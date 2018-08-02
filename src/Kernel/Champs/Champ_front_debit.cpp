@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,17 +56,17 @@ int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   const IntTab& face_voisins = zone_VF.face_voisins();
 
-  // on traite les faces sur la frontiere
-  DoubleTab vecteur_norm(le_bord.nb_faces(),dimension);
+  // For tabular sizing only
+  normal_vectors_=les_valeurs[0].valeurs();
 
-  // Dimensionnement du tableau
-  normales_divisees_par_aire_=les_valeurs[0].valeurs();
-
-  double aire=0.0;        // Aire de la frontiere
+  double boundary_area=0.0;        // total boundary area
   int premiere_face=le_bord.num_premiere_face();
   for(int i=0; i<le_bord.nb_faces(); i++)
     {
       int face = i + premiere_face;
+      double dS=zone_VF.face_surfaces( face );
+      boundary_area += dS * zone_VF.porosite_face( face );
+
       int elem = face_voisins(face,0);
       int signe = -1;
       if (elem == -1)
@@ -75,28 +75,30 @@ int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
           signe = 1;
         }
 
-      double dS=0;
-      for (int j=0; j<dimension; j++)
-        dS += zone_VF.face_normales(face,j) * zone_VF.face_normales(face,j);
-
-      dS = sqrt(dS);
-      aire += dS * zone_VF.porosite_face(face);
+      // fill the j^th component of the normal vector associated to the surface number i
       for(int j=0; j<dimension; j++)
-        normales_divisees_par_aire_(i,j)=signe*zone_VF.face_normales(face,j)/dS;
+        normal_vectors_(i,j)=signe*zone_VF.face_normales(face,j)/dS;
     }
-  aire=mp_sum(aire);
-  normales_divisees_par_aire_/=aire;
-  // Remplissage de tous les instants
+  boundary_area=mp_sum(boundary_area);
+
+  // the flow rate Q is imposed on the boundary
+  // so the velocity field u is computed as following :
+  // u = ( n Q )/ boundary_area
+  // where boundary_area is the total boundary area and n is the normal vector associated to the boundary
+  // for computational optimization, the normal vectors are divided by boundary_area here
+  normal_vectors_/=boundary_area;
+
+  // fill at every time
   int nb_cases=les_valeurs->nb_cases();
   for (int t=0; t<nb_cases; t++)
     {
-      DoubleTab& tab=les_valeurs[t].valeurs();
-      tab=normales_divisees_par_aire_;
-      if (tab.size_array())
+      DoubleTab& velocity_field=les_valeurs[t].valeurs();
+      velocity_field=normal_vectors_;
+      if (velocity_field.size_array())
         {
           // Allows weighting by rho in Champ_front_debit_massique
-          double debit=champ_debit_.valeur().valeurs()(0,0) * coeff_;
-          tab*=debit;
+          double flow_rate=champ_debit_.valeur().valeurs()(0,0) * coeff_;
+          velocity_field*=flow_rate;
         }
     }
   return 1;
@@ -155,7 +157,7 @@ void Champ_front_debit::mettre_a_jour(double temps)
     {
       // Allows weighting by rho in Champ_front_debit_massique
       double debit=champ_debit_.valeur().valeurs_au_temps(temps)(0,0) * coeff_;
-      tab=normales_divisees_par_aire_;
+      tab=normal_vectors_; // warning they are already divided by boundary area !
       tab*=debit;
     }
 }
