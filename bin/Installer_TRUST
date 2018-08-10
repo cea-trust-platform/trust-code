@@ -11,7 +11,6 @@ check_prerequis()
 [ -f $TRUST_ROOT/bin/linux_install_tools_`uname -m`.tgz ] && echo "linux_install_tools.tgz exists"
 if [ "`uname -s`" = Linux ] && [ -f $TRUST_ROOT/bin/linux_install_tools_`uname -m`.tgz ]
 then
-    export PATH=$PATH:$TRUST_ROOT/bin/bin
     cd $TRUST_ROOT/bin
     mkdir -p bin 2>/dev/null
     (cd bin;tar xfz ../linux_install_tools_`uname -m`.tgz)
@@ -50,7 +49,7 @@ do
       then
         pp="lzip"
         echo "You need $pp installed before installing the provided $p. Try to install it"
-        dest2=tmp_$pp
+        dest2=$TRUST_ROOT/tmp_$pp
         q=$pp
         rm -rf $dest2
         mkdir $dest2
@@ -60,18 +59,20 @@ do
         tar zxf $TRUST_ROOT/externalpackages/utils/$arch
         cd *$q*
         ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
-        cd ../..
+        [ $? -eq 0 ] && echo "lzip install completed"
         export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
         if [ "`lzip --help 1>/dev/null 2>&1;echo $?`" != 0 ]
         then
-           echo "$pp" >> $TRUST_ROOT/NON_INSTALLED
            echo "Error while installing lzip. See informations in $dest2 directory."
+           echo "Error while installing lzip." >> $TRUST_ROOT/NON_INSTALLED
+           echo "See logfile in $dest2" >> $TRUST_ROOT/NON_INSTALLED
+           echo "---" >> $TRUST_ROOT/NON_INSTALLED
         else
           rm -rf $dest2
         fi
       fi
     fi
-    dest=tmp_$p
+    dest=$TRUST_ROOT/tmp_$p
     q=$p
     [ "$p" = "awk" ] && q=gawk
     rm -rf $dest
@@ -93,13 +94,14 @@ do
     fi
     cd *$q*
     ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
-    [ $? -eq 0 ] && echo "install completed"
-    cd ../..
+    [ $? -eq 0 ] && echo "$p install completed"
     export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
     if [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ]
     then
-       echo "$p" >> $TRUST_ROOT/NON_INSTALLED
        echo "Error while installing $p. See informations in $dest directory."
+       echo "Error while installing $p." >> $TRUST_ROOT/NON_INSTALLED
+       echo "See logfile in $dest/" >> $TRUST_ROOT/NON_INSTALLED
+       echo "---" >> $TRUST_ROOT/NON_INSTALLED
     else
       rm -rf $dest
     fi

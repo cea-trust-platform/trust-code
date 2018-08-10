@@ -34,13 +34,15 @@ make_()
    else
       echo "KO (See $package_log)"
       echo "You need $1 installed correctly. Contact TRUST support."
+      echo "Error while installing $package_name. " >> $TRUST_ROOT/NON_INSTALLED
+      echo "See $package_log" >> $TRUST_ROOT/NON_INSTALLED
+      echo "You need $1 installed correctly." >> $TRUST_ROOT/NON_INSTALLED
       if [ "$package_name" = "Tcl/Tk" ] ; then
-         echo "$package_name: You may have to first install libX11-dev" >> $TRUST_ROOT/NON_INSTALLED
-      elif [ "$package_name" = "mpich" ] ; then
-         echo "$package_name: add the option -disable-ccache in the configure step" >> $TRUST_ROOT/NON_INSTALLED
-      else
-          echo "$package_name" >> $TRUST_ROOT/NON_INSTALLED
+         echo "=> You may have to first install libX11-dev" >> $TRUST_ROOT/NON_INSTALLED
+      elif [ "$package_name" = "mpich" ] && [ "$TRUST_DISABLE_CCACHE" != 1 ] ; then
+         echo "=> Adding the option -disable-ccache in the configure step may fix this problem." >> $TRUST_ROOT/NON_INSTALLED
       fi
+      echo "---" >> $TRUST_ROOT/NON_INSTALLED
    fi
    # On ecrit dans prog.log pour la desinstallation
    echo `pwd` >> $TRUST_ROOT/env/prog.log

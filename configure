@@ -531,24 +531,6 @@ else
 fi
 
 
-if [ "$TRUST_WITHOUT_DOC" != 1 ]
-then
-   [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && echo "    pdflatex for doc generation" >> NON_INSTALLED
-
-   if [ "`grep 'Ubuntu ' /etc/os-release 2>/dev/null`" != "" ] || [ "`grep 'Debian ' /etc/os-release 2>/dev/null`" != "" ]
-   then
-      [ `eval dpkg-query -W texlive-fonts-recommended 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fonts-recommended for doc generation" >> NON_INSTALLED
-   elif [ "`grep 'Fedora ' /etc/os-release 2>/dev/null`" != "" ]
-   then
-      [ `eval dnf list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
-   elif [ "`grep 'CentOS ' /etc/os-release 2>/dev/null`" != "" ]
-   then
-      [ `eval yum list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
-   else
-      echo "Unknown distribution, ensure that latex and texlive-fonts-recommended are installed for doc generation."
-   fi
-fi
-
 ################################
 # Check options for some hosts #
 ################################
@@ -570,6 +552,46 @@ cd env
 
 [ "$clean" != "" ] && exit 0
 cd ..
+
+exiterror=0
+[ -f $TRUST_ROOT/NON_INSTALLED ] && exiterror=1
+
+if [ "$TRUST_WITHOUT_DOC" != 1 ]
+then
+   if [ "`eval pdfldatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
+   then
+     echo "pdflatex is missing. It is not provided with TRUST." >> NON_INSTALLED
+     echo "All TRUST documentation is available at https://sourceforge.net/projects/trust-platform/" >> NON_INSTALLED
+     echo "---" >> NON_INSTALLED
+   fi
+
+   if [ "`grep 'Ubuntu ' /etc/os-release 2>/dev/null`" != "" ] || [ "`grep 'Debian ' /etc/os-release 2>/dev/null`" != "" ]
+   then
+      [ `eval dpkg-query -W texlive-fonts-recommended 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fonts-recommended for doc generation" >> NON_INSTALLED
+   elif [ "`grep 'Fedora ' /etc/os-release 2>/dev/null`" != "" ]
+   then
+      [ `eval dnf list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
+   elif [ "`grep 'CentOS ' /etc/os-release 2>/dev/null`" != "" ]
+   then
+      [ `eval yum list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
+   else
+      echo "Unknown distribution, ensure that latex and texlive-fonts-recommended are installed for doc generation."
+   fi
+fi
+
+if [ -f $TRUST_ROOT/NON_INSTALLED ]
+then
+   echo ""
+   echo "============================================================================"
+   echo "Some packages needed by TRUST were not correctly installed:"
+   echo "----------------------------------------------------------------"
+   cat $TRUST_ROOT/NON_INSTALLED
+   [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found!"
+   echo $ECHO_OPTS "See previous messages for further details or contact support at trust@cea.fr"
+   echo "============================================================================"
+   [ "$exiterror" = 1 ] && exit -1
+fi
+
 source ./env_TRUST.sh 1>/dev/null 2>&1
 
 ###############################################
@@ -624,18 +646,6 @@ then
    echo $ECHO_OPTS "make"
    echo $ECHO_OPTS "# To check TRUST, run:"
    echo $ECHO_OPTS "make check"
-fi
-
-if [ -f $TRUST_ROOT/NON_INSTALLED ]
-then
-   echo ""
-   echo "========================================================================="
-   echo "Some packages needed by TRUST code were not correctly installed:"
-   echo "----------------------------------------------------------------"
-   cat NON_INSTALLED
-   [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found!"
-   echo $ECHO_OPTS "See previous messages for further details or contact support at trust@cea.fr"
-   echo "========================================================================="
 fi
 
 exit 0
