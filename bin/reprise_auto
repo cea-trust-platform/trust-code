@@ -232,8 +232,8 @@ then
       [ $sub = LSF ] && echo $ECHO_OPTS "$shell#BSUB -b $restart" > $sub_file_next # Format restart MM:DD:HH:MN
       if [ $sub = CCC ]
       then
-         # Pas de balise possible pour curie pour un job en differe?
-         if [ $HOST = curie-ccrt ] || [ $HOST = cobalt ]
+         # Pas de balise possible pour CCRT pour un job en differe?
+         if [ $HOST = cobalt ]
 	 then
 	    echo $ECHO_OPTS "$shell#MSUB -E '--begin `date '+%Y'-``echo $restart | $TRUST_Awk -F: '{print $1"-"$2"T"$3":"$4}'`'" > $sub_file_next
 	 else
@@ -242,7 +242,6 @@ then
       fi
       [ $sub = SLURM ] && echo $ECHO_OPTS "$shell#SBATCH --begin `date '+%Y'-``echo $restart | $TRUST_Awk -F: '{print $1"-"$2"T"$3":"$4}'`" > $sub_file_next # Format restart MMDDHHMN
       # A noter que #MSUB -a ou #MSUB -S ne marche pas sur titane, le CCRT conseille #BSUB -b
-      # BSUB -b ne fonctionne pas pour curie
       cat $sub_file >> $sub_file_next    
       # Soumission du job (MACHINE-DEPENDANT) 
       [ $sub = PBS ] && mes=$mes"Submission of the job $job delayed to MM:DD:HH:MN=$restart :\n`$qsub $sub_file_next 2>&1`\n" 
@@ -474,7 +473,7 @@ else
 fi
 
 # Verifie si la machine a ete testee
-if [ $HOST != curie-ccrt ] && [ $HOST != occigen ] && [ $HOST != cobalt ] # Supported
+if [ $HOST != occigen ] && [ $HOST != cobalt ] # Supported
 then
    if [ $HOST = mars ] || [ $HOST = eris ]
    then

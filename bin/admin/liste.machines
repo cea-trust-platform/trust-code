@@ -9,7 +9,6 @@ linux	rsync_ssh	cible		cezanne63.intra.cea.fr				-PolyMAC -TrioMC -MATHYS						-
 linux	rsync_ssh	get_binary	is224591.intra.cea.fr																		# CentOS 6.4	Bat 526 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	tache		irene-ccrt.ccc.cea.fr		-limited	-TrioCFD						-benchmark						# RedHat 7.4	CEA CCRT
 linux	rsync_ssh	tache		cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT -PolyMAC				-benchmark						# RedHat 7.3	CEA CCRT
-linux	rsync_ssh	tache		curie-ccrt.ccc.cea.fr		-limited	-TrioCFD 	 					-benchmark						# RedHat 6.9	CEA TGCC
 linux	rsync_ssh	tache		ceres2.intra.cea.fr		-limited															# CentOS 6.8	CEA Marcoule	NB: bench desactive
 linux	rsync_ssh	tache		mezel.intra.cea.fr		-limited															# RedHat 6.7	CEA Cadarache	NB: bench desactive
 linux	rsync_ssh	tache		callisto.intra.cea.fr		-limited	-TrioCFD -FLICA5 -IJK-FT -PolyMAC					-disable-mpiio				# CentOS 6.4	CEA Saclay	NB: bench desactive
@@ -48,3 +47,4 @@ linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -F
 linux	rsync_ssh	non		is225223-gui.intra.cea.fr			-MPCube -TrioCFD -FLICA5 -GENEPI3 -IJK-FT		-gui		-remote_install_TRUST_with_source	# CentOS 7.4	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is231771.intra.cea.fr				-TrioCFD -FLICA5 -GENEPI3 -IJK-FT			-platform	-force_latest_openmpi			# CentOS 7.4	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	non		callisto-intel.intra.cea.fr	-limited	-IJK-FT -MATHYS								-disable-mpiio -without-visit		# CentOS 6.4	CEA Saclay	NB: bench desactive
+linux	rsync_ssh	non		cobalt-wi4mpi.ccc.cea.fr	-limited										-disable-tools				# RedHat 7.3	CEA CCRT

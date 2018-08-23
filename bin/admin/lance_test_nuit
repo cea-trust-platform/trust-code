@@ -345,10 +345,10 @@ check_components()
                            if  [ "${machine:0:14}" = "callisto-intel" ]
                            then
 		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.7.7/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
-                           elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "curie-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
+                           elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
-                           elif [ "${machine:0:10}" = "curie-ccrt" ] || [ "${machine:0:6}" = "cobalt" ] || [ "${machine:0:10}" = "irene-ccrt" ]
+                           elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
                            then
 		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
@@ -1061,10 +1061,12 @@ echo "###############################################"
                  echo "Call to "$TRUST_ROOT"/bin/admin/checkin_patch.ct"
                  echo "  See $checkin_log"
                  echo "TRUST checkin patch on $HOST the `date` ...">$checkin_log
-		 $TRUST_ROOT/bin/admin/checkin_patch.ct 1>>$checkin_log 2>&1
+		 #$TRUST_ROOT/bin/admin/checkin_patch.ct 1>>$checkin_log 2>&1 # Test a revoir
 		 wc -l $checkin_log
 		 grep "diff --git" $checkin_log
-		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL
+		 if [ "`cat $checkin_log | tail -n +2`" != "" ]
+		 then
+		 cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL
 		 #######################
 		 # Construction du patch
 		 #######################
@@ -1145,6 +1147,7 @@ echo "###############################################"
 		 elif [ $patch_error != 0 ]
 		 then
                     echo "Not install on remote machine!" | mail_ -s\"[lance_test_nuit] Failed to create $TRUST_VERSION patch version\" $TRUST_MAIL
+		 fi
 		 else
 		    echo "No patch"
 		    new_patch=0
@@ -1171,7 +1174,7 @@ echo "###############################################"
 	# Verification des composants #
 	###############################
 	#if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
-	if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ]
+	if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ] # Test a revoir
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
@@ -4011,7 +4014,7 @@ source /soft/mezel/TRIO/env_TRUST-$new.sh
 # for CEA Marcoule cluster (ceres2):
 source /softs/trio_u/env_TRUST-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & curie-ccrt & irene-ccrt):
+# for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
 # for CINES supercomputer (occigen):
@@ -4110,7 +4113,7 @@ source /soft/mezel/TRIO/env_TrioCFD-$new.sh
 # for CEA Marcoule cluster (ceres2):
 source /softs/trio_u/env_TrioCFD-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & curie-ccrt & irene-ccrt):
+# for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
 # for CINES supercomputer (occigen):

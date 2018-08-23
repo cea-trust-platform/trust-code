@@ -65,7 +65,6 @@ compilateurs="--cc $TRUST_cc --cxx $TRUST_CC"
 
 #########################################################
 # Les compilateurs Intel ne marchent pas toujours bien pour VisIt (plantages un peu incomprehensibles)
-# Exemple curie: MakeFiles/vtkRenderingCore.dir/vtkMapper.cxx.o: file not recognized: File truncated
 # On laisse faire VisIt (qui va prendre GNU) sauf sur certaines machines ou visiblement (callisto)
 # il faut que plugin et VisIt soit compiles les 2 avec Intel
 #########################################################
@@ -194,19 +193,6 @@ rm -r -f VTK*-build IceT-?-?-?
 #echo patch VTK gcc6 
 #cp VTK-6.1.0_patch_gcc6/CMake/* VTK-6.1.0/CMake
 #fi
-
-############################################
-# Modification eventuelle du script de build
-############################################
-if [ $HOST = curie-ccrt ]
-then
-   # Hack du build pour Qt sur curie car sinon include non trouve:
-   if [ "`grep ' \-opensource \-no-openssl' ./$build_visit`" = "" ]
-   then
-      echo "$build_visit hacked for Qt on $HOST..."
-      echo $ECHO_OPTS "1,$ s? -opensource? -opensource -no-openssl?g\nw" | ed ./$build_visit 1>/dev/null 2>&1 
-   fi
-fi
 
 #################################################
 # Compilation des paquets necessaires et de VisIt
