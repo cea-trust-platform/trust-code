@@ -56,6 +56,10 @@ make_tools()
 	 err=$?
 	 OK $err
          [ $rep = Outils/IHM ] && [ $err != 0 ] && err=0 && echo "IHM is in experimetal state, so ..."
+         if [ $rep = doc ] && [ $err != 0 ] ; then
+            err=0
+            echo "doc failed to build probably due to a missing latex package. All TRUST documentation is provided with the package you downloaded."
+         fi
 	 if [ $err != 0 ]
          then
             if [ $rep = Outils/TRIOXDATA ] && [ "$CLEAN" = clean ]

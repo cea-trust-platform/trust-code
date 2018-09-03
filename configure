@@ -2,6 +2,196 @@
 
 [ ! -f ./configure ] && echo "`basename $0` must be run where it is located." && exit -1
 TRUST_ROOT_SA=$TRUST_ROOT
+
+[ "`id -u 2>/dev/null`" = 0 ] && echo "It is not recommended to configure and install TRUST as root." && exit
+
+[ -f NON_INSTALLED ] && rm -f NON_INSTALLED
+
+##########################
+# Testing basic commands #
+##########################
+[ "`uname 1>/dev/null 2>&1;echo $?`" != 0 ] && echo "    uname" >> NON_INSTALLED
+multiple_choices=0 # if =1, it tells the user that he can install a command among those belonging to the same line
+
+if [ "`whence ls 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "`whereis -b whereis 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "`type type 1>/dev/null 2>&1;echo $?`" != 0 ]
+then
+   echo "    whence type whereis  (*)" >> NON_INSTALLED
+   multiple_choices=1
+fi
+
+############################
+# Check if a command exists
+whence2_()
+{
+      a=`whence ls 2>/dev/null`
+      err=$?
+      [ "`uname -s`" = OSF1 ] && err=1
+
+      if [ $err = 0 ]; then
+         whence $1 > .toto
+         cat .toto
+      else
+         a=`type $1 2>/dev/null`
+         if [ $? = 0 ] ; then
+            echo $a
+         else
+            whereis -b $1 > .toto
+            cat .toto
+         fi
+      fi
+}
+############################
+cmds="pwd whoami find cut wc ln tar gunzip"
+for com in $cmds ; do
+   [ "`whence2_ $com`" = "$com:" ] && [ "`whence2_ $com`" != "" ] && echo "    $com" >> NON_INSTALLED
+done
+
+if [ -f NON_INSTALLED ] ; then
+   echo "Fatal error: command(s)"
+   cat NON_INSTALLED
+   echo "is (are) not accessible... host misconfigured."
+   [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found"
+   exit
+fi
+
+#######################################################################################################
+# Checking if compilers exist. User can still force the use of a specific compiler
+# If user forces a compiler, we do not check if it really exists. This is still done by configurer_env
+#######################################################################################################
+c_compiler_found=0
+CC_compiler_found=0
+f77_compiler_found=0
+dtterm_found=0
+list_c_found=""
+list_CC_found=""
+
+# This list is token from the env_src/configurer_env script
+list_of_c_compilers="cc"
+list_of_f77_compilers="f90 f77 g77"
+list_of_dtterm="dtterm xterm"
+
+arch=`uname -s`
+case $arch in
+ HP-UX) list_of_CC_compilers="aCC CC g++"
+        list_of_dtterm=$list_of_dtterm" hpterm"
+        ;;
+ IRIX*) list_of_CC_compilers="CC g++"
+        ;;
+ SunOS) list_of_CC_compilers="g++ CC"
+        ;;
+   AIX) list_of_CC_compilers="mpCC_r xlC g++"
+        list_of_f77_compilers="f90 f77 g77 mpxlf_r xlf xlf90"
+        list_of_c_compilers="mpcc_r cc"
+        ;;
+  OSF1) list_of_CC_compilers="cxx g++"
+        ;;
+ Linux) list_of_CC_compilers="g++ icpc icc ecc pgCC"
+        list_of_c_compilers="gcc icc ecc pgcc cc"
+        list_of_f77_compilers="f90 f77 g77 gfortran ifort ifc efc pgf90 pgf77"
+        list_of_dtterm=$list_of_dtterm" nxterm rxvt konsole"
+        ;;
+CYGWIN*) list_of_CC_compilers="g++ icpc icc ecc pgCC"
+         list_of_f77_compilers="f90 f77 g77 gfortran ifort ifc efc pgf90 pgf77"
+         list_of_c_compilers="gcc icc ecc pgcc cc"
+         list_of_dtterm=$list_of_dtterm" nxterm rxvt konsole"
+        ;;
+Darwin) list_of_CC_compilers="g++ gcc"
+        list_of_c_compilers="gcc cc"
+        list_of_dtterm=$list_of_dtterm" nxterm"
+        ;;
+ cobea) list_of_CC_compilers="CC g++"
+        list_of_f77_compilers="fort77 g77 f90"
+        ;;
+UNIX_System_V) list_of_CC_compilers="CC g++"
+        list_of_f77_compilers="frt f77 f90"
+        list_of_dtterm="xterm"
+        ;;
+     *) list_of_CC_compilers="g++ CC"
+        list_of_f77_compilers="f90 f77 g77 fort77"
+        list_of_c_compilers="gcc cc"
+        ;;
+esac
+
+if [ "`echo $@ | grep 'cc='`" = "" ] ; then # C compiler has not been forced
+   for comp in $list_of_c_compilers ; do
+     [ "`whence2_ $comp`" != "$comp:" ] && [ "`whence2_ $comp`" != "" ] && c_compiler_found=1 && list_c_found=$list_c_found" "$comp
+   done
+else
+   c_compiler_found=2
+fi
+
+if [ "`echo $@ | grep 'c++='`" = "" ] ; then # C++ compiler has not been forced
+   for comp in $list_of_CC_compilers ; do
+     [ "`whence2_ $comp`" != "$comp:" ] && [ "`whence2_ $comp`" != "" ] && CC_compiler_found=1 && list_CC_found=$list_CC_found" "$comp
+   done
+else
+   CC_compiler_found=2
+fi
+
+if [ "`echo $@ | grep 'fc='`" = "" ] ; then # F77 compiler has not been forced
+   for comp in $list_of_f77_compilers ; do
+     [ "`whence2_ $comp`" != "$comp:" ] && [ "`whence2_ $comp`" != "" ] && f77_compiler_found=1
+   done
+else
+   f77_compiler_found=2
+fi
+
+for comm in $list_of_dtterm; do
+   [ "`whence2_ $comm`" != "$comm:" ] && [ "`whence2_ $comm`" != "" ] && dtterm_found=1
+done
+
+[ "$list_c_found" = " gcc" ] && [ "`eval gcc --version 1>/dev/null 2>&1;echo $?`" != 0 ] && c_compiler_found=0 && list_c_found=""
+
+[ "$c_compiler_found" = 0 ] && multiple_choices=1 && echo "    C compiler: $list_of_c_compilers  (*)" >> NON_INSTALLED
+[ "$CC_compiler_found" = 0 ] && multiple_choices=1 && echo "    C++ compiler: $list_of_CC_compilers  (*)" >> NON_INSTALLED
+[ "$f77_compiler_found" = 0 ] && multiple_choices=1 && echo "    Fortran compiler: $list_of_f77_compilers  (*)" >> NON_INSTALLED
+[ "$dtterm_found" = 0 ] && multiple_choices=1 && echo "    $list_of_dtterm  (*)" >> NON_INSTALLED
+
+
+######################
+# Checking prerequis #
+######################
+for file in /etc/os-release /etc/system-release /etc/release /etc/issue.net /etc/issue
+do
+   [ -f $file ] && OSfile=$file && break
+done
+
+if [ "`grep 'Ubuntu ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Debian ' $OSfile 2>/dev/null`" != "" ]
+then
+   [ `eval dpkg-query -W libx11-dev 1>/dev/null 2>&1;echo $?` != 0 ] && echo "libx11-dev" >> NON_INSTALLED
+elif [ "`grep 'Fedora ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
+then
+   [ `eval rpm -qa | grep -i libX11-devel 1>/dev/null 2>&1;echo $?` != 0 ] && echo "libX11-devel" >> NON_INSTALLED
+#elif [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
+#then
+#   [ `eval yum list installed libX11-devel 1>/dev/null 2>&1;echo $?` != 0 ] && echo "libX11-devel" >> NON_INSTALLED
+else
+   echo "If an error with hwloc occurs, install libX11-dev on your OS"
+fi
+
+########################
+# Testing make command #
+########################
+if [ "`eval make --version 1>/dev/null 2>&1;echo $?`" != 0 ] ; then
+   echo ""
+   echo "Fatal error:"
+   echo "------------"
+   echo "    make command not found."
+   if [ -f NON_INSTALLED ] ; then
+      echo ""
+      echo "These packages are also missing:"
+      echo "--------------------------------"
+      cat NON_INSTALLED
+      [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found."
+   fi
+   echo "Contact your system administrator to install it."
+   exit
+fi
+
+###################
+# Debut du script #
+###################
+
 export TRUST_ROOT=`pwd`
 first=1
 [ "$TRUST_ROOT" = "$TRUST_ROOT_SA" ] && [ "$TRUST_ENV" != "" ]  && first=0
@@ -9,44 +199,48 @@ first=1
 mkdir -p lib exec env
 ( cd env; ln -sf ../env_src/* .)
 
-# Check prerequis
+###################
+# Check prerequis #
+###################
 
 bin/Installer_TRUST -check_prerequis || exit -1
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
+#[ -d $TRUST_ROOT/exec/utils/bin ] && export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
+#[ -d $TRUST_ROOT/bin/bin ] && export PATH=$PATH:$TRUST_ROOT/bin/bin
 
 ###############################
 # Clean old directories (<v169)
 ###############################
 #reps="ALE EF Front_tracking_discontinu Kernel MAIN P1NCP1B Phase_field Rayonnement Rayonnement_semi_transp ThHyd ThSol UtilitairesAssemblages VDF VEF Zoom"
-reps="EF Kernel MAIN P1NCP1B ThHyd ThSol VDF VEF"
-for rep in $reps
-do
-   [ -d $rep ] && rm -r -f $rep
-done
+#reps="EF Kernel MAIN P1NCP1B ThHyd ThSol VDF VEF"
+#for rep in $reps
+#do
+#   [ -d $rep ] && rm -r -f $rep
+#done
 
 #########################################
 # Creation des liens avec les autres VOBS
 #########################################
 #reps="../Tests_TRUST/tests ../Doc_TRUST/doc ../Pre_Post_TRUST/Outils"
-reps=""
-for rep in $reps
-do 
-   # Eventuelle substitution pour les VOBs en Noyau et non TRUST
-   # Attention TRUST_Awk n'est pas encore defini...
-   [ ! -d $rep ] && rep=`echo $rep | awk '{sub("TRUST","Noyau",$0);print $0}'`
-   if [ -d $rep ]
-   then
-      r=`basename $rep`
-      [ ! -d $r ]  && ln -sf $rep $r && echo "Link created: $rep ->" $r
-   fi
-done
+#reps=""
+#for rep in $reps
+#do
+#   # Eventuelle substitution pour les VOBs en Noyau et non TRUST
+#   # Attention TRUST_Awk n'est pas encore defini...
+#   [ ! -d $rep ] && rep=`echo $rep | awk '{sub("TRUST","Noyau",$0);print $0}'`
+#   if [ -d $rep ]
+#   then
+#      r=`basename $rep`
+#      [ ! -d $r ]  && ln -sf $rep $r && echo "Link created: $rep ->" $r
+#   fi
+#done
 
 if [ "$1" != "-disable-optionals" ] && [ "$1" != "-for_appli_salome" ]
 then
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
 echo "[-help]                           Print help of the different configure options."
-echo "[-disable-optionals]              Disable all optionals librairies and tools." 
+echo "[-disable-optionals]              Disable all optionals librairies and tools."
 echo "[-add_search=<dir>]               Add a directory to the defaults path to search a tool."
 echo "[-c++=<prog>]                     Force the use of a specified C++ compiler."
 echo "[-cc=<prog>]                      Force the use of a specified C compiler."
@@ -102,22 +296,22 @@ if [ "$1" = "-for_appli_salome" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR $* 
-# pas encore pas ICoCoMEDField -with-medcoupling=$MEDCOUPLING_ROOT_DIR $* 
+  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR $*
+# pas encore pas ICoCoMEDField -with-medcoupling=$MEDCOUPLING_ROOT_DIR $*
   exit $?
 fi
 if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $* 
+  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
   exit $?
 fi
 
 for THIRD_PARTY in $LIST_THIRD_PARTY
 do
-  command=TRUST_DISABLE_$THIRD_PARTY=0   
-  eval $command       
+  command=TRUST_DISABLE_$THIRD_PARTY=0
+  eval $command
 done
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
@@ -139,54 +333,54 @@ do
    if [ "${1%-help}" != "$1" ]
    then
       exit
-            
+
    elif [ "${1#-c++=}" != "$1" ]
    then
       export TRUST_FORCE_CC=${1#-c++=}
-      
+
    elif [ "${1#-cc=}" != "$1" ]
    then
       export TRUST_FORCE_cc=${1#-cc=}
-      
+
    elif [ "${1#-cxxflags=}" != "$1" ]
    then
       export TRUST_ADD_CXXFLAGS=${1#-cxxflags=}
-      
+
    elif [ "${1#-cflags=}" != "$1" ]
    then
       export TRUST_ADD_CFLAGS=${1#-cflags=}
-      
+
    elif [ "${1#-fflags=}" != "$1" ]
    then
       export TRUST_ADD_FFLAGS=${1#-fflags=}
-         
+
    elif [ "${1#-fc=}" != "$1" ]
    then
       export TRUST_FORCE_F77=${1#-fc=}
-      
+
    elif [ "${1#-add_search=}" != "$1" ]
    then
       export TRUST_FORCE_SEARCH=$TRUST_FORCE_SEARCH" "${1#-add_search=}
     elif [ "${1#-with-medcoupling=}" != "$1" ]
    then
       export TRUST_USE_EXTERNAL_MEDCOUPLING=${1#-with-medcoupling=}
-        
+
    elif [ "${1#-with-med=}" != "$1" ]
    then
       export TRUST_USE_EXTERNAL_MED=${1#-with-med=}
-      
+
    elif [ "${1#-with-hdf=}" != "$1" ]
    then
       export TRUST_USE_EXTERNAL_HDF=${1#-with-hdf=}
-      
+
    elif [ "${1#-force_even_unsupported}" != "$1" ]
    then
-      export TRUST_FORCE_SUPPORTED=1   
-      
+      export TRUST_FORCE_SUPPORTED=1
+
    elif [ "${1#-force_provided_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_OPENMPI=1
-      
+
    elif [ "${1#-force_old_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_OLD_OPENMPI=1
@@ -198,11 +392,11 @@ do
    elif [ "${1#-force_provided_mpich}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_MPICH=1
-      
+
    elif [ "${1#-force_petsc_have_cuda}" != "$1" ]
    then
       export TRUST_FORCE_PETSC_HAVE_CUDA=1
-      
+
    elif [ "${1#-force_petsc_have_openmp}" != "$1" ]
    then
       export TRUST_FORCE_PETSC_HAVE_OPENMP=1
@@ -220,36 +414,36 @@ do
       THIRD_PARTY="VISIT"
       REP_THIRD_PARTY=$TRUST_ROOT/Outils/VisIt
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
-      
+
    elif [ "${1#-download-visit}" != "$1" ]
    then
-      export TRUST_DOWNLOAD_VISIT=1  
-       
+      export TRUST_DOWNLOAD_VISIT=1
+
    elif [ "${1#-download-salome}" != "$1" ]
    then
-      export TRUST_DOWNLOAD_SALOME=1  
-       
+      export TRUST_DOWNLOAD_SALOME=1
+
    elif [ "${1#-clean}" != "$1" ]
    then
-      export clean="clean" 
-       
+      export clean="clean"
+
    elif [ "${1#-disable-mpiio}" != "$1" ]
    then
-      export TRUST_DISABLE_MPIIO=1 
-       
+      export TRUST_DISABLE_MPIIO=1
+
    elif [ "${1#-disable-check_sources}" != "$1" ]
    then
-      export TRUST_DISABLE_CHECK_SRC=1 
+      export TRUST_DISABLE_CHECK_SRC=1
 
    elif [ "${1#-disable-checks}" != "$1" ]
    then
-      export TRUST_DISABLE_CHECKS=1 
-      export TRUST_DISABLE_CHECK_SRC=1 
+      export TRUST_DISABLE_CHECKS=1
+      export TRUST_DISABLE_CHECK_SRC=1
 
    elif [ "${1#-disable-}" != "$1" ]
    then
       THIRD_PARTY=`echo ${1#-disable-} | awk '{print toupper($1)}'`
-      
+
       REP_THIRD_PARTY=$TRUST_ROOT/ThirdPart/src/LIB$THIRD_PARTY
       [ "$THIRD_PARTY" = "GMSH" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/Gmsh
       [ "$THIRD_PARTY" = "CCACHE" ] && REP_THIRD_PARTY=$TRUST_ROOT/env/ccache
@@ -262,25 +456,25 @@ do
          echo "$1 option not available cause $REP_THIRD_PARTY is not installed."
 	 exit -1
       fi
-      
+
       testv="echo \$TRUST_DISABLE_$THIRD_PARTY"
       res=`eval $testv`
-      if [ "$res" = "" ] 
+      if [ "$res" = "" ]
       then
 	  echo "$1 option not available cause $THIRD_PARTY is not in list"
 	  exit -1
       fi
-      
+
       (cd $REP_THIRD_PARTY && [ $first -eq 0 ] && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
-      command=TRUST_DISABLE_$THIRD_PARTY=1   
+      command=TRUST_DISABLE_$THIRD_PARTY=1
       eval $command
 
    elif [ "${1#-without-host_file}" != $1 ]
    then
       export TRUST_WITHOUT_HOST=1
-       
-   else   
-      echo "Unknown option $1." 
+
+   else
+      echo "Unknown option $1."
       exit -1
    fi
    shift
@@ -295,18 +489,18 @@ then
       # Gestion externalpackages
       echo "Verify externalpackages..."
       cd $TRUST_ROOT/bin/gestion_externalpackages
-      export LC_ALL=C && ./Verify_externalpackages.sh 
+      export LC_ALL=C && ./Verify_externalpackages.sh
       [ $? != 0 ] && echo "" && echo "Error: You need to update externalpackages directory to $TRUST_ROOT_VERSION version" && exit -1
       cd $TRUST_ROOT
    else
-      echo "Disabling CHECKS, so no verify externalpackages."
+      echo "Disabling CHECKS, so externalpackages will not be verified."
    fi
 fi
 
-for THIRD_PARTY in $LIST_THIRD_PARTY 
+for THIRD_PARTY in $LIST_THIRD_PARTY
 do
    VAR=TRUST_DISABLE_$THIRD_PARTY
-   echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var 
+   echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
 echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
@@ -314,9 +508,9 @@ echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
-echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var   
+echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var
 
-if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]  
+if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]
 then
     echo "export TRUST_USE_EXTERNAL_MEDCOUPLING=1" >> $var
     echo "export MEDCOUPLING_ROOT_DIR=$TRUST_USE_EXTERNAL_MEDCOUPLING" >> $var
@@ -324,7 +518,7 @@ else
     echo "unset TRUST_USE_EXTERNAL_MEDCOUPLING" >> $var
     # echo "unset MEDFILE_ROOT_DIR" >> $var
 fi
-if [ "$TRUST_USE_EXTERNAL_MED" != "" ]  
+if [ "$TRUST_USE_EXTERNAL_MED" != "" ]
 then
     echo "export TRUST_USE_EXTERNAL_MED=1" >> $var
     echo "export MEDFILE_ROOT_DIR=$TRUST_USE_EXTERNAL_MED" >> $var
@@ -332,7 +526,7 @@ else
     echo "unset TRUST_USE_EXTERNAL_MED" >> $var
     # echo "unset MEDFILE_ROOT_DIR" >> $var
 fi
-if [ "$TRUST_USE_EXTERNAL_HDF" != "" ]  
+if [ "$TRUST_USE_EXTERNAL_HDF" != "" ]
 then
     echo "export TRUST_USE_EXTERNAL_HDF=1" >> $var
     echo "export HDF5_ROOT_DIR=$TRUST_USE_EXTERNAL_HDF" >> $var
@@ -360,8 +554,45 @@ cd ..
 
 cd env
 ./configurer_env $clean || exit -1
+
 [ "$clean" != "" ] && exit 0
 cd ..
+
+exiterror=0
+[ "`grep 'Error while installing' $TRUST_ROOT/NON_INSTALLED`" != "" ] && exiterror=1
+
+if [ "$TRUST_WITHOUT_DOC" != 1 ]
+then
+   [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && echo "    pdflatex for doc generation" >> NON_INSTALLED
+
+   if [ "`grep 'Ubuntu ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Debian ' $OSfile 2>/dev/null`" != "" ]
+   then
+      [ `eval dpkg-query -W texlive-fonts-recommended 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fonts-recommended for doc generation" >> NON_INSTALLED
+   elif [ "`grep 'Fedora ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
+   then
+      [ `eval rpm -qa | grep -i texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
+#   elif [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
+#   then
+#      [ `eval yum list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
+#      [ `eval yum list installed texlive-*fonts* 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-*fonts for doc generation" >> NON_INSTALLED
+   else
+      echo "Unknown distribution, ensure that texlive-fonts-recommended are installed for doc generation."
+   fi
+fi
+
+if [ -f $TRUST_ROOT/NON_INSTALLED ]
+then
+   echo ""
+   echo "========================================================================="
+   echo "Some packages needed by TRUST code were not correctly installed:"
+   echo "----------------------------------------------------------------"
+   cat $TRUST_ROOT/NON_INSTALLED
+   [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found!"
+   echo $ECHO_OPTS "See previous messages for further details or contact support at trust@cea.fr"
+   echo "========================================================================="
+   [ "$exiterror" = 1 ] && exit -1
+fi
+
 source ./env_TRUST.sh 1>/dev/null 2>&1
 
 ###############################################
@@ -374,7 +605,7 @@ then
    then
       echo "TRUST_TMP=$TRUST_TMP"
       echo "Please, specify a directory for the TRUST_TMP variable in the $perso file"
-      echo "in order to have good performances for TRUST." 
+      echo "in order to have good performances for TRUST."
    fi
 fi
 
@@ -399,14 +630,14 @@ then
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
    #echo $ECHO_OPTS "init:\n\tsource ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_opt $Build )" >> $TRUST_ROOT/Makefile  
-   echo $ECHO_OPTS "check_optim:\tcheck" >> $TRUST_ROOT/Makefile  
-   echo $ECHO_OPTS "check_debug:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_debug $Build )" >> $TRUST_ROOT/Makefile  
+   echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_opt $Build )" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check_optim:\tcheck" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check_debug:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_debug $Build )" >> $TRUST_ROOT/Makefile
    [ "${#ECHO_OPTS}" = 0 ] && echo "Error: Check "$TRUST_ROOT"/Makefile !!! (ECHO_OPTS="$ECHO_OPTS")" && exit -1
    ##################################
    # Desormais on recree les makefile
-   ##################################   
-   #make depend 
+   ##################################
+   #make depend
    echo $ECHO_OPTS "File Makefile created."
    echo $ECHO_OPTS "File configure.log created."
    echo
@@ -417,4 +648,5 @@ then
    echo $ECHO_OPTS "# To check TRUST, run:"
    echo $ECHO_OPTS "make check"
 fi
+
 exit 0

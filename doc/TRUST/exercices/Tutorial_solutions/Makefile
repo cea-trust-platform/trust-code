@@ -28,6 +28,9 @@ SUB_FILE26=xprepro_exo1_prep
 
 all: ../$(FILE).pdf
 ../$(FILE).pdf: $(FILE).tex Makefile $(SUB_FILE1).tex $(SUB_FILE2).tex $(SUB_FILE3).tex $(SUB_FILE4).tex $(SUB_FILE5).tex $(SUB_FILE6).tex $(SUB_FILE7).tex $(SUB_FILE8).tex $(SUB_FILE9).tex $(SUB_FILE10).tex $(SUB_FILE11).tex $(SUB_FILE12).tex $(SUB_FILE13).tex $(SUB_FILE14).tex $(SUB_FILE15).tex $(SUB_FILE16).tex $(SUB_FILE17).tex $(SUB_FILE18).tex $(SUB_FILE19).tex $(SUB_FILE20).tex $(SUB_FILE21).tex $(SUB_FILE22).tex $(SUB_FILE23).tex $(SUB_FILE24).tex $(SUB_FILE25).tex $(SUB_FILE26).tex
+ifeq (, $(shell which pdflatex))
+	@echo "No pdflatex command, consider installing texlive package"
+else
 	$(MAKE) clean
 	pdflatex -interaction=nonstopmode $(FILE).tex > LOG
 #	 makeindex $(FILE).idx >> LOG
@@ -35,7 +38,7 @@ all: ../$(FILE).pdf
 	pdflatex -interaction=nonstopmode  $(FILE).tex >> LOG
 	mv $(FILE).pdf ..
 	$(MAKE) clean_build
-
+endif
 
 clean_build:  
 	@echo "Removing compilation files and pdf"

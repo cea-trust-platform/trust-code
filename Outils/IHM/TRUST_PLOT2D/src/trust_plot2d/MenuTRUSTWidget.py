@@ -33,7 +33,10 @@ class MenuTRUSTWidget(QDockWidget):
     case= self._getLongCaseName()
     if case == "":
       return
-    self.execute("xterm")
+    exterm=os.environ.get("Xterm")
+    if exterm == "":
+      exterm="xterm"
+    self.execute(exterm)
 
   def EditFile(self,extension):
     case= self._getLongCaseName()
