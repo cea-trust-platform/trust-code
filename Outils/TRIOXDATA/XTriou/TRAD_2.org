@@ -198,9 +198,9 @@ condinit objet_lecture nul 0 Initial condition.
   attr nom chaine nom 0 Name of initial condition field.
   attr ch field_base ch 0 Type field and the initial values.
 condinits objet_lecture nul 0 Initial conditions.
-  attr aco chaine(into=["{"]) aco 0 Open accodance sign.
+  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
   attr condinit condinit condinit 0 CI
-  attr acof chaine(into=["}"]) acof 0 Closed accodance sign.
+  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 condlim_base objet_u condlim_base 0 Basic class of boundary conditions.
 condlimlu objet_lecture nul 0 Boundary condition specified.
   attr bord chaine bord 0 Name of the edge where the boundary condition applies.
@@ -425,19 +425,19 @@ ecrire_fichier_xyz_valeur_item objet_lecture nul 0 To write the values of a fiel
 ecrire_fichier_xyz_valeur_param listobj nul -2 ecrire_fichier_xyz_valeur_item ecrire_fichier_xyz_valeur not_set
 convection_deriv objet_lecture convection_deriv 0 not_set
 bloc_convection objet_lecture nul 0 not_set
-  attr aco chaine(into=["{"]) aco 0 Open accodance sign.
+  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
   attr operateur convection_deriv operateur 0 not_set
-  attr acof chaine(into=["}"]) acof 0 Closed accodance sign.
+  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 diffusion_deriv objet_lecture diffusion_deriv 0 not_set
 op_implicite objet_lecture nul 0 not_set
   attr implicite chaine(into=["implicite"]) implicite 0 not_set
   attr mot chaine(into=["solveur"]) mot 0 not_set
   attr solveur solveur_sys_base solveur 0 not_set
 bloc_diffusion objet_lecture nul 0 not_set
-  attr aco chaine(into=["{"]) aco 0 Open accodance sign.
-  attr operateur diffusion_deriv operateur 1 if none is specified, the diffusive scheme used is an order 2 scheme.
+  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+  attr operateur diffusion_deriv operateur 1 if none is specified, the diffusive scheme used is a 2nd-order scheme.
   attr op_implicite op_implicite op_implicite 1 To have diffusive implicitation, it use Uzawa algorithm. Very useful when viscosity has large variations.
-  attr acof chaine(into=["}"]) acof 0 Closed accodance sign.
+  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 eqn_base mor_eqn eqn_base -3 Basic class for equations.
   attr convection bloc_convection convection 1 Keyword to alter the convection scheme.
   attr diffusion bloc_diffusion diffusion 1 Keyword to specify the diffusion operator.
@@ -450,9 +450,9 @@ eqn_base mor_eqn eqn_base -3 Basic class for equations.
   attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
 traitement_particulier_base objet_lecture traitement_particulier_base 1 Basic class to post-process particular values.
 traitement_particulier objet_lecture nul 0 Auxiliary class to post-process particular values.
-  attr aco chaine(into=["{"]) aco 0 Open accodance sign.
+  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
   attr trait_part traitement_particulier_base trait_part 0 Type of traitement_particulier.
-  attr acof chaine(into=["}"]) acof 0 Closed accodance sign.
+  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 navier_stokes_standard eqn_base navier_stokes_standard -1 Navier-Stokes equations.
   attr methode_calcul_pression_initiale chaine(into=["avec_les_cl","avec_sources","avec_sources_et_operateurs","sans_rien"]) methode_calcul_pression_initiale 1 Keyword to select an option for the pressure calculation before the fist time step. Options are : avec_les_cl (default option lapP=0 is solved with Neuman boundary conditions on pressure if any), avec_sources (lapP=f is solved with Neuman boundaries conditions and f integrating the source terms of the Navier-Stokes equations) and avec_sources_et_operateurs (lapP=f is solved as with the previous option avec_sources but f integrating also some operators of the Navier-Stokes equations). The two last options are useful and sometime necessary when source terms are implicited when using an implicit time scheme to solve the Navier-Stokes equations.
   attr projection_initiale entier projection_initiale 1 Keyword to suppress, if boolean equals 0, the initial projection which checks DivU=0. By default, boolean equals 1.
@@ -1192,7 +1192,7 @@ scatter interprete scatter 0 Class to read a partionned mesh in the files during
   attr domaine ref_domaine domaine 0 Name of domain.
 scatterformatte scatter scatterformatte 0 Class to read a partionned mesh in the files during a parallel calculation. The files are formatted.
 scattermed scatter scattermed 0 This keyword will read the partition of the domain_name domain into a the MED format files file.med created by Medsplitter.
-listdeuxmots_sacc listobj nul 0 deuxmots 0 List of groups of two words (without accodances).
+listdeuxmots_sacc listobj nul 0 deuxmots 0 List of groups of two words (without curly brackets).
 partitionneur_deriv objet_u partitionneur_deriv -1 not_set
   attr nb_parts entier nb_parts 1 The number of non empty parts that must be generated (generally equal to the number of processors in the parallel run).
 partitionneur_metis partitionneur_deriv metis -1 Metis is an external partitionning library. It is a general algorithm that will generate a partition of the domain.
