@@ -224,20 +224,16 @@ do
    elif [ "$1" = "-baltik" ]
    then
       [ -f bin/trust ] && echo "Can't be run at $TRUST_ROOT" && exit -1 
-      baltik_name="basic"
       shift
-      [ "$1" != "" ] && baltik_name=$1
-      if [ -d $baltik_name ]
+      if [ "$1" != "" ] 
       then
-         echo "Error: "$baltik_name" baltik project already exists in the current directory."
-         echo "Please specify a new name for your baltik project using:"
-         echo "trust -baltik baltik_name"
-         exit -1
-       fi
+         baltik_name=$1
+         mkdir -p $baltik_name
+         cd $baltik_name
+      fi
       echo "Creating an empty Baltik project under `pwd` ..."
       echo "Copying a template from \$TRUST_ROOT/bin/baltik/templates/basic ..."
-      cp -r $TRUST_ROOT/bin/baltik/templates/basic $baltik_name
-      cd $baltik_name
+      cp -r $TRUST_ROOT/bin/baltik/templates/basic/* .
       echo "Changing the project configuration file project.cfg ..."
       sed -i "1,$ s?TRUST?`whoami 2>/dev/null`?g" project.cfg
       project=`pwd` && project=`basename $project`
