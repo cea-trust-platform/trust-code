@@ -756,7 +756,14 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
   const Zone_VF& zone_VF                   = ref_cast(Zone_VF,eqn.zone_dis().valeur());
   double tps                               = mon_equation->inconnue().temps();
 
-
+  double nb_pas_dt=mon_equation->schema_temps().nb_pas_dt();
+  int reprise = mon_equation.valeur().probleme().reprise_effectuee();
+  bool new_file = ( nb_pas_dt == 0 && reprise == 0 );
+  IOS_OPEN_MODE mode;
+  if (new_file == 0)
+    mode = (ios::out | ios::app);
+  else
+    mode = ios::out;
 
   int nb_cl=les_cl.size();
   for (int num_cl=0; num_cl<nb_cl; num_cl++)
@@ -888,12 +895,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 //            prints
           if (je_suis_maitre())
             {
-              double nb_pas_dt=mon_equation->schema_temps().nb_pas_dt();
-              int reprise = mon_equation.valeur().probleme().reprise_effectuee();
-
-              SFichier fic7("tauw.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
-              SFichier fic8("reynolds_tau.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
-              SFichier fic9("u_tau.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
+              SFichier fic7("tauw.dat", mode);
+              SFichier fic8("reynolds_tau.dat", mode);
+              SFichier fic9("u_tau.dat", mode);
               fic7 << tps << "   " << tauw_diri_m   << "   ";
               fic8 << tps << "   " << retau_diri_m  << "   ";
               fic9 << tps << "   " << utau_diri_m   << "   ";
@@ -1014,12 +1018,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 //            prints
           if (je_suis_maitre())
             {
-              double nb_pas_dt=mon_equation->schema_temps().nb_pas_dt();
-              int reprise = mon_equation.valeur().probleme().reprise_effectuee();
-
-              SFichier fic4("tauw_robin.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
-              SFichier fic5("reynolds_tau_robin.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
-              SFichier fic6("u_tau_robin.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
+              SFichier fic4("tauw_robin.dat", mode);
+              SFichier fic5("reynolds_tau_robin.dat", mode);
+              SFichier fic6("u_tau_robin.dat", mode);
               fic4 << tps << "   " << tauw_robin_m   << "   ";
               fic5 << tps << "   " << retau_robin_m  << "   ";
               fic6 << tps << "   " << utau_robin_m   << "   ";
@@ -1144,9 +1145,6 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
       if (je_suis_maitre())
         {
-          double nb_pas_dt=mon_equation->schema_temps().nb_pas_dt();
-          int reprise = mon_equation.valeur().probleme().reprise_effectuee();
-
           // calcul et ecritures des differentes grandeurs parietales
           //////////////////////////////////////////////////////
           // vitesse de frottement
@@ -1162,9 +1160,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
           double retaum=0.5*(retauh+retaub);
           tauwm=0.5*(tauwh+tauwb);
 
-          SFichier fic1("reynolds_tau.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
-          SFichier fic2("u_tau.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
-          SFichier fic3("tauw.dat", ( nb_pas_dt == 0 && reprise == 0 ) ? (ios::out) : (ios::app));
+          SFichier fic1("reynolds_tau.dat", mode);
+          SFichier fic2("u_tau.dat", mode);
+          SFichier fic3("tauw.dat", mode);
           fic1 << tps << " " << retaum << " " << retaub << " " << retauh << finl;
           fic2 << tps << " " << utaum << " "  << utaub << " "  << utauh  << finl;
           fic3 << tps << " " << tauwm << " "  << tauwb << " "  << tauwh  << finl;
