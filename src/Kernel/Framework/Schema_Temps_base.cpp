@@ -728,7 +728,7 @@ int Schema_Temps_base::lsauv() const
         {
           if (dt_sauv_<=dt_)
             return 1;
-          else if (tmax_<=temps_courant_ || nb_pas_dt_max_<=nb_pas_dt_ || stationnaires_atteints_)
+          else if (tmax_<=temps_courant_ || nb_pas_dt_max_<=nb_pas_dt_ || stationnaires_atteints_ || ind_temps_cpu_max_atteint || stop_lu())
             return 1;
           else
             {
