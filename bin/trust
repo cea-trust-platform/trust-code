@@ -105,7 +105,7 @@ help()
    echo "Usage: `basename $0` [option] datafile [nb_cpus] [1>file.out] [2>file.err]"
    echo "Where option may be:"
    echo "-help|-h                      : List options."
-   echo "-baltik                       : Instanciate a empty Baltik project."
+   echo "-baltik [baltik_name]         : Instanciate an empty Baltik project."
    echo "-index                        : Access to the TRUST ressource index."
    echo "-doc                          : Access to the TRUST manual (Generic Guide)."
    echo "-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords."
@@ -224,6 +224,13 @@ do
    elif [ "$1" = "-baltik" ]
    then
       [ -f bin/trust ] && echo "Can't be run at $TRUST_ROOT" && exit -1 
+      shift
+      if [ "$1" != "" ] 
+      then
+         baltik_name=$1
+         mkdir -p $baltik_name
+         cd $baltik_name
+      fi
       echo "Creating an empty Baltik project under `pwd` ..."
       echo "Copying a template from \$TRUST_ROOT/bin/baltik/templates/basic ..."
       cp -r $TRUST_ROOT/bin/baltik/templates/basic/* .
