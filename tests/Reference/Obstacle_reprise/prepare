@@ -1,6 +1,11 @@
 cp -f $TRUST_TESTS/Reference/Obstacle/Obstacle.geo .
 cp -f $TRUST_TESTS/Reference/Obstacle/Obstacle.data .
-[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data Obstacle
-trust Obstacle
-[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_Obstacle 2
-exit 0
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   trust Obstacle || exit -1
+   make_PAR.data Obstacle
+   trust PAR_Obstacle 2
+else
+   trust Obstacle || exit -1
+fi

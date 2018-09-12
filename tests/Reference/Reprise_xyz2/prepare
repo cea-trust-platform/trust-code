@@ -1,4 +1,4 @@
 # PARALLEL ONLY #
 make_PAR.data prepare
-trust PAR_prepare 2
+trust PAR_prepare 2 || exit -1
 mv -f PAR_prepare_dom.ok_arete Reprise_xyz2_dom.ok_arete

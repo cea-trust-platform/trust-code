@@ -14,20 +14,21 @@ facsecs="$stdfacsecs"
 sed "s/%list%/$list/; s/%cas%/$cas/;s/%extfacsecs%/$facsecs/;s/%facsecs%/$stdfacsecs/" conv.prm.P.m  > conv.prm.P
 
 python $TRUST_ROOT/bin/KSH/preprocessor.py conv.prm.P conv.prm
+[ "$?" != 0 ] && exit -1
 
 echo > ll
 for K in $cas
 do
-for resol in $list
+  for resol in $list
   do
-  nn=`echo $resol+1|bc `
+    nn=`echo $resol+1|bc `
     mkdir -p  ${K}_${resol}
     KK=$K
     [ $K = "ef_stab" ] &&  KK="ef_stab { TdivU }"
     sed "s/11 11/$nn $nn/;s/centre4/$KK/" base.data >  ${K}_${resol}/cas.data
-   sed "s/RESOL/${resol}/;s/CAS/$K/" post_run >   ${K}_${resol}/post_run
-   echo ${K}_${resol}/cas.data >> ll
-done
+    sed "s/RESOL/${resol}/;s/CAS/$K/" post_run >   ${K}_${resol}/post_run
+    echo ${K}_${resol}/cas.data >> ll
+  done
 done
 grep -v _10 ll > liste_cas_exclu_nr
  

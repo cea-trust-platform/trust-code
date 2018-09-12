@@ -1,7 +1,19 @@
-[ ! -d Conservation_of_mass_VEF_QC ] && copie_cas_test Conservation_of_mass_VEF_QC
-[ ! -d Conservation_of_mass_VDF_QC ] && copie_cas_test Conservation_of_mass_VDF_QC
+if [ ! -d Conservation_of_mass_VEF_QC ] ; then
+   copie_cas_test Conservation_of_mass_VEF_QC || exit -1
+fi
 
-[ ! -d Conserv_Masse_QC_rho_u ] && copie_cas_test Conserv_Masse_QC_rho_u
-[ ! -d Conserv_Masse_QC_rho_u_Piso ] && copie_cas_test Conserv_Masse_QC_rho_u_Piso
+if [ ! -d Conservation_of_mass_VDF_QC ] ; then
+   copie_cas_test Conservation_of_mass_VDF_QC || exit -1
+fi
+
+
+if [ ! -d Conserv_Masse_QC_rho_u ] ; then
+   copie_cas_test Conserv_Masse_QC_rho_u || exit -1
+fi
+
+if [ ! -d Conserv_Masse_QC_rho_u_Piso ] ; then
+   copie_cas_test Conserv_Masse_QC_rho_u_Piso || exit -1
+fi
+
 cp post_run Conserv_Masse_QC_rho_u
 sed "s/Conserv_Masse_QC_rho_u/Conserv_Masse_QC_rho_u_Piso/g" post_run > Conserv_Masse_QC_rho_u_Piso/post_run

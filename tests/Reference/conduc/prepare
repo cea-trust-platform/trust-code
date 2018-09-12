@@ -6,6 +6,3 @@ echo "}" >> pb_mul.data
 cat petit.data >> pb_mul.data
 
 trust pb_mul 2>  test.err 1> test.out
-status=$?
-[ $status -ne 0 ] && echo "Pb with $0 in "`pwd`
-exit $status

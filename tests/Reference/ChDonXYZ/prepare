@@ -1,5 +1,10 @@
 cas=ChDonXYZ_ICoCo
-[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data $cas
-trust $cas
-[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_$cas 2
-exit 0
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   trust $cas || exit -1
+   make_PAR.data $cas
+   trust PAR_$cas 2
+else
+   trust $cas || exit -1
+fi

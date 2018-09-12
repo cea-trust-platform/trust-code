@@ -1,2 +1,2 @@
-gunzip -c Pb1.geom.gz > Pb1.geom
+gunzip -c Pb1.geom.gz > Pb1.geom || exit -1
 gunzip -c Pb2.geom.gz > Pb2.geom

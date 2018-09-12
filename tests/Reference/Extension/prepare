@@ -3,10 +3,11 @@ echo $ECHO_OPTS "1,$ s?# sauvegarde?sauvegarde?g\nw prepare.data" | ed Extension
 echo $ECHO_OPTS "1,$ s?/sauve?/sauve #?g\nw" | ed prepare.data 1>/dev/null 2>&1 || exit -1
 echo $ECHO_OPTS "1,$ s?tinit 0.002?tinit 0.000?g\nw" | ed prepare.data 1>/dev/null 2>&1 || exit -1
 
-trust prepare || exit -1
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
+   trust prepare || exit -1
    make_PAR.data prepare
-   trust PAR_prepare 2 || exit -1
+   trust PAR_prepare 2
+else
+   trust prepare || exit -1
 fi
-exit 0 

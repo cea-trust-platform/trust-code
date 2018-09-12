@@ -1,5 +1,10 @@
 echo $ECHO_OPTS "1,$ s?resume_last_time ?sauvegarde ?g\nw sauvegarde.data" | ed ThHyd_C_K_Eps_VEF.data || exit -1
-[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data sauvegarde.data
-trust sauvegarde
-[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_sauvegarde 2
-exit 0
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   trust sauvegarde || exit -1
+   make_PAR.data sauvegarde.data
+   trust PAR_sauvegarde 2
+else
+   trust sauvegarde || exit -1
+fi

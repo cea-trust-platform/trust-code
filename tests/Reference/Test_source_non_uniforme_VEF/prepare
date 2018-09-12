@@ -1,6 +1,6 @@
 sed "s/champ_fonc_xyz dom /Champ_Uniforme /"  Test_source_non_uniforme_VEF.data  >  Test_source_uniforme.data 
 [ "`diff Test_source_non_uniforme_VEF.data Test_source_uniforme.data`" = "" ] && echo pb trad && exit 1
-trust Test_source_uniforme
+trust Test_source_uniforme || exit -1
 
 #make_PAR.data Test_source_uniforme
 #trust PAR_Test_source_uniforme 2
