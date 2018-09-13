@@ -693,7 +693,7 @@ inline double Eval_Diff_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int e
 {
   double flux;
   int ori=orientation(fac1);
-  flux = 0.5*(surface(fac1)+surface(fac2)) * dv_diffusivite(element) *
+  flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * dv_diffusivite(element) *
          (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
   return flux;
 }
@@ -704,7 +704,7 @@ inline double Eval_Diff_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int e
 inline void Eval_Diff_VDF_var_Face::coeffs_fa7_elem(int element ,int fac1, int fac2, double& aii, double& ajj) const
 {
   int ori=orientation(fac1);
-  aii = ajj = 0.5*(surface(fac1)+surface(fac2)) * dv_diffusivite(element)/dist_face(fac1,fac2,ori);
+  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * dv_diffusivite(element)/dist_face(fac1,fac2,ori);
 }
 
 

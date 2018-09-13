@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -825,7 +825,7 @@ inline double Eval_Dift_VDF_const_Face::flux_fa7_elem(const DoubleTab& inco, int
   double flux;
   int ori=orientation(fac1);
   double tau = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
-  double surf = 0.5*(surface(fac1)+surface(fac2));
+  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
 
 
   /*   if (k.nb_dim() == 1)  */
@@ -849,7 +849,7 @@ inline void Eval_Dift_VDF_const_Face::coeffs_fa7_elem(int elem ,int fac1, int fa
   //  double k_elem;
   int ori=orientation(fac1);
   double tau = 1/dist_face(fac1,fac2,ori);
-  double surf = 0.5*(surface(fac1)+surface(fac2));
+  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   /*   if (k.nb_dim() == 1)  */
   /*     k_elem = k(elem); */
   /*   else if (k.nb_dim() == 2)  */
