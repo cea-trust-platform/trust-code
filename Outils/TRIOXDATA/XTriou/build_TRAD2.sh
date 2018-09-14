@@ -3,9 +3,9 @@ DIR=`pwd`
 ROOT=`(cd $DIR/..;pwd)`
 ROOT=`basename $ROOT`
 if [ "$ROOT" = "TRIOXDATA" ]
-    then 
+then 
     mv -f TRAD_2 TRAD_2.sa 1>/dev/null 2>&1
-    python   Extract_xdata.py --src=$TRUST_ROOT/src 
+    python Extract_xdata.py --src=$TRUST_ROOT/src 
     if [ "`diff TRAD_2 TRAD_2.sa 2>&1`" != "" ]
     then
       echo TRAD_2 updated
@@ -17,5 +17,6 @@ if [ "$ROOT" = "TRIOXDATA" ]
       touch TRAD_2
     fi
 else
-    python   Extract_xdata.py --src=$project_directory/build/src
+    # Pour Baltik:
+    python Extract_xdata.py --src=$project_directory/build/src || exit -1
 fi

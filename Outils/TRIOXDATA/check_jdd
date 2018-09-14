@@ -5,10 +5,16 @@ cd XTriou
 make test_ref_trace >/dev/null
 trad=$?
 if [ $trad -ne 0 ] 
-  then
-    echo " cas rate a la traduction"
-    cat tests/cas_rate
-  fi
+then
+   echo " cas rate a la traduction"
+   #cat tests/cas_rate
+   for cas in `cat tests/cas_rate`
+   do
+      echo "-------------------------------"
+      echo $cas":"
+      VerifData `find . -name $cas.data` 2>&1 | grep "Exception:"
+   done
+fi
 
 cd ..
 [ "$1" = "-no_lance_test" ] && exit $trad
