@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
     }
   if (ok==0)
     {
-      Cerr<<"Error in "<<que_suis_je()<<" unkonown localisation"<<finl;
+      Cerr<<"Error in "<<que_suis_je()<<" unknown localisation"<<finl;
       exit();
     }
 

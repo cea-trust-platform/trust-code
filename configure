@@ -559,7 +559,7 @@ cd env
 cd ..
 
 exiterror=0
-[ "`grep 'Error while installing' $TRUST_ROOT/NON_INSTALLED`" != "" ] && exiterror=1
+[ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep 'Error while installing' $TRUST_ROOT/NON_INSTALLED`" != "" ] && exiterror=1
 
 if [ "$TRUST_WITHOUT_DOC" != 1 ]
 then
