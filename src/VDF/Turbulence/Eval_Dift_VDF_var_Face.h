@@ -873,7 +873,7 @@ inline double Eval_Dift_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int e
   double flux,k_elem;
   int ori=orientation(fac1);
   double tau = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
-  double surf = 0.5*(surface(fac1)+surface(fac2));
+  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   if (k_.nb_dim() == 1)
     k_elem = k_(elem);
   else if (k_.nb_dim() == 2)
@@ -901,7 +901,7 @@ inline void Eval_Dift_VDF_var_Face::coeffs_fa7_elem(int elem ,int fac1, int fac2
   double k_elem;
   int ori=orientation(fac1);
   double tau = 1/dist_face(fac1,fac2,ori);
-  double surf = 0.5*(surface(fac1)+surface(fac2));
+  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   if (k_.nb_dim() == 1)
     k_elem = k_(elem);
   else if (k_.nb_dim() == 2)
