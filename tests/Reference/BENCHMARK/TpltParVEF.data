@@ -51,7 +51,6 @@ Read pb
                         {
                         Cw 0.5
                         turbulence_paroi loi_standard_hydr
-                        dt_impr_ustar 0.1
                         }
 }            
 } 

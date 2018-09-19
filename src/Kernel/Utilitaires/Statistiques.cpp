@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,6 +69,8 @@ int gettimeofday(struct timeval *tv ,int toto)
 #include <sys/resource.h>
 #endif
 #include <stdio.h>
+#include <ArrOfDouble.h>
+#include <communications.h>
 
 // Le pointeur declare dans Statistiques.h
 Statistiques * les_statistiques_trio_U_nom_long_pour_decourager_l_utilisation_directe = 0;
@@ -470,16 +472,31 @@ static void print_stat(Sortie& perfs,
 
   if (! skip_globals)
     {
-
-      double min_time = Process::mp_min(time);
-      double max_time = Process::mp_max(time);
-      double avg_time = Process::mp_sum(time) / Process::nproc();
-      double min_nb = Process::mp_min(nb);
-      double max_nb = Process::mp_max(nb);
-      double avg_nb = Process::mp_sum(nb) / Process::nproc();
-      double min_quantity = Process::mp_min(quantity);
-      double max_quantity = Process::mp_max(quantity);
-      double avg_quantity = Process::mp_sum(quantity) / Process::nproc();
+      ArrOfDouble tmp(3);
+      // Min
+      tmp(0)=time;
+      tmp(1)=nb;
+      tmp(2)=quantity;
+      mp_min_for_each_item(tmp);
+      double min_time = tmp(0);
+      double min_nb = tmp(1);
+      double min_quantity = tmp(2);
+      // Max
+      tmp(0)=time;
+      tmp(1)=nb;
+      tmp(2)=quantity;
+      mp_max_for_each_item(tmp);
+      double max_time = tmp(0);
+      double max_nb = tmp(1);
+      double max_quantity = tmp(2);
+      // Average
+      tmp(0)=time;
+      tmp(1)=nb;
+      tmp(2)=quantity;
+      mp_sum_for_each_item(tmp);
+      double avg_time = tmp(0) / Process::nproc();
+      double avg_nb = tmp(1) / Process::nproc();
+      double avg_quantity = tmp(2) / Process::nproc();
 
       if (Process::je_suis_maitre())
         {
@@ -712,15 +729,33 @@ void Statistiques::restart_counters()
 static void compute_min_max_avg(Stat_Results& result)
 {
   const int nproc = Process::nproc();
-  result.min_time = Process::mp_min(result.time);
-  result.max_time = Process::mp_max(result.time);
-  result.avg_time = Process::mp_sum(result.time) / nproc;
-  result.min_count = Process::mp_min(result.count);
-  result.max_count = Process::mp_max(result.count);
-  result.avg_count = Process::mp_sum(result.count) / nproc;
-  result.min_quantity = Process::mp_min(result.quantity);
-  result.max_quantity = Process::mp_max(result.quantity);
-  result.avg_quantity = Process::mp_sum(result.quantity) / nproc;
+  ArrOfDouble tmp(3);
+  // Min
+  tmp(0)=result.time;
+  tmp(1)=result.count;
+  tmp(2)=result.quantity;
+  mp_min_for_each_item(tmp);
+  result.min_time = tmp(0);
+  result.min_count = tmp(1);
+  result.min_quantity = tmp(2);
+
+  // Max
+  tmp(0)=result.time;
+  tmp(1)=result.count;
+  tmp(2)=result.quantity;
+  mp_max_for_each_item(tmp);
+  result.max_time = tmp(0);
+  result.max_count = tmp(1);
+  result.max_quantity = tmp(2);
+
+  // Average
+  tmp(0)=result.time;
+  tmp(1)=result.count;
+  tmp(2)=result.quantity;
+  mp_sum_for_each_item(tmp);
+  result.avg_time = tmp(0) / nproc;
+  result.avg_count = tmp(1) / nproc;
+  result.avg_quantity = tmp(2) / nproc;
 }
 
 void Statistiques::get_stats(const Stat_Counter_Id& counter_id,

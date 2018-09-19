@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@
 #include <Param.h>
 #include <Debog.h>
 #include <EcrFicPartage.h>
+#include <communications.h>
 
 
 Implemente_base_sans_constructeur(Mod_turb_hyd_base,"Mod_turb_hyd_base",Objet_U);
@@ -555,15 +556,6 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
       // On recalcule les bornes de la viscosite turbulente apres le premier pas de temps
       const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base,equation().operateur(0).l_op_base());
       const Operateur_Conv_base& op_conv = ref_cast(Operateur_Conv_base,equation().operateur(1).l_op_base());
-      /*
-            double tu2=op_conv.dt_stab_conv();
-            double tu=op_conv.calculer_dt_stab();
-            if (tu!=tu2)
-              {
-                Cerr<<" dt_stab_conv not ok "<< tu<<" "<<tu2<<" deltai_rel "<<(tu-tu2)*2/(tu+tu2)<<finl;
-      //	abort();
-              }
-      */
       op_diff.calculer_borne_locale(borne_visco_turb, op_conv.dt_stab_conv(), dt_diff_sur_dt_conv_);
     }
   // On borne la viscosite turbulente
@@ -611,9 +603,14 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
     }
   if (imprimer_compt)
     {
-      compt=mp_sum(compt);
-      size=mp_sum(size);
-      double pourcent = 100*(float(compt)/size);
+      // PL: optimization to avoid 2 mp_sum instead 1:
+      ArrOfInt tmp(2);
+      tmp(0)=compt;
+      tmp(1)=size;
+      mp_sum_for_each_item(tmp);
+      /*      compt=mp_sum(compt);
+            size=mp_sum(size); */
+      double pourcent = 100*(float(tmp[0])/tmp[1]);
       if (je_suis_maitre() && pourcent>0)
         Cout<<"\nTurbulent viscosity has been limited on "<<pourcent<<" % of cells mesh."<<finl;
     }

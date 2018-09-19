@@ -408,6 +408,9 @@ fi
 # verifie si le code est compile en parallele ou non
 [ "$TRUST_DISABLE_MPI" = 1 ] && [ "$USE_MPIRUN" = 1 ] && export USE_MPIRUN=0
 
+# ToDo: check sur callisto
+[ $HOST = callisto ] && USE_MPIRUN=1
+
 #################
 # PETSc options #
 #################
