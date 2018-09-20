@@ -1,0 +1,145 @@
+# Test reading Champ_Fonc_MED fields for viscosity and conductivity #
+# PARALLEL OK 8 #
+dimension 2
+Pb_thermoHydraulique_Turbulent pb
+Domaine dom
+# BEGIN MESH #
+Lire_med dom dom grossier.med
+Raffiner_isotrope dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPrep1B dis
+Scheme_euler_explicit sch
+Read sch
+{
+	nb_pas_dt_max 5
+	tinit 0
+	tmax 0.2
+	dt_impr 1.e-10
+	dt_min 0.01
+	dt_sauv 1000.
+	seuil_statio 1.e-8
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu      Champ_Fonc_MED last_time grossier.med dom viscosite_dynamique elem 0.
+	rho     Champ_Uniforme 1 2        
+	lambda  Champ_Fonc_MED last_time grossier.med dom conductivite elem 0.
+        Cp      Champ_Uniforme 1 100.
+        beta_th Champ_Uniforme 1 0.
+}
+Champ_Uniforme gravite
+Read gravite 2 0. -9.81
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Read pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression petsc cholesky { }
+		convection { Amont }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_fonc_med last_time grossier.med dom vitesse som 0.
+			}
+		boundary_conditions {
+			 Haut1 Paroi_Fixe
+			 Bas1 Paroi_Fixe
+			 Haut2 Paroi_Fixe
+			 Bas2 Paroi_Fixe
+			 Haut3 Paroi_Fixe
+			 Bas3 Paroi_Fixe
+			 Gauche Paroi_Fixe
+			 SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+		}
+		modele_turbulence K_Epsilon {
+       			Transport_K_Epsilon 
+			{
+			   	convection { amont }
+				diffusion { }
+				boundary_conditions {
+					Haut1 Paroi
+					Bas1 Paroi
+					Haut2 Paroi
+					Bas2 Paroi
+					Haut3 Paroi
+					Bas3 Paroi
+					Gauche Paroi
+		       			Entree frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 1.e-2 1.e-3
+		       			SortieBasse frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+		      			SortieHaute frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+			   	}
+			   	initial_conditions {
+			      		k_Eps Champ_fonc_med last_time grossier.med dom K_EPS elem 0.
+			  	}
+			 }
+			 turbulence_paroi loi_standard_hydr
+		} 
+	}
+	Convection_Diffusion_Temperature_Turbulent
+        {
+                diffusion { }
+                convection { muscl }
+                boundary_conditions
+                {
+			 Haut1 Paroi_adiabatique
+			 Bas1 Paroi_adiabatique
+			 Haut2 Paroi_adiabatique
+			 Bas2 Paroi_adiabatique
+			 Haut3 Paroi_adiabatique
+			 Bas3 Paroi_adiabatique
+			 Gauche Paroi_adiabatique
+			 SortieBasse frontiere_ouverte t_ext champ_front_uniforme 1 20
+			 SortieHaute frontiere_ouverte t_ext champ_front_uniforme 1 20
+			 Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 30
+                }
+                initial_conditions { Temperature Champ_fonc_med last_time grossier.med dom temperature elem 0. }
+		modele_turbulence Prandtl {
+                        turbulence_paroi loi_standard_hydr_scalaire
+                }
+        }
+	Post_processing 
+	{
+		Probes 
+		{
+		sonde_vitesse vitesse periode 0.01 points 1 10. 0.5
+		sonde_k k periode 0.01 points 1 9.5 0.5
+		sonde_eps eps periode 0.01 points 1 9.5 0.5
+		sonde_visc viscosite_turbulente periode 0.01 points 1 9.5 0.5
+		sonde_yplus y_plus periode 0.01 segment 9 7.5 0.01 16.5 0.01
+		sonde_vorticite vorticite periode 0.01 segment 9 7.5 0.01 16.5 0.01
+		}
+		format lml
+		fields dt_post 20.
+		{
+			vitesse elem
+			k_eps elem
+			temperature elem
+			conductivite elem
+			viscosite_dynamique elem
+			pression elem
+		}
+	}	
+}
+Solve pb
+End
+

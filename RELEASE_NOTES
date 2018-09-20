@@ -1,3 +1,4 @@
+XX/XX/18 (TRUST)  Bug fixed   : Possible crash in VEF diffusive operators after reading conductivity field in a MED file
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7 : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
