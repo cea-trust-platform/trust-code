@@ -1,0 +1,126 @@
+# Hydraulique 3D laminaire #
+# PARALLEL OK #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 6 6 6
+                Longueurs 1 1 1
+        }
+        {
+                Bord wall   	X = 0.  0. <= Y <= 1.  0. <= Z <= 1.
+                Bord wall  	X = 1.  0. <= Y <= 1.  0. <= Z <= 1.
+                Bord wall   	Y = 0.  0. <= X <= 1.  0. <= Z <= 1.
+                Bord wall   	Y = 1.  0. <= X <= 1.  0. <= Z <= 1.
+                Bord inlet  	Z = 0.  0. <= X <= 1.  0. <= Y <= 1.
+                Bord outlet  	Z = 1.  0. <= X <= 1.  0. <= Y <= 1.
+        }
+}
+
+# END MESH #
+
+# BEGIN PARTITION
+
+Partition dom
+{
+	Partition_tool metis { Nb_parts 2 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+
+Scheme_euler_explicit sch
+Read sch
+{
+        tinit 0
+	nb_pas_dt_max 3
+        dt_min 5e-2
+        dt_impr 5.e-1
+	dt_max 5e-2
+	tmax 5
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+	mu  Champ_uniforme 1 1.
+	rho Champ_Uniforme 1 1000.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+
+Discretize pb dis
+domaine inlet
+extraire_surface { probleme pb domaine inlet avec_certains_bords 1 inlet }
+
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+methode_calcul_pression_initiale avec_sources
+		solveur_pression GCP {
+			precond ssor { omega 1.5 }
+			seuil 1.e-8
+			impr
+		}
+		diffusion { negligeable }
+		convection { negligeable   }
+
+		initial_conditions {
+			vitesse Champ_fonc_xyz dom  3 0 0 0.26259
+			}
+
+		boundary_conditions {
+			inlet frontiere_ouverte_vitesse_imposee champ_front_fonc_t 3  0. 0. 0.1+t/2.
+			wall symetrie
+			outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+
+		}
+	}
+
+	Post_processing
+	{
+		Definition_champs
+		{
+			inlet_velocity_elem Interpolation {
+				localisation elem
+				domaine inlet
+				source refChamp { pb_champ  pb vitesse }
+			}
+			Vitesse_u reduction_0D {
+				methode average
+				sources_reference { inlet_velocity_elem }
+			}
+		}
+
+		probes {
+			Vitesse_u inlet_velocity_elem periode 5e-2 numero_elem_sur_maitre 0
+		}
+		format lml
+		domaine inlet
+		fields dt_post 1.3
+		{
+			vitesse elem
+		}
+	}
+}
+Solve pb
+End

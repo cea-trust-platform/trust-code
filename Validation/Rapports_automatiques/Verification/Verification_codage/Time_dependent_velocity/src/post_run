@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python post_run.py
+

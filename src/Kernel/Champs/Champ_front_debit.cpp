@@ -22,6 +22,9 @@
 
 
 #include <Champ_front_debit.h>
+#include <Ch_front_input_uniforme.h>
+#include <Champ_front_uniforme.h>
+#include <Champ_front_t.h>
 #include <Champ_Don.h>
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
@@ -30,7 +33,7 @@
 #include <DoubleTrav.h>
 Implemente_instanciable(Champ_front_debit,"Champ_front_debit",Champ_front_normal);
 // XD champ_front_debit front_field_base champ_front_debit 0 This field is used to define a flow rate field instead of a velocity field for a Dirichlet boundary condition on Navier-Stokes equations.
-// XD attr ch front_field_base ch 0 uniform field in space to define the flow rate. It could be, for example, champ_front_uniforme, ch_front_input_uniform or champ_front_fonc_txyz that depends only on time.
+// XD attr ch front_field_base ch 0 uniform field in space to define the flow rate. It could be, for example, champ_front_uniforme, ch_front_input_uniform or champ_front_fonc_t.
 Sortie& Champ_front_debit::printOn(Sortie& os) const
 {
   return Champ_front_normal::printOn(os);
@@ -39,6 +42,16 @@ Sortie& Champ_front_debit::printOn(Sortie& os) const
 Entree& Champ_front_debit::readOn(Entree& is)
 {
   is >> champ_debit_;
+
+  if( !(sub_type(Champ_front_uniforme,champ_debit_.valeur()))
+      && !(sub_type(Ch_front_input_uniforme,champ_debit_.valeur()))
+      && !(sub_type(Champ_front_t,champ_debit_.valeur())) )
+    {
+      Cerr << "\nKeyword '" << champ_debit_.valeur().que_suis_je() << "' could not be used with 'Champ_front_debit'." << finl;
+      Cerr << "With Keyword 'Champ_front_debit', you can use only 'Champ_front_uniforme', 'Ch_front_input_uniforme' or 'Champ_front_fonc_t'" << finl;
+      exit();
+    }
+
   fixer_nb_comp(dimension);
   return is;
 }
