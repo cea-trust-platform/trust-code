@@ -1,6 +1,11 @@
 -------------------------------------------------------------
 Developer notes version 1.7.8_beta : Changes since version 1.7.7 :
 -------------------------------------------------------------
+19/09/18 (TRUST)  Slightly reduce the number of MPI allreduces for parallel calculation
+14/09/18 (TRUST)  Adding use of porosity in flux_fa7_elem and coeffs_fa7_elem methods
+14/09/18 (TRUST)  Fix XData tools to help during XD syntaxing
+25/07/18 (TRUST)  Add VEF support for mass fraction transport 
+23/07/18 (TRUST)  Issue for some internal boundaries in VDF 
 -------------------------------------------------------------
 Developer notes version 1.7.7 : Changes since version 1.7.6 :
 -------------------------------------------------------------

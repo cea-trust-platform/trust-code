@@ -1,8 +1,9 @@
-XX/XX/18 (TRUST)  Portability : Support of irene CCRT cluster
-XX/XX/18 (TRUST)  Performance : Slightly reduce the number of MPI allreduces for parallel calculation
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8_beta : Enhancements, modifications and corrected bugs since version 1.7.7 :
 --------------------------------------------------------------------------------------------------
+06/09/18 (TRUST)  Minor change: Possibility to specify the baltik name in trust -baltik
+06/09/18 (TRUST)  Minor change: Writing .sauv when tcpumax reached or .stop detected
+29/06/18 (TRUST)  Portability : Support of irene CCRT cluster
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7 : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
