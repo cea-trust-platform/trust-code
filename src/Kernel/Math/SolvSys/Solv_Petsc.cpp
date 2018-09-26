@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,16 +127,14 @@ void Solv_Petsc::create_solver(Entree& entree)
   KSPGetPC(SolveurPetsc_, &PreconditionneurPetsc_);
 
   // Add options if PETSc solver is used:
-  if (PE_Groups::get_nb_groups()==1)
+  if (PE_Groups::get_nb_groups()==1 && !disable_TU )
     {
       // _petsc.TU is only printed if one group calculation (e.g. Execute_parallel failed)
-      Nom petsc_TU(nom_du_cas());
+      Nom petsc_TU(":");
+      petsc_TU+=nom_du_cas();
       petsc_TU+="_petsc.TU";
-      if (!disable_TU)
-        {
-          add_option("log_summary",petsc_TU); 	// Monitor performances at the end of the calculation
-          PetscLogAllBegin(); 			// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
-        }
+      add_option("log_view",petsc_TU); 	// Monitor performances at the end of the calculation
+      PetscLogAllBegin(); 		// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
   //add_option("on_error_abort",""); // ne marche pas semble t'il
 
@@ -916,6 +914,8 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCType type_pc;
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
+
+
 #else
   Cerr << "Error, the code is not built with PETSc support." << finl;
   Cerr << "Contact TRUST support." << finl;
@@ -1088,7 +1088,7 @@ void Solv_Petsc::RestoreMatrixFromFile()
     }
   // Conversion AIJ to SBAIJ:
   MatSetOption(MatricePetsc_, MAT_SYMMETRIC, PETSC_TRUE);
-  MatConvert(MatricePetsc_, MATSBAIJ, MAT_REUSE_MATRIX,&MatricePetsc_);
+  MatConvert(MatricePetsc_, MATSBAIJ, MAT_INPLACE_MATRIX, &MatricePetsc_);
   int nb_rows_tot,nb_cols_tot;
   MatGetSize(MatricePetsc_,&nb_rows_tot,&nb_cols_tot);
   Cerr << "The matrix read has " << nb_rows_tot << " rows." << finl;
@@ -1140,19 +1140,19 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value)
   PetscBool flg;
   Nom vide="                                                                                                 ";
   char* tmp=strdup(vide);
-  PetscOptionsGetString(PETSC_NULL,option,tmp,vide.longueur(),&flg);
+  PetscOptionsGetString(PETSC_NULL,PETSC_NULL,option,tmp,vide.longueur(),&flg);
   Nom actual_value(tmp);
   free(tmp);
   if (actual_value==vide)
     {
       if (value=="")
         {
-          PetscOptionsSetValue(option, PETSC_NULL);
+          PetscOptionsSetValue(PETSC_NULL, option, PETSC_NULL);
           Cerr << "Option Petsc: " << option << finl;
         }
       else
         {
-          PetscOptionsSetValue(option, value);
+          PetscOptionsSetValue(PETSC_NULL, option, value);
           Cerr << "Option Petsc: " << option << " " << value << finl;
         }
       return 1;
@@ -1301,7 +1301,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   if (!solveur_direct_)
     {
       if (limpr()==1)
-        KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
+        {
+          KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
+        }
       else
         KSPMonitorCancel(SolveurPetsc_);
     }
@@ -1620,7 +1622,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
           Cout << "If an error INFOG(1)=-8|-9|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option." << finl;
           message_affi=0;
         }
-      PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERMUMPS);
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERMUMPS);
     }
   else if (solveur_direct_==2)
     {
@@ -1628,7 +1630,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         {
           Cout << "Cholesky from SUPERLU_DIST may take several minutes, please wait..." << finl;
         }
-      PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERSUPERLU_DIST);
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERSUPERLU_DIST);
     }
   else if (solveur_direct_==3)
     {
@@ -1636,7 +1638,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         {
           Cout << "Cholesky from PETSc may take several minutes, please wait..." ;
         }
-      PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERPETSC);
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPETSC);
     }
   else if (solveur_direct_==4)
     {
@@ -1644,7 +1646,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         {
           Cout << "Cholesky from UMFPACK may take several minutes, please wait..." ;
         }
-      PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERUMFPACK);
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERUMFPACK);
     }
   else if (solveur_direct_==5)
     {
@@ -1652,11 +1654,11 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         {
           Cout << "Cholesky from Pastix may take several minutes, please wait..." ;
         }
-      PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERPASTIX);
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPASTIX);
     }
   else if (solveur_direct_)
     {
-      Cerr << "PCFactorSetMatSolverPackage not called for direct solver, solveur_direct_=" << solveur_direct_ << finl;
+      Cerr << "PCFactorSetMatSolverType not called for direct solver, solveur_direct_=" << solveur_direct_ << finl;
       Cerr << "Contact TRUST support." << finl;
       exit();
     }
@@ -1726,7 +1728,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         {
           PetscViewer viewer;
           PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_READ,&viewer);
-          PCFactorSetUpMatSolverPackage(PreconditionneurPetsc_);
+          PCFactorSetUpMatSolverType(PreconditionneurPetsc_);
           Mat FactoredMatrix;
           PCFactorGetMatrix(PreconditionneurPetsc_,&FactoredMatrix);
 //	MatCreate(PETSC_COMM_WORLD,&FactoredMatrix);
@@ -1740,7 +1742,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         {
           Mat FactoredMatrix;
           // Compute the factored matrix:
-          PCFactorSetUpMatSolverPackage(PreconditionneurPetsc_);
+          PCFactorSetUpMatSolverType(PreconditionneurPetsc_);
           PCSetUp(PreconditionneurPetsc_);
           // Get the factored matrix:
           PCFactorGetMatrix(PreconditionneurPetsc_,&FactoredMatrix);
@@ -1835,9 +1837,9 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
 
       // Set type:
       if (Process::nproc()>1)
-        VecSetType(SecondMembrePetsc_, cuda_==1 ? VECMPICUSP : VECMPI);
+        VecSetType(SecondMembrePetsc_, cuda_==1 ? VECMPICUDA : VECMPI);
       else
-        VecSetType(SecondMembrePetsc_, cuda_==1 ? VECSEQCUSP : VECSEQ);
+        VecSetType(SecondMembrePetsc_, cuda_==1 ? VECSEQCUDA : VECSEQ);
       VecSetFromOptions(SecondMembrePetsc_);
       // Build b
       VecDuplicate(SecondMembrePetsc_,&SolutionPetsc_);

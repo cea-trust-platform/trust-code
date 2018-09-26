@@ -1,6 +1,6 @@
 petsc=$(PETSC_ROOT) $(PETSC_ROOT)/$(TRUST_ARCH)_opt/lib/libpetsc.a
 # petsc name changed from petsc-X.Y-pZ to petsc-X.Y.Z 
-package_petsc=petsc-3.6.3
+package_petsc=petsc-3.10.0
 mpi=$(MPI_INCLUDE)/mpi.h
 path_include=$(PETSC_ROOT)/$(TRUST_ARCH)
 all:$(petsc) check
