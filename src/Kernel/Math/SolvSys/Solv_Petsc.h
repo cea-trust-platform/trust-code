@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,10 @@ public :
   {
     return cuda_;
   };
-
+  inline bool read_matrix() const
+  {
+    return read_matrix_ == 1;
+  }
   void lecture(Entree&);
   // Timers:
   static PetscLogStage KSPSolve_Stage_;

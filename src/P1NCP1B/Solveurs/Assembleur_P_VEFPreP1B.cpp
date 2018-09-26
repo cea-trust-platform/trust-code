@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,7 @@
 #include <Scatter.h>
 #include <Check_espace_virtuel.h>
 #include <Champ_front_var_instationnaire.h>
+#include <Solv_Petsc.h>
 
 Implemente_instanciable(Assembleur_P_VEFPreP1B,"Assembleur_P_VEFPreP1B",Assembleur_P_VEF);
 
@@ -244,12 +245,18 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
   // Les decoupages doivent etre de largeur de joint de 2
   // si le support P1 ou Pa est utilise...
-  if (Process::nproc()>1 && zone_vef.zone().nb_joints() && zone_vef.zone().joint(0).epaisseur()<2 && (zone_vef.get_alphaS() || zone_vef.get_alphaA()))
+  bool read_matrix = false;
+  const SolveurSys& solveur_pression = ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression();
+  if (sub_type(Solv_Petsc, solveur_pression.valeur())) read_matrix = ref_cast(Solv_Petsc, solveur_pression.valeur()).read_matrix();
+  if (Process::nproc()>1 &&
+      zone_vef.zone().nb_joints() &&
+      zone_vef.zone().joint(0).epaisseur()<2 &&
+      (zone_vef.get_alphaS() || zone_vef.get_alphaA()) &&
+      !read_matrix)
     {
-      Cerr << "Largeur de joint " << zone_vef.zone().joint(0).epaisseur() << " insuffisante pour l'assemblage de la matrice de pression" << finl;
-      Cerr << "en VEF parallele. Decouper votre maillage avec une largeur de joint de 2." << finl;
-      Cerr << "WARNING!" << finl; // Provisoire
-      //Process::exit();
+      Cerr << "Ghost cells width of " << zone_vef.zone().joint(0).epaisseur() << " is not enough for assembling VEFPreP1B pressure matrix" << finl;
+      Cerr << "for parallel calculation. Partition your mesh with larg_joint option set to 2." << finl;
+      Process::exit();
     }
   // Typage et dimensionnement de la matrice au format natif
   int construite=la_matrice_de_travail_.non_nul();
@@ -347,7 +354,6 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
   // Modification de la matrice si pas de pression de reference
   /////////////////////////////////////////////////////////////
   modifier_matrice(la_matrice_de_travail_);
-
   ////////////////////////////////////////
   // Optimisation eventuelle de la matrice
   ////////////////////////////////////////
