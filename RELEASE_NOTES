@@ -1,4 +1,5 @@
-XX/XX/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.9.2
+XX/XX/18 (TRUST)  Performance : Performance of Cholesky Superlu version improved on symmetric matrix  
+XX/XX/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.9.3
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8_beta : Enhancements, modifications and corrected bugs since version 1.7.7 :
 --------------------------------------------------------------------------------------------------
