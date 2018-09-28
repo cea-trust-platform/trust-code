@@ -89,6 +89,12 @@ make_tools()
 ###################
 [ "$TRUST_ROOT" = "" ] && echo "Error. TRUST_ROOT is empty. Initialize TRUST environment." && echo "BUILD_EXEC=KO" && exit -1 
 
+# if trust is configured with -enable-petsc-debug option and the user needs only $exec_debug (via make debug)
+# uncomment the following two lines and lines containing only_make_debug_with_petsc_debug in $TRUST_ROOT/ThirdPart/src/LIBPETSC/install
+# Caution: if the user do: "make debug gcov" for example, this cannot work since the optimized build of petsc is not constructed.
+# only_make_debug_with_petsc_debug=0
+# [ "`echo $cibles | grep opt`" = "" ] && [ "`echo $cibles | grep debug`" != "" ] && export only_make_debug_with_petsc_debug=1
+
 # Options
 depend=0
 [ $# = 1 ] && [ $1 = "depend" ] && depend=1
@@ -201,6 +207,7 @@ then
 	 echo $ECHO_OPTS $rep":\c "
 	 OLD_OPT=$OPT
 	 OPT="_opt"
+	 [ "$TRUST_ENABLE_PETSC_DEBUG" = 1 ] && [ "$rep" = LIBPETSC ] && OPT=""
 	 $MAKE $CLEAN 1>>$COMPILE 2>&1
 	 err=$?
 	 OPT=$OLD_OPT
@@ -578,6 +585,14 @@ then
           _opt_avx)  build_type="Release_avx";;
 	  *) echo $opt not for cmake in $0; echo "BUILD_EXEC=KO" | tee -a $COMPILE; exit -1 ;;
          esac;
+         
+         if [ "$TRUST_ENABLE_PETSC_DEBUG" = 1 ] && [ "$build_type" = "Debug" ] 
+         then
+            export OPT="" && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
+         else
+            export OPT="_opt"
+            [ "$TRUST_DISABLE_PETSC" != 1 ] && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
+         fi
 
          CHOIX_MAKE multiple
          [ $depend = 1 ] && rm -f CMakeCache.txt

@@ -73,6 +73,9 @@ then
 	 else
 	    # On pointe vers PETSc debug si existante
 	    PETSC_ARCH_OPT=$TRUST_ARCH && [ ! -d $PETSC_ROOT/$PETSC_ARCH_OPT/lib ] && PETSC_ARCH_OPT=$TRUST_ARCH"_opt"
+	    # Si on compile petsc en debug, on pointe $exec_debug vers petsc_debug
+            # et les autres $exec_* de trust vers petsc_opt
+	    [ "$TRUST_ENABLE_PETSC_DEBUG" = 1 ] && PETSC_ARCH_OPT=$TRUST_ARCH"_opt"
 	 fi
 	 # On cree le lien
 	 cd $PETSC_ROOT 1>/dev/null 2>&1
@@ -257,6 +260,12 @@ then
    else
       options="--with-x=0"
    fi
+elif [ $TRUST_ENABLE_PETSC_DEBUG = 1 ]
+then
+   liste_debug="0 1"	# Version optimisee et debug consruites
+   options="--with-x=0"
+   # cette variable construit seulement petsc_debug si on fait make debug. Elle est declaree dans bin/compile
+   # [ "$only_make_debug_with_petsc_debug" = 1 ] && liste_debug="1"
 else
    liste_debug="0" 	# Une seule version construite (optimisee)
    options="--with-x=0" # Car --with-x=1 pose probleme pour Insure 
