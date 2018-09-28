@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Param.h>
+#include <Champ_Fonc_MED.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 
@@ -107,8 +108,23 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   Champ_Don& ch_beta_th = beta_t();
 
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser
+  // pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
+  // ToDo: reecrire ces deux methodes discretiser
   if(ch_lambda.non_nul())
     {
+      if (sub_type(Champ_Fonc_MED,ch_lambda.valeur()))
+        {
+          double temps=ch_lambda.valeur().temps();
+          Cerr<<"Convert Champ_fonc_MED lambda in Champ_Don..."<<finl;
+          Champ_Don ch_lambda_prov;
+          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,ch_lambda_prov);
+          ch_lambda_prov.affecter_(ch_lambda.valeur());
+          ch_lambda.detach();
+          ch_alpha.detach();
+          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,ch_lambda);
+          ch_lambda.valeur().valeurs()=ch_lambda_prov.valeur().valeurs();
+        }
       dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
       // le vrai nom sera donne plus tard
       if (sub_type(Champ_Fonc_Tabule,ch_lambda.valeur()))
