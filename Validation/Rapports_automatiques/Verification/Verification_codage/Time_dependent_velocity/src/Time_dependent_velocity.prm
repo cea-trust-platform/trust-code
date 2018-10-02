@@ -98,158 +98,6 @@ Chapter {
 }
 
 Chapter {
-	Title "Inlet velocity error"
-	description "The relative error on the inlet velocity is summarized on the table below and is computed by:"
-	description \latex_( $err(t_i) = \frac{|u_{\text{inlet}}^{\text{imposed}}(t_i) - \bar{u}_{\text{inlet}}^{TRUST}(t_i)|}{u_{\text{inlet}}^{\text{imposed}}(t_i)} $  \latex_)
-	description \latex_( where $u_{\text{inlet}}^{\text{imposed}}(t_i) = f(t_i)$ and $\bar{u}_{\text{inlet}}^{TRUST}(t_i)$ is the averaged velocity on cells located at the inlet (inlet edge in 2D or inlet surface in 3D).  \latex_)
-	Table {
-		nb_columns 3
-
-
-		label  Total number of time steps| t_max | max err
-		line {
-			legend "2D VDF testcase 1"
-			file test1_VDF/max.txt
-			columns $1 $2 $3
-			last_line
-		}
-		line {
-			legend 2D VEF testcase 1
-			file test1_VEF/max.txt
-			columns $1 $2 $3
-		}
-		line {
-			legend 2D VDF testcase 2
-			file test2_VDF/max.txt
-			columns $1 $2 $3
-		}
-		line {
-			legend 2D VEF testcase 2
-			file test2_VEF/max.txt
-			columns $1 $2 $3
-		}
-		line {
-			legend 3D VDF testcase 3
-			file test_3D_VDF/max.txt
-			columns $1 $2 $3
-		}
-		line {
-			legend 3D VEF testcase 3
-			file test_3D_VEF/max.txt
-			columns $1 $2 $3
-		}
-	}
-}
-
-
-Chapter {
-	Title "Time evolution of inlet velocity error"
-	figure {
-		Titre_figure "2D VDF: ux=2t+1"
-		include_description_curves 0
-		LabelX "time"
-		LabelY "|ux - uxTRUST| / ux"
-		Legend below
-		Width 7.9cm
-		RangeX 0. 5.
-		RangeY -5e-16 5e-16
-		nb_img_without_newline 2
-		curve {
-			legend "test1_VDF"
-			file ./test1_VDF/test_VITESSE_U.son 
-			columns ($1) abs(($2-(1+2*$1))/(1+2*$1))
-			style linespoints
-		}
-        }
-	figure {
-		Titre_figure "2D VEF: ux=2t+1"
-		include_description_curves 0
-		LabelX "time"
-		LabelY "|ux - uxTRUST| / ux"
-		Legend below
-		Width 7.9cm
-		RangeX 0. 5.
-		RangeY -5e-16 5e-16
-		nb_img_without_newline 2
-		curve {
-			legend "test1_VEF"
-			file ./test1_VEF/test_VITESSE_U.son 
-			columns ($1) abs(($2-(1+2*$1))/(1+2*$1))
-			style linespoints
-			linewidth 2
-		}
-        }
-	figure {
-		Titre_figure "2D VDF: uy=2t^2+0.1"
-		include_description_curves 0
-		LabelX "time"
-		LabelY "|uy - uyTRUST| / uy"
-		Legend below
-		Width 7.9cm
-		RangeX 0. 5.
-		nb_img_without_newline 2
-		curve {
-			legend "test2_VDF"
-			file ./test2_VDF/test_VITESSE_U.son
-			columns ($1) abs((($3)-(0.1+2*$1*$1))/(0.1+2*$1*$1))
-			style linespoints
-			linewidth 2
-		}
-        }
-	figure {
-		Titre_figure "2D VEF: uy=2t^2+0.1"
-		include_description_curves 0
-		LabelX "time"
-		LabelY "|uy - uyTRUST| / uy"
-		Legend below
-		Width 7.9cm
-		RangeX 0. 5.
-		nb_img_without_newline 2
-		curve {
-			legend "test2_VEF"
-			file ./test2_VEF/test_VITESSE_U.son 
-			columns ($1) abs((($3)-(0.1+2*$1*$1))/(0.1+2*$1*$1))
-			style linespoints
-			linewidth 2
-		}
-        }
-	figure {
-		Titre_figure "3D VDF: uz=t/2"
-		include_description_curves 0
-		LabelX "time"
-		LabelY "|uz -uzTRUST| / uz"
-		Legend below
-		Width 7.9cm
-		RangeX 0. 5.
-		nb_img_without_newline 2
-		curve {
-			legend "test_3D_VDF"
-			file ./test_3D_VDF/test_3D_VITESSE_U.son
-			columns ($1) abs((($4)-(0.1+0.5*$1))/(0.1+0.5*$1))
-			style linespoints
-			linewidth 2
-		}
-        }
-	figure {
-		Titre_figure "3D VEF: uz=t/2"
-		include_description_curves 0
-		LabelX "time"
-		LabelY "|uz - uzTRUST| / uz"
-		Legend below
-		Width 7.9cm
-		RangeX 0. 5.
-		nb_img_without_newline 2
-		curve {
-			legend "test_3D_VEF"
-			file ./test_3D_VEF/test_3D_VITESSE_U.son
-			columns ($1) abs((($4)-(0.1+0.5*$1))/(0.1+0.5*$1))
-			style linespoints
-			linewidth 2
-		}
-        }
-}
-
-Chapter {
 	Title "Time evolution of inlet velocity"
 
 	figure {
@@ -343,3 +191,52 @@ Chapter {
 	}
 
 }
+
+Chapter {
+	Title "Maximum error on inlet velocity"
+	description "At a given time \latex_( $t_i$\latex_), the relative error on the inlet velocity is computed by:"
+	description \latex_( $err(t_i) = \frac{|u_{\text{inlet}}^{\text{imposed}}(t_i) - \bar{u}_{\text{inlet}}^{\text{TRUST}}(t_i)|}{u_{\text{inlet}}^{\text{imposed}}(t_i)} $  \latex_)
+	description \latex_( where $u_{\text{inlet}}^{\text{imposed}}(t_i) = f(t_i)$ and $\bar{u}_{\text{inlet}}^{\text{TRUST}}(t_i)$ is the averaged velocity on cells located at the inlet (inlet edge in 2D or inlet surface in 3D).  \latex_)
+
+	Table {
+		# Title "Maximum error on inlet velocity"
+		Description "The table below highlights that the maximum error (for which the time evolution is plotted in the previous subsection) is too small and is close to machine error."
+		nb_columns 3
+
+
+		label  Total number of time steps| t_max | max err
+		line {
+			legend "2D VDF testcase 1"
+			file test1_VDF/max.txt
+			columns $1 $2 $3
+			last_line
+		}
+		line {
+			legend 2D VEF testcase 1
+			file test1_VEF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 2D VDF testcase 2
+			file test2_VDF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 2D VEF testcase 2
+			file test2_VEF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 3D VDF testcase 3
+			file test_3D_VDF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 3D VEF testcase 3
+			file test_3D_VEF/max.txt
+			columns $1 $2 $3
+		}
+	}
+}
+
+
