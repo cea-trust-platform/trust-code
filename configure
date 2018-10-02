@@ -330,6 +330,16 @@ unset TRUST_USE_EXTERNAL_MEDCOUPLING
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
 
+if [ "`echo $* | grep '\-disable\-petsc'`" != "" ] && [ "`echo $* | grep '\-enable\-petsc\-debug'`" != ""  ]
+then
+   echo ""
+   echo "Configure error:"
+   echo "----------------"
+   echo "You cannot configure TRUST with both options: -enable-petsc-debug -disable-petsc."
+   echo "Re-configure it only with one of these options."
+   exit -1
+fi
+
 while [ "$1" != "" ]
 do
    if [ "${1%-help}" != "$1" ]
@@ -485,8 +495,6 @@ do
    fi
    shift
 done
-
-[ "$TRUST_DISABLE_PETSC" = 1 ] && export TRUST_ENABLE_PETSC_DEBUG=0
 
 export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`
 if [ "$clean" != "clean" ]
