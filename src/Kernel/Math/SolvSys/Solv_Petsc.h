@@ -58,6 +58,10 @@ public :
   };
   void create_solver(Entree&);
   inline void reset();
+  inline bool read_matrix() const
+  {
+    return read_matrix_ == 1;
+  }
 #ifdef __PETSCKSP_H
   inline Solv_Petsc& operator=(const Solv_Petsc&);
   inline Solv_Petsc(const Solv_Petsc&);
@@ -71,10 +75,6 @@ public :
   {
     return cuda_;
   };
-  inline bool read_matrix() const
-  {
-    return read_matrix_ == 1;
-  }
   void lecture(Entree&);
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
@@ -118,7 +118,6 @@ protected :
   int controle_residu_;         // Verification si le residu ||Ax-B||<seuil
   int block_size_;              // Block size for SBAIJ matrix
   int save_matrix_;             // Save constant matrix in a file
-  int read_matrix_;		// Read constant matrix in a file
   Nom factored_matrix_;		// Deal with the A=LU factorization on disk
   int mataij_;			// Force the use of a Mataij matrix
   Nom type_pc_;			// Preconditioner type
@@ -134,6 +133,7 @@ protected :
   int solveur_direct_;          // Pour savoir si l'on manipule un solveur direct et non iteratif
   Nom chaine_lue_; 		// Chaine des mots cles lus
   int cuda_;                    // Utilisation des GPU avec CUDA
+  int read_matrix_;		// Read constant matrix in a file
 };
 
 class Solv_Petsc_GPU : public Solv_Petsc
@@ -150,6 +150,7 @@ public :
 
 inline Solv_Petsc::Solv_Petsc()
 {
+  read_matrix_=0;
 #ifdef __PETSCKSP_H
   initialize();
   instance++;
@@ -206,7 +207,6 @@ inline void Solv_Petsc::initialize()
   save_matrix_=0;
   mataij_=0;
   factored_matrix_="";
-  read_matrix_=0;
   solveur_direct_=0;
   controle_residu_=0;
   cuda_=0;
@@ -239,6 +239,7 @@ inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):SolveurSys_base::SolveurSys
   initialize();
   instance++;
   // Journal()<<"copie solv_petsc "<<instance<<finl;
+  read_matrix_=org.read_matrix();
   cuda_=org.cuda();
   // on relance la lecture ....
   EChaine recup(org.get_chaine_lue());
