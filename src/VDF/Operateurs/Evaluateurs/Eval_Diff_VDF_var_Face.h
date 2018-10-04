@@ -433,7 +433,7 @@ inline void Eval_Diff_VDF_var_Face::coeffs_arete_mixte(int fac1, int fac2, int f
         diffus+=dv_diffusivite(element);
       if ((element=elem_(fac4,0)) != -1)
         diffus+=dv_diffusivite(element);
-      if ((element=elem_(fac4,0)) != -1)
+      if ((element=elem_(fac4,1)) != -1)
         diffus+=dv_diffusivite(element);
 
       diffus/=3.0;
