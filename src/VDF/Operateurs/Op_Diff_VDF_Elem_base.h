@@ -81,6 +81,7 @@ protected:
 inline Op_Diff_VDF_Elem_base::Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur)
   : Op_Diff_VDF_base(iterateur)
 {
+  declare_support_masse_volumique(1);
 }
 // Description:
 // on dimensionne notre matrice.

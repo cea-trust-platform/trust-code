@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,101 +51,60 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab() const
 }
 double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 {
-  double dt_stab;
-  double coef;
-  //  const Zone_VDF & zone_VDF = iter.zone();
-  //  const IntTab & elem_faces = zone_VDF.elem_faces();
+  // Calcul du pas de temps de stabilite :
+  //
+  //
+  //  - La diffusivite n'est pas uniforme donc:
+  //
+  //     dt_stab = Min (1/(2*diffusivite(elem)*coeff(elem))
+  //
+  //     avec :
+  //            coeff =  1/(dx*dx) + 1/(dy*dy) + 1/(dz*dz)
+  //
+  //            i decrivant l'ensemble des elements du maillage
+  //
+  //  Rq: en hydraulique on cherche le Max sur les elements du maillage
+  //      initial (comme en thermique) et non le Max sur les volumes de Qdm.
+  double coef=0;
+  const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
+  const int diffu_variable = (diffu.dimension(0) == 1) ? 0 : 1;
+  const double diffu_constante = (diffu_variable ? 0. : max_array(diffu));
 
-  if (has_champ_masse_volumique())
+  // Si la diffusivite est variable, ce doit etre un champ aux elements.
+  assert((!diffu_variable) || diffu.size()==zone_VDF.nb_elem());
+  const int nb_elem = zone_VDF.nb_elem();
+  for (int elem = 0; elem < nb_elem; elem++)
     {
-
-      const Champ_base& champ_diffu = diffusivite();
-      const DoubleVect& diffu = champ_diffu.valeurs();
-      coef=0;
-      const int diffu_variable = (diffu.size() == 1) ? 0 : 1;
-      const double diffu_constante = (diffu_variable ? 0. : diffu(0));
-      const DoubleTab& valeurs_rho = get_champ_masse_volumique().valeurs();
-      const int dim = Objet_U::dimension;
-
-      // Si la diffusivite est variable, ce doit etre un champ aux elements.
-      assert((!diffu_variable) || diffu.size()==zone_VDF.nb_elem());
-
-
-      int elem;
-      const int nb_elem = zone_VDF.nb_elem();
-      for (elem = 0; elem < nb_elem; elem++)
+      double diflo = 0.;
+      for (int i = 0; i < dimension; i++)
         {
-          int i;
-          double diflo = 0.;
-          for (i = 0; i < dim; i++)
-            {
-              const double h = zone_VDF.dim_elem(elem, i);
-              diflo += 1. / (h * h);
-            }
-          double alpha = diffu_variable ? diffu(elem) : diffu_constante;
-          double rho = valeurs_rho(elem);
-          diflo *= alpha / rho;
-          coef = max(coef,diflo);
+          const double h = zone_VDF.dim_elem(elem, i);
+          diflo += 1. / (h * h);
         }
-      if (coef==0)
-        dt_stab = DMAXFLOAT;
-      else
-        dt_stab = 0.5/coef;
-
-
-    }
-  else
-    {
-
-
-      const Champ_base& champ_diffu = diffusivite_pour_pas_de_temps();
-      const DoubleVect& diffu = champ_diffu.valeurs();
-
-      // Calcul du pas de temps de stabilite :
-      //
-      //
-      //  - La diffusivite n'est pas uniforme donc:
-      //
-      //     dt_stab = Min (1/(2*diffusivite(elem)*coeff(elem))
-      //
-      //     avec :
-      //            coeff =  1/(dx*dx) + 1/(dy*dy) + 1/(dz*dz)
-      //
-      //            i decrivant l'ensemble des elements du maillage
-      //
-      //  Rq: en hydraulique on cherche le Max sur les elements du maillage
-      //      initial (comme en thermique) et non le Max sur les volumes de Qdm.
-
-      coef=0;
-      double diflo;
-      // double h_x,h_y,h_z;
-      const int diffu_variable = (diffu.size() == 1) ? 0 : 1;
-      const double diffu_constante = (diffu_variable ? 0. : diffu(0));
-
-      // Si la diffusivite est variable, ce doit etre un champ aux elements.
-      assert((!diffu_variable) || diffu.size()==zone_VDF.nb_elem());
-
-
-      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
+      double alpha;
+      if (diffu_variable)
         {
-          double inv_h=0;
-          for (int dir=0; dir<dimension; dir++)
+          if (diffu.nb_dim() == 1)
+            alpha = diffu(elem);
+          else
             {
-              double h=zone_VDF.dim_elem(elem,dir);
-              inv_h+=1/(h*h);
+              alpha = diffu(elem, 0);
+              for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
+                alpha = max(alpha, diffu(elem, ncomp));
             }
-          double alpha = diffu_variable ? diffu(elem) : diffu_constante;
-          //diflo = alpha * (1/(h_x*h_x) + 1/(h_y*h_y));
-          diflo=alpha*inv_h;
-          coef = max(coef,diflo);
         }
-
-
-      if (coef==0)
-        dt_stab = DMAXFLOAT;
       else
-        dt_stab = 0.5/coef;
+        alpha = diffu_constante;
+      diflo *= alpha;
+      if (has_champ_masse_volumique())
+        {
+          const DoubleTab& rho = get_champ_masse_volumique().valeurs();
+          diflo/= rho(elem);
+        }
+      coef = max(coef,diflo);
     }
+
+  double dt_stab = (coef==0 ? DMAXFLOAT : 0.5/coef);
   return Process::mp_min(dt_stab);
 }
 
