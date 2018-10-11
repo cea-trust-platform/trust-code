@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -2100,139 +2100,61 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
     }
 }
 
-//#define control_somme
+
 // ajoute les contributions des operateurs et des sources
-void  Equation_base::assembler( Matrice_Morse& matrice,const DoubleTab& inco, DoubleTab& resu)
+void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
+  // Test de verification de la methode contribuer_a_avec
+  for (int op=0; op<nombre_d_operateurs(); op++)
+    operateur(op).l_op_base().tester_contribuer_a_avec(inco, matrice);
+
+  // Contribution des operateurs et des sources:
+  // [Vol/dt+somme(A)]Inco(n+1)=somme(r)+Vol/dt*Inco(n)
+  // On calcule somme(r) par somme(operateur)+sources+somme(A)=somme(r)
   const Discretisation_base::type_calcul_du_residu& type_codage=probleme().discretisation().codage_du_calcul_du_residu();
   if (type_codage==Discretisation_base::VIA_CONTRIBUER_AU_SECOND_MEMBRE)
-    Cerr<<" we pass by contribuer_au_second_membre"<<finl;
-
-  if ((type_codage==Discretisation_base::VIA_CONTRIBUER_AU_SECOND_MEMBRE))
     {
       sources().contribuer_a_avec(inco,matrice);
-
       statistiques().end_count(assemblage_sys_counter_,0,0);
       sources().ajouter(resu);
       statistiques().begin_count(assemblage_sys_counter_);
-
-      matrice.ajouter_multvect(inco,resu);
-    }
-
-  int test_op=0;
-  {
-    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE");
-    if (theValue != NULL) test_op=2;
-  }
-  {
-    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
-    if (theValue != NULL) test_op=1;
-  }
-#ifdef control_somme
-  DoubleTab diff_tot(resu);
-#endif
-  double vmin=1;
-  if (test_op)
-    {
-      DoubleTab un(resu);
-      un=1;
-      solv_masse().appliquer(un);
-      vmin=mp_max_vect(un);
-      vmin=1/vmin;
-    }
-  for (int op=0; op< nombre_d_operateurs(); op++)
-    {
-      if (test_op)
+      matrice.ajouter_multvect(inco, resu); // Add source residual first
+      for (int op = 0; op < nombre_d_operateurs(); op++)
         {
-          Matrice_Morse test(matrice);
-          DoubleVect& coeff = test.get_set_coeff();
-          DoubleTrav diff(resu);
-          coeff=0;
-          operateur(op).l_op_base().calculer(inco,diff);
-          operateur(op).l_op_base().contribuer_a_avec(inco, test );
-          test.ajouter_multvect(inco,diff);
-          diff*=-1;
-#ifdef control_somme
-          operateur(op).l_op_base().contribuer_au_second_membre(diff_tot);
-#endif
-          operateur(op).l_op_base().contribuer_au_second_membre(diff);
-          solv_masse().appliquer(diff);
-          // on multiplie par le volume car les coefficients sont divises par le volume et on ne veut pas qu'un calcul lsur des petites mailles semblent disfonctionner;
-          diff*=vmin;
-          double err=mp_max_abs_vect(diff);
-          Cerr<<que_suis_je()<<" op "<<op <<" "<<operateur(op).l_op_base().que_suis_je()<< " "<<err<<finl;;
-          if (err>1e-6)
-            {
-              {
-                DoubleVect& diff_=diff;
-                Cerr<<" size "<< diff_.size()<<finl;
-                for (int i=0; i<diff_.size(); i++)
-                  if (dabs(diff_(i))>1e-10)
-                    {
-                      Cerr<<i << " "<< diff_(i)<< " "<<finl;
-                    }
-              }
-              if (test_op==1)
-                exit();
-            }
+          operateur(op).l_op_base().contribuer_a_avec(inco, matrice);
+          operateur(op).l_op_base().contribuer_au_second_membre(resu);
         }
-      operateur(op).l_op_base().contribuer_a_avec(inco, matrice );
-      if (!(type_codage==Discretisation_base::VIA_CONTRIBUER_AU_SECOND_MEMBRE))
+    }
+  else if (type_codage==Discretisation_base::VIA_AJOUTER)
+    {
+      for (int op=0; op<nombre_d_operateurs(); op++)
         {
-          statistiques().end_count(assemblage_sys_counter_,0,0);
+          operateur(op).l_op_base().contribuer_a_avec(inco, matrice);
+          statistiques().end_count(assemblage_sys_counter_, 0, 0);
           operateur(op).ajouter(resu);
           statistiques().begin_count(assemblage_sys_counter_);
         }
-      else
-        operateur(op).l_op_base().contribuer_au_second_membre(resu);
-    }
-
-  // contribution des sources
-  //
-  // [Vol/dt+somme(A)]Inco(n+1)=somme(r)+Vol/dt*Inco(n)
-  //
-  // On calcul somme(r) par somme(operateur)+sources+somme(A)=somme(r)
-
-  //  const Sources& sources = sources();
-#ifdef control_somme
-  if (test_op)
-    {
-      DoubleTab test(resu);
-      test-=diff_tot;
-      matrice.ajouter_multvect(inco,test);
-      solv_masse().appliquer(test);
-      double mtest=max_abs(test);
-      if (mtest>1e-5)
-        {
-          Cerr<<" global error "<< mtest<<finl;
-          if (test_op==1)
-            {
-              //    matrice.imprimer(Cerr);
-              //        Cerr<<matrice<<finl;
-              Cerr<<resu<<" test "<<test<<finl;
-              exit();
-            }
-        }
-    }
-#endif
-  if (!(type_codage==Discretisation_base::VIA_CONTRIBUER_AU_SECOND_MEMBRE))
-    {
+      sources().contribuer_a_avec(inco,matrice);
       statistiques().end_count(assemblage_sys_counter_,0,0);
       sources().ajouter(resu);
       statistiques().begin_count(assemblage_sys_counter_);
-
-      sources().contribuer_a_avec(inco,matrice);
-
-      matrice.ajouter_multvect(inco,resu);
+      matrice.ajouter_multvect(inco, resu); // Add source and operators residual
+      // PL (11/04/2018): On aimerait bien calculer la contribution des sources en premier
+      // comme dans le cas VIA_CONTRIBUER_AU_SECOND_MEMBRE mais le cas Canal_perio_3D (keps
+      // periodique plante: il y'a une erreur de periodicite dans les termes sources du modele KEps...
     }
-
+  else
+    {
+      Cerr << "Unknown value in Equation_base::assembler for " << type_codage << finl;
+      Process::exit();
+    }
 }
 
 
 // modifie la matrice et le second mmebre en fonction des CL
-void Equation_base::modifier_pour_Cl( Matrice_Morse& mat_morse,DoubleTab& secmem) const
+void Equation_base::modifier_pour_Cl(Matrice_Morse& mat_morse, DoubleTab& secmem) const
 {
-  for (int op=0; op< nombre_d_operateurs(); op++)
+  for (int op=0; op<nombre_d_operateurs(); op++)
     {
       operateur(op).l_op_base().modifier_pour_Cl(mat_morse,secmem);
     }

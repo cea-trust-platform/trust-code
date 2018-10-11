@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,13 +86,12 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int i,j,num_face;
   int nb_faces = zone_VEF.nb_faces();
-  int elem,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   double valA,flux;
   int n_bord, ind_face;
   int nb_bords=zone_VEF.nb_front_Cl();
   // On dimensionne et initialise le tableau des bilans de flux:
-  (ref_cast(DoubleTab,tab_flux_bords)).resize(zone_VEF.nb_faces_bord(),1);
+  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),1);
   tab_flux_bords=0.;
   const int& premiere_face_int=zone_VEF.premiere_face_int();
 
@@ -115,33 +114,21 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
               num_face = le_bord.num_face(ind_face);
               fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
-              elem1 = face_voisins(num_face,0);
-              for (i=0; i<nb_faces_elem; i++)
+              for (int kk=0; kk<2; kk++)
                 {
-                  if ( ( (j= elemfaces(elem1,i)) > num_face ) && (j != fac_asso) )
+                  int elem = face_voisins(num_face,kk);
+                  for (i=0; i<nb_faces_elem; i++)
                     {
-                      valA = viscA(num_face,j,elem1,nu(elem1));
-                      resu(num_face)+=valA*inconnue(j);
-                      resu(num_face)-=valA*inconnue(num_face);
-                      if(j<nb_faces) // face reelle
+                      if ( ( (j= elemfaces(elem,i)) > num_face ) && (j != fac_asso) )
                         {
-                          resu(j)+=0.5*valA*inconnue(num_face);
-                          resu(j)-=0.5*valA*inconnue(j);
-                        }
-                    }
-                }
-              elem2 = face_voisins(num_face,1);
-              for (i=0; i<nb_faces_elem; i++)
-                {
-                  if ( ( (j= elemfaces(elem2,i)) > num_face ) && ( j != fac_asso ) )
-                    {
-                      valA = viscA(num_face,j,elem2,nu(elem2));
-                      resu(num_face)+=valA*inconnue(j);
-                      resu(num_face)-=valA*inconnue(num_face);
-                      if(j<nb_faces) // face reelle
-                        {
-                          resu(j)+=0.5*valA*inconnue(num_face);
-                          resu(j)-=0.5*valA*inconnue(j);
+                          valA = viscA(num_face,j,elem,nu(elem));
+                          resu(num_face)+=valA*inconnue(j);
+                          resu(num_face)-=valA*inconnue(num_face);
+                          if(j<nb_faces) // face reelle
+                            {
+                              resu(j)+=0.5*valA*inconnue(num_face);
+                              resu(j)-=0.5*valA*inconnue(j);
+                            }
                         }
                     }
                 }
@@ -155,13 +142,13 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
           for (ind_face=num1; ind_face<num2; ind_face++)
             {
               num_face = le_bord.num_face(ind_face);
-              elem1 = face_voisins(num_face,0);
+              int elem = face_voisins(num_face,0);
 
               for (i=0; i<nb_faces_elem; i++)
                 {
-                  if (( (j= elemfaces(elem1,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
+                  if (( (j= elemfaces(elem,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
                     {
-                      valA = viscA(num_face,j,elem1,nu(elem1));
+                      valA = viscA(num_face,j,elem,nu(elem));
 
                       if (ind_face<nb_faces_bord_reel)
                         {
@@ -191,7 +178,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
     {
       for (int k=0; k<2; k++)
         {
-          elem = face_voisins(num_face,k);
+          int elem = face_voisins(num_face,k);
           {
             for (i=0; i<nb_faces_elem; i++)
               {
@@ -279,7 +266,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int i0,j,num_face;
   int nb_faces = zone_VEF.nb_faces();
-  int elem0,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int n_bord0;
   double valA;//,flux;
@@ -287,7 +273,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
   // On dimensionne et initialise le tableau des bilans de flux:
-  (ref_cast(DoubleTab,tab_flux_bords)).resize(zone_VEF.nb_faces_bord(),nb_comp);
+  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nb_comp);
   tab_flux_bords=0.;
 
   assert(nb_comp>1);
@@ -312,51 +298,33 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
               fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
               num_face = le_bord.num_face(ind_face);
-              elem1 = face_voisins(num_face,0);
-              for (i0=0; i0<nb_faces_elem; i0++)
+              for (int kk=0; kk<2; kk++)
                 {
-                  if ( ( (j= elemfaces(elem1,i0)) > num_face ) && (j != fac_asso ) )
+                  int elem = face_voisins(num_face, kk);
+                  for (i0=0; i0<nb_faces_elem; i0++)
                     {
-                      valA = viscA(num_face,j,elem1,nu(elem1));
-                      for (int nc=0; nc<nb_comp; nc++)
+                      if ( ( (j= elemfaces(elem,i0)) > num_face ) && (j != fac_asso ) )
                         {
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                          // resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
-                          // resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
-                          if(j<nb_faces) // face reelle
+                          valA = viscA(num_face,j,elem,nu(elem));
+                          for (int nc=0; nc<nb_comp; nc++)
                             {
-                              ////ATENTION DIFF NUM_face avec ma version
-                              resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                              resu(j,nc)-=0.5*valA*inconnue(j,nc);
-                              // resu(j,nc)+=0.5*valA*inconnue(num_face,nc)*porosite_face(j);
-                              // resu(j,nc)-=0.5*valA*inconnue(j,nc)*porosite_face(j);
+                              resu(num_face,nc)+=valA*inconnue(j,nc);
+                              resu(num_face,nc)-=valA*inconnue(num_face,nc);
+                              // resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
+                              // resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
+                              if(j<nb_faces) // face reelle
+                                {
+                                  ////ATENTION DIFF NUM_face avec ma version
+                                  resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
+                                  resu(j,nc)-=0.5*valA*inconnue(j,nc);
+                                  // resu(j,nc)+=0.5*valA*inconnue(num_face,nc)*porosite_face(j);
+                                  // resu(j,nc)-=0.5*valA*inconnue(j,nc)*porosite_face(j);
+                                }
                             }
                         }
                     }
                 }
-              elem2 = face_voisins(num_face,1);
-              for (i0=0; i0<nb_faces_elem; i0++)
-                {
-                  if ( ( (j= elemfaces(elem2,i0)) > num_face ) && (j!= fac_asso ) )
-                    {
-                      valA = viscA(num_face,j,elem2,nu(elem2));
-                      for (int nc=0; nc<nb_comp; nc++)
-                        {
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                          //        resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
-                          //        resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
-                          if(j<nb_faces) // face reelle
-                            {
-                              resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                              resu(j,nc)-=0.5*valA*inconnue(j,nc);
-                              // resu(j,nc)+=0.5*valA*inconnue(num_face,nc)*porosite_face(j);
-                              // resu(j,nc)-=0.5*valA*inconnue(j,nc)*porosite_face(j);
-                            }
-                        }
-                    }
-                }
+
             }
         }// fin if periodique
       else
@@ -396,10 +364,10 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
     {
       for (int k=0; k<2; k++)
         {
-          elem0 = face_voisins(num_face,k);
+          int elem = face_voisins(num_face,k);
           for (i0=0; i0<nb_faces_elem; i0++)
             {
-              if ( (j= elemfaces(elem0,i0)) > num_face )
+              if ( (j= elemfaces(elem,i0)) > num_face )
                 {
                   int el1,el2;
                   int contrib=1;
@@ -412,7 +380,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                     }
                   if(contrib)
                     {
-                      valA = viscA(num_face,j,elem0,nu(elem0));
+                      valA = viscA(num_face,j,elem,nu(elem));
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           //resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
@@ -462,7 +430,6 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int i0,j,num_face;
   int nb_faces = zone_VEF.nb_faces();
-  int elem0,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int n_bord;
   double valA,flux0;
@@ -470,7 +437,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
   // On dimensionne et initialise le tableau des bilans de flux:
-  (ref_cast(DoubleTab,tab_flux_bords)).resize(zone_VEF.nb_faces_bord(),nb_comp);
+  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nb_comp);
   tab_flux_bords=0.;
   assert(nb_comp>1);
   int nb_bords=zone_VEF.nb_front_Cl();
@@ -494,39 +461,24 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
               fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
               num_face = le_bord.num_face(ind_face);
-              elem1 = face_voisins(num_face,0);
-              for (i0=0; i0<nb_faces_elem; i0++)
+              for (int kk=0; kk<2; kk++)
                 {
-                  if ( ( (j= elemfaces(elem1,i0)) > num_face ) && (j != fac_asso ) )
+                  int elem = face_voisins(num_face, kk);
+                  for (i0=0; i0<nb_faces_elem; i0++)
                     {
-                      for (int nc=0; nc<nb_comp; nc++)
+                      if ( ( (j= elemfaces(elem,i0)) > num_face ) && (j != fac_asso ) )
                         {
-                          valA = viscA(num_face,j,elem1,nu(elem1,nc));
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                          if(j<nb_faces) // face reelle
+                          for (int nc=0; nc<nb_comp; nc++)
                             {
-                              ////ATENTION DIFF NUM_face avec ma version
-                              resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                              resu(j,nc)-=0.5*valA*inconnue(j,nc);
-                            }
-                        }
-                    }
-                }
-              elem2 = face_voisins(num_face,1);
-              for (i0=0; i0<nb_faces_elem; i0++)
-                {
-                  if ( ( (j= elemfaces(elem2,i0)) > num_face ) && (j!= fac_asso ) )
-                    {
-                      for (int nc=0; nc<nb_comp; nc++)
-                        {
-                          valA = viscA(num_face,j,elem2,nu(elem2,nc));
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                          if(j<nb_faces) // face reelle
-                            {
-                              resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                              resu(j,nc)-=0.5*valA*inconnue(j,nc);
+                              valA = viscA(num_face,j,elem,nu(elem,nc));
+                              resu(num_face,nc)+=valA*inconnue(j,nc);
+                              resu(num_face,nc)-=valA*inconnue(num_face,nc);
+                              if(j<nb_faces) // face reelle
+                                {
+                                  ////ATENTION DIFF NUM_face avec ma version
+                                  resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
+                                  resu(j,nc)-=0.5*valA*inconnue(j,nc);
+                                }
                             }
                         }
                     }
@@ -571,10 +523,10 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
     {
       for (int k=0; k<2; k++)
         {
-          elem0 = face_voisins(num_face,k);
+          int elem = face_voisins(num_face,k);
           for (i0=0; i0<nb_faces_elem; i0++)
             {
-              if ( (j= elemfaces(elem0,i0)) > num_face )
+              if ( (j= elemfaces(elem,i0)) > num_face )
                 {
                   int el1,el2;
                   int contrib=1;
@@ -589,7 +541,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                     {
                       for (int nc=0; nc<nb_comp; nc++)
                         {
-                          valA = viscA(num_face,j,elem0,nu(elem0,nc));
+                          valA = viscA(num_face,j,elem,nu(elem,nc));
                           resu(num_face,nc)+=valA*inconnue(j,nc);
                           resu(num_face,nc)-=valA*inconnue(num_face,nc);
                           if(j<nb_faces) // On traite les faces reelles

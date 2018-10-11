@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,8 @@
 #include <Champ.h>
 #include <Front_VF.h>
 #include <Zone_VF.h>
+#include <Matrice_Morse.h>
+#include <DoubleTrav.h>
 
 Implemente_base_sans_constructeur(Operateur_base,"Operateur_base",Objet_U);
 
@@ -617,3 +619,52 @@ void Operateur_base::calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) c
 // Par defaut : ne fait rien
 void Operateur_base::preparer_calcul(void) { }
 
+// Methode pour tester la methode contribuer_a_avec
+// Test activé par une variable d'environnement
+void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matrice_Morse& matrice)
+{
+  int test_op=0;
+  {
+    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE");
+    if (theValue != NULL) test_op=2;
+  }
+  {
+    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
+    if (theValue != NULL) test_op=1;
+  }
+  if (test_op==0) return;
+
+  Matrice_Morse mat(matrice);
+  DoubleTrav resu(inco);
+  DoubleVect& coeff = mat.get_set_coeff();
+  // A*Inc(n)=Op(Inc(n))+
+  coeff=0;
+  calculer(inco, resu); // Calcule l'operateur Op(Inc(n)) avec methode ajouter dans resu
+  contribuer_a_avec(inco, mat); // Construit la matrice de l'operateur (mat=-A)
+  mat.ajouter_multvect(inco, resu); // Calcule le flux avec la matrice et l'ajoute a resu (resu=Op(Inc(n))-A*Inc(n))
+  resu*=-1;
+  contribuer_au_second_membre(resu); // Ajoute flux impose
+  mon_equation.valeur().solv_masse().appliquer(resu); // M-1*(Op(Inc(n))-A*Inc(n))
+  // On multiplie par le volume car les coefficients sont divises par le volume et on ne veut pas
+  // qu'un calcul sur des petites mailles semblent disfonctionner;
+  DoubleTab un(inco);
+  un=1;
+  mon_equation.valeur().solv_masse().appliquer(un);
+  resu/=mp_max_vect(un);
+  double err=mp_max_abs_vect(resu);
+  Cerr<<"Test contribuer_a_avec on " << que_suis_je() <<" error: "<<err<<finl;;
+  if (err>1e-6)
+    {
+      {
+        DoubleVect& resu_=resu;
+        Cerr<<" size "<< resu_.size()<<finl;
+        for (int i=0; i<resu_.size(); i++)
+          if (dabs(resu_(i))>1e-10)
+            {
+              Cerr<<i << " "<< resu_(i)<< " "<<finl;
+            }
+      }
+      if (test_op==1)
+        exit();
+    }
+}
