@@ -1,0 +1,242 @@
+Parameters {
+	Title "Validation of Champ_front_fonc_t keyword"
+	versiontrust 1.7.7
+	Author "N. DJATI"
+	description "triokeyword(Champ_front_fonc_t) is a keyword allowing to set time-dependent boundary conditions for vector and scalar quantities such as velocity, temperature, flow rate, \latex_( \dots, etc\latex_)."
+	description "The current validation form aims to validate its implementation in VEF and VDF in 2D and 3D configurations."
+
+	TestCase test1_VDF  	test.data
+	TestCase test2_VDF 	test.data
+
+	TestCase test1_VEF  	test.data
+	TestCase test2_VEF  	test.data
+
+	TestCase test_3D_VDF	test_3D
+	TestCase test_3D_VEF	test_3D
+}
+
+Chapter {	
+	Title "Check if champ_front_debit accepts champ_front_fonc_txyz"
+	description "The development of triokeyword(Champ_front_fonc_t) was first motivated by blocking the usage of triokeyword(champ_front_debit) with triokeyword(champ_front_fonc_txyz.)"
+	description "In the following, we check on a simple test case that the usage of triokeyword(champ_front_fonc_txyz) is NOT ALLOWED with triokeyword(champ_front_debit.)"
+	description "Inlet boundary condition in Champ_front_debit.data datafile:"
+	description include_text_file("./test1_VDF/my_text")
+}
+
+Chapter {
+	Title "Test cases description"
+	description "In the current validation form, we consider the flow inside a (2D and 3D) plane channel. We set a time dependent velocity at the inlet of the channel. In addition, we impose symmetry boundary conditions on lateral walls in order to not alterate the velocity profile near walls and a null outlet pressure. Furthermore, we neglect convection."
+	description "We distinguish three different configurations. The first one concerns an imposed velocity following the x-direction (i.e.: \latex_( $u_x=f(t)$ and $u_y=0$ \latex_)) while in the second one we impose an inlet velocity in the y-direction (i.e.: \latex_( $u_x=0$ and $u_y=f(t)$ \latex_)) in 2D. In the last one, we impose a time dependend inlet velocity in the z-direction (i.e.: \latex_( $u_x=0$, $u_y=0$ and $u_z=f(t)$ \latex_)) in 3D."
+
+	Description "For all cases, we access to the average inlet velocity from TRUST by means of keywords triokeyword(Definition_Champs) and triokeyword(Reduction_0D.)"
+	Visu {
+		Title "testcase 1: \latex_( $\vec{u}=(2t+1~,~0)^t$ \latex_)"
+		description VDF
+		mesh test1_VDF/test.lata dom
+		vector test1_VDF/test.lata dom VITESSE ELEM
+		normal3d -0.0543768 -0.677396 0.733606
+		up3d -0.407612 0.685749 0.602993
+		cycles  -1
+		Width 7cm
+		nb_img_without_newline 2
+	}
+	Visu {
+		description VEF
+		mesh test1_VEF/test.lata dom
+		vector test1_VEF/test.lata dom VITESSE ELEM
+		normal3d -0.0543768 -0.677396 0.733606
+		up3d  -0.407612 0.685749 0.602993
+		cycles  -1
+		width 7cm
+	}
+
+	Visu {
+		Title "testcase 2: \latex_( $\vec{u}=(0~,~2t^2+0.1)^t$ \latex_)"
+		description VDF
+		mesh test2_VDF/test.lata dom
+		vector test2_VDF/test.lata dom VITESSE ELEM
+		normal3d -0.0543768 -0.677396 0.733606
+		up3d 0.685749 -0.407612 0.602993
+		cycles  -1
+		# width 12cm
+		Width 7cm
+		nb_img_without_newline 2
+	}
+
+	Visu {
+		description VEF
+		mesh test2_VEF/test.lata dom
+		vector test2_VEF/test.lata dom VITESSE ELEM
+		normal3d -0.0543768 -0.677396 0.733606
+		up3d 0.685749 -0.407612 0.602993
+		cycles  -1
+		width 7cm
+	}
+
+	Visu {
+		Title "testcase 3: \latex_( $\vec{u}=(0~,~0~,~t/2+0.1)^t$ \latex_)"
+		description VDF
+		mesh test_3D_VDF/test_3D.lata inlet
+		vector test_3D_VDF/test_3D.lata inlet VITESSE ELEM
+		normal3d 0.25 0.5 0.4
+		up3d 0.685749 -0.407612 0.602993
+		cycles  -1
+		# width 12cm
+		Width 7cm
+		nb_img_without_newline 2
+	}
+	Visu {
+		description VEF
+		mesh test_3D_VEF/test_3D.lata inlet
+		vector test_3D_VEF/test_3D.lata inlet VITESSE ELEM
+		normal3d 0.25 0.5 0.4
+		up3d 0.685749 -0.407612 0.602993
+		cycles  -1
+		Width 7cm
+	}
+
+}
+
+Chapter {
+	Title "Time evolution of inlet velocity"
+
+	figure {
+		Titre_figure "testcase 1: u=(2t+1 , 0)"
+		labelX "time"
+		labelY "ux inlet"
+		include_description_curves 0
+		Width 7.9cm
+		RangeX 0. 5.
+		nb_img_without_newline 2
+		Legend below
+
+		curve {
+			legend "VDF"
+			file ./test1_VDF/test_VITESSE_U.son
+			columns ($1) ($2)
+			style linespoints
+		}
+		curve {
+			legend "VEF"
+			file ./test1_VEF/test_VITESSE_U.son
+			columns ($1) ($2)
+			style linespoints
+		}
+		Curve {
+			Legend "imposed ux"
+			Fonction 2*x+1
+			Style lines
+			Typeligne 20
+		}
+	}
+
+	figure {
+		Titre_figure "testcase 2: u=(0 , 2t^2+0.1)"
+		labelX "time"
+		labelY "uy inlet"
+		include_description_curves 0
+		Width 7.9cm
+		RangeX 0. 5.
+		Legend below
+
+		curve {
+			legend "VDF"
+			file ./test2_VDF/test_VITESSE_U.son 
+			columns ($1) ($3)
+			style linespoints
+
+		}
+		curve {
+			legend "VEF"
+			file ./test2_VEF/test_VITESSE_U.son
+			columns ($1) ($3)
+			style linespoints
+		}
+		Curve {
+			Legend "imposed uy"
+			Fonction 2*x**2+0.1
+			Style lines
+			Typeligne 20
+		}
+	}
+
+	figure {
+		Titre_figure "testcase 3: u=(0 , 0 , t/2+0.1)"
+		labelX "time"
+		labelY "uz inlet"
+		include_description_curves 0
+		Width 7.9cm
+		RangeX 0. 5.
+		Legend below
+
+		curve {
+			legend "VDF"
+			file ./test_3D_VDF/test_3D_VITESSE_U.son
+			columns ($1) ($4)
+			style linespoints
+
+		}
+		curve {
+			legend "VEF"
+			file ./test_3D_VEF/test_3D_VITESSE_U.son
+			columns ($1) ($4)
+			style linespoints
+		}
+		Curve {
+			Legend "imposed uz"
+			Fonction x/2+0.1
+			Style lines
+			Typeligne 20
+		}
+	}
+
+}
+
+Chapter {
+	Title "Maximum error on inlet velocity"
+	description "At a given time \latex_( $t_i$\latex_), the relative error on the inlet velocity is computed by:"
+	description \latex_( $err(t_i) = \frac{|u_{\text{inlet}}^{\text{imposed}}(t_i) - \bar{u}_{\text{inlet}}^{\text{TRUST}}(t_i)|}{u_{\text{inlet}}^{\text{imposed}}(t_i)} $  \latex_)
+	description \latex_( where $u_{\text{inlet}}^{\text{imposed}}(t_i) = f(t_i)$ and $\bar{u}_{\text{inlet}}^{\text{TRUST}}(t_i)$ is the averaged velocity on cells located at the inlet (inlet edge in 2D or inlet surface in 3D).  \latex_)
+
+	Table {
+		# Title "Maximum error on inlet velocity"
+		Description "The table below highlights that the maximum error (for which the time evolution is plotted in the previous subsection) is too small and is close to machine error."
+		nb_columns 3
+
+
+		label  Total number of time steps| t_max | max err
+		line {
+			legend "2D VDF testcase 1"
+			file test1_VDF/max.txt
+			columns $1 $2 $3
+			last_line
+		}
+		line {
+			legend 2D VEF testcase 1
+			file test1_VEF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 2D VDF testcase 2
+			file test2_VDF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 2D VEF testcase 2
+			file test2_VEF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 3D VDF testcase 3
+			file test_3D_VDF/max.txt
+			columns $1 $2 $3
+		}
+		line {
+			legend 3D VEF testcase 3
+			file test_3D_VEF/max.txt
+			columns $1 $2 $3
+		}
+	}
+}
+
+

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+mkdir -p test1_VDF test2_VDF test1_VEF test2_VEF test_3D_VDF test_3D_VEF
+
+cp pre_run Champ_front_debit.data test1_VDF
+cp test.data test2_VDF
+
+# copy Mesh
+for d in test1_VDF test1_VEF
+do
+   cp post_run test.data $d
+   cp post_run1.py $d/post_run.py
+   cp mesh1.geo $d/mesh.geo
+done
+
+sed "s/champ_front_fonc_t   2 2.*t+1. 0./champ_front_fonc_t   2 0. 2.\*t\*t+0.1/g" test.data > test2.data
+
+for d in test2_VDF test2_VEF
+do
+   cp test2.data $d/test.data
+   cp post_run $d
+   cp post_run2.py $d/post_run.py
+   cp mesh2.geo $d/mesh.geo
+   sed -i "s/condition_elements (y/condition_elements (x/g" $d/test.data
+   sed -i "s/condition_faces (x/condition_faces (y/g" $d/test.data
+done
+
+for d in test1_VEF test2_VEF 
+do
+  sed -i "s/VDF dis/VEFprep1b dis/g" $d/test.data
+  sed -i "7a trianguler\_h dom" $d/test.data
+done
+
+
+# 3D testcases
+
+for d in test_3D_VDF test_3D_VEF 
+do
+   cp test_3D.data post_run $d
+   cp post_run3.py $d/post_run.py
+done
+
+sed -i "s/VDF dis/VEFprep1b dis/g" test_3D_VEF/test_3D.data
+sed -i "25a tetraedriser_homogene dom" test_3D_VEF/test_3D.data

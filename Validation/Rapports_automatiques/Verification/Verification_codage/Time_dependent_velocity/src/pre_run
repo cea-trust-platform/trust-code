@@ -1,0 +1,23 @@
+#!/bin/bash
+# This test case should produce an error when it is run.
+# if it is not the case, something is wrong !
+
+trust Champ_front_debit 1>Champ_front_debit.out 2>Champ_front_debit.err
+if [ "`grep 'Unexpected error during TRUST calculation.' Champ_front_debit.stop`" = "" ] 
+then
+   cat Champ_front_debit.data | grep champ_front_fonc_txyz | grep 2 > my_text
+   echo "\$ tail -5 NotWorking/Champ_front_debit.err:" >> my_text
+   tail -5 Champ_front_debit.err >> my_text
+   echo "__________________________________________________________________________________" >> my_text
+   echo "=> FATAL ERROR!!!! it seems that 'champ_front_debit' accepts 'champ_front_fonc_txyz'" >> my_text
+   echo "__________________________________________________________________________________" >> my_text
+   exit 1
+else
+   cat Champ_front_debit.data | grep champ_front_fonc_txyz | grep 2 > my_text
+   echo "\$ tail -5 NotWorking/Champ_front_debit.err:" >> my_text
+   tail -5 Champ_front_debit.err >> my_text
+   echo "__________________________________________________________________________________" >> my_text
+   echo "=> This is the seeked behaviour of TRUST when 'champ_front_fonc_txyz' is used with 'champ_front_debit'." >> my_text
+   echo "__________________________________________________________________________________" >> my_text
+fi
+

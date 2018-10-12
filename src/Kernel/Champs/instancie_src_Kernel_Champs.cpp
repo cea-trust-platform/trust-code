@@ -44,6 +44,7 @@
 #include <Champ_front_fonc_pois_tube.h>
 #include <Champ_front_lu.h>
 #include <Champ_front_normal.h>
+#include <Champ_front_t.h>
 #include <Champ_front_tangentiel.h>
 #include <Champ_front_txyz.h>
 #include <Champ_front_uniforme.h>
@@ -97,12 +98,13 @@ Champ_front_fonc_pois_ipsn inst40;verifie_pere(inst40);
 Champ_front_fonc_pois_tube inst41;verifie_pere(inst41);
 Champ_front_lu inst42;verifie_pere(inst42);
 Champ_front_normal inst43;verifie_pere(inst43);
-Champ_front_tangentiel inst44;verifie_pere(inst44);
-Champ_front_txyz inst45;verifie_pere(inst45);
-Champ_front_uniforme inst46;verifie_pere(inst46);
-Champ_input_P0 inst47;verifie_pere(inst47);
-Field_uniform_keps_from_ud inst48;verifie_pere(inst48);
-Init_par_partie inst49;verifie_pere(inst49);
-Tayl_Green inst50;verifie_pere(inst50);
-champ_init_canal_sinal inst51;verifie_pere(inst51);
+Champ_front_t inst44;verifie_pere(inst44);
+Champ_front_tangentiel inst45;verifie_pere(inst45);
+Champ_front_txyz inst46;verifie_pere(inst46);
+Champ_front_uniforme inst47;verifie_pere(inst47);
+Champ_input_P0 inst48;verifie_pere(inst48);
+Field_uniform_keps_from_ud inst49;verifie_pere(inst49);
+Init_par_partie inst50;verifie_pere(inst50);
+Tayl_Green inst51;verifie_pere(inst51);
+champ_init_canal_sinal inst52;verifie_pere(inst52);
 }
