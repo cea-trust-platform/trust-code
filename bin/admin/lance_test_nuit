@@ -860,7 +860,7 @@ grep "KO " $envoie_log
 mv -f build/rsync_*.log $REP_NUIT/.
 mv -f build/rsync_include_from $REP_NUIT/.
 mv -f build/ssh_*.log $REP_NUIT/.
-# On recupere le nom des machines sur lesquelles les sources n'ont pu etre mises a jour 
+# On recupere le nom des machines sur lesquelles les sources n ont pu etre mises a jour
 # Cette liste permettra de ne pas lancer la portabilite des baltiks sur ces machines
 if [ ${#liste_machines_KO} != 0 ] # chaine non vide
 then
@@ -1173,8 +1173,8 @@ echo "###############################################"
 	###############################
 	# Verification des composants #
 	###############################
-	#if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
-	if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ] # Test a revoir
+	if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
+	#if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ] # Test a revoir : pour livraison TrioMC qd TRUST est tagguee
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
@@ -1761,8 +1761,8 @@ do
 	 else
 	    cat kill.liste
 	    echo "  => KO: portability is NOT finished"
-            old_IFS=$IFS  # sauvegarde du séparateur de champ  
-            IFS=$'\n'     # nouveau séparateur de champ, le caractère fin de ligne  
+            old_IFS=$IFS  # sauvegarde du separateur de champ
+            IFS=$'\n'     # nouveau separateur de champ, le caractere fin de ligne
 	    for line in $(cat kill.liste)
 	    do
 	      (
@@ -1858,6 +1858,12 @@ echo>>$recupere_log
 # REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
 # HOST deja existant
 # recupere_log=$REP_NUIT/recupere_TRUST_arch_$HOST.log
+# recupere_TRUST_arch 1>>$recupere_log 2>&1   
+# cd $TRUST_ROOT
+# envoie_ftp_log=$REP_NUIT/envoie_ftp_cea_fr_$HOST.log
+# echo "TRUST script on $HOST the `date` ...">$envoie_ftp_log
+# echo>>$envoie_ftp_log
+# envoie_ftp_cea_fr 1>>$envoie_ftp_log 2>&1
 recupere_TRUST_arch 1>>$recupere_log 2>&1   
 grep KO $recupere_log
 grep -i portage $recupere_log
@@ -2764,7 +2770,7 @@ fi
 )
 cd $TRUST_ROOT/doc/Coverage
 echo "  Call to make in $TRUST_ROOT/doc/Coverage"
-make clean # dossier Coverage/html supprime et Coverage/html/index.html vide car non mis à jour dans l'archive TRUST + all baltik
+make clean # dossier Coverage/html supprime et Coverage/html/index.html vide car non mis a jour dans l'archive TRUST + all baltik
 make
 CPP_GCOV=$TRUST_ROOT/doc/Coverage/html/cpp.gcov
 echo "  Verification of $CPP_GCOV"
@@ -2860,7 +2866,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=83.11 # 81.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=83.10 # 83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
