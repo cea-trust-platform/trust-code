@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@
 #include <IntVects.h>
 
 Implemente_instanciable_sans_constructeur(ExtrudeBord,"ExtrudeBord",Interprete_geometrique_base);
-
+// XD extrudebord interprete extrudebord 1 Class to generate an extruded mesh from a boundary of a tetrahedral or an hexahedral mesh. NL2 Warning: If the initial domain is a tetrahedral mesh, the boundary will be moved in the XY plane then extrusion will be applied (you should maybe use the Transformer keyword on the final domain to have the domain you really want). You can use the keyword Ecrire_Fichier_Meshtv to generate a meshtv file to visualize your initial and final meshes. NL2 This keyword can be used for example to create a periodic box extracted from a boundary of a tetrahedral or a hexaedral mesh. This periodic box may be used then to engender turbulent inlet flow condition for the main domain.NL2 Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.
 ExtrudeBord::ExtrudeBord()
 {
   hexa_old=0;
@@ -64,15 +64,15 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
       exit();
     }
   Param param(que_suis_je());
-  param.ajouter("domaine_init",&nom_dom_volumique,Param::REQUIRED);
-  param.ajouter_arr_size_predefinie("direction",&vect_dir,Param::REQUIRED);
-  param.ajouter("nb_tranches",&nbpas,Param::REQUIRED);
-  param.ajouter("domaine_final",&nom_dom_surfacique,Param::REQUIRED);
-  param.ajouter("nom_bord",&nom_front,Param::REQUIRED);
-  param.ajouter_flag("hexa_old",&hexa_old);
-  param.ajouter_flag("Trois_Tetra",&Trois_Tetra);
-  param.ajouter_flag("Vingt_Tetra",&Vingt_Tetra);
-  param.ajouter("sans_passer_par_le2D",&en3D_);
+  param.ajouter("domaine_init",&nom_dom_volumique,Param::REQUIRED);// XD_ADD_P ref_domaine Initial domain with hexaedras or tetrahedras.
+  param.ajouter_arr_size_predefinie("direction",&vect_dir,Param::REQUIRED);// XD_ADD_P  listf Directions for the extrusion.
+  param.ajouter("nb_tranches",&nbpas,Param::REQUIRED);// XD_ADD_P  int Number of elements in the extrusion direction.
+  param.ajouter("domaine_final",&nom_dom_surfacique,Param::REQUIRED);// XD_ADD_P  chaine Extruded domain.
+  param.ajouter("nom_bord",&nom_front,Param::REQUIRED);// XD_ADD_P  chaine Name of the boundary of the initial domain where extrusion will be applied.
+  param.ajouter_flag("hexa_old",&hexa_old);// XD_ADD_P  rien Old algorithm for boundary extrusion from a hexahedral mesh.
+  param.ajouter_flag("Trois_Tetra",&Trois_Tetra);// XD_ADD_P  rien To extrude in 3 tetrahedras instead of 14 tetrahedras.
+  param.ajouter_flag("Vingt_Tetra",&Vingt_Tetra);// XD_ADD_P  rien To extrude in 20 tetrahedras instead of 14 tetrahedras.
+  param.ajouter("sans_passer_par_le2D",&en3D_);// XD_ADD_P  int Only for non-regression
   param.lire_avec_accolades_depuis(is);
 
   associer_domaine(nom_dom_volumique);

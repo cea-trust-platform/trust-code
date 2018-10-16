@@ -1232,17 +1232,6 @@ distance_paroi interprete distance_paroi 0 Class to generate external file Wall_
   attr dom ref_domaine dom 0 Name of domain.
   attr bords listchaine bords 0 Boundaries.
   attr format chaine(into=["binaire","formatte"]) format 0 Value for format may be binaire (a binary file Wall_length.xyz is written) or formatte (moreover, a formatted file Wall_length_formatted.xyz is written).
-extrudebord interprete extrudebord 1 Class to generate an extruded mesh from a boundary of a tetrahedral or an hexahedral mesh. NL2 Warning: If the initial domain is a tetrahedral mesh, the boundary will be moved in the XY plane then extrusion will be applied (you should maybe use the Transformer keyword on the final domain to have the domain you really want). You can use the keyword Ecrire_Fichier_Meshtv to generate a meshtv file to visualize your initial and final meshes. NL2 This keyword can be used for example to create a periodic box extracted from a boundary of a tetrahedral or a hexaedral mesh. This periodic box may be used then to engender turbulent inlet flow condition for the main domain.NL2 Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.
-  attr domaine_init ref_domaine domaine_init 0 Initial domain with hexaedras or tetrahedras.
-  attr direction listf direction 1 Directions for the extrusion.
-  attr nb_tranches entier nb_tranches 1 Number of elements in the extrusion direction.
-  attr domaine_final chaine domaine_final 1 Extruded domain.
-  attr nom_bord chaine nom_bord 1 Name of the boundary of the initial domain where extrusion will be applied.
-  attr non_perio rien non_perio 1 Extruded domain will not have periodic boundaries. So, the boundaries will be named devant (front) and derriere (back) instead of PERIO.
-  attr hexa_old rien hexa_old 1 Old algorithm for boundary extrusion from a hexahedral mesh.
-  attr trois_tetra rien trois_tetra 1 To extrude in 3 tetrahedras instead of 14 tetrahedras.
-  attr vingt_tetra rien vingt_tetra 1 To extrude in 20 tetrahedras instead of 14 tetrahedras.
-  attr sans_passer_par_le2D entier sans_passer_par_le2D 1 Only for non-regression
 troisf objet_lecture nul 0 Auxiliary class to extrude.
   attr lx floattant lx 0 X direction of the extrude operation.
   attr ly floattant ly 0 Y direction of the extrude operation.

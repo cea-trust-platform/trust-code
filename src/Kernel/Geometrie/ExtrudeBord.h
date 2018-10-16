@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,6 @@
  *                 nb_tranches         N
  *                 domaine_final         NOM_DU_DOMAINE_EXTRUDE
  *                 nom_bord         NOM_BORD_A_EXTRUDER
- *                non_perio  // mot cle a mettre si l'on souhaite que les cls extrudees ne soient pas perio
  *                hexa_old  //mot cle a mettre pour utiliser l'ancienne version de l'extrusion des hexas
  *                 }
  *
@@ -67,8 +66,6 @@ private:
 
   void extruder_bord(Nom& nom_front, Nom& nom_dom2, DoubleVect& vect_dir, int nbpas);
   void extruder_hexa_old(Nom& nom_front, Nom& nom_dom2, DoubleVect& vect_dir, int nbpas);
-  int perio; // flag pour perio :         1 :Les CLS devant et derriere seront nommees "PERIO"
-  //                        0: les CL seront nommees "devant" et "derriere"
   int hexa_old; // flag pour ancienne version de l'extrusion des hexas : 0 = ancienne version
   int Trois_Tetra; // flag pour extrusion en trois tetraedres plutot qu'en 14 (option par defaut)
   int Vingt_Tetra; // flag pour extrusion en vingr tetraedres plutot qu'en 14 (option par defaut)
