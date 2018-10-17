@@ -27,7 +27,7 @@ then
       [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig -lrt"
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
-      petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH"_opt"/include/petscmachineinfo.h	
+      petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h	
       if [ -f $petscmachineinfo ]
       then
 	 # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)

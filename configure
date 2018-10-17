@@ -256,6 +256,7 @@ echo "[-force_even_unsupported]         Force the configure even the compiler/OS
 #echo "[-force_petsc_have_cuda]          Use the latest PETSc version (petsc-dev) and try to activate the GPU support."
 #echo "[-force_petsc_have_openmp]        Use the latest PETSc version (petsc-dev) and try to activate the OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
+echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
 echo "[-disable-med]                    Disable MED library installation."
 echo "[-with-med=dir]                   Force Using external MED library"
 echo "[-with-hdf=dir]                   Force Using external HDF library"
@@ -313,6 +314,7 @@ do
   command=TRUST_DISABLE_$THIRD_PARTY=0
   eval $command
 done
+export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
@@ -327,6 +329,16 @@ unset TRUST_USE_EXTERNAL_MEDCOUPLING
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
+
+if [ "`echo $* | grep '\-disable\-petsc'`" != "" ] && [ "`echo $* | grep '\-enable\-petsc\-debug'`" != ""  ]
+then
+   echo ""
+   echo "Configure error:"
+   echo "----------------"
+   echo "You cannot configure TRUST with both options: -enable-petsc-debug -disable-petsc."
+   echo "Re-configure it only with one of these options."
+   exit -1
+fi
 
 while [ "$1" != "" ]
 do
@@ -392,6 +404,10 @@ do
    elif [ "${1#-force_provided_mpich}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_MPICH=1
+   
+   elif [ "${1#-enable-petsc-debug}" != "$1" ]
+   then
+      export TRUST_ENABLE_PETSC_DEBUG=1
 
    elif [ "${1#-force_petsc_have_cuda}" != "$1" ]
    then
@@ -503,6 +519,7 @@ do
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
+echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
 echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
