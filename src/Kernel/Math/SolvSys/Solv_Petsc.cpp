@@ -248,7 +248,12 @@ void Solv_Petsc::create_solver(Entree& entree)
           add_option("mat_mumps_icntl_14","35");
         else
           add_option("mat_mumps_icntl_14","90");
-
+        
+	// Ajout option Block Low Rank (BLR) factorization a tester dans les prochains mois (prometteur)
+	// Voir http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf page 51:
+	//add_option("mat_mumps_icntl_35","1"); // Activation BLR
+	//add_option("mat_mumps_cntl_7","");    // Dropping parameter
+	
         // Option out_of_core
         if (rang==4) add_option("mat_mumps_icntl_22","1");
 #else
