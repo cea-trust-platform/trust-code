@@ -822,6 +822,10 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "boomeramg");
+                // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de 
+                // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
+		// Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
+                add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
