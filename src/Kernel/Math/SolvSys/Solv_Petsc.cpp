@@ -248,12 +248,12 @@ void Solv_Petsc::create_solver(Entree& entree)
           add_option("mat_mumps_icntl_14","35");
         else
           add_option("mat_mumps_icntl_14","90");
-        
-	// Ajout option Block Low Rank (BLR) factorization a tester dans les prochains mois (prometteur)
-	// Voir http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf page 51:
-	//add_option("mat_mumps_icntl_35","1"); // Activation BLR
-	//add_option("mat_mumps_cntl_7","");    // Dropping parameter
-	
+
+        // Ajout option Block Low Rank (BLR) factorization a tester dans les prochains mois (prometteur)
+        // Voir http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf page 51:
+        //add_option("mat_mumps_icntl_35","1"); // Activation BLR
+        //add_option("mat_mumps_cntl_7","");    // Dropping parameter
+
         // Option out_of_core
         if (rang==4) add_option("mat_mumps_icntl_22","1");
 #else
@@ -827,9 +827,9 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "boomeramg");
-                // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de 
+                // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de
                 // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
-		// Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
+                // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
                 add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
                 check_not_defined(omega);
                 check_not_defined(level);

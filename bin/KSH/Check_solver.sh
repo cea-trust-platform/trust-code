@@ -310,6 +310,6 @@ head -2 rank | tee ranking.$$
 awk '(NR>2) && ($6=="OK")' rank | sort -n | tee -a ranking.$$
 echo "Saved in ranking.$$ file"
 # [ "$mail" = 1 ] && cat ranking.$$ | mail_ -s\"[Check_solver.sh] NP sur $HOST\" $TRUST_MAIL
-echo "NP sur $HOST:"
-cat ranking.$$
+#echo "NP sur $HOST:"
+#cat ranking.$$
 exit $exit
