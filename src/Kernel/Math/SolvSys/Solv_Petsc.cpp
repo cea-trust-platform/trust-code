@@ -245,6 +245,11 @@ void Solv_Petsc::create_solver(Entree& entree)
         else
           add_option("mat_mumps_icntl_14","90");
 
+        // Ajout option Block Low Rank (BLR) factorization a tester dans les prochains mois (prometteur)
+        // Voir http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf page 51:
+        //add_option("mat_mumps_icntl_35","1"); // Activation BLR
+        //add_option("mat_mumps_cntl_7","");    // Dropping parameter
+
         // Option out_of_core
         if (rang==4) add_option("mat_mumps_icntl_22","1");
 #else
@@ -818,6 +823,10 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "boomeramg");
+                // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de
+                // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
+                // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
+                add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -1596,9 +1605,8 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
       MatSetOption(MatricePetsc_,MAT_SYMMETRIC,PETSC_TRUE); // Utile ?
       if (type_pc_==PCLU)
         {
-          // PCCHOLESKY is only supported for sbaij matrix format else error message for example with SuperLu:
-          // "Mat type seqaij symbolic factor Cholesky using solver package superlu_dist"
-          if (mataij_==0)
+          // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU
+          if (mataij_==0 || solveur_direct_==2)
             PCSetType(PreconditionneurPetsc_, PCCHOLESKY); // Precond PCLU -> PCCHOLESKY
         }
       else if (type_pc_==PCSOR)

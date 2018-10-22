@@ -1,3 +1,8 @@
+XX/XX/18 (TRUST)  Performance : Performance of Cholesky Superlu version improved on symmetric matrix  
+XX/XX/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.9.3
+--------------------------------------------------------------------------------------------------
+Release notes version 1.7.8_beta : Enhancements, modifications and corrected bugs since version 1.7.7 :
+--------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7 : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
@@ -53,8 +58,8 @@ Release notes version 1.7.4 : Enhancements, modifications and corrected bugs sin
 Release notes version 1.7.3 : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
 03/06/16 (Tools)  Major change: Add TRUST_PLOT2D and TRUST_WIZZARD (Option -disable-plot2d added to configure)
-25/05/16 (TRUST)  Portability : Released version of metis upgrated to 5.1.0
-25/05/16 (TRUST)  Portability : Released version of PETSc upgrated to 3.6.3 (and some packages whose MUMPS and METIS)
+25/05/16 (TRUST)  Portability : Released version of metis upgraded to 5.1.0
+25/05/16 (TRUST)  Portability : Released version of PETSc upgraded to 3.6.3 (and some packages whose MUMPS and METIS)
 25/05/16 (TRUST)  Minor change: Option -disable-check_sources and -for_appli_salome added to the TRUST configure tool
 23/05/16 (TRUST)  Major change: Post in som on symetrie treated differently (TRUST_POST_SOM_SYMETRIE_ERREUR, TRUST_POST_SOM_NON_PARA, TRUST_POST_SOM_NO_DIRICHLET in Champ_base.cpp)
 18/05/16 (Kernel) Portability : MEDCoupling updated to 780 version
@@ -73,10 +78,10 @@ Release notes version 1.7.2 : Enhancements, modifications and corrected bugs sin
 20/11/15 (Kernel) New keyword : Add quiet option to SolveurSys
 20/11/15 (TRUST)  New feature : Add of a column corresponding to ||TAU||_2 before |TAUx| in ***Ustar.face (turbulence model)
 20/11/15 (TRUST)  New keyword : Add of a keyword dt_impr_ustar_mean_only to have means on boundaries in a NameTest_NamePb_ustar_mean_only.out file
-13/11/15 (TRUST)  Portability : Released version of mpich upgrated to 3.1.4
+13/11/15 (TRUST)  Portability : Released version of mpich upgraded to 3.1.4
 06/11/15 (TRUST)  Bug fixed   : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
 04/11/15 (TRUST)  Portability : Compiler clang 3.7.0 supported
-04/11/15 (Tools)  Portability : Released version of Gmsh upgrated to 2.10.1
+04/11/15 (Tools)  Portability : Released version of Gmsh upgraded to 2.10.1
 04/11/15 (Kernel) Portability : MEDCoupling updated to 770 version
 21/10/15 (Kernel) Minor change: Option -disable-tcl_tk added to the Kernel/TRUST configure tool (Do not detect/install the GUI Tcl/Tk librairy)
 14/10/15 (Kernel) Minor change: Option -disable-mpiio added to the Kernel/TRUST configure tool (Do not use MPI-IO mode for writing of .xyz binary output file)

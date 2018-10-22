@@ -45,9 +45,9 @@ print()
           cpu0="  nc"
        fi
        # Nombre d'iterations moyen passes dans le solveur
-       its=` grep -E 'Convergence [ei]n' $out | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$9} END {printf("%3d",s/n)}'`
-        # Calcul du residu relatif
-       res=` grep -E 'Residu final:|Final residue:' $out  | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$5} END {printf("%2.0e",(n>0?s/n:s))}'`      
+       its=` grep -E 'Convergence [ei]n' $out | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$3} END {printf("%3d",s/n)}'`
+        # Calcul du residu relatif final
+       res=` grep -E 'Residu final:|Final residue:' $out  | $TRUST_Awk -v nr=$nr '(NR>=nr) {s=$5} END {printf("%2.0e",s)}'`      
        # Calcul de la RAM
        ram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%5d",r)}' $1`
        OK="OK"
@@ -310,6 +310,6 @@ head -2 rank | tee ranking.$$
 awk '(NR>2) && ($6=="OK")' rank | sort -n | tee -a ranking.$$
 echo "Saved in ranking.$$ file"
 # [ "$mail" = 1 ] && cat ranking.$$ | mail_ -s\"[Check_solver.sh] NP sur $HOST\" $TRUST_MAIL
-echo "NP sur $HOST:"
-cat ranking.$$
+#echo "NP sur $HOST:"
+#cat ranking.$$
 exit $exit

@@ -420,8 +420,8 @@ $BALTIK
 $cpu3d$FTD
 $bench
 </TR>" >> $NUIT2
-      echo "<BR><LI>"$os >> /tmp/os
-      echo "<BR><LI>"$TRUST_CC >> /tmp/CC
+      [ "$os" != "" ] && echo "<BR><LI>"$os >> /tmp/os
+      [ "$TRUST_CC" != "" ] && echo "<BR><LI>"$TRUST_CC >> /tmp/CC
       done
       if [ ${#file} = 0 ]
       then

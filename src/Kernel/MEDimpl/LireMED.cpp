@@ -41,6 +41,12 @@
 #include <MEDFileMesh.hxx>
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileData.hxx>
+using MEDCoupling::MCAuto;
+using MEDCoupling::MEDCouplingUMesh;
+using MEDCoupling::MEDFileUMesh;
+using MEDCoupling::MEDFileMesh;
+using MEDCoupling::MEDFileMeshes;
+using MEDCoupling::DataArrayInt;
 #endif
 
 // fonction utile pour creer un Nom d'une taille donnee
@@ -1380,7 +1386,7 @@ Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, co
       Process::exit();
     }
   // According axis_type:
-  if (axis_type==AX_CYL)
+  if (axis_type==MEDCoupling::AX_CYL)
     {
       if (type_cell==INTERP_KERNEL::NORM_QUAD4)
         {
@@ -1397,7 +1403,7 @@ Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, co
           Process::exit();
         }
     }
-  if (axis_type==AX_SPHER)
+  if (axis_type==MEDCoupling::AX_SPHER)
     {
       type_elem+="_axi";
       if (!Objet_U::axi)
@@ -1460,7 +1466,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           Process::exit(-1);
         }
 
-      MEDCouplingAxisType axis_type = file->getAxisType();
+      MEDCoupling::MEDCouplingAxisType axis_type = file->getAxisType();
       std::vector<int> nel = file->getNonEmptyLevels();
       if (nel.size() < 1)
         {
