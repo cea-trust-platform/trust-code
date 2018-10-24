@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,6 +80,7 @@ public:
 inline Op_Diff_VDF_Face_base::Op_Diff_VDF_Face_base(const Iterateur_VDF_base& iterateur)
   : Op_Diff_VDF_base(iterateur)
 {
+  declare_support_masse_volumique(1);
 }
 
 // Description:

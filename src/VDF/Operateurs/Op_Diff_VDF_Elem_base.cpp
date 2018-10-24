@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,19 +63,18 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
   // Rq : On ne balaie pas l'ensemble des elements puisque
   //      le max de coeff est atteint sur l'element qui realise
   //      a la fois le min de dx le min de dy et le min de dz
-
-  const Champ_base& diff_dt=diffusivite_pour_pas_de_temps();
-
   double dt_stab = DMAXFLOAT;
-  double coef;
   const Zone_VDF& zone_VDF = iter.zone();
-  if (sub_type(Champ_Uniforme,diff_dt))
+  const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
+
+
+  if (sub_type(Champ_Uniforme,diffusivite_pour_pas_de_temps()) && !has_champ_masse_volumique())
     {
       // GF le max permet de traiter le multi_inco
-      double alpha=max_array(diff_dt.valeurs());
+      double alpha=max_array(diffu);
 
-      coef = 1/(zone_VDF.h_x()*zone_VDF.h_x())
-             + 1/(zone_VDF.h_y()*zone_VDF.h_y());
+      double coef = 1/(zone_VDF.h_x()*zone_VDF.h_x())
+                    + 1/(zone_VDF.h_y()*zone_VDF.h_y());
 
       if (dimension == 3)
         coef += 1/(zone_VDF.h_z()*zone_VDF.h_z());
@@ -83,40 +82,40 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
         dt_stab = DMAXFLOAT;
       else
         dt_stab = 0.5/(alpha*coef);
-
     }
   else
     {
-      const DoubleTab& alpha = diff_dt.valeurs();
-      double dt_loc;
-      double h, l;
       double alpha_loc;
-      int nbdim=alpha.nb_dim();
-      int i, elem, n=alpha.dimension(0);
-      for (elem=0 ; elem<n ; elem++)
+      int nbdim=diffu.nb_dim();
+      int nb_elem=diffu.dimension(0);
+      for (int elem=0 ; elem<nb_elem; elem++)
         {
-          h = 0;
-          for (i=0 ; i<dimension ; i++)
+          double h = 0;
+          for (int i=0 ; i<dimension; i++)
             {
-              l = zone_VDF.dim_elem(elem,i);
+              double l = zone_VDF.dim_elem(elem,i);
               h += 1./(l*l);
             }
           if (nbdim==1)
-            alpha_loc=alpha(elem);
+            alpha_loc=diffu(elem);
           else
             {
-              alpha_loc = alpha(elem,0);
-              for (int ncomp=1; ncomp<alpha.dimension(1); ncomp++)
-                alpha_loc = max(alpha_loc,alpha(elem,ncomp));
-
+              alpha_loc = diffu(elem,0);
+              for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++)
+                alpha_loc = max(alpha_loc,diffu(elem,ncomp));
             }
-          dt_loc = 0.5/((alpha_loc+DMINFLOAT)*h);
+          if (has_champ_masse_volumique())
+            {
+              const DoubleTab& rho = get_champ_masse_volumique().valeurs();
+              alpha_loc/= rho(elem);
+            }
+          double dt_loc = 0.5/((alpha_loc+DMINFLOAT)*h);
           if (dt_loc<dt_stab)
             dt_stab = dt_loc;
         }
     }
-  return Process::mp_min(dt_stab);
 
+  return Process::mp_min(dt_stab);
 }
 
 
