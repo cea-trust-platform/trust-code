@@ -25,7 +25,7 @@ On cree alors une liste d'objets de type class_type, virgule (0 ou 1) indique si
 
 
 Type type des attributs:
-entier, floattant, chaine (soit un mot soit un bloc entre accolades ), rien , ref_toto (il attend soit un nom soit un pointeur vers un objet toto), list (list de double: nval val1 val2 ...)  listf (liste de double de taille dimension) , listentier listentierf (de taille dimension) et listchaine , listechainef
+entier, floattant, chaine (soit un mot soit un bloc entre accolades ), rien , ref_toto (il attend soit un nom soit un pointeur vers un objet toto), list (list de double: nval val1 val2 ...)  listf (liste de double de taille dimension) , listentier listentierf (de taille dimension) et listchaine , listechainef, bloc_lecture (lecture entre accolades)
 suppress_param permet de supprimer l attr de la classe mere
 
 Dans description:
