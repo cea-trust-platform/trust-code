@@ -40,9 +40,9 @@ a single non-blocking reduction per iteration, if TRUST is built with a MPI-3 im
 \ \ \textbf{CHOLESKY} : Parallelized version of Cholesky\index{Cholesky} from MUMPS library. This solver accepts since
 the 1.6.7 version an option to select a different ordering than the automatic selected one by MUMPS (and printed by
 using the \textbf{impr} option). The possible choices are \textbf{Metis {\textbar} Scotch {\textbar} PT-Scotch
-{\textbar} Parmetis}. The two last options can't only be used during a parallel calculation, whereas the two first are
+{\textbar} Parmetis}. The two last options can only be used during a parallel calculation, whereas the two first are
 available for sequential or parallel calculations. It seems that the CPU cost of A=LU factorization but also of the
-backward/forward elimination steps may sometimes be reduced by selecting a different ordering than the default one.
+backward/forward elimination steps may sometimes be reduced by selecting a different ordering (Scotch seems often the best for b/f elimination) than the default one.
 Notice that this solver requires a huge amont of memory compared to iterative methods. To know how many RAM you will
 need by core, then use the \textbf{impr} option to have detailled informations during the analysis phase and before the
 factorisation phase (in the following output, you will learn that the largest memory is taken by the
