@@ -65,9 +65,9 @@ a5e9954b1dae036762f7b13673a2cf76  petsc/m4-1.4.17.tar.gz
 9365f01fdc31442283a69a78f9fa170b  petsc/metis-5.1.0-p5.tar.gz
 e13c8514c2f97c8417d7cb61efc24ed4  petsc/parmetis-4.0.3-p4.tar.gz
 d41d8cd98f00b204e9800998ecf8427e  petsc/pastix_5.2.3.tar.bz2
-0240c2ce8c54e47b3531a743ee844d41  petsc/petsc-3.10.0.tar.gz
+770c9c83c4a1fcc68a18048288268d80  petsc/petsc-3.10.0.tar.gz
 2f75e600a2ba155ed9ce974a1c4b536f  petsc/scalapack-2.0.2.tgz
-70e4a1b9425d36e01b7d3485e3507bfd  petsc/scotch_6.0.6-p1.tar.gz
+ef676a3118b5590c416176e402fac248  petsc/scotch_6.0.6.tar.gz
 334cd350ae375be63ccf4d62900be3e4  petsc/superlu_dist-5.4.0.tar.gz
 fa3a9bf9b2d6ed2431f1baa46f4058b8  tcl_tk/tcl8.5.13-src.tar.gz
 1fc7dbb7495160756dbc805224afa360  tcl_tk/tk8.5.13-src.tar.gz

@@ -1139,7 +1139,7 @@ void Solv_Petsc::lecture(Entree& is)
 
 
 // SV
-// Since PETSc 3.10 The option ksp_view is not taken into account for (at least) instance = 2 
+// Since PETSc 3.10 The option ksp_view is not taken into account for (at least) instance = 2
 // I don't understand why ??!!
 // So I introduce this fix : if the option ksp_view is in PETSc Options then we call the KSPView function
 bool Solv_Petsc::enable_ksp_view( void )
@@ -1342,7 +1342,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     {
       KSPView( SolveurPetsc_, PETSC_VIEWER_STDOUT_WORLD );
     }
-  
+
   //////////////////////////
   // Solve the linear system
   //////////////////////////
