@@ -20,7 +20,7 @@ then
       superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC=$PETSC" -l${superlu%.a}"
       [ -f libcmumps.a ] && PETSC=$PETSC" -lcmumps -ldmumps -lmumps_common -lsmumps -lzmumps -lpord"
       [ -f libpastix.a ] && PETSC=$PETSC" -lpastix"
-      for lib in HYPRE scalapack blacs spai parms parmetis metis ptesmumps ptscotch ptscotcherr ptscotcherrexit ptscotchparmetis scotch scotcherr scotcherrexit  
+      for lib in HYPRE scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetis ptscotch scotch scotcherr scotcherrexit  
       do
          [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
       done
