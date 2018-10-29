@@ -14,5 +14,6 @@ check:
 	./install check
 
 clean:
-	rm -r -f $(petsc) petsc-3.?-p? petsc-?.?.? petsc-dev cusp thrust tm4 bison flex #petsc.log
-	rm -f *.gz *.tgz *bz2 mpi_init.log configure.help configure.log
+	#rm -r -f $(petsc) petsc-3.?-p? petsc-?.?.? petsc-dev cusp thrust tm4 bison flex #petsc.log
+	#rm -f *.gz *.tgz *bz2 mpi_init.log configure.help configure.log
+	rm -r -f $(PETSC_ROOT)/../build/*
