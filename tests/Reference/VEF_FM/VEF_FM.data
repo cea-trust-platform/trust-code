@@ -132,7 +132,7 @@ Lire milieu
 	       	 Sc 0.8
 		 ignore_check_fraction
 		 }
-        Traitement_pth conservation_masse
+        Traitement_pth constant
   }
 
 # Gravity is mandatory here: #
@@ -171,7 +171,7 @@ Lire pb
                         PC5D paroi_fixe
                         PC6H paroi_fixe
                         PC6B paroi_fixe
-                        OUTL paroi_fixe
+                        OUTL  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
                         INJE  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 2. 0.
           }
 	  modele_turbulence k_epsilon {
@@ -193,7 +193,7 @@ Lire pb
                         PC5D paroi
                         PC6H paroi
                         PC6B paroi
-                        OUTL paroi
+                        OUTL  frontiere_ouverte_k_eps_impose Champ_Front_Uniforme 2 1.e-4 2.e-4
                         INJE  frontiere_ouverte_k_eps_impose Champ_Front_Uniforme 2 1.e-4 2.e-4
 	    }
 	  }
@@ -219,7 +219,7 @@ Lire pb
                         PC5D paroi_adiabatique
                         PC6H paroi_adiabatique
                         PC6B paroi_adiabatique
-                        OUTL paroi_adiabatique
+                        OUTL  frontiere_ouverte_Temperature_imposee Champ_Front_Uniforme 1 600.
                         INJE  frontiere_ouverte_Temperature_imposee Champ_Front_Uniforme 1 600.
                 }
 # Initial temperature in the cavity 300K #
@@ -246,7 +246,7 @@ Lire pb
                         PC5D paroi
                         PC6H paroi
                         PC6B paroi
-                        OUTL paroi
+                        OUTL  frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 1.
                         INJE  frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 1.
                 }
                 initial_conditions { fraction_massique0 Champ_Uniforme 1 0. }
@@ -275,7 +275,7 @@ Lire pb
                         PC5D paroi
                         PC6H paroi
                         PC6B paroi
-                        OUTL paroi
+                        OUTL  frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 0.
                         INJE  frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 0.
                 }
                 initial_conditions { fraction_massique1 Champ_Uniforme 1 1. }
