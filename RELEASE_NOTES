@@ -1,10 +1,13 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8_beta : Enhancements, modifications and corrected bugs since version 1.7.7 :
 --------------------------------------------------------------------------------------------------
-XX/10/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.10.0
+25/10/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.10.0
+25/10/18 (TRUST)  Performance : Performance of Cholesky Superlu version improved on symmetric matrix  
 25/09/18 (TRUST)  Bug fixed   : Possible crash in VEF diffusive operators after reading conductivity field in a MED file
 06/09/18 (TRUST)  Minor change: Possibility to specify the baltik name in trust -baltik
 06/09/18 (TRUST)  Minor change: Writing .sauv when tcpumax reached or .stop detected
+25/07/18 (TRUST)  New feature : Add VEF support for mass fraction transport 
+23/07/18 (TRUST)  Bug fixed   : Issue for some internal boundaries in VDF 
 29/06/18 (TRUST)  Portability : Support of irene CCRT cluster
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7 : Enhancements, modifications and corrected bugs since version 1.7.6 :
