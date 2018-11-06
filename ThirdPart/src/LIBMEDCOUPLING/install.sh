@@ -12,10 +12,12 @@ cd $DEST/..
 dest=$DEST/include/ICoCoMEDField.hxx
 cp -af $dest .
 
+# include file:
+medcoupling_hxx=$DEST/include/medcoupling++.h
+cp -af $medcoupling_hxx .
+
 rm -rf build install $medcoupling
 
-# New include file:
-medcoupling_hxx=$DEST/include/medcoupling++.h
 if [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
 then
     mkdir -p $DEST/include
@@ -29,8 +31,14 @@ then
     else
 	cp -a ICoCoMEDField.hxx $dest
     fi
-    echo "#undef MEDCOUPLING_" > $medcoupling_hxx
-    rm -f prov.h ICoCoMEDField.hxx
+    echo "#undef MEDCOUPLING_" > prov2.h
+    if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ] 
+       then
+       cp prov2.h $medcoupling_hxx
+    else
+       cp -a medcoupling++.h $medcoupling_hxx
+    fi
+    rm -f prov.h prov2.h ICoCoMEDField.hxx medcoupling++.h
     exit 0
 fi
 rm -f ICoCoMEDField.hxx
