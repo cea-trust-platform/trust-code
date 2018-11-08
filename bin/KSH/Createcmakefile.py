@@ -173,9 +173,9 @@ IF(NOT VISUAL)
  # on prend les compilos choisis par configure
  # pour retirer des blancs inutils
  set (pathcc $ENV{TRUST_CC})
- string(STRIP ${pathcc}  CMAKE_GENERATOR_CXX)
- set (CMAKE_GENERATOR_CC $ENV{TRUST_cc})
- set (CMAKE_GENERATOR_Fortran $ENV{TRUST_F77})
+ string(STRIP ${pathcc} CMAKE_CXX_COMPILER)
+ set (CMAKE_C_COMPILER $ENV{TRUST_cc})
+ set (CMAKE_Fortran_COMPILER $ENV{TRUST_F77})
 ENDIF(NOT VISUAL)
 
 project(Trio)
