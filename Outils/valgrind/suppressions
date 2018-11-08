@@ -1,3 +1,9 @@
+# Valgrind suppressions for TRUST and its baltiks
+#
+#  PLEASE (please !) COMMENT EACH SUPPRESSION WITH
+#     - the name of the test case involved
+#     - the OS of the machine involved (and the hostname if you want)
+
 ###
 ###  HYPRE
 ###
