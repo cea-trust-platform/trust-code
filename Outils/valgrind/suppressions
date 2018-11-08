@@ -43,7 +43,55 @@
    fun:KSPSetUp
    ...
 }
-
+## 06/11/2018: TMA TRUST for update of Petsc in version 3.10
+## on is234639 is221556 Ub16.04, g++ 5.4.0, mpich 3.2
+## for tests cases:
+## Couplage_Implicite_Instationnaire_jdd1
+## ThHyd_keps_VEF_impl
+## VAHL_DAVIS_VEFPreP1B_impl
+{
+   <update_to_petsc_3_10_a>
+   Memcheck:Leak
+   fun:malloc
+   fun:hypre_MAlloc
+   fun:hypre_idx_malloc
+   fun:hypre_SetUpFactor
+   fun:hypre_SetUpLUFactor
+   fun:HYPRE_DistributedMatrixPilutSolverSetup
+   fun:HYPRE_ParCSRPilutSetup
+}
+{
+   <update_to_petsc_3_10_b>
+   Memcheck:Leak
+   fun:malloc
+   fun:hypre_MAlloc
+   fun:hypre_mymalloc
+   fun:hypre_SetUpFactor
+   fun:hypre_SetUpLUFactor
+   fun:HYPRE_DistributedMatrixPilutSolverSetup
+   fun:HYPRE_ParCSRPilutSetup
+}
+{
+   <update_to_petsc_3_10_c>
+   Memcheck:Leak
+   fun:calloc
+   fun:hypre_CAlloc
+   fun:hypre_DistributedMatrixCreate
+   fun:HYPRE_DistributedMatrixCreate
+   fun:HYPRE_ConvertParCSRMatrixToDistributedMatrix
+   fun:HYPRE_ParCSRPilutSetup
+}
+{
+   <update_to_petsc_3_10_d>
+   Memcheck:Leak
+   fun:malloc
+   fun:hypre_MAlloc
+   fun:hypre_fp_malloc_init
+   fun:hypre_SetUpFactor
+   fun:hypre_SetUpLUFactor
+   fun:HYPRE_DistributedMatrixPilutSolverSetup
+   fun:HYPRE_ParCSRPilutSetup
+}
 ###
 ###  MUMPS
 ###
