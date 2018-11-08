@@ -159,6 +159,8 @@ then
             processes=$processes" "$!
             task[$n]=$!
         else
+	    # Test bloquant pour eviter de soumettre trop de runs:
+	    [ $nb_cmds -gt $TRUST_NB_PROCS ] && echo "-parallel_run can't be used: too much tasks ($nb_cmds) compared to available CPUs ($TRUST_NB_PROCS)." && exit -1
             bash ./$cmd &
             processes=$processes" "$!
             task[$n]=$!
