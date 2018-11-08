@@ -127,6 +127,7 @@ help()
    echo "-gdb                          : Run under gdb debugger."
    echo "-valgrind                     : Run under valgrind."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
+   echo "-callgrind                    : Run callgrind tool."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
@@ -310,6 +311,9 @@ do
    elif [ "$1" = "-valgrind_strict" ]
    then
       VALGRIND_STRICT=1
+   elif [ "$1" = "-callgrind" ]
+   then 
+      CALLGRIND=1
    elif [ "$1" = "-gdb" ]
    then
       gdb=gdb.sh && mpirun_options="-gdb"
@@ -550,9 +554,9 @@ fi
 ############
 # VALGRIND #
 ############
+val=`which valgrind`
 if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
-then
-    val=`which valgrind`    
+then    
     suppressions=""
     if [ "$VALGRIND_STRICT" != "1" ]
     then
@@ -597,6 +601,14 @@ then
     exec="$XTERM $val --error-exitcode=1 --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all   --show-reachable=$reachable --num-callers=15 $log_file $more_info_but_slower $suppressions $ATTACH $binary"
 fi
 
+#############
+# CALLGRIND #
+#############
+if [ "$CALLGRIND" = "1" ]
+then
+echo $binary
+   exec="$val --tool=callgrind --dump-instr=yes --trace-jump=yes --callgrind-out-file=$NOM.callgrind $binary"
+fi
 ###############################################
 # Utilisation de Petsc dans le jeu de donnees ?
 # et eventuellement dans le JDD du baltik MC2 ?
@@ -991,5 +1003,12 @@ else
 fi
 
 [ "$log_file" != "" ] && sleep 1 && cat $(ls -rt tmp_log* | tail -$NB_PROCS)
+
+# Another tips:
+if [ "$CALLGRIND" = 1 ]
+then
+   echo "Callgrind log $NOM.callgrind is created."
+   echo "You could try now: kcachegrind $NOM.callgrind" && [ ! -f /usr/bin/kcachegrind ] && echo "But kcachegrind is not installed."
+fi
 exit $err
 
