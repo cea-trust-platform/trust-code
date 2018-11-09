@@ -73,6 +73,9 @@ then
 	 else
 	    # On pointe vers PETSc debug si existante
 	    PETSC_ARCH_OPT=$TRUST_ARCH && [ ! -d $PETSC_ROOT/$PETSC_ARCH_OPT/lib ] && PETSC_ARCH_OPT=$TRUST_ARCH"_opt"
+	    # Si on compile petsc en debug, on pointe $exec_debug vers petsc_debug
+            # et les autres $exec_* de trust vers petsc_opt
+	    [ "$TRUST_ENABLE_PETSC_DEBUG" = 1 ] && PETSC_ARCH_OPT=$TRUST_ARCH"_opt"
 	 fi
 	 # On cree le lien
 	 cd $PETSC_ROOT 1>/dev/null 2>&1
@@ -110,42 +113,9 @@ fi
 
 for file in `ls $TRUST_ROOT/externalpackages/petsc/*`
 do
-ln -sf $file .
+   ln -sf $file .
 done
-ln -sf scotch_6.0.3.tar.gz ptscotch.tar.gz
-
-
-##############
-# PETSC-MASTER
-##############
-if [ $HOST = $TRUST_HOST_ADMIN ] && [ "`crontab -l 2>/dev/null | grep $TRUST_ROOT`" != "" ]
-then
-   ADMIN=1
-else
-   ADMIN=0
-fi
-
-# Update petsc-master
-PETSC_MASTER=petsc-master.tar.gz
-touch $PETSC_MASTER
-HTTP_PETSC_MASTER=http://ftp.mcs.anl.gov/pub/petsc/$PETSC_MASTER
-if [ "$PETSC_HAVE_CUDA" = 1 ] || [ "$PETSC_HAVE_OPENMP" = 1 ] || [ "$ADMIN" = 1 ]
-then
-   # Download last petsc-master package
-   wget_ -O $PETSC_MASTER.tmp $HTTP_PETSC_MASTER
-   if [ $? = 0 ] && [ "`diff $PETSC_MASTER.tmp $PETSC_MASTER`" != "" ]
-   then
-      mv -f $PETSC_MASTER.tmp $PETSC_MASTER
-   else
-      rm -f $PETSC_MASTER.tmp
-   fi
-fi
-
-if [ "$PETSC_HAVE_CUDA" = 1 ] || [ "$PETSC_HAVE_OPENMP" = 1 ]
-then
-   # PETSc strongly recommend petsc-master to try CUDA support or Thread support
-   package=$PETSC_MASTER
-fi
+ln -sf `ls scotch*.tar.gz` ptscotch.tar.gz
 
 ####################
 # Download if needed
@@ -171,7 +141,7 @@ cd $ROOT/$package
 #if [ -d $CONFIG ]
 #then
 #   #echo "Change some python scripts to force parallel build of external packages..."
-#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
+#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
 #else
    # Config directory has moved (for PETSc 3.6?)
 #   CONFIG=config/BuildSystem/config/packages
@@ -182,7 +152,9 @@ if [ "$TRUST_DISABLE_MPI" = 1 ]
 then
    # Need to be improved for the future changes:
    CONFIG=config/BuildSystem/config/packages
-   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
+# PL: On commente car il faut mettre a jour MUMPS_SEQ.py selon le MUMPS.py de 3.10.0
+# si le build de TRUST avec TRUST_DISABLE_MPI ne fonctionne pas.
+#   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi    
     
 ################
@@ -200,7 +172,7 @@ then
    # CUSP has been renamed CUSPLIBRARY
    # https://github.com/cusplibrary/cusplibrary
    ###################################################
-   CUSP=cusplibrary-0.4.0
+   CUSP=cusplibrary-0.5.1
    rm -r -f $ROOT/$CUSP
    #unzip pas toujours installe sur les PCs
    #On transforme le .zip en .tgz
@@ -257,6 +229,12 @@ then
    else
       options="--with-x=0"
    fi
+elif [ $TRUST_ENABLE_PETSC_DEBUG = 1 ]
+then
+   liste_debug="0 1"	# Version optimisee et debug consruites
+   options="--with-x=0"
+   # cette variable construit seulement petsc_debug si on fait make debug. Elle est declaree dans bin/compile
+   # [ "$only_make_debug_with_petsc_debug" = 1 ] && liste_debug="1"
 else
    liste_debug="0" 	# Une seule version construite (optimisee)
    options="--with-x=0" # Car --with-x=1 pose probleme pour Insure 
@@ -393,7 +371,7 @@ then
 
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
-   #[  $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
+   #[ $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
    # New (Pardiso)
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
@@ -405,11 +383,11 @@ then
    ##########
    # SCOTCH #
    ##########
-   if [  $scotch -eq 1 ]
+   if [ $scotch -eq 1 ]
    then
-      # On ajoute PT-Scotch sur certaines machines (ne compile pas sur castor, compilateur trop vieux?)
+      # On ajoute Scotch sur certaines machines
       add_package ptscotch
-      # PT-Scotch necessite bison
+      # Scotch necessite bison
       if [ "`bison --version 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
 	 if [ ! -d $ROOT/bison/bin ]
@@ -434,7 +412,7 @@ then
               fi
 	      export PATH=$PATH:$ROOT/m4/bin
 	    fi		 
-            echo "PT-Scotch needs bison installed. So installing it..."
+            echo "Scotch needs bison installed. So installing it..."
 	    bison=`(cd ..; ls bison-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$bison.tar.gz | tar -xf -
 	    cd $bison
@@ -446,12 +424,12 @@ then
 	 fi
 	 export PATH=$PATH:$ROOT/bison/bin
       fi
-      # PT-Scotch necessite flex
+      # Scotch necessite flex
       if [ "`flex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
 	 if [ ! -d $ROOT/flex/bin ]
 	 then
-            echo "PT-Scotch needs flex installed. So installing it..."
+            echo "Scotch needs flex installed. So installing it..."
 	    flex=`(cd ..; ls flex-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$flex.tar.gz | tar -xf -
 	    cd $flex
