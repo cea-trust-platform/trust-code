@@ -80,7 +80,8 @@ then
 else
 	MED_COUPLING_PYTHON="ON"
 fi
-OPTIONS="-DCMAKE_BUILD_TYPE=Release -DMEDCOUPLING_USE_MPI=$USE_MPI -DCMAKE_INSTALL_PREFIX=$DEST -DCMAKE_CXX_COMPILER=$TRUST_CC  -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version"
+
+OPTIONS="-DCMAKE_BUILD_TYPE=Release -DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_INSTALL_PREFIX=$DEST -DCMAKE_CXX_COMPILER=$TRUST_CC  -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version"
 OPTIONS=$OPTIONS" -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF" 
 # NO_CXX1 pour cygwin
 OPTIONS=$OPTIONS" -DMEDCOUPLING_BUILD_STATIC=ON -DNO_CXX11_SUPPORT=ON"
@@ -113,24 +114,32 @@ status=$?
 
 #ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
 
-if [ $status -eq 0 ]
+MC_ENV_FILE=$DEST/env.sh
+version=`python  -c "import sys; print sys.version[:3]"`
+echo "export MED_COUPLING_ROOT=$DEST"> $MC_ENV_FILE
+echo "export LD_LIBRARY_PATH=$DEST/lib/:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE
+echo "export PYTHONPATH=$DEST/bin/:$DEST/lib/python$version/site-packages/:\$PYTHONPATH" >> $MC_ENV_FILE
+echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> $MC_ENV_FILE
+
+if [ $status -eq 0 ]  # install was successful
 then
-  cd ..
-  rm -rf build $medcoupling
-  # test de fonctionnement
-  python -c "import MEDCoupling" && echo "MEDCoupling OK" || echo "MEDCoupling KO"
-  python -c "import LataLoader"  && echo "LataLoader OK"  || echo "LataLoader  KO"
+  #cd ..
+  #rm -rf build $medcoupling
+  ##
+  ## Test de fonctionnement
+  ##
+  source $MC_ENV_FILE
+  python -c "import MEDCoupling"
+  if [ $? -eq 0 ]
+  then
+    echo "MEDCoupling library OK"
+  else
+    echo "MEDCoupling library KO"
+    #exit -1
+  fi
 fi
 
-cd $DEST
-
-version=`python  -c "import sys; print sys.version[:3]"`
-echo "export MED_COUPLING_ROOT=$PWD"> env.sh
-echo "export LD_LIBRARY_PATH=$PWD/lib/:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_PATH}" >> env.sh
-echo "export PYTHONPATH=$PWD/bin/:$PWD/lib/python$version/site-packages/:\$PYTHONPATH" >> env.sh
-echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> env.sh
-
-touch include/*
+touch $DEST/include/*
 
 [ ! -f $DEST/include/ICoCoMEDField.hxx ] && echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 [ ! -f $medcoupling_hxx ] && echo "#define MEDCOUPLING_" > $medcoupling_hxx
