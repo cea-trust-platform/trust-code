@@ -5,6 +5,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+  -I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	
 
 Lib = $(TRUST_LIB)/libThSol

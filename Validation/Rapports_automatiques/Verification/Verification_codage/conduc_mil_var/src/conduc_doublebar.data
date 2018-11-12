@@ -38,9 +38,9 @@ Read sch
 	seuil_statio 1.e-8
 
 	facsec_max 100
-	facsec 10
+	facsec 1
 	nb_pas_dt_max 9000000000 
-	solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } } 
+	solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } } 
 
 }
 

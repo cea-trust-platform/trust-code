@@ -28,6 +28,7 @@
 #include <Equation_base.h>
 #include <Discretisation_tools.h>
 #include <Domaine.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable(Solide_Milieu_Variable,"Solide_Milieu_Variable",Milieu_base);
 // XD solide_milieu_variable milieu_base solide_milieu_variable -1 Solid with cp and/or rho non-uniform.
@@ -111,25 +112,26 @@ void Solide_Milieu_Variable::update_rho_cp(double temps)
     tab_multiply_any_shape(rho_cp,Cp.valeurs());
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_.valeur().changer_temps(temps);
+  const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().domaine_dis().domaine().md_vector_sommets();
+  const MD_Vector& md_faces = ref_cast(Zone_VF,rho_cp_elem_.zone_dis_base()).md_vector_faces();
   if (rho_cp_comme_T_.valeurs().get_md_vector()==rho_cp_elem_.valeurs().get_md_vector())
     {
       rho_cp_comme_T_.valeurs()= rho_cp;
     }
+  else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_som)
+    {
+      // Cerr << "WARNING: Solide_Milieu_Variable::update_rho_cp(): reprojection of a field from cells to nodes ..." << finl;
+      Discretisation_tools::cells_to_nodes(rho_cp_elem_,rho_cp_comme_T_);
+    }
+  else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_faces)
+    {
+      // Cerr << "WARNING: Solide_Milieu_Variable::update_rho_cp(): reprojection of a field from cells to faces ..." << finl;
+      Discretisation_tools::cells_to_faces(rho_cp_elem_,rho_cp_comme_T_);
+    }
   else
     {
-      Cerr << "WARNING: Solide_Milieu_Variable::update_rho_cp(): reprojection of a field from cells to nodes ..." << finl;
-
-      const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().domaine_dis().domaine().md_vector_sommets();
-      if (rho_cp_comme_T_.valeurs().get_md_vector()==md_som)
-        {
-          // reprojection de rho*Cp  - AB: a faire avec MC a terme
-          Discretisation_tools::cells_to_nodes(rho_cp_elem_,rho_cp_comme_T_);
-        }
-      else
-        {
-          Cerr<< que_suis_je()<<(int)__LINE__<<finl;
-          exit();
-        }
+      Cerr<< que_suis_je()<<(int)__LINE__<<finl;
+      exit();
     }
 
 }
