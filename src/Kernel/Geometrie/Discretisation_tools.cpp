@@ -202,6 +202,8 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
                   int face=elem_faces(ele,s);
                   for (int r = 0; r < zone_vf.dimension; r++)
                     {
+                      // Change of basis N.K.N, with N the normal of the face, and K the tensorial coefficient to get the value of the diffusivity
+                      // on the direction of the surface normal.
                       double normOnSurf = zone_vf.face_normales(face, r) / zone_vf.face_surfaces(face);
                       tabHf(face) += tabHe(ele, r) * normOnSurf * normOnSurf * volumes(ele);
                     }
