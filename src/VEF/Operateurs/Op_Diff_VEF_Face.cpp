@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -863,6 +863,31 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
 
                   }
               }
+        }
+    }
+  // Neumann :
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
+        {
+        }
+      else if (sub_type(Echange_externe_impose,la_cl.valeur()))
+        {
+          const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            {
+              matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
+            }
+        }
+      else if (sub_type(Neumann_homogene,la_cl.valeur())
+               || sub_type(Symetrie,la_cl.valeur())
+               || sub_type(Neumann_sortie_libre,la_cl.valeur()))
+        {
         }
     }
   modifier_matrice_pour_periodique_apres_contribuer(matrice,equation());

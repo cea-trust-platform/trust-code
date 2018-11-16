@@ -1,3 +1,4 @@
+XX/XX/18 (TRUST)  Bug fixed   : Heat exchange boundary condition in VEF was not implicited in conduction equation
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7 : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
