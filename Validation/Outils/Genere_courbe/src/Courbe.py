@@ -45,6 +45,7 @@ tracee dans le rapport de validation de TRUST.'''
 		self.segment     = 'Undefined'
 		self.points      = 'Undefined'
 		self.fonction    = 'Undefined'
+		self.gnuplot_command     = 'Undefined'
 		self.colonnes    = 'Undefined' 
 		self.style       = 'Undefined'
 		self.typeLigne   = 'Undefined'
@@ -69,6 +70,7 @@ tracee dans le rapport de validation de TRUST.'''
 		if self.segment != 'Undefined' : print dec,"segment", self.segment
 		if self.points != 'Undefined' : print dec,"points", self.points
 		if self.fonction != 'Undefined' : print dec,"fonction", self.fonction
+		if self.gnuplot_command != 'Undefined' : print dec,"gnuplot_command", self.gnuplot_command
 		from string import join
 		if self.colonnes != 'Undefined' : print dec,"colonnes", self.colonnes
 		if self.style != 'Undefined' : print dec,"style", self.style
@@ -86,7 +88,7 @@ tracee dans le rapport de validation de TRUST.'''
 		'''Lecture des parametres de la courbe.'''
 		self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
 		fin = False
-		dico=['legende','origine','version','fichier','plan','segment','points','fonction','colonnes','style','typeligne','typepoints','pointsize','axes','largeurligne','description']
+		dico=['legende','origine','version','fichier','plan','segment','points','fonction','gnuplot_command','colonnes','style','typeligne','typepoints','pointsize','axes','largeurligne','description']
 		while not fin:
 			ligne = fichier.readline()
 			if not ligne:
@@ -112,14 +114,11 @@ tracee dans le rapport de validation de TRUST.'''
 					self.points = valeur
 				elif motcle=='fonction':
 					self.fonction=valeur
-					# self.fichier='Undefined'
 				elif motcle=='colonnes':
 					valeur = valeur.strip()
 					valeurT = valeur.split()
 					if len(valeurT)!=2:
-						self.gestMsg.ecrire(GestionMessages._ERR, 'Error, expected format for %s : %s, and not %s' % (motcle_lu, 'index0 index1', valeur))
-					
-				
+						self.gestMsg.ecrire(GestionMessages._ERR, 'Error, expected format for %s : %s, and not %s' % (motcle_lu, 'index0 index1', valeur))				
 					self.colonnes=valeur
 				elif motcle=='style':
 					self.style = valeur
@@ -136,6 +135,8 @@ tracee dans le rapport de validation de TRUST.'''
 					self.axes = valeur
 				elif motcle=='largeurligne':
 					self.largeurLigne = valeur
+				elif motcle=='gnuplot_command':
+					self.gnuplot_command = valeur
 				elif motcle=='description':
 					self.description.append(valeur)
 				else:
@@ -217,6 +218,9 @@ tracee dans le rapport de validation de TRUST.'''
 		else:
 			cmd += ' "%s"' % (self.fichier)
 			pass
+		if self.gnuplot_command!='Undefined':
+			cmd += ' %s' % (self.gnuplot_command)
+
 		if self.colonnes!='Undefined':
 			valeurT=self.colonnes.split()
 			v0 = valeurT[0]

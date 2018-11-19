@@ -20,6 +20,7 @@ Figure {
 		origin "Trio_U"
 		Version "1.5.3-beta_build_180907"
 		file ./test_ef_stab/Moyennes_spatiales_vitesse_rho_mu_fin
+		gnuplot_command every 1
 	Style linespoints
 		# TypeLigne 4
 		# TypePoints 4

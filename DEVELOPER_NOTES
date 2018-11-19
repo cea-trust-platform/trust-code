@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.8_beta : Changes since version 1.7.7 :
 -------------------------------------------------------------
+16/11/18 (Tools)  New option gnuplot_command for Figure keyword useful to fine tune the gnuplot curves in prm reports
 19/09/18 (TRUST)  Slightly reduce the number of MPI allreduces for parallel calculation
 14/09/18 (TRUST)  Adding use of porosity in flux_fa7_elem and coeffs_fa7_elem methods
 14/09/18 (TRUST)  Fix XData tools to help during XD syntaxing
