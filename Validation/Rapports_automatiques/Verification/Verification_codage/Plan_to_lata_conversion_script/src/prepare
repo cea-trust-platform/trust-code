@@ -1,0 +1,9 @@
+#!/bin/bash
+
+mkdir -p sim2D sim3D
+
+cp Obstacle.data Obstacle.geo sim2D/.
+cp post_run_Obstacle sim2D/post_run
+cp Canal.data sim3D/.
+cp post_run_Canal sim3D/post_run
+
