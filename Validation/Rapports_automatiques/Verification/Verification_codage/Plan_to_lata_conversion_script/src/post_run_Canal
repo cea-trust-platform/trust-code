@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Canal:
+# Conversion of .plan files to .lata files
 python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_PX1Z TwoDimRepresentation -lp
 python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_PX1Z.plan Canal_SONDE_PX1Z -l
 python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_PXY1 Canal_SONDE_PXY1.lata -l
@@ -10,5 +10,5 @@ python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_PXYZ -l
 python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_V4YZ -l
 
 
-# Projection that will not work since the plan defining SONDE_ESSAI is inclined ! 
-# python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_ESSAI.plan toto.lata -lp
+# Projection that will crash since the plan defining SONDE_PINCLINED is inclined ! 
+# python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Canal_SONDE_PINCLINED.plan toto.lata -lp
