@@ -78,7 +78,10 @@ inline double Eval_Puiss_Th_QC_EF::calculer_terme_source_standard(int num_elem) 
     source = puissance(0,0) ;
   else
     {
-      source = puissance(num_elem,0);
+      if (puissance.nb_dim()==1)
+        source = puissance(num_elem);
+      else
+        source = puissance(num_elem,0);
     }
   return (source);
 }
