@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Check the lata files issued from plan_to_lata conversion script correspond to those of the reference.
+# In the case where the reference data should be edited, you should run the script Regenerate_reference_lata
+
+if [ -f Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z.plan ]
+then
+   fold="ref_jdd1"
+   # Conversion of .plan files to .lata files
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z TwoDimRepresentation -lp 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z.plan Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PXY1  Plan_to_lata_conversion_script_jdd1_SONDE_PXY1.lata 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_VXY0 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PXYZ 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_V4YZ -l 1>/dev/null 2>&1
+
+   # Projection that will crash since the plan defining SONDE_PINCLINED is inclined ! we cannont project this inclined plane on the (x,y) plane
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED.plan toto.lata -p 1>/dev/null 2>&1
+   errorp=$?
+elif [ -f Plan_to_lata_conversion_script_jdd2_P_PROBE.plan ]
+then
+   fold="ref_jdd2"
+   # Conversion of .plan files to .lata files
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd2_P_PROBE.plan -l 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd2_V_PROBE.plan toto_obstacle.lata -l 1>/dev/null 2>&1
+else
+   echo "Error: It seems that you have renamed the datafile and/or the probes!"
+   exit -1
+fi
+
+
+list="`ls *.lata`"
+error=0
+for f in $list
+do
+  compare_lata $f $fold/$f
+  [ "$?" != 0  ] && error=1 && echo "Error: file $f does not correspond to reference"
+done
+
+
+
+if [ $error != 0 ]
+then
+  echo "Generated lata files does not correspond to reference."
+  if [ "$errorp" != 255 ]
+  then
+     if [ "$fold" == "ref_jdd1" ]
+     then
+        echo " "
+        echo "Changed behavior of the script Plan_to_lata.py"
+        echo "Command:"
+        echo "  python Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED.plan toto.lata -p"
+        echo "does not produce an error."
+        echo "The usage of -p option when the plane is inclined should produce an error."
+     fi
+  fi
+  exit -1
+else
+  echo "Generated lata files are corresponding to reference."
+  if [ "$errorp" != 255 ]
+  then
+     if [ "$fold" == "ref_jdd1" ]
+     then
+        echo " "
+        echo "Changed behavior of the script Plan_to_lata.py"
+        echo "Command:"
+        echo "  python Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED.plan toto.lata -p"
+        echo "does not produce an error."
+        echo "The usage of -p option when the plane is inclined should produce an error."
+        exit -1
+     fi
+  fi
+  exit 0
+fi
