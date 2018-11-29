@@ -8,12 +8,16 @@ Parameters {
 #   Variation espace:
   TestCase . conduc_doublebar.data
   TestCase . conduc_doublebar_var.data
+###  TestCase . conduc_doublebar_vef.data
+###  TestCase . conduc_doublebar_var_vef.data
   TestCase . conduc_doublebar_rhoCp_var.data
 #   Variation temporelle:
   TestCase . conduc_bar.data
   TestCase . conduc_bar_var.data
 #   En EF
   TestCase . conduc_doublebar_rhoCp_var_ef.data
+#   En VEF
+  TestCase . conduc_doublebar_rhoCp_var_vef.data
 #   EF full analytic
   TestCase . conduc_bar_ef_ana.data
 }
@@ -219,6 +223,20 @@ EOF
 		file ./conduc_doublebar_var_SONDE_HORIZ.son
 		Style linespoints
 	}
+
+#  Curve {
+#		legend "t=2s - standard - VEF"
+#		segment conduc_doublebar_vef.data sonde_horiz 2.0
+#		file ./conduc_doublebar_vef_SONDE_HORIZ.son
+#		Style linespoints
+#	}
+#  Curve {
+#		legend "t=2s - variable - VEF"
+#		segment conduc_doublebar_var_vef.data sonde_horiz 2.0
+#		file ./conduc_doublebar_var_vef_SONDE_HORIZ.son
+#		Style linespoints
+#	}
+
   Curve {
 		legend "t=2s - analytic"
 	  fonction x > 0 ? (10-13.66)* erf(x/sqrt(4*2*0.03)) + 13.66 : (13.66-20)* erf(x/sqrt(4*2*0.01)) + 13.66
@@ -297,15 +315,62 @@ Le meme calcul que precedemment est conduit, a savoir le produit \latex_( $\rho 
 	    fonction x > 0 ? (10-13.66)* erf((x)/sqrt(4*2*0.03)) + 13.66 : (13.66-20)* erf((x)/sqrt(4*2*0.01)) + 13.66
 	  }
     Curve {
-		  legend "t=0s - standard EF"
+		  legend "t=0s - variable EF"
 		  segment conduc_doublebar_rhoCp_var_ef.data sonde_horiz 0.0
 		  file ./conduc_doublebar_ef_SONDE_HORIZ.son 
 		  Style linespoints
 	  }
     Curve {
-		  legend "t=2s - standard EF"
+		  legend "t=2s - variable EF"
 		  segment conduc_doublebar_rhoCp_var_ef.data sonde_horiz 2.0
 		  file ./conduc_doublebar_rhoCp_var_ef_SONDE_HORIZ.son 
+		  Style linespoints
+	  }
+	  Curve {
+	    legend "Temp. jonction analytic"
+	    fonction 13.66
+	  }
+  }
+	
+}
+
+Chapter {
+	Title "Validation en VEF"
+	Description Et pour finir, la double barre infinie en discretisation 'VEF' <<EOF
+Pour rappel en VEF, la temperature
+est localisee aux faces, mais les proprietes physiques \latex_( $\lambda$, $\rho$ et $C_p$ restent aux elements. \latex_)
+
+Comme precedemment le maillage est construit de telle maniere que l'abscisse x=0 coincide avec un noeud (la disconituite des proprietes physiques
+se produit donc exactement en x=0). Pour ce cas, le maillage VDF a ete utilise et a ete triangularise avec la commande trianguler_h.
+
+On charge les proprietes physiques comme precedemment en utilisant les groupes d'elements definis dans le fichier MED, mais par contre 
+la temperature initiale (definie aux faces donc, et non aux elements comme en VDF) est chargee a partir d'un champ MED aux noeuds. La temperature
+a la face x=0 est definie a 15deg (les memes resultats sont obtenues en prenant comme temperature initiale $T_p$).
+
+Le meme calcul que precedemment est conduit, a savoir le produit \latex_( $\rho C_p$ constant et $\lambda$ variable. \latex_)
+	EOF
+	
+	Figure {
+	  Title "VEF sur la double barre"
+	  Description ""  
+	  Dimension 2
+	  include_description_curves 0
+	  LabelX "X"
+    LabelY "T"
+	  Curve {
+		  legend "t=2s - analytic"
+	    fonction x > 0 ? (10-13.66)* erf((x)/sqrt(4*2*0.03)) + 13.66 : (13.66-20)* erf((x)/sqrt(4*2*0.01)) + 13.66
+	  }
+    Curve {
+		  legend "t=0s - variable VEF"
+		  segment conduc_doublebar_rhoCp_var_vef.data sonde_horiz 0.0
+		  file ./conduc_doublebar_vef_SONDE_HORIZ.son 
+		  Style linespoints
+	  }
+    Curve {
+		  legend "t=2s - variable VEF"
+		  segment conduc_doublebar_rhoCp_var_vef.data sonde_horiz 2.0
+		  file ./conduc_doublebar_rhoCp_var_vef_SONDE_HORIZ.son 
 		  Style linespoints
 	  }
 	  Curve {

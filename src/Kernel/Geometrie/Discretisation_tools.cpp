@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
 #include <Zone_VF.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
-
 
 void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 {
@@ -178,9 +177,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
         {
           for (int s=0; s<nb_face_elem; s++)
             {
-
               tabHf(elem_faces(ele,s))+=tabHe(ele)*volumes(ele);
-              //	      Cerr<<elem_faces(ele,s)<<" "<<tabHe(ele)*volumes(ele)<<" "<<tabHf(elem_faces(ele,s))<<finl;
             }
         }
       for (int f=0; f<zone_vf.premiere_face_int(); f++)
@@ -203,9 +200,13 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
               for (int s=0; s<nb_face_elem; s++)
                 {
                   int face=elem_faces(ele,s);
-                  //for (int comp=0;comp<nb_comp;comp++)
-                  int comp=zone_vf.orientation()[face];
-                  tabHf(face)+=tabHe(ele,comp)*volumes(ele);
+                  for (int r = 0; r < zone_vf.dimension; r++)
+                    {
+                      // Change of basis N.K.N, with N the normal of the face, and K the tensorial coefficient to get the value of the diffusivity
+                      // on the direction of the surface normal.
+                      double normOnSurf = zone_vf.face_normales(face, r) / zone_vf.face_surfaces(face);
+                      tabHf(face) += tabHe(ele, r) * normOnSurf * normOnSurf * volumes(ele);
+                    }
                 }
             }
           for (int f=0; f<zone_vf.premiere_face_int(); f++)

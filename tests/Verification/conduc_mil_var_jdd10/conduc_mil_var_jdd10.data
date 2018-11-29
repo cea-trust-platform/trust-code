@@ -2,7 +2,7 @@
 # PARALLEL OK 4 #
 dimension 2
 
-Pb_conduction pb
+Pb_conduction_milieu_variable pb
 Domaine dom
 
 # BEGIN MESH #
@@ -11,7 +11,7 @@ Mailler dom
 	Pave Cavite 
  	{
 		Origine 0. 0.
-		Nombre_de_Noeuds 11 2 
+		Nombre_de_Noeuds 31 2 
 		Longueurs 1. 1.
 	}
 	{
@@ -37,14 +37,14 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+EF dis
 
 Scheme_euler_implicit sch
 Read sch
 {
 	tinit 0
 	nb_pas_dt_max 3
-	tmax 300.
+	tmax 10.
 	dt_min 0.00001
 	dt_max 0.1
 	dt_impr 0.00001
@@ -57,31 +57,15 @@ Read sch
 
 }
 
-Solide sol
+Solide_milieu_variable sol
 Read sol
 {
-	rho Champ_tabule_temps 1
-	# 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-	{
-     3	
-	    0     24    25  
-	    2.0   2.0   2.0     
-	}
-	lambda Champ_tabule_temps 1
-	# 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-	  { 
-	    3
-	    0     149   150  
-	    0.01  0.01  0.04
-	  }
-	Cp Champ_tabule_temps 1
-	# 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-	{
-     3	
-	   0     24    25  
-	   0.5   0.5   0.5     
-	}
-
+	rho    Champ_uniforme  1 1.0  
+/* lambda    Champ_uniforme  1 1.0  
+  Cp    Champ_uniforme  1 1.0  */
+  lambda Champ_fonc_txyz dom 1   sin(t)*sin(x)+1.5 
+  Cp     Champ_fonc_txyz dom 1   sin(t)*sin(x)+2.0
+ 
 }
 Associate pb dom
 Associate pb sch
@@ -91,17 +75,23 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
+	Conduction_milieu_variable
 	{
 		diffusion { }
 		initial_conditions {
-			temperature Champ_Uniforme 1  10.0
+			temperature Champ_Uniforme 1  0.0 
+# 			temperature Champ_fonc_xyz dom 1 sin(3.1415926535898*x) #
 			}
+	  sources {
+       Puissance_Thermique champ_fonc_txyz dom 1 (sin(x)*sin(t)+2.0)*(sin(3.1415926535898*x)*cos(t))+3.1415926535898*sin(t)*(3.1415926535898*(sin(x)*sin(t)+1.5)*sin(3.1415926535898*x)-cos(x)*cos(3.1415926535898*x)*sin(t))
+         
+/*      Puissance_Thermique champ_fonc_txyz dom 1 sin(3.1415926535898*x)*((sin(t)*sin(x)+2.0)*cos(t)+3.1415926535898*3.1415926535898*sin(t))  */
+	  } 
 		boundary_conditions {
 			Haut paroi_adiabatique
 			Bas paroi_adiabatique
-			Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 10.		
-			Droit paroi_flux_impose                 Champ_Front_Uniforme 1 0.05						
+			Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 0.0		
+			Droit paroi_temperature_imposee        Champ_Front_Uniforme 1 0.0		
 		}
 	}
 
@@ -109,8 +99,7 @@ Read pb
 	{
 		Probes
 		{
-			sonde_horiz temperature periode 1. segment 10 0.05 0.5 0.95 0.5 
-  		sonde_point temperature periode 5. points 1 0.983 0.5 
+			sonde_horiz temperature periode 1. segment 31 0.0 0.5 1.0 0.5 
 		}		
 	}
 }

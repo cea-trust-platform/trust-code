@@ -29,7 +29,8 @@ EF dis
 Scheme_euler_implicit sch
 Read sch
 {
-	Tinit 0
+	tinit 0
+	nb_pas_dt_max 3
 	tmax 300.
 	dt_min 0.00001
 	dt_max 0.1
@@ -38,8 +39,8 @@ Read sch
 	seuil_statio 1.e-8
 
 	facsec_max 100
-	facsec 10
-	solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } } 
+	facsec 1
+	solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } } 
 
 }
 

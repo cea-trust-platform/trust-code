@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@
 #include <distances_VEF.h>
 #include <Interprete.h>
 #include <Pb_Conduction.h>
+#include <Pb_Conduction_Milieu_Variable.h>
 #include <Zone_Cl_VEF.h>
 #include <Domaine.h>
 #include <Champ_Fonc_P0_VEF.h>
@@ -161,7 +162,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1,
   REF(Champ_base) rch1;
   Probleme_base& pb1=ref_cast(Probleme_base, Interprete::objet(nompb1));
 
-  if (!sub_type(Pb_Conduction,pb1))
+  if (!sub_type(Pb_Conduction,pb1) && !sub_type(Pb_Conduction_Milieu_Variable,pb1))
     if (pb1.equation(1).inconnue().le_nom()!="temperature")
       nom_inco1 = "concentration";
 
@@ -171,7 +172,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1,
   REF(Champ_base) rch2 ;
   Probleme_base& pb2=ref_cast(Probleme_base, Interprete::objet(nompb2));
 
-  if (!sub_type(Pb_Conduction,pb2))
+  if (!sub_type(Pb_Conduction,pb2) && !sub_type(Pb_Conduction_Milieu_Variable,pb2))
     if (pb2.equation(1).inconnue().le_nom()!="temperature")
       nom_inco2 = "concentration";
 

@@ -42,7 +42,8 @@ VDF dis
 Scheme_euler_implicit sch
 Read sch
 {
-	Tinit 0
+	tinit 0
+	nb_pas_dt_max 3
 	tmax 300.
 	dt_min 0.00001
 	dt_max 0.1

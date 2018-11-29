@@ -42,7 +42,7 @@ EF dis
 Scheme_euler_implicit sch
 Read sch
 {
-	Tinit 0
+	tinit 0
 	tmax 10.
 	dt_min 0.00001
 	dt_max 0.1
