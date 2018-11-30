@@ -6,10 +6,10 @@ then
    ranking=`ls -rt ranking.* | tail -1`
    if [ "`grep parallele $ranking`" = "" ]
    then
-      ./check_ranking `ls -rt ranking.* | tail -1` 129 3.e-8 364 20
+      ./check_ranking `ls -rt ranking.* | tail -1` 134 3.e-8 364 20
       err=$?
    else
-      ./check_ranking `ls -rt ranking.* | tail -1` 133 3.e-8 511 13
+      ./check_ranking `ls -rt ranking.* | tail -1` 144 3.e-8 511 13
       err=$?
    fi
 fi

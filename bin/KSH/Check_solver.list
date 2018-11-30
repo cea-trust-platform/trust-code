@@ -24,7 +24,7 @@ let i=$i+1;solver[$i]="Petsc CLI { -ksp_type bcgs -pc_type hypre -pc_hypre_type 
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"	
 
 # iBCGSTAB+BLOCK_JACOBI_ICC
-let i=$i+1;solver[$i]="Petsc IBICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"				;rank[$i]=2;
+let i=$i+1;solver[$i]="Petsc IBICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"				;rank[$i]=2;
 
 # Reference TRUST GMRES+DIAG
 let i=$i+1;solver[$i]="Gmres          { seuil $seuil diag controle_residu 1 impr }"				;sym[$i]=0	;rank[$i]=5;
