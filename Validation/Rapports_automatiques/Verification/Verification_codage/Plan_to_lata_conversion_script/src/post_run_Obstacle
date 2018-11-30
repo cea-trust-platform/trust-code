@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Conversion of .plan files to .lata files
+python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Obstacle_P_PROBE.plan -l
+python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Obstacle_V_PROBE.plan toto_obstacle.lata -l
+
+
+

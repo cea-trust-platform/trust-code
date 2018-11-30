@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mkdir -p sim2D sim3D
+
+cp Obstacle.data Obstacle.geo verifie ref_jdd2.tar.gz sim2D/.
+cp post_run_Obstacle sim2D/post_run
+cp Canal.data verifie ref_jdd1.tar.gz sim3D/.
+cp post_run_Canal sim3D/post_run
+cd sim3D
+tar xzf ref_jdd1.tar.gz
+cd ../sim2D
+tar xzf ref_jdd2.tar.gz
+
