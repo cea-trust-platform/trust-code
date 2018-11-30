@@ -395,8 +395,9 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Add a second screen with "Windows $\rightarrow$ Layouts $\rightarrow$ 1x2",}}\\
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Plot a pressure horizontal profile:\\}}
-\hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ select the pressure field and thanks to the right button,}} \\ 
-\hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ select "Mode $\rightarrow$ Line out", and define your profile with left button,}} \\
+\hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ select the pressure field,}} \\ 
+\hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ on the visualisation, use the right click and select "Mode $\rightarrow$ Line out",}}\\
+\hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ then define your profile with left button,}} \\
 \hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ click on the origin point, let the left button pushed, and release at the end point.}}\\
 \hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{ The profile is shown on the second window.}}\\
 
@@ -868,9 +869,13 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \item Run the calculation with:\\
 \textbf{trust docond }
 
-\item Click: 'Start computation!', select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
+\item Open the IHM:\\
+\textbf{trust -evol docond }
+
+\item Select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
 
 \item To see when convergence is reached, select a probe (for example temperature) and click on 'Plot'. 
+
 \end{itemize}
 
 \end{block}
@@ -882,6 +887,9 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
+\item If the calculation is too long, open the docond.stop file, put a 1 instead the 0 and save.
+The calculation will stop after the current time step and make post-process.
+
 \item Post-process the results and compare the CPU performances with VDF\index{VDF} discretization: the VEF calculation is running $\approx$ 10 times slower (because more pressure unknowns and shorter time steps). Check the docond.out file to see the time steps for each equation (click on "Edit .out" at the upper right corner of the GUI).
 
 \item Accelerate the calculation by impliciting the diffusive term of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the Generic Guide: \textbf{trust -doc \&\index{trust -doc \&}}). 
@@ -891,7 +899,6 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item \label{schema_impl} Now, use a fully implicit scheme (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the Implicit solver "\textbf{solveur implicite}".
 
-\item Have a look at the Reference Manual for the \textbf{gmres\index{gmres}} options and define, according to the advice given on it, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}.
 \end{itemize}
 
 \end{block}
@@ -903,6 +910,8 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
+\item Have a look at the Reference Manual for the \textbf{gmres\index{gmres}} options and define, according to the advice given on it, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}.
+
 \item Your block will look like:\\
 \textbf{Solveur Implicite\index{Solveur Implicite} \{ solveur gmres\index{gmres} \{ diag seuil 1e-30 nb\_it\_max 5 impr \}  seuil\_convergence\_implicite\index{seuil\_convergence\_implicite} 0.01  \} }
 
@@ -1966,7 +1975,7 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 \hline 
 \textbf{dimension 3 }\tabularnewline
 \textbf{domaine dom }\tabularnewline
-\textbf{Lire\_med family\_names\_from\_group\_names dom Mesh\_1 Mesh\_1.med }\tabularnewline
+\textbf{Read\_med family\_names\_from\_group\_names dom Mesh\_1 Mesh\_1.med }\tabularnewline
 \textbf{Discretiser\_domaine\index{discretiser\_domaine} dom }\tabularnewline
 \textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom fichier mesh format lata\index{format lata}
 \}}\tabularnewline
