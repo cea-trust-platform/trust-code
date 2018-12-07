@@ -1,209 +1,132 @@
-# Hydraulique 3D : Qusi_compressible gaz parfait VDF #
+# Thermohydraulique 2D : Qausi_compressible gaz parfait VDF #
 # PARALLEL OK #
-dimension 3
-pb_thermohydraulique_qc_fraction_massique pb
-Domaine dom
-# BEGIN MESH #
-Mailler dom 
+dimension 2
+
+schema_euler_implicite sch
+read sch
 {
-	Pave Entree
-		{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 51 51 6
-		Longueurs 1.0 1.0 1.0
-		}
-		{
-		bord FRON   Z = 0.0      0.0 <= X <= 1.0   0.0 <= Y <= 1.0
-		bord BACK   Z = 1.0      0.0 <= X <= 1.0   0.0 <= Y <= 1.0
-		bord LEFT   X = 0.0      0.0 <= Y <= 1.0   0.0 <= Z <= 1.0
-		bord RIGH   X = 1.0      0.0 <= Y <= 1.0   0.0 <= Z <= 1.0
-		bord COND   Y = 1.0      0.0 <= X <= 1.0   0.0 <= Z <= 1.0
-		bord BAS    Y = 0.0      0.1 <= X <= 0.9   0.0 <= Z <= 1.0
-		}
-		,
-	Pave left
-		{
-		Origine 0.0 -0.1 0.0
-		Nombre_de_Noeuds 6 6 6
-		Longueurs 0.1 0.1 1.0
-		}
-		{
-		bord FRON   Z = 0.0      0.0 <= X <= 0.1  -0.1 <= Y <= 0.0
-		bord BACK   Z = 1.0      0.0 <= X <= 0.1  -0.1 <= Y <= 0.0
-		bord LEFT   X = 0.0     -0.1 <= Y <= 0.0  0.0 <= Z <= 1.0
-		bord RIGH   X = 0.1     -0.1 <= Y <= 0.0  0.0 <= Z <= 1.0
-		bord IN1    Y = -0.1     0.0 <= X <= 0.1  0.0 <= Z <= 1.0
-		} ,
-	Pave Righ
-		{
-		Origine 0.9 -0.1 0.0
-		Nombre_de_Noeuds  6 6 6
-		Longueurs 0.1 0.1 1.0
-		} 
-		{
-		bord FRON   Z = 0.0      0.9 <= X <= 1.0  -0.1 <= Y <= 0.0
-		bord BACK   Z = 1.0      0.9 <= X <= 1.0  -0.1 <= Y <= 0.0
-		bord LEFT   X = 0.9     -0.1 <= Y <= 0.0  0.0 <= Z <= 1.0
-		bord RIGH   X = 1.0     -0.1 <= Y <= 0.0  0.0 <= Z <= 1.0
-		bord IN2    Y = -0.1     0.9 <= X <= 1.0  0.0 <= Z <= 1.0
-		}
+    tinit 0.
+    tmax 400
+    dt_min 0.001
+    dt_max 1.
+    facsec 10.0
+    facsec_max 100
+    dt_impr 1.
+    dt_sauv 200.
+    seuil_statio 1.e-8
+    solveur implicite { solveur gmres { diag seuil 1.e-13 nb_it_max 5 impr } }
 }
-Regroupebord dom WALL { FRON BACK LEFT RIGH BAS }
+
+Pb_Thermohydraulique_QC pb
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_fluide
+{
+    Pave Cavite3
+        {
+        Origine 0.3 0.3
+        Nombre_de_Noeuds 20 20
+        Longueurs 0.7 0.7
+        }
+        {
+        Bord Droit1    X = 0.3  0.3 <= Y <= 1.0
+        Bord Entree    Y = 1.0  0.3 <= X <= 0.7
+        Bord Haut3     Y = 1.0  0.7 <= X <= 1.0
+        Bord Haut2     Y = 0.3  0.3 <= X <= 1.0
+        Bord Sortie    X = 1.0  0.3 <= Y <= 0.7
+        Bord Droit2    X = 1.0  0.7 <= Y <= 1.0
+        }
+}
 # END MESH #
 
 # BEGIN PARTITION
-Partition dom
+Partition dom_fluide
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM2
 }
 End
 END PARTITION #
 
 # BEGIN SCATTER
-Scatter DOM.Zones dom
+Scatter DOM2.Zones dom_fluide
 END SCATTER #
 
-# trianguler_h dom #
-
 VDF dis
-
-Scheme_euler_explicit sch
-Read sch
-{
-	tinit 0
-	tmax 1
-	dt_min 5.e-8
-	dt_max 10
-	dt_impr 5.e-5
-	dt_sauv 100
-	seuil_statio 1.e-9
-	facsec 0.5
-	precision_impr 7
-}
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-	pression 101325
-	mu Champ_Uniforme 1  1.812121e-5 
-	lambda Champ_Uniforme 1 0.02569 
-	loi_etat Melange_gaz_parfait
-	{
-		Prandtl 0.70854591280653943415
-		Sc 0.70854591280653943415
-	}
-	traitement_pth edo
-	Traitement_rho_gravite standard
+    mu Champ_Uniforme 1 0.001
+    pression 84000
+    lambda Champ_Uniforme 1 1.0
+    loi_etat gaz_parfait
+    {
+        Prandtl 1.
+        Cp 1000.
+        gamma 1.4
+    }
+    Traitement_pth constant
+    Traitement_rho_gravite moins_rho_moyen
 }
 
 Champ_Uniforme gravite
-Read gravite 3 0 0 0
-
+Read gravite 2 0 -9.81
 Associate fluide gravite
-Associate pb dom
-Associate pb sch
+Associate pb dom_fluide
 Associate pb fluide
-
+Associate pb sch
 Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_QC
-	{
-		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-10 }
-		convection { amont }
-		diffusion { }
-		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
-		boundary_conditions {
-			WALL   paroi_fixe
-			COND   paroi_fixe
-			IN1    frontiere_ouverte_vitesse_imposee champ_front_debit_QC_VDF  3 { 0  0.120696  0  }  moyen pb
-			IN2    Paroi_fixe
-		}
-	}
-	Convection_Diffusion_Chaleur_QC
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			WALL    paroi_adiabatique
-			COND    paroi_adiabatique
-			IN1     frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 293.
-			IN2     paroi_adiabatique
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 293 }
-	}
-	Equations_Scalaires_Passifs
-	{
-		Convection_Diffusion_fraction_massique_QC
-		{
-			diffusion {  negligeable  }
-			convection { amont }
-			boundary_conditions {
-				WALL    paroi
-				COND    paroi
-				IN1     Frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1  0.84
-				IN2     paroi
-			}
-			initial_conditions { fraction_massique0 Champ_Uniforme 1  0.84 }
-			espece
-			{
-				mu Champ_Uniforme 1 1.758e-5
-				Cp Champ_Uniforme 1 1040
-				Masse_molaire  0.028013
-			}
-		}
-		Convection_Diffusion_fraction_massique_QC
-		{
-			diffusion {  negligeable }
-			convection { amont }
-			boundary_conditions
-			{
-				WALL    paroi
-				COND    paroi
-				IN1     Frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1  0.16
-				IN2     paroi
-			}
-			initial_conditions { fraction_massique1 Champ_Uniforme 1  0.16 }
-			espece
-			{
-				mu Champ_Uniforme 1 2.04e-5
-				Cp Champ_Uniforme 1 1400
-				Masse_molaire  0.0319988
-			}
-		}
-	}
-	Post_processing
-	{
-		format lml
-		Definition_champs
-			{
-				mean_temperature1 Reduction_0D { methode average source refChamp { Pb_champ pb temperature } }
-				mean_temperature2 Reduction_0D { methode weighted_average source refChamp { Pb_champ pb temperature } }
-			}
-		Probes
-		{
-			vitesse vitesse periode 0.001 points 3  0.0 0.5 0.5  0.5 0.5 1.0  1.0 0.5 0.5
-			temperature temperature periode 0.001 points 3 0.0 0.5 0.5  0.5 0.5 1.0  1.0 0.5 0.5
-			Pression Pression Periode 0.001 points 3   0.0 0.5 0.5  0.5 0.5 1.0  1.0 0.5 0.5  
-			Pression2 Pression_tot Periode 0.001 points 3   0.0 0.5 0.5  0.5 0.5 1.0  1.0 0.5 0.5 
-			sonde_moyenne_temperature1 mean_temperature1 periode 0.001 numero_elem_sur_maitre 0
-			sonde_moyenne_temperature2 mean_temperature2 periode 0.001 numero_elem_sur_maitre 0
-		}
-		fields dt_post 10.
-		{
-			pression som
-			pression_tot som
-			vitesse som
-			temperature som
-			masse_volumique som
-			fraction_massique0 som
-			fraction_massique1 som
-		}
-	}
+    Navier_Stokes_QC
+    {
+        solveur_pression Petsc GCP { precond ssor { omega 1.500000 } seuil 1.e-14 impr }
+        convection { amont }
+        diffusion { }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee     Champ_front_debit_QC_VDF  2 { 0  -0.01 }  moyen pb
+            Sortie frontiere_ouverte_pression_imposee    Champ_front_Uniforme 1 0.
+            Droit1 paroi_fixe
+            Haut3  paroi_fixe
+            Haut2  paroi_fixe
+            Droit2 paroi_fixe
+        }
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions 
+        {
+            Entree frontiere_ouverte_temperature_imposee    Champ_front_Uniforme 1 293.
+            Sortie frontiere_ouverte_temperature_imposee    Champ_front_Uniforme 1 293.
+            Haut3  paroi_temperature_imposee                Champ_front_Uniforme 1 293.
+            Droit2 paroi_temperature_imposee                Champ_front_Uniforme 1 293.
+            Droit1 paroi_adiabatique
+            Haut2  paroi_adiabatique
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 303. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression     periode 1. points   1    0.55 0.55
+            sonde_seg      temperature  periode 5. segment 10    0. 0.75  1. 0.75
+        }
+        fields dt_post 500.
+        {
+            temperature elem
+            pression    som
+            vitesse     som
+        }
+    }
 }
+
 Solve pb
 End
