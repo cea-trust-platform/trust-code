@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8_beta : Enhancements, modifications and corrected bugs since version 1.7.7 :
 --------------------------------------------------------------------------------------------------
+07/12/18 (TRUST)  Bug fixed   : Heat exchange boundary condition in VEF was not implicited in conduction equation
 25/10/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.10.0
 25/10/18 (TRUST)  Performance : Performance of Cholesky Superlu version improved on symmetric matrix  
 25/09/18 (TRUST)  Bug fixed   : Possible crash in VEF diffusive operators after reading conductivity field in a MED file
