@@ -98,9 +98,41 @@
    fun:HYPRE_DistributedMatrixPilutSolverSetup
    fun:HYPRE_ParCSRPilutSetup
 }
+
 ###
 ###  MUMPS
 ###
+
+## 06/12/2018: TMA TRUST for udate of Petsc in version 3.10
+## on is221715 COs 7.5, g++ 4.8.5, mpich 3.2
+## on is234639, is221556, is234617 Ub16.04, g++ 5.4.0, mpich 3.2
+## for ICoCo tests cases:
+## CasCouplage_jdd2 CasCouplage_jdd3 CasCouplage_jdd4
+{
+   <petsc_3_10_ICoCo>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:PMPI_PACK
+   ...
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+}
+{
+   <petsc_3_10_ICoCo2>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:MPI_PACK
+   ...
+}
 
 # Triggered by 3D_P0P1Pa_perio
 # Triggered by OpDiffP1B_mixte_vitesse_implicite_3D
@@ -326,6 +358,8 @@
    fun:ompi_attr_set_fortran_mpi1
    fun:PMPI_Add_error_class
 }
+
+
 
 # upwind - is223279 en Fedora 18 - g++ 4.7.2 - OpenMPI 2.0.2
 # is147462 en Fedora 22 - g++ 5.1.1 - OpenMPI 2.0.2
