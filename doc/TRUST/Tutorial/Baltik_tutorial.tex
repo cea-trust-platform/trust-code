@@ -217,8 +217,10 @@ CEA Saclay \\ % Your institution for the title page
 \texttt{\$ cd Formation\_TRUST/yourname}
 
 \item Fill your project from a basic project template:\\
-\texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic my\_project}\\
+%\texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic my\_project}\\
+\texttt{\$ trust -baltik my\_project}\\
 \texttt{\$ cd my\_project}\\
+
 \texttt{\$ ls -l}
 
 \item You can see that you have now:
@@ -311,7 +313,7 @@ It means that they are not followed by the git repository for the moment.
 \texttt{\$ git status -\,-ignored}\\
 
 \item You can see that the file "project.cfg" has been modified. And that there are new untracked files.
-It means that there are not on the git repository.
+It means that they are not on the git repository.
 
 \item To see only the changes on the git repository files:\\
 \texttt{\$ git status -uno}\\
@@ -379,7 +381,7 @@ It means that there are not on the git repository.
 
 \begin{itemize}
 \item List other options available for the make command:\\
-\texttt{\$ make}
+\texttt{\$ make help}
 
 \item Build an optimized binary for profiling (option -pg -O3):\\
 \texttt{\$ make prof}\\
@@ -415,7 +417,7 @@ to compile your own optimized or debug or profiling or coverage executable. \\
 \frametitle{}
 \begin{block}{Eclipse}
 
-Do the second part of README\_ECLIPSE file (Create a BALTIK project):
+Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTIK project):
 \begin{itemize}
 \item to create your baltik project
 \item and launch the upwind test case with Eclipse.
