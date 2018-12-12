@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/bin/bash
 # --
 # Author : GF (CEA)
 # --
@@ -43,7 +43,7 @@ then
 fi
 
 script_name="${BALTIK_ROOT}/"`basename $0`
-echo "#! /usr/bin/env sh
+echo "#!/bin/bash
 # --
 # Author : GF (CEA)
 # --

@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/bin/bash
 
 # on regarde si TRUST_ROOT et TRUST_ROOT_ORG sont definis, si oui si ils sont bien identiques
 
