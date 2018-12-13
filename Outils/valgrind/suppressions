@@ -225,6 +225,37 @@
    fun:PetscFinalize
 }
 
+## 11/12/2018: TMA TRUST for update of Petsc in version 3.10
+## on is221715 COs 7.5, g++ 4.8.5, mpich 3.2
+## for test case: Echange_impose_VEF_jdd1
+{
+   <Echange_impose_VEF_jdd1_1>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:memalign
+   fun:PetscMallocAlign
+   fun:PetscMallocA
+   fun:PetscFunctionListAdd_Private
+   fun:MatRegister
+   fun:KSPMatRegisterAll
+   fun:KSPInitializePackage
+   fun:KSPCreate
+}
+{
+   <Echange_impose_VEF_jdd1_2>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:memalign
+   fun:PetscMallocAlign
+   fun:PetscMallocA
+   fun:PetscStrallocpy
+   fun:PetscFunctionListAdd_Private
+   fun:MatRegister
+   fun:KSPMatRegisterAll
+   fun:KSPInitializePackage
+   fun:KSPCreate
+}
+
 ###
 ### Intel related suppressions
 ###
