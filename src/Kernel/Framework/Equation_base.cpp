@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1499,54 +1499,64 @@ void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
 // Postcondition:
 double Equation_base::calculer_pas_de_temps() const
 {
-  double dt=0;
+  bool harmonic_calculation = true;
   double dt_op;
-
-  int nb_op=nombre_d_operateurs();
-  if(nb_op==0)
-    dt=DMAXFLOAT;
+  double dt;
+  if (harmonic_calculation)
+    dt = 0;
   else
+    dt = DMAXFLOAT;
+
+  int nb_op = nombre_d_operateurs();
+  for(int i=0; i<nb_op; i++)
     {
-      for(int i=0; i<nb_op; i++)
+      if(operateur(i).l_op_base().get_decal_temps()!=1)
+        dt_op = operateur(i).calculer_pas_de_temps();
+      else
+        dt_op = DMAXFLOAT;
+
+      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 0 ",dt_op);
+
+      Debog::verifier("Equation_base::calculer_pas_de_temps dt ",dt);
+      const Operateur_base& op=operateur(i).l_op_base();
+      if (sub_type(Operateur_Diff_base,op) && le_schema_en_temps->diffusion_implicite())
         {
-          if(operateur(i).l_op_base().get_decal_temps()!=1)
-            dt_op = operateur(i).calculer_pas_de_temps();
-          else
-            dt_op = DMAXFLOAT;
-
-          Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 0 ",dt_op);
-
-          Debog::verifier("Equation_base::calculer_pas_de_temps dt ",dt);
-          assert(dt_op>0);
-          if (i==0 && le_schema_en_temps->diffusion_implicite())
-            {
-              // On ne compte pas le pas de temps de diffusion lorsque la diffusion est implicitee
-            }
-          else
-            dt=dt+1./dt_op;
-
-          Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 1 ",dt_op);
-          if (le_schema_en_temps->limpr())
-            {
-              if (i == 0)
-                {
-                  Cout << " " << finl;
-                  Cout << "Printing of the time steps for the equation: " << que_suis_je() << finl;
-                }
-              const Operateur_base& op=operateur(i).l_op_base();
-              if (sub_type(Operateur_Conv_base,op))
-                Cout << "   convective";
-              else
-                {
-                  if (sub_type(Operateur_Diff_base,op))
-                    Cout <<  "   diffusive";
-                  else
-                    Cout <<  "   operator ";
-                }
-              Cout<<" time step : "<< dt_op_bak[i] << finl;
-            }
-          dt_op_bak[i]=dt_op;
+          // On ne compte pas le pas de temps de diffusion lorsque la diffusion est implicitee
         }
+      else if (dt_op>0)
+        {
+          // Une demie-moyenne harmonique est justifiee par le fait que diffusion et convection sont deux phenonomenes qui se cumulent
+          // L'information a chaque pas de temps ne peut traverser plus d'une maille de calcul donc dt*U + dt*vitesse_diffusion(~alpha/dx) < dx
+          // donc dt < dx/(U+alpha/dx) = 1/(1/(dx/U)+1/(dx^2/alpha)) : c'est bien une demie moyenne harmonique...
+          if (harmonic_calculation)
+            dt = dt + 1./dt_op;
+          else
+            // https://en.wikipedia.org/wiki/Numerical_solution_of_the_convection%E2%80%93diffusion_equation
+            // On pourrait prendre le min de tous les operateurs. Mais attention parfois peut diverger:
+            // Un cas typique (rare?) Convection.data ecoulement en travers par rapport au maillage VDF et Re(maille)~1
+            dt = (dt_op < dt ? dt_op : dt);
+        }
+
+      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 1 ",dt_op);
+      if (le_schema_en_temps->limpr())
+        {
+          if (i == 0)
+            {
+              Cout << " " << finl;
+              Cout << "Printing of the time steps for the equation: " << que_suis_je() << finl;
+            }
+          if (sub_type(Operateur_Conv_base,op))
+            Cout << "   convective";
+          else if (sub_type(Operateur_Diff_base,op))
+            Cout << "   diffusive";
+          else
+            Cout << "   operator ";
+          Cout<<" time step : "<< dt_op_bak[i] << finl;
+        }
+      dt_op_bak[i]=dt_op;
+    }
+  if (harmonic_calculation)
+    {
       if (dt==0.)
         dt = DMAXFLOAT;
       else
