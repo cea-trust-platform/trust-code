@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -344,7 +344,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         Cerr<<"Localisation etude: " << ::pwd() << finl;
         Cerr<<"Nom du cas " << data_file << finl;
         Cerr<<" code : "<< argv[0] << finl;
-        Cerr<<" version : 1.7.8_beta " << finl;
+        Cerr<<" version : 1.7.8 " << finl;
       }
 
     main_process->dowork(data_file);

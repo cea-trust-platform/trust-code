@@ -1,15 +1,26 @@
 Version	Qui				Tache
-1.7.8   trust@cea.fr            LDC: Mettre a jour le fichier License.txt
-1.7.8   trust@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
-1.7.8   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS)
-1.7.8   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
-1.7.8   trust@cea.fr            LDC: Revoir Google rules with cpplint on TRUST qui est passe de 48 erreurs a 57 lors d une integration pour v177
-1.7.8   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon
-1.7.8   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
-1.7.8   trust@cea.fr            LDC: ajouter fichier pour irene cf DI 4431
-1.7.8   trust@cea.fr            LDC: integrer branche de Pierre MEDCoupling
 1.7.8   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.7.8   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.7.8   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
 1.7.8   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+
+1.7.9   trust@cea.fr            LDC: ouvrir une DI pour "Branches à intégrer dans TRUST pour prochaine version 1.7.9" (cf DI162165)
+1.7.9   trust@cea.fr            LDC: ouvrir une DI pour installation réseau
+1.7.9   trust@cea.fr            LDC: ouvrir une DI pour installation clusters
+1.7.9   trust@cea.fr            LDC: ouvrir une DI pour mise à jour des supports de formation (si besoin) et bon de livraison des slides (cf DI166409)
+1.7.9   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
+1.7.9   trust@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
+1.7.9   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS)
+1.7.9   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
+1.7.9   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon
+1.7.9   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commenté à la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
+1.7.9   trust@cea.fr            LDC: Corriger sources TRUST pour l'erreur valgrind ajoutée au fichier suppression le 11/12/18.
+
+1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (qd livraison en fin d'année)
 1.7.x   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
+1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt
+1.7.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
+1.7.x   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
+1.7.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
+1.7.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+

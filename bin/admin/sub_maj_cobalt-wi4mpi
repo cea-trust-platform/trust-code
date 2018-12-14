@@ -11,4 +11,5 @@
 set -x
 cd $BRIDGE_MSUB_PWD
 [ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
-ccc_mprun -n $BRIDGE_MSUB_NPROC ./mise_a_jour_TRUST_arch 1>~/CR_cobalt-wi4mpi 2>&1
+# A reactiver en temps voulu (cf TRUST_USE_MUMPS)
+#ccc_mprun -n $BRIDGE_MSUB_NPROC ./mise_a_jour_TRUST_arch 1>~/CR_cobalt-wi4mpi 2>&1

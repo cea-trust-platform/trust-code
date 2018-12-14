@@ -665,7 +665,8 @@ echo>>$liste_log
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | wc -l`
+# petsc-3.10.0 : superlu_dist.py correction TMA
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.10.0 | grep -v scotch_6.0.6-p1 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -676,8 +677,9 @@ then
    # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
+   # petsc-3.10.0 : superlu_dist.py correction TMA
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.10.0 | grep -v scotch_6.0.6-p1`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -829,6 +831,8 @@ fi
       then
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
       else
+         git remote update
+         git checkout .
          git pull origin portage_178
          git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
@@ -1554,7 +1558,9 @@ echo "Release criteria of the $new version:" >> $MESSAGES_NUIT
 criteres_remplis=0
 total_criteres=0
 baltik_ok=0
-total_baltik=`echo $ComposantsOfficial | wc -w`
+#total_baltik=`echo $ComposantsOfficial | wc -w`
+nb=$(echo $ComposantsOfficial-1 | wc -w) # nb de baltik testés pour les versions (beta, RC ou officielle)
+total_baltik=$(echo $nb-1 | bc -l)       # on retire ijk du décompte car il n'est pas encore au point
 
 ######################
 # Tests d'installation
@@ -1852,11 +1858,11 @@ echo "  See $recupere_log"
 echo "TRUST script on $HOST the `date` ...">$recupere_log
 echo>>$recupere_log
 # pour le lance seul :
+# cd $TRUST_ROOT/bin/admin
 # export new=`awk '/version/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
 # export Version=Version$new
 # export DATE=`date '+%d%m%y'`
 # REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
-# HOST deja existant
 # recupere_log=$REP_NUIT/recupere_TRUST_arch_$HOST.log
 # recupere_TRUST_arch 1>>$recupere_log 2>&1   
 # cd $TRUST_ROOT
@@ -2455,7 +2461,11 @@ do
 	    echo $machine >> tmp.log
             grep " CORE " $PROJECT_ROOT/*$Composant*$machine.*make_check.log | awk -F"|" '{print $NF}' >> tmp.log
             echo " " >> tmp.log
-            valgrind=0
+            # on retire ijk, polymac, triomc et mathys du critere de livraison TRUST/TrioCFD
+            if [ "$Composant" != ijk ] && [[ "$ComposantsBeta" != *"$Composant"* ]] 
+            then 
+                valgrind=0
+            fi
 	 fi
       fi
       rm list.log
@@ -3332,7 +3342,7 @@ do
          echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)"
       fi
    fi
-   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
+   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] || [ "$Composant" != ijk ] # Test si Composant n est pas dans la liste des composants Beta ou pas ijk
    then
       let total_criteres=$total_criteres+1
       let criteres_remplis=$criteres_remplis+$validation_composant
@@ -3438,7 +3448,7 @@ for Composant in $Composants
 do
    if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
    then
-      if [ "$Composant" != Test_Baltik ]
+      if [ "$Composant" != Test_Baltik ] && [ "$Composant" != ijk ] # on retire ijk du critere de livraison TRUST/TrioCFD
       then
          echo " "
          echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"

@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.7.8_beta : Changes since version 1.7.7 :
+Developer notes version 1.7.8 : Changes since version 1.7.7 :
 -------------------------------------------------------------
 16/11/18 (Tools)  New option gnuplot_command for Figure keyword useful to fine tune the gnuplot curves in prm reports
 19/09/18 (TRUST)  Slightly reduce the number of MPI allreduces for parallel calculation

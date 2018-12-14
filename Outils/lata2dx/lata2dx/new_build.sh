@@ -23,3 +23,16 @@ cd $Build
 # GF ajout de -DCMAKE_CXX_COMPILER pour bien prendre le compilo choisi par trio 
 cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_CXX_COMPILER=$TRUST_CC
 make -j  $TRUST_NB_PROCS  install
+
+##
+## Test de fonctionnement
+##
+#source $Build/env.sh
+#python -c "import LataLoader" 
+#if [ $? -eq 0 ]
+#then
+#    echo "LataLoader library OK"
+#else
+#    echo "LataLoader library KO"
+#    exit -1
+#fi
