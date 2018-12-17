@@ -1,6 +1,6 @@
 Version	Qui				Tache
+1.7.8   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'année)
 1.7.8   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.7.8   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.7.8   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
 1.7.8   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 
@@ -15,10 +15,13 @@ Version	Qui				Tache
 1.7.9   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon
 1.7.9   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commenté à la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
 1.7.9   trust@cea.fr            LDC: Corriger sources TRUST pour l'erreur valgrind ajoutée au fichier suppression le 11/12/18.
+1.7.9   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
+1.7.9   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
+1.7.9   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
+1.7.9   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 
-1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (qd livraison en fin d'année)
+1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'année)
 1.7.x   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
-1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt
 1.7.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.7.x   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
 1.7.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations

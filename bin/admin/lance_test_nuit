@@ -832,9 +832,9 @@ fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
       else
          git remote update
-         git checkout .
-         git pull origin portage_178
-         git push origin Livraison:triou/TMA 1>tmp.log 2>&1
+         git checkout portage_178
+         git pull
+         #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
       cat tmp.log
       [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
@@ -2745,7 +2745,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=69.05 # 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=67.49 # xx v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ $coverage = 1 ]
 then
@@ -3342,7 +3342,8 @@ do
          echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)"
       fi
    fi
-   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] || [ "$Composant" != ijk ] # Test si Composant n est pas dans la liste des composants Beta ou pas ijk
+#   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
+   if [ "$Composant" != ijk ] && [[ "$ComposantsBeta" != *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta ou pas ijk
    then
       let total_criteres=$total_criteres+1
       let criteres_remplis=$criteres_remplis+$validation_composant
@@ -4098,6 +4099,9 @@ wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
 chmod +x Installer_TrioCFD.sh;
 ./Installer_TrioCFD.sh -configure-options \"\$OPTIONS\"
 
+# Option to minimize build. You need to set this variable and then run previous method:
+OPTIONS=\"-disable-optionals\"
+
 # Second method if TRUST-$new platform is already installed:
 wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
 chmod +x Installer_TrioCFD.sh;
@@ -4110,8 +4114,6 @@ source \$TRUST_ROOT/env_TRUST.sh;
 baltik_build_configure -execute;
 make optim debug
 
-# Option to minimize build. You need to set this variable and then run one of the 3 methods above
-OPTIONS=\"-disable-optionals\"
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------

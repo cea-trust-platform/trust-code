@@ -38,12 +38,12 @@ linux	rsync_ssh	non		is212915.intra.cea.fr				-MATHYS							-g 		-force_provided
 linux	rsync_ssh	non		is223278.intra.cea.fr		-all		-GENEPI3 -PolyMAC							-disable-mpi 				# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223279.intra.cea.fr		-all		-TrioMC -FLICA5 -GENEPI3						-disable-petsc				# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225220.intra.cea.fr		-all		-MPCube -MATHYS								-force_provided_openmpi	-without-visit	# CentOS 7.5	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		is223281.intra.cea.fr		-all		-GENEPI3 -FLICA5							-disable-optionals			# CentOS 7.5	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		is223281.intra.cea.fr		-all		-GENEPI3 -TrioMC							-disable-optionals			# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is230500-build64.intra.cea.fr										-build64						# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223280.intra.cea.fr				-TrioCFD -TrioMC -FLICA5 				-g 		-download-visit				# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube -GENEPI3 -PolyMAC			-g -enable-petsc-debug -download-salome			# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -FLICA5 -GENEPI3 -PolyMAC -avx							# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225223-gui.intra.cea.fr			-MPCube -TrioCFD -FLICA5 -GENEPI3 -IJK-FT		-gui		-remote_install_TRUST_with_source	# CentOS 7.5	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		is231771.intra.cea.fr				-TrioCFD -FLICA5 -GENEPI3 -PolyMAC			-platform	-force_latest_openmpi			# CentOS 7.5	Bat 451 LGLS	bureau Pierre Ledac
+linux	rsync_ssh	non		is231771.intra.cea.fr				-TrioCFD -FLICA5 -GENEPI3 				-platform	-force_latest_openmpi			# CentOS 7.5	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	non		callisto-intel.intra.cea.fr	-limited	-IJK-FT -MATHYS								-disable-mpiio -without-visit		# CentOS 6.4	CEA Saclay	NB: bench desactive
 linux	rsync_ssh	non		cobalt-wi4mpi.ccc.cea.fr	-limited										-disable-tools				# RedHat 7.3	CEA CCRT
