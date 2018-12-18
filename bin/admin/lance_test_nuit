@@ -3705,7 +3705,7 @@ then
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
-	    make distrib
+	    make distrib_git
 	    mkdir -p $WORKDIR/archives/ARCHIVES_$Composant
 	    echo "    Copy $Composant.tar.gz to $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz"
 	    cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
