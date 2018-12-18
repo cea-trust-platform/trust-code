@@ -3805,7 +3805,7 @@ then
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
-	    make distrib
+	    make distrib_git
 	    mkdir -p $WORKDIR/archives/ARCHIVES_$Composant
 	    echo "    Copy $Composant.tar.gz to $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz"
             if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
