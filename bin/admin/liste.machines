@@ -2,7 +2,7 @@ arch	maj		recup		hostname		Update	lance_test	baltiks							Tasks		Options
 linux	rsync_ssh	tache		is221559.intra.cea.fr				-TRUST -MPCube -TrioCFD -GENEPI3 -PolyMAC				-force_provided_mpich			# Debien 9  	Bat 451 LGLS	ancienne Gauthier Fauchet (Couplage Cathare/TRUST)
 linux	scp_ssh		cible		is213120.intra.cea.fr				-TRUST -TrioCFD -TrioMC	-IJK-FT						-force_provided_mpich			# Fedora 20	Bat 451 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	cible		is234639-clang.intra.cea.fr			-TrioCFD 						-clang38	-force_provided_openmpi	-disable-gmsh	# Ubuntu 16 	Bat 451 LGLS	bureau Pierre Ledac
-linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 			-gcov		-force_provided_mpich			# CentOS 6.4 	Bat 451 LMEC	bureau TMA GENEPI2
+linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 			-gcov		-force_provided_mpich			# CentOS 6.4 	Bat 451 LMEC	bureau TMA GENEPI2
 linux	rsync_ssh	cible		is212957.intra.cea.fr				-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC				-force_provided_mpich			# Ubuntu 16     Bat 451 LMEC    bureau TMA FLICA4
 linux	rsync_ssh	cible		is223284.intra.cea.fr				-MPCube -TrioCFD -FLICA5 -GENEPI3 -PolyMAC				-force_provided_mpich			# CentOS 7.5	Bat 451	LGLS	bureau a cote de Clarisse Genrault
 linux	rsync_ssh	tache		cezanne63.intra.cea.fr				-PolyMAC -TrioMC -MATHYS						-force_provided_mpich			# Debian 8	CEA Cadarache

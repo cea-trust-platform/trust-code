@@ -1,5 +1,4 @@
 Version	Qui				Tache
-1.7.8   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'année)
 1.7.8   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.7.8   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
 1.7.8   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)

@@ -1,3 +1,14 @@
+## 18/12/2018: TMA TRUST for update of Petsc in version 3.10
+## on is224591 COs 6.4, g++ 4.4.7, OpenMPI 1.2.9
+## for test case: Upwind
+{
+   <upwind>
+   Memcheck:Addr8
+   fun:ompi_pointer_array_set_item
+   fun:ompi_mpi_errcode_finalize
+   fun:ompi_mpi_finalize
+   fun:PetscFinalize
+} 
 {
    OpenMPI_129_Overlap
    Memcheck:Overlap
