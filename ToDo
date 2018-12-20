@@ -1,8 +1,4 @@
 Version	Qui				Tache
-1.7.8   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.7.8   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
-1.7.8   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
-
 1.7.9   trust@cea.fr            LDC: ouvrir une DI pour "Branches à intégrer dans TRUST pour prochaine version 1.7.9" (cf DI162165)
 1.7.9   trust@cea.fr            LDC: ouvrir une DI pour installation réseau
 1.7.9   trust@cea.fr            LDC: ouvrir une DI pour installation clusters
@@ -16,13 +12,13 @@ Version	Qui				Tache
 1.7.9   trust@cea.fr            LDC: Corriger sources TRUST pour l'erreur valgrind ajoutée au fichier suppression le 11/12/18.
 1.7.9   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.7.9   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.7.9   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
+1.7.9   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code et la mettre sous doc/Coverage
 1.7.9   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 
 1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'année)
 1.7.x   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
 1.7.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.7.x   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
+1.7.x   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code et la mettre sous doc/Coverage
 1.7.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.7.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 
