@@ -6,6 +6,7 @@
 |C
 |C_ext
 |Champ_Fonc_MEDfile
+|Champ_front_debit_QC_VDF
 |Champ_front_fonc_txyz
 |Cholesky
 |Concentration
@@ -157,6 +158,7 @@
 |champ_front_debit
 |champ_front_fonc_pois_ipsn
 |champ_front_fonc_pois_tube
+|champ_front_fonc_t
 |champ_front_fonc_txyz
 |champ_front_fonc_xyz
 |champ_front_fonction
@@ -638,7 +640,6 @@
 |nombre_de_noeuds
 |noms_champs
 |non
-|non_perio
 |normal_value
 |normalized_euclidian_norm
 |norme
@@ -835,7 +836,7 @@
 |runge_kutta_ordre_3
 |runge_kutta_ordre_4_d3p
 |runge_kutta_rationnel_ordre_2
-|sans_passer_par_le2D
+|sans_passer_par_le2d
 |sans_rien
 |sans_solveur_masse
 |sans_source_boussinesq
