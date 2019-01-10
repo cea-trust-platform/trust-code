@@ -344,19 +344,19 @@ check_components()
                            WORKBETA=""
                            if  [ "${machine:0:14}" = "callisto-intel" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.7.7/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.8 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.7.8/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.8 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.8.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.8 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.7.8.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.8 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.7.8.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -1177,8 +1177,8 @@ echo "###############################################"
 	###############################
 	# Verification des composants #
 	###############################
-	if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
-	#if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ] # Test a revoir : pour livraison TrioMC qd TRUST est tagguee
+	#if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
+	if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ] # Test a revoir : pour livraison TrioMC qd TRUST est tagguee
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
@@ -2745,7 +2745,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=67.49 # xx v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=67.49 # 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ $coverage = 1 ]
 then
