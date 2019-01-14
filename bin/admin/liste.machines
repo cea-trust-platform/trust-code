@@ -45,5 +45,5 @@ linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube -GENEPI3 -PolyMAC		
 linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -FLICA5 -GENEPI3 -PolyMAC -avx							# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225223-gui.intra.cea.fr			-MPCube -TrioCFD -FLICA5 -GENEPI3 -IJK-FT		-gui		-remote_install_TRUST_with_source	# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is231771.intra.cea.fr				-TrioCFD -FLICA5 -GENEPI3 				-platform	-force_latest_openmpi			# CentOS 7.5	Bat 451 LGLS	bureau Pierre Ledac
-linux	rsync_ssh	non		callisto-intel.intra.cea.fr	-limited	-IJK-FT -MATHYS								-disable-mpiio -without-visit		# CentOS 6.4	CEA Saclay	NB: bench desactive
+linux	rsync_ssh	non		callisto-intel.intra.cea.fr	-limited	-IJK-FT -MATHYS -PolyMAC						-disable-mpiio -without-visit		# CentOS 6.4	CEA Saclay	NB: bench desactive
 linux	rsync_ssh	non		cobalt-wi4mpi.ccc.cea.fr	-limited										-disable-tools				# RedHat 7.3	CEA CCRT

@@ -829,6 +829,10 @@ fi
       echo " git push origin TMA in `pwd`"
       if [[ "$Composant" != "flica5" && "$Composant" != "genepi3" ]]
       then
+         if [[ "$Composant" == "triocfd" ]]
+         then
+             git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+         fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
       else
          git remote update
