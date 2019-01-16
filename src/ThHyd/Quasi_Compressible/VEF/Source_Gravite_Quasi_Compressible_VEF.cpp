@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,7 +127,7 @@ void Source_Gravite_Quasi_Compressible_VEF::completer()
 // Postcondition:
 DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
 {
-  int i, face, nb_faces = la_zone->nb_faces();
+  int nb_faces = la_zone->nb_faces();
   int premiere_face_interne = la_zone->premiere_face_int();
   const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
   const DoubleVect& porosite_face = la_zone->porosite_face();
@@ -135,16 +135,20 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
   const DoubleTab& face_normales = la_zone->face_normales();
   const DoubleTab& xp = la_zone->xp();
   const DoubleTab& xv = la_zone->xv();
-  //const DoubleTab& tab_rhoP1 = le_fluide->masse_volumique()->valeurs();
   const DoubleTab& tab_rho = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur()).rho_discvit();
 
-  int num_cl;
-  int elem1,elem2, comp;
-  double delta_coord;
+  double rho_m=0;
+  if (le_fluide->get_traitement_rho_gravite())
+    {
+      // On calcule rho_moy on le retire de la gravite
+      // sensiblement egale a Boussi
+      // Le But donner un sens a P=0 quand on a de la gravite
+      rho_m=le_fluide->moyenne_vol(tab_rho);
+    }
 
   if (mon_equation->discretisation().que_suis_je()=="VEF")
     {
-      for (num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
+      for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
         {
           const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -152,66 +156,58 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
           int nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
             {
-              for (face=ndeb ; face<nfin ; face++)
+              for (int face=ndeb ; face<nfin ; face++)
                 {
-                  elem1 = face_voisins(face,0);
+                  int elem1 = face_voisins(face,0);
                   if (elem1==-1)
                     {
                       elem1 = face_voisins(face,1);
                     }
-                  for (comp=0 ; comp<dimension ; comp++)
+                  for (int comp=0 ; comp<dimension ; comp++)
                     {
-                      delta_coord = (xv(face,comp) - xp(elem1,comp));
-                      for (i=0 ; i<dimension ; i++)
+                      double delta_coord = (xv(face,comp) - xp(elem1,comp));
+                      for (int i=0 ; i<dimension ; i++)
                         {
-                          resu(face,i) += tab_rho(face)*delta_coord*face_normales(face,i)*g(comp);
+                          resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
                         }
                     }
                 }
             }
           else if (sub_type(Periodique,la_cl.valeur()))
             {
-              for (face=premiere_face_interne ; face<nb_faces; face++)
+              for (int face=premiere_face_interne ; face<nb_faces; face++)
                 {
-                  elem1 = face_voisins(face,0);
-                  elem2 = face_voisins(face,1);
-                  for (comp=0 ; comp<dimension ; comp++)
+                  int elem1 = face_voisins(face,0);
+                  int elem2 = face_voisins(face,1);
+                  for (int comp=0 ; comp<dimension ; comp++)
                     {
-                      delta_coord = (xp(elem2,comp) - xp(elem1,comp));
-                      for (i=0 ; i<dimension ; i++)
+                      double delta_coord = (xp(elem2,comp) - xp(elem1,comp));
+                      for (int i=0 ; i<dimension ; i++)
                         {
-                          resu(face,i) += tab_rho(face)*delta_coord*face_normales(face,i)*g(comp);
+                          resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
                         }
                     }
                 }
             }
         }
 
-      for (face=premiere_face_interne ; face<nb_faces; face++)
+      for (int face=premiere_face_interne ; face<nb_faces; face++)
         {
-          elem1 = face_voisins(face,0);
-          elem2 = face_voisins(face,1);
-          for (comp=0 ; comp<dimension ; comp++)
+          int elem1 = face_voisins(face,0);
+          int elem2 = face_voisins(face,1);
+          for (int comp=0 ; comp<dimension ; comp++)
             {
-              delta_coord = (xp(elem2,comp) - xp(elem1,comp));
-              for (i=0 ; i<dimension ; i++)
+              double delta_coord = (xp(elem2,comp) - xp(elem1,comp));
+              for (int i=0 ; i<dimension ; i++)
                 {
-                  resu(face,i) += tab_rho(face)*delta_coord*face_normales(face,i)*g(comp);
+                  resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
                 }
             }
         }
     }
   else if (mon_equation->discretisation().que_suis_je()=="VEFPreP1B")
     {
-      double rho_m=0;
-      if (le_fluide.valeur().get_traitement_rho_gravite())
-        {
-          // On calcule rho_moy on le retire de la gravite
-          // sensiblement egale a Boussi
-          // Le But donner un sens a P=0 quand on a de la gravite
-          rho_m=le_fluide.valeur().moyenne_vol(tab_rho);
-        }
-      for (num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
+      for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
         {
           const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -219,9 +215,9 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
           int nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur())||sub_type(Symetrie,la_cl.valeur())||sub_type(Periodique,la_cl.valeur()))
             {
-              for (face=ndeb ; face<nfin ; face++)
+              for (int face=ndeb ; face<nfin ; face++)
                 {
-                  for (comp=0 ; comp<dimension ; comp++)
+                  for (int comp=0 ; comp<dimension ; comp++)
                     {
                       resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
                     }
@@ -229,9 +225,9 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
             }
         }
 
-      for (face=premiere_face_interne ; face<nb_faces; face++)
+      for (int face=premiere_face_interne ; face<nb_faces; face++)
         {
-          for (comp=0 ; comp<dimension ; comp++)
+          for (int comp=0 ; comp<dimension ; comp++)
             {
               resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
             }
@@ -240,7 +236,7 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
   else
     {
       Cerr<<"La discretisation "<<mon_equation->discretisation().que_suis_je()<<" n'est pas reconnue dans Source_Gravite_Quasi_Compressible_VEF"<<finl;
-      abort();
+      Process::exit();
     }
 
   return resu;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ protected :
   Champ_Don longueur_rayo_;
 
   void creer_nu();
-  void calculer_nu();
+  virtual void calculer_nu();
 
 protected:
 
