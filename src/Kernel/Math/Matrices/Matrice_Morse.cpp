@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -162,6 +162,64 @@ Sortie& Matrice_Morse::imprimer_formatte(Sortie& s, int symetrie) const
     }
   return s;
 }
+
+Sortie& Matrice_Morse::imprimer_image(Sortie& s) const
+{
+  return imprimer_image(s,0);
+}
+
+Sortie& Matrice_Morse::imprimer_image(Sortie& s, int symetrie) const
+{
+  int numerotation_fortran=(tab1_.mp_min_vect()==1);
+  for (int proc=0; proc<Process::nproc(); proc++)
+    {
+      if (proc==Process::me())
+        {
+          s << "Matrix morse on the processor " << proc << " : " << finl;
+          int n=nb_lignes();
+          Noms tab_imp;
+          tab_imp.dimensionner(nb_colonnes());
+          for(int i=0; i<n; i++)
+            {
+              for (int k=0; k<nb_colonnes(); k++)
+                tab_imp[k]="\u2588\u2588";
+              if (i<10)
+                s <<i << " :" ;
+              else
+                s <<i << ":" ;
+
+              if (symetrie)
+                {
+                  for (int j=0; j<i; j++)
+                    {
+                      for (int k=tab1_(j)-numerotation_fortran; k<tab1_(j+1)-numerotation_fortran; k++)
+                        if (tab2_(k)-numerotation_fortran==i)
+                          tab_imp[j] = (coeff_(k) >= 0) ? "  " : "\u2592\u2592";
+                    }
+                  int ligne=tab2_(tab1_(i)-numerotation_fortran)-numerotation_fortran;
+                  if (i!=ligne)
+                    {
+                      Cerr << "Problem detected on this Matrice_Morse_Sym." << finl;
+                      Cerr << "The diagonal of the line " << ligne << " must be stored even if it is null." << finl;
+                      exit();
+                    }
+                }
+              for (int k=tab1_(i)-numerotation_fortran; k<tab1_(i+1)-numerotation_fortran; k++)
+                if (tab2_(k)+!numerotation_fortran==0)
+                  Cerr<<"Line " <<i<< " no coefficient "<<k<<finl;
+                else
+                  tab_imp[tab2_(k)-numerotation_fortran] = (coeff_(k) >= 0) ? "  " : "\u2592\u2592";
+
+              for(int k=0; k<nb_colonnes(); k++)
+                s<<tab_imp[k];
+              s<<finl;
+            }
+        }
+      Process::barrier();
+    }
+  return s;
+}
+
 
 // Description:
 //    Constructeur par copie d'une Matrice_Morse.

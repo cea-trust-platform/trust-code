@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,6 +75,8 @@ public :
   Sortie& imprimer(Sortie& s) const;
   Sortie& imprimer_formatte(Sortie& s) const;
   Sortie& imprimer_formatte(Sortie& s, int symetrie) const;
+  Sortie& imprimer_image(Sortie& s) const;
+  Sortie& imprimer_image(Sortie& s, int symetrie) const;
   int largeur_de_bande() const;         // Retourne la largeur de bande
   void remplir(const IntLists& ,const DoubleLists& ,const DoubleVect& );
   void remplir(const IntLists& ,const DoubleLists&);
