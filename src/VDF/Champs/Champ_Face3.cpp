@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -560,7 +560,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
   // que les valeurs aux parois.
 
   int ndeb,nfin,elem,ori,l_unif;
-  double norm_tau,u_etoile,norm_v, dist, val0, val1, val2, d_visco, visco=1.;
+  double norm_tau,u_etoile,norm_v=0, dist, val0, val1, val2, d_visco=0, visco=1.;
   y_plus=-1.;
 
   const Champ_Face& vit = *this;
@@ -592,21 +592,18 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
           v[i] = DMINFLOAT;
     }
   */
-  DoubleTab cisaillement(1,1);
-  int lp=0;
+
+  DoubleTab yplus_faces( 1, 1 ); // will contain yplus values if available
+  int yplus_already_computed=0; // flag
 
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
   if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base,modele_turbulence.valeur()))
     {
       const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
-      if( loipar.use_shear() )
-        {
-          cisaillement.resize(zone_VDF.nb_faces_bord());
-          cisaillement.ref(loipar.Cisaillement_paroi());
-          lp=1;
-        }
-      else lp=0;
+      yplus_faces.resize( la_zone_VDF->nb_faces_tot( ) );
+      yplus_faces.ref( loipar.tab_d_plus( ) );
+      yplus_already_computed = 1;
     }
 
   for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
@@ -619,74 +616,53 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
 
-          if (dimension == 2 )
-            for (int num_face=ndeb; num_face<nfin; num_face++)
-              {
-                ori = orientation(num_face);
-                if ( (elem =face_voisins(num_face,0)) != -1)
-                  norm_v=norm_2D_vit(vit,elem,ori,zone_VDF,val0);
-                else
-                  {
-                    elem = face_voisins(num_face,1);
-                    norm_v=norm_2D_vit(vit,elem,ori,zone_VDF,val0);
-                  }
-                if (axi)
-                  dist=zone_VDF.dist_norm_bord_axi(num_face);
-                else
-                  dist=zone_VDF.dist_norm_bord(num_face);
-                if (l_unif)
-                  d_visco = visco;
-                else
-                  d_visco = tab_visco[elem];
 
-                // PQ : 01/10/03 : corrections par rapport a la version premiere
+          for (int num_face=ndeb; num_face<nfin; num_face++)
+            {
 
-                if(lp)
-                  {
-                    norm_tau = sqrt(cisaillement(num_face,0)*cisaillement(num_face,0)
-                                    +cisaillement(num_face,1)*cisaillement(num_face,1));
-                  }
-                else  norm_tau = d_visco*norm_v/dist;
+              if( face_voisins( num_face, 0 ) != -1 )
+                elem = face_voisins( num_face, 0 ) ;
+              else
+                elem = face_voisins( num_face, 1 ) ;
 
-                u_etoile = sqrt(norm_tau);
-                y_plus(elem) = dist*u_etoile/d_visco;
+              if( yplus_already_computed )
+                {
+                  // y+ is only defined on faces so we take the face value to put in the element
+                  y_plus( elem ) = yplus_faces( num_face );
+                }
+              else
+                {
 
-              }
+                  if ( dimension == 2 )
+                    {
+                      ori = orientation(num_face);
+                      norm_v=norm_2D_vit(vit,elem,ori,zone_VDF,val0);
+                    }
+                  else if ( dimension == 3)
+                    {
+                      ori = orientation(num_face);
+                      norm_v=norm_3D_vit(vit,elem,ori,zone_VDF,val1,val2);
+                    } // dim 3
 
-          else if (dimension == 3)
-            for (int num_face=ndeb; num_face<nfin; num_face++)
-              {
-                ori = orientation(num_face);
-                if ( (elem = face_voisins(num_face,0)) != -1)
-                  norm_v=norm_3D_vit(vit,elem,ori,zone_VDF,val1,val2);
-                else
-                  {
-                    elem = face_voisins(num_face,1);
-                    norm_v=norm_3D_vit(vit,elem,ori,zone_VDF,val1,val2);
-                  }
-                if (axi)
-                  dist=zone_VDF.dist_norm_bord_axi(num_face);
-                else
-                  dist=zone_VDF.dist_norm_bord(num_face);
-                if (l_unif)
-                  d_visco = visco;
-                else
-                  d_visco = tab_visco[elem];
+                  if ( axi )
+                    dist=zone_VDF.dist_norm_bord_axi(num_face);
+                  else
+                    dist=zone_VDF.dist_norm_bord(num_face);
+                  if ( l_unif )
+                    d_visco = visco;
+                  else
+                    d_visco = tab_visco[elem];
 
-                // PQ : 01/10/03 : corrections par rapport a la version premiere
+                  // PQ : 01/10/03 : corrections par rapport a la version premiere
+                  norm_tau = d_visco*norm_v/dist;
 
-                if(lp)
-                  {
-                    norm_tau = sqrt(cisaillement(num_face,0)*cisaillement(num_face,0)
-                                    +cisaillement(num_face,1)*cisaillement(num_face,1)
-                                    +cisaillement(num_face,2)*cisaillement(num_face,2));
-                  }
-                else norm_tau = d_visco*norm_v/dist;
+                  u_etoile = sqrt(norm_tau);
+                  y_plus(elem) = dist*u_etoile/d_visco;
 
-                u_etoile = sqrt(norm_tau);
-                y_plus(elem) = dist*u_etoile/d_visco;
+                } // else yplus already computed
 
-              }
+            } // loop on faces
+
         } // Fin paroi fixe
 
     } // Fin boucle sur les bords
