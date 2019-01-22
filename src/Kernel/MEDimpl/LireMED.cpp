@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1811,12 +1811,13 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       // determination de la direction inutile
       int nbsom=sommets2.dimension(0);
       int dirinut=-1;
+      const double epsilon = Objet_U::precision_geom;
       for (int dir=0; dir<dim; dir++)
         {
           int trouve=1;
           double val1=sommets2(0,dir);
           for (int i=0; i<nbsom; i++)
-            if (val1!=sommets2(i,dir))
+            if (dabs(val1-sommets2(i,dir))>epsilon)
               {
                 trouve=0;
                 Cerr<<val1 << " "<<sommets2(i,dir)<<finl;
