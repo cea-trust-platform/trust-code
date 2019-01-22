@@ -847,8 +847,14 @@ test_solveur interprete test_solveur 1 To test several solvers
   attr seuil_verification floattant seuil_verification 1 Check if the solution satisfy ||Ax-B||<precision
   attr pas_de_solution_initiale rien pas_de_solution_initiale 1 Resolution isn\'t initialized with the solution x
   attr ascii rien ascii 1 Ascii files
-gen solveur_sys_base gen 0 not_set
-  attr data bloc_lecture data 0 not_set
+gen solveur_sys_base gen -1 not_set
+  attr solv_elem chaine solv_elem 0 To specify a solver among gmres or bicgstab.
+  attr precond chaine precond 0 The only preconditionner that we can specify is ilu. Its syntax is : precond ilu { [type int] [filling int] } where type is an integer with values 0|1|2|3 for null|left|right|left-and-right preconditionning (default value = 2) and filling is an integer (default value = 1).
+  attr seuil floattant seuil 1 Value of the final residue. The solver ceases iterations when the Euclidean residue standard ||Ax-B|| is less than this value. defautl value 1e-12.
+  attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+  attr save_matrice|save_matrix rien save_matrice 1 To save the matrix in a file.
+  attr quiet rien quiet 1 To not displaying any outputs of the solver.
+  attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the GEN solver.
 petsc solveur_sys_base petsc 0 Solveur via Petsc API NL2 \input{{solvpetsc}}
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set

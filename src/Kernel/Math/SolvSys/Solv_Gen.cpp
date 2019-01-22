@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
 Solv_Gen::Solv_Gen()
 {
   seuil_ = _SEUIL_Gen_;
+  nb_it_max_ = 1000000;
 }
 
 void Solv_Gen::reinit()
@@ -56,7 +57,7 @@ Entree& Solv_Gen::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(6);
+  Motcles les_parametres(7);
   {
     les_parametres[0] = "seuil";
     les_parametres[1] = "impr";
@@ -64,6 +65,7 @@ Entree& Solv_Gen::readOn(Entree& is )
     les_parametres[3] = "precond";
     les_parametres[4] = "save_matrice|save_matrix";
     les_parametres[5] = "quiet";
+    les_parametres[6] = "nb_it_max";
   }
   int rang;
 
@@ -110,6 +112,11 @@ Entree& Solv_Gen::readOn(Entree& is )
         case 5:
           {
             fixer_limpr(-1);
+            break;
+          }
+        case 6:
+          {
+            is>>nb_it_max_;
             break;
           }
         default :
@@ -252,7 +259,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
 
   int ret = ipar[0];
 
-  while(ret != 0)
+  while(ret != 0 && niter < nb_it_max_ )
     {
       niter++;
       W7.ref_array(w, ipar[7]-1, ntot);
@@ -375,7 +382,10 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
 
       //      Cerr<<"--------------------------------------------------"<<finl;
       if (limpr()>-1)
-        Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+        {
+          if (niter == nb_it_max_) Cout<<finl<<"Maximum number of iteration nb_iter_max for SolvGen = "<<nb_it_max_ << " reached..." <<finl;
+          Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+        }
       //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
       //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
       //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
