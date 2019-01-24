@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/bin/bash
 # --
 # Author : Eli LAUCOIN (CEA)
 # --
@@ -93,7 +93,7 @@ if [ "$1" = "-compute_dependencies" ]
 fi
 directory_for_tar=${project_directory}
 if [ "$1" = "-directory_for_tar" ]
-    then
+then
     directory_for_tar=$2
     mkdir -p ${directory_for_tar}
     shift
@@ -102,22 +102,22 @@ fi
 
 Gestion_conf=0
 option=""
-if [ "$1" = "-clearcase" ]
-    then
+if [ "$1" = "-git" ]
+then
     Gestion_conf=1
-    option="-clearcase"
+    option="-git"
     shift
 fi
 
 has_subproject=0
 for l_sub_project in $*
-  do
+do
   #echo ${project_directory}
   # echo ${BALTIK_ROOT}
   sub_project=`echo $l_sub_project | awk -F: '{print $2}'`
   p_sub_project=`echo $l_sub_project | awk -F: '{print $1}'`
-  if [ $sub_project != ${project_directory} ] 
-      then
+  if [ $sub_project != ${project_directory} ] && [ "$Gestion_conf" = 0 ]
+  then
       has_subproject=1
       mkdir -p $project_directory/archives_dependencies
       echo creation of archive $sub_project
@@ -158,6 +158,7 @@ project_archives="${project_directory_name}/archives"
 project_archives_dependencies="${project_directory_name}/archives_dependencies"
 project_baltik="${project_directory_name}/baltik"
 project_share="${project_directory_name}/share"
+release_notes="${project_directory_name}/RELEASE_NOTES"
 cd ..
 
 list_save="$project_src ${project_configuration_file}"
@@ -168,6 +169,7 @@ list_save="$project_src ${project_configuration_file}"
 [ -e $project_share ] && list_save="$list_save $project_share "
 
 [ -e $project_archives ] && list_save="$list_save $project_archives "
+[ -e $release_notes ] && list_save="$list_save $release_notes "
 
 # echo $has_subproject $*
 list_save_subp=""
@@ -177,16 +179,14 @@ export list_save; # echo "iiiiiiii" $list_save
 #;xterm ; exit
 if [ $Gestion_conf -eq 1 ]
 then 
-    # echo "clearcase"
+    # echo "git"
     list_save=""
-    cleartool find ${project_directory_name} -type f -nxn -print| grep -v "lost+found" | xargs tar rfh ${project_tar_name}
-    # on  ajoute les liens qui ne pointent  pas vers des repertoires ...
-    for dir in `cleartool find ${project_directory_name} -type l -nxn -print  | grep -v "lost+found"`
-      do
-      [ !  -d $dir ] && tar rfh  ${project_tar_name} $dir
-      done
-    [ "$list_save_subp" != "" ] && tar rfh ${project_tar_name} ${list_save_subp}
-    gzip ${project_tar_name}
+    cd ${project_directory}
+    echo "Creating ${project_tar_name} ..."
+    git archive --prefix=`basename $project_directory_name`/ --format=tar HEAD > ${project_tar_name}
+    [ "$list_save_subp" != "" ] && echo "Adding ${list_save_subp} ..." && tar rfh ${project_tar_name} ${list_save_subp}
+    echo "gziping ${project_tar_name} ..."
+    gzip -f ${project_tar_name}
     rm -f ${project_tar_name}
 else
     cmd="tar zcfh ${project_tar_name}.gz ${list_save} ${list_save_subp}"
@@ -194,7 +194,7 @@ else
     eval $cmd
 fi
 
-cd ${project_directory_name}
+cd ${project_directory}
 
 ln -sf ${project_tar_name}.gz ${project_tar_name_link}
 
