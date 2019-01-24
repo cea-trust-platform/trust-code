@@ -73,7 +73,7 @@ Entree& Solv_Gen::readOn(Entree& is )
   is >> motlu;
   if (motlu != accolade_ouverte)
     {
-      Cerr << "Error when reading the parameters for the conjugate gradient SSOR " << finl;
+      Cerr << "Error when reading the parameters for the generic solver " << finl;
       Cerr << "One expected : " << accolade_ouverte << finl;
       exit();
     }
@@ -149,7 +149,7 @@ int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice,
         solution.resize(n);
       else
         {
-          Cerr << "Solv_GCP::resoudre_systeme : wrong dimension of the vectors" << finl;
+          Cerr << "Solv_Gen::resoudre_systeme : wrong dimension of the vectors" << finl;
           return(-1);
         }
     }
@@ -235,6 +235,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
   int nmax = max(Process::mp_sum(n), 100);
   ipar[5] = nmax; // nb max de produit matrice vect
   // si nb negatif on s arrete a la convergence
+  // Si gros calcul (Process::mp_sum(n)>2147483647), specifier nb_it_max et imposer ipar[5] = -1
 
   fpar[0] = seuil_; // tolerance relative
   fpar[0]= 1e-50 ; // GF les autres solveurs n'ont pas de tol relative
