@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -242,8 +242,6 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
     }
   else
     return Fluide_Incompressible::lire_motcle_non_standard(mot,is);
-  return 1;
-
 }
 
 // Description:
@@ -299,10 +297,15 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   //   double Ch_m = EDO_Pth_->moyenne_vol(inco_chaleur_->valeurs());
   //   double rhom = EDO_Pth_->moyenne_vol(rho.valeurs());
   //   Pth_n = Pth_ = loi_etat_->inverser_Pth(Ch_m,rhom);
+  output_file_ = Objet_U::nom_du_cas();
+  output_file_ += "_";
+  output_file_ += pb.le_nom();
+  output_file_ += ".evol_glob";
+  Cerr << "Warning! evol_glob file renamed " << output_file_ << finl;
   if(je_suis_maitre())
     {
-      SFichier fic ("evol_glob");
-      fic<<"# Tps  Ch_moy  rhomoy Pth"<<finl;
+      SFichier fic (output_file_);
+      fic<<"# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]"<<finl;
     }
 }
 
@@ -602,12 +605,7 @@ void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
 
   if(je_suis_maitre())
     {
-      SFichier fic ("evol_glob",ios::app);
-      fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;
-    }
-  if(je_suis_maitre())
-    {
-      SFichier fic ("evol_glob",ios::app);
+      SFichier fic (output_file_,ios::app);
       fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;
     }
 }
@@ -731,7 +729,6 @@ const Champ_base& Fluide_Quasi_Compressible::get_champ(const Motcle& nom) const
     {
     }
   throw Champs_compris_erreur();
-  return ref_champ;
 }
 void Fluide_Quasi_Compressible::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
