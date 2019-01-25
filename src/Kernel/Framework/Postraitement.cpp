@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1144,10 +1144,10 @@ void Postraitement::init()
 
             if (Motcle(loc_post) == "FACES")
               {
-                if (Motcle(format).debute_par("lata")==0)
+                if (Motcle(format).debute_par("lata")==0 && Motcle(format).debute_par("med")==0)
                   {
                     Cerr<<"The field "<<nom[0]<<" can not be postprocessed to the faces in the format "<<format<<finl;
-                    Cerr<<"The postprocessing to the faces is allowed only in the format lata"<<finl;
+                    Cerr<<"The postprocessing to the faces is allowed only in the format lata or med"<<finl;
                     exit();
                   }
                 else
