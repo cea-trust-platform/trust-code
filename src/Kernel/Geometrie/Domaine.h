@@ -143,6 +143,11 @@ public :
   {
     return mesh_;
   };
+  MCAuto<MEDCouplingUMesh>& getUFacesMesh() const
+  {
+    // Construit si necessaire
+    return faces_mesh_;
+  };
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
   {
     mesh_ = m->clone(true);
@@ -160,8 +165,10 @@ protected :
   int deformable_;
   Nom fichier_lu_;
 #ifdef MEDCOUPLING_
-  ///! MEDCoupling version of the domaine:
+  ///! MEDCoupling version of the domain:
   mutable MCAuto<MEDCouplingUMesh> mesh_;
+  ///! MEDCoupling version of the faces domain:
+  mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
 #endif
 };
 Declare_liste(Domaine);
