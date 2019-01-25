@@ -506,6 +506,8 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
     ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
   else if (loc_post == "ELEM")
     ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+  else if (loc_post == "FACES")
+    ecr_med.ecrire_champ("CHAMPFACES", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
   else if (loc_post == "FACE")
     {
       if (nom_dom_inc != nom_dom)
