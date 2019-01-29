@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -681,7 +681,7 @@ void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
 {
   REF(Field_base) ch=findInputField(name);
   if (!ch.non_nul())
-    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate","name","no input field of that name");
+    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"no input field of that name");
 
   // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto
   // qui n'est pas un Objet_U...
@@ -702,7 +702,7 @@ void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
     }
 
   else
-    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate","name","field of this name is not an input field");
+    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"field of this name is not an input field");
 }
 
 // Description:
@@ -724,13 +724,13 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
 {
   REF(Field_base) ch=findInputField(name);
   if (!ch.non_nul())
-    throw WrongArgument(le_nom().getChar(),"setInputField",name.getChar(),"no input field of that name");
+    throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"no input field of that name");
   if (!est_egal(afield._time1,presentTime()))
     throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should be defined on current time interval");
   if (!est_egal(afield._time2,futureTime()))
     throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should be defined on current time interval");
   if (strcmp(name.getChar(),afield.getCharName()))
-    throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should have the same name as the argument name");
+    throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should have the same name as the argument name ");
 
   // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto
   // qui n'est pas un Objet_U...
@@ -751,7 +751,7 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
     }
 
   else
-    throw WrongArgument(le_nom().getChar(),"setInputField","name","field of this name is not an input field");
+    throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"field of this name is not an input field");
 }
 
 void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
@@ -759,7 +759,7 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 
   REF(Champ_Generique_base) ref_ch=findOutputField(name);
   if (!ref_ch.non_nul())
-    throw WrongArgument(le_nom().getChar(),"getOutputField",name.getChar(),"no output field of that name");
+    throw WrongArgument(le_nom().getChar(),"getOutputField",name.getString(),"no output field of that name");
 
   const Champ_Generique_base& ch = ref_ch.valeur();
 
