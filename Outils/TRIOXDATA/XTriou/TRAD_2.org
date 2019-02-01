@@ -153,7 +153,7 @@ extraction champ_post_de_champs_post extraction -1 To create a surface field (va
 morceau_equation champ_post_de_champs_post morceau_equation 1 To calculate a field related to a piece of equation. For the moment, the field which can be calculated is the stability time step of an operator equation. The problem name and the unknown of the equation should be given by Source refChamp { Pb_Champ problem_name unknown_field_of_equation }
   attr type chaine type 0 can only be operateur for equation operators.
   attr numero entier numero 0 numero will be 0 (diffusive operator) or 1 (convective operator).
-  attr option chaine(into=["stabilite","flux_bords"]) option 0 option is stability for time steps or flux_bords for boundary fluxes.
+  attr option chaine(into=["stabilite","flux_bords","flux_surfacique_bords"]) option 0 option is stability for time steps or flux_bords for boundary fluxes or flux_surfacique_bords for boundary surfacic fluxes
   attr compo entier compo 1 compo will specify the number component of the boundary flux (for boundary fluxes, in this case compo permits to specify the number component of the boundary flux choosen).
 definition_champ objet_lecture nul 0 Keyword to create new complex field for advanced postprocessing.
   attr name chaine name 0 The name of the new created field.

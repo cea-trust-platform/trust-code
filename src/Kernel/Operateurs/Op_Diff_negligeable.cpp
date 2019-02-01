@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,7 +134,7 @@ Motcle Op_Diff_negligeable::get_localisation_pour_post(const Nom& option) const
   Motcle loc;
   if (Motcle(option)=="stabilite")
     loc = "elem";
-  else if (Motcle(option)=="flux_bords")
+  else if (Motcle(option)=="flux_bords" || Motcle(option)=="flux_surfacique_bords")
     loc = "face";
 
   return loc;
