@@ -8,9 +8,9 @@
 
 usage()
 {
-echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
-echo the other options are passed to genererCourbes.py
-exit 0
+  echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
+  echo the other options are passed to genererCourbes.py
+  exit 0
 }
 # Chargement de l'environnement Python si necessaire
 #Provisoire pour voir quelles machines ont besoin de python
@@ -125,6 +125,8 @@ cd build
 if [ $run -eq 1 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=yes  -p $prm $*   > cmds
+  python $DIR/scripts/get_nb_procs.py $prm  > nb_procs || exit -1
+
   get_version
   echo "================================================"
   echo "-> Running commands in the ./build/cmds file ..."
@@ -136,11 +138,12 @@ then
      ########################
      # En lancement parallele, on cree des fichiers de nom cmdsN.sh sans le post_run et un fichier post_run.sh contenant les commandes post_run faites sequentiellement
      ########################
-     rm -f post_run.sh cmds*.sh
+     rm -f post_run.sh cmds*.sh nb_cpu*
      nb_tasks=`echo | awk -F";" '/\( echo/ {\
      n++;size=split($5,a," ");\
-     if (size==5) nb_cpus+=a[3];else nb_cpus++;\
-     cmds="cmds"n".sh";cmds_log="cmds"n".log";\
+     if (size==5) { nb_cpus+=a[3]; cur_n_cpu=a[3];} else { nb_cpus++; cur_n_cpu=1; } \
+     if (n < 10) n_str="00"n; else { if (n < 100) n_str="0"n; else n_str=""n; } \
+     cmds="cmds"n_str".sh";cmds_log="cmds"n".log";\
      print $1";"$2";"$3";"$4";"$5") 1>"cmds_log" 2>&1" > cmds;\
      print $1";"$3";"$6";"$7 >> "post_run.sh"}\
      !/\( echo/ {print $0 >> "post_run.sh"}\
@@ -153,7 +156,9 @@ then
         if [ "$parallel" = 2 ] 
         then
             chmod +x ./$cmd
-            $SJOB_DIR/Salloc ./$cmd &
+            nb_proc_one_case=`sed "${n}q;d" nb_procs`
+            echo "Commnand: " $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd
+            $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd &
         else
 
           # See https://stackoverflow.com/questions/1537956/bash-limit-the-number-of-concurrent-jobs    
@@ -172,17 +177,20 @@ then
                  sleep 1
               done
           }
+          max_bg_procs $TRUST_NB_PROCS
+          awk -F'"' '{print $2}' $cmd
+          bash ./$cmd &
 
-        max_bg_procs $TRUST_NB_PROCS
-        awk -F'"' '{print $2}' $cmd
-            bash ./$cmd &
         fi
-     done
+     done     
      wait
+
      # Lancement du post_run 
      bash ./post_run.sh
   fi
 fi
+
+
 if [ $run -eq 2 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=${suff}_run  -p $prm $*   > cmds_${suff}
@@ -192,6 +200,7 @@ then
   echo "========================================================"
   bash cmds_${suff}
 fi
+
 
 if [ $run -le -1 ]
 then
