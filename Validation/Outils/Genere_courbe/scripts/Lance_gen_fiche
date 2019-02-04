@@ -15,10 +15,22 @@ get_list_prm_from_Times()
   file=$1
   list=""
   for cas in `awk '{print $NF}' $file`
-  do
-  cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow | grep -v '/src/'`
-  list=$list" "$cadt
-  done
+    do
+    cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow | grep -v '/src/'`
+    list=$list" "$cadt
+    done
+  
+  # Complete with other PRM (to get new ones) at top of the list
+  lst_full=`get_list_prm`
+  extras=""
+  for p in $lst_full
+    do
+    echo $list | grep -q $p
+    if [ $? != 0 ]
+      then extras=$extras" "$p
+      fi
+    done
+  list=$extras" "$list
   echo $list
 }
 

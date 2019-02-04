@@ -1,9 +1,11 @@
 #!/bin/bash
 
 
-echo def Extract_Times DIR
+echo def Extract_Times [-revert] DIR
 Extract_Times()
 {
+    [ "$1" = "-revert" ] && revert="--reverse" && shift
+
     org=`pwd`
     cd $1
     ref=`pwd`
@@ -27,7 +29,7 @@ Extract_Times()
     done    > Times
     echo $stt Total  >> Times
     echo $stt Total 
-    sort -n Times > ../Times
+    sort -n $revert Times > ../Times
     cd ..
     rm -rf build_prov
     cd $org
