@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -891,24 +891,25 @@ inline double Eval_Dift_VDF_var_Face::secmem_arete_symetrie(int, int, int, int) 
 inline double Eval_Dift_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int elem,
                                                     int fac1, int fac2) const
 {
-  double flux,k_elem;
+  double flux; //,k_elem;
   int ori=orientation(fac1);
   double tau = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
   double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  if (k_.nb_dim() == 1)
-    k_elem = k_(elem);
-  else if (k_.nb_dim() == 2)
-    k_elem = k_(elem,0);
-  else
-    {
-      assert(0);
-      Process::exit();
-      k_elem=-1;
-    }
-  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
+  // if (k_.nb_dim() == 1)
+  //  k_elem = k_(elem);
+  // else if (k_.nb_dim() == 2)
+  //  k_elem = k_(elem,0);
+  // else
+  //  {
+  //    assert(0);
+  //    Process::exit();
+  //    k_elem=-1;
+  //  }
+  double reyn = - 2.*dv_diffusivite_turbulente(elem)*tau ;
+  //  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
   // On verifie que les termes diagonaux du tenseur de reynolds sont bien positifs
   // Sinon on annulle :
-  if (reyn < 0) reyn=0. ;
+  //  if (reyn < 0) reyn=0. ;
   flux = (-reyn + dv_diffusivite(elem)*tau) * surf ;
   return flux;
 }
@@ -919,24 +920,25 @@ inline double Eval_Dift_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int e
 
 inline void Eval_Dift_VDF_var_Face::coeffs_fa7_elem(int elem ,int fac1, int fac2, double& aii, double& ajj) const
 {
-  double k_elem;
+  // double k_elem;
   int ori=orientation(fac1);
   double tau = 1/dist_face(fac1,fac2,ori);
   double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  if (k_.nb_dim() == 1)
-    k_elem = k_(elem);
-  else if (k_.nb_dim() == 2)
-    k_elem = k_(elem,0);
-  else
-    {
-      assert(0);
-      Process::exit();
-      k_elem=-1;
-    }
-  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
+  // if (k_.nb_dim() == 1)
+  //   k_elem = k_(elem);
+  // else if (k_.nb_dim() == 2)
+  //   k_elem = k_(elem,0);
+  // else
+  //   {
+  //     assert(0);
+  //     Process::exit();
+  //     k_elem=-1;
+  //   }
+  double reyn =  - 2.*dv_diffusivite_turbulente(elem)*tau ;
+  //  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
   // On verifie que les termes diagonaux du tenseur de reynolds sont bien positifs
   // Sinon on annulle :
-  if (reyn < 0) reyn=0. ;
+  //  if (reyn < 0) reyn=0. ;
 
   aii = ajj =(-reyn +dv_diffusivite(elem)*tau) * surf;
 }
