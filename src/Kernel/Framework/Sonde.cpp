@@ -1132,7 +1132,12 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   if (nb>nb_bip)
     {
       // Si le maillage est deformable il faut reconstruire les sondes
-      if (mon_post->probleme().domaine().deformable()) initialiser();
+      if (mon_post->probleme().domaine().deformable())
+        {
+          if (les_positions_sondes_.dimension(0) > 0 )
+            les_positions_=   les_positions_sondes_;
+          initialiser();
+        }
       nb_bip=nb;
       reprise=1;
       postraiter();
