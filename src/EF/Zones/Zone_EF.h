@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,6 @@ public :
     return h_carre_(i);
   };
   inline double face_normales(int ,int ) const;
-  void calculer_face_surfaces();
   inline DoubleTab& face_normales();
   inline const DoubleTab& face_normales() const;
   inline IntVect& rang_elem_non_std();

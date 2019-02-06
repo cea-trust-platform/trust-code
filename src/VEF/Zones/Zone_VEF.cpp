@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -379,8 +379,6 @@ void Zone_VEF::discretiser()
   type_elem_.creer_facette_normales(zone_geom,
                                     facette_normales(),
                                     rang_elem_non_std());
-  // Calcul de face_surfaces_
-  calculer_face_surfaces();
 
   calculer_volumes_entrelaces();
   Cerr << "Informations of the Zone VEF of the domain " << zone().domaine().le_nom() << " : " << finl;
@@ -462,19 +460,6 @@ void Zone_VEF::calculer_volumes_entrelaces()
 void Zone_VEF::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
-}
-
-void Zone_VEF::calculer_face_surfaces()
-{
-  int nb_faces_=nb_faces_tot();
-  face_surfaces_.resize(nb_faces_, Array_base::NOCOPY_NOINIT);
-  for (int i=0; i<nb_faces_; i++)
-    {
-      double surf=0;
-      for (int k=0; k<dimension; k++)
-        surf += (face_normales_(i,k)*face_normales_(i,k));
-      face_surfaces_(i) = sqrt(surf);
-    }
 }
 
 void Zone_VEF::modifier_pour_Cl(const Conds_lim& conds_lim)

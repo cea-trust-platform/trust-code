@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -124,9 +124,6 @@ public :
   inline int face_amont_conj(int ,int ,int ) const;
   inline int face_bord_amont(int ,int ,int ) const;
   inline int elem_voisin(int , int , int ) const;
-
-  // face_surfaces
-  void calculer_face_surfaces(Faces&);
 
   inline IntVect& orientation();
   inline const IntVect& orientation() const;
@@ -272,7 +269,7 @@ inline double Zone_VDF::face_normales(int num_face,int k) const
   int ori = orientation(num_face);
   double surf=0;
   if (ori == k)
-    surf=face_surfaces_(num_face);
+    surf=face_surfaces(num_face);
   return surf;
 }
 

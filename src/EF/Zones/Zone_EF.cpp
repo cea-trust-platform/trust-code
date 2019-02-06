@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -519,8 +519,6 @@ void Zone_EF::discretiser()
                            face_som, face_vois, elem_face, zone_geom);
       }
   }
-  // Calcul de face_surfaces_
-  calculer_face_surfaces();
 
   Zone_VF::calculer_porosites();
   //calculer_volumes_entrelaces();
@@ -769,21 +767,6 @@ void Zone_EF::calculer_volumes_entrelaces()
 void Zone_EF::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
-}
-
-void Zone_EF::calculer_face_surfaces()
-{
-  int nb_faces_=nb_faces();
-  creer_tableau_faces(face_surfaces_);
-  face_surfaces_.echange_espace_virtuel();
-  for (int i=0; i<nb_faces_; i++)
-    {
-      double surf=0;
-      for (int k=0; k<dimension; k++)
-        surf += (face_normales_(i,k)*face_normales_(i,k));
-      face_surfaces_(i) = sqrt(surf);
-    }
-  face_surfaces_.echange_espace_virtuel();
 }
 
 void Zone_EF::modifier_pour_Cl(const Conds_lim& conds_lim)

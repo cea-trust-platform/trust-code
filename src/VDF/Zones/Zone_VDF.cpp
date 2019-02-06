@@ -212,16 +212,6 @@ void Zone_VDF::reordonner(Faces& les_faces)
   Joints&      joints     = zone().faces_joint();
   reordonner_vdf(zone().nb_faces_frontiere(),
                  les_faces_vdf, elem_faces_, orientation_, joints);
-
-  // Calcul des surfaces (tant que l'objet Faces_VDF existe !!!)
-  calculer_face_surfaces(les_faces);
-  // Cerr << "les faces apres les_faces_vdf.reordonner(orientation_) " << les_faces << finl;
-}
-
-void Zone_VDF::calculer_face_surfaces(Faces& les_faces)
-{
-  // Calcul des surfaces (tant que l'objet Faces_VDF existe !!!)
-  les_faces.calculer_surfaces(face_surfaces_);
 }
 
 // Description:
@@ -268,12 +258,6 @@ void Zone_VDF::discretiser()
   creer_tableau_faces(orientation_);
   orientation_.echange_espace_virtuel();
   orientation_.set_md_vector(md_nul); // Detache la structure parallele
-
-  // Calcul de la surface des faces virtuelles
-  // Note BM: idem que orientation_.
-  creer_tableau_faces(face_surfaces_);
-  face_surfaces_.echange_espace_virtuel();
-  face_surfaces_.set_md_vector(md_nul); // Detache la structure parallele
 
   // Application de la convention VDF sur face_voisin:
   // L'element face_voisin(i,0) doit avoir une coordonnee "ori" plus petite que la face
