@@ -241,3 +241,4 @@ echo "=============================="
 echo "-> Building PDF report file..."
 echo "=============================="
 python $DIR/src/genererCourbes.py -p $prm $*
+
