@@ -1,7 +1,8 @@
-XX/XX/18 (TRUST)  Bug fixed   : File evol_glob for quasi-compressible calculation renamed datacase_pbname.evol_glob
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 --------------------------------------------------------------------------------------------------
+05/02/19 (TRUST)  New keyword : Adding possibility to specify maximum number of iteration for the generic "GEN" solver
+25/01/19 (TRUST)  Bug fixed   : File evol_glob for quasi-compressible calculation renamed datacase_pbname.evol_glob
 23/01/19 (TRUST)  Bug fixed   : Stability time steps are now computed and printed for mass fraction transport 
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8 : Enhancements, modifications and corrected bugs since version 1.7.7 :
