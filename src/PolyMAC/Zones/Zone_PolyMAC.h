@@ -200,7 +200,6 @@ private:
   Elem_PolyMAC type_elem_;                  // type de l'element de discretisation
   DoubleTab face_normales_;             // normales aux faces
   DoubleVect longueur_aretes_; //longueur des aretes
-  DoubleTab volumes_entrelaces_dir_;    // decomposition de volumes_entrelaces_ de chaque cote
   int nb_faces_std_;                    // nombre de faces standard
   int nb_elem_std_;                     // nombre d'elements standard
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard

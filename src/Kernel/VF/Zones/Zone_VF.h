@@ -109,6 +109,8 @@ public :
   inline DoubleVect& volumes_entrelaces();
   inline const DoubleVect& volumes_entrelaces() const;
   inline double volumes_entrelaces(int num_face) const;
+  inline const DoubleTab& volumes_entrelaces_dir() const;
+  inline DoubleTab& volumes_entrelaces_dir();
 
   inline DoubleVect& porosite_face();
   inline const DoubleVect& porosite_face() const;
@@ -197,6 +199,7 @@ protected:
   DoubleVect volumes_;                          // volumes des elements
   DoubleVect inverse_volumes_;                  // inverse du volumes des elements
   DoubleVect volumes_entrelaces_;            // volumes entrelaces pour l'integration des Qdm
+  DoubleTab volumes_entrelaces_dir_;        // volumes entrelaces par cote
 
   DoubleVect porosite_elem_;                 // Porosites volumiques pour les volumes de
   // controle de masse
@@ -687,6 +690,19 @@ inline const DoubleVect& Zone_VF::volumes_entrelaces() const
 inline double Zone_VF::volumes_entrelaces(int num_face) const
 {
   return volumes_entrelaces_[num_face];
+}
+
+// Decription:
+// renvoie le tableau des volumes entrelaces par cote.
+inline DoubleTab& Zone_VF::volumes_entrelaces_dir()
+{
+  return volumes_entrelaces_dir_;
+}
+
+// Decription:
+inline const DoubleTab& Zone_VF::volumes_entrelaces_dir() const
+{
+  return volumes_entrelaces_dir_;
 }
 
 inline const ArrOfInt& Zone_VF::ind_faces_virt_bord() const
