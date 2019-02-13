@@ -1,13 +1,20 @@
+# Build stuff
 build/
 MonoDir*/
 lib/
 exec/
 externalpackages/
+externalpackages
 include/
 env/
 env_TRUST.sh
 Makefile
 *.log
+convert_jdd
+gcov/
+hierarchie.dump
+liste_cas
+md5.check
 
 # XDATA stuff
 
@@ -30,4 +37,35 @@ Outils/TRIOXDATA/XTriou/tests/
 Outils/TRIOXDATA/XTriou/traces
 Outils/TRIOXDATA/XTriou/triou.py
 Outils/TRIOXDATA/XTriou/update_xd
+Outils/TRIOXDATA/XTriou/TRAD_2.mod
+
+# ICoCo
+Outils/ICoCo/ICoCo_src/README.BALTIK
+Outils/ICoCo/ICoCo_src/configure
+Outils/ICoCo/ICoCo_src/env_MEDICoCo.sh
+Outils/ICoCo/ICoCo_src/full_env_MEDICoCo.sh
+Outils/Python_modules/distribute-0.6.28/
+Outils/Python_modules/distribute-0.7.3/
+
+# MED
+ThirdPart/src/LIBMED/archives
+ThirdPart/src/LIBMED/scripts/generated
+
+# Doc
+doc/Coverage/dico.pkl
+doc/Coverage/html/
+doc/Coverage/list_methodes
+doc/Coverage/list_methodes_non_appelees
+doc/TRUST/Keywords.Vim
+doc/TRUST/TRUST_Generic_Guide.pdf
+doc/TRUST/Tutorial/LOG
+doc/TRUST/Tutorial/TRUST_tutorial.aux
+doc/TRUST/Tutorial/TRUST_tutorial.idx
+doc/TRUST/Tutorial/TRUST_tutorial.nav
+doc/TRUST/Tutorial/TRUST_tutorial.out
+doc/TRUST/Tutorial/TRUST_tutorial.snm
+doc/TRUST/Tutorial/TRUST_tutorial.toc
+doc/TRUST/exercices/Tutorial_solutions.pdf
+doc/html/
+src/Readme_eclipse.pdf
 
