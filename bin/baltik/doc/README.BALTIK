@@ -227,5 +227,27 @@ if two or more of theses files share the same name.
 
 This section will be discussed in a future version of this document.
 
+==================================================
+12. Available environment variables
+==================================================
+
+Once the project environment sources, several environment variables are availables.
+Here are listed the most importants :
+- project_directory : root directory of the baltik project ;
+- exec_opt : path to the optimized executable (if built) ;
+- exec_debug : path to the debug executable (if built) ;
+- exec : current version of the executable used when running "trust" command ;
+- [SubProjectName]_project_directory : root directory of all sub projects associated to your baltik.
+
+For example if project.cfg contains following lines :
+
+[dependencies]
+MathKernel: ./MathKernel
+
+Then, environment variables "MathKernel_project_directory" will be created.
+
+
+
+
 
 
