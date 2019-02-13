@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -588,7 +588,9 @@ int Champ_implementation_P0::imprime_P0(Sortie& os, int ncomp) const
 
 int Champ_implementation_P0::affecter_(const Champ_base& ch)
 {
-  if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base()==ch.zone_dis_base())
+  // if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base().zone()==ch.zone_dis_base().zone())
+  // Plus general en comparant la zone:
+  if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base().zone()==ch.zone_dis_base().zone())
     {
       // Meme support donc on utilise une methode plus rapide pour affecter_
       // que la methode generale dans Champ_Fonc_base::affecter_ ou Champ_Inc_base::affecter_
