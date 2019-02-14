@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -512,12 +512,13 @@ void Operateur_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 
 //Calcul du tableau de valeurs d une quantite lie a un operateur pour postraitement
 //Options reconnues : "stabilite" pour dt_stab
-//                      "flux_bords" pour flux_bords_
+//                      "flux_bords" ou "flux_surfacique_bords" pour flux_bords_
 //
 void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
 {
-  if (Motcle(option)=="flux_bords")
+  if (Motcle(option)=="flux_bords" || Motcle(option)=="flux_surfacique_bords")
     {
+      bool surfacique = (Motcle(option)=="flux_surfacique_bords");
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 0.;
       const Zone_Cl_dis_base& zcl_dis = equation().zone_Cl_dis();
@@ -529,19 +530,21 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
           //Methode de distinction horrible mais evite de dupliquer le codage
           //pour les operateurs VEF et idem pour les operateurs VDF
           //Il faudrait une classe de base pour tous les operateurs VEF et idem en VDF
-
+          DoubleVect aire;
           if (!zdis.que_suis_je().debute_par("Zone_VDF"))
             {
               for (int n_bord=0; n_bord<nb_front; n_bord++)
                 {
                   const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
                   const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+
+                  if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
                   int ndeb = le_bord.num_premiere_face();
                   int nfin = ndeb + le_bord.nb_faces();
 
                   for (int face=ndeb; face<nfin; face++)
                     {
-                      es_valeurs(face) =  flux_bords_(face,comp);
+                      es_valeurs(face) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
                     }
                 }
             }
@@ -554,15 +557,15 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
                 {
                   const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
                   const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
                   int ndeb = le_bord.num_premiere_face();
                   int nfin = ndeb + le_bord.nb_faces();
-
                   for (int face=ndeb; face<nfin; face++)
                     {
                       elem = face_vois(face,0);
                       if (elem==-1)
                         elem = face_vois(face,1);
-                      es_valeurs(elem) =  flux_bords_(face,comp);
+                      es_valeurs(elem) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
                     }
                 }
             }
@@ -579,7 +582,7 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
 Motcle Operateur_base::get_localisation_pour_post(const Nom& option) const
 {
   Motcle loc;
-  if (Motcle(option)=="flux_bords")
+  if (Motcle(option)=="flux_bords" || Motcle(option)=="flux_surfacique_bords")
     {
       const Zone_dis_base& zdis = equation().zone_dis().valeur();
       if (!zdis.que_suis_je().debute_par("Zone_VDF"))
