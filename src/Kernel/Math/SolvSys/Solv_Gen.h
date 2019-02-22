@@ -56,7 +56,6 @@ protected :
             DoubleVect& solution);
   Precond le_precond_;
   int nb_it_max_;
-  int nb_it_max_flag ;
 
   SolvElem le_solveur_elem_;
 };
