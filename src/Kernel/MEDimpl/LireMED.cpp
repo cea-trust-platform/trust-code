@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1360,6 +1360,33 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, const int& axis_type, const bool& cell_from_boundary)
 {
   Nom type_elem;
+  // [ABN] : first make sure the axis type is properly set, this will influence choice of the element
+  // Set up correctly bidim_axi or axi variable according to MED file data.
+  if (axis_type==MEDCoupling::AX_CYL)
+    {
+      if (type_cell==INTERP_KERNEL::NORM_QUAD4)
+        {
+          if (!Objet_U::axi)
+            {
+              Cerr<<"WARNING, Cylindrical MED coordinates detected - we will use 'axi' keyword."<<finl;
+              Objet_U::axi=1;
+            }
+        }
+      else
+        {
+          Cerr << "Strange error with MED file - should never happen!? MED file with axis type AX_CYL contains elements other than NORM_QUAD4."<< finl;
+          Process::exit();
+        }
+    }
+  if (axis_type==MEDCoupling::AX_SPHER)
+    {
+      Cerr << "Spherical coordinates read in the MED file - this is unsupported in TRUST!" << finl;
+      Process::exit();
+    }
+
+  //
+  // At this stage 'axi' and 'bidim_axi' are properly set.
+  //
   if (type_cell==INTERP_KERNEL::NORM_QUAD4)
     type_elem = cell_from_boundary ? "QUADRANGLE_3D" : (isvef == 1 ? "Quadrangle" : "Rectangle");
   else if (type_cell==INTERP_KERNEL::NORM_HEXA8)
@@ -1385,33 +1412,20 @@ Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, co
       Cerr<<"Cell type " << type_cell<< " is not supported yet." <<finl;
       Process::exit();
     }
-  // According axis_type:
-  if (axis_type==MEDCoupling::AX_CYL)
+  if(Objet_U::bidim_axi && !(type_cell == INTERP_KERNEL::NORM_QUAD4 || type_cell == INTERP_KERNEL::NORM_SEG2))
     {
-      if (type_cell==INTERP_KERNEL::NORM_QUAD4)
-        {
-          type_elem="Rectangle_2D_axi";
-          if (!Objet_U::bidim_axi)
-            {
-              Cerr<<"Warning, we will use bidim_axi keyword."<<finl;
-              Objet_U::bidim_axi=1;
-            }
-        }
-      else
-        {
-          Cerr << "Cylindrical coordinates unsupported for element: " << type_elem << finl;
-          Process::exit();
-        }
+      Cerr<<"Cell type " << type_cell<< " is not supported for 'bidim_axi' mode." <<finl;
+      Process::exit();
     }
-  if (axis_type==MEDCoupling::AX_SPHER)
+  if (Objet_U::axi && !(type_cell == INTERP_KERNEL::NORM_HEXA8 || type_cell == INTERP_KERNEL::NORM_QUAD4))
     {
-      type_elem+="_axi";
-      if (!Objet_U::axi)
-        {
-          Cerr<<"Warning, we will use now Axi keyword."<<finl;
-          Objet_U::axi=1;
-        }
+      Cerr<<"Cell type " << type_cell<< " is not supported for 'axi' mode." <<finl;
+      Process::exit();
     }
+  if (Objet_U::bidim_axi && type_cell == INTERP_KERNEL::NORM_QUAD4)
+    type_elem = "Rectangle_2D_axi";
+  if (Objet_U::axi)
+    type_elem += "_axi";
   return type_elem;
 }
 #endif
@@ -2436,4 +2450,6 @@ void lire_nom_med(Nom& nom_champ, Entree& s)
       Cerr<<nom_champ<<finl;
     }
 }
+
+
 
