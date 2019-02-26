@@ -8,7 +8,7 @@ Pb_hydraulique pb
 
 Domaine dom
 
-# BEGIN MESH #
+#
 Mailler dom 
 {
 	Pave TUBE_Axi
@@ -25,9 +25,14 @@ Mailler dom
 		bord PAROI    X = 0.006     0. <= Y <= 1.	
 		} 
 
-
 }
+ecrire_med dom rectangle.med
+end
+#
 
+Bidim_Axi
+# BEGIN MESH #
+Lire_Med dom dom rectangle.med
 # END MESH #
 # BEGIN PARTITION
 Partition dom
