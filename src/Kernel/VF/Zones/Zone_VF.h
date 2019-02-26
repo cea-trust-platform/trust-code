@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,6 +47,10 @@ class Zone_VF : public Zone_dis_base
 public :
 
   virtual double face_normales(int , int ) const =0;
+  void calculer_face_surfaces(const DoubleVect& surfaces)
+  {
+    face_surfaces_ = surfaces;
+  };
   virtual const DoubleVect& face_surfaces() const
   {
     return face_surfaces_;
