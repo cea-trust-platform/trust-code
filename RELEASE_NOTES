@@ -1,3 +1,5 @@
+XX/XX/19 (TRUST)  New keyword : Block_Jacobi_ILU PETSc preconditioner (adapted to non symmetric linear system)
+XX/XX/19 (TRUST)  New keyword : Cholesky_Mumps_BLR PETSc solver (reduced memory and faster factorization)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 --------------------------------------------------------------------------------------------------
