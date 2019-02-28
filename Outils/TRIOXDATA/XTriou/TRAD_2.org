@@ -858,6 +858,7 @@ gen solveur_sys_base gen -1 not_set
   attr save_matrice|save_matrix rien save_matrice 1 To save the matrix in a file.
   attr quiet rien quiet 1 To not displaying any outputs of the solver.
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the GEN solver.
+  attr force rien force 1 Keyword to set ipar[5]=-1 in the GEN solver. This is helpful if you notice that the solver does not perform more than 100 iterations. If this keyword is specified in the datafile, you should provide nb_it_max.
 petsc solveur_sys_base petsc 0 Solveur via Petsc API NL2 \input{{solvpetsc}}
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set

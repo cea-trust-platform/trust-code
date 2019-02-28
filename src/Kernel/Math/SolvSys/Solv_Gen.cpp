@@ -32,6 +32,8 @@ Solv_Gen::Solv_Gen()
 {
   seuil_ = _SEUIL_Gen_;
   nb_it_max_ = 1000000;
+  nb_it_max_flag = 0;
+  force_ = 0;
 }
 
 void Solv_Gen::reinit()
@@ -57,7 +59,7 @@ Entree& Solv_Gen::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(7);
+  Motcles les_parametres(8);
   {
     les_parametres[0] = "seuil";
     les_parametres[1] = "impr";
@@ -66,6 +68,7 @@ Entree& Solv_Gen::readOn(Entree& is )
     les_parametres[4] = "save_matrice|save_matrix";
     les_parametres[5] = "quiet";
     les_parametres[6] = "nb_it_max";
+    les_parametres[7] = "force";
   }
   int rang;
 
@@ -117,6 +120,12 @@ Entree& Solv_Gen::readOn(Entree& is )
         case 6:
           {
             is>>nb_it_max_;
+            nb_it_max_flag = 1;
+            break;
+          }
+        case 7:
+          {
+            force_ = 1;
             break;
           }
         default :
@@ -127,6 +136,12 @@ Entree& Solv_Gen::readOn(Entree& is )
           }
         }
       is >> motlu;
+    }
+  if ((nb_it_max_flag ==0) && (force_==1) )
+    {
+      Cerr << "Error while reading the parameters of the generic solver " << finl;
+      Cerr << "When you choose to 'force' negative ipar[5], you should specify nb_it_max in your datafile" << finl;
+      exit();
     }
   return is;
 }
@@ -236,6 +251,8 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
   ipar[5] = nmax; // nb max de produit matrice vect
   // si nb negatif on s arrete a la convergence
   // Si gros calcul (Process::mp_sum(n)>2147483647), specifier nb_it_max et imposer ipar[5] = -1
+  // on le fait desormais en specifiant le mot cle 'force' dans le jdd
+  if (force_ ==1) ipar[5] = -1;
 
   fpar[0] = seuil_; // tolerance relative
   fpar[0]= 1e-50 ; // GF les autres solveurs n'ont pas de tol relative
@@ -384,7 +401,11 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
       //      Cerr<<"--------------------------------------------------"<<finl;
       if (limpr()>-1)
         {
-          if (niter == nb_it_max_) Cout<<finl<<"Maximum number of iteration nb_iter_max for SolvGen = "<<nb_it_max_ << " reached..." <<finl;
+          if (niter == nb_it_max_)
+            {
+              Cout<<finl<<"Maximum number of iteration nb_it_max for SolvGen = "<<nb_it_max_ << " reached..." <<finl;
+              if (nb_it_max_flag == 0) Cout<<"Advice: You can modify nb_it_max by setting it in your datafile..." <<finl;
+            }
           Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
         }
       //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
