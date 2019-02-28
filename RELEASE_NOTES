@@ -1,3 +1,4 @@
+XX/XX/19 (TRUST)  Bug fixed   : Axial symmetry was not functionnal with bidim_axi keyword when reading a 2D MED mesh
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8 : Enhancements, modifications and corrected bugs since version 1.7.7 :
 --------------------------------------------------------------------------------------------------
