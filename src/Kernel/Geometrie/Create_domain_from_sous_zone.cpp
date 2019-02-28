@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,10 +132,9 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
           bords.suppr(bords(b));
         }
     }
-
   dom.nommer(nom_dom);
+  domaine().reordonner();
   Scatter::init_sequential_domain(dom);
-
   return is;
 
 }
