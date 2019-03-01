@@ -207,7 +207,7 @@ void mon_main::finalize()
             Nom OptionLeft(OptionsLeft[i]);
             // Rajouter ici des options Trust (-log?):
             if (OptionLeft != "no_verify" &&
-		OptionLeft != "log_view" &&
+                OptionLeft != "log_view" &&
                 OptionLeft != "options_left" &&
                 OptionLeft != "options_view")
               {

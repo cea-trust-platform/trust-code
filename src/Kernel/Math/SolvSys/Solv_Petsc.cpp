@@ -940,7 +940,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // Change le calcul du test de convergence relative (||Ax-b||/||Ax(0)-b|| au lieu de ||Ax-b||/||b||)
   // Peu utilisee dans TRUST car on utilise la convergence sur la norme absolue
   // Mais cela corrige une erreur KSP_DIVERGED_DTOL quand ||Ax-b||/||b||>10000=div_tol par defaut dans PETSc (rencontree sur Etude REV_4)
-  //add_option("ksp_converged_use_initial_residual_norm",1); // Before PETSc 3.5
+  //add_option(sys, "ksp_converged_use_initial_residual_norm",1); // Before PETSc 3.5
   KSPConvergedDefaultSetUIRNorm(SolveurPetsc_); // After PETSc 3.5, a function is available
 
   // Surcharge eventuelle par la ligne de commande
