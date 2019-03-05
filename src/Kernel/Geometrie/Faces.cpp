@@ -710,6 +710,8 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
             int n1 = sommet(face, 1);
             int n2 = sommet(face, 2);
             int n3 = sommet(face, 3);
+            // NB: Dans un prisme, il y'a aussi des triangles comme faces... Donc:
+            if (n3<0) n3 = n2;
 
             double x1 = dom.coord(n0, 0) - dom.coord(n1, 0);
             double y1 = dom.coord(n0, 1) - dom.coord(n1, 1);
