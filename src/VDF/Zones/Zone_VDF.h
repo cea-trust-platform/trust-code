@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,6 @@ public :
   inline double h_y() const;
   inline double h_z() const;
 
-  inline double face_surfaces(int ) const;
   inline int Qdm(int num_arete,int ) const;
   //inline double porosite_face(int ) const;
   //inline double porosite_elem(int i) const;
@@ -126,8 +125,6 @@ public :
   inline int face_bord_amont(int ,int ,int ) const;
   inline int elem_voisin(int , int , int ) const;
 
-  inline DoubleVect& face_surfaces();
-  inline const DoubleVect& face_surfaces() const;
   inline IntVect& orientation();
   inline const IntVect& orientation() const;
 
@@ -145,7 +142,6 @@ public :
 
 private:
 
-  DoubleVect face_surfaces_;               // surfaces des faces
   IntVect orientation_;                    // orientation des faces
   // 0 si face perpendiculaire a l'axe des X
   // 1 si face perpendiculaire a l'axe des Y
@@ -176,25 +172,6 @@ private:
 };
 
 // Fonctions inline
-
-
-// Description:
-inline DoubleVect& Zone_VDF::face_surfaces()
-{
-  return face_surfaces_;
-}
-
-// Description:
-inline const DoubleVect& Zone_VDF::face_surfaces() const
-{
-  return face_surfaces_;
-}
-
-// Description:
-inline double Zone_VDF::face_surfaces(int i) const
-{
-  return face_surfaces_[i];
-}
 
 // Description:
 inline IntTab& Zone_VDF::Qdm()
@@ -292,7 +269,7 @@ inline double Zone_VDF::face_normales(int num_face,int k) const
   int ori = orientation(num_face);
   double surf=0;
   if (ori == k)
-    surf=face_surfaces_(num_face);
+    surf=face_surfaces(num_face);
   return surf;
 }
 

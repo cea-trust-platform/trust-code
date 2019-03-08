@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -380,8 +380,6 @@ void Zone_VEF::discretiser()
                                     facette_normales(),
                                     rang_elem_non_std());
 
-
-
   calculer_volumes_entrelaces();
   Cerr << "Informations of the Zone VEF of the domain " << zone().domaine().le_nom() << " : " << finl;
 
@@ -397,7 +395,7 @@ void Zone_VEF::calculer_h_carre()
   h_carre = 1.e30;
   h_carre_.resize(nbe);
   // Calcul des surfaces
-  DoubleVect& surfaces=face_surfaces();
+  const DoubleVect& surfaces=face_surfaces();
   const int& nb_faces_elem=zone().nb_faces_elem();
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {
@@ -463,27 +461,6 @@ void Zone_VEF::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
 }
-
-DoubleVect& Zone_VEF::face_surfaces()
-{
-  // On construit si de taille nul
-  // ou si le maillage est deformable
-  if (face_surfaces_.size()==0 || zone().domaine().deformable())
-    {
-      int nb_faces_=nb_faces_tot();
-      face_surfaces_.resize(nb_faces_, Array_base::NOCOPY_NOINIT);
-      for (int i=0; i<nb_faces_; i++)
-        {
-          double surf=0;
-          for (int k=0; k<dimension; k++)
-            surf += (face_normales_(i,k)*face_normales_(i,k));
-          face_surfaces_(i) = sqrt(surf);
-        }
-    }
-  return face_surfaces_;
-}
-
-
 
 void Zone_VEF::modifier_pour_Cl(const Conds_lim& conds_lim)
 {

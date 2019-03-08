@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -520,7 +520,6 @@ void Zone_EF::discretiser()
       }
   }
 
-
   Zone_VF::calculer_porosites();
   //calculer_volumes_entrelaces();
 
@@ -723,7 +722,7 @@ void Zone_EF::calculer_h_carre()
   h_carre = 1.e30;
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
-  DoubleVect& surfaces=face_surfaces();
+  const DoubleVect& surfaces=face_surfaces();
   const int& nb_faces_elem=zone().nb_faces_elem();
   const int& nbe=nb_elem();
   for (int num_elem=0; num_elem<nbe; num_elem++)
@@ -769,33 +768,6 @@ void Zone_EF::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
 }
-
-DoubleVect& Zone_EF::face_surfaces()
-{
-  // On construit si de taille nul
-  // ou si le maillage est deformable
-  if (face_surfaces_.size()==0 || zone().domaine().deformable())
-    {
-      int nb_faces_=nb_faces();
-      //face_surfaces_.resize(nb_faces_);
-      //      Scatter::creer_tableau_distribue(zone().domaine(), Joint::FACE, face_surfaces_);
-      creer_tableau_faces( face_surfaces_);
-
-      face_surfaces_.echange_espace_virtuel();
-
-      for (int i=0; i<nb_faces_; i++)
-        {
-          double surf=0;
-          for (int k=0; k<dimension; k++)
-            surf += (face_normales_(i,k)*face_normales_(i,k));
-          face_surfaces_(i) = sqrt(surf);
-        }
-      face_surfaces_.echange_espace_virtuel();
-    }
-  return face_surfaces_;
-}
-
-
 
 void Zone_EF::modifier_pour_Cl(const Conds_lim& conds_lim)
 {

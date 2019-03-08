@@ -1,3 +1,4 @@
+XX/XX/18 (TRUST)  Face surfaces are new stored in Zone_VF class (access: Zone_VF::face_surfaces() const). All childs have only a calculer_face_surfaces() method 
 -------------------------------------------------------------
 Developer notes version 1.7.9_beta : Changes since version 1.7.8 :
 -------------------------------------------------------------

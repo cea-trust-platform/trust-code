@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,22 @@ class Zone_VF : public Zone_dis_base
 public :
 
   virtual double face_normales(int , int ) const =0;
-  virtual double face_surfaces(int) const =0;
+  void calculer_face_surfaces(const DoubleVect& surfaces)
+  {
+    face_surfaces_ = surfaces;
+  };
+  virtual const DoubleVect& face_surfaces() const
+  {
+    return face_surfaces_;
+  }
+  virtual inline double face_surfaces(int i) const
+  {
+    return face_surfaces_(i);
+  };
+  virtual inline double surface(int i) const
+  {
+    return face_surfaces(i);
+  };
 
   void discretiser();
   void infobord();
@@ -174,6 +189,9 @@ public :
     return md_vector_aretes_;
   }
 
+private:
+  DoubleVect face_surfaces_;                // surface des faces
+
 protected:
 
   DoubleVect volumes_;                          // volumes des elements
@@ -183,6 +201,7 @@ protected:
   DoubleVect porosite_elem_;                 // Porosites volumiques pour les volumes de
   // controle de masse
   DoubleVect porosite_face_;              // Porosites surfaciques en masse et volumiques
+
   // en quantite de mouvement
   DoubleVect diametre_hydraulique_face_;  //diametres hydrauliques des faces
   DoubleTab diametre_hydraulique_elem_;  //diametres hydrauliques des elements
@@ -597,6 +616,8 @@ inline const IntVect& Zone_VF::orientation() const
 {
   Cerr<<"Method coded only for Zone_VDF"<<finl;
   Cerr<<"The orientation of the faces is not defined for another discretization as VDF"<<finl;
+  Cerr<<"Try recoding using face_normales(). Example for g(face)=gravite[orientation[face]];" << finl;
+  Cerr<<"Compute something like: g(face)=Sum(i=0;i<gravite.size();i++) of gravite[i]*face_normales(face,i)/surface(face);" << finl;
   exit();
   throw;
   return orientation();
