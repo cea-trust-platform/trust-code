@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 --------------------------------------------------------------------------------------------------
+20/02/19 (TRUST)  Bug fixed   : Y+ computation homogeinization for .lata and Ustar.face 
 13/02/19 (TRUST)  New keyword : Add flux_surfacique_bords option to Morceau_equation keyword to post-process surfacic fluxes on boundaries
 05/02/19 (TRUST)  New keyword : Adding possibility to specify maximum number of iteration for the generic "GEN" solver
 25/01/19 (TRUST)  Bug fixed   : File evol_glob for quasi-compressible calculation renamed datacase_pbname.evol_glob
