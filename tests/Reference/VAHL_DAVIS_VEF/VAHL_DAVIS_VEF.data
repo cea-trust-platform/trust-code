@@ -118,6 +118,14 @@ Read pb
 
 	Post_processings
 	{
+	    med_post {
+	   	fichier VAHL_DAVIS_VEF
+	    	format med
+		fields dt_post 0.01
+		{
+			temperature faces
+		}	    
+	    } 
 	    first_post {
 		Probes
 		{
