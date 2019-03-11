@@ -1,0 +1,16 @@
+Parameters {
+	Title "Check if we can build rapport.pdf of a validation form (prm)"
+	versiontrust 1.7.8
+	Author "trust"
+	description "This is a simplified prm"
+	description ""
+
+	TestCase . cas.data
+
+}
+
+Chapter {
+	Figure {
+		Image fig1.png
+	}
+}
