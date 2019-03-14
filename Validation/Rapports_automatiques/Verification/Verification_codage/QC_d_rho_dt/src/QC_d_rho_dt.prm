@@ -308,33 +308,33 @@ Chapter {
 	LabelY "rho (kg/m3)"
 	Curve {
 	legend "rho_moyen"
-		origin "Trio_U"
-	file Conserv_Masse_QC_rho_u/evol_glob
+	origin "Trio_U"
+	file Conserv_Masse_QC_rho_u/Conserv_Masse_QC_rho_u_pb.evol_glob
 	columns $1 $3
 	style linespoints
 	}
 	Curve {
 	legend "rho_moyen en Piso"
 	origin "Trio_U"
-	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	file Conserv_Masse_QC_rho_u_Piso/Conserv_Masse_QC_rho_u_Piso_pb.evol_glob
 	columns $1 $3
 	style linespoints
 	}
 	Curve {
 	legend "analytique a t_n"
-	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	file Conserv_Masse_QC_rho_u_Piso/Conserv_Masse_QC_rho_u_Piso_pb.evol_glob
 	columns $1 (0.833834+0.1*$1*(100*$1-9))
 	style linespoints
 	} 
 	Curve {
 	legend "analytique a t_n-1"
-	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	file Conserv_Masse_QC_rho_u_Piso/Conserv_Masse_QC_rho_u_Piso_pb.evol_glob
 	columns $1 (0.833834+(0.1*$1-0.001)*(100*$1-10))
 	style linespoints
 	} 
 	Curve {
 	legend "analytique a t_n-1/2 (moyenne des precedents)"
-	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	file Conserv_Masse_QC_rho_u_Piso/Conserv_Masse_QC_rho_u_Piso_pb.evol_glob
 	columns $1 ((0.833834+0.1*$1*(100*$1-9))+(0.833834+(0.1*$1-0.001)*(100*$1-10)))/2
 	style linespoints
 	} 	
@@ -360,7 +360,7 @@ figure {
 	}
 	Curve {
 	legend "analytique"
-	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	file Conserv_Masse_QC_rho_u_Piso/Conserv_Masse_QC_rho_u_Piso_pb.evol_glob
 	columns $1 (-(20*$1-1))
 	style lines
 	} 	
