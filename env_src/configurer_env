@@ -2091,7 +2091,7 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    Defines=${Defines% -D_INLINE_EVALUATEURS_ -DNDEBUG}
    # On remplace -O par -g
    O=`echo $CppFlags | awk '{print $1}'`
-   CppFlags="-g"${CppFlags#$O}
+   CppFlags="-g -Og"${CppFlags#$O}
    O=`echo $F77Flags | awk '{print $1}'`
    F77Flags="-g"${F77Flags#$O}
    # 16/03/2010: Ajout de -fbounds-check en debug sur gfortran
