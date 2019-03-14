@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -159,18 +159,16 @@ const Nom& Segment::nom_lml() const
 // Postcondition: la methode ne modifie pas l'objet
 int Segment::contient(const ArrOfDouble& pos, int element ) const
 {
-  // on  teste si la positon correspond a un des deux sommets
-
   assert(pos.size_array()==dimension);
-
-
   const Zone& zone=ma_zone.valeur();
   const Domaine& dom=zone.domaine();
   const IntTab& elem=zone.les_elems();
+  // on  teste si la position correspond a un des deux sommets
+  int dim = dom.coord_sommets().dimension(1);
   for (int s=0; s<2; s++)
     {
       int ok=1;
-      for (int d=0; (d<3)&&(ok==1); d++)
+      for (int d=0; (d<dim)&&(ok==1); d++)
         {
           double ps = dom.coord(elem(element,s), d);
           double pv=pos(d);
@@ -180,7 +178,23 @@ int Segment::contient(const ArrOfDouble& pos, int element ) const
       if (ok==1)
         return 1;
     }
-  return 0;
+  // on teste si la position est entre les deux sommets
+  // OM=aO1 avec 0<a<1
+  double autre_a = 0;
+  for (int d=0; d<dim; d++)
+    {
+      double O1 = dom.coord(elem(element,1), d) - dom.coord(elem(element,0), d);
+      double OM = pos(d) - dom.coord(elem(element,0), d);
+      if (!est_egal(O1,0))
+        {
+          double a = OM/O1; 		// Calcul de a
+          if (a<0 || a>1) return 0;	// M est en dehors de O1
+          if (autre_a>0 && !est_egal(a, autre_a)) return 0; // a est different du calcul selon une autre coordonnee
+          autre_a = a;
+        }
+      else if (!est_egal(OM,0)) return 0;	// M n'est pas selon O1
+    }
+  return 1;
 }
 
 

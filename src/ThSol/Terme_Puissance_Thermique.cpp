@@ -77,18 +77,16 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
       la_puissance_lu->fixer_nom_compo(la_puissance_lu.le_nom());
     }
 
-// PL: On deplace l'affectation dans initialiser_champ_puissance car faite un peu trop tot dans certains cas (discretisation non faite)
-//  la_puissance.valeur().valeurs() = 0;
-//  la_puissance.valeur().affecter(ch_puissance_lu);
-  //la_puissance->fixer_nom_compo("Puissance_volumique");
   la_puissance->fixer_nom_compo(la_puissance_lu.le_nom());
+  // PL: Il faut faire nommer_completer_champ_physique les 2 champs (plantage sinon pour une puissance de type Champ_fonc_tabule)
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());
+  la_puissance.valeur().valeurs() = 0;
+  la_puissance.valeur().affecter(ch_puissance_lu);
 }
 
 void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base& eqn)
 {
-  la_puissance.valeur().valeurs() = 0;
-  la_puissance.valeur().affecter(la_puissance_lu);
-
   if (sub_type(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur()))
     {
       const Zone_dis_base& zdis = eqn.zone_dis().valeur();
@@ -118,8 +116,6 @@ void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
       const Champ_Don& rho = pb.milieu().masse_volumique();
       associer_champs(rho, le_Cp);
     }
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance_lu,pb);
 }
 
 void Terme_Puissance_Thermique::modify_name_file(Nom& fichier) const
