@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -345,14 +345,6 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
       //indices des points de remote_xvs les plus proches de chaque point de local_xv
       MCAuto<DataArrayInt> glob_idx(DataArrayInt::New());
 
-      // On ajoute un point legerement decale pour contourner un bug MEDCoupling (blocage si nb_face1=1)
-      if (nb_face1==1)
-        {
-
-          remote_xvs->reAlloc(2);
-          for (int j = 0; j < dim; j++)
-            remote_xvs->setIJ(1, j, remote_xvs->getIJ(0, j)+tolerance);
-        }
       glob_idx = remote_xvs->findClosestTupleId(local_xvs);
 
       //pour chaque face de local_xv : controle de la tolerance, remplissage de tableau
