@@ -575,42 +575,67 @@ cd env
 [ "$clean" != "" ] && exit 0
 cd ..
 
-exiterror=0
-[ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep 'Error while installing' $TRUST_ROOT/NON_INSTALLED`" != "" ] && exiterror=1
+source ./env_TRUST.sh 1>/dev/null 2>&1
 
 if [ "$TRUST_WITHOUT_DOC" != 1 ]
 then
-   [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && echo "    pdflatex for doc generation" >> NON_INSTALLED
-
-   if [ "`grep 'Ubuntu ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Debian ' $OSfile 2>/dev/null`" != "" ]
+   texerror=0
+   if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
-      [ `eval dpkg-query -W texlive-fonts-recommended 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fonts-recommended for doc generation" >> NON_INSTALLED
-   elif [ "`grep 'Fedora ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
-   then
-      [ `eval rpm -qa | grep -i texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
-#   elif [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
-#   then
-#      [ `eval yum list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
-#      [ `eval yum list installed texlive-*fonts* 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-*fonts for doc generation" >> NON_INSTALLED
+      echo "pdflatex is missing..." >> NON_INSTALLED
+      texerror=1
    else
-      echo "Unknown distribution, ensure that texlive-fonts-recommended are installed for doc generation."
-   fi
+      dest2=$TRUST_TMP/tmp_tex
+      [ -d $dest2 ] && rm -r $dest2
+      mkdir $dest2
+      cd $dest2
+      cp -r $TRUST_ROOT/Outils/TexFiles/* .
+      make 1>LOG_FILE 2>&1
+      if [ $? != 0 ]
+      then
+         echo "Some latex packages are missing... see $dest2/LOG" >> $TRUST_ROOT/NON_INSTALLED
+         texerror=1
+      else
+         cd fiche_prm_test
+         Run_fiche -not_run 1>/dev/null 2>&1
+         [ ! -f build/rapport.pdf ] && cp Run.log $TRUST_TMP && texerror=2
+         rm -r $dest2
+      fi
+
+      cd $TRUST_ROOT
+  fi
+  if [ $texerror = 1 ]
+  then
+     echo "You cannot generate the PDF documentation of TRUST and its sub-projects unless you install metapackages equivalent to:" >> NON_INSTALLED
+     echo "  1. texlive-latex-base " >> NON_INSTALLED
+     echo "  2. texlive-latex-recommended" >> NON_INSTALLED
+     echo "  3. texlive-fonts-recommended" >> NON_INSTALLED
+     echo "  4. texlive-latex-extra" >> NON_INSTALLED
+     echo " NOTE1: The names of these packages may differ if your OS is not one of Debian/Ubuntu/Mint" >> NON_INSTALLED
+     echo " NOTE2: In the case you DO NOT WANT to install it, run: ./configure -without-doc" >> NON_INSTALLED
+  fi
+
+  if [ $texerror = 2 ]
+  then
+     echo "Something strange... PDF documentation can be generated, not rapport.pdf from prm file." >> NON_INSTALLED
+     echo "see $TRUST_TMP/Run.log " >> NON_INSTALLED
+  fi
+
 fi
 
 if [ -f $TRUST_ROOT/NON_INSTALLED ]
 then
    echo ""
    echo "========================================================================="
-   echo "Some packages needed by TRUST code were not correctly installed:"
+   echo "Some packages needed by TRUST code were not found/correctly installed:"
    echo "----------------------------------------------------------------"
    cat $TRUST_ROOT/NON_INSTALLED
    [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found!"
    echo $ECHO_OPTS "See previous messages for further details or contact support at trust@cea.fr"
    echo "========================================================================="
-   [ "$exiterror" = 1 ] && exit -1
+   exit -1
 fi
 
-source ./env_TRUST.sh 1>/dev/null 2>&1
 
 ###############################################
 # Verification des performances de TRUST_TMP #
