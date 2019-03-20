@@ -827,7 +827,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "flica5" && "$Composant" != "genepi3" ]]
+      if [[ "$Composant" != "flica5" && "$Composant" != "genepi3" && "$Composant" != "mpcube" ]]
       then
          if [[ "$Composant" == "triocfd" ]]
          then
@@ -836,7 +836,8 @@ fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
       else
          git remote update
-         git checkout portage_178
+         git checkout .
+         git checkout portage_179
          git pull
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
@@ -919,10 +920,14 @@ echo "###############################################"
               then
                  echo "Composants/$Composant">>$rebase_log
 	         cd $TRUST_ROOT/../Composants/$Composant
-	         git rebase Livraison 1>>$rebase_log 2>&1
-	         [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
-	         git rebase --continue 1>>$rebase_log 2>&1
-	         [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
+	         # git rebase Livraison 1>>$rebase_log 2>&1
+	         # [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
+	         # git rebase --continue 1>>$rebase_log 2>&1
+	         # [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
+                 git remote update
+                 git checkout .
+                 git checkout portage_179
+                 git pull
 	         cd - 1>/dev/null 2>&1
                  echo>>$rebase_log
 	      fi
@@ -3790,7 +3795,7 @@ then
 	       git push origin Livraison:triou/TMA
 	       git push origin Livraison:triou/$label
             fi
-	    if [ "$Composant" = triocfd ] || [ "$Composant" = mpcube ]
+	    if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
             then
 	       git push --tags origin Livraison:master
             fi
