@@ -1,6 +1,7 @@
 FILE1=TRUST_tutorial
 FILE2=Baltik_tutorial
 FILE3=Readme_eclipse
+FILE4=ICoCo_tutorial
 
 default:  all
 
@@ -42,7 +43,19 @@ else
 	$(MAKE) clean_build
 endif
 
-all:  $(FILE1) $(FILE2) $(FILE3)
+$(FILE4): ../$(FILE4).pdf
+../$(FILE4).pdf: $(FILE4).tex Makefile 
+ifeq (, $(shell which pdflatex))
+	@echo "No pdflatex command, consider installing texlive package"
+else
+	$(MAKE) clean_$(FILE4)
+	pdflatex -interaction=nonstopmode $(FILE4).tex > LOG
+	pdflatex -interaction=nonstopmode $(FILE4).tex >> LOG
+	mv $(FILE4).pdf ..
+	$(MAKE) clean_build
+endif
+
+all:  $(FILE1) $(FILE2) $(FILE3) $(FILE4)
 
 clean_build:  
 	@echo "Removing compilation files"
@@ -60,6 +73,10 @@ clean_$(FILE3):  clean_build
 	@echo "Removing $(FILE3).pdf"
 	@rm -f ../$(FILE3).pdf
 
-clean:  clean_$(FILE1) clean_$(FILE2) clean_$(FILE3)
+clean_$(FILE4):  clean_build
+	@echo "Removing $(FILE4).pdf"
+	@rm -f ../$(FILE4).pdf
+
+clean:  clean_$(FILE1) clean_$(FILE2) clean_$(FILE3) clean_$(FILE4)
 
 .PHONY: clean clean_build
