@@ -91,6 +91,14 @@ configure_compilateur_ccache()
    then
       variable=`echo $e | awk -F= '{print $1}'`
       chemin=`echo $e | awk -F\" '{print $2}'`
+      if [ "$chemin" = "" ]
+      then
+         eval $e
+         if [ "$TRUST_CC_BASE" = "" ]
+         then
+            echo "Error! No C++11 compiler found. For a GNU compiler, you would need a version>=4.8.1" && exit -1
+         fi
+      fi
       compilateur=`basename $chemin`
       # On cree un script g++ et gcc
       eval $e
@@ -259,7 +267,8 @@ xxx()
 	   then
 	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
 	   else
-	      echo $ECHO_OPTS "#include <string>\nint main() {std::string foo = \"Hello, world\";return 0;}" > main.cpp;$f -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
+              # Ajout du test du support obligatoire de C++11 a partir de TRUST 1.7.9
+	      echo $ECHO_OPTS "#include <iostream>\n#include <vector>\nint main() {std::vector<int> v = {0,1};for (auto i : v) std::cout << i << ' ';return 0;}" > main.cpp;$f -std=c++11 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then
@@ -1646,25 +1655,17 @@ case $TRUST_ARCH_CC in
    # 26/07/17 : pour portabilite sur Fedora26, passage de v7.1.0 a v7.1.1 sur test GNU
    # 28/11/17 : passage de v7.1.0 a v7.2.0 sur test GNU
    # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.3.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.3.1" && $1>="4.8.1") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
-	# 03/02/06 : on ajoute -pedantic -Wno-long-long a la compilation sauf si 3.4.6 ou 4.0.1 car sinon pb avec Petsc 3.1.x
 	# 26/03/10, passage enfin a -03
+	# 01/07/19, passage a C++ 11
         FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-	CppFlags="-O3 $FPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	# 06/02/14, Added -Wshadow
-	CppFlags=$CppFlags" -Wshadow"
-	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="3.4") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wextra -Wno-unused-parameter"
-	# GF pas convaincu des erreurs trouvees
+	CppFlags="-O3 $FPIC -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic"
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
-	if [ "$TRUST_VERSION_GNU" != 3.4.6 ] && [ "$TRUST_VERSION_GNU" != 4.0.1 ]
-	then
-	   CppFlags=$CppFlags" -pedantic"
-	fi
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
 	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
 	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
@@ -1827,14 +1828,6 @@ linux_clang++) TRUST_SUPPORTED=1
 	exit -1
    	;;
 esac
-
-# Add c++11 compiler flag to the default TRUST ones
-#if [ "$TRUST_VERSION_GNU" != "" ]
-#then
-#   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? $1<"4.3.0" ? "" : "-std=c++0x" : "-std=c++11"}'`
-#else
-#   CppFlags=$CppFlags" -std=c++11"
-#fi
 
 if [ $TRUST_SUPPORTED = 0 ] && [ "$TRUST_FORCE_SUPPORTED" != 1 ]
 then
