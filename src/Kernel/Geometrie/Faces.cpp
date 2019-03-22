@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -767,6 +767,8 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
     case point_1D:
     case vide_0D :
       {
+        for(int face=0; face <nb_faces_tot(); face++)
+          surfaces(face) = 1.0;
         break;
       }
     case polygone_3D:
@@ -777,7 +779,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             double n0=0,n1=0,n2=0;
             int n=nmax-1;
-            while (sommet(face,n)==-1) n--;
+            while (n >= 0 && sommet(face,n)==-1) n--;
             for (int i0=0; i0<=n; i0++)
               {
 

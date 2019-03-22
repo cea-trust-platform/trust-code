@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #define Poly_geom_base_included
 
 #include <Elem_geom_base.h>
+#include <Elem_geom.h>
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -45,7 +46,7 @@ public :
   virtual const ArrOfInt& getFacesIndex() const =0;
   virtual int get_somme_nb_faces_elem() const =0;
   virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const =0;
-  virtual void reduit_index(const ArrOfInt& elems_sous_part)=0;
+  virtual void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const = 0;
   virtual void compute_virtual_index()=0;
 protected :
 

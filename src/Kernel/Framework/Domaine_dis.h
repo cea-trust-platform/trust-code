@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,6 @@
 
 #include <Sous_zones_dis.h>
 #include <Zones_dis.h>
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -41,26 +40,30 @@
 //     Domaine Zone Zone_dis
 //     Dans TRUST V1 il n'y qu'une zone par domaine
 //////////////////////////////////////////////////////////////////////////////
+Declare_ref(Sous_zones_dis);
+Declare_ref(Zones_dis);
 class Domaine_dis : public Objet_U
 {
 
-  Declare_instanciable(Domaine_dis);
+  Declare_instanciable_sans_constructeur_ni_destructeur(Domaine_dis);
 
 public:
+  Domaine_dis();
+  ~Domaine_dis();
   inline int nombre_de_zones() const;
   inline const Zone_dis& zone_dis(int) const;
   inline Zone_dis& zone_dis(int);
   inline int nombre_de_sous_zones_dis() const
   {
-    return les_sous_zones_dis.size();
+    return les_sous_zones_dis->size();
   }
   inline const Sous_zone_dis& sous_zone_dis(int i) const
   {
-    return les_sous_zones_dis[i];
+    return les_sous_zones_dis.valeur()[i];
   }
   inline Sous_zone_dis& sous_zone_dis(int i)
   {
-    return les_sous_zones_dis[i];
+    return les_sous_zones_dis.valeur()[i];
   }
   void associer_domaine(const Domaine&);
   void discretiser(const Nom& );
@@ -68,9 +71,12 @@ public:
   inline const Domaine& domaine() const;
 
 protected:
-  Sous_zones_dis les_sous_zones_dis;
-  Zones_dis les_zones;
+  REF(Sous_zones_dis) les_sous_zones_dis;
+  REF(Zones_dis) les_zones;
   REF(Domaine) le_domaine;
+
+private:
+  mutable Nom i_am_allocator_of_les_zones;
 };
 
 
@@ -90,7 +96,7 @@ protected:
 // Postcondition: la methode ne modifie pas l'objet
 inline int Domaine_dis::nombre_de_zones() const
 {
-  return les_zones.size();
+  return les_zones.valeur().size();
 }
 
 // Description:
@@ -110,7 +116,7 @@ inline int Domaine_dis::nombre_de_zones() const
 // Postcondition: la methode ne modifie pas l'objet
 inline const Zone_dis& Domaine_dis::zone_dis(int i) const
 {
-  return les_zones[i];
+  return les_zones.valeur()[i];
 }
 
 // Description:
@@ -129,7 +135,7 @@ inline const Zone_dis& Domaine_dis::zone_dis(int i) const
 // Postcondition:
 inline Zone_dis& Domaine_dis::zone_dis(int i)
 {
-  return les_zones[i];
+  return les_zones.valeur()[i];
 }
 
 // Description:

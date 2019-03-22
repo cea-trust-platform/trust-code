@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,11 +89,29 @@ void Polygone::rebuild_index()
   PolygonIndex_=PolygonIndex_OK;
 }
 
-
-void Polygone::reduit_index(const ArrOfInt& elems_sous_part)
+void Polygone::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const
 {
-  rebuild_index();
+  const IntTab& les_elems = ma_zone.valeur().les_elems();
+  type_elem.typer("Polygone");
+  Polygone& reduced = ref_cast(Polygone, type_elem.valeur());
+  reduced.nb_som_elem_max_  = nb_som_elem_max_;
+  reduced.nb_face_elem_max_ = nb_face_elem_max_;
+
+  ArrOfInt& Pi = reduced.PolygonIndex_, &Fi = reduced.FacesIndex_;
+  Pi.set_smart_resize(1), Fi.resize(0), Fi.set_smart_resize(1);
+
+  for (int i = 0; i < elems_sous_part.size_array(); i++)
+    {
+      int e = elems_sous_part(i);
+      for (int f = PolygonIndex_(e); f < PolygonIndex_(e + 1); f++)
+        {
+          Fi.append_array(les_elems(e, f - PolygonIndex_(e)));
+        }
+      Pi.append_array(Fi.size_array());
+    }
 }
+
+
 void Polygone::compute_virtual_index()
 {
   rebuild_index();

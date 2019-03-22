@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -643,10 +643,10 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
         FacesIndex-=1;
         PolygonIndex-=1;
 
-        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+        // Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
 
         ref_cast(Polygone,ele.valeur()).affecte_connectivite_numero_global( FacesIndex, PolygonIndex, les_elems);
-        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+        // Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
         // on remet +1 car apres on le retire....
         les_elems+=1;
 

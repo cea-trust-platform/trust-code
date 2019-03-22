@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,6 @@
 #endif
 
 #include <Poly_geom_base.h>
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -92,7 +91,7 @@ public :
   void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
   // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolyhedronIndex);
   void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
-  void reduit_index(const ArrOfInt& elems_sous_part);
+  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const;
   void compute_virtual_index();
 
 private :

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -219,7 +219,16 @@ Entree& latatoother::interpreter(Entree& is)
 
       filter.initialize(opt, lata_db);
 
-
+      // On met dual_mesh a "false" si on lit un domaine de polyedres PolyMAC (pas encore supporte)
+      // et on-reouvre la database:
+      Noms geom_names = filter.get_exportable_geometry_names();
+      int elt_type = filter.get_geometry(Domain_Id(geom_names[0], 0, -1)).elt_type_;
+      Cerr << elt_type << finl;
+      if (elt_type==Domain::polyedre || elt_type==Domain::polygone)
+        {
+          opt.dual_mesh = false;
+          filter.initialize(opt, lata_db);
+        }
 
       Nom nom_pdb(nom_fic);
       Nom format_post_(format_post_supp);
@@ -246,7 +255,6 @@ Entree& latatoother::interpreter(Entree& is)
         post.initialize_by_default(nom_2);
       else
         post.initialize(nom_2,format_binaire_,"SIMPLE");
-
 
       // ecriture des domaines
       {
