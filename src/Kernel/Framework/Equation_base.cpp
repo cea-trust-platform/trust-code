@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -150,6 +150,11 @@ const Zone_dis& Equation_base::zone_dis() const
 void Equation_base::completer()
 {
   inconnue().associer_eqn(*this);
+  if (la_zone_Cl_dis.non_nul())
+    la_zone_Cl_dis->completer();
+
+  inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
+
   // pour les eqns n'appelant pas preparer_calcul
   initialise_residu();
   int nb_op=nombre_d_operateurs();
@@ -157,11 +162,6 @@ void Equation_base::completer()
   Debog::verifier(msg, nb_op);
   for(int i=0; i<nb_op; i++)
     operateur(i).completer();
-
-  if (la_zone_Cl_dis.non_nul())
-    la_zone_Cl_dis->completer();
-
-  inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
 
   les_sources.completer();
   schema_temps().completer();
@@ -248,6 +248,7 @@ Entree& Equation_base::readOn(Entree& is)
   // On complete:
   equation_non_resolue_.setString(expr_equation_non_resolue);
   equation_non_resolue_.parseString();
+  matrice_init = 0;
   return is;
 }
 
@@ -2078,14 +2079,14 @@ void Equation_base::reculer(int i)
 
 void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 {
-  int opp=0;
-  int nb_op=nombre_d_operateurs();
-  // GF avant on testait si on avait qu'une colonne car les matrices etaient dimensionnes par defaut a une colonne
-  while ((matrice.nb_colonnes()==0)&&(opp<nb_op))
+  if (matrice_init) //memoization
     {
-      operateur(opp).l_op_base().dimensionner(matrice);
-      opp++;
+      matrice = matrice_stockee;
+      matrice.get_set_coeff().resize(matrice.get_tab2().size());
+      return;
     }
+  int opp=0;
+  solv_masse().valeur().dimensionner(matrice);
   if (matrice.nb_colonnes()==0)
     {
       // on avait que des op negligeables
@@ -2097,6 +2098,29 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
       IntTab indice(nb_case_tot,2);
       for( int c=0; c<nb_case_tot; c++) indice(c,0)=indice(c,1)=c;
       if (indice.size()!=0) matrice.dimensionner(indice);
+    }
+  int nb_op=nombre_d_operateurs();
+  // GF avant on testait si on avait qu'une colonne car les matrices etaient dimensionnes par defaut a une colonne
+  while (opp<nb_op)
+    {
+      Matrice_Morse mat2;
+      operateur(opp).l_op_base().dimensionner(mat2);
+      if (mat2.nb_colonnes()) matrice += mat2;
+      opp++;
+    }
+  les_sources.dimensionner(matrice);
+  matrice.get_set_coeff() = 0;
+
+  if (probleme().discretisation().que_suis_je()=="PolyMAC_discretisation")
+    {
+      matrice_stockee = matrice; //memoization
+      matrice_stockee.get_set_coeff().resize(0);
+      matrice_init = 1;
+      int m = matrice.nb_lignes();
+      matrice_map.resize(m);
+      for (int i = 0; i < m; i++)
+        for (int j = matrice.get_tab1()(i) - 1; j < matrice.get_tab1()(i + 1) - 1; j++)
+          matrice_map[i][matrice.get_tab2()(j) - 1] = j + 1;
     }
 }
 
