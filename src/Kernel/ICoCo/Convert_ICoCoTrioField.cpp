@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,9 @@
 
 #include <ICoCoMEDField.hxx>
 #include <Domaine.h>
-#include <Champ_base.h>
-#include <Zone_dis_base.h>
+#include <Champ_Generique_base.h>
+#include <Champ_Generique_base.h>
+#include <Zone_VF.h>
 #include <PE_Groups.h>
 #include <Comm_Group.h>
 
@@ -47,87 +48,79 @@ void affecte_int_avec_inttab(True_int** p, const ArrOfInt& trio)
       (*p)[i]=True_int(trio[i]);
 }
 
-ICoCo::TrioField build_ICoCoField(const std::string& name,const Domaine& dom,  const DoubleTab& values,const int is_p1, const double& t1,const double& t2 )
+ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
 {
+  const Zone_VF& zvf = ref_cast(Zone_VF, ch.get_ref_zone_dis_base());
+  const Domaine& dom = zvf.zone().domaine();
+
   ICoCo::TrioField afield;
   afield.clear();
-  afield._space_dim=dom.dimension;
-  afield.setName(name);
+  afield.setName(ch.le_nom().getString());
+  afield._type = ch.get_localisation() == NODE;
+  afield._time1 = afield._time2 = ch.get_time(), afield._itnumber = 0;
 
-  afield._mesh_dim=afield._space_dim;
+  /* tableau des sommets : copie de celui du domaine */
+  const DoubleTab& coord = dom.les_sommets();
+  afield._space_dim = dom.dimension;
+  afield._nbnodes = coord.dimension(0);
+  affecte_double_avec_doubletab(&afield._coords, coord);
 
-  const DoubleTab& coord=dom.les_sommets();
-  //ch.get_copy_coordinates(coord);
-  affecte_double_avec_doubletab(&afield._coords,coord);
-
-  afield._nbnodes=coord.dimension(0);
-  Motcle type_elem_=dom.zone(0).type_elem()->que_suis_je();
+  /* dimension des elements du domaine */
+  Motcle type_elem_ = zvf.zone().type_elem()->que_suis_je();
   Motcle type_elem(type_elem_);
   type_elem.prefix("_AXI");
-  if (type_elem!=Motcle(type_elem_))
+  if (type_elem != Motcle(type_elem_))
     {
-      if (type_elem=="QUADRILATERE_2D")
-        type_elem="SEGMENT_2D";
-      if (type_elem=="RECTANGLE_2D")
-        type_elem="RECTANGLE";
-
+      if (type_elem == "QUADRILATERE_2D")
+        type_elem = "SEGMENT_2D";
+      if (type_elem == "RECTANGLE_2D")
+        type_elem = "RECTANGLE";
     }
-  if ((type_elem=="RECTANGLE") ||(type_elem=="QUADRANGLE")||(type_elem=="TRIANGLE")|| (type_elem=="TRIANGLE_3D")||(type_elem=="QUADRANGLE_3D"))
+  if ((type_elem == "RECTANGLE") || (type_elem == "QUADRANGLE") || (type_elem == "TRIANGLE") || (type_elem == "TRIANGLE_3D") || (type_elem == "QUADRANGLE_3D"))
     afield._mesh_dim=2;
-  else if ((type_elem=="HEXAEDRE")|| (type_elem=="HEXAEDRE_VEF")||(type_elem=="POLYEDRE")||(type_elem=="PRISME")||  (type_elem=="TETRAEDRE"))
+  else if ((type_elem == "HEXAEDRE") || (type_elem == "HEXAEDRE_VEF") || (type_elem == "POLYEDRE") || (type_elem == "PRISME") || (type_elem == "TETRAEDRE"))
     afield._mesh_dim=3;
-  else if ((type_elem=="SEGMENT_2D")||(type_elem=="SEGMENT"))
+  else if ((type_elem == "SEGMENT_2D") || (type_elem == "SEGMENT"))
     afield._mesh_dim=1;
   else
     {
-      Cerr<<type_elem<< " not coded" <<finl;
+      Cerr << "build_triofield: " << type_elem<< " not coded" <<finl;
       Process::exit();
     }
 
-  const IntTab& les_elems=dom.zone(0).les_elems();
-  //ch.get_copy_connectivity(ELEMENT,NODE,les_elems);
-  affecte_int_avec_inttab(&afield._connectivity,les_elems);
+  /* elements : ceux du domaine si le champ est aux sommets/elements, les faces si le champ est aux faces */
+  int loc_faces = ch.get_localisation() == FACE;
+  if (loc_faces) afield._mesh_dim--;
+  afield._nb_elems = loc_faces ? zvf.nb_faces() : zvf.zone().nb_elem();
+  if (loc_faces || type_elem != "POLYEDRE") //maillage de faces -> connectivity = face_sommets
+    {
+      const IntTab& conn = loc_faces ? zvf.face_sommets() : zvf.zone().les_elems();
+      afield._nodes_per_elem = conn.dimension(1);
+      affecte_int_avec_inttab(&afield._connectivity, conn);
+    }
+  else //maillage de polyedres -> connectivite au format MEDCoupling, a faire a la main
+    {
+      afield._nodes_per_elem = zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1); //un -1 apres chaque face
+      int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+      for (int e = 0, f, s, i, j; e < afield._nb_elems; e++)
+        {
+          /* insertion de la connectivite de chaque face, suivie d'un -1 */
+          for (i = 0; i < zvf.elem_faces().dimension(1) && (f = zvf.elem_faces(e, i)) >= 0; i++, *p = -1, p++)
+            for (j = 0; j < zvf.face_sommets().dimension(1) && (s = zvf.face_sommets(f, j)) >= 0; j++) *p = s, p++;
+          /* des -1 jusqu'a la ligne suivante */
+          for ( ; p < afield._connectivity + (e + 1) * afield._nodes_per_elem; p++) *p = -1;
+        }
+    }
 
-  afield._nodes_per_elem=les_elems.dimension(1);
-  afield._nb_elems=les_elems.dimension(0);
-
-  afield._itnumber=0;
-  afield._time1=t1;
-  afield._time2=t2;
-
-
-
-  afield._type=is_p1;
-
-  afield._has_field_ownership=true;
-  affecte_double_avec_doubletab(&afield._field,values);
-  if (values.nb_dim()>1)
-    afield._nb_field_components=values.dimension(1);
-  else
-    afield._nb_field_components=(1);
+  /* copie des valeurs du champ */
+  afield._has_field_ownership = true;
+  Champ espace_stockage;
+  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
+  const DoubleTab& vals = champ_ecriture.valeurs();
+  afield._nb_field_components = vals.nb_dim() > 1 ? vals.dimension(1) : 1;
+  affecte_double_avec_doubletab(&afield._field, vals);
   return afield;
 }
-ICoCo::TrioField buildTrioField_from_champ_base(const Champ_base& ch)
-{
-  if (ch.a_une_zone_dis_base())
-    {
-      int is_p1= 0;
-      double t1=ch.temps();
-      double t2=t1;
-      return build_ICoCoField(ch.le_nom().getString(),ch.zone_dis_base().zone().domaine(),  ch.valeurs(), is_p1,t1,t2 );
-
-    }
-  else
-    {
-      Cerr<<"In ICoCo::TrioField buildTrioField_from_champ_base "<<ch.le_nom()<<" has no zone_dis"<<finl;
-      Process::exit();
-    }
-  // on arrive jamais la
-  throw;
-}
-
-
-
 
 #ifndef NO_MEDFIELD
 #include <MEDCouplingUMesh.hxx>
@@ -194,7 +187,7 @@ MEDField build_medfield(TrioField& triofield)
             elemtype=INTERP_KERNEL::NORM_QUAD4;
             break;
           default:
-            throw INTERP_KERNEL::Exception("incompatible Trio field - wrong nb of nodes per elem");
+            elemtype=INTERP_KERNEL::NORM_POLYGON;
           }
         break;
       }
@@ -209,14 +202,14 @@ MEDField build_medfield(TrioField& triofield)
             elemtype=INTERP_KERNEL::NORM_HEXA8;
             break;
           default:
-            throw INTERP_KERNEL::Exception("incompatible Trio field - wrong nb of nodes per elem");
+            elemtype=INTERP_KERNEL::NORM_POLYHED;
           }
         break;
       default:
         throw INTERP_KERNEL::Exception("incompatible Trio field - wrong mesh dimension");
       }
     }
-  //creating a connectivity table that complies to MED (1 indexing)
+  //creating a connectivity table that complies to MED (1 indexing) <- en fait non
   //and passing it to _mesh
   MEDCoupling::MCAuto<MEDCoupling::MEDCouplingFieldDouble> field;
   True_int *conn(new True_int[triofield._nodes_per_elem]);
@@ -244,23 +237,25 @@ MEDField build_medfield(TrioField& triofield)
           conn[7]=conn[6];
           conn[6]=tmp;
         }
-      mesh->insertNextCell(elemtype,triofield._nodes_per_elem,conn);
+      int size = triofield._nodes_per_elem;
+      while (conn[size - 1] == -1) size--; //on enleve les -1 a la fin de la connectivite
+      mesh->insertNextCell(elemtype,size,conn);
     }
   delete [] conn;
   mesh->finishInsertingCells();
   //
 
 
-  std::vector<int> cells;
-  if ((mesh->getSpaceDimension() == 2 || mesh->getSpaceDimension() == 3) && mesh->getMeshDimension() == 2)
-    mesh->checkButterflyCells(cells);
-  if (!cells.empty())
-    {
-      Cerr<<" cells are butterflyed "<<cells[0]<<finl;
-      PE_Groups::groupe_TRUST().abort();
-      Process::abort();
-      Process::exit();
-    }
+  // std::vector<int> cells;
+  // if ((mesh->getSpaceDimension() == 2 || mesh->getSpaceDimension() == 3) && mesh->getMeshDimension() == 2)
+  //   mesh->checkButterflyCells(cells);
+  // if (!cells.empty())
+  //   {
+  //     Cerr<<" cells are butterflyed "<<cells[0]<<finl;
+  //     PE_Groups::groupe_TRUST().abort();
+  //     Process::abort();
+  //     Process::exit();
+  //   }
   //field on the sending end
   int nb_case=triofield.nb_values();
   if (triofield._type==0)
@@ -299,11 +294,9 @@ MEDField build_medfield(TrioField& triofield)
   field->setArray(fieldArr);
   return MEDField(field);
 }
-MEDField build_medfield_from_champ_base(const Champ_base& ch)
+MEDField build_medfield(const Champ_Generique_base& ch)
 {
-  TrioField fl =  buildTrioField_from_champ_base(ch);
-
-
+  TrioField fl =  build_triofield(ch);
   return build_medfield(fl);
 }
 
@@ -321,7 +314,7 @@ ICoCo::MEDField build_medfield(ICoCo::TrioField& ch)
   Process::exit();
   throw;
 }
-ICoCo::MEDField build_medfield_from_champ_base(const Champ_base& ch)
+ICoCo::MEDField build_medfield(const Champ_Generique_base& ch)
 {
   Cerr<<"Version compiled without MEDCoupling"<<finl;
   Process::exit();
