@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1037,7 +1037,9 @@ void OctreeRoot::construire(int reel_prec)
     double max[3] = {-1e30,-1e30,-1e30 };
     int i;
     const DoubleTab& tab = dom.coord_sommets();
-    const int n = tab.dimension(0);
+// 	tot sinon bouding box trop petite
+// 	peut etre teste reel_ ...
+    const int n = tab.dimension_tot(0);
     const int dim = tab.dimension(1);
     assert(dim <= 3);
     for (i = 0; i < n; i++)
