@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,8 @@
 #include <Fluide_Incompressible.h>
 #include <DoubleTrav.h>
 #include <Champ_Uniforme.h>
+#include <ConstDoubleTab_parts.h>
+#include <Champ_Inc_P0_base.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_K_Eps,"Modele_turbulence_hyd_K_Epsilon",Mod_turb_hyd_RANS);
 // XD k_epsilon mod_turb_hyd_rans k_epsilon -1 Turbulence model (k-eps).
@@ -136,7 +138,18 @@ Champ_Fonc& Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente(double te
 
   // K_Eps(i,0) = K au noeud i
   // K_Eps(i,1) = Epsilon au noeud i
+  // int n = tab_K_Eps.dimension(0);
   int n = tab_K_Eps.dimension(0);
+  if (n<0)
+    {
+      if (sub_type(Champ_Inc_P0_base, chK_Eps))
+        n = eqn_transp_K_Eps().zone_dis().zone().nb_elem();
+      else
+        {
+          Cerr << "Unsupported K_Eps field in Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente" << finl;
+          Process::exit(-1);
+        }
+    }
 
   DoubleTrav Fmu,D(tab_K_Eps.dimension_tot(0));
   D=0;
@@ -297,6 +310,17 @@ void imprimer_evolution_keps(const Champ_Inc& le_champ_K_Eps, const Schema_Temps
       int loc_eps_max=-1;
       int loc_nut_max=-1;
       int size=K_Eps.dimension(0);
+      if (size<0)
+        {
+          if (sub_type(Champ_Inc_P0_base, le_champ_K_Eps.valeur()))
+            size = le_champ_K_Eps.valeur().equation().zone_dis().zone().nb_elem();
+          else
+            {
+              Cerr << "Unsupported K_Eps field in Modele_turbulence_hyd_K_Eps::imprimer_evolution_keps()" << finl;
+              Process::exit(-1);
+            }
+        }
+      ConstDoubleTab_parts parts(le_champ_K_Eps.valeurs());
       for (int n=0; n<size; n++)
         {
           const double& k = K_Eps(n,0);
