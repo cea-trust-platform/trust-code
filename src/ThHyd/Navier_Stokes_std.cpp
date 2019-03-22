@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,6 +42,11 @@
 #include <Ensemble_Lagrange_base.h>
 #include <SFichier.h>
 #include <Param.h>
+#include <MD_Vector_std.h>
+#include <MD_Vector_composite.h>
+#include <MD_Vector_tools.h>
+#include <ConstDoubleTab_parts.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable_sans_constructeur(Navier_Stokes_std,"Navier_Stokes_standard",Equation_base);
 
@@ -828,20 +833,35 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
 
   if (assembleur_pression_.valeur().get_resoudre_increment_pression())
     {
-      // Solve B M-1 Bt Cp = M-1(F - BtP)
-      DoubleTrav Cp(tab_pression);
-      solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, Cp);
+      if (discretisation().que_suis_je() != "PolyMAC")
+        {
+          // Solve B M-1 Bt Cp = M-1(F - BtP)
+          DoubleTrav Cp(tab_pression);
+          solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, Cp);
 
-      // P(n+1) = P(n) + Cp
-      tab_pression += Cp;
-      assembleur_pression_.modifier_solution(tab_pression);
+          // P(n+1) = P(n) + Cp
+          tab_pression += Cp;
+          assembleur_pression_.modifier_solution(tab_pression);
 
-      // M-1 Bt P(n+1)
-      solveur_masse.appliquer(gradP);
-      derivee += gradP; // M-1 F
+          // M-1 Bt P(n+1)
+          solveur_masse.appliquer(gradP);
+          derivee += gradP; // M-1 F
+        }
+      else //PolyMAC : le solveur pression calcule la correction en vitesse...
+        {
+          DoubleTrav Cp(tab_pression);
+          DoubleTab_parts Cp_parts(Cp);
+          //secmemP contient (- div v, 0) / Cp contient (- corr en pression, nouvelles vitesses)
+          solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, Cp);
+          tab_pression -= Cp;
+          assembleur_pression_.modifier_solution(tab_pression);
+          //l'assembleur pression a une fonction pour corriger les vitesses
+          assembleur_pression_.valeur().corriger_vitesses(Cp, derivee);
+        }
     }
   else
     {
+      if (discretisation().que_suis_je() == "PolyMAC") abort();
       // Solve B M-1 Bt P(n+1) = B M-1 F
       solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, tab_pression);
       assembleur_pression_.modifier_solution(tab_pression);
@@ -850,19 +870,23 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
       // Time converges in O(sqrt(dt)) and not O(dt)
       // See: http://www.sciencedirect.com/science/article/pii/S0021999108004518
     }
-  // (BM) gradient operator requires updated virtual space in source vector
-  // Calculate Bt P(n+1)
-  tab_pression.echange_espace_virtuel();
-  gradient.calculer(tab_pression, gradP);
 
-  // gradP = Bt P(n+1) is kept and
-  // M-1Bt P(n+1) is calculated:
-  DoubleTrav Mmoins1gradP(gradP);
-  Mmoins1gradP = gradP;
-  solveur_masse.appliquer(Mmoins1gradP);
+  if (discretisation().que_suis_je() != "PolyMAC") //en PolyMAC, on a deja modifie la vitesse
+    {
+      // (BM) gradient operator requires updated virtual space in source vector
+      // Calculate Bt P(n+1)
+      tab_pression.echange_espace_virtuel();
+      gradient.calculer(tab_pression, gradP);
 
-  // dU/dt = M-1(F-Bt P(n+1))
-  derivee -= Mmoins1gradP;
+      // gradP = Bt P(n+1) is kept and
+      // M-1Bt P(n+1) is calculated:
+      DoubleTrav Mmoins1gradP(gradP);
+      Mmoins1gradP = gradP;
+      solveur_masse.appliquer(Mmoins1gradP);
+
+      // dU/dt = M-1(F-Bt P(n+1))
+      derivee -= Mmoins1gradP;
+    }
 
   if( sub_type(Op_Conv_ALE, terme_convectif.valeur()) )
     {
@@ -955,15 +979,20 @@ void Navier_Stokes_std::projeter()
       solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem,lagrange);
       assembleur_pression_.modifier_solution(lagrange);
       lagrange.echange_espace_virtuel();
-      // M-1 Bt l
-      gradient->multvect(lagrange, gradP);
-      gradP.echange_espace_virtuel();
+      if (discretisation().que_suis_je() == "PolyMAC") //en PolyMAC, on a deja les vitesses
+        assembleur_pression_.valeur().corriger_vitesses(lagrange, tab_vitesse);
+      else
+        {
+          // M-1 Bt l
+          gradient->multvect(lagrange, gradP);
+          gradP.echange_espace_virtuel();
 
-      solveur_masse.appliquer(gradP);
-      gradP.echange_espace_virtuel();
+          solveur_masse.appliquer(gradP);
+          gradP.echange_espace_virtuel();
 
-      tab_vitesse.ajoute(-dt,gradP);
-      tab_vitesse.echange_espace_virtuel();
+          tab_vitesse.ajoute(-dt,gradP);
+          tab_vitesse.echange_espace_virtuel();
+        }
 
       Debog::verifier("Navier_Stokes_std::projeter, vitesse", tab_vitesse);
 
@@ -1101,19 +1130,32 @@ int Navier_Stokes_std::preparer_calcul()
             if (mod)
               le_schema_en_temps->set_dt()=0;
           }
-        solveur_masse.appliquer(vpoint);
-        vpoint.echange_espace_virtuel();
-        divergence.calculer(vpoint, secmem);
-        secmem*=-1;
-        secmem.echange_espace_virtuel();
 
-        DoubleTrav inc_pre(la_pression.valeurs());
-        solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
-        // On veut que l'espace virtuel soit a jour, donc all_items
-        operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
+        if (discretisation().que_suis_je() != "PolyMAC")
+          {
+            solveur_masse.appliquer(vpoint);
+            vpoint.echange_espace_virtuel();
+            divergence.calculer(vpoint, secmem);
+            secmem*=-1;
+            secmem.echange_espace_virtuel();
 
+            DoubleTrav inc_pre(la_pression.valeurs());
+            solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
+            // On veut que l'espace virtuel soit a jour, donc all_items
+            operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
+          }
+        else //PolyMAC -> plus complique
+          {
+            const Zone_VF& zone = ref_cast(Zone_VF, zone_dis().valeur());
+            for (int f = 0; f < zone.nb_faces_tot(); f++) secmem(zone.nb_elem_tot() + f) += vpoint(f);
+
+            DoubleTrav inc_pre(la_pression.valeur());
+            solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmem, inc_pre);
+            inc_pre *= -1;
+            operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
+            la_pression.valeurs().echange_espace_virtuel();
+          }
         gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
-
         divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
         divergence_U.valeurs()=0.;  // on remet les bons flux bords pour div
       }
@@ -1276,8 +1318,8 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
   DoubleTab& Pa=la_pression_en_pa.valeurs();
   DoubleTab& tab_pression=la_pression.valeurs();
   const Champ_Don& rho=milieu().masse_volumique();
-  // On multiplie par rho si uniforme sinon deja en Pa...
   Pa = tab_pression;
+  // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho.valeur()))
     Pa *= rho(0,0);
 }
