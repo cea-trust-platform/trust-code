@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -734,9 +734,9 @@ void Champ_Generique_Interpolation::discretiser_domaine()
       const Probleme_base& Pb = get_ref_pb_base();
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
-      Nom type;
       // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
-      type = sub_type(Poly_geom_base, domaine_.valeur().zone(0).type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
+      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().zone(0).type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
+      Nom type = "NO_FACE_Zone_";
       if (localisation_=="faces")
         {
           type="Zone_";

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,10 +160,8 @@ void Champ_Don_Fonc_txyz::mettre_a_jour(double t)
   changer_temps(t);
   Domaine& domaine=mon_domaine.valeur();
   const Zone& ma_zone = domaine.zone(0);
-  const Elem_geom& mon_elem = ma_zone.type_elem();
   const IntTab& les_Polys = ma_zone.les_elems();
-  int nb_som = mon_elem.nb_som();
-  int nb_elems = ma_zone.nb_elem(),num_som;
+  int nb_elems = ma_zone.nb_elem();
   DoubleTab& mes_val = valeurs();
   int num_elem;
   double x,y,z;
@@ -173,13 +171,15 @@ void Champ_Don_Fonc_txyz::mettre_a_jour(double t)
   for (num_elem=0; num_elem<nb_elems; num_elem++)
     {
       x=y=z=0;
-      for(int s=0; s<nb_som; s++)
-        {
-          num_som = les_Polys(num_elem,s);
-          x += domaine.coord(num_som,0);
-          y += domaine.coord(num_som,1);
-          if (dimension >2 ) z += domaine.coord(num_som,2);
-        }
+      int nb_som = 0;
+      for(int s = 0, num_som; s < les_Polys.dimension(1); s++)
+        if ((num_som = les_Polys(num_elem,s)) >= 0)
+          {
+            nb_som++;
+            x += domaine.coord(num_som,0);
+            y += domaine.coord(num_som,1);
+            if (dimension >2 ) z += domaine.coord(num_som,2);
+          }
 
       positions(num_elem,0) = x/nb_som;
       positions(num_elem,1) = y/nb_som;
