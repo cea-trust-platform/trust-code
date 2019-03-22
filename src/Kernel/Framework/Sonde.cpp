@@ -777,9 +777,8 @@ void Sonde::initialiser()
           if(elem_[i]!=-1)
             {
               Journal()<<"The point " << i << " of the probe "<<nom_<<" is moved:";
-              for(int isom=0; isom<sommets_par_element; isom++)
+              for(int isom=0, sommet; isom<sommets_par_element && (sommet = sommet_elem(elem_[i],isom)) >= 0; isom++)
                 {
-                  int sommet=sommet_elem(elem_[i],isom);
                   double dist=0.;
                   for (int dir=0; dir<dimension; dir++)
                     dist+=(coord(sommet,dir)-les_positions_(i,dir))*(coord(sommet,dir)-les_positions_(i,dir));

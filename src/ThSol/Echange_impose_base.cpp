@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,8 @@ void Echange_impose_base::completer()
           && !nom_pb.debute_par("Probleme_Interface")
           && !nom_pb.debute_par("Probleme_Thermo_Front_Tracking")
           && !nom_pb.debute_par("Pb_Conduction_Milieu_Variable")
-          && !nom_pb.debute_par("Probleme_Front_Tracking"))
+          && !nom_pb.debute_par("Probleme_Front_Tracking")
+          && !nom_pb.debute_par("Pb_Conduction_Combustible"))
 
         division_par_rhoCp_=1;
 
@@ -339,7 +340,8 @@ int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr)
   if ((discr.que_suis_je() == "VDF")
       || (discr.que_suis_je() == "VDF_Interface")
       || (discr.que_suis_je() == "VDF_Front_Tracking")
-      || (discr.que_suis_je() == "VEFPreP1B") )
+      || (discr.que_suis_je() == "VEFPreP1B")
+      || (discr.que_suis_je() == "PolyMAC") )
     return 1;
   else
     {
