@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,10 @@ Entree& Terme_Puissance_Thermique_VDF_base::readOn(Entree& s )
   const Equation_base& eqn = equation();
   Terme_Puissance_Thermique::lire_donnees(s,eqn);
   champs_compris_.ajoute_champ(la_puissance);
+  Nom name_file("Puissance_Thermique");
+  modify_name_file(name_file);
+  set_fichier(name_file);
+  set_description("Heat power release = Integral(P*dv) [W]");
   return s ;
 }
 
@@ -52,14 +56,7 @@ void Terme_Puissance_Thermique_VDF_base::associer_zones(const Zone_dis& zone_dis
 int Terme_Puissance_Thermique_VDF_base::initialiser(double temps)
 {
   Terme_Source_VDF_base::initialiser(temps);
-
-  if (sub_type(Champ_val_tot_sur_vol_base,la_puissance.valeur()))
-    {
-      const Zone_dis_base& zdis = equation().zone_dis().valeur();
-      const Zone_Cl_dis_base& zcldis = equation().zone_Cl_dis().valeur();
-      Champ_val_tot_sur_vol_base& champ_puis = ref_cast(Champ_val_tot_sur_vol_base,la_puissance.valeur());
-      champ_puis.evaluer(zdis,zcldis);
-    }
+  initialiser_champ_puissance(equation());
   return 1;
 }
 
