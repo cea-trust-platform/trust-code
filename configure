@@ -275,6 +275,7 @@ echo "[-disable-check_sources]          No check sources before compiling."
 echo "[-disable-checks]                 Disable checks for external packages, sources, disk space and speed."
 echo "[-without-host_file]              Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "[-without-doc]                    Do not build the documentation."
+echo "[-without-pdflatex]               Do not build the pdf documentation."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a version of VisIt rather trying to build a version."
 #echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
@@ -319,6 +320,7 @@ export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_WITHOUT_DOC=0
+export TRUST_WITHOUT_PDFLATEX=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_DOWNLOAD_SALOME=0
@@ -424,6 +426,10 @@ do
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
 
+   elif [ "${1#-without-pdflatex}" != "$1" ]
+   then
+      export TRUST_WITHOUT_PDFLATEX=1
+
    elif [ "${1#-without-visit}" != "$1" ]
    then
       export TRUST_WITHOUT_VISIT=1
@@ -523,6 +529,7 @@ echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_
 echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
+echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDFLATEX		# Disable/enable pdf Documentation build only"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
 echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var
@@ -575,9 +582,12 @@ cd env
 [ "$clean" != "" ] && exit 0
 cd ..
 
+exiterror=0
+[ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep 'Error while installing' $TRUST_ROOT/NON_INSTALLED`" != "" ] && exiterror=1
+
 source ./env_TRUST.sh 1>/dev/null 2>&1
 
-if [ "$TRUST_WITHOUT_DOC" != 1 ]
+if [ "$TRUST_WITHOUT_DOC" != 1 ] && [ "$TRUST_WITHOUT_PDFLATEX" != 1 ]
 then
    texerror=0
    if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
@@ -612,7 +622,11 @@ then
      echo "  3. texlive-fonts-recommended" >> NON_INSTALLED
      echo "  4. texlive-latex-extra" >> NON_INSTALLED
      echo " NOTE1: The names of these packages may differ if your OS is not one of Debian/Ubuntu/Mint" >> NON_INSTALLED
-     echo " NOTE2: In the case you DO NOT WANT to install it, run: ./configure -without-doc" >> NON_INSTALLED
+     echo " NOTE2: In the case you DO NOT WANT to install it, run: " >> NON_INSTALLED
+     Num_opts_configure=`tail -1 configure.log | awk '{print NF-1}'`
+     opts_configure=`tail -1 configure.log | cut -d ' ' -f 1-$Num_opts_configure`
+     echo "        $opts_configure -without-pdflatex" >> NON_INSTALLED
+     exiterror=1
   fi
 
   if [ $texerror = 2 ]
@@ -633,7 +647,7 @@ then
    [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found!"
    echo $ECHO_OPTS "See previous messages for further details or contact support at trust@cea.fr"
    echo "========================================================================="
-   exit -1
+   [ "$exiterror" = 1 ] && exit -1
 fi
 
 
