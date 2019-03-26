@@ -525,7 +525,7 @@ then
    distant=1
    shift
 fi
-export nomail=0
+#export nomail=0 // On commente pour pouvoir faire par exemple: nomail=1 trust -check ....
 if [ "$1" = -nomail ]
 then
     nomail=1
