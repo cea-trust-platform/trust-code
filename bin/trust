@@ -355,7 +355,10 @@ do
 	 Qui $1 || exit -1
 	 option=liste_cas
       fi
-      echo $option | lance_test -no_timeout $binary
+      # Lorsque lance depuis ctest on desactive l'envoi de mail
+      # sinon si 1000 cas tests -> 1000 mails (1 par cas test)
+      nomail="" && [ "$CTEST_INTERACTIVE_DEBUG_MODE" != "" ] && nomail="-nomail"
+      echo $option | lance_test $nomail -no_timeout $binary
       exit $?
    elif [ "$1" = "-clean" ]
    then
