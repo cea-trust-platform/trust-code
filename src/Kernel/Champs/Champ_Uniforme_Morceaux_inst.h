@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,6 +72,7 @@ private :
 inline void Champ_Uniforme_Morceaux_inst::mettre_a_jour(double un_temps)
 {
   me_calculer(un_temps);
+  changer_temps(un_temps);
 }
 
 #endif
