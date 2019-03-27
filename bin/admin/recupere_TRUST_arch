@@ -341,10 +341,6 @@ do
 	MEDCOUPLPYT=$NOT && [ "`grep MED_COUPLING_PYTHON=ON $CR`" != "" ] && MEDCOUPLPYT="<TD $VERT>ON</TD>" && [ "`grep MED_COUPLING_PYTHON=OFF $CR`" != "" ] && MEDCOUPLPYT="<TD $ROUGE>OFF</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
-	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && MEDCOUPL=$NOT && GMSH=$NOT && ICOCO=$NOT
-	[ "`grep ' -disable-med ' $CR`" != "" ] 	&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && MEDCOUPL=$NOT && GMSH=$NOT && ICOCO=$NOT
-	[ "`grep 'Disabling MEDCOUPLING' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
-	[ "`grep ' -disable-medcoupling' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
 	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
 	[ "`grep ' -disable-mpi' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
 	[ "`grep 'Disabling GMSH' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT	

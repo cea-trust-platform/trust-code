@@ -257,11 +257,9 @@ echo "[-force_even_unsupported]         Force the configure even the compiler/OS
 #echo "[-force_petsc_have_openmp]        Use the latest PETSc version (petsc-dev) and try to activate the OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
-echo "[-disable-med]                    Disable MED library installation."
 echo "[-with-med=dir]                   Force Using external MED library"
 echo "[-with-hdf=dir]                   Force Using external HDF library"
 echo "[-disable-metis]                  Disable metis library installation."
-echo "[-disable-medcoupling]            Disable MEDCoupling library installation."
 echo "[-with-medcoupling=dir]           Force Using external MEDCoupling library"
 echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "[-disable-ccache]                 Disable ccache detection/installation."
@@ -305,7 +303,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
+  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
   exit $?
 fi
 

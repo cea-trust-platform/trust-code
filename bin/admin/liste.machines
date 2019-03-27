@@ -23,11 +23,11 @@ linux	rsync_ssh	tache		is228817.intra.cea.fr											-xdata		-force_provided_m
 linux	rsync_ssh	tache		is232974.intra.cea.fr		-all		-PolyMAC								-force_latest_openmpi			# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	sftp_ssh	tache		is220631.intra.cea.fr	-rsync	-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC		-prof		-force_provided_mpich			# Fedora 22	Bat 451 LGLS	bureau TMA FLICA4
 linux	rsync_ssh	tache		is232971.intra.cea.fr				-TRUST -MPCube -PAREX+ -FLICA5 -GENEPI3	 	-force_provided_openmpi -remote_install_TRUST_with_source	# Fedora 26 	Bat 451 LGLS	bureau Stephane Veys
-linux	rsync_ssh	non		is212800.intra.cea.fr		-all									 		-disable-medcoupling			# CentOS 6.4	Bat ?	?	bureau ? (Teste la compilation de TRUST allegee)
+linux	rsync_ssh	non		is212800.intra.cea.fr		-all									 							# CentOS 6.4	Bat ?	?	bureau ? (Teste la compilation de TRUST allegee)
 linux	rsync_ssh	non		is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT -PolyMAC				-g 		-force_provided_mpich -download-visit	# Ubuntu 16	Bat 451 LMSF    bureau Michel Filippi
 linux	rsync_ssh	non		is233136-clang.intra.cea.fr			-TRUST -TrioCFD -GENEPI3				-g -clang38	-force_provided_openmpi -disable-gmsh	# Ubuntu 16	Bat 451 LMSF	bureau Ulrich Bieder
 linux	rsync_ssh	non		is221710.intra.cea.fr								 		-force_provided_mpich -remote_install_TRUST_kernel_only		# Fedora 24	Bat 454	LMEC	bureau Marc Elmo (Couplage Cathare/TRUST)
-linux	rsync_ssh	non		is221710-womed.intra.cea.fr			-TRUST -MPCube -TrioCFD -GENEPI3 					-force_provided_mpich -disable-med 	# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
+linux	rsync_ssh	non		is221710-womed.intra.cea.fr			-TRUST -MPCube -TrioCFD -GENEPI3 					-force_provided_mpich 		 	# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
 linux	rsync_ssh	non		is224594-clang.intra.cea.fr			-FLICA5	-GENEPI3 -IJK-FT -TrioMC			-clang 		-force_provided_openmpi			# Fedora 24 	Bat 454 LMEC	bureau Yannick Gorsse
 linux	rsync_ssh	non		is233137.intra.cea.fr				-TRUST -FLICA5 -IJK-FT							-disable-mpi 				# Fedora 26	Bat 451 LMSF	bureau Guillaume Bois
 linux	rsync_ssh	non		is229106.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -FLICA5 -GENEPI3 	-force_provided_mpich -force_even_unsupported		# Fedora 27	Bat 454	LMEC	bureau Marc Tajchman

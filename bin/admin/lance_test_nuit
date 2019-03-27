@@ -202,8 +202,6 @@ check_components()
 	          wompi_machines=`liste_machines "\-disable-mpi"`
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
-	          wompi_machines=$wompi_machines" `liste_machines "\-disable-med "`"
-	          wompi_machines=$wompi_machines" `liste_machines "\-disable-medcoupling"`"
 	          # Machines en mode parallele
 		  machines=""
 		  for machine in $all_machines
@@ -1559,8 +1557,8 @@ criteres_remplis=0
 total_criteres=0
 baltik_ok=0
 #total_baltik=`echo $ComposantsOfficial | wc -w`
-nb=$(echo $ComposantsOfficial-1 | wc -w) # nb de baltik testés pour les versions (beta, RC ou officielle)
-total_baltik=$(echo $nb-1 | bc -l)       # on retire ijk du décompte car il n'est pas encore au point
+nb=$(echo $ComposantsOfficial-1 | wc -w) # nb de baltik test\E9s pour les versions (beta, RC ou officielle)
+total_baltik=$(echo $nb-1 | bc -l)       # on retire ijk du d\E9compte car il n'est pas encore au point
 
 ######################
 # Tests d'installation
@@ -1784,7 +1782,7 @@ do
 	       ssh $log@$adr kill -9 $pids
 	      ) 
 	    done
-	    IFS=$old_IFS  # rétablissement du séparateur de champ par défaut
+	    IFS=$old_IFS  # r\E9tablissement du s\E9parateur de champ par d\E9faut
 	 fi 
 	 rm -f start.liste stop.liste kill.liste
       else

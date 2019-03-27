@@ -1,3 +1,4 @@
+XX/XX/19 (TRUST)  Portability : MEDCoupling library is now mandatory to build Trust so -disable-med and -disable-medcoupling options are removed from the configure
 XX/XX/19 (TRUST)  Bug fixed   : Several PETSc CLI solvers can't be used together
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8 : Enhancements, modifications and corrected bugs since version 1.7.7 :
