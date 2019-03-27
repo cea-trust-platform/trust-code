@@ -1756,7 +1756,9 @@ linux_clang++) TRUST_SUPPORTED=1
 	# CppFlags="-O3 -ansi -unroll -tpp2 -ipo -ipo_obj"
 	# -Werror supprime pour Intel 12.1 car warning sur les accents dans les chaines de caracteres...
 	#CppFlags="-O3 -fPIC -ansi -unroll -Wno-deprecated -Werror"
-	CppFlags="$Cpp_flag_optim -fPIC -ansi -unroll"
+	# -std=c++11 -ansi : conflit et probleme de compilation sur irene
+	#CppFlags="$Cpp_flag_optim -fPIC -ansi -unroll"
+	CppFlags="$Cpp_flag_optim -std=c++11 -fPIC -unroll"
 	#SYSLIBS="-lF90 -lc -limf -lcxa -lCEPCF90"
 	#SYSLIBS="-lF90 -lCEPCF90"
 	# -lguide pour OpenMP sur argent (et -lkitcompat -lnuma en plus sur mercure)
