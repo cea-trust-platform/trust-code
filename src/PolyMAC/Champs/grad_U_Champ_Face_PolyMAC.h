@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,7 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        grad_U_Champ_Face.h
+// File:        grad_U_Champ_Face_PolyMAC.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     /main/7
 //
@@ -25,7 +25,6 @@
 
 
 #include <Champ_Fonc_P0_PolyMAC.h>
-#include <Ref_Champ_Face.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
