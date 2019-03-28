@@ -1,3 +1,5 @@
+XX/XX/19 (TRUST)  Eight validation sheets about PolyMAC available under $TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
+XX/XX/19 (TRUST)  New MAC discretization (Marker And Cell method) available under $TRUST_ROOT/src/PolyMAC allowing non conform and/or hybrid meshes with polyhedral cells
 XX/XX/19 (TRUST)  Add a strict check of PETSc CLI options to check misspelled or obsolete one
 -------------------------------------------------------------
 Developer notes version 1.7.8 : Changes since version 1.7.7 :
