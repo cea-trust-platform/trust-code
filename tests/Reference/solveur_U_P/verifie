@@ -1,0 +1,2 @@
+#!/bin/sh
+compare_lata std.lata solveur_U_P.lata
