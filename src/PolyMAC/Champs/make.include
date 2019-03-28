@@ -1,0 +1,5 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/src/Kernel/Champs
+	
+
+Lib = $(TRUST_LIB)/libpmchamp
