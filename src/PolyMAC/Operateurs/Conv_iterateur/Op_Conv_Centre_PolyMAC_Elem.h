@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Conv_Centre_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@
 #define Op_Conv_Centre_PolyMAC_Elem_included
 
 #include <ItPolyMACEl.h>
-#include <Eval_Centre_PolyMAC_Elem.h>
+#include <Eval_centre_PolyMAC_Elem.h>
 #include <Op_PolyMAC_Elem.h>
 
 //
@@ -37,14 +37,14 @@
 //  Le champ convecte est scalaire
 //  Le schema de convection est du type Centre
 //  L'iterateur associe est de type Iterateur_PolyMAC_Elem
-//  L'evaluateur associe est de type Eval_Centre_PolyMAC_Elem
+//  L'evaluateur associe est de type Eval_centre_PolyMAC_Elem
 
 //
 // .SECTION voir aussi
 //
 //
 
-declare_It_PolyMAC_Elem(Eval_Centre_PolyMAC_Elem)
+declare_It_PolyMAC_Elem(Eval_centre_PolyMAC_Elem)
 
 //////////////////////////////////////////////////////////////////////////////
 //
