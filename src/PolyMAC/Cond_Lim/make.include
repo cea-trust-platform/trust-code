@@ -1,0 +1,9 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/src/Kernel/Champs\
+	-I$(TRUST_ROOT)/src/Kernel/Framework\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
+	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
+	-I$(TRUST_ROOT)/src/ThSol
+
+Lib = $(TRUST_LIB)/libpolymac
