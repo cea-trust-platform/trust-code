@@ -1,0 +1,61 @@
+Parameters {
+	Title "Convergence du calcul"
+ 	 
+	TestCase  "cartesian/poiseuille_6" "cas.data"  	 
+	TestCase  "cartesian/poiseuille_12" "cas.data"  	 
+	TestCase  "cartesian/poiseuille_24" "cas.data"    	 
+	TestCase  "triangle/poiseuille_6" "cas.data"  	 
+	TestCase  "triangle/poiseuille_12" "cas.data"  	 
+	TestCase  "triangle/poiseuille_24" "cas.data"    	 
+	TestCase  "non_conformal/poiseuille_6" "cas.data"  	 
+	TestCase  "non_conformal/poiseuille_12" "cas.data"  	 
+	TestCase  "non_conformal/poiseuille_24" "cas.data"   	Author "GF "
+	IncludeData 2
+	Prerequisite "./extract_convergence"
+	Description "Cas test periodique, pour tester convergence en maillage des opérateurs de convection"
+}
+
+
+Chapter {
+	Title Convergence en maillage en vitesse 
+	Figure {
+	labelx N
+	labely erreur max 
+	logx
+	logy
+	Include_Description_Curves 0
+	width 12cm
+	Title "convergence de la diffusion vitesse en maillage "
+     
+	 
+		Curve {
+		legend cartesian, poiseuille
+		file cartesian/conv_glob_poiseuille
+		  style linespoints
+		}
+		         
+	 
+		Curve {
+		legend triangle, poiseuille
+		file triangle/conv_glob_poiseuille
+		  style linespoints
+		}
+		         
+	 
+		Curve {
+		legend non_conformal, poiseuille
+		file non_conformal/conv_glob_poiseuille
+		  style linespoints
+		}
+		        		Curve {
+		legend N^-1 
+		fonction 1./x
+		  style lines
+		}
+		Curve {
+		legend N^-2 
+		fonction 1./x/x
+		  style lines
+		}
+	}			
+} 

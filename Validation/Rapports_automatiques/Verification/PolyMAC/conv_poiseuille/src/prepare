@@ -1,0 +1,30 @@
+#!/bin/bash
+
+meshes="cartesian triangle non_conformal"
+list="6 12 24"
+cas="poiseuille"
+echo $cas > listcas
+echo $meshes > listmeshes
+
+sed "s/%meshes%/$meshes/; s/%list%/$list/; s/%cas%/$cas/" conv.prm.P.m  > conv.prm.P
+
+python $TRUST_ROOT/bin/KSH/preprocessor.py conv.prm.P conv.prm
+
+echo > ll
+for mesh in $meshes
+do
+    for K in $cas
+    do
+        for resol in $list
+        do
+            nn=`echo $resol+0|bc `
+            mkdir -p  $mesh/${K}_${resol}
+            cp jdd.data $mesh/${K}_${resol}/cas.data
+            sed "s/meshtype/$mesh/" pre_run > $mesh/${K}_${resol}/pre_run
+            sed "s/__resol__/$nn/g" prepare_meshes.py > $mesh/${K}_${resol}/prepare_meshes.py
+            sed "s/RESOL/${resol}/;s/CAS/$K/" post_run > $mesh/${K}_${resol}/post_run
+            echo $mesh/${K}_${resol}/cas.data >> ll
+        done
+    done
+done
+grep -v _6 ll > liste_cas_exclu_nr

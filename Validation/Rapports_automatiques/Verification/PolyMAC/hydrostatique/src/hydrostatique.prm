@@ -1,0 +1,76 @@
+Parameters
+{
+    Title "Verification hydrostatique"
+    Description "Calcul sans diffusion ni convection de QDM. On verifie l'absence de vitesses parasites, et que le profil de pression est exact. Le calcul est mene sur differents maillages (cartesien conforme, triangles et non conforme)."
+    Author "Y.G."
+    TestCase cartesian      jdd.data
+    TestCase triangle       jdd.data
+    TestCase non_conformal  jdd.data
+}
+
+Chapter
+{
+    Title "Hydrostatique PolyMAC"
+    Description ""
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0.161316 0.944928 -0.28476
+        Title "Maillage cartesien"
+        mesh        cartesian/jdd.lata dom
+        pseudocolor cartesian/jdd.lata dom PRESSION ELEM
+        vector      cartesian/jdd.lata dom VITESSE ELEM
+        Description ""
+    }
+
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0.161316 0.944928 -0.28476
+        Title "Maillage de triangles"
+        mesh        triangle/jdd.lata dom
+        pseudocolor triangle/jdd.lata dom PRESSION ELEM
+        vector      triangle/jdd.lata dom VITESSE ELEM
+        Description ""
+    }
+
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0.161316 0.944928 -0.28476
+        Title "Maillage non conforme"
+        mesh        non_conformal/jdd.lata dom
+        pseudocolor non_conformal/jdd.lata dom PRESSION ELEM
+        vector      non_conformal/jdd.lata dom VITESSE ELEM
+        Description ""
+    }
+
+    Tableau
+    {
+        Titre "Comparaison theorie/numerique"
+        nb_colonnes 2
+        label \latex_( $\Vert P \Vert_{\infty}$ \latex_) |  \latex_( $\Vert \vec{v} \Vert_{\infty}$ \latex_)
+        Ligne
+        {
+            Legende "Cartesien"
+            nb_colonnes_fichier 2
+            fichier ./cartesian/erreurs.txt
+            colonnes $1 $2
+        }
+        Ligne
+        {
+            Legende "Triangles"
+            nb_colonnes_fichier 2
+            fichier ./triangle/erreurs.txt
+            colonnes $1 $2
+        }
+        Ligne
+        {
+            Legende "Non conforme"
+            nb_colonnes_fichier 2
+            fichier ./non_conformal/erreurs.txt
+            colonnes $1 $2
+        }
+    }
+}
