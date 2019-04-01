@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 --------------------------------------------------------------------------------------------------
+29/03/19 (TRUST)  Portability : MEDCoupling library is now mandatory to build Trust so -disable-med and -disable-medcoupling options are removed from the configure
+29/03/19 (TRUST)  Bug fixed   : Several PETSc CLI solvers can't be used together
 13/03/19 (TRUST)  Bug fixed   : Axial symmetry was not functionnal with bidim_axi keyword when reading a 2D MED mesh
 20/02/19 (TRUST)  Bug fixed   : Y+ computation homogeinization for .lata and Ustar.face 
 13/02/19 (TRUST)  New keyword : Add flux_surfacique_bords option to Morceau_equation keyword to post-process surfacic fluxes on boundaries

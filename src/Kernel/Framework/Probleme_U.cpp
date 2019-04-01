@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -762,31 +762,6 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
     throw WrongArgument(le_nom().getChar(),"getOutputField",name.getString(),"no output field of that name");
 
   const Champ_Generique_base& ch = ref_ch.valeur();
-
-  Domaine dom;
-  ch.get_copy_domain(dom);
-
-  Champ espace_stockage;
-  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
-  const DoubleTab& values = champ_ecriture.valeurs();
-
-  Entity loc=ch.get_localisation();
-  if (loc==NODE)
-    //if (values.dimension_tot(0)==coord.dimension_tot(0))
-    {
-      Cerr<<name<<" type "<<ch.que_suis_je() <<" P1 ?? "<<finl;
-      //      afield._type=1;
-    }
-  else if (loc!=ELEMENT)
-    {
-      throw WrongArgument(name.getString()," "," "," wrong localisation type for field ");
-    }
-  double t1=presentTime();
-  double t2=futureTime();
-  int is_p1=0;
-  if (loc==NODE)
-    is_p1=1;
-  afield= build_ICoCoField(name.getString(), dom, values, is_p1,  t1, t2 );
-
+  afield = build_triofield(ch);
 }
 

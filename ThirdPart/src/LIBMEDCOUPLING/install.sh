@@ -18,29 +18,6 @@ cp -af $medcoupling_hxx .
 
 rm -rf build install $medcoupling
 
-if [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
-then
-    mkdir -p $DEST/include
-    rm -rf $DEST/lib
-    echo "MED or MEDCOUPLING DISABLE"
-    echo "#define NO_MEDFIELD " >  prov.h
-
-    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]
-	then
-	cp prov.h $dest
-    else
-	cp -a ICoCoMEDField.hxx $dest
-    fi
-    echo "#undef MEDCOUPLING_" > prov2.h
-    if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ] 
-       then
-       cp prov2.h $medcoupling_hxx
-    else
-       cp -a medcoupling++.h $medcoupling_hxx
-    fi
-    rm -f prov.h prov2.h ICoCoMEDField.hxx medcoupling++.h
-    exit 0
-fi
 rm -f ICoCoMEDField.hxx
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]
 then

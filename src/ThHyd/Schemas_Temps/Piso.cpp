@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,12 @@
 #include <Fluide_Quasi_Compressible.h>
 #include <Dirichlet.h>
 #include <Probleme_base.h>
+
+#include <MD_Vector_std.h>
+#include <MD_Vector_composite.h>
+#include <MD_Vector_tools.h>
+#include <ConstDoubleTab_parts.h>
+#include <Discretisation_base.h>
 
 Implemente_instanciable_sans_constructeur(Piso,"Piso",Simpler);
 
@@ -213,12 +219,21 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
   if (avancement_crank_==1)
     {
-      //Calcul de Bt(delta_t*delta_P)
-      gradient.valeur().multvect(correction_en_pression,gradP);
-      eqn.solv_masse().appliquer(gradP);
+      //calcul de Un+1
+      if (eqnNS.discretisation().que_suis_je() == "PolyMAC") //dans PolyMAC, la correction en vitesse est deja calculee
+        {
+          eqnNS.assembleur_pression().valeur().corriger_vitesses(correction_en_pression, current);
+          correction_en_pression *= -1;
+        }
+      else
+        {
+          //Calcul de Bt(delta_t*delta_P)
+          gradient.valeur().multvect(correction_en_pression,gradP);
+          eqn.solv_masse().appliquer(gradP);
 
-      //Calcul de Un+1 = U* -delta_t*delta_P
-      current -= gradP;
+          //Calcul de Un+1 = U* -delta_t*delta_P
+          current -= gradP;
+        }
       current.echange_espace_virtuel();
       divergence.calculer(current,secmem);
 

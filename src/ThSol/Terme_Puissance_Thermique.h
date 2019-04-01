@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,21 +53,19 @@ public :
   void preparer_source(const Probleme_base& pb);
   inline void associer_champs(const Champ_Don& , const Champ_Don&);
   void lire_donnees(Entree&,const Equation_base& eqn);
-  void mettre_a_jour(double temps)
-  {
-    la_puissance.mettre_a_jour(temps);
-  };
+  void mettre_a_jour(double temps);
   void modify_name_file(Nom& ) const;
   const DoubleTab& puissance_thermique() const
   {
     return la_puissance->valeurs();
   }
+  void initialiser_champ_puissance(const Equation_base& eqn);
 
 protected:
 
   REF(Champ_Don) rho_ref;
   REF(Champ_Don) Cp;
-  Champ_Don la_puissance;
+  Champ_Don la_puissance_lu, la_puissance;
 
 };
 

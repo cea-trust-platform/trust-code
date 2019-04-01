@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -394,9 +394,11 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
 // Le code est celui utilise dans la version Noyau de Equation_base::dimensionner_matrice()
 void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
 {
-  int size = equation().inconnue().valeurs().dimension_tot(0);
+  const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
+  int size = champ_inconnue.dimension_tot(0);
+  if (champ_inconnue.nb_dim() == 2) size *= champ_inconnue.dimension(1);
 
-  IntTab indice(size,2);
+  IntTab indice(size, 2);
   for(int i=0; i<size; ++i)
     {
       indice(i,0) = indice(i,1) = i;

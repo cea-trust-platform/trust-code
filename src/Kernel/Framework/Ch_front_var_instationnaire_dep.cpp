@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <Frontiere_dis_base.h>
 #include <Zone_dis_base.h>
 #include <Zone_VF.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Ch_front_var_instationnaire_dep,"Ch_front_var_instationnaire_dep",Champ_front_var_instationnaire);
 
@@ -62,9 +63,10 @@ int Ch_front_var_instationnaire_dep::initialiser(double temps, const Champ_Inc_b
   else
     {
       const Frontiere& MaFrontiere = frontiere_dis().frontiere();
-      if (inco.valeurs().dimension(0)==inco.zone_dis_base().nb_elem())
+      ConstDoubleTab_parts parts(inco.valeurs());
+      if (parts[0].dimension(0)==inco.zone_dis_base().nb_elem())
         MaFrontiere.Frontiere::trace_elem_local(inco.valeurs(),tab);
-      else if (inco.valeurs().dimension(0)==ref_cast(Zone_VF,inco.zone_dis_base()).nb_faces())
+      else if (parts[0].dimension(0)==ref_cast(Zone_VF,inco.zone_dis_base()).nb_faces())
         MaFrontiere.Frontiere::trace_face_local(inco.valeurs(),tab);
       else
         {

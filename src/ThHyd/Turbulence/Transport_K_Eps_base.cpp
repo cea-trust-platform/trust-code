@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Param.h>
 #include <Debog.h>
 #include <communications.h>
+#include <Champ_Inc_P0_base.h>
 
 Implemente_base_sans_constructeur(Transport_K_Eps_base,"Transport_K_Eps_base",Equation_base);
 
@@ -229,6 +230,16 @@ int Transport_K_Eps_base::controler_K_Eps()
 {
   DoubleTab& K_Eps = le_champ_K_Eps.valeurs();
   int size=K_Eps.dimension(0);
+  if (size<0)
+    {
+      if (sub_type(Champ_Inc_P0_base, le_champ_K_Eps.valeur()))
+        size = le_champ_K_Eps.valeur().equation().zone_dis().zone().nb_elem();
+      else
+        {
+          Cerr << "Unsupported K_Eps field in Transport_K_Eps_base::controler_K_Eps()" << finl;
+          Process::exit(-1);
+        }
+    }
   //int size_tot=mp_sum(size);
   // On estime pour eviter un mp_sum toujours couteux:
   int size_tot = size * Process::nproc();

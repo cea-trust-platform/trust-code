@@ -29,6 +29,7 @@
 
 #include <Array_base.h>
 #include <Double.h>
+#include <climits>
 
 class FArrOfDouble;
 class VDoubledata;

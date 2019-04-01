@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -225,7 +225,7 @@ static void ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const Doubl
     {
       // Champs p1bulles et autres: appel recursif pour les differents sous-tableaux:
       ConstDoubleTab_parts parts(val);
-      const int n = parts.size();
+      int n = zvf.que_suis_je() == "Zone_PolyMAC" ? 1 : parts.size();//on saute les variables auxiliaires de Champ_{P0,Face}_PolyMAC
       for (int i = 0; i < n; i++)
         ecriture_special_part2(zvf, fich, parts[i]);
     }

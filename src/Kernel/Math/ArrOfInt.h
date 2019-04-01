@@ -29,6 +29,7 @@
 
 #include <Array_base.h>
 #include <Int.h>
+#include <climits>
 
 class FArrOfInt;
 class VIntdata;

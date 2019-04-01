@@ -795,7 +795,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             double n0=0,n1=0,n2=0;
             int n=nmax-1;
-            while (sommet(face,n)==-1) n--;
+            while (n >= 0 && sommet(face,n)==-1) n--;
             for (int i0=0; i0<=n; i0++)
               {
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,8 +55,8 @@ Entree& Testeur_MEDCoupling::interpreter(Entree& is)
 #else
 
   const Probleme_base& pb = ref_cast(Probleme_base,objet(nom_pb));
-  const Champ_base& ch=pb.get_champ(nom_champ);
-  ICoCo::MEDField medfield=build_medfield_from_champ_base(ch);
+  const Champ_Generique_base& ch=pb.findOutputField(nom_champ);
+  ICoCo::MEDField medfield=build_medfield(ch);
   medfield.getField()->writeVTK(nom_du_cas().getString(),false);
 #endif
   return is;

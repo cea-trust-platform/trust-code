@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,8 +34,13 @@
 #include <Comm_Group_MPI.h>
 #include <DoubleTrav.h>
 #include <sys/stat.h>
-#ifdef PETSC_HAVE_OPENMP
-#include <petscthreadcomm.h>
+#include <MD_Vector_composite.h>
+#include <vector>
+#include <tuple>
+#include <map>
+#ifdef __PETSCKSP_H
+#include <petscis.h>
+#include <petscdmshell.h>
 #endif
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
@@ -113,6 +118,21 @@ void Solv_Petsc::create_solver(Entree& entree)
 
   // Creation du solveur et association avec le preconditionneur
   solveur_cree_++;
+  if (option_prefix_=="??") // Prefix non fixe
+    {
+      numero_solveur++;
+      option_prefix_="";
+      if (numero_solveur > 1)
+        {
+          // On cree un prefix pour les options si plus d'un solveur pour les differencier. Exemple:
+          // premier solveur -ksp_type ... -pc_type ...
+          // deuxieme solveur -solver2_ksp_type ... -solver2_pc-type ...
+          // troisieme solveur -solveur3_ksp_type ...
+          option_prefix_ += "solver";
+          option_prefix_ += (Nom) numero_solveur;
+          option_prefix_ += "_";
+        }
+    }
 
   /************************/
   /* Set PETSC_COMM_WORLD */
@@ -142,7 +162,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
   // Reprendre le formalisme de GCP { precond ssor { omega val } seuil val }
-  Motcles les_solveurs(14);
+  Motcles les_solveurs(16);
   {
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
@@ -158,6 +178,8 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[11] = "CHOLESKY_LAPACK";
     les_solveurs[12] = "CHOLESKY_UMFPACK";
     les_solveurs[13] = "CHOLESKY_PASTIX";
+    les_solveurs[14] = "CLI_VERBOSE";
+    les_solveurs[15] = "CLI_QUIET";
   }
   int solver_supported_on_gpu_by_petsc=0;
   int rang=les_solveurs.search(ksp);
@@ -165,7 +187,9 @@ void Solv_Petsc::create_solver(Entree& entree)
   switch(rang)
     {
     case 0:
+    case 14:
       {
+        solver_supported_on_gpu_by_petsc=1; // Not really, reserved to expert...
         Cerr << "Reading of the Petsc commands:" << finl;
         Nom valeur;
         is >> motlu;
@@ -180,17 +204,22 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             else
               {
+                if (valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
                 add_option(motlu.suffix("-"), valeur);
                 is >> motlu;
               }
           }
-        // Pour faciliter le debugage:
+        if (rang == 15)
+          break; // Quiet
         if (limpr()>-1)
-          fixer_limpr(1); // On imprime le residu si CLI
-        add_option("ksp_view","");
-        add_option("options_table","");
-        add_option("options_left","");
-        solver_supported_on_gpu_by_petsc=1; // Not really, reserved to expert...
+          fixer_limpr(1); // On imprime le residu
+        // Pour faciliter le debugage:
+        if (rang == 14) // Verbose
+          {
+            add_option("ksp_view", "");
+            add_option("options_view", "");
+            add_option("options_left", "");
+          }
         break;
       }
     case 1:
@@ -337,7 +366,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(18);
+      Motcles les_parametres_solveur(19);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil";
@@ -357,6 +386,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[15] = "save_matrice|save_matrix";
         les_parametres_solveur[16] = "quiet";
         les_parametres_solveur[17] = "restart";
+        les_parametres_solveur[18] = "cli_verbose";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -548,12 +578,16 @@ void Solv_Petsc::create_solver(Entree& entree)
                         is >> motlu;
                       }
                   }
-                // Pour faciliter le debugage:
                 if (limpr()>-1)
                   fixer_limpr(1); // On imprime le residu si CLI
-                add_option("ksp_view","");
-                add_option("options_table","");
-                add_option("options_left","");
+                // Pour faciliter le debugage:
+                if (rang == 18) // Verbose
+                  {
+
+                    add_option("ksp_view", "");
+                    add_option("options_view", "");
+                    add_option("options_left", "");
+                  }
                 break;
               }
             case 10:
@@ -786,7 +820,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "parasails");
-                add_option("pc_hypre_parasails_levels",(Nom)level.value());     // Higher values of level [>=0] leads to more accurate, but more expensive preconditioners (default 1)
+                add_option("pc_hypre_parasails_nlevels",(Nom)level.value());     // Higher values of level [>=0] leads to more accurate, but more expensive preconditioners (default 1)
                 add_option("pc_hypre_parasails_thresh",(Nom)epsilon.value());   // Lower values of eps [0-1] leads to more accurate, but more expensive preconditioners (default 0.1)
                 add_option("pc_hypre_parasails_sym","SPD"); // Matrice symetrique definie positive
                 check_not_defined(omega);
@@ -908,11 +942,13 @@ void Solv_Petsc::create_solver(Entree& entree)
   // Change le calcul du test de convergence relative (||Ax-b||/||Ax(0)-b|| au lieu de ||Ax-b||/||b||)
   // Peu utilisee dans TRUST car on utilise la convergence sur la norme absolue
   // Mais cela corrige une erreur KSP_DIVERGED_DTOL quand ||Ax-b||/||b||>10000=div_tol par defaut dans PETSc (rencontree sur Etude REV_4)
-  //add_option("ksp_converged_use_initial_residual_norm",1); // Before PETSc 3.5
+  //add_option(sys, "ksp_converged_use_initial_residual_norm",1); // Before PETSc 3.5
   KSPConvergedDefaultSetUIRNorm(SolveurPetsc_); // After PETSc 3.5, a function is available
 
   // Surcharge eventuelle par la ligne de commande
+  KSPSetOptionsPrefix(SolveurPetsc_, option_prefix_);
   KSPSetFromOptions(SolveurPetsc_);
+  PCSetOptionsPrefix(PreconditionneurPetsc_, option_prefix_);
   PCSetFromOptions(PreconditionneurPetsc_);
 
   // Setting the names:
@@ -934,6 +970,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 }
 
 int Solv_Petsc::instance=-1;
+int Solv_Petsc::numero_solveur=0;
 #ifdef __PETSCKSP_H
 PetscLogStage Solv_Petsc::KSPSolve_Stage_=0;
 
@@ -1024,8 +1061,8 @@ void Solv_Petsc::MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M)
   int i, ordre;
   ordre = M.ordre();
   M.transpose(mattmp);
-  for (i=0; i<ordre; i++)
-    M(i, i) = 0.;
+  for (i=0; i<ordre; i++) if (M.nb_vois(i))
+      M(i, i) = 0.;
   M = mattmp + M;
 }
 
@@ -1073,6 +1110,7 @@ void Solv_Petsc::RestoreMatrixFromFile()
   filename+="_rows_";
   filename+=(Nom)nproc();
   filename+="_cpus.petsc";
+  add_option("viewer_binary_skip_info",""); // Skip reading .info file to avoid -vecload_block_size unused option
 
   PetscViewer viewer;
   Cerr << "Reading the global PETSc matrix in the binary file " << filename << finl;
@@ -1157,6 +1195,15 @@ bool Solv_Petsc::enable_ksp_view( void )
 int Solv_Petsc::add_option(const Nom& astring, const Nom& value)
 {
   Nom option="-";
+  // Ajout du prefix si l'option concerne KSP, PC, Mat ou Vec:
+  if (astring.debute_par("ksp_") ||
+      astring.debute_par("sub_ksp_") ||
+      astring.debute_par("pc_") ||
+      astring.debute_par("sub_pc_") ||
+      astring.debute_par("mat_") ||
+      astring.debute_par("vec_"))
+    option+=option_prefix_;
+
   option+=astring;
   // Attention il ne retourne pas de code d'erreur si l'option est mal orthographiee!!
   // Il ne dit pas non plus qu'elle est unused avec -options_left
@@ -1381,7 +1428,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
-  if (Reason<0)
+  if (Reason<0 && Reason != KSP_DIVERGED_ITS)
     {
       Cerr << "No convergence on the resolution with the Petsc solver." << finl;
       Cerr << "Reason given by Petsc: ";
@@ -1516,9 +1563,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
 
 #ifdef PETSC_HAVE_OPENMP
   // Dans le cas d'OpenMP, seul le format aij est multithreade:
-  int nthreads;
-  PetscThreadCommGetNThreads(PETSC_COMM_WORLD,&nthreads);
-  if (nthreads>1) mataij_=1;
+  mataij_=1;
 #endif
 
   // Dans le cas de save_matrix_ en parallele
@@ -1806,6 +1851,59 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
           exit();
         }
     }
+
+  /* creation de champs Petsc si des MD_Vector_Composite sont trouves dans b, avec recursion! */
+  if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()) && nb_matrices_creees_ == 1)
+    {
+      std::map<std::string, std::vector<int>> champ;
+      //liste (MD_Vector_composite, offset de ses elements, prefixe des noms de ses champs)
+      std::vector<std::tuple<const MD_Vector_composite *, int, std::string>>
+                                                                          mdc_list = { std::make_tuple(&ref_cast(MD_Vector_composite, b.get_md_vector().valeur()), 0, std::string("b") ) };
+      while (mdc_list.size()) //remplissage recursif de champs_ -> (nom du champ, indices)
+        {
+          const MD_Vector_composite& mdc = *std::get<0>(mdc_list.back());
+          int idx = std::get<1>(mdc_list.back());
+          std::string prefix = std::get<2>(mdc_list.back());
+          mdc_list.pop_back();
+          for (int i = 0; i < mdc.nb_parts(); i++)
+            {
+              const MD_Vector_base& mdb = mdc.get_desc_part(i).valeur();
+              int nb_seq = mdb.nb_items_seq_local();
+              if (sub_type(MD_Vector_composite, mdb)) //un autre MD_Vector_Composite! on le met dans la liste
+                mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, prefix + std::to_string((long long) i)));
+              else
+                {
+                  std::vector<int> indices;
+                  for (int j = 0; j < nb_seq; j++) indices.push_back(decalage_local_global_ + idx + j);
+                  champ[prefix + std::to_string((long long) i)] = indices;
+                }
+              idx += nb_seq; //mise a jour du decalage (idx)
+            }
+        }
+
+      /* PetscSection : indique a quel champ appartient chaque variable */
+      PetscSection sec;
+      PetscSectionCreate(PETSC_COMM_WORLD, &sec);
+      PetscSectionSetNumFields(sec, champ.size());
+      PetscSectionSetChart(sec, decalage_local_global_, decalage_local_global_ + b.get_md_vector().valeur().nb_items_seq_local());
+      int idx = 0;
+      for (auto && kv : champ)
+        {
+          PetscSectionSetFieldName(sec, idx, kv.first.c_str());
+          for (int j = 0; j < (int) kv.second.size(); j++) PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
+          idx++;
+        }
+      PetscSectionSetUp(sec);
+
+      /* DMShell : un objet encapsulant la section */
+      DMShellCreate(PETSC_COMM_WORLD, &dm_);
+      DMSetSection(dm_, sec);
+      DMSetUp(dm_);
+      PetscSectionDestroy(&sec);
+    }
+  if (sub_type(MD_Vector_composite, b.get_md_vector().valeur())) PCSetDM(PreconditionneurPetsc_, dm_);
+
+
   /*************************************/
   /* Mise en place du preconditionneur */
   /*************************************/
@@ -1869,6 +1967,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         VecSetType(SecondMembrePetsc_, cuda_==1 ? VECMPICUDA : VECMPI);
       else
         VecSetType(SecondMembrePetsc_, cuda_==1 ? VECSEQCUDA : VECSEQ);
+      VecSetOptionsPrefix(SecondMembrePetsc_, option_prefix_);
       VecSetFromOptions(SecondMembrePetsc_);
       // Build b
       VecDuplicate(SecondMembrePetsc_,&SolutionPetsc_);
@@ -1994,6 +2093,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
   // Example: now possible to change aijcusp to aijcusparse via CLI
+  MatSetOptionsPrefix(MatricePetsc, option_prefix_);
   MatSetFromOptions(MatricePetsc);
 
   /********************************************/
