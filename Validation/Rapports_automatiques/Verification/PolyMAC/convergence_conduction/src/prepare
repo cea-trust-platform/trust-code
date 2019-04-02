@@ -11,6 +11,7 @@ echo $meshes > listmeshes
 sed "s/%meshes%/$meshes/" conv.prm.P.m > conv.prm.P
 
 python $TRUST_ROOT/bin/KSH/preprocessor.py conv.prm.P conv.prm
+share=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC/share
 
 echo > ll
 for mesh in $meshes
@@ -19,7 +20,7 @@ do
     do
         mkdir -p $mesh/jdd_$n
         sed -i "/# bloc testcases #/ i\ TestCase $mesh/jdd_$n cas.data" conv.prm
-        meshname=share/fvca8/meshes/$mesh/jdd_$n/mesh.med
+        meshname=$share/meshes/$mesh/jdd_$n/mesh.med
         sed "s~__meshprerun__~$meshname~g" pre_run > $mesh/jdd_$n/pre_run
         cp jdd.data $mesh/jdd_$n/cas.data
         cp post_run $mesh/jdd_$n/post_run
