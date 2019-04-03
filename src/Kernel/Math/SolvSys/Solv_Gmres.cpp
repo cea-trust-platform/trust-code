@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -392,7 +392,7 @@ l5:
             {
               Cout << "Gmres : Stopped after "<< it+1 <<" iterations (=nb_it_max)"<< finl;
               double residu_relatif = (res0>0?res2/res0:res2);
-              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )";
+              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )"<<finl;
             }
           return it+1;
         }

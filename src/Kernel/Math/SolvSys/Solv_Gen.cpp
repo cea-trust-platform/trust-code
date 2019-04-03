@@ -397,7 +397,6 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
 
   if (je_suis_maitre())
     {
-
       //      Cerr<<"--------------------------------------------------"<<finl;
       if (limpr()>-1)
         {
@@ -406,13 +405,16 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
               Cout<<finl<<"Maximum number of iteration nb_it_max for SolvGen = "<<nb_it_max_ << " reached..." <<finl;
               if (nb_it_max_flag == 0) Cout<<"Advice: You can modify nb_it_max by setting it in your datafile..." <<finl;
             }
-          Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+          //Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+          double residu_relatif = (fpar[2] > 0 ? fpar[5] / fpar[2] : fpar[5]);
+          Cout << finl << "Final residue: " << fpar[5] << " ( " << residu_relatif << " )"<<finl;
         }
-      //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
-      //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
-      //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
-      //Cerr<<"fpar(6) -- current residual/error norm : "<<fpar[5]<<finl;
-      //Cerr<<"fpar(7) -- convergence rate : "<<fpar[6]<<finl;
+          //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
+          //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
+          //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
+          //Cerr<<"fpar(6) -- current residual/error norm : "<<fpar[5]<<finl;
+          //Cerr<<"fpar(7) -- convergence rate : "<<fpar[6]<<finl;
+        }
     }
   if (0)
     {
@@ -442,7 +444,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
       err = Process::mp_sum(err);
       Cerr<<"ERROR: "<<sqrt(err)<<finl;
     }
-  return(1);
+  return niter;
 }
 
 
