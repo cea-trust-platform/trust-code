@@ -887,8 +887,9 @@ void Solv_Petsc::create_solver(Entree& entree)
                 check_not_defined(ordering);
                 break;
               }
-            case 8:
-            case 9:
+            case 9: // ilu
+              preconditionnement_non_symetrique_ = 1;
+            case 8: // icc
               {
                 PCSetType(PreconditionneurPetsc_, PCBJACOBI);
                 add_option("sub_pc_type",rang==8 ? "icc" : "ilu");
