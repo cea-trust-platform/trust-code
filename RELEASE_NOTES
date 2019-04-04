@@ -1,3 +1,4 @@
+XX/XX/19 (TRUST)  Portability : Fedora 29 and GNU compilers 8.2.1 supported
 XX/XX/19 (TRUST)  Bug fixed   : Axial symmetry was not functionnal with bidim_axi keyword when reading a 2D MED mesh
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.8 : Enhancements, modifications and corrected bugs since version 1.7.7 :
@@ -35,7 +36,7 @@ Release notes version 1.7.6 : Enhancements, modifications and corrected bugs sin
 21/08/17 (TRUST)  Validation  : Blocking turbulent quasi-compressible calculation with mass fraction in VEF
 29/06/17 (TRUST)  Bug fixed   : Taking into account the name of the thermal power defined by Champ_Input_P0
 --------------------------------------------------------------------------------------------------
-Release notes version 1.7.5 : Enhancements, modifications and corrected bugs since version 1.7.4 :
+Release notes version 1.7.5 : Enhancements, modifications and c29/06/16 (TRUST)  Portability : Linux distribution Fedora 24 and gcc 6.1.1 supportedorrected bugs since version 1.7.4 :
 --------------------------------------------------------------------------------------------------
 29/05/17 (TRUST)  New feature : Extraction method possible on 1D mesh
 16/05/17 (TRUST)  Minor change: Option -config completed with gedit editor
