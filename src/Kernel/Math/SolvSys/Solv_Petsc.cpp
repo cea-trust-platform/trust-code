@@ -188,6 +188,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     {
     case 0:
     case 14:
+    case 15:
       {
         solver_supported_on_gpu_by_petsc=1; // Not really, reserved to expert...
         Cerr << "Reading of the Petsc commands:" << finl;
