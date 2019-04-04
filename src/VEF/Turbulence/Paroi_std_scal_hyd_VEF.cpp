@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,7 +100,7 @@ int Paroi_std_scal_hyd_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   const DoubleVect& volumes_maille = zone_VEF.volumes();
-  DoubleVect& surfaces_face = ref_cast_non_const(Zone_VEF,zone_VEF).face_surfaces();
+  const DoubleVect& surfaces_face = zone_VEF.face_surfaces();
   int l_unif;
 
   double visco=-1;

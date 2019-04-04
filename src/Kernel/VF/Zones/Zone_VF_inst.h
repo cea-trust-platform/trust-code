@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,14 +46,6 @@ class Zone_VF_inst : public Zone_VF
 
 public :
 
-
-
-  inline double face_surfaces(int ) const
-  {
-    Cerr<<"face_surfaces not coded in "<<que_suis_je()<<finl;
-    exit();
-    return -1;
-  };
   inline double face_normales(int , int ) const
   {
     Cerr<<"face_normales not coded in "<<que_suis_je()<<finl;

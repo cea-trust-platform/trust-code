@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,17 +92,6 @@ public :
     return h_carre_(i);
   };
   inline double face_normales(int ,int ) const;
-  DoubleVect& face_surfaces();
-  // Une des 2 methode suivantes a supprimer ensuite dans tous le source
-  // pour etre coherent entre le VDF et le VEF :
-  inline double face_surfaces(int i) const
-  {
-    return face_surfaces_(i);
-  };
-  inline double surface(int i) const
-  {
-    return face_surfaces(i);
-  };
   inline DoubleTab& face_normales()
   {
     return face_normales_;
@@ -127,7 +116,6 @@ private:
   DoubleVect h_carre_;                        // carre du pas d'une maille
   Elem_VEF type_elem_;                  // type de l'element de discretisation
   DoubleTab face_normales_;             // normales aux faces
-  DoubleVect face_surfaces_;                // surface des faces
   DoubleTab facette_normales_;          // normales aux faces des volumes entrelaces
   DoubleTab vecteur_face_facette_;                // vecteur centre face->centre facette
   int nb_faces_std_;                    // nombre de faces standard

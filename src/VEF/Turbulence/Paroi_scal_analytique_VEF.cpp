@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ int Paroi_scal_analytique_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
   Equation_base& eqn_hydr = mon_modele_turb_scal->equation().probleme().equation(0);
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,eqn_hydr.milieu());
   const DoubleVect& volumes_maille = zone_VEF.volumes();
-  DoubleVect& surfaces_face = ref_cast_non_const(Zone_VEF,zone_VEF).face_surfaces();
+  const DoubleVect& surfaces_face = zone_VEF.face_surfaces();
 
   int elem;
   double dist=-1;

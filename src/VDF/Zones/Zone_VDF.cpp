@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,6 @@ Implemente_instanciable(Zone_VDF,"Zone_VDF",Zone_VF);
 Sortie& Zone_VDF::printOn(Sortie& os) const
 {
   Zone_VF::printOn(os);
-  os << "face_surfaces_"<<face_surfaces_<< finl;
   os << "orientation_"<<orientation_<< finl;
   os << "nb_faces_X_"<<nb_faces_X_<< finl;
   os << "nb_faces_Y_"<<nb_faces_Y_<< finl;
@@ -63,7 +62,6 @@ Sortie& Zone_VDF::printOn(Sortie& os) const
 Entree& Zone_VDF::readOn(Entree& is)
 {
   Zone_VF::readOn(is);
-  is >>  face_surfaces_;
   is >>  orientation_;
   is >>  nb_faces_X_;
   is >>  nb_faces_Y_;
@@ -214,10 +212,6 @@ void Zone_VDF::reordonner(Faces& les_faces)
   Joints&      joints     = zone().faces_joint();
   reordonner_vdf(zone().nb_faces_frontiere(),
                  les_faces_vdf, elem_faces_, orientation_, joints);
-
-  // Calcul des surfaces (tant que l'objet Faces_VDF existe !!!)
-  les_faces.calculer_surfaces(face_surfaces_);
-  // Cerr << "les faces apres les_faces_vdf.reordonner(orientation_) " << les_faces << finl;
 }
 
 // Description:
@@ -264,12 +258,6 @@ void Zone_VDF::discretiser()
   creer_tableau_faces(orientation_);
   orientation_.echange_espace_virtuel();
   orientation_.set_md_vector(md_nul); // Detache la structure parallele
-
-  // Calcul de la surface des faces virtuelles
-  // Note BM: idem que orientation_.
-  creer_tableau_faces(face_surfaces_);
-  face_surfaces_.echange_espace_virtuel();
-  face_surfaces_.set_md_vector(md_nul); // Detache la structure parallele
 
   // Application de la convention VDF sur face_voisin:
   // L'element face_voisin(i,0) doit avoir une coordonnee "ori" plus petite que la face

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,6 +47,9 @@ Sortie& Zone_VF::printOn(Sortie& os) const
   os << "face_voisins_ : " << finl;
   face_voisins_.ecrit(os);
 
+  os << "face_surfaces_ : "<<face_surfaces_<< finl;
+  face_surfaces_.ecrit(os);
+
   os << "xp_ : " << finl;
   xp_.ecrit(os);
 
@@ -81,6 +84,7 @@ Entree& Zone_VF::readOn(Entree& is)
   volumes_.lit(is);
   volumes_entrelaces_.lit(is);
   face_voisins_.lit(is);
+  face_surfaces_.lit(is);
   xp_.lit(is);
   xv_.lit(is);
   elem_faces_.lit(is);
@@ -179,6 +183,14 @@ void Zone_VF::discretiser()
     Scatter::construire_espace_virtuel_traduction(md_vect_elements, md_vector_faces_, elem_faces_);
 
     lazone.init_faces_virt_bord(md_vector_faces_, md_vector_faces_front_);
+
+    // Calcul des surfaces:
+    les_faces.calculer_surfaces(face_surfaces_);
+    // Calcul de la surface des faces virtuelles
+    MD_Vector md_nul;
+    creer_tableau_faces(face_surfaces_);
+    face_surfaces_.echange_espace_virtuel();
+    face_surfaces_.set_md_vector(md_nul); // Detache la structure parallele
 
     // Changement a la v1.5.7 beta: xv_ a maintenant un descripteur parallele: dimension(0)=nb_faces
     les_faces.calculer_centres_gravite(xv_);
