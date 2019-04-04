@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Masse_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/Zone_PolyMAC/Solveurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
   const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces_const(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   int i, k, f, fb;
 
   zone.init_m1(), zone.init_m2(), ch.init_ra();

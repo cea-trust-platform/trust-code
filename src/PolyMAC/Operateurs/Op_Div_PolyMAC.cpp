@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 
   Debog::verifier("vit in div",vit);
   const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& surface=zone_PolyMAC.face_surfaces_const();
+  const DoubleVect& surface=zone_PolyMAC.face_surfaces();
   const IntTab& face_voisins = zone_PolyMAC.face_voisins();
   const DoubleVect& porosite_surf = zone_PolyMAC.porosite_face();
 
@@ -126,7 +126,7 @@ DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 void Op_Div_PolyMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const
 {
   const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& surface=zone_PolyMAC.face_surfaces_const();
+  const DoubleVect& surface=zone_PolyMAC.face_surfaces();
   const IntTab& face_voisins = zone_PolyMAC.face_voisins();
   const DoubleVect& porosite_surf = zone_PolyMAC.porosite_face();
 

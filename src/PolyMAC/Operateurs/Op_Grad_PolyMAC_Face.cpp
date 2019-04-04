@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ DoubleTab& Op_Grad_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu)
   assert_espace_virtuel_vect(inco);
   const Zone_PolyMAC& zpolymac = la_zone_polymac.valeur();
   const Zone_Cl_PolyMAC& zclpolymac = la_zcl_polymac.valeur();
-  const DoubleVect& face_surfaces = zpolymac.face_surfaces_const();
+  const DoubleVect& face_surfaces = zpolymac.face_surfaces();
 
   double coef;
   int n0, n1;
@@ -158,7 +158,7 @@ void Op_Grad_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   assert_espace_virtuel_vect(inco);
   const Zone_PolyMAC& zpolymac = la_zone_polymac.valeur();
   const Zone_Cl_PolyMAC& zclpolymac = la_zcl_polymac.valeur();
-  const DoubleVect& face_surfaces = zpolymac.face_surfaces_const();
+  const DoubleVect& face_surfaces = zpolymac.face_surfaces();
 
   double coef;
   int n0, n1;
@@ -218,7 +218,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Zone_PolyMAC& zpolymac = la_zone_polymac.valeur();
   const Zone_Cl_PolyMAC& zclpolymac = la_zcl_polymac.valeur();
-  const DoubleVect& face_surfaces = zpolymac.face_surfaces_const();
+  const DoubleVect& face_surfaces = zpolymac.face_surfaces();
   const Equation_base& eqn = equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
   const Champ_P0_PolyMAC& la_pression_P0 = ref_cast(Champ_P0_PolyMAC,eqn_hydr.pression_pa().valeur());

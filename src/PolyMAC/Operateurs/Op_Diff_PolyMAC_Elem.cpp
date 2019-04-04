@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Op_Diff_PolyMAC_Elem.cpp
-// Directory : $POLYMAC_ROOT/src/Operateurs
+// File:        Op_Diff_PolyMAC_Elem.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 #include <Op_Diff_PolyMAC_Elem.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
@@ -113,7 +114,7 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& 
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces_const();
+  const DoubleVect& fs = zone.face_surfaces();
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
 
@@ -165,7 +166,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces_const();
+  const DoubleVect& fs = zone.face_surfaces();
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
 

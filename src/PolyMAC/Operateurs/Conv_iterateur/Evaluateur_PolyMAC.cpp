@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Evaluateur_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Evaluateurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ void Evaluateur_PolyMAC::associer_zones(const Zone_PolyMAC& zone_vdf,
   la_zcl = zone_cl_vdf;
   dimension = Objet_U::dimension;
   premiere_face_bord = zone_vdf.premiere_face_bord();
-  surface.ref(zone_vdf.face_surfaces_const());
+  surface.ref(zone_vdf.face_surfaces());
   elem_.ref(zone_vdf.face_voisins());
   porosite.ref(zone_vdf.porosite_face());
   volume_entrelaces.ref(zone_vdf.volumes_entrelaces());

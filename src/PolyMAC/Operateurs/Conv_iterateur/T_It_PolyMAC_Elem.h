@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        T_It_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Iterateurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
 // Version:     /main/43
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ template <class _TYPE_>  DoubleTab& T_It_PolyMAC_Elem<_TYPE_>::ajouter_bords(con
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_zone.valeur().face_surfaces_const()[ndeb],0))
+          if (nfin>ndeb && est_egal(la_zone.valeur().face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -474,7 +474,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::calculer_flux_bord(cons
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_zone.valeur().face_surfaces_const()[ndeb],0))
+          if (nfin>ndeb && est_egal(la_zone.valeur().face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -730,7 +730,7 @@ template <class _TYPE_>  DoubleTab& T_It_PolyMAC_Elem<_TYPE_>::ajouter_bords(con
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_zone.valeur().face_surfaces_const()[ndeb],0))
+          if (nfin>ndeb && est_egal(la_zone.valeur().face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;

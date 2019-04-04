@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ void Perte_Charge_PolyMAC::dimensionner(Matrice_Morse& matrice) const
 {
   const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
   const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces_const();
+  const DoubleVect& fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
   const IntTab& e_f = zone.elem_faces();
   int i, j, k, e, f, r, n_tot = zone.nb_faces_tot() + (dimension < 3 ? zone.zone().domaine().nb_som_tot() : zone.zone().nb_aretes_tot());
@@ -93,7 +93,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
   const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales(), &vit = la_vitesse->valeurs();
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces_const();
+  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int i, j, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
@@ -138,7 +138,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales(), &vit = inco;
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces_const();
+  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());

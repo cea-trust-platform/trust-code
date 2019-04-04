@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_PolyMAC_Elem.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ void Op_PolyMAC_Elem::dimensionner(const Zone_PolyMAC& la_zone,
   int n1 = la_zone.zone().nb_elem_tot(), n2 = la_zone.nb_faces_tot();
   int elem1,elem2, i;
   const IntTab& face_voisins = la_zone.face_voisins();
-  //  const DoubleVect& face_surfaces = la_zone.face_surfaces_const();
+  //  const DoubleVect& face_surfaces = la_zone.face_surfaces();
   //  const DoubleVect& volumes_entrelaces = la_zone.volumes_entrelaces();
   //  const DoubleVect& porosite_face = la_zone.porosite_face();
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();

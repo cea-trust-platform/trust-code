@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Champ_Fonc_Face_PolyMAC.cpp
+// File:        Champ_Fonc_Face_PolyMAC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Fonc_Face_PolyMAC.h>
 #include <Domaine.h>
@@ -86,7 +87,7 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
   DoubleTab& val = valeurs();
   const Zone_PolyMAC& zone_PolyMAC = ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur());
   int nb_faces = zone_PolyMAC.nb_faces();
-  const DoubleVect& surface = zone_PolyMAC.face_surfaces_const();
+  const DoubleVect& surface = zone_PolyMAC.face_surfaces();
   const DoubleTab& normales = zone_PolyMAC.face_normales();
 
 
@@ -170,7 +171,7 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
   const Zone_PolyMAC& zone_VF = ref_cast(Zone_PolyMAC,zone_vf());
   //  const Zone& zone_geom = zone_VDF.zone();
   const DoubleTab& normales = zone_VF.face_normales();
-  //  const DoubleVect& surfaces = zone_VF.face_surfaces_const();
+  //  const DoubleVect& surfaces = zone_VF.face_surfaces();
   const IntTab& elem_faces = zone_VF.elem_faces();
 
   const DoubleTab& ch = cha.valeurs();

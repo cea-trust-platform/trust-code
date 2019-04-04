@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Op_Conv_EF_Stab_PolyMAC_Face.cpp
-// Directory : $POLYMAC_ROOT/src/Operateurs
+// File:        Op_Conv_EF_Stab_PolyMAC_Face.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Conv_EF_Stab_PolyMAC_Face.h>
 #include <Probleme_base.h>
@@ -87,7 +88,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces_const(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
   int i, j, k, l, e, eb, f, fb, fc;
 
   ch.init_cl(), zone.init_ve();
@@ -124,7 +125,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces_const(), &ve = zone.volumes(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = zone.porosite_face();
 
   int i, j, k, l, e, eb, f, fb, fc, fd, fam;
 
@@ -160,7 +161,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces_const(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = zone.porosite_face();
   int i, j, k, l, e, eb, f, fb, fc, fd, fam;
 
   //element e -> contribution de la face fb a l'equation a la face f

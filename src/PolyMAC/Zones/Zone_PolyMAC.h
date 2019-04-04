@@ -113,21 +113,6 @@ public :
     return h_carre_(i);
   };
   inline double face_normales(int,int ) const;
-  DoubleVect& face_surfaces();
-  // Une des 2 methode suivantes a supprimer ensuite dans tous le source
-  // pour etre coherent entre le VDF et le PolyMAC :
-  inline const DoubleVect& face_surfaces_const() const
-  {
-    return face_surfaces_;
-  };
-  inline double face_surfaces(int i) const
-  {
-    return face_surfaces_(i);
-  };
-  inline double surface(int i) const
-  {
-    return face_surfaces(i);
-  };
   inline const DoubleVect& longueur_aretes() const
   {
     return longueur_aretes_;
@@ -147,7 +132,6 @@ public :
   inline int oriente_normale(int face_opp, int elem2)const;
   inline const ArrOfInt& ind_faces_virt_non_std() const;
   void calculer_volumes_entrelaces();
-
 
   void calculer_h_carre();
 
@@ -215,7 +199,6 @@ private:
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_PolyMAC type_elem_;                  // type de l'element de discretisation
   DoubleTab face_normales_;             // normales aux faces
-  DoubleVect face_surfaces_;		// surface des faces
   DoubleVect longueur_aretes_; //longueur des aretes
   DoubleTab volumes_entrelaces_dir_;    // decomposition de volumes_entrelaces_ de chaque cote
   int nb_faces_std_;                    // nombre de faces standard
@@ -405,22 +388,22 @@ static inline double kersol(DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P
 inline double Zone_PolyMAC::dist_norm_bord(int f) const
 {
   assert(face_voisins(f, 1) == -1);
-  return dabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces_(f);
+  return dabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_norm(int f) const
 {
-  return dabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces_(f);
+  return dabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_face_elem0(int f,int e) const
 {
-  return dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces_(f);
+  return dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_face_elem1(int f,int e) const
 {
-  return dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces_(f);
+  return dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_face_elem0_period(int num_face,int n0,double l) const

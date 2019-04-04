@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Masse_PolyMAC_Elem.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Solveurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
 // Version:     /main/1
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces_const();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   int i, e, f, ne_tot = zone.nb_elem_tot(), n, N = ch.valeurs().line_size();
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
 

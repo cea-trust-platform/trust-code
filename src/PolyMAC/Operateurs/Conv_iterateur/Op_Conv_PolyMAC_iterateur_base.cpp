@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Conv_PolyMAC_iterateur_base.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
 // Version:     /main/31
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ double Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() const
   const Zone_Cl_PolyMAC& zone_Cl_PolyMAC = iter.zone_Cl();
   const IntTab& face_voisins = zone_PolyMAC.face_voisins();
   const DoubleVect& volumes = zone_PolyMAC.volumes();
-  const DoubleVect& face_surfaces = zone_PolyMAC.face_surfaces_const();
+  const DoubleVect& face_surfaces = zone_PolyMAC.face_surfaces();
   const DoubleVect& vit_associe = vitesse().valeurs();
   const DoubleVect& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
   DoubleTab fluent;
@@ -148,7 +148,7 @@ void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage,c
       const Zone_Cl_PolyMAC& zone_Cl_PolyMAC = iter.zone_Cl();
       const IntTab& face_voisins = zone_PolyMAC.face_voisins();
       const DoubleVect& volumes = zone_PolyMAC.volumes();
-      const DoubleVect& face_surfaces = zone_PolyMAC.face_surfaces_const();
+      const DoubleVect& face_surfaces = zone_PolyMAC.face_surfaces();
       const DoubleVect& vit = vitesse().valeurs();
       DoubleTrav fluent(zone_PolyMAC.zone().nb_elem_tot());
 

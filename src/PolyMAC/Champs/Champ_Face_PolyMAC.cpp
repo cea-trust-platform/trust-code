@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Champ_Face_PolyMAC.cpp
+// File:        Champ_Face_PolyMAC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Face_PolyMAC.h>
 #include <Domaine.h>
@@ -102,7 +103,7 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
   DoubleTab& val = parts[0]; //partie vitesses
   const Zone_PolyMAC& zone_PolyMAC = ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur());
   int nb_faces = zone_PolyMAC.nb_faces();
-  const DoubleVect& surface = zone_PolyMAC.face_surfaces_const();
+  const DoubleVect& surface = zone_PolyMAC.face_surfaces();
   const DoubleTab& normales = zone_PolyMAC.face_normales();
 
 
@@ -180,7 +181,7 @@ void Champ_Face_PolyMAC::init_ra() const
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const IntTab& a_f = zone.arete_faces();
   const DoubleTab& nf = zone.face_normales(), &ta = zone.ta(), &xs = zone.zone().domaine().coord_sommets(), &xa = dimension < 3 ? xs : zone.xa(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces_const(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   int i, j, k, f, fb, a;
 
   if (radeb.dimension(0)) return;
@@ -252,7 +253,7 @@ void Champ_Face_PolyMAC::init_va() const
   const IntTab& f_e = zone.face_voisins(), &a_f = zone.arete_faces();
   const DoubleTab& xv = zone.xv(), &ta = zone.ta(), &xs = zone.zone().domaine().coord_sommets(),
                    &xa = dimension < 3 ? xs : zone.xa(), &nf = zone.face_normales(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces_const(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
   int i, j, k, l, m, e, f, fb, a;
 
   if (vadeb.dimension(0)) return;
@@ -403,7 +404,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val) const
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces_const(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
   int e, f, j, k, r;
 
   zone.init_ve();
@@ -422,7 +423,7 @@ void Champ_Face_PolyMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) cons
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins();
   const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces_const();
+  const DoubleVect& fs = zone.face_surfaces();
   int i, j, k, f, e;
   double scal;
 

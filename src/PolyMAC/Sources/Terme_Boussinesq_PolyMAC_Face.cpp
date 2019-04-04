@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
   const IntTab& f_e = zone.face_voisins();
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& pf = zone.porosite_face();
-  const DoubleVect& fs = zone.face_surfaces_const();
+  const DoubleVect& fs = zone.face_surfaces();
 
   DoubleVect g(dimension);
   g = grav;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -535,8 +535,6 @@ void Zone_PolyMAC::discretiser()
     }
   xv_.echange_espace_virtuel();
 
-  face_surfaces();
-
   // orthocentrer();
 
   detecter_faces_non_planes();
@@ -580,7 +578,7 @@ void Zone_PolyMAC::orthocentrer()
 {
   const IntTab& f_s = face_sommets(), &e_s = zone().les_elems(), &e_f = elem_faces();
   const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales_;
-  const DoubleVect& fs = face_surfaces_;
+  const DoubleVect& fs = face_surfaces();
   int i, j, e, f, s, np;
   DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1); //pour les systemes lineaires
   M.set_smart_resize(1), S.set_smart_resize(1);
@@ -655,7 +653,7 @@ void Zone_PolyMAC::detecter_faces_non_planes() const
 {
   const IntTab& f_e = face_voisins(), &f_s = face_sommets_;
   const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales_;
-  const DoubleVect& fs = face_surfaces_;
+  const DoubleVect& fs = face_surfaces();
   int i, j, f, s, rk = Process::me(), np = Process::nproc();
   double sin2;
   ArrOfDouble val(np); //sur chaque proc : { cos^2 max, indice de face, indices d'elements }
@@ -680,7 +678,7 @@ void Zone_PolyMAC::calculer_h_carre()
   h_carre = 1.e30;
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
-  DoubleVect& surfaces=face_surfaces();
+  const DoubleVect& surfaces=face_surfaces();
   const int& nb_faces_elem=zone().nb_faces_elem();
   const int& nbe=nb_elem();
   for (int num_elem=0; num_elem<nbe; num_elem++)
@@ -715,7 +713,7 @@ void Zone_PolyMAC::calculer_volumes_entrelaces()
           int elem = face_voisins_(num_face,dir);
           if (elem!=-1)
             {
-              volumes_entrelaces_dir_(num_face, dir) = sqrt(dot(&xp_(elem, 0), &xp_(elem, 0), &xv_(num_face, 0), &xv_(num_face, 0))) * face_surfaces_[num_face];
+              volumes_entrelaces_dir_(num_face, dir) = sqrt(dot(&xp_(elem, 0), &xp_(elem, 0), &xv_(num_face, 0), &xv_(num_face, 0))) * face_surfaces(num_face);
               volumes_entrelaces_[num_face] += volumes_entrelaces_dir_(num_face, dir);
             }
         }
@@ -727,33 +725,6 @@ void Zone_PolyMAC::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
 }
-
-DoubleVect& Zone_PolyMAC::face_surfaces()
-{
-  // On construit si de taille nul
-  // ou si le maillage est deformable
-  if (face_surfaces_.size()==0 || zone().domaine().deformable())
-    {
-      int nb_faces_=nb_faces();
-      //face_surfaces_.resize(nb_faces_);
-      //      Scatter::creer_tableau_distribue(zone().domaine(), Joint::FACE, face_surfaces_);
-      creer_tableau_faces( face_surfaces_);
-
-      face_surfaces_.echange_espace_virtuel();
-
-      for (int i=0; i<nb_faces_; i++)
-        {
-          double surf=0;
-          for (int k=0; k<dimension; k++)
-            surf += (face_normales_(i,k)*face_normales_(i,k));
-          face_surfaces_(i) = sqrt(surf);
-        }
-      face_surfaces_.echange_espace_virtuel();
-    }
-  return face_surfaces_;
-}
-
-
 
 void Zone_PolyMAC::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
@@ -993,7 +964,7 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 void Zone_PolyMAC::init_ve() const
 {
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleVect& ve = volumes_, &fs = face_surfaces_;
+  const DoubleVect& ve = volumes_, &fs = face_surfaces();
   int i, k, e, f;
 
   if (vedeb.dimension(0)) return;
@@ -1016,7 +987,7 @@ void Zone_PolyMAC::init_m2() const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleTab& nf = face_normales_;
-  const DoubleVect& fs = face_surfaces_const(), &ve = volumes(), &vf = volumes_entrelaces();
+  const DoubleVect& fs = face_surfaces(), &ve = volumes(), &vf = volumes_entrelaces();
   int i, j, k, l, e, f, n_f;
 
   if (m2deb.dimension(0)) return;
@@ -1069,7 +1040,7 @@ void Zone_PolyMAC::init_rf() const
 {
   const IntTab& f_s = face_sommets();
   const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales();
-  const DoubleVect& la = longueur_aretes(), &fs = face_surfaces_const();
+  const DoubleVect& la = longueur_aretes(), &fs = face_surfaces();
 
   if (rfdeb.dimension(0)) return;
   int i, s, f;

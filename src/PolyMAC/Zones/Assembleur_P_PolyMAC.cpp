@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Assembleur_P_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
 // Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& v
   //la matrice de masse de PolyMAC est de la forme { { 0, div} , { -grad, m2 }} et s'applique a  { -P, v }
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces_const(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   int i, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
   zone.init_m2(), ch.init_cl();

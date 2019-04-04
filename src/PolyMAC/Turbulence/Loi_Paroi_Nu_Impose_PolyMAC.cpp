@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -138,7 +138,7 @@ int  Loi_Paroi_Nu_Impose_PolyMAC::calculer_scal(Champ_Fonc_base& diffusivite_tur
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& xv = zone.xv(), &xp = zone.xp(), &nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces_const();
+  const DoubleVect& fs = zone.face_surfaces();
   DoubleVect pos(dimension);
 
   const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
