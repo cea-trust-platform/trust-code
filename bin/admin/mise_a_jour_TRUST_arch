@@ -330,6 +330,7 @@ option_configure=" -disable-ccache"
 # IHM
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-plot2d" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-plot2d"
 # Documentation
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-pdflatex" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -without-pdflatex"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
 # Compilation sans GUI tools
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-gnuplot -disable-tcl_tk -disable-gmsh -disable-plot2d -without-doc -without-visit"
