@@ -1,0 +1,5 @@
+#!/bin/bash
+for dir in "cartesian" "triangle" "non_conformal"
+do
+    ( mkdir -p $dir; cp prepare_meshes.py post_run $dir; sed "s/cas/$dir/" pre_run >$dir/pre_run && chmod +x $dir/pre_run;cp jdd.data $dir )
+done

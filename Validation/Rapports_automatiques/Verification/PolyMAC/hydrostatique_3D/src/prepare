@@ -1,0 +1,6 @@
+sed "s/__EXPR__/1e5\/2+10*(1-y)/;s/haut paroi_fixe/haut frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5/" base.data > haut.data
+sed "s/__EXPR__/1e5\/2+10*(-y)/;s/bas paroi_fixe/bas frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5/" base.data > bas.data
+sed "s/__EXPR__/1e5\/2+10*(1-z)/;s/derriere paroi_fixe/derriere frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5/;s/0 -10 0/0 0 -10/" base.data > derriere.data
+sed "s/__EXPR__/1e5\/2+10*(-z)/;s/devant paroi_fixe/devant frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5/;s/0 -10 0/0 0 -10/" base.data > devant.data
+sed "s/__EXPR__/1e5\/2+10*(1-x)/;s/droite paroi_fixe/droite frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5/;s/0 -10 0/-10 0 0/" base.data > droite.data
+sed "s/__EXPR__/1e5\/2+10*(-x)/;s/gauche paroi_fixe/gauche frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5/;s/0 -10 0/-10 0 0/" base.data > gauche.data

@@ -1,0 +1,374 @@
+Parameters
+{
+    Title "Tests de convergence de l'operateur de diffusion aux elements"
+ TestCase Triangles/jdd_1 cas.data
+ TestCase Triangles/jdd_2 cas.data
+ TestCase Triangles/jdd_3 cas.data
+ TestCase Quadrangles/jdd_1 cas.data
+ TestCase Quadrangles/jdd_2 cas.data
+ TestCase Quadrangles/jdd_3 cas.data
+ TestCase Cartesian/jdd_1 cas.data
+ TestCase Cartesian/jdd_2 cas.data
+ TestCase Cartesian/jdd_3 cas.data
+ TestCase Locally_Refined/jdd_1 cas.data
+ TestCase Locally_Refined/jdd_2 cas.data
+ TestCase Locally_Refined/jdd_3 cas.data
+# bloc testcases #
+
+    Author "YG"
+    IncludeData 2
+    Prerequisite "./extract_convergence"
+    Description "Cas test avec cl de Dirichlet, dont la solution analytique est un produit de sinus."
+}
+
+Chapter
+{
+    Title Maillages Triangles
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Triangles"
+        mesh Triangles/jdd_1/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Triangles"
+        mesh Triangles/jdd_2/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Triangles"
+        mesh Triangles/jdd_3/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+    }
+Chapter
+{
+    Title Maillages Quadrangles
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Quadrangles"
+        mesh Quadrangles/jdd_1/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Quadrangles"
+        mesh Quadrangles/jdd_2/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Quadrangles"
+        mesh Quadrangles/jdd_3/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+    }
+Chapter
+{
+    Title Maillages Cartesian
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Cartesian"
+        mesh Cartesian/jdd_1/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Cartesian"
+        mesh Cartesian/jdd_2/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Cartesian"
+        mesh Cartesian/jdd_3/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+    }
+Chapter
+{
+    Title Maillages Locally_Refined
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Locally_Refined"
+        mesh Locally_Refined/jdd_1/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Locally_Refined"
+        mesh Locally_Refined/jdd_2/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+        visu
+    {
+        normal3D 0. 0. 1.
+        # Title "Maillage Locally_Refined"
+        mesh Locally_Refined/jdd_3/cas.lata dom
+        Description ""
+        nb_img_without_newline 3
+        width 5cm
+    }
+    }
+Chapter
+{
+    Title Convergence en maillage en vitesse
+    Figure
+    {
+        labelx N
+        labely erreur max
+        logx
+        logy
+        Include_Description_Curves 0
+        width 12cm
+        Title "Ordres de convergence"
+                Curve
+        {
+            legend Triangles
+            file Triangles/conv_glob
+            colonnes (1./sqrt($1)) $2
+            style linespoints
+        }
+                Curve
+        {
+            legend Quadrangles
+            file Quadrangles/conv_glob
+            colonnes (1./sqrt($1)) $2
+            style linespoints
+        }
+                Curve
+        {
+            legend Cartesian
+            file Cartesian/conv_glob
+            colonnes (1./sqrt($1)) $2
+            style linespoints
+        }
+                Curve
+        {
+            legend Locally_Refined
+            file Locally_Refined/conv_glob
+            colonnes (1./sqrt($1)) $2
+            style linespoints
+        }
+                Curve
+        {
+            legend Order 1
+            fonction x
+            style lines
+        }
+        Curve
+        {
+            legend Order 2
+            fonction x*x
+            style lines
+        }
+    }
+
+        Figure
+    {
+        labelx diag
+        labely solution
+        Include_Description_Curves 0
+        Title "Convergence de la solution sur maillage Triangles"
+                Curve
+        {
+            legend "Triangles,1"
+            segment Triangles/jdd_1/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Triangles,2"
+            segment Triangles/jdd_2/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Triangles,3"
+            segment Triangles/jdd_3/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Triangles,4"
+            segment Triangles/jdd_4/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Triangles,5"
+            segment Triangles/jdd_5/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Triangles,6"
+            segment Triangles/jdd_6/cas temperature_diag
+            style linespoints
+        }
+            }
+        Figure
+    {
+        labelx diag
+        labely solution
+        Include_Description_Curves 0
+        Title "Convergence de la solution sur maillage Quadrangles"
+                Curve
+        {
+            legend "Quadrangles,1"
+            segment Quadrangles/jdd_1/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Quadrangles,2"
+            segment Quadrangles/jdd_2/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Quadrangles,3"
+            segment Quadrangles/jdd_3/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Quadrangles,4"
+            segment Quadrangles/jdd_4/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Quadrangles,5"
+            segment Quadrangles/jdd_5/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Quadrangles,6"
+            segment Quadrangles/jdd_6/cas temperature_diag
+            style linespoints
+        }
+            }
+        Figure
+    {
+        labelx diag
+        labely solution
+        Include_Description_Curves 0
+        Title "Convergence de la solution sur maillage Cartesian"
+                Curve
+        {
+            legend "Cartesian,1"
+            segment Cartesian/jdd_1/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Cartesian,2"
+            segment Cartesian/jdd_2/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Cartesian,3"
+            segment Cartesian/jdd_3/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Cartesian,4"
+            segment Cartesian/jdd_4/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Cartesian,5"
+            segment Cartesian/jdd_5/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Cartesian,6"
+            segment Cartesian/jdd_6/cas temperature_diag
+            style linespoints
+        }
+            }
+        Figure
+    {
+        labelx diag
+        labely solution
+        Include_Description_Curves 0
+        Title "Convergence de la solution sur maillage Locally_Refined"
+                Curve
+        {
+            legend "Locally_Refined,1"
+            segment Locally_Refined/jdd_1/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Locally_Refined,2"
+            segment Locally_Refined/jdd_2/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Locally_Refined,3"
+            segment Locally_Refined/jdd_3/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Locally_Refined,4"
+            segment Locally_Refined/jdd_4/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Locally_Refined,5"
+            segment Locally_Refined/jdd_5/cas temperature_diag
+            style linespoints
+        }
+                Curve
+        {
+            legend "Locally_Refined,6"
+            segment Locally_Refined/jdd_6/cas temperature_diag
+            style linespoints
+        }
+            }
+    }

@@ -34,21 +34,35 @@ check_dependancy()
             [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module `basename ${file%/make.include}` from the module $module." && break
          fi
       done      
-      # Troisieme regle: Certains modules ne doivent pas dependre des modules discretisation (VDF,VEF). Exemples: 
-      if [ -d $TRUST_ROOT/src/Phase_field ] # Verification depuis l'apparition du module Phase_field
-      then
-	 modules="ThHyd"
-	 for module in $modules
-	 do    
-            # Le make.include appartient t'il au module ?
-            if [ "`echo $relative_path | grep /$module/ `" != "" ] && [ "`echo $relative_path | grep -e /VDF[\/] -e /VEF[\/]`" = "" ]
-	    then  
-	       # Si oui, a t'il une dependance vers les modules en question ?
-               dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/VDF[\/]" -e "/VEF[\/]"`
-               [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $modules from a discretization module as VDF or VEF." && break
-            fi
-	 done     
-      fi 
+      # Troisieme regle: Certains modules ne doivent pas dependre des modules discretisation (VDF,VEF,...). Exemples:
+      modules="ThHyd"
+      for module in $modules
+      do
+         # Le make.include appartient t'il au module ?
+         if [ "`echo $relative_path | grep /$module/ `" != "" ] && [ "`echo $relative_path | grep -e /VDF[\/] -e /VEF[\/] -e /EF[\/] -e /PolyMAC[\/]`" = "" ]
+         then
+             dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/VDF[\/]" -e "/VEF[\/]" -e "/EF[\/]" -e "/PolyMAC[\/]"`
+             [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $module to a discretization module like VDF or VEF." && break
+         fi
+      done
+      # Quatrieme regle: un module discretisation ne peut dependre d'un autre module discretisation
+      modules="VDF VEF EF PolyMAC"
+      for module in $modules
+      do
+         # Le make.include appartient t'il au module ?
+         if [ "`echo $relative_path | grep /$module/ `" != "" ]
+         then
+            # Si oui, a t'il une dependance vers une autre discretisation ?
+	    for dis in $modules
+	    do
+	       if [ $dis != $module ]
+	       then
+                  dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/$dis[\/]"`
+                  [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $module to the discretization module $dis." && break
+	       fi
+	    done
+         fi
+      done
       # Gestion des erreurs
       if [ ${#mes} != 0 ] && [ "$1" != "make.include" ]
       then
@@ -272,11 +286,11 @@ check_all()
 #########
 if [ "`basename $0`" != "bash" ] && [ "`basename $0`" != "baltik_check_sources" ] && [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
 then
-  [ $TRUST_ARCH != linux ] && exit 0
+   [ $TRUST_ARCH != linux ] && exit 0
    # make.include detectes we are in a TRUST source directory
    org=`pwd`
    reffile=".check_sources.ok"
-   [ "$1" != "" ] && cd $1&& reffile=$org"/check_sources.ok"
+   [ "$1" != "" ] && cd $1 && reffile=$org"/check_sources.ok"
    if [ -f make.include ]
    then
       err=0

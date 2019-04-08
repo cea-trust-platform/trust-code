@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# cas 2D
+declare -A dico_meshes_2d=(["Cartesian"]="1 2" #3 4 5 6 7"
+                           ["Locally_Refined"]="1 2" #3 4 5 6 7"
+                           ["Quadrangles"]="1" # 2 3 4 5 6 7"
+                           ["Triangles"]="1") # 2 3 4 5 6")
+
+declare -A dico_meshes_3d=(["Hexa"]="1" # 2 3 4 5"
+                           ["Prism"]="1" # 2 3 4"
+                           ["Voronoi"]="1" # 2 3 4 5"
+                           ["Kershaw"]="1" # 2 3 4"
+                           ["LocRaf"]="1" # 2 3 4 5"
+                           ["CheckerBoard"]="1" # 2 3 4 5"
+                           ["PrismHexa"]="1" # 2 3 4"
+                           ["Random"]="1" # 2 3 4"
+                           ["Tetra"]="1") # 2 2 3 4 5 6 7")
+
+meshes_2d="${!dico_meshes_2d[@]}"
+meshes_3d="${!dico_meshes_3d[@]}"
+meshes_2d="Triangles Quadrangles Cartesian Locally_Refined"
+meshes_3d="Voronoi Prism Hexa Tetra PrismHexa Kershaw LocRaf Random CheckerBoard"
+echo $meshes_2d > listmeshes
+echo $meshes_3d >> listmeshes
+sed "s/%meshes_2d%/$meshes_2d/;s/%meshes_3d%/$meshes_3d/" conv.prm.P.m  > conv.prm.P
+
+python $TRUST_ROOT/bin/KSH/preprocessor.py conv.prm.P conv.prm
+share=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC/share
+
+for mesh in $meshes_2d
+do
+    for n in ${dico_meshes_2d[$mesh]}
+    do
+        mkdir -p $mesh/jdd_$n
+        sed -i "/# bloc testcases #/ i\ TestCase $mesh/jdd_$n cas.data" conv.prm
+        meshname=$share/meshes/$mesh/jdd_$n/mesh.med
+        sed "s~__meshprerun__~$meshname~g" pre_run > $mesh/jdd_$n/pre_run
+        cp jdd_2d.data $mesh/jdd_$n/cas.data
+        cp post_run $mesh/jdd_$n/post_run
+        echo $mesh/jdd_${n}/cas.data >> ll
+    done
+done
+
+for mesh in $meshes_3d
+do
+    for n in ${dico_meshes_3d[$mesh]}
+    do
+        mkdir -p $mesh/jdd_$n
+        sed -i "/# bloc testcases #/ i\ TestCase $mesh/jdd_$n cas.data" conv.prm
+        meshname=$share/meshes/$mesh/jdd_$n/mesh.med
+        sed "s~__meshprerun__~$meshname~g" pre_run > $mesh/jdd_$n/pre_run
+        cp jdd_3d.data $mesh/jdd_$n/cas.data
+        cp post_run $mesh/jdd_$n/post_run
+        echo $mesh/jdd_${n}/cas.data >> ll
+    done
+done
+
+grep -v _1 ll > liste_cas_exclu_nr

@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.7.9_beta : Changes since version 1.7.8 :
 -------------------------------------------------------------
+05/03/19 (TRUST)  Eight validation sheets about PolyMAC available under $TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
+05/03/19 (TRUST)  New MAC discretization (Marker And Cell method) available under $TRUST_ROOT/src/PolyMAC allowing non conform and/or hybrid meshes with polyhedral cells
 29/03/19 (TRUST)  Add a strict check of PETSc CLI options to check misspelled or obsolete one
 08/03/19 (TRUST)  Face surfaces are new stored in Zone_VF class (access: Zone_VF::face_surfaces() const). All childs have only a calculer_face_surfaces() method 
 23/01/19 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 

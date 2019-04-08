@@ -1,0 +1,9 @@
+#!/bin/bash
+meshname="__meshprerun__"
+for mesh in . PolyMAC mc2/PolyMAC
+do
+   mesh=$project_directory/$mesh/$meshname
+   [ -f $mesh ] && ln -sf $mesh mesh.med && exit
+done
+echo "Error in \$project_directory definition"
+exit -1
