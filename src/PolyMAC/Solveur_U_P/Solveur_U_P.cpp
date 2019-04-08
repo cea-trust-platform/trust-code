@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Solveur_U_P.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Schemas_Temps
+// Directory:   $TRUST_ROOT/src/PolyMAC/Solveur_U_P
 // Version:     /main/48
 //
 //////////////////////////////////////////////////////////////////////////////
