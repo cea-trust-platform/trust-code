@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ Sortie& Pave::printOn(Sortie& s ) const
   return Zone::printOn(s) ;
 }
 
-Pave::Pave():a_tanh(-123),tanh_dilatation(-123),Nx(-1),Ny(-1),Nz(-1),Mx(-1),My(-1),Mz(-1),tour_complet(-123) {}
+Pave::Pave():a_tanh(-123),tanh_dilatation(-123),xa_tanh(-123),xtanh_dilatation(-123),za_tanh(-123),ztanh_dilatation(-123),Nx(-1),Ny(-1),Nz(-1),Mx(-1),My(-1),Mz(-1),tour_complet(-123) {}
 // Description:
 //    Lit les specifications d'un pave a partir
 //    d'un flot d'entree.
@@ -86,13 +86,15 @@ Pave::Pave():a_tanh(-123),tanh_dilatation(-123),Nx(-1),Ny(-1),Nz(-1),Mx(-1),My(-
 // Exception: Symz n'a de sens qu'en dimension 3
 // Exception: Les facteurs de progression doivent etre positifs
 // Exception: Il doit y avoir au moins deux mailles en x
-// Exception: accolade oubvrante attendue avant lecture des bords
+// Exception: accolade ouvrante attendue avant lecture des bords
 // Exception: mot cle non reconnu
 // Effets de bord:
 // Postcondition:
 Entree& Pave::readOn(Entree& is)
 {
+  xtanh_dilatation=0;
   tanh_dilatation=0;
+  ztanh_dilatation=0;
   if(dimension<0)
     {
       Cerr << "You must give the dimension before to mesh" << finl;
@@ -103,7 +105,9 @@ Entree& Pave::readOn(Entree& is)
   Facteurs = 1.;
   Symetrique.resize(dimension);
   Symetrique=0;
+  xa_tanh = 10.;
   a_tanh = 10.;
+  za_tanh = 10.;
   Origine.resize(dimension);
   Longueurs.resize(dimension);
   Nb_Noeuds.resize(dimension);
@@ -123,7 +127,7 @@ Entree& Pave::readOn(Entree& is)
       exit();
     }
   {
-    Motcles les_mots(12);
+    Motcles les_mots(18);
     {
       les_mots[0]="Origine";
       les_mots[1]="Longueurs";
@@ -137,6 +141,12 @@ Entree& Pave::readOn(Entree& is)
       les_mots[9]="tanh_taille_premiere_maille";
       les_mots[10]="reprise_VEF";
       les_mots[11]="}";
+      les_mots[12]="xtanh";
+      les_mots[13]="xtanh_dilatation";
+      les_mots[14]="xtanh_taille_premiere_maille";
+      les_mots[15]="ztanh";
+      les_mots[16]="ztanh_dilatation";
+      les_mots[17]="ztanh_taille_premiere_maille";
     }
     while(motlu != "}")
       {
@@ -237,6 +247,112 @@ Entree& Pave::readOn(Entree& is)
             }
           case 11: // Fin
             break;
+          case 12:
+            {
+              is >> xa_tanh;
+              break;
+            }
+          case 13:
+            {
+              is >> xtanh_dilatation;
+              break;
+            }
+          case 14:
+            {
+              double x1, x_tmp;
+              is >> x1;
+              xa_tanh=.1;
+              double fac_sym;
+              assert(xtanh_dilatation!=-123);
+              if (xtanh_dilatation != 0 )
+                fac_sym=1.;
+              else
+                fac_sym=2.;
+              assert(!est_egal(xa_tanh,-123.));
+              for(int decimale=1; decimale<7; decimale++)
+                {
+                  x_tmp=Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                  while ( x_tmp > x1 )
+                    {
+                      xa_tanh+=pow(10.,-decimale);
+                      xa_tanh = min(xa_tanh,1-Objet_U::precision_geom);
+                      if ( dabs(xa_tanh) < Objet_U::precision_geom)
+                        {
+                          Cerr << "Error: The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
+                          Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                          Cerr << "You must decrease either the xtanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                          Cerr << "or the nombre_de_noeuds Nx node number in the X direction." << finl;
+                          exit();
+                        }
+                      x_tmp=Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                    }
+                  xa_tanh-=pow(10.,-decimale);
+                  xa_tanh = min(xa_tanh,1-Objet_U::precision_geom);
+                  if ( dabs(xa_tanh) < Objet_U::precision_geom)
+                    {
+                      Cerr << "Error: The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
+                      Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                      Cerr << "You must decrease either the xtanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                      Cerr << "or the nombre_de_noeuds Nx node number in the X direction." << finl;
+                      exit();
+                    }
+                }
+              Cerr << "The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
+              break;
+            }
+          case 15:
+            {
+              is >> za_tanh;
+              break;
+            }
+          case 16:
+            {
+              is >> ztanh_dilatation;
+              break;
+            }
+          case 17:
+            {
+              double z1, z_tmp;
+              is >> z1;
+              za_tanh=.1;
+              double fac_sym;
+              assert(ztanh_dilatation!=-123);
+              if (ztanh_dilatation != 0 )
+                fac_sym=1.;
+              else
+                fac_sym=2.;
+              assert(!est_egal(za_tanh,-123.));
+              for(int decimale=1; decimale<7; decimale++)
+                {
+                  z_tmp=Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                  while ( z_tmp > z1 )
+                    {
+                      za_tanh+=pow(10.,-decimale);
+                      za_tanh = min(za_tanh,1-Objet_U::precision_geom);
+                      if ( dabs(za_tanh) < Objet_U::precision_geom)
+                        {
+                          Cerr << "Error: The coefficient za_tanh has a value of : " << za_tanh << finl ;
+                          Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                          Cerr << "You must decrease either the ztanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                          Cerr << "or the nombre_de_noeuds Nz node number in the Z direction." << finl;
+                          exit();
+                        }
+                      z_tmp=Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                    }
+                  za_tanh-=pow(10.,-decimale);
+                  za_tanh = min(za_tanh,1-Objet_U::precision_geom);
+                  if ( dabs(za_tanh) < Objet_U::precision_geom)
+                    {
+                      Cerr << "Error: The coefficient za_tanh has a value of : " << za_tanh << finl ;
+                      Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                      Cerr << "You must decrease either the ztanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                      Cerr << "or the nombre_de_noeuds Nz node number in the Z direction." << finl;
+                      exit();
+                    }
+                }
+              Cerr << "The coefficient za_tanh has a value of : " << za_tanh << finl ;
+              break;
+            }
           default:
             Cerr << motlu << "  is not understood " << finl;
             Cerr << les_mots;
@@ -500,24 +616,80 @@ void Pave::maille2D()
     }
   if( (!Symetrique(0)) || (dabs(Facteurs(0)-1.)<epsilon_geom) )
     {
-      double x;
-      for (i=0; i<Nx; i++)
+      assert(!est_egal(xa_tanh,-123.));
+      if ((xa_tanh>epsilon_geom)&&(xa_tanh<1.) )
         {
-          tmp=(i*100)/Nx;
-          if(tmp > pourcent)
-            {
-              pourcent=tmp;
-              Cerr << "It was created " << pourcent << "% of coordx" << flush;
-            }
-          if (dabs(Facteurs(0)-1.)>epsilon_geom)
-            x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
+          ///  Maillage en x en tanh
+          Cerr << "In if( (xa_tanh>epsilon_geom)&&(xa_tanh<1.) )" << finl;
+          pourcent =0;
+          double fac_sym;
+          assert(xtanh_dilatation!=-123);
+          if (xtanh_dilatation != 0)
+            fac_sym=1.;
           else
-            x=Origine(0)+Longueurs(0)*i/Nx;
+            fac_sym=2.;
+
+          if (xtanh_dilatation != -1 )
+            {
+              for (i=0; i<Mx; i++)
+                {
+                  Cerr << "i=" << i << finl;
+                  tmp=(i*100)/Mx;
+                  if(tmp > pourcent)
+                    {
+                      pourcent=tmp;
+                      Cerr << "\rIt was created " << pourcent << "% of coordx" << flush;
+                    }
+                  assert(!est_egal(xa_tanh,-123.));
+                  for (j=0; j<My; j++)
+                    coord_noeud(i,j,0)=Origine(0)+Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*i/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                  Cerr << "coord_noeud(0,j,1)=" << coord_noeud(0,j,0) << finl;
+                  Cerr << "It was created " << pourcent << "% of coordx" << flush;
+                }
+            }
+          else
+            {
+              for (i=0; i<Mx; i++)
+                {
+                  Cerr << "i=" << i << finl;
+                  tmp=(i*100)/Mx;
+                  if(tmp > pourcent)
+                    {
+                      pourcent=tmp;
+                      Cerr << "\rIt was created " << pourcent << "% of coordx" << flush;
+                    }
+                  assert(!est_egal(xa_tanh,-123.));
+                  for (j=0; j<My; j++)
+                    coord_noeud(i,j,0)=Origine(0)+Longueurs(0)-Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*(Mx-1-i)/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                  Cerr << "coord_noeud(0,j,0)=" << coord_noeud(0,j,0) << finl;
+                  Cerr << "It was created " << pourcent << "% of coordx" << flush;
+                }
+            }
+          ///////////////////////////////
           for (j=0; j<My; j++)
-            coord_noeud(i,j,0)=x;
+            coord_noeud(0,j,0)=Origine(0);
         }
-      for (j=0; j<My; j++)
-        coord_noeud(Nx,j,0)=Origine(0)+Longueurs(0);
+      else
+        {
+          double x;
+          for (i=0; i<Nx; i++)
+            {
+              tmp=(i*100)/Nx;
+              if(tmp > pourcent)
+                {
+                  pourcent=tmp;
+                  Cerr << "It was created " << pourcent << "% of coordx" << flush;
+                }
+              if (dabs(Facteurs(0)-1.)>epsilon_geom)
+                x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
+              else
+                x=Origine(0)+Longueurs(0)*i/Nx;
+              for (j=0; j<My; j++)
+                coord_noeud(i,j,0)=x;
+            }
+          for (j=0; j<My; j++)
+            coord_noeud(Nx,j,0)=Origine(0)+Longueurs(0);
+        }
     }
   else
     {
@@ -728,26 +900,85 @@ void Pave::maille3D()
     }
   if( (!Symetrique(0)) || (dabs(Facteurs(0)-1.)<epsilon_geom) )
     {
-      double x;
-      for (i=0; i<Nx; i++)
+      assert(!est_egal(xa_tanh,-123.));
+      if ((xa_tanh>epsilon_geom)&&(xa_tanh<1.) )
         {
-          tmp=(i*100)/Nx;
-          if(tmp > pourcent)
-            {
-              pourcent=tmp;
-              Cerr << "It was created " << pourcent << "% of coordx" << flush;
-            }
-          if(dabs(Facteurs(0)-1.)>epsilon_geom)
-            x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
+          ///  Maillage en x en tanh
+          Cerr << "In if( (xa_tanh>epsilon)&&(xa_tanh<1.) )" << finl;
+          pourcent =0;
+          double fac_sym;
+          assert(xtanh_dilatation!=-123);
+          if (xtanh_dilatation != 0)
+            fac_sym=1.;
           else
-            x=Origine(0)+Longueurs(0)*i/Nx;
+            fac_sym=2.;
+
+          if (xtanh_dilatation != -1 )
+            {
+              for (i=0; i<Mx; i++)
+                {
+                  Cerr << "i=" << i << finl;
+                  tmp=(i*100)/Mx;
+                  if(tmp > pourcent)
+                    {
+                      pourcent=tmp;
+                      Cerr << "\rIt was created " << pourcent << "% of coordx" << flush;
+                    }
+                  assert(!est_egal(xa_tanh,-123.));
+                  for (j=0; j<My; j++)
+                    for (k=0; k<Mz; k++)
+                      coord_noeud(i,j,k,0)=Origine(0)+Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*i/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                  Cerr << "coord_noeud(i,0,0,0)=" << coord_noeud(i,0,0,0) << finl;
+                }
+            }
+          else
+            {
+              for (i=0; i<Mx; i++)
+                {
+                  Cerr << "i=" << i << finl;
+                  tmp=(i*100)/Mx;
+                  if(tmp > pourcent)
+                    {
+                      pourcent=tmp;
+                      Cerr << "It was created " << pourcent << "% of coordx" << flush;
+                    }
+                  assert(!est_egal(xa_tanh,-123.));
+                  for (j=0; j<My; j++)
+                    for (k=0; k<Mz; k++)
+                      coord_noeud(i,j,k,0)=Origine(0)+Longueurs(0)-Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*(Mx-1-i)/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+
+                  Cerr << "coord_noeud(i,0,0,0)=" << coord_noeud(i,0,0,0) << finl;
+                }
+            }
           for (j=0; j<My; j++)
             for (k=0; k<Mz; k++)
-              coord_noeud(i,j,k,0)=x;
+              coord_noeud(0,j,k,0)=Origine(0);
         }
-      for (j=0; j<My; j++)
-        for (k=0; k<Mz; k++)
-          coord_noeud(Nx,j,k,0)=Origine(0)+Longueurs(0);
+      ///////////////////////////////
+      else
+        {
+
+          double x;
+          for (i=0; i<Nx; i++)
+            {
+              tmp=(i*100)/Nx;
+              if(tmp > pourcent)
+                {
+                  pourcent=tmp;
+                  Cerr << "It was created " << pourcent << "% of coordx" << flush;
+                }
+              if(dabs(Facteurs(0)-1.)>epsilon_geom)
+                x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
+              else
+                x=Origine(0)+Longueurs(0)*i/Nx;
+              for (j=0; j<My; j++)
+                for (k=0; k<Mz; k++)
+                  coord_noeud(i,j,k,0)=x;
+            }
+          for (j=0; j<My; j++)
+            for (k=0; k<Mz; k++)
+              coord_noeud(Nx,j,k,0)=Origine(0)+Longueurs(0);
+        }
     }
   else
     {
@@ -927,26 +1158,84 @@ void Pave::maille3D()
   Cerr << finl;
   if( (!Symetrique(2)) ||( dabs(Facteurs(2)-1.)<epsilon_geom)    )
     {
-      double z;
-      for (k=0; k<Nz; k++)
+      assert(!est_egal(za_tanh,-123.));
+      if ((za_tanh>epsilon_geom)&&(za_tanh<1.) )
         {
-          tmp=(k*100)/Nz;
-          if(tmp > pourcent)
-            {
-              pourcent=tmp;
-              Cerr << "It was created " << pourcent << "% of coordz" << flush;
-            }
-          if(dabs(Facteurs(2)-1.)>epsilon_geom)
-            z=Origine(2)+Longueurs(2)*(pow(Facteurs(2),k)-1)/(pow(Facteurs(2),Nz)-1);
+          ///  Maillage en z en tanh
+          Cerr << "In if( (za_tanh>epsilon)&&(za_tanh<1.) )" << finl;
+          pourcent =0;
+          double fac_sym;
+          assert(ztanh_dilatation!=-123);
+          if (ztanh_dilatation != 0)
+            fac_sym=1.;
           else
-            z=Origine(2)+Longueurs(2)*k/Nz;
+            fac_sym=2.;
+
+          if (ztanh_dilatation != -1 )
+            {
+              for (k=0; k<Mz; k++)
+                {
+                  Cerr << "k=" << k << finl;
+                  tmp=(k*100)/Mz;
+                  if(tmp > pourcent)
+                    {
+                      pourcent=tmp;
+                      Cerr << "\rIt was created " << pourcent << "% of coordz" << flush;
+                    }
+                  assert(!est_egal(za_tanh,-123.));
+                  for (i=0; i<Mx; i++)
+                    for (j=0; j<My; j++)
+                      coord_noeud(i,j,k,2)=Origine(2)+Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*k/((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                  Cerr << "coord_noeud(0,0,k,2)=" << coord_noeud(0,0,k,2) << finl;
+                }
+            }
+          else
+            {
+              for (k=0; k<Mz; k++)
+                {
+                  Cerr << "k=" << k << finl;
+                  tmp=(k*100)/Mz;
+                  if(tmp > pourcent)
+                    {
+                      pourcent=tmp;
+                      Cerr << "It was created " << pourcent << "% of coordz" << flush;
+                    }
+                  assert(!est_egal(za_tanh,-123.));
+                  for (i=0; i<Mx; i++)
+                    for (j=0; j<My; j++)
+                      coord_noeud(i,j,k,2)=Origine(2)+Longueurs(2)-Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*(Mz-1-k)/((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+
+                  Cerr << "coord_noeud(0,0,k,2)=" << coord_noeud(0,0,k,2) << finl;
+                }
+            }
           for (i=0; i<Mx; i++)
             for (j=0; j<My; j++)
-              coord_noeud(i,j,k,2)=z;
+              coord_noeud(i,j,0,2)=Origine(2);
         }
-      for (i=0; i<Mx; i++)
-        for (j=0; j<My; j++)
-          coord_noeud(i,j,Nz,2)=Origine(2)+Longueurs(2);
+      ///////////////////////////////
+      else
+        {
+          double z;
+          for (k=0; k<Nz; k++)
+            {
+              tmp=(k*100)/Nz;
+              if(tmp > pourcent)
+                {
+                  pourcent=tmp;
+                  Cerr << "It was created " << pourcent << "% of coordz" << flush;
+                }
+              if(dabs(Facteurs(2)-1.)>epsilon_geom)
+                z=Origine(2)+Longueurs(2)*(pow(Facteurs(2),k)-1)/(pow(Facteurs(2),Nz)-1);
+              else
+                z=Origine(2)+Longueurs(2)*k/Nz;
+              for (i=0; i<Mx; i++)
+                for (j=0; j<My; j++)
+                  coord_noeud(i,j,k,2)=z;
+            }
+          for (i=0; i<Mx; i++)
+            for (j=0; j<My; j++)
+              coord_noeud(i,j,Nz,2)=Origine(2)+Longueurs(2);
+        }
     }
   else
     {
