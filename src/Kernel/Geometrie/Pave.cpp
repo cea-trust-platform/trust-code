@@ -25,6 +25,24 @@
 #include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Pave,"Pave",Zone);
+// XD bloc_pave objet_lecture nul -1 Class to create a pave.
+// XD attr Origine listf Origine 1 Keyword to define the pave (block) origin, that is to say one of the 8 block points (or 4 in a 2D coordinate system).
+// XD attr longueurs listf longueurs 1 Keyword to define the block dimensions, that is to say knowing the origin, length along the axes.
+// XD attr nombre_de_noeuds listentierf nombre_de_noeuds 1 Keyword to define the discretization (nodenumber) in each direction.
+// XD attr facteurs listf facteurs 1 Keyword to define stretching factors for mesh discretization in each direction. This is a real number which must be positive (by default 1.0). A stretching factor other than 1 allows refinement on one edge in one direction.
+// XD attr symx rien symx 1 Keyword to define a block mesh that is symmetrical with respect to the YZ plane (respectively Y-axis in 2D) passing through the block centre.
+// XD attr symy rien symy 1 Keyword to define a block mesh that is symmetrical with respect to the XZ plane (respectively X-axis in 2D) passing through the block centre.
+// XD attr symz rien symz 1 Keyword defining a block mesh that is symmetrical with respect to the XY plane passing through the block centre.
+// XD attr xtanh floattant xtanh 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the X-direction.
+// XD attr xtanh_dilatation entier(into=[-1,0,1]) xtanh_dilatation 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the X-direction. xtanh_dilatation: The value may be -1,0,1 (0 by default): 0: coarse mesh at the middle of the channel and smaller near the walls -1: coarse mesh at the left side of the channel and smaller at the right side 1: coarse mesh at the right side of the channel and smaller near the left side of the channel.
+// XD attr xtanh_taille_premiere_maille floattant xtanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the X-direction.
+// XD attr ytanh floattant ytanh 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Y-direction.
+// XD attr ytanh_dilatation entier(into=[-1,0,1]) ytanh_dilatation 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Y-direction. ytanh_dilatation: The value may be -1,0,1 (0 by default): 0: coarse mesh at the middle of the channel and smaller near the walls -1: coarse mesh at the bottom of the channel and smaller near the top 1: coarse mesh at the top of the channel and smaller near the bottom.
+// XD attr ytanh_taille_premiere_maille floattant ytanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the Y-direction.
+// XD attr ztanh floattant ztanh 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Z-direction.
+// XD attr ztanh_dilatation entier(into=[-1,0,1]) ztanh_dilatation 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Z-direction. tanh_dilatation: The value may be -1,0,1 (0 by default): 0: coarse mesh at the middle of the channel and smaller near the walls -1: coarse mesh at the back of the channel and smaller near the front 1: coarse mesh at the front of the channel and smaller near the back.
+// XD attr ztanh_taille_premiere_maille floattant ztanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the Z-direction.
+
 
 // Description:
 //    Simple appel a: Zone::printOn(Sortie&)
@@ -136,17 +154,17 @@ Entree& Pave::readOn(Entree& is)
       les_mots[4]="Symx";
       les_mots[5]="Symy";
       les_mots[6]="Symz";
-      les_mots[7]="tanh";
-      les_mots[8]="tanh_dilatation";
-      les_mots[9]="tanh_taille_premiere_maille";
-      les_mots[10]="reprise_VEF";
-      les_mots[11]="}";
-      les_mots[12]="xtanh";
-      les_mots[13]="xtanh_dilatation";
-      les_mots[14]="xtanh_taille_premiere_maille";
-      les_mots[15]="ztanh";
-      les_mots[16]="ztanh_dilatation";
-      les_mots[17]="ztanh_taille_premiere_maille";
+      les_mots[7]="xtanh";
+      les_mots[8]="xtanh_dilatation";
+      les_mots[9]="xtanh_taille_premiere_maille";
+      les_mots[10]="ytanh";
+      les_mots[11]="ytanh_dilatation";
+      les_mots[12]="ytanh_taille_premiere_maille";
+      les_mots[13]="ztanh";
+      les_mots[14]="ztanh_dilatation";
+      les_mots[15]="ztanh_taille_premiere_maille";
+      les_mots[16]="reprise_VEF";
+      les_mots[17]="}";
     }
     while(motlu != "}")
       {
@@ -189,75 +207,15 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 7:
             {
-              is >> a_tanh;
+              is >> xa_tanh;
               break;
             }
           case 8:
             {
-              is >> tanh_dilatation;
-              break;
-            }
-          case 9:
-            {
-              double y1, y_tmp;
-              is >> y1;
-              a_tanh=.1;
-              double fac_sym;
-              assert(tanh_dilatation!=-123);
-              if (tanh_dilatation != 0 )
-                fac_sym=1.;
-              else
-                fac_sym=2.;
-              assert(!est_egal(a_tanh,-123.));
-              for(int decimale=1; decimale<7; decimale++)
-                {
-                  y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
-                  while ( y_tmp > y1 )
-                    {
-                      a_tanh+=pow(10.,-decimale);
-                      a_tanh = min(a_tanh,1-Objet_U::precision_geom);
-                      if ( dabs(a_tanh) < Objet_U::precision_geom)
-                        {
-                          Cerr << "Error: The coefficient a_tanh has a value of : " << a_tanh << finl ;
-                          Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
-                          Cerr << "You must decrease either the tanh_taille_premiere_maille size of the first cell of the mesh " << finl;
-                          Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
-                          exit();
-                        }
-                      y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
-                    }
-                  a_tanh-=pow(10.,-decimale);
-                  a_tanh = min(a_tanh,1-Objet_U::precision_geom);
-                  if ( dabs(a_tanh) < Objet_U::precision_geom)
-                    {
-                      Cerr << "Error: The coefficient a_tanh has a value of : " << a_tanh << finl ;
-                      Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
-                      Cerr << "You must decrease either the tanh_taille_premiere_maille size of the first cell of the mesh " << finl;
-                      Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
-                      exit();
-                    }
-                }
-              Cerr << "The coefficient a_tanh has a value of : " << a_tanh << finl ;
-              break;
-            }
-          case 10:
-            {
-              rep_VEF=1;
-              break;
-            }
-          case 11: // Fin
-            break;
-          case 12:
-            {
-              is >> xa_tanh;
-              break;
-            }
-          case 13:
-            {
               is >> xtanh_dilatation;
               break;
             }
-          case 14:
+          case 9:
             {
               double x1, x_tmp;
               is >> x1;
@@ -300,17 +258,70 @@ Entree& Pave::readOn(Entree& is)
               Cerr << "The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
               break;
             }
-          case 15:
+          case 10:
+            {
+              is >> a_tanh;
+              break;
+            }
+          case 11:
+            {
+              is >> tanh_dilatation;
+              break;
+            }
+          case 12:
+            {
+              double y1, y_tmp;
+              is >> y1;
+              a_tanh=.1;
+              double fac_sym;
+              assert(tanh_dilatation!=-123);
+              if (tanh_dilatation != 0 )
+                fac_sym=1.;
+              else
+                fac_sym=2.;
+              assert(!est_egal(a_tanh,-123.));
+              for(int decimale=1; decimale<7; decimale++)
+                {
+                  y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                  while ( y_tmp > y1 )
+                    {
+                      a_tanh+=pow(10.,-decimale);
+                      a_tanh = min(a_tanh,1-Objet_U::precision_geom);
+                      if ( dabs(a_tanh) < Objet_U::precision_geom)
+                        {
+                          Cerr << "Error: The coefficient ya_tanh has a value of : " << a_tanh << finl ;
+                          Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                          Cerr << "You must decrease either the ytanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                          Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
+                          exit();
+                        }
+                      y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                    }
+                  a_tanh-=pow(10.,-decimale);
+                  a_tanh = min(a_tanh,1-Objet_U::precision_geom);
+                  if ( dabs(a_tanh) < Objet_U::precision_geom)
+                    {
+                      Cerr << "Error: The coefficient ya_tanh has a value of : " << a_tanh << finl ;
+                      Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                      Cerr << "You must decrease either the ytanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                      Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
+                      exit();
+                    }
+                }
+              Cerr << "The coefficient ya_tanh has a value of : " << a_tanh << finl ;
+              break;
+            }
+          case 13:
             {
               is >> za_tanh;
               break;
             }
-          case 16:
+          case 14:
             {
               is >> ztanh_dilatation;
               break;
             }
-          case 17:
+          case 15:
             {
               double z1, z_tmp;
               is >> z1;
@@ -353,9 +364,23 @@ Entree& Pave::readOn(Entree& is)
               Cerr << "The coefficient za_tanh has a value of : " << za_tanh << finl ;
               break;
             }
+          case 16:
+            {
+              rep_VEF=1;
+              break;
+            }
+          case 17: // Fin
+            break;
           default:
-            Cerr << motlu << "  is not understood " << finl;
-            Cerr << les_mots;
+            if (motlu == "tanh" || motlu == "tanh_dilatation" || motlu == "tanh_taille_premiere_maille")
+              {
+                Cerr << "Error: '" << motlu << "' keyword is obsolete since V1.7.9. We renamed it to 'Y"<< motlu <<"'" << finl;
+              }
+            else
+              {
+                Cerr << motlu << "  is not understood " << finl;
+                Cerr << les_mots;
+              }
             exit();
           }
       }
