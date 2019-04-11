@@ -1,6 +1,4 @@
 #!/bin/bash
-[ "$project_directory" = "" ] && project_directory=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
-[ -f ${project_directory}/mc2/PolyMAC/share/maquette_decapoly/env_maquette.sh ] && export project_directory="${project_directory}/mc2/PolyMAC"
-[ -f ${project_directory}/PolyMAC/share/maquette_decapoly/env_maquette.sh ] && export project_directory="${project_directory}/PolyMAC"
-source "${project_directory}/share/maquette_decapoly/env_maquette.sh"
+export project_directory=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
+source "$project_directory/share/maquette_decapoly/env_maquette.sh"
 python prepare_meshes.py meshtype
