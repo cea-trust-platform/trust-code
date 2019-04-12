@@ -4,7 +4,7 @@ package=Python-$(version).tgz
 install=$(TRUST_ROOT)/exec/$(name)
 cible=$(install)/bin/$(name)
 all:$(cible)
-$(cible): install makefile create_env
+$(cible): install makefile
 	make clean
 	@./install $(package) $(install)
 	

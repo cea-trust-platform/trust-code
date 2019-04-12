@@ -15,5 +15,4 @@ $TRUST_MAKE || exit -1
 $TRUST_MAKE python-config || exit -1 # For the build of VisIt
 make install || exit -1
 cd ..
-./create_env $2
 rm -r -f $Python
