@@ -884,6 +884,16 @@ PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1
 if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
 then
     make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
+    # PL: Nouveau depuis 1.7.9, l'environnement du Python installe par TRUST est inclus dans celui de ce dernier:
+    # Normalement, cela va regler deux problemes de Centos 6 avec Python natif 2.6:
+    # MEDCOUPLING va utiliser cet environnement a l'installation, reglant le probleme de MED_COUPLING_PYTHON=OFF
+    # VisIt va utiliser cet environnement a l'installation egalement
+    PYTHON_ROOT=$TRUST_ROOT/exec/python
+    echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
+    echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
+    echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
+    echo "ADD_LD_LIBRARY_PATH \$PYTHONLIBS_ROOT_DIR/lib" >> $env
+    echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
 fi
 
 ####################
