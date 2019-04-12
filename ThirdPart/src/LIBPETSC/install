@@ -257,6 +257,11 @@ add_package()
       # Located
       with_package="--download-$lower_name=../$external_package"
    fi
+   if [ $name = mumps ] && [ $TRUST_VERSION_GNU = "8.2.1" ] 
+   then
+      # PL : hack pour Fedora 29 en attendant le passage a Petsc 3.11
+      with_package="--download-mumps=https://bitbucket.org/petsc/pkg-mumps/get/v5.1.2-p2.tar.gz"
+   fi
    echo "PETSc needs to build it with $with_package"
    with_packages=$with_packages" "$with_package
    
