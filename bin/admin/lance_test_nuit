@@ -64,7 +64,8 @@ check_components()
 	    elif [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
 	    then
 	       # Test debug tous les jours sur Template, Tuto, ICoCo, TrioMC, MPCube, Genepi3 et Flica5
-	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
+	       #if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
+	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != mathys ]
 	       then
 	          make_option="make check_all_optim check_all_debug"
 	       fi
@@ -214,9 +215,9 @@ check_components()
 	       elif [ "$Composant" = IJK ] || [ "$Composant" = ijk ]
 	       then
 	          machines=`liste_machines "\-IJK-FT"`
-	       elif [ "$Composant" = PolyMAC ] || [ "$Composant" = polymac ]
-	       then
-	          machines=`liste_machines "\-PolyMAC"`
+	      # elif [ "$Composant" = PolyMAC ] || [ "$Composant" = polymac ]
+	      # then
+	      #    machines=`liste_machines "\-PolyMAC"`
 	       elif [ "$Composant" = ModeleCoeur ] || [ "$Composant" = triomc ]
 	       then
 	          machines=`liste_machines "\-TrioMC"`
@@ -502,7 +503,8 @@ VOBS="TRUST Composants"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
 ComposantsOfficial="triocfd ijk mpcube genepi3 flica5"
-export ComposantsBeta="polymac triomc mathys"
+#export ComposantsBeta="polymac triomc mathys"
+export ComposantsBeta="triomc mathys"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 

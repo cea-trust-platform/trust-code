@@ -1,28 +1,28 @@
 arch	maj		recup		hostname		Update	lance_test	baltiks							Tasks		Options	
-linux	rsync_ssh	tache		is221559.intra.cea.fr				-TRUST -MPCube -TrioCFD -GENEPI3 -PolyMAC				-force_provided_mpich			# Debien 9  	Bat 451 LGLS	ancienne Gauthier Fauchet (Couplage Cathare/TRUST)
-linux	scp_ssh		get_binary		is213120.intra.cea.fr				-TRUST -TrioCFD -TrioMC	-IJK-FT					-force_provided_mpich			# Fedora 20	Bat 451 LMEC	bureau TMA FLICA4
+linux	rsync_ssh	tache		is221559.intra.cea.fr				-TRUST -MPCube -TrioCFD -GENEPI3 					-force_provided_mpich			# Debien 9  	Bat 451 LGLS	ancienne Gauthier Fauchet (Couplage Cathare/TRUST)
+linux	scp_ssh		cible		is213120.intra.cea.fr				-TRUST -TrioCFD -TrioMC	-IJK-FT					-force_provided_mpich				# Fedora 20	Bat 451 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	cible		is234639-clang.intra.cea.fr			-TrioCFD 						-clang38	-force_provided_openmpi	-disable-gmsh	# Ubuntu 16 	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 			-gcov		-force_provided_mpich			# CentOS 6.4 	Bat 451 LMEC	bureau TMA GENEPI2
 linux	rsync_ssh	cible		is212957.intra.cea.fr				-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC				-force_provided_mpich			# Ubuntu 16     Bat 451 LMEC    bureau TMA FLICA4
-linux	rsync_ssh	cible		is223284.intra.cea.fr				-MPCube -TrioCFD -FLICA5 -GENEPI3 -PolyMAC		-force_provided_mpich -without-pdflatex 		# CentOS 7.5	Bat 451	LGLS	bureau a cote de Clarisse Genrault
-linux	rsync_ssh	tache		cezanne63.intra.cea.fr				-PolyMAC -TrioMC -MATHYS						-force_provided_mpich			# Debian 8	CEA Cadarache
+linux	rsync_ssh	cible		is223284.intra.cea.fr				-MPCube -TrioCFD -FLICA5 -GENEPI3 			-force_provided_mpich -without-pdflatex 		# CentOS 7.5	Bat 451	LGLS	bureau a cote de Clarisse Genrault
+linux	rsync_ssh	tache		cezanne63.intra.cea.fr				-TrioMC -MATHYS								-force_provided_mpich			# Debian 8	CEA Cadarache
 linux	rsync_ssh	tache		irene-ccrt.ccc.cea.fr		-limited	-TrioCFD						-benchmark						# RedHat 7.4	CEA CCRT
-linux	rsync_ssh	tache		cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT -PolyMAC				-benchmark						# RedHat 7.3	CEA CCRT
+linux	rsync_ssh	tache		cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 					-benchmark						# RedHat 7.3	CEA CCRT
 linux	rsync_ssh	tache		ceres2.intra.cea.fr		-limited															# CentOS 6.8	CEA Marcoule	NB: bench desactive
 linux	rsync_ssh	tache		mezel.intra.cea.fr		-limited								-without-pdflatex					# RedHat 6.7	CEA Cadarache	NB: bench desactive
-linux	rsync_ssh	tache		callisto.intra.cea.fr		-limited	-TrioCFD -FLICA5 -IJK-FT -PolyMAC					-disable-mpiio				# CentOS 6.4	CEA Saclay	NB: bench desactive
+linux	rsync_ssh	tache		callisto.intra.cea.fr		-limited	-TrioCFD -FLICA5 -IJK-FT 						-disable-mpiio				# CentOS 6.4	CEA Saclay	NB: bench desactive
 linux	rsync_ssh	tache		is226425-bench.intra.cea.fr	-limited								-avx -benchmark	-force_provided_mpich -disable-tools	# Fedora 24	Bat 451 LGLS	bureau TMA TRUST ( ajuster pour tester g++ 4.1.2)
 linux	rsync_ssh	tache		is221715.intra.cea.fr				-GENEPI3 -MATHYS -TrioMC     				-check-valgrind	-force_provided_mpich -without-pdflatex	# CentOS 7.5	Bat 451	LMEC	bureau TMA FLICA4
-linux	rsync_ssh	tache		is223289.intra.cea.fr				-TrioCFD						-force_provided_mpich -remote_install_TRUST_kernel_only	# Fedora 18	Bat 451 LGLS	bureau Stephane Veys
-linux	rsync_ssh	tache		is234639.intra.cea.fr				-MPCube -FT 						-check-valgrind	-force_provided_mpich			# Ubuntu 16 	Bat 451 LGLS	bureau Pierre Ledac
+linux	rsync_ssh	tache		is223289.intra.cea.fr				-TrioCFD -MPCub						-force_provided_mpich -remote_install_TRUST_kernel_only	# Fedora 18	Bat 451 LGLS	bureau Stephane Veys
+linux	rsync_ssh	tache		is234639.intra.cea.fr				-FT 							-check-valgrind	-force_provided_mpich			# Ubuntu 16 	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	tache		is221556.intra.cea.fr				-FLICA5							-check-valgrind -force_provided_mpich			# Ubuntu 16	Bat 451 LGLS    bureau a cote de Clarisse Genrault
-linux	rsync_ssh	tache		is234617.intra.cea.fr				-TrioCFD -IJK -PolyMAC					-check-valgrind -force_provided_mpich			# Ubuntu 16	Bat 451 LGLS    bureau TMA TRUST
+linux	rsync_ssh	tache		is234617.intra.cea.fr				-TrioCFD -IJK 						-check-valgrind -force_provided_mpich			# Ubuntu 16	Bat 451 LGLS    bureau TMA TRUST
 linux	rsync_ssh	tache		is210968.intra.cea.fr		-all								-Check_decoupage -force_provided_openmpi -without-pdflatex	# CentOS 7.5	Bat 451	LMEC	bureau TMA FLICA4
 linux	rsync_ssh	tache		is228817.intra.cea.fr											-xdata		-force_provided_mpich			# Fedora 2	Bat 451 LGLS	bureau Thomas Di Giusto
-linux	rsync_ssh	tache		is232974.intra.cea.fr		-all		-PolyMAC								-force_latest_openmpi			# CentOS 7.5	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	tache		is232974.intra.cea.fr		-all											-force_latest_openmpi			# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	sftp_ssh	tache		is220631.intra.cea.fr	-rsync	-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC		-prof		-force_provided_mpich			# Fedora 22	Bat 451 LGLS	bureau TMA FLICA4
 linux	rsync_ssh	tache		is232971.intra.cea.fr				-TRUST -MPCube -PAREX+ -FLICA5 -GENEPI3	 	-force_provided_openmpi -remote_install_TRUST_with_source	# Fedora 26 	Bat 451 LGLS	bureau Stephane Veys
-linux	rsync_ssh	non		is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT -PolyMAC				-g 		-force_provided_mpich -download-visit	# Ubuntu 16	Bat 451 LMSF    bureau Michel Filippi
+linux	rsync_ssh	non		is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT 					-g 		-force_provided_mpich -download-visit	# Ubuntu 16	Bat 451 LMSF    bureau Michel Filippi
 linux	rsync_ssh	non		is233136-clang.intra.cea.fr			-TRUST -TrioCFD -GENEPI3				-g -clang38	-force_provided_openmpi -disable-gmsh	# Ubuntu 16	Bat 451 LMSF	bureau Ulrich Bieder
 linux	rsync_ssh	non		is221710.intra.cea.fr								 		-force_provided_mpich -remote_install_TRUST_kernel_only		# Fedora 24	Bat 454	LMEC	bureau Marc Elmo (Couplage Cathare/TRUST)
 linux	rsync_ssh	non		is221710-womed.intra.cea.fr			-TRUST -MPCube -TrioCFD -GENEPI3 					-force_provided_mpich 		 	# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
@@ -33,15 +33,15 @@ linux	rsync_ssh	non		is223287.intra.cea.fr				-GENEPI3 -MPCube -FLICA5	-force_pr
 linux	rsync_ssh	non		is220631-clang.intra.cea.fr										-clang 		-force_provided_openmpi			# Fedora 22	Bat 451 LGLS	bureau TMA FLICA4
 linux	rsync_ssh	non		is226423-clang.intra.cea.fr			-MPCube	-FLICA5						-clang40	-force_provided_openmpi -disable-gmsh	# Ubuntu 16	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non		is212915.intra.cea.fr				-MATHYS							-g 	-force_provided_mpich	-without-pdflatex	# CentOS 7.5	Bat 451 LMSF	bureau Michel Filippi
-linux	rsync_ssh	non		is223278.intra.cea.fr		-all		-GENEPI3 -PolyMAC							-disable-mpi 				# CentOS 7.5	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		is223278.intra.cea.fr		-all		-GENEPI3 								-disable-mpi 				# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223279.intra.cea.fr		-all		-TrioMC -FLICA5 -GENEPI3						-disable-petsc	-without-pdflatex	# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225220.intra.cea.fr		-all		-MPCube -MATHYS								-force_provided_openmpi	-without-visit	# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223281.intra.cea.fr		-all		-GENEPI3 -TrioMC							-disable-optionals			# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is230500-build64.intra.cea.fr										-build64						# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223280.intra.cea.fr				-TrioCFD -TrioMC -FLICA5 				-g 		-download-visit	-without-pdflate	# CentOS 7.5	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube -GENEPI3 -PolyMAC			-g -enable-petsc-debug -download-salome			# CentOS 7.5	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -FLICA5 -GENEPI3 -PolyMAC -avx		-without-pdflatex			# CentOS 7.5	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube -GENEPI3 				-g -enable-petsc-debug -download-salome			# CentOS 7.5	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -FLICA5 -GENEPI3 	-avx		-without-pdflatex			# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225223-gui.intra.cea.fr			-MPCube -TrioCFD -FLICA5 -GENEPI3 -IJK-FT		-gui		-remote_install_TRUST_with_source	# CentOS 7.5	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is231771.intra.cea.fr				-TrioCFD -FLICA5 -GENEPI3 				-platform -force_latest_openmpi	-without-pdflatex	# CentOS 7.5	Bat 451 LGLS	bureau Pierre Ledac
-linux	rsync_ssh	non		callisto-intel.intra.cea.fr	-limited	-IJK-FT -MATHYS -PolyMAC						-disable-mpiio -without-visit		# CentOS 6.4	CEA Saclay	NB: bench desactive
+linux	rsync_ssh	non		callisto-intel.intra.cea.fr	-limited	-IJK-FT -MATHYS 							-disable-mpiio -without-visit		# CentOS 6.4	CEA Saclay	NB: bench desactive
 linux	rsync_ssh	non		cobalt-wi4mpi.ccc.cea.fr	-limited										-disable-tools				# RedHat 7.3	CEA CCRT
