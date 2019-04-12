@@ -887,10 +887,10 @@ void Solv_Petsc::create_solver(Entree& entree)
                 check_not_defined(ordering);
                 break;
               }
-            case 9: // ilu
-              preconditionnement_non_symetrique_ = 1;
             case 8: // icc
+            case 9: // ilu
               {
+                if (rang==9) preconditionnement_non_symetrique_ = 1; // ilu
                 PCSetType(PreconditionneurPetsc_, PCBJACOBI);
                 add_option("sub_pc_type",rang==8 ? "icc" : "ilu");
                 // On fixe le precondtionnement non symetrique pour appliquer eventuellement un ordering autre que celui par defaut (natural)
@@ -1909,7 +1909,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
       PetscSectionSetNumFields(sec, champ.size());
       PetscSectionSetChart(sec, decalage_local_global_, decalage_local_global_ + b.get_md_vector().valeur().nb_items_seq_local());
       int idx = 0;
-      for (auto && kv : champ)
+for (auto && kv : champ)
         {
           PetscSectionSetFieldName(sec, idx, kv.first.c_str());
           for (int j = 0; j < (int) kv.second.size(); j++) PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);

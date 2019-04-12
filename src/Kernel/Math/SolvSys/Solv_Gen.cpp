@@ -409,13 +409,13 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
           double residu_relatif = (fpar[2] > 0 ? fpar[5] / fpar[2] : fpar[5]);
           Cout << finl << "Final residue: " << fpar[5] << " ( " << residu_relatif << " )"<<finl;
         }
-          //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
-          //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
-          //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
-          //Cerr<<"fpar(6) -- current residual/error norm : "<<fpar[5]<<finl;
-          //Cerr<<"fpar(7) -- convergence rate : "<<fpar[6]<<finl;
-        }
+      //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
+      //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
+      //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
+      //Cerr<<"fpar(6) -- current residual/error norm : "<<fpar[5]<<finl;
+      //Cerr<<"fpar(7) -- convergence rate : "<<fpar[6]<<finl;
     }
+
   if (0)
     {
       DoubleVect tmp(solution);
