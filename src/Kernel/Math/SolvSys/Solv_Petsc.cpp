@@ -1909,7 +1909,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
       PetscSectionSetNumFields(sec, champ.size());
       PetscSectionSetChart(sec, decalage_local_global_, decalage_local_global_ + b.get_md_vector().valeur().nb_items_seq_local());
       int idx = 0;
-for (auto && kv : champ)
+      for (auto && kv : champ)
         {
           PetscSectionSetFieldName(sec, idx, kv.first.c_str());
           for (int j = 0; j < (int) kv.second.size(); j++) PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
