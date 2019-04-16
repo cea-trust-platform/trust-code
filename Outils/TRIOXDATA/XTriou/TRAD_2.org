@@ -314,6 +314,7 @@ read_tgrid interprete lire_tgrid -1 Keyword to reaf Tgrid/Gambit mesh files. 2D 
 discretisation_base objet_u discretisation_base -1 Basic class for space discretization of thermohydraulic turbulent problems.
 vdf discretisation_base vdf -1 Finite difference volume discretization.
 vef discretisation_base vef -1 Finite element volume discretization (P1NC/P0 element) NL2 Warning: it becomes an obsolete discretization.
+polymac discretisation_base polymac -1 polymac discretization.
 vefprep1b vef vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
   attr p0 rien p0 1 Pressure nodes are added on element centres
   attr p1 rien p1 1 Pressure nodes are added on vertices
@@ -383,7 +384,8 @@ piso simpler piso -1 Piso (Pressure Implicit with Split Operator) - method to so
   attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
 implicite piso implicite -1 similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains.
 simple piso simple -1 SIMPLE type algorithm
-  attr relax_pression floattant relax_pression 0 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
+  attr relax_pression floattant relax_pression 1 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
+solveur_u_p simple solveur_u_p 1 similar to simple.
 parametre_equation_base objet_lecture parametre_equation_base -1 Basic class for parametre_equation
 parametre_diffusion_implicite parametre_equation_base parametre_diffusion_implicite -1 To specify additional parameters for the equation when using impliciting diffusion
   attr crank entier(into=[0,1]) crank 1 Use (1) or not (0, default) a Crank Nicholson method for the diffusion implicitation algorithm. Setting crank to 1 increases the order of the algorithm from 1 to 2.
