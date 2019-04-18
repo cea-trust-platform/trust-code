@@ -113,7 +113,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
           fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
       double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
 
-      coeffs_perte_charge(ve, pos, t, n_ve , dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
+      coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
       double n2_dir = zone.dot(dir.addr(), dir.addr()); //si la fonction renvoie un vecteur non norme...
 
       /* contributions aux faces de e */
@@ -124,8 +124,8 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
                    fac = pe(e) * fs(f) * (e == f_e(f, 0) ? 1 : - 1);
             for (r = 0; r < dimension; r++) vf[r] = ve(r) + (vit(f) - scal) * nf(f, r) / fs(f);
             /* contribution */
-            resu(f) -= fac * (           C_iso * zone.dot(&xv(f, 0), vf, &xp(e, 0))
-                                         + (C_dir - C_iso) * zone.dot(vf, dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir);
+            resu(f) -= fac * (C_iso * zone.dot(&xv(f, 0), vf, &xp(e, 0))
+                              + (n2_dir > 1e-8 ? (C_dir - C_iso) * zone.dot(vf, dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir : 0));
           }
 
     }
@@ -158,7 +158,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
           fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
       double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
 
-      coeffs_perte_charge(ve, pos, t, n_ve , dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
+      coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
       double n2_dir = zone.dot(dir.addr(), dir.addr()); //si la fonction renvoie un vecteur non norme...
 
       /* contributions aux faces de e */
@@ -168,7 +168,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             double fac = pe(e) * fs(f) * (e == f_e(f, 0) ? 1 : - 1);
             /* partie "normale a la face" de vf */
             matrice(f, f) += fac * (C_iso * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0))
-                                    + (C_dir - C_iso) * zone.dot(&nf(f, 0), dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir) / fs(f);
+                                    + (n2_dir > 1e-8 ? (C_dir - C_iso) * zone.dot(&nf(f, 0), dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir : 0)) / fs(f);
             /* partie ve -> pfft */
             for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++)
               {
@@ -177,7 +177,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
                 if (zone.dot(proj, proj) < 1e-16) continue;
                 fb = zone.veji(k);
                 matrice(f, fb) += fac * pf(fb) / pe(e) * (C_iso * zone.dot(&xv(f, 0), proj, &xp(e, 0))
-                                                          + (C_dir - C_iso) * zone.dot(proj, dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir);
+                                                          + (n2_dir > 1e-8 ? (C_dir - C_iso) * zone.dot(proj, dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir : 0));
               }
           }
     }

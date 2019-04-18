@@ -1032,6 +1032,7 @@ void Zone_PolyMAC::init_m2() const
   for (f = 0; f < nb_faces_tot(); f++, m2deb.append_line(m2ji.dimension(0))) for (auto &&kv : m2[f])
       if (dabs(kv.second) > 1e-8 * vf(f)) m2ji.append_line(kv.first[0], kv.first[1]), m2ci.append_line(kv.second);
   CRIMP(m2deb), CRIMP(m2ji), CRIMP(m2ci);
+  Process::barrier();
   Cerr << "OK" << finl;
 }
 
@@ -1203,6 +1204,7 @@ void Zone_PolyMAC::init_m1_3d() const
   for (a = 0; a < zone().nb_aretes_tot(); m1deb.append_line(m1ji.dimension(0)), a++) for (auto &&kv : m1[a])
       if (dabs(kv.second) > 1e-8 * volumes(kv.first[1])) m1ji.append_line(kv.first[0], kv.first[1]), m1ci.append_line(kv.second);
   CRIMP(m1deb), CRIMP(m1ji), CRIMP(m1ci);
+  Process::barrier();
   Cerr << "OK" << finl;
 }
 
