@@ -877,23 +877,32 @@ rm -f $TRUST_ROOT/exec/ccache/g??
 ###################################################################################################
 # On a besoin d'un python complet pour VisIt 2.7.0 (python-config, lib.so) et PETSc, Run_fiche, MED
 ###################################################################################################
-[ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
 e="`cherche_file python python`";eval $e
 PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`
 # 1.6.8: Add a more complex test (test.py) for python if python is not well installed
-if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+if [ "$PYTHON_VERSION_OK" != 1 ] || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
 then
     make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
     # PL: Nouveau depuis 1.7.9, l'environnement du Python installe par TRUST est inclus dans celui de ce dernier:
     # Normalement, cela va regler deux problemes de Centos 6 avec Python natif 2.6:
     # MEDCOUPLING va utiliser cet environnement a l'installation, reglant le probleme de MED_COUPLING_PYTHON=OFF
     # VisIt va utiliser cet environnement a l'installation egalement
-    PYTHON_ROOT=$TRUST_ROOT/exec/python
-    echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
-    echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
+    m="# Path to Python install " && e="PYTHONLIBS_ROOT_DIR=\"\$TRUST_ROOT/exec/python\"     && export PYTHONLIBS_ROOT_DIR"   && ecrit $m"|"$e"|"$env;eval $e
+    m="# Path to Python binaries" && e="PYTHONINTERP_ROOT_DIR=\"\$PYTHONLIBS_ROOT_DIR/bin\"  && export PYTHONINTERP_ROOT_DIR" && ecrit $m"|"$e"|"$env;eval $e
+    v=`python -c "import sys; print sys.version[:3]"`
     echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
     echo "ADD_LD_LIBRARY_PATH \$PYTHONLIBS_ROOT_DIR/lib" >> $env
-    echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
+    echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python$v/site-packages" >> $env
+fi
+#####################################################################
+# Installation de Python modules (pour IHM ou si Python est installe)
+#####################################################################
+if [ "$TRUST_DISABLE_PLOT2D" != 1 ] || [ "$PYTHONLIBS_ROOT_DIR" != "" ]
+then
+   make_ $TRUST_ROOT/Outils/Python_modules python_modules $TRUST_ROOT/exec/python_modules.log
+   v=`python -c "import sys; print sys.version[:3]"`
+   echo "ADD_PATH \$TRUST_ROOT/exec/python_modules/bin" >> $env
+   echo "ADD_PYTHONPATH \$TRUST_ROOT/exec/python_modules/lib/python$v/site-packages" >> $env
 fi
 
 ####################
@@ -2029,7 +2038,7 @@ fi
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    make_ $TRUST_ROOT/Outils/hwloc hwloc $TRUST_ROOT/exec/hwloc.log
-   echo "ADD_PATH $TRUST_ROOT/exec/hwloc/bin" >> $env
+   echo "ADD_PATH \$TRUST_ROOT/exec/hwloc/bin" >> $env
 fi
 
 ###################
