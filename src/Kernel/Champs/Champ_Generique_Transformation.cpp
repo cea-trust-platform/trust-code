@@ -589,7 +589,8 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
       if (directive!=directive_so)
         {
           sources_val[so].resize(nb_pos,nb_compso);
-          source_so.valeur_aux(positions,sources_val[so]);
+          if (directive == "CHAMP_FACE") source_so.valeur_aux_faces(sources_val[so]);
+          else source_so.valeur_aux(positions,sources_val[so]);
         }
       else
         {

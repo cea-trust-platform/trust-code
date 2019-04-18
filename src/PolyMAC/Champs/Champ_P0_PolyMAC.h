@@ -50,7 +50,8 @@ public :
 
   virtual int fixer_nb_valeurs_nodales(int n);
 
-  /* version de trace reconstruisant de maniere plus precise la temperature aux faces de bord */
+  /* fonctions reconstruisant de maniere plus precise le champ aux faces */
+  DoubleTab& valeur_aux_faces(DoubleTab& vals) const;
   inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const;
 
   //tableaux utilitaires sur les CLs
