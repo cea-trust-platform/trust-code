@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,8 +70,12 @@ public :
   DoubleTab Les_Noeuds;
   IntVect Les_Nums;
   IntVect Symetrique;
-  double a_tanh;  // a pour le maillage en tanh valable que dans la diry!!
+  double a_tanh;  // a pour le maillage en tanh dans la diry!!
   int tanh_dilatation;
+  double xa_tanh;  // xa pour le maillage en tanh dans la dirx!!
+  int xtanh_dilatation;
+  double za_tanh;  // za pour le maillage en tanh dans la dirz!!
+  int ztanh_dilatation;
   int rep_VEF;
   inline int numero_maille(int );
   inline int numero_maille(int, int );

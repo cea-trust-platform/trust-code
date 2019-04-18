@@ -13,7 +13,7 @@ Mailler dom
 		Origine 0. 0. 0.
 		Nombre_de_Noeuds 8 14 10
 		Longueurs  12.56637061 2. 3.141592653
-		tanh 0.90180
+		ytanh 0.90180
 		}
 		{
 		Bord periox   X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
