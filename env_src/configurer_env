@@ -893,7 +893,7 @@ then
     echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
     echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
     echo "ADD_LD_LIBRARY_PATH \$PYTHONLIBS_ROOT_DIR/lib" >> $env
-    echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
+    echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
 fi
 
 ####################
