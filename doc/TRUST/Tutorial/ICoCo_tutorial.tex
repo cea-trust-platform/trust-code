@@ -957,19 +957,14 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 
 \begin{block}{Adjusting data file}
 \begin{itemize}
-\item Now we want to send the temperature from the Paroi\_echange1 boundary of the domain dom1 to the Paroi\_echange2 boundary of the domain dom2.
+\item Two way coupling for thermal problems should use Dirichlet and Neumann boundary conditions (using only Dirichlet boundary conditions for coupling both sides would not work).
+\item So we want to send the heat flux from the Paroi\_echange1 boundary of the domain dom1 to the Paroi\_echange2 boundary of the domain dom2.
 \item Create a new directory:\\
 \texttt{\$ cd ICoCo\_exercises}\\
 \texttt{\$ cp -r docond\_VEF\_3D\_ICoCo\_coupling1 docond\_VEF\_3D\_ICoCo\_coupling2}\\
 \texttt{\$ cd docond\_VEF\_3D\_ICoCo\_coupling2}\\
-\item Inspire you of the previous part to make a new exchange of temperature.
+\item Inspire you of the previous part to make a Neumann boundary condition (heat flux imposed):
 
-\item In the docond\_VEF\_3D\_dom1.data data file, add in the "Definition\_champs" block of the post-processings:\\
-\texttt{ \hspace{0.2cm} TEMPERATURE\_OUT\_DOM1 Interpolation \{             } \\
-\texttt{ \hspace{0.5cm}    localisation elem                                } \\
-\texttt{ \hspace{0.5cm}    domaine dom\_solide\_boundaries\_Paroi\_echange1 } \\
-\texttt{ \hspace{0.5cm}    source refChamp \{ Pb\_Champ pb temperature \}  \} } \\
-where "dom\_solide\_boundaries\_Paroi\_echange1" is a predefined name for the boundary Paroi\_echange1 of the domain dom1.
 \end{itemize}
 \end{block}
 
@@ -981,18 +976,45 @@ where "dom\_solide\_boundaries\_Paroi\_echange1" is a predefined name for the bo
 
 \begin{block}{Adjusting data file}
 \begin{itemize}
+\item In the docond\_VEF\_3D\_dom1.data data file, add in the "Definition\_champs" block of the post-processings:\\
+\texttt{ \hspace{0.2cm} FLUX\_SURFACIQUE\_OUT\_DOM1 Interpolation \{             } \\
+\texttt{ \hspace{0.5cm}    localisation elem                                     } \\
+\texttt{ \hspace{0.5cm}    domaine dom\_fluide\_boundaries\_Paroi\_echange1      } \\
+\texttt{ \hspace{0.5cm}    source Morceau\_equation \{                           } \\
+\texttt{ \hspace{0.7cm}        type operateur numero 0 option flux\_surfacique\_bords } \\
+\texttt{ \hspace{0.7cm}        source refChamp \{ Pb\_Champ pb temperature \} } \\
+\texttt{ \hspace{0.5cm}    \}                                                  } \\
+\texttt{ \hspace{0.2cm} \}                                                     } \\
+where "dom\_solide\_boundaries\_Paroi\_echange1" is a predefined name for the boundary Paroi\_echange1 of the domain dom1.
+
 \item In the docond\_VEF\_3D\_dom2.data data file, change the boundary condition on the 'Paroi\_echange2' boundary to:\\
-Paroi\_echange2 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom TEMPERATURE\_IN\_DOM2 probleme pb \}
+Paroi\_echange2 paroi\_flux\_impose ch\_front\_input \{ nb\_comp 1 nom FLUX\_SURFACIQUE\_IN\_DOM2 probleme pb \}
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Run with ICoCo}
+
+\begin{block}{Adjusting data file}
+\begin{itemize}
 \item Modify the main.cpp file to add a new exchange:\\
     \begin{itemize}
     \item [$\circ$] Create a new TrioDEC object to made exchange from domain dom2 to domain dom1: \\
-    \textit{TrioDEC dec\_temperature2(dom2\_ids, dom1\_ids);}
+    \textit{TrioDEC dec\_flux\_surfacique2(dom2\_ids, dom1\_ids);}
     \item [$\circ$] Create a new TrioField object: \\
-    \textit{TrioField field\_temperature2;}
+    \textit{TrioField field\_flux\_surfacique2;}
     \item [$\circ$] Add code lines into the while loop to made this exchange of informations.
     \end{itemize}
 \item You can have a look at the main5.cpp file for this exchange:\\
 \texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main5.cpp main5.cpp }
+
+\item Compare it to the previous one:\\
+\texttt{\$ tkdiff main5.cpp ../docond\_VEF\_3D\_ICoCo\_coupling1/main.cpp }
+\item You can see the use of the new fields FLUX\_SURFACIQUE\_IN\_DOM2 and FLUX\_SURFACIQUE\_OUT\_DOM1 added to the data files.
+
 \end{itemize}
 \end{block}
 
@@ -1004,9 +1026,6 @@ Paroi\_echange2 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 
 \begin{block}{Adjusting data file}
 \begin{itemize}
-\item Compare it to the previous one:\\
-\texttt{\$ tkdiff main5.cpp ../docond\_VEF\_3D\_ICoCo\_coupling1/main.cpp }
-\item You can see the use of the new fields TEMPERATURE\_IN\_DOM2 and TEMPERATURE\_OUT\_DOM1 added to the data files.
 \item Compile your main.cpp file:\\
 \texttt{\$ make}
 \item Launch calculation:\\

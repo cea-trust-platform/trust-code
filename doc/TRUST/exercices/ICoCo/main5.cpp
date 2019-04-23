@@ -102,12 +102,12 @@ int main(int argc,char **argv) {
   synchronize_bool(stop,sync_or);
 
   TrioDEC dec_temperature(dom2_ids, dom1_ids);
-  TrioDEC dec_temperature2(dom2_ids, dom1_ids);
+  TrioDEC dec_flux_surfacique2(dom2_ids, dom1_ids);
 
   double* save_old_field=0;
 
   TrioField field_temperature;
-  TrioField field_temperature2;
+  TrioField field_flux_surfacique2;
 
   clock_t clock0= clock ();
   int compti=0;
@@ -142,12 +142,12 @@ int main(int argc,char **argv) {
         if ( dom2_group.containsMyRank())
           {
             T->getOutputField("TEMPERATURE_OUT_DOM2",field_temperature);
-            T->getInputFieldTemplate("TEMPERATURE_IN_DOM2",field_temperature2);
+            T->getInputFieldTemplate("FLUX_SURFACIQUE_IN_DOM2",field_flux_surfacique2);
           }
         else
           {
             T->getInputFieldTemplate("TEMPERATURE_IN_DOM1",field_temperature);
-            T->getOutputField("TEMPERATURE_OUT_DOM1",field_temperature2);
+            T->getOutputField("FLUX_SURFACIQUE_OUT_DOM1",field_flux_surfacique2);
           }
 
         if (init)
@@ -156,35 +156,35 @@ int main(int argc,char **argv) {
               dec_temperature.setMethod("P0");
             else
               dec_temperature.setMethod("P1");
-            if (field_temperature2._type==0) 
-              dec_temperature2.setMethod("P0");
+            if (field_flux_surfacique2._type==0) 
+              dec_flux_surfacique2.setMethod("P0");
             else
-              dec_temperature2.setMethod("P1");
+              dec_flux_surfacique2.setMethod("P1");
           }
         // We attached the fields to the pipes
         dec_temperature.attachLocalField( &field_temperature);
         modifie_n_TrioDEC(dec_temperature);
-        dec_temperature2.attachLocalField( &field_temperature2);
-        modifie_n_TrioDEC(dec_temperature2);
+        dec_flux_surfacique2.attachLocalField( &field_flux_surfacique2);
+        modifie_n_TrioDEC(dec_flux_surfacique2);
         if(init)
           {
             dec_temperature.synchronize();
-            dec_temperature2.synchronize();
+            dec_flux_surfacique2.synchronize();
           }
 
         // send - received
         if (dom2_group.containsMyRank()) {
           dec_temperature.sendData();
-          dec_temperature2.recvData();
+          dec_flux_surfacique2.recvData();
         }
         else {
           dec_temperature.recvData();
-          dec_temperature2.sendData();
+          dec_flux_surfacique2.sendData();
         }
 
         if (dom2_group.containsMyRank() )
           {
-            T->setInputField("TEMPERATURE_IN_DOM2",field_temperature2);
+            T->setInputField("FLUX_SURFACIQUE_IN_DOM2",field_flux_surfacique2);
           }
         else
           {
