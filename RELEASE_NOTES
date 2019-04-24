@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 -------------------------------------------------------------------------------------------------------
+23/04/19 (TRUST)  New keyword : Block_Jacobi_ILU PETSc preconditioner (adapted to non symmetric linear system)
+23/04/19 (TRUST)  New keyword : Cholesky_Mumps_BLR PETSc solver (reduced memory and faster factorization)
 18/04/19 (TRUST)  New feature : Internal mesher is now able to build meshes with tanh variations in X and/or Y and/or Z directions.
 18/04/19 (TRUST)  Minor change: Keywords tanh, tanh_dilatation and tanh_taille_premiere_maille are renamed to ytanh, ytanh_dilatation and ytanh_taille_premiere_maille
 17/14/19 (TRUST)  New Option  : Allow the user to add a valgrind suppression file (-suppressions_val file_name)

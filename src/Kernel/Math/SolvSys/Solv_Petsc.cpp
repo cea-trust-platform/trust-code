@@ -162,7 +162,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
   // Reprendre le formalisme de GCP { precond ssor { omega val } seuil val }
-  Motcles les_solveurs(16);
+  Motcles les_solveurs(17);
   {
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
@@ -180,6 +180,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[13] = "CHOLESKY_PASTIX";
     les_solveurs[14] = "CLI_VERBOSE";
     les_solveurs[15] = "CLI_QUIET";
+    les_solveurs[16] = "CHOLESKY_MUMPS_BLR";
   }
   int solver_supported_on_gpu_by_petsc=0;
   int rang=les_solveurs.search(ksp);
@@ -257,6 +258,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 9:
     case 3:
     case 4:
+    case 16:
       {
 
         // Si MUMPS est present, on le prend par defaut (solveur_direct_=1) sinon SuperLU (solveur_direct_=2):
@@ -275,13 +277,15 @@ void Solv_Petsc::create_solver(Entree& entree)
         else
           add_option("mat_mumps_icntl_14","90");
 
-        // Ajout option Block Low Rank (BLR) factorization a tester dans les prochains mois (prometteur)
-        // Voir http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf page 51:
-        //add_option("mat_mumps_icntl_35","1"); // Activation BLR
-        //add_option("mat_mumps_cntl_7","");    // Dropping parameter
-
         // Option out_of_core
         if (rang==4) add_option("mat_mumps_icntl_22","1");
+
+        // Option BLR
+        if (rang==16)
+          {
+            Cerr << "Activating BLR factorization. For more info, see http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf (page 18, 51, 52)." << finl;
+            add_option("mat_mumps_icntl_35","1");
+          }
 #else
         solveur_direct_=2;
 #endif
@@ -367,7 +371,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(19);
+      Motcles les_parametres_solveur(20);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil";
@@ -388,6 +392,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[16] = "quiet";
         les_parametres_solveur[17] = "restart";
         les_parametres_solveur[18] = "cli_verbose";
+        les_parametres_solveur[19] = "dropping_parameter";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -689,6 +694,19 @@ void Solv_Petsc::create_solver(Entree& entree)
                 KSPGMRESSetRestart(SolveurPetsc_,restart_gmres);
                 break;
               }
+            case 19:
+              {
+                // Si pas MUMPS on previent
+                if (solveur_direct_!=1)
+                  {
+                    Cerr << les_parametres_solveur[rang] << " keyword for a solver is limited to " << les_solveurs[14] << " only." << finl;
+                    Process::exit();
+                  }
+                double dropping_parameter;
+                is >> dropping_parameter;
+                add_option("mat_mumps_cntl_7",dropping_parameter);    // Dropping parameter
+                break;
+              }
             default:
               {
                 Cerr << motlu << " : unrecognized option from those available in the Petsc solver:" << finl;
@@ -706,7 +724,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         }
 
       int pc_supported_on_gpu_by_petsc=0;
-      Motcles les_precond(9);
+      Motcles les_precond(10);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -717,6 +735,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[6] = "DIAG";               // Diagonal precondtioner
         les_precond[7] = "BOOMERAMG";          // Multigrid preconditioner
         les_precond[8] = "BLOCK_JACOBI_ICC";   // Block Jacobi ICC preconditioner (code dans PETSc, optimise)
+        les_precond[9] = "BLOCK_JACOBI_ILU";   // Block Jacobi ILU preconditioner (code dans PETSc, optimise)
         /*
           les_precond[3] = "ICC";                // Incomplete Cholesky
           les_precond[7] = "ASM";                // Additive Schwarz method (ILU as local precondioner)
@@ -868,10 +887,12 @@ void Solv_Petsc::create_solver(Entree& entree)
                 check_not_defined(ordering);
                 break;
               }
-            case 8:
+            case 8: // icc
+            case 9: // ilu
               {
+                if (rang==9) preconditionnement_non_symetrique_ = 1; // ilu
                 PCSetType(PreconditionneurPetsc_, PCBJACOBI);
-                add_option("sub_pc_type","icc");
+                add_option("sub_pc_type",rang==8 ? "icc" : "ilu");
                 // On fixe le precondtionnement non symetrique pour appliquer eventuellement un ordering autre que celui par defaut (natural)
                 // Un ordering rcm peut ameliorer par exemple la convergence
                 // Voir le remplissage de la matrice avec -mat_view_draw -draw_pause -1
