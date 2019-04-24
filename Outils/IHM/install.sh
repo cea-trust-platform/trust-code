@@ -16,11 +16,15 @@ diff $file $file.sa
 
 STANDALONE=ON
 export  CONFIGURATION_ROOT_DIR=$PWD/configuration
-if [ "$KERNEL_ROOT_DIR" != "" ]
+if [ "$KERNEL_ROOT_DIR" = "" ]
 then
-   #STANDALONE=OFF
-   export PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE
-   export PYTHONLIBS_ROOT_DIR=$PYTHON_ROOT_DIR
+# verification of modules
+(cd $TRUST_ROOT/Outils/Python_modules&& make ) || exit -1
+. $TRUST_ROOT/exec/python_modules/env.sh
+else
+#STANDALONE=OFF
+export PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE
+export PYTHONLIBS_ROOT_DIR=$PYTHON_ROOT_DIR
 fi
 export MED_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT
 export MEDCOUPLING_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT

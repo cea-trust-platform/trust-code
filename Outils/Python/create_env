@@ -1,0 +1,10 @@
+#!/bin/bash
+dest=$1
+mkdir -p $1
+env=$TRUST_ROOT/env/machine.env
+PYTHON_ROOT=$TRUST_ROOT${dest#$TRUST_ROOT}
+echo "ADD_PATH $PYTHON_ROOT/bin" >> $env
+echo "ADD_PYTHONPATH $PYTHON_ROOT/lib/python`python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
+echo "ADD_LD_LIBRARY_PATH $PYTHON_ROOT/lib" >> $env
+echo "export PYTHONINTERP_ROOT_DIR=$PYTHON_ROOT/bin" >> $dest/env.sh
+echo "export PYTHONLIBS_ROOT_DIR=$PYTHON_ROOT" >> $dest/env.sh

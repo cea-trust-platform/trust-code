@@ -1,10 +1,16 @@
 #!/bin/bash
 cible=$1 && [ "$1" = "" ] && exit -1
 
-python -c "import PySide"
-[ $? -eq 0 ] && echo OK && exit 0
+
+if [ -f  $cible/env.sh ]
+    then
+    .  $cible/env.sh
+    python -c "import PySide"
+    [ $? -eq 0 ] && echo OK && exit 0
+fi
 
 export OPT=""
+. $cible/env.sh
 package=PySide
 
 pac=`ls $TRUST_ROOT/externalpackages/Python_modules/$package*.gz`
@@ -18,4 +24,4 @@ pip install dist/PySide-*.whl  --prefix=$cible
 [ $? -ne 0 ] && echo "Pb installing $package" && exit -1
 cd ..
 rm -rf $pac
-echo "export CURVEPLOT_FORCE_PYSIDE=ON" >> $TRUST_ROOT/env/machine.env
+echo "export CURVEPLOT_FORCE_PYSIDE=ON" >> $cible/env.sh

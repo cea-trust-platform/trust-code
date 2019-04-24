@@ -1,10 +1,21 @@
 #!/bin/bash
+#ln -sf $TRUST_ROOT/externalpackages/Python_modules/* .
+
+
+
+
 cible=$1 && [ "$1" = "" ] && exit -1
 
-python -c "import matplotlib;import jsonschema"
-[ $? -eq 0 ] && [ "$FORCE_BUILD" != 1 ] && echo OK && exit 0
+if [ -f  $cible/env.sh ]
+    then
+    . $cible/env.sh
+    python -c "import matplotlib;import jsonschema"
+    [ $? -eq 0 ] && [ "$FORCE_BUILD" != 1 ] && echo OK && exit 0
+fi
 
 export OPT=""
+./create_env $cible
+. $cible/env.sh
 for package in numpy pytz pyparsing distribute Distribute2 pip wheel six  cycler python-dateutil  matplotlib functools32 vcversioner jsonschema 
 do
   ok=0
