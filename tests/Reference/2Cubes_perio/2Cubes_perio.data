@@ -76,7 +76,7 @@ Read pb
 	{
 		solveur_pression GCP { 
 			precond ssor { omega 1.65 } 
-			seuil 1.e-6
+			seuil 1.e-9
 			impr 
 		}
 		convection { EF_stab { alpha 0.2 } }
