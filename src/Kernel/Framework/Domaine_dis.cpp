@@ -123,9 +123,10 @@ void Domaine_dis::discretiser(const Nom& type_1)
       exit();
     }
   const Domaine& dom=le_domaine.valeur();
-  if (domaines_dis.find(type.getChar()) != domaines_dis.end()) //on a deja discretise ce domaine!
+  i_am_allocator_of_les_zones = domaine().le_nom()+"_"+type; // Nom unique
+  if (domaines_dis.find(i_am_allocator_of_les_zones.getChar()) != domaines_dis.end()) //on a deja discretise ce domaine!
     {
-      *this = domaines_dis[type.getChar()].valeur();
+      *this = domaines_dis[i_am_allocator_of_les_zones.getChar()].valeur();
       i_am_allocator_of_les_zones = "";
       return;
     }
@@ -198,8 +199,7 @@ void Domaine_dis::discretiser(const Nom& type_1)
             }
         }
     }
-  //memorisation
-  i_am_allocator_of_les_zones = domaine().le_nom()+"_"+type; // Nom unique
+  //memoization
   domaines_dis[i_am_allocator_of_les_zones.getChar()] = *this;
   domaines_dis[Nom(Nom("NO_FACE_") + i_am_allocator_of_les_zones).getChar()] = *this;
 
