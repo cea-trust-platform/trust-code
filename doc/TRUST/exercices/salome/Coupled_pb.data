@@ -1,0 +1,136 @@
+Dimension 3
+Domaine dom
+Domaine dom_fluide
+Domaine dom_solide
+
+Probleme_Couple PbC
+Pb_thermohydraulique pb_fluide
+Pb_conduction pb_solide
+
+# BEGIN MESH #
+Read_med family_names_from_group_names dom Mesh_1 Mesh_1.med
+Read_file dom_ssz.geo ;
+Create_domain_from_sous_zone { domaine_final dom_solide par_sous_zone Solid domaine_init dom }
+Create_domain_from_sous_zone { domaine_final dom_fluide par_sous_zone Fluid domaine_init dom }
+# END MESH #
+
+
+postraiter_domaine { format lata domaines { dom_solide dom_fluide } fichier dom.lata }
+
+VEFPreP1B dis
+
+Schema_Euler_implicite sch
+Read sch
+{
+	tinit         0.
+	dt_min     1e-6
+	dt_max       10.
+        tmax         20
+	facsec       30
+	facsec_max 3000.
+	solveur implicite
+	{
+		solveur gmres { diag seuil 1e-6 nb_it_max 3 }
+		seuil_convergence_implicite 1e6 
+	}
+}
+
+# Fluid and Solid have non-physical properties #
+Fluide_Incompressible fluide 
+Read fluide
+{
+	mu      Champ_Uniforme 1     8.6e-5
+	rho     Champ_Uniforme 1   998.03
+	lambda  Champ_Uniforme 1   1e6
+	Cp      Champ_Uniforme 1    10. 
+	Beta_th Champ_Uniforme 1     0.000841
+} 
+
+Solide sol
+Read sol
+{
+	rho    Champ_Uniforme 1 20
+	lambda Champ_Uniforme 1 1e6
+	Cp     Champ_Uniforme 1 50
+} 
+
+
+Associate  pb_fluide dom_fluide
+Associate  pb_fluide fluide
+
+Associate  pb_solide dom_solide
+Associate  pb_solide sol
+
+Associate  PbC pb_fluide
+Associate  PbC pb_solide
+Associate  PbC sch
+Discretize PbC dis
+
+
+Read pb_fluide
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { }
+		convection { amont }
+		diffusion  { }
+		initial_conditions { Vitesse champ_uniforme 3 0. 0. 0.01 }
+		boundary_conditions 
+		{
+			Fluid_inlet  frontiere_ouverte_vitesse_imposee  champ_front_uniforme 3 0. 0. 0.01
+			Fluid_outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+			Solid_Fluid_Interface       paroi_fixe
+		}
+	}
+
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		initial_conditions { Temperature Champ_uniforme 1 300. }
+		boundary_conditions 
+		{
+			Fluid_inlet  frontiere_ouverte_temperature_imposee champ_front_uniforme 1 300
+			Fluid_outlet frontiere_ouverte    T_ext            champ_front_uniforme 1 300
+			Solid_Fluid_Interface       paroi_contact        pb_solide        Solid_Fluid_Interface
+		}
+	}
+
+	Postraitement {
+		format lata
+		Champs dt_post  1+20*(t>10)
+		{
+			temperature elem
+			vitesse elem
+		}
+	}
+}
+
+Read pb_solide
+{
+	Conduction
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1 400.
+		}
+		boundary_conditions {
+			Solid_bottom    paroi_adiabatique
+			Solid_top       paroi_adiabatique
+			Solid_lateral_walls paroi_adiabatique
+			Solid_Fluid_Interface        paroi_contact      pb_fluide   Solid_Fluid_Interface
+		}
+	}
+
+	Post_processing
+	{
+		format lata
+		fields dt_post 1+20*(t>10)
+		{
+			temperature elem
+		}
+	}
+}
+
+Solve PbC
+End
