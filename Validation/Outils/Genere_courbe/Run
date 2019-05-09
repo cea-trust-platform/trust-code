@@ -148,16 +148,12 @@ then
      echo $nb_tasks
      nb_cmds=`ls cmds*.sh 2>/dev/null | wc -l`
      # On boucle et on execute chaque commande
-     processes=""
-     let n=1
      for cmd in cmds*.sh 
      do
         if [ "$parallel" = 2 ] 
         then
             chmod +x ./$cmd
             $SJOB_DIR/Salloc ./$cmd &
-            processes=$processes" "$!
-            task[$n]=$!
         else
 
 # See https://stackoverflow.com/questions/1537956/bash-limit-the-number-of-concurrent-jobs	
@@ -179,31 +175,9 @@ function max_bg_procs {
 	    max_bg_procs $TRUST_NB_PROCS
 	    awk -F'"' '{print $2}' $cmd
             bash ./$cmd &
-            processes=$processes" "$!
-            task[$n]=$!
         fi
-	let n=$n+1
      done
-     while [ "$processes" != "" ]
-     do
-        for process in $processes
-        do
-	   if [ "`kill -0 $process 2>/dev/null;echo $?`" != 0 ]
-	   then
-	      # Recherche du calcul qui a fini:
-	      let i=1
-	      while [ ${task[$i]} != $process ] && [ $i -lt $n ]
-	      do
-	         let i=$i+1
-	      done
-	      log=cmds$i.log
-	      task=cmds$i.sh
-	      echo "Calculation $i has finished. See $log"
-	      processes=`echo $processes | sed "1,$ s?$process??g"`
-	   fi
-        done
-	sleep 1
-     done
+     wait
      # Lancement du post_run 
      bash ./post_run.sh
   fi
