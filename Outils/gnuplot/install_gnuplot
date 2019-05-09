@@ -3,6 +3,12 @@ gnuplot=$1
 gd=gd-2.0.36RC1.tar.gz
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+LD_LIBRARY_PATH_OLD=$LD_LIBRARY_PATH
+unset LD_LIBRARY_PATH
+
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
 
 # recuperation des packages
 
@@ -85,4 +91,6 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH_OLD
+export PATH=$OLDPATH_
 exit 0

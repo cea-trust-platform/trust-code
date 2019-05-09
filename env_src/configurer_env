@@ -877,24 +877,33 @@ rm -f $TRUST_ROOT/exec/ccache/g??
 ###################################################################################################
 # On a besoin d'un python complet pour VisIt 2.7.0 (python-config, lib.so) et PETSc, Run_fiche, MED
 ###################################################################################################
-[ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
+# [ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
 e="`cherche_file python python`";eval $e
 PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`
+[ -d $TRUST_ROOT/exec/python ] && rm -r $TRUST_ROOT/exec/python
+
 # 1.6.8: Add a more complex test (test.py) for python if python is not well installed
-if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
-then
-    make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
-    # PL: Nouveau depuis 1.7.9, l'environnement du Python installe par TRUST est inclus dans celui de ce dernier:
-    # Normalement, cela va regler deux problemes de Centos 6 avec Python natif 2.6:
-    # MEDCOUPLING va utiliser cet environnement a l'installation, reglant le probleme de MED_COUPLING_PYTHON=OFF
-    # VisIt va utiliser cet environnement a l'installation egalement
-    PYTHON_ROOT=$TRUST_ROOT/exec/python
+#if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+#then
+    #make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
+    $TRUST_ROOT/externalpackages/Miniconda/./Miniconda2-latest-Linux-x86_64.sh -p $TRUST_ROOT/exec/python/ -b
+
+    # installing packages from local channel
+    $TRUST_ROOT/exec/python/bin/./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels pyqt=4 -y
+    $TRUST_ROOT/exec/python/bin/./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels nomkl -y
+    $TRUST_ROOT/exec/python/bin/./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels numpy -y
+    $TRUST_ROOT/exec/python/bin/./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels fontconfig=2.12.1 -y
+    $TRUST_ROOT/exec/python/bin/./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels matplotlib -y
+    $TRUST_ROOT/exec/python/bin/./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels jsonschema -y
+
+
+    PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
     echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
     echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
     echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
-    echo "ADD_LD_LIBRARY_PATH \$PYTHONLIBS_ROOT_DIR/lib" >> $env
+    #echo "ADD_LD_LIBRARY_PATH \$PYTHONLIBS_ROOT_DIR/lib" >> $env
     echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
-fi
+#fi
 
 ####################
 # Compilateurs C/C++
