@@ -32,8 +32,6 @@ check_gl()
 
 #   archives
 
-LD_LIBRARY_PATH_OLD=$LD_LIBRARY_PATH
-unset LD_LIBRARY_PATH
 OLDPATH_=$PATH
 NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
 export PATH=$NEWPATH_
@@ -139,6 +137,5 @@ do
  [ -h $f ] && rm  $f 
 done
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH_OLD
 export PATH=$OLDPATH_
 

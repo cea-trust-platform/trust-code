@@ -470,13 +470,6 @@ then
    #[ ! -f $dt_ev ] && exit 1
    bash  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
    err=$?
-   if [ $err != 0 ]
-   then
-      echo " "
-      echo "If Matplotlib error, so you could try to recompil PySide with the following command:"
-      echo "(cd "$TRUST_ROOT"/Outils/Python_modules/;env FORCE_BUILD=1 make clean PySide)" 
-      echo "Warning: This may cause a different behavior from the Python environment." 
-   fi
    exit $err
 fi
 
