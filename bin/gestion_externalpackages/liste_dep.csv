@@ -65,6 +65,7 @@ utils,unzip-60.tar.gz,outil,GF,GPL,http://www.info-zip.org,ftp://ftp.info-zip.or
 utils,sed-4.3.tar.xz,outil,GF,GPL,http://www.gnu.org/software/sed,http://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz,
 utils,lzip-1.19.tar.gz,outil,MR,GPL,http://ftp.nchc.org.tw/Unix/NonGNU/lzip/,http://download.savannah.gnu.org/releases/lzip/lzip-1.19.tar.gz,
 Miniconda,Miniconda2-4.6.14-Linux-x86_64.sh,outil,ND,BSD,https://repo.continuum.io/miniconda/Miniconda2-4.6.14-Linux-x86_64.sh,
+Miniconda,README_Miniconda,ND,
 MinicondaLocChann,channeldata.json,outil,ND,
 MinicondaLocChann,rss.xml,outil,ND,
 MinicondaLocChann,index.html,outil,ND,
