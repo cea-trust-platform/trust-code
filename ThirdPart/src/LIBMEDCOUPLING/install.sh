@@ -55,16 +55,8 @@ cd build
 USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
-# Do not build Python MEDCoupling if Python < 2.7 -- will be fixed directly in MEDCoupling from version 8.4
-PY_VERSION_MAJOR=`python -c 'import sys; print(sys.version_info[0])'`
-PY_VERSION_MINOR=`python -c 'import sys; print(sys.version_info[1])'`
-if [[ $PY_VERSION_MAJOR == 2 && $PY_VERSION_MINOR < 7 ]]
-then 
-	echo "Detected Python version is too old. Not building MEDCoupling Python bindings"
-	MED_COUPLING_PYTHON="OFF"
-else
-	MED_COUPLING_PYTHON="ON"
-fi
+# We use now python 2.7.16 and swig from conda so:
+MED_COUPLING_PYTHON="ON"
 
 OPTIONS="-DCMAKE_BUILD_TYPE=Release -DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_INSTALL_PREFIX=$DEST -DCMAKE_CXX_COMPILER=$TRUST_CC  -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version"
 OPTIONS=$OPTIONS" -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF" 
@@ -72,14 +64,6 @@ OPTIONS=$OPTIONS" -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF"
 OPTIONS=$OPTIONS" -DMEDCOUPLING_BUILD_STATIC=ON -DNO_CXX11_SUPPORT=ON"
 cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=$MED_COUPLING_PYTHON
 
-status=$?
-
-if [ $status -ne 0 ] && [ "$MED_COUPLING_PYTHON" = "ON" ]
-then
-  echo "we tried to compile without python"
-  cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
-  MED_COUPLING_PYTHON="OFF"
-fi
 
 
 make -j $TRUST_NB_PROCS
@@ -87,14 +71,6 @@ make -j $TRUST_NB_PROCS
 # echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 make install
 make install
-status=$?
-if [ $status -ne 0 ]
-then
-  echo "we tried to compile without python"
-  cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
-  MED_COUPLING_PYTHON="OFF"
-  make install
-fi
 status=$?
 
 #ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
@@ -120,7 +96,7 @@ then
     echo "MEDCoupling library OK"
   else
     echo "MEDCoupling library KO"
-    #exit -1
+    exit -1
   fi
 fi
 

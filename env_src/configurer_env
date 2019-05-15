@@ -893,7 +893,7 @@ then
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
 
-    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema"
+    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema swig"
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
