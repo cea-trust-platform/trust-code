@@ -2143,51 +2143,51 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 ############################
 # Disponibilite des binaires
 ############################
-echo " "
-echo "######################################"
-echo "# Test the disponibility of binaries #"
-echo "######################################"
-echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-nb_binaires=0
-porta_binaires=0
-dispo_binaires=0
-disponibilite_binaires=0
-machine=`liste_machines "get_binary" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}' | head -1`
-echo "Analysis of $WORKDIR/portages/PORTAGE_$new directory"
-binaires=`ls $WORKDIR/portages/PORTAGE_$new/*/TRUST/exec/TRUST*opt* 2>/dev/null`
-[ "$binaires" = "" ] && echo "See $REP_NUIT/CR_$machine" | mail_ -s\"[lance_test_nuit] No binary created under $WORKDIR/portages/PORTAGE_$new/*/TRUST/exec\" $TRUST_MAIL
-for binaire in $binaires
-do
-   let nb_binaires=$nb_binaires+1
-   cd $TRUST_TMP
-   rm -f nul.data
-   touch nul.data
-   echo $ECHO_OPTS "  Test of binary $binaire \c"
-   $binaire nul 1>binaire.out 2>&1
-   if [ $? != 0 ]
-   then
-      echo "KO"
-      cat binaire.out | mail_ -s\"[lance_test_nuit] Binary $binaire KO\" $TRUST_MAIL
-   else
-      let porta_binaires=$porta_binaires+1
-      echo "OK"
-   fi
-   cd - 1>/dev/null 2>&1
-done
-[ "$nb_binaires" != 0 ] && dispo_binaires=`echo $porta_binaires | $TRUST_Awk -v n=$nb_binaires '{print "scale=3\n"$1"/"n}' | bc -l`
-disponibilite_binaires=`echo $dispo_binaires | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
-echo " "
-if [ $disponibilite_binaires = 1 ]
-then
-   echo "Release criterion: Binaries OK"
-else
-   echo "Release criterion: Binaries KO"
-fi
-force_disponibilite_binaires=~/force_disponibilite_binaires && [ -f $force_disponibilite_binaires ] && disponibilite_binaires=1 && rm -f $force_disponibilite_binaires
-echo "$disponibilite_binaires  Binairies $porta_binaires/$nb_binaires=$dispo_binaires (=1)" >> $MESSAGES_NUIT
-let total_criteres=$total_criteres+1
-let criteres_remplis=$criteres_remplis+$disponibilite_binaires
-echo "<--- End at "`date '+%H:%M:%S %d/%m'`
+# echo " "
+# echo "######################################"
+# echo "# Test the disponibility of binaries #"
+# echo "######################################"
+# echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
+# nb_binaires=0
+# porta_binaires=0
+# dispo_binaires=0
+# disponibilite_binaires=0
+# machine=`liste_machines "get_binary" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}' | head -1`
+# echo "Analysis of $WORKDIR/portages/PORTAGE_$new directory"
+# binaires=`ls $WORKDIR/portages/PORTAGE_$new/*/TRUST/exec/TRUST*opt* 2>/dev/null`
+# [ "$binaires" = "" ] && echo "See $REP_NUIT/CR_$machine" | mail_ -s\"[lance_test_nuit] No binary created under $WORKDIR/portages/PORTAGE_$new/*/TRUST/exec\" $TRUST_MAIL
+# for binaire in $binaires
+# do
+#    let nb_binaires=$nb_binaires+1
+#    cd $TRUST_TMP
+#    rm -f nul.data
+#    touch nul.data
+#    echo $ECHO_OPTS "  Test of binary $binaire \c"
+#    $binaire nul 1>binaire.out 2>&1
+#    if [ $? != 0 ]
+#    then
+#       echo "KO"
+#       cat binaire.out | mail_ -s\"[lance_test_nuit] Binary $binaire KO\" $TRUST_MAIL
+#    else
+#       let porta_binaires=$porta_binaires+1
+#      echo "OK"
+#    fi
+#    cd - 1>/dev/null 2>&1
+# done
+# [ "$nb_binaires" != 0 ] && dispo_binaires=`echo $porta_binaires | $TRUST_Awk -v n=$nb_binaires '{print "scale=3\n"$1"/"n}' | bc -l`
+# disponibilite_binaires=`echo $dispo_binaires | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
+# echo " "
+# if [ $disponibilite_binaires = 1 ]
+# then
+#    echo "Release criterion: Binaries OK"
+# else
+#    echo "Release criterion: Binaries KO"
+# fi
+# force_disponibilite_binaires=~/force_disponibilite_binaires && [ -f $force_disponibilite_binaires ] && disponibilite_binaires=1 && rm -f $force_disponibilite_binaires
+# echo "$disponibilite_binaires  Binairies $porta_binaires/$nb_binaires=$dispo_binaires (=1)" >> $MESSAGES_NUIT
+# let total_criteres=$total_criteres+1
+# let criteres_remplis=$criteres_remplis+$disponibilite_binaires
+# echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ############
 # Test XData
