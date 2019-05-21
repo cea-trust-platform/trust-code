@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
   Nature_du_champ nature;
   int nb_comp;
 
-  if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords"))
+  if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords") || (Motcle(option_)=="flux_surfacique_bords"))
     {
       nature = scalaire;
       nb_comp = 1;
@@ -148,7 +148,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation
   Nature_du_champ nature;
   int nb_comp;
 
-  if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords"))
+  if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords") || (Motcle(option_)=="flux_surfacique_bords"))
     {
       nature = scalaire;
       nb_comp = 1;
@@ -182,7 +182,7 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
         Noms unites(1);
         if (Motcle(option_)=="stabilite")
           unites[0] = "s";
-        else if (Motcle(option_)=="flux_bords")
+        else if (Motcle(option_)=="flux_bords" || Motcle(option_)=="flux_surfacique_bords")
           unites[0] = "bidon";
 
         return unites;
@@ -248,6 +248,10 @@ void Champ_Generique_Morceau_Equation::nommer_source()
     {
       type_option = "flux_bords";
     }
+  else if (Motcle(option_)=="flux_surfacique_bords")
+    {
+      type_option = "flux_surfacique_bords";
+    }
   else
     {
       Cerr<<"Currently the only options considered for a piece of equation are \"stabilite\" and \"flux_bords\"."<<finl;
@@ -264,7 +268,7 @@ void Champ_Generique_Morceau_Equation::nommer_source()
       nom_post_source +=  type_morceau;
       nom_post_source += "_";
       nom_post_source += type_option ;
-      if ((Motcle(option_)=="flux_bords"))
+      if ((Motcle(option_)=="flux_bords") || (Motcle(option_)=="flux_surfacique_bords"))
         {
           Nom nume(compo_);
           nom_post_source += nume;

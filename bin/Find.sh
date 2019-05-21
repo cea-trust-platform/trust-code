@@ -26,12 +26,14 @@ then
    #nomfichier=`find $TRUST_ROOT -name $nom -print`
    for dir in `cat $TRUST_ENV/rep.TRUST`
    do 
-   rep=$TRUST_ROOT/$dir
-   if [ -f $rep/$nom ] && nomfichier=$rep/$nom 
-   then
-      echo $rep/$nom
-   fi
+      rep=$TRUST_ROOT/$dir
+      if [ -f $rep/$nom ] && nomfichier=$rep/$nom 
+      then
+         echo $rep/$nom
+         [ "$2" = -copy ] && cp -f $rep/$nom .
+      fi
    done
 else
    echo $nomfichier
+   [ "$2" = -copy ] && cp -f $nomfichier .
 fi

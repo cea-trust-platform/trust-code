@@ -802,7 +802,7 @@ int Postraitement::lire_champs_a_postraiter(Entree& s)
                         creer_champ_post_moreqn("operateur","stabilite",i,j,-1,s);
                     }
                 }
-              else if (motlu=="flux_bords")
+              else if (motlu=="flux_bords" || motlu=="flux_surfacique_bords")
                 {
                   int nb_eq = probleme().nombre_d_equations();
                   for (int i=0; i<nb_eq; i++)
@@ -823,7 +823,7 @@ int Postraitement::lire_champs_a_postraiter(Entree& s)
                                 compo=-1;
                               else
                                 compo=comp;
-                              creer_champ_post_moreqn("operateur","flux_bords",i,j,compo,s);
+                              creer_champ_post_moreqn("operateur",motlu,i,j,compo,s);
                             }
                         }
                     }
@@ -2074,7 +2074,7 @@ void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& opt
       nom_champ += "_";
       nom_champ += "dt";
     }
-  else if (option=="flux_bords")
+  else if (option=="flux_bords" || option=="flux_surfacique_bords")
     {
       int nb_op = mon_probleme->equation(num_eq).nombre_d_operateurs();
       if (num_morceau >= nb_op)

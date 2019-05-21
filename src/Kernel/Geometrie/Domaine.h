@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -145,7 +145,15 @@ public :
   };
   MCAuto<MEDCouplingUMesh>& getUFacesMesh() const
   {
-    // Construit si necessaire
+    if (faces_mesh_==NULL)
+      {
+        // Construit si necessaire le maillage des faces:
+        desc        = MEDCoupling::DataArrayInt::New();
+        descIndx    = MEDCoupling::DataArrayInt::New();
+        revDesc     = MEDCoupling::DataArrayInt::New();
+        revDescIndx = MEDCoupling::DataArrayInt::New();
+        faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
+      }
     return faces_mesh_;
   };
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
@@ -169,6 +177,10 @@ protected :
   mutable MCAuto<MEDCouplingUMesh> mesh_;
   ///! MEDCoupling version of the faces domain:
   mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
+  mutable MEDCoupling::DataArrayInt* desc;
+  mutable MEDCoupling::DataArrayInt* descIndx;
+  mutable MEDCoupling::DataArrayInt* revDesc;
+  mutable MEDCoupling::DataArrayInt* revDescIndx;
 #endif
 };
 Declare_liste(Domaine);
