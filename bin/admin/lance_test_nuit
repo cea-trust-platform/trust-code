@@ -1788,9 +1788,12 @@ do
                WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
 	       pids=$(ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
-	       echo "    ssh $log@$adr kill -9 $pids"
-	       ssh $log@$adr kill -19 $pids
-	       ssh $log@$adr kill -9 $pids
+	       echo "    ssh $log@$adr scancel $pids"
+	       ssh $log@$adr scancel $pids
+	       ssh $log@$adr scancel $pids
+	     #  echo "    ssh $log@$adr kill -9 $pids"
+	     #  ssh $log@$adr kill -19 $pids
+	     #  ssh $log@$adr kill -9 $pids
 	      ) 
 	    done
 	    IFS=$old_IFS  # r\E9tablissement du s\E9parateur de champ par d\E9faut
