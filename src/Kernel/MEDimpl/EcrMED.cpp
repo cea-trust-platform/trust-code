@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1396,36 +1396,40 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,
       field->setTimeUnit("s");
 
       if (type == "CHAMPFACES")
-      {
-        Cerr << "ToDo implement MED on faces for EcrMED::ecrire_champ" << finl;
-        //  See: http://docs.salome-platform.org/latest/dev/MEDCoupling/tutorial/medcouplingloaderex1_fr.html#passer-d-un-champ-aux-cellules-3d-a-un-champ-surfacique-3d
-      } else {
-        // Try to get directly the mesh from the domain:
-        if (dom . getUMesh() != NULL)
-          field -> setMesh(dom . getUMesh());
-        else {
-          // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
-          const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
-          const MCAuto<MEDCouplingUMesh> umesh = file_mesh -> getMeshAtLevel(0);
-          field -> setMesh(umesh);
+        {
+          Cerr << "ToDo implement MED on faces for EcrMED::ecrire_champ" << finl;
+          //  See: http://docs.salome-platform.org/latest/dev/MEDCoupling/tutorial/medcouplingloaderex1_fr.html#passer-d-un-champ-aux-cellules-3d-a-un-champ-surfacique-3d
         }
-        // Fill array:
-        int size = val . dimension(0);
-        int nb_comp = val . nb_dim() == 1 ? 1 : val . dimension(1);
-        MCAuto<DataArrayDouble> array(DataArrayDouble::New());
-        array -> useArray(val . addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
-        array -> setInfoOnComponent(0, "x [" + unite[0] . getString() + "]");
-        if (nb_comp > 1) {
-          array -> setInfoOnComponent(1, "y [" + unite[1] . getString() + "]");
-          if (nb_comp > 2)
-            array -> setInfoOnComponent(2, "z [" + unite[2] . getString() + "]");
+      else
+        {
+          // Try to get directly the mesh from the domain:
+          if (dom . getUMesh() != NULL)
+            field -> setMesh(dom . getUMesh());
+          else
+            {
+              // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
+              const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
+              const MCAuto<MEDCouplingUMesh> umesh = file_mesh -> getMeshAtLevel(0);
+              field -> setMesh(umesh);
+            }
+          // Fill array:
+          int size = val . dimension(0);
+          int nb_comp = val . nb_dim() == 1 ? 1 : val . dimension(1);
+          MCAuto<DataArrayDouble> array(DataArrayDouble::New());
+          array -> useArray(val . addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
+          array -> setInfoOnComponent(0, "x [" + unite[0] . getString() + "]");
+          if (nb_comp > 1)
+            {
+              array -> setInfoOnComponent(1, "y [" + unite[1] . getString() + "]");
+              if (nb_comp > 2)
+                array -> setInfoOnComponent(2, "z [" + unite[2] . getString() + "]");
+            }
+          field -> setArray(array);
+          // Write
+          MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());
+          file -> setFieldNoProfileSBT(field);
+          file -> write(file_name, 0);
         }
-        field -> setArray(array);
-        // Write
-        MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());
-        file -> setFieldNoProfileSBT(field);
-        file -> write(file_name, 0);
-      }
     }
   else
 #endif
