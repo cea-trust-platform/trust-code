@@ -981,8 +981,8 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,VECT(IntTab)& all_f
 }
 
 // ecrit le domaine dom dans le fichier nom_fic
-// mode =0 nouveau fichier
-// mode = -1 ajout du domaine dans le fichier
+// mode = -1 nouveau fichier
+// mode = 0 ajout du domaine dans le fichier
 void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
@@ -1172,6 +1172,12 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       int option = (mode == -1 ? 2 : 1); /* 2: reset file. 1: append, 0: overwrite objects */
       Cerr<<"Writing file " << nom_fic<<" (mode=" << mode << ") ..."<<finl;
       file->write(nom_fic.getString(), option);
+
+      // Append faces domain:
+      MCAuto<MEDCouplingUMesh>& FacesMesh = dom.getUFacesMesh();
+      MCAuto<MEDFileUMesh> FileUMesh(MEDFileUMesh::New());
+      FileUMesh->setMeshAtLevel(-1, FacesMesh, false);
+      FileUMesh->write(nom_fic.getString(), 1);
     }
   else
 #endif
@@ -1395,27 +1401,11 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,
       field->setTime(time, timestep, -1);
       field->setTimeUnit("s");
 
-      // See: http://docs.salome-platform.org/latest/dev/MEDCoupling/tutorial/medcouplingloaderex1_fr.html#passer-d-un-champ-aux-cellules-3d-a-un-champ-surfacique-3d
       // Try to get directly the mesh from the domain:
-      if (dom . getUMesh() != NULL)
+      if (dom.getUMesh() != NULL)
         {
           if (type == "CHAMPFACES")
-            {
-              MCAuto<MEDCouplingUMesh>& mesh = dom.getUFacesMesh();
-              field->setMesh(mesh);
-              // ToDo ecrire le maillage ailleurs?
-              MCAuto<MEDFileUMesh> file(MEDFileUMesh::New());
-              Nom FacesMeshName=mesh->getName().c_str();
-              FacesMeshName+="_faces";
-              file->setName(FacesMeshName.getString());
-              file->setCoords(mesh->getCoords());
-              file->setMeshAtLevel(0, mesh, false);
-              // ToDo groups & boundaries ?
-              // Write:
-              int append = 1;
-              Cerr<<"Adding faces mesh "<< FacesMeshName << " in " << nom_fic <<finl;
-              file->write(nom_fic.getString(), append);
-            }
+            field->setMesh(dom.getUFacesMesh());
           else
             field->setMesh(dom.getUMesh());
         }
@@ -1423,34 +1413,28 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,
         {
           // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
           const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
-          const MCAuto<MEDCouplingUMesh> umesh = file_mesh -> getMeshAtLevel(0);
-          field -> setMesh(umesh);
+          const MCAuto<MEDCouplingUMesh> umesh = file_mesh->getMeshAtLevel(0);
+          field->setMesh(umesh);
         }
       // Fill array:
-      int size = val . dimension(0);
-      int nb_comp = val . nb_dim() == 1 ? 1 : val . dimension(1);
+      int size = val.dimension(0);
+      int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
       MCAuto<DataArrayDouble> array(DataArrayDouble::New());
-      if (type == "CHAMPFACES")
-        {
-          Cerr << "ToDo implement for CHAMPFACES" << finl;
-          Process::exit(-1);
-        }
-      else
-        array -> useArray(val . addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
+      array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
 
       // Units:
-      array -> setInfoOnComponent(0, "x [" + unite[0] . getString() + "]");
+      array->setInfoOnComponent(0, "x [" + unite[0].getString() + "]");
       if (nb_comp > 1)
         {
-          array -> setInfoOnComponent(1, "y [" + unite[1] . getString() + "]");
+          array->setInfoOnComponent(1, "y [" + unite[1].getString() + "]");
           if (nb_comp > 2)
-            array -> setInfoOnComponent(2, "z [" + unite[2] . getString() + "]");
+            array->setInfoOnComponent(2, "z [" + unite[2].getString() + "]");
         }
-      field -> setArray(array);
+      field->setArray(array);
       // Write
       MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());
-      file -> setFieldNoProfileSBT(field);
-      file -> write(file_name, 0);
+      file->setFieldNoProfileSBT(field);
+      file->write(file_name, 0);
     }
   else
 #endif

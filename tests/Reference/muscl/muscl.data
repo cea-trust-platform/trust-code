@@ -137,6 +137,9 @@ Read pb
             fields dt_post 6.
             {
                 temperature faces
+		vitesse faces
+		temperature elem
+		temperature som
             }
         }
     }

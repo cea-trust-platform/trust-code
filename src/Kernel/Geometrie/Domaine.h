@@ -146,16 +146,10 @@ public :
   MCAuto<MEDCouplingUMesh>& getUFacesMesh() const
   {
     if (faces_mesh_==NULL)
-      {
-        // Construit si necessaire le maillage des faces:
-        desc        = MEDCoupling::DataArrayInt::New();
-        descIndx    = MEDCoupling::DataArrayInt::New();
-        revDesc     = MEDCoupling::DataArrayInt::New();
-        revDescIndx = MEDCoupling::DataArrayInt::New();
-        faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
-      }
+      buildUFacesMesh();
     return faces_mesh_;
   };
+  void buildUFacesMesh() const;
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
   {
     mesh_ = m->clone(true);
@@ -177,10 +171,11 @@ protected :
   mutable MCAuto<MEDCouplingUMesh> mesh_;
   ///! MEDCoupling version of the faces domain:
   mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
+  /*
   mutable MEDCoupling::DataArrayInt* desc;
   mutable MEDCoupling::DataArrayInt* descIndx;
   mutable MEDCoupling::DataArrayInt* revDesc;
-  mutable MEDCoupling::DataArrayInt* revDescIndx;
+  mutable MEDCoupling::DataArrayInt* revDescIndx; */
 #endif
 };
 Declare_liste(Domaine);

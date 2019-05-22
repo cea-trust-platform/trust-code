@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -531,4 +531,29 @@ void Domaine::imprimer() const
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
     }
   Cerr << "==============================================" << finl;
+}
+
+// Build the faces mesh:
+void Domaine::buildUFacesMesh() const
+{
+  MEDCoupling::DataArrayInt* desc        = MEDCoupling::DataArrayInt::New();
+  MEDCoupling::DataArrayInt* descIndx    = MEDCoupling::DataArrayInt::New();
+  MEDCoupling::DataArrayInt* revDesc     = MEDCoupling::DataArrayInt::New();
+  MEDCoupling::DataArrayInt* revDescIndx = MEDCoupling::DataArrayInt::New();
+  faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
+  // Name the mesh
+  faces_mesh_->setName(Nom(le_nom()+"faces").getString());
+  // Sort the mesh for MED file:
+  faces_mesh_->sortCellsInMEDFileFrmt();
+  // Renumber faces to have the same numbering
+  IntVect renum(faces_mesh_->getNumberOfCells());
+  for (int cell=0; cell<renum.size(); cell++) {
+    renum(cell) = cell;
+  }
+#ifdef NDEBUG
+  bool check = false;
+#else
+  bool check = true;
+#endif
+  faces_mesh_->renumberCells(renum.addr(), check);
 }
