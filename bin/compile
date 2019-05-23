@@ -116,6 +116,19 @@ CLEAN="" && MESSAGE="Building" && [ "${1%clean}" != "$1" ] && CLEAN=clean && MES
 [ ! -d $TRUST_ROOT/build ] && mkdir $TRUST_ROOT/build
  
 COMPILE=$TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
+if [ -f $COMPILE ]
+   then
+      # on recupere la date du dernier COMPILE
+      year=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 11`
+      month=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 7`
+      day=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 8`
+      Hh=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 9 | cut -d ':' -f 1`
+      Mm=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 9 | cut -d ':' -f 2`
+      Ss=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 9 | cut -d ':' -f 3`
+      DATE=$year"_"$month"_"$day"_"$Hh"_"$Mm"_"$Ss
+      # on renome le dernier fichier COMPILE existant
+      mv $COMPILE $TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD"_"$DATE".log"
+fi
 echo "TRUST compilation on $HOST the `date` ...">$COMPILE
 
 # Creation des fichiers License pour check_license_in_file.sh
