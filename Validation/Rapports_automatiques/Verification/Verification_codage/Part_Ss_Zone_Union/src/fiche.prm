@@ -30,7 +30,7 @@ Chapter {
 }  # chapter
 
 Chapter {
-  	  Title "Union"
+ 	  Title "Union"
     Description "The other way around: from a splitting of D1 and D2 create a global partioning of D which is the union of the D1 and D2 splitting."
 
     visu {
@@ -41,7 +41,7 @@ Chapter {
     visu {
       title "D2 partition"
       mesh union/domaine2_decoup.lata_00000.lata domaine2
-      pseudocolor union/domaine2_decoup.lata_00000.lata PARTITION_ELEM_domaine2
+      pseudocolor_with_range union/domaine2_decoup.lata_00000.lata PARTITION_ELEM_domaine2 0 4
     }
 
     visu {
@@ -52,3 +52,12 @@ Chapter {
    
 }  # chapter
 
+Chapter {
+      Title "'Sous_domaine' data file example"
+      description include_text_file("sous_dom/jdd_sous_dom.data", "partitionneur", "sous_domaine")
+}
+
+Chapter {
+      Title "'Union' data file example"
+      description include_text_file("union/jdd_union.data", "partitionneur", "union")
+}
