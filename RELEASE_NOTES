@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 -------------------------------------------------------------------------------------------------------
+28/05/19 (TRUST)  New keyword : 'Sous_domaine' and 'Union' partitioners, enabling the creation of conform partitions from sub-zones.
 23/04/19 (TRUST)  New keyword : Block_Jacobi_ILU PETSc preconditioner (adapted to non symmetric linear system)
 23/04/19 (TRUST)  New keyword : Cholesky_Mumps_BLR PETSc solver (reduced memory and faster factorization)
 18/04/19 (TRUST)  New feature : Internal mesher is now able to build meshes with tanh variations in X and/or Y and/or Z directions.

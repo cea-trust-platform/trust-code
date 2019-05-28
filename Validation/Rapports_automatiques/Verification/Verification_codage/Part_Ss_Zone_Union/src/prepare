@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || echo Warning: impossible de sourcer MEDCoupling. On prend l existant.
+
+python generate.py
+cp domaine_glob.med union
+cp domaine_glob.med sous_dom
