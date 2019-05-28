@@ -32,6 +32,10 @@ check_gl()
 
 #   archives
 
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
+
 for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`
 do
 ln -sf $file .
@@ -132,4 +136,6 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+
+export PATH=$OLDPATH_
 

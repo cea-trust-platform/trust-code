@@ -4,6 +4,10 @@ gd=gd-2.0.36RC1.tar.gz
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
+
 # recuperation des packages
 
 for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
@@ -85,4 +89,6 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+
+export PATH=$OLDPATH_
 exit 0
