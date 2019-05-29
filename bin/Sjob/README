@@ -1,24 +1,51 @@
-Un petit server de jobs pour ne pas saturer sa machine.....
+Un petit serveur de jobs en local pour ne pas saturer sa machine....
+Necessite le module Python 'psutil'.
 
+Un job est soumis avec la commande Salloc.
+Un job peut lui-meme soumettre d'autres jobs avec Salloc auquel cas la relation de parente est identifiee (un seul niveau de recursion supporte).
+La relation parent/enfant reste coherente lors du fonctionnement du serveur et l'outil est compatible avec des kill externes.
+  - si le parent meurt ou si un des enfants meurt, tous l'arbre de processus est tue;
+  - si les jobs/process sont tues en dehors du serveur, l'information est reflettee automatiquement.
 
-Sserver Nb
- -> demare le serveur si necessaire, et alloue Nb procs accesibles au serveur
-->  si Nb<0, on arrete le serveur
+== Commandes disponibles ==
 
-Salloc [ -n N ] commande 
--> demande N procs, attend leur disponibilité et lance la commande  
--> si N > Nb , alors on autorise quand meme le job a tourne
+* Sserver <Nb>
+ -> demare le serveur si necessaire, et alloue <Nb> procs accesibles au serveur, et par defaut <Nb> procs maximum accessible a un job (PROC_MAX).
+ -> si Nb=-1, on arrete le serveur directement sans tuer les jobs en cours
+ -> si Nb=-2, on tue tous les jobs proprement, puis on quitte le serveur.
 
-Squeue
- -> affiche les jobs et leur status
+* Salloc [ -n N ] commande 
+-> demande N procs, attend leur disponibilite et lance la commande  
+-> si N > Nb, et que N <= PROC_MAX alors on autorise quand meme le job a tourner, voir commandes avancees ci-dessous.
+
+* Squeue
+ -> affiche les jobs, leur parent eventuels en cas d'appel recursif de Salloc, une version courte de la commande invoquee et le status:
 	R    Running
 	W    Waiting
-	S_n  Suspend by job n (Salloc in Salloc)
+	S[x,y,..]  Suspended by job(s) x,y,... (Salloc in Salloc)
 
+* Sdelete <id>
+ -> tue (proprement) le job <id> et le retire de la liste des jobs. Tous les jobs appartenant au meme groupe (parent/enfants) sont aussi tues.
 
-Le port est fixe a 5001+uid.
+Les outils suivant sont capables de dialoguer avec le Sserver via des appels a Salloc:
+ -> Run_fiche : via l'option "-parallel_sjob"
+ -> Generate_makefile_validation : via l'option "-parallel_sjob", qui genere alors un makefile de validation qui fera appel au Sserver
+ -> Lance_gen_fiche : toujours avec la meme option, et qui lancera la fiche PRM (pour le processus de validation) via le Sserver
 
+== Commandes avancees ==
 
-Pour activer dans TRUST, utilisation automatique dans le script trust, 
-export TRUST_USE_Sjob=1
-Sserver 3
+Les commandes suivantes sont disponibles si on utilise directement le client:
+    ./client.py <cmd> <args>
+avec <cmd> qui peut etre:
+* squeue: fait la meme chose que Squeue ci dessus
+* set_nb_proc: change le nombre de procs alloues au serveur
+* set_nb_proc_max change le nombre de procs maximum qu'un job peut demander (PROC_MAX ci dessus). Par defaut au demarrage PROC_MAX=nb_procs.
+* sdelete <job_id>: tue le job <job_id> et tous les jobs appartenant a son groupe (i.e. ses enfants, ou son parent et ses freres).
+
+== Detail d'implementation ==
+Le serveur recoit des commandes via une socket TCP. 
+Salloc, Squeue emmettent en fait des commandes au serveur via le script client.py.
+
+Tout est en Python3.
+
+Le port de communication est fixe a 5001+uid.

@@ -182,7 +182,7 @@ then
           bash ./$cmd &
 
         fi
-     done     
+     done
      wait
 
      # Lancement du post_run 

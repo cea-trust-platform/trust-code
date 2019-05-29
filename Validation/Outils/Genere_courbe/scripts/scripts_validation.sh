@@ -80,7 +80,7 @@ verif_archives()
           then
           echo "$f pb ? (no `basename $f .pdf`.tgz  file)"
           PB=2
-      else          
+      else
           [ -d ../BUILD/`basename $f .pdf`/build ] && echo "rm -rf BUILD/`basename $f .pdf`/build" >> ../nettoie
       fi
       [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type d -name  $(basename $f .pdf)`" = "" ] && [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type l -name  $(basename $f .pdf)`" = "" ] &&echo $f not in Validation/Rapports_automatiques ?  && PB=3
@@ -134,7 +134,7 @@ compare_pdf_batch()
     pdftoppm -r 100 ${ref}  $ppm_dir_ref/${base_ref}_oo
     pdftoppm -r 100 ${new}  $ppm_dir_new/${base_new}_oo
     ret_code=0
-    
+
     for file_ref in `ls $ppm_dir_ref/${base_ref}_oo*ppm`
     do
       file_new=`echo $file_ref | sed "s?$ppm_dir_ref?$ppm_dir_new?; s?$base_ref?$base_new?"`
@@ -167,7 +167,7 @@ compare_pdf_batch()
       for f in `ls $ppm_dir_ref/*.ppm`; do convert $f $f.png; done
       for f in `ls $ppm_dir_diff/*.ppm`; do convert $f $f.png; done      
     fi
-    
+
     return $ret_code
 }
 
@@ -245,7 +245,7 @@ compare_new_rap_old_rap()
     cd new_rap/; fiches=`ls *.pdf`; cd -
     mkdir -p new_rap/OK new_rap/KO
     batch_mode=$1
-    
+
     for fiche in $fiches
       do
       comp_fiche $batch_mode $fiche

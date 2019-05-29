@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.9_beta : Changes since version 1.7.8 :
 -------------------------------------------------------------
+27/06/19 (TRUST)  Rewrote Sjob/Sserver: see full documentation in bin/Sjob/README
 26/06/19 (TRUST)  Fixes on PolyMAC solver for Flica5 project
 24/06/19 (TRUST)  Several fixes/improvements for PolyMAC discretization (regular and singular pressure loss sources, face interpolation, polyedra visualization with Lata format for VisIt, diffusive operator with null heat exchange coefficient ...)
 05/03/19 (TRUST)  Eight validation sheets about PolyMAC available under $TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC

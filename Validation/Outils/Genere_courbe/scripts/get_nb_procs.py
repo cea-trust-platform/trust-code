@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #
 # Given a PRM file, extract for each test case the number of procs required.
 # This is echoed on stdout in the same order the tests were found in the PRM.
