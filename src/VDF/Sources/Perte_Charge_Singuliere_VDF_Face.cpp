@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,6 +46,12 @@ Entree& Perte_Charge_Singuliere_VDF_Face::readOn(Entree& s)
 {
   Perte_Charge_Singuliere::lire_donnees(s);
   remplir_num_faces(s);
+  if (regul_) //fichier de sortie si regulation
+    {
+      bilan().resize(3); //K deb cible
+      set_fichier(Nom("K_") + identifiant_);
+      set_description(Nom("Regulation du Ksing de la surface ") + identifiant_ + "\nt K deb cible");
+    }
   return s;
 }
 
@@ -64,7 +70,7 @@ void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
   const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,equation().zone_dis().valeur());
   int taille_bloc = zone_VDF.nb_elem();
   num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,zone_VDF,num_faces);
+  lire_surfaces(s,le_domaine,zone_VDF,num_faces, sgn);
   int nfac = num_faces.size();
   int nfac_tot = mp_sum(num_faces.size());
   if (nfac_tot==0)
@@ -181,6 +187,12 @@ DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco,Doub
 
       }
   return resu;
+}
+
+void Perte_Charge_Singuliere_VDF_Face::mettre_a_jour(double temps)
+{
+  Perte_Charge_VDF_Face::mettre_a_jour(temps);
+  update_K(equation(), calculate_Q(equation(), num_faces, sgn), bilan());
 }
 
 

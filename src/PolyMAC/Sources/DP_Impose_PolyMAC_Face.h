@@ -14,46 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Perte_Charge_Singuliere_VEF_Face.h
-// Directory:   $TRUST_ROOT/src/VEF/Sources
+// File:        DP_Impose_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Perte_Charge_Singuliere_VEF_Face_included
-#define Perte_Charge_Singuliere_VEF_Face_included
+#ifndef DP_Impose_PolyMAC_Face_included
+#define DP_Impose_PolyMAC_Face_included
 
-#include <Perte_Charge_VEF_Face.h>
-#include <Perte_Charge_Singuliere.h>
+#include <Perte_Charge_PolyMAC_Face.h>
+#include <DP_Impose.h>
 
 class Domaine;
 class IntList;
 
 //
-// .DESCRIPTION class Perte_Charge_Singuliere_VEF_Face
+// .DESCRIPTION class DP_Impose_PolyMAC_Face
 //
 
 //
-// .SECTION voir aussi Perte_Charge_VEF_Face
+// .SECTION voir aussi Perte_Charge_PolyMAC_Face
 //
 //
 
-class Perte_Charge_Singuliere_VEF_Face : public Perte_Charge_VEF_Face,
-  public Perte_Charge_Singuliere
+class DP_Impose_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
+  public DP_Impose
 {
 
-  Declare_instanciable(Perte_Charge_Singuliere_VEF_Face);
+  Declare_instanciable(DP_Impose_PolyMAC_Face);
 
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps);
 
 protected:
   IntVect sgn;
+  double surf;//surface totale
 };
 #endif
