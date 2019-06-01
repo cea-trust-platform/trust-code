@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,16 @@
 
 
 #include <Perte_Charge.h>
+#include <Parser_U.h>
+#include <Champ_Don.h>
+#include <Domaine_dis.h>
 
 class Domaine;
 class Zone_dis_base;
+class Equation_base;
 class IntVect;
+class DoubleVect;
+class Source_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -46,13 +52,20 @@ class Perte_Charge_Singuliere : public Perte_Charge
 public :
 
   virtual ~Perte_Charge_Singuliere() {}
-  Entree& lire_donnees(Entree& );
-  virtual void lire_surfaces(Entree&, const Domaine&, const Zone_dis_base&, IntVect&);
+  Entree& lire_donnees(Entree&);
+  virtual void lire_surfaces(Entree&, const Domaine&, const Zone_dis_base&, IntVect&, IntVect&);
   inline double K() const;
+  double calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const; //met a jour le debit a travers la surface et le renvoie
+  void update_K(const Equation_base& eqn, double deb, DoubleVect& bilan);                  //regule K_ a partir du debit calcule par update_Q
 
 protected :
 
   double K_;
+
+  //pour la regulation de K;
+  Nom identifiant_;          //nom pour le fichier de sortie : celui de la surface, ou celui de la sous-zone et de la coupe
+  int regul_;                //1 si regulation activee
+  Parser_U deb_cible_, eps_; //K_ peut varier entre [K_ * (1 - eps_(t)), K_ * (1 + eps_(t))] par seconde pour atteindre deb_cible_(t)
 };
 
 

@@ -14,27 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Perte_Charge_Singuliere_PolyMAC_Face.cpp
+// File:        DP_Impose_PolyMAC_Face.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Sources
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Perte_Charge_Singuliere_PolyMAC_Face.h>
+#include <DP_Impose_PolyMAC_Face.h>
 #include <Zone_PolyMAC.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Motcle.h>
-#include <Domaine.h>
-#include <Matrice_Morse.h>
-#include <Param.h>
+#include <Milieu_base.h>
+#include <Champ_Don_base.h>
+#include <cfloat>
 
-Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
 
 //// printOn
 //
 
-Sortie& Perte_Charge_Singuliere_PolyMAC_Face::printOn(Sortie& s ) const
+Sortie& DP_Impose_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
@@ -42,16 +41,15 @@ Sortie& Perte_Charge_Singuliere_PolyMAC_Face::printOn(Sortie& s ) const
 //// readOn
 //
 
-Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
+Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
 {
-  Perte_Charge_Singuliere::lire_donnees(s);
+  DP_Impose::lire_donnees(s);
   remplir_num_faces(s);
-  if (regul_) //fichier de sortie si regulation
-    {
-      bilan().resize(3); //K deb cible
-      set_fichier(Nom("K_") + identifiant_);
-      set_description(Nom("Regulation du Ksing de la surface ") + identifiant_ + "\nt K deb cible");
-    }
+  if (!mp_max(sgn.size()))
+    Cerr << "DP_Impose_PolyMAC_Face : champ d'orientation non renseigne!" << finl, Process::exit();
+  //fichier de sortie
+  set_fichier(Nom("DP_") + identifiant_);
+  set_description(Nom("DP impose sur la surface ") + identifiant_ + "\nt DP dDP/dQ Q Q0");
   return s;
 }
 
@@ -60,11 +58,11 @@ Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
 //
 //                    Implementation des fonctions
 //
-//               de la classe Perte_Charge_Singuliere_PolyMAC_Face
+//               de la classe DP_Impose_PolyMAC_Face
 //
 ////////////////////////////////////////////////////////////////////
 
-void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
+void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
   const Zone_PolyMAC& zone_PolyMAC = ref_cast(Zone_PolyMAC,equation().zone_dis().valeur());
@@ -81,46 +79,61 @@ void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
       Cerr << "Check the coordinate of the surface plane which should match mesh coordinates." << finl;
       exit();
     }
+
+  DoubleTrav S;
+  zone_PolyMAC.creer_tableau_faces(S);
+  for (int i = 0; i < num_faces.size(); i++) S(num_faces(i)) = zone_PolyMAC.face_surfaces(num_faces(i));
+  surf = mp_somme_vect(S);
 }
 
-DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::ajouter(DoubleTab& resu) const
+DoubleTab& DP_Impose_PolyMAC_Face::ajouter(DoubleTab& resu) const
 {
   const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  //const DoubleVect& volumes_entrelaces = zone_PolyMAC.volumes_entrelaces();
-  const DoubleVect& p_f = zone_PolyMAC.porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
+  const DoubleVect& pf = zone_PolyMAC.porosite_face(), &fs = zone_PolyMAC.face_surfaces();
+  const DoubleTab& vit = equation().inconnue().valeurs();
+
+  //valeurs du champ de DP
+  DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
+  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_PolyMAC.xv()(num_faces(i), j);
+  DP_.valeur().valeur_aux(xvf, DP);
+
+  double rho = equation().milieu().masse_volumique().valeur()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
 
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
-      {
-        double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : dabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        resu(f) -= 0.5 * surf * p_f(f) * K() * Ud * dabs(Ud);
-      }
+      resu(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
+
+  bilan().resize(4); //DP dDP/dQ Q Q0
+  bilan()(0) = Process::mp_max(num_faces.size() ? DP(0, 0)       : -DBL_MAX);
+  bilan()(1) = Process::mp_max(num_faces.size() ? DP(0, 1) / rho : -DBL_MAX);
+  bilan()(3) = Process::mp_max(num_faces.size() ? DP(0, 2) * rho : -DBL_MAX);
+  if (Process::me()) bilan() = 0; //pour eviter un sommage en sortie
   return resu;
 }
 
-DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::calculer(DoubleTab& resu) const
+void DP_Impose_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat) const
+{
+  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
+  const DoubleVect& pf = zone_PolyMAC.porosite_face(), &fs = zone_PolyMAC.face_surfaces();
+
+  //valeurs du champ de DP
+  DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
+  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_PolyMAC.xv()(num_faces(i), j);
+  DP_.valeur().valeur_aux(xvf, DP);
+
+  double rho = equation().milieu().masse_volumique().valeur()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
+  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
+      mat(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
+}
+
+DoubleTab& DP_Impose_PolyMAC_Face::calculer(DoubleTab& resu) const
 {
   resu = 0;
   return ajouter(resu);
 }
 
-void Perte_Charge_Singuliere_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
+void DP_Impose_PolyMAC_Face::mettre_a_jour(double temps)
 {
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& p_f = zone_PolyMAC.porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
-
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
-      {
-        double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : dabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        matrice.coef(f, f) += surf * p_f(f) * K() * p_f(f) * dabs(Ud);
-      }
-}
-
-void Perte_Charge_Singuliere_PolyMAC_Face::mettre_a_jour(double temps)
-{
-  Perte_Charge_PolyMAC_Face::mettre_a_jour(temps);
-  update_K(equation(), calculate_Q(equation(), num_faces, sgn), bilan());
+  DP_Impose::mettre_a_jour(temps);
+  bilan().resize(4); //DP dDP/dQ Q Q0
+  bilan()(2) = calculate_Q(equation(), num_faces, sgn) * (Process::me() ? 0 : 1); //pour eviter le sommage en sortie
 }
