@@ -71,7 +71,6 @@ erreur=0
 
 # on charge les check de trio
 . $TRUST_ROOT/bin/KSH/check_sources.sh
-# on charge le check du Baltik s'il existe
 marqueur=$project_build_directory/.check_sources.ok
 
 check_file=0
@@ -93,10 +92,6 @@ do
       
       echo "check sources in" $dir
       cd $dir
-      
-      # Baltik check if available:
-      baltik_check_sources=$project_directory/share/bin/check_sources.sh && [ -f $baltik_check_sources ] && . $baltik_check_sources #|| echo "Error." && exit -1
-
       # check_file.sh -update
       # check_update_P
       
