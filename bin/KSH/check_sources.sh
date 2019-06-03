@@ -84,8 +84,7 @@ check_src_in_gc()
 check_recent_src()
 {
     file=$1
-    indent_file.sh $file
-    
+	indent_file.sh $file
     # pas daccumulation de <<  sinon cela met des heures avec gcc 6.6.1 #
     #   gros_pipe=`awk -F\<\< '{if (NF>19) {print NF $0}}' $file`
     #gros_pipe=`awk -F\<\< '{if (NF>1) { te=$0;a=gsub(";","ok",te); if (((NF+old)>19)&&(a!=0))  {print ("line:",FNR, "number",NF+old, $0)}  ; if ((NF>1)&&(a==0)) { old=NF+old } else { old =0 } }}' $file`
@@ -110,7 +109,7 @@ check_recent_src()
     # Interdiction du francais dans les messages d'erreur du Kernel
     ###############################################################
     if [ "`echo $PWD | grep /TRUST/src/Kernel/`" != "" ]
-    then
+	then
 	$TRUST_ROOT/bin/KSH/forbid_french.ct $file
 	erreur $?
     fi
@@ -120,7 +119,7 @@ check_recent_src()
     #################################################
     ok=`grep include $file | grep "#" | grep "\"*\"" 2>/dev/null`
     if [ "$ok" != "" ]
-    then
+	then
 	echo "**************************************************************"
 	echo "An include file is written under the form: #include \"toto.h\""
 	echo "It should be written like: #include <toto.h>"
@@ -131,7 +130,7 @@ check_recent_src()
     ####################################################################
     # Check source header: (Baltik rep="" so not checked yet for Baltik)
     ####################################################################
-    [ "$rep" != "" ] && check_en_tete $rep/$file     
+    [ "$rep" != "" ] && check_en_tete $rep/$file         
 }
 
 check_update_P()
@@ -266,12 +265,14 @@ check_src()
 check_all()
 {
   # Used by Baltik projects
-  for file in `ls *.cpp *.h *.c 2>/dev/null` 
-  do
-     # ls 1>/dev/null
-     check_recent_src $file
-  done
-  
+  if [ 1 -eq 1 ]
+  then
+    for file in `ls *.cpp *.h *.c 2>/dev/null` 
+    do
+       # ls 1>/dev/null
+       check_recent_src $file
+    done
+  fi
   check_src_in_gc
     
   check_update_P -check `\ls *.P 2>/dev/null`
@@ -309,8 +310,8 @@ then
 	 newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
 	 new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
-      [ "$new_newer_files" = "" ] && exit 0
-      mk_Instancie
+	[ "$new_newer_files" = "" ] && exit 0
+     mk_Instancie
       #############
       # Git check #
       #############
@@ -366,7 +367,6 @@ then
       # Fin des verifications
       #######################
       cd $org
-
       if [ $err = 1 ]
       then
 	rm -f ${reffile}
