@@ -1172,18 +1172,21 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       int option = (mode == -1 ? 2 : 1); /* 2: reset file. 1: append, 0: overwrite objects */
       Cerr<<"Writing file " << nom_fic<<" (mode=" << mode << ") ..."<<finl;
       file->write(nom_fic.getString(), option);
-
-      // Append faces domain:
-      MCAuto<MEDCouplingUMesh>& FacesMesh = dom.getUFacesMesh();
-      MCAuto<MEDFileUMesh> FileUMesh(MEDFileUMesh::New());
-      FileUMesh->setMeshAtLevel(-1, FacesMesh, false);
-      FileUMesh->write(nom_fic.getString(), 1);
     }
   else
 #endif
     medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode, major_mode);
 //Cerr<<"Writing of the domain is ended"<<finl;
 
+}
+
+void EcrMED::ecrire_faces_domaine(const Nom& nom_fic,const Domaine& dom, const Zone_dis_base& zone_dis_base)
+{
+  dom.buildUFacesMesh(zone_dis_base);
+  MCAuto<MEDCouplingUMesh>& FacesMesh = dom.getUFacesMesh();
+  MCAuto<MEDFileUMesh> FileUMesh(MEDFileUMesh::New());
+  FileUMesh->setMeshAtLevel(-1, FacesMesh, false);
+  FileUMesh->write(nom_fic.getString(), 1);
 }
 
 // POUR LES CHAMPS

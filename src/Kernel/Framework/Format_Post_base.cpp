@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -171,6 +171,13 @@ int Format_Post_base::test_coherence(const int& champs, const int& stat, const d
 int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
 {
   Cerr << "Format_Post_base::ecrire_domaine(...)\n"
+       << " method not coded for " << que_suis_je() << finl;
+  return 0;
+}
+
+int Format_Post_base::ecrire_faces_domaine(const Domaine& domaine,const Zone_dis_base& zone_dis_base)
+{
+  Cerr << "Format_Post_base::ecrire_faces_domaine(...)\n"
        << " method not coded for " << que_suis_je() << finl;
   return 0;
 }

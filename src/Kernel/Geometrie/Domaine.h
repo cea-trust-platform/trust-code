@@ -39,6 +39,7 @@ class Zone_dis;
 class Domaine_dis;
 class Probleme_base;
 class Zone_VF;
+class Zone_dis_base;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -145,11 +146,9 @@ public :
   };
   MCAuto<MEDCouplingUMesh>& getUFacesMesh() const
   {
-    if (faces_mesh_==NULL)
-      buildUFacesMesh();
     return faces_mesh_;
   };
-  void buildUFacesMesh() const;
+  void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
   {
     mesh_ = m->clone(true);
@@ -171,11 +170,6 @@ protected :
   mutable MCAuto<MEDCouplingUMesh> mesh_;
   ///! MEDCoupling version of the faces domain:
   mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
-  /*
-  mutable MEDCoupling::DataArrayInt* desc;
-  mutable MEDCoupling::DataArrayInt* descIndx;
-  mutable MEDCoupling::DataArrayInt* revDesc;
-  mutable MEDCoupling::DataArrayInt* revDescIndx; */
 #endif
 };
 Declare_liste(Domaine);

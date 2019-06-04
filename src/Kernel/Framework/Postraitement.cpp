@@ -1207,6 +1207,8 @@ void Postraitement::init()
 
       if (zone_dis_pour_faces.non_nul())
         {
+          format_post->ecrire_faces_domaine(dom, zone_dis_pour_faces);
+
           const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
           const IntTab& faces_sommets = zone_vf.face_sommets();
           const int nb_sommets = dom.nb_som();
@@ -1295,6 +1297,8 @@ int Postraitement::postraiter_champs()
 
       if (zone_dis_pour_faces.non_nul())
         {
+          format_post->ecrire_faces_domaine(dom, zone_dis_pour_faces);
+
           const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
           const IntTab& faces_sommets = zone_vf.face_sommets();
           const int nb_sommets = dom.nb_som();
