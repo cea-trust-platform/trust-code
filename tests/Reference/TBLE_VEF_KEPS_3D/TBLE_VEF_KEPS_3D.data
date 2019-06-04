@@ -12,9 +12,9 @@ dilate dom_3D 1.e-3
 # BEGIN PARTITION
 Partition dom_3D
 {
-        Partition_tool metis { Nb_parts 2 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -30,31 +30,31 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit	0.
-	tmax	2000.
-	nb_pas_dt_max 1
-	dt_min	0.001
-	dt_max	1.5
-	dt_impr	0.001
-	dt_sauv	1000.
-	dt_start	dt_calc
-	facsec	10
-	facsec_max	50
-	seuil_statio	1.e-8
-	solveur implicite
-	{
-		solveur petsc bicgstab { precond diag { } seuil 1.e-7 impr }
-	}
+    tinit	0.
+    tmax	2000.
+    nb_pas_dt_max 1
+    dt_min	0.001
+    dt_max	1.5
+    dt_impr	0.001
+    dt_sauv	1000.
+    dt_start	dt_calc
+    facsec	10
+    facsec_max	50
+    seuil_statio	1.e-8
+    solveur implicite
+    {
+        solveur petsc bicgstab { precond diag { } seuil 1.e-7 impr }
+    }
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu	Champ_Fonc_Fonction 1 temperature 5.49e-4
-	rho	Champ_Uniforme 1 988.03
-	lambda	Champ_Fonc_Fonction 1 temperature 0.59
-	Cp	Champ_Uniforme 1 4180.
-	beta_th	Champ_Uniforme 1 3.9e-4
+    mu	Champ_Fonc_Fonction 1 temperature 5.49e-4
+    rho	Champ_Uniforme 1 988.03
+    lambda	Champ_Fonc_Fonction 1 temperature 0.59
+    Cp	Champ_Uniforme 1 4180.
+    beta_th	Champ_Uniforme 1 3.9e-4
 }
 
 Champ_Uniforme gravite
@@ -69,69 +69,85 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_Turbulent
-	{
-		solveur_pression Petsc Cholesky { }
-		convection { ef_stab { } }
-		diffusion { }
-		sources { boussinesq_temperature { T0 321.9 } }
-		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
-		boundary_conditions
-		{
-			IN	frontiere_ouverte_vitesse_imposee	champ_front_Uniforme 3 0. 0.0415  0.
-			OUT	frontiere_ouverte_pression_imposee	champ_front_Uniforme 1 0.
-			WALL	paroi_fixe
-			COLD	paroi_fixe
-			SYMZ0	symetrie
-			SYMZ1	symetrie
-		}
-		modele_turbulence K_Epsilon 
-		{
-			Transport_K_Epsilon 
-                  	{
-				parametre_equation parametre_implicite { resolution_explicite }
-				convection { amont }
-				diffusion { }
-				boundary_conditions
-				{
-					IN	frontiere_ouverte_K_eps_impose	Champ_Front_Uniforme 2 2e-5 1e-5
-					OUT	frontiere_ouverte K_EPS_EXT	Champ_Front_Uniforme 2 2e-5 1e-5
-					WALL	paroi
-					COLD	paroi                                             
-					SYMZ0	symetrie
-					SYMZ1	symetrie
-				}
-				initial_conditions { k_Eps Champ_Uniforme 2 2e-5 1e-5 }
-            		}
-			turbulence_paroi Paroi_TBLE { N 50 facteur 1 }
-	       }
-	}
-	Convection_Diffusion_Temperature_Turbulent
-	{
-		diffusion { }
-		convection { ef_stab { } }
-		boundary_conditions 
-		{			        	
-			IN	frontiere_ouverte_temperature_imposee	champ_front_uniforme 1 321.9
-			OUT	frontiere_ouverte T_ext			champ_front_uniforme 1 321.9
- 			WALL	paroi_adiabatique
-  			COLD	paroi_flux_impose			champ_Front_Uniforme 1 -2.13e+4
-			SYMZ0	symetrie
-			SYMZ1	symetrie
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 321.9 }	
-		modele_turbulence Prandtl
-		{
-			turbulence_paroi Paroi_TBLE_scal { N 50 facteur 1. }
-		}
-	}
-	Post_processing
-	{
-		fields dt_post 10.
-		{
-			viscosite_turbulente	elem
-		}
-	}
+    Navier_Stokes_Turbulent
+    {
+        solveur_pression Petsc Cholesky { }
+        convection { ef_stab { } }
+        diffusion { }
+        sources { boussinesq_temperature { T0 321.9 } }
+        initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
+        boundary_conditions
+        {
+            IN	frontiere_ouverte_vitesse_imposee	champ_front_Uniforme 3 0. 0.0415  0.
+            OUT	frontiere_ouverte_pression_imposee	champ_front_Uniforme 1 0.
+            WALL	paroi_fixe
+            COLD	paroi_fixe
+            SYMZ0	symetrie
+            SYMZ1	symetrie
+        }
+        modele_turbulence K_Epsilon
+        {
+            Transport_K_Epsilon
+            {
+                parametre_equation parametre_implicite { resolution_explicite }
+                convection { amont }
+                diffusion { }
+                boundary_conditions
+                {
+                    IN	frontiere_ouverte_K_eps_impose	Champ_Front_Uniforme 2 2e-5 1e-5
+                    OUT	frontiere_ouverte K_EPS_EXT	Champ_Front_Uniforme 2 2e-5 1e-5
+                    WALL	paroi
+                    COLD	paroi
+                    SYMZ0	symetrie
+                    SYMZ1	symetrie
+                }
+                initial_conditions { k_Eps Champ_Uniforme 2 2e-5 1e-5 }
+            }
+            turbulence_paroi Paroi_TBLE { N 50 facteur 1 }
+        }
+    }
+    Convection_Diffusion_Temperature_Turbulent
+    {
+        diffusion { }
+        convection { ef_stab { } }
+        boundary_conditions
+        {
+            IN	frontiere_ouverte_temperature_imposee	champ_front_uniforme 1 321.9
+            OUT	frontiere_ouverte T_ext			champ_front_uniforme 1 321.9
+            WALL	paroi_adiabatique
+            COLD	paroi_flux_impose			champ_Front_Uniforme 1 -2.13e+4
+            SYMZ0	symetrie
+            SYMZ1	symetrie
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 321.9 }
+        modele_turbulence Prandtl
+        {
+            turbulence_paroi Paroi_TBLE_scal { N 50 facteur 1. }
+        }
+    }
+    Post_processings
+    {
+        lml
+        {
+            fichier TBLE_VEF_KEPS_3D format lml
+            fields dt_post 10.
+            {
+                viscosite_turbulente	elem
+            }
+        }
+        med
+        {
+            fichier TBLE_VEF_KEPS_3D format med
+            fields dt_post 10.
+            {
+                temperature faces
+                vitesse faces
+		k faces
+		eps faces
+            }
+        }
+
+    }
 }
 Solve pb
 End
