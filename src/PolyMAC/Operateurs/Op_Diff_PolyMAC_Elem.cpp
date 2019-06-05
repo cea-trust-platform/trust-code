@@ -126,12 +126,14 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& 
       {
         // grad T : si Echange_impose_base, on ne remplit que si h > 0
         for (n = 0; n < N; n++) if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0) for (i = 0; i < 2; i++)
-              if ((e = f_e(f, i)) >= 0)
-                resu.addr()[N * (ne_tot + f) + n] -= (i ? 1 : -1) * fs(f) * inco.addr()[N * e + n];
-              else if (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2) //Echange_impose_base
-                resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n);
-              else if (ch.icl(f, 0) == 5) //Dirichlet
-                resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
+              {
+                if ((e = f_e(f, i)) >= 0)
+                  resu.addr()[N * (ne_tot + f) + n] -= (i ? 1 : -1) * fs(f) * inco.addr()[N * e + n];
+                else if (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2) //Echange_impose_base
+                  resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n);
+                else if (ch.icl(f, 0) == 5) //Dirichlet
+                  resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
+              }
 
         // m2 / nu : attention a ne pas remplir si Echange_impose_base avec h == 0
         for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (n = 0, fb = zone.m2ji(i, 0); n < N; n++)
