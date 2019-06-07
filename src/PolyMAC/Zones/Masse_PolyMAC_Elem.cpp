@@ -62,6 +62,14 @@ void Masse_PolyMAC_Elem::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zo
   la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
 }
 
+void Masse_PolyMAC_Elem::completer()
+{
+  no_diff_ = true;
+  for(int i = 0; i < equation().nombre_d_operateurs(); i++)
+    if (sub_type(Operateur_Diff_base, equation().operateur(i).l_op_base()))
+      if (!sub_type(Op_Diff_negligeable, equation().operateur(i).l_op_base())) no_diff_ = false;
+}
+
 //ne touche que la partie "elements"
 DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
 {
@@ -120,20 +128,21 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const IntTab& e_f = zone.elem_faces();
   int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
+  const bool only_ne = (matrix.nb_lignes() == ne_tot);
 
   zone.init_m2(), ch.init_cl();
   IntTab indice(0,2);
   indice.set_smart_resize(1);
   //partie superieure : diagonale (matrice de masse classique) et divergence
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0, indice.append_line(e, e); i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+  for (e = 0; e < zone.nb_elem(); e++) for (i = 0, indice.append_line(e, e); i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 && !only_ne; i++)
       for (n = 0; n < N; n++) indice.append_line(N * e + n, N * (ne_tot + f) + n);
   //partie inferieure : partie diagonale pour les flux de faces imposes par CLs
-  for (f = 0; f < zone.nb_faces(); f++)
-    if (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()) || (ch.icl(f, 0) > 2 && ch.icl(f, 0) < 5))
-      for (n = 0; n < N; n++) indice.append_line(N * (ne_tot + f) + n, N * (ne_tot + f) + n);
+  if (!only_ne) for (f = 0; f < zone.nb_faces(); f++)
+      if (no_diff_ || (ch.icl(f, 0) > 2 && ch.icl(f, 0) < 5))
+        for (n = 0; n < N; n++) indice.append_line(N * (ne_tot + f) + n, N * (ne_tot + f) + n);
 
   tableau_trier_retirer_doublons(indice);
-  Matrix_tools::allocate_morse_matrix(N * (ne_tot + nf_tot), N * (ne_tot + nf_tot), indice, matrix);
+  Matrix_tools::allocate_morse_matrix(N * (ne_tot + !only_ne * nf_tot), N * (ne_tot + !only_ne * nf_tot), indice, matrix);
 }
 DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
 {
@@ -147,6 +156,7 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
   int rCp = equation().que_suis_je() == "Conduction"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
+            || equation().que_suis_je().debute_par("Equation_") // equations F5
             || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
 
   ch.init_cl();
@@ -155,11 +165,14 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
       secmem.addr()[N * e + n] += (rCp ? rho(e, 0) * Cp(e, 0) : 1) * pe(e) * ve(e) * inco.addr()[N * e + n] / dt;
 
   //partie inferieure : valeur imposee pour les CLs de Neumann, 0
-  for (f = 0; f < zone.nb_faces(); f++)
-    if (ch.icl(f, 0) == 3) for (n = 0; n < N; n++)
-        secmem(N * (ne_tot + f) + n) = ref_cast(Neumann_paroi, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
-    else if (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()) || ch.icl(f, 0) == 4)
-      for (n = 0; n < N; n++) secmem(N * (ne_tot + f) + n) = 0;
+  if (secmem.get_md_vector( ) == zone.mdv_elems_faces)
+    {
+      for (f = 0; f < zone.nb_faces(); f++)
+        if (ch.icl(f, 0) == 3) for (n = 0; n < N; n++)
+            secmem(N * (ne_tot + f) + n) = ref_cast(Neumann_paroi, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
+        else if (no_diff_ || ch.icl(f, 0) == 4)
+          for (n = 0; n < N; n++) secmem(N * (ne_tot + f) + n) = 0;
+    }
   return secmem;
 }
 
@@ -176,6 +189,7 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
   int rCp = equation().que_suis_je() == "Conduction"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
+            || equation().que_suis_je().debute_par("Equation_") // equations F5
             || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
 
   zone.init_m2(), ch.init_cl();
@@ -187,9 +201,9 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
           mat(N * e + n, N * (ne_tot + f) + n) += fs(f) * (e == f_e(f, 0) ? 1 : -1);
     }
   //partie inferieure : 1 pour les flux imposes par CLs aux faces (si diffusion) ou pour toutes les faces (sinon)
-  for (f = 0; f < zone.nb_faces(); f++)
-    if (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()) || ch.icl(f, 0) == 3 || ch.icl(f, 0) == 4)
-      for (n = 0; n < N; n++) mat(N * (ne_tot + f) + n, N * (ne_tot + f) + n) = 1;
+  if (mat.nb_lignes() > N * ne_tot) for (f = 0; f < zone.nb_faces(); f++)
+      if (no_diff_ || ch.icl(f, 0) == 3 || ch.icl(f, 0) == 4)
+        for (n = 0; n < N; n++) mat(N * (ne_tot + f) + n, N * (ne_tot + f) + n) = 1;
 
   return matrice;
 }

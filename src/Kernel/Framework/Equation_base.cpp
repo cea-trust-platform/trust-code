@@ -163,6 +163,8 @@ void Equation_base::completer()
   for(int i=0; i<nb_op; i++)
     operateur(i).completer();
 
+  solv_masse().valeur().completer();
+
   les_sources.completer();
   schema_temps().completer();
 

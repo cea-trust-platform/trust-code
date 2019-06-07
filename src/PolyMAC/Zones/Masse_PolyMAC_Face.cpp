@@ -36,6 +36,7 @@
 #include <Op_Diff_negligeable.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Masse_PolyMAC_Face,"Masse_PolyMAC_Face",Solveur_Masse_base);
 
@@ -101,12 +102,20 @@ void Masse_PolyMAC_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zo
   la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
 }
 
+void Masse_PolyMAC_Face::completer()
+{
+  no_diff_ = true;
+  for(int i = 0; i < equation().nombre_d_operateurs(); i++)
+    if (sub_type(Operateur_Diff_base, equation().operateur(i).l_op_base()))
+      if (!sub_type(Op_Diff_negligeable, equation().operateur(i).l_op_base())) no_diff_ = false;
+}
+
 void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   int i, a, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot();
-
+  const bool only_m2 = (matrix.nb_lignes() == nf_tot);
 
   zone.init_m1(), zone.init_m2(), ch.init_ra();
   IntTab indice(0,2);
@@ -118,11 +127,11 @@ void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
 
 
   //partie vorticites : diagonale si pas de diffusion
-  for (a = 0; sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()) && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-    indice.append_line(nf_tot + a, nf_tot + a);
+  if (!only_m2) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
+      indice.append_line(nf_tot + a, nf_tot + a);
 
   tableau_trier_retirer_doublons(indice);
-  Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, nf_tot + na_tot, indice, matrix);
+  Matrix_tools::allocate_morse_matrix(nf_tot + !only_m2 * na_tot, nf_tot + !only_m2 * na_tot, indice, matrix);
 }
 
 DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
@@ -132,8 +141,11 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  DoubleVect coef(zone.porosite_face());
+  coef = 1.;
   int i, k, f, fb;
 
+  if (has_coefficient_temporel_) appliquer_coef(coef);
   zone.init_m1(), zone.init_m2(), ch.init_ra();
 
   //partie vitesses : contribution de m2 / dt
@@ -143,9 +155,9 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
     else if (ch.icl(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
     else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++)
         if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //vf calculee
-          secmem(f) += zone.m2ci(i) * pf(fb) * inco(fb) / dt;
+          secmem(f) += zone.m2ci(i) * pf(fb) * coef(f) * inco(fb) / dt;
         else if (ch.icl(fb, 0) == 3) for (k = 0; k < dimension; k++) //Dirichlet
-            secmem(f) += zone.m2ci(i) * pf(fb) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), k) * nf(fb, k) / (fs(fb) * dt);
+            secmem(f) += zone.m2ci(i) * pf(fb) * coef(f) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), k) * nf(fb, k) / (fs(fb) * dt);
 
   return secmem;
 }
@@ -155,20 +167,54 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const DoubleVect& pf = zone.porosite_face();
+  DoubleVect coef(zone.porosite_face());
+  coef = 1.;
   int i, a, f, fb, nf_tot = zone.nb_faces_tot();
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
 
+  if (has_coefficient_temporel_) appliquer_coef(coef);
   zone.init_m1(), zone.init_m2(), ch.init_ra();
 
   //partie vitesses : contribution de m2 / dt
   for (f = 0; f < zone.nb_faces(); f++) //vf imposee par CL
     if (ch.icl(f, 0) > 1) mat(f, f) = 1;
     else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //v(fb) calculee
-          mat(f, fb) += zone.m2ci(i) * pf(fb) / dt;
+          mat(f, fb) += zone.m2ci(i) * coef(f) * pf(fb) / dt;
 
   //partie vorticites : diagonale si Op_Diff_negligeable
-  for (a = 0; sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()) && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-    mat(nf_tot + a, nf_tot + a) = 1;
+  if (mat.nb_lignes() > nf_tot) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
+      mat(nf_tot + a, nf_tot + a) = 1;
 
   return matrice;
+}
+
+void Masse_PolyMAC_Face::appliquer_coef(DoubleVect& coef) const
+{
+  if (has_coefficient_temporel_)
+    {
+      REF(Champ_base) ref_coeff;
+      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
+
+      DoubleTab values;
+      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
+        {
+          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
+          ConstDoubleTab_parts val_parts(coeff.valeurs());
+          values.ref(val_parts[0]);
+
+        }
+      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
+        {
+          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
+          values.ref(coeff.valeurs());
+
+        }
+      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
+        {
+          DoubleTab nodes;
+          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
+          ref_coeff.valeur().valeur_aux(nodes,values);
+        }
+      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
+    }
 }

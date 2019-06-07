@@ -49,6 +49,7 @@ public :
 
 protected :
   double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  DoubleVect porosite_surf;
 private :
   IntTab equiv; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
 };

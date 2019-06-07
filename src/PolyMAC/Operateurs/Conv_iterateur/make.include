@@ -11,9 +11,12 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
+	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
 	-I$(TRUST_ROOT)/src/ThHyd/Quasi_Compressible\
 	-I$(TRUST_ROOT)/src/ThHyd\
+	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol
 
 Lib = $(TRUST_LIB)/libpolymac_operateurs_conv_iterateur

@@ -25,6 +25,9 @@
 
 #include <Champ_Inc_P0_base.h>
 #include <Ref_Zone_VF.h>
+#include <Zone_PolyMAC.h>
+#include <Operateur.h>
+#include <Op_Diff_PolyMAC_base.h>
 
 class Zone_PolyMAC;
 
@@ -70,6 +73,39 @@ protected :
 
 
 };
+
+inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
+{
+  /* dimensionnement du tableau de destination x si necessaire */
+  const DoubleTab& src = valeurs();
+  const Front_VF& fvf = ref_cast(Front_VF, fr);
+  int N = src.nb_dim() > 1 ? src.dimension(1): 1;
+  if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
+  const Operateur_base& op_diff = equation().operateur(0).l_op_base(); //pour acceder a la diffusivite
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, zone_dis_base());
+  const IntTab& f_e = zone.face_voisins();
+  zone.init_m2();
+
+  DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)
+  N > 1 ? dst.resize(zone.nb_faces(), N) : dst.resize(zone.nb_faces()); //aargh
+  for (int i = 0; i < fvf.nb_faces(); i++) for (int n = 0, f = fvf.num_face(i); n < N; n++)
+      dst.addr()[N * f + n] = src.addr()[N * f_e(f, 0) + n]; //on part de la valeur en l'element voisin
+
+  if (src.dimension_tot(0) > zone.zone().nb_elem_tot() && sub_type(Op_Diff_PolyMAC_base, op_diff)) //si on a les flux aux faces, on corrige avec m2
+    {
+      const DoubleTab& nu_f = ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu_faces();
+      for (int i = 0; i < fvf.nb_faces(); i++) for (int n = 0, f = fvf.num_face(i); n < N; n++) if (nu_f.addr()[N * f + n] > 1e-12)
+            for (int j = zone.m2deb(f); j < zone.m2deb(f + 1); j++)
+              dst.addr()[N * f + n] -= src.addr()[N * (zone.nb_elem_tot() + zone.m2ji(j, 0)) + n] * zone.m2ci(j) / zone.face_surfaces(f) / nu_f.addr()[N * f + n];
+    }
+
+  if (distant)
+    fr.frontiere().trace_face_distant(dst, x);
+  else
+    fr.frontiere().trace_face_local(dst, x);
+  // useless ? x.echange_espace_virtuel();
+  return x;
+}
 
 #endif
 

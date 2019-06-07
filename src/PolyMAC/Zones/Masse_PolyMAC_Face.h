@@ -49,9 +49,12 @@ public:
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
+  void appliquer_coef(DoubleVect& ) const;
+  void completer();
 
 private:
 
+  bool no_diff_;
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
 };

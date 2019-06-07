@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/19 (TRUST)  Bug fixed   : Probes on polyhedral meshes
 23/04/19 (TRUST)  New keyword : Block_Jacobi_ILU PETSc preconditioner (adapted to non symmetric linear system)
 23/04/19 (TRUST)  New keyword : Cholesky_Mumps_BLR PETSc solver (reduced memory and faster factorization)
 18/04/19 (TRUST)  New feature : Internal mesher is now able to build meshes with tanh variations in X and/or Y and/or Z directions.

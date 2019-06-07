@@ -1,7 +1,8 @@
-XX/XX/18 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 
 -------------------------------------------------------------
 Developer notes version 1.7.9_beta : Changes since version 1.7.8 :
 -------------------------------------------------------------
+XX/XX/19 (TRUST)  Fixes on PolyMAC solver for Flica5 project
+XX/XX/19 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 
 05/03/19 (TRUST)  Eight validation sheets about PolyMAC available under $TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
 05/03/19 (TRUST)  New MAC discretization (Marker And Cell method) available under $TRUST_ROOT/src/PolyMAC allowing non conform and/or hybrid meshes with polyhedral cells
 29/03/19 (TRUST)  Add a strict check of PETSc CLI options to check misspelled or obsolete one
