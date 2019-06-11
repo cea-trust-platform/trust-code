@@ -135,6 +135,19 @@ Read pb
                 viscosite_turbulente	elem
             }
         }
+        lata
+        {
+            fichier TBLE_VEF_KEPS_3D format lata
+            fields dt_post 10.
+            {
+                temperature faces
+                vitesse faces
+		k faces
+		eps faces
+		temperature elem
+		vitesse elem
+            }
+        }	
         med
         {
             fichier TBLE_VEF_KEPS_3D format med
@@ -144,9 +157,10 @@ Read pb
                 vitesse faces
 		k faces
 		eps faces
+		temperature elem
+		vitesse elem
             }
         }
-
     }
 }
 Solve pb
