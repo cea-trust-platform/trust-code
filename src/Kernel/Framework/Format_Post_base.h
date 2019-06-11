@@ -25,6 +25,7 @@
 
 #include <Domaine.h>
 #include <Champ_base.h>
+#include <Ref_Zone_dis_base.h>
 
 class DoubleTab;
 class IntTab;
@@ -132,7 +133,7 @@ public:
   virtual int finir(int& est_le_dernier_post);
 
   virtual int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post);
-  virtual int ecrire_faces_domaine(const Domaine& domaine, const Zone_dis_base& zone_dis_base);
+  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
   virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_,const Noms& noms_compo,

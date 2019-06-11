@@ -980,10 +980,16 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,VECT(IntTab)& all_f
     }
 }
 
+void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
+{
+  REF(Zone_dis_base) zone_dis_base; // Pas de zone discretisee
+  ecrire_domaine_dis(nom_fic, dom, zone_dis_base, nom_dom, mode);
+}
+
 // ecrit le domaine dom dans le fichier nom_fic
 // mode = -1 nouveau fichier
 // mode = 0 ajout du domaine dans le fichier
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_dom,int mode)
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
   const  DoubleTab& sommets=dom.les_sommets();
@@ -1092,7 +1098,10 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       file->setName(mesh->getName()); //name needed to be non empty
       file->setCoords(mesh->getCoords());
       file->setMeshAtLevel(0, mesh, false);
-      // Store the mesh
+      // Check and store the mesh
+#ifndef NDEBUG
+      mesh->checkConsistency();
+#endif
       dom.setUMesh(mesh);
 
       // Family for the cells:
@@ -1106,37 +1115,56 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       family_name += zone.le_nom();
       file->addFamily(family_name.getString(), global_family_id);
 
-      // Boundary mesh:
-      MCAuto<MEDCouplingUMesh> boundary_mesh(MEDCouplingUMesh::New(mesh->getName(), mesh_dimension - 1));
-      boundary_mesh->setCoords(mesh->getCoords());
-      int nfaces = 0;
-      int nb_type_face = familles.size();
-      for (int j = 0; j < nb_type_face; j++)
-        nfaces += familles(j).size_array();
-      boundary_mesh->allocateCells(nfaces);
-      for (int j = 0; j < nb_type_face; j++)
+      // Faces:
+      int nfaces;
+      MCAuto<DataArrayInt> renum_boundary_cell(DataArrayInt::New());
+      // If the domain is discretized, we can create a faces mesh, else only a boundary mesh
+      if (zone_dis_base.non_nul())
         {
-          int size = familles(j).size_array();
-          if (size)
+          // Faces mesh:
+          dom.buildUFacesMesh(zone_dis_base);
+          MCAuto<MEDCouplingUMesh>& faces_mesh = dom.getUFacesMesh();
+          faces_mesh->setCoords(mesh->getCoords());
+          faces_mesh->setName(mesh->getName());
+          renum_boundary_cell = faces_mesh->sortCellsInMEDFileFrmt();
+          file->setMeshAtLevel(-1, faces_mesh, false);
+          nfaces = faces_mesh->getNumberOfCells();
+        }
+      else
+        {
+          // Boundary mesh:
+          MCAuto<MEDCouplingUMesh> boundary_mesh(MEDCouplingUMesh::New(mesh->getName(), mesh_dimension - 1));
+          boundary_mesh->setCoords(mesh->getCoords());
+          nfaces = 0;
+          int nb_type_face = familles.size();
+          for (int j = 0; j < nb_type_face; j++)
+            nfaces += familles(j).size_array();
+          boundary_mesh->allocateCells(nfaces);
+          for (int j = 0; j < nb_type_face; j++)
             {
-              // Converting trio to medcoupling boundary cell:
-              int boundary_mesh_dimension = -1;
-              INTERP_KERNEL::NormalizedCellType type_boundary_cell = type_geo_trio_to_type_medcoupling(type_face[j], boundary_mesh_dimension);
-              assert(boundary_mesh_dimension == mesh_dimension - 1);
-              nverts = all_faces_bord[j].dimension(1);
-              all_faces_bord[j] -= 1; // Numerotation Fortran -> C++
-              for (int i = 0; i < size; i++)
+              int size = familles(j).size_array();
+              if (size)
                 {
-                  int nvertices = nverts;
-                  for (int k = 0; k < nverts; k++)
-                    if (all_faces_bord[j].addr()[i * nverts + k] < 0)
-                      nvertices--; // Some face type has not a constant number of vertices (eg: Polygon)
-                  boundary_mesh->insertNextCell(type_boundary_cell, nvertices, all_faces_bord[j].addr() + i * nverts);
+                  // Converting trio to medcoupling boundary cell:
+                  int boundary_mesh_dimension = -1;
+                  INTERP_KERNEL::NormalizedCellType type_boundary_cell = type_geo_trio_to_type_medcoupling(type_face[j],
+                                                                                                           boundary_mesh_dimension);
+                  assert(boundary_mesh_dimension == mesh_dimension - 1);
+                  nverts = all_faces_bord[j].dimension(1);
+                  all_faces_bord[j] -= 1; // Numerotation Fortran -> C++
+                  for (int i = 0; i < size; i++)
+                    {
+                      int nvertices = nverts;
+                      for (int k = 0; k < nverts; k++)
+                        if (all_faces_bord[j].addr()[i * nverts + k] < 0)
+                          nvertices--; // Some face type has not a constant number of vertices (eg: Polygon)
+                      boundary_mesh->insertNextCell(type_boundary_cell, nvertices, all_faces_bord[j].addr() + i * nverts);
+                    }
                 }
             }
+          renum_boundary_cell = boundary_mesh->sortCellsInMEDFileFrmt();
+          file->setMeshAtLevel(-1, boundary_mesh, false);
         }
-      MCAuto<DataArrayInt> renum_boundary_cell(boundary_mesh->sortCellsInMEDFileFrmt());
-      file->setMeshAtLevel(-1, boundary_mesh, false);
 
       bool use_group_instead_of_family = false;
       if (use_group_instead_of_family)
@@ -1148,6 +1176,7 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
           // Family (with possible renum of the boundary cells)
           MCAuto<DataArrayInt> family_array(DataArrayInt::New());
           family_array->alloc(nfaces);
+          int nb_type_face = familles.size();
           int face = 0;
           for (int j = 0; j < nb_type_face; j++)
             for (int i = 0; i < familles[j].size_array(); i++)
@@ -1156,8 +1185,10 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
                 family_array->setIJ(renum_boundary_cell->getIJ(face, 0), 0, family_id);
                 face++;
               }
+          // Faces internes (faimily_id=0):
+          for (; face<nfaces; face++)
+            family_array->setIJ(renum_boundary_cell->getIJ(face, 0), 0, 0);
           file->setFamilyFieldArr(-1, family_array);
-
           // Naming family on boundaries:
           for (int i = 0; i < noms_bords.size(); i++)
             {
@@ -1167,6 +1198,12 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
               grps[0] = noms_bords[i].getString();
               file->setGroupsOnFamily(noms_bords[i].getString(), grps);
             }
+          // Faces internes:
+          std::string name = "faces_internes";
+          file->addFamily(name, 0);
+          std::vector<std::string> grps(1);
+          grps[0] = name;
+          file->setGroupsOnFamily(name, grps);
         }
       // Write:
       int option = (mode == -1 ? 2 : 1); /* 2: reset file. 1: append, 0: overwrite objects */
@@ -1178,15 +1215,6 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
     medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode, major_mode);
 //Cerr<<"Writing of the domain is ended"<<finl;
 
-}
-
-void EcrMED::ecrire_faces_domaine(const Nom& nom_fic,const Domaine& dom, const Zone_dis_base& zone_dis_base)
-{
-  dom.buildUFacesMesh(zone_dis_base);
-  MCAuto<MEDCouplingUMesh>& FacesMesh = dom.getUFacesMesh();
-  MCAuto<MEDFileUMesh> FileUMesh(MEDFileUMesh::New());
-  FileUMesh->setMeshAtLevel(-1, FacesMesh, false);
-  FileUMesh->write(nom_fic.getString(), 1);
 }
 
 // POUR LES CHAMPS

@@ -203,10 +203,15 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int& est_le_pr
 
 }
 
+int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+{
+  const REF(Zone_dis_base) zone_dis_base;
+  return ecrire_domaine_dis(domaine, zone_dis_base, est_le_premier_post);
+}
 
 // Description:
 //  voir Format_Post_base::ecrire_domaine
-int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post)
 {
   Nom nom_fich(med_basename_);
   nom_fich +=".";
@@ -219,23 +224,8 @@ int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_pre
   nom_fic_base += format;
   Nom nom_fic=nom_fic_base.nom_me(Process::me());
 
-  ecrire_domaine_med(domaine,nom_fic,est_le_premier_post,nom_fich);
+  ecrire_domaine_med(domaine,zone_dis_base,nom_fic,est_le_premier_post,nom_fich);
 
-  return 1; // ok tout va bien
-}
-
-// Description:
-//  voir Format_Post_base::ecrire_domaine
-int Format_Post_Med::ecrire_faces_domaine(const Domaine& domaine, const Zone_dis_base& zone_dis_base)
-{
-  Nom format="med";
-  Nom nom_fic_base(med_basename_);
-  nom_fic_base += ".";
-  nom_fic_base += format;
-  Nom nom_fic=nom_fic_base.nom_me(Process::me());
-
-  EcrMED ecr_med(getEcrMED());
-  ecr_med.ecrire_faces_domaine(nom_fic,domaine,zone_dis_base);
   return 1; // ok tout va bien
 }
 
@@ -437,7 +427,7 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
   return 1;
 }
 
-int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich)
+int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich)
 {
 
   //Cerr<<"We want to postprocess with MED "<<est_le_premier_post<<finl;
@@ -456,7 +446,7 @@ int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fi
   s<<"dimension: "<<dim<<finl;
   s<<"domaine: "<<domaine.le_nom()<<finl;
   s<<"nb_proc: "<<Process::nproc()<<finl;
-  ecr_med.ecrire_domaine(nom_fic,domaine,domaine.le_nom(),mode);
+  ecr_med.ecrire_domaine_dis(nom_fic,domaine,zone_dis_base,domaine.le_nom(),mode);
   // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<"end"<<finl;
 
   s.flush();

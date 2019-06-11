@@ -1203,12 +1203,10 @@ void Postraitement::init()
   // else we write it at each postraiter_champs() call
   if(!dom.deformable())
     {
-      format_post->ecrire_domaine(dom,est_le_premier_postraitement_pour_nom_fich_);
+      format_post->ecrire_domaine_dis(dom,zone_dis_pour_faces,est_le_premier_postraitement_pour_nom_fich_);
       // zone_dis_pour_faces non_nul() si on demande un postraitement d'un champ aux faces:
       if (zone_dis_pour_faces.non_nul())
         {
-          format_post->ecrire_faces_domaine(dom, zone_dis_pour_faces);
-
           const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
           const IntTab& faces_sommets = zone_vf.face_sommets();
           const int nb_sommets = dom.nb_som();
@@ -1293,12 +1291,10 @@ int Postraitement::postraiter_champs()
   // We write the time dependant domain here
   if (dom.deformable())
     {
-      format_post->ecrire_domaine(dom,est_le_premier_postraitement_pour_nom_fich_);
+      format_post->ecrire_domaine_dis(dom,zone_dis_pour_faces,est_le_premier_postraitement_pour_nom_fich_);
 
       if (zone_dis_pour_faces.non_nul())
         {
-          format_post->ecrire_faces_domaine(dom, zone_dis_pour_faces);
-
           const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
           const IntTab& faces_sommets = zone_vf.face_sommets();
           const int nb_sommets = dom.nb_som();

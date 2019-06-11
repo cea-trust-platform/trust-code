@@ -546,17 +546,6 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
   DataArrayInt *revDesc = DataArrayInt::New();
   DataArrayInt *revDescIndx = DataArrayInt::New();
   faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
-  // Name the mesh
-  /* FACES_dom
-  Nom tmp("FACES_");
-  tmp+=le_nom(); */
-  /* dom_faces */
-  Nom tmp(le_nom());
-  tmp+="_faces";
-  faces_mesh_->setName(tmp.getString());
-  // Sort the mesh for MED file:
-  faces_mesh_->sortCellsInMEDFileFrmt();
-
   // Renumber faces to have the same numbering than Domaine_dis
   std::size_t size = faces_mesh_->getNumberOfCells();
   IntVect renum(size);
