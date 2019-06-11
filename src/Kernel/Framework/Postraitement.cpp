@@ -1204,7 +1204,7 @@ void Postraitement::init()
   if(!dom.deformable())
     {
       format_post->ecrire_domaine(dom,est_le_premier_postraitement_pour_nom_fich_);
-
+      // zone_dis_pour_faces non_nul() si on demande un postraitement d'un champ aux faces:
       if (zone_dis_pour_faces.non_nul())
         {
           format_post->ecrire_faces_domaine(dom, zone_dis_pour_faces);

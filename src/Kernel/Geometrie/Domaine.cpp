@@ -547,7 +547,13 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
   DataArrayInt *revDescIndx = DataArrayInt::New();
   faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
   // Name the mesh
-  faces_mesh_->setName(Nom(le_nom() + "_faces").getString());
+  /* FACES_dom
+  Nom tmp("FACES_");
+  tmp+=le_nom(); */
+  /* dom_faces */
+  Nom tmp(le_nom());
+  tmp+="_faces";
+  faces_mesh_->setName(tmp.getString());
   // Sort the mesh for MED file:
   faces_mesh_->sortCellsInMEDFileFrmt();
 
@@ -620,4 +626,7 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
 #endif
   // Apply the renumbering:
   faces_mesh_->renumberCells(renum.addr(), check);
+#ifndef NDEBUG
+  faces_mesh_->checkConsistency();
+#endif
 }

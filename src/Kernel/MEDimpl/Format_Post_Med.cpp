@@ -161,6 +161,12 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
       nom_post.prefix("_ELEM_");
       nom_post.prefix("_elem_");
     }
+  else if (loc_post=="FACES")
+    {
+      nom_post.prefix(dom.le_nom());
+      nom_post.prefix("_FACES_");
+      nom_post.prefix("_faces_");
+    }
   nom_post+="_";
   nom_post+=nom2;
 
@@ -499,22 +505,29 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
       nom_post = noms_compo[ncomp];
     }
   nom_post.prefix(dom.le_nom());
+  Nom nom_dom="";
   if (loc_post == "SOM")
     {
       nom_post.prefix("_som_");
       nom_post.prefix("_SOM_");
+      nom_dom = dom.le_nom();
     }
   else if (loc_post == "ELEM")
     {
       nom_post.prefix("_ELEM_");
       nom_post.prefix("_elem_");
+      nom_dom = dom.le_nom();
+    }
+  else if (loc_post == "FACES")
+    {
+      nom_post.prefix("_FACES_");
+      nom_post.prefix("_faces_");
+      nom_dom = dom.getUFacesMesh()->getName().c_str();
     }
   if (je_suis_maitre())
-    os << "champ: " << nom_post << " " << dom.le_nom() << " " << loc_post << finl;
+    os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
   os.syncfile();
   EcrMED ecr_med(getEcrMED());
-  Nom nom_dom = dom.le_nom();
-  Nom nom_dom_inc = dom.le_nom();
   Nom type_elem = dom.zone(0).type_elem()->que_suis_je();;
 
   if (loc_post == "SOM")
@@ -523,12 +536,6 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
     ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
   else if (loc_post == "FACES")
     ecr_med.ecrire_champ("CHAMPFACES", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
-  else if (loc_post == "FACE")
-    {
-      if (nom_dom_inc != nom_dom)
-        Cerr << "We do not know to postprocess " << id_du_champ
-             << " with the keyword " << loc_post << " on different domains " << finl;
-    }
   else
     {
       Cerr << "We do not know to postprocess " << id_du_champ
