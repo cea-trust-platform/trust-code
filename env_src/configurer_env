@@ -893,7 +893,7 @@ then
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
 
-    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema"
+    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema swig"
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
@@ -955,17 +955,15 @@ fi
 ######################################################################
 # On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
 # Update to 3.0.1 to fix recursive cmake
+# Update to 4.0 and include in conda
 ######################################################################
-e="`cherche_file cmake cmake`";eval $e
-CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=352?1:0)}'`
-if [ "$CMAKE_VERSION_OK" != 1 ]
+echo "Installing cmake in conda ... "
+$TRUST_ROOT/exec/python/bin/conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels cmake -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
+# If cmake from conda has not been correctly installed, we exit with an error
+if [ $? != 0 ]
 then
-  if [ $TRUST_ARCH = cygwin ]
-  then
-   echo "cmake not ok  but on cygwin we dont try to compile cmake"
-  else
-   make_ $TRUST_ROOT/Outils/cmake cmake $TRUST_ROOT/exec/cmake.log
- fi
+   echo "Error while installing 'cmake' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+   Display_Missing_packages && exit -1
 fi
 
 ##############################
