@@ -88,7 +88,7 @@ void Partitionneur_Union::construire_partition(ArrOfInt& elem_part, int& nb_part
       //... et on remplit un morceau de elem_part avec
       if (dec_ssz.size_array() != ssz.nb_elem_tot())
         {
-          Cerr << "Partitionneur_Union : nombr d'elements incoherent pour la sous-zone " << kv.first.c_str() << finl;
+          Cerr << "Partitionneur_Union : incoherent element number for sub-zone " << kv.first.c_str() << finl;
           Process::exit();
         }
       for (int i = 0; i < ssz.nb_elem_tot(); i++)
