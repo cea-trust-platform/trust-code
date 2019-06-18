@@ -879,32 +879,54 @@ rm -f $TRUST_ROOT/exec/ccache/g??
 #########################################################################
 unset PYTHONPATH # We get a warning from Miniconda if we do not unset this variable
 
-PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*100+a[3];print (v==2716?1:0)}'`
-if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+# check the previous install of conda if it exists
+if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
+then
+   # check of python version
+   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*100+a[3];print (v==2716?1:0)}'`
+   PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
+   # check of cmake and swig
+   INSTALL_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/cmake -version 1>/dev/null 2>&1; echo $?`" != 0 ] && INSTALL_OK=0
+   [ "`$TRUST_ROOT/exec/python/bin/swig -version 1>/dev/null 2>&1; echo $?`" != 0 ] && INSTALL_OK=0
+
+   if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
+   then
+      INSTALL_CONDA=1
+   else
+      echo "# The current install of python, python packages, swig and cmake from miniconda seems OK... we skip it"
+   fi
+else
+   INSTALL_CONDA=1
+fi
+
+if [ "$INSTALL_CONDA" = 1 ] 
 then
     # If a previous installation folder exists, we remove it.
     [ -d $TRUST_ROOT/exec/python ] && rm -r $TRUST_ROOT/exec/python
-    # The we install miniconda and the different packages
- 
-    echo "Installing Miniconda2-4.6.14-Linux-x86_64.sh under $TRUST_ROOT/exec/python"
+
+    # Then we install miniconda and the different packages
+    echo "Trying to install Miniconda2-4.6.14-Linux-x86_64.sh"
     $TRUST_ROOT/externalpackages/Miniconda/./Miniconda2-4.6.14-Linux-x86_64.sh -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
     [ $? != 0 ] && echo "Error while installing Miniconda2-4.6.14-Linux-x86_64.sh. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
 
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
 
-    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema swig"
+    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema swig cmake"
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
       ./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels $pkg -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
       [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
+    # Cmake of lata2dx seeks for swig in this order: swig3.0, swig2.0 then swig. 
+    # In the case where no swig is installed on machine, swig from conda will be used.
+    # However, if swig3.0 or 2.0 is already installed on machine, cmake will detect it first and use it in the compilation step.
+    # So, we create a link from swig to swig3.0 in order to take into account swig from conda (this happenned on ubuntu which has swig installed using sudo apt-get install swig)
+    ln -sf swig swig3.0
     cd -
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
-else
-    echo "It seems that the current install of python from miniconda is OK... we skip it"
 fi
 # export PATH
 PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
@@ -957,14 +979,14 @@ fi
 # Update to 3.0.1 to fix recursive cmake
 # Update to 4.0 and include in conda
 ######################################################################
-echo "Installing cmake in conda ... "
-$TRUST_ROOT/exec/python/bin/conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels cmake -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
-# If cmake from conda has not been correctly installed, we exit with an error
-if [ $? != 0 ]
-then
-   echo "Error while installing 'cmake' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
-   Display_Missing_packages && exit -1
-fi
+#echo "Installing cmake in conda ... "
+#$TRUST_ROOT/exec/python/bin/conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels cmake -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
+## If cmake from conda has not been correctly installed, we exit with an error
+#if [ $? != 0 ]
+#then
+#   echo "Error while installing 'cmake' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+#   Display_Missing_packages && exit -1
+#fi
 
 ##############################
 # Installation de makedepend #
