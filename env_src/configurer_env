@@ -923,8 +923,6 @@ then
       ./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels $pkg -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
       [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
-    # Cmake of lata2dx seeks for swig in this order: swig3.0, swig2.0 then swig. 
-    ln -sf swig swig3.0
     cd -
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
