@@ -1,0 +1,53 @@
+# Example usage of Partitionneur Sous_Domaine and Union #
+# PARALLEL NOT #
+
+dimension 2
+Pb_Conduction pb
+
+Domaine domaine_glob
+Domaine domaine1 
+Domaine domaine2
+
+Lire_med family_names_from_group_names domaine_glob domaine_glob domaine_glob.med
+Read_file domaine_glob_ssz.geo ;
+Create_domain_from_sous_zone
+{
+	domaine_final domaine1
+	par_sous_zone sous_zone_dom1
+	domaine_init domaine_glob
+}
+Create_domain_from_sous_zone
+{
+	domaine_final domaine2
+	par_sous_zone sous_zone_dom2
+	domaine_init domaine_glob
+}
+
+Decouper domaine_glob
+{
+    partitionneur tranche { tranches 1 3 }
+    ecrire_decoupage domaine_glob.txt
+    ecrire_lata domaine_glob_decoup.lata
+}
+Decouper domaine1
+{
+    partitionneur sous_domaine
+    { 
+         fichier     domaine_glob.txt
+         fichier_ssz domaine_glob_sous_zone_dom1.file
+    }
+    Nom_Zones domaine1
+    ecrire_lata domaine1_decoup.lata
+}
+Decouper domaine2
+{
+    partitionneur sous_domaine
+    { 
+         fichier     domaine_glob.txt
+         fichier_ssz domaine_glob_sous_zone_dom2.file
+    }
+    Nom_Zones domaine2
+    ecrire_lata domaine2_decoup.lata
+}
+
+End
