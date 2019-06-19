@@ -75,6 +75,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
 
+  zone.init_m2();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);

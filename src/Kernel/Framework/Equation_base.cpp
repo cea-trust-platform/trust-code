@@ -2091,39 +2091,55 @@ void Equation_base::reculer(int i)
 
 void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 {
-  if (matrice_init) //memoization
+  // [ABN]: dimensioning of the implicit matrix: it can receive input from:
+  //  - the operators
+  //  - the mass solver
+  //  - the sources
+  // We proceed in this order, with the idea that operators should take most of the slots in the Morse
+  // structure. Having the mass solver first would lead (in VDF, EF and VEF) to diagonal slots
+  // being reserved before sub-diagonal terms. In the Morse structure coefficients would then
+  // not be ordered by increasing columns number. This is not desirable, notably for EF which seem to
+  // be sensitive to this ordering (although they should not ....). Some Baltiks too (FLICA5 - thermic part)
+  // rely on this.
+  if (matrice_init) // memoization
     {
       matrice = matrice_stockee;
       matrice.get_set_coeff().resize(matrice.get_tab2().size());
       return;
     }
-  int opp=0;
-  solv_masse().valeur().dimensionner(matrice);
-  if (matrice.nb_colonnes()==0)
+
+  bool isInit = false;
+  // Operators first (they're likely to take most of the slots in the Morse structure)
+  for(int opp=0; opp < nombre_d_operateurs(); opp++)
     {
-      // on avait que des op negligeables
-      // on dimensionne par la diagonale
-      int nb_comp=1;
-      if (inconnue().valeurs().nb_dim()>1)
-        nb_comp=inconnue().valeurs().dimension(1);
-      int nb_case_tot=inconnue().valeurs().dimension_tot(0)*nb_comp;
-      IntTab indice(nb_case_tot,2);
-      for( int c=0; c<nb_case_tot; c++) indice(c,0)=indice(c,1)=c;
-      if (indice.size()!=0) matrice.dimensionner(indice);
+      if (!isInit)
+        operateur(opp).l_op_base().dimensionner(matrice);
+      else
+        {
+          Matrice_Morse mat2;
+          operateur(opp).l_op_base().dimensionner(mat2);
+          if (mat2.nb_colonnes())
+            matrice += mat2;  // this only works if the matrix has been given its overall size first
+        }
+      isInit = isInit || (matrice.nb_colonnes() != 0);
     }
-  int nb_op=nombre_d_operateurs();
-  // GF avant on testait si on avait qu'une colonne car les matrices etaient dimensionnes par defaut a une colonne
-  while (opp<nb_op)
+
+  //  ... then the mass solver ...
+  if (!isInit)
+    solv_masse().valeur().dimensionner(matrice);
+  else
     {
       Matrice_Morse mat2;
-      operateur(opp).l_op_base().dimensionner(mat2);
-      if (mat2.nb_colonnes()) matrice += mat2;
-      opp++;
+      solv_masse().valeur().dimensionner(mat2);
+      matrice += mat2; // this only works if the matrix has been given its overall size first
     }
-  les_sources.dimensionner(matrice);
-  matrice.get_set_coeff() = 0;
 
-  if (probleme().discretisation().que_suis_je()=="PolyMAC_discretisation")
+  // and finally sources (mass solver has surely done something already so no need for "isInit" test)
+  les_sources.dimensionner(matrice);
+
+  matrice.get_set_coeff() = 0.0;  // just to be sure ...
+
+  if (probleme().discretisation().que_suis_je().debute_par("PolyMAC"))
     {
       matrice_stockee = matrice; //memoization
       matrice_stockee.get_set_coeff().resize(0);
@@ -2135,7 +2151,6 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
           matrice_map[i][matrice.get_tab2()(j) - 1] = j + 1;
     }
 }
-
 
 // ajoute les contributions des operateurs et des sources
 void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)

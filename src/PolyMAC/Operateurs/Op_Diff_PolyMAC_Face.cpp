@@ -72,6 +72,8 @@ void Op_Diff_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   int i, j, a, e, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot();
 
+  zone.init_m2();
+
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
   //partie vitesses : nu grad(div) - nu m2 Rf
