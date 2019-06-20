@@ -890,7 +890,7 @@ then
    # list of packages already-installed/to-install in conda
    pkgs="pyqt nomkl numpy fontconfig matplotlib jsonschema swig cmake"
    for pkg in $pkgs ; do
-     [ "`conda list | grep $pkg`" = "" ] && INSTALL_OK=0
+     [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && INSTALL_OK=0
    done
 
    if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]

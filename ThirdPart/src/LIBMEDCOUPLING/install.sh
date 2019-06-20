@@ -72,9 +72,10 @@ cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=$MED_COUPLING_PYTHON
 # The current CMake of MEDCoupling is badly written: dependencies on .pyc generation do not properly capture SWIG generated Python modules.
 # So we need to do make twice ...
 make -j $TRUST_NB_PROCS
-make -j $TRUST_NB_PROCS install
 # si make install fonctionne coorectement ce fichier sera ecrase
 # echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
+make install
+make install
 status=$?
 
 #ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
