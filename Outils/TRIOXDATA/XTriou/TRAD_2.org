@@ -36,7 +36,7 @@ champs_a_post listobj nul -1 champ_a_post 0 Fields to be post-processed.
 champs_posts objet_lecture nul 0 Field\'s write mode.
   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-  attr period chaine period 0 Value of the period.
+  attr period floattant period 0 Value of the period.
   attr champs|fields champs_a_post champs 0 Post-processed fields.
 stat_post_deriv objet_lecture stat_post_deriv 0 not_set
 stat_post_t_deb stat_post_deriv t_deb 0 not_set
@@ -56,7 +56,7 @@ stat_post_correlation stat_post_deriv correlation 0 not_set
 list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
 stats_posts objet_lecture nul 0 Field\'s write mode. \input{{statistiques}}
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-  attr period chaine period 0 Value of the period.
+  attr period floattant period 0 Value of the period.
   attr champs|fields list_stat_post champs 0 Post-processed fields.
 stats_serie_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
