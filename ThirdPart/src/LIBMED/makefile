@@ -36,4 +36,4 @@ clean :
 	@rm -rf build
 	@rm -rf $(TRUST_MED_ROOT)/../install
 	@rm -rf $(TRUST_MED_ROOT)/../MED
-	@rm -f archives scripts/generated/*.sh
+	@rm -rf archives scripts/generated/*.sh

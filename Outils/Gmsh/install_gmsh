@@ -123,7 +123,20 @@ $TRUST_ROOT/exec/python/bin/cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENAB
 # Hack Gmsh pour eviter le message penible: 
 # undefined reference to symbol '_gfortran_concat_string@@GFORTRAN_1.0'
 # Voir http://stackoverflow.com/questions/13247107/cmake-dso-linking
-echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_link_libraries(gmsh \${LINK_LIBRARIES} gfortran)?g\nw" | ed ../CMakeLists.txt 1>/dev/null 2>&1
+EXTRA_LINK_LIB=""
+font_file=`locate -r "/usr/.*/libfontconfig.so$"`
+if [ -f  "$font_file" ]; then
+  ldd -r "$font_file" | grep -q uuid && need_uuid=1
+  ldd -r "$font_file" | grep -q freetype && need_freetype=1
+  if [ $need_uuid -eq 1 ]; then
+    EXTRA_LINK_LIB="$EXTRA_LINK_LIB uuid "
+  fi
+  if [ $need_freetype -eq 1 ]; then
+    EXTRA_LINK_LIB="$EXTRA_LINK_LIB freetype "
+  fi
+fi
+
+echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_link_libraries(gmsh \${LINK_LIBRARIES} gfortran $EXTRA_LINK_LIB )?g\nw" | ed ../CMakeLists.txt 1>/dev/null 2>&1
 [ $? != 0 ] && echo "Fail to change CMakeLists.txt. Contact TRUST support." && exit -1
 
 
