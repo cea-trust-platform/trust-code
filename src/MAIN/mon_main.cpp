@@ -208,6 +208,24 @@ void mon_main::finalize()
             // Rajouter ici des options Trust (-log?):
             if (OptionLeft != "no_verify" &&
                 OptionLeft != "log_view" &&
+                OptionLeft != "journal=0" &&
+                OptionLeft != "journal=1" &&
+                OptionLeft != "journal=2" &&
+                OptionLeft != "journal=3" &&
+                OptionLeft != "journal=4" &&
+                OptionLeft != "journal=5" &&
+                OptionLeft != "journal=6" &&
+                OptionLeft != "journal=7" &&
+                OptionLeft != "journal=8" &&
+                OptionLeft != "journal=9" &&
+                OptionLeft != "petsc=0" &&
+                OptionLeft != "check_enabled=0" &&
+                OptionLeft != "check_enabled=1" &&
+                OptionLeft != "mpi" &&
+                OptionLeft != "help" &&
+                OptionLeft != "journal_master" &&
+                OptionLeft != "disable_ieee" &&
+                OptionLeft != "disable_stop" &&
                 OptionLeft != "options_left" &&
                 OptionLeft != "options_view")
               {
