@@ -156,12 +156,7 @@ public:
   virtual DoubleTab&  valeur_aux_sommets(const Domaine&, DoubleTab&) const;
   virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                                DoubleVect&, int) const;
-  virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const
-  {
-    Cerr<<"valeur_aux_faces(DoubleTab& result) must be overloaded by "<<que_suis_je()<<finl;
-    exit();
-    return result;
-  }
+  virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
   int calculer_valeurs_som_post(DoubleTab& valeurs,int nbsom,Nom& nom_post,const Domaine& dom) const ;
   int calculer_valeurs_som_compo_post(DoubleTab& valeurs,int ncomp,int nbsom,Nom& nom_post,const Domaine& dom,int appliquer_cl=0) const ;
   int calculer_valeurs_elem_post(DoubleTab& valeurs,int nbelem,Nom& nom_post,const Domaine& dom) const ;

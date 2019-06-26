@@ -441,6 +441,13 @@ DoubleVect& Champ_base::valeur_aux_sommets_compo(const Domaine& dom,
 }
 
 // Description:
+// renvoie la valeur du champ aux faces
+DoubleTab& Champ_base::valeur_aux_faces(DoubleTab& result) const
+{
+  return valeur_aux(ref_cast(Zone_VF, zone_dis_base()).xv(), result);
+}
+
+// Description:
 // mettre_a_jour de la classe de base Champ_base :ne fait rien !
 void Champ_base::mettre_a_jour(double)
 {

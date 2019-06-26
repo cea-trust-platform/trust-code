@@ -137,7 +137,7 @@ int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
       for (int s=0; s<faces.dimension(1); s++)
         {
           int som=faces(f,s);
-          if (marqueur(som)==-1)
+          if (som >= 0 && marqueur(som)==-1)
             {
 
               marqueur(som)=ntot;
@@ -155,7 +155,7 @@ int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
   // on refait les faces
   for (int f=0; f<faces.dimension(0); f++)
     for (int s=0; s<faces.dimension(1); s++)
-      faces(f,s)=marqueur(faces_org(f,s));
+      faces(f,s) = faces_org(f, s) >= 0 ? marqueur(faces_org(f,s)) : -1;
 
 
 

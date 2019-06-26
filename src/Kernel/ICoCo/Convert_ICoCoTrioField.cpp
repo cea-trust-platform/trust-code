@@ -76,7 +76,7 @@ ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
       if (type_elem == "RECTANGLE_2D")
         type_elem = "RECTANGLE";
     }
-  if ((type_elem == "RECTANGLE") || (type_elem == "QUADRANGLE") || (type_elem == "TRIANGLE") || (type_elem == "TRIANGLE_3D") || (type_elem == "QUADRANGLE_3D"))
+  if ((type_elem == "RECTANGLE") || (type_elem == "QUADRANGLE") || (type_elem == "TRIANGLE") || (type_elem == "TRIANGLE_3D") || (type_elem == "QUADRANGLE_3D") || (type_elem == "POLYGONE") || (type_elem == "POLYGONE_3D"))
     afield._mesh_dim=2;
   else if ((type_elem == "HEXAEDRE") || (type_elem == "HEXAEDRE_VEF") || (type_elem == "POLYEDRE") || (type_elem == "PRISME") || (type_elem == "TETRAEDRE"))
     afield._mesh_dim=3;
@@ -95,12 +95,15 @@ ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
   if (loc_faces || type_elem != "POLYEDRE") //maillage de faces -> connectivity = face_sommets
     {
       const IntTab& conn = loc_faces ? zvf.face_sommets() : zvf.zone().les_elems();
-      afield._nodes_per_elem = conn.dimension(1);
-      affecte_int_avec_inttab(&afield._connectivity, conn);
+      //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
+      afield._nodes_per_elem = max(conn.dimension(1), type_elem == "POLYGONE" || type_elem == "POLYGONE_3D"  || type_elem == "POLYEDRE"  ? 5 : 0);
+      afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+      for (int i = 0; i < afield._nb_elems; i++) for (int j = 0; j < afield._nodes_per_elem; j++)
+          afield._connectivity[afield._nodes_per_elem * i + j] = j < conn.dimension(1) ? conn(i, j) : -1;
     }
   else //maillage de polyedres -> connectivite au format MEDCoupling, a faire a la main
     {
-      afield._nodes_per_elem = zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1); //un -1 apres chaque face
+      afield._nodes_per_elem = max(zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1), 9); //un -1 apres chaque face : au moins 9 pour eviter un papillonage
       int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
       for (int e = 0, f, s, i, j; e < afield._nb_elems; e++)
         {
@@ -246,16 +249,16 @@ MEDField build_medfield(TrioField& triofield)
   //
 
 
-  // std::vector<int> cells;
-  // if ((mesh->getSpaceDimension() == 2 || mesh->getSpaceDimension() == 3) && mesh->getMeshDimension() == 2)
-  //   mesh->checkButterflyCells(cells);
-  // if (!cells.empty())
-  //   {
-  //     Cerr<<" cells are butterflyed "<<cells[0]<<finl;
-  //     PE_Groups::groupe_TRUST().abort();
-  //     Process::abort();
-  //     Process::exit();
-  //   }
+  std::vector<int> cells;
+  if ((mesh->getSpaceDimension() == 2 || mesh->getSpaceDimension() == 3) && mesh->getMeshDimension() == 2)
+    mesh->checkButterflyCells(cells);
+  if (!cells.empty())
+    {
+      Cerr<<" cells are butterflyed "<<cells[0]<<finl;
+      PE_Groups::groupe_TRUST().abort();
+      Process::abort();
+      Process::exit();
+    }
   //field on the sending end
   int nb_case=triofield.nb_values();
   if (triofield._type==0)

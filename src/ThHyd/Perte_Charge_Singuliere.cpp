@@ -142,7 +142,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                 Process::exit();
               }
       */
-      if (!zone_dis.que_suis_je().debute_par("Zone_VEF"))
+      if (zone_dis.que_suis_je().debute_par("Zone_VDF"))
         {
           Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
           Cerr << "The keyword " << method << " specified for plan definition is only possible in VEF discretization !" << finl;
@@ -234,9 +234,8 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
             {
               int elem = elem_list_vol(ind_elem);
               // Loop on faces of each element on the volume domain
-              for (int j=0; j<nfe; j++)
+              for (int j=0, numfa; j < nfe && (numfa = elem_faces(elem,j)) >= 0; j++)
                 {
-                  int numfa = elem_faces(elem,j);
                   // Test if the same face between surface domain and volum domain
                   int coincide=0;
                   // Loop on vertex of each face of each element on the volume domain

@@ -14,66 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// File:        Ch_input_uniforme.h
+// Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_P0_PolyMAC_included
-#define Champ_P0_PolyMAC_included
 
-#include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VF.h>
+#ifndef Ch_input_uniforme_included
+#define Ch_input_uniforme_included
 
-class Zone_PolyMAC;
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_PolyMAC
-// .DESCRIPTION : class Champ_P0_PolyMAC
+#include <Champ_Uniforme.h>
+#include <Champ_Input_Proto.h>
+
+//////////////////////////////////////////////////////////////////////////////////
 //
-// Champ correspondant a une inconnue scalaire (type temperature ou pression)
-// Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
+// .DESCRIPTION
+//     class Ch_input_uniforme
+//
+//     Cette classe represente un champ uniforme accessible par setInputField
+//
+// .SECTION voir aussi
+//   Champ_Input_Proto
+/////////////////////////////////////////////////////////////////////////////////
 
-class Champ_P0_PolyMAC : public Champ_Inc_P0_base
+class Ch_input_uniforme : public Champ_Uniforme, public Champ_Input_Proto
 {
-  Declare_instanciable(Champ_P0_PolyMAC);
+  Declare_instanciable(Ch_input_uniforme);
 
-public :
+public:
 
-  const Zone_PolyMAC&        zone_PolyMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  Champ_base& affecter_(const Champ_base& ch);
-  int                       imprime(Sortie& , int ) const;
+  virtual Champ_base& affecter_(const Champ_base&)
+  {
+    return *this;
+  }
+  virtual void getTemplate(TrioField& afield) const;
+  virtual void setValue(const TrioField& afield);
 
-  virtual int fixer_nb_valeurs_nodales(int n);
+protected:
 
-  /* fonctions reconstruisant de maniere plus precise le champ aux faces */
-  DoubleTab& valeur_aux_faces(DoubleTab& vals) const;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const;
-
-  //tableaux utilitaires sur les CLs
-  //types de CL : 0 -> pas de CL
-  //              1 -> Echange_externe_impose
-  //              2 -> Echange_global_impose
-  //              3 -> Neumann_paroi
-  //              4 -> Neumann_sortie_libre
-  //              5 -> Dirichlet
-  //              6 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab icl; //icl(f, .) = (type de la CL, no de la CL, indice dans la CL)
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
+  // Factorisation function between several input field classes
+  virtual void set_nb_comp(int i); // calls fixer_nb_comp
+  virtual void set_name(const Nom& name); // calls nommer
+  virtual const Nom& get_name() const; // calls le_nom
 };
 
 #endif
-
-
-
-

@@ -272,8 +272,9 @@ void Solv_Petsc::create_solver(Entree& entree)
         // On differencie sequentiel (peu de memoire, mais estimation juste)
         // et le calcul parallele (voir peut etre une separation entre plus et moins de 16 processeurs...)
         // Peut etre equiper le script trust d'une detection des erreurs INFO(1)=-9 ...
+        // On passe de 35 a 40 pour faire passer le cas cavite_entrainee_2D_jdd2 (suite passage a MUMPS 5.2.0)
         if (Process::nproc()==1)
-          add_option("mat_mumps_icntl_14","35");
+          add_option("mat_mumps_icntl_14","40");
         else
           add_option("mat_mumps_icntl_14","90");
 
@@ -1715,7 +1716,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
           Cout << "If the decomposition fails/crashes cause a lack of memory, then increase the number of CPUs for your calculation" << finl;
           Cout << "or use Cholesky_out_of_core keyword to write the decomposition on the disk, thus saving memory but with an extra CPU cost during solve." << finl;
           Cout << "To see the RAM required by the decomposition in the .out file, add impr option to the solver: petsc cholesky { impr }" << finl;
-          Cout << "If an error INFOG(1)=-8|-9|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option." << finl;
+          Cout << "If an error INFOG(1)=-8|-9|-11|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option." << finl;
           message_affi=0;
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERMUMPS);

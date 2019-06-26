@@ -14,66 +14,68 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// File:        Ch_input_uniforme.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_P0_PolyMAC_included
-#define Champ_P0_PolyMAC_included
+#include <Ch_input_uniforme.h>
+#include <Probleme_base.h>
+#include <Schema_Temps_base.h>
+#include <Interprete.h>
 
-#include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VF.h>
+Implemente_instanciable(Ch_input_uniforme,"Champ_input_uniforme",Champ_Uniforme);
 
-class Zone_PolyMAC;
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_PolyMAC
-// .DESCRIPTION : class Champ_P0_PolyMAC
-//
-// Champ correspondant a une inconnue scalaire (type temperature ou pression)
-// Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
-
-class Champ_P0_PolyMAC : public Champ_Inc_P0_base
+Entree& Ch_input_uniforme::readOn(Entree& is)
 {
-  Declare_instanciable(Champ_P0_PolyMAC);
+  sous_zone_ok=false;
+  read(is);
+  valeurs().resize(1, nb_compo_);
+  if (initial_value_.size_array()) for (int i = 0; i < nb_compo_; i++) valeurs()(0, i) = initial_value_(i);
+  mon_pb->addInputField(*this);
+  return is;
+}
 
-public :
+Sortie& Ch_input_uniforme::printOn(Sortie& os) const
+{
+  return os;
+}
 
-  const Zone_PolyMAC&        zone_PolyMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  Champ_base& affecter_(const Champ_base& ch);
-  int                       imprime(Sortie& , int ) const;
+void Ch_input_uniforme::set_nb_comp(int i)
+{
+  fixer_nb_comp(i);
+}
 
-  virtual int fixer_nb_valeurs_nodales(int n);
+void Ch_input_uniforme::set_name(const Nom& name)
+{
+  nommer(name);
+}
 
-  /* fonctions reconstruisant de maniere plus precise le champ aux faces */
-  DoubleTab& valeur_aux_faces(DoubleTab& vals) const;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const;
+const Nom& Ch_input_uniforme::get_name() const
+{
+  return le_nom();
+}
 
-  //tableaux utilitaires sur les CLs
-  //types de CL : 0 -> pas de CL
-  //              1 -> Echange_externe_impose
-  //              2 -> Echange_global_impose
-  //              3 -> Neumann_paroi
-  //              4 -> Neumann_sortie_libre
-  //              5 -> Dirichlet
-  //              6 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab icl; //icl(f, .) = (type de la CL, no de la CL, indice dans la CL)
+// Description
+// Provides afield with a dummy geometry, a name, a time interval,
+// components, and no field ownership.
+void Ch_input_uniforme::getTemplate(TrioField& afield) const
+{
 
-protected :
+  afield.dummy_geom();
+  afield.setName(le_nom().getChar());
 
-  REF(Zone_VF) la_zone_VF;
+  afield._time1=mon_pb->presentTime();
+  afield._time2=mon_pb->futureTime();
 
+  afield._nb_field_components=nb_comp();
+}
 
-};
-
-#endif
-
-
-
-
+// Description
+// Uses the first value in afield as uniform value, regardless of geometry.
+void Ch_input_uniforme::setValue(const TrioField& afield)
+{
+  Champ_Input_Proto::setValueOnTab(afield, valeurs());
+}
