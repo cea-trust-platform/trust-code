@@ -99,6 +99,8 @@ public :
   inline double coefficient_echange_thermique(int ) const;
 
   inline virtual const IntVect& orientation() const;
+  inline virtual int orientation(int ) const;
+
   DoubleTab normalized_boundaries_outward_vector(int global_face_number, double scale_factor) const;
   inline DoubleTab& xv();
   inline const DoubleTab& xv() const;
@@ -617,13 +619,24 @@ inline double Zone_VF::xv(int num_face,int k) const
 
 inline const IntVect& Zone_VF::orientation() const
 {
-  Cerr<<"Method coded only for Zone_VDF"<<finl;
-  Cerr<<"The orientation of the faces is not defined for another discretization as VDF"<<finl;
-  Cerr<<"Try recoding using face_normales(). Example for g(face)=gravite[orientation[face]];" << finl;
-  Cerr<<"Compute something like: g(face)=Sum(i=0;i<gravite.size();i++) of gravite[i]*face_normales(face,i)/surface(face);" << finl;
+  Cerr<<"Try using orientation(num_face) instead of orientation() if the mesh is axis oriented."<< finl;
   exit();
   throw;
   return orientation();
+}
+
+inline int Zone_VF::orientation(int num_face) const
+{
+  for (int dir=0; dir<dimension; dir++)
+    {
+      if (est_egal(dabs(face_normales(num_face, dir)), face_surfaces(num_face)))
+        return dir;
+    }
+  Cerr<<"Your mesh is not axis oriented."<<finl;
+  Cerr<<"Try recoding using face_normales(). Example for g(face)=gravite[orientation[face]];" << finl;
+  Cerr<<"Compute something like: g(face)=Sum(i=0;i<gravite.size();i++) of gravite[i]*face_normales(face,i)/surface(face);" << finl;
+  exit();
+  return -1;
 }
 
 // Description:
