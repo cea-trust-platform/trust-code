@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -734,15 +734,18 @@ void Sonde::initialiser()
               for(int fac=0; fac<nfaces_par_element; fac++)
                 {
                   int face=elem_faces(elem_[i],fac);
-                  double dist=0.;
-
-                  for (int dir=0; dir<dimension; dir++)
-                    dist+=(xv(face,dir)-les_positions_(i,dir))*(xv(face,dir)-les_positions_(i,dir));
-
-                  if(dist<=dist_min)
+                  if (face >= 0)
                     {
-                      dist_min=dist;
-                      face_min=face;
+                      double dist=0.;
+
+                      for (int dir=0; dir<dimension; dir++)
+                        dist+=(xv(face,dir)-les_positions_(i,dir))*(xv(face,dir)-les_positions_(i,dir));
+
+                      if(dist<=dist_min)
+                        {
+                          dist_min=dist;
+                          face_min=face;
+                        }
                     }
                 }
 

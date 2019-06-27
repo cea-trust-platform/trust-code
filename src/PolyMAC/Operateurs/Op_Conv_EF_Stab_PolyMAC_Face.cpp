@@ -36,7 +36,13 @@
 #include <Champ_Face_PolyMAC.h>
 #include <Param.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable_sans_constructeur( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
+
+Op_Conv_EF_Stab_PolyMAC_Face::Op_Conv_EF_Stab_PolyMAC_Face()
+{
+  alpha = 1; //par defaut, on fait de l'amont
+}
+
 // XD Op_Conv_EF_Stab_PolyMAC_Face interprete Op_Conv_EF_Stab_PolyMAC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC
 Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
 {
@@ -47,7 +53,6 @@ Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
 Entree& Op_Conv_EF_Stab_PolyMAC_Face::readOn( Entree& is )
 {
   Op_Conv_PolyMAC_base::readOn( is );
-  alpha = 1; //par defaut, on fait de l'amont
   Param param(que_suis_je());
   param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
   param.lire_avec_accolades_depuis(is);
@@ -80,6 +85,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
             if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++;
           }
   Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
+  porosite_surf.ref(zone.porosite_face());
 }
 
 void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
@@ -125,30 +131,43 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = zone.porosite_face();
-
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = porosite_surf;
   int i, j, k, l, e, eb, f, fb, fc, fd, fam;
+
+  /* calcul de la div aux elements */
+  DoubleTab div;
+  zone.zone().creer_tableau_elements(div);
+  div = 0.;
+  for (f = 0; f < zone.nb_faces_tot(); f++) for (int d = 0; d < 2; ++d)
+      if ((e = f_e(f, d)) != -1) div(e) += (d ? -1. : 1.) * pf(f) * inco(f) * fs(f);
 
   //element e -> contribution de la face fb a l'equation a la face f
   for (e = 0; e < zone.nb_elem_tot(); e++)  for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-      for (j = 0; f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-        for (k = 0; k < 2; k++) //amont/aval de fb
-          {
-            eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
-            double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-            if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
-              {
-                if (eb >= 0)
-                  {
-                    for (fam = eb == e ? f : fc, l = zone.m2deb(fam); l < zone.m2deb(fam + 1); l++) if (zone.m2ji(l, 1) == eb) //convection de m2
-                        fd = zone.m2ji(l, 0), resu(f) -= fac * (eb == f_e(fam, 0) ? 1 : -1) * zone.m2ci(l) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pf(fd) * inco(fd);
-                  }
-                else if (ch.icl(fb, 0) == 3) for (l = 0; l < dimension; l++) //face de Dirichlet -> on convecte la vitesse au bord
-                    resu(f) -= fac * fs(f) * (xv(f, l) - xp(e, l)) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), l);
-              }
-            else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                fc = zone.veji(l), resu(f) -= fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pf(fc) * inco(fc);
-          }
+      {
+        for (j = 0; f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+          for (k = 0; k < 2; k++) //amont/aval de fb
+            {
+              eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
+              double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
+              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
+                {
+                  if (eb >= 0)
+                    {
+                      for (fam = eb == e ? f : fc, l = zone.m2deb(fam); l < zone.m2deb(fam + 1); l++) if (zone.m2ji(l, 1) == eb) //convection de m2
+                          fd = zone.m2ji(l, 0), resu(f) -= fac * (eb == f_e(fam, 0) ? 1 : -1) * zone.m2ci(l) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pf(fd) * inco(fd);
+                    }
+                  else if (ch.icl(fb, 0) == 3) for (l = 0; l < dimension; l++) //face de Dirichlet -> on convecte la vitesse au bord
+                      resu(f) -= fac * fs(f) * (xv(f, l) - xp(e, l)) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), l);
+                }
+              else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
+                  fc = zone.veji(l), resu(f) -= fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pf(fc) * inco(fc);
+            }
+
+        // if (incompressible) continue
+        for (l = zone.m2deb(f); l < zone.m2deb(f + 1); l++) if (zone.m2ji(l, 1) == e)
+            resu(f) += pf(f) * zone.m2ci(l) * vit(zone.m2ji(l, 0)) * div(zone.m2ji(l, 1)) / ve(zone.m2ji(l, 1));
+      }
+
   return resu;
 }
 
@@ -161,7 +180,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_surf;
   int i, j, k, l, e, eb, f, fb, fc, fd, fam;
 
   //element e -> contribution de la face fb a l'equation a la face f
