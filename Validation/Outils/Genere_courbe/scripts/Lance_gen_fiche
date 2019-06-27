@@ -88,7 +88,13 @@ genere_fiche()
 
       if [ ! -f build/rapport.pdf ] || [ "$status" != "0" ]
           then
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
           echo "!!! Error with report $dir"
+          echo "!!! Below is a cat of the logs found in `pwd`/run$OPTIONS_PRM.log"
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          cat run$OPTIONS_PRM.log
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
           ko=1
       else
           cp build/rapport.pdf $org/archives/$cas.pdf
@@ -99,7 +105,13 @@ genere_fiche()
             status=$?
             echo "@@@ Done Run -archive"
             if [ $status -ne 0 ]; then
-              echo "!!!! Error with Run_archive $dir"
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo "!!! Error with Run_archive $dir"
+              echo "!!! Below is a cat of the logs found in `pwd`/arc.log"
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              cat arc.log
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
               ko=2
             else
               mv preserve.tgz $org/archives/$cas.tgz
