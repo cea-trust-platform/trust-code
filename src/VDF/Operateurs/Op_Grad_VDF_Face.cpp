@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,8 @@
 #include <Check_espace_virtuel.h>
 #include <communications.h>
 #include <DoubleTrav.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
 
 Implemente_instanciable(Op_Grad_VDF_Face,"Op_Grad_VDF_Face",Operateur_Grad_base);
 
@@ -75,6 +77,17 @@ void Op_Grad_VDF_Face::associer(const Zone_dis& zone_dis,
   orientation.ref(zvdf.orientation());
   xp.ref(zvdf.xp());
 
+}
+
+void Op_Grad_VDF_Face::dimensionner(Matrice_Morse& mat) const
+{
+  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+  for (int f = 0; f < zvdf.nb_faces(); f++) for (int i = 0, e; i < 2 && (e = zvdf.face_voisins(f, i)) >= 0; i++)
+      stencil.append_line(f, e);
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_morse_matrix(zvdf.nb_faces_tot(), zvdf.nb_elem_tot(), stencil, mat);
 }
 
 DoubleTab& Op_Grad_VDF_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
@@ -167,6 +180,62 @@ DoubleTab& Op_Grad_VDF_Face::calculer(const DoubleTab& inco, DoubleTab& resu) co
 {
   resu=0;
   return ajouter(inco,resu);
+}
+
+void Op_Grad_VDF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& la_matrice) const
+{
+  assert_espace_virtuel_vect(inco);
+  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const DoubleVect& face_surfaces = zvdf.face_surfaces();
+
+  double coef;
+  int n0, n1;
+
+  // Boucle sur les bords pour traiter les conditions aux limites
+  int ndeb, nfin, num_face;
+  for (int n_bord=0; n_bord<zvdf.nb_front_Cl(); n_bord++)
+    {
+
+      // pour chaque Condition Limite on regarde son type
+      // Si face de Dirichlet ou de Symetrie on ne fait rien
+      // Si face de Neumann on calcule la contribution au terme source
+
+      const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
+      if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
+        {
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          ndeb = le_bord.num_premiere_face();
+          nfin = ndeb + le_bord.nb_faces();
+
+          for (num_face=ndeb; num_face<nfin; num_face++)
+            {
+              n0 = face_voisins(num_face,0);
+              if (n0 != -1)
+                {
+                  coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann;
+                  la_matrice(num_face, n0) += coef;
+                }
+              else
+                {
+                  n1 = face_voisins(num_face,1);
+                  coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann;
+                  la_matrice(num_face, n1) -= coef;
+                }
+            }
+        }
+      // Fin de la boucle for
+    }
+
+  // Boucle sur les faces internes
+  for (num_face=zvdf.premiere_face_int(); num_face<zvdf.nb_faces(); num_face++)
+    {
+      n0 = face_voisins(num_face,0);
+      n1 = face_voisins(num_face,1);
+      coef = face_surfaces(num_face)*porosite_surf(num_face);
+      la_matrice(num_face, n0) += coef;
+      la_matrice(num_face, n1) -= coef;
+    }
 }
 
 int Op_Grad_VDF_Face::impr(Sortie& os) const
