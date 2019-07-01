@@ -906,7 +906,7 @@ fi
 if [ "$INSTALL_CONDA" = 1 ] 
 then
     # If a previous installation folder exists, we remove it.
-    [ -d $TRUST_ROOT/exec/python ] && rm -r $TRUST_ROOT/exec/python
+    [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
 
     # Then we install miniconda and the different packages
     echo "Trying to install Miniconda2-4.6.14-Linux-x86_64.sh"
