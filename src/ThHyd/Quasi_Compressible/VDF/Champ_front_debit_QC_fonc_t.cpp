@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_front_debit_QC.cpp
+// File:        Champ_front_debit_QC_fonc_t.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible/VDF
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_front_debit_QC.h>
+#include <Champ_front_debit_QC_fonc_t.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Fluide_Quasi_Compressible.h>
@@ -28,10 +28,10 @@
 #include <Zone_VDF.h>
 #include <Interprete.h>
 
-Implemente_instanciable(Champ_front_debit_QC,"Champ_front_debit_QC_VDF",Ch_front_var_instationnaire_indep);
-// XD Champ_front_debit_QC_VDF front_field_base Champ_front_debit_QC_VDF 0 This keyword is used to define a flow rate field for quasi-compressible fluids in VDF discretization. The flow rate is kept constant during a transient.
+Implemente_instanciable(Champ_front_debit_QC_fonc_t,"Champ_front_debit_QC_VDF_fonc_t",Ch_front_var_instationnaire_indep);
+// XD Champ_front_debit_QC_VDF_fonc_t front_field_base Champ_front_debit_QC_VDF_fonc_t 0 This keyword is used to define a flow rate field for quasi-compressible fluids in VDF discretization. The flow rate could be constant or time-dependent.
 // XD attr dimension int  dim 0 Problem dimension
-// XD attr liste bloc_lecture liste 0 List of the mass flow rate values [kg/s/m2] with the following syntaxe: { val1 ... valdim }
+// XD attr liste bloc_lecture liste 0 List of the mass flow rate values [kg/s/m2] with the following syntaxe: { val1 ... valdim } where val1 ... valdim are constant or function of time.
 // XD attr moyen chaine moyen 1 Option to use rho mean value
 // XD attr pb_name chaine pb_name 0 Problem name
 
@@ -53,7 +53,7 @@ Implemente_instanciable(Champ_front_debit_QC,"Champ_front_debit_QC_VDF",Ch_front
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Champ_front_debit_QC::printOn(Sortie& os) const
+Sortie& Champ_front_debit_QC_fonc_t::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
   os << tab.size() << " ";
@@ -81,9 +81,9 @@ Sortie& Champ_front_debit_QC::printOn(Sortie& os) const
 // Exception: accolade fermante attendue
 // Effets de bord:
 // Postcondition:
-Entree& Champ_front_debit_QC::readOn(Entree& is)
+Entree& Champ_front_debit_QC_fonc_t::readOn(Entree& is)
 {
-  Cerr<<"Champ_front_debit_QC_VDF usage : dim { val1 .. valdim } [ moyen ] nom_pb"<<finl;
+  Cerr<<"Champ_front_debit_QC_VDF_fonc_t usage : dim { val1 .. valdim } [ moyen ] nom_pb"<<finl;
   ismoyen=0;
   int dim;
   is >> dim;
@@ -94,18 +94,28 @@ Entree& Champ_front_debit_QC::readOn(Entree& is)
   is >> motlu;
   if (motlu != les_mots[0])
     {
-      Cerr << "Erreur a la lecture d'un Champ_front_debit_QC" << finl;
+      Cerr << "Erreur a la lecture d'un Champ_front_debit_QC_VDF_fonc_t" << finl;
       Cerr << "On attendait { a la place de " << motlu << finl;
       exit();
     }
   fixer_nb_comp(dim);
-  Debit.resize(dim);
-  for(int i=0; i<dim; i++)
-    is >> Debit(i);
+  f_debit_t.dimensionner(dim);
+
+  for (int i = 0; i<dim; i++)
+    {
+      Nom tmp;
+      is >> tmp;
+      Cerr << "Reading and interpretation of the function " << tmp << finl;
+      f_debit_t[i].setNbVar(1);
+      f_debit_t[i].setString(tmp);
+      f_debit_t[i].addVar("t");
+      f_debit_t[i].parseString();
+      Cerr << "Interpretation of function " << tmp << " Ok" << finl;
+    }
   is >> motlu;
   if (motlu != les_mots[1])
     {
-      Cerr << "Erreur a la lecture d'un Champ_front_debit_QC" << finl;
+      Cerr << "Erreur a la lecture d'un Champ_front_debit_QC_VDF_fonc_t" << finl;
       Cerr << "On attendait } a la place de " << finl;
       exit();
     }
@@ -139,7 +149,7 @@ Entree& Champ_front_debit_QC::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-Champ_front_base& Champ_front_debit_QC::affecter_(const Champ_front_base& ch)
+Champ_front_base& Champ_front_debit_QC_fonc_t::affecter_(const Champ_front_base& ch)
 {
   return *this;
 }
@@ -159,13 +169,14 @@ Champ_front_base& Champ_front_debit_QC::affecter_(const Champ_front_base& ch)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Champ_front_debit_QC::mettre_a_jour(double tps)
+void Champ_front_debit_QC_fonc_t::mettre_a_jour(double tps)
 {
 
 
   const Frontiere& front=la_frontiere_dis->frontiere();
   int nb_faces=front.nb_faces();
   DoubleTab& tab=valeurs();
+  DoubleTab& Debit=valeurs_au_temps(tps);
   int dim=nb_comp();
   const Zone_VDF& la_zone_VDF = ref_cast(Zone_VDF,zone_dis());
   const IntTab& face_voisins=la_zone_VDF.face_voisins();
@@ -182,7 +193,11 @@ void Champ_front_debit_QC::mettre_a_jour(double tps)
         if (n0 == -1)
           n0 = face_voisins(num_face, 1);
         for (int ori=0; ori<dim; ori++)
-          tab(num_face-ndeb,ori)=Debit(ori)/tab_rhonp1P0(n0);
+          {
+            f_debit_t[ori].setVar("t",tps);
+            Debit(num_face-ndeb,ori)=f_debit_t[ori].eval();
+            tab(num_face-ndeb,ori)=Debit(num_face-ndeb,ori)/tab_rhonp1P0(n0);
+          }
       }
   else
     {
@@ -202,7 +217,20 @@ void Champ_front_debit_QC::mettre_a_jour(double tps)
       rho_moy/=S;
       for ( num_face=ndeb; num_face<nfin; num_face++)
         for (int ori=0; ori<dim; ori++)
-          tab(num_face-ndeb,ori)=Debit(ori)/rho_moy;
+          {
+            f_debit_t[ori].setVar("t",tps);
+            Debit(num_face-ndeb,ori)=f_debit_t[ori].eval();
+            tab(num_face-ndeb,ori)=Debit(num_face-ndeb,ori)/rho_moy;
+          }
     }
 
 }
+
+double Champ_front_debit_QC_fonc_t::valeur_au_temps(double tps, int som, int k) const
+{
+  Parser_U& f_debit_tk=f_debit_t[k];
+  f_debit_tk.setVar("t",tps);
+  return f_debit_tk.eval();
+}
+
+
