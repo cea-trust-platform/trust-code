@@ -59,8 +59,8 @@ Sortie& Partitionneur_Sous_Domaine::printOn(Sortie& os) const
 
 void Partitionneur_Sous_Domaine::set_param(Param& param)
 {
-  param.ajouter("fichier",&filename_,Param::REQUIRED);
-  param.ajouter("fichier_ssz",&filename_ssz_,Param::REQUIRED);
+  param.ajouter("fichier",&filename_,Param::REQUIRED); // XD_ADD_P chaine fichier domaine
+  param.ajouter("fichier_ssz",&filename_ssz_,Param::REQUIRED); // XD_ADD_P chaine fichier sous zonne
 }
 
 // Description:

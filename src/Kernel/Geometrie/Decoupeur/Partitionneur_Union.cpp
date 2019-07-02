@@ -26,7 +26,8 @@
 #include <EChaine.h>
 #include <Sous_Zone.h>
 
-// XD partitionneur_union partitionneur_deriv sous_domaine -1 Let several local domains be generated from a bigger one using the keyword create_domain_from_sous_zone, and let their partitions be generated in the usual way. Provided the list of partition files for each small domain, the keyword 'union' will partition the global domain in a conform fashion with the smaller domains.
+// XD partitionneur_union partitionneur_deriv union 0 Let several local domains be generated from a bigger one using the keyword create_domain_from_sous_zone, and let their partitions be generated in the usual way. Provided the list of partition files for each small domain, the keyword 'union' will partition the global domain in a conform fashion with the smaller domains.
+// XD attr liste bloc_lecture liste 0 List of the partition files with the following syntaxe: {sous_zone1 decoupage1  ... sous_zoneim decoupageim } where sous_zone1 ... sous_zomeim are small domains names and decoupage1 ... decoupageim are partition files.
 Implemente_instanciable(Partitionneur_Union,"Partitionneur_Union",Partitionneur_base);
 
 // Description:
