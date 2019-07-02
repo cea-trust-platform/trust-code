@@ -124,10 +124,19 @@ $TRUST_ROOT/exec/python/bin/cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENAB
 # undefined reference to symbol '_gfortran_concat_string@@GFORTRAN_1.0'
 # Voir http://stackoverflow.com/questions/13247107/cmake-dso-linking
 EXTRA_LINK_LIB=""
-font_file=`locate -r "/usr/.*/libfontconfig.so$"`
+# locate command is not available by default on all plateforms such as on CCRT clusters
+which locate 1>/dev/null 2>&1
+err=$?
+if [ $err -eq 0 ]
+then
+   font_file=`locate -r "/usr/.*/libfontconfig.so$"`
+else
+   font_file=`ldconfig -p | grep libfontconfig.so$ | awk '{ print $4 }'`
+fi
+
 if [ -f  "$font_file" ]; then
-  ldd -r "$font_file" | grep -q uuid && need_uuid=1
-  ldd -r "$font_file" | grep -q freetype && need_freetype=1
+  need_uuid=0 && ldd -r "$font_file" | grep -q uuid && need_uuid=1
+  need_freetype=0 && ldd -r "$font_file" | grep -q freetype && need_freetype=1
   if [ $need_uuid -eq 1 ]; then
     EXTRA_LINK_LIB="$EXTRA_LINK_LIB uuid "
   fi
