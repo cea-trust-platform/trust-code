@@ -620,15 +620,17 @@ void Sonde::initialiser()
   if (numero_elem_==-1)
     {
       // Location of probes is given by coordinates in the les_positions_ array:
-      int nb_som = zone_geom.type_elem().nb_som();
+      //int nb_som = zone_geom.type_elem().nb_som();
       int nb_coord = les_positions_.dimension(1);
-      if (nb_coord+1>nb_som)
+      if (nb_coord != Objet_U::dimension)
+        //if (nb_coord+1>nb_som)
         {
           Cerr << "You can't specify the probe named " << nom_ << " with "<< nb_coord << " coordinates on the domain named " <<zone_geom.domaine().le_nom()<<finl;
-          Cerr << "which is constituted with cells of kind " << zone_geom.type_elem().valeur().que_suis_je() << "." << finl;
+          Cerr << "which has spatial dimension " << Objet_U::dimension << finl;
           Cerr << "Change the probe coordinates or use numero_elem_sur_maitre keyword (see documentation)" << finl;
           Cerr << "to specify a cell containing the probe and not its coordinates." << finl;
-          exit();
+          // [ABN] : yes we should exit, otherwise we just don't see the warning:
+          Process::exit();
         }
       // Fill the elem_ array (which list cells containing all the probes):
       zone_geom.chercher_elements(les_positions_,elem_);
