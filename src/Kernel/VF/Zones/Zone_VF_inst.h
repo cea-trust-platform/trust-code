@@ -52,12 +52,6 @@ public :
     exit();
     return -1;
   };
-  inline const IntVect& orientation() const
-  {
-    exit();
-    throw;
-    return orientation();
-  };
 
 private:
 
