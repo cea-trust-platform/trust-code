@@ -33,11 +33,11 @@ then
 	 echo "#include <mpi.h>
 	 #include <iostream>
 	 using std::cout;
-	 using std::endl;   
+	 using std::endl;
 	 int main(int argc, char** argv)
 	 {
 	    MPI_Init(&argc,&argv);
-	    cout<<\"OK\"<<endl; 
+	    cout<<\"OK\"<<endl;
 	    return 0;
 	 }" > $TRUST_TMP/mpi_init.cpp
 	 $TRUST_CC -o $TRUST_TMP/mpi_init $TRUST_TMP/mpi_init.cpp
@@ -97,7 +97,7 @@ then
          echo "#include <petscksp.h>
 #$string" > $petsc_for_kernel
       fi
-   done  
+   done
    exit 0
 fi
 
@@ -120,7 +120,7 @@ ln -sf `ls scotch*.tar.gz` ptscotch.tar.gz
 ####################
 # Download if needed
 ####################
-[ ! -f $package ] && wget_ http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/$package 
+[ ! -f $package ] && wget_ http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/$package
 [ ! -f $package ] && echo "Package $package not found." && exit -1
 
 #############
@@ -141,11 +141,11 @@ cd $ROOT/$package
 #if [ -d $CONFIG ]
 #then
 #   #echo "Change some python scripts to force parallel build of external packages..."
-#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
+#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1
 #else
    # Config directory has moved (for PETSc 3.6?)
 #   CONFIG=config/BuildSystem/config/packages
-#fi 
+#fi
 
 # Hack to have MUMPS sequential:
 if [ "$TRUST_DISABLE_MPI" = 1 ]
@@ -155,8 +155,8 @@ then
 # PL: On commente car il faut mettre a jour MUMPS_SEQ.py selon le MUMPS.py de 3.10.0
 # si le build de TRUST avec TRUST_DISABLE_MPI ne fonctionne pas.
 #   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
-fi    
-    
+fi
+
 ################
 # GPU support? #
 ################
@@ -180,7 +180,7 @@ then
    echo "CUSP is installed."
    # Add ViennaCL promising: See http://viennacl.sourceforge.net/viennacl-about.html (needs OpenCL)
    # --download-viennacl=../ViennaCL-1.5.1.tar.gz --with-opencl-dir=$OPENCL_INTEL_ROOT
-   with_gpu="--with-cuda=1 --with-cuda-dir=$CUDA_ROOT 
+   with_gpu="--with-cuda=1 --with-cuda-dir=$CUDA_ROOT
 --with-cusp=1 --with-cusp-dir=$ROOT/$CUSP
 --with-thrust=1 --with-cuda-arch=sm_$REVISION_NUMBER
 --with-ssl=0
@@ -203,10 +203,10 @@ then
    #then
    #   with_thread="--with-threadcomm --with-pthreadclasses"
    #else
-   #   with_thread="--with-threadcomm --with-openmp" 
+   #   with_thread="--with-threadcomm --with-openmp"
    #fi
    # On airain, --with-threadcomm --with-openmp is not enough... Strange. So:
-   with_thread="--with-threadcomm --with-pthreadclasses --with-openmp" 
+   with_thread="--with-threadcomm --with-pthreadclasses --with-openmp"
    echo "****************************************"
    echo "Thread support for PETSc with: "$with_thread
    echo "****************************************"
@@ -237,21 +237,21 @@ then
    # [ "$only_make_debug_with_petsc_debug" = 1 ] && liste_debug="1"
 else
    liste_debug="0" 	# Une seule version construite (optimisee)
-   options="--with-x=0" # Car --with-x=1 pose probleme pour Insure 
+   options="--with-x=0" # Car --with-x=1 pose probleme pour Insure
 fi
 
 ######################################
-# Ajout d'un package au build de PETSc 
+# Ajout d'un package au build de PETSc
 ######################################
 add_package()
 {
-   echo $ECHO_OPTS "Looking for package $1... \c"   
+   echo $ECHO_OPTS "Looking for package $1... \c"
    external_package=`cd ..;ls -rt $1*.tar.gz $1*.tgz $1*.tar.bz2 2>/dev/null | tail -1`
    #external_package=`grep petsc $TRUST_ROOT/bin/gestion_externalpackages/liste_dep.csv  | awk -F, '{print "/"$2}' | grep "/"$1`
    name=`echo $1 | awk '{print tolower($1)}'`
    if [ "$external_package" = "" ]
    then
-      # Download     
+      # Download
       with_package="--download-$name=yes"
    else
       # Located
@@ -268,7 +268,7 @@ with_packages=""
 
 #################################################
 # Choix de Scalapack & Blacs (natives ou de base)
-#################################################   
+#################################################
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
    # Probleme lors du link, donc on n'utilise pas
@@ -276,7 +276,7 @@ then
    then
       ############################
       # Choix de Scalapack natif #
-      ############################     
+      ############################
       libscalapack=`ls $TRUST_BLAS_LAPACK/lib*scalapack_lp64.a 2>/dev/null`
       libscalapack=""
       # On desactive car SCALAPACK natif sur CCRT/SuperMUC bloque MUMPS parfois avec Petsc 3.2 (ex PAR_Cx sur 5 ou 6 processeurs) !
@@ -284,18 +284,18 @@ then
       # A essayer avec Petsc 3.4 ?
       if [ "$libscalapack" != "" ]
       then
-	 echo "Native optimized SCALAPACK will be used in $TRUST_BLAS_LAPACK"		
-	 with_packages=$with_packages" --with-scalapack-lib=$libscalapack --with-scalapack-include=$TRUST_BLAS_LAPACK/../../include" 
+	 echo "Native optimized SCALAPACK will be used in $TRUST_BLAS_LAPACK"
+	 with_packages=$with_packages" --with-scalapack-lib=$libscalapack --with-scalapack-include=$TRUST_BLAS_LAPACK/../../include"
       else
 	 add_package scalapack
       fi
       ##########################
       # Choix de BLACS natives #
-      ##########################     	 
+      ##########################
       # La detection de la librairie MPI BLAS a prendre n'est pas evidente
       # CCRT: openmpi car bullxmpi ou intelmpi si mpich (en fait mvapich)
       # jade: mpt
-      # SuperMuc: intel ou ibm	
+      # SuperMuc: intel ou ibm
       if [ "`env | grep -i /mpt`" != "" ]
       then
 	 mpi=_sgimpt
@@ -305,10 +305,10 @@ then
       elif [ "`echo $MPI_ROOT | grep intel/mpi`" != "" ] || [ "`echo $MPI_ROOT | grep mpich`" != "" ]
       then
 	 mpi=_intelmpi
-      elif [ "`echo $MPI_ROOT | grep ibmhpc`" != "" ] 
+      elif [ "`echo $MPI_ROOT | grep ibmhpc`" != "" ]
       then
 	 mpi=""
-      fi	
+      fi
       libblacs=`ls $TRUST_BLAS_LAPACK/lib*blacs"$mpi"_lp64.a 2>/dev/null`
       if [ "$libblacs" != "" ]
       then
@@ -338,8 +338,8 @@ then
 else
    # 1.6.4: On n'utilise plus fblaslapack-3.1.1 et l'on prend LIBLAPACK (livre)
    with_blas=" --with-blas-lapack-dir=$TRUST_ROOT/lib/src/LIBLAPACK"
-fi  
- 
+fi
+
 ##################
 # Solveurs directs
 ##################
@@ -348,7 +348,7 @@ then
    # On prend MUMPS (plus performant)
    add_package MUMPS
    add_package metis
-fi    
+fi
 
 ##############
 # MPI or not #
@@ -407,11 +407,11 @@ then
         	  ./configure --prefix=$ROOT/m4 || exit -1
 		  $TRUST_MAKE || exit -1
 		  make install || exit -1
-		  cd ..	 
+		  cd ..
 		  rm -r -f $m4
               fi
 	      export PATH=$PATH:$ROOT/m4/bin
-	    fi		 
+	    fi
             echo "Scotch needs bison installed. So installing it..."
 	    bison=`(cd ..; ls bison-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$bison.tar.gz | tar -xf -
@@ -440,7 +440,7 @@ then
 	    rm -r -f $flex
 	 fi
 	 export PATH=$PATH:$ROOT/flex/bin
-      fi 
+      fi
    fi
    #######
    # Hypre
@@ -460,7 +460,7 @@ package_valgrind=$TRUST_ROOT/exec/valgrind
 # PYTHON
 ########
 # Chargement de l'environnement si necessaire
-# Car parfois Ex Debian, le python construit ne marche pas: 
+# Car parfois Ex Debian, le python construit ne marche pas:
 # scotch_5.1.12b_esmumps-p1.tar.gz is not a tarball
 # [or installed python cannot process compressed files]
 #if [ "`python --version 2>/dev/null;echo $?`" != 0 ]
@@ -472,7 +472,7 @@ then
       source $TRUST_ROOT/exec/python/env.sh
    else
       echo "Error, PETSc needs python!"
-      exit -1         
+      exit -1
    fi
 fi
 
@@ -485,12 +485,12 @@ do
    echo "Build `v="optimised";[ $debug = 1 ] && v="debug";echo $v` version of PETSc"
    echo "**********************************"
    cd $ROOT/$package
-   
+
    ###############
    # Configuration
    ###############
    export PETSC_ARCH=$TRUST_ARCH`[ $debug = 0 ] && echo "_opt"`
-   export PETSC_DIR=`pwd`   
+   export PETSC_DIR=`pwd`
    # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
    COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
@@ -517,14 +517,14 @@ do
    $with_mpi \
 --with-64-bit-indices \
    $options || exit -1
-   
+
    #############
    # Compilation
    #############
    # build avec cmake (parallel build) ou classique selon les machines (castor,titane,...)
    # $TRUST_MAKE inutile (et produit des warnings)
    # make all-legacy : force le build classique
-   make all 	
+   make all
    if [ $? = 0 ]
    then
       ###########
@@ -535,16 +535,16 @@ do
       then
          # Tests with PETSC_HAVE_CUDA=1 are done below
         #  bloque de temps en temps make test
-        echo No running make test 
+        echo No running make test
 	 err=$?
       fi
       if [ $err = 0 ]
-      then	 
+      then
 	 ##############
 	 # Installation
 	 ##############
 	 # Erreur possible et bizarre (dont on ne tient pas compte) produite lors d'une installation avec sudo (eg: cezanne27)
-	 make install   
+	 make install
 	 if [ $? = 0 ] || [ "$SUDO_UID" != "" ]
 	 then
 	    # On fait un touch des fichiers include
@@ -560,7 +560,7 @@ do
 	    echo "make install failed." && exit -1
 	 fi
 	 # Correction du fichier metis.h
-	 echo $ECHO_OPTS "1,$ s?2048,?2048?g\nw" | ed $PETSC_ROOT/$PETSC_ARCH/include/metis.h 1>/dev/null 2>&1	 
+	 echo $ECHO_OPTS "1,$ s?2048,?2048?g\nw" | ed $PETSC_ROOT/$PETSC_ARCH/include/metis.h 1>/dev/null 2>&1
 	 if [ $? != 0 ]
 	 then
 	    echo "Change of the file $PETSC_ROOT/$PETSC_ARCH/include/metis.h failed." && exit -1

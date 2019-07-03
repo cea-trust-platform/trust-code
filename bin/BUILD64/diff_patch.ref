@@ -58,7 +58,7 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBSKIT/Installer ./ThirdPart/src/LIBSKI
 < 
 Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT/patch: color.f
 diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
-619,625d618
+628,634d627
 < 
 < # Ajout des paths dans le PATH 
 < for d in  $TRUST_FORCE_SEARCH
@@ -66,14 +66,14 @@ diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
 < export PATH=$d:${PATH}
 < done
 < 
-924,925d916
+982,983d974
 < # Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
 < [ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
-1701c1692
+1749c1740
 < 	F77Flags="-O3 $FPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
 ---
 > 	F77Flags="-O3 $FPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-1917d1907
+1959d1949
 <    TRUST_USE_MUMPS=0
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 62,63c62,63
