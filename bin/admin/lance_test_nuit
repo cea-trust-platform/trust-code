@@ -3773,10 +3773,10 @@ then
             echo "    Call git commit --all -m Commit for an official Release $label version."
 	    if [ "$Composant" = triocfd ]
 	    then
-	       cp $TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
+	       cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
 	       if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
 	       then
-	          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
+	          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
 	       #else
 	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
 	       fi
