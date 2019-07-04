@@ -85,7 +85,7 @@ check_components()
                   if [ $? != 0 ]
                   then
                      cat tmp.log
-                     cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
+                     cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
                      echo "  KO"
 	             MODIF_TRUST_OK=0
                   else
@@ -106,7 +106,7 @@ check_components()
                if [ $? != 0 ]
                then
                   cat tmp.log
-                  cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
+                  cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
                   echo "  KO"
 	          VERIF_LIGHT_OK=0
                else
@@ -149,7 +149,7 @@ check_components()
 	       if [ $DOC_PDF_OK = 0 ]
 	       then
 	          echo $ECHO_OPTS "KO."
-	          cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
+	          cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
 	       else
 	          echo $ECHO_OPTS "OK"
 	       fi	    
@@ -440,9 +440,9 @@ git_push()
       cat $repo_log | tail -n +3
       if [ "$git_branch" != "Livraison" ]
       then
-         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" $TRUST_MAIL $TMA_PROJECT_LEADER
       else
-         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER
       fi
    done
 }
@@ -628,7 +628,7 @@ if [ $verif_error != 0 ]
 then
    echo>>$verif_log
    cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
-   cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 echo>>$verif_log
 cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log 
@@ -645,7 +645,7 @@ echo>>$external_log
 nb_error=`grep "not in" $external_log | wc -l`
 if [ $nb_error != 0 ]
 then
-   cat $external_log | mail_ -s\"[lance_test_nuit] Verify_externalpackages.sh KO on $HOST:$TRUST_ROOT\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $external_log | mail_ -s\"[lance_test_nuit] Verify_externalpackages.sh KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
    cat $external_log
    echo "  KO"
 else
@@ -666,7 +666,7 @@ echo>>$liste_log
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
 # petsc-3.10.0 : superlu_dist.py correction TMA
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.10.0 | grep -v scotch_6.0.6-p1 | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.10.0 | grep -v scotch_6.0.6-p1 | grep -v cycler-0.10.0-py27hc7354d3_0.tar.bz2 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -679,7 +679,7 @@ then
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    # petsc-3.10.0 : superlu_dist.py correction TMA
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.10.0 | grep -v scotch_6.0.6-p1`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.10.0 | grep -v scotch_6.0.6-p1 | grep -v cycler-0.10.0-py27hc7354d3_0.tar.bz2`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -689,7 +689,7 @@ then
       $TRUST_ROOT/bin/gestion_externalpackages/compare_archive $package 1>>$liste_log 2>&1
    done
    cd - 1>/dev/null 2>&1
-   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
    grep "computed checksums did NOT match" $liste_log
    grep "FAILED" $liste_log
    echo "  KO"
@@ -708,7 +708,7 @@ if [ -s $build64_log  ]
 then
    echo>>$build64_log
    echo "=> tkdiff diff_patch bin/BUILD64/diff_patch.ref ">>$build64_log
-   cat $build64_log | mail_ -s\"[lance_test_nuit] BUILD64 Verifie_patch KO on $HOST:$TRUST_ROOT\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $build64_log | mail_ -s\"[lance_test_nuit] BUILD64 Verifie_patch KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
    cat $build64_log
    echo "  KO"
 else
@@ -817,7 +817,7 @@ fi
    echo " git push origin TMA in `pwd`"
    git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
    cat tmp.log
-   [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push origin TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push origin TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER
    rm tmp.log 1>/dev/null 2>&1
    cd - 1>/dev/null 2>&1
       
@@ -842,7 +842,7 @@ fi
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
       cat tmp.log
-      [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+      [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       rm tmp.log 1>/dev/null 2>&1
       cd - 1>/dev/null 2>&1
    done
@@ -1466,7 +1466,7 @@ Running cpplint by filtering with --filter=$filter
 ====================================" >> $cpplint_log
    python $TRUST_ROOT/bin/KSH/cpplint.py $filter src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp include/*.h 2>&1 | grep -v "Done processing" >> $cpplint_log
    tail -n1 $cpplint_log
-   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL $TMA_PROJECT_LEADER
 else
    echo "NOT executed"
 fi
@@ -1989,7 +1989,7 @@ else
    echo "Release criterion: TRUST  KO"
    grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
-   cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST portability KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST portability KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_portabilite=~/force_portabilite && [ -f $force_portabilite ] && portabilite=1 && rm -f $force_portabilite
 limite=0.99 # cf recupere_TRUST_arch
@@ -2026,7 +2026,7 @@ else
    echo "Release criterion: Atelier KO"
    grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST atelier KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST atelier KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && workshop=1 && rm -f $force_make_atelier
 echo "$workshop  Atelier $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
@@ -2062,7 +2062,7 @@ else
    grep "XPREPRO=NOT" $REP_NUIT/CR_* >> tmp.log
    grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_portabilite_Xprepro=~/force_portabilite_Xprepro && [ -f $force_portabilite_Xprepro ] && portabilite_Xprepro=1 && rm -f $force_portabilite_Xprepro
 echo "$portabilite_Xprepro  Xprepro $port_Xprepro=$Xprepro (>=1)" >> $MESSAGES_NUIT
@@ -2097,7 +2097,7 @@ else
    echo "Release criterion: Baltik  KO"
    grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST baltik KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST baltik KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && testbaltik=1 && rm -f $force_portabilite_baltik
 echo "$testbaltik  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
@@ -2132,7 +2132,7 @@ else
    echo "Release criterion: Assert KO"
    grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST assert KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST assert KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && assert=1 && rm -f $force_test_assert
 echo "$assert  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
@@ -2236,7 +2236,7 @@ do
          validation_xdata=1
       else
          [ "$validation_xdata" = "" ] && validation_xdata=0
-         [ -f $check_xdata_log ] && cat $check_xdata_log | mail_ -s\"[lance_test_nuit] Check XData on $machine KO\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+         [ -f $check_xdata_log ] && cat $check_xdata_log | mail_ -s\"[lance_test_nuit] Check XData on $machine KO\" $TMA_PROJECT_LEADER $TRUST_MAIL
       fi
    fi
 done
@@ -2318,7 +2318,7 @@ then
 		     if [ "`grep $module=KO $module.log 2>/dev/null`" != "" ]
 		     then
         	        [ ! -f compare_resultat.log ] && ../compare_resultat .tests_TRUST_mpi_*
-        	        cat compare_resultat.log | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host KO\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+        	        cat compare_resultat.log | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host KO\" $TMA_PROJECT_LEADER $TRUST_MAIL
 		     else
 		        cat .tests_TRUST_mpi_* | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host not finished\" $TRUST_MAIL
 		     fi
@@ -2387,7 +2387,7 @@ do
       echo "  KO $machine machine not accessible via ssh."
       echo "  No $valgrind_log"
       valgrind=0
-      echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+      echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" $TMA_PROJECT_LEADER $TRUST_MAIL
    else
       echo "Verification of $valgrind_log"
       #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
@@ -2403,7 +2403,7 @@ do
       fi
       if [ $scp_error != 0 ]
       then
-         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" $TMA_PROJECT_LEADER $TRUST_MAIL
       fi
       rm -f $scp_error
       sleep 1
@@ -2444,7 +2444,7 @@ do
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" -c $TRUST_PROJECT_LEADER -c $TMA_PROJECT_LEADER $TRUST_MAIL
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" $TRUST_PROJECT_LEADER $TMA_PROJECT_LEADER $TRUST_MAIL
                rm -f $log_filtre
 	    fi
          fi
@@ -2491,7 +2491,7 @@ do
        else
           BALTIK_PROJECT_LEADER="TRUST_PROJECT_LEADER"
        fi
-       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
+       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
     fi
     rm tmp.log 2>/dev/null
 done
@@ -2504,7 +2504,7 @@ if [ $KO != 0 ]
 then
    grep "KVALGRIND=KO" $REP_NUIT/CR_*
    (
-   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
    )
    #valgrind=0 # Test provisoire : en attente decision project leader
 fi
@@ -2764,7 +2764,7 @@ then
    echo "    Code coverage $couverture_de_code% >= $couverture_minimale% of lines"
 else
    echo "    Code coverage $couverture_de_code% < $couverture_minimale% of lines"
-   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 (
 # Creation du rapport html
@@ -2876,7 +2876,7 @@ error_log=`grep 'error Doxygen' $credoc_log`
 #echo "    $KO keywords NOT covered by test cases"
 #let NB=$OK+$KO
 # Mail de verification uniquement le week-end
-#[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered ] && cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s\"[lance_test_nuit] Tests coverage credoc: list of keywords NOT covered by test cases\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+#[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered ] && cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s\"[lance_test_nuit] Tests coverage credoc: list of keywords NOT covered by test cases\" $TMA_PROJECT_LEADER $TRUST_MAIL
 #keywords_minimal=77.37 #v1.7.5
 #
 echo "    See $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata* files"
@@ -2902,9 +2902,9 @@ else
    echo "    Keywords coverage $couverture_de_motcle% < $keywords_minimal% tested"
    if [ -f $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested ]
    then
-      cat $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+      cat $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" $TMA_PROJECT_LEADER $TRUST_MAIL
    else
-      echo "No list_keywords_xdata_tested file" | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+      echo "No list_keywords_xdata_tested file" | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" $TMA_PROJECT_LEADER $TRUST_MAIL
    fi
 fi
 echo " "
@@ -2978,7 +2978,7 @@ else
       echo "-------------------------------------------------------------------------------------------" >> $check_log
       echo " " >> $check_log
       [ "$error_log" != "" ] && cat $REP_NUIT/Check_decoupage.ksh_$machine.log >> $check_log
-      cat $check_log | mail_ -s\"[lance_test_nuit] KO Check_decoupage script on $machine\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+      cat $check_log | mail_ -s\"[lance_test_nuit] KO Check_decoupage script on $machine\" $TMA_PROJECT_LEADER $TRUST_MAIL
    fi
    rm -f $check_log
 fi
@@ -3053,7 +3053,7 @@ then
        # Envoi du rapport genere le week-end au project leader
       if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
       then
-         echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+         echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TMA_PROJECT_LEADER $TRUST_MAIL
       else
          echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
       fi
@@ -3102,11 +3102,11 @@ nothing_todo=0 && [ "`grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" = "" ] && n
 for qui in `$TRUST_Awk '!/Qui/ {print $2}' $TRUST_ROOT/ToDo | sort -u`
 do
    grep $qui $TRUST_ROOT/ToDo | grep ${TRUST_VERSION%_beta} > $TRUST_TMP/ToDo
-   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 2 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" -c $TMA_PROJECT_LEADER -c $TRUST_MAIL $qui
+   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 2 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TMA_PROJECT_LEADER $TRUST_MAIL $qui
 done
 # Envoi la liste complete le lundi au chef de projet avant COSUIV pour planning de la semaine
 grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo > $TRUST_TMP/ToDo
-#[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+#[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" $TMA_PROJECT_LEADER $TRUST_MAIL
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -3153,7 +3153,7 @@ then
       # Envoi du rapport genere le week-end au project leader
       if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
       then
-         echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+         echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TMA_PROJECT_LEADER $TRUST_MAIL
       else
          echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
       fi
@@ -3206,7 +3206,7 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #   validation_projets_baltik=1
 #else
 #   validation_projets_baltik=0
-#   cat $log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $PROJECT_ROOT\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+#   cat $log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $PROJECT_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
 #fi
 #echo " "
 #if [ $validation_projets_baltik = 1 ]
@@ -3250,7 +3250,7 @@ do
 	 nb=`grep "Validation XDATA=KO" $Gui_log | wc -l`
          KO=`echo $(($KO+$nb))`
          BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-	 [ $nb != 0 ] && cat $Gui_log | mail_ -s\"[lance_test_nuit] XDATA $Composant $TRUST_VERSION KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+	 [ $nb != 0 ] && cat $Gui_log | mail_ -s\"[lance_test_nuit] XDATA $Composant $TRUST_VERSION KO\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       fi
       Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"$view".log"
       if [ -f $Composant_log ]
@@ -3317,7 +3317,7 @@ do
       then
          if [ $tot_cible != 0 ]
 	 then
-	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
+	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
 	 else
 	    cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
 	 fi
@@ -3405,7 +3405,7 @@ else
    then
       grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO on host:\" $TRUST_MAIL
    else
-      grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+      grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
    fi
 fi
 [ "$KOt" -eq 0 ] && validation_scripts=1
@@ -3456,7 +3456,7 @@ elif [ ! -f $TRUST_ROOT/build/doc/doxygen*.out ]
 then
    validation_doxygen=0 && echo "TRUST Doxygen KO" && echo `ls -la $TRUST_ROOT/build/doc/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation NOT\" $TRUST_MAIL
 fi
-[ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+[ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" $TRUST_MAIL $TMA_PROJECT_LEADER
 for Composant in $Composants
 do
    if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
@@ -3475,7 +3475,7 @@ do
             validation_doxygen=0 && echo "$Composant Doxygen KO" && echo `ls -la $TRUST_ROOT/../Composants/$Composant/build/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation NOT\" $TRUST_MAIL
          fi
          BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-         [ -s $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ] && validation_doxygen=0 && echo "$Composant Doxygen KO" && cat $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+         [ -s $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ] && validation_doxygen=0 && echo "$Composant Doxygen KO" && cat $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation KO\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       fi
    fi
 done
