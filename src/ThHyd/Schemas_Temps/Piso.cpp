@@ -22,7 +22,6 @@
 
 #include <Piso.h>
 #include <Zone_VF.h>
-#include <Navier_Stokes_std.h>
 #include <EChaine.h>
 #include <Debog.h>
 #include <Matrice_Bloc.h>
@@ -93,7 +92,7 @@ Entree& Piso::lire(const Motcle& motlu,Entree& is)
         is >> nb_corrections_max_;
         if (nb_corrections_max_ < 2)
           {
-            Cerr<<"Tere must be at least two corrections steps for the PISO algorithm."<<finl;
+            Cerr<<"There must be at least two corrections steps for the PISO algorithm."<<finl;
             exit();
           }
         break;
@@ -165,13 +164,23 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //resu =  A[Un]Un -(A[Un]Un-Ss) + Sv -BtPn
   gradient.calculer(pression,gradP);
   resu -= gradP;
+
+  //sometimes we need a first special treatement like for ALE for example
+  first_special_treatment( eqn, eqnNS, current, dt, resu );
+
   eqnNS.assembler_avec_inertie(matrice,current,resu);
   le_solveur_.valeur().reinit();
+
+  //sometimes we need a second special treatement like for ALE for example
+  second_special_treatment( eqn, current, resu, matrice );
 
   //Construction de matrice_en_pression_2 = BD-1Bt[Un]
   //Assemblage reeffectue seulement pour algorithme Piso (avancement_crank_==0)
   Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
   SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
+
+
+
   if (avancement_crank_==0)
     {
       assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
@@ -215,7 +224,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   solveur_pression_.resoudre_systeme(matrice_en_pression_2.valeur(),
                                      secmem,correction_en_pression);
   correction_en_pression.echange_espace_virtuel();
-  Debog::verifier("Piso::iterer_NS arpes correction_pression",correction_en_pression);
+  Debog::verifier("Piso::iterer_NS apres correction_pression",correction_en_pression);
 
   if (avancement_crank_==1)
     {
@@ -238,10 +247,13 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       divergence.calculer(current,secmem);
 
       //Calcul de Pn+1 = Pn + (delta_t*delta_P)/delat_t
+      Debog::verifier("Piso::iterer_NS correction avant dt",correction_en_pression);
       correction_en_pression /= dt;
       pression += correction_en_pression;
       eqnNS.assembleur_pression().valeur().modifier_solution(pression);
       pression.echange_espace_virtuel();
+      Debog::verifier("Piso::iterer_NS pression finale",pression);
+      Debog::verifier("Piso::iterer_NS current final",current);
       if (is_QC)
         {
           // on redivise par rho_np_1 avant de sortir
@@ -345,4 +357,24 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   current.echange_espace_virtuel();
   // divergence.calculer(current, secmem); Cerr<<" ici DIVU  "<<mp_max_abs_vect(secmem)<<finl;;
   Cout <<"PISO : "<<nb_corrections_max_<<" corrections to perform the projection."<< finl;
+}
+
+void Piso::first_special_treatment(Equation_base& eqn, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu)
+{
+  //nothing to do
+}
+
+void Piso::second_special_treatment(Equation_base& eqn,DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice)
+{
+  //nothing to do
+}
+
+void Implicite::first_special_treatment(Equation_base& eqn, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu)
+{
+  //nothing to do
+}
+
+void Implicite::second_special_treatment(Equation_base& eqn,DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice)
+{
+  //nothing to do
 }

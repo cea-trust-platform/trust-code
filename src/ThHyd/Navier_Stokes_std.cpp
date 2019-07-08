@@ -802,11 +802,22 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
   // B dU/dt = 0
   // with F explicit terms: sum(operators)+sources
   // In:  derivee = M-1(F - BtP(n))
-  // Out: derivee = M-1(F - BtP(n+1)) P(n+1)=P(n)+Cp
+  // Out: derivee = M-1(F - BtP(n+1)), P(n+1)=P(n)+Cp
+
+  // In case of ALE:
+  // Out: derivee = M-1(F + ALEconvectiveTerm - BtP(n+1)) = derivee_out, P(n+1)=P(n)+Cp
+  // Cp is calculated from the following equation:
+  // (BJ_{n}M-1Bt)Cp=B(J_{n}U_{n}/timestep+J_{n}derivee_out-J_{n+1}U_ALE), J-Jacobian, _{n}- at time n
 
   DoubleTab& tab_pression=la_pression.valeurs();
   DoubleTab& gradP=gradient_P.valeurs();
   DoubleTrav secmemP(tab_pression);
+  DoubleTrav deriveeALE(derivee);
+
+  double timestep=probleme().schema_temps().pas_de_temps();
+
+  // can be used for methods like ALE
+  renewing_jacobians( derivee );
 
   if (div_u_nul_et_non_dsurdt_divu_)
     {
@@ -817,24 +828,42 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
       derivee2*=dt;
       derivee2+=la_vitesse.passe();
       derivee2/=dt;
-      divergence.calculer(derivee2, secmemP); // Div(M-1(F - BtP))
-
+      if( !sub_type(Op_Conv_ALE, terme_convectif.valeur()) ) //No ALE method
+        {
+          divergence.calculer(derivee2, secmemP); // Div(M-1(F - BtP))
+        }
     }
   else
-    divergence.calculer(derivee, secmemP); // Div(M-1(F - BtP))
+    {
+      if( !sub_type(Op_Conv_ALE, terme_convectif.valeur()) ) //No ALE method
+        {
+          divergence.calculer(derivee, secmemP); // Div(M-1(F - BtP))
+        }
+    }
 
-  secmemP *= -1; // car div =-B
-
-  // Correction du second membre d'apres les conditions aux limites :
-  assembleur_pression_.modifier_secmem(secmemP);
+  if( !sub_type(Op_Conv_ALE, terme_convectif.valeur()) ) //No ALE method
+    {
+      secmemP *= -1; // car div =-B
+      // Correction du second membre d'apres les conditions aux limites :
+      assembleur_pression_.modifier_secmem(secmemP);
+    }
 
   // Set print of the linear system solve according to dt_impr:
   solveur_pression_->fixer_schema_temps_limpr(schema_temps().limpr());
 
+  const bool is_PolyMAC = ( discretisation().que_suis_je() == "PolyMAC" );
+  const bool is_ALE = ( sub_type(Op_Conv_ALE, terme_convectif.valeur()) );
+
   if (assembleur_pression_.valeur().get_resoudre_increment_pression())
     {
-      if (discretisation().que_suis_je() != "PolyMAC")
+
+      if ( ! is_PolyMAC )
         {
+          if( is_ALE )
+            {
+              // we don't want to have domaine_ale object here
+              div_ale_derivative( deriveeALE, timestep, derivee, secmemP );
+            }
           // Solve B M-1 Bt Cp = M-1(F - BtP)
           DoubleTrav Cp(tab_pression);
           solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, Cp);
@@ -871,7 +900,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
       // See: http://www.sciencedirect.com/science/article/pii/S0021999108004518
     }
 
-  if (discretisation().que_suis_je() != "PolyMAC") //en PolyMAC, on a deja modifie la vitesse
+  if ( ! is_PolyMAC ) //en PolyMAC, on a deja modifie la vitesse
     {
       // (BM) gradient operator requires updated virtual space in source vector
       // Calculate Bt P(n+1)
@@ -888,24 +917,6 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
       derivee -= Mmoins1gradP;
     }
 
-  if( sub_type(Op_Conv_ALE, terme_convectif.valeur()) )
-    {
-      Nom discr=discretisation().que_suis_je();
-      if (discr != "VEFPreP1B")
-        {
-          Cerr<<"volume_entrelace_Cl used in the mass matrix is wrong for the ALE treatment on the boundaries"<<finl;
-          Cerr<<"(vol_entrelace_Cl=0 for some of the boundaries indeed a correction is necessary) :"<<finl;
-          Cerr<<"the VEFPreP1B discretization mut be used to avoid this problem. "<<finl;
-          exit();
-        }
-      Cerr << "Adding ALE contribution..." << finl;
-      Op_Conv_ALE& opale=ref_cast(Op_Conv_ALE, terme_convectif.valeur());
-      DoubleTrav ALE(derivee); // copie de la structure, initialise a zero
-      opale.ajouterALE(la_vitesse.valeurs(), ALE);
-      solveur_masse.appliquer(ALE);
-      derivee+=ALE;
-      Cerr << "ALE => norme(derivee) = " << mp_norme_vect(derivee) << finl;
-    }
   return derivee;
 }
 
@@ -1241,7 +1252,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier.post_traitement_particulier();
-
+  Debog::verifier("Navier_Stokes_std::mettre_a_jour : pression",  la_pression.valeurs());
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : vitesse", la_vitesse.valeurs());
 }
 
@@ -1259,11 +1270,9 @@ void Navier_Stokes_std::abortTimeStep()
 bool Navier_Stokes_std::initTimeStep(double dt)
 {
   P_n=pression()->valeurs();
-  if (probleme().domaine().que_suis_je()=="Domaine_ALE")
-    {
-      assembleur_pression_.assembler(matrice_pression_);
-      solveur_pression_->reinit();
-    }
+
+  // needed by ALE method and we don't want domaine_ale object in TRUST
+  update_pressure_matrix( );
 
   // Verification que dt_max est correctement fixe pour un champ
   // de vitesse nul et diffusion_implicite active <=> dt_conv=INF
@@ -2006,4 +2015,19 @@ const Champ_Inc& Navier_Stokes_std::rho_la_vitesse() const
   exit();
   throw;
   return rho_la_vitesse();
+}
+
+void Navier_Stokes_std::renewing_jacobians( DoubleTab& derivee )
+{
+  // nothing to do
+}
+
+void Navier_Stokes_std::div_ale_derivative( DoubleTrav& deriveeALE, double timestep, DoubleTab& derivee, DoubleTrav& secmemP )
+{
+  // nothing to do
+}
+
+void Navier_Stokes_std::update_pressure_matrix( void )
+{
+  // nothing to do
 }

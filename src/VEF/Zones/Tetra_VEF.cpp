@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -148,10 +148,19 @@ void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
   double psc;
   double pv[3];
 
-  facette_normales.resize(0,6,3);
-  // valgrind with MPICH says a unitialised here so we initialize:
-  // zone_geom.creer_tableau_elements(facette_normales, Array_base::NOCOPY_NOINIT);
-  zone_geom.creer_tableau_elements(facette_normales);
+  //Original:
+  // facette_normales.resize(0,6,3);
+  // // valgrind with MPICH says a unitialised here so we initialize:
+  // // zone_geom.creer_tableau_elements(facette_normales, Array_base::NOCOPY_NOINIT);
+  // zone_geom.creer_tableau_elements(facette_normales);
+
+  //New similar as in Tri_VEF.cpp
+  if (facette_normales.get_md_vector() != zone_geom.md_vector_elements())
+    {
+      facette_normales.reset();
+      facette_normales.resize(0,6,3);
+      zone_geom.creer_tableau_elements(facette_normales);
+    }
 
   for(i=0; i<nb_elem; i++)
     {

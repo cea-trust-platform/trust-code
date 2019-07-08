@@ -14,60 +14,74 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Ch_front_input.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/9
+// File:        Convection_tools.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <ArrOfInt.h>
+#include <Double.h>
+
+//////////////////////////////////////////////////////////////
+//   Fonctions limiteurs de MUSCL
+////////////////////////////////////////////////////////////////
 
 
-#ifndef Ch_front_input_included
-#define Ch_front_input_included
-
-
-#include <Ch_front_var_instationnaire_dep.h>
-#include <Champ_Input_Proto.h>
-#include <IntTab.h>
-
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Ch_front_input
-//
-//     Cette classe represente un champ accessible par setInputField
-//     defini sur une frontiere avec une valeur par face.
-//
-// .SECTION voir aussi
-//   Champ_Input_Proto
-/////////////////////////////////////////////////////////////////////////////////
-
-class Ch_front_input : public Ch_front_var_instationnaire_dep, public Champ_Input_Proto
+double minmod(double grad1, double grad2)
 {
-  Declare_instanciable(Ch_front_input);
+  double gradlim=0.;
+  if(grad1*grad2>0.) (dabs(grad1)<dabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
+  return gradlim;
+}
 
-public:
+double vanleer(double grad1, double grad2)
+{
+  double gradlim=0.;
+  if(grad1*grad2>0.) gradlim=2.*grad1*grad2/(grad1+grad2) ;
+  return gradlim;
+}
 
-  virtual Champ_front_base& affecter_(const Champ_front_base&)
-  {
-    return *this;
-  }
-  virtual void getTemplate(TrioField& afield) const;
-  virtual void setValue(const TrioField& afield);
-
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  void buildSommetsFaces() const ; // const because used in Ch_Front_input_ALE::getTemplate() which is const - actually updates the 2 members below due to ALE mesh movement:
-
-protected:
-
-  // Factorisation function between several input field classes
-  virtual void set_nb_comp(int i); // calls fixer_nb_comp
-  virtual void set_name(const Nom& ); // calls nommer
-  virtual const Nom& get_name() const; // calls le_nom
-  mutable DoubleTab sommets_; // mutable because of buildSommetsFaces function used in ALE
-  mutable IntTab faces_; // mutable because of buildSommetsFaces function used in ALE
+double vanalbada(double grad1, double grad2)
+{
+  double gradlim=0.;
+  if(grad1*grad2>0.) gradlim=grad1*grad2*(grad1+grad2)/(grad1*grad1+grad2*grad2) ;
+  return gradlim;
+}
 
 
-};
+double chakravarthy(double grad1, double grad2)
+{
+  /*
+    Cerr << " limiteur chakavarthy non preconise (non symetrique) " << finl;
+    exit();
+    return 0;
+  */
+  double gradlim=0.;
+  if ((grad1*grad2)>0)
+    {
+      gradlim=dmin(grad1/grad2,1.8); // 1<<beta<<2
+      gradlim=dmax(gradlim,0.);
+      gradlim*=grad2;
+    }
+  return gradlim;
+}
 
-#endif
-
+double superbee(double grad1, double grad2)
+{
+  /*
+    Cerr << " limiteur superbee non preconise (source d'instabilites) " << finl;
+    exit();
+    return 0;
+  */
+  double gradlim=0.;
+  if ((grad1*grad2)>0)
+    {
+      double gradlim1,gradlim2;
+      gradlim1=dmin(2*(grad1/grad2),1);
+      gradlim2=dmin(grad1/grad2,2);
+      gradlim=dmax(gradlim1,gradlim2);
+      gradlim=dmax(gradlim,0.);
+      gradlim*=grad2;
+    }
+  return gradlim;
+}
