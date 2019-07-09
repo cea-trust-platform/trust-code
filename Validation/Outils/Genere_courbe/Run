@@ -8,9 +8,9 @@
 
 usage()
 {
-echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
-echo the other options are passed to genererCourbes.py
-exit 0
+  echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
+  echo the other options are passed to genererCourbes.py
+  exit 0
 }
 # Chargement de l'environnement Python si necessaire
 #Provisoire pour voir quelles machines ont besoin de python
@@ -87,29 +87,29 @@ if [ $run -ne -2 ]
     then
     $DIR/prepare_gen $orig || exit -1
     if [ "$NBPASMAX" != "" ] 
-	then
-	echo "We modify .data to run only on $NBPASMAX time step"
-	for jdd in `find build -name '*'.data`
-	  do
+    then
+    echo "We modify .data to run only on $NBPASMAX time step"
+    for jdd in `find build -name '*'.data`
+      do
           mv $jdd $jdd.save
-	  # comme dans copie_cas_test sans le solveur 
-	    $TRUST_Awk -v NBPASMAX=$NBPASMAX '/tinit/ {print $0;print "\tnb_pas_dt_max", NBPASMAX ;getline}\
+      # comme dans copie_cas_test sans le solveur 
+        $TRUST_Awk -v NBPASMAX=$NBPASMAX '/tinit/ {print $0;print "\tnb_pas_dt_max", NBPASMAX ;getline}\
    !/nb_pas_dt_max/ {print $0}\
 ' $jdd.save > $jdd
-	done
+    done
     fi
     # dans le cas ou on copie le cas test on verifie que le prm est identique dans src et dans build (cas des prm generes par prepare)
     if [ $run -eq -1 ]
-	then
-	modif=`diff $orig/src/*prm build/${prm}`
-	if [ "$modif" != "" ]
-	then 
-	    echo "-> Problem with $orig/src/*prm and build/${prm}" >/dev/stderr
-	    echo "-> There is a difference between the prm file in build directory and the prm file in the src directory." >/dev/stderr
-	    diff $orig/src/*prm build/${prm} >/dev/stderr
-	    mv build build_err
-	    exit -1    
-	fi
+    then
+    modif=`diff $orig/src/*prm build/${prm}`
+    if [ "$modif" != "" ]
+    then 
+        echo "-> Problem with $orig/src/*prm and build/${prm}" >/dev/stderr
+        echo "-> There is a difference between the prm file in build directory and the prm file in the src directory." >/dev/stderr
+        diff $orig/src/*prm build/${prm} >/dev/stderr
+        mv build build_err
+        exit -1    
+    fi
     fi
 else
 # $DIR/prepare_gen $orig
@@ -125,6 +125,8 @@ cd build
 if [ $run -eq 1 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=yes  -p $prm $*   > cmds
+  python $DIR/scripts/get_nb_procs.py $prm  > nb_procs || exit -1
+
   get_version
   echo "================================================"
   echo "-> Running commands in the ./build/cmds file ..."
@@ -136,11 +138,12 @@ then
      ########################
      # En lancement parallele, on cree des fichiers de nom cmdsN.sh sans le post_run et un fichier post_run.sh contenant les commandes post_run faites sequentiellement
      ########################
-     rm -f post_run.sh cmds*.sh
+     rm -f post_run.sh cmds*.sh nb_cpu*
      nb_tasks=`echo | awk -F";" '/\( echo/ {\
      n++;size=split($5,a," ");\
-     if (size==5) nb_cpus+=a[3];else nb_cpus++;\
-     cmds="cmds"n".sh";cmds_log="cmds"n".log";\
+     if (size==5) { nb_cpus+=a[3]; cur_n_cpu=a[3];} else { nb_cpus++; cur_n_cpu=1; } \
+     if (n < 10) n_str="00"n; else { if (n < 100) n_str="0"n; else n_str=""n; } \
+     cmds="cmds"n_str".sh";cmds_log="cmds"n".log";\
      print $1";"$2";"$3";"$4";"$5") 1>"cmds_log" 2>&1" > cmds;\
      print $1";"$3";"$6";"$7 >> "post_run.sh"}\
      !/\( echo/ {print $0 >> "post_run.sh"}\
@@ -153,35 +156,41 @@ then
         if [ "$parallel" = 2 ] 
         then
             chmod +x ./$cmd
-            $SJOB_DIR/Salloc ./$cmd &
+            nb_proc_one_case=`sed "${n}q;d" nb_procs`
+            echo "Commnand: " $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd
+            $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd &
         else
 
-# See https://stackoverflow.com/questions/1537956/bash-limit-the-number-of-concurrent-jobs	
-function max_bg_procs {
-    if [[ $# -eq 0 ]] ; then
-       echo "Usage: max_bg_procs NUM_PROCS.  Will wait until the number of background (&)"
-       echo "           bash processes (as determined by 'jobs -pr') falls below NUM_PROCS"
-       return
-    fi
-    local max_number=$((0 + ${1:-0}))
-    while true; do
-       local current_number=$(jobs -pr | wc -l)
-       if [[ $current_number -lt $max_number ]]; then
-          break
-       fi
-       sleep 1
-    done
-}
-	    max_bg_procs $TRUST_NB_PROCS
-	    awk -F'"' '{print $2}' $cmd
-            bash ./$cmd &
+          # See https://stackoverflow.com/questions/1537956/bash-limit-the-number-of-concurrent-jobs    
+          function max_bg_procs {
+              if [[ $# -eq 0 ]] ; then
+                 echo "Usage: max_bg_procs NUM_PROCS.  Will wait until the number of background (&)"
+                 echo "           bash processes (as determined by 'jobs -pr') falls below NUM_PROCS"
+                 return
+              fi
+              local max_number=$((0 + ${1:-0}))
+              while true; do
+                 local current_number=$(jobs -pr | wc -l)
+                 if [[ $current_number -lt $max_number ]]; then
+                    break
+                 fi
+                 sleep 1
+              done
+          }
+          max_bg_procs $TRUST_NB_PROCS
+          awk -F'"' '{print $2}' $cmd
+          bash ./$cmd &
+
         fi
      done
      wait
+
      # Lancement du post_run 
      bash ./post_run.sh
   fi
 fi
+
+
 if [ $run -eq 2 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=${suff}_run  -p $prm $*   > cmds_${suff}
@@ -192,24 +201,25 @@ then
   bash cmds_${suff}
 fi
 
+
 if [ $run -le -1 ]
 then
     list_tot=`python $DIR/src/genererCourbes.py -p $prm  --get_cmd_to_run=yes| grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"  `
     if [ -f liste_cas_exclu_nr ]
-	then
-	list_cas_nr="" 
-	for cas in $list_tot
-	  do
-	  if [ "`grep $cas liste_cas_exclu_nr`" = "" ]
-	      then
-	      list_cas_nr=${list_cas_nr}" "$cas
-	  else
-	      echo not_in_nr    $cas not in nr
-	  fi
-	done
-	echo "liste_cas_nr" $list_cas_nr 
+    then
+    list_cas_nr="" 
+    for cas in $list_tot
+      do
+      if [ "`grep $cas liste_cas_exclu_nr`" = "" ]
+          then
+          list_cas_nr=${list_cas_nr}" "$cas
+      else
+          echo not_in_nr    $cas not in nr
+      fi
+    done
+    echo "liste_cas_nr" $list_cas_nr 
     else
-	echo "liste_cas_nr" $list_tot
+    echo "liste_cas_nr" $list_tot
     fi
     exit
 fi
@@ -217,17 +227,18 @@ if [ $run -ne 0 ]
 then
     if [ "`grep erreur_calcul temps_total`" != "" ]
     then 
-	echo
-	echo 
-	cat temps_total
-	echo
-	echo
-	echo "-> Error in: python $DIR/src/genererCourbes.py -p $prm $*"
-	echo "-> Search and fix all the previous errors."
-	exit 1
+    echo
+    echo 
+    cat temps_total
+    echo
+    echo
+    echo "-> Error in: python $DIR/src/genererCourbes.py -p $prm $*"
+    echo "-> Search and fix all the previous errors."
+    exit 1
     fi
 fi
 echo "=============================="
 echo "-> Building PDF report file..."
 echo "=============================="
 python $DIR/src/genererCourbes.py -p $prm $*
+

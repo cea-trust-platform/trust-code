@@ -12,26 +12,42 @@ fi
 
 get_list_prm_from_Times()
 {
-file=$1
-list=""
-for cas in `awk '{print $NF}' $file`
-do
-cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow | grep -v '/src/'`
-list=$list" "$cadt
-done
-echo $list
+  file=$1
+  list=""
+  for cas in `awk '{print $NF}' $file`
+    do
+    cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow | grep -v '/src/'`
+    if [ ! -f $cadt/skip_prm ]; then
+      list=$list" "$cadt
+    fi
+    done
+  
+  # Complete with other PRM (to get new ones) at top of the list
+  lst_full=`get_list_prm`
+  extras=""
+  for p in $lst_full
+    do
+    echo $list | grep -q $p
+    if [ $? != 0 ]
+      then extras=$extras" "$p
+      fi
+    done
+  list=$extras" "$list
+  echo $list
 }
+
+
 get_list_prm()
 {
     for dir in `find $Rapports_auto_root/Validation/Rapports_automatiques -name '*.prm' -follow  | grep '/src/'`
       do
       cas=`dirname $dir`
       if [ "`basename $cas`" != "src" ]
-	  then
-	  echo "$dir bizarre!!!!"
+      then
+      echo "$dir bizarre!!!!"
       else
         dirn_cas=`dirname $cas`
-	    if [ ! -f $dirn_cas/skip_prm ]
+        if [ ! -f $dirn_cas/skip_prm ]
         then
           echo `dirname $cas`
         fi
@@ -56,55 +72,70 @@ genere_fiche()
       opt="-parallel_sjob"
     fi 
     if [ $concurent -eq 0 ] ||  [ ! -d BUILD/$cas/build ]
-	then
-	[ ! -d BUILD ] && echo `pwd` pas de build && exit 
-        echo $cas non existant on lance la generation de la fiche $dir
-        #  pwd
-	# GF le / apres dir est important pour ne pas copier le lien
-	# le -L pour copier les liens en tant que fichier 
-	cp -rL $dir/ BUILD
-	chmod -R +w  BUILD/$cas
-	cd BUILD/$cas
-	touch Running$OPTIONS_PRM
-	${GENERE_COURBE}/Run $prm $opt  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
+    then
+      [ ! -d BUILD ] && echo `pwd` pas de build && exit 
+      echo $cas non existant on lance la generation de la fiche $dir
+      # GF le / apres dir est important pour ne pas copier le lien
+      # le -L pour copier les liens en tant que fichier 
+      cp -rL $dir/ BUILD
+      chmod -R +w  BUILD/$cas
+      cd BUILD/$cas
+      touch Running$OPTIONS_PRM
+      echo "@@@ About to execute Run script ..."
+      ${GENERE_COURBE}/Run $prm $opt  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
+      status=$?
+      echo "@@@ Done executing Run script."
 
-	if [ ! -f build/rapport.pdf ]
-	    then
-	    echo pb avec le rapport $dir
-	    ko=1
-	else
-	    
-	    cp build/rapport.pdf $org/archives/$cas.pdf
-	 ###   ${GENERE_COURBE}/src/genere $prm 
-	    if [ $pdf_only -eq  0 ]
-	     then
-	    ${GENERE_COURBE}/Run $prm $opt -archive 1>arc.log 2>&1
-	    status=$?
-	    if [ $status -ne 0 ] 
-		then
-		echo "pb avec Run_archive $dir"
-		ko=2
-		else
-		mv preserve.tgz $org/archives/$cas.tgz
-		rm -rf build
-		fi
-	    fi
-	fi
-	if [ $ko -eq 0 ]
-	then
-	    mv 	Running$OPTIONS_PRM ../deps_$(basename $dir)
-	else
-	    mv 	Running$OPTIONS_PRM KO$OPTIONS_PRM
-	fi
+      if [ ! -f build/rapport.pdf ] || [ "$status" != "0" ]
+          then
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          echo "!!! Error with report $dir"
+          echo "!!! Below is a cat of the logs found in `pwd`/run$OPTIONS_PRM.log"
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          cat run$OPTIONS_PRM.log
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          ko=1
+      else
+          cp build/rapport.pdf $org/archives/$cas.pdf
 
-	cd $org
+          if [ $pdf_only -eq  0 ]; then
+            echo "@@@ About to execute Run -archive ..."
+            ${GENERE_COURBE}/Run $prm $opt -archive 1>arc.log 2>&1
+            status=$?
+            echo "@@@ Done Run -archive"
+            if [ $status -ne 0 ]; then
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo "!!! Error with Run_archive $dir"
+              echo "!!! Below is a cat of the logs found in `pwd`/arc.log"
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              cat arc.log
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              ko=2
+            else
+              mv preserve.tgz $org/archives/$cas.tgz
+              rm -rf build
+            fi
+          fi
+      fi
+      if [ $ko -eq 0 ]; then
+         mv     Running$OPTIONS_PRM ../deps_$(basename $dir)
+      else
+         mv     Running$OPTIONS_PRM KO$OPTIONS_PRM
+      fi
+
+      cd $org
     else
-	echo BUILD/$dir existe and mode concurrent, on ne lance pas la fiche
+      echo BUILD/$dir existe and mode concurrent, on ne lance pas la fiche
     fi
 
     return $ko
 }
 
+###
+### MAIN
+###
 
 org=`pwd`
 
@@ -122,7 +153,7 @@ with_sjob=0
 liste_prm=`get_list_prm`
 [ "$1" = "-from-Times" ] && shift && file=$1 && shift&& liste_prm=`get_list_prm_from_Times $file` 
 force=0
-[ "$*" != "" ] && echo on passe les cas precises && liste_prm="$@" && force=1 
+[ "$*" != "" ] && echo On passe les cas precises && liste_prm="$@" && force=1 
 echo $liste_prm
 echo " cas en double ? "
 for dir in $liste_prm
@@ -138,7 +169,9 @@ then
   do 
     cas=`basename $dir`
     
+    echo "@@ About to genere_fiche"
     genere_fiche $dir
+    echo "@@ Done genere_fiche"
   
     [ $ko -ne 0 ] && echo pb au run ??? && exit -1
   done
@@ -165,9 +198,9 @@ do
       then
       te=`find $dir/src -newer $org/archives/$cas.pdf -type f`
       if [ "$te" != "" ]
-	  then
-	  echo $cas.pdf plus vieux que $te , on lance la generation de la fiche $dir
-	  genere_fiche $dir
+      then
+      echo $cas.pdf plus vieux que $te , on lance la generation de la fiche $dir
+      genere_fiche $dir
       fi
   fi
 done
@@ -179,9 +212,9 @@ do
   if [  -f $org/archives/$cas.pdf ]
       then
       if [ $org/archives/$cas.pdf -ot $exec ]
-	  then 
-	  echo $cas.pdf plus vieux que $exec , on lance la generation de la fiche $dir
-	  genere_fiche $dir
+      then 
+      echo $cas.pdf plus vieux que $exec , on lance la generation de la fiche $dir
+      genere_fiche $dir
       fi
   fi
 done

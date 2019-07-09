@@ -4,28 +4,40 @@
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
 
-[ "$1" = "" ] && echo usage $0 nb_proc
-if [ $1 -le -1 ]
-then
-echo on arrete le serveur
-python $DIR/lib/client.py stop
-exit 0 
+usage="Usage: $0 <nb_proc>"
+[ "$1" = "" ] && echo $usage
+if [ $1 -le -1 ]; then
+   echo Stopping server ...
+   if [ $1 -le -2 ]; then
+     python3 $DIR/lib/client.py kill_and_stop
+   else
+     python3 $DIR/lib/client.py stop
+   fi
+   exit 0 
 fi
 
 # on teste le serveur
+echo Testing if server is alive ...
 $DIR/Squeue 1> /dev/null 2>&1
-if [ $? -ne 0 ]
+running=$?
+if [ $running -ne 0 ]
 then
-echo we start the server
-python $DIR/lib/test_server.py  &
-sleep 1
+    echo Starting the server ...
+    python3 $DIR/lib/server.py  &
+    sleep 1
+else
+    echo Server is already running!
 fi
-python $DIR/lib/client.py set_nb_proc $1
 
+python3 $DIR/lib/client.py set_nb_proc $1
+python3 $DIR/lib/client.py set_nb_proc_max $1
 
-$DIR/Squeue
-status=$?
-[ $status -ne 0 ] && exit $status
+if [ $running -ne 0 ]
+then
+   $DIR/Squeue
+   status=$?
+   [ $status -ne 0 ] && exit $status
+fi
 
 # on attend la fin du server
 wait

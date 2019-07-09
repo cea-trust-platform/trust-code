@@ -1,17 +1,17 @@
 # Build stuff
 build/
-MonoDir*/
-lib/
-exec/
-externalpackages/
-externalpackages
-include/
-env/
-env_TRUST.sh
+/MonoDir*/
+/exec/
+/externalpackages/
+/externalpackages
+/include/
+/lib/
+/env/
+/env_TRUST.sh
 Makefile
 *.log
 convert_jdd
-gcov/
+/gcov/
 hierarchie.dump
 liste_cas
 md5.check

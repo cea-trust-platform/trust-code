@@ -2,25 +2,26 @@
 
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
-#trap "python $DIR/lib/client.py finish $$;exit 1" HUP INT PIPE QUIT TERM KILL ABRT
-trap "python $DIR/lib/client.py finish $$;exit 1"  INT PIPE QUIT TERM KILL ABRT
+#trap "python3 $DIR/lib/client.py finish $$;exit 1" HUP INT PIPE QUIT TERM KILL ABRT
+trap "python3 $DIR/lib/client.py finish $$;exit 1"  INT PIPE QUIT TERM KILL ABRT
 NB=1
-if [ $1 = "-n" ]
-then
- shift
- NB=$1
- shift
+if [ $1 = "-n" ]; then
+  shift
+  NB=$1
+  shift
 fi
 
-if [ "$RUNNING_IN_SALLOC" != "" ]
-then
-PERE=$RUNNING_IN_SALLOC
+if [ "$RUNNING_IN_SALLOC" != "" ]; then
+  PERE=$RUNNING_IN_SALLOC
+else
+  PERE=-1
 fi
 export RUNNING_IN_SALLOC=$$
-python $DIR/lib/client.py srun $NB $$ $PERE
-[ $? -ne 0 ] && echo pb with server && exit -1
+python3 $DIR/lib/client.py srun $NB $$ $PERE "$@"
+status=$?
+[ $status -ne 0 ] && echo ERROR: problem with Sserver or job killed!!! Exiting. && exit -1
 eval "$@"
 status=$?
-python $DIR/lib/client.py finish $$
+python3 $DIR/lib/client.py finish $$
 exit $status
 
