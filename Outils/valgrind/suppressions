@@ -90,13 +90,14 @@
 {
    <update_to_petsc_3_10_d>
    Memcheck:Leak
+   ...
    fun:malloc
    fun:hypre_MAlloc
-   fun:hypre_fp_malloc_init
-   fun:hypre_SetUpFactor
+   ...
    fun:hypre_SetUpLUFactor
    fun:HYPRE_DistributedMatrixPilutSolverSetup
    fun:HYPRE_ParCSRPilutSetup
+   ...
 }
 
 ###
@@ -130,9 +131,9 @@
    fun:walk_type_array
    fun:check_mem_is_defined
    fun:PMPI_Pack
-   fun:MPI_PACK
    ...
 }
+
 
 # Triggered by 3D_P0P1Pa_perio
 # Triggered by OpDiffP1B_mixte_vitesse_implicite_3D
@@ -255,7 +256,6 @@
    fun:KSPInitializePackage
    fun:KSPCreate
 }
-
 ###
 ### Intel related suppressions
 ###
@@ -291,7 +291,82 @@
    fun:_Z9split_motRK3Nom
    ...
 }
+###
+### 08/04/19 : TMA Integration PolyMac
+### on is221556 Ubuntu 16.04.6, g++ 5.4.0, mpich 3.2
+### Couplage_Implicite_Instationnaire_jdd1
+### Echange_impose_VEF_jdd1
+### ThHyd_keps_VEF_impl
+### VAHL_DAVIS_VEFPreP1B_impl
+### Kernel_penta 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:memalign
+   fun:PetscMallocAlign
+   fun:PetscMallocA
+   ...
+   fun:PetscFunctionListAdd_Private
+   fun:MatRegister
+   fun:KSPMatRegisterAll
+   fun:KSPInitializePackage.part.1
+   fun:KSPCreate
+}
+{
+   <zone_vf_Open_MPI>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:opal_class_initialize
+   fun:ompi_free_list_grow
+   ...
+   fun:PMPI_Ibarrier
+   fun:PetscCommBuildTwoSidedFReq_Ibarrier
+   fun:PetscCommBuildTwoSidedFReq
+   fun:MatStashScatterBegin_BTS
+   fun:MatStashScatterBegin_Private
+   fun:MatAssemblyBegin_HYPRE
+   ...
+}
 
+###
+### TMA PolyMAC v1.7.8 related suppressions 
+###
+
+# 19/02/19 on is221556 (MPICH 3.2), Ubuntu 16.04.5 LTS
+# For test cases : PAR_fvca8_jdd10, 13, 5, 7
+#                  PAR_hydrostatique_3D_jdd1-6
+{
+   <PAR_fvca8_1>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:generic_Isend
+   fun:PMPI_Isend
+}
+{
+   <PAR_fvca8_2>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:mpi_pack
+   fun:__dmumps_buf_MOD_dmumps_buf_send_blocfacto
+   fun:__dmumps_fac_front_type2_aux_m_MOD_dmumps_send_factored_blk
+   fun:__dmumps_fac2_lu_m_MOD_dmumps_fac2_lu
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatFactorNumeric_MUMPS
+   fun:MatLUFactorNumeric
+   fun:PCSetUp_LU
+}
 
 ###
 ###  CLANG related suppressions
@@ -341,6 +416,21 @@
    fun:PMPI_Init_thread
    fun:PetscInitialize
    ...
+}
+## 22/01/2019: TMA TRUST for update of Petsc in version 3.10
+## on is234639 Ubuntu 16, clang++3.8.0_2, OpenMPI 2.0.4
+## for test case: Upwind
+{
+   <upwind_clang_3_8_0_2>
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:opal_libevent2022_event_mm_realloc_
+   fun:poll_dispatch
+   fun:opal_libevent2022_event_base_loop
+   fun:opal_progress
+   fun:ompi_mpi_finalize
+   fun:PetscFinalize
 }
 # Also triggered 
 { 
