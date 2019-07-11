@@ -8,6 +8,8 @@ def get_nb_procs( filename ) :
     test_cases=["TESTCASE","CASTEST"]
     
     all_nb_procs=[]
+    # Initialisation de all_nb_procs pour le cas de fiches sans cas tests (construits a la volee)
+    all_nb_procs.append( 1 )
     with open( filename, "r" ) as f:
         for line in f :
             split = line.split( )
