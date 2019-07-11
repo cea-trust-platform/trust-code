@@ -69,6 +69,11 @@ export OPT
 # initialisation des variables utiles
 project_directory=`pwd`
 export project_directory
+# source de l'environnement du baltik
+for envsh in $( ls env_* )
+do
+    source $envsh
+done
 
 project_configuration_file="${project_directory}/project.cfg"
 if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
