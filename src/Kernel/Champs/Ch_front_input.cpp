@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,26 +101,9 @@ void Ch_front_input::getTemplate(TrioField& afield) const
   affecte_int_avec_inttab(&afield._connectivity,faces);
 }
 
-// Description
-// Uses the first value in afield as uniform value, regardless of geometry.
-void Ch_front_input::setValue(const TrioField& afield)
+// In the case of a mobile mesh (ALE frame) we need to call this function after each displacement of the mesh
+void Ch_front_input::buildSommetsFaces() const
 {
-  for (int i=1; i<les_valeurs->nb_cases(); i++)
-    Champ_Input_Proto::setValueOnTab(afield,les_valeurs[i].valeurs());
-  Gpoint(afield._time1,afield._time2);
-}
-int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
-{
-  if (!Ch_front_var_instationnaire_dep::initialiser(temps,inco))
-    return 0;
-
-  /*
-    if (nb_comp()==1)
-    for (int i=0;i<les_valeurs->nb_cases();i++)
-    les_valeurs[i].valeurs()=9.9e5;
-  */
-
-
   const DoubleTab& sommets_org=(mon_pb->domaine().les_sommets());
   DoubleTab& sommets=sommets_;
   sommets.resize(sommets_org.dimension_tot(0),sommets_org.dimension(1));
@@ -157,7 +140,28 @@ int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
     for (int s=0; s<faces.dimension(1); s++)
       faces(f,s) = faces_org(f, s) >= 0 ? marqueur(faces_org(f,s)) : -1;
 
+}
 
+// Description
+// Uses the first value in afield as uniform value, regardless of geometry.
+void Ch_front_input::setValue(const TrioField& afield)
+{
+  for (int i=1; i<les_valeurs->nb_cases(); i++)
+    Champ_Input_Proto::setValueOnTab(afield,les_valeurs[i].valeurs());
+  Gpoint(afield._time1,afield._time2);
+}
+int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
+{
+  if (!Ch_front_var_instationnaire_dep::initialiser(temps,inco))
+    return 0;
+
+  /*
+    if (nb_comp()==1)
+    for (int i=0;i<les_valeurs->nb_cases();i++)
+    les_valeurs[i].valeurs()=9.9e5;
+  */
+
+  buildSommetsFaces();
 
   return 1;
 }

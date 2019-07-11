@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -145,6 +145,13 @@ public :
 
 
   virtual const Champ_Inc& rho_la_vitesse() const;
+
+  inline Operateur_Conv& get_terme_convectif();
+
+  virtual void renewing_jacobians( DoubleTab& derivee );
+  virtual void div_ale_derivative( DoubleTrav& derivee_ale, double timestep, DoubleTab& derivee, DoubleTrav& secmemP );
+  virtual void update_pressure_matrix( void );
+
 protected:
   virtual void discretiser_assembleur_pression();
 
@@ -327,5 +334,11 @@ inline void Navier_Stokes_std::associer_fluide(const Fluide_Incompressible& un_f
 {
   le_fluide = un_fluide;
 }
+
+inline Operateur_Conv& Navier_Stokes_std::get_terme_convectif()
+{
+  return terme_convectif;
+}
+
 
 #endif

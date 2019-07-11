@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,9 +39,7 @@ public :
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
   virtual DoubleTab& ajouterALE(const DoubleTab&, DoubleTab& ) const=0;
-  virtual DoubleTab& supprimerALE(const DoubleTab&, DoubleTab& ) const=0;
-  //    const Domaine_ALE& domaine_ALE() const;
-  //    Domaine_ALE& domaine_ALE();
+
 
 protected :
   Operateur_Conv op_conv;
