@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 
 echo "def Extract_Times [-revert] DIR [<output_dir>]"
@@ -122,7 +122,12 @@ compare_pdf_batch()
     ref=$2
 
     base_ref=`basename $ref .pdf`
-    base_new=`basename $new .pdf`  
+    base_new=`basename $new .pdf` 
+
+    ppm_dir_ref1="ppms/ppm_ref_"
+    ppm_dir_new1="ppms/ppm_new_"
+    ppm_dir_diff1="ppms/ppm_diff_"
+ 
     ppm_dir_ref="ppms/ppm_ref_${base_ref}"
     ppm_dir_new="ppms/ppm_new_${base_new}"
     ppm_dir_diff="ppms/ppm_diff_${base_ref}"
@@ -137,7 +142,7 @@ compare_pdf_batch()
 
     for file_ref in `ls $ppm_dir_ref/${base_ref}_oo*ppm`
     do
-      file_new=`echo $file_ref | sed "s?$ppm_dir_ref?$ppm_dir_new?; s?$base_ref?$base_new?"`
+      file_new=`echo $file_ref | sed "s?$ppm_dir_ref1?$ppm_dir_new1?; s?$base_ref?$base_new?g"`
       diff $file_ref $file_new 1> /dev/null 2>&1
       if [ $? == 0 ]
       then
