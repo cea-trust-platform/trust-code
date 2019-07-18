@@ -125,7 +125,7 @@ then
          else
             rm -f $marqueur
          fi      
-         [ $err -ne 0 ] && erreur=$err && echo Error in `pwd` && echo
+         [ $err -ne 0 ] && erreur=$err && echo WARNING: error in `pwd` && echo
          cd $project_build_directory
       fi
    done
