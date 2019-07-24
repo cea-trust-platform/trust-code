@@ -1,6 +1,5 @@
-XX/XX/18 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 
 -------------------------------------------------------------
-Developer notes version 1.7.9_beta : Changes since version 1.7.8 :
+Developer notes version 1.7.9 : Changes since version 1.7.8 :
 -------------------------------------------------------------
 27/06/19 (TRUST)  Rewrote Sjob/Sserver: see full documentation in bin/Sjob/README
 26/06/19 (TRUST)  Fixes on PolyMAC solver for Flica5 project

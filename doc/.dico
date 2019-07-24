@@ -142,6 +142,7 @@
  Champ_Inc_Q1_base Champ_Inc_Q1_base Champ_Inc_Q1_base.h
  champ_init_canal_sinal champ_init_canal_sinal champ_init_canal_sinal.h
  Champ_input_P0 Champ_input_P0 Champ_input_P0.h
+ Champ_input_uniforme Ch_input_uniforme Ch_input_uniforme.h
  Champ_Ostwald Champ_Ostwald Champ_Ostwald.h
  Champ_Ostwald_VDF Champ_Ostwald_VDF Champ_Ostwald_VDF.h
  Champ_Ostwald_VEF Champ_Ostwald_VEF Champ_Ostwald_VEF.h
@@ -773,8 +774,10 @@
  Partitionneur_Fichier_Decoupage Partitionneur_Fichier_Decoupage Partitionneur_Fichier_Decoupage.h
  Partitionneur_Metis Partitionneur_Metis Partitionneur_Metis.h
  Partitionneur_Partition Partitionneur_Partition Partitionneur_Partition.h
+ Partitionneur_Sous_Domaine Partitionneur_Sous_Domaine Partitionneur_Sous_Domaine.h
  Partitionneur_Sous_Zones Partitionneur_Sous_Zones Partitionneur_Sous_Zones.h
  Partitionneur_Tranche Partitionneur_Tranche Partitionneur_Tranche.h
+ Partitionneur_Union Partitionneur_Union Partitionneur_Union.h
  Pave Pave Pave.h
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h

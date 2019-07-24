@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ private :
   int version_;
   int facsec_auto_;
 
-  bool sous_zone;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
+//  bool sous_zone;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
   Nom nom_sous_zone;
   REF(Sous_zone_VF) la_sous_zone_dis;
 

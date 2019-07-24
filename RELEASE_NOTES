@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------------------
-Release notes version 1.7.9_beta : Enhancements, modifications and corrected bugs since version 1.7.8 :
+Release notes version 1.7.9 : Enhancements, modifications and corrected bugs since version 1.7.8 :
 -------------------------------------------------------------------------------------------------------
 26/06/19 (TRUST)  Bug fixed   : Probes on polyhedral meshes
 28/05/19 (TRUST)  New feature : 'Create_domaine_from_sous_zone' now propagates the zone information to the sub-domains.

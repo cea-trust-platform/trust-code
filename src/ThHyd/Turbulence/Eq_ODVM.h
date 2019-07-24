@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,8 +105,8 @@ private :
 
   int N;                                // Number of grid-points in the 1-D mesh.
   int compt;
-  double dy, y0, yn, dt, u_tau, nu, alpha, Theta, dy_w;
-  double tn,tn1;
+  double dy, y0, dt, u_tau, nu, alpha, Theta, dy_w;
+  double tn;
   double gamma;                                // Temporal filter parameter.
   double facteur; //stretching factor
 

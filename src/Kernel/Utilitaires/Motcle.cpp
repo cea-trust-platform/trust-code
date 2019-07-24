@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -251,7 +251,7 @@ int Motcle::selftest()
   un_nom="Ok";
   un_motcle=un_nom;
   un_motcle="Ok";
-  un_motcle=un_motcle;
+  un_motcle=un_autre;
   return 1;
 }
 
