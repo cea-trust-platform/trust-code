@@ -11,7 +11,7 @@ then
    source $env
    # Look for CMakeLists.txt
    CMakeLists=`ls build/src/CMakeLists.txt ../build/src/CMakeLists.txt src/CMakeLists.txt ../src/CMakeLists.txt 2>/dev/null`
-   if [ $CMakeLists != "" ]
+   if [ "$CMakeLists" != "" ]
    then 
       CMakeLists=`pwd`/$CMakeLists
       PROJECT_ROOT=`dirname $CMakeLists`
