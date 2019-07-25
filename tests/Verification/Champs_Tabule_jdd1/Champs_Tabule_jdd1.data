@@ -1,0 +1,101 @@
+# Conduction 2D : Diverses conditions limites thermiques #
+# PARALLEL NOT #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 5 2 
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Gauche   Y = 1. 0. <= X <= 1.
+		Bord Gauche    Y = 0. 0. <= X <= 1.
+		Bord Gauche X = 1. 0. <= Y <= 1.
+	}
+} 
+
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 10.
+	dt_min 0.1
+	dt_max 0.1
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.01
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+	Conduction
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1 0. 
+			}
+		boundary_conditions {
+			Gauche paroi_adiabatique
+		}
+	Sources { 
+	puissance_thermique champ_tabule_temps 1   { 3  1. 2. 4.  2. 2. -1. }  
+	}
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+	        P puissance_volumique periode .05 points 1 0.45 0.45
+		}
+	format lml
+		fields dt_post 0.5 
+		{
+			puissance_volumique elem
+			
+		}
+	}
+}
+
+Solve pb
+
+End
