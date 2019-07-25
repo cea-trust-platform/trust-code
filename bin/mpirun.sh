@@ -108,8 +108,8 @@ case $Mpirun in
 		      then
 			  echo "On rajoute les breakpoints inclus dans le fichier break_points"
 			  cat break_points >> $gdb_options
-		      fi			  
-                      echo gdb $exec -x $gdb_options > $gdb
+		      fi		
+                      echo gdb -q $exec -x $gdb_options > $gdb
                       chmod +x $gdb
 		      # Attention xterm -e sur Mandriva 2008 n'accepte plus qu'une seule commande derriere -e
 		      if [ $MPI = "OPENMPI" ]
