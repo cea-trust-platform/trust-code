@@ -1525,7 +1525,7 @@ Composant="triocfd"
   [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
 #done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+#echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
@@ -3932,8 +3932,8 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
-   echo " " >> $MESSAGES_NUIT
-   echo "TRUST support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+#   echo " " >> $MESSAGES_NUIT
+#   echo "TRUST support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
@@ -3997,7 +3997,7 @@ Table of contents
 6. Version tested on several OS
 7. Version portability with several compilers
 
-TRUST support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+TRUST support team: $TRUST_MAIL  
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4099,7 +4099,7 @@ Table of contents
 2. How to run preinstalled version?
 3. $Composant Release notes
 
-TRUST/TrioCFD support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+TRUST/TrioCFD support team: $TRUST_MAIL  
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4189,7 +4189,7 @@ New TrioMC version released v"$new"
 1. How to run preinstalled version?
 2. $Composant Release notes
 
-TRUST/TrioMC support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+TRUST/TrioMC support team: $TRUST_MAIL 
 MATHYS support team: mathys@cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON

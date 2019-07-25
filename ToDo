@@ -1,20 +1,17 @@
 Version	Qui				Tache
 
-1.7.9   trust@cea.fr            LDC: ouvrir une DI pour mise à jour des supports de formation (si besoin) et bon de livraison des slides (cf DI166409)
-1.7.9   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
-1.7.9   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
-1.7.9   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.7.9   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+1.8.0   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 
-
+1.8.0   trust@cea.fr            AGL: suppression de trio-u.cea.fr -> mettre le nvo site dans lance_test_nuit, bin/admin/checkin_patch.ct, bin/admin/cree_index.html retiré pour 179
+1.8.0   trust@cea.fr            LDC: ouvrir une DI pour "Branches à intégrer dans TRUST pour prochaine version 1.8.0" (cf DI162165)
 1.8.0   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 171680)
 1.8.0   trust@cea.fr            LDC: ouvrir une DI pour installation réseau (cf di 166668)
 1.8.0   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 166635)
-1.8.0   trust@cea.fr            LDC: ouvrir une DI pour mise à jour des supports de formation (si besoin) et bon de livraison des slides (cf DI166409)
+1.8.0   trust@cea.fr            LDC: ouvrir une DI pour mise à jour des supports de formation (si besoin) et bon de livraison des slides (cf DI171775)
 1.8.0   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.0   trust@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
 1.8.0   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
-1.8.0   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
+1.8.0   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
 1.8.0   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon et vefprep1b
 1.8.0   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commenté à la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
 1.8.0   trust@cea.fr            LDC: Corriger sources TRUST pour l'erreur valgrind ajoutée au fichier suppression le 11/12/18.
@@ -22,11 +19,11 @@ Version	Qui				Tache
 1.8.0   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.8.0   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code et la mettre sous doc/Coverage
 1.8.0   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
-1.8.0   trust@cea.fr            LDC: ouvrir une DI pour "Branches à intégrer dans TRUST pour prochaine version 1.8.0" (cf DI162165)
-1.7.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'année)
-1.7.x   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
-1.7.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.7.x   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code et la mettre sous doc/Coverage
-1.7.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
-1.7.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+
+1.8.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'année)
+1.8.x   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
+1.8.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
+1.8.x   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code et la mettre sous doc/Coverage
+1.8.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
+1.8.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 
