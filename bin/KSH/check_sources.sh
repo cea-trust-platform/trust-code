@@ -69,7 +69,7 @@ check_src_in_gc()
 
 check_recent_src()
 {
-    file=$1
+    file=`ls -l $1 | awk '{print $NF}'` # Pour pointer sur le bon fichier si lien dans Baltik
     indent_file.sh $file
     
     # pas daccumulation de <<  sinon cela met des heures avec gcc 6.6.1 #
