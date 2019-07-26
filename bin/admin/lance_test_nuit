@@ -920,10 +920,10 @@ echo "###############################################"
               then
                  echo "Composants/$Composant">>$rebase_log
 	         cd $TRUST_ROOT/../Composants/$Composant
-	         # git rebase Livraison 1>>$rebase_log 2>&1
-	         # [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
-	         # git rebase --continue 1>>$rebase_log 2>&1
-	         # [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
+#	          git rebase Livraison 1>>$rebase_log 2>&1
+#	          [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
+#	          git rebase --continue 1>>$rebase_log 2>&1
+#	          [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
                  git remote update
                  git checkout .
                  git checkout portage_179

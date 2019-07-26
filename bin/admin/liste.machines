@@ -1,6 +1,6 @@
 5arch	maj		recup		hostname		Update	lance_test	baltiks							Tasks		Options	
 linux	rsync_ssh	tache		is221559.intra.cea.fr				-TRUST -MPCube -TrioCFD -GENEPI3 					-force_provided_mpich			# Debien 9  	Bat 451 LGLS	ancienne Gauthier Fauchet (Couplage Cathare/TRUST)
-linux	scp_ssh		cible		is213120.intra.cea.fr				-TRUST -TrioCFD -TrioMC	-IJK-FT					-force_provided_mpich				# Fedora 20	Bat 451 LMEC	bureau TMA FLICA4
+linux	scp_ssh		cible		is213120.intra.cea.fr				-TRUST -TrioCFD -TrioMC	-IJK-FT	MATHYS				-force_provided_mpich				# Fedora 20	Bat 451 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	tache		is234639-clang.intra.cea.fr			-TrioCFD 						-clang38	-force_provided_openmpi	-disable-gmsh	# Fedora 29 	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 			-gcov		-force_provided_mpich			# CentOS 6.4 	Bat 451 LMEC	bureau TMA GENEPI2
 linux	rsync_ssh	cible		is212957.intra.cea.fr				-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC				-force_provided_mpich 			# Ubuntu 16     Bat 451 LMEC    bureau TMA TRUST
@@ -36,7 +36,7 @@ linux	rsync_ssh	non		is212915.intra.cea.fr				-MATHYS							-g 	-force_provided_
 linux	rsync_ssh	non		is223278.intra.cea.fr		-all		-GENEPI3 								-disable-mpi 				# CentOS 7.6	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223279.intra.cea.fr		-all		-TrioMC -FLICA5 -GENEPI3						-disable-petsc	-without-pdflatex	# CentOS 7.6	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225220.intra.cea.fr		-all		-MPCube -MATHYS					-without-pdflatex -force_provided_openmpi	-without-visit	# CentOS 7.6	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		is223281.intra.cea.fr		-all		-GENEPI3 -TrioMC							-disable-optionals			# CentOS 7.6	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		is223281.intra.cea.fr		-all		-GENEPI3 							-disable-optionals			# CentOS 7.6	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is230500-build64.intra.cea.fr										-build64	-without-pdflatex			# CentOS 7.6	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223280.intra.cea.fr				-TrioCFD -TrioMC -FLICA5 				-g 		-download-visit	-without-pdflatex	# CentOS 7.6	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube -GENEPI3 		-g -enable-petsc-debug -download-salome	-without-pdflatex		# CentOS 7.6	Bat 451	LGLS	salle de formation
