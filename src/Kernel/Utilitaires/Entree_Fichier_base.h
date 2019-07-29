@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,7 @@ class Entree_Fichier_base : public Entree, public Objet_U
   Declare_base_sans_constructeur(Entree_Fichier_base);
 public:
   Entree_Fichier_base();
+  Entree_Fichier_base(const Entree_Fichier_base&) = default;
   Entree_Fichier_base(const char* name,IOS_OPEN_MODE mode=ios::in);
   ifstream& get_ifstream();
   void close();
