@@ -2066,7 +2066,7 @@ fi
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    make_ $TRUST_ROOT/Outils/hwloc hwloc $TRUST_ROOT/exec/hwloc.log
-   echo "ADD_PATH $TRUST_ROOT/exec/hwloc/bin" >> $env
+   echo "ADD_PATH \$TRUST_ROOT/exec/hwloc/bin" >> $env
 fi
 
 ###################

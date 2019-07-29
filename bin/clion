@@ -11,22 +11,24 @@ then
    source $env
    # Look for CMakeLists.txt
    CMakeLists=`ls build/src/CMakeLists.txt ../build/src/CMakeLists.txt src/CMakeLists.txt ../src/CMakeLists.txt 2>/dev/null`
-   if [ $CMakeLists != "" ]
+   if [ "$CMakeLists" != "" ]
    then 
+      CMakeLists=`pwd`/$CMakeLists
       PROJECT_ROOT=`dirname $CMakeLists`
-      echo "Found $CMakeLists project..."
+      echo "Running Clion on $CMakeLists project..."
 
       # Configuration for Clion:
-      cd $PROJECT_ROOT 
-      BUILD_ROOT=../MonoDir_mpi/src 		# Trust project
-      [ ! -d $BUILD_ROOT ] && BUILD_ROOT=exec 	# Baltik project
+      cd $PROJECT_ROOT
+      BUILD_ROOT=`pwd`/exec 	# Baltik project
+      [ ! -d $BUILD_ROOT ] && BUILD_ROOT=$TRUST_ROOT/MonoDir_mpi/src	# Trust project
       [ ! -d $BUILD_ROOT ] && echo "Build the project before !" && exit
 
       # Create a link to build directory to avoid change CLion settings
+      rm -r -f cmake-build-debug
       ln -s -f $BUILD_ROOT cmake-build-debug
 
       # Run Clion on the project
-      $clion &
+      $clion $CMakeLists &
    else
       echo "No CMakeLists.txt found."
    fi

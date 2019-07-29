@@ -1,3 +1,4 @@
+XX/XX/18 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 
 -------------------------------------------------------------
 Developer notes version 1.7.9 : Changes since version 1.7.8 :
 -------------------------------------------------------------
