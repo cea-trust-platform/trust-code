@@ -51,11 +51,19 @@ Entree& Assembleur_P_EF::readOn(Entree& s )
 void calculer_inv_volume_special(DoubleTab& inv_volumes_som, const Zone_Cl_EF& zone_Cl_EF,const DoubleTab& volumes_som,const DoubleTab& marqueur)
 {
   inv_volumes_som=volumes_som;
+  // MODIF GB
+  inv_volumes_som=0.;
   int taille=volumes_som.dimension_tot(0);
   for (int i=0; i<taille; i++)
-    if (marqueur(i,0))
-      for (int comp=0; comp<Objet_U::dimension; comp++)
-        inv_volumes_som(i,comp)=1./volumes_som(i,comp);
+    // MODIF GB
+    // if (marqueur(i,0))
+    {
+      double marq_norm2 = 0.;
+      for (int comp=0; comp<Objet_U::dimension; comp++) marq_norm2 += marqueur(i,comp)*marqueur(i,comp);
+      if (marq_norm2)
+        for (int comp=0; comp<Objet_U::dimension; comp++)
+          inv_volumes_som(i,comp)=1./volumes_som(i,comp);
+    }
 
 }
 void calculer_inv_volume(DoubleTab& inv_volumes_som, const Zone_Cl_EF& zone_Cl_EF,const DoubleVect& volumes_som)
