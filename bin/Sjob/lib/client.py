@@ -8,8 +8,8 @@ except:
     pass
 
 HOST = ''    # The remote host
-#PORT = 50007              # The same port as used by the server
 from port import PORT
+from job_manager import MAX_SEND_RCV_SIZE
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
     s.connect((HOST, PORT))
@@ -19,7 +19,7 @@ except ConnectionRefusedError:
 s.sendall(bytes(' '.join(sys.argv[1:]), "UTF-8"))
 while 1:
     try:
-        data = s.recv(1024*32).decode("UTF-8")
+        data = s.recv(MAX_SEND_RCV_SIZE).decode("UTF-8")
         if data:
             break
     except socket.error:

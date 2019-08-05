@@ -6,10 +6,8 @@
 
 def get_nb_procs( filename ) :
     test_cases=["TESTCASE","CASTEST"]
-    
+
     all_nb_procs=[]
-    # Initialisation de all_nb_procs pour le cas de fiches sans cas tests (construits a la volee)
-    all_nb_procs.append( 1 )
     with open( filename, "r" ) as f:
         for line in f :
             split = line.split( )
@@ -19,16 +17,27 @@ def get_nb_procs( filename ) :
                 if first_word.upper() in test_cases :
                     rep = split[ 1 ]
                     test = split[ 2 ]
-                    if nb_words == 3 :
+                    if nb_words == 3:
                         all_nb_procs.append( 1 )
                     else :
                         word = split[ 3 ]
-                        if word.isdigit( ) :
-                            all_nb_procs.append( int(word) )
-                        else :
-                            all_nb_procs.append( 1 )
-                            
-    nb_procs = max( all_nb_procs )
+                        # In some PRMs, number of procs is put within quotes ...
+                        if word.startswith("\""):
+                            a = word.split("\"")
+                            word = a[1]
+                        if word.startswith("'"):
+                            a = word.split("'")
+                            word = a[1]
+                        try:
+                            nb_proc = int(word)
+                        except:
+                            nb_proc = 1
+                        all_nb_procs.append(nb_proc)
+
+    if all_nb_procs == []:
+      nb_procs = 0
+    else:
+      nb_procs = max( all_nb_procs )
     return nb_procs, all_nb_procs
 
 if __name__ == "__main__":
