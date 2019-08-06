@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1033,7 +1033,10 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       // Nodes:
       int nnodes = sommets.dimension(0);
       MCAuto<DataArrayDouble> points(DataArrayDouble::New());
-      points->useArray(sommets.addr(), false, MEDCoupling::CPP_DEALLOC, nnodes, dimension);
+      if (nnodes==0)
+        points->alloc(0, dimension);
+      else
+        points->useArray(sommets.addr(), false, MEDCoupling::CPP_DEALLOC, nnodes, dimension);
       points->setInfoOnComponent(0, "x");
       points->setInfoOnComponent(1, "y");
       if (dimension == 3) points->setInfoOnComponent(2, "z");
@@ -1404,22 +1407,24 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,
         }
       // Fill array:
       int size = val.dimension(0);
-      int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
-      MCAuto<DataArrayDouble> array(DataArrayDouble::New());
-      array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
-      array->setInfoOnComponent(0, "x ["+unite[0].getString()+"]");
-      if (nb_comp>1)
+      if (size>0)
         {
-          array->setInfoOnComponent(1, "y ["+unite[1].getString()+"]");
-          if (nb_comp>2)
-            array->setInfoOnComponent(2, "z ["+unite[2].getString()+"]");
+          int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
+          MCAuto<DataArrayDouble> array(DataArrayDouble::New());
+          array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
+          array->setInfoOnComponent(0, "x [" + unite[0].getString() + "]");
+          if (nb_comp > 1)
+            {
+              array->setInfoOnComponent(1, "y [" + unite[1].getString() + "]");
+              if (nb_comp > 2)
+                array->setInfoOnComponent(2, "z [" + unite[2].getString() + "]");
+            }
+          field->setArray(array);
+          // Write
+          MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());
+          file->setFieldNoProfileSBT(field);
+          file->write(file_name, 0);
         }
-      field->setArray(array);
-      // Write
-      MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());
-      file->setFieldNoProfileSBT(field);
-      file->write(file_name, 0);
-
     }
   else
 #endif
