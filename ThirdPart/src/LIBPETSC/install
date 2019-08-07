@@ -248,17 +248,55 @@ add_package()
    echo $ECHO_OPTS "Looking for package $1... \c"
    external_package=`cd ..;ls -rt $1*.tar.gz $1*.tgz $1*.tar.bz2 2>/dev/null | tail -1`
    #external_package=`grep petsc $TRUST_ROOT/bin/gestion_externalpackages/liste_dep.csv  | awk -F, '{print "/"$2}' | grep "/"$1`
-   name=`echo $1 | awk '{print tolower($1)}'`
+   lower_name=`echo $1 | awk '{print tolower($1)}'`
    if [ "$external_package" = "" ]
    then
       # Download
-      with_package="--download-$name=yes"
+      with_package="--download-$lower_name=yes"
    else
       # Located
-      with_package="--download-$name=../$external_package"
+      with_package="--download-$lower_name=../$external_package"
+   fi
+   if [ $name = mumps ] && [ $TRUST_VERSION_GNU = "8.2.1" ] 
+   then
+      # PL : hack pour Fedora 29 en attendant le passage a Petsc 3.11
+      with_package="--download-mumps=https://bitbucket.org/petsc/pkg-mumps/get/v5.1.2-p2.tar.gz"
    fi
    echo "PETSc needs to build it with $with_package"
    with_packages=$with_packages" "$with_package
+   
+   ###############################
+   # Hack pour un parallel build # 
+   ###############################
+   # PL: desactiver au moindre probleme de build d'un externalpackage...
+   # Utilisation de flock pour eviter des ar/ranlib en concurrence
+   if [ -f /usr/bin/flock ]
+   then
+      config=config/BuildSystem/config/packages
+      if [ $lower_name = "scalapack" ]
+      then
+         sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py
+         sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py
+         try_parallel_build                                                         $config/scalapack.py make lib
+      elif [ $lower_name = "mumps" ]
+      then 
+         sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
+         sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
+         sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
+         try_parallel_build                                               $config/MUMPS.py make alllib
+      elif [ $lower_name = "ptscotch" ]
+      then
+         try_parallel_build $config/PTScotch.py make clean
+      elif [ $lower_name = "suitesparse" ]
+      then
+         try_parallel_build $config/SuiteSparse.py library
+      fi
+   fi
+}
+try_parallel_build()
+{
+   config_file=$1 && shift && make_command=$*
+   sed -i "1,$ s?$make_command?$make_command -j$TRUST_NB_PROCS?g" $config_file || exit -1
 }
 
 ###########################################################################
@@ -364,7 +402,7 @@ fi
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
    # SUPERLU_DIST
-   [ $minimal_mumps = 0 ] &&  add_package superlu_dist
+   [ $minimal_mumps = 0 ] && add_package superlu_dist
 
    # New (Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
@@ -378,7 +416,7 @@ then
 
    # MUMPS et SUPERLU necessitent desormais parmetis
    add_package parmetis
-
+./lib/src/LIBPETSC/build/petsc-3.10.0/config/BuildSystem/config/packages/SuiteSparse.py
    ##########
    # SCOTCH #
    ##########
@@ -386,6 +424,7 @@ then
    then
       # On ajoute Scotch sur certaines machines
       add_package ptscotch
+
       # Scotch necessite bison
       if [ "`bison --version 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
@@ -502,7 +541,7 @@ do
    # On prend with-errorchecking=1 meme en optimise (ne degrade pas les performances)
    # PETSc 3.4: default is now shared library libpetsc.so so we add --with-shared-libraries=0 to keep building static library libpetsc.a:
    ./configure --prefix=$PETSC_ROOT/$PETSC_ARCH \
-   --with-single-library --with-shared-libraries=0 \
+   --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
    --with-fortran=yes \
@@ -522,7 +561,7 @@ do
    # build avec cmake (parallel build) ou classique selon les machines (castor,titane,...)
    # $TRUST_MAKE inutile (et produit des warnings)
    # make all-legacy : force le build classique
-   make all
+   make all NP_MAKE=$TRUST_NB_PROCS
    if [ $? = 0 ]
    then
       ###########

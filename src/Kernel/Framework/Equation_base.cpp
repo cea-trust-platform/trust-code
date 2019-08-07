@@ -2161,11 +2161,15 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
     operateur(op).l_op_base().tester_contribuer_a_avec(inco, matrice);
 
   // Contribution des operateurs et des sources:
-  // [Vol/dt+somme(A)]Inco(n+1)=somme(r)+Vol/dt*Inco(n)
-  // On calcule somme(r) par somme(operateur)+sources+somme(A)=somme(r)
+  // [Vol/dt+A]Inco(n+1)=somme(residu)+Vol/dt*Inco(n)
+  // Typiquement: si Op=flux(Inco) alors la matrice implicite A contient une contribution -dflux/dInco
+  // Exemple: Op flux convectif en VDF:
+  // Op=T*u*S et A=-d(T*u*S)/dT=-u*S
   const Discretisation_base::type_calcul_du_residu& type_codage=probleme().discretisation().codage_du_calcul_du_residu();
   if (type_codage==Discretisation_base::VIA_CONTRIBUER_AU_SECOND_MEMBRE)
     {
+      // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
+      // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
       sources().contribuer_a_avec(inco,matrice);
       statistiques().end_count(assemblage_sys_counter_,0,0);
       sources().ajouter(resu);
@@ -2179,6 +2183,9 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
     }
   else if (type_codage==Discretisation_base::VIA_AJOUTER)
     {
+      // On calcule somme(residu) par somme(operateur)+sources+A*Inco(n)
+      // Cette approche necessite de coder seulement deux methodes (contribuer_a_avec et ajouter)
+      // Donc un peu plus couteux en temps de calcul mais moins de code a ecrire/maintenir
       for (int op=0; op<nombre_d_operateurs(); op++)
         {
           operateur(op).l_op_base().contribuer_a_avec(inco, matrice);
@@ -2190,7 +2197,7 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
       statistiques().end_count(assemblage_sys_counter_,0,0);
       sources().ajouter(resu);
       statistiques().begin_count(assemblage_sys_counter_);
-      matrice.ajouter_multvect(inco, resu); // Add source and operators residual
+      matrice.ajouter_multvect(inco, resu); // Ajout de A*Inco(n)
       // PL (11/04/2018): On aimerait bien calculer la contribution des sources en premier
       // comme dans le cas VIA_CONTRIBUER_AU_SECOND_MEMBRE mais le cas Canal_perio_3D (keps
       // periodique plante: il y'a une erreur de periodicite dans les termes sources du modele KEps...
