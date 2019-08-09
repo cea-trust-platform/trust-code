@@ -834,16 +834,16 @@ fi
              git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
          fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
+         cat tmp.log
+         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+         rm tmp.log 1>/dev/null 2>&1
       else
          git remote update
          git checkout .
-         git checkout portage_179
+         git checkout portage_180
          git pull
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
-      cat tmp.log
-      [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
-      rm tmp.log 1>/dev/null 2>&1
       cd - 1>/dev/null 2>&1
    done
 )
@@ -926,7 +926,7 @@ echo "###############################################"
 #	          [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
                  git remote update
                  git checkout .
-                 git checkout portage_179
+                 git checkout portage_180
                  git pull
 	         cd - 1>/dev/null 2>&1
                  echo>>$rebase_log
