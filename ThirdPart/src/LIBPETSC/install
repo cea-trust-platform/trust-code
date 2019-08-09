@@ -284,7 +284,7 @@ add_package()
          sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
          sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
          try_parallel_build                                               $config/MUMPS.py make alllib
-      elif [ $lower_name = "ptscotch" ]
+      elif [ $lower_name = "ptscotch_marche_pas_sur_is223196" ]
       then
          try_parallel_build $config/PTScotch.py make clean
       elif [ $lower_name = "suitesparse" ]
