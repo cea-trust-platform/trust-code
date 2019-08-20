@@ -49,7 +49,7 @@ module () {
    # openmpi mpi/openmpi/1.8.8  mpi/openmpi/2.0.2  mpi/openmpi/2.0.4(default)
    #openmpi="mpi/openmpi/2.0.4"
    # intelmpi mpi/intelmpi/2017.0.4.196 mpi/intelmpi/2017.0.6.256 mpi/intelmpi/2018.0.1.163  mpi/intelmpi/2018.0.3.222(default)
-   intelmpi="mpi/intelmpi/2018.0.3.222"
+   openmpi="mpi/intelmpi/2018.0.3.222"
    # wi4mpi mpi/wi4mpi/3.1.5  mpi/wi4mpi/3.2.0  mpi/wi4mpi/3.2.1(default)
    #openmpi="mpi/wi4mpi/3.2.1"
    #Python version 2.7.5  python/2.7.8  python/2.7.12  python/2.7.14(default)  python/3.6.1  python3/3.6.4(default)
