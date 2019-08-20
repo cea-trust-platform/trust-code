@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,7 @@ class Sortie_Fichier_base :  public Sortie, public Objet_U
   Declare_base_sans_constructeur(Sortie_Fichier_base);
 public:
   Sortie_Fichier_base();
+  Sortie_Fichier_base(const Sortie_Fichier_base&) = default;
   Sortie_Fichier_base(const char* name, IOS_OPEN_MODE mode=ios::out);
 // ~Sortie_Fichier_base();
   ofstream& get_ofstream();

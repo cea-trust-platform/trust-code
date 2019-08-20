@@ -29,9 +29,9 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
-Linux x86_64		1*68@1.4Ghz	96Go:		KNL 7250		irene.ccc.cea.fr
-Linux x86_64		2*24@2.7Ghz	96Go:33Mo	Xeon 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
-Linux x86_64		2*14@2.4Ghz	64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
+Linux x86_64		 1*4@2.5Ghz	16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
+Linux x86_64	        2*24@2.7Ghz	96Go:33Mo	Xeon 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
+Linux x86_64	        2*14@2.4Ghz	64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
 Linux x86_64		1*4@3.00Ghz	16Go:8Mo	Xeon E3-1220 v5	2.4s	is231771.intra.cea.fr   (g++ 4.8.5, MPICH 3.2)		1.56	cpu_3D	 v1.7.7
 Linux x86_64		1*4@3.20Ghz	 8Go:8Mo	Xeon E3-1225	2.9s	malrif.intra.cea.fr	(g++ 4.4.1)		1.49		cpu_3D	 v1.6.8
 Linux x86_64		2*8@2.70Ghz	32Go:20Mo 	Xeon E5-2680	3.1s	supermuc.lrz.de		(icpc 12.1.6)
