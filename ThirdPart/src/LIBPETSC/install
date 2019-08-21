@@ -133,7 +133,7 @@ package=${package%.tar.gz}
 ROOT=`dirname $PETSC_ROOT`
 ROOT=`pwd`
 
-###################################
+###################################DefaultUserIdentity
 # Correction eventuelle des sources
 ###################################
 cd $ROOT/$package
@@ -257,46 +257,37 @@ add_package()
       # Located
       with_package="--download-$lower_name=../$external_package"
    fi
-   if [ $name = mumps ] && [ $TRUST_VERSION_GNU = "8.2.1" ] 
-   then
-      # PL : hack pour Fedora 29 en attendant le passage a Petsc 3.11
-      with_package="--download-mumps=https://bitbucket.org/petsc/pkg-mumps/get/v5.1.2-p2.tar.gz"
-   fi
    echo "PETSc needs to build it with $with_package"
    with_packages=$with_packages" "$with_package
    
    ###############################
    # Hack pour un parallel build # 
    ###############################
-   # PL: desactiver au moindre probleme de build d'un externalpackage...
+   # PL: Si le parallel build echoue retour au build sequentiel avec typiquement "make $j lib || make lib"
    # Utilisation de flock pour eviter des ar/ranlib en concurrence
    if [ -f /usr/bin/flock ]
    then
       config=config/BuildSystem/config/packages
+      j="-j$TRUST_NB_PROCS"
       if [ $lower_name = "scalapack" ]
       then
-         sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py
-         sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py
-         try_parallel_build                                                         $config/scalapack.py make lib
+         sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
+         sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
+	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
       elif [ $lower_name = "mumps" ]
       then 
-         sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
-         sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
-         sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py
-         try_parallel_build                                               $config/MUMPS.py make alllib
+         sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
+         sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
+         sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
+	 sed -i "1,$ s?make alllib?make $j alllib \|\| make alllib?g"     $config/MUMPS.py || exit -1
       elif [ $lower_name = "ptscotch" ]
       then
-         try_parallel_build $config/PTScotch.py make clean
+         sed -i "1,$ s?make clean ptesmumps esmumps?make clean \&\& make $j ptesmumps \&\& make $j esmumps?g" $config/PTScotch.py || exit -1
       elif [ $lower_name = "suitesparse" ]
       then
-         try_parallel_build $config/SuiteSparse.py library
+         sed -i "1,$ s?library?library $j?g" $config/SuiteSparse.py || exit -1
       fi
    fi
-}
-try_parallel_build()
-{
-   config_file=$1 && shift && make_command=$*
-   sed -i "1,$ s?$make_command?$make_command -j$TRUST_NB_PROCS?g" $config_file || exit -1
 }
 
 ###########################################################################
@@ -416,7 +407,6 @@ then
 
    # MUMPS et SUPERLU necessitent desormais parmetis
    add_package parmetis
-./lib/src/LIBPETSC/build/petsc-3.10.0/config/BuildSystem/config/packages/SuiteSparse.py
    ##########
    # SCOTCH #
    ##########
