@@ -1,3 +1,5 @@
+XX/08/19 (TRUST)  Optimization: In Champ_Generique_Transformation a useless MPI synchronization is moved to the right place
+XX/08/19 (TRUST)  Bug fixed   : During parallel calculaton, possible divide by 0 on definition_champs expression using fields with non-updated virtual spaces on cells
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.7.9 : Enhancements, modifications and corrected bugs since version 1.7.8 :
 -------------------------------------------------------------------------------------------------------

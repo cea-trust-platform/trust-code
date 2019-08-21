@@ -385,14 +385,17 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   else if (localisation_=="som")
     {
       const int nb_sommets = domaine.nb_som();
-
+      // PL: mise a jour de l'espace virtuel de la source:
+      Champ copie_source;
+      copie_source = source;
+      copie_source.valeurs().echange_espace_virtuel();
       if (ncomp==-1)
         {
           DoubleTab val_temp;
-          source.calculer_valeurs_som_post(val_temp,
-                                           nb_sommets,
-                                           nom_champ_interpole,
-                                           domaine);
+          copie_source.valeur().calculer_valeurs_som_post(val_temp,
+                                                          nb_sommets,
+                                                          nom_champ_interpole,
+                                                          domaine);
           if (nb_comp==1)
             for (int i_val=0; i_val<imax; i_val++)
               {
@@ -409,11 +412,11 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
         //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
         {
           DoubleTab val_temp;
-          source.calculer_valeurs_som_compo_post(val_temp,
-                                                 ncomp,
-                                                 nb_sommets,
-                                                 nom_champ_interpole,
-                                                 domaine);
+          copie_source.valeur().calculer_valeurs_som_compo_post(val_temp,
+                                                                ncomp,
+                                                                nb_sommets,
+                                                                nom_champ_interpole,
+                                                                domaine);
 
           int dim0 = val_temp.dimension(0);
           for (int i=0; i<dim0; i++)
