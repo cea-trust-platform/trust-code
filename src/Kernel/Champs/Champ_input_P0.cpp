@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 //
 // File:        Champ_input_P0.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/10
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,7 +25,7 @@
 #include <Schema_Temps_base.h>
 #include <Interprete.h>
 #include <Domaine.h>
-#include <Exceptions.h>
+#include <ICoCoExceptions.h>
 #include <communications.h>
 #include <Convert_ICoCoTrioField.h>
 #include <Zone_VF.h>

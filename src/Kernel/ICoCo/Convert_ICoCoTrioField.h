@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,10 +43,10 @@ class ArrOfDouble;
 class ArrOfInt;
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 void affecte_int_avec_inttab(True_int** p, const ArrOfInt& trio);
-#include <ICoCoMEDField.hxx>
+#include <ICoCoMEDDoubleField.hxx>
 #ifndef NO_MEDFIELD
-ICoCo::MEDField build_medfield(ICoCo::TrioField&);
-ICoCo::MEDField build_medfield(const Champ_Generique_base&);
+ICoCo::MEDDoubleField build_medfield(ICoCo::TrioField&);
+ICoCo::MEDDoubleField build_medfield(const Champ_Generique_base&);
 #endif
 ICoCo::TrioField build_triofield(const Champ_Generique_base&);
 

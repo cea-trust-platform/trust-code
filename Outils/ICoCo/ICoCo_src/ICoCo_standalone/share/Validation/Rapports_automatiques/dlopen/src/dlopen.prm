@@ -1,5 +1,6 @@
 parametres {
 	titre "Test de couplage sans MedCoupling + test dlopen"
+    description "Test de link avec un .so en mode dynamique (dlopen) et en mode compilation (linking au .so a la compile). Pas de MEDCoupling"
 	auteur "fauchet pour perdu "
 	casTest dlopen ok
 	casTest std ok

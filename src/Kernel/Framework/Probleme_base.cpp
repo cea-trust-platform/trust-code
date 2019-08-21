@@ -31,7 +31,7 @@
 #include <EcritureLectureSpecial.h>
 #include <Postraitement.h>
 #include <Discretisation_base.h>
-#include <Exceptions.h>
+#include <ICoCoExceptions.h>
 #include <math.h>
 #include <stat_counters.h>
 #include <Debog.h>

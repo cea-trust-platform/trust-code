@@ -9,7 +9,7 @@
 
 namespace ICoCo
 {
-  class MEDField;
+  class MEDDoubleField;
   class TrioField;
   class Field;
 }
@@ -27,13 +27,13 @@ namespace MEDCoupling
     inline void attachLocalField(MEDCouplingFieldDouble *field)
 	{ InterpKernelDEC::attachLocalField(field); }
 
-    inline void attachLocalField(const ICoCo::MEDField *field)
+    inline void attachLocalField(const ICoCo::MEDDoubleField *field)
 	{ InterpKernelDEC::attachLocalField(field); }
     virtual ~TrioDEC();
   private:
     void releaseInternalPointer();
   private :
-    ICoCo::MEDField *_my_traduced_field;
+    ICoCo::MEDDoubleField *_my_traduced_field;
   };
 }
 

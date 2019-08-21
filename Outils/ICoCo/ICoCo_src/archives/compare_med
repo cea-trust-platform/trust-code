@@ -1,9 +1,0 @@
-#!/bin/bash
-mkdir pp
-cd pp 
-tar zxf ../ParaMEDMEM.tar.gz
-find  ParaMEDMEM -name '*~' | xargs rm
-find  ../../build/prov/ParaMEDMEM -name '*~' | xargs rm
-diff -r --brief ../../build/prov/ParaMEDMEM ParaMEDMEM
-comp_dir . ../../build/prov/
-tar zcf ../ParaMEDMEM_mod.tar.gz ParaMEDMEM

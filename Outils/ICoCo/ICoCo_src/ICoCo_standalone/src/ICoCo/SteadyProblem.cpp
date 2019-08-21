@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <SteadyProblem.h>
-#include <Exceptions.h>
+#include <ICoCoExceptions.h>
 #include <Comm_Group_MPI.h>
 #include <MAIN.h>
 #include <Init_Params.h>

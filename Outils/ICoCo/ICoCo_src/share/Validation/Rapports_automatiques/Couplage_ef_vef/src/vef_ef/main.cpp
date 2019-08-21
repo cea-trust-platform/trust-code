@@ -1,4 +1,4 @@
-#include <Problem.h>
+#include <ICoCoProblem.h>
 #include "CommInterface.hxx"
 #include "ProcessorGroup.hxx"
 #include "MPIProcessorGroup.hxx"

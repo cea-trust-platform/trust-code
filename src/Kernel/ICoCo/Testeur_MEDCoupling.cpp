@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Testeur_MEDCoupling.h>
-#include <ICoCoMEDField.hxx>
+#include <ICoCoMEDDoubleField.hxx>
+#include <MEDCouplingFieldDouble.hxx>
 #include <Convert_ICoCoTrioField.h>
 #include <Probleme_base.h>
 #include <Champ_base.h>
@@ -56,8 +57,8 @@ Entree& Testeur_MEDCoupling::interpreter(Entree& is)
 
   const Probleme_base& pb = ref_cast(Probleme_base,objet(nom_pb));
   const Champ_Generique_base& ch=pb.findOutputField(nom_champ);
-  ICoCo::MEDField medfield=build_medfield(ch);
-  medfield.getField()->writeVTK(nom_du_cas().getString(),false);
+  ICoCo::MEDDoubleField medfield=build_medfield(ch);
+  medfield.getMCField()->writeVTK(nom_du_cas().getString(),false);
 #endif
   return is;
 }
