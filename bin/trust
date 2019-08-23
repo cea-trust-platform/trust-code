@@ -159,8 +159,8 @@ queue_choisie=""
 suppression_file=""
 [ "$prod" = "" ] && prod=0
 [ "$bigmem" = "" ] && bigmem=0
-gpu=0
-node=0
+[ "$gpu" = "" ] && gpu=0
+[ "$node" = "" ] && node=0
 [ "$USE_MPIRUN" = "" ] && USE_MPIRUN=0
 
 ####################
