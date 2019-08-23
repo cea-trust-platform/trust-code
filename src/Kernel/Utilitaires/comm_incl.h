@@ -31,7 +31,13 @@
 //
 
 #ifdef MPI_
+
+// Portability for OpenMPI 1.10 which headers do not honour -Wshadow ... OpenMPI sucks.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+
 #include <mpi.h>
-#endif
+
+#pragma GCC diagnostic pop
 
 #endif
