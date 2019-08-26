@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -372,22 +372,33 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
       exit();
     }
 
+  // Verification que le domaine d'extraction utilise est correct:
+  if (domaine_->nb_som()!=0)
+    {
+      if (domaine_->zone(0).les_elems().dimension(0) != nb_faces ||
+          domaine_->zone(0).les_elems().dimension(1) != nb_som_faces)
+        {
+          Cerr << "Error when extracting the field " << nom_post_ << ": The " << domaine_.le_nom() << " domain can't be used cause already built with different support !" << finl;
+          Cerr << "You could create an empty domain with no operations on it before extracting this field." << finl;
+          Process::exit();
+        }
+    }
   Zone zz;
   domaine_->add(zz);
-  Zone& ajoutee= domaine_->zone(0);
+  Zone& ajoutee = domaine_->zone(0);
   ajoutee.typer(type_elem);
   ajoutee.associer_domaine(domaine_);
 
   IntTab& mes_elems_zone = ajoutee.les_elems();
   mes_elems_zone.reset();
-  mes_elems_zone.resize(nb_faces,nb_som_faces);
+  mes_elems_zone.resize(nb_faces, nb_som_faces);
 
   // Destruction du descripteur parallele, et on reconstruit...
   domaine_->les_sommets().reset();
-  domaine_->les_sommets()=sommets_source;
-  for (int face=0; face<nb_faces; face++)
-    for (int s=0; s<nb_som_faces; s++)
-      mes_elems_zone(face,s) =face_sommets(num_premiere_face+face,s);
+  domaine_->les_sommets() = sommets_source;
+  for (int face = 0; face < nb_faces; face++)
+    for (int s = 0; s < nb_som_faces; s++)
+      mes_elems_zone(face, s) = face_sommets(num_premiere_face + face, s);
   NettoieNoeuds::nettoie(domaine_);
 
   //Renumerotation
