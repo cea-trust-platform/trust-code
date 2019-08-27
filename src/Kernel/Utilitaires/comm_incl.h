@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,8 @@
 //
 
 #ifdef MPI_
+// Desactivation du C++ bindings pour gcc recent (>=8.x) sinon erreur avec OpenMPI natif... (See https://github.com/open-mpi/ompi/issues/5157)
+#define OMPI_SKIP_MPICXX 1
 #include <mpi.h>
 #endif
 
