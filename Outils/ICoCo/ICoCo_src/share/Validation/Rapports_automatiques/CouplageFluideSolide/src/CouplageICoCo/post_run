@@ -1,0 +1,2 @@
+#!/bin/bash
+paste docond_VEF_dom1_pb1_Diffusion_chaleur.out docond_VEF_dom2_pb2_Diffusion_chaleur.out > heat_flux.out

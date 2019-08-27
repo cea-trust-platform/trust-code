@@ -1,0 +1,199 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+dimension 2
+
+
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.
+    tmax 300.
+    dt_min 1.e-6
+    dt_max 0.1
+    dt_impr 2
+    dt_sauv 20.
+    seuil_statio 1.e-4
+    diffusion_implicite 1
+}
+
+Pb_conduction pb1
+Pb_Thermohydraulique pb2
+
+Domaine dom_solide
+Domaine dom_fluide
+
+Mailler dom_solide
+{
+    Pave Cavite1
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 11
+        Longueurs 0.3 1.0
+    }
+    {
+        Bord paroi_a_40 			X = 0.   0.  <= Y <= 1.0
+        Bord paroi_a_20   			Y = 1.0  0.  <= X <= 0.3
+        Bord paroi_a_40    			Y = 0.   0.  <= X <= 0.3
+        Raccord local homogene Paroi_echange  	X = 0.3  0.3 <= Y <= 1.0
+    } ,
+    Pave Cavite2
+    {
+        Origine 0.3 0.
+        Nombre_de_Noeuds 8 4
+        Longueurs 0.7 0.3
+    }
+    {
+        Raccord local homogene Paroi_echange   	Y = 0.3  0.3 <= X <= 1.0
+        Bord paroi_a_40    			Y = 0.   0.3 <= X <= 1.0
+        Bord paroi_a_20  			X = 1.0  0.  <= Y <= 0.3
+    }
+}
+
+Mailler dom_fluide
+{
+    Pave Cavite3
+    {
+        Origine 0.3 0.3
+        Nombre_de_Noeuds 8 8
+        Longueurs 0.7 0.7
+    }
+    {
+        Raccord local homogene Paroi_echange    X = 0.3  0.3 <= Y <= 1.0
+        Bord Entree    				Y = 1.0  0.3 <= X <= 0.7
+        Bord Paroi     				Y = 1.0  0.7 <= X <= 1.0
+        Raccord local homogene Paroi_echange    Y = 0.3  0.3 <= X <= 1.0
+        Bord Sortie    				X = 1.0  0.3 <= Y <= 0.7
+        Bord Paroi				X = 1.0  0.7 <= Y <= 1.0
+    }
+}
+
+trianguler_fin dom_solide
+trianguler_fin dom_fluide
+
+VEFPreP1B dis
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2.0
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 0.0001
+}
+
+Solide sol
+Read sol
+{
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+Associate sol gravite
+Associate fluide gravite
+
+Associate pb1 dom_solide
+Associate pb1 sol
+
+Associate pb2 dom_fluide
+Associate pb2 fluide
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Read pb1
+{
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30.
+        }
+        boundary_conditions {
+            paroi_a_40 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            paroi_a_20 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20.
+            Paroi_echange paroi_contact pb2 Paroi_echange
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_tsol temperature periode 5. points 2
+            0.15 0.55
+            0.55 0.15
+            sonde_segs temperature periode 5. segment 10
+            0. 0.75 0.3 0.75
+        }
+        format lata
+        fields dt_post 10
+        {
+            temperature elem
+        }
+    }
+}
+
+Read pb2
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 30. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2 0. -0.01
+            Sortie frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2 0.01 0.
+            Paroi	paroi_fixe
+            Paroi_echange	paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Sortie frontiere_ouverte_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Paroi_echange paroi_contact pb1 Paroi_echange
+            Paroi paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 30. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 5. points 1 0.55 0.55
+            sonde_vitesse vitesse periode 5. points 1 0.55 0.55
+            sonde_tflu temperature periode 5. points 1 0.55 0.55
+            sonde_segf temperature periode 5. segment 10 0.3 0.75 1.0 0.75
+        }
+        format lata
+        fields dt_post 10
+        {
+            pression elem
+            vitesse elem
+            temperature elem
+        }
+    }
+}
+Solve pbc
+End
