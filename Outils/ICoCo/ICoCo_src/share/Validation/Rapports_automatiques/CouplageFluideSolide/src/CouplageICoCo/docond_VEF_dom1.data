@@ -1,0 +1,126 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+dimension 2
+
+Nom ICoCoProblemName Lire ICoCoProblemName pb1
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.
+    tmax 300.
+    dt_min 1.e-6
+    dt_max 0.1
+    dt_impr 2
+    dt_sauv 20.
+    seuil_statio 1.e-4
+    diffusion_implicite 1
+}
+
+Pb_conduction pb1
+
+Domaine dom_solide
+
+Mailler dom_solide
+{
+    Pave Cavite1
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 11
+        Longueurs 0.3 1.0
+    }
+    {
+        Bord paroi_a_40 			X = 0.   0.  <= Y <= 1.0
+        Bord paroi_a_20   			Y = 1.0  0.  <= X <= 0.3
+        Bord paroi_a_40    			Y = 0.   0.  <= X <= 0.3
+        Raccord local homogene Paroi_echange  	X = 0.3  0.3 <= Y <= 1.0
+    } ,
+    Pave Cavite2
+    {
+        Origine 0.3 0.
+        Nombre_de_Noeuds 8 4
+        Longueurs 0.7 0.3
+    }
+    {
+        Raccord local homogene Paroi_echange   	Y = 0.3  0.3 <= X <= 1.0
+        Bord paroi_a_40    			Y = 0.   0.3 <= X <= 1.0
+        Bord paroi_a_20  			X = 1.0  0.  <= Y <= 0.3
+    }
+}
+
+trianguler_fin dom_solide
+
+VEFPreP1B dis
+
+Solide sol
+Read sol
+{
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+Associate sol gravite
+
+Associate pb1 dom_solide
+Associate pb1 sol
+
+Associate pb1 sch
+Discretize pb1 dis
+
+Read pb1
+{
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30.
+        }
+        boundary_conditions {
+            paroi_a_40 paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+            paroi_a_20 paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+# Paroi_echange paroi_contact pb2 Paroi_echange #
+# Paroi_echange paroi_temperature_imposee Champ_Front_Uniforme 1 20.   #
+            Paroi_echange paroi_flux_impose ch_front_input { nb_comp 1 nom FLUX_SURFACIQUE_IN_DOM1 probleme pb1 }
+        }
+    }
+    Post_processings
+    {
+        front {
+            Definition_champs
+            {
+                TEMPERATURE_OUT_DOM1 Interpolation {
+                    localisation elem
+                    domaine dom_solide_boundaries_Paroi_echange
+                    source refChamp { Pb_Champ pb1 temperature }
+                }
+            }
+            Probes
+            {
+                sonde_tsol temperature periode 5. points 2
+                0.15 0.55
+                0.55 0.15
+                sonde_segs temperature periode 5. segment 10
+                0. 0.75 0.3 0.75
+            }
+            domaine dom_solide_boundaries_Paroi_echange
+            fichier docond_VEF_solide_echange format lata
+            fields dt_post 10
+            {
+                TEMPERATURE_OUT_DOM1
+                temperature elem
+            }
+        }
+        volume {
+            fichier docond_VEF_solide format lata
+            fields dt_post 10
+            {
+                temperature 	elem
+            }
+        }
+    }
+}
+
+# Solve pb1 #
+End
