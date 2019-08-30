@@ -2,8 +2,8 @@ Parameters {
 	Title "Comparing TRUST and ICOCO couplings for a thermal fluid-solid simulation"
 	Author "Pierre LEDAC"
         VersionTrio_U 1.7.9
- 	TestCase CouplageTrust ok.data
- 	TestCase CouplageICoCo ok.data
+        TestCase CouplageTrust ok.data
+        TestCase CouplageICoCo ok.data
 	Description "The two simulations are leaded up to stationnary state."
 	Description "The thermal coupling between the two domains is done by Dirichlet/Neumann conditions on temperature."
 	Description "TRUST coupling: each time step, the domains are solved one after another with N>=1 cpus"

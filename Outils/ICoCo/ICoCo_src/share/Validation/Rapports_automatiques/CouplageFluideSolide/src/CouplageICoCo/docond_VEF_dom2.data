@@ -133,6 +133,15 @@ Read pb2
                 temperature 	elem
             }
         }
+        volume_2 {
+            fichier docond_VEF_fluide_2 format lml
+            fields dt_post 10
+            {
+                pression elem
+                vitesse elem
+                temperature 	elem
+            }
+        }
     }
 }
 

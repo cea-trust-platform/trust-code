@@ -177,8 +177,9 @@ Read pb2
         }
         initial_conditions { Temperature Champ_Uniforme 1 30. }
     }
-    Post_processing
+    Post_processings
     {
+        Post_1 {
         Probes
         {
             sonde_pression pression periode 5. points 1 0.55 0.55
@@ -192,6 +193,16 @@ Read pb2
             pression elem
             vitesse elem
             temperature elem
+        }
+        }
+        Post_2 { 
+            fichier docond_VEF_fluide format lml
+            fields dt_post 10
+            {
+                pression elem
+                vitesse elem
+                temperature elem
+            }
         }
     }
 }
