@@ -49,6 +49,9 @@ cp $org/MEDCouplingSkyLineArray.cxx $(find $medcoupling -name  MEDCouplingSkyLin
 echo patching MEDCouplingMemArray.cxx 
 cp $org/MEDCouplingMemArray.cxx $(find $medcoupling -name  MEDCouplingMemArray.cxx )
 
+echo patching MEDCouplingTimeLabel.hxx 
+cp $org/MEDCouplingTimeLabel.hxx $(find $medcoupling -name  MEDCouplingTimeLabel.hxx )
+
 mkdir build
 cd build
 
