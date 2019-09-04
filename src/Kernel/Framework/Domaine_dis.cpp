@@ -24,6 +24,7 @@
 #include <Domaine.h>
 #include <Discretisation_base.h>
 #include <Zone_VF.h>
+#include <map>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Domaine_dis,"Domaine_dis",Objet_U);
 Implemente_ref(Sous_zones_dis);

@@ -36,6 +36,8 @@
 #include <Array_tools.h>
 #include <communications.h>
 #include <array>
+#include <vector>
+#include <map>
 #include <IntTrav.h>
 
 Faces_builder::Faces_builder() :
