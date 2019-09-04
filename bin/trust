@@ -372,7 +372,7 @@ do
       exit $?
    elif [ "$1" = "-clean" ]
    then
-      for ext in lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress
+      for ext in list lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress
       do 
 	 echo "rm *.$ext files."
 	 rm -f *.$ext
