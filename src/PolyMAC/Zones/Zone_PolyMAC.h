@@ -46,8 +46,8 @@
 #include <Echange_global_impose.h>
 #include <Champ_front_var_instationnaire.h>
 #include <vector>
-#include <array>
 #include <Lapack.h>
+#include <array>
 
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"

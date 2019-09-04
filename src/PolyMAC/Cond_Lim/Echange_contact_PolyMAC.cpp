@@ -29,7 +29,6 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Zone_PolyMAC.h>
 #include <Equation_base.h>
-#include <Zone_PolyMAC.h>
 #include <Champ_P0_PolyMAC.h>
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_base.h>

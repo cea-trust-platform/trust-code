@@ -38,7 +38,6 @@
 #include <ConstDoubleTab_parts.h>
 
 #include <Matrice_Diagonale.h>
-#include <Matrice_Bloc.h>
 
 #include <Zone_Cl_PolyMAC.h>
 #include <Neumann_sortie_libre.h>

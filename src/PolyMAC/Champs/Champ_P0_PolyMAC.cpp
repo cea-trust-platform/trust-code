@@ -30,10 +30,10 @@
 #include <Dirichlet_homogene.h>
 #include <Neumann_paroi.h>
 #include <Echange_externe_impose.h>
-#include <cmath>
-#include <array>
 #include <Connectivite_som_elem.h>
 #include <ConstDoubleTab_parts.h>
+#include <array>
+#include <cmath>
 
 Implemente_instanciable(Champ_P0_PolyMAC,"Champ_P0_PolyMAC",Champ_Inc_P0_base);
 

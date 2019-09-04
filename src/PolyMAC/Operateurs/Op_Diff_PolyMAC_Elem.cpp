@@ -32,9 +32,9 @@
 #include <Echange_externe_impose.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <cmath>
 #include <Champ_P0_PolyMAC.h>
 #include <Modele_turbulence_scal_base.h>
+#include <cmath>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Elem, "Op_Diff_PolyMAC_Elem|Op_Dift_PolyMAC_P0_PolyMAC", Op_Diff_PolyMAC_base ) ;
 

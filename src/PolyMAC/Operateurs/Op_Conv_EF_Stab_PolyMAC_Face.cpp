@@ -32,9 +32,9 @@
 #include <Symetrie.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <cmath>
 #include <Champ_Face_PolyMAC.h>
 #include <Param.h>
+#include <cmath>
 
 Implemente_instanciable_sans_constructeur( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
 
