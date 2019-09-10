@@ -525,7 +525,13 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   if (zvf.que_suis_je().debute_par("Zone_VDF"))
     is_VDF = 1;
   if (localisation_ == "elem")
-    positions = zvf.xp();
+    {
+      positions = zvf.xp();
+      if (positions.size() == 0)
+        {
+          zvf.zone().calculer_centres_gravite(positions);
+        }
+    }
   else if (localisation_ == "som")
     positions = get_ref_domain().coord_sommets();
   else if (localisation_ == "faces")
