@@ -2058,10 +2058,10 @@ if [ "$TRUST_OPENMP" = 1 ]
 then
    if [ "`basename $TRUST_CC_BASE`" = icpc ]
    then
-      openmp=-openmp # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
-      openmp=-fopenmp
+      openmp="-openmp" # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
+      openmp="-fopenmp -mkl=parallel" # Ajout de -mkl=parallel pour etre sur de linker avec Mkl BLAS parallele et non sequential (Vu sur sagittarius)
    else
-      openmp=-fopenmp
+      openmp="-fopenmp"
    fi
    CppFlags=$CppFlags" "$openmp
    SYSLIBS=$SYSLIBS" "$openmp
