@@ -1,7 +1,16 @@
 import os
 
+MAX_SEND_RCV_SIZE=1024*32
+
 def sendall_str(conn, s):
+    if len(s) > MAX_SEND_RCV_SIZE:
+        cut = "\n... [TRUNCATED]"
+        sz = MAX_SEND_RCV_SIZE-len(cut)-2  # -2 to be on the safe side
+        s = "%s%s" % (s[:sz], cut)
     conn.sendall(bytes(s, "UTF-8"))
+
+def my_log(msg):
+    print(msg, flush=True)  # Be sure to flush.
 
 class Job(object):
     """ A single job in the queue """
@@ -29,31 +38,24 @@ class Job(object):
         # nice formatting to have packs instead of long lists...
         # "1,2,3,4,5,6" becomes "1->6"
         l = []
-        while c != []:
-            if len(c) == 1:
-                l.append("%d" % c[0])
-                break
-            prev, ln, i  = c[0], len(c[1:]), -1
-            end_done = False
-            for i, cc in enumerate(c[1:]):
-                if cc != prev+1:
-                    if i == ln-1:  end_done = True
-                    if i==0:
-                        l.append("%d" % c[0])
-                        c = c[1:]
-                        break
-                    if c[0]+1 == prev:  l.extend([str(c[0]), str(prev)])
-                    else:               l.append("%d->%d" % (c[0], prev))
-                    c = c[i+1:]
-                    break
-                else:
-                    prev = cc
-            if i == ln-1 and not end_done:
-                if c[0]+1 == prev:  l.extend([str(c[0]), str(prev)])
-                else:               l.append("%d->%d" % (c[0], prev))
-                break
+        if len(c) <= 2:
+          l = [",".join([str(cc) for cc in c])]
+        else:  # At least 3 items
+          l = [str(c[0])]
+          wasArrow = False
+          for i, cc in enumerate(c[1:-1]):
+            if (cc == c[i]+1) and (cc == c[i+2]-1):
+              if not wasArrow:
+                wasArrow = True
+                l.append("->")
+            else:
+              if not wasArrow:   l.append(",%d" % cc)
+              else:              l.append("%d" % cc)
+              wasArrow = False
+          if not wasArrow:   l.append(",%d" % c[-1])
+          else:              l.append("%d" % c[-1])
 
-        return "S[%s]" % (",".join(l))
+        return "S[%s]" % ("".join(l))
 
     def gen_short_com(self):
         a = self.cmd.split()
@@ -96,10 +98,10 @@ class SJobManager(object):
       if (job.pere != -1):
         father = self.get_job_with_id(job.pere)
         if father is None:
-            if warn: print("WARNING - job #%d has a father (#%d) but it cannot be found!" %(job.id, job.pere))
+            if warn: my_log("WARNING - job #%d has a father (#%d) but it cannot be found!" %(job.id, job.pere))
         else:
             if not job.id in father.children:
-                print("WARNING -> could not find job #%d in the children of job #%d" % (job.id, father.id))
+                my_log("WARNING -> could not find job #%d in the children of job #%d" % (job.id, father.id))
             else:
                 father.children.remove(job.id)
             # Resume father when all its children have terminated:
@@ -116,10 +118,17 @@ class SJobManager(object):
         the Salloc script until the job is scheduled to run. """
         job = Job()
         job.id = self.generate_id()
-        job.pid = int(args[1])
-        job.nb=int(args[0])
+        try:
+          job.nb=int(args[0])
+          job.pid = int(args[1])
+          pere = int(args[2])
+        except:
+          print ("ERROR in SRUN - args passed: ")
+          my_log(args)
+          sendall_str(conn,"EXIT: srun KO! Invalid parameter passed: %s" % str(args))
+          conn.close()
+          return
         job.conn=conn
-        pere = int(args[2])
         job.cmd = " ".join(args[3:])
         job.gen_short_com()
 
@@ -131,7 +140,7 @@ class SJobManager(object):
             job.pere=father.id
             if father.status != "S":
                 father.status="S"
-                print("Suspending -> %s" % str(father))
+                my_log("Suspending -> %s" % str(father))
             # Append the job to the list that the father will have to wait for ...
             father.children.append(job.id)
         self.liste_action.append(job)
@@ -166,7 +175,7 @@ class SJobManager(object):
                     break
                 cnt += 1
                 if cnt == MAX_TIMEOUT_SEC:
-                    print("WARNING - could not kill properly PID %d" % pid)
+                    my_log("WARNING - could not kill properly PID %d" % pid)
                     return False
         return True
 
@@ -196,7 +205,7 @@ class SJobManager(object):
         procs = mainp.children(recursive=True)
         all_procs = procs + [mainp]
         for p in all_procs:
-            # print("(Inclusive) child of %d is: %d" % (pid, p.pid))
+            # my_log("(Inclusive) child of %d is: %d" % (pid, p.pid))
             self._safe_terminate(p)
         _, alive = psutil.wait_procs(all_procs, timeout=GRACE_TIME_SEC)
         if alive == []:
@@ -210,7 +219,7 @@ class SJobManager(object):
             _, alive = psutil.wait_procs(all_procs, timeout=1)
             cnt += 1
             if cnt == MAX_TIMEOUT_SEC:
-                print("WARNING - could not kill properly PID %d" % pid)
+                my_log("WARNING - could not kill properly PID %d" % pid)
                 return False
         return True
 
@@ -223,7 +232,7 @@ class SJobManager(object):
             except:
                 pass # In case we are killing a tree, the children might already have died.
         self.kill_process_and_children(a.pid)
-        print("Killed and deleted -> %s" % str(a))
+        my_log("Killed and deleted -> %s" % str(a))
         self.remove_and_resume_father(a, warn)
 
     def sdelete(self, conn, args):
@@ -266,7 +275,7 @@ class SJobManager(object):
 
         a = self.get_job_with_pid(pidj)
         if self.get_job_with_pid(pidj) is None:
-            print("WARNING: 'finish' invoked with invalid PID (%d)" % pidj)
+            my_log("WARNING: 'finish' invoked with invalid PID (%d)" % pidj)
             OK="invalid PID (%d)" % pidj
         else:
             if a.status[0]=="W":
@@ -274,7 +283,7 @@ class SJobManager(object):
                 a.conn.close()
             self.remove_and_resume_father(a)
             OK = "OK %d" % a.id
-            print("Finished -> %s" % str(a))
+            my_log("Finished -> %s" % str(a))
         sendall_str(conn,"finish "+OK)
         conn.close()
 
@@ -308,8 +317,8 @@ class SJobManager(object):
         for job in self.liste_action:
             if job.status=="W":
                 if (job.nb>self.nb_proc_max):
-                    print("WARNING: killing job because too many procs requested -> %s" % str(job))
-                    sendall_str(job.conn,"EXIT: killing #%d - too many proc requested!!" % job.id)
+                    my_log("WARNING: killing job because too many procs requested (%d procs!) -> %s" % (job.nb, str(job)))
+                    sendall_str(job.conn,"EXIT: killing #%d - too many proc requested (%d procs)!!" % (job.id, job.nb))
                     self.kill_process_and_children(job.pid)
                     self.remove_and_resume_father(job)
                     continue
@@ -317,13 +326,13 @@ class SJobManager(object):
                     if self.kill_if_dead_father(job):
                         continue
                     job.status="R"
-                    print("Run -> %s" % str(job))
+                    my_log("Run -> %s" % str(job))
                     sendall_str(job.conn,"Running #%d" % job.id)  # This unlocks the script client.py called from Salloc
                     job.conn.close()
                     use+=job.nb
 #             else:
 #               if job.status!="R" :
-#                 print("Supsend job ? %d" % job.id)
+#                 my_log("Supsend job ? %d" % job.id)
 
     def kill_if_dead_father(self, job):
       if job.pere >= 0:
@@ -371,12 +380,22 @@ class SJobManager(object):
             sendall_str(conn,"down %d"%self.nb_proc)
             conn.close()
         elif (cmd=="set_nb_proc"):
-            self.nb_proc=int(args[0])
-            sendall_str(conn,"Setting nb_proc to %d" % self.nb_proc)
+            try:
+                self.nb_proc=int(args[0])
+                msg = "Setting nb_proc to %d" % self.nb_proc
+            except:
+                msg = "Invalid number of procs: %s" % str(args)
+            sendall_str(conn, msg)
+            my_log(msg)
             conn.close()
         elif (cmd=="set_nb_proc_max"):
-            self.nb_proc_max=int(args[0])
-            sendall_str(conn,"Setting nb_proc_max to %d"%self.nb_proc_max)
+            try:
+                self.nb_proc_max=int(args[0])
+                msg = "Setting nb_proc_max to %d"%self.nb_proc_max
+            except:
+                msg = "Invalid number of procs: %s" % str(args)
+            sendall_str(conn,msg)
+            my_log(msg)
             conn.close()
         elif (cmd=="stop"):
             sendall_str(conn,"stop")
@@ -388,7 +407,7 @@ class SJobManager(object):
         elif (cmd=="kill_all"):
             self.kill_all(conn)
         else:
-            print("ERROR command not understood: " + data)
+            my_log("ERROR command not understood: " + data)
             sendall_str(conn,'Command not understood!')
             conn.close()
             return 1
