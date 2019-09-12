@@ -346,9 +346,10 @@ then
 			               --with-blacs-include=$TRUST_BLAS_LAPACK/../../include"
       fi
    else
-      if [ -d /ccc ] && [ ${TRUST_CC_BASE%icpc} != $TRUST_CC_BASE ] # CCRT & Intel compiler
+      #if [ -d /ccc ] && [ ${TRUST_CC_BASE%icpc} != $TRUST_CC_BASE ] # CCRT & Intel compiler
+      if [ ${TRUST_CC_BASE%icpc} != $TRUST_CC_BASE ] # Intel compiler
       then
-	 # Sur les machines du CCRT (detectees par /ccc):
+	 # On arrete si on ne trouve pas les BLAS du compilateur INTEL.
 	 echo "What a pity that MKL libraries are not found on $HOST for PETSc build with Intel compilers. Contact TRUST support." && exit -1
       fi
       add_package scalapack
