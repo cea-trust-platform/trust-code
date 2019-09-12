@@ -194,21 +194,18 @@ else
 fi
 
 ####################
-# Thread support ? #
+# OpenMP support ? #
 ####################
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
-   #USE_OPENMP=1
-   #if [ $USE_OPENMP = 0 ]
-   #then
-   #   with_thread="--with-threadcomm --with-pthreadclasses"
-   #else
-   #   with_thread="--with-threadcomm --with-openmp"
-   #fi
-   # On airain, --with-threadcomm --with-openmp is not enough... Strange. So:
-   with_thread="--with-threadcomm --with-pthreadclasses --with-openmp"
+   with_openmp="--with-openmp" 
+   # Pour MPI-OpenMP hybride:
+   # voir: https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
+   # with_openmp=$with_openmp" -L$TRUST_ROOT/exec/hwloc --with-hwloc"
+   # Peut etre mettre a jour la version de hwloc...
+   # Modifier egalement mkliks pour ajouter le -L$TRUST_ROOT/exec/hwloc
    echo "****************************************"
-   echo "Thread support for PETSc with: "$with_thread
+   echo "OpenMP support for PETSc with: "$with_openmp
    echo "****************************************"
 fi
 
@@ -541,7 +538,6 @@ do
    $with_packages \
    $with_blas \
    $with_gpu \
-   $with_thread \
    $with_openmp \
    $with_mpi \
    $options || exit -1
@@ -610,12 +606,13 @@ then
 fi
 
 ##############
-# Tests Thread
+# Tests OpenMP
 ##############
-if [ "$PETSC_HAVE_OPENMP" = 1 ]
-then
-   $DIR/test_openmp || exit -1
-fi
+# ToDo: a revoir...
+#if [ "$PETSC_HAVE_OPENMP" = 1 ]
+#then
+#   $DIR/test_openmp || exit -1
+#fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
 cp $package/configure.log .

@@ -1053,6 +1053,10 @@ then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
+elif [ "`ls $TRUST_ROOT/exec/python/lib/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
+then
+   # Try threaded BLAS (in fact OpenBlas) from Miniconda
+   TRUST_BLAS_LAPACK="\$TRUST_ROOT/exec/python/lib"
 elif [ "`ls /usr/lib64/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ]
 then
    # Try Blas under /usr/lib64
@@ -2046,7 +2050,7 @@ fi
 ##########
 # OpenMP #
 ##########
-if [ "$TRUST_FORCE_PETSC_HAVE_OPENMP" = 1 ]
+if [ "$TRUST_OPENMP" = 1 ]
 then
    if [ "`basename $TRUST_CC_BASE`" = icpc ]
    then
