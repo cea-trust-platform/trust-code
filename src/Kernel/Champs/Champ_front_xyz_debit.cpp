@@ -25,6 +25,8 @@
 #include <Champ_front_uniforme.h>
 #include <Ch_front_input_uniforme.h>
 #include <Champ_front_t.h>
+#include <Champ_front_Tabule.h>
+
 
 Implemente_instanciable(Champ_front_xyz_debit,"Champ_front_xyz_debit",Champ_front_normal);
 // XD champ_front_xyz_debit front_field_base champ_front_xyz_debit 0 This field is used to define a flow rate field with a velocity profil which will be normalized to match the flow rate choosed.
@@ -54,9 +56,9 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
 
   flow_rate_.valeur().initialiser(tps,inco);
-  if ( !sub_type(Champ_front_uniforme,flow_rate_.valeur()) && !sub_type(Ch_front_input_uniforme,flow_rate_.valeur()) && !sub_type(Champ_front_t,flow_rate_.valeur()))
+  if ( !sub_type(Champ_front_uniforme,flow_rate_.valeur()) && !sub_type(Ch_front_input_uniforme,flow_rate_.valeur()) && !sub_type(Champ_front_t,flow_rate_.valeur()) && !sub_type(Champ_front_Tabule,flow_rate_.valeur()))
     {
-      Cerr << "\nError in Champ_front_xyz_debit::initialiser() \nflow_rate must be of type champ_front_uniforme, ch_front_input_uniforme or champ_front_fonc_t!" << finl;
+      Cerr << "\nError in Champ_front_xyz_debit::initialiser() \nflow_rate must be of type champ_front_uniforme, ch_front_input_uniforme, champ_front_tabule or champ_front_fonc_t!" << finl;
       exit();
     }
   if (flow_rate_.valeur().nb_comp()!=1)
