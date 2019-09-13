@@ -97,7 +97,13 @@ then
 else
     #LAPACK="\$(TRUST_BLAS_LAPACK)/liblapack.a \$(TRUST_BLAS_LAPACK)/libblas.a"
     # Don't use static libraries cause problem when linking module for Baltik (not -fPIC compiled)
-    LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
+    if [ -f $TRUST_BLAS_LAPACK/libopenblas.so ]
+    then
+       # Prefer openblas if founded:
+       LAPACK="-L\$(TRUST_BLAS_LAPACK) -lopenblas"
+    else
+       LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
+    fi
     # BLAS/LAPACK Intel (mkl) libraries have different names so try to find it thanks to PETSc
     if [ "$petscmachineinfo" != "" ] && [ "`grep mkl_ $petscmachineinfo`" != "" ]
     then
