@@ -119,6 +119,7 @@
  Champ_front_var Champ_front_var Champ_front_var.h
  Champ_front_var_instationnaire Champ_front_var_instationnaire Champ_front_var_instationnaire.h
  Champ_front_Vortex Ch_front_Vortex Ch_front_Vortex.h
+ Champ_front_xyz_debit Champ_front_xyz_debit Champ_front_xyz_debit.h
  Champ_Generique Champ_Generique Champ_Generique.h
  Champ_Generique_base Champ_Generique_base Champ_Generique_base.h
  Champ_Generique_Operateur_base Champ_Generique_Operateur_base Champ_Generique_Operateur_base.h
