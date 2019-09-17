@@ -165,6 +165,7 @@
  Champ_som_lu Champ_som_lu Champ_som_lu.h
  Champ_som_lu_VDF Champ_som_lu_VDF Champ_som_lu_VDF.h
  Champ_som_lu_VEF Champ_som_lu_VEF Champ_som_lu_VEF.h
+ Champ_Tabule_Morceaux Champ_Tabule_Morceaux Champ_Tabule_Morceaux.h
  Champ_Tabule_Temps Champ_Tabule_Temps Champ_Tabule_Temps.h
  Champ_Uniforme Champ_Uniforme Champ_Uniforme.h
  Champ_Uniforme_inst Champ_Uniforme_inst Champ_Uniforme_inst.h
