@@ -367,6 +367,7 @@ void Matrice_Morse::dimensionner(int n, int nnz)
 //
 void Matrice_Morse::dimensionner(const IntTab& Ind)
 {
+  if (Ind.size()==0) return; // On ne fait rien si la structure est vide
   int n_ancien = nb_lignes(), m_ancien = nb_colonnes();
 
   assert(Ind.nb_dim() == 2);
@@ -864,7 +865,7 @@ Matrice_Morse& Matrice_Morse::diagmulmat(const DoubleVect& x)
 {
   int m=nb_lignes();
   int l=0;
-  int n=x.size();
+  int n=x.size_array();
   if(n!=m)
     {
       Cerr << "Matrice_Morse::diagmulmat bad dimensions" << finl;
@@ -1180,6 +1181,8 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
     {
       Cerr << "Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution, "
            << "coeff_seuil double) const \n has never been tested in parallel" << finl;
+      Cerr << "Try 'Solveur Gmres { diag }' or 'Solveur Petsc Gmres { precond diag { } }'" << finl;
+      Cerr << "instead of 'Solveur Gmres { }' which is not parallelized yet." << finl;
       exit();
     }
 
@@ -2418,11 +2421,47 @@ void Matrice_Morse::assert_check_sorted_morse_matrix_structure( void ) const
 #endif
 }
 
+// Build a new Morse matrix spanning the rectangular area defined by the two points (nl0, nc0) and (nl1, nc1)
+// in the original matrix.
+// Indices are provided in C mode (0-based indexing).
+void Matrice_Morse::construire_sous_bloc(int nl0, int nc0, int nl1, int nc1, Matrice_Morse& result) const
+{
+  // count non-zero entries:
+  assert(nl0 >= 0);
+  assert(nc0 >= 0);
+  assert(nl0 <= nl1);
+  assert(nc0 <= nc1);
 
+  int max_nnz = tab1_(nl1+1) - tab1_(nl0); // maximum number of zeros that we will find
+  int tot=0;
+  IntTab loca(max_nnz, 2);
+  DoubleTab sub_coeffs(max_nnz);
+  for (int li=nl0; li <= nl1; li++)
+    {
+      int idx_coeff = tab1_(li)-1;
+      int nb_coeff_on_line = tab1_(li+1)-tab1_(li);
+      for (int j=0; j < nb_coeff_on_line; j++)
+        {
+          int col_idx = tab2_(j+idx_coeff)-1;
+          if (col_idx >= nc0 && col_idx <= nc1) // is the coeff in the window?
+            {
+              loca(tot, 0) = li - nl0;
+              loca(tot, 1) = col_idx - nc0;
+              sub_coeffs(tot) = coeff_(j+idx_coeff);
+              tot++;
+            }
+        }
+    }
+  loca.resize(tot,2);
+  sub_coeffs.resize(tot);
 
-
-
-
-
-
+  result.dimensionner(loca);
+  // Set coefficient values:
+  for (int i =0 ; i < tot; i++)
+    {
+      int il = loca(i, 0);
+      int ic = loca(i, 1);
+      result.coef(il, ic) = sub_coeffs(i);
+    }
+}
 
