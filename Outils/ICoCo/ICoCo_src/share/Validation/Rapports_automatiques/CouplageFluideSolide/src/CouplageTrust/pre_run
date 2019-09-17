@@ -9,5 +9,5 @@ then
 else
   rm -f is_ok
 fi
-touch ok.data
+#touch ok.data
 mv -f $data.TU ok.TU

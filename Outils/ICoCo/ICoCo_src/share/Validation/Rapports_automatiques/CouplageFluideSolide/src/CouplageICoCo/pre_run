@@ -8,5 +8,5 @@ then
 else
   rm -f is_ok
 fi
-touch ok.data
+#touch ok.data
 mv -f docond_VEF_dom2.TU ok.TU
