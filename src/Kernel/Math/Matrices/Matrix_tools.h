@@ -42,7 +42,7 @@ class Matrice_Morse;
 class Matrice_Morse_Sym;
 class IntTab;
 class ArrOfDouble;
-
+class DoubleTab;
 class Matrix_tools
 {
 public :
@@ -124,6 +124,35 @@ public :
   static void extend_matrix_stencil( const IntTab& stencil,
                                      Matrice&      matrix,
                                      const bool& attach_stencil_to_matrix=false );
+
+
+  // diagonal matrix times a square morse matrix 'mat'
+  // if inverse then the 1/diag is used
+  // this can be seen as a left multiplication
+  static void matdiag_mult_matmorse( const DoubleTab& diag,
+                                     Matrice_Morse& mat,
+                                     const bool& inverse );
+
+  //right multiplication version of matdiag_mult_matmorse
+  static void matmorse_mult_matdiag( const DoubleTab& diag,
+                                     Matrice_Morse& mat,
+                                     const bool& inverse );
+
+
+  // uniform diagonal matrix (i.e. same coefficient on the diag) times a square morse matrix 'mat'
+  // if inverse then the 1/diag is used
+  // this can be seen as a left multiplication
+  static void uniform_matdiag_mult_matmorse( const double& diag,
+                                             Matrice_Morse& mat,
+                                             const bool& inverse );
+
+  //right multiplication version of uniform_matdiag_mult_matmorse
+  static void matmorse_mult_uniform_matdiag( const double& diag,
+                                             Matrice_Morse& mat,
+                                             const bool& inverse );
+
+
+
 
 };
 
