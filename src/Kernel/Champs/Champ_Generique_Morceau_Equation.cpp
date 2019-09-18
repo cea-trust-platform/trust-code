@@ -134,6 +134,11 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
       nature = scalaire;
       nb_comp = 1;
     }
+  else
+    {
+      Cerr << "Error. Contact TRUST support." << finl;
+      Process::exit();
+    }
 
   espace_stockage = creer_espace_stockage(nature,nb_comp,es_tmp);
   morceau().calculer_pour_post(espace_stockage,option_,compo_);
