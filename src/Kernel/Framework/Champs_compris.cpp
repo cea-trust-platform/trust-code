@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,37 +65,42 @@ Entree& Champs_compris::readOn(Entree& is)
   return is;
 }
 
-const Champ_base& Champs_compris::get_champ(const Motcle& nom) const
+static Nom nom; // Optimisation pour ne pas creer a de multiples reprises un objet
+const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
 {
+  nom = motcle;
   if (nom=="??")
     {
       Cerr<<"Champs_compris::get_champ()"<<finl;
-      Cerr<<"No field can be requested by the identity ??"<<finl;
+      Cerr<<"No field can be requested using the identifier \'??\'"<<finl;
       exit();
     }
 
   CONST_LIST_CURSEUR(REF(Champ_base)) curseur = liste_champs_;
-  Motcle nom_champ;
+  Nom nom_champ;
   while (curseur)
     {
-      const Champ_base& ch= curseur.valeur().valeur();
+      const Champ_base& ch = curseur.valeur().valeur();
       nom_champ = ch.le_nom();
-      if (nom_champ==nom)
+      if (nom_champ.majuscule()==nom)
         {
           return ch;
         }
       else
         {
-          const Noms&  syno= ch.get_synonyms();
+          const Noms& syno = ch.get_synonyms();
           int nb_syno=syno.size();
           for (int s=0; s<nb_syno; s++)
-            if (syno[s]==nom)
-              return ch;
+            {
+              nom_champ = syno[s];
+              if (nom_champ.majuscule()==nom)
+                return ch;
+            }
           int nb_composantes = ch.nb_comp();
           for (int i=0; i<nb_composantes; i++)
             {
               nom_champ = ch.nom_compo(i);
-              if (nom_champ==nom)
+              if (nom_champ.majuscule()==nom)
                 {
                   return ch;
                 }
@@ -110,7 +115,7 @@ const Champ_base& Champs_compris::get_champ(const Motcle& nom) const
 
 }
 
-int  new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
+int new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
 {
   Motcle mot(nom_champ);
   int size=new_list.size();
