@@ -346,13 +346,3 @@ void Source_base::set_fichier(const Nom& nom)
   out_+="_";
   out_+=equation().probleme().le_nom()+"_"+nom;
 }
-
-// !SC: revoir tout ca !
-DoubleTab& Source_base::calculer_derivee(DoubleTab& ch) const
-{
-  return ch;
-}
-DoubleTab& Source_base::ajouter_derivee(DoubleTab& ch) const
-{
-  return ch;
-}

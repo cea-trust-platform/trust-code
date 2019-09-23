@@ -27,6 +27,7 @@
 #include <DoubleVect.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <Matrice_Bloc.h>
 
 class DoubleTab;
 class DoubleTabs;
@@ -52,8 +53,6 @@ public :
 
   virtual DoubleTab& ajouter(DoubleTab& ) const=0;
   virtual DoubleTab& calculer(DoubleTab& ) const=0;
-  virtual DoubleTab& calculer_derivee(DoubleTab& ch) const;
-  virtual DoubleTab& ajouter_derivee(DoubleTab& ch) const;
   virtual void mettre_a_jour(double temps);
   virtual void completer();
   virtual void dimensionner(Matrice_Morse&) const ;
@@ -64,9 +63,8 @@ public :
   inline void associer_zones_public(const Zone_dis& ,const Zone_Cl_dis& );
   virtual int initialiser(double temps);
   virtual void associer_champ_rho(const Champ_base& champ_rho);
-  virtual int a_pour_Champ_Fonc(const Motcle& mot,
-                                REF(Champ_base)& ch_ref) const;
-
+  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const;
+  virtual void contribuer_jacobienne(Matrice_Bloc& , int ) const {}
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   virtual void creer_champ(const Motcle& motlu);

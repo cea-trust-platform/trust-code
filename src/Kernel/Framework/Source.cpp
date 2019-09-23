@@ -208,14 +208,6 @@ DoubleTab& Source::ajouter(DoubleTab& xx) const
   return tmp;
 }
 
-DoubleTab& Source::ajouter_derivee(DoubleTab& xx) const
-{
-  statistiques().begin_count(source_counter_);
-  DoubleTab& tmp = valeur().ajouter_derivee(xx);
-  statistiques().end_count(source_counter_);
-  return tmp;
-}
-
 // Description:
 //    Appel a l'objet sous-jacent.
 //    Affecte le terme source au tableau passe en parametre.
@@ -235,14 +227,6 @@ DoubleTab& Source::calculer(DoubleTab& xx) const
 {
   statistiques().begin_count(source_counter_);
   DoubleTab& tmp = valeur().calculer(xx);
-  statistiques().end_count(source_counter_);
-  return tmp;
-}
-
-DoubleTab& Source::calculer_derivee(DoubleTab& xx) const
-{
-  statistiques().begin_count(source_counter_);
-  DoubleTab& tmp = valeur().calculer_derivee(xx);
   statistiques().end_count(source_counter_);
   return tmp;
 }
