@@ -326,7 +326,8 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
 
       ArrOfInt& Recep=raccord_distant.Tab_Recep();
       Recep.resize_array(nb_face1);
-      double tolerance = 1e-8; //not very tolerant, are we?
+      //double tolerance = 1e-8; //not very tolerant, are we?
+      double tolerance = Objet_U::precision_geom * 100 ; //default value 1e-8 not very tolerant, are we?
 
       //DataArrayDoubles des xv locaux et de tous les remote_xv (a la suite)
       std::vector<MCAuto<DataArrayDouble> > vxv(parts);
