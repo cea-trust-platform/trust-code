@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -164,7 +164,7 @@ public:
       aa[2].nommer("ok2");
       SChaine out;
       out<<aa;
-      CPPUNIT_ASSERT_EQUAL_MESSAGE("apres printon ",Nom("3 ok0\nvide_0D\n ok1\nvide_0D\n ok2\nvide_0D\n \n"),Nom(out.get_str()));
+      CPPUNIT_ASSERT_EQUAL_MESSAGE("apres printon ",Nom("3 ok0\nFaces::vide_0D\n ok1\nFaces::vide_0D\n ok2\nFaces::vide_0D\n \n"),Nom(out.get_str()));
       {
         VECT(Bord) bb;
 

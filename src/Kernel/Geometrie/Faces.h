@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,19 +38,6 @@ class DoubleTab;
 // .SECTION voir aussi
 //    Faces
 //////////////////////////////////////////////////////////////////////////////
-enum Type_Face
-{
-  vide_0D,
-  point_1D,
-  segment_2D,
-  segment_2D_axi,
-  triangle_3D,
-  quadrilatere_2D_axi,
-  quadrangle_3D,
-  quadrangle_3D_axi,
-  polygone_3D
-};
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -67,6 +54,19 @@ class Faces : public Objet_U
   Declare_instanciable(Faces);
 
 public:
+
+  enum Type_Face
+  {
+    vide_0D,
+    point_1D,
+    segment_2D,
+    segment_2D_axi,
+    triangle_3D,
+    quadrilatere_2D_axi,
+    quadrangle_3D,
+    quadrangle_3D_axi,
+    polygone_3D
+  };
 
   inline Type_Face type_face() const;
   inline int nb_faces() const;
@@ -107,6 +107,8 @@ private :
   IntTab faces_voisins;
   REF(Zone) ma_zone;
 };
+
+typedef Faces::Type_Face Type_Face;
 
 extern void
 calculer_centres_gravite(DoubleTab& xv,

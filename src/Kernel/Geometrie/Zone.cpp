@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, 
 static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 {
   int typ = faces.type_face();
-  const int pe = (faces.type_face() == vide_0D) ? Process::nproc()-1 : Process::me();
+  const int pe = (faces.type_face() == Faces::vide_0D) ? Process::nproc()-1 : Process::me();
   const int min_pe = ::mp_min(pe);
   // Le processeur min_pe envoie son type a tous les autres
   int typ_commun = typ;
@@ -101,7 +101,7 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 
   if (typ_commun != typ)
     {
-      if (typ != vide_0D)
+      if (typ != Faces::vide_0D)
         {
           Cerr << "Error in Zone.cpp corriger_type: invalid boundary face type" << finl;
           Process::exit();
@@ -141,7 +141,7 @@ Entree& Zone::readOn(Entree& s)
   s >> mes_faces_raccord;
   s >> mes_faces_int;
 
-  // remplacer vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
+  // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
   {
     int i;
     int n = nb_front_Cl();

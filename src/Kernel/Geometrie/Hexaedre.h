@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@
 // .DESCRIPTION
 //    Classe Hexaedre
 //    Cette represente un element geometrique a 6 faces, 8 sommets et
-//    un seul type de face (quadrangle_3D) a 4 sommets.
+//    un seul type de face (Faces::quadrangle_3D) a 4 sommets.
 // .SECTION voir aussi
 //    Hexaedre_axi Elem_geom_base Elem_geom
 //    Un hexaedre est un element 3D
@@ -365,7 +365,7 @@ inline int Hexaedre::est_structure() const
 //    Acces:
 // Retour: Type_Face
 //    Signification: un type de face
-//    Contraintes: toujours egal a quadrangle_3D (si i=0)
+//    Contraintes: toujours egal a Faces::quadrangle_3D (si i=0)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -377,7 +377,7 @@ inline Type_Face Hexaedre::type_face(int i) const
       Cerr << "A hexahedron has not " << i << " types of face" << finl;
       exit();
     }
-  return quadrangle_3D;
+  return Faces::quadrangle_3D;
 }
 
 
