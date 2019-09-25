@@ -40,7 +40,7 @@
 //    Classe Polygone
 //    Cette represente l'element geometrique Polygone.
 //    Un polyedre est un element defini par ses faces
-//    de type polygone_3D
+//    de type Faces::polygone_3D
 // .SECTION voir aussi
 //    Poly_geom_base Elem_geom
 //////////////////////////////////////////////////////////////////////////////
@@ -219,7 +219,7 @@ inline int Polygone::est_structure() const
 //    Acces:
 // Retour: Type_Face
 //    Signification: le type de la face i
-//    Contraintes: i=0 (polygone_3D)
+//    Contraintes: i=0 (Faces::polygone_3D)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -229,11 +229,11 @@ inline Type_Face Polygone::type_face(int i) const
   switch(i)
     {
     case 0:
-      return segment_2D;
+      return Faces::segment_2D;
     default :
       Cerr << "Error, a polyhedron has 1 type of faces and not " << i << finl;
       exit();
-      return quadrangle_3D;
+      return Faces::quadrangle_3D;
     }
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -322,16 +322,16 @@ void Remove_elem::Remove_elem_(Zone& zone)
         while(curseur)
           {
             Faces& les_faces=curseur->faces();
-            if(dimension==2) les_faces.typer(segment_2D);
-            else             les_faces.typer(quadrangle_3D);
+            if(dimension==2) les_faces.typer(Faces::segment_2D);
+            else             les_faces.typer(Faces::quadrangle_3D);
             recreer_faces(zone, les_faces, som_face);
             ++curseur;
           }
         Cerr << " addition of a new boundary issued from removed elements" << finl;
         Bord& new_bord=zone.faces_bord().add(Bord());
         new_bord.nommer("newBord");
-        if(dimension==2) new_bord.typer_faces(segment_2D);
-        else             new_bord.typer_faces(quadrangle_3D);
+        if(dimension==2) new_bord.typer_faces(Faces::segment_2D);
+        else             new_bord.typer_faces(Faces::quadrangle_3D);
         Faces& les_faces=new_bord.faces();
         creer_faces(zone, les_faces, som_face);
       }
@@ -343,8 +343,8 @@ void Remove_elem::Remove_elem_(Zone& zone)
         while(curseur)
           {
             Faces& les_faces=curseur->faces();
-            if(dimension==2) les_faces.typer(segment_2D);
-            else             les_faces.typer(quadrangle_3D);
+            if(dimension==2) les_faces.typer(Faces::segment_2D);
+            else             les_faces.typer(Faces::quadrangle_3D);
             recreer_faces(zone, les_faces, som_face);
             ++curseur;
           }

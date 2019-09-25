@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -398,7 +398,7 @@ void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom
       Bord& devant = zone.faces_bord().add(Bord());
       devant.nommer(nom_dvt_);
       Faces& les_faces_dvt=devant.faces();
-      les_faces_dvt.typer(triangle_3D);
+      les_faces_dvt.typer(Faces::triangle_3D);
 
       IntTab som_dvt(oldsz, 3);
       les_faces_dvt.voisins().resize(oldsz, 2);
@@ -427,7 +427,7 @@ void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom
       Bord& derriere = zone.faces_bord().add(Bord());
       derriere.nommer(nom_derriere_);
       Faces& les_faces_der=derriere.faces();
-      les_faces_der.typer(triangle_3D);
+      les_faces_der.typer(Faces::triangle_3D);
 
       IntTab som_der(oldsz, 3);
       les_faces_der.voisins().resize(oldsz, 2);
@@ -489,7 +489,7 @@ void Extruder_en3::construire_bord_lateral(Faces& les_faces_du_bord, Faces& les_
         }
     }
 
-  les_faces_du_bord.typer(triangle_3D);
+  les_faces_du_bord.typer(Faces::triangle_3D);
   les_faces_du_bord.les_sommets().ref(les_sommets);
   les_faces_du_bord.voisins().resize(2*nb_faces*NZ_, 2);
   les_faces_du_bord.voisins()=-1;

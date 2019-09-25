@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,28 +72,28 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
 {
   switch(type_face)
     {
-    case vide_0D:
+    case Faces::vide_0D:
       type_elem_face = "??";
       break;
-    case point_1D:
+    case Faces::point_1D:
       type_elem_face = "??";
       break;
-    case segment_2D:
+    case Faces::segment_2D:
       type_elem_face = "segment";
       break;
-    case segment_2D_axi:
+    case Faces::segment_2D_axi:
       type_elem_face = "segment";
       break;
-    case triangle_3D:
+    case Faces::triangle_3D:
       type_elem_face = "triangle";
       break;
-    case quadrilatere_2D_axi:
+    case Faces::quadrilatere_2D_axi:
       type_elem_face = "quadrangle_VEF";
       break;
-    case quadrangle_3D:
+    case Faces::quadrangle_3D:
       type_elem_face = (sub_type(Hexaedre,type_elem)?"rectangle":"quadrangle_VEF");
       break;
-    case quadrangle_3D_axi:
+    case Faces::quadrangle_3D_axi:
       type_elem_face = "quadrangle_VEF";
       break;
     default:

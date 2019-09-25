@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -234,7 +234,7 @@ inline int Segment::est_structure() const
 //    Acces:
 // Retour: Type_Face
 //    Signification: un type de face
-//    Contraintes: toujours egal a point_1D (si i=0)
+//    Contraintes: toujours egal a Faces::point_1D (si i=0)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -246,7 +246,7 @@ inline Type_Face Segment::type_face(int i) const
       Cerr << "A segment has not " << i << " types of face" << finl;
       exit();
     }
-  return point_1D;
+  return Faces::point_1D;
 }
 
 #endif

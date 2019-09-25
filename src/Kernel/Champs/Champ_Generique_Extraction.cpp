@@ -342,18 +342,18 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   int nb_som_faces = zvf_source.nb_som_face();
 
   Nom type_zone,type_elem;
-  if (type_face_source==segment_2D || type_face_source==segment_2D_axi)
+  if (type_face_source==Faces::segment_2D || type_face_source==Faces::segment_2D_axi)
     type_elem = "Segment"; // Pour MC2
   else if (type_face_source==5)
     type_elem = "Segment"; // Pour MC2
-  else if (type_face_source==quadrangle_3D)
+  else if (type_face_source==Faces::quadrangle_3D)
     type_elem = "Quadrangle";
-  else if (type_face_source==triangle_3D)
+  else if (type_face_source==Faces::triangle_3D)
     type_elem = "Triangle";
-  else if (type_face_source==point_1D)
+  else if (type_face_source==Faces::point_1D)
     type_elem = "Point";
   //Cas suivant possible en parallele
-  else if ((type_face_source==vide_0D) && (nb_faces==0))
+  else if ((type_face_source==Faces::vide_0D) && (nb_faces==0))
     {
       if (zvf_source.que_suis_je().debute_par("Zone_VDF"))
         type_elem = "Rectangle";
@@ -367,7 +367,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
     }
   else
     {
-      Cerr<<"The type of faces of the boundary name "<<nom_fr_<<" is neither type quadrangle_3D nor triangle_3D"<<finl;
+      Cerr<<"The type of faces of the boundary name "<<nom_fr_<<" is neither type Faces::quadrangle_3D nor Faces::triangle_3D"<<finl;
       Cerr<<"We do not realize the extraction"<<finl;
       exit();
     }
