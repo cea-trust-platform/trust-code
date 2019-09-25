@@ -392,7 +392,15 @@ l5:
             {
               Cout << "Gmres : Stopped after "<< it+1 <<" iterations (=nb_it_max)"<< finl;
               double residu_relatif = (res0>0?res2/res0:res2);
-              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )"<<finl;
+              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )";
+            }
+          if (it == (nb_ligne_tot-1))
+            {
+              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<< finl;
+              Cerr << "!!! Gmres stopped after a number of iterations equal to the matrix size. "<< finl;
+              Cerr << "!!! Either your matrix is ill-conditioned (try cholesky instead), or your convergence threshold is too low. "<< finl;
+              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<< finl;
+              Process::exit(-1);
             }
           return it+1;
         }
