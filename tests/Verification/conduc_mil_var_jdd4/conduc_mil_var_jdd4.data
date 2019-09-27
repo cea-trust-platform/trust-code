@@ -44,7 +44,7 @@ Read sch
 
 }
 
-Solide_Milieu_Variable sol
+Solide sol
 Read sol
 {
   rho Champ_Uniforme 1 2

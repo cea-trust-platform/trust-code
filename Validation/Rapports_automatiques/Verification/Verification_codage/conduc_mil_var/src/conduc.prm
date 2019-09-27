@@ -36,9 +36,9 @@ Chapter {
     \[  \frac{\partial T}{\partial t} - \nabla \cdot (D \nabla T) = \frac{S}{\rho C_p} \]
 
   Cela permet de faire appel directement a l'operateur de diffusion de TRUST. 
-  L'uniformite de $\rho$ et $C_p$ est verifiee dans la methode \latex_) Solide::verifier_coherence_champs. \latex_(
-
-  La modification principale de la classe \latex_) Solide_Milieu_Variable \latex_( consiste donc a autoriser $\rho$ et/ou $C_p$ variables en espace, 
+  L'uniformite de $\rho$ et $C_p$ est maintenant verifiee dans la methode \latex_) Conduction::associer_solide(). \latex_( et ainsi la nouvelle classe \latex_) Conduction_Milieu_Variable autorise
+  \latex_(
+  implicitement des grandeurs $\rho$ et/ou $C_p$ variables en espace, 
   en reprenant la forme  originale de l'equation de la chaleur. Le terme $\rho C_p$ est replace devant la derivee partielle de T et les termes sources par l'appel 
   \latex_)
   'solveur_masse->set_name_of_coefficient_temporel("rho_cp_comme_T")' dans la methode Conduction_Milieu_Variable: :lire_motcle_non_standard.
