@@ -384,7 +384,14 @@ fi
 ##############
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   with_mpi="--with-mpi-dir=$MPI_ROOT"
+   # Si les compilateurs sont dans le bin 
+   if [ -d $MPI_ROOT/bin ]
+   then
+       with_mpi="--with-mpi-dir=$MPI_ROOT"
+   # Si les compilateurs sont dans le usr/bin 
+   else
+      with_mpi="--with-mpi-dir=$MPI_ROOT --with-cc=$TRUST_cc --with-fc=$TRUST_F77"
+   fi
 else
    with_mpi="--with-mpi=0 -with-mumps-serial --with-mpiuni-fortran-binding=0"
 fi
