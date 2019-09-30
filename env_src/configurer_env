@@ -1046,12 +1046,21 @@ m="# Path to a browser";e="`cherche_file TRUST_WEBBROWSER google-chrome firefox 
 ###############
 TRUST_BLAS_LAPACK=""
 # Try to improve detection of MKL (Intel):
+[ "$MKLROOT" = "" ] && MKLROOT=$MKL_ROOTDIR # Sur sagittarius
 [ "$MKLROOT" = "" ] && MKLROOT=`type -p icpc 2>/dev/null | awk -F/bin '{print $1}'`
 if [ "$MKLROOT" != "" ]
 then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
+elif [ "`ls /usr/lib64/libopenblas.so 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
+then
+   # Try threaded BLAS (in fact OpenBlas)
+   TRUST_BLAS_LAPACK=/usr/lib64
+elif [ "`ls $TRUST_ROOT/exec/python/lib/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
+then
+   # Try threaded BLAS (in fact OpenBlas) from Miniconda (attention marche pas sur Fedora30...)
+   TRUST_BLAS_LAPACK="\$TRUST_ROOT/exec/python/lib"
 elif [ "`ls /usr/lib64/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ]
 then
    # Try Blas under /usr/lib64
@@ -2045,14 +2054,14 @@ fi
 ##########
 # OpenMP #
 ##########
-if [ "$TRUST_FORCE_PETSC_HAVE_OPENMP" = 1 ]
+if [ "$TRUST_OPENMP" = 1 ]
 then
    if [ "`basename $TRUST_CC_BASE`" = icpc ]
    then
-      openmp=-openmp # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
-      openmp=-fopenmp
+      openmp="-openmp" # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
+      openmp="-fopenmp -mkl=parallel" # Ajout de -mkl=parallel pour etre sur de linker avec Mkl BLAS parallele et non sequential (Vu sur sagittarius)
    else
-      openmp=-fopenmp
+      openmp="-fopenmp"
    fi
    CppFlags=$CppFlags" "$openmp
    SYSLIBS=$SYSLIBS" "$openmp
@@ -2077,6 +2086,12 @@ fi
 #./check_stream
 #cd - 1>/dev/null 2>&1
 m="# PETSc will use OpenMP ?";e="PETSC_HAVE_OPENMP=\"$PETSC_HAVE_OPENMP\" && export PETSC_HAVE_OPENMP";ecrit $m"|"$e"|"$env
+# Si support OpenMP, alors on fixe OMP_NUM_THREADS=1 par defaut (no black box) car performances catastrophiques si l'utilisateur mixe MPI et OpenMP sans savoir ce qu'il fait...
+# L'utilisateur devra faire: OMP_NUM_THREADS=n $exec jdd ou utiliser le script trust qui permettra de specifier le nombre de threads, ex: trust -n 2 -m 4 jdd (2 MPI et 4 threads par task MPI)
+if [ "$PETSC_HAVE_OPENMP" = 1 ]
+then
+   m="# Default, no multithreading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$env
+fi
 
 #################################################################
 # Creation des cas tests ou non a partir des fiches de validation

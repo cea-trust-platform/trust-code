@@ -1,6 +1,7 @@
--------------------------------------------------------------
+------------------------------------------------------------------
 Developer notes version 1.8.0_beta : Changes since version 1.7.9 :
--------------------------------------------------------------
+------------------------------------------------------------------
+30/09/19 (TRUST)  Add -openmp configure option to build TRUST with OpenMP support (use of threaded OpenBLAS or MKL BLAS in PETSc libraries like MUMPS)
 -------------------------------------------------------------
 Developer notes version 1.7.9 : Changes since version 1.7.8 :
 -------------------------------------------------------------

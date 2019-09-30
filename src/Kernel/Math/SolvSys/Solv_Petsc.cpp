@@ -1586,11 +1586,6 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
   // Dans le cas de CUDA, seul le format AIJ est supporte pour le moment:
   if (cuda_==1) mataij_=1;
 
-#ifdef PETSC_HAVE_OPENMP
-  // Dans le cas d'OpenMP, seul le format aij est multithreade:
-  mataij_=1;
-#endif
-
   // Dans le cas de save_matrix_ en parallele
   // Sinon, cela bloque avec sbaij:
   if (save_matrix_ && Process::nproc()>1) mataij_=1;
