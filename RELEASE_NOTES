@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/19 (TRUST)  Bug fixed   : Remove the duplication of last time post-processings when using ICoCo
 XX/XX/19 (TRUST)  Bug fixed   : Write u+,d+,u*, ... values into *_Ustar.face when temps_cpu_max reached or when stop_file detected.
 28/08/19 (TRUST)  Bug fixed   : Add a check for extracted field using surface domain with not the good support
 23/08/19 (TRUST)  Bug fixed   : Regression introduced in 1.7.7: using MED format post-processing during parallel calculation with empty zones crashed

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 #include <ProblemTrio_V2.h>
 #include <Probleme_U.h>
+#include <Probleme_base.h>
 #include <Exceptions.h>
 #include <Noms.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@
 #include <MAIN.h>
 #include <mon_main.h>
 #include <ICoCoTrioField.h>
+#include <Schema_Temps_base.h>
 
 #include <Init_Params.h>
 
@@ -371,7 +373,18 @@ bool ProblemTrio_V2::solveTimeStep()
 void ProblemTrio_V2::validateTimeStep()
 {
   pb->validateTimeStep();
-  pb->postraiter(0);
+  if(sub_type(Probleme_base,*pb))
+    {
+      const Probleme_base& pb_base = ref_cast(Probleme_base,*pb);
+      const Schema_Temps_base& sch = pb_base.schema_temps();
+      bool stop_ = sch.stop();
+      if (!stop_) pb->postraiter(0);
+    }
+  else
+    {
+      // If *pb is a coupled problem, we may get the last line duplicated in post-processing files.
+      pb->postraiter(0);
+    }
   statistiques().end_count(timestep_counter_);
 }
 
