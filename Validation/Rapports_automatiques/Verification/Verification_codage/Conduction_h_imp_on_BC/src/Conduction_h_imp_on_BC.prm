@@ -13,6 +13,18 @@ Parameters {
 
 
 Chapter {
+	Title "Introduction"
+	description "Before TRUST 1.8.0, the diffusive time step was computed as"
+	description "\latex_( \begin{equation} \Delta t = \beta \frac{(\Delta x)^{2}}{D} \end{equation} \latex_)"
+	description "Since the version 1.8.0, in VEF discretization, we compute Biot number given by \latex_( \begin{equation*} Bi = \frac{h \Delta x}{\lambda} \end{equation*} \latex_) and we use expression (1) if Bi<1 and :"
+	description "\latex_( \begin{equation}  \Delta t = \beta \frac{\lambda \Delta x}{h D} \end{equation} \latex_)"
+	description "in the case where Bi > 1"
+
+
+
+}
+
+Chapter {
 	Title "One-dimensional heat conduction within a 2D solid medium with uniform thermophysical properties"
 	description "The first test case of this validation form concerns a problem of type triokeyword(pb_conduction) as shown hereafter."
 	Figure {
@@ -24,7 +36,7 @@ Chapter {
 	description "At the steady state, the heat flux equilibrium at the right boundary can be expressed by:"
 	description "\latex_( \begin{equation} h (T_{ext} - T_W ) = - \frac{\lambda (T_W - T_{left})}{L} \end{equation} \latex_) "
 	description "which yields \latex_( \begin{equation} T_W  = (T_{ext} + \frac{\lambda}{hL} T_{left} ) / (1 + \frac{\lambda}{hL}) \end{equation} \latex_)"
-	description "Since  \latex_( $T_{left} = 0$, equation (2) can be simplified to : \begin{equation} T_W  = T_{ext} / (1 + \frac{\lambda}{hL}) = 100 / (1 + \frac{0.1}{20} ) = 99.5 \end{equation} \latex_)"
+	description "Since  \latex_( $T_{left} = 0$, equation (4) can be simplified to : \begin{equation} T_W  = T_{ext} / (1 + \frac{\lambda}{hL}) = 100 / (1 + \frac{0.1}{20} ) = 99.5 \end{equation} \latex_)"
 	description "We treat this problem using an explicit and implicit time schemes in order to check that everything is okay. We will plot the residual of energy equation, the mean temperature at the wall with imposed heat flux BC and we will draw the temperature profile inside the domain."
 
 	description "In both, implicit and explicit time schemes, equation residuals decrease and wall temperature converges to the analytical value of 99.5 as shown on figures below."
@@ -131,7 +143,7 @@ Chapter {
 	description "At the steady state, the heat flux equilibrium at the right boundary can be expressed by:"
 	description "\latex_( \begin{equation} h (T_{ext} - T_W ) = - \frac{\lambda (T_W - T_{left})}{L} \end{equation} \latex_) "
 	description "which yields \latex_( \begin{equation} T_W  = (T_{ext} + \frac{\lambda}{hL} T_{left} ) / (1 + \frac{\lambda}{hL}) \end{equation} \latex_)"
-	description "Since  \latex_( $T_{left} = 0$, equation (2) can be simplified to : \begin{equation} T_W  = T_{ext} / (1 + \frac{\lambda}{hL}) = 30.06 / (1 + \frac{0.1}{5\times 10} ) = 30 \end{equation} \latex_)"
+	description "Since  \latex_( $T_{left} = 0$, equation (7) can be simplified to : \begin{equation} T_W  = T_{ext} / (1 + \frac{\lambda}{hL}) = 30.06 / (1 + \frac{0.1}{5\times 10} ) = 30 \end{equation} \latex_)"
         
 	description "We treat this problem using an explicit and implicit time schemes in order to check that everything is okay. We will plot the residual of energy equation, the mean temperature at the wall with imposed heat flux BC and we will draw the temperature profile inside the domain."
 
