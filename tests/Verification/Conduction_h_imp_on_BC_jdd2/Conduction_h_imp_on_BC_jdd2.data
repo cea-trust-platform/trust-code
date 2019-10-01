@@ -1,0 +1,117 @@
+# Conduction 3D : Diverses conditions limites thermiques #
+# PARALLEL OK 2 #
+dimension 3
+
+Pb_conduction pb
+Domaine dom
+Domaine rightboundary
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 11  5  3
+                Longueurs 10. 2.  10
+        }
+        {
+                Bord Gauche   X = 0.  0. <= Y <= 2.   0. <= Z <= 10.
+                Bord Droit    X = 10. 0. <= Y <= 2.   0. <= Z <= 10.
+                Bord Bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord Haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
+                Bord perioz   Z = 10. 0. <= X <= 10.  0. <= Y <= 2.
+ 
+                }
+} 
+tetraedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 400.
+	dt_min 0.0000001
+	dt_max 1.0
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.1
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+	Conduction
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1 10. 
+			}
+		boundary_conditions {
+			perioz paroi_adiabatique
+			Haut paroi_adiabatique
+			Bas  paroi_adiabatique
+			Gauche paroi_temperature_imposee
+			      Champ_Front_Uniforme 1 0.0
+			Droit paroi_echange_externe_impose 
+			       h_imp Champ_Front_Uniforme 1 5.0 
+			       T_ext Champ_Front_Uniforme 1 30.06
+		}
+	}
+
+	Post_processing
+	{
+		Definition_champs {
+	                Twall Extraction { Domaine rightboundary nom_frontiere Droit methode trace source refChamp { Pb_champ pb temperature } } 
+
+			T_mean reduction_0D { 
+				methode moyenne
+				source_reference Twall
+				}
+		}
+		Probes {
+			Tmean T_mean periode 0.01 numero_elem_sur_maitre 0
+		}
+		format lml
+		fields dt_post 30.
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Solve pb
+
+End

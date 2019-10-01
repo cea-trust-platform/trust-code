@@ -1,0 +1,7 @@
+
+
+mkdir -p conduc2D conduc2Dimp conduc3D conduc3Dimp
+mv Conduc2D_h_imp.data conduc2D
+mv Conduc2D_h_imp_implicite.data conduc2Dimp
+mv Conduc3D_h_imp.data conduc3D
+mv Conduc3D_h_imp_implicite.data conduc3Dimp

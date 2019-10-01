@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@
 #include <Champ.h>
 #include <Check_espace_virtuel.h>
 #include <Debog.h>
+#include <Echange_externe_impose.h>
 
 Implemente_base(Op_Diff_VEF_base,"Op_Diff_VEF_base",Operateur_Diff_base);
 
@@ -123,11 +124,46 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
       double alpha_max = local_max_vect(valeurs_diffusivite);
 
+      // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
+      bool is_h_imp = 0;
+      double h_imp_max = -1, h_imp_temp=-2, max_conductivity = 0;
+      const Zone_Cl_VEF& la_zone_cl_vef = la_zcl_vef.valeur();
+      const Equation_base& mon_eqn = la_zone_cl_vef.equation();
+
+      for(int i=0; i<la_zone_cl_vef.nb_cond_lim(); i++)
+        {
+          // loop on boundaries
+          const Cond_lim_base& la_cl = la_zone_cl_vef.les_conditions_limites(i).valeur();
+
+          if (sub_type(Echange_externe_impose,la_cl))
+            {
+              const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
+              const Champ_front_base& le_ch_front = ref_cast( Champ_front_base, la_cl_int.h_imp().valeur());
+              const DoubleVect& tab = le_ch_front.valeurs();
+              h_imp_temp = local_max_vect(tab); // get h_imp from datafile
+              h_imp_temp = abs(h_imp_temp); // we should take the absolute value since it can be negative!
+              h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
+              is_h_imp = (h_imp_max==0) ? 0:1; // bool to tell us if we have a BC with Paroi_echange_externe_impose
+            }
+        } // End loop on boundaries
+
       if ((alpha_max == 0.)||(zone_VEF.nb_elem()==0))
         dt_stab = DMAXFLOAT;
       else
         {
           const double min_delta_h_carre = zone_VEF.carre_pas_du_maillage();
+          if (is_h_imp)
+            {
+              // get the thermal conductivity
+              const Milieu_base& mon_milieu = mon_eqn.milieu();
+              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
+              max_conductivity = local_max_vect(tab_lambda);
+              // compute Biot number given by Bi = L*h/lambda.
+              double Bi = h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
+              // if Bi>1, replace conductivity by h_imp*h in diffusivity. We are very conservative since h_imp_max is not necessarily located where max_conductivity is.
+              if (Bi>1.0)
+                alpha_max *= h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
+            }
           dt_stab = min_delta_h_carre / (2. * dimension * alpha_max);
         }
 

@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+28/08/19 (TRUST)  Bug fixed   : Convective heat flux imposed through paroi_echange_externe_impose is taken into account in dt_stab computation in VEF
 28/08/19 (TRUST)  Bug fixed   : Add a check for extracted field using surface domain with not the good support
 23/08/19 (TRUST)  Bug fixed   : Regression introduced in 1.7.7: using MED format post-processing during parallel calculation with empty zones crashed
 21/08/19 (TRUST)  New keyword : Champ_Fonc_MED_Tabule to interpolate each time step among a list of fields from a MED file
