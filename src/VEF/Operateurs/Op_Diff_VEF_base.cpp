@@ -125,7 +125,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       double alpha_max = local_max_vect(valeurs_diffusivite);
 
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
-      bool is_h_imp = 0;
+      bool is_h_imp = false;
       double h_imp_max = -1, h_imp_temp=-2, max_conductivity = 0;
       const Zone_Cl_VEF& la_zone_cl_vef = la_zcl_vef.valeur();
       const Equation_base& mon_eqn = la_zone_cl_vef.equation();
@@ -143,7 +143,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
               h_imp_temp = local_max_vect(tab); // get h_imp from datafile
               h_imp_temp = abs(h_imp_temp); // we should take the absolute value since it can be negative!
               h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
-              is_h_imp = (h_imp_max==0) ? 0:1; // bool to tell us if we have a BC with Paroi_echange_externe_impose
+              is_h_imp = (h_imp_max>0.0); // bool to tell us if we have a BC with Paroi_echange_externe_impose
             }
         } // End loop on boundaries
 

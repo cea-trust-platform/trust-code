@@ -1,5 +1,5 @@
 # Conduction 2D : Diverses conditions limites thermiques #
-# PARALLEL OK 8 #
+# PARALLEL OK 2 #
 dimension 2
 
 Pb_conduction pb
@@ -42,8 +42,21 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Scheme_euler_implicit sch
+Scheme_euler_explicit sch
 Read sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 100.
+	dt_min 0.0000001
+	dt_max 1.0
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Scheme_euler_implicit sch_imp
+Read sch_imp
 {
 	tinit 0
 	nb_pas_dt_max 3
@@ -67,7 +80,7 @@ Read sol
 	Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
-Associate pb sch
+Associate pb sch_imp
 Associate pb sol
 
 Discretize pb dis

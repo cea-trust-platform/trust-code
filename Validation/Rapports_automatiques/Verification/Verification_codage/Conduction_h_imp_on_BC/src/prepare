@@ -1,6 +1,8 @@
 
 
 mkdir -p conduc2D conduc2Dimp conduc3D conduc3Dimp
+sed "s/Associate pb sch/Associate pb sch_imp/" Conduc2D_h_imp.data > Conduc2D_h_imp_implicite.data 
+sed "s/Associate pb sch/Associate pb sch_imp/" Conduc3D_h_imp.data > Conduc3D_h_imp_implicite.data 
 mv Conduc2D_h_imp.data conduc2D
 mv Conduc2D_h_imp_implicite.data conduc2Dimp
 mv Conduc3D_h_imp.data conduc3D
