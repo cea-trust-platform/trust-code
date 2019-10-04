@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# cas 0 VEF 2D
+sed "s/ENTREE/champ\_front\_uniforme 2 4 1/; s/VALUE/champ\_front\_uniforme 1 2/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_0.data
+sed -i "23a trianguler_h dom" Champ_front_xyz_debit_0.data
+
 # cas 1 VEF 2D
 sed "s/ENTREE/champ\_front\_fonc\_xyz 2 y*(y-2) 2*y/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_1.data
 sed -i "23a trianguler_h dom" Champ_front_xyz_debit_1.data
@@ -11,7 +15,7 @@ sed -i "24a trianguler_h dom" Champ_front_xyz_debit_2.data
 sed -i "25a raffiner_isotrope dom" Champ_front_xyz_debit_2.data
 
 # cas 3 VDF 3D
-sed "s/ENTREE/champ\_front\_fonc\_txyz 3 -0.2 0.4*y 1/; s/VALUE/champ\_front\_uniforme 1 -0.25/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_3.data
+sed "s/ENTREE/champ\_front\_uniforme 3 2 1 1/; s/VALUE/champ\_front\_uniforme 1 -0.25/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_3.data
 sed -i "s/11 11/21 21/" Champ_front_xyz_debit_3.data
 sed -i "23a Extruder { domaine dom direction 0 0 3 nb_tranches 25 }" Champ_front_xyz_debit_3.data
 sed -i "s/dom  2 0 0/dom  3 0 0 0/"  Champ_front_xyz_debit_3.data
@@ -20,24 +24,23 @@ sed -i "88a derriere paroi_fixe"  Champ_front_xyz_debit_3.data
 sed -i "106a vitX Transformation { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb vitesse } } }" Champ_front_xyz_debit_3.data
 sed -i "107a vitY Transformation { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb vitesse } } }" Champ_front_xyz_debit_3.data
 sed -i "108a vitZ Transformation { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb vitesse } } }" Champ_front_xyz_debit_3.data
-sed -i "s/profil_vitX   nodes vitesseX periode 100 segment 10 5 0.1 5 2/profil_vitX   nodes vitX periode 100 plan 6 6   5 0 0 5 2 0 5 0 3/g" Champ_front_xyz_debit_3.data
-sed -i "s/profil_vitY   nodes vitesseY periode 100 segment 10 5 0.1 5 2/profil_vitY   grav vitY periode 100 plan 6 6   5 0 0 5 2 0 5 0 3/g" Champ_front_xyz_debit_3.data
-sed -i "115a profil_vitZ   nodes vitZ periode 100 plan 6 6   5 0 0 5 2 0 5 0 3" Champ_front_xyz_debit_3.data
-sed -i "116a sonde_vitX vitX  periode 100 segment 10 5 0 1.5 5 2 1.5" Champ_front_xyz_debit_3.data
-sed -i "117a sonde_vitY vitY  periode 100 segment 10 5 0 1.5 5 2 1.5" Champ_front_xyz_debit_3.data
-sed -i "118a sonde_vitZ vitZ  periode 100 segment 10 5 0 1.5 5 2 1.5" Champ_front_xyz_debit_3.data
+sed -i "s/profil_vitX   nodes vitesseX periode 100 segment 10 5 0.1 5 2/profil_vitX   nodes vitX periode 100 plan 15 15   5 0 0 5 2 0 5 0 3/g" Champ_front_xyz_debit_3.data
+sed -i "s/profil_vitY   nodes vitesseY periode 100 segment 10 5 0.1 5 2/profil_vitY   grav vitY periode 100 plan 15 15   5 0 0 5 2 0 5 0 3/g" Champ_front_xyz_debit_3.data
+sed -i "115a profil_vitZ   nodes vitZ periode 100 plan 15 15   5 0 0 5 2 0 5 0 3" Champ_front_xyz_debit_3.data
+sed -i "116a sonde_vitX vitX  periode 100 segment 20 5 0.05 1.5 5 1.95 1.5" Champ_front_xyz_debit_3.data
+sed -i "117a sonde_vitY vitY  periode 100 segment 20 5 0.05 1.5 5 1.95 1.5" Champ_front_xyz_debit_3.data
+sed -i "118a sonde_vitZ vitZ  periode 100 segment 20 5 0.05 1.5 5 1.95 1.5" Champ_front_xyz_debit_3.data
 #sed -i "119a Post\_processings \{ outlet \{ domaine dom\_boundaries\_Outlet format lata definition\_champs \{ Vx Transformation \{ methode composante numero 0 localisation elem source refChamp \{ Pb\_champ pb vitesse \} \} Vy Transformation \{ methode composante numero 1 localisation elem source refChamp \{ Pb\_champ pb vitesse \} \} vn Transformation \{ methode vecteur expression 3 cos(alpha)*Vx-sin(alpha)*Vy 0 0 sources\_reference \{ Vx , Vy \} \} vt Transformation \{ methode vecteur expression 3 0 sin(alpha)*Vx+cos(alpha)*Vy 0 sources\_reference \{ Vx , Vy \} \} \} fields dt\_post 1.3 \{ vitesse elem vn elem vt elem \} \} \}" Champ_front_xyz_debit_3.data
 #sed -i "s/alpha/0/g" Champ_front_xyz_debit_3.data
+sed -i "s/paroi\_fixe/symetrie/" Champ_front_xyz_debit_3.data
 
 # cas 4 VEF 3D incline
-sed "24a tetraedriser_homogene dom" Champ_front_xyz_debit_3.data > Champ_front_xyz_debit_4.data
-sed -i "25a transformer dom x+0.5*y y z" Champ_front_xyz_debit_4.data
-sed -i "s/VDF/VEFPreP1B/"  Champ_front_xyz_debit_4.data
-#sed -i "s#alpha#-PI/6#g" Champ_front_xyz_debit_4.data
+sed "s/ENTREE/champ\_front\_uniforme 2 1 2/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_4.data
+sed -i "23a trianguler_h dom" Champ_front_xyz_debit_4.data
+sed -i "s/champ\_front\_uniforme 1 -0.25/Champ\_front\_tabule 1 { # nb time steps # 3 # Times # 0 2 4 # Values # 1 5 22 }/" Champ_front_xyz_debit_4.data
+sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 360/" Champ_front_xyz_debit_4.data
 
-
-
-liste="Champ_front_xyz_debit_1 Champ_front_xyz_debit_2 Champ_front_xyz_debit_3 Champ_front_xyz_debit_4"
+liste="Champ_front_xyz_debit_0 Champ_front_xyz_debit_1 Champ_front_xyz_debit_2 Champ_front_xyz_debit_3 Champ_front_xyz_debit_4"
 for cas in $liste
 do
   mkdir $cas
@@ -45,4 +48,18 @@ do
   cp post_run propertiesGeometry.py traite_sonde.py $cas
   sed -i "s/ENTREE/$cas/g" $cas/propertiesGeometry.py
 done
+
+liste2="Champ_front_xyz_debit_0 Champ_front_xyz_debit_1 Champ_front_xyz_debit_4"
+for cas in $liste2
+do
+  sed -n "80,88p" $cas/$cas.data > $cas/BC.txt
+  sed -i 's/^\s*//' $cas/BC.txt # supprime les espaces en debut de ligne
+done
+
+sed -n "82,90p" Champ_front_xyz_debit_2/Champ_front_xyz_debit_2.data > Champ_front_xyz_debit_2/BC.txt
+sed -i 's/^\s*//' Champ_front_xyz_debit_2/BC.txt # supprime les espaces en debut de ligne
+
+sed -n "80,89p" Champ_front_xyz_debit_3/Champ_front_xyz_debit_3.data > Champ_front_xyz_debit_3/BC.txt
+sed -i 's/^\s*//' Champ_front_xyz_debit_3/BC.txt # supprime les espaces en debut de ligne
+
 
