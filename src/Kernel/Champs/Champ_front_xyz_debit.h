@@ -53,7 +53,7 @@ protected:
 
   virtual void initialiser_coefficient(const Champ_Inc_base& inco);
   void calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user);
-  void calculer_champ_vitesse(DoubleTab& velocity_field, double flow_rate, DoubleTab& velocity_user);
+  void calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, double flow_rate, DoubleTab& velocity_user);
 
 public:
   virtual int initialiser(double tps, const Champ_Inc_base& inco);
