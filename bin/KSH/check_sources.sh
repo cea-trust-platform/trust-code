@@ -97,7 +97,7 @@ check_recent_src()
     #############################################################
     # Interdiction de entier au lieu de int a partir de la v1.6.8
     #############################################################
-    grep -e "[$,( ]entier[& ]" $file && echo "-> Error in $file: entier type should be replace by int type" && echo && erreur 1
+    grep -e "[$,( ]entier[& ]" $file | grep -v "XD attr" && echo "-> Error in $file: entier type should be replace by int type" && echo && erreur 1
     
     ################################################
     # Only UTF-8 or ASCII encoding since v1.7.6
