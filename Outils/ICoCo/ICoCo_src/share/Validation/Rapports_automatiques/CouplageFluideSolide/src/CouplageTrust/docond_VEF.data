@@ -188,6 +188,7 @@ Read pb2
             sonde_segf temperature periode 5. segment 10 0.3 0.75 1.0 0.75
         }
         format lata
+        fichier docond_VEF
         fields dt_post 10
         {
             pression elem
