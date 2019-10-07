@@ -388,7 +388,9 @@ then
        with_mpi="--with-mpi-dir=$MPI_ROOT"
    # Si les compilateurs sont dans le usr/bin 
    else
-      with_mpi="--with-mpi-dir=$MPI_ROOT --with-cc=$TRUST_cc --with-fc=$TRUST_F77"
+      echo "Error LIBPETSC can't be installed because mpirun is not found in $MPI_ROOT/bin"
+      echo "To workaround, re-configure TRUST with ./configure -force_provided_mpich or ./configure -force_provided_openmpi"
+      exit -1
    fi
 else
    with_mpi="--with-mpi=0 -with-mumps-serial --with-mpiuni-fortran-binding=0"
