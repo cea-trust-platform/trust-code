@@ -1,23 +1,30 @@
 #!/bin/bash
 
-# cas 0 VEF 2D
+# chap 1 : cas 0 VEF 2D
 sed "s/ENTREE/champ\_front\_uniforme 2 4 1/; s/VALUE/champ\_front\_uniforme 1 2/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_0.data
 sed -i "23a trianguler_h dom" Champ_front_xyz_debit_0.data
 
-# cas 1 VEF 2D
+# chap 2 : cas 1 VEF 2D
 sed "s/ENTREE/champ\_front\_fonc\_xyz 2 y*(y-2) 2*y/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_1.data
 sed -i "23a trianguler_h dom" Champ_front_xyz_debit_1.data
 
-# cas 2 VEF 2D incline
+# chap 3 : cas 4 VEF 2D
+sed "s/ENTREE/champ\_front\_uniforme 2 1 2/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_4.data
+sed -i "23a trianguler_h dom" Champ_front_xyz_debit_4.data
+sed -i "s/champ\_front\_uniforme 1 -0.25/Champ\_front\_tabule 1 { # nb time steps # 3 # Times # 0 2 4 # Values # 1 5 22 }/" Champ_front_xyz_debit_4.data
+sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 360/" Champ_front_xyz_debit_4.data
+
+# chap 4 : cas 2 VEF 2D 
 sed "s/ENTREE/champ\_front\_fonc\_xyz 2 0*(y<0.5)-0.25*(y_GE_0.5)*(y_LT_1)-0.75*(y_GE_1)*(y_LT_1.5)-0.5*(y_GE_1.5)*(y_LT_2) 2/; s/VALUE/champ\_front\_uniforme 1 -2.5/; s/VDF/VEFPreP1B/; s/10 5 0.1 5 2/20 5 0.01 6. 2/g" Champ_front_xyz_debit.data > Champ_front_xyz_debit_2.data
 sed -i "23a transformer dom x+0.5*y y" Champ_front_xyz_debit_2.data
 sed -i "24a trianguler_h dom" Champ_front_xyz_debit_2.data
 sed -i "25a raffiner_isotrope dom" Champ_front_xyz_debit_2.data
 
-# cas 3 VDF 3D
-sed "s/ENTREE/champ\_front\_uniforme 3 2 1 1/; s/VALUE/champ\_front\_uniforme 1 -0.25/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_3.data
-sed -i "s/11 11/21 21/" Champ_front_xyz_debit_3.data
-sed -i "23a Extruder { domaine dom direction 0 0 3 nb_tranches 25 }" Champ_front_xyz_debit_3.data
+# chap 5 : cas 3 VDF 3D 
+sed "s/ENTREE/champ\_front\_uniforme 3 2 1 1/; s/VALUE/champ\_front\_uniforme 1 4/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_3.data
+sed -i "s/11 11/41 41/" Champ_front_xyz_debit_3.data
+#sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 400/" Champ_front_xyz_debit_3.data
+sed -i "23a Extruder { domaine dom direction 0 0 3 nb_tranches 41 }" Champ_front_xyz_debit_3.data
 sed -i "s/dom  2 0 0/dom  3 0 0 0/"  Champ_front_xyz_debit_3.data
 sed -i "87a devant paroi_fixe"  Champ_front_xyz_debit_3.data
 sed -i "88a derriere paroi_fixe"  Champ_front_xyz_debit_3.data
@@ -30,15 +37,50 @@ sed -i "115a profil_vitZ   nodes vitZ periode 100 plan 15 15   5 0 0 5 2 0 5 0 3
 sed -i "116a sonde_vitX vitX  periode 100 segment 20 5 0.05 1.5 5 1.95 1.5" Champ_front_xyz_debit_3.data
 sed -i "117a sonde_vitY vitY  periode 100 segment 20 5 0.05 1.5 5 1.95 1.5" Champ_front_xyz_debit_3.data
 sed -i "118a sonde_vitZ vitZ  periode 100 segment 20 5 0.05 1.5 5 1.95 1.5" Champ_front_xyz_debit_3.data
+sed -i "119a sonde00 vitesse periode 10 point 1 5.0 2.500e-02  1.5 # pour avoir la valeur sur la face #" Champ_front_xyz_debit_3.data
+sed -i "120a sonde01 vitesse periode 10 point 1 5.0 7.500e-02  1.5" Champ_front_xyz_debit_3.data
+sed -i "121a sonde02 vitesse periode 10 point 1  5.0 1.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "122a sonde03 vitesse periode 10 point 1 5.0 1.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "123a sonde04 vitesse periode 10 point 1 5.0 2.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "124a sonde05 vitesse periode 10 point 1 5.0 2.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "125a sonde06 vitesse periode 10 point 1 5.0 3.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "126a sonde07 vitesse periode 10 point 1 5.0 3.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "127a sonde08 vitesse periode 10 point 1 5.0 4.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "128a sonde09 vitesse periode 10 point 1 5.0 4.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "129a sonde10 nodes vitesse periode 10 point 1 5.0 5.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "130a sonde11 vitesse periode 10 point 1 5.0 5.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "131a sonde12 vitesse periode 10 point 1 5.0 6.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "132a sonde13 vitesse periode 10 point 1 5.0 6.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "133a sonde14 vitesse periode 10 point 1 5.0 7.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "134a sonde15 vitesse periode 10 point 1 5.0 7.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "135a sonde16 vitesse periode 10 point 1 5.0 8.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "136a sonde17 vitesse periode 10 point 1 5.0 8.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "137a sonde18 vitesse periode 10 point 1 5.0 9.250e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "138a sonde19 vitesse periode 10 point 1 5.0 9.750e-01  1.5" Champ_front_xyz_debit_3.data
+sed -i "139a sonde20 vitesse periode 10 point 1 5.0 1.025  1.5" Champ_front_xyz_debit_3.data
+sed -i "140a sonde21 vitesse periode 10 point 1 5.0 1.075  1.5" Champ_front_xyz_debit_3.data
+sed -i "141a sonde22 vitesse periode 10 point 1 5.0 1.125  1.5" Champ_front_xyz_debit_3.data
+sed -i "142a sonde23 vitesse periode 10 point 1 5.0 1.175  1.5" Champ_front_xyz_debit_3.data
+sed -i "143a sonde24 vitesse periode 10 point 1 5.0 1.225  1.5" Champ_front_xyz_debit_3.data
+sed -i "144a sonde25 vitesse periode 10 point 1 5.0 1.275  1.5" Champ_front_xyz_debit_3.data
+sed -i "145a sonde26 vitesse periode 10 point 1 5.0 1.325  1.5" Champ_front_xyz_debit_3.data
+sed -i "146a sonde27 vitesse periode 10 point 1 5.0 1.375  1.5" Champ_front_xyz_debit_3.data
+sed -i "147a sonde28 vitesse periode 10 point 1 5.0 1.425  1.5" Champ_front_xyz_debit_3.data
+sed -i "148a sonde29 vitesse periode 10 point 1 5.0 1.475  1.5" Champ_front_xyz_debit_3.data
+sed -i "149a sonde30 vitesse periode 10 point 1 5.0 1.525  1.5" Champ_front_xyz_debit_3.data
+sed -i "150a sonde31 vitesse periode 10 point 1 5.0 1.575  1.5" Champ_front_xyz_debit_3.data
+sed -i "151a sonde32 vitesse periode 10 point 1 5.0 1.625  1.5" Champ_front_xyz_debit_3.data
+sed -i "152a sonde33 vitesse periode 10 point 1 5.0 1.675  1.5" Champ_front_xyz_debit_3.data
+sed -i "153a sonde34 vitesse periode 10 point 1 5.0 1.725  1.5" Champ_front_xyz_debit_3.data
+sed -i "154a sonde35 vitesse periode 10 point 1 5.0 1.775  1.5" Champ_front_xyz_debit_3.data
+sed -i "155a sonde36 vitesse periode 10 point 1 5.0 1.825  1.5" Champ_front_xyz_debit_3.data
+sed -i "156a sonde37 vitesse periode 10 point 1 5.0 1.875  1.5" Champ_front_xyz_debit_3.data
+sed -i "157a sonde38 vitesse periode 10 point 1 5.0 1.925  1.5" Champ_front_xyz_debit_3.data
+sed -i "158a sonde39 vitesse periode 10 point 1 5.0 1.975  1.5" Champ_front_xyz_debit_3.data
 #sed -i "119a Post\_processings \{ outlet \{ domaine dom\_boundaries\_Outlet format lata definition\_champs \{ Vx Transformation \{ methode composante numero 0 localisation elem source refChamp \{ Pb\_champ pb vitesse \} \} Vy Transformation \{ methode composante numero 1 localisation elem source refChamp \{ Pb\_champ pb vitesse \} \} vn Transformation \{ methode vecteur expression 3 cos(alpha)*Vx-sin(alpha)*Vy 0 0 sources\_reference \{ Vx , Vy \} \} vt Transformation \{ methode vecteur expression 3 0 sin(alpha)*Vx+cos(alpha)*Vy 0 sources\_reference \{ Vx , Vy \} \} \} fields dt\_post 1.3 \{ vitesse elem vn elem vt elem \} \} \}" Champ_front_xyz_debit_3.data
 #sed -i "s/alpha/0/g" Champ_front_xyz_debit_3.data
 sed -i "s/paroi\_fixe/symetrie/" Champ_front_xyz_debit_3.data
 
-# cas 4 VEF 3D incline
-sed "s/ENTREE/champ\_front\_uniforme 2 1 2/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_4.data
-sed -i "23a trianguler_h dom" Champ_front_xyz_debit_4.data
-sed -i "s/champ\_front\_uniforme 1 -0.25/Champ\_front\_tabule 1 { # nb time steps # 3 # Times # 0 2 4 # Values # 1 5 22 }/" Champ_front_xyz_debit_4.data
-sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 360/" Champ_front_xyz_debit_4.data
 
 liste="Champ_front_xyz_debit_0 Champ_front_xyz_debit_1 Champ_front_xyz_debit_2 Champ_front_xyz_debit_3 Champ_front_xyz_debit_4"
 for cas in $liste

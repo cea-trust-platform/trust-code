@@ -263,6 +263,75 @@ Chapter {
 		Normal3d 0.3759122273803819 0.1964758316262978 0.9055866854656571
 		Up3D -0.07150280348325952 0.9805002704125454 -0.1830479959326514
 	}
+	visu {
+		title "Outlet Mesh"
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3.lata dom_boundaries/Outlet
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE00.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE01.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE02.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE03.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE04.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE05.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE06.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE07.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE08.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE09.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE10.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE11.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE12.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE13.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE14.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE15.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE16.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE17.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE18.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE19.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE20.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE21.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE22.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE23.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE24.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE25.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE26.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE27.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE28.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE29.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE30.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE31.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE32.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE33.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE34.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE35.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE36.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE37.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE38.son MESH red
+		mesh  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3_SONDE39.son MESH red
+		width 9cm
+		Normal3d 1  0  0
+		Up3D 0  1  0 
+		operator_to_all no_legend
+	}
+	visu {
+		title "Vitesse X SOM"
+		pseudocolor  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3.lata dom VITESSE_X SOM
+		width 9cm
+		Normal3d 0.8153707332816618 0.2842728746334313 0.5043406587370989
+		Up3D -0.2471680851067527 0.9586925441378071 -0.1407712453565714
+	}
+	visu {
+		title "Vitesse Y SOM"
+		pseudocolor  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3.lata dom VITESSE_Y SOM
+		width 9cm
+		Normal3d 0.8153707332816618 0.2842728746334313 0.5043406587370989
+		Up3D -0.2471680851067527 0.9586925441378071 -0.1407712453565714
+	}
+	visu {
+		title "Vitesse Z SOM"
+		pseudocolor  Champ_front_xyz_debit_3/Champ_front_xyz_debit_3.lata dom VITESSE_Z SOM
+		width 9cm
+		Normal3d 0.8153707332816618 0.2842728746334313 0.5043406587370989
+		Up3D -0.2471680851067527 0.9586925441378071 -0.1407712453565714
+	}
 	figure { 
 		title "SONDE_VITX"
 		include_description_curves 0
@@ -270,9 +339,9 @@ Chapter {
 		labelY "VITESSEX"
 		width 10cm
 		curve {
-			fonction 2
+			fonction 0.2
 			style linespoints
-			legend "User Ux=2"
+			legend "User Ux=0.2"
 		}
 		curve {
 			segment Champ_front_xyz_debit_3/Champ_front_xyz_debit_3 SONDE_VITX 0
