@@ -557,7 +557,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
 
   int nb_sources = get_nb_sources();
   nb_pos = positions.dimension(0);
-  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale"));
+  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale")||(methode_=="vecteur"));
   double x=0;
   double y=0;
   double z=0;
