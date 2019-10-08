@@ -26,7 +26,7 @@ Mailler dom
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }  
+	Partition_tool tranche { tranches 2 1 }  
 	Larg_joint 2
 	zones_name DOM
 }
@@ -79,11 +79,9 @@ Read pb
 			Upper  paroi_fixe
 			Lower  paroi_fixe
 			Inlet  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-# 			Inlet  frontiere_ouverte_vitesse_imposee champ_front_debit champ_front_uniforme 1 5. #
 			Outlet  frontiere_ouverte_vitesse_imposee champ_front_xyz_debit { 
                                 flow_rate champ_front_uniforme 1 1
 				velocity_profil champ_front_fonc_xyz 2 (y_LT_0.5)*y+((y_GE_0.5)_AND_(y_LE_1.5))*0.5+(y_GT_1.5)*(2-y) 0 
-# champ_front_fonc_xyz 2 3+x 1+y / Boundary_field_inward { normal_value 2. } / champ_front_uniforme 2 10 2 #
                         }
 		}
 	}
@@ -109,16 +107,13 @@ Read pb
 			profil_vitX   nodes vitesseX periode 0.01 segment 10 10 0 10 2
 			profil_vitY   nodes vitesseY periode 0.01 segment 10 10 0 10 2
 		}
-		format lata
+		format lml
 		fields dt_post 1.3
 		{
-			vitesse elem
 			vitesse som
-			vitesse faces
 		}
 	}
 }
 Solve pb
 End
-
 
