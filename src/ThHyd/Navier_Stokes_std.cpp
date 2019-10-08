@@ -368,13 +368,14 @@ void Navier_Stokes_std::completer()
 
   Equation_base::completer();
 
-
-
   // On ne decline pas le residu par composantes pour la vitesse:
   initialise_residu(1);
 
   la_pression.associer_eqn(*this);
   la_pression->completer(la_zone_Cl_dis.valeur());
+  // [ABN] make sure the pressure knows the zone_Cl_dis to be able to use specific postreatment like 'gravcl'
+  la_pression->associer_zone_cl_dis(la_zone_Cl_dis);
+
   divergence_U.associer_eqn(*this);
   gradient_P.associer_eqn(*this);
   la_pression_en_pa.associer_eqn(*this);

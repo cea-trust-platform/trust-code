@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,6 +62,7 @@ public:
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   void postraiter(int forcer);
+  inline void completer() {}
 
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };
