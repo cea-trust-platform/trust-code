@@ -43,11 +43,11 @@ Scheme_euler_explicit sch
 Read sch
 {
         tinit 0
-	nb_pas_dt_max 200
+        nb_pas_dt_max 200
         dt_min 5.e-8
         dt_impr 5.e-1
         seuil_statio 1.e-8
-	dt_max 1
+        dt_max 1
 }
 
 Fluide_Incompressible eau
