@@ -24,7 +24,7 @@ sed -i "25a raffiner_isotrope dom" Champ_front_xyz_debit_2.data
 
 # chap 5 : cas 3 VDF 3D 
 sed "s/ENTREE/champ\_front\_uniforme 3 2 1 1/; s/VALUE/champ\_front\_uniforme 1 4/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_3.data
-sed -i "s/11 11/41 41/" Champ_front_xyz_debit_3.data
+sed -i "s/11 11/21 21/" Champ_front_xyz_debit_3.data
 sed -i "23a Extruder { domaine dom direction 0 0 3 nb_tranches 41 }" Champ_front_xyz_debit_3.data
 sed -i "s/dom  2 0 0/dom  3 0 0 0/"  Champ_front_xyz_debit_3.data
 sed -i "87a devant paroi_fixe"  Champ_front_xyz_debit_3.data
@@ -32,6 +32,8 @@ sed -i "88a derriere paroi_fixe"  Champ_front_xyz_debit_3.data
 sed -i "111,112d"   Champ_front_xyz_debit_3.data
 sed -i "s/paroi\_fixe/symetrie/" Champ_front_xyz_debit_3.data
 sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 300/" Champ_front_xyz_debit_3.data
+sed -i "s/tranches 2 1/tranches 2 1 1/" Champ_front_xyz_debit_3.data
+sed -i "25a dimension 3" Champ_front_xyz_debit_3.data 
 
 
 liste="Champ_front_xyz_debit_0 Champ_front_xyz_debit_1 Champ_front_xyz_debit_2 Champ_front_xyz_debit_3 Champ_front_xyz_debit_4"

@@ -21,6 +21,7 @@ Mailler dom
 		bord Outlet	X = 5. 0. <= Y <= 2.
 		}
 }
+trianguler_h dom
 # END MESH #
 # BEGIN PARTITION
 
@@ -37,13 +38,13 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+VEFPreP1B dis
 
 Scheme_euler_explicit sch
 Read sch
 {
         tinit 0
-        nb_pas_dt_max 200
+	nb_pas_dt_max 3
         dt_min 5.e-8
         dt_impr 5.e-1
         seuil_statio 1.e-8
@@ -81,8 +82,8 @@ Read pb
 			Lower  paroi_fixe
 			Inlet  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
 			Outlet  frontiere_ouverte_vitesse_imposee champ_front_xyz_debit { 
-				flow_rate VALUE
-				velocity_profil ENTREE
+				flow_rate champ_front_uniforme 1 -0.25
+				velocity_profil champ_front_fonc_xyz 2 y*(y-2) 2*y
 			}
 		}
 	}
@@ -108,7 +109,7 @@ Read pb
 			profil_vitX   nodes vitesseX periode 100 segment 10 5 0.1 5 2
 			profil_vitY   nodes vitesseY periode 100 segment 10 5 0.1 5 2
 		}
-		format lata
+		format lml
 		fields dt_post 100
 		{
 			vitesse som
