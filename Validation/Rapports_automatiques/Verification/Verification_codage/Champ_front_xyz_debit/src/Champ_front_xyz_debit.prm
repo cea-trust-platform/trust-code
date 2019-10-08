@@ -1,6 +1,6 @@
 Parameters {
 	Title "Champ_front_xyz_debit verification"
-	Author "triou"
+	Author "TMA TRUST team (MR)"
 	VersionTrio_U 1.7.8_beta
 	TestCase Champ_front_xyz_debit_0    Champ_front_xyz_debit_0.data
 	TestCase Champ_front_xyz_debit_1    Champ_front_xyz_debit_1.data
