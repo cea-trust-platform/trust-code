@@ -117,6 +117,39 @@ void Champ_Generique_Morceau_Equation::completer(const Postraitement_base& post)
   Champ_Gen_de_Champs_Gen::completer(post);
 }
 
+Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature_du_champ& nature,
+                                                                    const int& nb_comp,
+                                                                    Champ_Fonc& es_tmp) const
+{
+  Noms noms;
+  Noms unites;
+  for (int c=0; c<nb_comp; c++)
+    {
+      //  noms.add("bidon");
+      unites.add("bidon");
+    }
+  noms.add("bidon");
+  double temps;
+  temps = get_time();
+  const Discretisation_base&  discr = get_discretisation();
+  Motcle directive;
+  if ((Motcle(option_)=="flux_bords") || (Motcle(option_)=="flux_surfacique_bords"))
+    directive = "champ_face"; // Pour avoir les flux_bords aux faces et non aux elements en VDF (ex: temperature)
+  else
+    directive = get_directive_pour_discr();
+  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+
+  discr.discretiser_champ(directive,zone_dis,nature,noms,unites,nb_comp,temps,es_tmp);
+
+  if (directive=="pression")
+    {
+      const  Zone_Cl_dis_base& zcl = get_ref_zcl_dis_base();
+      es_tmp->completer(zcl);
+    }
+
+  return es_tmp;
+}
+
 // Description:
 // le morceau d equation lance la discretisation du champ espace_stockage
 // et remplit son tableau de valeurs par la methode calculer_pour_post(...)

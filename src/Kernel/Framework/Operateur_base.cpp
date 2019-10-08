@@ -534,49 +534,21 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
 
       if (flux_bords_.nb_dim()==2)
         {
-          //Methode de distinction horrible mais evite de dupliquer le codage
-          //pour les operateurs VEF et idem pour les operateurs VDF
-          //Il faudrait une classe de base pour tous les operateurs VEF et idem en VDF
           DoubleVect aire;
-          if (!zdis.que_suis_je().debute_par("Zone_VDF"))
+          for (int n_bord=0; n_bord<nb_front; n_bord++)
             {
-              for (int n_bord=0; n_bord<nb_front; n_bord++)
+              const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+
+              if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
+              int ndeb = le_bord.num_premiere_face();
+              int nfin = ndeb + le_bord.nb_faces();
+
+              for (int face=ndeb; face<nfin; face++)
                 {
-                  const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
-                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-
-                  if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
-                  int ndeb = le_bord.num_premiere_face();
-                  int nfin = ndeb + le_bord.nb_faces();
-
-                  for (int face=ndeb; face<nfin; face++)
-                    {
-                      es_valeurs(face) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
-                    }
+                  es_valeurs(face) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
                 }
             }
-          else
-            {
-              const Zone_VF& zvf = ref_cast(Zone_VF,zdis);
-              const IntTab& face_vois = zvf.face_voisins();
-              int elem;
-              for (int n_bord=0; n_bord<nb_front; n_bord++)
-                {
-                  const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
-                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-                  if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
-                  int ndeb = le_bord.num_premiere_face();
-                  int nfin = ndeb + le_bord.nb_faces();
-                  for (int face=ndeb; face<nfin; face++)
-                    {
-                      elem = face_vois(face,0);
-                      if (elem==-1)
-                        elem = face_vois(face,1);
-                      es_valeurs(elem) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
-                    }
-                }
-            }
-
         }
     }
   else

@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+02/11/20 (TRUST)  Bug fixed   : In VDF, advanced fields using flux_bords wasn't correct near corners of the domain
 28/10/20 (TRUST)  Improvement : Reduce memory footprint when using implicit time schemes
 27/10/20 (TRUST)  New keyword : Typer_Lire (or Type_Read) to read and type an object, eg: Type_Read sch schea_euler_implicite { ... }
 27/10/20 (TRUST)  Bug Fixed   : Champ_front_xyz_debit uses now the correct convention: a positive value for flow inlet

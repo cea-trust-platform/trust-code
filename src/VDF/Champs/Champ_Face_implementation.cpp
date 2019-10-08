@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,36 +60,36 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
   const DoubleTab& ch = cha.valeurs();
   const Domaine& dom=zone().domaine();
 
-  if (nb_compo_ == 1)
-    {
-      Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
-  else // (nb_compo_ != 1)
-    {
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              val(rang_poly,ncomp) = 0;
-          else
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              {
+  /*  if (nb_compo_ == 1)
+      {
+        Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
+        Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
+        Process::exit();
+      }
+    else // (nb_compo_ != 1) */
+  {
+    for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+      {
+        le_poly=les_polys(rang_poly);
+        if (le_poly == -1)
+          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+            val(rang_poly,ncomp) = 0;
+        else
+          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+            {
 
-                val1 = ch(elem_faces(le_poly,ncomp));
-                val2 = ch(elem_faces(le_poly,Objet_U::dimension+ncomp));
+              val1 = ch(elem_faces(le_poly,ncomp));
+              val2 = ch(elem_faces(le_poly,Objet_U::dimension+ncomp));
 
-                som0 = face_sommets(elem_faces(le_poly,ncomp),0);
-                som1 = face_sommets(elem_faces(le_poly,Objet_U::dimension+ncomp),0);
+              som0 = face_sommets(elem_faces(le_poly,ncomp),0);
+              som1 = face_sommets(elem_faces(le_poly,Objet_U::dimension+ncomp),0);
 
-                psi = ( positions(rang_poly,ncomp) - dom.coord(som0,ncomp) )
-                      / ( dom.coord(som1,ncomp) - dom.coord(som0,ncomp) ) ;
-                val(rang_poly,ncomp) = interpolation(val1,val2,psi);
-              }
-        }
-    }
+              psi = ( positions(rang_poly,ncomp) - dom.coord(som0,ncomp) )
+                    / ( dom.coord(som1,ncomp) - dom.coord(som0,ncomp) ) ;
+              val(rang_poly,ncomp) = interpolation(val1,val2,psi);
+            }
+      }
+  }
   return val;
 }
 
