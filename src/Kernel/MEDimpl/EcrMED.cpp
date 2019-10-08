@@ -1362,7 +1362,8 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
 // time le temps
 // compteur le numero du pas de temps (ne sert pas pour l'instant)
 // ToDo: suppress compteur variable (set to 1 and NEVER used !)
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
+void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& dom, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+                          const Noms& noms_compo, const Nom& type_elem, double time, int compteur)
 {
   const Nom& nom_dom = dom.le_nom();
 #ifdef MEDCOUPLING_
@@ -1412,13 +1413,8 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,
           int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
           MCAuto<DataArrayDouble> array(DataArrayDouble::New());
           array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
-          array->setInfoOnComponent(0, "x [" + unite[0].getString() + "]");
-          if (nb_comp > 1)
-            {
-              array->setInfoOnComponent(1, "y [" + unite[1].getString() + "]");
-              if (nb_comp > 2)
-                array->setInfoOnComponent(2, "z [" + unite[2].getString() + "]");
-            }
+          if (nb_comp > 1) for (int i = 0; i < nb_comp; i++)
+              array->setInfoOnComponent(i, noms_compo[i].getString() + "[" + unite[i].getString() + "]");
           field->setArray(array);
           // Write
           MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());

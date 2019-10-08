@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -479,20 +479,27 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
   //et n est pas reellement utilise
   compteur = 1;
   Nom nom_post(id_du_champ);
+  Noms noms_compo_courts(noms_compo);
   if (ncomp != -1)
     {
       nom_post = noms_compo[ncomp];
     }
   nom_post.prefix(dom.le_nom());
+  for (int i = 0; i < noms_compo.size(); ++i)
+    noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix(dom.le_nom());
   if (loc_post == "SOM")
     {
       nom_post.prefix("_som_");
       nom_post.prefix("_SOM_");
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_SOM_");
     }
   else if (loc_post == "ELEM")
     {
       nom_post.prefix("_ELEM_");
       nom_post.prefix("_elem_");
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_ELEM_");
     }
   if (je_suis_maitre())
     os << "champ: " << nom_post << " " << dom.le_nom() << " " << loc_post << finl;
@@ -500,12 +507,16 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
   EcrMED ecr_med(getEcrMED());
   Nom nom_dom = dom.le_nom();
   Nom nom_dom_inc = dom.le_nom();
-  Nom type_elem = dom.zone(0).type_elem()->que_suis_je();;
+  Nom type_elem = dom.zone(0).type_elem()->que_suis_je();
+
+  // modif noms compo
+  for (int i = 0; i < noms_compo.size(); ++i)
+    noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(nom_post);
 
   if (loc_post == "SOM")
-    ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
   else if (loc_post == "ELEM")
-    ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
   else if (loc_post == "FACE")
     {
       if (nom_dom_inc != nom_dom)

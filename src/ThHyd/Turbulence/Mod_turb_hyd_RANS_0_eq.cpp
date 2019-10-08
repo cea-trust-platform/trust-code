@@ -267,7 +267,7 @@ void Mod_turb_hyd_RANS_0_eq::imprimer (Sortie& os )  const
         Nom nom_dom_inc= dom.le_nom();
         Nom type_elem=dom.zone(0).type_elem()->que_suis_je();
         assert(K_eps_sortie_.valeurs().dimension(0)==dom.zone(0).nb_elem());
-        ecr_med.ecrire_champ("CHAMPMAILLE",fic,dom,nom_post,K_eps_sortie_.valeurs(),K_eps_sortie_->unites(),type_elem,temps,0);
+        ecr_med.ecrire_champ("CHAMPMAILLE",fic,dom,nom_post,K_eps_sortie_.valeurs(),K_eps_sortie_->unites(),K_eps_sortie_->noms_compo(),type_elem,temps,0);
       }
   return Mod_turb_hyd_base::imprimer(os);
 }
