@@ -632,8 +632,8 @@ void Sonde::initialiser()
           // [ABN] : yes we should exit, otherwise we just don't see the warning:
           Process::exit();
         }
-      // Fill the elem_ array (which list cells containing all the probes):
-      zone_geom.chercher_elements(les_positions_,elem_);
+      // Fill the elem_ array (which list real cells containing all the probes):
+      zone_geom.chercher_elements(les_positions_,elem_,1);
     }
   else
     {

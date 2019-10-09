@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+09/10/19 (TRUST)  Optimization: In Champ_Generique_Transformation a useless MPI synchronization is moved to the right place
+09/10/19 (TRUST)  Bug fixed   : During parallel calculaton, possible divide by 0 on definition_champs expression using fields with non-updated virtual spaces on cells
 07/10/19 (TRUST)  Bug fixed   : Write u+,d+,u*, ... values into *_Ustar.face when temps_cpu_max reached or when stop_file detected.
 30/09/19 (Tools)  Portability : Provided Gnuplot version updated to 5.2.7
 28/08/19 (TRUST)  Bug fixed   : Add a check for extracted field using surface domain with not the good support

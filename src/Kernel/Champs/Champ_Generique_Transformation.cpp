@@ -531,6 +531,13 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
         {
           zvf.zone().calculer_centres_gravite(positions);
         }
+      if (positions.size()>0)
+        {
+          // ToDo : corriger un jour xp dimensionne a nb_elem_tot et qui devrait etre un vecteur distribue comme xv...
+          // La correction serait a faire au niveau de Elem_geom_base::calculer_centre_gravite mais ensuite cela oblige
+          // a corriger pas mal de code pour tenir compte de ce changement.
+          positions.resize(zvf.nb_elem(), positions.dimension(1));
+        }
     }
   else if (localisation_ == "som")
     positions = get_ref_domain().coord_sommets();
@@ -805,8 +812,9 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
             }
         }
     }
-
-  valeurs_espace.echange_espace_virtuel();
+  // PL: Suppression d'une synchronisation couteuse tres souvent inutile
+  // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel
+  // valeurs_espace.echange_espace_virtuel();
   return espace_stockage.valeur();
 }
 
