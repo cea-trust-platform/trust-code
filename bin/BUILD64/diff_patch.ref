@@ -43,13 +43,13 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT_C/jmfft.h ./ThirdPart/src/LIBMFF
 ---
 > #define INTEGER int
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBPETSC/install ./ThirdPart/src/LIBPETSC/install
-380d379
+416d415
 <    add_package metis
-497c496
+533c532
 <    FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env |sed "s/-fdefault-integer-8//g" `
 ---
 >    FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
-518d516
+553d551
 < --with-64-bit-indices \
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBSKIT/Installer ./ThirdPart/src/LIBSKIT/Installer
 25,27d24
@@ -69,11 +69,11 @@ diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
 982,983d974
 < # Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
 < [ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
-1749c1740
+1759c1750
 < 	F77Flags="-O3 $FPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
 ---
 > 	F77Flags="-O3 $FPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-1959d1949
+1969d1959
 <    TRUST_USE_MUMPS=0
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 62,63c62,63
