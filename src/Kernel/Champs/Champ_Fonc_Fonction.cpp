@@ -75,21 +75,11 @@ Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 
 
   int nbcomp;
-  nbcomp=lire_dimension(is,que_suis_je());
-  if(nbcomp==1)
-    {
-      fixer_nb_comp(nbcomp);
-      is >> nom_champ_parametre_;
-
-      Cerr<<"We read the analytic function "<<finl;
-      la_table.lire_f(is);
-    }
-  else
-    {
-      Cerr << "Error reading from an object of type Champ_Fonc_Fonction" << finl;
-      Cerr << "We know treating only the scalar fields " << finl;
-      exit();
-    }
+  nbcomp = lire_dimension(is,que_suis_je());
+  fixer_nb_comp(nbcomp);
+  is >> nom_champ_parametre_;
+  Cerr<<"We read the analytic function "<<finl;
+  la_table.lire_f(is, nbcomp);
   return is;
 }
 Implemente_instanciable_sans_constructeur(Sutherland,"Sutherland",Champ_Fonc_Fonction);
