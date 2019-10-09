@@ -26,7 +26,6 @@
 #include <ICoCoMEDField.hxx>
 #include <Domaine.h>
 #include <Champ_Generique_base.h>
-#include <Champ_Generique_base.h>
 #include <Zone_VF.h>
 #include <PE_Groups.h>
 #include <Comm_Group.h>
