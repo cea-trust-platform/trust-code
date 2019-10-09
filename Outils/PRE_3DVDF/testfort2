@@ -1,4 +1,5 @@
 #!/bin/bash
+LC_ALL=C
 # Procedure de test de Xprepro
 echo "Usage: `basename $0` [numero_cas_test]"
 [ ${#DISPLAY} = 0 ] && export DISPLAY=":0"
