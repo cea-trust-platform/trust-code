@@ -980,7 +980,8 @@ if [ "$compiler_found" = 0 ] ; then
   exit -1
 fi
 # Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
-[ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
+# 10/10/2019: On ne s'arrete plus maintenant, en ajoutant l'option -i8 pour ifort on compile en 64 BITS
+#[ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
 
 ######################################################################
 # On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
@@ -1834,7 +1835,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	fi
 	# Test si la librairie libguide.so existe car -lguide est deprecated avec Intel 12.x et doit etre remplace par -liomp5
 	[ "`$TRUST_CC --version | grep NEC`" != "" ] && SYSLIBS=$SYSLIBS" /usr/lib/libnuma.so -lkitcompat"
-	F77Flags="-O3 -fPIC"
+	F77Flags="-O3 -fPIC -i8"
 	ccFLAGS="-O3 -fPIC -unroll"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
