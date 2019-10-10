@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ public :
     return PolygonIndex_;
   };
   void rebuild_index();
-  void reduit_index(const ArrOfInt& elems_sous_part);
+  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const;
   void compute_virtual_index();
 private :
   ArrOfInt FacesIndex_,PolygonIndex_;  //  PolygoneIndex_[ele] numero premiere face de ele (sert sutrout en diff)

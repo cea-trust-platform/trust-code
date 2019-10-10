@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/bin/bash
 # --
 # Author : Eli LAUCOIN (CEA)
 # --
@@ -57,6 +57,11 @@ then
     number_of_compilation_arguments_error
 fi
 
+# source de l'environnement du baltik
+for envsh in $( ls env_* )
+do
+    source $envsh
+done
 
 # recuperation des options de compilation
 

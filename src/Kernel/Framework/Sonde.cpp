@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -620,15 +620,17 @@ void Sonde::initialiser()
   if (numero_elem_==-1)
     {
       // Location of probes is given by coordinates in the les_positions_ array:
-      int nb_som = zone_geom.type_elem().nb_som();
+      //int nb_som = zone_geom.type_elem().nb_som();
       int nb_coord = les_positions_.dimension(1);
-      if (nb_coord+1>nb_som)
+      if (nb_coord != Objet_U::dimension)
+        //if (nb_coord+1>nb_som)
         {
           Cerr << "You can't specify the probe named " << nom_ << " with "<< nb_coord << " coordinates on the domain named " <<zone_geom.domaine().le_nom()<<finl;
-          Cerr << "which is constituted with cells of kind " << zone_geom.type_elem().valeur().que_suis_je() << "." << finl;
+          Cerr << "which has spatial dimension " << Objet_U::dimension << finl;
           Cerr << "Change the probe coordinates or use numero_elem_sur_maitre keyword (see documentation)" << finl;
           Cerr << "to specify a cell containing the probe and not its coordinates." << finl;
-          exit();
+          // [ABN] : yes we should exit, otherwise we just don't see the warning:
+          Process::exit();
         }
       // Fill the elem_ array (which list cells containing all the probes):
       zone_geom.chercher_elements(les_positions_,elem_);
@@ -734,15 +736,18 @@ void Sonde::initialiser()
               for(int fac=0; fac<nfaces_par_element; fac++)
                 {
                   int face=elem_faces(elem_[i],fac);
-                  double dist=0.;
-
-                  for (int dir=0; dir<dimension; dir++)
-                    dist+=(xv(face,dir)-les_positions_(i,dir))*(xv(face,dir)-les_positions_(i,dir));
-
-                  if(dist<=dist_min)
+                  if (face >= 0)
                     {
-                      dist_min=dist;
-                      face_min=face;
+                      double dist=0.;
+
+                      for (int dir=0; dir<dimension; dir++)
+                        dist+=(xv(face,dir)-les_positions_(i,dir))*(xv(face,dir)-les_positions_(i,dir));
+
+                      if(dist<=dist_min)
+                        {
+                          dist_min=dist;
+                          face_min=face;
+                        }
                     }
                 }
 
@@ -777,9 +782,8 @@ void Sonde::initialiser()
           if(elem_[i]!=-1)
             {
               Journal()<<"The point " << i << " of the probe "<<nom_<<" is moved:";
-              for(int isom=0; isom<sommets_par_element; isom++)
+              for(int isom=0, sommet; isom<sommets_par_element && (sommet = sommet_elem(elem_[i],isom)) >= 0; isom++)
                 {
-                  int sommet=sommet_elem(elem_[i],isom);
                   double dist=0.;
                   for (int dir=0; dir<dimension; dir++)
                     dist+=(coord(sommet,dir)-les_positions_(i,dir))*(coord(sommet,dir)-les_positions_(i,dir));
@@ -1132,7 +1136,12 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   if (nb>nb_bip)
     {
       // Si le maillage est deformable il faut reconstruire les sondes
-      if (mon_post->probleme().domaine().deformable()) initialiser();
+      if (mon_post->probleme().domaine().deformable())
+        {
+          if (les_positions_sondes_.dimension(0) > 0 )
+            les_positions_=   les_positions_sondes_;
+          initialiser();
+        }
       nb_bip=nb;
       reprise=1;
       postraiter();

@@ -1,4 +1,15 @@
 -------------------------------------------------------------
+Developer notes version 1.7.9 : Changes since version 1.7.8 :
+-------------------------------------------------------------
+27/06/19 (TRUST)  Rewrote Sjob/Sserver: see full documentation in bin/Sjob/README
+26/06/19 (TRUST)  Fixes on PolyMAC solver for Flica5 project
+24/06/19 (TRUST)  Several fixes/improvements for PolyMAC discretization (regular and singular pressure loss sources, face interpolation, polyedra visualization with Lata format for VisIt, diffusive operator with null heat exchange coefficient ...)
+05/03/19 (TRUST)  Eight validation sheets about PolyMAC available under $TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
+05/03/19 (TRUST)  New PolyMAC discretization (Marker And Cell method for Polyedras) available under $TRUST_ROOT/src/PolyMAC allowing non conform and/or hybrid meshes with polyhedral cells
+29/03/19 (TRUST)  Add a strict check of PETSc CLI options to check misspelled or obsolete one
+08/03/19 (TRUST)  Face surfaces are new stored in Zone_VF class (access: Zone_VF::face_surfaces() const). All childs have only a calculer_face_surfaces() method 
+23/01/19 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 
+-------------------------------------------------------------
 Developer notes version 1.7.8 : Changes since version 1.7.7 :
 -------------------------------------------------------------
 16/11/18 (Tools)  New option gnuplot_command for Figure keyword useful to fine tune the gnuplot curves in prm reports

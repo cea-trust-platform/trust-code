@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/bin/bash
 # --
 # Author : Eli LAUCOIN (CEA)
 # --
@@ -25,7 +25,7 @@ extract_executable_name()
       
 list_type()
 {
-    echo debug optim gcov prof optim_avx optim_valgrind custom
+    echo debug optim gcov prof optim_avx optim_valgrind custom semi_optim
 }
 human_name_from_name()
 {
@@ -33,6 +33,7 @@ human_name_from_name()
  human=$name
  [ $name = "optim" ] && human="optimized"
  [ $name = "optim_avx" ] && human="optimized with avx"
+ [ $name = "semi_optim" ] && human="semi-optimized using -g -O3"
  [ $name = "optim_valgrind" ] && human="optimized with valgrind"
  [ $name = "gcov" ] && human="coverage"
  [ $name = "prof" ] && human="profile"
@@ -53,6 +54,9 @@ TRUST_opt_from_name()
 
     optim)
         OPT="_opt"
+        ;;
+    semi_optim)
+        OPT="_semi_opt"
         ;;
     optim_avx)
         OPT="_opt_avx"

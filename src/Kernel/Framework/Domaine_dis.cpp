@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,29 @@
 #include <Discretisation_base.h>
 #include <Zone_VF.h>
 
-Implemente_instanciable(Domaine_dis,"Domaine_dis",Objet_U);
+Implemente_instanciable_sans_constructeur_ni_destructeur(Domaine_dis,"Domaine_dis",Objet_U);
+Implemente_ref(Sous_zones_dis);
+Implemente_ref(Zones_dis);
 
+Domaine_dis::Domaine_dis() : i_am_allocator_of_les_zones("")
+{
+}
+
+//tables de discretisations deja effectuees du domaine (pour ne pas le faire en double)
+static std::map<std::string, REF(Domaine_dis)> domaines_dis;
+Domaine_dis::~Domaine_dis()
+{
+  // [ABN] Niiiiice!!!!  TODO: review this before PolyMAC integration in TRUST!
+  if (i_am_allocator_of_les_zones!="" && les_zones.non_nul() && les_sous_zones_dis.non_nul())
+    {
+      domaines_dis.erase(i_am_allocator_of_les_zones.getChar());
+      domaines_dis.erase(Nom(Nom("NO_FACE_") + i_am_allocator_of_les_zones).getChar());
+      Objet_U * ptr1 = les_zones.operator->();  // hack to get pointer
+      Objet_U * ptr2 = les_sous_zones_dis.operator->();
+      delete (ptr1);
+      delete (ptr2);
+    }
+}
 
 // Description:
 //    Surcharge Objet_U::printOn(Sortie&)
@@ -46,7 +67,7 @@ Implemente_instanciable(Domaine_dis,"Domaine_dis",Objet_U);
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Domaine_dis::printOn(Sortie& os) const
 {
-  return os << domaine().le_nom() << finl << les_zones << les_sous_zones_dis;
+  return os << domaine().le_nom() << finl << les_zones.valeur() << les_sous_zones_dis.valeur();
 }
 
 
@@ -70,7 +91,7 @@ Sortie& Domaine_dis::printOn(Sortie& os) const
 Entree& Domaine_dis::readOn(Entree& is)
 {
   Nom nom;
-  return is >> nom >> les_zones >> les_sous_zones_dis;
+  return is >> nom >> les_zones.valeur() >> les_sous_zones_dis.valeur();
 }
 
 
@@ -102,7 +123,13 @@ void Domaine_dis::discretiser(const Nom& type_1)
       exit();
     }
   const Domaine& dom=le_domaine.valeur();
-
+  i_am_allocator_of_les_zones = domaine().le_nom()+"_"+type; // Nom unique
+  if (domaines_dis.find(i_am_allocator_of_les_zones.getChar()) != domaines_dis.end()) //on a deja discretise ce domaine!
+    {
+      *this = domaines_dis[i_am_allocator_of_les_zones.getChar()].valeur();
+      i_am_allocator_of_les_zones = "";
+      return;
+    }
   // Initialisation du tableau renum_som_perio
   const int nb_som = dom.nb_som();
   IntTab renum(nb_som);
@@ -112,8 +139,9 @@ void Domaine_dis::discretiser(const Nom& type_1)
 
   // Cree les Zone_dis, les type et leur associe la zone et le domaine
   // correspondants.
-
-  les_zones.dimensionner(dom.nb_zones());
+  Zones_dis *zptr = new Zones_dis;
+  les_zones = *zptr;
+  les_zones->dimensionner(dom.nb_zones());
 
   for(int i=0; i<nombre_de_zones(); i++)
     {
@@ -134,8 +162,9 @@ void Domaine_dis::discretiser(const Nom& type_1)
 
   // Cree les sous_zones_dis, les type, et leur associe
   // les zone_dis et les sous_zone correspondantes.
-
-  les_sous_zones_dis.dimensionner(dom.nb_ss_zones());
+  Sous_zones_dis *szptr = new Sous_zones_dis;
+  les_sous_zones_dis = *szptr;
+  les_sous_zones_dis->dimensionner(dom.nb_ss_zones());
 
   for (int i=0; i<dom.nb_ss_zones(); i++)
     {
@@ -170,6 +199,10 @@ void Domaine_dis::discretiser(const Nom& type_1)
             }
         }
     }
+  //memoization
+  domaines_dis[i_am_allocator_of_les_zones.getChar()] = *this;
+  domaines_dis[Nom(Nom("NO_FACE_") + i_am_allocator_of_les_zones).getChar()] = *this;
+
 }
 
 

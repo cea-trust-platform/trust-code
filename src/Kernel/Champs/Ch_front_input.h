@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,15 +55,16 @@ public:
   virtual void setValue(const TrioField& afield);
 
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
+  void buildSommetsFaces() const ; // const because used in Ch_Front_input_ALE::getTemplate() which is const - actually updates the 2 members below due to ALE mesh movement:
+
 protected:
 
   // Factorisation function between several input field classes
   virtual void set_nb_comp(int i); // calls fixer_nb_comp
   virtual void set_name(const Nom& ); // calls nommer
   virtual const Nom& get_name() const; // calls le_nom
-
-  DoubleTab sommets_;
-  IntTab faces_;
+  mutable DoubleTab sommets_; // mutable because of buildSommetsFaces function used in ALE
+  mutable IntTab faces_; // mutable because of buildSommetsFaces function used in ALE
 
 
 };

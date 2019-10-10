@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -440,6 +440,7 @@ int Polyedre::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) cons
 {
   faces_som_local.resize(nb_face_elem_max_,nb_som_face_max_);
   faces_som_local=-1;
+  if (ele == 0 && PolyhedronIndex_.size_array() == 1) return 1; //pas d'elements!
   // on cherche les faces de l'elt
   int fl=0;
   for (int f=PolyhedronIndex_(ele); f<PolyhedronIndex_(ele+1); f++)
@@ -645,35 +646,28 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   Nodes_.resize_array(old_nodes_index+new_s);
 }
 
-void Polyedre::reduit_index(const ArrOfInt& elems_sous_part)
+void Polyedre::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const
 {
+  type_elem.typer("Polyedre");
+  Polyedre& reduced = ref_cast(Polyedre, type_elem.valeur());
+  reduced.nb_som_elem_max_  = nb_som_elem_max_;
+  reduced.nb_face_elem_max_ = nb_face_elem_max_;
+  reduced.nb_som_face_max_  = nb_som_face_max_;
+  ArrOfInt& Pi = reduced.PolyhedronIndex_, &Fi = reduced.FacesIndex_, &N = reduced.Nodes_;
+  Pi.set_smart_resize(1), Fi.set_smart_resize(1), N.set_smart_resize(1);
 
-  ArrOfInt PolyhedronIndex_old(PolyhedronIndex_);
-  ArrOfInt FacesIndex_old(FacesIndex_);
-  ArrOfInt Nodes_old(Nodes_);
-  int nbelem=0,nbf=0,nbs=0;
-  int size_tot = elems_sous_part.size_array();
-  for (int num_poly=0; num_poly<size_tot; num_poly++)
+  for (int i = 0; i < elems_sous_part.size_array(); i++)
     {
-      int elem=elems_sous_part[num_poly];
-      for (int f=PolyhedronIndex_old(elem); f<PolyhedronIndex_old(elem+1); f++)
+      int e = elems_sous_part(i);
+      for (int f = PolyhedronIndex_(e); f < PolyhedronIndex_(e + 1); f++)
         {
-          for (int s=FacesIndex_old(f); s<FacesIndex_old(f+1); s++)
-            {
-              int somm_loc=Nodes_old(s);
-              Nodes_(nbs)=somm_loc;
-              nbs++;
-            }
-          FacesIndex_(nbf+1)=nbs;
-          nbf++;
+          for (int s = FacesIndex_(f); s < FacesIndex_(f + 1); s++) N.append_array(Nodes_(s));
+          Fi.append_array(N.size_array());
         }
-      PolyhedronIndex_[nbelem+1]=nbf;
-      nbelem++	;
+      Pi.append_array(Fi.size_array() - 1);
     }
-  PolyhedronIndex_.resize(nbelem+1);
-  FacesIndex_.resize(nbf+1);
-  Nodes_.resize(nbs);
 }
+
 void Polyedre::compute_virtual_index()
 {
   // Methode brutal mais il faut bien commencer ....

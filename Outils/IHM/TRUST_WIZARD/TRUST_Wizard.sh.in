@@ -1,5 +1,5 @@
 #!/bin/bash
-python -c "import triou"
+python -c "import triou" 1>/dev/null 2>&1
 if [ $? -ne 0 ] 
 then
   source $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 

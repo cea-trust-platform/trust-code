@@ -1,0 +1,116 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK 2 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+ Lire_med family_names_from_group_names dom mesh pour_trust.med
+
+
+# END MESH #
+# BEGIN PARTITION
+
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+/* PolyMAC dis */
+polymac  dis
+option_vdf { P_imposee_aux_faces oui }
+
+
+Scheme_euler_implicit sch
+Read sch
+{
+	tinit 0
+	tmax 2.5
+	/* dt_min identique au dt_max alors dt=dt_min=dt_max */
+	dt_min 1e-2
+	dt_max 1e-2
+	dt_impr 5.e-1
+	dt_sauv 1e-5
+	seuil_statio 1.e-18
+	solveur solveur_U_P { solveur petsc cholesky { } }
+}
+
+Scheme_euler_explicit sch2
+Read sch2
+{
+	tinit 0
+	tmax 2.5
+	/* dt_min identique au dt_max alors dt=dt_min=dt_max */
+	dt_min 1e-2
+	dt_max 1e-2
+	dt_impr 5.e-1
+	dt_sauv 1e-5
+	seuil_statio 1.e-18
+}
+Fluide_Incompressible eau
+Read eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { }
+		convection {  negligeable  }
+
+		diffusion {  negligeable }
+		sources { source_qdm champ_uniforme 2 0  -10.  }
+		# Conditions initiales sur la vitesse #
+		initial_conditions {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			nord frontiere_ouverte_pression_imposee champ_front_uniforme 1 1.
+			est paroi_fixe
+			sud paroi_fixe
+			ouest paroi_fixe
+		}
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+			sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
+                	sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
+		}
+		
+		Format lata
+		fields nb_pas_dt_post 1
+		{
+			pression elem
+			vitesse elem
+divergence_u elem
+		}
+}
+sauvegarde formatte es.sauv
+}
+# On doit trouver les resultantes des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positives #
+# On doit trouver le moment des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positifs #
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End

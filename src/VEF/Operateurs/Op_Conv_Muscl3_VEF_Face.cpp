@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Conv_Muscl3_VEF_Face.h>
+#include <Convection_tools.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Muscl3_VEF_Face,"Op_Conv_Muscl3_VEF_P1NC",Op_Conv_VEF_Face);
 

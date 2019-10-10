@@ -42,7 +42,7 @@ void build_geometry_(OperatorFacesMesh & op,
     throw;
   }
   // const int max_nb_som_face = 3; // for tetrahedra
-  if (src.elt_type_ != Domain::triangle && src.elt_type_ != Domain::tetra) {
+  if (src.elt_type_ != Domain::triangle && src.elt_type_ != Domain::polygone && src.elt_type_ != Domain::tetra && src.elt_type_ != Domain::polyedre) {
     Journal() << "Error in OperatorFacesMesh::build_geometry: cannot operate on unstructured mesh with this element type" << endl;
     throw;
   }
@@ -53,12 +53,12 @@ void build_geometry_(OperatorFacesMesh & op,
   DomainUnstructured & dest = dest_domain.instancie(DomainUnstructured);
   dest.id_ = src.id_;
   dest.id_.name_ += "_centerfaces";
-  if (src.elt_type_ == Domain::triangle)
+  if (src.elt_type_ == Domain::triangle || src.elt_type_ == Domain::polygone)
     dest.elt_type_=Domain::line;
   else if ( src.elt_type_ == Domain::tetra)
     dest.elt_type_=Domain::triangle;
-
-  
+  else if ( src.elt_type_ == Domain::polyedre)
+    dest.elt_type_=Domain::polygone;
 
   dest.nodes_ = src.nodes_;
   dest.elements_ = src.faces_;

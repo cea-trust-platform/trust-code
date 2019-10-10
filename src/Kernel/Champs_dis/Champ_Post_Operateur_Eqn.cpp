@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <Equation_base.h>
 #include <Operateur_base.h>
 #include <Param.h>
+#include <MD_Vector_composite.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Post_Operateur_Eqn,"Operateur_Eqn|Champ_Post_Operateur_Eqn",Champ_Generique_Operateur_base);
 
@@ -106,7 +107,8 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
 
   int ok=0;
   const Equation_base& eqn=ref_eq_.valeur();
-  const MD_Vector& md = eqn.inconnue().valeurs().get_md_vector();
+  const MD_Vector& mdf = eqn.inconnue().valeurs().get_md_vector(),
+                   md = sub_type(MD_Vector_composite, mdf.valeur()) ? ref_cast(MD_Vector_composite, mdf.valeur()).get_desc_part(0) : mdf;
   const Zone_VF& zvf= ref_cast( Zone_VF,ref_eq_.valeur().zone_dis().valeur());
   if (md== zvf.face_sommets().get_md_vector())
     {

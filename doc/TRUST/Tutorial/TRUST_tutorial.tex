@@ -107,7 +107,7 @@
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST Tutorial V1.7.8]{TRUST Tutorial V1.7.8} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[TRUST Tutorial V1.7.9]{TRUST Tutorial V1.7.9} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
 \institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -133,7 +133,7 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \frametitle{Overview} % Table of contents slide, comment this block out to remove it
 %\tableofcontents[sectionstyle=show/show,subsectionstyle=hide/hide/hide ] 
-
+\begin{small}
 \begin{columns}[c] 
 \column{.48\textwidth}
 \vspace{-0.5cm}
@@ -142,6 +142,7 @@ CEA Saclay \\ % Your institution for the title page
 \vspace{-0.5cm}
 \tableofcontents[sections={9-16}, hideallsubsections]
 \end{columns}
+\end{small}
 % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,12 +154,14 @@ CEA Saclay \\ % Your institution for the title page
 \section{{\bf{Initialization}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,12 +198,14 @@ CEA Saclay \\ % Your institution for the title page
 \subsection{Sequential calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -476,12 +481,14 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \subsection{Parallel calculation} \label{exo_para_1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -668,12 +675,14 @@ You will run it like:\\
 \subsection{Parallel calculation on a cluster} \label{exo_para_3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -745,15 +754,17 @@ or
 
 
 
-\section{{\bf{Heat transfer (2D, VDF/VEF)}}}
+\section{{\bf{Heat transfer (2D, VDF/VEF)}}} \label{docond_pb_couple}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -928,12 +939,14 @@ The calculation will stop after the current time step and make post-process.
 \section{{\bf{Low Mach number flow (2D)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1088,12 +1101,14 @@ or \\
 \section{{\bf{Periodic channel flow (3D)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1185,12 +1200,14 @@ You can also see the instructions at the end of the Heat transfer VDF/VEF exerci
 \section{{\bf{Constituents \& turbulent flow}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1271,12 +1288,14 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 \section{{\bf{Turbulent flow in a curved pipe (3D)}}} \label{prm_para}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1406,12 +1425,14 @@ Notice that we use \textbf{"trust"} command lines because this script will use t
 \section{{\bf{Turbulent flow over a backward-facing step (3D)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1492,12 +1513,14 @@ Outlet: $P_0=0$
 \section{{\bf{Tank filling (2D, single-phase flow)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1696,12 +1719,14 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \section{{\bf{Tank filling (3D, two-phase flow)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1810,12 +1835,14 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %\subsubsection{Cylinder}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1837,12 +1864,12 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{block}{Create a geometry}
 
 \begin{itemize}
-\item Create a directory:\\
-\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo1} \\
-\textbf{cd Formation\_TRUST/yourname/salome/exo1} \\
+\item Create a new folder:\\
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/salome/exo1} \\
+\texttt{\$ cd Formation\_TRUST/yourname/salome/exo1} \\
 
-\item Launch Salom\'e (we suppose it is installed):\\
-\textbf{\$PathToSalome/salome \&} 
+\item Launch Salom\'e (we suppose it is installed in \$PathToSalome):\\
+\texttt{\$ \$PathToSalome/salome \&} 
 
 \item Create a new study: File $\rightarrow$ New
 
@@ -1976,7 +2003,6 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 \textbf{dimension 3 }\tabularnewline
 \textbf{domaine dom }\tabularnewline
 \textbf{Read\_med family\_names\_from\_group\_names dom Mesh\_1 Mesh\_1.med }\tabularnewline
-\textbf{Discretiser\_domaine\index{discretiser\_domaine} dom }\tabularnewline
 \textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom fichier mesh format lata\index{format lata}
 \}}\tabularnewline
 \hline 
@@ -2100,7 +2126,7 @@ Netgen & MG
 
 \begin{block}{Run with TRUST}
 \begin{itemize}
-\item Change or create a new data file for TRUST to read and visualize your refined mesh.
+\item Edit your datafile or create a new one to read and visualize your refined mesh.
 
 \item \textbf{N.B.}: The solutions of the exercise (mesh.py file for the first mesh and prism.py file for the second mesh) are located here: \$TRUST\_ROOT/doc/TRUST/exercices/salome.
 \end{itemize}
@@ -2114,12 +2140,14 @@ Netgen & MG
 %\subsubsection{Revolution}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2141,13 +2169,10 @@ Netgen & MG
 \begin{block}{Create a geometry}
 
 \begin{itemize}
-\item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo2} \\
-\textbf{cd Formation\_TRUST/yourname/salome/exo2} \\
-
-\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
-\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
-\# take the network version but to be used for testing NOT for work.
+\item Create a directory and run Salom\'e (we suppose it is installed on \$PathToSalome):\\
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/salome/exo2} \\
+\texttt{\$ cd Formation\_TRUST/yourname/salome/exo2} \\
+\texttt{\$ \$PathToSalome/salome \&} 
 
 \item Create a new study: File $\rightarrow$ New.
 
@@ -2262,12 +2287,14 @@ Then "Apply and Close"
 %\subsubsection{T-shape}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2289,13 +2316,10 @@ Then "Apply and Close"
 \begin{block}{Create a geometry}
 
 \begin{itemize}
-\item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo3} \\
-\textbf{cd Formation\_TRUST/yourname/salome/exo3} \\
-
-\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
-\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
-\# take the network version but to be used for testing NOT for work.
+\item Create a directory and run Salom\'e (we suppose it is installed on \$PathToSalome):\\
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/salome/exo3} \\
+\texttt{\$ cd Formation\_TRUST/yourname/salome/exo3} \\
+\texttt{\$ \$PathToSalome/salome \&} 
 
 \item Create a new study: File $\rightarrow$ New.
 
@@ -2546,20 +2570,192 @@ or in parallel with:\\
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\section{{\bf{Gmsh meshing tool}}} \label{gmsh}
-\subsection{2D VEF mesh}
-%\subsection{Gmsh}
-%\subsubsection{2D VEF mesh}
+\subsection{Mesh for coupled problem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Salom\'e: Create domains for a TRUST coupled problem}
+\begin{block}{}
+Consider that we want to simulate a coupled problem with TRUST on a complex geometry. Suppose that this latter is drawn by means of Salom\'e.
+
+The main difficulty araises from the fact that the mesh elements should be connected on the interface between the two domains in order to be correctly read by TRUST. \\
+%
+In this exercise, you will learn how to:
+\begin{itemize}
+\item  Create two domains (domain 1 and domain 2) using Salom\'e
+\item  Get a coherent mesh on the interface between the two domains. We recall that TRUST is able to treat only meshes with connected elements on the interface.
+\item  Mesh both domains and export it into a single MED file.
+\item  Read the MED file from TRUST datafile and simulate a coupled problem.
+\end{itemize}
+%
+Note: for simple geometries, the internal TRUST mesher "Mailler" will be largely sufficient (see the exercise \ref{docond_pb_couple} for example).
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Mesh for coupled problem}
+\begin{block}{Description of the problem}
+
+Let us consider the cooling of a solid block by means of a fluid flowing inside circular cross-section channels. The channel is centered in the block of a square cross-section. The outer boundaries of the solid are adiabatic. Below is given a schematic description of the problem.
+%
+\begin{figure}
+\includegraphics[width=0.55\textwidth]{PICTURES/Pb_couple.pdf}
+\end{figure}
+\vspace{-0.5cm}
+In order to build meshes using Salom\'e for such a simulation, we should create two domains: the first domain will represent the solid block and the second domain the fluid.
+
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Mesh for coupled problem}
+
+\begin{block}{In the Geometry module:}
+\begin{itemize}
+
+\item Create a new folder for this exercise and launch Salom\'e:\\
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/salome/exo4} \\
+\texttt{\$ cd Formation\_TRUST/yourname/salome/exo4} \\
+\texttt{\$ \$PathToSalome/salome \&} 
+
+\item Create a new study: File $\rightarrow$ New
+
+\item Select the Geometry module from drop-down menu of Salom\'e.
+
+\item Save your study in hdf format (Salom\'e format) frequently.
+
+\item Create the first geometry with: New Entity $\rightarrow$ Primitives $\rightarrow$ Box. Then, specify dimensions $Dx=200$,  $Dy=200$ and $Dz=400$. After that, Apply and Close.
+
+\item Create a vertex with: New Entity $\rightarrow$ Basic $\rightarrow$ Point. Specify the vertex coordinates $X=100$, $Y=100$ and $Z=0$, then Apply and Close
+
+\item Create the second geometry with: New Entity $\rightarrow$ Primitives $\rightarrow$ Cylinder. Then, specify the Base Point: Vertex\_1 and Vector OZ, Radius $R=40$ and Height $H=400$ for the cylinder. After that, Apply and Close.
+
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Mesh for coupled problem}
+
+\begin{block}{In the Geometry module:}
+\begin{itemize}
+
+ \item Perform a cut with: Operations $\rightarrow$ Boolean $\rightarrow$ Cut. In the Main Object select: Box\_1 and in the Tool Objects select: Cylinder\_1 $\rightarrow$ Apply and Close.
+ 
+ \item Create a partition with: Operations $\rightarrow$ Partition. In Objects select: Cylinder\_1 and Cut\_1. Then Apply and Close.
+
+ \item Define 2 groups of volumes, one for each domain with: New entity $\rightarrow$ Group $\rightarrow$ Create Group.
+ \begin{enumerate}
+ \item  Shape Type: Volume. Name: Solid. Main Shape: Partition\_1. Select the hollow box then click on Add, after that on Apply.
+ \item  Shape Type: Volume. Name: Fluid. Main Shape: Partition\_1. Select the cylindrical channel then click on Add, after that on Apply and Close.
+ \end{enumerate}
+ 
+\end{itemize}
+ \end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Mesh for coupled problem}
+
+\begin{block}{In the Geometry module:}
+\begin{itemize}
+
+ \item Define the groups of faces for external boundaries and the interface with: New entity $\rightarrow$ Group $\rightarrow$ Create Group.
+ \begin{enumerate}
+ \item Shape Type: Surface. Name: Fluid\_inlet. Main Shape: Partition\_1. Then select the bottom of the cylinder and Add. Click on Apply.
+ \item Shape Type: Surface. Name: Fluid\_outlet. Main Shape: Partition\_1. Then select the top circular boundary of the cylinder then click on Add, then Apply.
+ \item Shape Type: Surface. Name: Solid\_top. Main Shape: Partition\_1. Then select the top of the box then click on Add, then Apply.
+ \item Shape Type: Surface. Name: Solid\_bottom. Main Shape: Partition\_1. Then select the bottom of the box then click on Add, then Apply.
+ \item Shape Type: Surface. Name: Solid\_lateral\_walls. Main Shape: Partition\_1. Then select the remaining 4 lateral boundaries of the box then click on Add, then Apply.
+ \item Shape Type: Surface. Name: Solid\_Fluid\_Interface. Main Shape: Partition\_1. Then select the top boundary of the box and click on Hide selected, then Click on a lateral boundary and click on Hide selected, then the lateral boundary of the cylinder will be visible. Select it and click on Add then Apply.
+ \end{enumerate}
+ 
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Mesh for coupled problem}
+
+\begin{block}{In the Mesh module:}
+\begin{itemize} 
+
+ \item Create a mesh based on the Partition\_1 with: Mesh $\rightarrow$ Create Mesh. Let the name be Mesh\_1 and in Geometry select Partition\_1. In the 3D algorithm, select NETGEN 1D-2D-3D. Click on the wheel of "Hypothesis" then on "NETGEN 3D Parameters". In Arguments, select the fineness "Fine" instead of "Moderate" then click on OK then Apply and Close.
+ 
+ \item Right click on Mesh\_1, then Compute.
+ 
+ \item Create groups with: Mesh $\rightarrow$ Greate Groups from Geometry. \\
+ In Mesh, select Mesh\_1 then in Elements select all the created groups in Partition\_1 (with keypad Ctrl) in Geometry then click on Apply And Close.
+
+ \item Export the mesh in med format (if possible, choose MED 3.2).
+ 
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Mesh for coupled problem}
+
+\begin{block}{Launch the coupled problem datafile:}
+\begin{itemize} 
+
+ \item Source TRUST environnement with:\\
+\texttt{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+
+ \item Copy the datafile: \\
+ \texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/salome/Coupled\_pb.data .}
+
+ \item Run the test case using TRUST: \\
+ \texttt{\$ trust Coupled\_pb.data}
+
+ \item When the computation finishes, visualize results using VisIt:\\
+ \texttt{\$ visit -o Coupled\_pb.lata}
+
+ \item Draw the temperature profile on both domains and set the min and max on color bar to 300 and 400 respectively. When you visualize time evolution of temperature, you see that the solid is cooled and its temperature decreases. If we increase the time of the simulation, the temperature of the solid will be equal to that of the fluid at the steady state.
+ 
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{{\bf{Gmsh meshing tool}}} \label{gmsh}
+\subsection{2D VEF mesh}
+%\subsection{Gmsh}
+%\subsubsection{2D VEF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{small}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2671,12 +2867,14 @@ Point(14)=\{1,0.75,0,lc2\};
 %\subsubsection{3D VEF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2764,12 +2962,14 @@ Physical Volume("dom") = \{1\};
 %\subsubsection{3D VEF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2827,12 +3027,14 @@ Physical Volume("dom") = \{1\};
 \subsection{3D VDF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3015,12 +3217,14 @@ End }
 \subsection{2D VDF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3151,12 +3355,14 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \section{{\bf{Validation form}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3405,12 +3611,14 @@ or\\
 \section{{\bf{Annex: Unix Quick Reference}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3595,12 +3803,14 @@ or\\
 \section{{\bf{Index}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
+\begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
 \tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
+\end{small}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

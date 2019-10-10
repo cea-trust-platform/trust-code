@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,10 @@
 #include <IntTab.h>
 #include <SolveurSys_base.h>
 #include <ArrOfDouble.h>
+
+#ifdef __PETSCKSP_H
+#include <petscdm.h>
+#endif
 
 class IntVect;
 class DoubleTab;
@@ -79,7 +83,8 @@ public :
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
 #endif
-  static int instance;          // Nombre d'instance de la classe
+  static int instance;               // Nombre d'instances en cours de la classe
+  static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
 
 protected :
 #ifdef __PETSCKSP_H
@@ -106,6 +111,7 @@ protected :
   Vec SolutionPetsc_;		// Globale solution
   KSP SolveurPetsc_;
   PC PreconditionneurPetsc_;
+  DM dm_;                       //description de champs PETSC
   int decalage_local_global_;   // Decalage numerotation local/global pour matrice et vecteur PETSc
   int nb_rows_;                 // Nombre de lignes locales de la matrice TRUST
   int nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST
@@ -123,6 +129,7 @@ protected :
   int mataij_;			// Force the use of a Mataij matrix
   Nom type_pc_;			// Preconditioner type
   Nom type_ksp_;		// KSP type
+  Nom option_prefix_;   // Prefix des options CLI (permet de faire plusieurs solveurs en CLI)
 
   int petsc_nb_cpus_;		// Number of CPUs used to solve the PETSc matrix
   int petsc_cpus_selection_;	// Selection of CPUs used to solve the PETSc matrix
@@ -185,6 +192,9 @@ inline void Solv_Petsc::reset()
         }
       // Destruction matrice
       MatDestroy(&MatricePetsc_);
+      // Destruction DM
+      if (dm_!=NULL)
+        DMDestroy(&dm_);
     }
   initialize();
 #endif
@@ -212,6 +222,8 @@ inline void Solv_Petsc::initialize()
   controle_residu_=0;
   cuda_=0;
   block_size_=1;
+  option_prefix_="??";
+  dm_=NULL;
   if (instance==-1)
     {
       // First initialization:
@@ -242,6 +254,7 @@ inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):SolveurSys_base::SolveurSys
   // Journal()<<"copie solv_petsc "<<instance<<finl;
   read_matrix_=org.read_matrix();
   cuda_=org.cuda();
+  option_prefix_=org.option_prefix_;
   // on relance la lecture ....
   EChaine recup(org.get_chaine_lue());
   readOn(recup);

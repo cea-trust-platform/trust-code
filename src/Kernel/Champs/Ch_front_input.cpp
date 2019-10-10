@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,6 +101,47 @@ void Ch_front_input::getTemplate(TrioField& afield) const
   affecte_int_avec_inttab(&afield._connectivity,faces);
 }
 
+// In the case of a mobile mesh (ALE frame) we need to call this function after each displacement of the mesh
+void Ch_front_input::buildSommetsFaces() const
+{
+  const DoubleTab& sommets_org=(mon_pb->domaine().les_sommets());
+  DoubleTab& sommets=sommets_;
+  sommets.resize(sommets_org.dimension_tot(0),sommets_org.dimension(1));
+  sommets.set_smart_resize(1);
+
+  IntTab& faces=faces_;
+  const IntTab& faces_org=(frontiere_dis().frontiere().faces().les_sommets());
+  faces=faces_org;
+  int ntot=0;
+  ArrOfInt marqueur(sommets_org.dimension(0));
+  marqueur=-1;
+  for (int f=0; f<faces.dimension(0); f++)
+    {
+      for (int s=0; s<faces.dimension(1); s++)
+        {
+          int som=faces(f,s);
+          if (som >= 0 && marqueur(som)==-1)
+            {
+
+              marqueur(som)=ntot;
+              for (int dir=0; dir<dimension; dir++)
+                {
+                  sommets(ntot,dir)=sommets_org(som,dir);
+                }
+              ntot++;
+            }
+        }
+    }
+  sommets.resize(ntot,dimension);
+
+
+  // on refait les faces
+  for (int f=0; f<faces.dimension(0); f++)
+    for (int s=0; s<faces.dimension(1); s++)
+      faces(f,s) = faces_org(f, s) >= 0 ? marqueur(faces_org(f,s)) : -1;
+
+}
+
 // Description
 // Uses the first value in afield as uniform value, regardless of geometry.
 void Ch_front_input::setValue(const TrioField& afield)
@@ -120,44 +161,7 @@ int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
     les_valeurs[i].valeurs()=9.9e5;
   */
 
-
-  const DoubleTab& sommets_org=(mon_pb->domaine().les_sommets());
-  DoubleTab& sommets=sommets_;
-  sommets.resize(sommets_org.dimension_tot(0),sommets_org.dimension(1));
-  sommets.set_smart_resize(1);
-
-  IntTab& faces=faces_;
-  const IntTab& faces_org=(frontiere_dis().frontiere().faces().les_sommets());
-  faces=faces_org;
-  int ntot=0;
-  ArrOfInt marqueur(sommets_org.dimension(0));
-  marqueur=-1;
-  for (int f=0; f<faces.dimension(0); f++)
-    {
-      for (int s=0; s<faces.dimension(1); s++)
-        {
-          int som=faces(f,s);
-          if (marqueur(som)==-1)
-            {
-
-              marqueur(som)=ntot;
-              for (int dir=0; dir<dimension; dir++)
-                {
-                  sommets(ntot,dir)=sommets_org(som,dir);
-                }
-              ntot++;
-            }
-        }
-    }
-  sommets.resize(ntot,dimension);
-
-
-  // on refait les faces
-  for (int f=0; f<faces.dimension(0); f++)
-    for (int s=0; s<faces.dimension(1); s++)
-      faces(f,s)=marqueur(faces_org(f,s));
-
-
+  buildSommetsFaces();
 
   return 1;
 }

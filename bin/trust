@@ -126,6 +126,7 @@ help()
    echo "-check function|class|class::method : Check the non regression of a list of tests cases covering a function, a class or a class method."
    echo "-gdb                          : Run under gdb debugger."
    echo "-valgrind                     : Run under valgrind."
+   echo "-suppressions_val             : Add a suppression file."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
    echo "-callgrind                    : Run callgrind tool."
    echo "-create_sub_file              : Create a submission file only."
@@ -155,6 +156,7 @@ gdb=""
 taches=""
 cpus_per_task=""
 queue_choisie=""
+suppression_file=""
 [ "$prod" = "" ] && prod=0
 [ "$bigmem" = "" ] && bigmem=0
 gpu=0
@@ -308,6 +310,14 @@ do
    elif [ "$1" = "-valgrind" ]
    then 
       VALGRIND=1
+   elif [ "$1" = "-suppressions_val" ]
+   then
+      shift
+      if [ "$1" != "" ] 
+      then
+         suppression_file=$1
+         [ ! -f $suppression_file ] && echo "The suppression file $suppression_file not found" && exit -1 
+      fi
    elif [ "$1" = "-valgrind_strict" ]
    then
       VALGRIND_STRICT=1
@@ -355,7 +365,10 @@ do
 	 Qui $1 || exit -1
 	 option=liste_cas
       fi
-      echo $option | lance_test -no_timeout $binary
+      # Lorsque lance depuis ctest on desactive l'envoi de mail
+      # sinon si 1000 cas tests -> 1000 mails (1 par cas test)
+      nomail="" && [ "$CTEST_INTERACTIVE_DEBUG_MODE" != "" ] && nomail="-nomail"
+      echo $option | lance_test $nomail -no_timeout $binary
       exit $?
    elif [ "$1" = "-clean" ]
    then
@@ -460,13 +473,6 @@ then
    #[ ! -f $dt_ev ] && exit 1
    bash  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
    err=$?
-   if [ $err != 0 ]
-   then
-      echo " "
-      echo "If Matplotlib error, so you could try to recompil PySide with the following command:"
-      echo "(cd "$TRUST_ROOT"/Outils/Python_modules/;env FORCE_BUILD=1 make clean PySide)" 
-      echo "Warning: This may cause a different behavior from the Python environment." 
-   fi
    exit $err
 fi
 
@@ -564,10 +570,13 @@ then
 	if [ "`$Mpirun --version 2>&1 | grep 1.2.9`" != "" ]
 	then
 	   # Ajout de suppressions supplementaires pour OpenMPI 1.2.9
-	   cat $TRUST_ROOT/Outils/valgrind/suppressions_openmpi_129 $TRUST_ROOT/Outils/valgrind/suppressions > $TRUST_TMP/suppressions
+           # Ajout d'un fichier de suppressions supplementaires
+	   cat $TRUST_ROOT/Outils/valgrind/suppressions_openmpi_129 $TRUST_ROOT/Outils/valgrind/suppressions $suppression_file > $TRUST_TMP/suppressions
 	   suppressions=$suppressions" --suppressions=$TRUST_TMP/suppressions"
 	else
-	   suppressions=$suppressions" --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions"
+           # Ajout d'un fichier de suppressions supplementaires
+	   cat $TRUST_ROOT/Outils/valgrind/suppressions $suppression_file > $TRUST_TMP/suppressions
+	   suppressions=$suppressions" --suppressions=$TRUST_TMP/suppressions"
 	fi
     fi
     if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]

@@ -29,8 +29,9 @@ case $Mpirun in
 		# Case provided MPI is used:
 		############################ 
 	        MPI=OPENMPI
-		[ ${MPI_ROOT%mpich}  != $MPI_ROOT ] && MPI=MPICH
-		[ ${MPI_ROOT%mpich2} != $MPI_ROOT ] && MPI=MPICH2
+		[ "`$Mpirun --help 2>&1 | grep -i mpich`" != "" ] && MPI=MPICH 
+		#[ ${MPI_ROOT%mpich}  != $MPI_ROOT ] && MPI=MPICH
+		#[ ${MPI_ROOT%mpich2} != $MPI_ROOT ] && MPI=MPICH2
 		
                 #################
                 # Cas de MPICH2 #
@@ -116,7 +117,8 @@ case $Mpirun in
 		         $Mpirun -np $np -d $Xterm -e $gdb
 		      elif [ $MPI = "MPICH" ]
 		      then
-		         $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -e $gdb
+		         #$Mpirun -np $np `echo $Xterm | awk '{print $1}'` -e $gdb
+			 $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -hold -e $gdb -ex run --args
 		      fi
 		      rm -f $gdb_options $gdb
 		   else

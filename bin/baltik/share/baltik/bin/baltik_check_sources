@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 baltik_environnement_error() {
     echo "-----------------------------------------"
     echo "ERROR : undefined variable BALTIK_ROOT   "
@@ -24,10 +23,9 @@ baltik_environnement_init()
 BALTIK_ROOT=`baltik_environnement_init`
 # verification de l'etat de la variable BALTIK_ROOT
 if [ "${BALTIK_ROOT}" = "" ]
-    then
+then
     baltik_environnement_error
 fi
-
 
 # chargement des fonctions d'affichage des messages d'erreur
 . ${BALTIK_ROOT}/bin/baltik_errors
@@ -47,7 +45,7 @@ fi
 
 # verification de l'etat de la variable TRUST_ROOT
 if [ "${TRUST_ROOT}" = "" ]
-    then
+then
     TRUST_environnement_error
 fi
 
@@ -56,7 +54,7 @@ project_directory=`pwd`
 
 project_build_directory="${project_directory}/build/src"
 if [ ! -e $project_build_directory ]
-    then
+then
     no_build_directory_error "$project_directory"
 fi
 
@@ -64,59 +62,73 @@ fi
 # on reconstruit la liste des repertoires ayant conduit au build
 cd $project_build_directory
 
-
-DIRS=$(for f in `ls *.cpp *.cxx *.h *.xx *.hpp *.c *.f 2>/dev/null | grep -v info_atelier.cpp` ; do  f2=`ls -l $f | awk '{print $NF}' `;  dirname $f2;done |sort -u)
+#DIRS=$(for f in `ls *.cpp *.cxx *.h *.xx *.hpp *.c *.f 2>/dev/null | grep -v info_atelier.cpp` ; do  f2=`ls -l $f | awk '{print $NF}' `;  dirname $f2;done |sort -u)
+DIRS=`ls -l * | awk '/->/ {print $NF}' | xargs dirname | sort -u` 
 
 erreur=0
 
 # on charge les check de trio
 . $TRUST_ROOT/bin/KSH/check_sources.sh
-marqueur=$project_build_directory/.check_sources.ok
+# on charge le check du Baltik s'il existe
 
 check_file=0
-
-if [ "$1" = "-check_file" ]
-    then
-    check_file=1
-    marqueur=${marqueur}"_check_file"
-fi
-
 if [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
 then
-for dir in $DIRS
-do
-  
-  err=0
-  if [ ! -f $marqueur ] || [ $dir -nt $marqueur ] || [ "`find $dir  -maxdepth 1 -newer $marqueur`" != "" ]
+   for dir in $DIRS
+   do
+      marqueur=$project_build_directory/.check_sources.ok
+      marqueur=$dir/.check_sources.ok
+      if [ "$1" = "-check_file" ]
       then
-      
-      echo "check sources in" $dir
-      cd $dir
-      # check_file.sh -update
-      # check_update_P
-      
-      check_all
-      erreur $?
-      
-      if [ $check_file -eq 1 ]
-	  then
-	  check_file.sh -print
-	  erreur $?
+         check_file=1
+         marqueur=${marqueur}"_check_file"
       fi
+      err=0
+#      if [ ! -f $marqueur ]
+#      then
+#         echo $marqueur pas trouve
+#      elif [ $dir -nt $marqueur ]
+#      then
+#         echo $dir plus recent que $marqueur
+#      elif [ "`find $dir -maxdepth 1 -newer $marqueur 2>/dev/null`" != "" ]
+#      then
+#         echo fichier `find $dir -maxdepth 1 -newer $marqueur` dans $dir plus recent que marqueur 
+#      fi
+      if [ ! -f $marqueur ] || [ $dir -nt $marqueur ] || [ "`find $dir -maxdepth 1 -newer $marqueur`" != "" ]
+      then
+         echo "check sources in" $dir
+         cd $dir
       
-     
-      [ $err -ne 0 ] && erreur=$err #  && echo Error in `pwd` && echo
-      cd $project_build_directory
-      fi
- 
-done
-fi
+         # Baltik check if available:
+         baltik_check_sources=$project_directory/share/bin/check_sources.sh
+	 if [ -f $baltik_check_sources ]
+	 then
+	    $baltik_check_sources
+	    erreur $?
+         fi
+	 
+	 # check_file.sh -update
+         # check_update_P
+      
+         check_all
+         erreur $?
+      
+         if [ $check_file -eq 1 ]
+	 then
+	    check_file.sh -print
+	    erreur $?
+         fi
 
-if [ $erreur -eq 0 ] 
-    then
-    touch $marqueur
-else
-    rm -f $marqueur
+	 if [ $err -eq 0 ] 
+         then
+            touch $marqueur
+         else
+            rm -f $marqueur
+         fi      
+         [ $err -ne 0 ] && erreur=$err && echo WARNING: error in `pwd` && echo
+         cd $project_build_directory
+      fi
+   done
 fi
 
 exit $erreur

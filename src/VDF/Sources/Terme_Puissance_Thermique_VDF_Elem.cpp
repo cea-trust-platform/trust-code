@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,10 +36,6 @@ Sortie& Terme_Puissance_Thermique_VDF_Elem::printOn(Sortie& s ) const
 Entree& Terme_Puissance_Thermique_VDF_Elem::readOn(Entree& s )
 {
   Terme_Puissance_Thermique_VDF_base::readOn(s);
-  Nom name_file("Puissance_Thermique");
-  modify_name_file(name_file);
-  set_fichier(name_file);
-  set_description("Heat power release = Integral(P*dv) [W]");
   return s;
 }
 
@@ -55,16 +51,7 @@ void Terme_Puissance_Thermique_VDF_Elem::associer_zones(const Zone_dis& zone_dis
 
 void Terme_Puissance_Thermique_VDF_Elem::associer_pb(const Probleme_base& pb)
 {
-  if (!pb.milieu().capacite_calorifique().non_nul())
-    {
-      Cerr << "La capacite calorifique Cp n'est pas definie..." << finl;
-      Cerr << "Elle est necessaire pour la definition du terme source puissance thermique." << finl;
-      exit();
-    }
-
   preparer_source(pb);
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance.le_nom(),"W/m3",la_puissance,pb);
   Eval_Puiss_Th_VDF_Elem& eval_puis = (Eval_Puiss_Th_VDF_Elem&) iter.evaluateur();
   eval_puis.associer_champs(rho_ref.valeur(),Cp.valeur(),la_puissance);
 }

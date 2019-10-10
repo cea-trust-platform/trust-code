@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,8 +40,8 @@ class Imprimer_Fichiers_RANS_VDF : public Interprete
 public :
   Entree& interpreter(Entree&);
 
-private :
-  int temperature;
+//private :
+//  int temperature;
 
 };
 

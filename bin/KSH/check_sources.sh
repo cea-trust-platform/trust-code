@@ -34,21 +34,35 @@ check_dependancy()
             [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module `basename ${file%/make.include}` from the module $module." && break
          fi
       done      
-      # Troisieme regle: Certains modules ne doivent pas dependre des modules discretisation (VDF,VEF). Exemples: 
-      if [ -d $TRUST_ROOT/src/Phase_field ] # Verification depuis l'apparition du module Phase_field
-      then
-	 modules="ThHyd"
-	 for module in $modules
-	 do    
-            # Le make.include appartient t'il au module ?
-            if [ "`echo $relative_path | grep /$module/ `" != "" ] && [ "`echo $relative_path | grep -e /VDF[\/] -e /VEF[\/]`" = "" ]
-	    then  
-	       # Si oui, a t'il une dependance vers les modules en question ?
-               dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/VDF[\/]" -e "/VEF[\/]"`
-               [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $modules from a discretization module as VDF or VEF." && break
-            fi
-	 done     
-      fi 
+      # Troisieme regle: Certains modules ne doivent pas dependre des modules discretisation (VDF,VEF,...). Exemples:
+      modules="ThHyd"
+      for module in $modules
+      do
+         # Le make.include appartient t'il au module ?
+         if [ "`echo $relative_path | grep /$module/ `" != "" ] && [ "`echo $relative_path | grep -e /VDF[\/] -e /VEF[\/] -e /EF[\/] -e /PolyMAC[\/]`" = "" ]
+         then
+             dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/VDF[\/]" -e "/VEF[\/]" -e "/EF[\/]" -e "/PolyMAC[\/]"`
+             [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $module to a discretization module like VDF or VEF." && break
+         fi
+      done
+      # Quatrieme regle: un module discretisation ne peut dependre d'un autre module discretisation
+      modules="VDF VEF EF PolyMAC"
+      for module in $modules
+      do
+         # Le make.include appartient t'il au module ?
+         if [ "`echo $relative_path | grep /$module/ `" != "" ]
+         then
+            # Si oui, a t'il une dependance vers une autre discretisation ?
+	    for dis in $modules
+	    do
+	       if [ $dis != $module ]
+	       then
+                  dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/$dis[\/]"`
+                  [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $module to the discretization module $dis." && break
+	       fi
+	    done
+         fi
+      done
       # Gestion des erreurs
       if [ ${#mes} != 0 ] && [ "$1" != "make.include" ]
       then
@@ -70,7 +84,8 @@ check_src_in_gc()
 check_recent_src()
 {
     file=$1
-	indent_file.sh $file
+    indent_file.sh $file
+    
     # pas daccumulation de <<  sinon cela met des heures avec gcc 6.6.1 #
     #   gros_pipe=`awk -F\<\< '{if (NF>19) {print NF $0}}' $file`
     #gros_pipe=`awk -F\<\< '{if (NF>1) { te=$0;a=gsub(";","ok",te); if (((NF+old)>19)&&(a!=0))  {print ("line:",FNR, "number",NF+old, $0)}  ; if ((NF>1)&&(a==0)) { old=NF+old } else { old =0 } }}' $file`
@@ -95,7 +110,7 @@ check_recent_src()
     # Interdiction du francais dans les messages d'erreur du Kernel
     ###############################################################
     if [ "`echo $PWD | grep /TRUST/src/Kernel/`" != "" ]
-	then
+    then
 	$TRUST_ROOT/bin/KSH/forbid_french.ct $file
 	erreur $?
     fi
@@ -105,7 +120,7 @@ check_recent_src()
     #################################################
     ok=`grep include $file | grep "#" | grep "\"*\"" 2>/dev/null`
     if [ "$ok" != "" ]
-	then
+    then
 	echo "**************************************************************"
 	echo "An include file is written under the form: #include \"toto.h\""
 	echo "It should be written like: #include <toto.h>"
@@ -116,7 +131,7 @@ check_recent_src()
     ####################################################################
     # Check source header: (Baltik rep="" so not checked yet for Baltik)
     ####################################################################
-    [ "$rep" != "" ] && check_en_tete $rep/$file         
+    [ "$rep" != "" ] && check_en_tete $rep/$file     
 }
 
 check_update_P()
@@ -251,14 +266,12 @@ check_src()
 check_all()
 {
   # Used by Baltik projects
-  if [ 1 -eq 1 ]
-  then
-    for file in `ls *.cpp *.h *.c 2>/dev/null` 
-    do
-       # ls 1>/dev/null
-       check_recent_src $file
-    done
-  fi
+  for file in `ls *.cpp *.h *.c 2>/dev/null` 
+  do
+     # ls 1>/dev/null
+     check_recent_src $file
+  done
+  
   check_src_in_gc
     
   check_update_P -check `\ls *.P 2>/dev/null`
@@ -272,11 +285,11 @@ check_all()
 #########
 if [ "`basename $0`" != "bash" ] && [ "`basename $0`" != "baltik_check_sources" ] && [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
 then
-  [ $TRUST_ARCH != linux ] && exit 0
+   [ $TRUST_ARCH != linux ] && exit 0
    # make.include detectes we are in a TRUST source directory
    org=`pwd`
    reffile=".check_sources.ok"
-   [ "$1" != "" ] && cd $1&& reffile=$org"/check_sources.ok"
+   [ "$1" != "" ] && cd $1 && reffile=$org"/check_sources.ok"
    if [ -f make.include ]
    then
       err=0
@@ -296,8 +309,8 @@ then
 	 newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
 	 new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
-	[ "$new_newer_files" = "" ] && exit 0
-     mk_Instancie
+      [ "$new_newer_files" = "" ] && exit 0
+      mk_Instancie
       #############
       # Git check #
       #############
@@ -353,6 +366,7 @@ then
       # Fin des verifications
       #######################
       cd $org
+
       if [ $err = 1 ]
       then
 	rm -f ${reffile}

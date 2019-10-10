@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Exceptions.h>
 #include <communications.h>
 #include <Convert_ICoCoTrioField.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable(Champ_input_P0,"Champ_input_P0",Champ_Fonc_P0_base);
 
@@ -97,38 +98,45 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
 
   afield._nb_field_components=nb_comp();
 
+  /* coordonnees */
   const DoubleTab& sommets=mon_pb->domaine().les_sommets();
-  const IntTab& elems=mon_pb->domaine().zone(0).les_elems();
-
-  assert(sommets.nb_dim()==2);
-  assert(elems.nb_dim()==2);
-
-  afield._space_dim=sommets.dimension(1);
-  afield._mesh_dim=afield._space_dim;
   afield._nbnodes=sommets.dimension(0);
-  int npe=::mp_max(elems.dimension(1));
-  afield._nodes_per_elem=npe;
-
-  // Includes all the nodes, even those not used in connectivity
-  // order is  x y z  x y z  x y z
+  afield._mesh_dim = afield._space_dim = sommets.dimension(1);
   affecte_double_avec_doubletab(&afield._coords,sommets);
 
-  assert (sizeof(int)==sizeof(int));
-  if (ma_sous_zone.non_nul())
+  /* connectivites */
+  const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis_base());
+  afield._nb_elems = ma_sous_zone.non_nul() ? nb_elems_reels_sous_zone_ : zvf.nb_elem();
+  Motcle type_elem = zvf.zone().type_elem()->que_suis_je();
+  if (type_elem != "POLYEDRE") //cas simple -> il suffit de copier les_elems
     {
-      const Sous_Zone& ssz=ma_sous_zone.valeur();
-      afield._nb_elems = nb_elems_reels_sous_zone_;
-      afield._connectivity=new True_int[afield._nb_elems*npe];
-      for (int i = 0, j, k = -1; i < ssz.nb_elem_tot(); i++)
-        if (ssz[i] < nb_elems_reels_loc_)
-          for (j = 0, k++; j<npe; j++)
-            afield._connectivity[k*npe+j]=elems(ssz[i],j);
+      const IntTab& e_s = zvf.zone().les_elems();
+      afield._nodes_per_elem = e_s.dimension(1);
+      if (ma_sous_zone.non_nul())
+        {
+          const Sous_Zone& ssz=ma_sous_zone.valeur();
+          afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+          for (int i = 0, j = 0; i < ssz.nb_elem_tot(); i++)
+            if (ssz[i] < zvf.nb_elem())
+              memcpy(afield._connectivity + j * e_s.dimension(1), &e_s(ssz[i], 0), e_s.dimension(1) * sizeof(int)), j++;
+        }
+      else affecte_int_avec_inttab(&afield._connectivity, e_s);
     }
-  else
+  else //polyedres -> il faut reconstruire une connectivite de type MEDCoupling a la main
     {
-      afield._nb_elems=elems.dimension(0);
-      affecte_int_avec_inttab(&afield._connectivity,elems);
-
+      afield._nodes_per_elem = zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1); //un -1 apres chaque face
+      int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+      for (int i = 0, j, k, e, f, s; i < (ma_sous_zone.non_nul() ? ma_sous_zone.valeur().nb_elem_tot() : zvf.nb_elem()); i++)
+        {
+          if (ma_sous_zone.non_nul() && ma_sous_zone.valeur()[i] >= zvf.nb_elem()) continue; //element non reel de la sous-zone -> on saute
+          e = ma_sous_zone.non_nul() ? ma_sous_zone.valeur()[i] : i; //numero de l'element
+          int *pf = p + afield._nodes_per_elem; //fin de la ligne
+          /* insertion de la connectivite de chaque face, suivie d'un -1 */
+          for (j = 0; j < zvf.elem_faces().dimension(1) && (f = zvf.elem_faces(e, j)) >= 0; j++, *p = -1, p++)
+            for (k = 0; k < zvf.face_sommets().dimension(1) && (s = zvf.face_sommets(f, k)) >= 0; k++) *p = s, p++;
+          /* des -1 jusqu'a la ligne suivante */
+          for ( ; p < pf; p++) *p = -1;
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <DomaineCutter.h>
 #include <Scatter.h>
 #include <Sous_Zone.h>
+#include <SFichier.h>
 
 Implemente_instanciable(Create_domain_from_sous_zone,"Create_domain_from_sous_zone",Interprete_geometrique_base);
 // XD create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 This keyword fills the domain domaine_final with the subzone par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
@@ -73,7 +74,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   else
     Cerr << "\nWARNING: par_sous_zones option only available for subzones that do not touch each other!!\n" << finl;
 
-  int nb_poly;
+  int nb_poly = 0;
   DomaineCutter cutter;
   Noms vide;
 
@@ -131,6 +132,54 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
 
           bords.suppr(bords(b));
         }
+    }
+
+  //et les sous-zones?
+  const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine_org.ss_zones();
+  int nb_sous_zones = liste_sous_zones.size();
+  const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(vec_nom_ssz(0)));
+  ArrOfInt rev_ssz(domaine_org.zone(0).nb_elem());
+  rev_ssz = -1;
+  for (int i = 0; i < nb_poly; i++)
+    rev_ssz(ssz[i]) = i;
+
+  Nom jdd(" "), jdd_par(" ");
+  int ecr_jdd = 0;
+  for (int i = 0; i < nb_sous_zones; i++)
+    if (liste_sous_zones[i]->le_nom() != nom_sous_zone)
+      {
+        //liste des elements de la sous-sous-zone
+        ArrOfInt polys;
+        polys.set_smart_resize(1);
+        for (int j = 0, k; j < liste_sous_zones[i]->nb_elem_tot(); j++)
+          if ((k = rev_ssz[liste_sous_zones[i].valeur()[j]]) >= 0)
+            polys.append_array(k);
+
+        if (!polys.size_array())
+          continue; //sous-sous-zone vide!
+
+        Nom nom_ssz(nom_dom + "_" + liste_sous_zones[i]->le_nom()), file_ssz(nom_ssz + ".file");
+
+        //contribution aux JDDs des sous-sous-zones
+        jdd += Nom("export Sous_Zone ") + nom_ssz + "\n";
+        jdd += Nom("Associer ") + nom_ssz + " " + nom_dom + "\n";
+        jdd += Nom("Lire ") + nom_ssz + " { fichier " + file_ssz + " }" + "\n";
+        jdd_par += Nom("export Sous_Zone ") + nom_ssz + "\n";
+        jdd_par += Nom("Associer ") + nom_ssz + " " + nom_dom + "\n";
+        jdd_par += Nom("Lire ") + nom_ssz + " { fichier " + nom_ssz + ".ssz }" + "\n";
+        ecr_jdd = 1;
+
+        //fichier de la sous-sous-zone
+        SFichier f_ssz(file_ssz);
+        f_ssz << polys;
+      }
+
+  if (ecr_jdd)
+    {
+      SFichier f_jdd(nom_dom + "_ssz.geo");
+      SFichier f_jdd_par(nom_dom + "_ssz_par.geo");
+      f_jdd << jdd;
+      f_jdd_par << jdd_par;
     }
 
   dom.nommer(nom_dom);

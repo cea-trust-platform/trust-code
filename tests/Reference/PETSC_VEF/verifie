@@ -8,11 +8,11 @@ then
    if [ "`grep parallele $ranking`" = "" ]
    then
 #      ./check_ranking `ls -rt ranking.* | tail -1` 1657 2.e-7 34 0.30
-      ./check_ranking `ls -rt ranking.* | tail -1` 1699 2.e-7 34 0.30
+      ./check_ranking `ls -rt ranking.* | tail -1` 1920 2.e-7 34 0.30
       err=$?
    else
 #      ./check_ranking `ls -rt ranking.* | tail -1` 1796 2.e-7 70 0.35
-      ./check_ranking `ls -rt ranking.* | tail -1` 1832 2.e-7 70 0.35
+      ./check_ranking `ls -rt ranking.* | tail -1` 2083 2.e-7 70 0.35
       err=$?
    fi
 fi

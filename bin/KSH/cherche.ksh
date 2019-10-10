@@ -41,7 +41,7 @@ liste=`mktemp_`
 #ls $TRUST_TESTS/$filtre/[a-n]*/*.lml.gz 1>>$liste
 #ls $TRUST_TESTS/$filtre/[o-z]*/*.lml.gz 1>>$liste
 #ls $TRUST_TESTS/$filtre/[0-9]*/*.lml.gz 1>>$liste
-find $TRUST_TESTS/$filtre/ -follow -name *.lml.gz -print 2>/dev/null>$liste
+find $TRUST_TESTS/$filtre/ -follow -name '*'.lml.gz -print 2>/dev/null>$liste
 # On fait un sort -u car [a-z] bugge sous sh Mandrake 9.x
 tmp=`mktemp_`
 # -w pour ne chercher que des mots complets (marche pas sur SGI,HP... !)

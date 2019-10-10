@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -703,25 +703,41 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
       }
     case  quadrangle_3D :
       {
-        assert(dimension==3);
-        double delta0, delta1, delta2;
-        double longueur0, longueur1;
+        // On se base sur Hexa_VEF::normale():
         for(int face=0; face <nb_faces_tot(); face++)
           {
-            delta0=(dom.coord(sommet(face ,1), 0) - dom.coord(sommet(face ,0), 0));
-            delta1=(dom.coord(sommet(face ,1), 1) - dom.coord(sommet(face ,0), 1));
-            delta2=(dom.coord(sommet(face ,1), 2) - dom.coord(sommet(face ,0), 2));
-            longueur0=sqrt(delta0*delta0+delta1*delta1+delta2*delta2);
-            delta0=(dom.coord(sommet(face ,2), 0) - dom.coord(sommet(face ,0), 0));
-            delta1=(dom.coord(sommet(face ,2), 1) - dom.coord(sommet(face ,0), 1));
-            delta2=(dom.coord(sommet(face ,2), 2) - dom.coord(sommet(face ,0), 2));
-            longueur1=sqrt(delta0*delta0+delta1*delta1+delta2*delta2);
-            surfaces(face)=dabs(longueur0*longueur1);
-            if(surfaces(face)==0.)
-              {
-                Cerr << "area("<<face<<")=0 ! Check your mesh." << finl;
-                exit();
-              }
+            int n0 = sommet(face, 0);
+            int n1 = sommet(face, 1);
+            int n2 = sommet(face, 2);
+            int n3 = sommet(face, 3);
+            // NB: Dans un prisme, il y'a aussi des triangles comme faces... Donc:
+            if (n3<0) n3 = n2;
+
+            double x1 = dom.coord(n0, 0) - dom.coord(n1, 0);
+            double y1 = dom.coord(n0, 1) - dom.coord(n1, 1);
+            double z1 = dom.coord(n0, 2) - dom.coord(n1, 2);
+
+            double x2 = dom.coord(n3, 0) - dom.coord(n1, 0);
+            double y2 = dom.coord(n3, 1) - dom.coord(n1, 1);
+            double z2 = dom.coord(n3, 2) - dom.coord(n1, 2);
+
+            double nx = (y1*z2 - y2*z1)/2;
+            double ny = (-x1*z2 + x2*z1)/2;
+            double nz = (x1*y2 - x2*y1)/2;
+
+            x1 = dom.coord(n0,0) - dom.coord(n2,0);
+            y1 = dom.coord(n0,1) - dom.coord(n2,1);
+            z1 = dom.coord(n0,2) - dom.coord(n2,2);
+
+            x2 = dom.coord(n3,0) - dom.coord(n2,0);
+            y2 = dom.coord(n3,1) - dom.coord(n2,1);
+            z2 = dom.coord(n3,2) - dom.coord(n2,2);
+
+            nx -= (y1*z2 - y2*z1)/2;
+            ny -= (-x1*z2 + x2*z1)/2;
+            nz -= (x1*y2 - x2*y1)/2;
+
+            surfaces(face)=sqrt(nx*nx+ny*ny+nz*nz);
           }
         break;
       }
@@ -767,6 +783,8 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
     case point_1D:
     case vide_0D :
       {
+        for(int face=0; face <nb_faces_tot(); face++)
+          surfaces(face) = 1.0;
         break;
       }
     case polygone_3D:
@@ -777,7 +795,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             double n0=0,n1=0,n2=0;
             int n=nmax-1;
-            while (sommet(face,n)==-1) n--;
+            while (n >= 0 && sommet(face,n)==-1) n--;
             for (int i0=0; i0<=n; i0++)
               {
 

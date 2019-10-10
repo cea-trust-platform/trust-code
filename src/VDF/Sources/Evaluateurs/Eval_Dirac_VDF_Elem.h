@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
 
 #include <Evaluateur_Source_VDF_Elem.h>
 #include <Ref_Champ_Don.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Zone.h>
 
 ////////////////////////////////////////////////////////////////////////////
@@ -55,7 +54,7 @@ protected:
   double rho_ref_;
   REF(Champ_Don) Cp;
   double Cp_;
-  REF(Champ_Uniforme) la_puissance;
+  REF(Champ_Don) la_puissance;
   double puissance;
   REF(Zone) ma_zone;
   double nb_dirac;

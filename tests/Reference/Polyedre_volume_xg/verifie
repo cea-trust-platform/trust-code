@@ -1,0 +1,13 @@
+#!/bin/bash
+
+org=`pwd`
+org=`basename $org`
+sed "s/ecrire_fichier_formatte dom dom.geom/lire_fichier dom dom_melange.geom/" $org.data > mel.data
+[ "`diff $org.data mel.data`" = "" ] && echo pb substitution &&exit 1
+trust mel 1>mel.out 2> mel.err 
+if [ $? -ne 0 ]
+then
+echo  pb run ; exit -1
+fi
+compare_lata $org.lml mel.lml 
+

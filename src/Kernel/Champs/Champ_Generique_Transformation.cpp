@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -288,9 +288,20 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                   const DoubleTab& values_source_i = source_i.valeurs( );
                   const Zone_VF& zvf_source_i = ref_cast( Zone_VF, zone_source_i );
 
-                  //composite case
-                  //if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && ((localisation_=="??")|| (localisation_=="elem_som") ))
-                  if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && (localisation_=="??"))
+
+                  MD_Vector md;
+                  md = values_source_i.get_md_vector( );
+
+                  //composite case, in particular Champ_{P0,Face}_PolyMAC...
+                  if (zvf_source_i.que_suis_je()=="Zone_PolyMAC" && sub_type( MD_Vector_composite, md.valeur( )))
+                    {
+                      const MD_Vector& md0 = ref_cast(MD_Vector_composite, md.valeur()).get_desc_part(0);
+                      if (md0 == zvf_source_i.zone( ).les_elems().get_md_vector( ))
+                        sources_location.add( "elem" );
+                      else if (md0 == zvf_source_i.face_sommets( ).get_md_vector( ))
+                        sources_location.add("faces");
+                    }
+                  else if( ( sub_type( MD_Vector_composite, md.valeur( ) ) ) && (localisation_=="??"))
                     {
                       Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
                       Cerr << "The source number "<<i<<" is composite and the location was not provided. It is forbidden to apply a 'transformation' on a composite source without providing a location. "<<finl;
@@ -303,11 +314,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                       // md = md_comp.get_desc_part( part );
                       // when dealing with pression_pa it leads to have elem and som locations
                     }
-
-                  MD_Vector md;
-                  md = values_source_i.get_md_vector( );
-
-                  if ( md == zvf_source_i.face_sommets( ).get_md_vector( ) )
+                  else if ( md == zvf_source_i.face_sommets( ).get_md_vector( ) )
                     {
                       sources_location.add( "faces" );
                     }
@@ -582,7 +589,8 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
       if (directive!=directive_so)
         {
           sources_val[so].resize(nb_pos,nb_compso);
-          source_so.valeur_aux(positions,sources_val[so]);
+          if (directive == "CHAMP_FACE") source_so.valeur_aux_faces(sources_val[so]);
+          else source_so.valeur_aux(positions,sources_val[so]);
         }
       else
         {

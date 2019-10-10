@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -153,6 +153,13 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
                 }
 
             }
+
+          else if ((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") )
+            {
+              Cout << "Error while reading '" << motlu << "' from datafile. Check for missing space character" << finl;
+              Process::exit();
+            }
+
           /* GF ne pas reactiver ce morceau de code car cela
              est complique pour la traduction des jdd en python
              else if (motlu=="##")

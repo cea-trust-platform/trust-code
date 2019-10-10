@@ -1,0 +1,63 @@
+Parameters {
+	Title "'Sous_Domaine' and 'Union' partitioners "
+	Description "Illustration of partitioners Sous_domaine and Union"
+
+	Author "A. Gerschenfeld / A.Bruneton"
+
+  TestCase sous_dom jdd_sous_dom.data
+  TestCase union    jdd_union.data
+}
+
+
+Chapter {
+  	  Title "Sous_domaine"
+    Description "Let D be a global domain and two sub-domains D1 and D2 created from sub-zones of D. A global partition of D can be forwarded to the two sub-domains D1 and D2 in a conform fashion thanks to the 'Sous_domaine' partitioner ."
+
+    visu {
+      title "Global domain partition"
+      mesh sous_dom/domaine_glob_decoup.lata_00000.lata domaine_glob
+      pseudocolor sous_dom/domaine_glob_decoup.lata_00000.lata PARTITION_ELEM_domaine_glob 
+    }
+
+    visu {
+      title "Sub-domain 1 and 2"
+      description "The mesh is only shown for the sub-domain 1. We see the match on the allocated proc numbers with the initial splitting of the global domain."
+      mesh sous_dom/domaine1_decoup.lata_00000.lata domaine1
+      Pseudocolor_with_range sous_dom/domaine1_decoup.lata_00000.lata PARTITION_ELEM_domaine1 0 2
+      Pseudocolor_with_range sous_dom/domaine2_decoup.lata_00000.lata PARTITION_ELEM_domaine2 0 2
+    }
+   
+}  # chapter
+
+Chapter {
+ 	  Title "Union"
+    Description "The other way around: from a splitting of D1 and D2 create a global partioning of D which is the union of the D1 and D2 splitting."
+
+    visu {
+      title "D1 partition"
+      mesh union/domaine1_decoup.lata_00000.lata domaine1
+      pseudocolor union/domaine1_decoup.lata_00000.lata PARTITION_ELEM_domaine1
+    }
+    visu {
+      title "D2 partition"
+      mesh union/domaine2_decoup.lata_00000.lata domaine2
+      pseudocolor_with_range union/domaine2_decoup.lata_00000.lata PARTITION_ELEM_domaine2 0 4
+    }
+
+    visu {
+      title "Global partition"
+      mesh union/domaine_glob_decoup.lata_00000.lata domaine_glob
+      Pseudocolor union/domaine_glob_decoup.lata_00000.lata PARTITION_ELEM_domaine_glob
+    }
+   
+}  # chapter
+
+Chapter {
+      Title "'Sous_domaine' data file example"
+      description include_text_file("sous_dom/jdd_sous_dom.data", "partitionneur", "sous_domaine")
+}
+
+Chapter {
+      Title "'Union' data file example"
+      description include_text_file("union/jdd_union.data", "partitionneur", "union")
+}

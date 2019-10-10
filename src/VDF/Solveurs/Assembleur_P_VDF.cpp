@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -419,7 +419,8 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
           const int nfin = ndeb + la_front_dis.nb_faces();
           if (nfin>ndeb && est_egal(face_surfaces[ndeb],0))
             {
-              Cerr << "\nError in the definition of the boundary conditions." << finl;
+              Cerr << "\nFirst face surface is smaller than PrecisionGeom = " << precision_geom << finl;
+              Cerr << "May be you have an error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
               Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << la_front_dis.le_nom() << finl;
               exit();

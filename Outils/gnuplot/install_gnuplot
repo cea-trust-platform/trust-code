@@ -4,6 +4,10 @@ gd=gd-2.0.36RC1.tar.gz
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
+
 # recuperation des packages
 
 for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
@@ -74,6 +78,7 @@ do
       # --without-lisp-files car plantage sur VRH797979.intra.cea.fr car emacs mal installe
       ./configure --prefix=$TRUST_ROOT/exec/gnuplot --without-lua  --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
    fi
+   # 17-05-2019: if you update gnuplot to a new version using cmake, use cmake from conda as is the case for gmsh
    $TRUST_MAKE || exit -1
    make install  || echo error on installation, but we hope that is ok
    cd ..
@@ -85,4 +90,6 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+
+export PATH=$OLDPATH_
 exit 0

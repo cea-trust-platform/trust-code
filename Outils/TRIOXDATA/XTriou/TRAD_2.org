@@ -36,7 +36,7 @@ champs_a_post listobj nul -1 champ_a_post 0 Fields to be post-processed.
 champs_posts objet_lecture nul 0 Field\'s write mode.
   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-  attr period chaine period 0 Value of the period.
+  attr period chaine period 0 Value of the period which can be like (2.*t).
   attr champs|fields champs_a_post champs 0 Post-processed fields.
 stat_post_deriv objet_lecture stat_post_deriv 0 not_set
 stat_post_t_deb stat_post_deriv t_deb 0 not_set
@@ -56,7 +56,7 @@ stat_post_correlation stat_post_deriv correlation 0 not_set
 list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
 stats_posts objet_lecture nul 0 Field\'s write mode. \input{{statistiques}}
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-  attr period chaine period 0 Value of the period.
+  attr period chaine period 0 Value of the period which can be like (2.*t).
   attr champs|fields list_stat_post champs 0 Post-processed fields.
 stats_serie_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
@@ -153,7 +153,7 @@ extraction champ_post_de_champs_post extraction -1 To create a surface field (va
 morceau_equation champ_post_de_champs_post morceau_equation 1 To calculate a field related to a piece of equation. For the moment, the field which can be calculated is the stability time step of an operator equation. The problem name and the unknown of the equation should be given by Source refChamp { Pb_Champ problem_name unknown_field_of_equation }
   attr type chaine type 0 can only be operateur for equation operators.
   attr numero entier numero 0 numero will be 0 (diffusive operator) or 1 (convective operator).
-  attr option chaine(into=["stabilite","flux_bords"]) option 0 option is stability for time steps or flux_bords for boundary fluxes.
+  attr option chaine(into=["stabilite","flux_bords","flux_surfacique_bords"]) option 0 option is stability for time steps or flux_bords for boundary fluxes or flux_surfacique_bords for boundary surfacic fluxes
   attr compo entier compo 1 compo will specify the number component of the boundary flux (for boundary fluxes, in this case compo permits to specify the number component of the boundary flux choosen).
 definition_champ objet_lecture nul 0 Keyword to create new complex field for advanced postprocessing.
   attr name chaine name 0 The name of the new created field.
@@ -217,17 +217,6 @@ vect_nom listobj vect_nom 0 nom_anonyme 0 Vect of name.
 list_nom listobj list_nom 1 nom_anonyme 0 List of name.
 list_nom_virgule listobj list_nom_virgule 1 nom_anonyme 1 List of name.
 mailler_base objet_lecture mailler_base -1 Basic class to mesh.
-bloc_pave objet_lecture nul -1 Class to create a pave.
-  attr Origine listf Origine 1 Keyword to define the pave (block) origin, that is to say one of the 8 block points (or 4 in a 2D coordinate system).
-  attr longueurs listf longueurs 1 Keyword to define the block dimensions, that is to say knowing the origin, length along the axes.
-  attr nombre_de_noeuds listentierf nombre_de_noeuds 1 Keyword to define the discretization (nodenumber) in each direction.
-  attr facteurs listf facteurs 1 Keyword to define stretching factors for mesh discretization in each direction. This is a real number which must be positive (by default 1.0). A stretching factor other than 1 allows refinement on one edge in one direction.
-  attr symx rien symx 1 Keyword to define a block mesh that is symmetrical with respect to the YZ plane (respectively Y-axis in 2D) passing through the block centre.
-  attr symy rien symy 1 Keyword to define a block mesh that is symmetrical with respect to the XZ plane (respectively X-axis in 2D) passing through the block centre.
-  attr symz rien symz 1 Keyword defining a block mesh that is symmetrical with respect to the XY plane passing through the block centre.
-  attr tanh floattant tanh 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation.
-  attr tanh_dilatation entier(into=[-1,0,1]) tanh_dilatation 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation. tanh_dilatation: The value may be -1,0,1 (0 by default): 0: coarse mesh at the middle of the channel and smaller near the walls 1: coarse mesh at the bottom of the channel and smaller near the top -1: coarse mesh at the top of the channel and smaller near the bottom.
-  attr tanh_taille_premiere_maille floattant tanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the Y direction.
 defbord objet_lecture nul 0 Class to define an edge.
 defbord_2 defbord nul -1 1-D edge (straight line) in the 2-D space.
   attr dir chaine(into=["X","Y"]) dir 0 Edge is perpendicular to this direction.
@@ -314,6 +303,7 @@ read_tgrid interprete lire_tgrid -1 Keyword to reaf Tgrid/Gambit mesh files. 2D 
 discretisation_base objet_u discretisation_base -1 Basic class for space discretization of thermohydraulic turbulent problems.
 vdf discretisation_base vdf -1 Finite difference volume discretization.
 vef discretisation_base vef -1 Finite element volume discretization (P1NC/P0 element) NL2 Warning: it becomes an obsolete discretization.
+polymac discretisation_base polymac -1 polymac discretization.
 vefprep1b vef vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
   attr p0 rien p0 1 Pressure nodes are added on element centres
   attr p1 rien p1 1 Pressure nodes are added on vertices
@@ -383,7 +373,8 @@ piso simpler piso -1 Piso (Pressure Implicit with Split Operator) - method to so
   attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
 implicite piso implicite -1 similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains.
 simple piso simple -1 SIMPLE type algorithm
-  attr relax_pression floattant relax_pression 0 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
+  attr relax_pression floattant relax_pression 1 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
+solveur_u_p simple solveur_u_p 1 similar to simple.
 parametre_equation_base objet_lecture parametre_equation_base -1 Basic class for parametre_equation
 parametre_diffusion_implicite parametre_equation_base parametre_diffusion_implicite -1 To specify additional parameters for the equation when using impliciting diffusion
   attr crank entier(into=[0,1]) crank 1 Use (1) or not (0, default) a Crank Nicholson method for the diffusion implicitation algorithm. Setting crank to 1 increases the order of the algorithm from 1 to 2.
@@ -444,8 +435,8 @@ eqn_base mor_eqn eqn_base -3 Basic class for equations.
   attr conditions_initiales|initial_conditions condinits conditions_initiales 1 Initial conditions.
   attr conditions_limites|boundary_conditions condlims conditions_limites 1 Boundary conditions.
   attr sources sources sources 1 To introduce a source term into an equation (in case of several source terms into the same equation, the blocks corresponding to the various terms need to be separated by a comma)
-  attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field for the whole domain or only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
-  attr ecrire_fichier_xyz_valeur_bin ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur_bin 1 This keyword is used to write the values of a field for the whole domain or only for some boundaries in a binary file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
+  attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
+  attr ecrire_fichier_xyz_valeur_bin ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur_bin 1 This keyword is used to write the values of a field only for some boundaries in a binary file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
   attr parametre_equation parametre_equation_base parametre_equation 1 Keyword used to specify additional parameters for the equation
   attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
 traitement_particulier_base objet_lecture traitement_particulier_base 1 Basic class to post-process particular values.
@@ -702,8 +693,8 @@ fluide_quasi_compressible fluide_incompressible fluide_quasi_compressible -1 Com
   attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
   attr pression floattant pression 1 Initial pressure.
   attr loi_etat loi_etat_base loi_etat 1 State law.
-  attr traitement_pth chaine(into=["edo","constant","conservation_masse"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there are three possibilities: NL2 1) with the keyword \'edo\' the code computes Pth solving an O.D.E. ; in this case, the mass is not strictly conserved (it is the default case for quasi compressible computation): NL2 2) the keyword \'conservation_masse\' forces the conservation of the mass (closed geometry or with periodic boundaries condition) NL2 3) the keyword \'constant\' makes it possible to have a constant Pth ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions).
-  attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g.
+  attr traitement_pth chaine(into=["edo","constant","conservation_masse"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there are three possibilities: NL2 1) with the keyword \'edo\' the code computes Pth solving an O.D.E. ; in this case, the mass is not strictly conserved (it is the default case for quasi compressible computation): NL2 2) the keyword \'conservation_masse\' forces the conservation of the mass (closed geometry or with periodic boundaries condition) NL2 3) the keyword \'constant\' makes it possible to have a constant Pth ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions). NL2 It is possible to monitor the volume averaged value for temperature and density, plus Pth evolution in the .evol_glob file.
+  attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g. Unknown pressure is then P*=P+rhomoy*g*z. It is useful when you apply uniforme pressure boundary condition like P*=0. 
   attr temps_debut_prise_en_compte_drho_dt floattant temps_debut_prise_en_compte_drho_dt 1 While time<value, dRho/dt is set to zero (Rho, volumic mass). Useful for some calculation during the first time steps with big variation of temperature and volumic mass.
   attr omega_relaxation_drho_dt floattant omega_relaxation_drho_dt 1 Optional option to have a relaxed algorithm to solve the mass equation. value is used (1 per default) to specify omega.
   attr beta_th suppress_param beta_th 1 suppress
@@ -847,8 +838,18 @@ test_solveur interprete test_solveur 1 To test several solvers
   attr seuil_verification floattant seuil_verification 1 Check if the solution satisfy ||Ax-B||<precision
   attr pas_de_solution_initiale rien pas_de_solution_initiale 1 Resolution isn\'t initialized with the solution x
   attr ascii rien ascii 1 Ascii files
-gen solveur_sys_base gen 0 not_set
-  attr data bloc_lecture data 0 not_set
+ilu precond_base ilu -1 This preconditionner can be only used with the generic GEN solver. 
+  attr type entier type 1 values can be 0|1|2|3 for null|left|right|left-and-right preconditionning (default value = 2)
+  attr filling entier filling 1 default value = 1.
+gen solveur_sys_base gen -1 not_set
+  attr solv_elem chaine solv_elem 0 To specify a solver among gmres or bicgstab.
+  attr precond precond_base precond 0 The only preconditionner that we can specify is ilu.
+  attr seuil floattant seuil 1 Value of the final residue. The solver ceases iterations when the Euclidean residue standard ||Ax-B|| is less than this value. default value 1e-12.
+  attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+  attr save_matrice|save_matrix rien save_matrice 1 To save the matrix in a file.
+  attr quiet rien quiet 1 To not displaying any outputs of the solver.
+  attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the GEN solver.
+  attr force rien force 1 Keyword to set ipar[5]=-1 in the GEN solver. This is helpful if you notice that the solver does not perform more than 100 iterations. If this keyword is specified in the datafile, you should provide nb_it_max.
 petsc solveur_sys_base petsc 0 Solveur via Petsc API NL2 \input{{solvpetsc}}
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set

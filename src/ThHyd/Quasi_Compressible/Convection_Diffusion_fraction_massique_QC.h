@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,10 +50,6 @@ public :
   void associer_fluide(const Fluide_Incompressible& );
   inline const Champ_Inc& inconnue() const;
   inline Champ_Inc& inconnue();
-  inline double calculer_pas_de_temps() const
-  {
-    return 1e30;
-  } ; // on ne sait pas calculer le dt_stab
   inline const Espece& espece() const;
   inline Espece& espece();
 

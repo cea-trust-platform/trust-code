@@ -1,5 +1,5 @@
 name=valgrind
-version=3.12.0
+version=3.15.0
 install=$(TRUST_ROOT)/exec/$(name)
 cible=$(install)/bin/$(name)
 all:$(cible)

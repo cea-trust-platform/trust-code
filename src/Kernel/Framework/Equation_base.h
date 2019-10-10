@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,10 @@
 #include <Ref_Objet_U.h>
 #include <Liste_Noms.h>
 #include <Parser_U.h>
+#include <Matrice_Morse.h>
+#include <vector>
+#include <map>
+
 class Operateur;
 class DoubleTab;
 class DoubleTrav;
@@ -216,6 +220,8 @@ public :
     return calculate_time_derivative_;
   };
 
+  mutable std::vector<std::map<int, int> > matrice_map;
+
 protected :
 
   Nom nom_;
@@ -270,6 +276,10 @@ private :
   // For multistep methods, store previous dI/dt(n), dI/dt(n-1),...
   Champ_Inc derivee_en_temps_;
   int calculate_time_derivative_;
+
+  //memoization of the matrix for PolyMAC
+  mutable Matrice_Morse matrice_stockee;
+  mutable int matrice_init;
 };
 
 

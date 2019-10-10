@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,10 @@
 
 #include <Op_Conv_ALE.h>
 
+
 Implemente_base(Op_Conv_ALE,"Operateur_Conv_ALE",Operateur_Conv_base);
+// XD convection_ale convection_deriv ale 0 A convective scheme for ALE (Arbitrary Lagrangian-Eulerian)  framework.
+// XD  attr opconv bloc_convection opconv 0 Choice between: amont and muscl   NL2 Example: convection {  ALE { amont } }
 
 Sortie& Op_Conv_ALE::printOn(Sortie& os) const
 {
@@ -44,7 +47,7 @@ DoubleTab& Op_Conv_ALE::ajouter(const DoubleTab& inco, DoubleTab& resu) const
   op_conv.ajouter(inco, resu);
   Cerr << "equation : " << equation().le_nom() << finl;
   Motcle le_nom_eqn=equation().le_nom();
-  if (le_nom_eqn!="pbNavier_Stokes_standard")
+  if (le_nom_eqn!="pbNavier_Stokes_standard_ALE")
     {
       ajouterALE(inco,resu);
     }
@@ -83,3 +86,5 @@ void Op_Conv_ALE::associer(const Zone_dis& zdis,
   return ref_cast(Domaine_ALE, dom.valeur());
   }
 */
+
+

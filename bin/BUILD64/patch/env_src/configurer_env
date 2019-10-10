@@ -91,6 +91,14 @@ configure_compilateur_ccache()
    then
       variable=`echo $e | awk -F= '{print $1}'`
       chemin=`echo $e | awk -F\" '{print $2}'`
+      if [ "$chemin" = "" ]
+      then
+         eval $e
+         if [ "$TRUST_CC_BASE" = "" ]
+         then
+            echo "Error! No C++11 compiler found. For a GNU compiler, you would need a version>=4.8.1" && exit -1
+         fi
+      fi
       compilateur=`basename $chemin`
       # On cree un script g++ et gcc
       eval $e
@@ -259,7 +267,8 @@ xxx()
 	   then
 	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
 	   else
-	      echo $ECHO_OPTS "#include <string>\nint main() {std::string foo = \"Hello, world\";return 0;}" > main.cpp;$f -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
+              # Ajout du test du support obligatoire de C++11 a partir de TRUST 1.7.9
+	      echo $ECHO_OPTS "#include <iostream>\n#include <vector>\nint main() {std::vector<int> v = {0,1};for (auto i : v) std::cout << i << ' ';return 0;}" > main.cpp;$f -std=c++11 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then
@@ -872,17 +881,66 @@ then
 fi
 rm -f $TRUST_ROOT/exec/ccache/g??
 
-###################################################################################################
-# On a besoin d'un python complet pour VisIt 2.7.0 (python-config, lib.so) et PETSc, Run_fiche, MED
-###################################################################################################
-[ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
-e="`cherche_file python python`";eval $e
-PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`
-# 1.6.8: Add a more complex test (test.py) for python if python is not well installed
-if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+#########################################################################
+# On utilise python de conda pour PETSc, Run_fiche, MED, MEDCOUPLING, IHM
+#########################################################################
+unset PYTHONPATH # We get a warning from Miniconda if we do not unset this variable
+
+# check the previous install of conda and conda packages if it exists
+if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
-    make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
+   # check of python version
+   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*100+a[3];print (v==2716?1:0)}'`
+   PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
+
+   INSTALL_OK=1 
+   # list of packages already-installed/to-install in conda
+   pkgs="pyqt nomkl numpy fontconfig matplotlib jsonschema swig cmake"
+   for pkg in $pkgs ; do
+     [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && INSTALL_OK=0
+   done
+
+   if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
+   then
+      INSTALL_CONDA=1
+   else
+      echo "# The current install of python, python packages, swig and cmake from miniconda seems OK... we skip it"
+   fi
+else
+   INSTALL_CONDA=1
 fi
+
+if [ "$INSTALL_CONDA" = 1 ] 
+then
+    # If a previous installation folder exists, we remove it.
+    [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
+
+    # Then we install miniconda and the different packages
+    echo "Trying to install Miniconda2-4.6.14-Linux-x86_64.sh"
+    $TRUST_ROOT/externalpackages/Miniconda/./Miniconda2-4.6.14-Linux-x86_64.sh -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+    [ $? != 0 ] && echo "Error while installing Miniconda2-4.6.14-Linux-x86_64.sh. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+
+    # Installing packages from local channel
+    cd $TRUST_ROOT/exec/python/bin
+
+    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema swig cmake"
+    for pkg in $pkgs
+    do
+      echo "Installing $pkg ... "
+      ./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels $pkg -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
+      [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+    done
+    cd -
+    # If a package has not been correctly installed, we exit with an error
+    [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
+fi
+# export PATH
+PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
+echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
+echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
+echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
+echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chemin vers python2.6
+echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
 
 ####################
 # Compilateurs C/C++
@@ -927,18 +985,16 @@ fi
 ######################################################################
 # On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
 # Update to 3.0.1 to fix recursive cmake
+# Update to 4.0 and include in conda
 ######################################################################
-e="`cherche_file cmake cmake`";eval $e
-CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=352?1:0)}'`
-if [ "$CMAKE_VERSION_OK" != 1 ]
-then
-  if [ $TRUST_ARCH = cygwin ]
-  then
-   echo "cmake not ok  but on cygwin we dont try to compile cmake"
-  else
-   make_ $TRUST_ROOT/Outils/cmake cmake $TRUST_ROOT/exec/cmake.log
- fi
-fi
+#echo "Installing cmake in conda ... "
+#$TRUST_ROOT/exec/python/bin/conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels cmake -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
+## If cmake from conda has not been correctly installed, we exit with an error
+#if [ $? != 0 ]
+#then
+#   echo "Error while installing 'cmake' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+#   Display_Missing_packages && exit -1
+#fi
 
 ##############################
 # Installation de makedepend #
@@ -1655,25 +1711,17 @@ case $TRUST_ARCH_CC in
    # 26/07/17 : pour portabilite sur Fedora26, passage de v7.1.0 a v7.1.1 sur test GNU
    # 28/11/17 : passage de v7.1.0 a v7.2.0 sur test GNU
    # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.3.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"8.2.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
-	# 03/02/06 : on ajoute -pedantic -Wno-long-long a la compilation sauf si 3.4.6 ou 4.0.1 car sinon pb avec Petsc 3.1.x
 	# 26/03/10, passage enfin a -03
+	# 01/07/19, passage a C++ 11
         FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-	CppFlags="-O3 $FPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	# 06/02/14, Added -Wshadow
-	CppFlags=$CppFlags" -Wshadow"
-	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="3.4") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wextra -Wno-unused-parameter"
-	# GF pas convaincu des erreurs trouvees
+	CppFlags="-O3 $FPIC -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic"
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
-	if [ "$TRUST_VERSION_GNU" != 3.4.6 ] && [ "$TRUST_VERSION_GNU" != 4.0.1 ]
-	then
-	   CppFlags=$CppFlags" -pedantic"
-	fi
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
 	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
 	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
@@ -1706,7 +1754,7 @@ case $TRUST_ARCH_CC in
 linux_clang++) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	# 06/02/14, Added -Wshadow
 	CppFlags=$CppFlags" -Wshadow"
 	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
@@ -1764,7 +1812,9 @@ linux_clang++) TRUST_SUPPORTED=1
 	# CppFlags="-O3 -ansi -unroll -tpp2 -ipo -ipo_obj"
 	# -Werror supprime pour Intel 12.1 car warning sur les accents dans les chaines de caracteres...
 	#CppFlags="-O3 -fPIC -ansi -unroll -Wno-deprecated -Werror"
-	CppFlags="$Cpp_flag_optim -fPIC -ansi -unroll"
+	# -std=c++11 -ansi : conflit et probleme de compilation sur irene
+	#CppFlags="$Cpp_flag_optim -fPIC -ansi -unroll"
+	CppFlags="$Cpp_flag_optim -std=c++11 -fPIC -unroll"
 	#SYSLIBS="-lF90 -lc -limf -lcxa -lCEPCF90"
 	#SYSLIBS="-lF90 -lCEPCF90"
 	# -lguide pour OpenMP sur argent (et -lkitcompat -lnuma en plus sur mercure)
@@ -1836,14 +1886,6 @@ linux_clang++) TRUST_SUPPORTED=1
 	exit -1
    	;;
 esac
-
-# Add c++11 compiler flag to the default TRUST ones
-#if [ "$TRUST_VERSION_GNU" != "" ]
-#then
-#   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? $1<"4.3.0" ? "" : "-std=c++0x" : "-std=c++11"}'`
-#else
-#   CppFlags=$CppFlags" -std=c++11"
-#fi
 
 if [ $TRUST_SUPPORTED = 0 ] && [ "$TRUST_FORCE_SUPPORTED" != 1 ]
 then
@@ -2101,7 +2143,7 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    Defines=${Defines% -D_INLINE_EVALUATEURS_ -DNDEBUG}
    # On remplace -O par -g
    O=`echo $CppFlags | awk '{print $1}'`
-   CppFlags="-g"${CppFlags#$O}
+   CppFlags="-g -O0"${CppFlags#$O}
    O=`echo $F77Flags | awk '{print $1}'`
    F77Flags="-g"${F77Flags#$O}
    # 16/03/2010: Ajout de -fbounds-check en debug sur gfortran

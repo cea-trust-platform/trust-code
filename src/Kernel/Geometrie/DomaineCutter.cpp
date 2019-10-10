@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -821,7 +821,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
         if (!is_regular)
           {
             // global ou non ????????
-            ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,i_elem_global);
+            ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,liste_inverse_elements[i_elem_global]);
             nb_faces_elem       = faces_element_reference.dimension(0);
             while ( faces_element_reference(nb_faces_elem-1,0)==-1)
               nb_faces_elem--;
@@ -1102,6 +1102,9 @@ void DomaineCutter::construire_sous_domaine(const int part,
   const Domaine& domaine = ref_domaine_.valeur();
   const Zone&     zone    = domaine.zone(0);
 
+  ArrOfInt elements_sous_partie;
+  liste_elems_sous_domaines_.copy_list_to_array(part, elements_sous_partie);
+
   // Preparation du sous_domaine
   // sous_domaine.reset(); /* reset n'existe pas encore... */
   sous_domaine.nommer(domaine.le_nom());
@@ -1114,11 +1117,12 @@ void DomaineCutter::construire_sous_domaine(const int part,
     zone_partie.nommer(nom_zone);
   }
   zone_partie.associer_domaine(sous_domaine);
-  zone_partie.type_elem() = zone.type_elem();
+  if (sub_type(Poly_geom_base,zone.type_elem().valeur()))
+    ref_cast(Poly_geom_base,zone.type_elem().valeur()).build_reduced(zone_partie.type_elem(), elements_sous_partie);
+  else
+    zone_partie.type_elem() = zone.type_elem();
   zone_partie.type_elem().associer_zone(zone_partie);
 
-  ArrOfInt elements_sous_partie;
-  liste_elems_sous_domaines_.copy_list_to_array(part, elements_sous_partie);
   construire_liste_sommets_sousdomaine(domaine.nb_som(),
                                        zone.les_elems(),
                                        elements_sous_partie,
@@ -1163,10 +1167,6 @@ void DomaineCutter::construire_sous_domaine(const int part,
           Joint&     joint = zone_partie.joint(ij);
           joint.set_joint_item(Joint::ELEMENT).set_items_distants();
         }
-    }
-  if (sub_type(Poly_geom_base,zone_partie.type_elem().valeur()))
-    {
-      ref_cast(Poly_geom_base,zone_partie.type_elem().valeur()).reduit_index(elements_sous_partie);
     }
   Scatter::trier_les_joints(zone_partie.faces_joint());
 }

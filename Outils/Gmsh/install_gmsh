@@ -32,6 +32,10 @@ check_gl()
 
 #   archives
 
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
+
 for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`
 do
 ln -sf $file .
@@ -110,7 +114,8 @@ fi
 options=$options" -DENABLE_PETSC=0"
 # Build avec GUI (FLTK), et support MED,LAPACK
 [ "$MISSING_GL" != "" ] && MISSING_GL=$TRUST_ROOT/Outils/Gmsh/missing
-cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENABLE_CAIRO=OFF \
+
+$TRUST_ROOT/exec/python/bin/cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENABLE_CAIRO=OFF \
 -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_Fortran_COMPILER=$TRUST_F77 \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
 -DCMAKE_PREFIX_PATH="$TRUST_ROOT/lib/src/LIBMED/MED;$TRUST_ROOT/lib/src/LIBLAPACK;$FLTK_ROOT;$MISSING_GL" .. 2>&1 || exit -1
@@ -118,8 +123,31 @@ cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENABLE_CAIRO=OFF \
 # Hack Gmsh pour eviter le message penible: 
 # undefined reference to symbol '_gfortran_concat_string@@GFORTRAN_1.0'
 # Voir http://stackoverflow.com/questions/13247107/cmake-dso-linking
-echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_link_libraries(gmsh \${LINK_LIBRARIES} gfortran)?g\nw" | ed ../CMakeLists.txt 1>/dev/null 2>&1
+EXTRA_LINK_LIB=""
+# locate command is not available by default on all plateforms such as on CCRT clusters
+which locate 1>/dev/null 2>&1
+err=$?
+if [ $err -eq 0 ]
+then
+   font_file=`locate -r "/usr/.*/libfontconfig.so$"`
+else
+   font_file=`ldconfig -p | grep libfontconfig.so$ | awk '{ print $4 }'`
+fi
+
+if [ -f  "$font_file" ]; then
+  need_uuid=0 && ldd -r "$font_file" | grep -q uuid && need_uuid=1
+  need_freetype=0 && ldd -r "$font_file" | grep -q freetype && need_freetype=1
+  if [ $need_uuid -eq 1 ]; then
+    EXTRA_LINK_LIB="$EXTRA_LINK_LIB uuid "
+  fi
+  if [ $need_freetype -eq 1 ]; then
+    EXTRA_LINK_LIB="$EXTRA_LINK_LIB freetype "
+  fi
+fi
+
+echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_link_libraries(gmsh \${LINK_LIBRARIES} gfortran $EXTRA_LINK_LIB )?g\nw" | ed ../CMakeLists.txt 1>/dev/null 2>&1
 [ $? != 0 ] && echo "Fail to change CMakeLists.txt. Contact TRUST support." && exit -1
+
 
 # Build and install
 $TRUST_MAKE || exit -1
@@ -132,4 +160,10 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+
+# Now rename final executable to gmsh-exec which will be invoked with the proper LD_LIBRARY_PATH by bin/gmsh
+mv $TRUST_ROOT/exec/gmsh/bin/gmsh $TRUST_ROOT/exec/gmsh/bin/gmsh_exec
+cp $TRUST_ROOT/Outils/Gmsh/gmsh.sh $TRUST_ROOT/exec/gmsh/bin/gmsh
+
+export PATH=$OLDPATH_
 

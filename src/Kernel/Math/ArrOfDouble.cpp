@@ -32,6 +32,7 @@
 #include <Memoire.h>
 #include <Vect_ArrOfDouble.h>
 #include <Ref_ArrOfDouble.h>
+#include <climits>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfDouble,"ArrOfDouble",Array_base);
 
@@ -565,6 +566,8 @@ void  ArrOfDouble::memory_resize(int new_size, Array_base::Resize_Options opt)
         new_mem_size = old_mem_size;
       else if (new_size < old_mem_size * 2)
         new_mem_size = old_mem_size * 2;
+      else if (new_size > old_mem_size && old_mem_size > INT_MAX / 2)
+        new_mem_size = INT_MAX;
     }
 
   if (new_mem_size != old_mem_size)
@@ -825,7 +828,6 @@ double max_array(const ArrOfDouble& dx)
 static inline double scalar_abs(double x)
 {
   return dabs(x);
-
 }
 
 // Description:

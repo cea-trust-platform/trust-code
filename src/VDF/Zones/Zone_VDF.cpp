@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,6 @@ Implemente_instanciable(Zone_VDF,"Zone_VDF",Zone_VF);
 Sortie& Zone_VDF::printOn(Sortie& os) const
 {
   Zone_VF::printOn(os);
-  os << "face_surfaces_"<<face_surfaces_<< finl;
   os << "orientation_"<<orientation_<< finl;
   os << "nb_faces_X_"<<nb_faces_X_<< finl;
   os << "nb_faces_Y_"<<nb_faces_Y_<< finl;
@@ -63,7 +62,6 @@ Sortie& Zone_VDF::printOn(Sortie& os) const
 Entree& Zone_VDF::readOn(Entree& is)
 {
   Zone_VF::readOn(is);
-  is >>  face_surfaces_;
   is >>  orientation_;
   is >>  nb_faces_X_;
   is >>  nb_faces_Y_;
@@ -214,10 +212,6 @@ void Zone_VDF::reordonner(Faces& les_faces)
   Joints&      joints     = zone().faces_joint();
   reordonner_vdf(zone().nb_faces_frontiere(),
                  les_faces_vdf, elem_faces_, orientation_, joints);
-
-  // Calcul des surfaces (tant que l'objet Faces_VDF existe !!!)
-  les_faces.calculer_surfaces(face_surfaces_);
-  // Cerr << "les faces apres les_faces_vdf.reordonner(orientation_) " << les_faces << finl;
 }
 
 // Description:
@@ -264,12 +258,6 @@ void Zone_VDF::discretiser()
   creer_tableau_faces(orientation_);
   orientation_.echange_espace_virtuel();
   orientation_.set_md_vector(md_nul); // Detache la structure parallele
-
-  // Calcul de la surface des faces virtuelles
-  // Note BM: idem que orientation_.
-  creer_tableau_faces(face_surfaces_);
-  face_surfaces_.echange_espace_virtuel();
-  face_surfaces_.set_md_vector(md_nul); // Detache la structure parallele
 
   // Application de la convention VDF sur face_voisin:
   // L'element face_voisin(i,0) doit avoir une coordonnee "ori" plus petite que la face
@@ -325,102 +313,39 @@ void Zone_VDF::calculer_volumes_entrelaces()
 {
   Cerr << "On calcule les volumes entrelaces" << finl;
   creer_tableau_faces(volumes_entrelaces_);
-  int num_face;
-  int nb_faces_front=premiere_face_int();
-  // Calcul des volumes entrelaces different pour l'axi et le 2D_axisymetrique
-  // Modifications PL du 1/12/98
-  for (num_face=0; num_face<nb_faces_front; num_face++)
-    {
-      double r,dr,dz;
-      int num1=face_voisins_(num_face,0);//se sont des elements
-      int num2=face_voisins_(num_face,1);//
-      if (num1 != -1)
-        {
-          //        Cerr<<"(num1 != -1)"<<finl;
-          if((axi)  && (orientation_[num_face]==0))
-            volumes_entrelaces_[num_face] = volumes(num1)*xv_(num_face,0)/xp(num1,0);
+  volumes_entrelaces_dir_.resize(nb_faces(), 2);
+  creer_tableau_faces(volumes_entrelaces_dir_);
 
-          else if ( (bidim_axi) && (orientation_[num_face]==0))
-            {
-              dr =dabs( xv(num_face,0) - xp(num1,0));
-              dz = dim_elem(num1,1);
-
-              if ( xv(num_face,0) < xp(num1,0) ) r = xv(num_face,0);
-              else r = xp(num1,0);
-
-              volumes_entrelaces_[num_face] = 2*M_PI*(r*dr+0.5*dr*dr)*dz;
-            }
-
-          else
-            {
-              dr = dim_elem(num1,0);
-              dz = dim_elem(num1,1);
-              if ( xv(num_face,0) < xp(num1,0) ) r = xv(num_face,0);
-              else r = xp(num1,0);
-
-              volumes_entrelaces_[num_face] = volumes(num1);
-            }
-        }
-      else
-        {
-          assert(num2 != -1);
-          // Cerr<<"(num2 != -1)"<<finl;
-          if((axi)  && (orientation_[num_face]==0))
-            volumes_entrelaces_[num_face] = volumes(num2)*xv_(num_face,0)/xp(num2,0);
-
-          else if ( (bidim_axi) && (orientation_[num_face]==0))
-            {
-              dr = dabs( xv(num_face,0) - xp(num2,0));
-              dz = dim_elem(num2,1) ;
-
-              if ( xv(num_face,0) < xp(num2,0) ) r = xv(num_face,0) ;
-              else r = xp(num2,0);
-
-              double vol;
-              if (r < DMINFLOAT )  vol =2*M_PI*(r*dr+0.5*dr*dr)*dz;
-              else vol =2*M_PI*(r*dr+0.5*dr*dr)*dz;
-
-              volumes_entrelaces_[num_face] = vol;
-            }
-          else
-            {
-              dr = dim_elem(num2,0);
-              dz = dim_elem(num2,1);
-              if ( xv(num_face,0) < xp(num2,0) ) r = xv(num_face,0);
-              else r = xp(num2,0);
-
-              volumes_entrelaces_[num_face] = volumes(num2);
-            }
-
-        }
-    }
-
+  const int nb_faces_front = premiere_face_int();
   const int nbf = nb_faces();
-  for (num_face=nb_faces_front; num_face<nbf; num_face++)
+  for (int num_face = 0; num_face<nbf; num_face++)
     {
-      double r,dr,dz;
-      int num1=face_voisins_(num_face,0);
-      int num2=face_voisins_(num_face,1);
-      if ((axi) && (orientation_[num_face]==0))
-        volumes_entrelaces_[num_face] = 0.5*xv_(num_face,0)*(volumes(num1)/xp(num1,0)
-                                                             + volumes(num2)/xp(num2,0));
-      else if ((bidim_axi) && (orientation_[num_face]==0))
+      const double f = (num_face < nb_faces_front) ? 2. : 1.;
+      for (int dir = 0; dir < 2; dir ++)
         {
-          dr = dabs( xp(num2,0) - xp(num1,0));
-          dz = dim_elem(num2,1);
-          if ( xp(num1,0) < xp(num2,0) )
-            r = xp(num1,0);
-          else
-            r = xp(num2,0);
-          volumes_entrelaces_[num_face] =        2*M_PI*(r*dr+0.5*dr*dr)*dz;
-        }
-      else
-        {
-          volumes_entrelaces_[num_face] = 0.5*(volumes(num1)
-                                               + volumes(num2));
+          int elem = face_voisins_(num_face, dir);
+          if (elem != -1)
+            {
+              if ((axi) && (orientation_[num_face]==0))
+                volumes_entrelaces_dir_(num_face, dir) = f * 0.5 * xv_(num_face, 0) * volumes(elem) / xp(elem, 0);
+              else if ((bidim_axi) && (orientation_[num_face]==0))
+                {
+                  const double r1 = xv(num_face, 0);
+                  const double r2 = xp(elem, 0);
+                  const double dz = dim_elem(elem, 1);
+                  const double dr = dabs(r1 - r2);
+                  const double r = min(r1, r2);
+                  volumes_entrelaces_dir_(num_face, dir) = 2. * M_PI * (r * dr + 0.5 * dr * dr) * dz;
+                }
+              else
+                volumes_entrelaces_dir_(num_face, dir) = f * 0.5 * volumes(elem);
+
+              volumes_entrelaces_[num_face] += volumes_entrelaces_dir_(num_face, dir);
+            }
         }
     }
   volumes_entrelaces_.echange_espace_virtuel();
+  volumes_entrelaces_dir_.echange_espace_virtuel();
 }
 
 static inline int face_vois(const Zone_VDF& zvdf, const Zone& zone, int face, int i)

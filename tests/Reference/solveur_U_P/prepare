@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sed "s/Associate pb sch/Associate pb sch2/g" solveur_U_P.data > std.data 
+trust std
+

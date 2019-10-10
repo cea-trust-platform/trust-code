@@ -18,9 +18,7 @@ STANDALONE=ON
 export  CONFIGURATION_ROOT_DIR=$PWD/configuration
 if [ "$KERNEL_ROOT_DIR" = "" ]
 then
-# verification of modules
-(cd $TRUST_ROOT/Outils/Python_modules&& make ) || exit -1
-. $TRUST_ROOT/exec/python_modules/env.sh
+echo "verification of modules"
 else
 #STANDALONE=OFF
 export PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE
