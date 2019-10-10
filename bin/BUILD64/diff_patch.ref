@@ -66,14 +66,14 @@ diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
 < export PATH=$d:${PATH}
 < done
 < 
-982,983d974
+983,984d975
 < # Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
 < [ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
-1759c1750
+1760c1751
 < 	F77Flags="-O3 $FPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
 ---
 > 	F77Flags="-O3 $FPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-1969d1959
+1970d1960
 <    TRUST_USE_MUMPS=0
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 62,63c62,63

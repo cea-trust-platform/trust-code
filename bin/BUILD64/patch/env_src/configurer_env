@@ -940,7 +940,8 @@ echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
 echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chemin vers python2.6
-echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
+# Ligne commenté à cause des warnings gdb 
+#echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
 
 ####################
 # Compilateurs C/C++
