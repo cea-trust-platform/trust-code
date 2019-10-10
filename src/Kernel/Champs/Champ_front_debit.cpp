@@ -48,14 +48,14 @@ Entree& Champ_front_debit::readOn(Entree& is)
 // Mise a jour du temps
 int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
 {
-  Cerr << "Champ_front_debit::initialiser" << finl;
+//  Cerr << "Champ_front_debit::initialiser" << finl;
   Champ_front_xyz_debit::initialiser(tps, inco);
   return 1;
 }
 
 void Champ_front_debit::initialiser_coefficient(const Champ_Inc_base& inco)
 {
-  Cerr << "Champ_front_debit::initialiser_coefficient" << finl;
+//  Cerr << "Champ_front_debit::initialiser_coefficient" << finl;
   coeff_ = 1.0;
 }
 

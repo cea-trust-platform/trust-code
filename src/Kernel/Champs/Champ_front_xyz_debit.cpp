@@ -29,7 +29,7 @@
 
 
 Implemente_instanciable(Champ_front_xyz_debit,"Champ_front_xyz_debit",Champ_front_normal);
-// XD champ_front_xyz_debit front_field_base champ_front_xyz_debit 0 This field is used to define a flow rate field with a velocity profil which will be normalized to match the flow rate choosed.
+// XD champ_front_xyz_debit front_field_base champ_front_xyz_debit 0 This field is used to define a flow rate field with a velocity profil which will be normalized to match the flow rate chosen.
 
 Sortie& Champ_front_xyz_debit::printOn(Sortie& os) const
 {
@@ -49,7 +49,7 @@ Entree& Champ_front_xyz_debit::readOn(Entree& is)
 
 int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
 {
-  Cerr << "Champ_front_xyz_debit::initialiser flow_rate_alone_ " << flow_rate_alone_ << finl;
+//  Cerr << "Champ_front_xyz_debit::initialiser" << finl;
   if (!Champ_front_normal::initialiser(tps,inco))
     return 0;
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
@@ -124,18 +124,13 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
           Q_nvo+=dS*u_scal_n;
         }
       Q_nvo=mp_sum(Q_nvo);
-      Cerr << "Q_nvo " << Q_nvo << finl;
-      if (dimension==2)
-        Cerr << "Champ_front_xyz_debit::initialiser velocity_field(0,0) " << velocity_field(0,0) << " velocity_field(0,1) " << velocity_field(0,1)  << finl;
-      else
-        Cerr << "Champ_front_xyz_debit::initialiser velocity_field(0,0) " << velocity_field(0,0) << " velocity_field(0,1) " << velocity_field(0,1) << " velocity_field(0,2) " << velocity_field(0,2) << finl;
     }
   return 1;
 }
 
 void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user)
 {
-  Cerr << "Champ_front_xyz_debit::calculer_normales_et_integrale" << finl;
+//  Cerr << "Champ_front_xyz_debit::calculer_normales_et_integrale" << finl;
   const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
   const IntTab& face_voisins = zone_VF.face_voisins();
   double dS=0.;
@@ -173,31 +168,24 @@ void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bo
       integrale_+=dS*u_scal_n*zone_VF.porosite_face(face);
     }
   integrale_=mp_sum(integrale_);
-  Cerr << "integrale_ " << integrale_ << finl;
 }
 
 void Champ_front_xyz_debit::initialiser_coefficient(const Champ_Inc_base& inco)
 {
-  Cerr << "Champ_front_xyz_debit::initialiser_coefficient" << finl;
+//  Cerr << "Champ_front_xyz_debit::initialiser_coefficient" << finl;
   coeff_ = 1.;
 }
 
 void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, double flow_rate, DoubleTab& velocity_user)
 {
-  Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse" << finl;
-  Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse velocity_field.size_array() = " << velocity_field.size_array() << finl;
-
+//  Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse" << finl;
   if (velocity_field.size_array())
     {
       // Allows weighting by rho in Champ_front_debit_massique
-      Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse integrale_ = " << integrale_ << finl;
       velocity_field=flow_rate*coeff_/integrale_ ;
-      Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse flow_rate_alone_ = " << flow_rate_alone_ << finl;
 
       if (!flow_rate_alone_)
         {
-          Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse velocity_user.size() = " << velocity_user.size() << " velocity_user(0,0) = " << velocity_user(0,0) << " velocity_user(0,1) = " << velocity_user(0,1) << finl;
-          Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse velocity_field.size() = " << velocity_field.size() << finl;
           for(int i=0; i<le_bord.nb_faces(); i++)
             {
               for(int j=0; j<dimension; j++)
@@ -208,28 +196,21 @@ void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, Doub
                     velocity_field(i,j)=velocity_field(i,j)*velocity_user(0,j);
                 }
             }
-          Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse 3" << finl;
         }
       else
         {
-          Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse 4" << finl;
           for(int i=0; i<le_bord.nb_faces(); i++)
             for(int j=0; j<dimension; j++)
-              velocity_field=velocity_field(i,j)*normal_vectors_(i,j);
+              velocity_field(i,j)=velocity_field(i,j)*normal_vectors_(i,j);
         }
     }
-  if (dimension==2)
-    Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse velocity_field(0,0) " << velocity_field(0,0) << " velocity_field(0,1) " << velocity_field(0,1)  << finl;
-  else
-    Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse velocity_field(0,0) " << velocity_field(0,0) << " velocity_field(0,1) " << velocity_field(0,1) << " velocity_field(0,2) " << velocity_field(0,2) << finl;
-  Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse fin" << finl;
   // no else here because in // if the boundary isn't on the proc, it crashes!
 }
 
 void Champ_front_xyz_debit::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   flow_rate_.valeur().associer_fr_dis_base(fr);
-  Cerr << "Champ_front_xyz_debit::associer_fr_dis_base flow_rate_alone_ " << flow_rate_alone_ << finl;
+//  Cerr << "Champ_front_xyz_debit::associer_fr_dis_base flow_rate_alone_ " << flow_rate_alone_ << finl;
   if (!flow_rate_alone_)
     velocity_profil_.valeur().associer_fr_dis_base(fr);
   Champ_front_normal::associer_fr_dis_base(fr);
@@ -237,7 +218,7 @@ void Champ_front_xyz_debit::associer_fr_dis_base(const Frontiere_dis_base& fr)
 
 void Champ_front_xyz_debit::set_temps_defaut(double temps)
 {
-  Cerr << "Champ_front_xyz_debit::set_temps_defaut" << finl;
+//  Cerr << "Champ_front_xyz_debit::set_temps_defaut" << finl;
   flow_rate_.valeur().set_temps_defaut(temps);
   if (!flow_rate_alone_)
     velocity_profil_.valeur().set_temps_defaut(temps);
@@ -246,7 +227,7 @@ void Champ_front_xyz_debit::set_temps_defaut(double temps)
 
 void Champ_front_xyz_debit::fixer_nb_valeurs_temporelles(int nb_cases)
 {
-  Cerr << "Champ_front_xyz_debit::fixer_nb_valeurs_temporelles" << finl;
+//  Cerr << "Champ_front_xyz_debit::fixer_nb_valeurs_temporelles" << finl;
   flow_rate_.valeur().fixer_nb_valeurs_temporelles(nb_cases);
   if (!flow_rate_alone_)
     velocity_profil_.valeur().fixer_nb_valeurs_temporelles(nb_cases);
@@ -255,7 +236,7 @@ void Champ_front_xyz_debit::fixer_nb_valeurs_temporelles(int nb_cases)
 
 void Champ_front_xyz_debit::changer_temps_futur(double temps,int i)
 {
-  Cerr << "Champ_front_xyz_debit::changer_temps_futur" << finl;
+//  Cerr << "Champ_front_xyz_debit::changer_temps_futur" << finl;
   Champ_front_normal::changer_temps_futur(temps,i);
   flow_rate_.valeur().changer_temps_futur(temps,i);
   if (!flow_rate_alone_)
@@ -266,7 +247,7 @@ void Champ_front_xyz_debit::changer_temps_futur(double temps,int i)
 //    Turn the wheel of the CL
 int Champ_front_xyz_debit::avancer(double temps)
 {
-  Cerr << "Champ_front_xyz_debit::avancer" << finl;
+//  Cerr << "Champ_front_xyz_debit::avancer" << finl;
   Champ_front_normal::avancer(temps);
   if (flow_rate_.valeur().avancer(temps))
     if (!flow_rate_alone_)
@@ -281,7 +262,7 @@ int Champ_front_xyz_debit::avancer(double temps)
 //    Turn the wheel of the CL
 int Champ_front_xyz_debit::reculer(double temps)
 {
-  Cerr << "Champ_front_xyz_debit::reculer" << finl;
+//  Cerr << "Champ_front_xyz_debit::reculer" << finl;
   Champ_front_normal::reculer(temps);
   if (flow_rate_.valeur().reculer(temps))
     if (!flow_rate_alone_)
@@ -294,7 +275,7 @@ int Champ_front_xyz_debit::reculer(double temps)
 
 void Champ_front_xyz_debit::mettre_a_jour(double temps)
 {
-  Cerr << "Champ_front_xyz_debit::mettre_a_jour  temps = " << temps << finl;
+//  Cerr << "Champ_front_xyz_debit::mettre_a_jour  temps = " << temps << finl;
   DoubleTab velocity_user;
 
   flow_rate_.valeur().mettre_a_jour(temps);
@@ -315,10 +296,5 @@ void Champ_front_xyz_debit::mettre_a_jour(double temps)
       const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
       calculer_champ_vitesse(le_bord, velocity_field, flow_rate, velocity_user);
     }
-  if (dimension==2)
-    Cerr << "Champ_front_xyz_debit::mettre_a_jour velocity_field(0,0) " << velocity_field(0,0) << " velocity_field(0,1) " << velocity_field(0,1)  << finl;
-  else
-    Cerr << "Champ_front_xyz_debit::mettre_a_jour velocity_field(0,0) " << velocity_field(0,0) << " velocity_field(0,1) " << velocity_field(0,1) << " velocity_field(0,2) " << velocity_field(0,2) << finl;
-
 }
 
