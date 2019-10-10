@@ -77,39 +77,18 @@ Entree& Boundary_field_uniform_keps_from_ud::readOn(Entree& is)
   DoubleTab& tab=les_valeurs->valeurs();
 
   Param param(que_suis_je());
-  param.ajouter("U", &u,Param::REQUIRED);
-  param.ajouter("D", &d,Param::REQUIRED);
+  param.ajouter("U", &u,Param::REQUIRED); //initial velocity magnitude
+  param.ajouter("D", &d,Param::REQUIRED); //hydraulic diameter
   param.lire_avec_accolades(is);
 
   int keps_size=2;// k and eps
   tab.resize(1,keps_size);
   fixer_nb_comp(keps_size);
-  // is >> u; //initial velocity magnitude
-  // is >> d; //hydraulic diameter
 
-  //Now compute associated K and Eps by appling formula given by :
-  //http://en.wikipedia.org/wiki/Turbulence_kinetic_energy
-  //http://www.cfd-online.com/Wiki/Turbulence_length_
-  //http://support.esi-cfd.com/esi-users/turb_parameters/
-
-  //Hypothesis:
-  //Cmu=0.09 : k-eps parameter
-  //l=0.038 Dh where Dh is the hydraulic diameter
-  //Note that Cmu^(3/4)=0.1643
   double I=0.05;  //: initial turbulence intensity
 
-  //in 3D we have
-  //k = 3/2*(u*I)^2
-  //in 2D we have
-  //k = (u*I)^2
-  //with u = initial velocity magnitude
-  //eps = Cmu^(3/4) * k^(3/2) * l^(-1)
-  //where l is the turbulence length scale which can be expressed as 0.038 Dh
-  //Dh is the hydraulic diameter
-  double l=0.038*d;
-  double k = ( dimension == 2 ? 1 : 3./2. )*(u*I)*(u*I);
-  double eps = 0.1643*pow(k,1.5)/l;
-  tab(0,0)=k;
-  tab(0,1)=eps;
+  pair val = k_eps_from_udi(u, d, I, dimension);
+  tab(0,0)= val.k;
+  tab(0,1)= val.eps;
   return is;
 }

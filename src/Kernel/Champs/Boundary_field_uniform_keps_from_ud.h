@@ -42,4 +42,37 @@ class Boundary_field_uniform_keps_from_ud : public Champ_front_uniforme
   Declare_instanciable(Boundary_field_uniform_keps_from_ud);
 };
 
+struct pair
+{
+  double k;
+  double eps;
+};
+
+inline pair k_eps_from_udi(const double& u, const double& d, const double& I, const int& dimension)
+{
+  //Now compute associated K and Eps by appling formula given by :
+  //http://en.wikipedia.org/wiki/Turbulence_kinetic_energy
+  //http://www.cfd-online.com/Wiki/Turbulence_length_
+  //http://support.esi-cfd.com/esi-users/turb_parameters/
+
+  //Hypothesis:
+  //Cmu=0.09 : k-eps parameter
+  //l=0.038 Dh where Dh is the hydraulic diameter
+  //Note that Cmu^(3/4)=0.1643
+
+
+  //in 3D we have
+  //k = 3/2*(u*I)^2
+  //in 2D we have
+  //k = (u*I)^2
+  //with u = initial velocity magnitude
+  //eps = Cmu^(3/4) * k^(3/2) * l^(-1)
+  //where l is the turbulence length scale which can be expressed as 0.038 Dh
+  //Dh is the hydraulic diameter
+  double l=0.038*d;
+  pair val;
+  val.k = ( dimension == 2 ? 1 : 3./2. )*(u*I)*(u*I);
+  val.eps = 0.1643*pow(val.k,1.5)/l;
+  return val;
+}
 #endif
