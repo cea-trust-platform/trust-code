@@ -7,8 +7,8 @@ Parameters {
 	TestCase Champ_front_xyz_debit_2    Champ_front_xyz_debit_2.data
 	TestCase Champ_front_xyz_debit_3    Champ_front_xyz_debit_3.data
 	TestCase Champ_front_xyz_debit_4    Champ_front_xyz_debit_4.data
+	Description "This report presents the use of the class Champ_front_xyz_debit. It allows users to impose a velocity profil in addition of a flow rate on a boundary."
 }
-
 
 Chapter {
 	Title "Visualization for 2D VEF test case, uniforme fields" 
