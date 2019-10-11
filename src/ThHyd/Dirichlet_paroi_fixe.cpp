@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,13 +94,16 @@ Entree& Dirichlet_paroi_fixe::readOn(Entree& s )
 int Dirichlet_paroi_fixe::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-  Motcle Hydraulique="Hydraulique";
-  Motcle Thermique="Thermique";
-  Motcle indetermine="indetermine";
-  Motcle K_Eps_V2="Transport_Keps_V2";
-  Motcle K_Eps_Bas_Re="Transport_Keps_Bas_Re";
+
+  Motcle Hydraulique  ="Hydraulique";
+  Motcle Thermique    ="Thermique";
+  Motcle K_Eps_V2     ="Transport_Keps_V2";
+  Motcle K_Eps_Bas_Re ="Transport_Keps_Bas_Re";
+  Motcle K_Eps_Rea    ="Transport_Keps_Rea";
+  Motcle indetermine  ="indetermine";
+
   if ( (dom_app==Hydraulique) || (dom_app==indetermine) ||
-       (dom_app==Thermique) || (dom_app=="Transport_Keps") || (dom_app==K_Eps_V2) || (dom_app==K_Eps_Bas_Re) )
+       (dom_app==Thermique) || (dom_app=="Transport_Keps") || (dom_app==K_Eps_V2) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) )
     return 1;
   else
     {
