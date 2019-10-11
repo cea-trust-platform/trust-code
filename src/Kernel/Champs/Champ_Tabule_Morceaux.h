@@ -14,66 +14,69 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source.h
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/16
+// File:        Champ_Tabule_Morceaux.h
+// Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_included
-#define Source_included
+#ifndef Champ_Tabule_Morceaux_included
+#define Champ_Tabule_Morceaux_included
 
+#include <Champ_Don_base.h>
+#include <Ref_Domaine.h>
+#include <List_Ref_Sous_Zone.h>
+#include <List_Champ_Fonc_Tabule.h>
+#include <IntTab.h>
 
-#include <Source_base.h>
-
-class Equation_base;
-
-Declare_deriv(Source_base);
-
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
-//     classe Source
-//     Classe generique de la hierarchie des sources, un objet Source peut
-//     referencer n'importe quel d'objet derivant de Source_base.
-//     La plupart des methodes appellent les methodes de l'objet Probleme
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//      Source_base
-//////////////////////////////////////////////////////////////////////////////
-class Source : public DERIV(Source_base)
+// .DESCRIPTION : class Champ_Tabule_Morceaux
+//
+// <Description of class Champ_Tabule_Morceaux>
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Champ_Tabule_Morceaux : public Champ_Don_base
 {
-  Declare_instanciable(Source);
+
+  Declare_instanciable( Champ_Tabule_Morceaux ) ;
+
 public :
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const;
-  inline void mettre_a_jour(double temps);
-  void completer();
-  int impr(Sortie&) const;
-  void typer_direct(const Nom& );
-  void typer(const Nom&, const Equation_base&);
-  int initialiser(double temps);
+
+  virtual int initialiser(const double& un_temps);
+  virtual void mettre_a_jour(double un_temps);
+
+  int nb_champs_tabules()const
+  {
+    return champs_tabules.size();
+  }
+
+  Champ_Fonc_Tabule& champ_tabule(int i)
+  {
+    return champs_tabules[i] ;
+  }
+  const Champ_Fonc_Tabule& champ_tabule(int i) const
+  {
+    return champs_tabules[i];
+  }
+
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
+                              const IntVect& les_polys,
+                              DoubleTab& valeurs) const ;
+  virtual double valeur_a_elem_compo(const DoubleVect& position,
+                                     int le_poly, int ncomp) const;
+
+protected:
+
+  LIST(Champ_Fonc_Tabule) champs_tabules;
+  Champ_Fonc_Tabule ch_tab2;
+
+  LIST(REF(Sous_Zone)) les_sous_zones;
+  REF(Domaine) mon_domaine;
+
+  void calculer_champ_tabule_morceaux();
+  IntTab num_zone_;
 };
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Mise a jour (en temps) de la source.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline void Source::mettre_a_jour(double temps)
-{
-  valeur().mettre_a_jour(temps);
-}
-
-#endif
+#endif /* Champ_Tabule_Morceaux_included */

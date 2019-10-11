@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -566,3 +566,87 @@ void Matrix_tools::extend_matrix_stencil( const IntTab& stencil,
                              attach_stencil_to_matrix );
     }
 }
+
+
+
+void Matrix_tools::matdiag_mult_matmorse( const DoubleTab& diag,
+                                          Matrice_Morse& mat,
+                                          const bool& inverse )
+{
+  const int nb_lignes = mat.nb_lignes( );
+  const IntVect& tab1 = mat.get_tab1( );
+  const IntVect& tab2 = mat.get_tab2( );
+  int nnz_tot = 0;
+  for( int i=0; i<nb_lignes; i++ )
+    {
+      const int nnz_i = tab1[ i+1 ] - tab1[ i ]; // nnz sur la ligne i
+      for(int k=0; k<nnz_i; k++)
+        {
+          const int j = tab2[nnz_tot + k] - 1 ; // indice de la colonne
+          double& coefficient = mat.coef( i, j );
+          if( inverse )
+            coefficient *= 1./diag[ i ] ;
+          else
+            coefficient *= diag[ i ] ;
+        }
+      nnz_tot += nnz_i;
+    }
+}
+
+void Matrix_tools::matmorse_mult_matdiag( const DoubleTab& diag,
+                                          Matrice_Morse& mat,
+                                          const bool& inverse )
+{
+  const int nb_lignes = mat.nb_lignes( );
+  const IntVect& tab1 = mat.get_tab1( );
+  const IntVect& tab2 = mat.get_tab2( );
+  int nnz_tot = 0;
+  for( int i=0; i<nb_lignes; i++ )
+    {
+      const int nnz_i = tab1[ i+1 ] - tab1[ i ]; // nnz sur la ligne i
+      for(int k=0; k<nnz_i; k++)
+        {
+          const int j = tab2[nnz_tot + k] - 1 ; // indice de la colonne
+          double& coefficient = mat.coef( i, j );
+          if( inverse )
+            coefficient *= 1./diag[ j ] ;
+          else
+            coefficient *= diag[ j ] ;
+        }
+      nnz_tot += nnz_i;
+    }
+}
+
+
+void Matrix_tools::uniform_matdiag_mult_matmorse( const double& diag,
+                                                  Matrice_Morse& mat,
+                                                  const bool& inverse )
+{
+  const int nb_lignes = mat.nb_lignes( );
+  const IntVect& tab1 = mat.get_tab1( );
+  const IntVect& tab2 = mat.get_tab2( );
+  int nnz_tot = 0;
+  for( int i=0; i<nb_lignes; i++ )
+    {
+      const int nnz_i = tab1[ i+1 ] - tab1[ i ]; // nnz sur la ligne i
+      for(int k=0; k<nnz_i; k++)
+        {
+          const int j = tab2[nnz_tot + k] - 1 ; // indice de la colonne
+          double& coefficient = mat.coef( i, j );
+          if( inverse )
+            coefficient *= 1./diag ;
+          else
+            coefficient *= diag ;
+        }
+      nnz_tot += nnz_i;
+    }
+}
+
+void Matrix_tools::matmorse_mult_uniform_matdiag( const double& diag,
+                                                  Matrice_Morse& mat,
+                                                  const bool& inverse )
+{
+  uniform_matdiag_mult_matmorse( diag, mat, inverse );
+}
+
+

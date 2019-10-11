@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -286,15 +286,17 @@ Entree& Sous_Zone::readOn(Entree& is)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=y=z=0;
-              for(int le_som=0; le_som<nbsom; le_som++)
+              int s, nb_som_poly = 0;
+              for(int le_som = 0; le_som < nbsom && ((s = lazone.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
-                  x+=dom.coord(lazone.sommet_elem(le_poly,le_som),0);
-                  y+=dom.coord(lazone.sommet_elem(le_poly,le_som),1);
-                  z+=dom.coord(lazone.sommet_elem(le_poly,le_som),2);
+                  x+=dom.coord(s, 0);
+                  y+=dom.coord(s, 1);
+                  z+=dom.coord(s, 2);
+                  nb_som_poly++;
                 }
-              x/=((double)(nbsom));
-              y/=((double)(nbsom));
-              z/=((double)(nbsom));
+              x/=((double)(nb_som_poly));
+              y/=((double)(nb_som_poly));
+              z/=((double)(nb_som_poly));
               if ( sup_strict(x,ox)
                    && sup_strict(lx,x)
                    && sup_strict(y,oy)
@@ -491,13 +493,14 @@ Entree& Sous_Zone::readOn(Entree& is)
           for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
-              int le_som;
+              int le_som, s, nb_som_poly = 0;
               x=y=z=0;
-              for(le_som=0; le_som<nbsom; le_som++)
+              for(le_som=0; le_som<nbsom && ((s = lazone.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
-                  x+=dom.coord(lazone.sommet_elem(le_poly,le_som),0);
-                  y+=dom.coord(lazone.sommet_elem(le_poly,le_som),1);
-                  z+=dom.coord(lazone.sommet_elem(le_poly,le_som),2);
+                  x+=dom.coord(s, 0);
+                  y+=dom.coord(s, 1);
+                  z+=dom.coord(s, 2);
+                  nb_som_poly++;
                 }
               le_som=0;
               double xmin,xmax,ymin,ymax,zmin,zmax;
@@ -507,18 +510,18 @@ Entree& Sous_Zone::readOn(Entree& is)
               xmax=xmin;
               ymax=ymin;
               zmax=zmin;
-              for(le_som=1; le_som<nbsom; le_som++)
+              for(le_som=1; le_som<nbsom && ((s = lazone.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
-                  xmin=min(xmin,dom.coord(lazone.sommet_elem(le_poly,le_som),0));
-                  ymin=min(ymin,dom.coord(lazone.sommet_elem(le_poly,le_som),1));
-                  zmin=min(zmin,dom.coord(lazone.sommet_elem(le_poly,le_som),2));
-                  xmax=max(xmax,dom.coord(lazone.sommet_elem(le_poly,le_som),0));
-                  ymax=max(ymax,dom.coord(lazone.sommet_elem(le_poly,le_som),1));
-                  zmax=max(zmax,dom.coord(lazone.sommet_elem(le_poly,le_som),2));
+                  xmin=min(xmin,dom.coord(s, 0));
+                  ymin=min(ymin,dom.coord(s, 1));
+                  zmin=min(zmin,dom.coord(s, 2));
+                  xmax=max(xmax,dom.coord(s, 0));
+                  ymax=max(ymax,dom.coord(s, 1));
+                  zmax=max(zmax,dom.coord(s, 2));
                 }
-              x/=((double)(nbsom));
-              y/=((double)(nbsom));
-              z/=((double)(nbsom));
+              x/=((double)(nb_som_poly));
+              y/=((double)(nb_som_poly));
+              z/=((double)(nb_som_poly));
               if (
                 (    sup_strict(x,ox)    && sup_strict(lx,x)
                      && sup_strict(y,oy)    && sup_strict(ly,y)

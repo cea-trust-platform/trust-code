@@ -14,66 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source.h
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/16
+// File:        List_Champ_Fonc_Tabule.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_included
-#define Source_included
+#include <List_Champ_Fonc_Tabule.h>
+
+// #include <VectDeDouble.h>
 
 
-#include <Source_base.h>
-
-class Equation_base;
-
-Declare_deriv(Source_base);
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Source
-//     Classe generique de la hierarchie des sources, un objet Source peut
-//     referencer n'importe quel d'objet derivant de Source_base.
-//     La plupart des methodes appellent les methodes de l'objet Probleme
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//      Source_base
-//////////////////////////////////////////////////////////////////////////////
-class Source : public DERIV(Source_base)
-{
-  Declare_instanciable(Source);
-public :
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const;
-  inline void mettre_a_jour(double temps);
-  void completer();
-  int impr(Sortie&) const;
-  void typer_direct(const Nom& );
-  void typer(const Nom&, const Equation_base&);
-  int initialiser(double temps);
-};
-
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Mise a jour (en temps) de la source.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline void Source::mettre_a_jour(double temps)
-{
-  valeur().mettre_a_jour(temps);
-}
-
-#endif
+Implemente_liste(Champ_Fonc_Tabule);

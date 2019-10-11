@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,14 +66,8 @@ Entree& Noms::readOn(Entree& s)
 
 int Noms::search(const Nom& t ) const
 {
-  assert(size()>=0);
-  int i=size();
-  while(i--)
-    if (operator()(i)==t)
-      {
-        return i;
-      }
-  return -1;
+  //Use rang() now
+  return rang(t.getString().c_str());
 }
 
 int Noms::search_without_checking_Motcle(const Nom& t ) const
@@ -98,6 +92,13 @@ int Noms::contient_(const char* const ch) const
 /* Returns the VECT position number of a string (-1 if not found) */
 int Noms::rang(const char* const ch) const
 {
-  Nom nom(ch);
-  return search(nom);
+  //Optimization to avoid creating an object Nom:
+  assert(size()>=0);
+  int i=size();
+  while(i--)
+    if (operator()(i).getString()==ch)
+      {
+        return i;
+      }
+  return -1;
 }

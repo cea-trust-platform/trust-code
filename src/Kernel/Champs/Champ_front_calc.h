@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,9 +71,9 @@ public:
     distant_=d ;
   };
 protected :
-  REF(Champ_Inc_base) l_inconnue;	// L'inconnue du probleme oppose
-  Nom nom_autre_bord_,nom_autre_pb_;	// Nom du bord et du probleme oppose
-  int distant_; // par defaut distant_ vaut 1
+  REF(Champ_Inc_base) l_inconnue;          // L'inconnue du probleme oppose
+  Nom nom_autre_bord_,nom_autre_pb_;       // Nom du bord et du probleme oppose
+  int distant_;                            // par defaut distant_ vaut 1
 };
 
 #endif
