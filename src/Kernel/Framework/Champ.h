@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ public :
   }
   inline void nommer(const Nom& );
   inline const Nom& le_nom() const;
-  inline int fixer_nb_comp(int i);
+  inline void fixer_nb_comp(int i);
   inline int nb_comp() const ;
   inline double changer_temps(const double& t);
   inline double temps() const;
@@ -100,9 +100,9 @@ inline const Nom& Champ::le_nom() const
 {
   return valeur().le_nom();
 }
-inline int Champ::fixer_nb_comp(int i)
+inline void Champ::fixer_nb_comp(int i)
 {
-  return valeur().fixer_nb_comp(i);
+  valeur().fixer_nb_comp(i);
 }
 inline int Champ::nb_comp() const
 {
