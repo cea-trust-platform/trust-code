@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+14/10/19 (TRUST)  Bug fixed   : Remove the duplication of last time post-processings when using ICoCo
 11/10/19 (TRUST)  Bug fixed   : Gmres algorithm was not exiting when iteration numbers was over matrix size
 11/10/19 (TRUST)  Bug fixed   : Sub-zone fix for polyedrons
 11/10/19 (TRUST)  New keyword : Champ_Tabule_Morceaux field to use piece-wise uniform tabulated field  
