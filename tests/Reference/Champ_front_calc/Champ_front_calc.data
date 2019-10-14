@@ -75,7 +75,6 @@ Read sch
    dt_max 100.
    dt_impr 1.e-8
    seuil_statio 1.e-4
-   facsec 0.2
 } 
 
 # On choisit un Solide commun aux deux problemes #
