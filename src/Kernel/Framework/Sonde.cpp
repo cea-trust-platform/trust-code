@@ -744,8 +744,12 @@ void Sonde::initialiser()
         }
     }
   // Check if some probes are outside the domain:
+  ArrOfDouble tmp(nbre_points);
   for (int i=0; i<nbre_points; i++)
-    if (mp_max(elem_[i])==-1)
+    tmp(i) = elem_[i];
+  mp_max_for_each_item(tmp);
+  for (int i=0; i<nbre_points; i++)
+    if (tmp(i)==-1)
       Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << zone_geom.domaine().le_nom() << finl;
 
   if (je_suis_maitre()&&(nproc()>1))
