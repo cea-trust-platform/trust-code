@@ -1383,6 +1383,37 @@ fi
 [ "$TRUST_cc" = "" ]  && m="# Path to C compiler"   && e="TRUST_cc=\"$TRUST_cc_BASE\"   && export TRUST_cc"  && ecrit $m"|"$e"|"$env && eval $e
 [ "$TRUST_F77" = "" ] && m="# Path to F77 compiler" && e="TRUST_F77=\"$TRUST_F77_BASE\" && export TRUST_F77" && ecrit $m"|"$e"|"$env && eval $e
 
+################################################
+# Checking the size of type 'long' for BUILD64 #
+################################################
+if [ "$TRUST_INT64" = "1" ]
+then
+   echo '#include <iostream>
+using namespace std;
+int main() {    
+   cout<<"Size of int is "<<sizeof(int)<<" bytes"<<endl;
+   cout<<"Size of long is "<<sizeof(long)<<" bytes"<<endl;
+   return sizeof(long);
+}' > test_size_long.cpp
+   $TRUST_CC -o test_size_long.out test_size_long.cpp
+   ./test_size_long.out  1>/dev/null
+   sizeoflong=$?
+   if [ "$sizeoflong" != 8 ]
+   then
+      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : No "  | tee -a $env
+      echo "Fatal error: it seems that sizeoflong = $sizeoflong which is not 8 bytes"
+      echo "You cannot unfortunately build 64-bit indices version of TRUST."
+      # It could perhaps be possible to replace int by long long instead of long"
+      echo "Contact TRUST support at trust@cea.fr"
+      # We do not display missing packages
+      exit -1;
+   else
+      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : Yes "  | tee -a $env
+      rm test_size_long.out test_size_long.cpp
+   fi
+fi
+
+
 ########################
 # Installation de astyle
 ########################
