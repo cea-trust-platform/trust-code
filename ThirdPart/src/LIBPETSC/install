@@ -271,7 +271,7 @@ add_package()
          sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
          sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
 	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
-      elif [ $lower_name = "mumps" ]
+      elif [ $lower_name = "mumps_marche_pas" ]
       then 
          sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
          sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
