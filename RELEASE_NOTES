@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/19 (TRUST)  Portability : Add -with-64-bit-indices configure option in order to build TRUST with 64 bits integers 
 07/10/19 (TRUST)  Bug fixed   : Write u+,d+,u*, ... values into *_Ustar.face when temps_cpu_max reached or when stop_file detected.
 30/09/19 (Tools)  Portability : Provided Gnuplot version updated to 5.2.7
 28/08/19 (TRUST)  Bug fixed   : Add a check for extracted field using surface domain with not the good support
