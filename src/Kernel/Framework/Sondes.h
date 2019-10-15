@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ public:
   inline void ouvrir_fichiers();
   inline void fermer_fichiers();
   inline void completer();
+  inline void init_bords();
   void associer_post(const Postraitement&);
   void postraiter();
   void mettre_a_jour(double temps, double tinit);
@@ -80,6 +81,31 @@ inline void Sondes::completer()
   while(curseur)
     {
       curseur->completer();
+      ++curseur;
+    }
+}
+
+// Description:
+//   Complete la lecture des sondes
+//
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline void Sondes::init_bords()
+{
+  LIST_CURSEUR(Sonde) curseur=*this;
+  while(curseur)
+    {
+      curseur->init_bords();
       ++curseur;
     }
 }

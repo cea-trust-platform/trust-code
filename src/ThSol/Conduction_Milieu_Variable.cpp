@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Conduction_Milieu_Variable.h>
-#include <Solide_Milieu_Variable.h>
+#include <Solide.h>
 #include <Discret_Thermique.h>
 #include <Frontiere_dis_base.h>
 #include <Probleme_base.h>
@@ -160,13 +160,13 @@ const Champ_base& Conduction_Milieu_Variable::diffusivite_pour_pas_de_temps()
 
 // Description:
 //    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Solide_Milieu_Variable.
+//    le milieu est en fait caste en Solide.
 // Precondition:
 // Parametre: Milieu_base& un_milieu
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Solide_Milieu_Variable"
+//                 doit pourvoir etre force au type "Solide"
 //    Acces: entree
 // Retour:
 //    Signification:
@@ -176,7 +176,7 @@ const Champ_base& Conduction_Milieu_Variable::diffusivite_pour_pas_de_temps()
 // Postcondition:
 void Conduction_Milieu_Variable::associer_milieu_base(const Milieu_base& le_milieu)
 {
-  le_solide = ref_cast(Solide_Milieu_Variable,le_milieu);
+  le_solide = ref_cast(Solide,le_milieu);
 }
 
 // Description:
@@ -290,7 +290,7 @@ void Conduction_Milieu_Variable::discretiser()
 
 // Description:
 //    Renvoie le milieu physique associe a l'equation.
-//    Ici Solide_Milieu_Variable upcaste en Milieu_base.
+//    Ici Solide upcaste en Milieu_base.
 //    (version const)
 // Precondition:
 // Parametre:
@@ -300,7 +300,7 @@ void Conduction_Milieu_Variable::discretiser()
 //    Acces:
 // Retour: Milieu_base&
 //    Signification: le milieu physique associe a l'equation
-//                   (Solide_Milieu_Variable upcaste en Milieu_base)
+//                   (Solide upcaste en Milieu_base)
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
@@ -312,7 +312,7 @@ const Milieu_base& Conduction_Milieu_Variable::milieu() const
 
 // Description:
 //    Renvoie le milieu physique associe a l'equation.
-//    Ici Solide_Milieu_Variable upcaste en Milieu_base.
+//    Ici Solide upcaste en Milieu_base.
 // Precondition:
 // Parametre:
 //    Signification:
@@ -321,7 +321,7 @@ const Milieu_base& Conduction_Milieu_Variable::milieu() const
 //    Acces:
 // Retour: Milieu_base&
 //    Signification: le milieu physique associe a l'equation
-//                   (Solide_Milieu_Variable upcaste en Milieu_base)
+//                   (Solide upcaste en Milieu_base)
 //    Contraintes:
 // Exception:
 // Effets de bord:
@@ -340,13 +340,13 @@ Milieu_base& Conduction_Milieu_Variable::milieu()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Solide_Milieu_Variable&
+// Retour: Solide&
 //    Signification: le milieu solide associe a l'equation
 //    Contraintes: reference constante
 // Exception: pas de milieu solide associe a l'equation
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Solide_Milieu_Variable& Conduction_Milieu_Variable::solide() const
+const Solide& Conduction_Milieu_Variable::solide() const
 {
   if(!le_solide.non_nul())
     {
@@ -423,13 +423,13 @@ void Conduction_Milieu_Variable::get_noms_champs_postraitables(Noms& nom,Option 
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Solide_Milieu_Variable&
+// Retour: Solide&
 //    Signification: le milieu solide associe a l'equation
 //    Contraintes:
 // Exception: pas de milieu solide associe a l'equation
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Solide_Milieu_Variable& Conduction_Milieu_Variable::solide()
+Solide& Conduction_Milieu_Variable::solide()
 {
   if(!le_solide.non_nul())
     {

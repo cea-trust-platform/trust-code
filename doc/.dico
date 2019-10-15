@@ -939,7 +939,6 @@
  Sin Sin StdFunction.h
  Sinh Sinh StdFunction.h
  Solide Solide Solide.h
- Solide_Milieu_Variable Solide_Milieu_Variable Solide_Milieu_Variable.h
  Solide_SWIFT_VDF_P0_VDF Terme_Source_Solide_SWIFT_VDF Terme_Source_Solide_SWIFT_VDF.h
  SolvElem SolvElem SolvElem.h
  SolvElem_base SolvElem_base SolvElem_base.h

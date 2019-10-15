@@ -10,7 +10,6 @@
 #include <Pb_Conduction.h>
 #include <Pb_Conduction_Milieu_Variable.h>
 #include <Solide.h>
-#include <Solide_Milieu_Variable.h>
 #include <Traitement_particulier_Solide.h>
 void instancie_src_ThSol() {
 Cerr << "src_ThSol" << finl;
@@ -21,6 +20,5 @@ Echange_global_impose inst4;verifie_pere(inst4);
 Pb_Conduction inst5;verifie_pere(inst5);
 Pb_Conduction_Milieu_Variable inst6;verifie_pere(inst6);
 Solide inst7;verifie_pere(inst7);
-Solide_Milieu_Variable inst8;verifie_pere(inst8);
-Traitement_particulier_Solide inst9;verifie_pere(inst9);
+Traitement_particulier_Solide inst8;verifie_pere(inst8);
 }

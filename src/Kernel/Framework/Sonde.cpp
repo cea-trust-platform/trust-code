@@ -28,12 +28,72 @@
 #include <communications.h>
 #include <Champ_Generique_Interpolation.h>
 #include <Entree_complete.h>
-//#include <Ch_Fonc_P0.h>
+
+#include <Champ_Generique_refChamp.h>
+#include <Champ_Inc_base.h>
+#include <Zone_Cl_dis.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);
-Sonde::Sonde() {  }
+// XD sonde objet_lecture nul 0 Keyword is used to define the probes. Observations: the probe coordinates should be given in Cartesian coordinates (X, Y, Z), including axisymmetric.
+// XD attr nom_sonde chaine nom_sonde 0 Name of the file in which the values taken over time will be saved. The complete file name is nom_sonde.son.
+// XD attr special chaine(into=["grav","som","nodes","chsom","gravcl"]) special 1 Option to change the positions of the probes. Several options are available: NL2 grav : each probe is moved to the nearest cell center of the mesh; NL2 som : each probe is moved to the nearest vertex of the mesh NL2 nodes : each probe is moved to the nearest face center of the mesh; NL2 chsom : only available for P1NC sampled field. The values of the probes are calculated according to P1-Conform corresponding field. NL2 gravcl : Extend to the domain face boundary a cell-located segment probe in order to have the boundary condition for the field. For this type the extreme probe point has to be on the face center of gravity.
+// XD attr nom_inco chaine nom_inco 0 Name of the sampled field.
+// XD attr mperiode chaine(into=["periode"]) mperiode 0 Keyword to set the sampled field measurement frequency.
+// XD attr prd floattant prd 0 Period value. Every prd seconds, the field value calculated at the previous time step is written to the nom_sonde.son file.
+// XD attr type sonde_base type 0 Type of probe.
+
+// XD segmentfacesx sonde_base segmentfacesx 0 Segment probe where points are moved to the nearest x faces
+// XD attr nbr entier nbr 0 Number of probe points of the segment, evenly distributed.
+// XD attr point_deb un_point point_deb 0 First outer probe segment point.
+// XD attr point_fin un_point point_fin 0 Second outer probe segment point.
+
+// XD segmentfacesy sonde_base segmentfacesy 0 Segment probe where points are moved to the nearest y faces
+// XD attr nbr entier nbr 0 Number of probe points of the segment, evenly distributed.
+// XD attr point_deb un_point point_deb 0 First outer probe segment point.
+// XD attr point_fin un_point point_fin 0 Second outer probe segment point.
+// XD segmentfacesz sonde_base segmentfacesz 0 Segment probe where points are moved to the nearest z faces
+
+// XD attr nbr entier nbr 0 Number of probe points of the segment, evenly distributed.
+// XD attr point_deb un_point point_deb 0 First outer probe segment point.
+// XD attr point_fin un_point point_fin 0 Second outer probe segment point.
 
 static int fichier_sondes_cree=0;
+
+// Description:
+//    Constructeur d'une sonde a partir de son nom.
+// Precondition:
+// Parametre: Nom& nom
+//    Signification: le nom de la sonde a construire
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Sonde::Sonde(const Nom& nom)  :
+  nom_(nom),
+  dim(-1),
+  ncomp(-1),
+  numero_elem_(-1),
+  periode(1.e10),   // initialisation de periode par defaut
+  nodes(false),
+  chsom(false),
+  grav(false),
+  gravcl(false),  // Valeurs aux centres de gravite (comme grav) mais avec ajout eventuel des valeurs aux bords via la zone Cl du champ post-traite
+  som(false),
+  nb_bip(0.),
+  reprise(0),
+  orientation_faces_(-1)
+{}
+
+// Description:
+//    Constructeur d'une sonde sans paramètre.
+Sonde::Sonde() :
+  Sonde(Nom())    // thank you C++11
+{}
 
 // Description:
 //    Imprime le type de l'objet sur un flot de sortie.
@@ -169,35 +229,32 @@ Entree& Sonde::readOn(Entree& is)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbre_points;
-  // initialisation de periode par defaut
-  periode = 1.e10;
-  // initialisation de periode-nodes-chsom-grav par defaut
-  nodes=0;
-  chsom=0;
-  grav=0;
-  som=0;
-  dim=-1;
-  numero_elem_=-1;
+
   is >> motlu;
   // Lecture d'un mot cle qui n'est pas le champ
   if (motlu=="nodes")
     {
-      nodes=1;
+      nodes = true;
       is >> motlu;
     }
   else if (motlu=="chsom")
     {
-      chsom=1;
+      chsom = true;
       is >> motlu;
     }
   else if (motlu=="grav")
     {
-      grav=1;
+      grav = true;
+      is >> motlu;
+    }
+  else if (motlu=="gravcl")
+    {
+      gravcl = true;
       is >> motlu;
     }
   else if (motlu=="som")
     {
-      som=1;
+      som = true;
       is >> motlu;
     }
   // Affectation du nom du champ
@@ -246,7 +303,7 @@ Entree& Sonde::readOn(Entree& is)
   // Lecture des caracteristiques de la sonde
   IntVect fait(2);
 
-  Motcles les_motcles(12);
+  Motcles les_motcles(15);
   {
     les_motcles[0] = "periode";
     les_motcles[1] = "point";
@@ -260,6 +317,9 @@ Entree& Sonde::readOn(Entree& is)
     les_motcles[9] = "position_like";
     les_motcles[10] = "numero_elem_sur_maitre";
     les_motcles[11] = "segmentpoints";
+    les_motcles[12] = "segmentfacesx";
+    les_motcles[13] = "segmentfacesy";
+    les_motcles[14] = "segmentfacesz";
   }
 
   while ((fait(0) != 1) || (fait(1) != 1))
@@ -308,17 +368,37 @@ Entree& Sonde::readOn(Entree& is)
             type_ = les_motcles[rang];
             rang=1;
             dim=0;
+            gravcl = false;
             is >> numero_elem_;
             les_positions_.resize(1,dimension);
             break;
           }
         case 3:
         case 6:
+        case 12:
+        case 13:
+        case 14:
           {
             type_ = les_motcles[rang];
             int rang2=rang;
             rang = 1;
             dim = 1;
+            if (rang2==12 || rang2==13 || rang2==14)
+              {
+                nodes = true;
+                grav = false;
+                gravcl = false;
+                som = false;
+              }
+            const Motcle mot = type_.getSuffix("SEGMENTFACES");
+            Motcles nom_dir(3);
+
+            nom_dir[0] = "X";
+            nom_dir[1] = "Y";
+            nom_dir[2] = "Z";
+
+            orientation_faces_ = nom_dir.search(mot);
+
             DoubleVect origine(dimension);
             DoubleVect extremite(dimension);
             DoubleVect dx(dimension);
@@ -355,6 +435,7 @@ Entree& Sonde::readOn(Entree& is)
             int rang2=rang;
             rang = 1;
             dim = 2;
+            gravcl = false;
             DoubleVect origine(dimension);
             DoubleVect extremite1(dimension);
             DoubleVect extremite2(dimension);
@@ -398,6 +479,7 @@ Entree& Sonde::readOn(Entree& is)
             type_ = les_motcles[rang];
             rang = 1;
             dim = 3;
+            gravcl = false;
             ArrOfDouble origine(dimension);
             ArrOfDouble extremite1(dimension);
             ArrOfDouble extremite2(dimension);
@@ -439,6 +521,7 @@ Entree& Sonde::readOn(Entree& is)
             // circle nbre_points x0 y0 [z0 dir] radius teta1 teta2
             rang = 1;
             dim = 1;
+            gravcl = false;
             int dir;
             double radius, teta1, teta2;
             DoubleVect origine(dimension);
@@ -609,7 +692,6 @@ void Sonde::associer_post(const Postraitement& le_post)
 // Postcondition: la sonde est initialisee
 void Sonde::initialiser()
 {
-  nb_bip = 0.;
   // Dimension the elem_ array:
   int nbre_points = les_positions_.dimension(0);
   if(elem_.size() != nbre_points)
@@ -620,16 +702,14 @@ void Sonde::initialiser()
   if (numero_elem_==-1)
     {
       // Location of probes is given by coordinates in the les_positions_ array:
-      //int nb_som = zone_geom.type_elem().nb_som();
       int nb_coord = les_positions_.dimension(1);
       if (nb_coord != Objet_U::dimension)
-        //if (nb_coord+1>nb_som)
         {
           Cerr << "You can't specify the probe named " << nom_ << " with "<< nb_coord << " coordinates on the domain named " <<zone_geom.domaine().le_nom()<<finl;
           Cerr << "which has spatial dimension " << Objet_U::dimension << finl;
           Cerr << "Change the probe coordinates or use numero_elem_sur_maitre keyword (see documentation)" << finl;
           Cerr << "to specify a cell containing the probe and not its coordinates." << finl;
-          // [ABN] : yes we should exit, otherwise we just don't see the warning:
+          // [ABN] : we should exit, otherwise we just don't see the warning:
           Process::exit();
         }
       // Fill the elem_ array (which list real cells containing all the probes):
@@ -664,8 +744,12 @@ void Sonde::initialiser()
         }
     }
   // Check if some probes are outside the domain:
+  ArrOfDouble tmp(nbre_points);
   for (int i=0; i<nbre_points; i++)
-    if (mp_max(elem_[i])==-1)
+    tmp(i) = elem_[i];
+  mp_max_for_each_item(tmp);
+  for (int i=0; i<nbre_points; i++)
+    if (tmp(i)==-1)
       Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << zone_geom.domaine().le_nom() << finl;
 
   if (je_suis_maitre()&&(nproc()>1))
@@ -686,8 +770,16 @@ void Sonde::initialiser()
   // Probes may be moved to cog, face, vertex:
   const Zone& zone = mon_champ->get_ref_domain().zone(0);
   const Noms nom_champ = mon_champ->get_property("nom");
-  if (grav==1)
+
+  if (grav || gravcl)
     {
+      DoubleTab coords_bords(2,dimension);
+      for (int idim=0; idim<dimension; idim++)
+        {
+          coords_bords(0,idim) = les_positions_(0,idim);
+          coords_bords(1,idim) = les_positions_(nbre_points-1,idim);
+        }
+
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to centers of gravity). Check the .log files to see the new location."<<finl;
       const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
       const DoubleTab xp = zoneVF.xp();
@@ -704,8 +796,11 @@ void Sonde::initialiser()
               Journal() << finl;
             }
         }
+
+      if (gravcl)
+        ajouter_bords(coords_bords);
     }
-  else if (nodes==1)
+  else if (nodes)
     {
       const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
       const DoubleTab xv = zoneVF.xv();
@@ -736,7 +831,10 @@ void Sonde::initialiser()
               for(int fac=0; fac<nfaces_par_element; fac++)
                 {
                   int face=elem_faces(elem_[i],fac);
-                  if (face >= 0)
+                  // Sonde de type segmentfaces : on recherche seulement parmi les faces orientees selon
+                  // orientation_faces_
+                  if (face >= 0 &&
+                      (orientation_faces_ == -1 || zoneVF.orientation_si_definie(face)==orientation_faces_))
                     {
                       double dist=0.;
 
@@ -760,7 +858,7 @@ void Sonde::initialiser()
             }
         }
     }
-  else if (som==1)
+  else if (som)
     {
       if (sub_type(Champ_Generique_Interpolation,mon_champ.valeur()))
         {
@@ -805,7 +903,7 @@ void Sonde::initialiser()
         }
     }
 
-  // chaque processeur a regarder si il avait le point
+  // chaque processeur a regarde s'il avait le point
   // le maitre construit un tableau (prop) determinant qui
   // va donner la valeur au maitre
 
@@ -867,7 +965,6 @@ void Sonde::initialiser()
 
   envoyer_broadcast(prop, 0);
 
-  reprise=0;
   les_positions_sondes_=les_positions_;
 
   nbre_points_tot=nbre_points;
@@ -1174,7 +1271,7 @@ void Sonde::postraiter()
   mon_champ->fixer_identifiant_appel(nom_champ_lu_);
   const Champ_base& ma_source = ref_cast(Champ_base,mon_champ->get_champ(espace_stockage));
 
-  if (chsom==1)
+  if (chsom)
     {
       Champ_base& ma_source_mod =ref_cast_non_const(Champ_base,ma_source);
       if (ncomp == -1)
@@ -1190,6 +1287,8 @@ void Sonde::postraiter()
         ma_source.valeur_aux_elems_compo(les_positions_,elem_,valeurs_locales, ncomp);
     }
 
+  if (gravcl)
+    mettre_a_jour_bords();
   //int i;
   int nb_compo=valeurs_locales.nb_dim();
   //  int nbre_points = les_positions_.dimension(0);
@@ -1352,3 +1451,129 @@ void Sonde::postraiter()
     }
 }
 
+void Sonde::init_bords()
+{
+  if (!gravcl)
+    return;
+
+  const int nbf = faces_bords_.size_array();
+  rang_cl_.resize(nbf);
+
+  if (sub_type(Champ_Generique_refChamp,mon_champ.valeur()))
+    {
+      Probleme_base& Pb = mon_post->probleme();
+      REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
+      const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
+      const Zone_Cl_dis& zcl = ch_inc.zone_Cl_dis();
+
+      if (zcl.non_nul())
+        {
+          for (int iface=0; iface<nbf; iface++)
+            {
+              int face = faces_bords_[iface];
+              for (int icl=0; icl<zcl.nb_cond_lim(); icl++)
+                {
+                  const Cond_lim& cl = zcl.les_conditions_limites(icl);
+                  const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
+                  const int& ndeb = le_bord.num_premiere_face();
+                  const int& nfin = ndeb + le_bord.nb_faces();
+                  for (int i=ndeb; i<nfin; i++)
+                    {
+                      if (i==face)
+                        rang_cl_[iface] = icl;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Sonde::ajouter_bords(const DoubleTab& coords_bords)
+{
+  double eps = mon_champ->get_ref_domain().epsilon();
+  const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
+  const Zone& zone = mon_champ->get_ref_domain().zone(0);
+
+  const DoubleTab xv = zoneVF.xv();
+  const IntTab& elem_faces = zoneVF.elem_faces();
+  const IntTab& face_voisins = zoneVF.face_voisins();
+  const int nfaces_par_element = zone.nb_faces_elem() ;
+  int nbre_points = les_positions_.dimension(0);
+
+  faces_bords_.set_smart_resize(1);
+
+  IntTab tmp(2);
+  tmp[0] = 0;
+  tmp[1] = nbre_points-1;
+
+  for (int i = 0; i<coords_bords.dimension(0); i++)
+    {
+      int e = tmp[i];
+      int elem = elem_[e];
+      if (elem !=-1)
+        {
+          for(int fac=0; fac<nfaces_par_element; fac++)
+            {
+              int face=elem_faces(elem,fac);
+              if(face_voisins(face,1)==-1 || face_voisins(face,0)==-1)
+                {
+                  double dist=0.;
+                  for (int idim=0; idim<dimension; idim++)
+                    dist+=((xv(face,idim)-coords_bords(i,idim))*(xv(face,idim)-coords_bords(i,idim)));
+
+                  if (sqrt(dist) < eps)
+                    {
+                      faces_bords_.append_array(face);
+                      for (int idim=0; idim<dimension; idim++)
+                        les_positions_(e,idim) = coords_bords(i,idim);
+                    }
+                }
+            }
+        }
+    }
+  // [ABN] skiping the assert below. On funny shaped domains (e.g. U-shape) a probe might
+  // re-enter the domain, and hence hit more than two faces overall:
+  // assert(mp_sum(faces_bords_.size_array())<=2);
+}
+
+void Sonde::mettre_a_jour_bords()
+{
+  if (sub_type(Champ_Generique_refChamp,mon_champ.valeur()))
+    {
+      Probleme_base& Pb = mon_post->probleme();
+      REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
+      const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
+      const Zone_Cl_dis& zcl = ch_inc.zone_Cl_dis();
+
+      if (zcl.non_nul())
+        {
+          const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
+          const IntTab& face_voisins = zoneVF.face_voisins();
+
+          int nbval = valeurs_locales.dimension(0);
+
+          for (int iface=0; iface<faces_bords_.size_array(); iface++)
+            {
+              int face = faces_bords_[iface];
+              int icl = rang_cl_[iface];
+              const Cond_lim& cl = zcl.les_conditions_limites(icl);
+              const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
+              const int& ndeb = le_bord.num_premiere_face();
+              DoubleVect valcl;
+              cl->champ_front()->valeurs_face(face-ndeb,valcl);
+
+              if (valcl.size() == 0)
+                {
+                  Cerr << "Error: Sonde::mettre_a_jour_bords(): 'gravcl' option - unable to extract face value for BC of type '" << cl.valeur().que_suis_je() << "'" << finl;
+                  Cerr << "Try using 'grav' keyword instead, or shift your probe to avoid this boundary cond." << finl;
+                  Process::exit(1);
+                }
+
+              if (face_voisins(face,0) != -1)
+                valeurs_locales(nbval-1) = valcl[0];
+              else
+                valeurs_locales(0) = valcl[0];
+            }
+        }
+    }
+}

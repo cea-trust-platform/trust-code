@@ -45,7 +45,7 @@ Read sch
 
 }
 
-Solide_Milieu_Variable sol
+Solide sol
 Read sol
 {
   rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 }

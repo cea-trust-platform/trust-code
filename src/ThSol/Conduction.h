@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ public:
   Conduction();
   void set_param(Param&);
   int lire_motcle_non_standard(const Motcle&, Entree&);
-  inline void associer_solide(const Solide& );
+  void associer_solide(const Solide& );
   void associer_milieu_base(const Milieu_base& );
   const Milieu_base& milieu() const;
   Milieu_base& milieu();
@@ -91,27 +91,6 @@ protected :
 
 
 };
-
-
-// Description:
-//    Associe le milieu solide a l'equation.
-// Precondition:
-// Parametre: Solide& un_solide
-//    Signification: le milieu solide a associer a l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un milieu physique associe
-inline void Conduction::associer_solide(const Solide& un_solide)
-{
-  le_solide = un_solide;
-}
-
 
 // Description:
 //    Renvoie le champ inconnue de l'equation,

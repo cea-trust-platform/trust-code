@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 #include <Equation_base.h>
 #include <Operateur_Diff.h>
 #include <Schema_Temps.h>
-#include <Ref_Solide_Milieu_Variable.h>
+#include <Ref_Solide.h>
 #include <Traitement_particulier_Solide.h>
 
 class Milieu_base;
@@ -57,12 +57,12 @@ public:
   Conduction_Milieu_Variable();
   void set_param(Param&);
   int lire_motcle_non_standard(const Motcle&, Entree&);
-  inline void associer_solide(const Solide_Milieu_Variable& );
+  inline void associer_solide(const Solide& );
   void associer_milieu_base(const Milieu_base& );
   const Milieu_base& milieu() const;
   Milieu_base& milieu();
-  const Solide_Milieu_Variable& solide() const;
-  Solide_Milieu_Variable& solide();
+  const Solide& solide() const;
+  Solide& solide();
   int nombre_d_operateurs() const;
   const Operateur& operateur(int) const;
   Operateur& operateur(int);
@@ -85,7 +85,7 @@ public:
   /////////////////////////////////////////////////////
 private :
 
-  REF(Solide_Milieu_Variable) le_solide;
+  REF(Solide) le_solide;
   Champ_Inc la_temperature;
   Operateur_Diff terme_diffusif;
 
@@ -101,7 +101,7 @@ protected :
 // Description:
 //    Associe le milieu solide a l'equation.
 // Precondition:
-// Parametre: Solide_Milieu_Variable& un_solide
+// Parametre: Solide& un_solide
 //    Signification: le milieu solide a associer a l'equation
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -112,7 +112,7 @@ protected :
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation a un milieu physique associe
-inline void Conduction_Milieu_Variable::associer_solide(const Solide_Milieu_Variable& un_solide)
+inline void Conduction_Milieu_Variable::associer_solide(const Solide& un_solide)
 {
   le_solide = un_solide;
 }

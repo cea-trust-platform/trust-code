@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,6 +55,7 @@ public:
   void finir();
   int sauvegarder(Sortie& os) const;
   int reprendre(Entree& is);
+  void completer();
 };
 
 #endif

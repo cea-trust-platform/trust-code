@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@ public:
   virtual void finir() {};
   virtual int sauvegarder(Sortie& os) const;
   virtual int reprendre(Entree& is);
+  virtual void completer() = 0;
 
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };

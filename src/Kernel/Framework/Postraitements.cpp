@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -292,3 +292,13 @@ int Postraitements::reprendre(Entree& is)
   return 1;
 }
 
+void Postraitements::completer()
+{
+  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
+  while(curseur)
+    {
+      Postraitement_base& post = curseur.valeur().valeur();
+      post.completer();
+      ++curseur;
+    }
+}

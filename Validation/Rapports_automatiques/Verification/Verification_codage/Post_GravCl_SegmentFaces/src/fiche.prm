@@ -1,0 +1,81 @@
+Parameters {
+	Title "Using keywords 'gravcl' and 'segmentfaces'"
+	Description "This note describes the usage of the new post-processing keywords 'gravcl' and 'segmentfaces{x|y|z}' inside the definition of a probe. All the results are presented on the Convection test case for which the domain is U-shaped with imposed input velocity, and imposed output pressure."
+
+	Author "A.Bruneton"
+  TestCase . Convection.data
+}
+
+Chapter {
+	Title "Keyword 'gravcl'"
+	Description  As a reminder the final position of a probe can be be shifted using keywords 'som', 'chsom', 'grav', or 'nodes'. <<EOF
+    	The new keyword 'gravcl' behaves exactly like 'grav', but will also include the boundary condition value in the 
+    	postprocessing if one (or the two) extreme point(s) of the probe is located on the center of gravity of the boundary face. For example for the pressure in VDF (naturally located at the element center), this keyword will add the boundary value of the pressure.
+    	
+    	Note that this only works if the extreme point is located on the face center of gravity (within epsilon).
+    	
+    	Note also that this doesn't work for some BC, typically 'symetry' is not supported.
+EOF
+
+  Figure {
+    Title ""
+    Description "The left handside is not covered because it is a 'symetry' BC. Trying to extend the probe there will trigger an error."  
+    Dimension 2
+    include_description_curves 0
+    LabelX "X"
+    LabelY "Pressure"
+    Curve {
+	    legend "grav"
+	    segment ./Convection.data SONDE_PRESSION_GRAV
+	    Style linespoints
+    }
+    Curve {
+	    legend "gravcl"
+	    segment ./Convection.data SONDE_PRESSION_GRAVCL
+	    Style linespoints
+    }
+  }
+
+} # Chapter
+
+
+Chapter {
+	Title "Keyword 'segmentfaces'"
+	Description  The probe type 'segmentfacesx' (resp. 'segmentfacesy', 'segmentfacesz') <<EOF
+    	is typically used in VDF with the velocity field. It forces the code to move the probe location to the closest discretisation point
+    	of the field for the given direction.
+    	Hence for the velocity in VDF, specifying 'segmentfacesx' (instead of 'segment') will shift the probe location to the closest discretisation point where the X
+    	component is computed, corresponding to a face aligned with the Oy axis.
+EOF
+
+  Figure {
+    Title ""
+    Description ""  
+    Dimension 2
+    include_description_curves 0
+    LabelX "X"
+    LabelY "Velocity"
+    Curve {
+	    legend "segment"
+	    segment ./Convection.data SONDE_VITESSE
+	    Style linespoints
+    }
+    Curve {
+	    legend "segmentfacesx"
+	    segment ./Convection.data SONDE_VITESSE_SX
+	    Style linespoints
+    }
+  }
+
+} # Chapter
+
+
+
+Chapter 
+{
+  Title "Dataset illustrating the usage of 'gravcl' and 'segmentfacesx'"
+  Description ""
+  Description include_text_file("Convection.data", "probe", "gravcl", "segmentfacesx")
+}
+
+
