@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Zone_PolyMAC.h>
+#include <tuple>
+#include <unordered_map>
 #include <Rectangle.h>
 #include <Hexaedre.h>
 #include <Triangle.h>
@@ -59,17 +61,19 @@
 #include <IntLists.h>
 #include <DoubleLists.h>
 
+//#include <osqp/osqp.h>
+#include <unistd.h>
+
 #include <vector>
 #include <set>
-#include <tuple>
 #include <map>
-#include <unordered_map>
 #include <cmath>
 #include <cfloat>
 #include <numeric>
 
-//#include <osqp/osqp.h>
-#include <unistd.h>
+
+
+
 
 Implemente_instanciable(Zone_PolyMAC,"Zone_PolyMAC",Zone_VF);
 

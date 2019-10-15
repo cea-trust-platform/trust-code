@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -140,17 +140,6 @@ DoubleTab& Sources::ajouter(DoubleTab& xx) const
   return xx;
 }
 
-DoubleTab& Sources::ajouter_derivee(DoubleTab& xx) const
-{
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->ajouter_derivee(xx);
-      ++curseur;
-    }
-  return xx;
-}
-
 // Description:
 //    Calcule la contribution de toutes les sources de la
 //    liste stocke le resultat dans le tableau passe en parametre,
@@ -175,18 +164,6 @@ DoubleTab& Sources::calculer(DoubleTab& xx) const
   while(curseur)
     {
       curseur->ajouter(xx);
-      ++curseur;
-    }
-  return xx;
-}
-
-DoubleTab& Sources::calculer_derivee(DoubleTab& xx) const
-{
-  xx=0;
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->ajouter_derivee(xx);
       ++curseur;
     }
   return xx;
@@ -335,6 +312,18 @@ void Sources::contribuer_a_avec(const DoubleTab& a, Matrice_Morse& matrice) cons
       const Source& src = curseur.valeur();
       const Source_base& src_base = src.valeur();
       src_base.contribuer_a_avec(a,matrice);
+      ++curseur;
+    }
+}
+
+void Sources::contribuer_jacobienne(Matrice_Bloc& matrice, int n) const
+{
+  CONST_LIST_CURSEUR(Source) curseur(*this);
+  while(curseur)
+    {
+      const Source& src = curseur.valeur();
+      const Source_base& src_base = src.valeur();
+      src_base.contribuer_jacobienne(matrice, n);
       ++curseur;
     }
 }

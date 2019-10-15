@@ -1,0 +1,251 @@
+Parameters {
+	Title "Imposed convective heat flux BC in VEF"
+	versiontrust 1.8.0
+	Author "N. DJATI (CS)"
+	description "triokeyword(Paroi_echange_externe_impose) is a keyword allowing to impose a convective heat flux (and an external temperature) on a given boundary when dealing with energy equation. Before TRUST V1.8.0, computed stability time steps did not take into account the value of the heat flux on the boundary in VEF disrectization. This makes the computation diverging if the Biot number (which is the ratio of heat transfer by convection to heat transfer by conduction) is greater than unity."
+	description "The current verification form aims to validate the new time-step computation in VEF in 2D and 3D configurations."
+
+	TestCase conduc2D    Conduc2D_h_imp.data 
+	TestCase conduc3D    Conduc3D_h_imp.data
+	TestCase conduc2Dimp Conduc2D_h_imp_implicite.data
+	TestCase conduc3Dimp Conduc3D_h_imp_implicite.data
+}
+
+
+Chapter {
+	Title "Introduction"
+	description "Before TRUST 1.8.0, the diffusive time step was computed as"
+	description "\latex_( \begin{equation} \Delta t = \beta \frac{(\Delta x)^{2}}{D} \end{equation} \latex_)"
+	description "Since the version 1.8.0, in VEF discretization, we compute Biot number given by \latex_( \begin{equation*} Bi = \frac{h \Delta x}{\lambda} \end{equation*} \latex_) and we use expression (1) if Bi<1 and :"
+	description "\latex_( \begin{equation}  \Delta t = \beta \frac{\lambda \Delta x}{h D} \end{equation} \latex_)"
+	description "in the case where Bi > 1"
+
+
+
+}
+
+Chapter {
+	Title "One-dimensional heat conduction within a 2D solid medium with uniform thermophysical properties"
+	description "The first test case of this validation form concerns a problem of type triokeyword(pb_conduction) as shown hereafter."
+	Figure {
+		width 7cm
+		picture pb_conduction.PNG
+	}
+	description "We consider that the solid of size 1x1 has a density of 2 kg.m-3, a thermal conductivity of 0.1 W.m-1.K-1 and a Cp of 0.5 J.kg-1.K. We set the temperature at the left wall to 0 and we impose a heat flux of 20 W.m-2.K on the other side. We consider also that the outer temperature is equal to 100."
+
+	description "At the steady state, the heat flux equilibrium at the right boundary can be expressed by:"
+	description "\latex_( \begin{equation} h (T_{ext} - T_W ) = - \frac{\lambda (T_W - T_{left})}{L} \end{equation} \latex_) "
+	description "which yields \latex_( \begin{equation} T_W  = (T_{ext} + \frac{\lambda}{hL} T_{left} ) / (1 + \frac{\lambda}{hL}) \end{equation} \latex_)"
+	description "Since  \latex_( $T_{left} = 0$, equation (4) can be simplified to : \begin{equation} T_W  = T_{ext} / (1 + \frac{\lambda}{hL}) = 100 / (1 + \frac{0.1}{20} ) = 99.5 \end{equation} \latex_)"
+	description "We treat this problem using an explicit and implicit time schemes in order to check that everything is okay. We will plot the residual of energy equation, the mean temperature at the wall with imposed heat flux BC and we will draw the temperature profile inside the domain."
+
+	description "In both, implicit and explicit time schemes, equation residuals decrease and wall temperature converges to the analytical value of 99.5 as shown on figures below."
+
+	figure {
+		Title "Equation residuals"
+		Titre_figure "Explicit time scheme"
+		labelX "time"
+		labelY "Residual = max|dT/dt|"
+		include_description_curves 0
+		Width 7.9cm
+		LogY
+		nb_img_without_newline 2
+		curve {
+			legend "Max residual"
+			file conduc2D/Conduc2D_h_imp.dt_ev
+			columns ($1) ($6)
+		}
+	}
+
+	figure {
+		Titre_figure "Implicite time scheme"
+		labelX "time"
+		labelY "Residual = max|dT/dt|"
+		include_description_curves 0
+		Width 7.9cm
+		LogY
+		curve {
+			legend "Max residual"
+			file conduc2Dimp/Conduc2D_h_imp_implicite.dt_ev
+			columns ($1) ($6)
+		}
+	}
+
+	Visu {
+		Title "Temperature profile"
+		description "Explicit time scheme"
+		mesh conduc2D/Conduc2D_h_imp.lata dom
+		pseudocolor conduc2D/Conduc2D_h_imp.lata dom TEMPERATURE SOM
+		cycles  -1
+		Width 7cm
+		nb_img_without_newline 2
+	}
+
+	Visu {
+		description "Implicit time scheme"
+		mesh conduc2Dimp/Conduc2D_h_imp_implicite.lata dom
+		pseudocolor conduc2Dimp/Conduc2D_h_imp_implicite.lata dom TEMPERATURE SOM
+		cycles  -1
+		width 7cm
+	}
+
+	figure {
+		Title "Mean wall temperature"
+		Titre_figure "Explicit computation"
+		labelX "time"
+		labelY "Mean wall temperature"
+		include_description_curves 0
+		Width 7.9cm
+		nb_img_without_newline 2
+		Legend below
+		RangeX 0 10
+		RangeY 95 100
+		curve {
+			legend "Mean wall temperature"
+			file conduc2D/Conduc2D_h_imp_TMEAN.son
+			columns ($1) ($2)
+		}
+		curve {
+			legend "Analytical solution"
+			Fonction 99.5
+			Style lines
+		}
+	}
+
+	figure {
+		Titre_figure "Implicite computation"
+		labelX "time"
+		labelY "Mean wall temperature"
+		include_description_curves 0
+		Width 7.9cm
+		Legend below
+		RangeX 0 10
+		RangeY 95 100
+		curve {
+			legend "Mean wall temperature"
+			file conduc2Dimp/Conduc2D_h_imp_implicite_TMEAN.son
+			columns ($1) ($2)
+		}
+		curve {
+			legend "Analytical solution"
+			Fonction 99.5
+			Style lines
+		}
+	}
+}
+
+
+Chapter {
+	Title "One-dimensional heat conduction within a 3D solid medium with uniform thermophysical properties"
+	description "The second test case of this validation form is similar to the first one, except that it is in 3D and the imposed heat flux and external temperature are different."
+	description "We consider that the solid of size 10x2x10 has a density of 2 kg.m-3, a thermal conductivity of 0.1 W.m-1.K-1 and a Cp of 0.5 J.kg-1.K. We set the temperature at the left wall to 0 and we impose a heat flux of 5 W.m-2.K on the other side. We consider also that the outer temperature is equal to 30.06."
+
+	description "At the steady state, the heat flux equilibrium at the right boundary can be expressed by:"
+	description "\latex_( \begin{equation} h (T_{ext} - T_W ) = - \frac{\lambda (T_W - T_{left})}{L} \end{equation} \latex_) "
+	description "which yields \latex_( \begin{equation} T_W  = (T_{ext} + \frac{\lambda}{hL} T_{left} ) / (1 + \frac{\lambda}{hL}) \end{equation} \latex_)"
+	description "Since  \latex_( $T_{left} = 0$, equation (7) can be simplified to : \begin{equation} T_W  = T_{ext} / (1 + \frac{\lambda}{hL}) = 30.06 / (1 + \frac{0.1}{5\times 10} ) = 30 \end{equation} \latex_)"
+        
+	description "We treat this problem using an explicit and implicit time schemes in order to check that everything is okay. We will plot the residual of energy equation, the mean temperature at the wall with imposed heat flux BC and we will draw the temperature profile inside the domain."
+
+	description "In both, implicit and explicit time schemes, equation residuals decrease and wall temperature converges to the analytical value of 30 as shown on figures below."
+
+	figure {
+		Title "Equation residuals"
+		Titre_figure "Explicit time scheme"
+		labelX "time"
+		labelY "Residual = max|dT/dt|"
+		include_description_curves 0
+		Width 7.9cm
+		LogY
+		nb_img_without_newline 2
+		curve {
+			legend "Max residual"
+			file conduc3D/Conduc3D_h_imp.dt_ev
+			columns ($1) ($6)
+		}
+	}
+
+	figure {
+		Titre_figure "Implicite time scheme"
+		labelX "time"
+		labelY "Residual = max|dT/dt|"
+		include_description_curves 0
+		Width 7.9cm
+		LogY
+		curve {
+			legend "Max residual"
+			file conduc3Dimp/Conduc3D_h_imp_implicite.dt_ev
+			columns ($1) ($6)
+		}
+	}
+
+	Visu {
+		Title "Temperature profile"
+		description "Explicit time scheme"
+		mesh conduc3D/Conduc3D_h_imp.lata dom
+		pseudocolor conduc3D/Conduc3D_h_imp.lata dom TEMPERATURE SOM
+		cycles  -1
+		normal3d 0.4543768 0.477396 0.733606
+		Width 7cm
+		nb_img_without_newline 2
+	}
+
+	Visu {
+		description "Implicit time scheme"
+		mesh conduc3Dimp/Conduc3D_h_imp_implicite.lata dom
+		pseudocolor conduc3Dimp/Conduc3D_h_imp_implicite.lata dom TEMPERATURE SOM
+		cycles  -1
+		normal3d 0.4543768 0.477396 0.733606
+		width 7cm
+	}
+
+	figure {
+		Title "Mean wall temperature"
+		Titre_figure "Explicit computation"
+		labelX "time"
+		labelY "Mean wall temperature"
+		include_description_curves 0
+		Width 7.9cm
+		nb_img_without_newline 2
+		Legend below
+		RangeX 0 200
+		RangeY 29.15 30.05
+		curve {
+			legend "Mean wall temperature"
+			file conduc3D/Conduc3D_h_imp_TMEAN.son
+			columns ($1) ($2)
+		}
+		curve {
+			legend "Analytical solution"
+			Fonction 30
+			Style lines
+		}
+	}
+
+	figure {
+		Titre_figure "Implicite computation"
+		labelX "time"
+		labelY "Mean wall temperature"
+		include_description_curves 0
+		Width 7.9cm
+		Legend below
+		RangeX 0 200
+		RangeY 29.15 30.05
+		curve {
+			legend "Mean wall temperature"
+			file conduc3Dimp/Conduc3D_h_imp_implicite_TMEAN.son
+			columns ($1) ($2)
+		}
+		curve {
+			legend "Analytical solution"
+			Fonction 30
+			Style lines
+		}
+	}
+}
+
+
+Chapter {
+	Title "Conclusion"
+	description "We see that with the implicit and explicit computations converge to the analytical solution in both 2D and 3D configurations."
+}

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -345,14 +345,4 @@ void Source_base::set_fichier(const Nom& nom)
   out_=Objet_U::nom_du_cas();
   out_+="_";
   out_+=equation().probleme().le_nom()+"_"+nom;
-}
-
-// !SC: revoir tout ca !
-DoubleTab& Source_base::calculer_derivee(DoubleTab& ch) const
-{
-  return ch;
-}
-DoubleTab& Source_base::ajouter_derivee(DoubleTab& ch) const
-{
-  return ch;
 }

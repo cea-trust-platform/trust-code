@@ -20,6 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <Faces_builder.h>
+#include <IntTrav.h>
 #include <Domaine.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
@@ -36,7 +37,8 @@
 #include <Array_tools.h>
 #include <communications.h>
 #include <array>
-#include <IntTrav.h>
+#include <vector>
+#include <map>
 
 Faces_builder::Faces_builder() :
   les_elements_ptr_(0),

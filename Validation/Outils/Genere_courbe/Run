@@ -151,12 +151,14 @@ then
      echo $nb_tasks
      nb_cmds=`ls cmds*.sh 2>/dev/null | wc -l`
      # On boucle et on execute chaque commande
+     cmd_id=0
      for cmd in cmds*.sh 
      do
+        cmd_id=$((cmd_id + 1))
         if [ "$parallel" = 2 ] 
         then
             chmod +x ./$cmd
-            nb_proc_one_case=`sed "${n}q;d" nb_procs`
+            nb_proc_one_case=`sed "${cmd_id}q;d" nb_procs`
             echo "Commnand: " $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd
             $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd &
         else

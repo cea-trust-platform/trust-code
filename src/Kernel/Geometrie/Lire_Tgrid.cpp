@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -599,11 +599,11 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                           nouveau_bord=dom.zone(0).faces_bord().add(Bord());
                           nouveau_bord->nommer((Nom)izone);
                           if (nb_som_face==3)
-                            nouveau_bord->faces().typer(triangle_3D);
+                            nouveau_bord->faces().typer(Faces::triangle_3D);
                           else if (nb_som_face==4)
-                            nouveau_bord->faces().typer(quadrangle_3D);
+                            nouveau_bord->faces().typer(Faces::quadrangle_3D);
                           else if (nb_som_face==2)
-                            nouveau_bord->faces().typer(segment_2D);
+                            nouveau_bord->faces().typer(Faces::segment_2D);
                           else
                             {
                               Cerr << "Type of boundary face not provided for nb_som_face=" << nb_som_face << finl;

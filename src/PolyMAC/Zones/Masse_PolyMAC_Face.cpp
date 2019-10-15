@@ -28,7 +28,6 @@
 #include <Symetrie.h>
 #include <Debog.h>
 #include <Equation_base.h>
-#include <Zone_PolyMAC.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Champ_Face_PolyMAC.h>

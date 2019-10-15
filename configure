@@ -256,7 +256,7 @@ echo "[-force_old_openmpi]              Download and use the OpenMPI `awk '/old_
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk '/latest_version=/ {gsub("latest_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 #echo "[-force_petsc_have_cuda]          Use the latest PETSc version (petsc-dev) and try to activate the GPU support."
-#echo "[-force_petsc_have_openmp]        Use the latest PETSc version (petsc-dev) and try to activate the OpenMP support."
+echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
 echo "[-with-med=dir]                   Force Using external MED library"
@@ -415,9 +415,9 @@ do
    then
       export TRUST_FORCE_PETSC_HAVE_CUDA=1
 
-   elif [ "${1#-force_petsc_have_openmp}" != "$1" ]
+   elif [ "${1#-openmp}" != "$1" ]
    then
-      export TRUST_FORCE_PETSC_HAVE_OPENMP=1
+      export TRUST_OPENMP=1
 
    elif [ "${1#-without-doc}" != "$1" ]
    then
@@ -635,6 +635,19 @@ then
      echo "see $TRUST_TMP/Run.log " >> NON_INSTALLED
   fi
 
+fi
+
+if [ "$TRUST_DISABLE_PETSC" != 1 ]
+then
+  TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
+  if [ "`eval bison --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "$TEST_LDD_VERSION" != 1 ]
+  then
+     # Bison from TRUST cannot be installed if glibc version is at least 2.28
+     [ -f NON_INSTALLED ] && echo "" >> NON_INSTALLED
+     echo "Petsc install will fail when installing bison provided by TRUST since your glibc version is too recent." >> NON_INSTALLED
+     echo "  => Contact your system administrator to install bison using 'sudo apt-get install bison' for example." >> NON_INSTALLED
+     exiterror=1
+  fi
 fi
 
 if [ -f $TRUST_ROOT/NON_INSTALLED ]

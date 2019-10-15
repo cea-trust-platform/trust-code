@@ -89,11 +89,23 @@
 \usepackage[T1]{fontenc}
 \usepackage{alltt}
 
+% block
+\setbeamercolor{block title}{fg=blue,bg=blue!20!bg}
+\setbeamercolor{block body}{bg=block title.bg!30!bg}
+
+% alertblock
+\setbeamercolor{block title alerted}{fg=white,bg=orange!90!black}
+\setbeamercolor{block body alerted}{bg=block title alerted.bg!10!bg}
+
+% exampleblock
+\setbeamercolor{block title example}{fg=white,bg=violet!90!bg}
+\setbeamercolor{block body example}{bg=block title example.bg!10!bg}
+
 %----------------------------------------------------------------------------------------
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST Baltik Project Tutorial V1.7.9]{TRUST Baltik Project Tutorial V1.7.9}
+\title[TRUST Baltik Project Tutorial V1.8.0beta]{TRUST Baltik Project Tutorial V1.8.0beta}
 % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
@@ -109,6 +121,33 @@ CEA Saclay \\ % Your institution for the title page
 
 \begin{document}
 
+\usebeamercolor{block title}
+\colorlet{blocktitlefgsave}{block title.fg} 
+\colorlet{blocktitlebgsave}{block title.bg}
+\usebeamercolor{normal text}
+\usebeamercolor{block body}
+\colorlet{blockbodyfgsave}{block body.fg}
+\colorlet{blockbodybgsave}{block body.bg}   
+\usebeamercolor{normal text}
+
+\usebeamercolor{block title example}
+\colorlet{exblocktitlefgsave}{block title example.fg}   
+\colorlet{exblocktitlebgsave}{block title example.bg}
+\usebeamercolor{normal text}
+\usebeamercolor{block body example}
+\colorlet{exblockbodyfgsave}{block body example.fg}
+\colorlet{exblockbodybgsave}{block body example.bg} 
+\usebeamercolor{normal text}
+
+\usebeamercolor{block title alerted}
+\colorlet{exblocktitlefgsave}{block title alerted.fg}   
+\colorlet{exblocktitlebgsave}{block title alerted.bg}
+\usebeamercolor{normal text}
+\usebeamercolor{block body alerted}
+\colorlet{exblockbodyfgsave}{block body alerted.fg}
+\colorlet{exblockbodybgsave}{block body alerted.bg} 
+\usebeamercolor{normal text}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \titlepage % Print the title page as the first slide
@@ -123,9 +162,9 @@ CEA Saclay \\ % Your institution for the title page
 \tableofcontents [hideallsubsections]
 %\begin{columns}[c] 
 %\column{.45\textwidth}
-%\tableofcontents[sections={1-3},hideallsubsections]
+%\tableofcontents[sections={1-4},hideallsubsections]
 %\column{.5\textwidth} 
-%\tableofcontents[sections={4-8},hideallsubsections]
+%\tableofcontents[sections={5-8},hideallsubsections]
 %\end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,9 +176,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -170,27 +209,160 @@ CEA Saclay \\ % Your institution for the title page
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Initialisation of TRUST environment}
+%\begin{exampleblock}{Eclipse}
+
+%\begin{itemize}
+%\item Create your TRUST project and launch a test case with \textbf{Eclipse}:\\
+%    \begin{itemize}
+%%    \item [$\circ$] Open TRUST index html page:\\
+%%    \texttt{\$ trust -index}\\
+%%    $\rightarrow$ "FTP site" \\
+%%    $\rightarrow$ "See here how to configure Eclipse with TRUST project." \\
+%    \item [$\circ$] open the Readme\_eclipse.pdf file: \\
+%%    \texttt{\$ vim|nedit|gedit|emacs \$TRUST\_ROOT/src/README\_ECLIPSE \&}\\
+%    \texttt{\$ evince \$TRUST\_ROOT/src/Readme\_eclipse.pdf \&}\\
+%    \item [$\circ$] Do the first two parts ("Download \& configure Eclipse" and "Create a platform TRUST project").\\
+%    \end{itemize}
+
+%\item Close Eclipse.\\
+%\end{itemize}
+
+%\end{exampleblock}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{{\bf{Eclipse initialization}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Initialisation of TRUST environment}
-\begin{block}{Eclipse}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Download \& configure Eclipse (I)}
 
+\begin{exampleblock}{Download Eclipse}
 \begin{itemize}
-\item Create your TRUST project and launch a test case with \textbf{Eclipse}:\\
-    \begin{itemize}
-%    \item [$\circ$] Open TRUST index html page:\\
-%    \texttt{\$ trust -index}\\
-%    $\rightarrow$ "FTP site" \\
-%    $\rightarrow$ "See here how to configure Eclipse with TRUST project." \\
-    \item [$\circ$] open the Readme\_eclipse.pdf file: \\
-%    \texttt{\$ vim|nedit|gedit|emacs \$TRUST\_ROOT/src/README\_ECLIPSE \&}\\
-    \texttt{\$ evince \$TRUST\_ROOT/src/Readme\_eclipse.pdf \&}\\
-    \item [$\circ$] Do the first two parts ("Download \& configure Eclipse" and "Create a platform TRUST project").\\
-    \end{itemize}
-
-\item Close Eclipse.\\
+\item Go to the website of the Eclipse Foundation: \url{http://www.eclipse.org/downloads/eclipse-packages/}
+\item Click on \textbf{Eclipse Neon (4.6)} on the menu \textbf{More downloads}.
+\item Select \textbf{Eclipse IDE for C/C++ Developers} $\rightarrow$ \textbf{Linux 64-bits}
+\item Download the \textbf{eclipse-cpp-neon-3-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
+\item For OS older than CentOs7, Ubuntu16.04 and Fedora22, download \textbf{Eclipse Mars} version: \textbf{eclipse-cpp-mars-2-linux-gtk-x86\_64.tar.gz}
 \end{itemize}
+\end{exampleblock}
 
+\begin{exampleblock}{Untar the downloaded Eclipse archive}
+ \texttt{\$ cd Formation\_TRUST/yourname} \\
+ \texttt{\$ tar xfz eclipse-*.tar.gz} \\
+ \texttt{\$ cd eclipse}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Download \& configure Eclipse (II)}
+
+\begin{exampleblock}{For Ubuntu16.04, Fedora22, CentOs 7 and recents OS}
+Edit the \textit{eclipse.ini} file by deleting the last 2 lines (Xms and Xmx) and adding the following lines:\\
+\textbf{Xms512m} \\
+\textbf{Xmx2048m}
+\end{exampleblock}
+
+\begin{exampleblock}{For older OS}
+Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following ones: \\
+\textbf{Xmn256m} \\
+\textbf{Xss2m}\\
+\textbf{server}\\
+\textbf{Xms512m}\\
+\textbf{Xmx2048m}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project (I)}
+
+\begin{block}{Initialize TRUST environnement}
+\texttt{\$ source /home/triou/env\_TRUST\_X.Y.Z.sh} \\
+\texttt{\$ echo \$TRUST\_ROOT/src} \\
+\texttt{\$ echo \$exec\_debug} \\
 \end{block}
+
+\begin{exampleblock}{Launch Eclipse}
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/workspace}\\
+\texttt{\$ cd Formation\_TRUST/yourname/eclipse}\\
+\texttt{\$ ./eclipse \&}
+%
+\begin{itemize}
+\item Workspace: Browse the directory \texttt{Formation\_TRUST/yourname/workspace} 
+\item Welcome : close x button
+\end{itemize}
+%
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project (II)}
+
+\begin{exampleblock}{Create the project}
+\begin{itemize}
+\item File $\rightarrow$ New  $\rightarrow$  C++ Project \\
+ $\Rightarrow$ Project name: TRUST-X.Y.Z \\
+ $\Rightarrow$ Project type: "Executable"  $\rightarrow$  "Empty Project" \\
+ $\Rightarrow$ Toolchains: "Linux GCC" \\
+ $\Rightarrow$ Finish
+\end{itemize}
+\end{exampleblock}
+
+\begin{exampleblock}{Import source files into the already created project}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click on TRUST-X-Y-Z  $\rightarrow$  "Import..." \\
+  $\Rightarrow$ General  $\rightarrow$ File System $\rightarrow$ Next \\
+  $\Rightarrow$ From directory: copy the string matching \texttt{\$TRUST\_ROOT/src/} \\
+  $\Rightarrow$ Check "Select All" \\
+  $\Rightarrow$ Into folder: TRUST-X.Y.Z \\
+  $\Rightarrow$ Finish \\
+  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer).
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project (III)}
+
+\begin{exampleblock}{Configure the project and launch a computation}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ Properties \\
+  $\Rightarrow$ Builders: uncheck "CDT Builder" $\rightarrow$ OK $\rightarrow$ OK 
+\item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..."\\
+  $\Rightarrow$ Right click on "C/C++ Application" $\rightarrow$ New 
+  \begin{itemize}
+  \item In the "Main" tab: \\
+  $\Rightarrow$ Project: TRUST-X.Y.Z \\
+  $\Rightarrow$ "C/C++ Application": copy the string matching \$exec\_debug \\
+  $\Rightarrow$ "Apply" \\
+  \item In the "Arguments" tab:\\
+  $\Rightarrow$ "Program arguments" $\rightarrow$ specify the name of your datafile \\
+  $\Rightarrow$ "Working directory" $\rightarrow$ uncheck "Use default" and select the directory with path containing the datafile \\
+  $\Rightarrow$ "Apply"
+  \end{itemize}
+  $\Rightarrow$ "Debug" 
+\end{itemize}
+\end{exampleblock}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -201,9 +373,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,9 +419,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,7 +429,7 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \frametitle{Create your git repository}
 
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 \begin{itemize}
 \item We want to create a git repository to store and manage your developpments.
 \item Initialize an empty git repository:\\
@@ -277,20 +449,20 @@ It means that they are not followed by the git repository for the moment.
 \texttt{\$ git commit -m "Initial commit"}\\
 \end{itemize}
 
-\end{block}
+\end{alertblock}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Create your git repository}
 
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 \begin{itemize}
 \item Watch your working tree status:\\
 \texttt{\$ git status}
 \item There is nothing more to add to your git repository.
 \end{itemize}
-\end{block}
+\end{alertblock}
 
 \begin{block}{Baltik commands}
 \begin{itemize}
@@ -306,7 +478,7 @@ It means that they are not followed by the git repository for the moment.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Create your git repository}
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 
 \begin{itemize}
 \item Check the status of your git repository with the "-\,-ignored" option to see the status of all files:\\
@@ -324,7 +496,7 @@ It means that they are not on the git repository.
 \item You can see information about your first commit and actual untracked changes.
 \end{itemize}
 
-\end{block}
+\end{alertblock}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -335,9 +507,9 @@ It means that they are not on the git repository.
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -406,27 +578,131 @@ to compile your own optimized or debug or profiling or coverage executable. \\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{}
-\begin{block}{Eclipse}
+%\begin{frame}
+%\frametitle{}
+%\begin{exampleblock}{Eclipse}
 
-Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTIK project):
-\begin{itemize}
-\item to create your baltik project
-\item and launch the upwind test case with Eclipse.
-\end{itemize}
+%Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTIK project):
+%\begin{itemize}
+%\item to create your baltik project
+%\item and launch the upwind test case with Eclipse.
+%\end{itemize}
 
-\end{block}
-\end{frame}
+%\end{exampleblock}
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{{\bf{Create a basic BALTIK project without dependency}}}
+%\begin{frame}
+%\tableofcontents[sections={1-5},currentsection, currentsubsection]
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a basic BALTIK project without dependency (I)}
+
+\begin{block}{Initialize baltik environnement}
+ \texttt{\$ source env\_baltik.sh } \\
+ \texttt{\$ echo \$project\_directory/src }
+\end{block}
+
+\begin{exampleblock}{Launch Eclipse}
+\texttt{\$ cd Formation\_TRUST/yourname/eclipse } \\
+\texttt{\$ ./eclipse \& }
+\end{exampleblock}
+
+\begin{exampleblock}{Create the project}
+\begin{itemize}
+\item File $\rightarrow$ New $\rightarrow$ "Makefile Project with Existing Code" \\
+  $\Rightarrow$ Project name: MY\_BALTIK \\
+  $\Rightarrow$ Existing Code Location: copy string matching \texttt{\$project\_directory/src} \\
+  $\Rightarrow$ Toolchain for Indexer Settings: "Linux GCC" \\
+  $\Rightarrow$ Finish \\
+  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer).
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a basic BALTIK project without dependency (II)}
+
+\begin{exampleblock}{Configure the BALTIK project and link it with TRUST}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click on MY\_BALTIK $\rightarrow$ Properties \\
+  $\Rightarrow$ Builders: check "CDT Builder" \\
+  $\Rightarrow$ C/C++ Build : 
+  \begin{itemize}
+  \item Builder Settings: Build directory: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../} or copy the string matching \texttt{\$project\_directory/} \\
+  \item Behavior: check "Build (Incremental build)": debug optim (instead of all) 
+  \end{itemize}
+  $\Rightarrow$ Project References: check TRUST-X.Y.Z $\rightarrow$ OK
+\end{itemize}
+\end{exampleblock}
+  
+\begin{exampleblock}{Build the BALTIK project}
+From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\rightarrow$ Rebuild \\
+  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer). \\
+  Right click MY\_BALTIK $\rightarrow$ Build Project \\
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a basic BALTIK project without dependency (III)}
+
+\begin{exampleblock}{Launch a computation}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..." \\
+  $\Rightarrow$ C/C++ Application $\rightarrow$ New 
+  \begin{itemize}
+  \item In the "Main" tab:\\
+  $\Rightarrow$ Project: MY\_BALTIK \\
+  $\Rightarrow$ C/C++ Application: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../basic} or copy the string matching \texttt{\$project\_directory/basic} \\
+  $\Rightarrow$ "Apply" 
+  \item In the "Arguments" tab:\\
+  $\Rightarrow$ Program arguments $\rightarrow$ specify the name of your datafile \\
+  $\Rightarrow$ Working directory $\rightarrow$ uncheck "Use default" and select the  directory containing the datafile \\
+  $\Rightarrow$ "Apply"
+  \end{itemize}
+  $\Rightarrow$ Debug
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{{\bf{Useful shortcuts in sources}}}
+%\begin{frame}
+%\tableofcontents[sections={1-5},currentsection, currentsubsection]
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful shortcuts in sources}
+
+\begin{exampleblock}{Shortcuts}
+\vspace{0.2cm}
+\begin{itemize} 
+\item Open a cpp file from Project Explorer tab: \\
+  Double click on TRUST-X.Y.Z $\rightarrow$ Kernel $\rightarrow$ Framework $\rightarrow$ Probleme\_base.cpp \\ \vspace{0.2cm}
+\item In the cpp file: Right click on method "initialize()" \\
+  $\Rightarrow$ F3: Opens Declaration \\
+  $\Rightarrow$ F4: Open Type Hierarchy \\
+  $\Rightarrow$ Ctrl+Alt+H: Open Call Hierarchy \\
+  $\Rightarrow$ "Alt+$\rightarrow$" and "Alt+$\leftarrow$": Move from a tab to another
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \section{{\bf{Modify the cpp sources}}}
@@ -435,9 +711,9 @@ Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTI
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -455,7 +731,7 @@ Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTI
 \end{itemize}
 \end{block}
 
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 \begin{itemize}
 \item Check the status of your repository:\\
 \texttt{\$ git status .}\\
@@ -464,7 +740,7 @@ Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTI
 \texttt{\$ git add my\_first\_class.*}\\
 \texttt{\$ git commit -m "Add my\_first\_class src"}\\
 \end{itemize}
-\end{block}
+\end{alertblock}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -486,7 +762,7 @@ Do the second part of \$TRUST\_ROOT/src/Readme\_eclipse.pdf file (Create a BALTI
 \end{itemize}
 \end{block}
 
-\begin{block}{Eclipse}
+\begin{exampleblock}{Eclipse}
 \begin{itemize}
 \item Edit the 2 files with Eclipse.
 
@@ -495,7 +771,7 @@ $\rightarrow$ "Index/Rebuild" from "my\_project" of "Project Explorer"\\
 $\rightarrow$ Click on "$\blacktriangleright$" button of "my\_project" in the "Project Explorer"
 
 \end{itemize}
-\end{block}
+\end{exampleblock}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -574,6 +850,8 @@ ERROR...
 
 \item Just after the line where \underline{the problem is discretized}, add the keywords "my\_first\_class" and "End".\\
 NB: Instead of "End", you can reduce the number of time step to only 1.\\
+
+\item Run your binary to check that this new keyword is recognized:\\
 \end{itemize}
 
 \end{block}
@@ -582,12 +860,10 @@ NB: Instead of "End", you can reduce the number of time step to only 1.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
-\begin{block}{Baltik commands}
 
-\begin{itemize}
-\item Run your binary to check that this new keyword is recognized:\\
-    \begin{itemize}
-    \item [$\circ$] With Eclipse:\\
+\begin{exampleblock}{With Eclipse:}
+%    \begin{itemize}
+%    \item [$\circ$] With Eclipse:\\
     $\rightarrow$ In the project explorer, right click on "MY\_BALTIK" and select "Debug As/Debug configurations..." \\
     $\rightarrow$ In "Main" tab, check "Disable auto build" then click on "Apply"\\
     $\rightarrow$ In "Arguments" tab, fill "Program arguments:" with "Cx"\\
@@ -595,16 +871,23 @@ NB: Instead of "End", you can reduce the number of time step to only 1.\\
     $\rightarrow$ "Apply" and "Debug"\\
     $\rightarrow$ Click on "Yes" to change the kind of view\\
     $\rightarrow$ Click on "Resume" button to run the calculation until the end\\
-    \item [$\circ$] Or in a terminal:\\
+\end{exampleblock}    
+
+\begin{block}{On a terminal:}
+%    \item [$\circ$] Or in a terminal:\\
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ exec=\$exec\_debug trust Cx}\\
-    \end{itemize}
-
-\item "Interprete\_geometrique\_base::interpreter\_()" method is called first,
+%    \end{itemize}
+\end{block}    
+    
+\begin{block}{}
+%\begin{itemize}
+%\item 
+\textbf{Nota bene:} "Interprete\_geometrique\_base::interpreter\_()" method is called first,
 which calls then the "my\_first\_class::interpreter\_()" method.
-\end{itemize}
-
+%\end{itemize}
 \end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -613,9 +896,9 @@ which calls then the "my\_first\_class::interpreter\_()" method.
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -731,33 +1014,30 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 1}
+\frametitle{Modify your cpp class: Part 1}
 
-\begin{itemize}
-\item Build/fix/re-build the test case:\\
+\begin{exampleblock}{With Eclipse:}
     \begin{itemize}
-    \item [$\circ$] With Eclipse:\\
+    \item Build/fix/re-build the test case:\\
     $\rightarrow$ "Project" and "Build project"\\
-    \item [$\circ$] Or in a terminal:\\
+    \item Run the test case:\\
+    $\rightarrow$ "Run" and "Debug"\\
+    \end{itemize}
+\end{exampleblock}
+
+\begin{block}{Or in a terminal:}
+    \begin{itemize}
+    \item Build/fix/re-build the test case:\\
     \texttt{\$ cd \$project\_directory}\\
     \texttt{\$ make debug}\\
-    \end{itemize}
-
-\item Run the test case:\\
-    \begin{itemize}
-    \item [$\circ$] With Eclipse:\\
-    $\rightarrow$ "Run" and "Debug"\\
-    \item [$\circ$] Or in a terminal:\\
+    \item Run the test case:\\
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ export exec=\$exec\_debug}\\
     \texttt{\$ trust Cx}
+    \item In this case, TRUST runs with exec\_debug.
     \end{itemize}
-
-\item In this case, TRUST runs with exec\_debug.
-\end{itemize}
-
 \end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -858,9 +1138,9 @@ from the domain, only from the problem.
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -931,35 +1211,37 @@ param.ajouter(...);  \textcolor{blue}{// XD\_ADD\_P type description}
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Adding prints}
-\begin{block}{}
 
+\begin{block}{}
 \begin{itemize}
 \item Edit the "my\_project/src/TRUST\_modif/mon\_main.cpp" file in your baltik project of Eclipse.
-
 \item Add this lines after "Process::imprimer\_ram\_totale(1);" :\\
 \textit{std::cout <\textcompwordmark{}< "Hello World to cout." <\textcompwordmark{}< std::endl;\\
 std::cerr <\textcompwordmark{}< "Hello World to cerr." <\textcompwordmark{}< std::endl;\\
 Cout <\textcompwordmark{}< "Hello World to Cout." <\textcompwordmark{}< finl;\\
 Cerr <\textcompwordmark{}< "Hello World to Cerr." <\textcompwordmark{}< finl;\\
 Process::Journal() <\textcompwordmark{}< "Hello World to Journal." <\textcompwordmark{}< finl;}\\
+\end{itemize}
+\end{block}
 
-\item Rebuild the code with Eclipse:\\
+\begin{exampleblock}{With Eclipse: Rebuild the code}
 $\rightarrow$ "Build project" from "my\_project" of "Project Explorer"\\
-or \\
+\end{exampleblock}
+
+\begin{block}{Or in a terminal: Rebuild the code}
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make debug optim}\\
-\end{itemize}
-
 \end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1019,26 +1301,29 @@ Use this output during parallel development to print plumbing infos which would 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{}
 
+\begin{block}{}
 \begin{itemize}
 \item Then complete the name of the file with the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
-
 \item Then you will create the file with the \textbf{SFichier} class and print the sum into this file.
+\end{itemize}
+\end{block}
 
-\item Run the test case:\\
-    \begin{itemize}
-    \item [$\circ$] With Eclipse:\\
-    $\rightarrow$ "Run" and "Debug"\\
-    \item [$\circ$] Or in a terminal:\\
-    \texttt{\$ cd \$project\_directory/build/Cx/}\\
-    \texttt{\$ exec=\$exec\_debug trust Cx}
-    \end{itemize}
+\begin{exampleblock}{With Eclipse: Run the test case}
+$\rightarrow$ "Run" and "Debug"\\
+\end{exampleblock}
 
+\begin{block}{Or in a terminal: Run the test case}
+\texttt{\$ cd \$project\_directory/build/Cx/}\\
+\texttt{\$ exec=\$exec\_debug trust Cx}
+\end{block}
+
+\begin{block}{}
+\begin{itemize}
 \item Then open the "Cx\_result.txt" file.
 \end{itemize}
-
 \end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1048,9 +1333,9 @@ Use this output during parallel development to print plumbing infos which would 
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1197,9 +1482,9 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1234,13 +1519,13 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{frame}
 \frametitle{New share/Validation/Rapports\_automatiques}
 
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 \begin{itemize}
 \item Add it to your git repository:\\
 \texttt{\$ git add upwind}\\
 \texttt{\$ git commit -m "New prm"}
 \end{itemize}
-\end{block}
+\end{alertblock}
 
 \begin{block}{Baltik commands}
 \begin{itemize}
@@ -1265,9 +1550,9 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1293,14 +1578,14 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{frame}
 \frametitle{New tests/Reference/Validation}
 
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 \begin{itemize}
 \item Lets check the git status before solving this problem:\\
 \texttt{\$ git status -uno}\\
 \item A new test case based on your PRM file has been created in the directory:\\
 \$project\_directory/tests/Reference/Validation/upwind\_jdd1
 \end{itemize}
-\end{block}
+\end{alertblock}
 
 \begin{block}{Baltik commands}
 \begin{itemize}
@@ -1350,7 +1635,7 @@ ERROR...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{New tests/Reference/Validation}
-\begin{block}{Git commands}
+\begin{alertblock}{Git commands}
 
 \begin{itemize}
 \item Add this non-regression test in configuration:\\
@@ -1361,7 +1646,7 @@ ERROR...
 \texttt{\$ git log}\\
 \end{itemize}
 
-\end{block}
+\end{alertblock}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1394,9 +1679,9 @@ ERROR...
 %%%%\begin{frame}
 %%%%\begin{columns}[c] 
 %%%%\column{.45\textwidth}
-%%%%\tableofcontents[sections={1-3},currentsection, currentsubsection]
+%%%%\tableofcontents[sections={1-4},currentsection, currentsubsection]
 %%%%\column{.5\textwidth} 
-%%%%\tableofcontents[sections={4-8},currentsection, currentsubsection]
+%%%%\tableofcontents[sections={5-8},currentsection, currentsubsection]
 %%%%\end{columns}
 %%%%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1439,9 +1724,9 @@ ERROR...
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1480,9 +1765,9 @@ ERROR...
 %\begin{frame}
 %\begin{columns}[c] 
 %\column{.45\textwidth}
-%\tableofcontents[sections={1-3},currentsection, currentsubsection]
+%\tableofcontents[sections={1-4},currentsection, currentsubsection]
 %\column{.5\textwidth} 
-%\tableofcontents[sections={4-8},currentsection, currentsubsection]
+%\tableofcontents[sections={5-8},currentsection, currentsubsection]
 %\end{columns}
 %\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1586,43 +1871,36 @@ ERROR...
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{GDB exercise}
-\begin{block}{}
 
-\begin{itemize}
-\item Run a test case with GDB:\\
-    \begin{itemize}
-    \item [$\circ$] With Eclipse:\\
+\begin{exampleblock}{With Eclipse:}
+Run a test case with GDB:\\
     $\rightarrow$ "Debug As" and "Debug configurations..." from "my\_project"\\
     $\rightarrow$ in "Arguments", "Program arguments:" upwind\\
     $\rightarrow$ "Working directory:"  Formation\_TRUST/yourname/upwind/\\
     $\rightarrow$ "Apply" and "Debug"\\
-    \item [$\circ$] Or in a terminal:\\
+For more information about GDB commands, refer to the help menu.\\
+\end{exampleblock}
+
+\begin{block}{Or in a terminal:} 
+\begin{itemize}
+\item Run a test case with GDB:\\   
     \texttt{\$ cd Formation\_TRUST/yourname/upwind/}\\
     \texttt{\$ exec=\$exec\_debug trust -gdb upwind}
-    \end{itemize}
-
 \item You are now in GDB.
-
 \item Add a breakpoint and stop into the SSOR preconditionner:\\
 \texttt{(gdb) break SSOR::ssor}
-
-\item Run the test case:\\
-\texttt{(gdb) run upwind}
-
-\item Have a look at the stack\\
-\texttt{(gdb) where}
 \end{itemize}
-
 \end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1631,6 +1909,11 @@ ERROR...
 \begin{block}{}
 
 \begin{itemize}
+\item Run the test case:\\
+\texttt{(gdb) run upwind}
+\item Have a look at the stack\\
+\texttt{(gdb) where}
+
 \item Go to the next instruction:\\
 \texttt{(gdb) n}
 
@@ -1645,11 +1928,6 @@ ERROR...
 \texttt{(gdb) print tab1.size\_array() \textcolor{blue}{\# Array size}}\\
 \texttt{(gdb) up}\\
 \texttt{(gdb) list 100}
-
-\item Print lines after the 100th line:\\
-\texttt{(gdb) print matrice}\\
-\texttt{(gdb) print matrice.que\_suis\_je() \textcolor{blue}{\# Kind of matrix ?}}\\
-\texttt{(gdb) print matrice.que\_suis\_je().nom\_ \textcolor{blue}{\# Kind of matrix ?}}
 \end{itemize}
 
 \end{block}
@@ -1660,9 +1938,14 @@ ERROR...
 \frametitle{GDB exercise}
 \begin{block}{}
 
-\hspace{0.6cm} \texttt{(gdb) up 5 \textcolor{blue}{\# Move up 5 levels}}\\
-\hspace{0.6cm} \texttt{(gdb) list 900}
 \begin{itemize}
+\item Print lines after the 100th line:\\
+\texttt{(gdb) print matrice}\\
+\texttt{(gdb) print matrice.que\_suis\_je() \textcolor{blue}{\# Kind of matrix ?}}\\
+\texttt{(gdb) print matrice.que\_suis\_je().nom\_ \textcolor{blue}{\# Kind of matrix ?}}
+\texttt{(gdb) up 5 \textcolor{blue}{\# Move up 5 levels}}\\
+\texttt{(gdb) list 900}
+
 \item Print others variables:\\
 \texttt{(gdb) \textcolor{blue}{\# Pressure field}}\\
 \texttt{(gdb) print la\_pression.que\_suis\_je().nom\_}\\
@@ -1672,9 +1955,6 @@ ERROR...
 \texttt{(gdb) print la\_pression.valeurs().nb\_dim()}\\
 \texttt{(gdb) \textcolor{blue}{\# Dump the field values}}\\
 \texttt{(gdb) dumptab la\_pression.valeurs()}
-\end{itemize}
-\begin{itemize}
-\item With Eclipse, for more information about GDB commands, refer to the help menu.\\
 \end{itemize}
 
 \end{block}
@@ -1686,9 +1966,9 @@ ERROR...
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1755,9 +2035,9 @@ On the other hand, in this case, there are errors.\\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

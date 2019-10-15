@@ -1,0 +1,36 @@
+Parameters {
+	Title "Test de champ_tabule_temps "
+	Author "fauchet"
+	description "On regarde si le champs de comporte correctement"
+	TestCase .  champ_tabule_temps
+	TestCase .  champ_tabule_med
+}
+Chapter {
+	Title "Champ_tabule"
+	description "On regarde directement le champ via la puissance_volumique"
+	description attention le champ de puissance lu est genere via champ_tabule
+
+	# definition figure 0
+	Figure {
+		labelX time
+		labelY V
+		rangey -2 3
+		Include_Description_Curves 0
+		width 12cm
+		Curve {
+			legend theorie
+			file Puissance.dat
+			style linespoints
+		}
+		Curve {
+			legend champ_tabule_temps
+			file champ_tabule_temps_P.son
+			style lines
+		}
+		Curve {
+			legend champ_tabule_med
+			file champ_tabule_med_P.son
+			style lines
+		}
+	}
+}

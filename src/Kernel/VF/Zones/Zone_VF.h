@@ -100,6 +100,7 @@ public :
 
   inline virtual const IntVect& orientation() const;
   inline virtual int orientation(int ) const;
+  inline virtual int orientation_si_definie(int) const;
 
   DoubleTab normalized_boundaries_outward_vector(int global_face_number, double scale_factor) const;
   inline DoubleTab& xv();
@@ -623,6 +624,16 @@ inline const IntVect& Zone_VF::orientation() const
   exit();
   throw;
   return orientation();
+}
+
+inline int Zone_VF::orientation_si_definie(int num_face) const
+{
+  for (int dir=0; dir<dimension; dir++)
+    {
+      if (est_egal(dabs(face_normales(num_face, dir)), face_surfaces(num_face)))
+        return dir;
+    }
+  return -1;
 }
 
 inline int Zone_VF::orientation(int num_face) const

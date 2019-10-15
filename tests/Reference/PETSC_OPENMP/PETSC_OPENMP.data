@@ -60,7 +60,7 @@ Read pb
 {
 	Navier_Stokes_standard
 	{
-		solveur_pression Petsc GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr }
+		solveur_pression Petsc Cholesky { impr }
 		convection { muscl }
 		diffusion { }
 		initial_conditions {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,5 +207,5 @@ void Champ_front_var_instationnaire::Gpoint(double t1, double t2)
     }
   else
     Gpoint_=0;
-  Gpoint_.echange_espace_virtuel();
+  //Gpoint_.echange_espace_virtuel(); PL inutile
 }

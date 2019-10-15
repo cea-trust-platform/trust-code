@@ -933,7 +933,8 @@ echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
 echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chemin vers python2.6
-echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
+# Ligne commenté à cause des warnings gdb 
+#echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
 
 ####################
 # Compilateurs C/C++
@@ -1046,12 +1047,21 @@ m="# Path to a browser";e="`cherche_file TRUST_WEBBROWSER google-chrome firefox 
 ###############
 TRUST_BLAS_LAPACK=""
 # Try to improve detection of MKL (Intel):
+[ "$MKLROOT" = "" ] && MKLROOT=$MKL_ROOTDIR # Sur sagittarius
 [ "$MKLROOT" = "" ] && MKLROOT=`type -p icpc 2>/dev/null | awk -F/bin '{print $1}'`
 if [ "$MKLROOT" != "" ]
 then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
+elif [ "`ls /usr/lib64/libopenblas.so 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
+then
+   # Try threaded BLAS (in fact OpenBlas)
+   TRUST_BLAS_LAPACK=/usr/lib64
+elif [ "`ls $TRUST_ROOT/exec/python/lib/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
+then
+   # Try threaded BLAS (in fact OpenBlas) from Miniconda (attention marche pas sur Fedora30...)
+   TRUST_BLAS_LAPACK="\$TRUST_ROOT/exec/python/lib"
 elif [ "`ls /usr/lib64/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ]
 then
    # Try Blas under /usr/lib64
@@ -1702,7 +1712,8 @@ case $TRUST_ARCH_CC in
    # 26/07/17 : pour portabilite sur Fedora26, passage de v7.1.0 a v7.1.1 sur test GNU
    # 28/11/17 : passage de v7.1.0 a v7.2.0 sur test GNU
    # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"8.2.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+   # 19/07/19 : passage a 9.0.1 pour Fedora 30
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<="9.0.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
@@ -2044,14 +2055,14 @@ fi
 ##########
 # OpenMP #
 ##########
-if [ "$TRUST_FORCE_PETSC_HAVE_OPENMP" = 1 ]
+if [ "$TRUST_OPENMP" = 1 ]
 then
    if [ "`basename $TRUST_CC_BASE`" = icpc ]
    then
-      openmp=-openmp # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
-      openmp=-fopenmp
+      openmp="-openmp" # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
+      openmp="-fopenmp -mkl=parallel" # Ajout de -mkl=parallel pour etre sur de linker avec Mkl BLAS parallele et non sequential (Vu sur sagittarius)
    else
-      openmp=-fopenmp
+      openmp="-fopenmp"
    fi
    CppFlags=$CppFlags" "$openmp
    SYSLIBS=$SYSLIBS" "$openmp
@@ -2066,7 +2077,7 @@ fi
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    make_ $TRUST_ROOT/Outils/hwloc hwloc $TRUST_ROOT/exec/hwloc.log
-   echo "ADD_PATH $TRUST_ROOT/exec/hwloc/bin" >> $env
+   echo "ADD_PATH \$TRUST_ROOT/exec/hwloc/bin" >> $env
 fi
 
 ###################
@@ -2076,6 +2087,12 @@ fi
 #./check_stream
 #cd - 1>/dev/null 2>&1
 m="# PETSc will use OpenMP ?";e="PETSC_HAVE_OPENMP=\"$PETSC_HAVE_OPENMP\" && export PETSC_HAVE_OPENMP";ecrit $m"|"$e"|"$env
+# Si support OpenMP, alors on fixe OMP_NUM_THREADS=1 par defaut (no black box) car performances catastrophiques si l'utilisateur mixe MPI et OpenMP sans savoir ce qu'il fait...
+# L'utilisateur devra faire: OMP_NUM_THREADS=n $exec jdd ou utiliser le script trust qui permettra de specifier le nombre de threads, ex: trust -n 2 -m 4 jdd (2 MPI et 4 threads par task MPI)
+if [ "$PETSC_HAVE_OPENMP" = 1 ]
+then
+   m="# Default, no multithreading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$env
+fi
 
 #################################################################
 # Creation des cas tests ou non a partir des fiches de validation

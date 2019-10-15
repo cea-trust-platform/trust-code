@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -425,7 +425,7 @@ void Extruder::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, int ol
         }
     }
 
-  les_faces_bord.typer(triangle_3D);
+  les_faces_bord.typer(Faces::triangle_3D);
   les_faces_bord.les_sommets().ref(les_sommets);
   les_faces_bord.voisins().resize(4*size_2D*NZ, 2);
   les_faces_bord.voisins()=-1;
@@ -462,7 +462,7 @@ void Extruder::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int ol
   Bord& devant = zone.faces_bord().add(Bord());
   devant.nommer("devant");
   Faces& les_faces_dvt=devant.faces();
-  les_faces_dvt.typer(triangle_3D);
+  les_faces_dvt.typer(Faces::triangle_3D);
 
   IntTab som_dvt(oldsz, 3);
   les_faces_dvt.voisins().resize(oldsz, 2);
@@ -471,7 +471,7 @@ void Extruder::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int ol
   Bord& derriere = zone.faces_bord().add(Bord());
   derriere.nommer("derriere");
   Faces& les_faces_der=derriere.faces();
-  les_faces_der.typer(triangle_3D);
+  les_faces_der.typer(Faces::triangle_3D);
 
   IntTab som_der(oldsz, 3);
   les_faces_der.voisins().resize(oldsz, 2);
@@ -631,7 +631,7 @@ void Extruder::traiter_faces_dvt_hexa(Faces& les_faces_bord, int oldnbsom)
         }
     }
 
-  les_faces_bord.typer(quadrangle_3D);
+  les_faces_bord.typer(Faces::quadrangle_3D);
   les_faces_bord.les_sommets().ref(les_sommets);
   les_faces_bord.voisins().resize(size_2D*NZ, 2);
   les_faces_bord.voisins()=-1;
@@ -665,7 +665,7 @@ void Extruder::extruder_dvt_hexa(Domaine& dom, Faces& les_faces, int oldnbsom, i
   Bord& devant = zone.faces_bord().add(Bord());
   devant.nommer("devant");
   Faces& les_faces_dvt=devant.faces();
-  les_faces_dvt.typer(quadrangle_3D);
+  les_faces_dvt.typer(Faces::quadrangle_3D);
 
   IntTab som_dvt(oldsz, 4);
   les_faces_dvt.voisins().resize(oldsz, 2);
@@ -674,7 +674,7 @@ void Extruder::extruder_dvt_hexa(Domaine& dom, Faces& les_faces, int oldnbsom, i
   Bord& derriere = zone.faces_bord().add(Bord());
   derriere.nommer("derriere");
   Faces& les_faces_der=derriere.faces();
-  les_faces_der.typer(quadrangle_3D);
+  les_faces_der.typer(Faces::quadrangle_3D);
 
   IntTab som_der(oldsz, 4);
   les_faces_der.voisins().resize(oldsz, 2);

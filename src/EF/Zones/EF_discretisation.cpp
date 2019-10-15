@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@
 #include <EF_discretisation.h>
 #include <Zone_EF.h>
 #include <Champ_Fonc_Tabule.h>
-//#include <Ch_Fonc_P1_EF.h>
 #include <Champ_Fonc_P0_EF.h>
 
 #include <Champ_Fonc_Tabule_P0_EF.h>
@@ -35,7 +34,6 @@
 #include <Point_EF.h>
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
-//#include <Fluide_Quasi_Compressible.h>
 #include <Champ_Uniforme.h>
 #include <DescStructure.h>
 #include <Champ_Inc.h>
@@ -675,7 +673,7 @@ Nom  EF_discretisation::get_name_of_type_for(const Nom& class_operateur, const N
   if (class_operateur=="Source")
     {
       type=type_operateur;
-      if (eqn.que_suis_je()=="Conduction_Milieu_Variable")
+      if (eqn.que_suis_je()=="Conduction_Milieu_Variable" || eqn.que_suis_je().debute_par("Conduction_Combustible"))
         type+="_QC";
       type+="_EF";
       return type;

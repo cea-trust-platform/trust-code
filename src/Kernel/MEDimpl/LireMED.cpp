@@ -842,7 +842,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
           face.typer(type_face);
           int nface=nm1;
           familles.resize_array(nface);
-          if (face.type_face()!=polygone_3D)
+          if (face.type_face()!=Faces::polygone_3D)
             {
 
               int nbsom=face.nb_som_faces();
@@ -2038,7 +2038,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   for (int fr=0; fr<nbfr; fr++)
     {
       zone.frontiere(fr).faces().associer_zone(zone);
-      if ( zone.frontiere(fr).faces().type_face()!=vide_0D)
+      if ( zone.frontiere(fr).faces().type_face()!=Faces::vide_0D)
         zone.frontiere(fr).faces().reordonner();
     }
   //  GF au moins en polyedre il faut reordonner

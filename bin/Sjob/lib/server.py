@@ -43,7 +43,7 @@ def main1():
     ok=1
     while ok:
         conn, addr = s.accept()
-        data = conn.recv(1024)
+        data = conn.recv(job_manager.MAX_SEND_RCV_SIZE)
         zeLock.acquire()
         ok = manager.handle(conn,data.decode("UTF-8"))
         zeLock.release()

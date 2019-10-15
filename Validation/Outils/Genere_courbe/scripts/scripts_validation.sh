@@ -68,7 +68,7 @@ verif_archives()
         Rapports_auto_root=$TRUST_ROOT
         export Rapports_auto_root
     else
-        echo "Use of $Rapports_auto_root directory for validation insteed of \$TRUST_ROOT"
+        echo "Using $Rapports_auto_root directory for validation instead of \$TRUST_ROOT"
     fi
     DIR=`dirname -- $0`
     DIR=`(cd $DIR;pwd)`
@@ -390,16 +390,16 @@ Generate_makefile_validation()
 {
     deps="\$(exec)"
     [ "$1" = "-without_deps_exe" ] && deps="" && shift
-    LANCE=$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/Lance_gen_fiche
+    [ "$1" = "-parallel_sjob" ] && parallel="1" && shift
+    SCRIPT_ROOT=$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts
+    LANCE=$SCRIPT_ROOT/Lance_gen_fiche
     source $LANCE
-    [ "$1" = "-parallel_sjob" ] && LANCE="$TRUST_ROOT/bin/Sjob/Salloc $LANCE" && shift
     if [ "$1" = "" ]     # Time file provided
     then
       prm=`get_list_prm`
     else
       prm=`get_list_prm_from_Times $1`
     fi
-    echo "all:\t `get_list_prm`" > makefile
 
     res=`for cas in $prm; do basename $cas; done`
     resb=""
@@ -409,25 +409,45 @@ Generate_makefile_validation()
       res2=$res2" "archives/$cas.pdf
       resb=$resb" "$cas
     done
-    echo $ECHO_OPTS "all_tgz: $resb" >makefile
 
+    echo $ECHO_OPTS "all_tgz: $resb" >makefile
     echo $ECHO_OPTS "all:\t $res2" >> makefile
+
+    function get_lance_cmd()
+    {
+        p=$1
+        if [ "$parallel" = "1" ]; then
+            full_file=`find $p/src -name "*.prm"`
+            max_nb_proc=1
+            if [ -f "$full_file" ]; then
+               max_nb_proc=`python $SCRIPT_ROOT/get_nb_procs.py $full_file | sort -n | tail -1`
+               # A PRM might have no test case at all:
+               if [ "x$max_nb_proc" = "x" ]; then max_nb_proc=1; fi
+            fi
+            lance="$TRUST_ROOT/bin/Sjob/Salloc -n $max_nb_proc $LANCE"
+            echo $lance
+        else
+            echo $LANCE
+        fi
+    }
 
     for p in $prm
     do
+      lance=`get_lance_cmd $p`
       cas=$(basename $p)
       pdf="archives/$(basename $p).pdf"
       echo $ECHO_OPTS "BUILD/deps_$cas: $deps \$(shell find $p/src -newer $pdf 2>/dev/null)" 
       echo $ECHO_OPTS "\t @mkdir -p BUILD;touch BUILD/deps_$cas"
       echo "${pdf}: BUILD/deps_$cas"
-      echo $ECHO_OPTS "\t@$LANCE \$(option_fast) -pdf_only  $p"
+      echo $ECHO_OPTS "\t@$lance \$(option_fast) -pdf_only  $p"
     done >> makefile
 
     for p in $prm
     do
+      lance=`get_lance_cmd $p`
       cas=$(basename $p)
       echo $cas: archives/$cas.tgz
       echo archives/$cas.tgz: BUILD/deps_$cas
-      echo $ECHO_OPTS "\t@$LANCE \$(option_fast) $p"
+      echo $ECHO_OPTS "\t@$lance \$(option_fast) $p"
     done >> makefile
 }

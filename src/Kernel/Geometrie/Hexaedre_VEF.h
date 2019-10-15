@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -422,7 +422,7 @@ inline int Hexaedre_VEF::est_structure() const
 //    Acces:
 // Retour: Type_Face
 //    Signification: un type de face
-//    Contraintes: toujours egal a triangle_3D (si i=0)
+//    Contraintes: toujours egal a Faces::triangle_3D (si i=0)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -434,7 +434,7 @@ inline Type_Face Hexaedre_VEF::type_face(int i) const
       Cerr << "A VEF hexahedron (Hexaedre_VEF) has not " << i << " types of face" << finl;
       exit();
     }
-  return quadrangle_3D;
+  return Faces::quadrangle_3D;
 }
 
 #endif

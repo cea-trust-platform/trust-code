@@ -1,0 +1,12 @@
+if [ "$1" = "champ_tabule_med" ] || [ $(basename `pwd`) = "Champs_Tabule_jdd2" ]
+then
+if [ ! -f Puissance.med ]
+then
+if [ ! -f  champ_tabule_temps.lata ]
+then
+trust champ_tabule_temps
+fi
+trust extrait
+mv Puissance_0000.med Puissance.med
+fi
+fi

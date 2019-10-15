@@ -175,6 +175,17 @@ liste()
       if [ $nbdif != 0 ]
       then
          echo "Warning: $nbdif test case(s) not in configuration management => Commit your test case(s) on git!"
+	 tmp1=`mktemp_`
+	 for file in $liste
+	 do
+	    echo $file >> $tmp1
+	 done
+	 tmp2=`mktemp_`
+	 for file in $testslist
+	 do
+	    echo $file >> $tmp2
+	 done
+	 diff $tmp1 $tmp2
 	 exit -1
       fi
    else

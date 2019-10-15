@@ -30,9 +30,12 @@
 #include <Domaine.h>
 #include <communications.h>
 
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
 
 using namespace MEDCoupling;
+#endif
 
 Implemente_instanciable_sans_constructeur(Raccord_distant_homogene,"Raccord_distant_homogene",Raccord_distant);
 
@@ -315,6 +318,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   for (int p = 0; p < parts; p++)
     racc_vois[p].set_smart_resize(1);
 
+#ifdef MEDCOUPLING_
   // On traite les informations, chaque proc connait tous les XV
   // Si le proc porte un morceau du raccord_distant
   int prem_face1 = opposed_boundary.num_premiere_face();
@@ -326,7 +330,8 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
 
       ArrOfInt& Recep=raccord_distant.Tab_Recep();
       Recep.resize_array(nb_face1);
-      double tolerance = 1e-8; //not very tolerant, are we?
+      //double tolerance = 1e-8; //not very tolerant, are we?
+      double tolerance = Objet_U::precision_geom * 100 ; //default value 1e-8 not very tolerant, are we?
 
       //DataArrayDoubles des xv locaux et de tous les remote_xv (a la suite)
       std::vector<MCAuto<DataArrayDouble> > vxv(parts);
@@ -379,6 +384,10 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
           racc_vois[proc].append_array(ind_face2);
         }
     }
+#else
+  Cerr<<"Raccord_distant_homogene needs TRUST compiled with MEDCoupling."<<finl;
+  exit();
+#endif
   VECT(ArrOfInt) facteurs(Process::nproc());
   envoyer_all_to_all(racc_vois, facteurs);
 

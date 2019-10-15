@@ -37,6 +37,8 @@
 #include <SolveurSys.h>
 #include <DoubleTrav.h>
 #include <IntTrav.h>
+#include <Lapack.h>
+#include <array>
 
 #include <Periodique.h>
 #include <Neumann_sortie_libre.h>
@@ -46,8 +48,7 @@
 #include <Echange_global_impose.h>
 #include <Champ_front_var_instationnaire.h>
 #include <vector>
-#include <array>
-#include <Lapack.h>
+#include <map>
 
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"

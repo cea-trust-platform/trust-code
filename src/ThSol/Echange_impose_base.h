@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,9 +62,9 @@ public:
   double h_imp(int num,int k) const;
   virtual double T_ext(int num) const;
   virtual double T_ext(int num,int k) const;
-  void mettre_a_jour(double );
-  int initialiser(double temps);
-  int a_mettre_a_jour_ss_pas_dt()
+  virtual void mettre_a_jour(double );
+  virtual int initialiser(double temps);
+  virtual int a_mettre_a_jour_ss_pas_dt()
   {
     return 1;
   };
@@ -77,7 +77,7 @@ public:
   virtual void changer_temps_futur(double temps,int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
-  void associer_fr_dis_base(const Frontiere_dis_base& ) ;
+  virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
 
   inline Champ_front& T_ext();
   inline const Champ_front& T_ext() const;
@@ -86,8 +86,8 @@ public:
 
   inline Echange_impose_base();
   virtual int compatible_avec_eqn(const Equation_base&) const;
-  int compatible_avec_discr(const Discretisation_base& ) const;
-  void completer();
+  virtual int compatible_avec_discr(const Discretisation_base& ) const;
+  virtual void completer();
 protected :
 
   Champ_front h_imp_;

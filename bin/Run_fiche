@@ -182,7 +182,7 @@ then
    [ "$save" = 1 ] && echo "-save not implemented yet" && exit -1
    [ "$binary" != "" ] && export exec=$binary
    # Lancement en local de la commande creant la fiche avec les options
-   export USE_MPIRUN=1 # On utilise les queues de production desormais
+   [ "$prod" = "" ] && export prod=1 # On utilise les queues de production desormais par defaut si pas specifie
    # Recherche de la fiche prm:
    prm=`ls src/*.prm 2>/dev/null`
    if [ "`echo $prm | wc -w`" != 1 ]

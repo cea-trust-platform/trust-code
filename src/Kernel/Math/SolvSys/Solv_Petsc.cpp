@@ -21,6 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Solv_Petsc.h>
+#include <tuple>
+#ifdef __PETSCKSP_H
+#include <petscis.h>
+#include <petscdmshell.h>
+#endif
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
 #include <Matrice_Bloc_Sym.h>
@@ -36,12 +41,9 @@
 #include <sys/stat.h>
 #include <MD_Vector_composite.h>
 #include <vector>
-#include <tuple>
 #include <map>
-#ifdef __PETSCKSP_H
-#include <petscis.h>
-#include <petscdmshell.h>
-#endif
+
+
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 Implemente_instanciable_sans_constructeur(Solv_Petsc_GPU,"Solv_Petsc_GPU",Solv_Petsc);
@@ -1583,11 +1585,6 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
 
   // Dans le cas de CUDA, seul le format AIJ est supporte pour le moment:
   if (cuda_==1) mataij_=1;
-
-#ifdef PETSC_HAVE_OPENMP
-  // Dans le cas d'OpenMP, seul le format aij est multithreade:
-  mataij_=1;
-#endif
 
   // Dans le cas de save_matrix_ en parallele
   // Sinon, cela bloque avec sbaij:

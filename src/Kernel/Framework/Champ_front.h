@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,7 @@ class Champ_front : public DERIV(Champ_front_base), public Champ_Proto
 public:
 
 //  Champ_front(const Champ_front_base& x);
+  Champ_front(const Champ_front&) = default;
   inline Champ_front& operator=(const Champ_front_base& ch_base) ;
   inline Champ_front& operator=(const Champ_front& ch_base) ;
   inline void nommer(const Nom& name) ;

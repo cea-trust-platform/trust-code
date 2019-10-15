@@ -51,9 +51,8 @@ cb_config_list *:1" > ROMIO_HINTS.env
    #
    # Load modules
    # intel 15.6.233 16.4.258 17.0
-   intel="intel/17.0"
-   # intelmpi 2017.0.098 5.1.3.258
-   module="$intel intelmpi/2017.0.098" # license is not available now
+   intel="intel/18.1"
+   module="$intel intelmpi/2018.1.163"
    # openmpi 2.0.0 2.0.1
    #module="$intel openmpi/intel/2.0.1" # error mpif-sizeof.h
    #module="openmpi/gnu/2.0.1"

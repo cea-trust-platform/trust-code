@@ -64,6 +64,7 @@
  Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz.h
  Champ_Fonc_MED Champ_Fonc_MED Champ_Fonc_MED.h
  Champ_Fonc_MEDfile Champ_Fonc_MEDfile Champ_Fonc_MED.h
+ Champ_Fonc_MED_Tabule Champ_Fonc_MED_Tabule Champ_Fonc_MED_Tabule.h
  Champ_Fonc_Morceaux Champ_Fonc_Morceaux Champ_Fonc_Morceaux.h
  Champ_Fonc_P0_base Champ_Fonc_P0_base Champ_Fonc_P0_base.h
  Champ_Fonc_P0_EF Champ_Fonc_P0_EF Champ_Fonc_P0_EF.h
@@ -165,6 +166,7 @@
  Champ_som_lu Champ_som_lu Champ_som_lu.h
  Champ_som_lu_VDF Champ_som_lu_VDF Champ_som_lu_VDF.h
  Champ_som_lu_VEF Champ_som_lu_VEF Champ_som_lu_VEF.h
+ Champ_Tabule_Morceaux Champ_Tabule_Morceaux Champ_Tabule_Morceaux.h
  Champ_Tabule_Temps Champ_Tabule_Temps Champ_Tabule_Temps.h
  Champ_Uniforme Champ_Uniforme Champ_Uniforme.h
  Champ_Uniforme_inst Champ_Uniforme_inst Champ_Uniforme_inst.h

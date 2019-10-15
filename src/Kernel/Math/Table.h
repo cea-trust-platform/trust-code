@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,8 @@ public :
   Entree& lire_fxyzt(Entree& is,const int& dim);
   inline const int& isfonction() const;
   Table(const Table&);
+  Table& operator=(const Table& t) = default; // exige par gcc 9 car sinon error: implicitly-declared 'Table& Table::operator=(const Table&)' is deprecated [-Werror=deprecated-copy]
+
 private:
 
   DoubleTab les_valeurs;

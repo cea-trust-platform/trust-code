@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -151,7 +151,7 @@ void Champ_front_calc::completer()
       const Zone_dis_base& zone_dis_locale = frontiere_dis().zone_dis();
       const Frontiere& frontiere_opposee = front_dis().frontiere();
       const Frontiere& frontiere_locale = frontiere_dis().frontiere();
-      if (!sub_type(Raccord_distant_homogene, frontiere_opposee))
+      if (distant_ && !sub_type(Raccord_distant_homogene, frontiere_opposee))
         {
           const Nom& nom_domaine_oppose = zone_dis_opposee.zone().domaine().le_nom();
           Cerr << "Error, the boundary " << frontiere_opposee.le_nom() << " should be a Raccord." << finl;
@@ -159,9 +159,9 @@ void Champ_front_calc::completer()
           Cerr << "Modif_bord_to_raccord " << nom_domaine_oppose << " " << frontiere_opposee.le_nom() << finl;
           exit();
         }
-      Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
       if (distant_==1)
         {
+          Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
           if (!raccord_distant.est_initialise())
             raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
         }

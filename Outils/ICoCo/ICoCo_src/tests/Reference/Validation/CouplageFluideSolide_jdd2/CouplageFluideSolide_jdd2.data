@@ -1,0 +1,6 @@
+Nom ok
+
+Read_file ok is_ok
+ecrire ok
+system "cp docond_VEF_fluide_2.lml CouplageFluideSolide_jdd2.lml"
+

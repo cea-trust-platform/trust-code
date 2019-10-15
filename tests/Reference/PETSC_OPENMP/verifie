@@ -3,16 +3,15 @@ tmp=`pwd`
 initial_datafile=`basename $tmp .data`
 if [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f PAR_$initial_datafile.TU ]
 then
-   threads=2
+   threads=1
    datafile=$initial_datafile"_"$threads
    cp -f $initial_datafile.data $datafile.data
-   trust $datafile -threadcomm_type openmp -threadcomm_nthreads $threads 1>$datafile.out 2>$datafile.err || exit -1
+   OMP_NUM_THREADS=1 trust $datafile 1>$datafile.out 2>$datafile.err || exit -1
    compare_lata $initial_datafile.lml $datafile.lml || exit -1
    echo "
 Compare KSPSolve performance for:
 1) MPI 1 task  			$initial_datafile data file
 2) MPI 1 task and $threads threads 	$datafile data file
-3) MPI 2 tasks 			PAR_$initial_datafile data file
-Time for 3) should be less than 1) but higher than 2) cause SSOR is NOT multithreaded. Try multithreaded preconditionners..."
+3) MPI 2 tasks 			PAR_$initial_datafile data file"
    grep "KSPSolve " *_petsc.TU
 fi

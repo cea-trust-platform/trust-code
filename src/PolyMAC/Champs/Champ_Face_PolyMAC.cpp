@@ -29,8 +29,6 @@
 #include <Zone_Cl_PolyMAC.h>
 #include <IntLists.h>
 #include <DoubleLists.h>
-#include <cmath>
-#include <array>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
@@ -42,6 +40,8 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
+#include <array>
+#include <cmath>
 
 Implemente_instanciable(Champ_Face_PolyMAC,"Champ_Face_PolyMAC",Champ_Inc_base) ;
 

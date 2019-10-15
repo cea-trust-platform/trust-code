@@ -133,7 +133,7 @@ package=${package%.tar.gz}
 ROOT=`dirname $PETSC_ROOT`
 ROOT=`pwd`
 
-###################################
+###################################DefaultUserIdentity
 # Correction eventuelle des sources
 ###################################
 cd $ROOT/$package
@@ -194,21 +194,18 @@ else
 fi
 
 ####################
-# Thread support ? #
+# OpenMP support ? #
 ####################
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
-   #USE_OPENMP=1
-   #if [ $USE_OPENMP = 0 ]
-   #then
-   #   with_thread="--with-threadcomm --with-pthreadclasses"
-   #else
-   #   with_thread="--with-threadcomm --with-openmp"
-   #fi
-   # On airain, --with-threadcomm --with-openmp is not enough... Strange. So:
-   with_thread="--with-threadcomm --with-pthreadclasses --with-openmp"
+   with_openmp="--with-openmp" 
+   # Pour MPI-OpenMP hybride:
+   # voir: https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
+   # with_openmp=$with_openmp" -L$TRUST_ROOT/exec/hwloc --with-hwloc"
+   # Peut etre mettre a jour la version de hwloc...
+   # Modifier egalement mkliks pour ajouter le -L$TRUST_ROOT/exec/hwloc
    echo "****************************************"
-   echo "Thread support for PETSc with: "$with_thread
+   echo "OpenMP support for PETSc with: "$with_openmp
    echo "****************************************"
 fi
 
@@ -248,17 +245,46 @@ add_package()
    echo $ECHO_OPTS "Looking for package $1... \c"
    external_package=`cd ..;ls -rt $1*.tar.gz $1*.tgz $1*.tar.bz2 2>/dev/null | tail -1`
    #external_package=`grep petsc $TRUST_ROOT/bin/gestion_externalpackages/liste_dep.csv  | awk -F, '{print "/"$2}' | grep "/"$1`
-   name=`echo $1 | awk '{print tolower($1)}'`
+   lower_name=`echo $1 | awk '{print tolower($1)}'`
    if [ "$external_package" = "" ]
    then
       # Download
-      with_package="--download-$name=yes"
+      with_package="--download-$lower_name=yes"
    else
       # Located
-      with_package="--download-$name=../$external_package"
+      with_package="--download-$lower_name=../$external_package"
    fi
    echo "PETSc needs to build it with $with_package"
    with_packages=$with_packages" "$with_package
+   
+   ###############################
+   # Hack pour un parallel build # 
+   ###############################
+   # PL: Si le parallel build echoue retour au build sequentiel avec typiquement "make $j lib || make lib"
+   # Utilisation de flock pour eviter des ar/ranlib en concurrence
+   if [ -f /usr/bin/flock ]
+   then
+      config=config/BuildSystem/config/packages
+      j="-j$TRUST_NB_PROCS"
+      if [ $lower_name = "scalapack" ]
+      then
+         sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
+         sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
+	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
+      elif [ $lower_name = "mumps" ]
+      then 
+         sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
+         sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
+         sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
+	 sed -i "1,$ s?make alllib?make $j alllib \|\| make alllib?g"     $config/MUMPS.py || exit -1
+      elif [ $lower_name = "ptscotch" ]
+      then
+         sed -i "1,$ s?make clean ptesmumps esmumps?make clean \&\& make $j ptesmumps \&\& make $j esmumps?g" $config/PTScotch.py || exit -1
+      elif [ $lower_name = "suitesparse" ]
+      then
+         sed -i "1,$ s?library?library $j?g" $config/SuiteSparse.py || exit -1
+      fi
+   fi
 }
 
 ###########################################################################
@@ -317,9 +343,10 @@ then
 			               --with-blacs-include=$TRUST_BLAS_LAPACK/../../include"
       fi
    else
-      if [ -d /ccc ] && [ ${TRUST_CC_BASE%icpc} != $TRUST_CC_BASE ] # CCRT & Intel compiler
+      #if [ -d /ccc ] && [ ${TRUST_CC_BASE%icpc} != $TRUST_CC_BASE ] # CCRT & Intel compiler
+      if [ ${TRUST_CC_BASE%icpc} != $TRUST_CC_BASE ] # Intel compiler
       then
-	 # Sur les machines du CCRT (detectees par /ccc):
+	 # On arrete si on ne trouve pas les BLAS du compilateur INTEL.
 	 echo "What a pity that MKL libraries are not found on $HOST for PETSc build with Intel compilers. Contact TRUST support." && exit -1
       fi
       add_package scalapack
@@ -355,7 +382,16 @@ fi
 ##############
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   with_mpi="--with-mpi-dir=$MPI_ROOT"
+   # Si les compilateurs sont dans le bin 
+   if [ -d $MPI_ROOT/bin ]
+   then
+       with_mpi="--with-mpi-dir=$MPI_ROOT"
+   # Si les compilateurs sont dans le usr/bin 
+   else
+      echo "Error LIBPETSC can't be installed because mpirun is not found in $MPI_ROOT/bin"
+      echo "To workaround, re-configure TRUST with ./configure -force_provided_mpich or ./configure -force_provided_openmpi"
+      exit -1
+   fi
 else
    with_mpi="--with-mpi=0 -with-mumps-serial --with-mpiuni-fortran-binding=0"
 fi
@@ -364,7 +400,7 @@ fi
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
    # SUPERLU_DIST
-   [ $minimal_mumps = 0 ] &&  add_package superlu_dist
+   [ $minimal_mumps = 0 ] && add_package superlu_dist
 
    # New (Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
@@ -378,7 +414,6 @@ then
 
    # MUMPS et SUPERLU necessitent desormais parmetis
    add_package parmetis
-
    ##########
    # SCOTCH #
    ##########
@@ -386,6 +421,7 @@ then
    then
       # On ajoute Scotch sur certaines machines
       add_package ptscotch
+
       # Scotch necessite bison
       if [ "`bison --version 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
@@ -502,7 +538,7 @@ do
    # On prend with-errorchecking=1 meme en optimise (ne degrade pas les performances)
    # PETSc 3.4: default is now shared library libpetsc.so so we add --with-shared-libraries=0 to keep building static library libpetsc.a:
    ./configure --prefix=$PETSC_ROOT/$PETSC_ARCH \
-   --with-single-library --with-shared-libraries=0 \
+   --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
    --with-fortran=yes \
@@ -511,7 +547,6 @@ do
    $with_packages \
    $with_blas \
    $with_gpu \
-   $with_thread \
    $with_openmp \
    $with_mpi \
    $options || exit -1
@@ -522,7 +557,7 @@ do
    # build avec cmake (parallel build) ou classique selon les machines (castor,titane,...)
    # $TRUST_MAKE inutile (et produit des warnings)
    # make all-legacy : force le build classique
-   make all
+   make all NP_MAKE=$TRUST_NB_PROCS
    if [ $? = 0 ]
    then
       ###########
@@ -580,12 +615,13 @@ then
 fi
 
 ##############
-# Tests Thread
+# Tests OpenMP
 ##############
-if [ "$PETSC_HAVE_OPENMP" = 1 ]
-then
-   $DIR/test_openmp || exit -1
-fi
+# ToDo: a revoir...
+#if [ "$PETSC_HAVE_OPENMP" = 1 ]
+#then
+#   $DIR/test_openmp || exit -1
+#fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
 cp $package/configure.log .
