@@ -445,9 +445,9 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
     {
       {
         int nb_sommets_par_face_fr=sommets_faces_fr.dimension(1);
-        for (int i = 0; i < nb_sommets_par_face_fr; i++)
+        for (int i = 0; i < min(nb_sommets_par_face, nb_sommets_par_face_fr); i++)
           une_face[i] = sommets_faces_fr(i_face, i);
-        for (int i = nb_sommets_par_face_fr; i < nb_sommets_par_face; i++)
+        for (int i = min(nb_sommets_par_face, nb_sommets_par_face_fr); i < nb_sommets_par_face; i++)
           une_face[i] = -1;
       }
       // Quels sont les elements voisins de cette face ?
