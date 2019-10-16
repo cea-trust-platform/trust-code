@@ -133,7 +133,7 @@ package=${package%.tar.gz}
 ROOT=`dirname $PETSC_ROOT`
 ROOT=`pwd`
 
-###################################DefaultUserIdentity
+###################################
 # Correction eventuelle des sources
 ###################################
 cd $ROOT/$package
@@ -413,7 +413,9 @@ then
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
 
    # MUMPS et SUPERLU necessitent desormais parmetis
+   [ "$TRUST_INT64" = "1" ] && add_package metis # Only in build 64 since MUMPS has been disabled ?
    add_package parmetis
+
    ##########
    # SCOTCH #
    ##########
@@ -511,6 +513,8 @@ then
    fi
 fi
 
+with_64bit_indices="" && [ "$TRUST_INT64" = "1" ] && with_64bit_indices="--with-64-bit-indices"
+
 ###############
 # Loop on build
 ###############
@@ -529,7 +533,13 @@ do
    # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
    COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
-   FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
+
+   if [ "$TRUST_INT64" = "1" ]
+   then
+      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env |sed "s/-fdefault-integer-8//g" `
+   else
+      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
+   fi
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
    ./configure --help 1>../configure.help 2>&1
@@ -549,6 +559,7 @@ do
    $with_gpu \
    $with_openmp \
    $with_mpi \
+   $with_64bit_indices \
    $options || exit -1
 
    #############

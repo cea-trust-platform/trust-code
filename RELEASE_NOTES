@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+16/10/19 (TRUST)  Portability : Add -with-64-bit-indices configure option in order to build TRUST with 64 bits integers 
 16/10/19 (TRUST)  New keyword : Champ_front_xyz_debit field to define a flow rate field with a velocity profil.
 15/10/19 (TRUST)  New keyword : 'segmentfaces{x|y|z}' as new probe type for VDF. Like 'segement' but sticking to one side of the hexaedron to catch a specific component of a face field
 15/10/19 (TRUST)  New keyword : 'gravcl' as new localisation option for probes: like 'grav' but also taking into account BC values

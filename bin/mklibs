@@ -177,7 +177,7 @@ do
     LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
    done
   # echo $LIBS_MEDC
-   echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
+   [ "$TRUST_INT64" != "1" ] && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
    [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  	>> $fic
    
    [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "  		>> $fic

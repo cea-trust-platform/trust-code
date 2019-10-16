@@ -266,6 +266,7 @@ echo "[-with-medcoupling=dir]           Force Using external MEDCoupling library
 echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
+echo "[-with-64-bit-indices]            Build with 64 bits integer indices (experimental)."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
@@ -319,6 +320,7 @@ export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
+export TRUST_INT64=0
 export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_PDFLATEX=0
 export TRUST_WITHOUT_VISIT=0
@@ -414,6 +416,10 @@ do
    elif [ "${1#-force_petsc_have_cuda}" != "$1" ]
    then
       export TRUST_FORCE_PETSC_HAVE_CUDA=1
+
+   elif [ "${1#-with-64-bit-indices}" != "$1" ]
+   then
+      export TRUST_INT64=1
 
    elif [ "${1#-openmp}" != "$1" ]
    then
@@ -528,6 +534,7 @@ echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# D
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
 echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
+echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDFLATEX		# Disable/enable pdf Documentation build only"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
@@ -558,6 +565,20 @@ else
     echo "unset  TRUST_USE_EXTERNAL_HDF" >> $var
     #echo "unset HDF5_ROOT_DIR" >> $var
 fi
+
+##########################################################
+#     Check if trust has already been built in 64bits    #
+# We prevent a 32bits build after having sed int by long #
+##########################################################
+# before commenting this part, ensure you sed long by int in trust sources
+if [ "$clean" != "clean" ] && [ "$TRUST_INT64" = "0" ] && [ -f .build64 ]
+then
+    echo "Sources are in 64 bits while you're trying to build a 32 bits version. "
+    echo "Ensure you download a version which can be built in 32 bits"
+    echo "Contact support at trust@cea.fr"
+    exit -1
+fi
+[ "$TRUST_INT64" = "1" ] && echo "We will edit sources to build 64 bits version, please wait..." && ./bin/BUILD64/GO
 
 
 ################################

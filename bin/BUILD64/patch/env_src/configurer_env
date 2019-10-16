@@ -981,7 +981,8 @@ if [ "$compiler_found" = 0 ] ; then
   exit -1
 fi
 # Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
-[ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
+# 10/10/2019: On ne s'arrete plus maintenant, en ajoutant l'option -i8 pour ifort on compile en 64 BITS
+#[ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
 
 ######################################################################
 # On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
@@ -1391,6 +1392,37 @@ fi
 [ "$TRUST_CC" = "" ]  && m="# Path to C++ compiler" && e="TRUST_CC=\"$TRUST_CC_BASE\"   && export TRUST_CC"  && ecrit $m"|"$e"|"$env && eval $e
 [ "$TRUST_cc" = "" ]  && m="# Path to C compiler"   && e="TRUST_cc=\"$TRUST_cc_BASE\"   && export TRUST_cc"  && ecrit $m"|"$e"|"$env && eval $e
 [ "$TRUST_F77" = "" ] && m="# Path to F77 compiler" && e="TRUST_F77=\"$TRUST_F77_BASE\" && export TRUST_F77" && ecrit $m"|"$e"|"$env && eval $e
+
+################################################
+# Checking the size of type 'long' for BUILD64 #
+################################################
+if [ "$TRUST_INT64" = "1" ]
+then
+   echo '#include <iostream>
+using namespace std;
+int main() {    
+   cout<<"Size of int is "<<sizeof(int)<<" bytes"<<endl;
+   cout<<"Size of long is "<<sizeof(long)<<" bytes"<<endl;
+   return sizeof(long);
+}' > test_size_long.cpp
+   $TRUST_CC -o test_size_long.out test_size_long.cpp
+   ./test_size_long.out  1>/dev/null
+   sizeoflong=$?
+   if [ "$sizeoflong" != 8 ]
+   then
+      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : No "  | tee -a $env
+      echo "Fatal error: it seems that sizeoflong = $sizeoflong which is not 8 bytes"
+      echo "You cannot unfortunately build 64-bit indices version of TRUST."
+      # It could perhaps be possible to replace int by long long instead of long"
+      echo "Contact TRUST support at trust@cea.fr"
+      # We do not display missing packages
+      exit -1;
+   else
+      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : Yes "  | tee -a $env
+      rm test_size_long.out test_size_long.cpp
+   fi
+fi
+
 
 ########################
 # Installation de astyle
@@ -1845,7 +1877,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	fi
 	# Test si la librairie libguide.so existe car -lguide est deprecated avec Intel 12.x et doit etre remplace par -liomp5
 	[ "`$TRUST_CC --version | grep NEC`" != "" ] && SYSLIBS=$SYSLIBS" /usr/lib/libnuma.so -lkitcompat"
-	F77Flags="-O3 -fPIC"
+	F77Flags="-O3 -fPIC -i8"
 	ccFLAGS="-O3 -fPIC -unroll"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
