@@ -14,60 +14,22 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_Constituant_VDF_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Sources
-// Version:     /main/20
+// File:        Eval_Source_C_PolyMAC_Elem.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Terme_Source_Constituant_VDF_Elem.h>
-#include <Milieu_base.h>
-#include <Convection_Diffusion_Concentration.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
+#include <Eval_Source_C_PolyMAC_Elem.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem,"Source_Constituant_VDF_P0_VDF",Terme_Source_VDF_base);
-implemente_It_Sou_VDF_Elem(Eval_Source_C_VDF_Elem)
 
-//// printOn
-//
-
-Sortie& Terme_Source_Constituant_VDF_Elem::printOn(Sortie& s ) const
+void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
 {
-  return s << que_suis_je() ;
+  la_source_constituant = Q;
+  source_constituant.ref(Q.valeurs());
 }
 
-//// readOn
-//
-
-Entree& Terme_Source_Constituant_VDF_Elem::readOn(Entree& s )
+void Eval_Source_C_PolyMAC_Elem::mettre_a_jour( )
 {
-  Terme_Source_Constituant::lire_donnees(s);
-  set_fichier("Source_Constituant");
-  set_description("Injection rate = Integral(source_C*dv) [mol/s]");
-  return s;
+
 }
-
-
-void Terme_Source_Constituant_VDF_Elem::associer_zones(const Zone_dis& zone_dis,
-                                                       const Zone_Cl_dis& zone_cl_dis)
-{
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-
-  iter->associer_zones(zvdf, zclvdf);
-
-  Eval_Source_C_VDF_Elem& eval_puis = (Eval_Source_C_VDF_Elem&) iter.evaluateur();
-  eval_puis.associer_zones(zvdf, zclvdf );
-}
-
-
-void Terme_Source_Constituant_VDF_Elem::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
-  Eval_Source_C_VDF_Elem& eval_puis = (Eval_Source_C_VDF_Elem&) iter.evaluateur();
-  eval_puis.associer_champs(la_source_constituant);
-}
-
-

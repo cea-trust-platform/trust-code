@@ -14,25 +14,25 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_Constituant_VDF_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Sources
+// File:        Terme_Source_Constituant_PolyMAC_Elem.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
 // Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Terme_Source_Constituant_VDF_Elem.h>
+#include <Terme_Source_Constituant_PolyMAC_Elem.h>
 #include <Milieu_base.h>
 #include <Convection_Diffusion_Concentration.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem,"Source_Constituant_VDF_P0_VDF",Terme_Source_VDF_base);
-implemente_It_Sou_VDF_Elem(Eval_Source_C_VDF_Elem)
+Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_P0_PolyMAC",Terme_Source_PolyMAC_base);
+implemente_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
 
 //// printOn
 //
 
-Sortie& Terme_Source_Constituant_VDF_Elem::printOn(Sortie& s ) const
+Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
@@ -40,7 +40,7 @@ Sortie& Terme_Source_Constituant_VDF_Elem::printOn(Sortie& s ) const
 //// readOn
 //
 
-Entree& Terme_Source_Constituant_VDF_Elem::readOn(Entree& s )
+Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s )
 {
   Terme_Source_Constituant::lire_donnees(s);
   set_fichier("Source_Constituant");
@@ -49,24 +49,24 @@ Entree& Terme_Source_Constituant_VDF_Elem::readOn(Entree& s )
 }
 
 
-void Terme_Source_Constituant_VDF_Elem::associer_zones(const Zone_dis& zone_dis,
-                                                       const Zone_Cl_dis& zone_cl_dis)
+void Terme_Source_Constituant_PolyMAC_Elem::associer_zones(const Zone_dis& zone_dis,
+                                                           const Zone_Cl_dis& zone_cl_dis)
 {
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+  const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC,zone_dis.valeur());
+  const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC,zone_cl_dis.valeur());
 
   iter->associer_zones(zvdf, zclvdf);
 
-  Eval_Source_C_VDF_Elem& eval_puis = (Eval_Source_C_VDF_Elem&) iter.evaluateur();
+  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
   eval_puis.associer_zones(zvdf, zclvdf );
 }
 
 
-void Terme_Source_Constituant_VDF_Elem::associer_pb(const Probleme_base& pb)
+void Terme_Source_Constituant_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
-  Eval_Source_C_VDF_Elem& eval_puis = (Eval_Source_C_VDF_Elem&) iter.evaluateur();
+  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
   eval_puis.associer_champs(la_source_constituant);
 }
 
