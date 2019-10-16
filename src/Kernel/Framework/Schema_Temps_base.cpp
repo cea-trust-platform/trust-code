@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,6 +82,12 @@ void Schema_Temps_base::initialize()
 
 double Schema_Temps_base::computeTimeStep(bool& is_stop) const
 {
+  //reevaluation de dt_max_ si fonction du temps
+  if (dt_max_str_ != Nom())
+    {
+      dt_max_fn_.setVar(0, temps_courant());
+      dt_max_ = dt_max_fn_.eval();
+    }
 
   is_stop=false;
   // Correction en premier du pas de temps
@@ -328,7 +334,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "tmax",&tmax_); // XD_ADD_P double Time during which the calculation will be stopped (1e30s by default).
   param.ajouter_non_std( "tcpumax",(this)); // XD_ADD_P double CPU time limit (must be specified in hours) for which the calculation is stopped (1e30s by default).
   param.ajouter( "dt_min",&dt_min_); // XD_ADD_P double Minimum calculation time step (1e-16s by default).
-  param.ajouter( "dt_max",&dt_max_); // XD_ADD_P double Maximum calculation time step (1e30s by default).
+  param.ajouter( "dt_max",&dt_max_str_); // XD_ADD_P string Maximum calculation time step as function of time (1e30s by default).
   param.ajouter( "dt_sauv",&dt_sauv_); // XD_ADD_P double Save time step value (1e30s by default). Every dt_sauv, fields are saved in the .sauv file. The file contains all the information saved over time. If this instruction is not entered, results are saved only upon calculation completion. To disable the writing of the .sauv files, you must specify 0.
   param.ajouter( "dt_impr",&dt_impr_); // XD_ADD_P double Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
   param.ajouter( "facsec",&facsec_); // XD_ADD_P double Value assigned to the safety factor for the time step (1. by default). The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
@@ -439,6 +445,14 @@ Entree& Schema_Temps_base::readOn(Entree& is)
     Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
   else
     Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+  if (dt_max_str_ != Nom())
+    {
+      dt_max_fn_.setNbVar(1);
+      dt_max_fn_.setString(dt_max_str_);
+      dt_max_fn_.addVar("t");
+      dt_max_fn_.parseString();
+      dt_max_ = dt_max_fn_.eval();
+    }
   return is ;
 }
 
