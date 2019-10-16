@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+16/10/19 (TRUST)  New feature : Champ_Fonc_Fonction now supports multi-components. 
+12/10/19 (TRUST)  New keyword : Champ_Tabule_Morceaux: tabulated field defined per sub-zone 
 12/10/19 (TRUST)  New keyword : 'segmentfaces{x|y|z}' as new probe type for VDF. Like 'segement' but sticking to one side of the hexaedron to catch a specific component of a face field
 12/10/19 (TRUST)  New keyword : 'gravcl' as new localisation option for probes: like 'grav' but also taking into account BC values
 14/08/19 (TRUST)  Bug fixed   : Convective heat flux imposed through paroi_echange_externe_impose is taken into account in dt_stab computation in VEF
