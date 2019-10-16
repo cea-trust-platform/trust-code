@@ -52,6 +52,7 @@
 #include <Champ_front_tangentiel.h>
 #include <Champ_front_txyz.h>
 #include <Champ_front_uniforme.h>
+#include <Champ_front_xyz_debit.h>
 #include <Champ_input_P0.h>
 #include <Field_uniform_keps_from_ud.h>
 #include <Init_par_partie.h>
@@ -110,9 +111,10 @@ Champ_front_t inst48;verifie_pere(inst48);
 Champ_front_tangentiel inst49;verifie_pere(inst49);
 Champ_front_txyz inst50;verifie_pere(inst50);
 Champ_front_uniforme inst51;verifie_pere(inst51);
-Champ_input_P0 inst52;verifie_pere(inst52);
-Field_uniform_keps_from_ud inst53;verifie_pere(inst53);
-Init_par_partie inst54;verifie_pere(inst54);
-Tayl_Green inst55;verifie_pere(inst55);
-champ_init_canal_sinal inst56;verifie_pere(inst56);
+Champ_front_xyz_debit inst52;verifie_pere(inst52);
+Champ_input_P0 inst53;verifie_pere(inst53);
+Field_uniform_keps_from_ud inst54;verifie_pere(inst54);
+Init_par_partie inst55;verifie_pere(inst55);
+Tayl_Green inst56;verifie_pere(inst56);
+champ_init_canal_sinal inst57;verifie_pere(inst57);
 }

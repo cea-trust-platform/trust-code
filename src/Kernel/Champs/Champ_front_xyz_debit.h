@@ -14,35 +14,57 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_front_debit_massique.cpp
+// File:        Champ_front_xyz_debit.h
 // Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/5
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <Champ_front_debit_massique.h>
-#include <Champ_Don.h>
-#include <Champ_Inc_base.h>
-#include <Equation_base.h>
-#include <Milieu_base.h>
+#ifndef Champ_front_xyz_debit_included
+#define Champ_front_xyz_debit_included
+
+#include <Champ_front_normal.h>
+#include <Parser_U.h>
+#include <Param.h>
+#include <Ch_front_var_instationnaire_dep.h>
+#include <Champ_front.h>
 #include <Zone_VF.h>
-#include <DoubleTrav.h>
+#include <Champ_front_uniforme.h>
+#include <Ch_front_input_uniforme.h>
+//.DESCRIPTION  class Champ_front_xyz_debit
+//
 
-Implemente_instanciable(Champ_front_debit_massique,"Champ_front_debit_massique",Champ_front_debit);
 
-Sortie& Champ_front_debit_massique::printOn(Sortie& os) const
+class Champ_front_xyz_debit : public Champ_front_normal
 {
-  return Champ_front_debit::printOn(os);
-}
+  Declare_instanciable(Champ_front_xyz_debit);
 
-Entree& Champ_front_debit_massique::readOn(Entree& is)
-{
-  return Champ_front_debit::readOn(is);
-}
+protected:
+  Champ_front velocity_profil_;
+  Champ_front flow_rate_;
+  // in TRUST the normal vector to a surface is stocked weighted by the area of the surface via "face_normales"
+  // here we want normal vectors only, formely known as normales_divisees_par_aire_
+  // We need the normal vector (only) because the velocity field will be perpendicular the surface
+  DoubleTab normal_vectors_;
+  double coeff_;
+  double integrale_;
+  bool flow_rate_alone_=0;
 
-void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco)
-{
-  const Champ_Don& masse_volumique = inco.equation().milieu().masse_volumique();
-  coeff_ = masse_volumique.valeur().valeurs().nb_dim() == 1 ? masse_volumique(0) : masse_volumique(0, 0);
-}
+  virtual void initialiser_coefficient(const Champ_Inc_base& inco);
+  void calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user);
+  void calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, double flow_rate, DoubleTab& velocity_user);
+
+public:
+  virtual int initialiser(double tps, const Champ_Inc_base& inco);
+  void mettre_a_jour(double temps);
+  void associer_fr_dis_base(const Frontiere_dis_base& fr);
+  void set_temps_defaut(double temps);
+  void fixer_nb_valeurs_temporelles(int nb_cases);
+  void changer_temps_futur(double temps,int i);
+  int avancer(double temps);
+  int reculer(double temps);
+
+};
+
+#endif

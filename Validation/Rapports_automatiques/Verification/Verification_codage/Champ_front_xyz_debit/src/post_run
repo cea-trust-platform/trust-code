@@ -1,0 +1,6 @@
+#!/bin/bash
+#recuperation des donnees physiques
+
+python propertiesGeometry.py
+[ "$1" == "Champ_front_xyz_debit_2" ] && python traite_sonde.py $1_PROFIL_VITX.son
+
