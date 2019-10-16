@@ -79,9 +79,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
-            std::array<double, 3> vec = zone.cross(dimension, dimension, &xv(f2, 0), &xv(f1, 0), &xp(e2, 0), &xp(e1, 0));
-            for (k = 0, ok = (zone.dot(&xv(f2, 0), &xv(f1, 0), &xp(e2, 0), &xp(e1, 0)) > 0); ok && k < 3; k++)
-              ok &= dabs(vec[k]) < 1e-8 * zone.dot(&xv(f1, 0), &xv(f1, 0), &xp(e1, 0), &xp(e1, 0));
+            for (k = 0, ok = 1; ok && k < dimension; k++) ok &= dabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
             if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++;
           }
   Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
@@ -131,7 +129,8 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = porosite_surf;
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+
   int i, j, k, l, e, eb, f, fb, fc, fd, fam;
 
   /* calcul de la div aux elements */
@@ -154,20 +153,19 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
                   if (eb >= 0)
                     {
                       for (fam = eb == e ? f : fc, l = zone.m2deb(fam); l < zone.m2deb(fam + 1); l++) if (zone.m2ji(l, 1) == eb) //convection de m2
-                          fd = zone.m2ji(l, 0), resu(f) -= fac * (eb == f_e(fam, 0) ? 1 : -1) * zone.m2ci(l) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pf(fd) * inco(fd);
+                          fd = zone.m2ji(l, 0), resu(f) -= fac * (eb == f_e(fam, 0) ? 1 : -1) * zone.m2ci(l) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pe(eb) * inco(fd);
                     }
                   else if (ch.icl(fb, 0) == 3) for (l = 0; l < dimension; l++) //face de Dirichlet -> on convecte la vitesse au bord
                       resu(f) -= fac * fs(f) * (xv(f, l) - xp(e, l)) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), l);
                 }
               else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                  fc = zone.veji(l), resu(f) -= fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pf(fc) * inco(fc);
+                  fc = zone.veji(l), resu(f) -= fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pe(eb) * inco(fc);
             }
 
         // if (incompressible) continue
         for (l = zone.m2deb(f); l < zone.m2deb(f + 1); l++) if (zone.m2ji(l, 1) == e)
             resu(f) += pf(f) * zone.m2ci(l) * vit(zone.m2ji(l, 0)) * div(zone.m2ji(l, 1)) / ve(zone.m2ji(l, 1));
       }
-
   return resu;
 }
 
@@ -180,7 +178,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_surf;
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = zone.porosite_elem();
   int i, j, k, l, e, eb, f, fb, fc, fd, fam;
 
   //element e -> contribution de la face fb a l'equation a la face f
@@ -193,11 +191,11 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
             if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
               {
                 if (eb >= 0) for (fam = eb == e ? f : fc, l = zone.m2deb(fam); l < zone.m2deb(fam + 1); l++) if (zone.m2ji(l, 1) == eb && ch.icl(fd = zone.m2ji(l, 0), 0) < 2) //convection de m2
-                      matrice(f, fd) += fac * (eb == f_e(fam, 0) ? 1 : -1) * zone.m2ci(l) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pf(fd);
+                      matrice(f, fd) += fac * (eb == f_e(fam, 0) ? 1 : -1) * zone.m2ci(l) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pe(eb);
               }
             else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
                 if (ch.icl(fc = zone.veji(l), 0) < 2 && dabs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f))
-                  matrice(f, fc) += fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pf(fc);
+                  matrice(f, fc) += fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pe(eb);
           }
 }
 

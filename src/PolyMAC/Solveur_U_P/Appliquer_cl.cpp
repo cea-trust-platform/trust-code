@@ -32,7 +32,7 @@
 
 void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_base& la_zone,
                                                         const Zone_Cl_dis_base& la_zone_cl,
-                                                        Matrice_Morse& la_matrice, DoubleTab& secmem)
+                                                        Matrice_Morse& la_matrice, DoubleTab& inco, DoubleTab& secmem)
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
   // la convection, de la diffusion pour le cas des faces.
@@ -67,7 +67,7 @@ void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_base& la_
                   // pour le second membre
                   for (int j = secmem[face*nb_comp+comp] = 0; j < Objet_U::dimension; j++)
                     secmem[face*nb_comp+comp] += la_cl_Dirichlet.val_imp(face-numdeb,j) * ma_zone_VF.face_normales(face, j) / ma_zone_VF.face_surfaces(face);
-
+                  secmem[face*nb_comp+comp] -= inco[face*nb_comp+comp];
                   // if (nb_comp == 1)
                   //   secmem(face) = la_cl_Dirichlet.val_imp(ind_face,0);
                   // else
@@ -92,6 +92,7 @@ void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_base& la_
                   // pour le second membre
                   for (int j = secmem[face*nb_comp+comp] = 0; j < Objet_U::dimension; j++)
                     secmem[face*nb_comp+comp] += la_cl_Dirichlet_homogene.val_imp(face-numdeb,j) * ma_zone_VF.face_normales(face, j) / ma_zone_VF.face_surfaces(face);
+                  secmem[face*nb_comp+comp] -= inco[face*nb_comp+comp];
                   // if (nb_comp == 1)
                   //   secmem(face) = la_cl_Dirichlet_homogene.val_imp(ind_face,0);
                   // else

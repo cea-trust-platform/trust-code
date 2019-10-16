@@ -167,6 +167,9 @@ public :
   mutable IntTab rfdeb, rfji; //reconstruction du rotationnel par (rfji, rfci)[rfdeb(f), rfdeb(f + 1)[ (champ aux aretes)
   mutable DoubleTab rfci;
 
+  //stabilisation d'une matrice de masse mimetique en un element : dans PolyMAC -> m1 ou m2
+  inline void ajouter_stabilisation(DoubleTab& M) const;
+
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
   mutable IntTab m2deb, m2ji; //reconstruction de m2 par (m2ji(.,0), m2ci)[m2deb(f), m2deb(f + 1)[ (faces); m2ji(.,1) contient le numero d'element
@@ -365,19 +368,19 @@ static inline DoubleTab transp(DoubleTab a)
 }
 
 /* minimise ||M.x - b||_2, met le noyau de M dans P et retourne le residu */
-static inline double kersol(DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x)
+static inline double kersol(DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x, DoubleTab& S)
 {
   int i, nk, m = M.dimension(0), n = M.dimension(1), k = min(m, n), l = max(m, n), w = 5 * l, info, iP, jP;
   double res2 = 0;
   char a = 'A';
   //lapack en mode Fortran -> on decompose en fait Mt!!
-  DoubleTab A = M, S(k), U(m, m), Vt(n, n), W(w), iS(n, m);
+  DoubleTab A = M, U(m, m), Vt(n, n), W(w), iS(n, m);
+  S.resize(k);
   F77NAME(dgesvd)(&a, &a, &n, &m, A.addr(), &n, S.addr(), Vt.addr(), &n, U.addr(), &m, W.addr(), &w, &info);
   for (i = 0, nk = n; i < k && S(i) > eps * S(0); i++) nk--;
   if (P) P->resize(n, nk);
   for (i = 0, jP = -1; i < n; i++) if (i < k && S(i) > eps * S(0)) iS(i, i) = 1 / S(i); //terme diagonal de iS
     else if (P) for (iP = 0, jP++; iP < n; iP++) (*P)(iP, jP) = Vt(i, iP); //colonne de V -> colonne de P
-  DoubleTab iM = prod(transp(Vt), prod(iS, transp(U)));
   x = prod(transp(Vt), prod(iS, prod(transp(U), b)));
   DoubleTab res = prod(M, x);
   for (i = 0; i < m; i++) res2 += std::pow(res(i, 0) - b(i, 0), 2);

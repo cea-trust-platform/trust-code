@@ -97,7 +97,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& v
   //la matrice de masse de PolyMAC est de la forme { { 0, div} , { -grad, m2 }} et s'applique a  { -P, v }
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   int i, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
   zone.init_m2(), ch.init_cl();
@@ -105,12 +105,12 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& v
   //construction du stencil et dimensionnement de la matrice
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  //blocs superieurs : diagonale / laplacien, divergence
+  //blocs superieurs : -div
   for (e = 0; e < zone.nb_elem(); e++)
     for (i = 0, stencil.append_line(e, e); i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) if (ch.icl(f, 0) < 2)
         stencil.append_line(e, ne_tot + f);
 
-  //blocs inferieurs : -grad, m2
+  //blocs inferieurs : grad, m2
   for (f = 0; f < zone.nb_faces(); f++) //boucle sur les faces
     {
       if (ch.icl(f, 0) < 2) //vf calcule
@@ -126,17 +126,17 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& v
   Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil, mat);
 
   //remplissage
-  //blocs superieurs : diagonale / laplacien, divergence
+  //blocs superieurs : 0, -div
   for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) if (ch.icl(f, 0) < 2)
-        mat(e, ne_tot + f) += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1);
+        mat(e, ne_tot + f) -= fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1);
 
-  //blocs inferieurs : -grad, m2
+  //blocs inferieurs : grad, m2
   for (f = 0; f < zone.nb_faces(); f++)
     if (ch.icl(f, 0) < 2) //vf calcule
       {
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)  mat(ne_tot + f, e) += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1); //gradient
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)  mat(ne_tot + f, e) += fs(f) * pf(f) * (e == f_e(f, 0) ? -1 : 1); //gradient
         for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //vfb calcule
-            mat(ne_tot + f, ne_tot + fb) += zone.m2ci(i) * pf(fb);
+            mat(ne_tot + f, ne_tot + fb) += zone.m2ci(i) * pe(zone.m2ji(i, 1));
       }
     else mat(ne_tot + f, ne_tot + f) = 1; //vf imposee par CL
 
@@ -151,6 +151,18 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& v
         }
     }
   if (!has_P_ref && !Process::me()) mat(0, 0) += 1; //revient a imposer P(0) = 0
+
+  //controle de symmetrie
+  // int imax = -1, jmax = -1;
+  // double dmax = 0;
+  // for (i = 0; i < ne_tot + nf_tot; i++) for (int k = mat.get_tab1()(i) - 1; k < mat.get_tab1()(i + 1) - 1; k++)
+  // {
+  //   int j = mat.get_tab2()(k) - 1;
+  //   if (dabs(mat(i, j) - mat(j, i)) > dmax) imax = i, jmax = j, dmax = dabs(mat(i, j) - mat(j, i));
+  // }
+  // Cerr << "max : mat(" << imax << ", " << jmax << ") = " << mat(imax, jmax) << ", mat(" << jmax << ", "<< imax << ") = " << mat(jmax, imax)
+  //      << ", diff = " << 100 * dmax / min(dabs(mat(imax, jmax)), dabs(mat(jmax, imax))) << "%" << finl;
+  // Cerr << "ne_tot = " << ne_tot << ", nf_tot = " << nf_tot << finl;
 
   // la_matrice.typer("Matrice_Morse_Sym");
   // Matrice_Morse_Sym &matsym = ref_cast(Matrice_Morse_Sym, la_matrice.valeur());

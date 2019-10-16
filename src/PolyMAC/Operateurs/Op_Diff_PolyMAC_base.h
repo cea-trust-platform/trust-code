@@ -64,10 +64,14 @@ public:
   const Champ_base& diffusivite_turbulente() const;
 
   void remplir_nu(DoubleTab& nu) const;
-  void remplir_nu_faces() const;
-  const DoubleTab& get_nu_faces() const
+  void remplir_nu_fac() const;
+  const DoubleTab& get_nu() const
   {
-    return nu_faces;
+    return nu_;
+  }
+  const DoubleTab& get_nu_fac() const
+  {
+    return nu_fac;
   }
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
@@ -78,7 +82,8 @@ protected:
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_;
-  mutable DoubleTab nu_faces; //diffusivite aux faces (anisotropie + moyenne harmonique), public pour Melange_Thermique_Aiguilles et Paroi_Contact
+  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)^2
+  mutable DoubleTab nu_fac;
 };
 
 

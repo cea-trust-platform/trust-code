@@ -58,13 +58,9 @@ Entree& Op_Diff_PolyMAC_base::readOn(Entree& s )
 void Op_Diff_PolyMAC_base::completer()
 {
   Operateur_base::completer();
-  nu_faces.resize(0, equation().inconnue().valeurs().line_size());
-  la_zone_poly_.valeur().creer_tableau_faces(nu_faces);
-  if (equation().que_suis_je() == "Transport_K_Eps")
-    {
-      nu_.resize(0, 2);
-      la_zone_poly_.valeur().zone().creer_tableau_elements(nu_, Array_base::NOCOPY_NOINIT);
-    }
+  if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
+  la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
+  la_zone_poly_.valeur().creer_tableau_faces(nu_fac);
 }
 
 int Op_Diff_PolyMAC_base::impr(Sortie& os) const
@@ -306,41 +302,25 @@ void Op_Diff_PolyMAC_base::remplir_nu(DoubleTab& nu) const
     }
 }
 
-void Op_Diff_PolyMAC_base::remplir_nu_faces() const
+void Op_Diff_PolyMAC_base::remplir_nu_fac() const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  remplir_nu(nu_);
-  int i, j, e, f, r, skip, n , N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size();
+  int i, f;
 
   /* utilise-t-on des lois de paroi ? */
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
                 ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
 
-  assert(N_nu == N || N_nu == N * dimension);
-
   for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
     {
       int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
           num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
-      for (f = deb; f < deb + num; f++) for (n = 0; n < N; n++) //nu par composante a chaque face
-          {
-            double v_sur_nu = 0; //pour moyenne harmonique
-            for (j = 0, skip = 0; j < 2 && (e = zone.face_voisins(f, j)) >= 0; j++) //elements amont/aval
-              {
-                double nu_dir = 0, norm = 0, d2; //nu dans la direction de (xp - xv)
-                if (nu_.line_size() > N) //nu anisotrope
-                  for (r = 0; r < dimension; r++) d2 = std::pow(zone.xp(e, r) - zone.xv(f, r), 2), nu_dir += nu_.addr()[N_nu * e + dimension * n + r] * d2, norm += d2;
-                else nu_dir = nu_.addr()[N * e + n], norm = 1; //nu isotrope
-
-                if (nu_dir) v_sur_nu += zone.volumes_entrelaces_dir()(f, j) * norm / nu_dir;
-                else skip = 1; //nu = 0 d'un cote -> diffusion nulle a la face
-              }
-            nu_faces.addr()[N * f + n] = skip ? 0 : zone.volumes_entrelaces(f) / v_sur_nu;
-            if (i < cls.size() && loi_par) //facteur multiplicatif du a la loi de paroi
-              nu_faces.addr()[N * f + n] *= zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
-          }
+      for (f = deb; f < deb + num; f++) //nu par composante a chaque face
+        if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
+          nu_fac(f) = sqrt(zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb));
+        else nu_fac(f) = sqrt(zone.porosite_face(f)); //par defaut : facteur du a la porosite
     }
-  nu_faces.echange_espace_virtuel();
+  nu_fac.echange_espace_virtuel();
 }
