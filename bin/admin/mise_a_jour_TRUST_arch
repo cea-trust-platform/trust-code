@@ -341,7 +341,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configurei" -with-64-bit-indices"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -with-64-bit-indices"
 
 ########################
 # Lancement du configure

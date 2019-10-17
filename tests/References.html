@@ -99,6 +99,8 @@
 <TR><TD><SMALL><A HREF="#Champ_fonc_xyz">Champ_fonc_xyz</A></TD><TD><SMALL># Thermohydraulique 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_front_calc">Champ_front_calc</A></TD><TD><SMALL># Conduction 2D : couplage de 2 domaines solides #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_front_debit_QC_VDF">Champ_front_debit_QC_VDF</A></TD><TD><SMALL># Thermohydraulique 2D : Quasi_compressible gaz parfait VDF #</TD></TR>
+<TR><TD><SMALL><A HREF="#Champ_front_debit_massique">Champ_front_debit_massique</A></TD><TD><SMALL># Hydraulique 2D laminaire #</TD></TR>
+<TR><TD><SMALL><A HREF="#Champ_front_xyz_debit">Champ_front_xyz_debit</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_tabule_temps">Champ_tabule_temps</A></TD><TD><SMALL># Calcul Hydraulique : Mise en mouvement par acceleration champ tabule temps #</TD></TR>
 <TR><TD><SMALL><A HREF="#Chmoy_faceperio">Chmoy_faceperio</A></TD><TD><SMALL># Champ_front_recyclage { moyenne_imposee connection_exacte fichier } #</TD></TR>
 <TR><TD><SMALL><A HREF="#Cholesky">Cholesky</A></TD><TD><SMALL># Thermohydraulique 2D : Couplage Boussinesq et schema quick #</TD></TR>
@@ -486,6 +488,7 @@
 <TR><TD><SMALL><A HREF="#cond_vef_impl">cond_vef_impl</A></TD><TD><SMALL># Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc">conduc</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc_VEF">conduc_VEF</A></TD><TD><SMALL># Conduction 2D VEF : Diverses conditions limites #</TD></TR>
+<TR><TD><SMALL><A HREF="#conduc_var">conduc_var</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#coude_irreg">coude_irreg</A></TD><TD><SMALL># Hydraulique 2D laminaire avec maillage irregulier #</TD></TR>
 <TR><TD><SMALL><A HREF="#cpu_3D">cpu_3D</A></TD><TD><SMALL># Thermohydraulique 3D turbulent sous maille et Boussinesq #</TD></TR>
 <TR><TD><SMALL><A HREF="#defilante">defilante</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
@@ -919,6 +922,14 @@
 <CENTER># Thermohydraulique 2D : Quasi_compressible gaz parfait VDF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Champ_front_debit_QC_VDF/Champ_front_debit_QC_VDF.data>Edit</a> Champ_front_debit_QC_VDF.data </CENTER>
+<HR><CENTER><B><A NAME=Champ_front_debit_massique>Champ_front_debit_massique</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Champ_front_debit_massique/Champ_front_debit_massique.data>Edit</a> Champ_front_debit_massique.data </CENTER>
+<HR><CENTER><B><A NAME=Champ_front_xyz_debit>Champ_front_xyz_debit</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire avec "trou" dans le maillage #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Champ_front_xyz_debit/Champ_front_xyz_debit.data>Edit</a> Champ_front_xyz_debit.data </CENTER>
 <HR><CENTER><B><A NAME=Champ_tabule_temps>Champ_tabule_temps</A></B></CENTER>
 <CENTER># Calcul Hydraulique : Mise en mouvement par acceleration champ tabule temps #</CENTER>
 <CENTER><a href=../tests/Reference/Champ_tabule_temps/Champ_tabule_temps.lml.gif><img src=../tests/Reference/Champ_tabule_temps/Champ_tabule_temps.lml.gif.fin></a></CENTER>
@@ -2590,6 +2601,11 @@
 <CENTER># Conduction 2D VEF : Diverses conditions limites #</CENTER>
 <CENTER><a href=../tests/Reference/conduc_VEF/conduc_VEF.lml.gif><img src=../tests/Reference/conduc_VEF/conduc_VEF.lml.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/conduc_VEF/conduc_VEF.data>Edit</a> conduc_VEF.data </CENTER>
+<HR><CENTER><B><A NAME=conduc_var>conduc_var</A></B></CENTER>
+<CENTER># Conduction 2D : Diverses conditions limites thermiques #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/conduc_var/conduc.geo>Edit</a> conduc.geo </CENTER>
+<CENTER><a href=../tests/Reference/conduc_var/conduc_var.data>Edit</a> conduc_var.data </CENTER>
 <HR><CENTER><B><A NAME=coude_irreg>coude_irreg</A></B></CENTER>
 <CENTER># Hydraulique 2D laminaire avec maillage irregulier #</CENTER>
 <CENTER><a href=../tests/Reference/coude_irreg/coude_irreg.lml.gif><img src=../tests/Reference/coude_irreg/coude_irreg.lml.gif.fin></a></CENTER>
