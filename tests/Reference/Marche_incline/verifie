@@ -1,7 +1,0 @@
-jdd=`pwd`
-jdd=`basename $jdd`
-if [ ! -f PAR_$jdd.TU ]
-then
-   ./Test_rot 1>verifie.log 2>&1
-   exit $?
-fi

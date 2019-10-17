@@ -1,3 +1,0 @@
-#!/bin/bash
-python ../dernierTemps.py Moyennes_spatiales_vitesse_rho_mu
-sh ../tableauFrott.awk

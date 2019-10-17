@@ -1,4 +1,0 @@
-# Verification du fichier de decoupage sur veymont
-
-[ ! -f PAR_keps_3D_VEF_raffiner_iostrope_parallele.lata ] && echo PAR not available && exit 0
-compare_lata keps_3D_VEF_raffiner_iostrope_parallele.lata PAR_keps_3D_VEF_raffiner_iostrope_parallele.lata

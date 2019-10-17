@@ -1,8 +1,0 @@
-#!/bin/bash
-sh ./first.awk keps p
-mv Umoy.dat Umoy.dat.p
-sh ./first.awk keps
-mv Umoy.dat Umoy.dat.th
-
-
-

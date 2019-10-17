@@ -1,6 +1,0 @@
-gunzip -c cylindre.geom.gz > cylindre.geom || exit -1
-gunzip -c Disable_output_files_HydroTurb.sauv.gz > debut.sauv || exit -1
-#trust debut
-rm -f Disable_output_files_HydroTurb.dt_ev Disable_output_files_HydroTurb.sauv
-cp -f debut.dt_ev Disable_output_files_HydroTurb.dt_ev
-chmod +w Disable_output_files_HydroTurb.dt_ev
