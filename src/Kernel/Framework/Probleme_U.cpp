@@ -685,31 +685,12 @@ void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
   if (!ch.non_nul())
     throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"no input field of that name");
 
-  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto
-  // qui n'est pas un Objet_U...
-  if(sub_type(Ch_front_input_uniforme,ch.valeur()))
-    {
-      Ch_front_input_uniforme& ch_input=ref_cast(Ch_front_input_uniforme,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
-  else if(sub_type(Ch_front_input,ch.valeur()))
-    {
-      Ch_front_input& ch_input=ref_cast(Ch_front_input,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
-  else if(sub_type(Ch_input_uniforme,ch.valeur()))
-    {
-      Ch_input_uniforme& ch_input=ref_cast(Ch_input_uniforme,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
-  else if(sub_type(Champ_input_P0,ch.valeur()))
-    {
-      Champ_input_P0& ch_input=ref_cast(Champ_input_P0,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
-
-  else
+  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto qui n'est pas un Objet_U...
+  Champ_Input_Proto * chip = dynamic_cast<Champ_Input_Proto *>(ch.operator->());
+  if (!chip)
     throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"field of this name is not an input field");
+
+  chip->getTemplate(afield);
 }
 
 // Description:
@@ -739,31 +720,12 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
   if (strcmp(name.getChar(),afield.getCharName()))
     throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should have the same name as the argument name ");
 
-  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto
-  // qui n'est pas un Objet_U...
-  if(sub_type(Ch_front_input_uniforme,ch.valeur()))
-    {
-      Ch_front_input_uniforme& ch_input=ref_cast(Ch_front_input_uniforme,ch.valeur());
-      ch_input.setValue(afield);
-    }
-  else if(sub_type(Ch_front_input,ch.valeur()))
-    {
-      Ch_front_input& ch_input=ref_cast(Ch_front_input,ch.valeur());
-      ch_input.setValue(afield);
-    }
-  else if(sub_type(Ch_input_uniforme,ch.valeur()))
-    {
-      Ch_input_uniforme& ch_input=ref_cast(Ch_input_uniforme,ch.valeur());
-      ch_input.setValue(afield);
-    }
-  else if(sub_type(Champ_input_P0,ch.valeur()))
-    {
-      Champ_input_P0& ch_input=ref_cast(Champ_input_P0,ch.valeur());
-      ch_input.setValue(afield);
-    }
-
-  else
+  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto qui n'est pas un Objet_U...
+  Champ_Input_Proto * chip = dynamic_cast<Champ_Input_Proto *>(ch.operator->());
+  if (!chip)
     throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"field of this name is not an input field");
+
+  chip->setValue(afield);
 }
 
 void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const

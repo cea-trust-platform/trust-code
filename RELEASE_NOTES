@@ -2,6 +2,8 @@
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------
+17/10/19 (TRUST)  New feature : Champ_Fonc_Fonction now supports multi-components. 
+17/10/19 (TRUST)  New keyword : Champ_Tabule_Morceaux: tabulated field defined per sub-zone 
 16/10/19 (TRUST)  Portability : Add -with-64-bit-indices configure option in order to build TRUST with 64 bits integers 
 16/10/19 (TRUST)  New keyword : Champ_front_xyz_debit field to define a flow rate field with a velocity profil.
 15/10/19 (TRUST)  New keyword : 'segmentfaces{x|y|z}' as new probe type for VDF. Like 'segement' but sticking to one side of the hexaedron to catch a specific component of a face field
