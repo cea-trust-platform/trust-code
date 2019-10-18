@@ -30,7 +30,8 @@
 #include <DoubleTrav.h>
 
 Implemente_instanciable(Champ_front_debit_massique,"Champ_front_debit_massique",Champ_front_debit);
-
+// XD champ_front_debit_massique front_field_base champ_front_debit_massique 0 This field is used to define a flow rate field using the density
+// XD attr ch front_field_base ch 0 uniform field in space to define the flow rate. It could be, for example, champ_front_uniforme, ch_front_input_uniform or champ_front_fonc_txyz that depends only on time.
 Sortie& Champ_front_debit_massique::printOn(Sortie& os) const
 {
   return Champ_front_debit::printOn(os);
