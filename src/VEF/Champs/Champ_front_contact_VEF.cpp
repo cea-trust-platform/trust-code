@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1084,13 +1084,13 @@ void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb
   bis+="_index";
   fichier_med.prefix(".med");
   const Domaine& dom2 = zvef2.zone().domaine();
-  Noms unites(1);
-  unites[0]="1";
+  Noms unites_(1);
+  unites_[0]="1";
   Noms nom_compos(1);
   nom_compos[0]=chp.le_nom();
   Format_Post_Med post;
   post.initialize_by_default(fichier_med);
   post.ecrire_domaine(dom2,1);
-  post.ecrire_champ(dom2,unites,nom_compos,-1,0., 0., chp.le_nom(), dom2.le_nom(), Motcle("elem"), "scalar",chp_val);
-  post.ecrire_champ(dom2,unites,nom_compos,-1,0., 0., chp.le_nom(), dom2.le_nom(), Motcle("elem"), "scalar",chp_val);
+  post.ecrire_champ(dom2,unites_,nom_compos,-1,0., 0., chp.le_nom(), dom2.le_nom(), Motcle("elem"), "scalar",chp_val);
+  post.ecrire_champ(dom2,unites_,nom_compos,-1,0., 0., chp.le_nom(), dom2.le_nom(), Motcle("elem"), "scalar",chp_val);
 }
