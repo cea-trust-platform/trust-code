@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@
 #include <DoubleTrav.h>
 #include <Schema_Temps_base.h>
 #include <SFichier.h>
+#include <Probleme_base.h>
 
 Implemente_instanciable(Champ_P1NC,"Champ_P1NC",Champ_Inc_base);
 
@@ -582,7 +583,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
   // que les valeurs aux parois.
 
   int ndeb,nfin,elem,l_unif;
-  double norm_tau,u_etoile,norm_v, dist, val1, val2, val3, d_visco, visco=1.;
+  double norm_tau,u_etoile,norm_v=0, dist=0, val1, val2, val3, d_visco, visco=1.;
   IntVect num(dimension);
   y_plus=-1.;
 
@@ -611,20 +612,20 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
     }
   // tab_visco+=DMINFLOAT;
 
-  DoubleTab cisaillement(1,1);
-  int lp=0;
+  DoubleTab yplus_faces( 1, 1 ); // will contain yplus values if available
+  int yplus_already_computed=0; // flag
 
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
   if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base,modele_turbulence.valeur()))
     {
       const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
-      if( !loipar.use_shear() ) lp=0;
-      else
+      // if( ! sub_type( Paroi_negligeable_VEF , loipar ) )
+      if( loipar.use_shear( ) )
         {
-          cisaillement.resize(zone_VEF.nb_faces_bord());
-          cisaillement.ref(loipar.Cisaillement_paroi());
-          lp=1;
+          yplus_faces.resize( la_zone_VEF->nb_faces_tot( ) );
+          yplus_faces.ref( loipar.tab_d_plus( ) );
+          yplus_already_computed = 1;
         }
     }
 
@@ -638,79 +639,67 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
 
-          if (dimension == 2 )
-            for (int num_face=ndeb; num_face<nfin; num_face++)
-              {
-                elem =face_voisins(num_face,0);
+          for (int num_face=ndeb; num_face<nfin; num_face++)
+            {
 
-                num[0]=elem_faces(elem,0);
-                num[1]=elem_faces(elem,1);
+              elem =face_voisins(num_face,0);
 
-                if (num[0]==num_face) num[0]=elem_faces(elem,2);
-                else if (num[1]==num_face) num[1]=elem_faces(elem,2);
+              if( yplus_already_computed )
+                {
+                  // y+ is only defined on faces so we take the face value to put in the element
+                  y_plus( elem ) = yplus_faces( num_face );
+                }
+              else
+                {
 
-                dist = distance_2D(num_face,elem,zone_VEF);
-                dist *= 3./2.;// pour se ramener a distance paroi / milieu de num[0]-num[1]
-                norm_v=norm_2D_vit1_lp(vit,num_face,num[0],num[1],zone_VEF,val1,val2);
+                  if (dimension == 2 )
+                    {
 
-                if (l_unif)
-                  d_visco = visco;
-                else
-                  d_visco = tab_visco[elem];
+                      num[0]=elem_faces(elem,0);
+                      num[1]=elem_faces(elem,1);
 
-                // PQ : 01/10/03 : corrections par rapport a la version premiere
+                      if (num[0]==num_face) num[0]=elem_faces(elem,2);
+                      else if (num[1]==num_face) num[1]=elem_faces(elem,2);
 
-                if(lp)
-                  {
-                    norm_tau = sqrt(cisaillement(num_face,0)*cisaillement(num_face,0)
-                                    +cisaillement(num_face,1)*cisaillement(num_face,1));
-                  }
-                else norm_tau = d_visco*norm_v/dist;
+                      dist = distance_2D(num_face,elem,zone_VEF);
+                      dist *= 3./2.;// pour se ramener a distance paroi / milieu de num[0]-num[1]
+                      norm_v=norm_2D_vit1_lp(vit,num_face,num[0],num[1],zone_VEF,val1,val2);
 
-                u_etoile = sqrt(norm_tau);
-                y_plus(elem) = dist*u_etoile/d_visco;
+                    } // dim 2
+                  else if (dimension == 3)
+                    {
 
-              }
+                      num[0]=elem_faces(elem,0);
+                      num[1]=elem_faces(elem,1);
+                      num[2]=elem_faces(elem,2);
 
-          else if (dimension == 3)
-            for (int num_face=ndeb; num_face<nfin; num_face++)
-              {
-                elem =face_voisins(num_face,0);
+                      if (num[0]==num_face) num[0]=elem_faces(elem,3);
+                      else if (num[1]==num_face) num[1]=elem_faces(elem,3);
+                      else if (num[2]==num_face) num[2]=elem_faces(elem,3);
 
-                num[0]=elem_faces(elem,0);
-                num[1]=elem_faces(elem,1);
-                num[2]=elem_faces(elem,2);
+                      dist = distance_3D(num_face,elem,zone_VEF);
+                      dist *= 4./3.; // pour se ramener a distance paroi / milieu de num[0]-num[1]-num[2]
+                      norm_v=norm_3D_vit1_lp(vit, num_face, num[0], num[1], num[2], zone_VEF, val1, val2, val3);
 
-                if (num[0]==num_face) num[0]=elem_faces(elem,3);
-                else if (num[1]==num_face) num[1]=elem_faces(elem,3);
-                else if (num[2]==num_face) num[2]=elem_faces(elem,3);
+                    }// dim 3
 
-                dist = distance_3D(num_face,elem,zone_VEF);
-                dist *= 4./3.; // pour se ramener a distance paroi / milieu de num[0]-num[1]-num[2]
-                norm_v=norm_3D_vit1_lp(vit, num_face, num[0], num[1], num[2], zone_VEF, val1, val2, val3);
+                  if (l_unif)
+                    d_visco = visco;
+                  else
+                    d_visco = tab_visco[elem];
 
-                if (l_unif)
-                  d_visco = visco;
-                else
-                  d_visco = tab_visco[elem];
+                  // PQ : 01/10/03 : corrections par rapport a la version premiere
+                  norm_tau = d_visco*norm_v/dist;
+                  u_etoile = sqrt(norm_tau);
+                  y_plus(elem) = dist*u_etoile/d_visco;
 
-                // PQ : 01/10/03 : corrections par rapport a la version premiere
+                }// else yplus already computed
 
-                if(lp)
-                  {
-                    norm_tau = sqrt(cisaillement(num_face,0)*cisaillement(num_face,0)
-                                    +cisaillement(num_face,1)*cisaillement(num_face,1)
-                                    +cisaillement(num_face,2)*cisaillement(num_face,2));
-                  }
-                else norm_tau = d_visco*norm_v/dist;
+            }// loop on faces
 
-                u_etoile = sqrt(norm_tau);
-                y_plus(elem) = dist*u_etoile/d_visco;
+        }// Fin de paroi fixe
 
-              }
-        } // Fin paroi fixe
-
-    } // Fin boucle sur les bords
+    }// Fin boucle sur les bords
 }
 
 

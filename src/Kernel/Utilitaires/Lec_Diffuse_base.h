@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,6 +74,7 @@ public:
   virtual void set_diffuse(int diffuse);
 protected:
   Lec_Diffuse_base();
+  Lec_Diffuse_base(const Lec_Diffuse_base&) = default;
   Lec_Diffuse_base& operator=(const Lec_Diffuse_base& );
   virtual Entree& get_entree_master() = 0;
 };

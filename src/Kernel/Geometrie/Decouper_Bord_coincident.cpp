@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -246,9 +246,9 @@ void Decouper_Bord_coincident::Decouper_Bord_coincident_(Zone& zone)
               {
                 Faces& les_faces=curseur.valeur()->faces();
                 if(dimension==2)
-                  les_faces.typer(segment_2D);
+                  les_faces.typer(Faces::segment_2D);
                 else
-                  les_faces.typer(triangle_3D);
+                  les_faces.typer(Faces::triangle_3D);
 
                 IntTab& sommets=les_faces.les_sommets();
                 assert(sommets.dimension(1)==dimension);
@@ -269,9 +269,9 @@ void Decouper_Bord_coincident::Decouper_Bord_coincident_(Zone& zone)
         {
         Faces& les_faces=curseur->faces();
         if(dimension==2)
-        les_faces.typer(segment_2D);
+        les_faces.typer(Faces::segment_2D);
         else
-        les_faces.typer(triangle_3D);
+        les_faces.typer(Faces::triangle_3D);
 
         IntTab& sommets=les_faces.les_sommets();
         int nb_faces=sommets.dimension(0);

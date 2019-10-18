@@ -1,0 +1,13 @@
+#!/bin/bash
+# Lancement du calcul couple TRUST:
+source $TRUST_ROOT/env_TRUST.sh
+data=docond_VEF
+trust $data 1>ok.out 2>ok.err
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok
+else
+  rm -f is_ok
+fi
+#touch ok.data
+mv -f $data.TU ok.TU

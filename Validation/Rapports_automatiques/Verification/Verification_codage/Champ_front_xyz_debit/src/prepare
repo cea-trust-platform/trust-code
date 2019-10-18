@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# chap 1 : cas 0 VEF 2D champ_front_uniforme
+sed "s/ENTREE/champ\_front\_uniforme 2 4 1/; s/VALUE/champ\_front\_uniforme 1 2/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_0.data
+sed -i "23a trianguler_h dom" Champ_front_xyz_debit_0.data
+
+# chap 2 : cas 1 VEF 2D champ_front_fonc_xyz
+sed "s/ENTREE/champ\_front\_fonc\_xyz 2 y*(y-2) 2*y/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_1.data
+sed -i "23a trianguler_h dom" Champ_front_xyz_debit_1.data
+
+# chap 3 : cas 4 VEF 2D low rate depending of time
+sed "s/ENTREE/champ\_front\_uniforme 2 1 2/; s/VALUE/champ\_front\_uniforme 1 -0.25/; s/VDF/VEFPreP1B/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_4.data
+sed -i "23a trianguler_h dom" Champ_front_xyz_debit_4.data
+sed -i "s/champ\_front\_uniforme 1 -0.25/Champ\_front\_tabule 1 { # nb time steps # 3 # Times # 0 2 4 # Values # 1 5 22 }/" Champ_front_xyz_debit_4.data
+sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 360/" Champ_front_xyz_debit_4.data
+sed -i "s/vitesseX periode 100/vitesseX periode 2.1/" Champ_front_xyz_debit_4.data
+sed -i "s/vitesseY periode 100/vitesseY periode 2.1/" Champ_front_xyz_debit_4.data
+
+# chap 4 : cas 2 VEF 2D inclined
+sed "s/ENTREE/champ\_front\_fonc\_xyz 2 0*(y<0.5)-0.25*(y_GE_0.5)*(y_LT_1)-0.75*(y_GE_1)*(y_LT_1.5)-0.5*(y_GE_1.5)*(y_LT_2) 2/; s/VALUE/champ\_front\_uniforme 1 -2.5/; s/VDF/VEFPreP1B/; s/10 5 0.1 5 2/20 5 0.01 6. 2/g" Champ_front_xyz_debit.data > Champ_front_xyz_debit_2.data
+sed -i "23a transformer dom x+0.5*y y" Champ_front_xyz_debit_2.data
+sed -i "24a trianguler_h dom" Champ_front_xyz_debit_2.data
+sed -i "25a raffiner_isotrope dom" Champ_front_xyz_debit_2.data
+
+# chap 5 : cas 3 VDF 3D 
+sed "s/ENTREE/champ\_front\_uniforme 3 2 1 1/; s/VALUE/champ\_front\_uniforme 1 4/" Champ_front_xyz_debit.data > Champ_front_xyz_debit_3.data
+sed -i "s/11 11/21 21/" Champ_front_xyz_debit_3.data
+sed -i "23a Extruder { domaine dom direction 0 0 3 nb_tranches 41 }" Champ_front_xyz_debit_3.data
+sed -i "s/dom  2 0 0/dom  3 0 0 0/"  Champ_front_xyz_debit_3.data
+sed -i "87a devant paroi_fixe"  Champ_front_xyz_debit_3.data
+sed -i "88a derriere paroi_fixe"  Champ_front_xyz_debit_3.data
+sed -i "111,112d"   Champ_front_xyz_debit_3.data
+sed -i "s/paroi\_fixe/symetrie/" Champ_front_xyz_debit_3.data
+sed -i "s/nb\_pas\_dt\_max 200/nb\_pas\_dt\_max 300/" Champ_front_xyz_debit_3.data
+sed -i "s/tranches 2 1/tranches 2 1 1/" Champ_front_xyz_debit_3.data
+sed -i "25a dimension 3" Champ_front_xyz_debit_3.data 
+
+
+liste="Champ_front_xyz_debit_0 Champ_front_xyz_debit_1 Champ_front_xyz_debit_2 Champ_front_xyz_debit_3 Champ_front_xyz_debit_4"
+for cas in $liste
+do
+  mkdir $cas
+  mv $cas.data $cas
+  cp post_run propertiesGeometry.py traite_sonde.py $cas
+  sed -i "s/ENTREE/$cas/g" $cas/propertiesGeometry.py
+done
+
+liste2="Champ_front_xyz_debit_0 Champ_front_xyz_debit_1 Champ_front_xyz_debit_4"
+for cas in $liste2
+do
+  sed -n "80,88p" $cas/$cas.data > $cas/BC.txt
+  sed -i 's/^\s*//' $cas/BC.txt # supprime les espaces en debut de ligne
+done
+
+sed -n "82,90p" Champ_front_xyz_debit_2/Champ_front_xyz_debit_2.data > Champ_front_xyz_debit_2/BC.txt
+sed -i 's/^\s*//' Champ_front_xyz_debit_2/BC.txt # supprime les espaces en debut de ligne
+
+sed -n "80,90p" Champ_front_xyz_debit_3/Champ_front_xyz_debit_3.data > Champ_front_xyz_debit_3/BC.txt
+sed -i 's/^\s*//' Champ_front_xyz_debit_3/BC.txt # supprime les espaces en debut de ligne
+
+

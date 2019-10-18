@@ -116,10 +116,21 @@ Champ\_fonc\_xyz\index{xyz} dom 2 tanh(4*y)*(0.95+0.1*rnd(1)) 0.
 \bigskip
 
 {\bfseries
-Possible error:}
+Possible errors:}
+
+Error 1:
 
 Champ\_fonc\_txyz 1 \ cos(10*t)*(1{\textless}x{\textless}2)*(1{\textless}y{\textless}2)
 
-Previous line is wrong. It should be written:
+Previous line is wrong. It should be written as:
 
 Champ\_fonc\_txyz 1 \ cos(10*t)*(1{\textless}x)*(x{\textless}2)*(1{\textless}y)*(y{\textless}2)
+
+\bigskip
+Error 2:
+
+Champ\_front\_fonc\_xyz 1 \ 20*(x{\textless}-2)+10*(y]-5)+3*(z{\textgreater}0)
+
+Previous line is wrong because negative values are not written between parentheses. It should be written as:
+
+Champ\_front\_fonc\_xyz 1 \ 20*(x{\textless}(-2))+10*(y](-5))+3*(z{\textgreater}0)

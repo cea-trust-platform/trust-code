@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -159,28 +159,29 @@ const Nom& Segment::nom_lml() const
 // Postcondition: la methode ne modifie pas l'objet
 int Segment::contient(const ArrOfDouble& pos, int element ) const
 {
-  // on  teste si la positon correspond a un des deux sommets
-
   assert(pos.size_array()==dimension);
-
 
   const Zone& zone=ma_zone.valeur();
   const Domaine& dom=zone.domaine();
   const IntTab& elem=zone.les_elems();
-  for (int s=0; s<2; s++)
+  // Test whether OM = a.O1 with O and 1 the extreme points of the seg and M the point to be tested
+  double autre_a = 0;
+  for (int d=0; d<dimension; d++)
     {
-      int ok=1;
-      for (int d=0; (d<3)&&(ok==1); d++)
+      double O1 = dom.coord(elem(element,1), d) - dom.coord(elem(element,0), d);
+      double OM = pos(d) - dom.coord(elem(element,0), d);
+      if (!est_egal(O1,0))
         {
-          double ps = dom.coord(elem(element,s), d);
-          double pv=pos(d);
-          //Cerr<<ps<<" "<<pv<<finl;
-          if( !est_egal(ps,pv)) ok=0;
+          double a = OM/O1;
+          // M is outside O1?
+          if (a<-Objet_U::precision_geom || a>1+Objet_U::precision_geom) return 0;
+          // a is not the same as for another dimension, <=> not aligned
+          if (autre_a>0 && !est_egal(a, autre_a)) return 0;
+          autre_a = a;
         }
-      if (ok==1)
-        return 1;
+      else if (!est_egal(OM,0)) return 0; // M is not along O1
     }
-  return 0;
+  return 1;
 }
 
 

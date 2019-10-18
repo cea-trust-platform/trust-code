@@ -97,15 +97,18 @@ then
 else
     #LAPACK="\$(TRUST_BLAS_LAPACK)/liblapack.a \$(TRUST_BLAS_LAPACK)/libblas.a"
     # Don't use static libraries cause problem when linking module for Baltik (not -fPIC compiled)
-    LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
-    # BLAS/LAPACK Intel (mkl) libraries have different names so try to find it thanks to PETSc
-    if [ "$petscmachineinfo" != "" ]
+    if [ -f $TRUST_BLAS_LAPACK/libopenblas.so ]
     then
-       if [ "$MKLROOT" != "" ]
-       then
-          # Since Pastix has been added (threaded), with GNU compilers and MKL library, -lgomp should be added if found:
-          LAPACK=" `awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"mkl") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
-       fi
+       # Prefer openblas if founded:
+       LAPACK="-L\$(TRUST_BLAS_LAPACK) -lopenblas"
+    else
+       LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
+    fi
+    # BLAS/LAPACK Intel (mkl) libraries have different names so try to find it thanks to PETSc
+    if [ "$petscmachineinfo" != "" ] && [ "`grep mkl_ $petscmachineinfo`" != "" ]
+    then
+        # Since Pastix has been added (threaded), with GNU compilers and MKL library, -lgomp should be added if found:
+        LAPACK=" `awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"mkl") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
     fi
 fi
 
@@ -113,26 +116,22 @@ fi
 # MED
 #####
 MEDLDFLAGS=""
-#if [ -f $TRUST_MED_ROOT/lib/libmed.a ] && [ -f $TRUST_MED_ROOT/lib/libhdf5.a ]
-if [ "$TRUST_DISABLE_MED" != "1" ]
+# Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
+lz="" 
+if [ -f $TRUST_MED_ROOT/bin/h5cc ]
 then
-   # Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
-   lz="" 
-   if [ -f $TRUST_MED_ROOT/bin/h5cc ]
-   then
-      # Meilleur moyen: si MED est compile on regarde dans h5cc
-      [ "`grep lz $TRUST_MED_ROOT/bin/h5cc`" != "" ] && lz="-lz "
-   else
-      # Sinon, on regarde si la librairie existe... Mais attention on ne verifie pas si elle est 32 ou 64 bits...
-      [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz="-lz "
-   fi
-   # Binaire 32 bits, pour ameliorer la portabilite:
-   if [ "`uname -m`" = i686 ] && [ "$lz" != "" ] && [ -f /usr/lib/libz.a ]
-   then
-      lz="/usr/lib/libz.a "
-   fi
-   MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a $lz-lm -ldl"
+   # Meilleur moyen: si MED est compile on regarde dans h5cc
+   [ "`grep lz $TRUST_MED_ROOT/bin/h5cc`" != "" ] && lz="-lz "
+else
+   # Sinon, on regarde si la librairie existe... Mais attention on ne verifie pas si elle est 32 ou 64 bits...
+   [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz="-lz "
 fi
+# Binaire 32 bits, pour ameliorer la portabilite:
+if [ "`uname -m`" = i686 ] && [ "$lz" != "" ] && [ -f /usr/lib/libz.a ]
+then
+   lz="/usr/lib/libz.a "
+fi
+MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a $lz-lm -ldl"
 
 #################################################
 # Construction des fichiers $TRUST_ENV/make.lib?
@@ -178,7 +177,7 @@ do
     LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
    done
   # echo $LIBS_MEDC
-   [ "$TRUST_DISABLE_MED" != "1" ] && [ "$TRUST_DISABLE_MEDCOUPLING" != "1" ] && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
+   [ "$TRUST_INT64" != "1" ] && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
    [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  	>> $fic
    
    [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "  		>> $fic

@@ -1,6 +1,6 @@
 FILE1=TRUST_tutorial
 FILE2=Baltik_tutorial
-FILE3=Readme_eclipse
+FILE3=ICoCo_tutorial
 
 default:  all
 
@@ -38,7 +38,7 @@ else
 	$(MAKE) clean_$(FILE3)
 	pdflatex -interaction=nonstopmode $(FILE3).tex > LOG
 	pdflatex -interaction=nonstopmode $(FILE3).tex >> LOG
-	mv $(FILE3).pdf $(TRUST_ROOT)/src
+	mv $(FILE3).pdf ..
 	$(MAKE) clean_build
 endif
 

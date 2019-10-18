@@ -65,7 +65,7 @@
 #include <fstream>
 #include <iostream>
 #include <visitstream.h>
-
+#include <vector>
 
 // ****************************************************************************
 //  Method: avtlata constructor
@@ -424,6 +424,8 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
     points->Delete();
     
     const IntTab & conn = geom.elements_;
+    const IntTab & elem_faces = geom.elem_faces_;
+    const IntTab & faces = geom.faces_;
     const int ncells = conn.dimension(0);
     int nverts = conn.dimension(1);
     
@@ -456,7 +458,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
       type_cell=VTK_POLYGON;
       break;
     case Domain::polyedre:
-      type_cell=VTK_CONVEX_POINT_SET;
+      type_cell= elem_faces.dimension(0) > 0 ? VTK_POLYHEDRON : VTK_CONVEX_POINT_SET;
       break;
     default:
       type_cell=-1;
@@ -465,6 +467,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
       break;
     }
     vtkIdType *verts = new vtkIdType[nverts];
+    std::vector<vtkIdType> poly_p, poly_f;
     if (type_cell == VTK_VERTEX && ncells == 0) {
       // Cells are implicit. Create them:
       ugrid->Allocate(nnodes);
@@ -491,6 +494,15 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
           verts[5]=conn(i,5);
           verts[6]=conn(i,7);
           verts[7]=conn(i,6);
+        } else if (type_cell==VTK_POLYHEDRON) { 
+          //polyhedra, face by face
+          int j, nfaces = 0, npts = 0, k, i_f, s, f;
+          poly_p.resize(0), poly_f.resize(0);
+          for (j = 0; j < conn.dimension(1); j++) if ((s = conn(i, j)) >= 0) poly_p.push_back(s), npts++;
+          for (j = 0; j < elem_faces.dimension(1); j++) if ((f = elem_faces(i, j)) >= 0)
+            for (k = 0, nfaces++, i_f = poly_f.size(), poly_f.push_back(0); k < faces.dimension(1) ; k++) if ((s = faces(f, k)) >= 0)
+              poly_f.push_back(s), poly_f[i_f]++;
+          ugrid->InsertNextCell(type_cell, npts, &poly_p[0], nfaces, &poly_f[0]);
         } else if ((type_cell==VTK_CONVEX_POINT_SET)||(type_cell==VTK_POLYGON)) {
           int nverts_loc=nverts;
           for (int j = 0; j < nverts; j++) 
@@ -545,7 +557,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
           for (int j = 0; j < nverts; j++) 
             verts[j] = conn(i,j);
         }
-        if ((type_cell!=VTK_CONVEX_POINT_SET) && (type_cell!=VTK_POLYGON))
+        if ((type_cell!=VTK_POLYHEDRON) &&(type_cell!=VTK_CONVEX_POINT_SET) && (type_cell!=VTK_POLYGON))
          
           ugrid->InsertNextCell(type_cell, nverts, verts);
       }

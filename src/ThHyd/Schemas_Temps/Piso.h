@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #define Piso_included
 
 #include <Simpler.h>
+#include <Navier_Stokes_std.h>
 
 //Description
 
@@ -95,6 +96,8 @@ public :
 
   Piso();
   virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge);
+  virtual void first_special_treatment(Equation_base&, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu);
+  virtual void second_special_treatment(Equation_base& eqn, DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice);
 
 protected :
 
@@ -141,6 +144,10 @@ protected :
 class Implicite : public Piso
 {
   Declare_instanciable(Implicite);
+public :
+  virtual void first_special_treatment(Equation_base&, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu);
+  virtual void second_special_treatment(Equation_base& eqn, DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice);
+
 };
 
 

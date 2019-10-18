@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Frontiere_dis_base.h>
 #include <Probleme_base.h>
 #include <Param.h>
+#include <Champ_Uniforme.h>
 
 Implemente_instanciable_sans_constructeur(Conduction,"Conduction",Equation_base);
 
@@ -169,7 +170,41 @@ const Champ_base& Conduction::diffusivite_pour_pas_de_temps()
 // Postcondition:
 void Conduction::associer_milieu_base(const Milieu_base& le_milieu)
 {
-  le_solide = ref_cast(Solide,le_milieu);
+  associer_solide(ref_cast(Solide,le_milieu));
+}
+
+// Description:
+//    Associe le milieu solide a l'equation.
+// Precondition:
+// Parametre: Solide& un_solide
+//    Signification: le milieu solide a associer a l'equation
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: l'equation a un milieu physique associe
+void Conduction::associer_solide(const Solide& un_solide)
+{
+  const Champ_Don& rho = un_solide.masse_volumique();
+  const Champ_Don& Cp = un_solide.capacite_calorifique();
+
+  if (! ( (sub_type(Champ_Uniforme,rho.valeur())) &&
+          (sub_type(Champ_Uniforme,Cp.valeur())) )   )
+    {
+      Cerr << "ERROR: Conduction equation: one of the physical properties rho ou Cp is not of type Champ_Uniforme!" << finl;
+      Cerr << "Consider using Conduction_Milieu_Variable instead of Conduction." << finl;
+      Process::exit(-1);
+    }
+  if  ( (rho(0,0) <= 0) || (Cp(0,0) <= 0) )
+    {
+      Cerr << "ERROR: Conduction equation: one of the physical properties rho ou Cp is not striclty positive." << finl;
+    }
+
+  le_solide = un_solide;
 }
 
 // Description:

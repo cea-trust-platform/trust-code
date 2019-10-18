@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,6 @@
 
 #include <Nom.h>
 #include <stdio.h>
-#include <Motcle.h>
 #include <string>
 int Nom::nb_noms=0;
 
@@ -709,27 +708,20 @@ Nom::operator const char*() const
 // Postcondition:
 int operator ==(const Nom& un_nom, const char* const un_autre)
 {
-  //int res_actu=(strcmp(un_nom.nom_.c_str(), un_autre)==0);
   int res_actu=(un_nom.nom_.compare(un_autre)==0);
-  if ((Nom::check_case_non_sensitive_==1) && (!res_actu))
+#ifndef NDEBUG
+  if ((!res_actu) && (Nom::check_case_non_sensitive_==1))
     {
-      Motcle toto(un_autre);
-      if (toto==un_nom)
+      Nom toto(un_autre);
+      if (toto.majuscule().nom_.compare(un_nom.getChar()) == 0)
         {
-          if (Process::je_suis_maitre())
-            {
-              Cerr << "Warning: " << un_nom << " and " << un_autre << " are they really different ?" << finl;
-              Cerr << "A test in the code on a string of characters does not seem to take account of the case." << finl;
-              Cerr << "Contact TRUST support by sending your data file of this calculation." << finl;
-              Cerr<<finl;
-              /*
-                #ifndef NDEBUG
-                Process::exit();
-                #endif
-              */
-            }
+          Cerr << "Warning: " << un_nom << " and " << un_autre << " are they really different ?" << finl;
+          Cerr << "A test in the code on a string of characters does not seem to take account of the case." << finl;
+          Cerr << "Contact TRUST support by sending your data file of this calculation." << finl;
+          Cerr << finl;
         }
     }
+#endif
   return res_actu;
 }
 

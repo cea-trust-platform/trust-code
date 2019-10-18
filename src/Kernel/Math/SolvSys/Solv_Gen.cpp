@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,9 @@ Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
 Solv_Gen::Solv_Gen()
 {
   seuil_ = _SEUIL_Gen_;
+  nb_it_max_ = 1000000;
+  nb_it_max_flag = 0;
+  force_ = 0;
 }
 
 void Solv_Gen::reinit()
@@ -56,7 +59,7 @@ Entree& Solv_Gen::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(6);
+  Motcles les_parametres(8);
   {
     les_parametres[0] = "seuil";
     les_parametres[1] = "impr";
@@ -64,6 +67,8 @@ Entree& Solv_Gen::readOn(Entree& is )
     les_parametres[3] = "precond";
     les_parametres[4] = "save_matrice|save_matrix";
     les_parametres[5] = "quiet";
+    les_parametres[6] = "nb_it_max";
+    les_parametres[7] = "force";
   }
   int rang;
 
@@ -71,7 +76,7 @@ Entree& Solv_Gen::readOn(Entree& is )
   is >> motlu;
   if (motlu != accolade_ouverte)
     {
-      Cerr << "Error when reading the parameters for the conjugate gradient SSOR " << finl;
+      Cerr << "Error when reading the parameters for the generic solver " << finl;
       Cerr << "One expected : " << accolade_ouverte << finl;
       exit();
     }
@@ -112,6 +117,17 @@ Entree& Solv_Gen::readOn(Entree& is )
             fixer_limpr(-1);
             break;
           }
+        case 6:
+          {
+            is>>nb_it_max_;
+            nb_it_max_flag = 1;
+            break;
+          }
+        case 7:
+          {
+            force_ = 1;
+            break;
+          }
         default :
           {
             Cerr << "Error when reading the parameters of the generic solver " << finl;
@@ -120,6 +136,12 @@ Entree& Solv_Gen::readOn(Entree& is )
           }
         }
       is >> motlu;
+    }
+  if ((nb_it_max_flag ==0) && (force_==1) )
+    {
+      Cerr << "Error while reading the parameters of the generic solver " << finl;
+      Cerr << "When you choose to 'force' negative ipar[5], you should specify nb_it_max in your datafile" << finl;
+      exit();
     }
   return is;
 }
@@ -142,7 +164,7 @@ int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice,
         solution.resize(n);
       else
         {
-          Cerr << "Solv_GCP::resoudre_systeme : wrong dimension of the vectors" << finl;
+          Cerr << "Solv_Gen::resoudre_systeme : wrong dimension of the vectors" << finl;
           return(-1);
         }
     }
@@ -228,6 +250,9 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
   int nmax = max(Process::mp_sum(n), 100);
   ipar[5] = nmax; // nb max de produit matrice vect
   // si nb negatif on s arrete a la convergence
+  // Si gros calcul (Process::mp_sum(n)>2147483647), specifier nb_it_max et imposer ipar[5] = -1
+  // on le fait desormais en specifiant le mot cle 'force' dans le jdd
+  if (force_ ==1) ipar[5] = -1;
 
   fpar[0] = seuil_; // tolerance relative
   fpar[0]= 1e-50 ; // GF les autres solveurs n'ont pas de tol relative
@@ -252,7 +277,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
 
   int ret = ipar[0];
 
-  while(ret != 0)
+  while(ret != 0 && niter < nb_it_max_ )
     {
       niter++;
       W7.ref_array(w, ipar[7]-1, ntot);
@@ -372,16 +397,25 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
 
   if (je_suis_maitre())
     {
-
       //      Cerr<<"--------------------------------------------------"<<finl;
       if (limpr()>-1)
-        Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+        {
+          if (niter == nb_it_max_)
+            {
+              Cout<<finl<<"Maximum number of iteration nb_it_max for SolvGen = "<<nb_it_max_ << " reached..." <<finl;
+              if (nb_it_max_flag == 0) Cout<<"Advice: You can modify nb_it_max by setting it in your datafile..." <<finl;
+            }
+          //Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+          double residu_relatif = (fpar[2] > 0 ? fpar[5] / fpar[2] : fpar[5]);
+          Cout << finl << "Final residue: " << fpar[5] << " ( " << residu_relatif << " )"<<finl;
+        }
       //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
       //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
       //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
       //Cerr<<"fpar(6) -- current residual/error norm : "<<fpar[5]<<finl;
       //Cerr<<"fpar(7) -- convergence rate : "<<fpar[6]<<finl;
     }
+
   if (0)
     {
       DoubleVect tmp(solution);
@@ -410,7 +444,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
       err = Process::mp_sum(err);
       Cerr<<"ERROR: "<<sqrt(err)<<finl;
     }
-  return(1);
+  return niter;
 }
 
 

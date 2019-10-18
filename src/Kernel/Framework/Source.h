@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,6 @@ class Source : public DERIV(Source_base)
 public :
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
-  DoubleTab& calculer_derivee(DoubleTab& ) const;
-  DoubleTab& ajouter_derivee(DoubleTab& ) const;
   inline void mettre_a_jour(double temps);
   void completer();
   int impr(Sortie&) const;

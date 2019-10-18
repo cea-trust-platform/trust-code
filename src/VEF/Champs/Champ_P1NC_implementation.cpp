@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1810,7 +1810,8 @@ valeur_aux_elems_compo(const DoubleTab& positions,
   const Zone& zone_geom = zone();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
-  assert(val.size() == les_polys_size);
+  // Commenter en attendant de comprendre le dimensionnement de xp apres la sortie de version
+  // assert(val.size() == les_polys_size);
   int le_poly;
 
   const DoubleTab& ch = cha.valeurs();

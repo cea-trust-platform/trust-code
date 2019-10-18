@@ -643,10 +643,10 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
         FacesIndex-=1;
         PolygonIndex-=1;
 
-        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+        // Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
 
         ref_cast(Polygone,ele.valeur()).affecte_connectivite_numero_global( FacesIndex, PolygonIndex, les_elems);
-        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+        // Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
         // on remet +1 car apres on le retire....
         les_elems+=1;
 
@@ -842,7 +842,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
           face.typer(type_face);
           int nface=nm1;
           familles.resize_array(nface);
-          if (face.type_face()!=polygone_3D)
+          if (face.type_face()!=Faces::polygone_3D)
             {
 
               int nbsom=face.nb_som_faces();
@@ -1825,12 +1825,13 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       // determination de la direction inutile
       int nbsom=sommets2.dimension(0);
       int dirinut=-1;
+      const double epsilon = Objet_U::precision_geom;
       for (int dir=0; dir<dim; dir++)
         {
           int trouve=1;
           double val1=sommets2(0,dir);
           for (int i=0; i<nbsom; i++)
-            if (val1!=sommets2(i,dir))
+            if (dabs(val1-sommets2(i,dir))>epsilon)
               {
                 trouve=0;
                 Cerr<<val1 << " "<<sommets2(i,dir)<<finl;
@@ -2037,7 +2038,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   for (int fr=0; fr<nbfr; fr++)
     {
       zone.frontiere(fr).faces().associer_zone(zone);
-      if ( zone.frontiere(fr).faces().type_face()!=vide_0D)
+      if ( zone.frontiere(fr).faces().type_face()!=Faces::vide_0D)
         zone.frontiere(fr).faces().reordonner();
     }
   //  GF au moins en polyedre il faut reordonner

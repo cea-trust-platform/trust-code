@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -776,6 +776,8 @@ void Probleme_base::completer()
       loi.completer();
       ++curseur;
     }
+
+  les_postraitements.completer();
 }
 
 // Description:

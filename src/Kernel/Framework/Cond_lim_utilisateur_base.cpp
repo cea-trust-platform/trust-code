@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -211,6 +211,15 @@ int Cond_lim_utilisateur_base::is_pb_VDF()
   else
     return 0;
 }
+int Cond_lim_utilisateur_base::is_pb_PolyMAC()
+{
+  const Discretisation_base& discr=mon_equation->discretisation();
+  Nom nom_discr=discr.que_suis_je();
+  if (nom_discr=="PolyMAC")
+    return 1;
+  else
+    return 0;
+}
 int Cond_lim_utilisateur_base::is_pb_VEF()
 {
   Cerr<<"Cond_lim_utilisateur_base::is_pb_VEF not coded" <<finl;
@@ -330,6 +339,15 @@ void paroi_contact::complement(Nom& ajout)
       ajout+=nom_autre_bord;
       ajout+=" temperature 1.e10";
     }
+  else if (is_pb_PolyMAC())
+    {
+      //paroi_echange_contact_PolyMAC pb2 Droit1 temperature 1.e10
+      ajout= "paroi_echange_contact_PolyMAC ";
+      ajout+=nom_autre_pb;
+      ajout+=" ";
+      ajout+=nom_autre_bord;
+      ajout+=" temperature 1.e10";
+    }
   else
     {
 
@@ -383,6 +401,16 @@ void paroi_contact_fictif::complement(Nom& ajout)
       if (rayo==1)
         ajout="Paroi_Echange_contact_rayo_semi_transp_VDF ";
 
+      ajout+=nom_autre_pb;
+      ajout+=" ";
+      ajout+=nom_autre_bord;
+      ajout+=" temperature ";
+      ajout+=Nom(conduct_fictif/ep_fictif,"%e");
+    }
+  else if (is_pb_PolyMAC())
+    {
+      //paroi_echange_contact_PolyMAC pb2 Droit1 temperature conduc / ep
+      ajout= "paroi_echange_contact_PolyMAC ";
       ajout+=nom_autre_pb;
       ajout+=" ";
       ajout+=nom_autre_bord;

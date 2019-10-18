@@ -110,6 +110,8 @@ void DataArrayDouble::FindTupleIdsNearTuplesAlg(const BBTreePts<SPACEDIM,int>& m
 template<int SPACEDIM>
 void DataArrayDouble::FindClosestTupleIdAlg(const BBTreePts<SPACEDIM,int>& myTree, double dist, const double *pos, int nbOfTuples, const double *thisPt, int thisNbOfTuples, int *res)
 {
+  // PL si dist nul (cas de nbOfTuples=1), alors boucle infinie plus bas
+  if (dist==0) dist=1.e-12;
   double distOpt(dist);
   const double *p(pos);
   int *r(res);

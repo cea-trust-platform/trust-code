@@ -1,0 +1,129 @@
+# Conduction 2D : Diverses conditions limites thermiques #
+# PARALLEL OK 2 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+Domaine rightboundary
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 11 11 
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 1.
+		Bord Bas    Y = 0. 0. <= X <= 1.
+		Bord Droit  X = 1. 0. <= Y <= 1.
+	}
+} 
+
+trianguler_H dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0
+	tmax 100.
+	dt_min 0.0000001
+	dt_max 1.0
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Scheme_euler_implicit sch_imp
+Read sch_imp
+{
+	tinit 0
+	tmax 100.
+	dt_min 0.0000001
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-8
+        facsec 10.0
+        facsec_max 1e6
+        solveur implicite { 
+                solveur gmres { diag seuil 1.e-13 nb_it_max 5 impr }
+                          }
+}
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.1
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+	Conduction
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1 10. 
+			}
+		boundary_conditions {
+			Haut paroi_adiabatique
+			Bas  paroi_adiabatique
+			Gauche paroi_temperature_imposee
+			      Champ_Front_Uniforme 1 0.0
+			Droit paroi_echange_externe_impose 
+			       h_imp Champ_Front_Uniforme 1 20.0 
+			       T_ext Champ_Front_Uniforme 1 100.
+		}
+	}
+
+	Post_processing
+	{
+		Definition_champs {
+	                Twall Extraction { Domaine rightboundary nom_frontiere Droit methode trace source refChamp { Pb_champ pb temperature } } 
+
+			T_mean reduction_0D { 
+				methode moyenne
+				source_reference Twall
+				}
+		}
+		Probes {
+			Tmean T_mean periode 0.01 numero_elem_sur_maitre 0
+		}
+		format lata
+		fields dt_post 30.
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Solve pb
+
+End

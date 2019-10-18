@@ -49,8 +49,15 @@ then
    # S'il est different, on le change
    if [ ! -f $name.cpp ] || [ "`diff $name.cpp $tmp/$name.cpp`" != "" ]
    then
-      echo "Fichier $name modifie:"
-      [ -f $name.cpp ]  && diff $name.cpp $tmp/$name.cpp
+      if [ -f $name.cpp ]
+      then
+         echo "Fichier $name modifie:"
+         diff $name.cpp $tmp/$name.cpp
+      else
+         echo "Fichier $name cree:"
+         touch $name.cpp
+	 git add $name.cpp
+      fi
       cat $tmp/$name.cpp > $name.cpp
       touch CMakeLists.txt
       # le touch est important pour recompiler mon_main !!!!!

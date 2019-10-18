@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -172,7 +172,7 @@ void Transformer::transformation_complete(Noms& les_fcts)
           LIST_CURSEUR(Bord) curseur=les_bords;
           while (curseur)
             {
-              curseur->faces().typer(quadrangle_3D);
+              curseur->faces().typer(Faces::quadrangle_3D);
               ++curseur;
             }
           les_bords.associer_zone(domaine().zone(0));

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,8 @@
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc_Tabule.h>
-
+#include <Discretisation_base.h>
+#include <Champ_val_tot_sur_vol_base.h>
 
 // Description:
 //    Lit le terme de puissance thermique a partir
@@ -61,40 +62,63 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
       else  if (type_zdis.debute_par("Zone_VEF"))
         type += "_VEF";
     }
-  la_puissance.typer(type);
-  Champ_Don_base& ch_puissance = ref_cast(Champ_Don_base,la_puissance.valeur());
-  is >> ch_puissance;
-  if ((!sub_type(Champ_Uniforme,ch_puissance))&&(!sub_type(Champ_Fonc_Tabule,ch_puissance)))
-    {
-      const DoubleTab& p=ch_puissance.valeurs();
-      if (p.get_md_vector()!=eqn.zone_dis().valeur().zone().md_vector_elements())
-        {
-          for (int i=0; i<1000; i++)
-            {
-              Cerr<<" Warning !!!!!! The field associate to the power seems to not have the good support !!!!!!!" <<finl;
-              Cerr<<"If you use champ_fonc_med try use_exisiting_domain"<<finl;
-            }
-          Process::exit();
-        }
-    }
-  if (la_puissance.le_nom()=="anonyme")
-    la_puissance->fixer_nom_compo("Puissance_volumique");
+  la_puissance_lu.typer(type);
+  Champ_Don_base& ch_puissance_lu = ref_cast(Champ_Don_base,la_puissance_lu.valeur());
+  is >> ch_puissance_lu;
+
+  eqn.probleme().discretisation().discretiser_champ("CHAMP_ELEM", eqn.zone_dis(), "pp", "1",1,0., la_puissance);
+
+  if (la_puissance_lu.le_nom()=="anonyme")
+    la_puissance_lu->fixer_nom_compo("Puissance_volumique");
   else
     {
 // on met a jour le nom des compos
-      Cerr << "The field 'Puissance_volumique' has been renamed as '" << la_puissance.le_nom() << "'." << finl;
-      la_puissance->fixer_nom_compo(la_puissance.le_nom());
+      Cerr << "The field 'Puissance_volumique' has been renamed as '" << la_puissance_lu.le_nom() << "'." << finl;
+      la_puissance_lu->fixer_nom_compo(la_puissance_lu.le_nom());
     }
+
+  la_puissance->fixer_nom_compo(la_puissance_lu.le_nom());
+  // PL: Il faut faire nommer_completer_champ_physique les 2 champs (plantage sinon pour une puissance de type Champ_fonc_tabule)
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());
+  la_puissance.valeur().valeurs() = 0;
+  la_puissance.valeur().affecter(ch_puissance_lu);
+}
+
+void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base& eqn)
+{
+  if (sub_type(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur()))
+    {
+      const Zone_dis_base& zdis = eqn.zone_dis().valeur();
+      const Zone_Cl_dis_base& zcldis = eqn.zone_Cl_dis().valeur();
+      Champ_val_tot_sur_vol_base& champ_puis = ref_cast(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur());
+      champ_puis.evaluer(zdis,zcldis);
+    }
+}
+
+void Terme_Puissance_Thermique::mettre_a_jour(double temps)
+{
+  la_puissance_lu.mettre_a_jour(temps);
+  la_puissance.valeur().affecter(la_puissance_lu.valeur());
 }
 
 void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
 {
-  const Champ_Don& le_Cp = pb.milieu().capacite_calorifique();
-  const Champ_Don& rho = pb.milieu().masse_volumique();
-  associer_champs(rho,le_Cp);
+  if (!pb.is_QC())
+    {
+      if (!pb.milieu().capacite_calorifique().non_nul())
+        {
+          Cerr << "La capacite calorifique Cp n'est pas definie..." << finl;
+          Cerr << "Elle est necessaire pour la definition du terme source puissance thermique." << finl;
+          Process::exit();
+        }
+      const Champ_Don& le_Cp = pb.milieu().capacite_calorifique();
+      const Champ_Don& rho = pb.milieu().masse_volumique();
+      associer_champs(rho, le_Cp);
+    }
 }
 
-void   Terme_Puissance_Thermique::modify_name_file(Nom& fichier) const
+void Terme_Puissance_Thermique::modify_name_file(Nom& fichier) const
 {
   if (la_puissance.le_nom()!="Puissance_volumique")
     {

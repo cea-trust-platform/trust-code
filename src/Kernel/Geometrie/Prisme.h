@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -402,7 +402,7 @@ inline int Prisme::est_structure() const
 //    Acces:
 // Retour: Type_Face
 //    Signification: le type de la face i
-//    Contraintes: i=0 (quadrangle_3D), i=1 (triangle_3D)
+//    Contraintes: i=0 (Faces::quadrangle_3D), i=1 (Faces::triangle_3D)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -412,13 +412,13 @@ inline Type_Face Prisme::type_face(int i) const
   switch(i)
     {
     case 0:
-      return quadrangle_3D;
+      return Faces::quadrangle_3D;
     case 1:
-      return triangle_3D;
+      return Faces::triangle_3D;
     default :
       Cerr << "Error, a prism has 2 types of faces and not " << i << finl;
       exit();
-      return quadrangle_3D;
+      return Faces::quadrangle_3D;
     }
 }
 

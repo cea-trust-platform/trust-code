@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 #include <Ref_Champ_base.h>
 #include <Ref_Postraitement.h>
+#include <IntTab.h>
 #include <DoubleTab.h>
 #include <Motcle.h>
 #include <Ref_Operateur_Statistique_tps_base.h>
@@ -47,11 +48,12 @@ class Zone;
 //////////////////////////////////////////////////////////////////////////////
 class Sonde : public Objet_U
 {
-  Declare_instanciable_sans_destructeur(Sonde);
+  Declare_instanciable_sans_constructeur_ni_destructeur(Sonde);
 
 public :
 
-  inline Sonde(const Nom& );
+  Sonde();
+  Sonde(const Nom& );
   void associer_post(const Postraitement& );
   void initialiser();
   void mettre_a_jour(double temps, double tinit);
@@ -65,9 +67,6 @@ public :
   inline const IntVect& les_poly() const;
   inline void fixer_periode(double);
   inline double temps() const;
-  //int add(const DoubleTab&);
-  //int add(const double, const double);
-  //int add(const double, const double, const double);
   inline SFichier& fichier();
   inline ~Sonde();
   inline const Nom& get_nom() const
@@ -82,55 +81,45 @@ public :
   {
     return dim ;
   } ;
+
+  // Traitement des bords (option "gravcl")
+  void ajouter_bords(const DoubleTab& coords_bords);
+  void init_bords();
+  void mettre_a_jour_bords();
+
 protected :
 
   REF(Postraitement) mon_post;
-  Nom nom_;                                // le nom de la sonde
-  Nom nom_fichier_;                        // le nom du fichier contenant la sonde
+  Nom nom_;                               // le nom de la sonde
+  Nom nom_fichier_;                       // le nom du fichier contenant la sonde
   int dim;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
   int nbre_points1,nbre_points2,nbre_points3;        // faire des sonde_segment,sonde_plan,etc...
   REF(Champ_Generique_base) mon_champ;
-  //REF(Champ_base) ma_source;
   REF(Operateur_Statistique_tps_base) operateur_statistique_;        // Reference vers un operateur statistique eventuel
-  int ncomp;                           // Numero de la composante a sonder
+  int ncomp;                              // Numero de la composante a sonder
   // Si ncomp = -1 la sonde s'applique a toutes les
   // composantes du champ
-  DoubleTab les_positions_;                // les coordonnees des sondes ponctuelles
+  DoubleTab les_positions_;               // les coordonnees des sondes ponctuelles
   DoubleTab les_positions_sondes_;        // les coordonnees des sondes ponctuelles non modifie
-  int numero_elem_;                        // vaut -1 si pas defini et vaut le numero de l'elem sur le maitre
-  IntVect elem_;                        // les elements contenant les sondes ponctuelles
-  double periode;                        // periode d'echantillonnage
+  int numero_elem_;                       // vaut -1 si pas defini et vaut le numero de l'elem sur le maitre
+  IntVect elem_;                          // les elements contenant les sondes ponctuelles
+  double periode;                         // periode d'echantillonnage
   // cles pour typage des sondes (sondes redefinies aux noeuds ou d'apres les valeurs aux sommets ou au centre de gravite ou aux sommets)
-  int nodes,chsom,grav,som;
-  DoubleTab valeurs_locales,valeurs_sur_maitre;                        // valeurs_locales les valeurs sur chaque proc, valeurs_sur_maitre les valeurs regroupes sur le maitre
+  bool nodes,chsom,grav,gravcl,som;
+  DoubleTab valeurs_locales,valeurs_sur_maitre;     // valeurs_locales les valeurs sur chaque proc, valeurs_sur_maitre les valeurs regroupes sur le maitre
   int nbre_points_tot;
   double nb_bip;
   SFichier le_fichier_;
   Motcle nom_champ_lu_;
-  VECT(ArrOfInt) participant ; // vecteur d'ArrOfInt sur le maitre ; participant[pe][i] -> le ieme point sur pe correspond  la  participant [pe][i]  eme position
-  int reprise;        // si reprise=0, on cree la sonde, sinon on ecrit a la suite
+  VECT(ArrOfInt) participant ;            // vecteur d'ArrOfInt sur le maitre ; participant[pe][i] -> le ieme point sur pe correspond  la  participant [pe][i]  eme position
+  int reprise;                            // si reprise=0, on cree la sonde, sinon on ecrit a la suite
   Nom type_;
+  int orientation_faces_;
+
+  // Traitement des bords (option "gravcl")
+  ArrOfInt faces_bords_;                  // array containing the indices of the boundary faces hit by the probe
+  IntTab rang_cl_;                        // for a given face, index of the CL that this face bears
 };
-
-
-// Description:
-//    Constructeur d'une sonde a partir de son nom.
-// Precondition:
-// Parametre: Nom& nom
-//    Signification: le nom de la sonde a construire
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Sonde::Sonde(const Nom& nom)
-  : nom_(nom), ncomp(-1)
-{}
-
 
 
 // Description:

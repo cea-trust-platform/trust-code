@@ -64,7 +64,7 @@ if [ -f ${REP}$lata ]
 then
    echo $ECHO_OPTS "Chapter {
 	Title \"Visualization via VisIt\" " >> $prm
-   lata2dx ${REP}$lata writeprm 2>&1 | grep -v "] " | grep -v _boundaries | awk '{print "\n\tvisu {\n\t\ttitle \""$4" "$5"\"\n\t\t"$0"\n\t}"}'>> $prm
+   lata2dx ${REP}$lata writeprm 2>&1 | grep -v "] " | grep -v _boundaries | awk '{print "\n\tvisu {\n\t\twidth 8cm\n\t\ttitle \""$4" "$5"\"\n\t\t"$0"\n\t}"}'>> $prm
    echo $ECHO_OPTS "}\n" >> $prm
    sed -i "1,$ s?scalar?pseudocolor?g" $prm
    sed -i "1,$ s?title \" \"?title \"MESH\"?g" $prm
@@ -73,6 +73,7 @@ fi
 # Paragraph with curve block
 if [ -f ${REP}$son ]
 then
+   width="Width 12cm" # Essayer de mettre 2 courbes par page
    nbson=`awk '{print $NR}' ${REP}$son`
    echo $ECHO_OPTS "Chapter {
 	Title \"Visualization via Gnuplot\" " >> $prm
@@ -83,16 +84,20 @@ then
       type=`grep Type ${REP}$file | cut -d " " -f 3`
       if [[ "$type" == "SEGMENT" ]]
       then
-          echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$probe\"">> $prm
+          echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$field profile\"">> $prm
+	  echo $ECHO_OPTS "\n\t\t$width" >> $prm
           echo $ECHO_OPTS "\t\tinclude_description_curves 0\n\t\tlabelX \"AXIS\"\n\t\tlabelY \"$field\"" >> $prm
           echo $ECHO_OPTS "\t\tcurve {\n\t\t\tsegment $case $probe" >> $prm
+	  echo $ECHO_OPTS "\t\t\tlegende \"$probe\"" >> $prm
           echo $ECHO_OPTS "\t\t\tstyle linespoints\n\t\t}" >> $prm
           echo $ECHO_OPTS "\t}" >> $prm
       #elif [[ "$type" == "POINTS" ]]
       #then
-      #    echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$probe\"">> $prm
+      #    echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$field profile\"">> $prm
+      #    echo $ECHO_OPTS "\n\t\t$width" >> $prm
       #    echo $ECHO_OPTS "\t\tinclude_description_curves 0\n\t\tlabelX \"AXIS\"\n\t\tlabelY \"$field\"" >> $prm
       #    echo $ECHO_OPTS "\t\tcurve {\n\t\t\tpoints $case $probe" >> $prm
+      #    echo $ECHO_OPTS "\t\t\tlegende \"$probe\"" >> $prm
       #    echo $ECHO_OPTS "\t\t\tstyle linespoints\n\t\t}" >> $prm
       #    echo $ECHO_OPTS "\t}" >> $prm
       else
@@ -112,13 +117,15 @@ then
         nbcol=`expr $nbcol - 1`
         for ((j=1 ; $nbscal - $j + 1 ; j++))
         do
-          echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$probe\"">> $prm
+          echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$field evolution\"">> $prm
+	  echo $ECHO_OPTS "\n\t\t$width" >> $prm
  	  echo $ECHO_OPTS "\t\tinclude_description_curves 0\n\t\tlabelX \"TIME\"\n\t\tlabelY \"${lab[$j]}"$field"\"" >> $prm
 	  k=`expr $j + 1`
           for ((i=$k ; $nbcol - $i + $k ; i=$i+$nbscal))
           do
             echo $ECHO_OPTS $file | awk -v REP=${REP} '{print "\t\tcurve {\n\t\t\tfile "REP$0""}' >> $prm
             echo $ECHO_OPTS "\t\t\tcolumns (\$1) ($"$i")" >> $prm
+	    echo $ECHO_OPTS "\t\t\tlegende \"$probe $i\"" >> $prm
             #echo $ECHO_OPTS "\t\t\tlegend \"column $i\"" >> $prm
             echo $ECHO_OPTS "\t\t\tstyle linespoints\n\t\t}" >> $prm
           done
@@ -131,14 +138,21 @@ then
       probe=`echo $ECHO_OPTS $file | sed "s/$1_//g" | sed "s/\.plan//g" | awk '{print ""$0""}'`
       field=`grep GRILLE ${REP}$file | cut -d " " -f 3`
       type=`grep GRILLE ${REP}$file | cut -d " " -f 2`
-      echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$probe\"">> $prm
+      echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$field 2D map\"">> $prm
+      echo $ECHO_OPTS "\n\t\t$width" >> $prm
       echo $ECHO_OPTS "\t\tinclude_description_curves 0\n\t\tlabelX \"AXIS\"\n\t\tlabelY \"AXIS\"" >> $prm
       echo $ECHO_OPTS "\t\tcurve {\n\t\t\tplan $case $probe" >> $prm
+      echo $ECHO_OPTS "\t\t\tlegende \"$probe\"" >> $prm
       echo $ECHO_OPTS "\t\t\tstyle points\n\t\t}" >> $prm
       echo $ECHO_OPTS "\t}" >> $prm
    done
    echo $ECHO_OPTS "}\n" >> $prm
 fi
+echo $ECHO_OPTS "Chapter {
+\tTitle \"Computer performance\"
+\ttableau_performance {
+\t}
+}" >> $prm
 
 echo "-> Generate prm file... OK"
 [ "$genonly" = "1" ] && exit
@@ -148,7 +162,7 @@ echo "=========================="
 
 # Creation of pdf file
 # --------------------
-Run_fiche -not_run -o $1.pdf
+Run_fiche -not_run -o $1.pdf -xpdf
 echo "=========================="
 if [ -f ${REP}build/$1.pdf ]
 then

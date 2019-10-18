@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -288,9 +288,20 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                   const DoubleTab& values_source_i = source_i.valeurs( );
                   const Zone_VF& zvf_source_i = ref_cast( Zone_VF, zone_source_i );
 
-                  //composite case
-                  //if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && ((localisation_=="??")|| (localisation_=="elem_som") ))
-                  if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && (localisation_=="??"))
+
+                  MD_Vector md;
+                  md = values_source_i.get_md_vector( );
+
+                  //composite case, in particular Champ_{P0,Face}_PolyMAC...
+                  if (zvf_source_i.que_suis_je()=="Zone_PolyMAC" && sub_type( MD_Vector_composite, md.valeur( )))
+                    {
+                      const MD_Vector& md0 = ref_cast(MD_Vector_composite, md.valeur()).get_desc_part(0);
+                      if (md0 == zvf_source_i.zone( ).les_elems().get_md_vector( ))
+                        sources_location.add( "elem" );
+                      else if (md0 == zvf_source_i.face_sommets( ).get_md_vector( ))
+                        sources_location.add("faces");
+                    }
+                  else if( ( sub_type( MD_Vector_composite, md.valeur( ) ) ) && (localisation_=="??"))
                     {
                       Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
                       Cerr << "The source number "<<i<<" is composite and the location was not provided. It is forbidden to apply a 'transformation' on a composite source without providing a location. "<<finl;
@@ -303,11 +314,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                       // md = md_comp.get_desc_part( part );
                       // when dealing with pression_pa it leads to have elem and som locations
                     }
-
-                  MD_Vector md;
-                  md = values_source_i.get_md_vector( );
-
-                  if ( md == zvf_source_i.face_sommets( ).get_md_vector( ) )
+                  else if ( md == zvf_source_i.face_sommets( ).get_md_vector( ) )
                     {
                       sources_location.add( "faces" );
                     }
@@ -518,7 +525,20 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   if (zvf.que_suis_je().debute_par("Zone_VDF"))
     is_VDF = 1;
   if (localisation_ == "elem")
-    positions = zvf.xp();
+    {
+      positions = zvf.xp();
+      if (positions.size() == 0)
+        {
+          zvf.zone().calculer_centres_gravite(positions);
+        }
+      if (positions.size()>0)
+        {
+          // ToDo : corriger un jour xp dimensionne a nb_elem_tot et qui devrait etre un vecteur distribue comme xv...
+          // La correction serait a faire au niveau de Elem_geom_base::calculer_centre_gravite mais ensuite cela oblige
+          // a corriger pas mal de code pour tenir compte de ce changement.
+          positions.resize(zvf.nb_elem(), positions.dimension(1));
+        }
+    }
   else if (localisation_ == "som")
     positions = get_ref_domain().coord_sommets();
   else if (localisation_ == "faces")
@@ -544,7 +564,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
 
   int nb_sources = get_nb_sources();
   nb_pos = positions.dimension(0);
-  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale"));
+  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale")||(methode_=="vecteur"));
   double x=0;
   double y=0;
   double z=0;
@@ -582,7 +602,8 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
       if (directive!=directive_so)
         {
           sources_val[so].resize(nb_pos,nb_compso);
-          source_so.valeur_aux(positions,sources_val[so]);
+          if (directive == "CHAMP_FACE") source_so.valeur_aux_faces(sources_val[so]);
+          else source_so.valeur_aux(positions,sources_val[so]);
         }
       else
         {
@@ -791,8 +812,9 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
             }
         }
     }
-
-  valeurs_espace.echange_espace_virtuel();
+  // PL: Suppression d'une synchronisation couteuse tres souvent inutile
+  // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel
+  // valeurs_espace.echange_espace_virtuel();
   return espace_stockage.valeur();
 }
 

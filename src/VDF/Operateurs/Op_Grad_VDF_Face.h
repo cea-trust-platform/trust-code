@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Ref_Zone_VDF.h>
 #include <Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Matrice_Morse.h>
 
 //
 // .DESCRIPTION class Op_Grad_VDF_Face
@@ -52,6 +53,8 @@ public:
                 const Champ_Inc& );
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  void dimensionner(Matrice_Morse& ) const;
+  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const;
   int impr(Sortie& os) const;
 
   inline Zone_VDF& zone_VDF();

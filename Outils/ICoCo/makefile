@@ -5,5 +5,5 @@ all:	Test_ICoCo.sh
 check:	all
 	(cd ICoCo_src; make check_optim)
 clean:
-	(cd ICoCo_src; make dist_clean|| echo dist_clean not possible)
+	(cd ICoCo_src; make dist_clean|| echo dist_clean not possible;rm -f configure)
 	#rm -f LOG

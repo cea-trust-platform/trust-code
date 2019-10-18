@@ -31,6 +31,11 @@ echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" > share/doc_src/Keywor
 mkdir -p share/doc_auto
 cd share/doc_auto
 cp $dest/XTriou/doc.pdf ${project_name}_Reference_Manual.pdf 
-ln -sf $TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf .
-ln -sf  ${project_name}_Reference_Manual.pdf TRUST_Reference_Manual.pdf 
-
+# on chage l'hyperlien dans TRUST_Generic_Guide.pdf
+cd $project_directory/build
+cp -r $TRUST_ROOT/doc/TRUST/Generic_Guide .
+cd ./Generic_Guide
+sed -i "s/TRUST_Reference_Manual/`echo $project_name`_Reference_Manual/" Generic_Guide.tex
+make
+cd $project_directory/share/doc_auto
+mv $project_directory/build/TRUST_Generic_Guide.pdf .

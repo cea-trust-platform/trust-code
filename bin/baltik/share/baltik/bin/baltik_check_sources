@@ -63,7 +63,8 @@ fi
 cd $project_build_directory
 
 #DIRS=$(for f in `ls *.cpp *.cxx *.h *.xx *.hpp *.c *.f 2>/dev/null | grep -v info_atelier.cpp` ; do  f2=`ls -l $f | awk '{print $NF}' `;  dirname $f2;done |sort -u)
-DIRS=`ls -l * | awk '/->/ {print $NF}' | xargs dirname | sort -u` 
+DIRS=`ls -l * | awk '/->/ {print $NF}' | xargs dirname 2>/dev/null | sort -u` # Plus rapide (mais necessite une version dirname recente)
+[ "$DIRS" = "" ] && DIRS=`ls -l * | awk '/->/ {print $NF}' | xargs -L 1 dirname 2>/dev/null | sort -u` # Plus lent avec -L 1 si version dirname ancienne
 
 erreur=0
 
@@ -125,7 +126,7 @@ then
          else
             rm -f $marqueur
          fi      
-         [ $err -ne 0 ] && erreur=$err && echo Error in `pwd` && echo
+         [ $err -ne 0 ] && erreur=$err && echo WARNING: error in `pwd` && echo
          cd $project_build_directory
       fi
    done

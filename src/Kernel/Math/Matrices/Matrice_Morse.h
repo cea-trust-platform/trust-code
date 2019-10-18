@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,10 @@ class DoubleVects;
 //                  tab1[n+1] = nnz+1
 //    Remarque: dans ce commentaire le [] est a prendre au sens fortran:
 //                    tab1[1] designe la premiere valeur de tab1
+//
+//    C'est aussi le format décrit dans la page Wikipedia :
+//        https://fr.wikipedia.org/wiki/Matrice_creuse
+//    en faisant un +1 sur tous les éléments des tableaux d'indices (IA et JA dans la page)
 //    -----------------------------------------------------------------------
 // .SECTION voir aussi
 //     Matrice_Base Matrice_Morse_Sym
@@ -75,6 +79,8 @@ public :
   Sortie& imprimer(Sortie& s) const;
   Sortie& imprimer_formatte(Sortie& s) const;
   Sortie& imprimer_formatte(Sortie& s, int symetrie) const;
+  Sortie& imprimer_image(Sortie& s) const;
+  Sortie& imprimer_image(Sortie& s, int symetrie) const;
   int largeur_de_bande() const;         // Retourne la largeur de bande
   void remplir(const IntLists& ,const DoubleLists& ,const DoubleVect& );
   void remplir(const IntLists& ,const DoubleLists&);
@@ -207,7 +213,8 @@ public :
   // initialisation a la matrice unite
   void unite();
 
-
+  // extraction d'un sous-bloc
+  void construire_sous_bloc(int nl0, int nc0, int nl1, int nc1, Matrice_Morse& result) const;
 
   void formeC() ;
   void formeF() ;
@@ -224,7 +231,7 @@ protected :
   IntVect tab2_;
   DoubleVect coeff_;
 
-  int m_;
+  int m_;          // Number of columns
   int symetrique_; // Pour inliner operator()(i,j) afin d'optimiser
 
 

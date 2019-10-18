@@ -1,5 +1,5 @@
 #Pmacro declareArr(__Scalar__,__scalar__)
- 
+
 #ifndef ArrOf__Scalar___included
 #define ArrOf__Scalar___included
 
@@ -10,6 +10,7 @@
 #Pif("__scalar__"=="int")
 #include <Int.h>
 #Pendif
+#include <climits>
 
 class FArrOf__Scalar__;
 class V__Scalar__data;
@@ -55,11 +56,11 @@ class ArrOf__Scalar__ : public Array_base
 public:
   //
   // Destructeur
-  // 
+  //
   ~ArrOf__Scalar__();
   //
   // Constructeurs
-  //   
+  //
   ArrOf__Scalar__();
   ArrOf__Scalar__(int size);
 //  ArrOf__Scalar__(int size, __scalar__ initial_value);
@@ -74,7 +75,7 @@ public:
   virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
   // Methodes de gestion de l'allocation memoire:
-  // Assigne une valeur au drapeau "smart_resize" 
+  // Assigne une valeur au drapeau "smart_resize"
   // (reallocation uniquement si la taille augmente)
   void    set_smart_resize(int flag);
   // Gestion du type de memoire alouee (standard ou pool de memoire Trio-U)
@@ -84,7 +85,7 @@ public:
 
   // Construction de tableaux qui pointent vers des donnees existantes
   // !!! Utiliser ref_data avec precaution (attention a size_array_)
-  virtual void ref_data(__scalar__* ptr, int size); 
+  virtual void ref_data(__scalar__* ptr, int size);
   virtual void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1);
   // Operateur copie
   ArrOf__Scalar__ & operator=(const ArrOf__Scalar__ &);
@@ -93,7 +94,7 @@ public:
 
   //
   // Methodes d'acces aux donnees et aux caracteristiques du tableau
-  // 
+  //
   // Remplit le tableau avec la valeur en parametre
   inline ArrOf__Scalar__ & operator=(__scalar__ valeur);
   inline       __scalar__ & operator[](int i);
@@ -131,7 +132,7 @@ public:
 #Pendif
 
   void        ordonne_array();
-  void        array_trier_retirer_doublons();        
+  void        array_trier_retirer_doublons();
 
 protected:
   //
@@ -155,7 +156,7 @@ private:
   // Pointeur nul => le tableau est "detache".
   // Pointeur non nul => le tableau est "normal" ou "ref_data"
   //  Si p_ est non nul, data_ pointe quelque part a l'interieur de la zone allouee
-  //  (en general au debut, sauf si le tableau a ete initialise 
+  //  (en general au debut, sauf si le tableau a ete initialise
   //   avec ref() ou attach_array() avec start > 0)
   __scalar__*   data_;
 
@@ -218,12 +219,12 @@ __scalar__ norme_array(const ArrOf__Scalar__&)  ;
 // Signification: nouvelle valeur demandee pour size_array() (doit etre >= 0)
 // Parametre: opt
 // Signification: quoi faire des anciennes case et des nouvelles cases (voir memory_resize())
-//  Attention, pour un tableau smart_resize, l'option "INIT" 
+//  Attention, pour un tableau smart_resize, l'option "INIT"
 // Precondition :
 //  - Si "new_size" est egal a la taille du tableau, aucune condition.
-//  - Sinon, 
+//  - Sinon,
 //    * le tableau ne doit pas etre un type derive de ArrOf__Scalar__ !!!
-//    * le tableau doit etre "resizable", c'est a dire: 
+//    * le tableau doit etre "resizable", c'est a dire:
 //      soit detache, soit normal (pas de type "ref_data") avec ref_count egal a 1
 inline void ArrOf__Scalar__::resize_array(int new_size, Array_base::Resize_Options opt)
 {
@@ -246,10 +247,10 @@ inline void ArrOf__Scalar__::resize_array_(int new_size, Array_base::Resize_Opti
   assert(new_size >= 0);
   // Soit le tableau est detache (data_==0), soit il est normal (p_!=0)
   // S'il est normal, il ne faut pas qu'il y ait d'autre reference au tableau,
-  // ou alors la taille ne doit pas changer. 
+  // ou alors la taille ne doit pas changer.
   assert(new_size == size_array_ || data_ == 0 || (p_ != 0 && ref_count() == 1));
   // Le seul cas ou on n'appelle pas memory_resize est le suivant:
-  //  le tableau est smart_resize 
+  //  le tableau est smart_resize
   //  ET la taille reste inferieure ou egale a la taille allouee
   //  ET on ne veut pas initialiser les nouvelles cases
   if ((opt == COPY_INIT) || (new_size > memory_size_) || (smart_resize_ == 0))
@@ -365,7 +366,7 @@ inline void   ArrOf__Scalar__::append_array(__scalar__ valeur)
 //   Attention, l'adresse peut changer apres un appel
 //   a resize_array(), ref_data, ref_array, ...
 // Precondition:
-// Retour: const __scalar__* 
+// Retour: const __scalar__*
 //   Signification: pointeur sur le premier element du tableau
 inline const __scalar__* ArrOf__Scalar__::addr() const
 {
@@ -402,6 +403,7 @@ inline __scalar__* ArrOf__Scalar__::addr()
 #Pendif
 #include <Vect_ArrOf__Scalar__.h>
 #include <Ref_ArrOf__Scalar__.h>
+#include <climits>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOf__Scalar__,"ArrOf__Scalar__",Array_base);
 
@@ -453,7 +455,7 @@ private:
   // Contient le nombre d'objets ArrOf__Scalar__ dont le membre "p" pointe
   // vers "this". On a ref_count_ >= 0.
   int ref_count_;
-  // "sz" est la taille du tableau "data_" alloue 
+  // "sz" est la taille du tableau "data_" alloue
   // On a sz >= 0.
   int size_;
   // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference
@@ -513,14 +515,14 @@ V__Scalar__data::V__Scalar__data(int size, ArrOf__Scalar__::Storage storage)
 #Pif("__scalar__"=="double")    data_ = d_ptr_trav_->d_ptr_();#Pelse    data_ = d_ptr_trav_->i_ptr_();#Pendif
     if (size>size_warning) Cerr << " OK" << finl;
     break;
-    
+
   }
   default:
     Process::exit();
   }
   ref_count_ = 1;
   size_ = size;
-  
+
   assert(data_ != 0);
 }
 
@@ -611,7 +613,7 @@ V__Scalar__data & V__Scalar__data::operator=(const V__Scalar__data & v)
 //
 // ******************************************************************
 
-// Description: 
+// Description:
 //    Ecriture du tableau sur "os" :
 //    ecrit le nombre d'elements suivi des valeurs du tableau
 // Precondition:
@@ -619,8 +621,8 @@ V__Scalar__data & V__Scalar__data::operator=(const V__Scalar__data & v)
 //    Signification: le flot de sortie a utiliser
 // Retour: Sortie&
 //    Signification: le flot de sortie modifie
-Sortie& ArrOf__Scalar__::printOn(Sortie& os) const 
-{  
+Sortie& ArrOf__Scalar__::printOn(Sortie& os) const
+{
   int sz=size_array();
   os << sz << finl;
   if (sz > 0) {
@@ -630,19 +632,19 @@ Sortie& ArrOf__Scalar__::printOn(Sortie& os) const
   return os;
 }
 
-// Description: 
+// Description:
 //    Lecture d'un tableau dans un flot d'entree
 //    Lit le nombre d'elements suivi des elements eux-memes
-// Precondition: 
+// Precondition:
 //    Le tableau doit etre "resizable" (voir precondition de resize_array_)
 // Parametre: Entree& is
 //    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: Entree& 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
+//    Contraintes:
 // Exception:
 //    Si la taille lue est negative, erreur.
 Entree& ArrOf__Scalar__::readOn(Entree& is)
@@ -734,7 +736,7 @@ ArrOf__Scalar__::ArrOf__Scalar__(int n, __scalar__ x) :
 */
 // Description:
 //     Constructeur par copie. On alloue une nouvelle zone de memoire
-//     et on copie le contenu du tableau (il s'agit d'un "deep copy"). 
+//     et on copie le contenu du tableau (il s'agit d'un "deep copy").
 //     L'attribut smart_resize_ est copie aussi.
 //     Si le tableau A est de taille nulle, on cree un tableau "detache",
 //     sinon on cree un tableau "normal".
@@ -749,7 +751,7 @@ ArrOf__Scalar__::ArrOf__Scalar__(const ArrOf__Scalar__& A): Array_base()
     p_ = new V__Scalar__data(size, STANDARD);
     data_ = p_->get_data();
     size_array_ = size;
-    memory_size_ = size;    
+    memory_size_ = size;
     smart_resize_ = A.smart_resize_;
     inject_array(A);
   } else {
@@ -826,7 +828,7 @@ ArrOf__Scalar__& ArrOf__Scalar__::operator=(const ArrOf__Scalar__& m)
   return *this;
 }
 /*
-// Description: 
+// Description:
 //   Affectation d'un tableau de type FArrOf__Scalar__
 //   (tableau stocke sur disque).
 // Precondition:
@@ -914,6 +916,8 @@ void  ArrOf__Scalar__::memory_resize(int new_size, Array_base::Resize_Options op
       new_mem_size = old_mem_size;
     else if (new_size < old_mem_size * 2)
       new_mem_size = old_mem_size * 2;
+    else if (new_size > old_mem_size && old_mem_size > INT_MAX / 2)
+      new_mem_size = INT_MAX;
   }
 
   if (new_mem_size != old_mem_size) {
@@ -979,10 +983,10 @@ void  ArrOf__Scalar__::memory_resize(int new_size, Array_base::Resize_Options op
 //    DONC: il faut supposer desormais que les nouvelles cases ne sont pas
 //    initialisees lors d'un resize.
 // Parametre: first
-//  Signification: premiere case a initialiser. 
+//  Signification: premiere case a initialiser.
 //  Contrainte:    (nb==0) ou (0 <= first < memory_size_)
 // Parametre: nb
-//  Signification: nombre de cases a initialiser. 
+//  Signification: nombre de cases a initialiser.
 //  Contrainte:    (nb==0) ou (0 < nb <= memory_size_ - first)
 void  ArrOf__Scalar__::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
 {
@@ -996,7 +1000,7 @@ void  ArrOf__Scalar__::fill_default_value(Array_base::Resize_Options opt, int fi
 #ifndef NDEBUG
 #Pif("__scalar__"=="int")
     static const int INT_INVALIDE = INT_MIN;
-    for (int i = 0; i < nb; i++) 
+    for (int i = 0; i < nb; i++)
       data[i] = INT_INVALIDE;
 #Pendif
 #Pif("__scalar__"=="double")
@@ -1009,7 +1013,7 @@ void  ArrOf__Scalar__::fill_default_value(Array_base::Resize_Options opt, int fi
     // Attention, il faut long long car sinon warning sur gcc 4.1 et i686
     static const unsigned long long VALEUR_INVALIDE =
       0x7ff7ffffffffffffULL;
-    /* static const double VALEUR_INVALIDE = DMAXFLOAT;    */  
+    /* static const double VALEUR_INVALIDE = DMAXFLOAT;    */
 
     // On utilise "memcpy" et non "=" car "=" peut provoquer une exception
     // si la copie passe par le fpu.
@@ -1018,29 +1022,29 @@ void  ArrOf__Scalar__::fill_default_value(Array_base::Resize_Options opt, int fi
 #else
     // Alternative acceptable... ?
     for (int i = 0; i < nb; i++)
-      data[i] = DMAXFLOAT*0.999;    
+      data[i] = DMAXFLOAT*0.999;
 #endif
 #Pendif
 #endif
   } else {
     // Comportement pour les tableaux normaux : compatibilite avec la
     // version precedente : on initialise avec 0.
-    for (int i = 0; i < nb; i++) 
+    for (int i = 0; i < nb; i++)
       data[i] = (__scalar__) 0;
   }
 }
 
 // ****************************************************************
-// 
+//
 //         Fonctions non membres de la classe ArrOf__Scalar__
 //
 // ****************************************************************
 
-// Description: 
+// Description:
 //  Renvoie 1 si les tableaux "v" et "a" sont de la meme taille
 //  et contiennent les memes valeurs au sens strict, sinon renvoie 0.
 //  Le test est !(v[i]!=a[i])
-int operator==(const ArrOf__Scalar__& v, const ArrOf__Scalar__& a) 
+int operator==(const ArrOf__Scalar__& v, const ArrOf__Scalar__& a)
 {
   const int n = v.size_array();
   const int na = a.size_array();
@@ -1061,13 +1065,13 @@ int operator==(const ArrOf__Scalar__& v, const ArrOf__Scalar__& a)
   return resu;
 }
 
-// Description: 
+// Description:
 //    Retourne l'indice du min ou -1 si le tableau est vide
-// Precondition: 
+// Precondition:
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
 // Retour: int
-//    Signification: indice du min 
+//    Signification: indice du min
 int imin_array(const ArrOf__Scalar__& dx){
   int indice_min = -1;
   const int size = dx.size_array();
@@ -1085,9 +1089,9 @@ int imin_array(const ArrOf__Scalar__& dx){
   return indice_min;
 }
 
-// Description: 
+// Description:
 //    Retourne l'indice du max ou -1 si le tableau est vide
-// Precondition: 
+// Precondition:
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
 // Retour: int
@@ -1109,14 +1113,14 @@ int imax_array(const ArrOf__Scalar__& dx){
   return indice_max;
 }
 
-// Description: 
+// Description:
 //    Retourne la valeur minimale
 // Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
 // Retour: __scalar__
-//    Signification: valeur du min 
+//    Signification: valeur du min
 __scalar__ min_array(const ArrOf__Scalar__& dx)
 {
   const int size = dx.size_array();
@@ -1130,14 +1134,14 @@ __scalar__ min_array(const ArrOf__Scalar__& dx)
   return valeur_min;
 }
 
-// Description: 
+// Description:
 //    Retourne la valeur maximale
-// Precondition: 
+// Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
 // Retour: __scalar__
-//    Signification: valeur du max 
+//    Signification: valeur du max
 __scalar__ max_array(const ArrOf__Scalar__& dx)
 {
   const int size = dx.size_array();
@@ -1151,31 +1155,31 @@ __scalar__ max_array(const ArrOf__Scalar__& dx)
   return valeur_max;
 }
 
-static inline __scalar__ scalar_abs(__scalar__ x) 
-{ 
+static inline __scalar__ scalar_abs(__scalar__ x)
+{
 #Pif("__scalar__"=="double")
-  return dabs(x); 
+  return dabs(x);
 #Pendif
 #Pif("__scalar__"=="int")
-  return abs(x); 
-#Pendif  
+  return abs(x);
+#Pendif
 }
 
-// Description: 
+// Description:
 //    Retourne le max des abs(i)
-// Precondition: 
+// Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: __scalar__
-//    Signification: valeur du max des valeurs absolues 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Signification: valeur du max des valeurs absolues
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 __scalar__ max_abs_array(const ArrOf__Scalar__& dx)
 {
   const int size = dx.size_array();
@@ -1189,21 +1193,21 @@ __scalar__ max_abs_array(const ArrOf__Scalar__& dx)
   return valeur_max;
 }
 
-// Description: 
+// Description:
 //    Retourne le min des abs(i)
-// Precondition: 
+// Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: __scalar__
-//    Signification: valeur du min des valeurs absolues 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Signification: valeur du min des valeurs absolues
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 __scalar__ min_abs_array(const ArrOf__Scalar__& dx)
 {
   const int size = dx.size_array();
@@ -1246,7 +1250,7 @@ static True_int  fonction_compare_arrof__scalar___ordonner(const void * data1, c
 #Pendif
 }
 
-// Description: 
+// Description:
 //   Tri des valeurs du tableau dans l'ordre croissant.
 //   La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
 void ArrOf__Scalar__::ordonne_array()
@@ -1254,12 +1258,12 @@ void ArrOf__Scalar__::ordonne_array()
   const int size = size_array_;
   if (size > 1) {
     __scalar__ * data = data_;
-    qsort(data, size, sizeof(__scalar__), 
+    qsort(data, size, sizeof(__scalar__),
           fonction_compare_arrof__scalar___ordonner);
   }
 }
 
-// Description: 
+// Description:
 //   Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons
 //   La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
 void ArrOf__Scalar__::array_trier_retirer_doublons()
@@ -1301,7 +1305,7 @@ void ArrOf__Scalar__::array_trier_retirer_doublons()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void ArrOf__Scalar__::ref_array(ArrOf__Scalar__& m, int start, int size) 
+void ArrOf__Scalar__::ref_array(ArrOf__Scalar__& m, int start, int size)
 {
   assert(&m != this);
   // La condition 'm n'est pas de type "ref_data"' est necessaire pour
@@ -1348,10 +1352,10 @@ void ArrOf__Scalar__::ref_data(__scalar__* ptr, int size)
 // Retour: int
 //    Signification: 1 si les donnees du tableau ont ete supprimees
 // Precondition:
-// Postcondition: 
+// Postcondition:
 //  On a p_==0, data_==0 et size_array_==0, memory_size_ = 0
 //  L'attribut smart_resize_ est conserve.
-int ArrOf__Scalar__::detach_array() 
+int ArrOf__Scalar__::detach_array()
 {
   int retour = 0;
   if (p_) {
@@ -1371,7 +1375,7 @@ int ArrOf__Scalar__::detach_array()
 }
 
 // Description:
-//    Amene le tableau dans l'etat "normal", "detache" ou "ref_array" 
+//    Amene le tableau dans l'etat "normal", "detache" ou "ref_array"
 //    en associant une sous-zone de memoire du tableau m, definie par start et size
 //    Si size < 0, on prend le tableau m jusqu'a la fin.
 // Precondition:
@@ -1385,11 +1389,11 @@ int ArrOf__Scalar__::detach_array()
 // Exception:
 // Effets de bord:
 // Postcondition:
-//    Si m est detache, le tableau reste detache, 
+//    Si m est detache, le tableau reste detache,
 //    si m est "ref_array", le tableau devient "ref_array",
 //    sinon le tableau est "normal", avec ref_count > 1
 //    Si m est de taille nulle, le tableau reste detache + Warning dans fichier .log
-void ArrOf__Scalar__::attach_array(const ArrOf__Scalar__& m, int start, int size) 
+void ArrOf__Scalar__::attach_array(const ArrOf__Scalar__& m, int start, int size)
 {
   // Le tableau doit etre detache
   assert(data_ == 0 && p_ == 0);
@@ -1445,7 +1449,7 @@ void ArrOf__Scalar__::attach_array(const ArrOf__Scalar__& m, int start, int size
 ArrOf__Scalar__& ArrOf__Scalar__::inject_array(const ArrOf__Scalar__& source,
                                                int nb_elements,
                                                int first_element_dest,
-                                               int first_element_source) 
+                                               int first_element_source)
 {
   assert(&source != this);
   assert(nb_elements >= -1);
@@ -1487,19 +1491,19 @@ int ArrOf__Scalar__::ref_count() const
 
 // Description:
 //    Addition case a case sur toutes les cases du tableau
-// Precondition: 
+// Precondition:
 //    la taille de y doit etre au moins egale a la taille de this
 // Parametre: const ArrOf__Scalar__& y
 //    Signification: tableau a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: ArrOf__Scalar__&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 ArrOf__Scalar__& ArrOf__Scalar__::operator+=(const ArrOf__Scalar__& y)
 {
   assert(size_array()==y.size_array());
@@ -1511,20 +1515,20 @@ ArrOf__Scalar__& ArrOf__Scalar__::operator+=(const ArrOf__Scalar__& y)
   return *this;
 }
 
-// Description: 
+// Description:
 //     ajoute la meme valeur a toutes les cases du tableau
-// Precondition: 
+// Precondition:
 // Parametre: const __scalar__ dy
 //    Signification: valeur a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: ArrOf__Scalar__
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 ArrOf__Scalar__& ArrOf__Scalar__::operator+=(const __scalar__ dy)
 {
   __scalar__ * data = data_;
@@ -1551,7 +1555,7 @@ ArrOf__Scalar__& ArrOf__Scalar__::operator-=(const ArrOf__Scalar__& y)
 }
 
 
-// Description: 
+// Description:
 //     soustrait la meme valeur a toutes les cases
 // Retour: ArrOf__Scalar__ &
 //    Signification: *this
@@ -1566,11 +1570,11 @@ ArrOf__Scalar__& ArrOf__Scalar__::operator-=(const __scalar__ dy)
 
 #Pif("__scalar__"=="double")
 
-// Description: 
+// Description:
 //     muliplie toutes les cases par dy
 // Retour: ArrOf__Scalar__ &
 //    Signification: *this
-ArrOf__Scalar__& ArrOf__Scalar__::operator*= (const __scalar__ dy) 
+ArrOf__Scalar__& ArrOf__Scalar__::operator*= (const __scalar__ dy)
 {
   __scalar__ * data = data_;
   const int n = size_array();
@@ -1580,11 +1584,11 @@ ArrOf__Scalar__& ArrOf__Scalar__::operator*= (const __scalar__ dy)
 }
 
 
-// Description: 
+// Description:
 //     divise toutes les cases par dy
 // Retour: ArrOf__Scalar__ &
 //    Signification: *this
-ArrOf__Scalar__& ArrOf__Scalar__::operator/= (const __scalar__ dy) 
+ArrOf__Scalar__& ArrOf__Scalar__::operator/= (const __scalar__ dy)
 {
   const __scalar__ i_dy = 1. / dy;
   operator*=(i_dy);
@@ -1595,20 +1599,20 @@ ArrOf__Scalar__& ArrOf__Scalar__::operator/= (const __scalar__ dy)
 //    Produit scalaire de deux "array".
 //    (dotproduct_array remplace operator* car le nom indique clairement
 //     que l'on fait un produit scalaire non distribue)
-// Precondition: 
+// Precondition:
 // Parametre: const ArrOf__Scalar__& dx
 //    Signification: premier tableau
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Parametre: const ArrOf__Scalar__& dy
 //    Signification: second tableau (obligatoirement de meme taille)
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: __scalar__
 //    Signification: produit scalaire
-//    Contraintes: 
+//    Contraintes:
 __scalar__ dotproduct_array (const ArrOf__Scalar__& dx, const ArrOf__Scalar__& dy)
 {
   const int size = dx.size_array();
@@ -1622,10 +1626,10 @@ __scalar__ dotproduct_array (const ArrOf__Scalar__& dx, const ArrOf__Scalar__& d
   return resultat;
 }
 
-// Description: 
+// Description:
 //   Calcul de la norme du vecteur dx (fonction blas DNRM2,
 //   soit racine carree(somme des dx[i]*dx[i]).
-__scalar__ norme_array(const ArrOf__Scalar__& dx)  
+__scalar__ norme_array(const ArrOf__Scalar__& dx)
 {
   integer n = dx.size_array();
   __scalar__ resultat = 0.;

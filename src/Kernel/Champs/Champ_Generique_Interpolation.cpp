@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -385,14 +385,17 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   else if (localisation_=="som")
     {
       const int nb_sommets = domaine.nb_som();
-
+      // PL: mise a jour de l'espace virtuel de la source:
+      Champ copie_source;
+      copie_source = source;
+      copie_source.valeurs().echange_espace_virtuel();
       if (ncomp==-1)
         {
           DoubleTab val_temp;
-          source.calculer_valeurs_som_post(val_temp,
-                                           nb_sommets,
-                                           nom_champ_interpole,
-                                           domaine);
+          copie_source.valeur().calculer_valeurs_som_post(val_temp,
+                                                          nb_sommets,
+                                                          nom_champ_interpole,
+                                                          domaine);
           if (nb_comp==1)
             for (int i_val=0; i_val<imax; i_val++)
               {
@@ -409,11 +412,11 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
         //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
         {
           DoubleTab val_temp;
-          source.calculer_valeurs_som_compo_post(val_temp,
-                                                 ncomp,
-                                                 nb_sommets,
-                                                 nom_champ_interpole,
-                                                 domaine);
+          copie_source.valeur().calculer_valeurs_som_compo_post(val_temp,
+                                                                ncomp,
+                                                                nb_sommets,
+                                                                nom_champ_interpole,
+                                                                domaine);
 
           int dim0 = val_temp.dimension(0);
           for (int i=0; i<dim0; i++)
@@ -734,9 +737,9 @@ void Champ_Generique_Interpolation::discretiser_domaine()
       const Probleme_base& Pb = get_ref_pb_base();
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
-      Nom type;
       // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
-      type = sub_type(Poly_geom_base, domaine_.valeur().zone(0).type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
+      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().zone(0).type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
+      Nom type = "NO_FACE_Zone_";
       if (localisation_=="faces")
         {
           type="Zone_";

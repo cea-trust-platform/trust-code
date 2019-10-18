@@ -37,14 +37,14 @@ make_tools()
    echo "$MESSAGE tools and plugins:"
    echo "==========================="
    reps="Outils/lance_test_seq_par Outils/triou2doxygen Outils/lata2dx"
-   [ "$TRUST_DISABLE_MEDCOUPLING" = 0 ] && [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && reps=$reps" Outils/ICoCo"
+   [ "$TRUST_INT64" = 0 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && reps=$reps" Outils/ICoCo"
    [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"
    reps=$reps" Outils/TRIOXDATA Outils/doxygen"
    [ "$TRUST_WITHOUT_DOC" != 1 ] && reps=$reps" doc"
    [ "$TRUST_DISABLE_GNUPLOT" != 1 ] && reps=$reps" Outils/gnuplot"
-   [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_GMSH" != 1 ] && reps=$reps" Outils/Gmsh"
+   [ "$TRUST_DISABLE_GMSH" != 1 ] && reps=$reps" Outils/Gmsh"
    [ "$TRUST_WITHOUT_VISIT" != 1 ] && reps=$reps" Outils/VisIt"
-   [ "$TRUST_DISABLE_MEDCOUPLING" = 0 ] && [ "$TRUST_DISABLE_PLOT2D" != 1 ] && reps=$reps" Outils/IHM"
+   [ "$TRUST_INT64" = 0 ] && [ "$TRUST_DISABLE_PLOT2D" != 1 ] && reps=$reps" Outils/IHM"
    err_tool=0
    for rep in $reps
    do
@@ -116,6 +116,19 @@ CLEAN="" && MESSAGE="Building" && [ "${1%clean}" != "$1" ] && CLEAN=clean && MES
 [ ! -d $TRUST_ROOT/build ] && mkdir $TRUST_ROOT/build
  
 COMPILE=$TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
+if [ -f $COMPILE ]
+   then
+      # on recupere la date du dernier COMPILE
+      year=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 11`
+      month=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 7`
+      day=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 8`
+      Hh=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 9 | cut -d ':' -f 1`
+      Mm=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 9 | cut -d ':' -f 2`
+      Ss=`head -1 $COMPILE | tr -s ' ' | cut -d ' ' -f 9 | cut -d ':' -f 3`
+      DATE=$year"_"$month"_"$day"_"$Hh"_"$Mm"_"$Ss
+      # on renome le dernier fichier COMPILE existant
+      mv $COMPILE $TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD"_"$DATE".log"
+fi
 echo "TRUST compilation on $HOST the `date` ...">$COMPILE
 
 # Creation des fichiers License pour check_license_in_file.sh
@@ -194,7 +207,7 @@ then
    else
       LIBMETIS=""
    fi
-   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` `[ "$TRUST_DISABLE_MED" = 0 ] && echo LIBMED` LIBMEDCOUPLING"
+   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` LIBMED LIBMEDCOUPLING"
    time=`date "+%s"`
    for rep in $reps
    do

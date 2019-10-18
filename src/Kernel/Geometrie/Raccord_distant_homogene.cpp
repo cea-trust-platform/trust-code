@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,13 @@
 #include <DoubleTabs.h>
 #include <Domaine.h>
 #include <communications.h>
+
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingMemArray.hxx>
+
+using namespace MEDCoupling;
+#endif
 
 Implemente_instanciable_sans_constructeur(Raccord_distant_homogene,"Raccord_distant_homogene",Raccord_distant);
 
@@ -311,6 +318,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   for (int p = 0; p < parts; p++)
     racc_vois[p].set_smart_resize(1);
 
+#ifdef MEDCOUPLING_
   // On traite les informations, chaque proc connait tous les XV
   // Si le proc porte un morceau du raccord_distant
   int prem_face1 = opposed_boundary.num_premiere_face();
@@ -322,85 +330,64 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
 
       ArrOfInt& Recep=raccord_distant.Tab_Recep();
       Recep.resize_array(nb_face1);
-      // Define tolerance (this could be calculated once after discretization to compute PrecisionGeom)
-      double tolerance=DMAXFLOAT;
-      const DoubleTab& coord=opposed_zone_dis.zone().domaine().coord_sommets();
-      const IntTab& sommets=opposed_zone_dis_vf.face_sommets();
-      int nb_som_par_face=sommets.dimension(1);
-      // Compute smaller distance between two items (face center and vertex)
-      for (int ind_face=0; ind_face<nb_face1; ind_face++)
+      //double tolerance = 1e-8; //not very tolerant, are we?
+      double tolerance = Objet_U::precision_geom * 100 ; //default value 1e-8 not very tolerant, are we?
+
+      //DataArrayDoubles des xv locaux et de tous les remote_xv (a la suite)
+      std::vector<MCAuto<DataArrayDouble> > vxv(parts);
+      std::vector<const DataArrayDouble*> cvxv(parts);
+      for (int p = 0; p < parts; p++)
         {
-          int face1 = ind_face+prem_face1;
-          for (int s=0; s<nb_som_par_face; s++)
-            {
-              int som = sommets(face1,s);
-              double distance=0;
-              for (int j=0; j<dim; j++)
-                {
-                  double x1=local_xv(face1,j);
-                  double x2=coord(som,j);
-                  distance+=(x1-x2)*(x1-x2);
-                }
-              distance=sqrt(distance);
-              // We divide per 10 to have a tolerance
-              double local_tolerance=0.1*distance;
-              if (tolerance>local_tolerance) tolerance=local_tolerance;
-            }
+          vxv[p] = DataArrayDouble::New();
+          vxv[p]->useExternalArrayWithRWAccess(remote_xv[p].addr(), remote_xv[p].dimension(0), remote_xv[p].dimension(1));
+          cvxv[p] = vxv[p];
         }
-      // Loop on faces on the local boundary:
-      for (int ind_face=0; ind_face<nb_face1; ind_face++)
+      MCAuto<DataArrayDouble> remote_xvs(DataArrayDouble::Aggregate(cvxv)), local_xvs(DataArrayDouble::New());
+      local_xvs->alloc(nb_face1, dim);
+      for (int ind_face = 0; ind_face < nb_face1; ind_face++) for (int j = 0; j < dim; j++)
+          local_xvs->setIJ(ind_face, j, local_xv(prem_face1 + ind_face, j));
+
+      //indices des points de remote_xvs les plus proches de chaque point de local_xv
+      MCAuto<DataArrayInt> glob_idx(DataArrayInt::New());
+
+      glob_idx = remote_xvs->findClosestTupleId(local_xvs);
+
+      //pour chaque face de local_xv : controle de la tolerance, remplissage de tableau
+      for (int ind_face = 0, face1 = prem_face1; ind_face<nb_face1; ind_face++, face1++)
         {
-          int face1 = ind_face+prem_face1;
-          int temoin=0;
-          int p_minimal=-1;
-          int ind_face2_minimal=-1;
-          double distance_minimal=DMAXFLOAT;
-          // Loop on partition:
-          for (int p=0; p<parts; p++)
+          //retour de l'indice global (glob_idx(ind_face)) au couple (proc, ind_face2)
+          int proc = 0, ind_face2 = glob_idx->getIJ(ind_face, 0);
+          while (ind_face2 >= remote_xv[proc].dimension(0)) ind_face2 -= remote_xv[proc].dimension(0), proc++;
+          assert(ind_face2 < remote_xv[proc].dimension(0));
+
+          //controle de la tolerance
+          double distance2 = 0;
+          for (int j=0; j<dim; j++)
             {
-              int size = remote_xv[p].dimension(0);
-              for (int ind_face2=0; ind_face2<size; ind_face2++)
-                {
-                  int remote_face_found=1;
-                  double distance=0;
-                  for (int j=0; j<dim; j++)
-                    {
-                      double x1=local_xv(face1,j);
-                      double x2=remote_xv[p](ind_face2,j);
-                      distance+=(x1-x2)*(x1-x2);
-                    }
-                  distance=sqrt(distance);
-                  if (distance>tolerance) remote_face_found=0;
-                  if (distance<distance_minimal)
-                    {
-                      distance_minimal=distance;
-                      ind_face2_minimal=ind_face2;
-                      p_minimal=p;
-                    }
-                  // Si on a passe le test ci-dessus, c'est que les dim coordonnees de la face
-                  // sont les memes (d == dim)
-                  if (remote_face_found)
-                    {
-                      Recep(ind_face)=p;
-                      racc_vois[p].append_array(ind_face2);
-                      temoin=1;
-                      //Cerr << "[" << Process::me() << "] Find remote face " << ind_face2 << " for local face ind_face " << ind_face << finl;
-                      break;
-                    }
-                }
+              double x1=local_xv(face1,j);
+              double x2=remote_xv[proc](ind_face2,j);
+              distance2 += (x1-x2)*(x1-x2);
             }
-          if (temoin==0)
+          if (distance2 > tolerance * tolerance)
             {
               Cerr << "Warning, there is no remote face found on the local boundary " << opposed_boundary.le_nom() << " for the face local number " << ind_face << " (";
               for (int j=0; j<dim; j++) Cerr << " " << local_xv(face1,j);
-              Cerr << " )" << finl << "the nearest face on the remote boundary " << raccord_distant.le_nom() << " is the face " << ind_face2_minimal << " (";
-              for (int j=0; j<dim; j++) Cerr << " " << remote_xv[p_minimal](ind_face2_minimal,j);
-              Cerr << " )" << finl << "which is located at a distance of " << distance_minimal << " and it is above the geometric tolerance " << tolerance << finl;
+              Cerr << " )" << finl << "the nearest face on the remote boundary " << raccord_distant.le_nom() << " is the face " << ind_face2 << " (";
+              for (int j=0; j<dim; j++) Cerr << " " << remote_xv[proc](ind_face2,j);
+              Cerr << " )" << finl << "which is located at a distance of " << sqrt(distance2) << " and it is above the geometric tolerance " << tolerance << finl;
               Cerr << "Check your mesh or contact TRUST support." << finl;
               Process::exit();
             }
+
+          //remplissage des tableaux
+          Recep(ind_face)=proc;
+          racc_vois[proc].append_array(ind_face2);
         }
     }
+#else
+  Cerr<<"Raccord_distant_homogene needs TRUST compiled with MEDCoupling."<<finl;
+  exit();
+#endif
   VECT(ArrOfInt) facteurs(Process::nproc());
   envoyer_all_to_all(racc_vois, facteurs);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,8 @@
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <Zone_VF.h>
+#include <Front_VF.h>
 
 Implemente_instanciable(Champ_Front_Fonction,"Champ_Front_Fonction",Ch_front_var_instationnaire_dep);
 
@@ -73,39 +75,24 @@ Entree& Champ_Front_Fonction::readOn(Entree& is)
 
   int nbcomp;
   nbcomp=lire_dimension(is,que_suis_je());
-  if(nbcomp==1)
-    {
-      fixer_nb_comp(nbcomp);
-      is >> nom_champ_parametre_;
+  fixer_nb_comp(nbcomp);
+  is >> nom_champ_parametre_;
 
-      Cerr<<"The analytical fonction is read... "<<finl;
-      la_table.lire_f(is);
-    }
-  else
-    {
-      Cerr << "Error when reading Champ_Front_Fonction:" << finl;
-      Cerr << "We can deal only with scalar fields." << finl;
-      exit();
-    }
+  Cerr<<"The analytical fonction is read... "<<finl;
+  la_table.lire_fxyzt(is, nbcomp);
   return is;
 }
 void Champ_Front_Fonction::mettre_a_jour(double temps)
 {
-
-
   const Champ_base& ch=ref_pb.valeur().get_champ(nom_champ_parametre_);
-
+  const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
+  const Zone_VF& zvf = ref_cast(Zone_VF, frontiere_dis().zone_dis());
   DoubleTab& tab=valeurs_au_temps(temps);
-  DoubleTab tab_ch(tab);
+  DoubleTab tab_ch(tab), pos(tab.dimension_tot(0), dimension);
   ch.trace(frontiere_dis(),tab_ch,temps,0);
   assert(tab.dimension(0)==tab_ch.dimension(0));
-  int nb_cas=tab.dimension_tot(0);
-  for (int comp=0; comp<tab.dimension(1); comp++)
-    for (int c=0; c<nb_cas; c++)
-      {
-        tab(c,comp)=la_table.val(tab_ch(c,comp));
-      }
-
+  for (int i = 0, j; i < fvf.nb_faces_tot(); i++) for (j = 0; j < dimension; j++) pos(i, j) = zvf.xv(fvf.num_face(i), j);
+  la_table.valeurs(tab_ch, pos, temps, tab);
 }
 
 int Champ_Front_Fonction::initialiser(double temps, const Champ_Inc_base& inco)

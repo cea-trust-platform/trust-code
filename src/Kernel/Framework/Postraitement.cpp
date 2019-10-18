@@ -707,6 +707,11 @@ int Postraitement::reprendre(Entree& is)
   ////////////////////////////////////////////////////////////////////
 }
 
+void Postraitement::completer()
+{
+  les_sondes_.init_bords();
+}
+
 // Description:
 //    Lit le nom des champs a postraiter sur un flot d'entree.
 //    Format:
@@ -1142,18 +1147,19 @@ void Postraitement::init()
             const Noms nom = champ->get_property("nom");
             const Noms composantes = champ->get_property("composantes");
 
-            if (Motcle(loc_post) == "FACES")
+            if (Motcle(loc_post) == "FACES" && Motcle(format).debute_par("lata")==0 && Motcle(format).debute_par("med")==0)
               {
-                if (Motcle(format).debute_par("lata")==0 && Motcle(format).debute_par("med")==0)
-                  {
-                    Cerr<<"The field "<<nom[0]<<" can not be postprocessed to the faces in the format "<<format<<finl;
-                    Cerr<<"The postprocessing to the faces is allowed only in the format lata or med"<<finl;
-                    exit();
-                  }
-                else
-                  zone_dis_pour_faces = champ->get_ref_zone_dis_base();
+                Cerr<<"The field "<<nom[0]<<" can not be postprocessed to the faces in the format "<<format<<finl;
+                Cerr<<"The postprocessing to the faces is allowed only in the format lata or med"<<finl;
+                exit();
               }
-
+            // PL: Ajout automatique du postraitement aux faces pour PolyMAC seul, sinon doit etre specifie par FACES
+            if (Motcle(loc_post) == "FACES" || champ->get_ref_zone_dis_base().que_suis_je()=="Zone_PolyMAC")
+              {
+                REF(Zone_dis_base) ref_zone_dis = champ->get_ref_zone_dis_base();
+                if (ref_zone_dis.non_nul())
+                  zone_dis_pour_faces = ref_zone_dis;
+              }
             const Nature_du_champ& nature = champ_ecriture.nature_du_champ();
             if (Motcle(nom_post)== Motcle(nom[0]))
               {
@@ -1205,7 +1211,7 @@ void Postraitement::init()
     {
       format_post->ecrire_domaine_dis(dom,zone_dis_pour_faces,est_le_premier_postraitement_pour_nom_fich_);
       // zone_dis_pour_faces non_nul() si on demande un postraitement d'un champ aux faces:
-      if (zone_dis_pour_faces.non_nul())
+      if (zone_dis_pour_faces.non_nul() && Motcle(format) != "LML")
         {
           const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
           const IntTab& faces_sommets = zone_vf.face_sommets();
@@ -1335,8 +1341,11 @@ int Postraitement::postraiter_champs()
 
       Champ espace_stockage;
       const Champ_base& champ_ecriture = champ.get_champ(espace_stockage);
-      const DoubleTab& valeurs_post = champ_ecriture.valeurs();
-
+      DoubleTab val_vec;
+      bool isChamp_Face_PolyMAC = champ_ecriture.que_suis_je()=="Champ_Face_PolyMAC";
+      if (isChamp_Face_PolyMAC)
+        champ_ecriture.valeur_aux_faces(val_vec);
+      const DoubleTab& valeurs_post = isChamp_Face_PolyMAC ? val_vec : champ_ecriture.valeurs();
       //Etape de recuperation des informations specifiques au champ a postraiter
 
       Entity loc = champ.get_localisation();

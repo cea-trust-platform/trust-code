@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,14 +33,12 @@ Implemente_instanciable(Champ_front_debit_massique,"Champ_front_debit_massique",
 
 Sortie& Champ_front_debit_massique::printOn(Sortie& os) const
 {
-  return Champ_front_normal::printOn(os);
+  return Champ_front_debit::printOn(os);
 }
 
 Entree& Champ_front_debit_massique::readOn(Entree& is)
 {
-  is >> champ_debit_;
-  fixer_nb_comp(dimension);
-  return is;
+  return Champ_front_debit::readOn(is);
 }
 
 void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco)

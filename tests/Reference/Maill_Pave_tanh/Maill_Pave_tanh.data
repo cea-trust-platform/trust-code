@@ -13,8 +13,8 @@ Pave Cavite
 		Origine 0. 0. 0.
 		Nombre_de_Noeuds 10 65 10
 		Longueurs 6.283185307 2.0 3.141592653
-		tanh_dilatation 0
-                tanh_taille_premiere_maille 0.01
+		ytanh_dilatation 0
+                ytanh_taille_premiere_maille 0.01
 
 	}
 	{

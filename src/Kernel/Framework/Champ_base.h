@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,10 +36,6 @@ class IntVect;
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 
-// definition des type de Champs.
-enum Nature_du_champ { scalaire, multi_scalaire, vectoriel };
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -63,40 +59,21 @@ class Champ_base : public Field_base, public Champ_Proto
   Declare_base_sans_constructeur(Champ_base);
 
 public:
-  //
-  // Methodes reimplementees de Objet_U
-  //
-  void            nommer(const Nom& );
-  const Nom&      le_nom() const;
+  Champ_base();
+
   //
   // Nouvelles methodes
   //
-  Champ_base();
   virtual int nb_valeurs_nodales() const
   {
     Cerr<<"We do not have to pass here "<<__FILE__<<(int)__LINE__<<finl;
     exit();
     return -1;
   };
-  int          nb_comp() const ;
-  Nature_du_champ nature_du_champ() const ;
-  double          temps() const;
-  const Noms&     unites() const ;
-  const Nom&      unite() const ;
-  const Nom&      unite(int ) const ;
-  const Noms&     noms_compo() const ;
-  const Nom&      nom_compo(int ) const ;
-  const Nom&      nom_compo() const ;
 
-  virtual int          fixer_nb_comp(int i);
-  virtual Nature_du_champ fixer_nature_du_champ(Nature_du_champ );
-  virtual double          changer_temps(const double& t);
-  virtual const Noms&     fixer_unites(const Noms& );
-  virtual const Nom&      fixer_unite(const Nom& );
-  virtual const Nom&      fixer_unite(int i, const Nom&);
-  virtual const Noms&     fixer_noms_compo(const Noms& ) ;
-  virtual const Nom&      fixer_nom_compo(int, const Nom& ) ;
-  virtual const Nom&      fixer_nom_compo(const Nom& ) ;
+  double          temps() const;
+  virtual double  changer_temps(const double& t);
+
   // Attention, il faut avoir fixe nb_comp et nature_du_champ avant
   // de fixer le nb_valeurs_nodales.
   virtual int          fixer_nb_valeurs_nodales(int n);
@@ -156,7 +133,7 @@ public:
   virtual DoubleTab&  valeur_aux_sommets(const Domaine&, DoubleTab&) const;
   virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                                DoubleVect&, int) const;
-
+  virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
   int calculer_valeurs_som_post(DoubleTab& valeurs,int nbsom,Nom& nom_post,const Domaine& dom) const ;
   int calculer_valeurs_som_compo_post(DoubleTab& valeurs,int ncomp,int nbsom,Nom& nom_post,const Domaine& dom,int appliquer_cl=0) const ;
   int calculer_valeurs_elem_post(DoubleTab& valeurs,int nbelem,Nom& nom_post,const Domaine& dom) const ;
@@ -165,23 +142,10 @@ public:
   virtual int completer_post_champ(const Domaine& dom,const int axi,const Nom& loc_post,
                                    const Nom& le_nom_champ_post,Format_Post_base& format) const;
   virtual void completer(const Zone_Cl_dis_base& zcl);
-  inline const Noms& get_synonyms() const
-  {
-    return noms_synonymes_;
-  };
-  inline void add_synonymous(const Nom& nom)
-  {
-    noms_synonymes_.add(nom);
-  };
+
 protected:
 
-  Nom nom_ ;
-  Noms noms_compo_;
-  Noms noms_synonymes_;
-  Noms unite_;
-  int nb_compo_ ;
   double temps_ ;
-  Nature_du_champ nature;
 };
 
 #endif

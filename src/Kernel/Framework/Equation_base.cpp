@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -150,6 +150,11 @@ const Zone_dis& Equation_base::zone_dis() const
 void Equation_base::completer()
 {
   inconnue().associer_eqn(*this);
+  if (la_zone_Cl_dis.non_nul())
+    la_zone_Cl_dis->completer();
+
+  inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
+
   // pour les eqns n'appelant pas preparer_calcul
   initialise_residu();
   int nb_op=nombre_d_operateurs();
@@ -158,10 +163,8 @@ void Equation_base::completer()
   for(int i=0; i<nb_op; i++)
     operateur(i).completer();
 
-  if (la_zone_Cl_dis.non_nul())
-    la_zone_Cl_dis->completer();
-
-  inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
+  if (solv_masse().non_nul())  // [ABN]: In case of Front-Tracking, mass solver mass might be uninitialized ...
+    solv_masse().valeur().completer();
 
   les_sources.completer();
   schema_temps().completer();
@@ -248,6 +251,7 @@ Entree& Equation_base::readOn(Entree& is)
   // On complete:
   equation_non_resolue_.setString(expr_equation_non_resolue);
   equation_non_resolue_.parseString();
+  matrice_init = 0;
   return is;
 }
 
@@ -1499,54 +1503,64 @@ void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
 // Postcondition:
 double Equation_base::calculer_pas_de_temps() const
 {
-  double dt=0;
+  bool harmonic_calculation = true;
   double dt_op;
-
-  int nb_op=nombre_d_operateurs();
-  if(nb_op==0)
-    dt=DMAXFLOAT;
+  double dt;
+  if (harmonic_calculation)
+    dt = 0;
   else
+    dt = DMAXFLOAT;
+
+  int nb_op = nombre_d_operateurs();
+  for(int i=0; i<nb_op; i++)
     {
-      for(int i=0; i<nb_op; i++)
+      if(operateur(i).l_op_base().get_decal_temps()!=1)
+        dt_op = operateur(i).calculer_pas_de_temps();
+      else
+        dt_op = DMAXFLOAT;
+
+      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 0 ",dt_op);
+
+      Debog::verifier("Equation_base::calculer_pas_de_temps dt ",dt);
+      const Operateur_base& op=operateur(i).l_op_base();
+      if (sub_type(Operateur_Diff_base,op) && le_schema_en_temps->diffusion_implicite())
         {
-          if(operateur(i).l_op_base().get_decal_temps()!=1)
-            dt_op = operateur(i).calculer_pas_de_temps();
-          else
-            dt_op = DMAXFLOAT;
-
-          Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 0 ",dt_op);
-
-          Debog::verifier("Equation_base::calculer_pas_de_temps dt ",dt);
-          assert(dt_op>0);
-          if (i==0 && le_schema_en_temps->diffusion_implicite())
-            {
-              // On ne compte pas le pas de temps de diffusion lorsque la diffusion est implicitee
-            }
-          else
-            dt=dt+1./dt_op;
-
-          Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 1 ",dt_op);
-          if (le_schema_en_temps->limpr())
-            {
-              if (i == 0)
-                {
-                  Cout << " " << finl;
-                  Cout << "Printing of the time steps for the equation: " << que_suis_je() << finl;
-                }
-              const Operateur_base& op=operateur(i).l_op_base();
-              if (sub_type(Operateur_Conv_base,op))
-                Cout << "   convective";
-              else
-                {
-                  if (sub_type(Operateur_Diff_base,op))
-                    Cout <<  "   diffusive";
-                  else
-                    Cout <<  "   operator ";
-                }
-              Cout<<" time step : "<< dt_op_bak[i] << finl;
-            }
-          dt_op_bak[i]=dt_op;
+          // On ne compte pas le pas de temps de diffusion lorsque la diffusion est implicitee
         }
+      else if (dt_op>0)
+        {
+          // Une demie-moyenne harmonique est justifiee par le fait que diffusion et convection sont deux phenonomenes qui se cumulent
+          // L'information a chaque pas de temps ne peut traverser plus d'une maille de calcul donc dt*U + dt*vitesse_diffusion(~alpha/dx) < dx
+          // donc dt < dx/(U+alpha/dx) = 1/(1/(dx/U)+1/(dx^2/alpha)) : c'est bien une demie moyenne harmonique...
+          if (harmonic_calculation)
+            dt = dt + 1./dt_op;
+          else
+            // https://en.wikipedia.org/wiki/Numerical_solution_of_the_convection%E2%80%93diffusion_equation
+            // On pourrait prendre le min de tous les operateurs. Mais attention parfois peut diverger:
+            // Un cas typique (rare?) Convection.data ecoulement en travers par rapport au maillage VDF et Re(maille)~1
+            dt = (dt_op < dt ? dt_op : dt);
+        }
+
+      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 1 ",dt_op);
+      if (le_schema_en_temps->limpr())
+        {
+          if (i == 0)
+            {
+              Cout << " " << finl;
+              Cout << "Printing of the time steps for the equation: " << que_suis_je() << finl;
+            }
+          if (sub_type(Operateur_Conv_base,op))
+            Cout << "   convective";
+          else if (sub_type(Operateur_Diff_base,op))
+            Cout << "   diffusive";
+          else
+            Cout << "   operator ";
+          Cout<<" time step : "<< dt_op_bak[i] << finl;
+        }
+      dt_op_bak[i]=dt_op;
+    }
+  if (harmonic_calculation)
+    {
       if (dt==0.)
         dt = DMAXFLOAT;
       else
@@ -2078,28 +2092,66 @@ void Equation_base::reculer(int i)
 
 void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 {
-  int opp=0;
-  int nb_op=nombre_d_operateurs();
-  // GF avant on testait si on avait qu'une colonne car les matrices etaient dimensionnes par defaut a une colonne
-  while ((matrice.nb_colonnes()==0)&&(opp<nb_op))
+  // [ABN]: dimensioning of the implicit matrix: it can receive input from:
+  //  - the operators
+  //  - the mass solver
+  //  - the sources
+  // We proceed in this order, with the idea that operators should take most of the slots in the Morse
+  // structure. Having the mass solver first would lead (in VDF, EF and VEF) to diagonal slots
+  // being reserved before sub-diagonal terms. In the Morse structure coefficients would then
+  // not be ordered by increasing columns number. This is not desirable, notably for EF which seem to
+  // be sensitive to this ordering (although they should not ....). Some Baltiks too (FLICA5 - thermic part)
+  // rely on this.
+  if (matrice_init) // memoization
     {
-      operateur(opp).l_op_base().dimensionner(matrice);
-      opp++;
+      matrice = matrice_stockee;
+      matrice.get_set_coeff().resize(matrice.get_tab2().size());
+      return;
     }
-  if (matrice.nb_colonnes()==0)
+
+  bool isInit = false;
+  // Operators first (they're likely to take most of the slots in the Morse structure)
+  for(int opp=0; opp < nombre_d_operateurs(); opp++)
     {
-      // on avait que des op negligeables
-      // on dimensionne par la diagonale
-      int nb_comp=1;
-      if (inconnue().valeurs().nb_dim()>1)
-        nb_comp=inconnue().valeurs().dimension(1);
-      int nb_case_tot=inconnue().valeurs().dimension_tot(0)*nb_comp;
-      IntTab indice(nb_case_tot,2);
-      for( int c=0; c<nb_case_tot; c++) indice(c,0)=indice(c,1)=c;
-      if (indice.size()!=0) matrice.dimensionner(indice);
+      if (!isInit)
+        operateur(opp).l_op_base().dimensionner(matrice);
+      else
+        {
+          Matrice_Morse mat2;
+          operateur(opp).l_op_base().dimensionner(mat2);
+          if (mat2.nb_colonnes())
+            matrice += mat2;  // this only works if the matrix has been given its overall size first
+        }
+      isInit = isInit || (matrice.nb_colonnes() != 0);
+    }
+
+  //  ... then the mass solver ...
+  if (!isInit)
+    solv_masse().valeur().dimensionner(matrice);
+  else
+    {
+      Matrice_Morse mat2;
+      solv_masse().valeur().dimensionner(mat2);
+      matrice += mat2; // this only works if the matrix has been given its overall size first
+    }
+
+  // and finally sources (mass solver has surely done something already so no need for "isInit" test)
+  les_sources.dimensionner(matrice);
+
+  matrice.get_set_coeff() = 0.0;  // just to be sure ...
+
+  if (probleme().discretisation().que_suis_je().debute_par("PolyMAC"))
+    {
+      matrice_stockee = matrice; //memoization
+      matrice_stockee.get_set_coeff().resize(0);
+      matrice_init = 1;
+      int m = matrice.nb_lignes();
+      matrice_map.resize(m);
+      for (int i = 0; i < m; i++)
+        for (int j = matrice.get_tab1()(i) - 1; j < matrice.get_tab1()(i + 1) - 1; j++)
+          matrice_map[i][matrice.get_tab2()(j) - 1] = j + 1;
     }
 }
-
 
 // ajoute les contributions des operateurs et des sources
 void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)

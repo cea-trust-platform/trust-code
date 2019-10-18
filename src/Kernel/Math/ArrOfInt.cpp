@@ -33,6 +33,7 @@
 #include <limits.h>
 #include <Vect_ArrOfInt.h>
 #include <Ref_ArrOfInt.h>
+#include <climits>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfInt,"ArrOfInt",Array_base);
 
@@ -566,6 +567,8 @@ void  ArrOfInt::memory_resize(int new_size, Array_base::Resize_Options opt)
         new_mem_size = old_mem_size;
       else if (new_size < old_mem_size * 2)
         new_mem_size = old_mem_size * 2;
+      else if (new_size > old_mem_size && old_mem_size > INT_MAX / 2)
+        new_mem_size = INT_MAX;
     }
 
   if (new_mem_size != old_mem_size)
@@ -809,7 +812,6 @@ int max_array(const ArrOfInt& dx)
 static inline int scalar_abs(int x)
 {
   return abs(x);
-
 }
 
 // Description:

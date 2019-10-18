@@ -1,5 +1,5 @@
 name=gnuplot
-version=4.6.6
+version=5.2.7
 package=$(name)-$(version).tar.gz
 install=$(TRUST_ROOT)/exec/$(name)
 cible=$(install)/bin/$(name)

@@ -72,7 +72,7 @@ source env_TRUST.sh
 TRUST ftp site: ftp://$TRUST_FTP/$PUBLIC/index.html
 Please, do not give the ftp address without permission.
 
-TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+TRUST/TrioCFD support team. mailto: $TRUST_MAIL 
 
 To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply to this message.
 EOF

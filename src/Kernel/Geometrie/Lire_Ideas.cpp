@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -193,7 +193,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
       Bord& nouveau=les_bords.add(Bord());
       //
       nouveau.nommer(nom_bord);
-      nouveau.faces().typer(triangle_3D);
+      nouveau.faces().typer(Faces::triangle_3D);
       //
       nouveau.faces().dimensionner(NGELEM[k]);
       //

@@ -341,10 +341,6 @@ do
 	MEDCOUPLPYT=$NOT && [ "`grep MED_COUPLING_PYTHON=ON $CR`" != "" ] && MEDCOUPLPYT="<TD $VERT>ON</TD>" && [ "`grep MED_COUPLING_PYTHON=OFF $CR`" != "" ] && MEDCOUPLPYT="<TD $ROUGE>OFF</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
-	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && MEDCOUPL=$NOT && GMSH=$NOT && ICOCO=$NOT
-	[ "`grep ' -disable-med ' $CR`" != "" ] 	&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && MEDCOUPL=$NOT && GMSH=$NOT && ICOCO=$NOT
-	[ "`grep 'Disabling MEDCOUPLING' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
-	[ "`grep ' -disable-medcoupling' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
 	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
 	[ "`grep ' -disable-mpi' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
 	[ "`grep 'Disabling GMSH' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT	
@@ -499,7 +495,7 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_triocfd.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ijk.html">IJK-FT</A> : IJK-FT baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_polymac.html">PolyMAC</A> : PolyMAC baltik compilation portability<BR>" >> $NUIT2
+   #echo "<A HREF="nuit_polymac.html">PolyMAC</A> : PolyMAC baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_triomc.html">TrioMC</A> : TrioMC baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_mathys.html">MATHYS</A> : MATHYS baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_mpcube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2

@@ -2,7 +2,7 @@
 # 
 
 # on regarde ce que contient externalpackages sans tenir compte du RELEASE_NOTES
-(cd $TRUST_ROOT/externalpackages; md5sum * */* 2>/dev/null | sort -k 2 | grep -v RELEASE_NOTES | sed "s/ \*/  /") > md5.check
+(cd $TRUST_ROOT/externalpackages; md5sum * */* */*/* */*/*/* 2>/dev/null | sort -k 2 | grep -v RELEASE_NOTES | grep -v README_Miniconda | grep -v channeldata | grep -v rss.xml | grep -v repodata.json | grep -v repodata2.json | grep -v local_channel/index.html | grep -v local_channel/linux-64/index.html | grep -v local_channel/noarch/index.html | sed "s/ \*/  /") > md5.check
 
 echo "Control of md5 sum of externalpackages"
 diff md5.ref md5.check
@@ -18,7 +18,7 @@ done
 
 
 
-sed "s/General/./"  liste_dep.csv  | awk -F, '{print "[ ! -f $TRUST_ROOT/externalpackages/"$1"/"$2" ]  && echo "$2" not in externalpackages " }' | grep -v "dir/paquet" > cmd_test
+sed "s/General/./g;s/MinicondaLocChannLinux/Miniconda\/local_channel\/linux-64/g; s/MinicondaLocChannNoarch/Miniconda\/local_channel\/noarch/g;s/MinicondaLocChann/Miniconda\/local_channel/g"  liste_dep.csv  | awk -F, '{print "[ ! -f $TRUST_ROOT/externalpackages/"$1"/"$2" ]  && echo "$2" not in externalpackages " }' | grep -v "dir/paquet" > cmd_test
 sh cmd_test
 
 	

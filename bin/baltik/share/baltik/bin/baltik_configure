@@ -123,12 +123,20 @@ rm -r -f $project_build_directory/*
 rm -f $project_build_directory/*/CMakeCache.txt
 mkdir -p $project_build_directory
 
+
+# Names and path of sub projects
+sub_projects_names=""
+sub_projects_paths=""
+
 # ajout des fichiers sources des differentes dependances
 while read name path
 do
   echo "Adding source files from project $name"
   sourcedir="$path/src"
- 
+
+  sub_projects_names=$sub_projects_names" "$name
+  sub_projects_paths=$sub_projects_paths" "$path
+
   for suf in h cpp f c hxx cxx
     do
     test_uniq=`find  $sourcedir -follow -name "*."${suf} -exec basename {} \; | sort | uniq -d`
@@ -403,11 +411,11 @@ printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  t
 printf "\n" >> $project_makefile
 
 printf "# obsolete check_trio_$type : Running TRUST test suite in `human_name_from_name $type` mode (IMPORTANT: prefer the use of check_trust_$type because it will disappear)\n" >>$project_makefile
-printf "check_trio_$type : $type\n"                                  >> $project_makefile
-printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
-printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
+printf "check_trio_$type : check_trust_$type\n"                                  >> $project_makefile
+#printf "\t@echo \"####################################\"\n"     >> $project_makefile
+#printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+#printf "\t@echo \"####################################\"\n"     >> $project_makefile
+#printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
 printf "\n" >> $project_makefile
 
 printf "# help check_full_$type : Running full test suite in `human_name_from_name $type` mode (all test of project + all test of TRUST platform)\n" >>$project_makefile
@@ -640,6 +648,20 @@ export exec_pg=\${project_directory}/${project_executable_name}_opt_pg
 export exec_gcov=\${project_directory}/${project_executable_name}_opt_gcov
 export exec_avx=\${project_directory}/${project_executable_name}_opt_avx
 export exec_debug=\${project_directory}/${project_executable_name}" > $env_file
+
+# Add dependencies project directory
+idx=0
+list_path=($sub_projects_paths)
+for name in $sub_projects_names :
+do
+    the_path=${list_path[$idx]}
+    if [ "$the_path" != $project_directory ] && [ "$name" != ":" ]
+    then
+	echo "export "$name"_project_directory="$the_path >> $env_file
+    fi
+    let idx++
+done
+
 
 sed "s/\/all\//\/full\//g"  $env_file > $env_file_full
 echo "Done."

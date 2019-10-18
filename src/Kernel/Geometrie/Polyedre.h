@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,14 +33,13 @@
 
 #include <Poly_geom_base.h>
 
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
 //    Classe Polyedre
 //    Cette represente l'element geometrique Polyedre.
 //    Un polyedre est un element defini par ses faces
-//    de type polygone_3D
+//    de type Faces::polygone_3D
 // .SECTION voir aussi
 //    Poly_geom_base Elem_geom
 //////////////////////////////////////////////////////////////////////////////
@@ -92,7 +91,7 @@ public :
   void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
   // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolyhedronIndex);
   void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
-  void reduit_index(const ArrOfInt& elems_sous_part);
+  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const;
   void compute_virtual_index();
 
 private :
@@ -225,7 +224,7 @@ inline int Polyedre::est_structure() const
 //    Acces:
 // Retour: Type_Face
 //    Signification: le type de la face i
-//    Contraintes: i=0 (polygone_3D)
+//    Contraintes: i=0 (Faces::polygone_3D)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -235,11 +234,11 @@ inline Type_Face Polyedre::type_face(int i) const
   switch(i)
     {
     case 0:
-      return polygone_3D;
+      return Faces::polygone_3D;
     default :
       Cerr << "Error, a polyhedron has 1 type of faces and not " << i << finl;
       exit();
-      return quadrangle_3D;
+      return Faces::quadrangle_3D;
     }
 }
 

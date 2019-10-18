@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,14 +34,13 @@ void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& rho,
   rho_ref_ = rho(0,0);
   Cp = capa;
   Cp_ = capa(0,0);
-  la_puissance = ref_cast(Champ_Uniforme,Q.valeur());
-  puissance = Q(0,0);
+  la_puissance = Q;
+  puissance = Q(0);
 }
 
 void Eval_Dirac_VEF_Face::mettre_a_jour( )
 {
-  const Champ_Uniforme& puiss_unif = la_puissance.valeur();
-  puissance= puiss_unif(0,0);
+  puissance= la_puissance.valeur()(0);
   ma_zone = la_zone.valeur().zone();
 }
 

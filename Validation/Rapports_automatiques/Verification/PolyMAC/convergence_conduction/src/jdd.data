@@ -1,0 +1,116 @@
+# PARALLEL OK #
+dimension 2
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+# END MESH #
+
+# BEGIN PARTITION
+Postraiter_domaine
+{
+    fichier mesh.lata
+    format lata
+    domaine dom
+}
+
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max  1
+    seuil_statio 1e-8
+    solveur implicite
+    {
+        solveur petsc cli
+        {
+            -pc_type fieldsplit
+            -pc_fieldsplit_0_field b1
+            -pc_fieldsplit_1_field b0
+            -pc_fieldsplit_type schur
+            -ksp_type fgmres
+            -ksp_rtol 1e-8
+            -fieldsplit_b0_ksp_max_it 10
+            -fieldsplit_b1_ksp_max_it 10
+        }
+    }
+}
+
+Solide sol
+Read sol
+{
+    rho    Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp     Champ_Uniforme 1 1.
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+    Conduction
+    {
+        diffusion { }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y) }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+            boundary paroi_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            # T_som interpolation { domaine dom localisation som source refChamp { Pb_champ pb temperature } } #
+            erreur_T transformation
+            {
+                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
+                {
+                    refChamp { pb_champ pb temperature nom_source Temp }
+                }
+            }
+            max_erreur_T reduction_0D
+            {
+                methode max source_reference erreur_T
+            }
+        }
+
+        Probes
+        {
+            # temperature_diag_som            T_som periode 1e8 segment 500 0. 1. 1. 0. #
+            temperature_diag grav temperature periode 1e8 segment 500 0. 1. 1. 0.
+            norme_linf max_erreur_T periode 1e-7 numero_elem_sur_maitre 0
+        }
+        format Lata
+        fields dt_post 30.
+        {
+            temperature elem
+            erreur_T
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End

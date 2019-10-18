@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,6 +58,11 @@ public:
   void contribue_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
 
+  void get_ordre(int& ) const;
+  void get_type_lim(Motcle& ) const;
+  void get_alpha(double& ) const;
+  void get_type_op(int& )const;
+
 protected:
   Motcle type_lim;
 
@@ -71,11 +76,6 @@ protected:
   mutable ArrOfInt est_une_face_de_dirichlet_;
 };
 
-double minmod(double, double);
-double vanleer(double, double);
-double vanalbada(double, double);
-double chakravarthy(double, double);
-double superbee(double, double);
 
 // Description:
 // on dimensionne notre matrice au moyen de la methode dimensionner de la classe

@@ -1,0 +1,230 @@
+Parameters {
+	Title "Comparing TRUST and ICOCO couplings for a thermal fluid-solid simulation"
+	Author "Pierre LEDAC"
+        VersionTrio_U 1.7.9
+        TestCase CouplageTrust ok.data
+        TestCase CouplageICoCo ok.data
+	Description "The two simulations are leaded up to stationnary state."
+	Description "The thermal coupling between the two domains is done by Dirichlet/Neumann conditions on temperature."
+	Description "TRUST coupling: each time step, the domains are solved one after another with N>=1 cpus"
+	Description "ICOCO coupling: each time step, the domains are solved together on 2*N cpus" 
+	Description "With TRUST coupling, a same temperature T(n+1) is imposed on the two boundaries based on a heat flux equality equation."
+	Description "With ICOCO coupling, temperature and heat flux on each sides at time n+1 matches the other side at time n." 
+	Description "As a result, the temperature evolution is slightly different and ICoCO coupling seems not strictly conservative (see below: heat flux between domains plot)"
+}
+Chapter {
+        Title "Simulations status"
+        Table {
+                nb_columns 1
+                label "status"
+                line {
+                        legend "TRUST coupling"
+                        file ./CouplageTrust/is_ok
+                }
+                line {
+                        legend "ICOCO coupling"
+                        file ./CouplageICoCo/is_ok
+                }
+        }
+}
+Chapter {
+        Title "Domains/Meshes"
+        visu {
+                title "Solid (red) and fluid (blue) domains"
+		mesh CouplageTrust/docond_VEF.lata dom_fluide blue
+		mesh CouplageTrust/docond_VEF.lata dom_solide red
+        }
+}
+Chapter {
+        Title "Temperature and velocity fields"
+        visu {
+                title "TRUST coupling"
+		Width 9cm
+		mesh CouplageTrust/docond_VEF.lata dom_fluide
+		mesh CouplageTrust/docond_VEF.lata dom_solide
+		pseudocolor_with_range CouplageTrust/docond_VEF.lata dom_fluide TEMPERATURE ELEM 20 40
+		pseudocolor_with_range CouplageTrust/docond_VEF.lata dom_solide TEMPERATURE ELEM 20 40
+                blackvector CouplageTrust/docond_VEF.lata dom_fluide VITESSE ELEM
+        }
+        visu {
+                title "ICOCO coupling"
+		Width 9cm
+		mesh CouplageICoCo/docond_VEF_fluide.lata dom_fluide
+		mesh CouplageICoCo/docond_VEF_solide.lata dom_solide
+		pseudocolor_with_range CouplageICoCo/docond_VEF_fluide.lata dom_fluide TEMPERATURE ELEM 20 40
+		pseudocolor_with_range CouplageICoCo/docond_VEF_solide.lata dom_solide TEMPERATURE ELEM 20 40
+                blackvector CouplageICoCo/docond_VEF_fluide.lata dom_fluide VITESSE ELEM
+        }
+
+}
+Chapter {
+	Title "Probe evolutions" 
+
+	figure { 
+		title "Heat flux between domains"
+		Width 12cm
+		include_description_curves 0
+		labelX "TIME [s] : Notice the ICOCO difference near the first timesteps..."
+		labelY "HEAT FLUX [W]"
+		curve {
+			file CouplageTrust/docond_VEF_pb1_Diffusion_chaleur.out
+			columns ($1) (-$4)
+			style linespoints
+			legende "TRUST (solid->fluid)"
+		}
+		curve {
+			file CouplageTrust/docond_VEF_pb2_Diffusion_chaleur.out
+			columns ($1) ($5)
+			style linespoints
+			legende "TRUST (fluid->solid)"
+		}
+		curve {
+			file CouplageICoCo/docond_VEF_dom1_pb1_Diffusion_chaleur.out
+			columns ($1) (-$4)
+			style linespoints
+			legende "ICOCO (solid->fluid)"
+		}
+		curve {
+			file CouplageICoCo/docond_VEF_dom2_pb2_Diffusion_chaleur.out
+			columns ($1) ($5)
+			style linespoints
+			legende "ICOCO (fluid->solid)"
+		}
+		curve {
+			file CouplageTrust/heat_flux.out
+			columns ($1) ($4+$10)
+			style linespoints
+			legende "TRUST difference"
+		}
+		curve {
+			file CouplageICoCo/heat_flux.out
+			columns ($1) ($4+$10)
+			style linespoints
+			legende "ICOCO difference"
+		}
+	}
+
+	figure { 
+		title "Solid temperature evolution"
+		Width 12cm
+		include_description_curves 0
+		labelX "TIME"
+		labelY "TEMPERATURE"
+		curve {
+			file CouplageTrust/docond_VEF_SONDE_TSOL.son
+			columns ($1) ($2)
+			style linespoints
+			legende "TRUST"
+		}
+		curve {
+			file CouplageICoCo/docond_VEF_dom1_SONDE_TSOL.son
+			columns ($1) ($2)
+			style linespoints
+			legende "ICOCO"
+		}
+	}
+
+	figure { 
+		title "Solid temperature profile"
+		Width 12cm
+		include_description_curves 0
+		labelX "AXIS"
+		labelY "TEMPERATURE"
+		curve {
+			segment CouplageTrust/docond_VEF SONDE_SEGS
+			style linespoints
+			legende "TRUST"
+		}
+		curve {
+			segment CouplageICoCo/docond_VEF_dom1 SONDE_SEGS
+			style linespoints
+			legende "ICOCO"
+		}
+
+	}
+
+	figure { 
+		title "Fluid X velocity evolution"
+		Width 12cm
+		include_description_curves 0
+		labelX "TIME"
+		labelY "X_VITESSE"
+		curve {
+			file CouplageTrust/docond_VEF_SONDE_VITESSE.son
+			columns ($1) ($2)
+			style linespoints
+			legende "TRUST"
+			legende "ICOCO"
+		}
+		curve {
+			file CouplageICoCo/docond_VEF_dom2_SONDE_VITESSE.son
+			columns ($1) ($2)
+			style linespoints
+			legende "ICOCO"
+		}
+
+	}
+
+	figure { 
+		title "Fluid Y velocity evolution"
+		Width 12cm
+		include_description_curves 0
+		labelX "TIME"
+		labelY "Y_VITESSE"
+		curve {
+			file CouplageTrust/docond_VEF_SONDE_VITESSE.son
+			columns ($1) ($3)
+			style linespoints
+			legende "TRUST"
+		}	
+		curve {
+			file CouplageICoCo/docond_VEF_dom2_SONDE_VITESSE.son
+			columns ($1) ($3)
+			style linespoints
+			legende "ICOCO"
+		}
+	}
+
+	figure { 
+		title "Fluid temperature evolution"
+		Width 12cm
+		include_description_curves 0
+		labelX "TIME"
+		labelY "TEMPERATURE"
+		curve {
+			file CouplageTrust/docond_VEF_SONDE_TFLU.son
+			columns ($1) ($2)
+			style linespoints
+			legende "TRUST"
+		}
+		curve {
+			file CouplageICoCo/docond_VEF_dom2_SONDE_TFLU.son
+			columns ($1) ($2)
+			style linespoints
+			legende "ICOCO"
+		}
+	}
+
+	figure { 
+		title "Fluid temperature profile"
+		Width 12cm
+		include_description_curves 0
+		labelX "AXIS"
+		labelY "TEMPERATURE"
+		curve {
+			segment CouplageTrust/docond_VEF SONDE_SEGF
+			style linespoints
+			legende "TRUST"
+		}
+		curve {
+			segment CouplageICoCo/docond_VEF_dom2 SONDE_SEGF
+			style linespoints
+			legende "ICOCO"
+		}
+	}
+}
+Chapter {
+        Title "Computer performance"
+        tableau_performance {
+        }
+}

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+liste=`ls Verif_Duplic_ICoCo_pb_*.out Verif_Duplic_ICoCo.lata`
+
+error=0
+for f in $liste
+do
+  [ "`sort $f | uniq -cd`" != "" ] && echo $f contains duplicate line && error=1
+done
+
+exit $error

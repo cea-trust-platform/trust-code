@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,6 +60,11 @@ public:
   virtual const Zone_Cl_dis_base& zone_Cl_dis_base() const =0       ;
   virtual int modifier_secmem(DoubleTab&)=0                      ;
   virtual int modifier_solution(DoubleTab&)=0                    ;
+  virtual void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const
+  {
+    Cerr<<"corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) must be overloaded by "<<que_suis_je()<<finl;
+    exit();
+  }
 
 private:
   // Drapeau, indique si le solveur resout un increment de pression ou

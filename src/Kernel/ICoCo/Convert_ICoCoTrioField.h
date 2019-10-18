@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 
 #include <ICoCoTrioField.h>
 #include <arch.h>
-class Champ_base;
+class Champ_Generique_base;
 class Domaine;
 class DoubleTab;
 class ArrOfDouble;
@@ -39,9 +39,8 @@ void affecte_int_avec_inttab(True_int** p, const ArrOfInt& trio);
 #include <ICoCoMEDField.hxx>
 #ifndef NO_MEDFIELD
 ICoCo::MEDField build_medfield(ICoCo::TrioField&);
-ICoCo::MEDField build_medfield_from_champ_base(const Champ_base&);
+ICoCo::MEDField build_medfield(const Champ_Generique_base&);
 #endif
-ICoCo::TrioField buildTrioField_from_champ_base(const Champ_base&);
-ICoCo::TrioField build_ICoCoField(const std::string& name,const Domaine& dom,  const DoubleTab& values,const int is_p1, const double& t1,const double& t2 );
+ICoCo::TrioField build_triofield(const Champ_Generique_base&);
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,9 @@
 #include <sys/stat.h>
 #include <Ch_front_input_uniforme.h>
 #include <Ch_front_input.h>
+#include <Ch_input_uniforme.h>
 #include <Champ_input_P0.h>
+
 #ifdef VTRACE
 #include <vt_user.h>
 #endif
@@ -681,28 +683,14 @@ void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
 {
   REF(Field_base) ch=findInputField(name);
   if (!ch.non_nul())
-    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate","name","no input field of that name");
+    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"no input field of that name");
 
-  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto
-  // qui n'est pas un Objet_U...
-  if(sub_type(Ch_front_input_uniforme,ch.valeur()))
-    {
-      Ch_front_input_uniforme& ch_input=ref_cast(Ch_front_input_uniforme,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
-  else if(sub_type(Ch_front_input,ch.valeur()))
-    {
-      Ch_front_input& ch_input=ref_cast(Ch_front_input,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
-  else if(sub_type(Champ_input_P0,ch.valeur()))
-    {
-      Champ_input_P0& ch_input=ref_cast(Champ_input_P0,ch.valeur());
-      ch_input.getTemplate(afield);
-    }
+  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto qui n'est pas un Objet_U...
+  Champ_Input_Proto * chip = dynamic_cast<Champ_Input_Proto *>(ch.operator->());
+  if (!chip)
+    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"field of this name is not an input field");
 
-  else
-    throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate","name","field of this name is not an input field");
+  chip->getTemplate(afield);
 }
 
 // Description:
@@ -724,34 +712,20 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
 {
   REF(Field_base) ch=findInputField(name);
   if (!ch.non_nul())
-    throw WrongArgument(le_nom().getChar(),"setInputField",name.getChar(),"no input field of that name");
+    throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"no input field of that name");
   if (!est_egal(afield._time1,presentTime()))
     throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should be defined on current time interval");
   if (!est_egal(afield._time2,futureTime()))
     throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should be defined on current time interval");
   if (strcmp(name.getChar(),afield.getCharName()))
-    throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should have the same name as the argument name");
+    throw WrongArgument(le_nom().getChar(),"setInputField","afield","Should have the same name as the argument name ");
 
-  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto
-  // qui n'est pas un Objet_U...
-  if(sub_type(Ch_front_input_uniforme,ch.valeur()))
-    {
-      Ch_front_input_uniforme& ch_input=ref_cast(Ch_front_input_uniforme,ch.valeur());
-      ch_input.setValue(afield);
-    }
-  else if(sub_type(Ch_front_input,ch.valeur()))
-    {
-      Ch_front_input& ch_input=ref_cast(Ch_front_input,ch.valeur());
-      ch_input.setValue(afield);
-    }
-  else if(sub_type(Champ_input_P0,ch.valeur()))
-    {
-      Champ_input_P0& ch_input=ref_cast(Champ_input_P0,ch.valeur());
-      ch_input.setValue(afield);
-    }
+  // Du au fait qu'on ne peut pas faire une ref sur Champ_Input_Proto qui n'est pas un Objet_U...
+  Champ_Input_Proto * chip = dynamic_cast<Champ_Input_Proto *>(ch.operator->());
+  if (!chip)
+    throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"field of this name is not an input field");
 
-  else
-    throw WrongArgument(le_nom().getChar(),"setInputField","name","field of this name is not an input field");
+  chip->setValue(afield);
 }
 
 void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
@@ -759,34 +733,9 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 
   REF(Champ_Generique_base) ref_ch=findOutputField(name);
   if (!ref_ch.non_nul())
-    throw WrongArgument(le_nom().getChar(),"getOutputField",name.getChar(),"no output field of that name");
+    throw WrongArgument(le_nom().getChar(),"getOutputField",name.getString(),"no output field of that name");
 
   const Champ_Generique_base& ch = ref_ch.valeur();
-
-  Domaine dom;
-  ch.get_copy_domain(dom);
-
-  Champ espace_stockage;
-  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
-  const DoubleTab& values = champ_ecriture.valeurs();
-
-  Entity loc=ch.get_localisation();
-  if (loc==NODE)
-    //if (values.dimension_tot(0)==coord.dimension_tot(0))
-    {
-      Cerr<<name<<" type "<<ch.que_suis_je() <<" P1 ?? "<<finl;
-      //      afield._type=1;
-    }
-  else if (loc!=ELEMENT)
-    {
-      throw WrongArgument(name.getString()," "," "," wrong localisation type for field ");
-    }
-  double t1=presentTime();
-  double t2=futureTime();
-  int is_p1=0;
-  if (loc==NODE)
-    is_p1=1;
-  afield= build_ICoCoField(name.getString(), dom, values, is_p1,  t1, t2 );
-
+  afield = build_triofield(ch);
 }
 

@@ -6,28 +6,33 @@
 let i=$i+1;solver[$i]="Optimal        { seuil $seuil impr }"        						;sym[$i]=0                  	
 
 # GMRES DIAG/ILU
-let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond DIAG { } impr }"							;rank[$i]=4;
-#let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond ILU { level 1 } impr }"	
-#let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"	
+let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond DIAG { } restart 30 impr }"					;rank[$i]=4;
+#let i=$i+1;solver[$i]="Petsc GMRES   { seuil $seuil precond ILU { level 1 } impr }"	
+#let i=$i+1;solver[$i]="Petsc GMRES   { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"	
+let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }"				;rank[$i]=8;		
 
 # BICGSTAB
 let i=$i+1;solver[$i]="Petsc CLI { -ksp_type bcgs -pc_type sor -ksp_atol $seuil }"	
-#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 0 } impr }"
-#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond PILUT { level 1 } impr }"	# PILUT instead ILUT because CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot
-let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"				
-let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"			;rank[$i]=1;
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond DIAG { } impr }"							;rank[$i]=3;
-#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 1 } impr }"	
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SSOR { omega 1 } impr }"	# EISENSTAT ne marche pas 3.0.0 mais OK avec 3.1.0
 let i=$i+1;solver[$i]="Petsc CLI { -ksp_type bcgs -pc_type hypre -pc_hypre_type pilut -pc_hypre_pilut_factorrowsize 20 -pc_hypre_pilut_tol 0.01 -ksp_atol $seuil }"	;
-#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"	
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"	
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }"				;rank[$i]=0;
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 0 } impr }"		;sym[$i]=1 	
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"	;sym[$i]=1 	;rank[$i]=1;
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 0 } impr }"
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond PILUT { level 1 } impr }"	# PILUT instead ILUT because CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 1 } impr }"	
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"	
 
-# iBCGSTAB+BLOCK_JACOBI_ICC
-let i=$i+1;solver[$i]="Petsc IBICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"				;rank[$i]=2;
+# iBCGSTAB+BLOCK_JACOBI_ILU/ICC
+let i=$i+1;solver[$i]="Petsc IBICGSTAB { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }"				;rank[$i]=2;
+let i=$i+1;solver[$i]="Petsc IBICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"	;sym[$i]=1	;rank[$i]=2;
 
 # Reference TRUST GMRES+DIAG
 let i=$i+1;solver[$i]="Gmres          { seuil $seuil diag controle_residu 1 impr }"				;sym[$i]=0	;rank[$i]=5;
+# Reference TRUST BICGSTAB+DIAG
+let i=$i+1;solver[$i]="Gen            { seuil $seuil solv_elem bicgstab precond ilu { type 0 filling 10 } impr }" ;sym[$i]=0	;rank[$i]=0;
 
 ################################
 # Solveurs matrices symetriques:
@@ -42,6 +47,8 @@ let i=$i+1;solver[$i]="Optimal        { seuil $seuil impr }"        						;sym[$
 
 # Cholesky Mumps (Fonctionne en non symetrique mais aucun interet pour TRUST)
 let i=$i+1;solver[$i]="Petsc Cholesky { impr }"									;sym[$i]=1 	;rank[$i]=3;
+let i=$i+1;solver[$i]="Petsc Cholesky_mumps_blr { impr }"							;sym[$i]=1 	;rank[$i]=3;
+let i=$i+1;solver[$i]="Petsc Cholesky_mumps_blr { dropping_parameter 1.e-6 impr }"						;sym[$i]=1 	;rank[$i]=3;
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering metis impr }"							;sym[$i]=1 	;rank[$i]=4;
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering scotch impr }"							;sym[$i]=1 	;rank[$i]=5;
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering parmetis impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=6;

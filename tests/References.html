@@ -99,6 +99,8 @@
 <TR><TD><SMALL><A HREF="#Champ_fonc_xyz">Champ_fonc_xyz</A></TD><TD><SMALL># Thermohydraulique 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_front_calc">Champ_front_calc</A></TD><TD><SMALL># Conduction 2D : couplage de 2 domaines solides #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_front_debit_QC_VDF">Champ_front_debit_QC_VDF</A></TD><TD><SMALL># Thermohydraulique 2D : Quasi_compressible gaz parfait VDF #</TD></TR>
+<TR><TD><SMALL><A HREF="#Champ_front_debit_massique">Champ_front_debit_massique</A></TD><TD><SMALL># Hydraulique 2D laminaire #</TD></TR>
+<TR><TD><SMALL><A HREF="#Champ_front_xyz_debit">Champ_front_xyz_debit</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_tabule_temps">Champ_tabule_temps</A></TD><TD><SMALL># Calcul Hydraulique : Mise en mouvement par acceleration champ tabule temps #</TD></TR>
 <TR><TD><SMALL><A HREF="#Chmoy_faceperio">Chmoy_faceperio</A></TD><TD><SMALL># Champ_front_recyclage { moyenne_imposee connection_exacte fichier } #</TD></TR>
 <TR><TD><SMALL><A HREF="#Cholesky">Cholesky</A></TD><TD><SMALL># Thermohydraulique 2D : Couplage Boussinesq et schema quick #</TD></TR>
@@ -247,6 +249,8 @@
 <TR><TD><SMALL><A HREF="#M3DLAM">M3DLAM</A></TD><TD><SMALL># Hydraulique 3D laminaire #</TD></TR>
 <TR><TD><SMALL><A HREF="#MED_docond">MED_docond</A></TD><TD><SMALL># Test lecture maillage MED et Post_processing format MED # </TD></TR>
 <TR><TD><SMALL><A HREF="#Maill_Pave_tanh">Maill_Pave_tanh</A></TD><TD><SMALL># SIMULATION D UN CANAL 3D  #</TD></TR>
+<TR><TD><SMALL><A HREF="#Maill_Pave_tanh_3D">Maill_Pave_tanh_3D</A></TD><TD><SMALL># Mesh construction with tanh variation in X, Y and Z directions #</TD></TR>
+<TR><TD><SMALL><A HREF="#Maill_Pave_tanh_XYZ">Maill_Pave_tanh_XYZ</A></TD><TD><SMALL># Mesh construction with tanh variation in X, Y and Z directions #</TD></TR>
 <TR><TD><SMALL><A HREF="#Maillage_Hexa_ICEM">Maillage_Hexa_ICEM</A></TD><TD><SMALL># Lecture d'un maillage hexaedre issu d'ICEM #</TD></TR>
 <TR><TD><SMALL><A HREF="#Maillage_Transformer_2D_VEF_K_Eps_Yplus">Maillage_Transformer_2D_VEF_K_Eps_Yplus</A></TD><TD><SMALL># Calcul 2D Hydraulique VEF turbulent K-Eps avec Utilisation loi de paroi Standard (Y+~50) #</TD></TR>
 <TR><TD><SMALL><A HREF="#MaillerParallel">MaillerParallel</A></TD><TD><SMALL># Thermohydraulique 3D : Couplage Boussinesq et schema quick #</TD></TR>
@@ -315,6 +319,7 @@
 <TR><TD><SMALL><A HREF="#Poiseuille_VEF">Poiseuille_VEF</A></TD><TD><SMALL># Hydraulique 2D : Poiseuille 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Poiseuille_VEF_impl">Poiseuille_VEF_impl</A></TD><TD><SMALL># Hydraulique 2D : Poiseuille 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Poiseuille_VEF_segsol">Poiseuille_VEF_segsol</A></TD><TD><SMALL># Hydraulique 2D : Poiseuille 2D #</TD></TR>
+<TR><TD><SMALL><A HREF="#Polyedre_volume_xg">Polyedre_volume_xg</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Polynomes">Polynomes</A></TD><TD><SMALL># Conduction 2D : Sources volumiques de puissance #</TD></TR>
 <TR><TD><SMALL><A HREF="#Poreps">Poreps</A></TD><TD><SMALL># Thermohydraulique 2D : porosites volumiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#Poreux_VEF_2D">Poreux_VEF_2D</A></TD><TD><SMALL># ThermoHydraulique 2D : poreux #</TD></TR>
@@ -470,6 +475,7 @@
 <TR><TD><SMALL><A HREF="#VEF_diffusion_P0_stab_TVD">VEF_diffusion_P0_stab_TVD</A></TD><TD><SMALL># Hydraulique 2D : test de l'operateur de diffusion stabilise #</TD></TR>
 <TR><TD><SMALL><A HREF="#VER_HEXA">VER_HEXA</A></TD><TD><SMALL># test si la maille a bien ete reordonne #</TD></TR>
 <TR><TD><SMALL><A HREF="#VER_QUAD">VER_QUAD</A></TD><TD><SMALL># test si la maille a bien ete reordonne #</TD></TR>
+<TR><TD><SMALL><A HREF="#Verif_Duplic_ICoCo">Verif_Duplic_ICoCo</A></TD><TD><SMALL># Test of last time step post-processing #</TD></TR>
 <TR><TD><SMALL><A HREF="#VerifierCoin">VerifierCoin</A></TD><TD><SMALL># Thermohydraulique VEF 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#centre4_VDF">centre4_VDF</A></TD><TD><SMALL># Hydraulique 2D : plaque boundary layer #</TD></TR>
 <TR><TD><SMALL><A HREF="#centre4_VDF_periodique">centre4_VDF_periodique</A></TD><TD><SMALL># Hydraulique 2D : plaque boundary layer parallele #</TD></TR>
@@ -482,6 +488,7 @@
 <TR><TD><SMALL><A HREF="#cond_vef_impl">cond_vef_impl</A></TD><TD><SMALL># Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc">conduc</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc_VEF">conduc_VEF</A></TD><TD><SMALL># Conduction 2D VEF : Diverses conditions limites #</TD></TR>
+<TR><TD><SMALL><A HREF="#conduc_var">conduc_var</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#coude_irreg">coude_irreg</A></TD><TD><SMALL># Hydraulique 2D laminaire avec maillage irregulier #</TD></TR>
 <TR><TD><SMALL><A HREF="#cpu_3D">cpu_3D</A></TD><TD><SMALL># Thermohydraulique 3D turbulent sous maille et Boussinesq #</TD></TR>
 <TR><TD><SMALL><A HREF="#defilante">defilante</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
@@ -915,6 +922,14 @@
 <CENTER># Thermohydraulique 2D : Quasi_compressible gaz parfait VDF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Champ_front_debit_QC_VDF/Champ_front_debit_QC_VDF.data>Edit</a> Champ_front_debit_QC_VDF.data </CENTER>
+<HR><CENTER><B><A NAME=Champ_front_debit_massique>Champ_front_debit_massique</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Champ_front_debit_massique/Champ_front_debit_massique.data>Edit</a> Champ_front_debit_massique.data </CENTER>
+<HR><CENTER><B><A NAME=Champ_front_xyz_debit>Champ_front_xyz_debit</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire avec "trou" dans le maillage #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Champ_front_xyz_debit/Champ_front_xyz_debit.data>Edit</a> Champ_front_xyz_debit.data </CENTER>
 <HR><CENTER><B><A NAME=Champ_tabule_temps>Champ_tabule_temps</A></B></CENTER>
 <CENTER># Calcul Hydraulique : Mise en mouvement par acceleration champ tabule temps #</CENTER>
 <CENTER><a href=../tests/Reference/Champ_tabule_temps/Champ_tabule_temps.lml.gif><img src=../tests/Reference/Champ_tabule_temps/Champ_tabule_temps.lml.gif.fin></a></CENTER>
@@ -1559,6 +1574,14 @@
 <CENTER># SIMULATION D UN CANAL 3D  #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Maill_Pave_tanh/Maill_Pave_tanh.data>Edit</a> Maill_Pave_tanh.data </CENTER>
+<HR><CENTER><B><A NAME=Maill_Pave_tanh_3D>Maill_Pave_tanh_3D</A></B></CENTER>
+<CENTER># Mesh construction with tanh variation in X, Y and Z directions #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Maill_Pave_tanh_3D/Maill_Pave_tanh_3D.data>Edit</a> Maill_Pave_tanh_3D.data </CENTER>
+<HR><CENTER><B><A NAME=Maill_Pave_tanh_XYZ>Maill_Pave_tanh_XYZ</A></B></CENTER>
+<CENTER># Mesh construction with tanh variation in X, Y and Z directions #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Maill_Pave_tanh_XYZ/Maill_Pave_tanh_XYZ.data>Edit</a> Maill_Pave_tanh_XYZ.data </CENTER>
 <HR><CENTER><B><A NAME=Maillage_Hexa_ICEM>Maillage_Hexa_ICEM</A></B></CENTER>
 <CENTER># Lecture d'un maillage hexaedre issu d'ICEM #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1857,6 +1880,11 @@
 <CENTER># Hydraulique 2D : Poiseuille 2D #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Poiseuille_VEF_segsol/Poiseuille_VEF_segsol.data>Edit</a> Poiseuille_VEF_segsol.data </CENTER>
+<HR><CENTER><B><A NAME=Polyedre_volume_xg>Polyedre_volume_xg</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire avec "trou" dans le maillage #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Polyedre_volume_xg/Polyedre_volume_xg.data>Edit</a> Polyedre_volume_xg.data </CENTER>
+<CENTER><a href=../tests/Reference/Polyedre_volume_xg/dom_melange.geom>Edit</a> dom_melange.geom </CENTER>
 <HR><CENTER><B><A NAME=Polynomes>Polynomes</A></B></CENTER>
 <CENTER># Conduction 2D : Sources volumiques de puissance #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2518,6 +2546,10 @@
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/VER_QUAD/VER_QUAD.data>Edit</a> VER_QUAD.data </CENTER>
 <CENTER><a href=../tests/Reference/VER_QUAD/mod2.geom>Edit</a> mod2.geom </CENTER>
+<HR><CENTER><B><A NAME=Verif_Duplic_ICoCo>Verif_Duplic_ICoCo</A></B></CENTER>
+<CENTER># Test of last time step post-processing #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Verif_Duplic_ICoCo/Verif_Duplic_ICoCo.data>Edit</a> Verif_Duplic_ICoCo.data </CENTER>
 <HR><CENTER><B><A NAME=VerifierCoin>VerifierCoin</A></B></CENTER>
 <CENTER># Thermohydraulique VEF 2D couplee a conduction 2D #</CENTER>
 <CENTER><a href=../tests/Reference/VerifierCoin/VerifierCoin.lml.gif><img src=../tests/Reference/VerifierCoin/VerifierCoin.lml.gif.fin></a></CENTER>
@@ -2569,6 +2601,11 @@
 <CENTER># Conduction 2D VEF : Diverses conditions limites #</CENTER>
 <CENTER><a href=../tests/Reference/conduc_VEF/conduc_VEF.lml.gif><img src=../tests/Reference/conduc_VEF/conduc_VEF.lml.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/conduc_VEF/conduc_VEF.data>Edit</a> conduc_VEF.data </CENTER>
+<HR><CENTER><B><A NAME=conduc_var>conduc_var</A></B></CENTER>
+<CENTER># Conduction 2D : Diverses conditions limites thermiques #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/conduc_var/conduc.geo>Edit</a> conduc.geo </CENTER>
+<CENTER><a href=../tests/Reference/conduc_var/conduc_var.data>Edit</a> conduc_var.data </CENTER>
 <HR><CENTER><B><A NAME=coude_irreg>coude_irreg</A></B></CENTER>
 <CENTER># Hydraulique 2D laminaire avec maillage irregulier #</CENTER>
 <CENTER><a href=../tests/Reference/coude_irreg/coude_irreg.lml.gif><img src=../tests/Reference/coude_irreg/coude_irreg.lml.gif.fin></a></CENTER>

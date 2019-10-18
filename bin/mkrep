@@ -13,6 +13,7 @@ do
    then
       #echo $dir
       echo $ECHO_OPTS $dir >> $fichier_tmp
+      (cd $dir;mk_Instancie)
    fi
 done
 #  la ligne suivante permet d'avoir un noyau minimal

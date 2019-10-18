@@ -18,6 +18,7 @@ STANDALONE=ON
 export  CONFIGURATION_ROOT_DIR=$PWD/configuration
 if [ "$KERNEL_ROOT_DIR" != "" ]
 then
+echo "verification of modules"
    #STANDALONE=OFF
    export PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE
    export PYTHONLIBS_ROOT_DIR=$PYTHON_ROOT_DIR

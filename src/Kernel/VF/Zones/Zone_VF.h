@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,22 @@ class Zone_VF : public Zone_dis_base
 public :
 
   virtual double face_normales(int , int ) const =0;
-  virtual double face_surfaces(int) const =0;
+  void calculer_face_surfaces(const DoubleVect& surfaces)
+  {
+    face_surfaces_ = surfaces;
+  };
+  virtual const DoubleVect& face_surfaces() const
+  {
+    return face_surfaces_;
+  }
+  virtual inline double face_surfaces(int i) const
+  {
+    return face_surfaces_(i);
+  };
+  virtual inline double surface(int i) const
+  {
+    return face_surfaces(i);
+  };
 
   void discretiser();
   void infobord();
@@ -84,6 +99,9 @@ public :
   inline double coefficient_echange_thermique(int ) const;
 
   inline virtual const IntVect& orientation() const;
+  inline virtual int orientation(int ) const;
+  inline virtual int orientation_si_definie(int) const;
+
   DoubleTab normalized_boundaries_outward_vector(int global_face_number, double scale_factor) const;
   inline DoubleTab& xv();
   inline const DoubleTab& xv() const;
@@ -94,6 +112,8 @@ public :
   inline DoubleVect& volumes_entrelaces();
   inline const DoubleVect& volumes_entrelaces() const;
   inline double volumes_entrelaces(int num_face) const;
+  inline const DoubleTab& volumes_entrelaces_dir() const;
+  inline DoubleTab& volumes_entrelaces_dir();
 
   inline DoubleVect& porosite_face();
   inline const DoubleVect& porosite_face() const;
@@ -174,15 +194,20 @@ public :
     return md_vector_aretes_;
   }
 
+private:
+  DoubleVect face_surfaces_;                // surface des faces
+
 protected:
 
   DoubleVect volumes_;                          // volumes des elements
   DoubleVect inverse_volumes_;                  // inverse du volumes des elements
   DoubleVect volumes_entrelaces_;            // volumes entrelaces pour l'integration des Qdm
+  DoubleTab volumes_entrelaces_dir_;        // volumes entrelaces par cote
 
   DoubleVect porosite_elem_;                 // Porosites volumiques pour les volumes de
   // controle de masse
   DoubleVect porosite_face_;              // Porosites surfaciques en masse et volumiques
+
   // en quantite de mouvement
   DoubleVect diametre_hydraulique_face_;  //diametres hydrauliques des faces
   DoubleTab diametre_hydraulique_elem_;  //diametres hydrauliques des elements
@@ -595,11 +620,34 @@ inline double Zone_VF::xv(int num_face,int k) const
 
 inline const IntVect& Zone_VF::orientation() const
 {
-  Cerr<<"Method coded only for Zone_VDF"<<finl;
-  Cerr<<"The orientation of the faces is not defined for another discretization as VDF"<<finl;
+  Cerr<<"Try using orientation(num_face) instead of orientation() if the mesh is axis oriented."<< finl;
   exit();
   throw;
   return orientation();
+}
+
+inline int Zone_VF::orientation_si_definie(int num_face) const
+{
+  for (int dir=0; dir<dimension; dir++)
+    {
+      if (est_egal(dabs(face_normales(num_face, dir)), face_surfaces(num_face)))
+        return dir;
+    }
+  return -1;
+}
+
+inline int Zone_VF::orientation(int num_face) const
+{
+  for (int dir=0; dir<dimension; dir++)
+    {
+      if (est_egal(dabs(face_normales(num_face, dir)), face_surfaces(num_face)))
+        return dir;
+    }
+  Cerr<<"Your mesh is not axis oriented."<<finl;
+  Cerr<<"Try recoding using face_normales(). Example for g(face)=gravite[orientation[face]];" << finl;
+  Cerr<<"Compute something like: g(face)=Sum(i=0;i<gravite.size();i++) of gravite[i]*face_normales(face,i)/surface(face);" << finl;
+  exit();
+  return -1;
 }
 
 // Description:
@@ -666,6 +714,19 @@ inline const DoubleVect& Zone_VF::volumes_entrelaces() const
 inline double Zone_VF::volumes_entrelaces(int num_face) const
 {
   return volumes_entrelaces_[num_face];
+}
+
+// Decription:
+// renvoie le tableau des volumes entrelaces par cote.
+inline DoubleTab& Zone_VF::volumes_entrelaces_dir()
+{
+  return volumes_entrelaces_dir_;
+}
+
+// Decription:
+inline const DoubleTab& Zone_VF::volumes_entrelaces_dir() const
+{
+  return volumes_entrelaces_dir_;
 }
 
 inline const ArrOfInt& Zone_VF::ind_faces_virt_bord() const

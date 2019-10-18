@@ -1,8 +1,11 @@
 #!/bin/bash
 gnuplot=$1
-gd=gd-2.0.36RC1.tar.gz
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
 
 # recuperation des packages
 
@@ -10,7 +13,7 @@ for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
 do
   ln -sf $file .
 done
-
+gd=`ls gd-*.tar.gz 2>/dev/null`
 let i=0
 for package in $gd $gnuplot
 do
@@ -34,7 +37,7 @@ do
          PNG=$Build/png
          ZLIB=$Build/zlib
          # Installation de zlib
-         package=zlib-1.2.5.tar.gz
+         package=`ls zlib-*.tar.gz 2>/dev/null`
          echo "***************************************"
          echo "Trying to install ${package%.tar.gz}..."
          echo "***************************************"
@@ -45,7 +48,7 @@ do
          cd .. && rm -r -f ${package%.tar.gz}
         
          # Installation de png
-         package=libpng-1.5.6.tar.gz
+         package=`ls libpng-*.tar.gz 2>/dev/null`
          echo "***************************************"
          echo "Trying to install ${package%.tar.gz}..."
          echo "***************************************"
@@ -72,8 +75,9 @@ do
       XLIB="" && [ -d /usr/X11R6/lib64 ] && XLIB="--x-lib=/usr/X11R6/lib64" 
       # --without-tutorial car plantage sur is209003 pour un probleme Latex 
       # --without-lisp-files car plantage sur VRH797979.intra.cea.fr car emacs mal installe
-      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --without-lua  --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
+      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --without-lua --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
    fi
+   # 17-05-2019: if you update gnuplot to a new version using cmake, use cmake from conda as is the case for gmsh
    $TRUST_MAKE || exit -1
    make install  || echo error on installation, but we hope that is ok
    cd ..
@@ -85,4 +89,9 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+
+# Pour avoir la meme palette que gnuplot 4:
+echo "set colors classic # Meme palette que gnuplot 4" >> $TRUST_ROOT/exec/gnuplot/share/gnuplot/*/gnuplotrc
+
+export PATH=$OLDPATH_
 exit 0

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,8 +96,6 @@ public:
   inline virtual void completer() {};
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
   virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
-  inline const Nom& le_nom() const;
-  inline int nb_comp() const;
   inline DoubleTab& valeurs();
   inline const DoubleTab& valeurs() const;
   virtual DoubleTab& valeurs_au_temps(double temps)=0;
@@ -105,9 +103,7 @@ public:
   inline const Frontiere_dis_base& frontiere_dis() const;
   inline Frontiere_dis_base& frontiere_dis();
   const Zone_dis_base& zone_dis() const;
-  inline void nommer(const Nom& name);
   virtual Champ_front_base& affecter_(const Champ_front_base& ch) =0;
-  inline void fixer_nb_comp(int );
   virtual void fixer_nb_valeurs_temporelles(int nb_cases);
   virtual void mettre_a_jour(double temps);
   virtual void calculer_coeffs_echange(double temps);
@@ -125,21 +121,8 @@ public:
   virtual int avancer(double temps);
   virtual int reculer(double temps);
 
-  inline const Noms& get_synonyms() const
-  {
-    return noms_synonymes_;
-  };
-  inline void add_synonymous(const Nom& nom)
-  {
-    noms_synonymes_.add(nom);
-  };
-
 protected:
 
-  Nom nom_ ;
-  Nom unite_;
-  Noms noms_synonymes_;
-  int nb_compo_ ;
   double temps_defaut ; // Le temps pris par defaut quand le parametre
   // n'est pas specifie. Ce sera en particulier
   // celui utilise par les operateurs et les
@@ -147,46 +130,6 @@ protected:
   REF(Frontiere_dis_base) la_frontiere_dis;
   Roue_ptr les_valeurs; // Les valeurs du champ
 };
-
-
-// Description:
-//    Renvoie le nom du champ.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Nom& Champ_front_base::le_nom() const
-{
-  return nom_;
-}
-
-
-// Description:
-//    Renvoie le nombre de composante du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de composante du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline int Champ_front_base::nb_comp() const
-{
-  return nb_compo_ ;
-}
 
 
 // Description:
@@ -270,45 +213,6 @@ inline const DoubleTab& Champ_front_base::valeurs() const
   return valeurs_au_temps(temps_defaut);
 }
 
-
-// Description:
-//    Fixe le nombre de composantes du champ
-// Precondition:
-// Parametre: int i
-//    Signification: le nombre de composantes du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline void Champ_front_base::fixer_nb_comp(int i)
-{
-  nb_compo_ = i ;
-}
-
-
-// Description:
-//    Donne un nom au champ
-// Precondition:
-// Parametre: Nom& name
-//    Signification: le nom a donner au champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ a un nom
-inline void Champ_front_base::nommer(const Nom& name)
-{
-  nom_ = name ;
-}
 // devra etre surchargee par les champ_front voulant verifier les arguments
 inline void Champ_front_base::verifier(const Cond_lim_base& la_cl) const
 {

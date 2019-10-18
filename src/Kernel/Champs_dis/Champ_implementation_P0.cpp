@@ -588,7 +588,7 @@ int Champ_implementation_P0::imprime_P0(Sortie& os, int ncomp) const
 
 int Champ_implementation_P0::affecter_(const Champ_base& ch)
 {
-  // if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base().zone()==ch.zone_dis_base().zone())
+  // if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base()==ch.zone_dis_base())
   // Plus general en comparant la zone:
   if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base().zone()==ch.zone_dis_base().zone())
     {
@@ -602,6 +602,7 @@ int Champ_implementation_P0::affecter_(const Champ_base& ch)
     }
   else
     {
+      Cerr << "Warning (if called each time step): computing field " << le_champ().le_nom() << " on domain " << le_champ().zone_dis_base().zone().domaine().le_nom() << " is not optimized... " << finl;
       return 0;
     }
 }

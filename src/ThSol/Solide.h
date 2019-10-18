@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #define Solide_included
 
 #include <Milieu_base.h>
+#include <Champ_Fonc.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,6 +43,18 @@ public:
   void set_param(Param& param);
   void verifier_coherence_champs(int& err,Nom& message);
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+
+  void mettre_a_jour(double temps);
+  int initialiser(const double& temps);
+  void update_rho_cp(double temps);
+
+  const Champ_base& get_rho_cp_comme_T() const
+  {
+    return rho_cp_comme_T_;
+  };
+
+protected:
+  Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
 
 };
 

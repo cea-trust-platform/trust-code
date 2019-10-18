@@ -230,7 +230,8 @@ int Pb_Thermohydraulique_Turbulent::verifier()
     if (!sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_mod_turb_hyd.valeur()))
       {
         if ((!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th))
-            && (le_mod_turb_th.que_suis_je()!="Modele_turbulence_scal_sous_maille_dyn_VDF"))
+            && (le_mod_turb_th.que_suis_je()!="Modele_turbulence_scal_sous_maille_dyn_VDF")
+            && (le_mod_turb_th.que_suis_je()!="Modele_turbulence_scal_Dispersion_Thermique_InterAss"))
           {
             Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
             Cerr << "pour l'hydraulique et la thermique" << finl;

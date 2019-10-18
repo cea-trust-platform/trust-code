@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -143,7 +143,7 @@ void Refine_Mesh::apply_2D(void)
   build_new_internal_frontier_faces_2D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
   update_domain(Nom("Triangle"),
-                segment_2D,
+                Faces::segment_2D,
                 new_nodes,
                 new_cells,
                 new_sub_zones_descriptions,
@@ -193,7 +193,7 @@ void Refine_Mesh::apply_3D(void)
   build_new_internal_frontier_faces_3D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
   update_domain(Nom("Tetraedre"),
-                triangle_3D,
+                Faces::triangle_3D,
                 new_nodes,
                 new_cells,
                 new_sub_zones_descriptions,

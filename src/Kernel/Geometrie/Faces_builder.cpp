@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <Faces_builder.h>
+#include <IntTrav.h>
 #include <Domaine.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
@@ -29,11 +30,15 @@
 #include <Scatter.h>
 #include <stdio.h>
 #include <Poly_geom_base.h>
+#include <Elem_geom_base.h>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_std.h>
 #include <Schema_Comm.h>
 #include <Array_tools.h>
 #include <communications.h>
+#include <array>
+#include <vector>
+#include <map>
 
 Faces_builder::Faces_builder() :
   les_elements_ptr_(0),
@@ -794,6 +799,18 @@ void Zone::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_ve
         {
           continue;
         }
+      //les tableaux faces_sommets_frontiere doivent faire la meme largeur sur tous les procs avant echange
+      int nb_som_faces = Process::mp_max(faces_sommets_frontiere.dimension(1));
+      if (faces_sommets_frontiere.dimension(1) < nb_som_faces)
+        {
+          IntTrav fsf_old;
+          fsf_old = faces_sommets_frontiere;
+          faces_sommets_frontiere.resize(fsf_old.dimension_tot(0), nb_som_faces);
+          faces_sommets_frontiere = -1;
+          for (int i = 0, j; i < fsf_old.dimension_tot(0); i++)
+            for (j = 0; j < fsf_old.dimension(1); j++)
+              faces_sommets_frontiere(i, j) = fsf_old(i, j);
+        }
 
       vect_renum = -1;
       const int i_premiere_face = front.num_premiere_face();
@@ -868,17 +885,11 @@ static void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_ree
     // On range dans pe_arete le numero du plus petit processeur proprietaire des
     // elements adjacents a cette arete
     // Inutile de parcourir les elements reels, on va trouver pe_elem[i]==moi...
+    // Si l'arete se trouve sur un processeur de rang inferieur, on lui attribue
     for (i = nb_elem; i < nb_elem_tot; i++)
-      {
-        int pe = pe_elem[i];
-        for (int j = 0; j < nb_aretes_elem; j++)
-          {
-            int i_arete = elem_aretes(i, j);
-            // Si l'arete se trouve sur un processeur de rang inferieur, on lui attribue
-            if (i_arete < nb_aretes_reelles && pe_arete[i_arete] > pe)
-              pe_arete[i_arete] = pe;
-          }
-      }
+      for (int pe = pe_elem[i], j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+        if (a < nb_aretes_reelles && pe_arete[a] > pe)
+          pe_arete[a] = pe;
   }
   // On suppose que l'espace virtuel des elements contient au moins une couche d'elements virtuels
   //   (tous les voisins des elements reels par des sommets) alors les aretes reelles sont
@@ -890,14 +901,8 @@ static void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_ree
 
   // Copier tab_aretes dans la structure tmp (on sait echanger tmp, pas tab_aretes)
   for (i = 0; i < nb_elem; i++)
-    {
-      for (int j = 0; j < nb_aretes_elem; j++)
-        {
-          int i_arete = elem_aretes(i, j);
-          int val = tab_aretes[i_arete];
-          tmp(i, j) = val;
-        }
-    }
+    for (int j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      tmp(i, j) = tab_aretes[a];
 
   // 2) Echange du tableau
   tmp.echange_espace_virtuel();
@@ -907,18 +912,10 @@ static void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_ree
   //    qui donne la valeur
   // Inutile de parcourir les elements reels, la valeur ne changerait pas
   for (i = nb_elem; i < nb_elem_tot; i++)
-    {
-      // Numero du processeur qui a envoye les valeurs de cet element:
-      int pe = pe_elem[i];
-      for (int j = 0; j < nb_aretes_elem; j++)
-        {
-          int i_arete = elem_aretes(i, j);
-          // Si l'arete est reelle et qu'elle appartient au processeur qui a envoye l'element i
-          // prendre cette valeur:
-          if (i_arete < nb_aretes_reelles && pe_arete[i_arete] == pe)
-            tab_aretes[i_arete] = tmp(i, j);
-        }
-    }
+    for (int pe = pe_elem[i], j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      if (a < nb_aretes_reelles && pe_arete[a] == pe)
+        tab_aretes[a] = tmp(i, j);
+
   // tab_aretes contient maintenant des valeurs correctes pour toutes les aretes reeles
   //  (les items communs sont a jour). On fait encore un echange en passant par tmp pour
   //  mettre a jour les items virtuels:
@@ -928,47 +925,32 @@ static void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_ree
 
   // Copier encore une fois tab_aretes dans la structure tmp
   for (i = 0; i < nb_elem; i++)
-    {
-      for (int j = 0; j < nb_aretes_elem; j++)
-        {
-          int i_arete = elem_aretes(i, j);
-          int val = tab_aretes[i_arete];
-          tmp(i, j) = val;
-        }
-    }
+    for (int j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      tmp(i, j) = tab_aretes[a];
+
   // Echange du tableau
   tmp.echange_espace_virtuel();
   // Recopie de tmp dans tab_aretes
   for (i = nb_elem; i < nb_elem_tot; i++)
-    {
-      for (int j = 0; j < nb_aretes_elem; j++)
-        {
-          int i_arete = elem_aretes(i, j);
-          tab_aretes[i_arete] = tmp(i, j);
-        }
-    }
+    for (int j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      tab_aretes[a] = tmp(i, j);
 }
 
+/* version de creer_aretes compatible avec les polyedres */
 void Zone::creer_aretes()
 {
-  // definition des aretes sur l'element de reference:
-  IntTab aretes_reference;
-  type_elem().valeur().get_tab_aretes_sommets_locaux(aretes_reference);
-
-  const int nb_aretes_elem = aretes_reference.dimension(0);
   const IntTab& elem_som = les_elems();
-  const int nbsom_elem = elem_som.dimension(1);
   // Nombre d'elements reels:
   const int nbelem = elem_som.dimension(0);
   // Les elements virtuels sont deja construits:
   const int nbelem_tot = elem_som.dimension_tot(0);
-  Elem_Aretes.resize(0, nb_aretes_elem);
-  creer_tableau_elements(Elem_Aretes, Array_base::NOCOPY_NOINIT);
 
   Aretes_som.set_smart_resize(1);
   Aretes_som.resize(0, 2);
+  bool is_poly = sub_type(Poly_geom_base, type_elem().valeur());
 
-  int nb_aretes_reelles = -1;
+  std::vector<std::vector<int> > v_e_a(nbelem_tot);//liste des aretes de chaque element
+  int nb_aretes_reelles = 0, i, j;
   {
     // Une liste chainee pour retrouver, pour chaque sommet, la liste des aretes
     // attachees a ce sommet. Le tableau est de meme taille que Aretes_som.dimension(0)
@@ -979,40 +961,50 @@ void Zone::creer_aretes()
     // Indice de la premiere arete attachee a chaque sommet dans chaine_aretes_sommets
     ArrOfInt premiere_arete_som(nb_som_tot());
     premiere_arete_som= -1;
-    ArrOfInt tab_elem(nbsom_elem);
 
-    for (int i_elem = 0; i_elem < nbelem_tot; i_elem++)
+    std::map<std::array<double, 3>, std::array<int, 2> > aretes_loc; //aretes de l'element considere : aretes_loc[{xa, ya, za}] = { s1, s2}
+    //l'utilisation d'un map permet de s'assurer que les aretes soient dans le meme ordre sur tous les procs!
+    for (int i_elem = 0; i_elem < nbelem_tot; aretes_loc.clear(), i_elem++)
       {
-        for (int j = 0; j < nbsom_elem; j++)
-          tab_elem[j] = elem_som(i_elem, j);
-        for (int i_arete = 0; i_arete < nb_aretes_elem; i_arete++)
+        /* 1. on retrouve les aretes de l'element en iterant sur ses faces */
+        const Elem_geom_base& elem_g = ref_cast(Elem_geom_base, type_elem().valeur());
+        IntTrav f_e_r;
+        if (is_poly)
           {
-            int s1 = tab_elem[aretes_reference(i_arete, 0)];
-            int s2 = tab_elem[aretes_reference(i_arete, 1)];
-            // On a count = i_elem * nb_aretes_elem + i_arete
-            // Cette arete correspond a Elem_Aretes(i_elem, i_arete)
-            int som1 = min(s1, s2);
-            int som2 = max(s1, s2);
-            // Cherche cette arete parmi les aretes construites
-            int k = premiere_arete_som[som1]; // index dans chaine_aretes_sommets
-            while (k >= 0 && (Aretes_som(k, 0) != som1 || Aretes_som(k, 1) != som2))
-              {
-                k = chaine_aretes_sommets[k];
-              }
-            if (k < 0)
+            const Poly_geom_base& poly_g = ref_cast(Poly_geom_base, type_elem().valeur());
+            poly_g.get_tab_faces_sommets_locaux(f_e_r, i_elem);
+          }
+        else elem_g.get_tab_faces_sommets_locaux(f_e_r);
+
+        for (i = 0; i < f_e_r.dimension(0) && f_e_r(i, 0) >= 0; i++)
+          for (j = 0; j < f_e_r.dimension(1) && f_e_r(i, j) >= 0; j++)
+            {
+              int s1 = elem_som(i_elem, f_e_r(i, j)),
+                  s2 = elem_som(i_elem, f_e_r(i, j + 1 < f_e_r.dimension(1) && f_e_r(i, j + 1) >= 0 ? j + 1 : 0));
+              std::array<double, 3> key;
+              for (int l = 0; l < 3; l++) key[l] = (domaine().coord_sommets()(s1, l) + domaine().coord_sommets()(s2, l)) / 2;
+              aretes_loc[key] = {{ min(s1, s2), max(s1, s2) }};
+            }
+
+        for (auto && kv : aretes_loc)
+          {
+            //a-t-on deja vu cette arete ?
+            int k = premiere_arete_som[kv.second[0]];
+            while (k >= 0 && (Aretes_som(k, 0) != kv.second[0] || Aretes_som(k, 1) != kv.second[1])) k = chaine_aretes_sommets[k];
+            if (k < 0) //on n'a pas encore trouve l'arete -> maj de premiere_arete_som et chaine_arete_sommets
               {
                 // L'arete n'existe pas encore
                 k = chaine_aretes_sommets.size_array();
                 assert(k == Aretes_som.dimension(0));
-                Aretes_som.append_line(som1, som2);
+                Aretes_som.append_line(kv.second[0], kv.second[1]);
                 // Insertion de l'arete en tete de la liste chainee
-                int old_head = premiere_arete_som[som1];
+                int old_head = premiere_arete_som[kv.second[0]];
                 // Indice de la nouvelle arete
                 int new_head = chaine_aretes_sommets.size_array();
                 chaine_aretes_sommets.append_array(old_head);
-                premiere_arete_som[som1] = new_head;
+                premiere_arete_som[kv.second[0]] = new_head;
               }
-            Elem_Aretes(i_elem, i_arete) = k;
+            v_e_a[i_elem].push_back(k); //ajout de l'arete a la liste des aretes de l'element
           }
         if (i_elem == nbelem - 1)
           {
@@ -1021,6 +1013,16 @@ void Zone::creer_aretes()
           }
       }
   }
+  /* remplissage du tableau elem_aretes a l'aide de v_e_a */
+  int nb_aretes_elem = 0;
+  for (i = 0; i < nbelem_tot; i++) nb_aretes_elem = max(nb_aretes_elem, (int) v_e_a[i].size());
+  nb_aretes_elem = mp_max(nb_aretes_elem);
+  Elem_Aretes.resize(0, nb_aretes_elem);
+  creer_tableau_elements(Elem_Aretes, Array_base::NOCOPY_NOINIT);
+  for (i = 0, Elem_Aretes = -1; i < nbelem_tot; i++)
+    for (j = 0; j < (int) v_e_a[i].size(); j++)
+      Elem_Aretes(i, j) = v_e_a[i][j];
+
   // Ajuste la taille du tableau Aretes_som
   const int n_aretes_tot = Aretes_som.dimension(0); // attention, nb_aretes_tot est une methode !
   Aretes_som.append_line(-1, -1); // car le resize suivant ne fait quelque chose que si on change de taille
@@ -1041,14 +1043,14 @@ void Zone::creer_aretes()
     // Pour chaque arete, indice de l'arete sur le processeur proprietaire
     ArrOfInt indice_aretes_owner;
     indice_aretes_owner.resize_array(n_aretes_tot, Array_base::NOCOPY_NOINIT);
-    for (int i = 0; i < nb_aretes_reelles; i++)
+    for (i = 0; i < nb_aretes_reelles; i++)
       indice_aretes_owner[i] = i;
     echanger_tableau_aretes(Elem_Aretes, nb_aretes_reelles, indice_aretes_owner);
 
     // Construction de pe_voisins
     ArrOfInt pe_voisins;
     pe_voisins.set_smart_resize(1);
-    for (int i=0; i<n_aretes_tot; i++)
+    for (i=0; i<n_aretes_tot; i++)
       if (pe_aretes[i]!=moi)
         pe_voisins.append_array(pe_aretes[i]);
 
@@ -1057,20 +1059,20 @@ void Zone::creer_aretes()
     reverse_send_recv_pe_list(pe_voisins, liste_pe);
 
     // On concatene les deux listes.
-    for (int i = 0; i < liste_pe.size_array(); i++)
+    for (i = 0; i < liste_pe.size_array(); i++)
       pe_voisins.append_array(liste_pe[i]);
     array_trier_retirer_doublons(pe_voisins);
 
     int nb_voisins = pe_voisins.size_array();
     ArrOfInt indices_pe(nproc());
     indices_pe= -1;
-    for (int i = 0; i < nb_voisins; i++)
+    for (i = 0; i < nb_voisins; i++)
       indices_pe[pe_voisins[i]] = i;
 
     VECT(ArrOfInt) aretes_communes_to_recv(nb_voisins);
     VECT(ArrOfInt) blocs_aretes_virt(nb_voisins);
     VECT(ArrOfInt) aretes_to_send(nb_voisins);
-    for (int i = 0; i < nb_voisins; i++)
+    for (i = 0; i < nb_voisins; i++)
       {
         aretes_communes_to_recv[i].set_smart_resize(1);
         blocs_aretes_virt[i].set_smart_resize(1);
@@ -1078,7 +1080,7 @@ void Zone::creer_aretes()
       }
     // Parcours des aretes: recherche des aretes a recevoir d'un autre processeur.
     // Aretes reeles (items communs)
-    for (int i = 0; i < nb_aretes_reelles; i++)
+    for (i = 0; i < nb_aretes_reelles; i++)
       {
         const int pe = pe_aretes[i];
         if (pe != moi)
@@ -1098,7 +1100,7 @@ void Zone::creer_aretes()
           }
       }
     // Aretes virtuelles
-    for (int i = nb_aretes_reelles; i < n_aretes_tot; i++)
+    for (i = nb_aretes_reelles; i < n_aretes_tot; i++)
       {
         const int pe = pe_aretes[i];
         assert(pe < nproc() && pe != moi);
@@ -1119,11 +1121,11 @@ void Zone::creer_aretes()
       schema.set_send_recv_pe_list(pe_voisins, pe_voisins);
       schema.begin_comm();
       // On empile le tableau aretes_to_send et le nombre d'aretes commune avec ce pe:
-      for (int i = 0; i < nb_voisins; i++)
+      for (i = 0; i < nb_voisins; i++)
         schema.send_buffer(pe_voisins[i]) << aretes_to_send[i];
       schema.echange_taille_et_messages();
       // Reception
-      for (int i = 0; i < nb_voisins; i++)
+      for (i = 0; i < nb_voisins; i++)
         schema.recv_buffer(pe_voisins[i]) >> aretes_to_send[i];
       schema.end_comm();
     }

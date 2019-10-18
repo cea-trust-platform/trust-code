@@ -1,0 +1,2 @@
+#!/bin/bash
+paste $1*"_ERRP.son" $1*"_ERRV.son" | awk '{print $2 " " $4}' | tail -1 > $1_erreurs.txt 

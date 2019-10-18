@@ -4,6 +4,7 @@
 //
 #include <verifie_pere.h>
 #include <Champ_Fonc_MED.h>
+#include <Champ_Fonc_MED_Tabule.h>
 #include <Champ_Fonc_P0_MED.h>
 #include <Champ_Fonc_P1_MED.h>
 #include <Champ_Fonc_Q1_MED.h>
@@ -26,24 +27,25 @@ void instancie_src_Kernel_MEDimpl() {
 Cerr << "src_Kernel_MEDimpl" << finl;
 Champ_Fonc_MED inst1;verifie_pere(inst1);
 Champ_Fonc_MEDfile inst2;verifie_pere(inst2);
-Champ_Fonc_P0_MED inst3;verifie_pere(inst3);
-Champ_Fonc_P1_MED inst4;verifie_pere(inst4);
-Champ_Fonc_Q1_MED inst5;verifie_pere(inst5);
-Champ_front_MED inst6;verifie_pere(inst6);
-Discr_inst inst7;verifie_pere(inst7);
-EcrMED inst8;verifie_pere(inst8);
-EcrMEDfile inst9;verifie_pere(inst9);
-Ecrire_Champ_MED inst10;verifie_pere(inst10);
-Format_Post_Med inst11;verifie_pere(inst11);
-Format_Post_Med_major inst12;verifie_pere(inst12);
-Format_Post_Medfile inst13;verifie_pere(inst13);
-Integrer_champ_med inst14;verifie_pere(inst14);
-LataToMED inst15;verifie_pere(inst15);
-latatoother inst16;verifie_pere(inst16);
-LireMED inst17;verifie_pere(inst17);
-LireMEDfile inst18;verifie_pere(inst18);
-Pb_MED inst19;verifie_pere(inst19);
-Pbc_MED inst20;verifie_pere(inst20);
-Read_MED_For_Testing_No_Verify_Option inst21;verifie_pere(inst21);
-ScatterMED inst22;verifie_pere(inst22);
+Champ_Fonc_MED_Tabule inst3;verifie_pere(inst3);
+Champ_Fonc_P0_MED inst4;verifie_pere(inst4);
+Champ_Fonc_P1_MED inst5;verifie_pere(inst5);
+Champ_Fonc_Q1_MED inst6;verifie_pere(inst6);
+Champ_front_MED inst7;verifie_pere(inst7);
+Discr_inst inst8;verifie_pere(inst8);
+EcrMED inst9;verifie_pere(inst9);
+EcrMEDfile inst10;verifie_pere(inst10);
+Ecrire_Champ_MED inst11;verifie_pere(inst11);
+Format_Post_Med inst12;verifie_pere(inst12);
+Format_Post_Med_major inst13;verifie_pere(inst13);
+Format_Post_Medfile inst14;verifie_pere(inst14);
+Integrer_champ_med inst15;verifie_pere(inst15);
+LataToMED inst16;verifie_pere(inst16);
+latatoother inst17;verifie_pere(inst17);
+LireMED inst18;verifie_pere(inst18);
+LireMEDfile inst19;verifie_pere(inst19);
+Pb_MED inst20;verifie_pere(inst20);
+Pbc_MED inst21;verifie_pere(inst21);
+Read_MED_For_Testing_No_Verify_Option inst22;verifie_pere(inst22);
+ScatterMED inst23;verifie_pere(inst23);
 }

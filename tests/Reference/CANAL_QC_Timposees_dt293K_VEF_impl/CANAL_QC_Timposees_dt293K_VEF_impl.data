@@ -14,7 +14,7 @@ Mailler dom
                 Origine 0. 0. 0.
                 Nombre_de_Noeuds 5 9 5
                 Longueurs  0.093764 0.029846 0.046882
-                tanh_taille_premiere_maille 1.5e-4
+                ytanh_taille_premiere_maille 1.5e-4
                 }
                 {
                 Bord periox   X = 0.          0. <= Y <= 0.029846     0. <= Z <= 0.046882

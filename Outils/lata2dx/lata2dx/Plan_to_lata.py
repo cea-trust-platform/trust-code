@@ -20,7 +20,7 @@ def get_parameters(PlanFile):
     if twodimensions == 1 :
        dimension=2
 
-  Nelem = int(lines[4].split(' ')[2])/2
+  Nelem = int(int(lines[4].split(' ')[2])/2)
   Ncells = int(lines[2*Nelem+8]) # Total number of cells
   Field = lines[3].split(' ')[2]
  
@@ -48,9 +48,12 @@ def save_connections(LataFile, Probe):
   ny1 = [ x+Ny for x in nx1 ]
   ny2 = [ x+1 for x in ny1 ]
 
+  connections=np.array([nx1, nx2, ny1, ny2]).T
   GridConnections=LataFile+'.'+Probe+'.0.0.elem'
   with open(GridConnections, 'w+') as datafile_id:
-      np.savetxt(datafile_id, np.array([nx1, nx2, ny1, ny2]).T, fmt=['%d','%d','%d','%d'])
+      for item in connections:
+        datafile_id.write("%s %s %s %s\n" % (item[0], item[1], item[2], item[3]) )
+
   return GridConnections
 
 # Write the main lata file
@@ -84,10 +87,10 @@ def determine_component_to_remove( Nelem ) :
   elif( first_z == last_z ) :
     return 2
   else :
-    print "Error in determine_component_to_remove"
+    print ("Error in determine_component_to_remove")
     if ( twodimensions==1 ):
-       print "It seems that your plane is inclined. You cannot project it into (x,y) plane."
-       print "If you want a LATA file, please re-execute the conversion command without -p option."
+       print ("It seems that your plane is inclined. You cannot project it into (x,y) plane.")
+       print ("If you want a LATA file, please re-execute the conversion command without -p option.")
     sys.exit( 255 )
   return -1
 
@@ -118,7 +121,7 @@ def save_field(LataFile,Field,Probe):
       t = ' '.join(lines[i].split(' ')[1:])
       f.write(t) #+'\n')
   f.close()
-  print "Writing the", Field, "field at time=%12.10f" % Time
+  print ("Writing the %s field at time=%12.10f" %(Field,Time))
   return current_time, FieldFile
 
 # Add the field being post-processed at the current time to the main lata file
@@ -139,7 +142,7 @@ if __name__=="__main__":
  
   if len(args) == 0:
      parser.print_help()
-     print "\nPlease specify a .plan file!"
+     print ("\nPlease specify a .plan file!")
      exit(1)
 
   InputFileName = sys.argv[1]
@@ -159,7 +162,7 @@ if __name__=="__main__":
   LataFile = TestCase+'.lata'
   if not (os.path.isfile(PlanFile)):
      parser.print_help()
-     print "\nError:", PlanFile,"file does not exist!"
+     print ("\nError: %s file does not exist!" %(PlanFile))
      exit(1)
   parser.print_usage()
 
@@ -176,7 +179,7 @@ if __name__=="__main__":
   # Grid
   GridCoordinates = write_coordinates(Nelem,LataFile,Probe,dimension)
   GridConnections = save_connections(LataFile,Probe)
-  print Probe,"grid has been correctly generated"
+  print ("%s grid has been correctly generated" %(Probe))
 
   if opts.lasttime:
      current_line = NumberOfLines-(2*Nelem)
@@ -191,5 +194,5 @@ if __name__=="__main__":
  
   # Write the main lata file
   write_lata_file(LataFile,DataFile,Probe,GridCoordinates,GridConnections,Nelem,Ncells,post_processed_Fields,dimension)
-  print "\n", PlanFile, "has been successfuly converted to", LataFile
-  print "You can open it with: \nvisit -o",LataFile
+  print ("\n %s has been successfuly converted to %s" %(PlanFile,LataFile))
+  print ("You can open it with: \nvisit -o %s" %(LataFile))

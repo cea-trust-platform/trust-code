@@ -56,6 +56,11 @@ then
     number_of_compilation_arguments_error
 fi
 
+# source de l'environnement du baltik
+for envsh in $( ls env_* )
+do
+    source $envsh
+done
 
 # recuperation des options de compilation
 
@@ -64,7 +69,6 @@ OPT=`TRUST_opt_from_name $1`
 export OPT
 
 [ "${1%_valgrind}" != "$1" ] && export VALGRIND=1 && extension="_valgrind"
-
 
 # initialisation des variables utiles
 project_directory=`pwd`
@@ -79,7 +83,6 @@ fi
 project_description=`extract_section "$project_configuration_file" description`
 
 project_executable_name=`extract_executable_name ${project_description}`
-
 project_executable_name="${project_executable_name}${OPT}"
 
 project_test_directory="${project_directory}/build/tests"

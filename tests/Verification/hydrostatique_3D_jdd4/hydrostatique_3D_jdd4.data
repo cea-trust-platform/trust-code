@@ -1,0 +1,132 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK #
+# decoupeur ne marche pas #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom Extruded nc.med
+# END MESH #
+
+# BEGIN PARTITION
+
+Partition dom
+{
+    Partition_tool metis { nb_parts 2 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC  dis
+# VDF  dis #
+option_vdf { P_imposee_aux_faces oui }
+
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    tmax 5
+    dt_max 0.1
+    solveur implicite
+    {
+        solveur petsc cli
+        {
+            -pc_type fieldsplit
+            -pc_fieldsplit_0_field b1
+            -pc_fieldsplit_1_field b0
+            -pc_fieldsplit_type schur
+            -ksp_type fgmres
+            -ksp_max_it 10
+        }
+    }
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+    mu  Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
+}
+
+Associate  pb dom
+Associate  pb sch
+Associate  pb eau
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion  { negligeable }
+        sources    { source_qdm champ_uniforme 3 0 -10 0 }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
+        boundary_conditions
+        {
+            haut paroi_fixe
+            bas frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5
+            gauche paroi_fixe
+            droite paroi_fixe
+            devant paroi_fixe
+            derriere paroi_fixe
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            erreur_P transformation
+            {
+                methode formule expression 1 abs(p-sol)
+                sources
+                {
+                    refChamp { Pb_champ pb pression nom_source p } ,
+                    transformation { methode formule expression 1 1e5/2+10*(-y) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                }
+            }
+            erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
+            erreur_V_max
+                    reduction_0D
+                    {
+                        methode max source transformation
+                        {
+                            methode norme source interpolation { domaine dom localisation elem source refchamp { Pb_champ pb vitesse } }
+                        }
+                    }
+
+        }
+        probes
+        {
+            errP erreur_P_max periode 1e-6 Numero_elem_sur_maitre 0
+            errV erreur_V_max periode 1e-6 Numero_elem_sur_maitre 0
+        }
+
+        Format Lata
+        fields dt_post 1.3
+        {
+            erreur_P elem
+            pression elem
+            pression_pa elem
+            vitesse elem
+            # divergence_u elem
+            gradient_pression elem #
+        }
+    }
+    sauvegarde formatte ascci.sauv
+}
+# On doit trouver les resultantes des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positives #
+# On doit trouver le moment des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positifs #
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End

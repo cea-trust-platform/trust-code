@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -589,7 +589,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
     while(curseur)
       {
         Faces& lesfacesbord=curseur->faces();
-        lesfacesbord.typer(triangle_3D);
+        lesfacesbord.typer(Faces::triangle_3D);
         IntTab& sommets=lesfacesbord.les_sommets();
         if(curseur->le_nom()==nom_front)
           {

@@ -1,0 +1,12 @@
+#!/bin/bash
+# Lancement du calcul couple ICOCO:
+sh $project_directory/share/bin/create_Makefile 2
+make check
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok
+else
+  rm -f is_ok
+fi
+#touch ok.data
+mv -f docond_VEF_dom2.TU ok.TU

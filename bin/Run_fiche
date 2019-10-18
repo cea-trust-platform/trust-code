@@ -38,6 +38,12 @@ help()
 pdflatex --version 1>/dev/null 2>&1
 [ $? != 0 ] && echo "WARNING! pdflatex is not available or installed. `basename $0` WILL NOT produce the PDF report. Install pdflatex on $HOST."
 
+if [ "$TRUST_WITHOUT_PDFLATEX" = 1 ] 
+then
+  echo "WARNING! You have disabled the build of pdf documentation. You probably have a problem with latex packages." | tee Run.log
+  echo "  `basename $0` WILL PROBABLY NOT produce the PDF report." | tee -a Run.log
+fi
+
 options=""
 pdf=build/rapport.pdf
 save=""
@@ -176,7 +182,7 @@ then
    [ "$save" = 1 ] && echo "-save not implemented yet" && exit -1
    [ "$binary" != "" ] && export exec=$binary
    # Lancement en local de la commande creant la fiche avec les options
-   export USE_MPIRUN=1 # On utilise les queues de production desormais
+   [ "$prod" = "" ] && export prod=1 # On utilise les queues de production desormais par defaut si pas specifie
    # Recherche de la fiche prm:
    prm=`ls src/*.prm 2>/dev/null`
    if [ "`echo $prm | wc -w`" != 1 ]
@@ -185,7 +191,7 @@ then
       echo "There should be ONE .prm file in the src directory."
       exit -1
    fi
-   $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee Run.log
+   $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee -a Run.log
    error=${PIPESTATUS[0]}
    if [ "$error" != 0 ]
    then

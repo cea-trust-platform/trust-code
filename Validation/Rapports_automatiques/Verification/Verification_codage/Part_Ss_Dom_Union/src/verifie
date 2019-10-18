@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for f in domaine1_decoup.lata_00000.lata domaine2_decoup.lata_00000.lata domaine_glob_decoup.lata_00000.lata; do
+  [ -f $f ] || exit 128
+done
+

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -230,7 +230,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
         while(curseur)
           {
             Faces& les_faces=curseur->faces();
-            les_faces.typer(segment_2D);
+            les_faces.typer(Faces::segment_2D);
             IntTab& sommetsfaces=les_faces.les_sommets();
             int nb_faces=sommetsfaces.dimension(0);
             IntTab nouveaux(2*nb_faces,2);
@@ -260,7 +260,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
         while(curseur)
           {
             Faces& les_faces=curseur.valeur()->faces();
-            les_faces.typer(segment_2D);
+            les_faces.typer(Faces::segment_2D);
             IntTab& sommetsfaces=les_faces.les_sommets();
             int nb_faces=sommetsfaces.dimension(0);
             IntTab nouveaux(2*nb_faces,2);
@@ -290,7 +290,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
         while(curseur)
           {
             Faces& les_faces=curseur->faces();
-            les_faces.typer(segment_2D);
+            les_faces.typer(Faces::segment_2D);
             IntTab& sommetsfaces=les_faces.les_sommets();
             int nb_faces=sommetsfaces.dimension(0);
             IntTab nouveaux(2*nb_faces,2);

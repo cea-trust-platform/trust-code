@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ public :
 //    Acces:
 // Retour: Type_Face
 //    Signification: un type de face
-//    Contraintes: toujours egal a segment_2D_axi (si i=0)
+//    Contraintes: toujours egal a Faces::segment_2D_axi (si i=0)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
@@ -80,7 +80,7 @@ inline Type_Face Rectangle_axi::type_face(int i) const
       Cerr << "A rectangle has not " << i << " types of face" << finl;
       exit();
     }
-  return segment_2D_axi;
+  return Faces::segment_2D_axi;
 }
 
 #endif

@@ -18,22 +18,23 @@ cp -af $medcoupling_hxx .
 
 rm -rf build install $medcoupling
 
-if [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
+# MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
+if [ "$TRUST_INT64" = "1" ]
 then
     mkdir -p $DEST/include
     rm -rf $DEST/lib
-    echo "MED or MEDCOUPLING DISABLE"
+    echo "MEDCOUPLING DISABLE for 64 bits"
     echo "#define NO_MEDFIELD " >  prov.h
 
     if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]
-	then
+    then
 	cp prov.h $dest
     else
 	cp -a ICoCoMEDField.hxx $dest
     fi
     echo "#undef MEDCOUPLING_" > prov2.h
     if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ] 
-       then
+    then
        cp prov2.h $medcoupling_hxx
     else
        cp -a medcoupling++.h $medcoupling_hxx
@@ -41,6 +42,7 @@ then
     rm -f prov.h prov2.h ICoCoMEDField.hxx medcoupling++.h
     exit 0
 fi
+
 rm -f ICoCoMEDField.hxx
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]
 then
@@ -50,6 +52,10 @@ then
 fi
 [ ! -f $archive ] && echo $archive no such file && exit 1
 tar zxf $archive
+
+echo patching MEDCouplingMemArray.i
+echo "cp $org/MEDCouplingMemArray.i $medcoupling/src/MEDCoupling_Swig/MEDCouplingMemArray.i"
+cp $org/MEDCouplingMemArray.i $medcoupling/src/MEDCoupling_Swig/MEDCouplingMemArray.i
 
 echo patching MEDCouplingFieldDouble
 cp $org/MEDCouplingFieldDouble.hxx $(find $medcoupling -name  MEDCouplingFieldDouble.hxx )
@@ -68,6 +74,9 @@ cp $org/MEDCouplingSkyLineArray.cxx $(find $medcoupling -name  MEDCouplingSkyLin
 echo patching MEDCouplingMemArray.cxx 
 cp $org/MEDCouplingMemArray.cxx $(find $medcoupling -name  MEDCouplingMemArray.cxx )
 
+echo patching MEDCouplingTimeLabel.hxx 
+cp $org/MEDCouplingTimeLabel.hxx $(find $medcoupling -name  MEDCouplingTimeLabel.hxx )
+
 mkdir build
 cd build
 
@@ -78,46 +87,23 @@ cd build
 USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
-# Do not build Python MEDCoupling if Python < 2.7 -- will be fixed directly in MEDCoupling from version 8.4
-PY_VERSION_MAJOR=`python -c 'import sys; print(sys.version_info[0])'`
-PY_VERSION_MINOR=`python -c 'import sys; print(sys.version_info[1])'`
-if [[ $PY_VERSION_MAJOR == 2 && $PY_VERSION_MINOR < 7 ]]
-then 
-	echo "Detected Python version is too old. Not building MEDCoupling Python bindings"
-	MED_COUPLING_PYTHON="OFF"
-else
-	MED_COUPLING_PYTHON="ON"
-fi
+# We use now python 2.7.16 and swig from conda so:
+MED_COUPLING_PYTHON="ON"
 
-OPTIONS="-DCMAKE_BUILD_TYPE=Release -DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_INSTALL_PREFIX=$DEST -DCMAKE_CXX_COMPILER=$TRUST_CC  -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version"
+OPTIONS="-DCMAKE_BUILD_TYPE=Release -DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_INSTALL_PREFIX=$DEST -DCMAKE_CXX_COMPILER=$TRUST_CC  -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig"
 OPTIONS=$OPTIONS" -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF" 
 # NO_CXX1 pour cygwin
 OPTIONS=$OPTIONS" -DMEDCOUPLING_BUILD_STATIC=ON -DNO_CXX11_SUPPORT=ON"
 cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=$MED_COUPLING_PYTHON
 
-status=$?
 
-if [ $status -ne 0 ] && [ "$MED_COUPLING_PYTHON" = "ON" ]
-then
-  echo "we tried to compile without python"
-  cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
-  MED_COUPLING_PYTHON="OFF"
-fi
-
-
+# The current CMake of MEDCoupling is badly written: dependencies on .pyc generation do not properly capture SWIG generated Python modules.
+# So we need to do make twice ...
 make -j $TRUST_NB_PROCS
 # si make install fonctionne coorectement ce fichier sera ecrase
 # echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 make install
 make install
-status=$?
-if [ $status -ne 0 ]
-then
-  echo "we tried to compile without python"
-  cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
-  MED_COUPLING_PYTHON="OFF"
-  make install
-fi
 status=$?
 
 #ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
@@ -143,7 +129,7 @@ then
     echo "MEDCoupling library OK"
   else
     echo "MEDCoupling library KO"
-    #exit -1
+    exit -1
   fi
 fi
 

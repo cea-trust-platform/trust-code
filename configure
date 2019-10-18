@@ -147,6 +147,8 @@ done
 [ "$f77_compiler_found" = 0 ] && multiple_choices=1 && echo "    Fortran compiler: $list_of_f77_compilers  (*)" >> NON_INSTALLED
 [ "$dtterm_found" = 0 ] && multiple_choices=1 && echo "    $list_of_dtterm  (*)" >> NON_INSTALLED
 
+# Check if swig is installed. If not available, MED_COUPLING_PYTHON=OFF
+# [ "`whence2_ swig`" = "swig:" ] && [ "`whence2_ swig`" != "" ] && echo "    Swig ... not found. MED_COUPLING_PYTHON will be OFF unless you install it." >> NON_INSTALLED
 
 ######################
 # Checking prerequis #
@@ -254,18 +256,17 @@ echo "[-force_old_openmpi]              Download and use the OpenMPI `awk '/old_
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk '/latest_version=/ {gsub("latest_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 #echo "[-force_petsc_have_cuda]          Use the latest PETSc version (petsc-dev) and try to activate the GPU support."
-#echo "[-force_petsc_have_openmp]        Use the latest PETSc version (petsc-dev) and try to activate the OpenMP support."
+echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
-echo "[-disable-med]                    Disable MED library installation."
 echo "[-with-med=dir]                   Force Using external MED library"
 echo "[-with-hdf=dir]                   Force Using external HDF library"
 echo "[-disable-metis]                  Disable metis library installation."
-echo "[-disable-medcoupling]            Disable MEDCoupling library installation."
 echo "[-with-medcoupling=dir]           Force Using external MEDCoupling library"
 echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
+echo "[-with-64-bit-indices]            Build with 64 bits integer indices (experimental)."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
@@ -275,6 +276,7 @@ echo "[-disable-check_sources]          No check sources before compiling."
 echo "[-disable-checks]                 Disable checks for external packages, sources, disk space and speed."
 echo "[-without-host_file]              Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "[-without-doc]                    Do not build the documentation."
+echo "[-without-pdflatex]               Do not build the pdf documentation."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a version of VisIt rather trying to build a version."
 #echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
@@ -305,7 +307,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
+  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
   exit $?
 fi
 
@@ -318,7 +320,9 @@ export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
+export TRUST_INT64=0
 export TRUST_WITHOUT_DOC=0
+export TRUST_WITHOUT_PDFLATEX=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_DOWNLOAD_SALOME=0
@@ -413,9 +417,13 @@ do
    then
       export TRUST_FORCE_PETSC_HAVE_CUDA=1
 
-   elif [ "${1#-force_petsc_have_openmp}" != "$1" ]
+   elif [ "${1#-with-64-bit-indices}" != "$1" ]
    then
-      export TRUST_FORCE_PETSC_HAVE_OPENMP=1
+      export TRUST_INT64=1
+
+   elif [ "${1#-openmp}" != "$1" ]
+   then
+      export TRUST_OPENMP=1
 
    elif [ "${1#-without-doc}" != "$1" ]
    then
@@ -423,6 +431,10 @@ do
       THIRD_PARTY="DOC"
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
+
+   elif [ "${1#-without-pdflatex}" != "$1" ]
+   then
+      export TRUST_WITHOUT_PDFLATEX=1
 
    elif [ "${1#-without-visit}" != "$1" ]
    then
@@ -522,7 +534,9 @@ echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# D
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
 echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
+echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
+echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDFLATEX		# Disable/enable pdf Documentation build only"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
 echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var
@@ -552,6 +566,20 @@ else
     #echo "unset HDF5_ROOT_DIR" >> $var
 fi
 
+##########################################################
+#     Check if trust has already been built in 64bits    #
+# We prevent a 32bits build after having sed int by long #
+##########################################################
+# before commenting this part, ensure you sed long by int in trust sources
+if [ "$clean" != "clean" ] && [ "$TRUST_INT64" = "0" ] && [ -f .build64 ]
+then
+    echo "Sources are in 64 bits while you're trying to build a 32 bits version. "
+    echo "Ensure you download a version which can be built in 32 bits"
+    echo "Contact support at trust@cea.fr"
+    exit -1
+fi
+[ "$TRUST_INT64" = "1" ] && echo "We will edit sources to build 64 bits version, please wait..." && ./bin/BUILD64/GO
+
 
 ################################
 # Check options for some hosts #
@@ -578,30 +606,76 @@ cd ..
 exiterror=0
 [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep 'Error while installing' $TRUST_ROOT/NON_INSTALLED`" != "" ] && exiterror=1
 
-if [ "$TRUST_WITHOUT_DOC" != 1 ]
-then
-   [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && echo "    pdflatex for doc generation" >> NON_INSTALLED
+source ./env_TRUST.sh 1>/dev/null 2>&1
 
-   if [ "`grep 'Ubuntu ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Debian ' $OSfile 2>/dev/null`" != "" ]
+if [ "$TRUST_WITHOUT_DOC" != 1 ] && [ "$TRUST_WITHOUT_PDFLATEX" != 1 ]
+then
+   texerror=0
+   if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
-      [ `eval dpkg-query -W texlive-fonts-recommended 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fonts-recommended for doc generation" >> NON_INSTALLED
-   elif [ "`grep 'Fedora ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
-   then
-      [ `eval rpm -qa | grep -i texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
-#   elif [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
-#   then
-#      [ `eval yum list installed texlive-fontspec 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-fontspec for doc generation" >> NON_INSTALLED
-#      [ `eval yum list installed texlive-*fonts* 1>/dev/null 2>&1;echo $?` != 0 ] && echo "    texlive-*fonts for doc generation" >> NON_INSTALLED
+      echo "pdflatex is missing..." >> NON_INSTALLED
+      texerror=1
    else
-      echo "Unknown distribution, ensure that texlive-fonts-recommended are installed for doc generation."
-   fi
+      dest2=$TRUST_TMP/tmp_tex
+      [ -d $dest2 ] && rm -r $dest2
+      mkdir $dest2
+      cd $dest2
+      cp -r $TRUST_ROOT/Outils/TexFiles/* .
+      make 1>LOG_FILE 2>&1
+      if [ $? != 0 ]
+      then
+         echo "Some latex packages are missing... see $dest2/LOG" >> $TRUST_ROOT/NON_INSTALLED
+         texerror=1
+      else
+         cd fiche_prm_test
+         Run_fiche -not_run 1>/dev/null 2>&1
+         [ ! -f build/rapport.pdf ] && cp Run.log $TRUST_TMP && texerror=2
+         rm -r $dest2
+      fi
+
+      cd $TRUST_ROOT
+  fi
+  if [ $texerror = 1 ]
+  then
+     echo "You cannot generate the PDF documentation of TRUST and its sub-projects unless you install metapackages equivalent to:" >> NON_INSTALLED
+     echo "  1. texlive-latex-base " >> NON_INSTALLED
+     echo "  2. texlive-latex-recommended" >> NON_INSTALLED
+     echo "  3. texlive-fonts-recommended" >> NON_INSTALLED
+     echo "  4. texlive-latex-extra" >> NON_INSTALLED
+     echo " NOTE1: The names of these packages may differ if your OS is not one of Debian/Ubuntu/Mint" >> NON_INSTALLED
+     echo " NOTE2: In the case you DO NOT WANT to install it, run: " >> NON_INSTALLED
+     Num_opts_configure=`tail -1 configure.log | awk '{print NF-1}'`
+     opts_configure=`tail -1 configure.log | cut -d ' ' -f 1-$Num_opts_configure`
+     echo "        $opts_configure -without-pdflatex" >> NON_INSTALLED
+     exiterror=1
+  fi
+
+  if [ $texerror = 2 ]
+  then
+     echo "Something strange... PDF documentation can be generated, not rapport.pdf from prm file." >> NON_INSTALLED
+     echo "see $TRUST_TMP/Run.log " >> NON_INSTALLED
+  fi
+
+fi
+
+if [ "$TRUST_DISABLE_PETSC" != 1 ]
+then
+  TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
+  if [ "`eval bison --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "$TEST_LDD_VERSION" != 1 ]
+  then
+     # Bison from TRUST cannot be installed if glibc version is at least 2.28
+     [ -f NON_INSTALLED ] && echo "" >> NON_INSTALLED
+     echo "Petsc install will fail when installing bison provided by TRUST since your glibc version is too recent." >> NON_INSTALLED
+     echo "  => Contact your system administrator to install bison using 'sudo apt-get install bison' for example." >> NON_INSTALLED
+     exiterror=1
+  fi
 fi
 
 if [ -f $TRUST_ROOT/NON_INSTALLED ]
 then
    echo ""
    echo "========================================================================="
-   echo "Some packages needed by TRUST code were not correctly installed:"
+   echo "Some packages needed by TRUST code were not found/correctly installed:"
    echo "----------------------------------------------------------------"
    cat $TRUST_ROOT/NON_INSTALLED
    [ "$multiple_choices" = 1 ] && echo "(*) Only one command is needed but none has been found!"
@@ -610,7 +684,6 @@ then
    [ "$exiterror" = 1 ] && exit -1
 fi
 
-source ./env_TRUST.sh 1>/dev/null 2>&1
 
 ###############################################
 # Verification des performances de TRUST_TMP #

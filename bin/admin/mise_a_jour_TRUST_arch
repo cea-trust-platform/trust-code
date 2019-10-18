@@ -313,12 +313,10 @@ option_configure=" -disable-ccache"
 # OpenMPI ancien sur la machine ou l'on construit le binaire sinon ne trouve pas un fichier en local
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc -disable-plot2d"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi -without-visit -without-doc -disable-plot2d"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-medcoupling" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-medcoupling"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-med " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpiio"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-valgrind"
 # Salome
@@ -332,17 +330,18 @@ option_configure=" -disable-ccache"
 # IHM
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-plot2d" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-plot2d"
 # Documentation
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-pdflatex" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -without-pdflatex"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
 # Compilation sans GUI tools
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-gnuplot -disable-tcl_tk -disable-gmsh -disable-plot2d -without-doc -without-visit"
 # Compilateur clang
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang " | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang" | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang38" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.8/bin/clang++ -cc=/usr/lib/llvm-3.8/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang39" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.9/bin/clang++ -cc=/usr/lib/llvm-3.9/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -disable-medcoupling"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -with-64-bit-indices"
 
 ########################
 # Lancement du configure
@@ -350,7 +349,7 @@ option_configure=" -disable-ccache"
 echo "--------------------------------------------------------"
 echo "Configure on $HOST at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST"\."`" != "" ] && [ ! -f GO ] && ./bin/BUILD64/GO
+# [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST"\."`" != "" ] && [ ! -f GO ] && ./bin/BUILD64/GO
 ./configure $option_configure
 [ $? != 0 ] && echo "Error in the configure... We leave." && exit_ -1
 

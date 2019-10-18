@@ -67,7 +67,7 @@ ld_env.sh: makefile
 exe:
 	if [ \"\$(OPT)\" = \"_opt\" ]; then (cd  $build/../..; make optim);else  (cd  $build/../..; make debug); fi
 valgrind: couplage
-	env exec=\"\$TRUST_ROOT/exec/valgrind/bin/valgrind --db-attach=yes ./couplage \"   trust couplage \$(nproc) 
+	  env exec=./couplage VALGRIND=1 trust couplage \$(nproc)
 clean:
 	rm -f couplage *dump *lata* *out *err *TU *log  *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh 
 	if [ -f Clean.sh ] ; then bash Clean.sh ; fi">> makefile
