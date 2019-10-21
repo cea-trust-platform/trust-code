@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -173,6 +173,11 @@ int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
   Cerr << "Format_Post_base::ecrire_domaine(...)\n"
        << " method not coded for " << que_suis_je() << finl;
   return 0;
+}
+
+int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post)
+{
+  return ecrire_domaine(domaine, est_le_premier_post);
 }
 
 // Description:

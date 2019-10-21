@@ -11,9 +11,9 @@ Read_file M3DLAM.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -27,14 +27,14 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 110
+    nb_pas_dt_max 110
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.005
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.005
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -47,53 +47,67 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_Standard
-	{
-		solveur_pression optimal { seuil 1.000000e-09 quiet }
+    Navier_Stokes_Standard
+    {
+        solveur_pression optimal { seuil 1.000000e-09 quiet }
 
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3  0. 0. 0.
-			}
-		boundary_conditions {
-			 Bas1 Paroi_Fixe
-			 Haut1 Paroi_Fixe
-			 Haut2 Paroi_Fixe
-			 Haut3 Paroi_Fixe
-			 Bas2 Paroi_Fixe
-			 Gauche Paroi_Fixe
-			 Bas3 Paroi_Fixe
-			 Sud1 Paroi_Fixe
-			 Nord1 Paroi_Fixe
-			 Sud2 Paroi_Fixe
-			 Nord2 Paroi_Fixe
-			 Sud3 Paroi_Fixe
-			 Nord3 Paroi_Fixe
-			 Sud4 Paroi_Fixe
-			 Nord4 Paroi_Fixe
-			 Sud5 Paroi_Fixe
-			 Nord5 Paroi_Fixe
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3  0. 0. 0.
+        }
+        boundary_conditions {
+            Bas1 Paroi_Fixe
+            Haut1 Paroi_Fixe
+            Haut2 Paroi_Fixe
+            Haut3 Paroi_Fixe
+            Bas2 Paroi_Fixe
+            Gauche Paroi_Fixe
+            Bas3 Paroi_Fixe
+            Sud1 Paroi_Fixe
+            Nord1 Paroi_Fixe
+            Sud2 Paroi_Fixe
+            Nord2 Paroi_Fixe
+            Sud3 Paroi_Fixe
+            Nord3 Paroi_Fixe
+            Sud4 Paroi_Fixe
+            Nord4 Paroi_Fixe
+            Sud5 Paroi_Fixe
+            Nord5 Paroi_Fixe
 
-			 SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3  1. 0. 0.
-		}
-	}
+            SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3  1. 0. 0.
+        }
+    }
 
-	Post_processing 
-	{
-		Probes 
-		{
-			sonde_pression pression periode 0.1 points 1 7.5 0.9 5.5
-			sonde_vitesse vitesse periode 0.1 points 1 8.0 0.9 5.5
-		}
-		fields dt_post 80.
-		{
-			vitesse elem
-			taux_cisaillement elem
-		}
-	}
+    Post_processings
+    {
+        lml
+        {
+            format lml fichier M3DLAM
+            Probes
+            {
+                sonde_pression pression periode 0.1 points 1 7.5 0.9 5.5
+                sonde_vitesse vitesse periode 0.1 points 1 8.0 0.9 5.5
+            }
+            fields dt_post 80.
+            {
+                vitesse elem
+                taux_cisaillement elem
+            }
+        }
+	
+        med
+        {
+            format med fichier M3DLAM
+            fields dt_post 80.
+            {
+                vitesse faces
+            }
+        }
+	
+    }
 }
 Imprimer_flux_sum dom { Entree }
 Calculer_moments dom centre_de_gravite 0 0 0

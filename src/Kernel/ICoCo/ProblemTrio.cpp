@@ -40,7 +40,6 @@
 #include <ICoCoMEDField.hxx>
 #include <Convert_ICoCoTrioField.h>
 #include <stat_counters.h>
-#include <Field_base.h>
 
 using ICoCo::Problem;
 using ICoCo::ProblemTrio;
@@ -641,17 +640,6 @@ void ProblemTrio::setInputField(const std::string& name, const MEDField& afield)
   triofield._field=0;
   //fieldArr->decrRef();
 
-  // Assigning proper component names
-  const unsigned int nbcomp = fieldArr->getNumberOfComponents();
-  std::vector<std::string> compo_names = fieldArr->getInfoOnComponents();
-
-  REF(Field_base) ch = pb->findInputField(Nom(name.c_str()));
-  assert(nbcomp == (unsigned)ch->nb_comp());
-  for (unsigned int i = 0; i < nbcomp; i++)
-    {
-      Nom compo_name(compo_names[i].c_str());
-      ch->fixer_nom_compo((int)i, compo_name);
-    }
 #else
   throw NotImplemented("No ParaMEDMEM","setInputMEDField");
 #endif

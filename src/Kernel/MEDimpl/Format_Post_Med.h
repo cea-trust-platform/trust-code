@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,6 +77,7 @@ public:
                             const double& t_init);
   virtual int finir(int& est_le_dernier_post);
   virtual int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post);
+  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
   virtual int ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
@@ -101,7 +102,7 @@ protected:
   Nom med_basename_;
 
   // Methodes specifiques a ce format:
-  virtual int ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich);
+  virtual int ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich);
   virtual int ecrire_temps_med(const double temps,Nom& nom_fich);
   virtual int ecrire_champ_med(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
                                int ncomp, double temps_,const Nom& nom_pdb,

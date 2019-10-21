@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@ class Zone_dis;
 class Domaine_dis;
 class Probleme_base;
 class Zone_VF;
+class Zone_dis_base;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -143,6 +144,11 @@ public :
   {
     return mesh_;
   };
+  MCAuto<MEDCouplingUMesh>& getUFacesMesh() const
+  {
+    return faces_mesh_;
+  };
+  void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
   {
     mesh_ = m->clone(true);
@@ -160,8 +166,10 @@ protected :
   int deformable_;
   Nom fichier_lu_;
 #ifdef MEDCOUPLING_
-  ///! MEDCoupling version of the domaine:
+  ///! MEDCoupling version of the domain:
   mutable MCAuto<MEDCouplingUMesh> mesh_;
+  ///! MEDCoupling version of the faces domain:
+  mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
 #endif
 };
 Declare_liste(Domaine);

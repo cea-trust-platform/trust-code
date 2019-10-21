@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,11 @@
 #include <Scatter.h>
 #include <Octree_Double.h>
 #include <Interprete_bloc.h>
+#include <Domaine_dis.h>
+#ifdef MEDCOUPLING_
+using MEDCoupling::DataArrayInt;
+using MEDCoupling::DataArrayDouble;
+#endif
 
 Implemente_instanciable_sans_constructeur(Domaine,"Domaine",Objet_U);
 Implemente_liste(Domaine);
@@ -531,4 +536,86 @@ void Domaine::imprimer() const
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
     }
   Cerr << "==============================================" << finl;
+}
+
+// Build the faces mesh:
+void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
+{
+  MCAuto<DataArrayInt> desc(DataArrayInt::New());
+  MCAuto<DataArrayInt> descIndx(DataArrayInt::New());
+  MCAuto<DataArrayInt> revDesc(DataArrayInt::New());
+  MCAuto<DataArrayInt> revDescIndx(DataArrayInt::New());
+  faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
+  // Renumber faces to have the same numbering than Domaine_dis
+  std::size_t size = faces_mesh_->getNumberOfCells();
+  IntVect renum(size);
+  // Compute Center of Mass
+  MCAuto<DataArrayDouble> xv_med = faces_mesh_->computeCellCenterOfMass();
+  // On boucle sur les elements des tableaux Zone_VF::elem_faces et desc
+  // Ensuite on compare geometriquement les centres des faces de ces tableaux pour trouver les relations
+  // Boucle sur les mailles
+  const IntTab& elem_faces = ref_cast(Zone_VF, zone_dis_base).elem_faces();
+  int nb_elem = elem_faces.dimension(0);
+  int nb_face_elem = elem_faces.dimension(1);
+  assert(nb_elem == (int)descIndx->getNbOfElems()-1);
+  // Centre des faces TRUST:
+  const DoubleTab& xv = ref_cast(Zone_VF, zone_dis_base).xv();
+  //int nb_faces = xv.dimension_tot(0);
+  int nb_comp = xv.dimension_tot(1);
+  // xv1, xv2 tableaux temporaires des centres des faces de l'element elem pour comparaison
+  MCAuto<DataArrayDouble> xv1(DataArrayDouble::New());
+  xv1->alloc(nb_face_elem, nb_comp);
+  MCAuto<DataArrayDouble> xv2(DataArrayDouble::New());
+  xv2->alloc(nb_face_elem, nb_comp);
+
+  // Boucle sur les elements
+  MCAuto<DataArrayInt> renum_local(DataArrayInt::New());
+  for (int elem=0; elem<nb_elem; elem++)
+    {
+      //Cerr << "elem=" << elem << finl;
+      for (int i=0; i<nb_face_elem; i++)
+        {
+          // Face globale TRUST
+          int face = elem_faces(elem, i);
+          /*
+          Cerr << "\tface=" << face;
+          for (int j=0; j<nb_comp; j++) Cerr << " " << xv(face, j);
+          Cerr << finl; */
+          // Face globale MED
+          int index = descIndx->getIJ(elem, 0);
+          int face_med = desc->getIJ(index + i, 0);
+          /*
+          Cerr << "\tface_med=" << face_med;
+          for (int j=0; j<nb_comp; j++) Cerr << " " << xv_med->getIJ(face_med, j);
+          Cerr << finl; */
+          // Centre des faces TRUST et MED
+          for (int j=0; j<nb_comp; j++)
+            {
+              xv1->setIJ(i, j, xv(face, j));
+              xv2->setIJ(i, j, xv_med->getIJ(face_med, j));
+            }
+        }
+      renum_local = xv2->findClosestTupleId(xv1);
+      for (std::size_t i=0; i<renum_local->getNumberOfTuples(); i++)
+        {
+          int i_med = renum_local->getIJ(i, 0);
+          int face_med = desc->getIJ(descIndx->getIJ(elem, 0) + i_med, 0);
+          int face = elem_faces(elem, i);
+          /*
+          Cerr << "Local: " << i_med << " -> " << (int)i << finl;
+          Cerr << "Global:" << face_med << " -> " << face << finl;
+           */
+          renum(face_med) = face;
+        }
+    }
+#ifdef NDEBUG
+  bool check = false;
+#else
+  bool check = true;
+#endif
+  // Apply the renumbering:
+  faces_mesh_->renumberCells(renum.addr(), check);
+#ifndef NDEBUG
+  faces_mesh_->checkConsistency();
+#endif
 }

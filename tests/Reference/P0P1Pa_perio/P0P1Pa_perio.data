@@ -114,6 +114,15 @@ Read pb
 				vitesse elem
 			}
 		}
+		med
+		{
+			fichier P0P1Pa_perio
+			format med
+			fields dt_post 100.
+			{
+				vitesse faces
+			}
+		}
 	}
 }
 

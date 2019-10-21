@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,6 +161,12 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
       nom_post.prefix("_ELEM_");
       nom_post.prefix("_elem_");
     }
+  else if (loc_post=="FACES")
+    {
+      nom_post.prefix(dom.le_nom());
+      nom_post.prefix("_FACES_");
+      nom_post.prefix("_faces_");
+    }
   nom_post+="_";
   nom_post+=nom2;
 
@@ -197,10 +203,15 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int& est_le_pr
 
 }
 
+int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+{
+  const REF(Zone_dis_base) zone_dis_base;
+  return ecrire_domaine_dis(domaine, zone_dis_base, est_le_premier_post);
+}
 
 // Description:
 //  voir Format_Post_base::ecrire_domaine
-int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post)
 {
   Nom nom_fich(med_basename_);
   nom_fich +=".";
@@ -213,7 +224,7 @@ int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_pre
   nom_fic_base += format;
   Nom nom_fic=nom_fic_base.nom_me(Process::me());
 
-  ecrire_domaine_med(domaine,nom_fic,est_le_premier_post,nom_fich);
+  ecrire_domaine_med(domaine,zone_dis_base,nom_fic,est_le_premier_post,nom_fich);
 
   return 1; // ok tout va bien
 }
@@ -416,7 +427,7 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
   return 1;
 }
 
-int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich)
+int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich)
 {
 
   //Cerr<<"We want to postprocess with MED "<<est_le_premier_post<<finl;
@@ -435,7 +446,7 @@ int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fi
   s<<"dimension: "<<dim<<finl;
   s<<"domaine: "<<domaine.le_nom()<<finl;
   s<<"nb_proc: "<<Process::nproc()<<finl;
-  ecr_med.ecrire_domaine(nom_fic,domaine,domaine.le_nom(),mode);
+  ecr_med.ecrire_domaine_dis(nom_fic,domaine,zone_dis_base,domaine.le_nom(),mode);
   // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<"end"<<finl;
 
   s.flush();
@@ -484,34 +495,37 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
       nom_post = noms_compo[ncomp];
     }
   nom_post.prefix(dom.le_nom());
+  Nom nom_dom="";
   if (loc_post == "SOM")
     {
       nom_post.prefix("_som_");
       nom_post.prefix("_SOM_");
+      nom_dom = dom.le_nom();
     }
   else if (loc_post == "ELEM")
     {
       nom_post.prefix("_ELEM_");
       nom_post.prefix("_elem_");
+      nom_dom = dom.le_nom();
+    }
+  else if (loc_post == "FACES")
+    {
+      nom_post.prefix("_FACES_");
+      nom_post.prefix("_faces_");
+      nom_dom = dom.getUFacesMesh()->getName().c_str();
     }
   if (je_suis_maitre())
-    os << "champ: " << nom_post << " " << dom.le_nom() << " " << loc_post << finl;
+    os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
   os.syncfile();
   EcrMED ecr_med(getEcrMED());
-  Nom nom_dom = dom.le_nom();
-  Nom nom_dom_inc = dom.le_nom();
   Nom type_elem = dom.zone(0).type_elem()->que_suis_je();;
 
   if (loc_post == "SOM")
     ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
   else if (loc_post == "ELEM")
     ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
-  else if (loc_post == "FACE")
-    {
-      if (nom_dom_inc != nom_dom)
-        Cerr << "We do not know to postprocess " << id_du_champ
-             << " with the keyword " << loc_post << " on different domains " << finl;
-    }
+  else if (loc_post == "FACES")
+    ecr_med.ecrire_champ("CHAMPFACES", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
   else
     {
       Cerr << "We do not know to postprocess " << id_du_champ

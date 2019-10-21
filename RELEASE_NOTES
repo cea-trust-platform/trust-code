@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------------
+XX/XX/19 (TRUST)  New feature : Face fields (e.g. temperature/velocity in VEF, velocity in VDF) may be written in MED files (may be visualized by Paraview not VisIt yet) 
 17/10/19 (TRUST)  New feature : Champ_Fonc_Fonction now supports multi-components. 
 17/10/19 (TRUST)  New keyword : Champ_Tabule_Morceaux: tabulated field defined per sub-zone 
 16/10/19 (TRUST)  Portability : Add -with-64-bit-indices configure option in order to build TRUST with 64 bits integers 
