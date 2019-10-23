@@ -1,1 +1,4 @@
-../Quasi_Comp_3D/prepare
+for file in *.geom.gz
+do
+   gunzip -c $file > ${file%.gz} || exit -1
+done

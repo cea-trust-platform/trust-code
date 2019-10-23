@@ -1,9 +1,0 @@
-# Quelques verifications sans l'IHM
-# Pour ne pas lancer la verification 2 fois (sequentiel et parallele):
-ref=`pwd`
-ref=`basename $ref`
-[ -f PAR_$ref.out ] && exit 0
-# Au format lata
-./run_test -lata -no_gui 1>>run_test.log 2>&1
-[ $? != 0 ] && exit -1
-exit 0

@@ -1,6 +1,0 @@
-gunzip -c cylindre.geom.gz > cylindre.geom || exit -1
-gunzip -c Cx_impl.sauv.gz > Cx_impl.sauv || exit -1
-#trust debut
-rm -f Cx_impl.dt_ev
-cp -f debut.dt_ev Cx_impl.dt_ev
-chmod +w Cx_impl.dt_ev

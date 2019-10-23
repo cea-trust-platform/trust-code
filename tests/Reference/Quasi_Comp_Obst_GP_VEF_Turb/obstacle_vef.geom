@@ -1,1 +1,0 @@
-../Quasi_Comp_Obst_GP_VEF/obstacle_vef.geom

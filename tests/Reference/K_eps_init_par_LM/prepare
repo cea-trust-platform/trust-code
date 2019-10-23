@@ -1,4 +1,0 @@
-rm -f Wall_length.xyz
-trust LM || exit -1
-# pour rendre possible l'utilisation en //
-mv init_K_eps_0000.med init_K_eps.med

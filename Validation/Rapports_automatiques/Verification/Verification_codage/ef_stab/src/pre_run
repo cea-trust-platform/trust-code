@@ -1,3 +1,0 @@
-rm -f Pressure_* Moy*  
-
-trust geom 1> geom.out 2>geom.err || exit -1

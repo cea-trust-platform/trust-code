@@ -1,2 +1,0 @@
-sed "s/VDF dis/VEFPreP1b dis Read dis { P0 }/" Decroissance_keps.data > vef.data
-sed -i '22iTrianguler_h dom' vef.data

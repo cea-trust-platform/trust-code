@@ -1,5 +1,0 @@
-#!/bin/bash
-
-trust grossier 1>grossier.out 2>grossier.err || exit -1
-# important pour qu'en // il ne cherche qu'a lire ce fichier
-mv grossier_0000.med grossier.med
