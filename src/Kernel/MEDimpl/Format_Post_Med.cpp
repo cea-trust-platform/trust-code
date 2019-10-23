@@ -490,42 +490,55 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
   //et n est pas reellement utilise
   compteur = 1;
   Nom nom_post(id_du_champ);
+  Noms noms_compo_courts(noms_compo);
   if (ncomp != -1)
     {
       nom_post = noms_compo[ncomp];
     }
   nom_post.prefix(dom.le_nom());
   Nom nom_dom="";
+  for (int i = 0; i < noms_compo.size(); ++i)
+    noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix(dom.le_nom());
   if (loc_post == "SOM")
     {
       nom_post.prefix("_som_");
       nom_post.prefix("_SOM_");
       nom_dom = dom.le_nom();
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_SOM_");
     }
   else if (loc_post == "ELEM")
     {
       nom_post.prefix("_ELEM_");
       nom_post.prefix("_elem_");
       nom_dom = dom.le_nom();
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_ELEM_");
     }
   else if (loc_post == "FACES")
     {
       nom_post.prefix("_FACES_");
       nom_post.prefix("_faces_");
       nom_dom = dom.getUFacesMesh()->getName().c_str();
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_FACES_");
     }
   if (je_suis_maitre())
     os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
   os.syncfile();
   EcrMED ecr_med(getEcrMED());
-  Nom type_elem = dom.zone(0).type_elem()->que_suis_je();;
+  Nom type_elem = dom.zone(0).type_elem()->que_suis_je();
+
+  // modif noms compo
+  for (int i = 0; i < noms_compo.size(); ++i)
+    noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(nom_post);
 
   if (loc_post == "SOM")
-    ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
   else if (loc_post == "ELEM")
-    ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
   else if (loc_post == "FACES")
-    ecr_med.ecrire_champ("CHAMPFACES", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPFACES", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
   else
     {
       Cerr << "We do not know to postprocess " << id_du_champ

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,20 +49,22 @@ Table::Table(const Table& t): Objet_U(t),Parser_Eval()
 
 //Lecture d'une expression analytique dependant des valeurs (val) d'un champ parametre
 //isf est fixe a 1
-Entree& Table::lire_f(Entree& is)
+Entree& Table::lire_f(Entree& is, const int nb_comp)
 {
   isf=1;
   Nom tmp;
-  is >> tmp;
 
-  Cerr << "Reading and interpretation of the function " << tmp << finl;
-  Cerr<< "unknow : val"<<finl;
   VECT(Parser_U)& fval=fonction();
-  fval.dimensionner(1);
-  fval[0].setNbVar(1);
-  fval[0].setString(tmp);
-  fval[0].addVar("val");
-  fval[0].parseString();
+  fval.dimensionner(nb_comp);
+  for (int i = 0; i < nb_comp; i++)
+    {
+      is >> tmp;
+      Cerr << "Reading and interpretation of the function " << tmp << finl;
+      fval[i].setNbVar(1);
+      fval[i].setString(tmp);
+      fval[i].addVar("val");
+      fval[i].parseString();
+    }
   Cerr << "Interpretation of the function " << tmp << " OK" << finl;
 
   return is;
@@ -158,7 +160,7 @@ Entree& Table::readOn(Entree& s )
 //    Sort en erreur s'il manque des parametres
 // Effets de bord:
 // Postcondition:
-double Table::val(const double& val_param) const
+double Table::val(const double& val_param, int ncomp) const
 {
   if (les_parametres.size() == 1)
     {
@@ -180,8 +182,8 @@ double Table::val(const double& val_param) const
   else if (isf==1)
     {
       // Plus rapide que parser(0).setVar("val",val_param);
-      parser(0).setVar(0,val_param);
-      return parser(0).eval();
+      parser(ncomp).setVar(0,val_param);
+      return parser(ncomp).eval();
     }
   else
     {
