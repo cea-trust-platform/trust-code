@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cd Canal_plan_couple_M100
-tar xfz Canal_plan_couple_M100.geom.tar.gz
-

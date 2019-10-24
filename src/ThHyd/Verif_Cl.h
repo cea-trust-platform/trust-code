@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,14 +27,13 @@
 //
 // .DESCRIPTION
 //    Interface du module ThHyd.
-//    Contient 3 fonctions:
+//    Contient 2 fonctions:
 //      int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& )
 //      int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_turb(const Zone_Cl_dis& , const Zone_Cl_dis& )
 //    qui servent a tester la coherence des conditions aux limites
-//    et les 3 fonctions
-//      int message_erreur_[therm|conc|turb](const Cond_lim& , const Cond_lim& , int& )
-//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc|turb]
+//    et les 2 fonctions
+//      int message_erreur_[therm|conc](const Cond_lim& , const Cond_lim& , int& )
+//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc]
 // .SECTION voir aussi
 //    Fonction de librairie hors classe
 //////////////////////////////////////////////////////////////////////////////
@@ -50,7 +49,3 @@ int message_erreur_therm(const Cond_lim& , const Cond_lim& , int& );
 int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )  ;
 
 int message_erreur_conc(const Cond_lim& , const Cond_lim& , int& );
-
-int tester_compatibilite_hydr_turb(const Zone_Cl_dis& , const Zone_Cl_dis& );
-
-int message_erreur_turb(const Cond_lim& , const Cond_lim& , int& );
