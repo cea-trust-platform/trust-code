@@ -517,11 +517,15 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
     }
   else if (loc_post == "FACES")
     {
+#ifdef MEDCOUPLING_
       nom_post.prefix("_FACES_");
       nom_post.prefix("_faces_");
       nom_dom = dom.getUFacesMesh()->getName().c_str();
       for (int i = 0; i < noms_compo.size(); ++i)
         noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_FACES_");
+#else
+      Cerr << "Post-processing in med format on faces needs MEDCoupling" << finl;
+#endif
     }
   if (je_suis_maitre())
     os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;

@@ -148,12 +148,12 @@ public :
   {
     return faces_mesh_;
   };
-  void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
   {
     mesh_ = m->clone(true);
   };
 #endif
+  void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
 protected :
 
   LIST(REF(Domaine)) domaines_frontieres_;

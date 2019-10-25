@@ -541,6 +541,7 @@ void Domaine::imprimer() const
 // Build the faces mesh:
 void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
 {
+#ifdef MEDCOUPLING_
   MCAuto<DataArrayInt> desc(DataArrayInt::New());
   MCAuto<DataArrayInt> descIndx(DataArrayInt::New());
   MCAuto<DataArrayInt> revDesc(DataArrayInt::New());
@@ -617,5 +618,6 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
   faces_mesh_->renumberCells(renum.addr(), check);
 #ifndef NDEBUG
   faces_mesh_->checkConsistency();
+#endif
 #endif
 }
