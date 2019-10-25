@@ -14,42 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Entree_fluide_K_Eps_impose.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/17
+// File:        Ref_Turbulence_paroi_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Modele_turbulence_base
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#ifndef Entree_fluide_K_Eps_impose_included
-#define Entree_fluide_K_Eps_impose_included
-
-#include <Dirichlet_entree_fluide.h>
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Entree_fluide_K_Eps_impose
-//    Cas particulier de la classe Dirichlet_entree_fluide
-//    pour une concentration TURBULENTE imposee.
-//    C'est le meme type de classe que Entree_fluide_concentration_imposee
-//    en imposant des grandeurs turbulentes.
-//    Impose les valeurs de K et epsilon d'entree du fluide dans une
-//    equation de type Transport_K_eps
-// .SECTION voir aussi
-//    Dirichlet_entree_fluide Entree_fluide_concentration_imposee
-//    Transport_K_eps
-//////////////////////////////////////////////////////////////////////////////
-class Entree_fluide_K_Eps_impose  : public Dirichlet_entree_fluide
-{
-
-  Declare_instanciable(Entree_fluide_K_Eps_impose);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const;
-
-};
-
-#endif
-
+#include <Ref_Turbulence_paroi_base.h>
+#include <Turbulence_paroi.h>
+Implemente_ref(Turbulence_paroi_base);

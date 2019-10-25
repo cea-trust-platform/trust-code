@@ -1,8 +1,0 @@
-#!/bin/bash
-
-
-sed "s/gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 0/gauche paroi_fixe/;s/droite frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 -1 0 /droite paroi_fixe/;s/champ_uniforme 2 -1. 0/champ_uniforme 2 -0. 0/" PE2.data > PE.data
-
-sed "s/modif_div_face_dirichlet 1/modif_div_face_dirichlet 0/" PE2.data > PE2_modif_div0.data
-sed "s/CL_pression_sommet_faible 1/CL_pression_sommet_faible 0/" PE2.data > PE2_p_forte.data
-sed "s/modif_div_face_dirichlet 1/modif_div_face_dirichlet 0/" PE2_p_forte.data > PE2_p_forte_modif_div0.data

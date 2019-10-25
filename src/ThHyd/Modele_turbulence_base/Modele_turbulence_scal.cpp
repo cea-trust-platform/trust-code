@@ -14,17 +14,18 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Entree_fluide_K_Eps_impose.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/17
+// File:        Modele_turbulence_scal.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Modele_turbulence_base
+// Version:     /main/22
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Entree_fluide_K_Eps_impose.h>
-#include <Motcle.h>
+#include <Modele_turbulence_scal.h>
+#include <Discretisation_base.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Entree_fluide_K_Eps_impose,"Frontiere_ouverte_K_Eps_impose",Dirichlet_entree_fluide);
+Implemente_deriv(Modele_turbulence_scal_base);
+Implemente_instanciable(Modele_turbulence_scal,"Modele_turbulence_scal",DERIV(Modele_turbulence_scal_base));
 
 
 // Description:
@@ -41,62 +42,45 @@ Implemente_instanciable(Entree_fluide_K_Eps_impose,"Frontiere_ouverte_K_Eps_impo
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Entree_fluide_K_Eps_impose::printOn(Sortie& s ) const
+Sortie& Modele_turbulence_scal::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << valeur().que_suis_je() << finl;
 }
 
 // Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
+//    Lit les specifications d'un modele de turbulence
+//    a partir d'un flot d'entree.
 // Precondition:
 // Parametre: Entree& s
 //    Signification: un flot d'entree
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree& s
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
 //    Contraintes:
-// Exception:
+// Exception: Le modele sous maille n'est pas implemente en coordonnees cylindriques
 // Effets de bord:
 // Postcondition:
-Entree& Entree_fluide_K_Eps_impose::readOn(Entree& s)
+Entree& Modele_turbulence_scal::readOn(Entree& s )
 {
-  return Cond_lim_base::readOn(s);
+  Motcle typ;
+  s >> typ;
+  Motcle nom1("Modele_turbulence_scal_");
+  nom1 += typ;
+  if (typ == "sous_maille_dyn")
+    {
+      nom1 += "_";
+      Nom disc = equation().discretisation().que_suis_je();
+      if(disc=="VEFPreP1B")
+        disc="VEF";
+      nom1 +=disc;
+    }
+  Cerr << nom1 << finl;
+  DERIV(Modele_turbulence_scal_base)::typer(nom1);
+  valeur().associer_eqn(equation());
+  valeur().associer(equation().zone_dis(), equation().zone_Cl_dis());
+  s >> valeur();
+  return s;
 }
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Entree_fluide_K_Eps_impose sont compatibles
-//    avec une equation dont le domaine est le Transport_Keps
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Entree_fluide_K_Eps_impose::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle K_Eps="Transport_Keps";
-  Motcle K_Eps_V2="Transport_Keps_V2";
-  Motcle K_Eps_Bas_Re="Transport_Keps_Bas_Re";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==K_Eps) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_V2) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}

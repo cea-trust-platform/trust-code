@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,38 +14,16 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Verif_Cl.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/9
+// File:        Ref_Turbulence_paroi_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Modele_turbulence_base
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <arch.h>
-#include <Cond_lim.h>
+#ifndef Ref_Turbulence_paroi_base_included
+#define Ref_Turbulence_paroi_base_included
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Interface du module ThHyd.
-//    Contient 2 fonctions:
-//      int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//    qui servent a tester la coherence des conditions aux limites
-//    et les 2 fonctions
-//      int message_erreur_[therm|conc](const Cond_lim& , const Cond_lim& , int& )
-//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc]
-// .SECTION voir aussi
-//    Fonction de librairie hors classe
-//////////////////////////////////////////////////////////////////////////////
-
-class Zone_Cl_dis;
-
-// Fonctions qui servent a tester la coherence des conditions aux limites
-
-int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& );
-
-int message_erreur_therm(const Cond_lim& , const Cond_lim& , int& );
-
-int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )  ;
-
-int message_erreur_conc(const Cond_lim& , const Cond_lim& , int& );
+#include <Ref.h>
+class Turbulence_paroi_base;
+Declare_ref(Turbulence_paroi_base);
+#endif
