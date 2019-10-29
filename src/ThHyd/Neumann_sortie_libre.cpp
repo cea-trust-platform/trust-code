@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -241,16 +241,19 @@ double Neumann_sortie_libre::val_ext(int i,int j) const
 int Neumann_sortie_libre::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-  Motcle KEPS="Transport_Keps";
-  Motcle KEPS_V2="Transport_Keps_V2";
-  Motcle K_Eps_Bas_Re="Transport_Keps_Bas_Re";
-  Motcle Thermique="Thermique";
-  Motcle Thermique_H="Thermique_H";
-  Motcle Concentration="Concentration";
-  Motcle Fraction_massique="Fraction_massique";
-  Motcle V2="Transport_V2";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==KEPS) || (dom_app==K_Eps_Bas_Re) || (dom_app==indetermine) ||
+
+  Motcle KEPS              ="Transport_Keps";
+  Motcle KEPS_V2           ="Transport_Keps_V2";
+  Motcle K_Eps_Bas_Re      ="Transport_Keps_Bas_Re";
+  Motcle K_Eps_Rea         ="Transport_Keps_Rea";
+  Motcle Thermique         ="Thermique";
+  Motcle Thermique_H       ="Thermique_H";
+  Motcle Concentration     ="Concentration";
+  Motcle Fraction_massique ="Fraction_massique";
+  Motcle V2                ="Transport_V2";
+  Motcle indetermine       ="indetermine";
+
+  if ( (dom_app==KEPS) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || (dom_app==indetermine) ||
        (dom_app==Thermique) || (dom_app==Concentration) ||
        (dom_app==Thermique_H) || (dom_app==V2) || (dom_app==KEPS_V2) ||
        (dom_app==Fraction_massique) )

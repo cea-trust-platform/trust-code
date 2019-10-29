@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,14 +89,17 @@ Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
 int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-  Motcle Concentration="Concentration";
-  Motcle Fraction_massique="Fraction_massique";
-  Motcle K_Eps ="Transport_Keps";
-  Motcle K_Eps_V2 ="Transport_Keps_V2";
-  Motcle V2 ="Transport_V2";
-  Motcle Diphasique="Diphasique_moyenne";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_V2) || (dom_app==V2) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique))
+
+  Motcle Concentration     ="Concentration";
+  Motcle Fraction_massique ="Fraction_massique";
+  Motcle K_Eps             ="Transport_Keps";
+  Motcle K_Eps_V2          ="Transport_Keps_V2";
+  Motcle K_Eps_Rea         ="Transport_Keps_Rea";
+  Motcle V2                ="Transport_V2";
+  Motcle Diphasique        ="Diphasique_moyenne";
+  Motcle indetermine       ="indetermine";
+
+  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_Rea) || (dom_app==K_Eps_V2) || (dom_app==V2) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique))
     return 1;
   else
     {
