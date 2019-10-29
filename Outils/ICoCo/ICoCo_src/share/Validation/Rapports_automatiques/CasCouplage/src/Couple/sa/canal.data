@@ -8,7 +8,7 @@ Read sch
         tinit 0.
         dt_start dt_fixe 7.e-06
         tmax 10000.
-	nb_pas_dt_max 5 
+        nb_pas_dt_max 5 
         dt_min 1.e-6
         dt_max 1.e-1
         dt_impr 1e-7
@@ -31,7 +31,7 @@ Read Eau
 }
 
 
-Pb_Hydraulique_Turbulent pb
+Pb_Hydraulique pb
 Probleme_Couple pb_ch
 Associate pb_ch pb
 Associate pb canal
@@ -41,13 +41,14 @@ Discretize pb_ch dis
 
 Read pb
 {
- Navier_Stokes_Turbulent
+ Navier_Stokes_standard
  {
        methode_calcul_pression_initiale avec_les_cl
+       # Two pressure solvers to let a chance for a run w/o PETSc -- see prepare #
        solveur_pression Gcp { precond ssor { omega 1.5 }
                                              seuil 1.e-06
                             }
-	solveur_pression petsc cholesky { }
+       solveur_pression petsc cholesky { }
        solveur_bar      Gcp { precond ssor { omega 1.5 }
                                              seuil 1.e-12
                             }
@@ -59,12 +60,12 @@ Read pb
          sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
          paroi  paroi_fixe
        }
-       Modele_turbulence Sous_maille_wale
+       # Modele_turbulence Sous_maille_wale
                         {
                         Cw 0.5
                         turbulence_paroi loi_standard_hydr
                         dt_impr_ustar 0.5
-                        } 
+                        } # 
 }
 Post_processings
 {

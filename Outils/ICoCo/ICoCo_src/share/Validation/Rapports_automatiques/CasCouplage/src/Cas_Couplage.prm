@@ -1,6 +1,6 @@
 parametres {
 	titre "Tests de Couplage via ICoCo + MEDCoupling"
-	auteur "fauchet pour perdu "
+	auteur "Fauchet pour Perdu, puis laminaire Bruneton"
 	casTest . ok
 	casTest Couple ok
 	casTest Couple2 ok

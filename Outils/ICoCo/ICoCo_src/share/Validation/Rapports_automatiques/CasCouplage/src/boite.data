@@ -32,7 +32,7 @@ Read Eau
 }
 
 
-Pb_Hydraulique_Turbulent pb_ch
+Pb_Hydraulique pb_ch
 Associate pb_ch boite
 Associate pb_ch Eau
 Associate pb_ch sch
@@ -40,10 +40,9 @@ Discretize pb_ch dis
 
 Read pb_ch
 {
- Navier_Stokes_Turbulent
+ Navier_Stokes_standard
  {
        methode_calcul_pression_initiale avec_les_cl
-
        solveur_pression Gcp { precond ssor { omega 1.5 }
                                              seuil 1.e-06
                             }
@@ -53,17 +52,17 @@ Read pb_ch
        convection { EF_stab { } }
        diffusion  {  }
        Sources { Canal_perio { bord perio coeff 10. } }
-       initial_conditions {  vitesse champ_Uniforme 3 10. 0. 0. }
+       initial_conditions {  vitesse champ_fonc_xyz boite 3 10.*sin(Y*3.1415/0.05)*sin(Z*3.1415/0.05) 0. 0. }
        boundary_conditions {
                    perio    periodique 
                    paroi    paroi_fixe
                           }
-        Modele_turbulence Sous_maille_wale
+        # Modele_turbulence Sous_maille_wale
                         {
                         Cw 0.5
                         turbulence_paroi loi_standard_hydr
                         dt_impr_ustar 0.5
-                        } 
+                        } #
 }
 Post_processings
 {
