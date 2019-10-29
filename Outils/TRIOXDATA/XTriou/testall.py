@@ -1,5 +1,6 @@
 from test_cas import test_cas
-for file in ['Canal_VEF_2D_LongMelange','therce','cinits','prem','trois','Marche','docond']:
+#for file in ['Canal_VEF_2D_LongMelange','therce','cinits','prem','trois','Marche','docond']:
+for file in ['therce','cinits','prem','trois','docond']:
 	test_cas(file)
 	pass
 print file
