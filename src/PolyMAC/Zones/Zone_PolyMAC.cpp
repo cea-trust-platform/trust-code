@@ -53,6 +53,7 @@
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
 #include <ConstDoubleTab_parts.h>
+#include <Lapack.h>
 
 #include <LireMED.h>
 #include <EcrMED.h>
@@ -585,8 +586,8 @@ void Zone_PolyMAC::orthocentrer()
   const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales_;
   const DoubleVect& fs = face_surfaces();
   int i, j, e, f, s, np;
-  DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1); //pour les systemes lineaires
-  M.set_smart_resize(1), S.set_smart_resize(1);
+  DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1), vp; //pour les systemes lineaires
+  M.set_smart_resize(1), S.set_smart_resize(1), vp.set_smart_resize(1);
   IntTrav b_f_ortho, b_e_ortho; // b_{f,e}_ortho(f/e) = 1 si la face / l'element est orthocentre
   creer_tableau_faces(b_f_ortho), zone().creer_tableau_elements(b_e_ortho);
 
@@ -606,7 +607,7 @@ void Zone_PolyMAC::orthocentrer()
         for (i = 0; i < np; i++) for (j = 0, S(i, 0) = 0, M(i, 3) = 1; j < 3; j++)
             S(i, 0) += 0.5 * std::pow(M(i, j) = xs(f_s(f, i), j) - xv_(f, j), 2);
         for (j = 0, S(np, 0) = M(np, 3) = 0; j < 3; j++) M(np, j) = nf(f, j) / fs(f);
-        if (kersol(M, S, 1e-12, NULL, X) > 1e-8) continue; //la face n'a pas d'orthocentre
+        if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //la face n'a pas d'orthocentre
 
         //contrainte : ne pas diminuer la distance entre xv et chaque arete de plus de 50%
         double r2min = DBL_MAX;
@@ -641,7 +642,7 @@ void Zone_PolyMAC::orthocentrer()
       M.resize(np, dimension + 1), S.resize(np, 1);
       for (i = 0; i < np; i++) for (j = 0, S(i, 0) = 0, M(i, dimension) = 1; j < dimension; j++)
           S(i, 0) += 0.5 * std::pow(M(i, j) = xs(e_s(e, i), j) - xp_(e, j), 2);
-      if (kersol(M, S, 1e-12, NULL, X) > 1e-8) continue; //l'element n'a pas d'orthocentre
+      if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //l'element n'a pas d'orthocentre
 
       //contrainte : ne pas diminuer la distance entre xp et chaque face de plus de 50%
       double rmin = DBL_MAX;
@@ -966,6 +967,38 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
   return dist;
 }
 
+//stabilisation des matrices m1 et m2 de PolyMAC
+inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M) const
+{
+  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = 2 + n_f * (6 + 2 * n_f), liwork = 2 * (3 + 5 * n_f), info = 0;
+  DoubleTab A, S, b(n_f, 1), N(1, 1), x(1, 1), work(lwork), V;
+  IntTab iwork(liwork);
+
+  /* valeurs propres (S) et noyau (N) */
+  kersol(M, b, 1e-12, &N, x, S);
+  assert(N.dimension(1) == n_f - dimension); //M doit etre de rang d
+  double eps = S(dimension - 1); //valeur propre la plus petite de M (hors noyau)
+
+  /* ajout d'une matrice de forme N P n^t, avec P symetrique pour minimiser les termes hors diag de M */
+  int n_k = N.dimension(1), n_l = n_f * (n_f - 1) / 2, n_c = n_k * (n_k + 1) / 2; //une ligne par coeff M(i, j > i), une colonne par terme P(i, j >= i)
+  A.resize(n_l, n_c), b.resize(n_l, 1);
+  for (i1 = i = 0; i1 < n_f; i1++) for (i2 = i1 + 1; i2 < n_f; i2++, i++) //(i1, i2, i) -> numero de ligne
+      for (j1 = j = 0, b(i, 0) = -M(i1, i2); j1 < n_k; j1++) for (j2 = j1; j2 < n_k; j2++, j++) //(j1, j2, j) -> numero de colonne
+          A(i, j) = N(i1, j1) * N(i2, j2) + (j1 != j2) * N(i1, j2) * N(i2, j1);
+  kersol(A, b, 1e-12, NULL, x, S); //minimise la somme des carres des termes hors diag de M
+  //modification de M
+  for (i1 = 0; i1 < n_f; i1++) for (i2 = 0; i2 < n_f; i2++) for (j1 = j = 0; j1 < n_k; j1++) for (j2 = j1; j2 < n_k; j2++, j++)
+          M(i1, i2) += x(j, 0) * (N(i1, j1) * N(i2, j2) + (j1 != j2) * N(i1, j2) * N(i2, j1));
+
+  /* decomposition de Schur de M, puis renfort de la diagonale pour rendre toutes les vp plsu grandes que eps */
+  char jobz = 'V', uplo = 'U';
+  V = M, S.resize(n_f);
+  F77NAME(dsyevd)(&jobz, &uplo, &n_f, &V(0, 0), &n_f, &S(0), &work(0), &lwork, &iwork(0), &liwork, &info);
+  assert(info == 0);
+  //ajout pour garantir des vp plus grandes que eps
+  for (i = 0, M = 0; i < n_f; i++) for (j = 0; j < n_f; j++) for (k = 0; k < n_f; k++) M(i, j) += V(k, i) * max(S(k), eps) * V(k, j);
+}
+
 //interpolation normales aux faces -> elements d'ordre 1
 void Zone_PolyMAC::init_ve() const
 {
@@ -992,51 +1025,34 @@ void Zone_PolyMAC::init_ve() const
 void Zone_PolyMAC::init_m2() const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
-  const DoubleTab& nf = face_normales_;
-  const DoubleVect& fs = face_surfaces(), &ve = volumes(), &vf = volumes_entrelaces();
-  int i, j, k, l, e, f, n_f;
+  const DoubleVect& fs = face_surfaces(), &ve = volumes();
+  int i, j, k, e, f, n_f, lwork = 2 + e_f.dimension(1) * (6 + 2 * e_f.dimension(1)), liwork = 2 * (3 + 5 * e_f.dimension(1));
 
   if (m2deb.dimension(0)) return;
   init_ve();
   Cerr << zone().domaine().le_nom() << " : initialisation de m2... ";
   std::vector<std::map<std::array<int, 2>, double>> m2(nb_faces_tot());
 
-  DoubleTrav N(e_f.dimension(1), dimension), M(e_f.dimension(1), e_f.dimension(1)), P(e_f.dimension(1), e_f.dimension(1));
-  Matrice33 NtN(0, 0, 0, 0, 0, 0, 0, 0, 1), iNtN;
+  DoubleTab A(1, 1), M(1, 1), S(1, 1), b(1, 1), N(1, 1), x(1, 1), V(1, 1), work(lwork);
+  IntTab iwork(liwork);
+  A.set_smart_resize(1), M.set_smart_resize(1), S.set_smart_resize(1), b.set_smart_resize(1), N.set_smart_resize(1), x.set_smart_resize(1), V.set_smart_resize(1);
   std::map<int, int> idxf;
   for (e = 0; e < nb_elem_tot(); e++, idxf.clear())
     {
-      /* 1. matrice non stabilisee et matrice P de stabilisation creuse, mais pas forcement */
+      /* matrice non stabilisee */
       for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) idxf[f] = i, n_f++;
+      M.resize(n_f, n_f), b.resize(n_f, 1), x.resize(n_f, 1);
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (k = vedeb(e); k < vedeb(e + 1); k++)
-          {
-            M(i, j = idxf[veji(k)]) = dot(&xv_(f, 0), &veci(k, 0), &xp_(e, 0)) * fs(f) * (e == f_e(f, 0) ? 1 : -1);
-            P(i, j) = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) * ((i == j) - dot(&veci(k, 0), &nf(f, 0)) / fs(f)) * (e == f_e(f, 0) ? 1 : -1);
-          }
+          M(i, idxf[veji(k)]) = dot(&xv_(f, 0), &veci(k, 0), &xp_(e, 0)) * fs(f) * (e == f_e(f, 0) ? 1 : -1);
 
-      /* 2. si P n'est pas symetrique, on la remplace par la formule (11) de https://doi.org/10.1016/j.cam.2018.02.007 (moins creuse, mais SPC)*/
-      int ok = 1;
-      for (i = 0; i < n_f; i++) for (j = i + 1; ok && j < n_f; j++) if (dabs(P(i, j) - P(j, i)) > ve(e) * 1e-8) ok = 0;
-      if (!ok)
-        {
-          //N : matrice des normales aux faces de e au format "colonne"
-          for (i = 0; i < n_f; i++) for (j = 0, f = e_f(e, i); j < dimension; j++) N(i, j) = nf(f, j) / fs(f);
-          //operations : transposee Nt, produit Nt.N, son inverse, et projecteur N.(NtN)^-1.Nt
-          for (i = 0; i < dimension; i++) for (j = 0; j < dimension; j++) for (k = 0, NtN(i, j) = 0; k < n_f; k++) NtN(i, j) += N(k, i) * N(k, j);
-          Matrice33::inverse(NtN, iNtN, 1);
-          for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) for (k = 0, P(i, j) = 0; k < dimension; k++) for (l = 0; l < dimension; l++)
-                  P(i, j) += N(i, k) * iNtN(k, l) * N(j, l);
-          for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) P(i, j) = ve(e) / 2 * ((i == j) - P(i, j));
-        }
-
-      //matrice finale : somme M + P
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
-          m2[e_f(e, i)][ {{e_f(e, j), e }}] += M(i, j) + P(i, j);
+      /* stabilisation et stockage */
+      ajouter_stabilisation(M);
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(M(i, j)) > 1e-12 * ve(e)) m2[e_f(e, i)][ {{e_f(e, j), e }}] += M(i, j);
     }
   //remplissage
   m2deb.resize(1), m2deb.set_smart_resize(1), m2ji.resize(0, 2), m2ji.set_smart_resize(1), m2ci.set_smart_resize(1);
   for (f = 0; f < nb_faces_tot(); f++, m2deb.append_line(m2ji.dimension(0))) for (auto &&kv : m2[f])
-      if (dabs(kv.second) > 1e-8 * vf(f)) m2ji.append_line(kv.first[0], kv.first[1]), m2ci.append_line(kv.second);
+      m2ji.append_line(kv.first[0], kv.first[1]), m2ci.append_line(kv.second);
   CRIMP(m2deb), CRIMP(m2ji), CRIMP(m2ci);
   Process::barrier();
   Cerr << "OK" << finl;
@@ -1162,53 +1178,36 @@ void Zone_PolyMAC::init_m1_3d() const
 {
   const IntTab& f_s = face_sommets_, &e_a = zone().elem_aretes(), &e_f = elem_faces_;
   const DoubleVect& la = longueur_aretes_, &ve = volumes();
-  int a, i, j, k, l, e, f, s, s2, n_a;
+  int a, i, j, k, e, f, s, s2, n_a;
 
   Cerr << zone().domaine().le_nom() << " : initialisation de m1... ";
   std::vector<std::map<std::array<int, 2>, double>> m1(zone().nb_aretes_tot()); //m1[a][{ ab, e }] : contribution de (arete ab, element e)
-  DoubleTrav N(e_a.dimension(1), 3), M(e_a.dimension(1), e_a.dimension(1)), P(e_a.dimension(1), e_a.dimension(1));
-  Matrice33 NtN, iNtN;
+  DoubleTab M;
+  M.set_smart_resize(1);
   std::map<int, int> idxa;
   for (e = 0; e < nb_elem_tot(); e++, idxa.clear())
     {
-      /* matrice non stabilisee et stablisee non symetrique : contribution par facette (couple face/arete) */
+      /* matrice non stabilisee : contribution par facette (couple face/arete) */
       for (i = 0, n_a = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) idxa[a] = i, n_a++;
-      for (i = 0, M = 0, P = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
+      M.resize(n_a, n_a);
+      for (i = 0, M = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
           {
             s2 = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0), a = som_arete[min(s, s2)].at(max(s, s2));
             std::array<double, 3> vec = cross(3, 3, &xp_(e, 0), &xv_(f, 0), &xa_(a, 0), &xa_(a, 0));
             //on tourne la facette dans la bonne direction
             int sgn = dot(&ta_(a, 0), &vec[0]) > 0 ? 1 : -1;
-            for (k = wedeb(e); k < wedeb(e + 1); k++)
-              {
-                M(idxa[a], idxa[weji(k)]) += sgn * la(a) * dot(&vec[0], &weci(k, 0)) / 2;
-                P(idxa[a], idxa[weji(k)]) += sgn * la(a) * dot(&vec[0], &ta_(a, 0)) * ((a == weji(k)) - dot(&ta_(a, 0), &weci(k, 0))) / 2;
-              }
+            for (k = wedeb(e); k < wedeb(e + 1); k++) M(idxa[a], idxa[weji(k)]) += sgn * la(a) * dot(&vec[0], &weci(k, 0)) / 2;
           }
 
-      //P est-elle symetrique?
-      int ok = 1;
-      for (i = 0; i < n_a; i++) for (j = i + 1; ok && j < n_a; j++) if (dabs(P(i, j) - P(j, i)) > 1e-8 * volumes(e)) ok = 0;
-      if (!ok) //si non : formule (11) de https://doi.org/10.1016/j.cam.2018.02.007 (moins creuse, mais symetrique)
-        {
-          //N : matrice des tangentes aux aretes de e au format "colonne"
-          for (i = 0, n_a = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) for (j = 0, n_a++; j < 3; j++) N(i, j) = ta_(a, j);
-          //operations : transposee Nt, produit Nt.N, son inverse, et projecteur N.(NtN)^-1.Nt
-          for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) for (k = 0, NtN(i, j) = 0; k < n_a; k++) NtN(i, j) += N(k, i) * N(k, j);
-          Matrice33::inverse(NtN, iNtN, 1);
-          for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) for (k = 0, P(i, j) = 0; k < dimension; k++) for (l = 0; l < dimension; l++)
-                  P(i, j) += N(i, k) * iNtN(k, l) * N(j, l);
-          for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) P(i, j) = 3 * ve(e) / n_a * ((i == j) - P(i, j));
-        }
-
-      for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++)
-          m1[e_a(e, i)][ {{ e_a(e, j), e }}] += M(i, j) + P(i, j);
+      /* stabilisation et stockage */
+      ajouter_stabilisation(M);
+      for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) if (dabs(M(i, j)) > 1e-12 * ve(e)) m1[e_a(e, i)][ {{ e_a(e, j), e }}] += M(i, j);
     }
 
   //remplissage
   m1deb.resize(1), m1deb.set_smart_resize(1), m1ji.resize(0, 2), m1ji.set_smart_resize(1), m1ci.set_smart_resize(1);
   for (a = 0; a < zone().nb_aretes_tot(); m1deb.append_line(m1ji.dimension(0)), a++) for (auto &&kv : m1[a])
-      if (dabs(kv.second) > 1e-8 * volumes(kv.first[1])) m1ji.append_line(kv.first[0], kv.first[1]), m1ci.append_line(kv.second);
+      m1ji.append_line(kv.first[0], kv.first[1]), m1ci.append_line(kv.second);
   CRIMP(m1deb), CRIMP(m1ji), CRIMP(m1ci);
   Process::barrier();
   Cerr << "OK" << finl;

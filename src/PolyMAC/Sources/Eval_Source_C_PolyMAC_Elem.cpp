@@ -14,83 +14,22 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/13
+// File:        Eval_Source_C_PolyMAC_Elem.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Eval_Source_C_PolyMAC_Elem.h>
 
 
-#ifndef Op_Diff_PolyMAC_base_included
-#define Op_Diff_PolyMAC_base_included
+void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_source_constituant = Q;
+  source_constituant.ref(Q.valeurs());
+}
 
-#include <Operateur_Diff_base.h>
-#include <Op_Diff_Turbulent_base.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-class Champ_Fonc;
-
-
-//
-// .DESCRIPTION class Op_Diff_PolyMAC_base
-//
-// Classe de base des operateurs de diffusion PolyMAC
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulent_base
+void Eval_Source_C_PolyMAC_Elem::mettre_a_jour( )
 {
 
-
-  Declare_base(Op_Diff_PolyMAC_base);
-
-public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-
-  void associer_diffusivite(const Champ_base& );
-  void completer();
-  const Champ_base& diffusivite() const;
-  const Champ_base& diffusivite_turbulente() const;
-
-  void remplir_nu(DoubleTab& nu) const;
-  void remplir_nu_fac() const;
-  const DoubleTab& get_nu() const
-  {
-    return nu_;
-  }
-  const DoubleTab& get_nu_fac() const
-  {
-    return nu_fac;
-  }
-
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
-
-protected:
-  REF(Zone_PolyMAC) la_zone_poly_;
-  REF(Zone_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_;
-  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)^2
-  mutable DoubleTab nu_fac;
-};
-
-
-
-//
-// Fonctions inline de la classe Op_Diff_PolyMAC_base
-//
-
-
-#endif
+}

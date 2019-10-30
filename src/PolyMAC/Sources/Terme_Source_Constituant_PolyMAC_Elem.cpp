@@ -14,83 +14,60 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/13
+// File:        Terme_Source_Constituant_PolyMAC_Elem.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Terme_Source_Constituant_PolyMAC_Elem.h>
+#include <Milieu_base.h>
+#include <Convection_Diffusion_Concentration.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
 
+Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_P0_PolyMAC",Terme_Source_PolyMAC_base);
+implemente_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
 
-#ifndef Op_Diff_PolyMAC_base_included
-#define Op_Diff_PolyMAC_base_included
-
-#include <Operateur_Diff_base.h>
-#include <Op_Diff_Turbulent_base.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-class Champ_Fonc;
-
-
-//
-// .DESCRIPTION class Op_Diff_PolyMAC_base
-//
-// Classe de base des operateurs de diffusion PolyMAC
-
-//
-// .SECTION voir aussi
-//
+//// printOn
 //
 
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulent_base
+Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s ) const
 {
+  return s << que_suis_je() ;
+}
 
-
-  Declare_base(Op_Diff_PolyMAC_base);
-
-public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-
-  void associer_diffusivite(const Champ_base& );
-  void completer();
-  const Champ_base& diffusivite() const;
-  const Champ_base& diffusivite_turbulente() const;
-
-  void remplir_nu(DoubleTab& nu) const;
-  void remplir_nu_fac() const;
-  const DoubleTab& get_nu() const
-  {
-    return nu_;
-  }
-  const DoubleTab& get_nu_fac() const
-  {
-    return nu_fac;
-  }
-
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
-
-protected:
-  REF(Zone_PolyMAC) la_zone_poly_;
-  REF(Zone_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_;
-  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)^2
-  mutable DoubleTab nu_fac;
-};
-
-
-
-//
-// Fonctions inline de la classe Op_Diff_PolyMAC_base
+//// readOn
 //
 
+Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s )
+{
+  Terme_Source_Constituant::lire_donnees(s);
+  set_fichier("Source_Constituant");
+  set_description("Injection rate = Integral(source_C*dv) [mol/s]");
+  return s;
+}
 
-#endif
+
+void Terme_Source_Constituant_PolyMAC_Elem::associer_zones(const Zone_dis& zone_dis,
+                                                           const Zone_Cl_dis& zone_cl_dis)
+{
+  const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC,zone_dis.valeur());
+  const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC,zone_cl_dis.valeur());
+
+  iter->associer_zones(zvdf, zclvdf);
+
+  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
+  eval_puis.associer_zones(zvdf, zclvdf );
+}
+
+
+void Terme_Source_Constituant_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
+{
+  const Equation_base& eqn = pb.equation(0);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
+  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
+  eval_puis.associer_champs(la_source_constituant);
+}
+
+

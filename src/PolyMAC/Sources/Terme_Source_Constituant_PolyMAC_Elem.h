@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,83 +14,57 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/13
+// File:        Terme_Source_Constituant_PolyMAC_Elem.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Terme_Source_Constituant_PolyMAC_Elem_included
+#define Terme_Source_Constituant_PolyMAC_Elem_included
 
 
-#ifndef Op_Diff_PolyMAC_base_included
-#define Op_Diff_PolyMAC_base_included
 
-#include <Operateur_Diff_base.h>
-#include <Op_Diff_Turbulent_base.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-class Champ_Fonc;
+#include <Terme_Source_Constituant.h>
+#include <Terme_Source_PolyMAC_base.h>
+#include <Eval_Source_C_PolyMAC_Elem.h>
+#include <ItSouPolyMACEl.h>
 
+declare_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
 
+//.DESCRIPTION class Terme_Source_Constituant_PolyMAC_Elem
 //
-// .DESCRIPTION class Op_Diff_PolyMAC_base
+// Cette classe represente un terme source de l'equation de la thermique
+// du type degagement volumique de puissance thermique uniforme sur une zone
 //
-// Classe de base des operateurs de diffusion PolyMAC
+//.SECTION
+// voir aussi Terme_Source_Constituant, Terme_Source_PolyMAC_base
 
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulent_base
+class Terme_Source_Constituant_PolyMAC_Elem : public Terme_Source_Constituant,
+  public Terme_Source_PolyMAC_base
 {
-
-
-  Declare_base(Op_Diff_PolyMAC_base);
+  Declare_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
 
-  void associer_diffusivite(const Champ_base& );
-  void completer();
-  const Champ_base& diffusivite() const;
-  const Champ_base& diffusivite_turbulente() const;
-
-  void remplir_nu(DoubleTab& nu) const;
-  void remplir_nu_fac() const;
-  const DoubleTab& get_nu() const
+  inline Terme_Source_Constituant_PolyMAC_Elem();
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
+  void associer_pb(const Probleme_base& );
+  void mettre_a_jour(double temps)
   {
-    return nu_;
+    Terme_Source_Constituant::mettre_a_jour(temps);
   }
-  const DoubleTab& get_nu_fac() const
-  {
-    return nu_fac;
-  }
-
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
-
-protected:
-  REF(Zone_PolyMAC) la_zone_poly_;
-  REF(Zone_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_;
-  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)^2
-  mutable DoubleTab nu_fac;
 };
 
 
+//
+// Fonctions inline de la classe Terme_Source_Constituant_PolyMAC_Elem
+//
 
-//
-// Fonctions inline de la classe Op_Diff_PolyMAC_base
-//
+inline Terme_Source_Constituant_PolyMAC_Elem::Terme_Source_Constituant_PolyMAC_Elem()
+  : Terme_Source_Constituant(),Terme_Source_PolyMAC_base(It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)())
+{
+}
 
 
 #endif

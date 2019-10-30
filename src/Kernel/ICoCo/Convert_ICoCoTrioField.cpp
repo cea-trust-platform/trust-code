@@ -249,8 +249,8 @@ MEDField build_medfield(TrioField& triofield)
 
 
   std::vector<int> cells;
-  if ((mesh->getSpaceDimension() == 2 || mesh->getSpaceDimension() == 3) && mesh->getMeshDimension() == 2)
-    mesh->checkButterflyCells(cells);
+  // if ((mesh->getSpaceDimension() == 2 || mesh->getSpaceDimension() == 3) && mesh->getMeshDimension() == 2)
+  //   mesh->checkButterflyCells(cells);
   if (!cells.empty())
     {
       Cerr<<" cells are butterflyed "<<cells[0]<<finl;

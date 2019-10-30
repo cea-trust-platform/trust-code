@@ -42,10 +42,10 @@ class Op_Diff_PolyMAC_Elem : public Op_Diff_PolyMAC_base
 public :
 
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& ajouter_mod(const DoubleTab& ,  DoubleTab&, const DoubleVect& ) const;
+  DoubleTab& ajouter_mod(const DoubleTab& ,  DoubleTab&, const DoubleVect* ) const;
   virtual void calculer_flux_bord(const DoubleTab& inco) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_a_avec_mod(const DoubleTab&, Matrice_Morse&, const DoubleVect& ) const;
+  void contribuer_a_avec_mod(const DoubleTab&, Matrice_Morse&, const DoubleVect* ) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const;
   void completer();

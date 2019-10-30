@@ -72,13 +72,16 @@ void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
 
   zone.init_m2();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
+  /* blocs superieurs de la matrice : divergence */
+  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+      for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * (ne_tot + f) + n);
   /* blocs inferieurs de la matrice : grad T = M2 / nu sauf aux faces de bord de Neumann */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4)
       {
@@ -106,50 +109,55 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu)
   //si on trouve Melange_Thermique_Aiguilles_PolyMAC dans les sources, alors on le laisse faire l'appel
   for (CONST_LIST_CURSEUR(Source) curseur(equation().sources()); curseur; ++curseur)
     if (curseur.valeur().que_suis_je() == "Melange_Thermique_Aiguilles_P0_PolyMAC") return resu;
-  return ajouter_mod(inco, resu, la_zone_poly_.valeur().porosite_face());
+  return ajouter_mod(inco, resu, NULL);
 }
 
 /* version permettant a Melange_Thermique_Aiguilles_PolyMAC de modifier certaines porosites aux faces */
-DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& resu, const DoubleVect& pf_mod) const
+DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& resu, const DoubleVect* fac_mod) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleVect& fs = zone.face_surfaces();
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
+  int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
+  assert(N_nu == 1 || N_nu == N);
 
-  remplir_nu_faces();
-  for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++) nu_faces.addr()[N * f + n] *= pf_mod(f);
+  remplir_nu(nu_), remplir_nu_fac();
+  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++) nu_fac.addr()[N * f + n] *= (*fac_mod)(f);
 
-  /* blocs inferieurs de la matrice : grad T - m2 / nu sauf si Neumann */
+  /* blocs superieurs de la matrice : divergence hors Neumann */
+  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4 && n < N; n++)
+        resu(N * e + n) -= fs(f) * nu_fac(f) * (e == f_e(f, 0) ? 1 : -1) * inco.addr()[N * (ne_tot + f) + n];
+
+  /* blocs inferieurs de la matrice : - grad T - m2 / nu sauf si Neumann */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4)
       {
         // grad T : si Echange_impose_base, on ne remplit que si h > 0
         for (n = 0; n < N; n++) if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0) for (i = 0; i < 2; i++)
               {
                 if ((e = f_e(f, i)) >= 0)
-                  resu.addr()[N * (ne_tot + f) + n] -= (i ? 1 : -1) * fs(f) * inco.addr()[N * e + n];
+                  resu.addr()[N * (ne_tot + f) + n] += (i ? 1 : -1) * fs(f) * nu_fac(f) * inco.addr()[N * e + n];
                 else if (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2) //Echange_impose_base
-                  resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n);
+                  resu.addr()[N * (ne_tot + f) + n] += fs(f) * nu_fac(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n);
                 else if (ch.icl(f, 0) == 5) //Dirichlet
-                  resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
+                  resu.addr()[N * (ne_tot + f) + n] += fs(f) * nu_fac(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
               }
 
         // m2 / nu : attention a ne pas remplir si Echange_impose_base avec h == 0
         for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (n = 0, fb = zone.m2ji(i, 0); n < N; n++)
             if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
               {
-                double fac = zone.m2ci(i) / nu_faces.addr()[N * fb + n];
+                double fac = zone.m2ci(i) / nu_.addr()[N_nu > 1 ? N * zone.m2ji(i, 1) + n : zone.m2ji(i, 1)];
                 if (f == fb && (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2)) //si Echange_impose_base : on modifie le terme diagonal
                   fac = (ch.icl(f, 0) == 1) * fac + fs(f) / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-                resu.addr()[N * (ne_tot + f) + n] -= fac * inco.addr()[N * (ne_tot + fb) + n];
+                resu.addr()[N * (ne_tot + f) + n] += fac * inco.addr()[N * (ne_tot + fb) + n];
               }
-            else resu.addr()[N * (ne_tot + f) + n] -= inco.addr()[N * (ne_tot + f) + n];
+            else resu.addr()[N * (ne_tot + f) + n] += inco.addr()[N * (ne_tot + f) + n];
       }
 
   /* remplissage de flux_bords */
-  for (f = 0; f < zone.premiere_face_int(); f++) for (n = 0; n < N; n++) flux_bords_(f, n) = fs(f) * inco.addr()[N * (ne_tot + f) + n];
+  for (f = 0; f < zone.premiere_face_int(); f++) for (n = 0; n < N; n++) flux_bords_(f, n) = fs(f) * nu_fac(f) * inco.addr()[N * (ne_tot + f) + n];
 
   return resu;
 }
@@ -161,38 +169,44 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   //si on trouve Melange_Thermique_Aiguilles_PolyMAC dans les sources, alors on le laisse faire l'appel
   for (CONST_LIST_CURSEUR(Source) curseur(equation().sources()); curseur; ++curseur)
     if (curseur.valeur().que_suis_je() == "Melange_Thermique_Aiguilles_P0_PolyMAC") return;
-  contribuer_a_avec_mod(inco, matrice, la_zone_poly_.valeur().porosite_face());
+  contribuer_a_avec_mod(inco, matrice, NULL);
 }
 
 /* version permettant a Melange_Thermique_Aiguilles_PolyMAC de modifier certaines porosites aux faces */
-void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_Morse& matrice, const DoubleVect& pf_mod) const
+void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_Morse& matrice, const DoubleVect* fac_mod) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleVect& fs = zone.face_surfaces();
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
+  int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
+  assert(N_nu == 1 || N_nu == N);
 
-  remplir_nu_faces();
-  for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++) nu_faces.addr()[N * f + n] *= pf_mod(f);
+  remplir_nu(nu_), remplir_nu_fac();
+  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++) nu_fac.addr()[N * f + n] *= (*fac_mod)(f);
+
+  /* blocs superieurs de la matrice : divergence hors Neumann */
+  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4 && n < N; n++)
+        if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
+          matrice(N * e + n, N * (ne_tot + f) + n) += fs(f) * nu_fac(f) * (e == f_e(f, 0) ? 1 : -1);
 
   /* blocs inferieurs de la matrice : grad T = M2 / nu sauf si Neumann ou Echange_impose_base avec h = 0 */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4)
       {
-        /* grad T */
+        /* - grad T */
         for (n = 0; n < N; n++) if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
-            for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0) matrice(N * (ne_tot + f) + n, N * e + n) += (i ? 1 : -1) * fs(f);
-        /* m2 / nu */
+            for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0) matrice(N * (ne_tot + f) + n, N * e + n) -= (i ? 1 : -1) * fs(f) * nu_fac(f);
+        /* - m2 / nu */
         for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (n = 0, fb = zone.m2ji(i, 0); n < N; n++)
             if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
               {
-                double fac = zone.m2ci(i) / nu_faces.addr()[N * fb + n];
+                double fac = zone.m2ci(i) / nu_.addr()[N_nu > 1 ? N * zone.m2ji(i, 1) + n : zone.m2ji(i, 1)];
                 if (f == fb && (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2)) //si Echange_impose_base : on modifie le terme diagonal
                   fac = (ch.icl(f, 0) == 1) * fac + fs(f) / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-                matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += fac;
+                matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) -= fac;
               }
-            else matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += (f == fb); //Echange_impose_base avec h = 0 -> 1 sur la diagonale (comme Neumann)
+            else matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) -= (f == fb); //Echange_impose_base avec h = 0 -> 1 sur la diagonale (comme Neumann)
       }
 }
 

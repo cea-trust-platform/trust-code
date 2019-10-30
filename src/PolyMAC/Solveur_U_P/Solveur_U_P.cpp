@@ -61,7 +61,7 @@ Entree& Solveur_U_P::readOn(Entree& is )
 
 void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_base& la_zone,
                                                         const Zone_Cl_dis_base& la_zone_cl,
-                                                        Matrice_Morse& la_matrice, DoubleTab& secmem) ;
+                                                        Matrice_Morse& la_matrice, DoubleTab& inco, DoubleTab& secmem) ;
 
 
 
@@ -144,9 +144,6 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
   Matrice_global.get_bloc(0,0).typer("Matrice_Morse");
   Matrice_Morse& matrice=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,0).valeur());
-
-  // gradient.calculer(pression,gradP);
-  // resu -= gradP;
   eqnNS.dimensionner_matrice(matrice);
   eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
 
@@ -156,13 +153,14 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
     mat_grad.get_set_tab1()(i) = mat_grad.get_tab1()(i - 1);
   mat_div.set_nb_columns(n - 1);
 
-  DoubleTrav PP(ppart[0]);
   residu_parts[0]*=-1;
-  gradient.valeur().ajouter(PP,residu_parts[0]);
+  matrice.ajouter_multvect(current, residu_parts[0]);
+  gradient.valeur().ajouter(pression,residu_parts[0]);
   residu_parts[0]*=-1;
+  divergence.calculer(current, residu_parts[1]);
   modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(eqnNS.zone_dis().valeur(),
                                                      eqnNS.zone_Cl_dis(),
-                                                     matrice,residu_parts[0]) ;
+                                                     matrice, current, residu_parts[0]) ;
   /* int nb_f=current.dimension(0);
   int nnz=matrice.tab1_[nb_f]-1;
   matrice.dimensionner(nb_f,matrice.nb_colonnes(),nnz);
@@ -171,8 +169,8 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
 
   //Calcul de Uk = U*_k + U'k
-  ppart[0] = Inconnues_parts[1];
-  current  = Inconnues_parts[0];
+  ppart[0] += Inconnues_parts[1];
+  current  += Inconnues_parts[0];
   //current.echange_espace_virtuel();
   Debog::verifier("Solveur_U_P::iterer_NS current",current);
 

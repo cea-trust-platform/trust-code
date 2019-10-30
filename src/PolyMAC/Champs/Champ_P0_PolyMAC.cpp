@@ -183,10 +183,12 @@ DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
   const IntTab& f_e = zone.face_voisins();
   const Operateur_base& op_diff = equation().operateur(0).l_op_base(); //pour acceder a la diffusivite
   //si le champ est l'inconnue d'un probleme scalaire, alors les flux sont normalises par la diffusivite
-  const DoubleTab& src = valeurs(), *nu_f = (&equation().inconnue().valeur() == this && sub_type(Op_Diff_PolyMAC_base, op_diff)) ? &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu_faces() : NULL;
+  const DoubleTab& src = valeurs(), *nu = NULL, *nu_fac = NULL;
+  if (&equation().inconnue().valeur() == this && sub_type(Op_Diff_PolyMAC_base, op_diff))
+    nu = &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu(), nu_fac = &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu_fac();
 
   /* vals doit etre pre-dimensionne */
-  int i, j, e, f, n, nv, N = (src.nb_dim() == 1 ? 1 : src.dimension(1));
+  int i, j, e, f, n, nv, N = (src.nb_dim() == 1 ? 1 : src.dimension(1)), N_nu = nu ? nu->line_size() : 0;
   assert(dst.dimension(0) == zone.xv().dimension(0) && N == (dst.nb_dim() == 1 ? 1 : dst.dimension(1)));
   zone.init_m2();
 
@@ -194,9 +196,9 @@ DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
       {
         for (n = 0; n < N; n++) dst.addr()[N * f + n] += src.addr()[N * e + n] / nv;//partie "valeur en l'element"
         //partie "gradient" : avec les flux
-        if (src.dimension_tot(0) > zone.nb_elem_tot()) for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++) if (zone.m2ji(j, 1) == e) for (n = 0; n < N; n++)
+        if (src.dimension_tot(0) > zone.nb_elem_tot() && nu) for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++) if (zone.m2ji(j, 1) == e) for (n = 0; n < N; n++)
                 dst.addr()[N * f + n] -= (i ? -1 : 1) * src.addr()[N * (zone.nb_elem_tot() + zone.m2ji(j, 0)) + n] * zone.m2ci(j) / zone.face_surfaces(f)
-                                         * (nu_f && nu_f->addr()[N * f + n] > 1e-12 ? 1. / nu_f->addr()[N * f + n] : 0) / nv;
+                                         * (nu->addr()[N_nu > 1 ? N * e + n : e] > 1e-12 ? 1. / (nu->addr()[N_nu > 1 ? N * e + n : e] * (*nu_fac)(f)) : 0) / nv;
       }
   return dst;
 }

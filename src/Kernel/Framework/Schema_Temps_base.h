@@ -26,6 +26,7 @@
 #include <Ref_Probleme_base.h>
 #include <math.h>
 #include <DoubleTab.h>
+#include <Parser_U.h>
 
 class Equation;
 class Equation_base;
@@ -34,6 +35,7 @@ class Param;
 class DoubleTab;
 class Matrice_Base;
 class SFichier;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -240,6 +242,7 @@ public :
   } ;
   inline double& set_dt_max()
   {
+    dt_max_str_ = Nom(); //desactive la fonction dt_max = f(t)
     return dt_max_;
   } ;
   inline double& set_dt_sauv()
@@ -356,7 +359,9 @@ protected :
   int nb_pas_dt_max_;
   mutable int nb_impr_;
   double dt_min_;                        // Pas de temps min fixe par l'utilisateur
-  double dt_max_;                        // Pas de temps max fixe par l'utilisateur
+  mutable double dt_max_;                // Pas de temps max fixe par l'utilisateur
+  Nom dt_max_str_;                       //reglage de dt_max comme une fonction du temps
+  mutable Parser_U dt_max_fn_;           //Parser_U associe
   double dt_stab_;                // Pas de temps de stabilite
   double facsec_;
   double seuil_statio_;

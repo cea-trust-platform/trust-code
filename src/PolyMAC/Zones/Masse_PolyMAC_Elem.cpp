@@ -89,6 +89,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   int rCp = equation().que_suis_je() == "Conduction"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
+            || equation().que_suis_je().debute_par("Convection_Diffusion_Concentration")
             || equation().que_suis_je().debute_par("Equation_") // equations F5
             || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
 
@@ -126,16 +127,14 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces();
-  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
+  int e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
   const bool only_ne = (matrix.nb_lignes() == ne_tot);
 
   zone.init_m2(), ch.init_cl();
   IntTab indice(0,2);
   indice.set_smart_resize(1);
-  //partie superieure : diagonale (matrice de masse classique) et divergence
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0, indice.append_line(e, e); i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 && !only_ne; i++)
-      for (n = 0; n < N; n++) indice.append_line(N * e + n, N * (ne_tot + f) + n);
+  //partie superieure : diagonale
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) indice.append_line(N * e + n, N * e + n);
   //partie inferieure : partie diagonale pour les flux de faces imposes par CLs
   if (!only_ne) for (f = 0; f < zone.nb_faces(); f++)
       if (no_diff_ || (ch.icl(f, 0) > 2 && ch.icl(f, 0) < 5))
@@ -144,18 +143,20 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
   tableau_trier_retirer_doublons(indice);
   Matrix_tools::allocate_morse_matrix(N * (ne_tot + !only_ne * nf_tot), N * (ne_tot + !only_ne * nf_tot), indice, matrix);
 }
+
 DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   int e, f, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
 
   const Champ_Don& rho = equation().milieu().masse_volumique(), Cp = equation().milieu().capacite_calorifique();
   int rCp = equation().que_suis_je() == "Conduction"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
+            || equation().que_suis_je().debute_par("Convection_Diffusion_Concentration")
             || equation().que_suis_je().debute_par("Equation_") // equations F5
             || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
 
@@ -169,7 +170,7 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
     {
       for (f = 0; f < zone.nb_faces(); f++)
         if (ch.icl(f, 0) == 3) for (n = 0; n < N; n++)
-            secmem(N * (ne_tot + f) + n) = ref_cast(Neumann_paroi, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
+            secmem(N * e + n) -= fs(f) * (secmem(N * (ne_tot + f) + n) = ref_cast(Neumann_paroi, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n));
         else if (no_diff_ || ch.icl(f, 0) == 4)
           for (n = 0; n < N; n++) secmem(N * (ne_tot + f) + n) = 0;
     }
@@ -180,26 +181,23 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
-  int i, e, f, ne_tot = zone.nb_elem_tot(), n, N = ch.valeurs().line_size();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
+  int e, f, ne_tot = zone.nb_elem_tot(), n, N = ch.valeurs().line_size();
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
 
   const Champ_Don& rho = equation().milieu().masse_volumique(), Cp = equation().milieu().capacite_calorifique();
   int rCp = equation().que_suis_je() == "Conduction"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature"
             || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
+            || equation().que_suis_je().debute_par("Convection_Diffusion_Concentration")
             || equation().que_suis_je().debute_par("Equation_") // equations F5
             || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
 
   zone.init_m2(), ch.init_cl();
-  //partie superieure : diagonale et divergence
+  //partie superieure : diagonale
   for (e = 0; e < zone.nb_elem(); e++)
-    {
-      for (n = 0; n < N; n++) mat(N * e + n, N * e + n) += (rCp ? rho(e, 0) * Cp(e, 0) : 1) * pe(e) * ve(e) / dt; //diagonale
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
-          mat(N * e + n, N * (ne_tot + f) + n) += fs(f) * (e == f_e(f, 0) ? 1 : -1);
-    }
+    for (n = 0; n < N; n++) mat(N * e + n, N * e + n) += (rCp ? rho(e, 0) * Cp(e, 0) : 1) * pe(e) * ve(e) / dt; //diagonale
+
   //partie inferieure : 1 pour les flux imposes par CLs aux faces (si diffusion) ou pour toutes les faces (sinon)
   if (mat.nb_lignes() > N * ne_tot) for (f = 0; f < zone.nb_faces(); f++)
       if (no_diff_ || ch.icl(f, 0) == 3 || ch.icl(f, 0) == 4)

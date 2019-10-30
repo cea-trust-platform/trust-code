@@ -133,12 +133,14 @@ void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * m
 void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
                      double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
 {
-  Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
-  SolveurSys& le_solveur_ = param_eqn.solveur();
   converge = 1;
   if (nb_ite>1) return;
-
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
+  if (eqnNS.discretisation().que_suis_je() == "PolyMAC")
+    return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice);
+  Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
+  SolveurSys& le_solveur_ = param_eqn.solveur();
+
   DoubleTrav gradP(current);
   DoubleTrav correction_en_pression(pression);
   DoubleTrav resu(current);
@@ -229,20 +231,12 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (avancement_crank_==1)
     {
       //calcul de Un+1
-      if (eqnNS.discretisation().que_suis_je() == "PolyMAC") //dans PolyMAC, la correction en vitesse est deja calculee
-        {
-          eqnNS.assembleur_pression().valeur().corriger_vitesses(correction_en_pression, current);
-          correction_en_pression *= -1;
-        }
-      else
-        {
-          //Calcul de Bt(delta_t*delta_P)
-          gradient.valeur().multvect(correction_en_pression,gradP);
-          eqn.solv_masse().appliquer(gradP);
+      //Calcul de Bt(delta_t*delta_P)
+      gradient.valeur().multvect(correction_en_pression,gradP);
+      eqn.solv_masse().appliquer(gradP);
 
-          //Calcul de Un+1 = U* -delta_t*delta_P
-          current -= gradP;
-        }
+      //Calcul de Un+1 = U* -delta_t*delta_P
+      current -= gradP;
       current.echange_espace_virtuel();
       divergence.calculer(current,secmem);
 
@@ -377,4 +371,62 @@ void Implicite::first_special_treatment(Equation_base& eqn, Navier_Stokes_std& e
 void Implicite::second_special_treatment(Equation_base& eqn,DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice)
 {
   //nothing to do
+}
+
+//version PolyMAC de la fonction ci-dessus
+void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab& pression, double dt, Matrice_Morse& matrice)
+{
+  Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
+  SolveurSys& le_solveur_ = param_eqn.solveur();
+
+  Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
+  Operateur_Grad& op_grad = eqnNS.operateur_gradient();
+  Operateur_Div& op_div = eqnNS.operateur_divergence();
+
+  DoubleTrav dv(current), dP(pression); //corrections en vitesse / pression
+
+  /* etape de prediction : current <- v(0) ne verifiant pas div = 0 */
+  DoubleTrav secmem_NS(current), v_new(current);
+  op_grad.ajouter(pression, secmem_NS);
+  secmem_NS *= -1;
+  eqnNS.assembler_avec_inertie(matrice, current, secmem_NS);
+  le_solveur_.valeur().reinit();
+  le_solveur_.resoudre_systeme(matrice, secmem_NS, v_new);
+  v_new.echange_espace_virtuel();
+  /* on stocke le residu de cette resolution dans secmem_NS (x dt pour etre coherent avec la normalisation de matrice_pression) */
+  secmem_NS *= -1, matrice.ajouter_multvect(v_new, secmem_NS), secmem_NS *= -dt;
+
+  Matrice_Morse& mat_press_orig = ref_cast(Matrice_Morse, eqn.matrice_pression().valeur()), mat_press;
+
+  /* etapes de correction : current <- v(i) verifiant div = 0 mais approche pour NS, pression <- p(i) correspondant a v(i) */
+  for (int i = 0; i < 1; i++)
+    {
+      DoubleTrav sol_M(pression), secmem_M(pression);
+      /* resolution en (dt * dp(i), dv(i)) */
+      //second membre : divergence, NS
+      DoubleTab_parts p_sec(secmem_M), p_sol(sol_M), p_v(v_new), p_res(secmem_NS); //p_sec/sol[0] -> elements, p_sec/sol[1] -> faces
+      //bloc superieur : div v(i-1)
+      op_div.ajouter(v_new, p_sec[0]);
+      //bloc inferieur : residu de l'etape de prediction
+      p_sec[1] = 0;//p_res[0];
+
+      //matrice (sauf si avancement_crank_ == 1) : prise en compte des contributions des sources (et pas des operateurs!)
+      if (avancement_crank_ == 0)
+        {
+          mat_press = mat_press_orig, matrice.get_set_coeff() = 0;
+          eqn.sources().contribuer_a_avec(current, matrice);
+          for (int j = 0, off = p_sec[0].dimension_tot(0); j < p_sec[1].dimension(0); j++)
+            mat_press(off + j, off + j) += dt * matrice(j, j);
+          eqn.solveur_pression().valeur().reinit();
+        }
+
+      //resolution
+      Cerr << "PISO : |sec dp| < " << mp_max_vect(p_sec[0]) << " |sec dv| < " << mp_max_vect(p_sec[1]) << finl;
+      eqn.solveur_pression().resoudre_systeme(avancement_crank_ == 1 ? mat_press_orig : mat_press, secmem_M, sol_M);
+      //mises a jour : v^(i) = v^(i-1)+dv^(i), p^(i) = p^(i-1) + dp^(i)
+      Cerr << "PISO : |dp| < " << mp_max_vect(p_sol[0]) / dt << " |dv| < " << mp_max_vect(p_sol[1]) << finl;
+      p_v[0] += p_sol[1], sol_M /= dt, pression += sol_M;
+      v_new.echange_espace_virtuel(), pression.echange_espace_virtuel();
+    }
+  current = v_new;
 }

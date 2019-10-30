@@ -139,7 +139,7 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
   const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem();
   DoubleVect coef(zone.porosite_face());
   coef = 1.;
   int i, k, f, fb;
@@ -154,9 +154,9 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
     else if (ch.icl(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
     else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++)
         if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //vf calculee
-          secmem(f) += zone.m2ci(i) * pf(fb) * coef(f) * inco(fb) / dt;
+          secmem(f) += zone.m2ci(i) * pe(zone.m2ji(i, 1)) * coef(f) * inco(fb) / dt;
         else if (ch.icl(fb, 0) == 3) for (k = 0; k < dimension; k++) //Dirichlet
-            secmem(f) += zone.m2ci(i) * pf(fb) * coef(f) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), k) * nf(fb, k) / (fs(fb) * dt);
+            secmem(f) += zone.m2ci(i) * pe(zone.m2ji(i, 1)) * coef(f) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), k) * nf(fb, k) / (fs(fb) * dt);
 
   return secmem;
 }
@@ -165,7 +165,7 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const DoubleVect& pf = zone.porosite_face();
+  const DoubleVect& pe = zone.porosite_elem();
   DoubleVect coef(zone.porosite_face());
   coef = 1.;
   int i, a, f, fb, nf_tot = zone.nb_faces_tot();
@@ -178,7 +178,7 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   for (f = 0; f < zone.nb_faces(); f++) //vf imposee par CL
     if (ch.icl(f, 0) > 1) mat(f, f) = 1;
     else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //v(fb) calculee
-          mat(f, fb) += zone.m2ci(i) * coef(f) * pf(fb) / dt;
+          mat(f, fb) += zone.m2ci(i) * coef(f) * pe(zone.m2ji(i, 1)) / dt;
 
   //partie vorticites : diagonale si Op_Diff_negligeable
   if (mat.nb_lignes() > nf_tot) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)

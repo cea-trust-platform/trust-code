@@ -181,7 +181,7 @@ void Champ_Face_PolyMAC::init_ra() const
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const IntTab& a_f = zone.arete_faces();
   const DoubleTab& nf = zone.face_normales(), &ta = zone.ta(), &xs = zone.zone().domaine().coord_sommets(), &xa = dimension < 3 ? xs : zone.xa(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces();
   int i, j, k, f, fb, a;
 
   if (radeb.dimension(0)) return;
@@ -203,8 +203,8 @@ void Champ_Face_PolyMAC::init_ra() const
 
           //partie m2
           for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++) if (icl(fb = zone.m2ji(j, 0), 0) < 2) //vfb calcule
-              rami[fb] += sgn * zone.m2ci(j) * pf(fb) / fs(f);
-            else if (icl(fb, 0) == 3) for (k = 0; k < dimension; k++) ramf[fb][k] += sgn * zone.m2ci(j) * pf(fb) / fs(f) * nf(fb, k) / fs(fb);
+              rami[fb] += sgn * zone.m2ci(j) / fs(f);
+            else if (icl(fb, 0) == 3) for (k = 0; k < dimension; k++) ramf[fb][k] += sgn * zone.m2ci(j) / fs(f) * nf(fb, k) / fs(fb);
           //partie "bord" -> avec va si Neumann ou Symetrie, avec val_imp si Dirichlet_homogene
           if (icl(f, 0) == 1 || icl(f, 0) == 2)
             {

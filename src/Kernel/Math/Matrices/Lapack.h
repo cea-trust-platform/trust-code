@@ -111,6 +111,19 @@ extern "C"
                          );
   // FIN MODIF ELI LAUCOIN (19/03/2008)
 
+  void F77DECLARE(DSYEVD)(const char*   const, // JOBZ
+                          const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const double* const, // W
+                          const double* const, // WORK
+                          const int*    const, // LWORK
+                          const int*    const, // IORK
+                          const int*    const, // LIWORK
+                          const int*    const  // INFO
+                         );
+
 #else
 
   void F77DECLARE(dpbtrf)(const char* const, const int* const, const int* const, const double* const, const int* const, const int* const);
@@ -191,6 +204,19 @@ extern "C"
                           const int*    const  // INFO
                          );
   // FIN MODIF ELI LAUCOIN (19/03/2008)
+
+  void F77DECLARE(dsyevd)(const char*   const, // JOBZ
+                          const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const double* const, // W
+                          const double* const, // WORK
+                          const int*    const, // LWORK
+                          const int*    const, // IWORK
+                          const int*    const, // LIWORK
+                          const int*    const  // INFO
+                         );
 
 #endif
 }
