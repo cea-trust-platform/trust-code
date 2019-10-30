@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
+30/10/19 (TRUST)  New feature : PISO scheme now working with PolyMAC.
+30/10/19 (TRUST)  Bug fixed   : Several bug fixes for polyhedrons and PolyMAC discretisation. 
+30/10/19 (TRUST)  New feature : Time scheme: dt_max argument can now be a function of time (expression is parsed)
 25/10/19 (TRUST)  Major change: Turbulence features (turbulent problems, wall laws, turbulence models and associated boundary conditions) are moved from TRUST to TrioCFD baltik.
 21/10/19 (TRUST)  New feature : Face fields (e.g. temperature/velocity in VEF, velocity in VDF) may be written in MED files (may be visualized by Paraview not VisIt yet) 
 17/10/19 (TRUST)  New feature : Champ_Fonc_Fonction now supports multi-components. 
