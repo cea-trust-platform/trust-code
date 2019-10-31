@@ -12,4 +12,5 @@ clean:
 	@echo "cleaning..."
 	rm -rf XDATA   TRIOU/dist TRIOU/build XDATA.sh IHMTRIO.sh #*.log
 	rm -rf TRIOU/TRIOU_SRC/src #TRIOU/TRIOU_SRC/src/menu_* TRIOU/TRIOU_SRC/src/test_* TRIOU/TRIOU_SRC/src/triou.py
+	rm -rf XTriou/triouint.py  XTriou/triouint2.py
 	(cd XTriou; make clean)
