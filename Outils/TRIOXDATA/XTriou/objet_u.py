@@ -50,7 +50,7 @@ try:
         fileName="__sa__"+file_name_import
         try:
             xtree=self.xtree
-            print "sauvegarde de secours"
+            print("sauvegarde de secours")
             self.xtree.saveAs(fileName)
         except:
             pass
@@ -137,7 +137,7 @@ try:
             self.status=xtree.node.status
         else:
             if isinstance(xtree.parent.node,objet_u):
-                if xtree.name in xtree.parent.node.test_valid.keys():
+                if xtree.name in list(xtree.parent.node.test_valid.keys()):
                     if (xtree.parent.node.test_valid[xtree.name]!="Valid"):
                         not_ok=1
                         pass
@@ -215,7 +215,7 @@ def test_accolade(mot):
     " appele par read_data"
     if (mot!='{') and (mot!='}'):
         message="On attendait { ou } et non "+mot
-        print message
+        print(message)
         raise Exception(message)
     pass
 
@@ -235,9 +235,9 @@ def traite_trace(cls,mottest,mot):
             traite_trace(cls.__bases__[0],mottest,mot)
         else:
             if cls.readacc_==0:
-                print "read_val",cls.name_,lower(mottest)
+                print("read_val",cls.name_,lower(mottest))
             else:
-                print "read_val_spec",cls.name_,lower(mottest)
+                print("read_val_spec",cls.name_,lower(mottest))
                 pass
 
             pass
@@ -248,7 +248,7 @@ lutil=[]
 # marquage des objets utilises
 def ajout_test(titi):
     if (trace_active):
-        print "read_val",titi,'__init__'
+        print("read_val",titi,'__init__')
         pass
     if not titi in lutil:
         lutil.append(titi)
@@ -439,7 +439,7 @@ class objet_u(XObject):
                 pass
             pass
         if object_to_edit:
-            if name in object_to_edit.test_valid.keys():
+            if name in list(object_to_edit.test_valid.keys()):
                 if object_to_edit.test_valid[name]!="Valid":
                     ok=0
                     pass
@@ -519,7 +519,7 @@ class objet_u(XObject):
             pass
         if (attr==None):
             msg= mottest+" pas compris par "+getNameEn(self) + " mots compris "+str([ x.name_trio for x in listattr ])
-            print msg
+            print(msg)
             raise Exception("dans read_val "+msg)
         mot=attr.name
         traite_trace(self.__class__,mottest,mot)
@@ -554,7 +554,7 @@ class objet_u(XObject):
                 bloc=read_bloc(chaine2)
                 setattr(self,mot,bloc)
                 if mot!='bloc_lecture':
-                    print "a modifier", self.__class__,mottest,mot
+                    print("a modifier", self.__class__,mottest,mot)
                     pass
                 #cmd="self."+self.list_mot_[i]+"_=bloc"
                 # exec(cmd)
@@ -673,7 +673,7 @@ class objet_u(XObject):
             pass
         pr=getattr(self,mot)
         if 0:
-            print "non"
+            print("non")
         else:
             # try:
             # pr=self.list_val_[i]
@@ -718,18 +718,18 @@ class objet_u(XObject):
             cmd="cl2="+name_
             exec(cmd)
             if not issubclass(cl1,cl2):
-                print "Pb ",cl1," not asubclass of ",cl2
+                print("Pb ",cl1," not asubclass of ",cl2)
                 raise Exception("erreur de type")
             cmd="self="+type2_+"()"
             exec(cmd)
-            print "ERR",self.print_py(),self
+            print("ERR",self.print_py(),self)
 
             if len(chaine): chaine.pop(0)
             chsa=chaine
 
             self.read_data(chaine,niveau,listdata)
             chaine=chsa
-            print "ERR",self.print_py()
+            print("ERR",self.print_py())
             pass
         niveau=niveau+1
         listmot=(self.get_list_attr())
@@ -931,7 +931,7 @@ class objet_u(XObject):
                     #print type_val.xtypes[1]
                     if (isAttributeLink(attr)):
                     #  if (len(type_val.xtypes)==3)and isinstance(type_val.xtypes[1],XString):
-                        print " afaire"
+                        print(" afaire")
                         stri+=val.name_u
                     else:
                         stri=stri+val.print_lu()
@@ -1114,7 +1114,7 @@ class objet_u(XObject):
         if self.status!="Valid":
             global is_import_file
             if not is_import_file:
-                print msg
+                print(msg)
             if leve:
                 raise Exception(msg)
             pass
@@ -1144,12 +1144,12 @@ def trouve_class_list(mot,listclass):
     if ok !=1 :
         global is_import_file
         if not is_import_file:
-            print mot," pas trouve comme classe utilisateur, noms existants: ",
+            print(mot," pas trouve comme classe utilisateur, noms existants: ", end=' ')
             for cl in listclass:
                 if cl.name_u!="not_set":
-                    print  cl.name_u,
+                    print(cl.name_u, end=' ')
                 pass
-            print
+            print()
         raise Exception("pb dans trouve_class")
     return cl
 
@@ -1161,7 +1161,7 @@ def read_data_read(self,chaine,niveau,listclass=[]):
     cl=trouve_class_list(mot,listclass)
     #self.name_obj_=mot
     #self.obj_=cl
-    print "read ",cl.name_u,cl
+    print("read ",cl.name_u,cl)
     # on remet cl a la fin de la list
     listclass.remove(cl)
     listclass.append(cl)
@@ -1175,15 +1175,15 @@ def read_data_read(self,chaine,niveau,listclass=[]):
 
 def read_string(chaine):
     " lecture d'un string c.a.d \"rtoit otot\" et renvoie de la meme chose"
-    for i in xrange(1,len(chaine)):
+    for i in range(1,len(chaine)):
         if chaine[i][-1] == '"':
             break
         pass
     bloc=""
-    for ii in xrange(i+1):
+    for ii in range(i+1):
         bloc=bloc+chaine[ii]+" "
         pass
-    for ii in xrange(ii+1):
+    for ii in range(ii+1):
         chaine.pop(0)
         pass
     #chaine=chaine[i+1:]
@@ -1192,7 +1192,7 @@ def read_bloc(chaine):
     " lecture d'un bloc c.ad. soit un mot soit un bloc entre accolade"
     acc=1;
     # print chaine[0]
-    for i in xrange(1,len(chaine)):
+    for i in range(1,len(chaine)):
         if chaine[i] == '{':
             acc=acc+1
         elif chaine[i] == '}':
@@ -1203,10 +1203,10 @@ def read_bloc(chaine):
             pass
         pass
     bloc=""
-    for ii in xrange(i+1):
+    for ii in range(i+1):
         bloc=bloc+chaine[ii]+" "
         pass
-    for ii in xrange(i+1):
+    for ii in range(i+1):
         chaine.pop(0)
         pass
     #chaine=chaine[i+1:]
@@ -1229,7 +1229,7 @@ def read_bloc_comm_entier(c):
     z=c.index("*/")
     bloc=' '.join(c[:z])
     if "/*" in bloc:
-        print "non code"
+        print("non code")
         1/0
     c=c[z+1:]
     #    print "comm ",bloc, c
@@ -1242,7 +1242,7 @@ def retire_new(c):
     for i in range(len(c)):
         if (lower(c[i])=='new'):
 
-            print "on retire new"
+            print("on retire new")
             c[i]=c[i+1]
             c[i+1]=c[i+2]
             c[i+2]='lire'
@@ -1259,7 +1259,7 @@ def modifie_ordre(listclass,mtype1,mtype2):
         cmd="type2="+mtype2
         exec(cmd)
     except:
-        print mtype1," ou ",mtype2," inconnus..."
+        print(mtype1," ou ",mtype2," inconnus...")
         return
     listpbsol=[]
     listpbf=[]
@@ -1401,7 +1401,7 @@ def lire_fichier(name):
     return c,d,listcomm
 def read_file_data(name):
     " lit le jdd de nom name et renvoie la liste des classes"
-    print "read_file_data",name
+    print("read_file_data",name)
     listclass=[]
 
     c,d,listcomm=lire_fichier(name)
@@ -1422,7 +1422,7 @@ def read_file_data(name):
         fichier_lu=0
         if ((mot=='lire_fichier')or (mot=='read_file') )and (c[2]==';'):
             try:
-                print 'lecture de',c[1]
+                print('lecture de',c[1])
                 new_chaine,dd,listcomm2=lire_fichier(c[1])
                 l=c[3:]
                 # ouhps si commentaire dans lire_fichier c est faux !!!
@@ -1432,7 +1432,7 @@ def read_file_data(name):
                 # on remet le fin pour decaler
                 fichier_lu=1
             except:
-                print "fichier pas encore existant ? "
+                print("fichier pas encore existant ? ")
             pass
         if fichier_lu==0:
             if len(c): c.pop(0)
@@ -1444,7 +1444,7 @@ def read_file_data(name):
                 exec(cmd)
                 pass
             except:
-                print cmd, " impossible"
+                print(cmd, " impossible")
                 raise Exception("pb")
             niv=0
 
@@ -1602,7 +1602,7 @@ def traite_naif(aa):
                     a[i+1]='__NL__'
                 if i+1>=len(a)-1:
                     i-=1;
-                    print " il manque un # ?"
+                    print(" il manque un # ?")
                     break;
                 i+=1
                 pass
@@ -1610,17 +1610,17 @@ def traite_naif(aa):
             listcomm.append(lena-i)
             # print "OKKKKKKKKKKK",a[i]
         elif (mot=='##'):
-            print "pas gere .... ";1/0
-            while (a[i+1]!="end##"): i+=1;print i,"dans ##",a[i]
+            print("pas gere .... ");1/0
+            while (a[i+1]!="end##"): i+=1;print(i,"dans ##",a[i])
             i+=1
-            print "okkk",a[i],"okk"
+            print("okkk",a[i],"okk")
         elif (mot=="/*"):
             listcomm.append(lena-i)
             acc=1
             while(acc!=0):
                 if i+1>=len(a):
                     i-=1;
-                    print " il manque un */ ?"
+                    print(" il manque un */ ?")
                     break;
 
                 te=a[i+1]
@@ -1643,7 +1643,7 @@ def traite_naif(aa):
     return a,c,listcomm
 def write_file_data(name,listclass):
     " ecrit le jdd dans name "
-    print "write_file_data ", name
+    print("write_file_data ", name)
     s=open(name,'w')
     # on initialise le flag d'ecriture
     listech=[]
@@ -1663,7 +1663,7 @@ def write_file_data(name,listclass):
                 pass
             pass
         else:
-            print c
+            print(c)
             throw("pas une classe objet_u ?????")
     for c in listclass:
         # is_associate=isinstance(c,associate)
@@ -1693,7 +1693,7 @@ def write_file_data(name,listclass):
 
 def write_file_python(name,listclass):
     " ecrit les classes dans un fichier python"
-    print "write_file_python ", name
+    print("write_file_python ", name)
     s=open(name,'w')
     s.write('from triou import *\n')
     #s.write('listclass=[]\n')
@@ -1714,7 +1714,7 @@ def write_file_python(name,listclass):
             if nm in list_nom:
                 nm+="_"+str(i)
                 pass
-            if nm in dicoclass.values() or nm=="in":
+            if nm in list(dicoclass.values()) or nm=="in":
                 nm+="_i"
                 pass
             pass
@@ -1816,7 +1816,7 @@ class listobj_impl(objet_u):
                 cmd="cl2="+self.__class__.class_type
                 exec(cmd)
                 if not issubclass(cl1,cl2):
-                    print "Pb ",cl1," not asubclass of ",cl2
+                    print("Pb ",cl1," not asubclass of ",cl2)
                     raise Exception("erreur de type")
                 cmd=newob+"="+type2_+"()"
             else:
@@ -1840,7 +1840,7 @@ class listobj_impl(objet_u):
                     if chaine[0]!='}':
                         message="erreur dans la lecture de "+self.__class__.name_
                         message+='\n on attendait , ou } et non '+chaine[0]
-                        print message
+                        print(message)
                         raise Exception(message)
                     pass
                 pass
@@ -1923,13 +1923,13 @@ def trouve_base(name):
     " renvoie la classe de base de name -> ne sert plus"
     # print dir()
     i=0
-    for l in dicobases.values():
+    for l in list(dicobases.values()):
         if name in l:
-            return dicobases.keys()[i]
+            return list(dicobases.keys())[i]
         i=i+1
         pass
     msg=name+" not in dico"
-    print "dico",dicobases
+    print("dico",dicobases)
     raise Exception(msg)
 pass
 
@@ -1962,7 +1962,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
 
     if (doc_gen[name] == 1) :
         if debug:
-            print "la doc de ",name," a deja ete genere"
+            print("la doc de ",name," a deja ete genere")
             pass
         niveau-=1
         return ""
@@ -1981,7 +1981,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     clname=icl.name_trio_
     vrai_name_=icl.name_
     if debug:
-        print "gen_doc name",name
+        print("gen_doc name",name)
         pass
 
     # generation de l'entete tstr contient le debut
@@ -2005,7 +2005,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         pass
         pass
 
-    if clname in dicobases.keys(): # si c'est une section, je ferme l'accolade laissee ouverte
+    if clname in list(dicobases.keys()): # si c'est une section, je ferme l'accolade laissee ouverte
         if name!='methode_loi_horaire':
             tstr+='\label{'+replace(name,'_','')+'}'+"}\n"
         else:
@@ -2018,7 +2018,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         tstr=tstr+' \index{'+clname+'} '
         pass
     tstra=""
-    if clname not in dicobases.keys():
+    if clname not in list(dicobases.keys()):
         # if name != vrai_name_:
         tstra = "\subsection{"+clname+"\label{"+replace(name,'_','')+"} }\n"
         pass
@@ -2029,9 +2029,9 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         pass
     # a t on un syno
 
-    if clname in synonyme.values():
+    if clname in list(synonyme.values()):
 
-        for k in synonyme.keys():
+        for k in list(synonyme.keys()):
             if synonyme[k]==clname:
                 tstra+="Synonymous: { \\bf "+ k   + ' } \index{  '+k +'  } \\newline \\newline  \n'
                 break
@@ -2107,7 +2107,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr+=" \} "
             pass
 
-        type="\n\nlist of { \it "+dicoclass.keys()[dicoclass.values().index(icl.class_type)]+"}"
+        type="\n\nlist of { \it "+list(dicoclass.keys())[list(dicoclass.values()).index(icl.class_type)]+"}"
         type2=icl.class_type
         tstr+=type+" (\\ref{"+replace(type2,'_','')+"})"
         if icl.virgule:
@@ -2157,7 +2157,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             elif issubclass(icl,objet_lecture):
                 if icl.name_trio_!='':tstr=tstr+clname+" "
             else:
-                if  icl.name_trio_=='': print "objet lecture???? ",clname,icl.name_trio_
+                if  icl.name_trio_=='': print("objet lecture???? ",clname,icl.name_trio_)
                 tstr+=clname+" obj\nLire obj "
                 pass
             tstr+="\{  "
@@ -2272,10 +2272,10 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
 
             gen_ref=1
             try:
-                strtype=dicoclass.keys()[dicoclass.values().index(stype2)]
+                strtype=list(dicoclass.keys())[list(dicoclass.values()).index(stype2)]
             except:
                 if stype2=="list":
-                    print "list non code", xattr.name,stype2,name,stype
+                    print("list non code", xattr.name,stype2,name,stype)
                     raise Exception("on ne doit plus passer la")
 
                 # print "pas dans dico" , stype
@@ -2369,10 +2369,10 @@ def gen_doc_base(fr=1):
     for  cla in  getXClasses():
         listxc.append(cla.name_)
         pass
-    for cla in dicoclass.values():
+    for cla in list(dicoclass.values()):
         doc_gen[cla]=0
         if not cla in listxc:
-            print cla,"not in listxc"
+            print(cla,"not in listxc")
         pass
     s1=open('doc.tex','w')
 
@@ -2440,7 +2440,7 @@ Here is a list of post-processable fields, but it is not the only ones.
 
 
     l=[]
-    for name in dicobases.keys():
+    for name in list(dicobases.keys()):
         if lutil:
             # on verifie qu'au moins une classe fille est dans lutil
 
@@ -2451,7 +2451,7 @@ Here is a list of post-processable fields, but it is not the only ones.
 
             for cl in dicobases[name]:
                 if cl in lutil:
-                    print name
+                    print(name)
                     l.append(name)
                     break
                 pass
@@ -2487,7 +2487,7 @@ Here is a list of post-processable fields, but it is not the only ones.
         tstr="\section{"
         if (fr==1):
             # faux!!!
-            tstr=tstr+dicoclass.keys()[dicoclass.values().index(name)]
+            tstr=tstr+list(dicoclass.keys())[list(dicoclass.values()).index(name)]
             #tstr=tstr+dicoclass[name]
         else:
             tstr=tstr+name
@@ -2498,10 +2498,10 @@ Here is a list of post-processable fields, but it is not the only ones.
         try:
             tstr=tstr+gen_doc(namecl,doc_gen,fr,lutil)
         except:
-            print "generation de la doc de "+name+" rate"
+            print("generation de la doc de "+name+" rate")
             gen_doc(namecl,doc_gen,fr,lutil)
             raise Exception("doc rate")
-        print"gen_doc_base ",name
+        print("gen_doc_base ",name)
         for l in dicobases[name]:
             # print "l",l
             if l!=name:
@@ -2524,7 +2524,7 @@ Here is a list of post-processable fields, but it is not the only ones.
         for cla in getXClasses():
             cl=cla.name_
             if cl not in lutil:
-                print "La doc pour ",cl," n a pas ete genere"
+                print("La doc pour ",cl," n a pas ete genere")
                 pass
             pass
 
@@ -2532,10 +2532,10 @@ Here is a list of post-processable fields, but it is not the only ones.
 
 def copy(a):
     " renvoie une copie de a"
-    print "copy deb"
+    print("copy deb")
     cmd="c="+a.print_py()
     exec(cmd)
-    print "copy fin"
+    print("copy fin")
     return c
 
 def change_type(inst,new_type):
@@ -2557,14 +2557,14 @@ def change_type(inst,new_type):
                 pass
             pass
         else:
-            print "sauvegarde", attr
+            print("sauvegarde", attr)
             setattr(pr,"saattr_"+attr,getattr(inst,attr))
             pass
         pass
     for attr in list2:
         if attr not in list1:
             if hasattr(inst,"saattr_"+attr):
-                print "recup sauvegarde",attr
+                print("recup sauvegarde",attr)
                 setattr(pr,attr,getattr(inst,"saattr_"+attr))
                 pass
             pass
@@ -2576,9 +2576,9 @@ def change_type(inst,new_type):
             listm2.append(mot)
             pass
         pass
-    print "listm2",listm2
+    print("listm2",listm2)
     for mot in listm2:
         setattr(pr,mot,getattr(inst,mot))
         pass
-    print pr.print_py()
+    print(pr.print_py())
     return pr

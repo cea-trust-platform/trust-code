@@ -62,11 +62,11 @@ class ExportImportObject(XObject):
         ]
 
     def ImportDataFile(self, study, fileName):
-        print study, fileName
+        print(study, fileName)
         try:
             from triou import read_file_data
             listclass = read_file_data( fileName )
-            print listclass
+            print(listclass)
             from xsalome import python2corba
             from TRIOU_Extension import getEngine
             engine = getEngine()
@@ -74,20 +74,20 @@ class ExportImportObject(XObject):
             for obj in listclass:
                 cobj = python2corba(obj, engine)
                 cls = obj.__class__.__name__
-                if not amap.has_key( cls ):
+                if cls not in amap:
                     amap[ cls ] = 0
                 amap[ cls ] = amap[ cls ] + 1
                 name = cls + "_" + str(amap[ cls ])
                 study_to_cls_to_name_map[ study._get_StudyId() ] = amap
                 engine.PublishInStudy(study, None, cobj, name)
             return 1
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             pass
         return 0
 
     def ExportDataFile(self, study, fileName):
-        print study, fileName
+        print(study, fileName)
         try:
             from xsalome import corba2python
             listclass = []
@@ -107,8 +107,8 @@ class ExportImportObject(XObject):
             from triou import write_file_data
             write_file_data( fileName, listclass )
             return 1
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             pass
         return 0
     pass

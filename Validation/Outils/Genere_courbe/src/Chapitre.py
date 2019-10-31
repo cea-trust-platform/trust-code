@@ -46,18 +46,18 @@ class Chapitre:
 
     #lecture des parametres du chapitre dans le fichier de parametres
     def printFichierParametres(self,indice):
-        print "Chapitre {"
+        print("Chapitre {")
         dec='\t'
-        if self.titre != 'Undefined' : print dec,"titre" ,self.titre
+        if self.titre != 'Undefined' : print(dec,"titre" ,self.titre)
 
         print_description(self.description,dec)
 
         for fig in self.listeFigures :
-            print dec,"# definition figure %d"%(indice)
+            print(dec,"# definition figure %d"%(indice))
             fig.printFichierParametres()
             indice += 1
             pass
-        print "}"
+        print("}")
         return indice
     def lireParametres(self, fichier,casTest):
         '''Lecture des parametres du chapitre.'''
@@ -103,7 +103,7 @@ class Chapitre:
                     pass
                 else:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR,'Chapter', dico,motcle_lu,fichier=fichier)
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
     #generation des graphiques correspondant aux figures du chapitre
     def genererGraphes(self, dest, indice,debug_figure,novisit):

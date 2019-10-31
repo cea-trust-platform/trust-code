@@ -41,7 +41,7 @@ class TailFileWidget(QDockWidget):
     def onRunButton(self):
         """ Start the run
         """
-        print "*fg* TailFileWidget.onRunButton"
+        print("*fg* TailFileWidget.onRunButton")
         if self._longcaseName == "":
             return
         run_TRUST(self._longcaseName)
@@ -57,11 +57,11 @@ class TailFileWidget(QDockWidget):
             with open(stopFile, "w") as f:
                 f.write("1\n")
         except IOError:
-            print "Could not write into stop file ..."
+            print("Could not write into stop file ...")
 
     @Slot()
     def onCaseChanged(self):
-        print "*fg* TailFileWidget onCaseChanged"
+        print("*fg* TailFileWidget onCaseChanged")
         self.tryLoadFile(self.outTextEdit, ".out")
         self.tryLoadFile(self.errTextEdit, ".err")
 

@@ -26,13 +26,13 @@ def modifie_nom(file,format):
             Fam=mesh.getFamily(typ,fam+1)
             fam_name=Fam.getName()
             from string import split
-            print fam_name
+            print(fam_name)
             fam_morceaux=split(fam_name,"_")
             fam_name_new=fam_morceaux[2]
             for morc in fam_morceaux[3:]:
                 fam_name_new+="_"+morc
             if (fam_name_new!=fam_name):
-                print fam_name,"->" ,fam_name_new
+                print(fam_name,"->" ,fam_name_new)
                 pass
             Fam.setName(fam_name_new)
             pass
@@ -67,7 +67,7 @@ def write_pour_trio(tetra,name,format="med21",tolerance=1.e-5):
     tetra_edit = tetra_mesh.GetMeshEditor()
 
     tetra_noeuds = tetra_edit.FindCoincidentNodes(tolerance )
-    print "noeuds coincidants ", tetra_noeuds
+    print("noeuds coincidants ", tetra_noeuds)
     tetra_edit.MergeNodes(tetra_noeuds)
     domname=name[:-4]
     f=open(domname+".data","w")

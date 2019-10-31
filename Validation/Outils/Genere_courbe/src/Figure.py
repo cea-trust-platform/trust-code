@@ -61,35 +61,35 @@ class Figure:
         pass
     def printFichierParametres(self):
         dec='\t'
-        print dec,"Figure {"
+        print(dec,"Figure {")
         dec='\t\t'
-        if self.titre != 'Undefined': print dec,"titre", self.titre
-        if self.titre_figure != 'Undefined': print dec,"titre_figure", self.titre_figure
+        if self.titre != 'Undefined': print(dec,"titre", self.titre)
+        if self.titre_figure != 'Undefined': print(dec,"titre_figure", self.titre_figure)
         print_description(self.description,dec)
 
-        if self.dimension != 2 : print dec,"dimension", self.dimension
+        if self.dimension != 2 : print(dec,"dimension", self.dimension)
         from string import join
-        if self.rangeX != 'auto' : print dec,"rangeX", self.rangeX
-        if self.rangeY != 'auto' : print dec,"rangeY", self.rangeY
-        if self.labelX != 'Undefined' : print dec,"labelX", self.labelX
-        if self.labelY != 'Undefined' : print dec,"labelY", self.labelY
-        if self.logX != False : print dec,"logX", self.logX
-        if self.logY != False : print dec,"logY", self.logY
-        if self.format != 'png' : print dec,"format", self.format
-        if self.pointSize != 'Undefined' : print dec,"pointSize", self.pointSize
-        if self.legende != 'Undefined' : print dec,"legende", self.legende
-        if self.grid != 'Undefined' : print dec,"grid", self.grid
-        if self.xtics != 'Undefined' : print dec,"xtics", self.xtics
-        if self.ytics != 'Undefined' : print dec,"ytics", self.ytics
+        if self.rangeX != 'auto' : print(dec,"rangeX", self.rangeX)
+        if self.rangeY != 'auto' : print(dec,"rangeY", self.rangeY)
+        if self.labelX != 'Undefined' : print(dec,"labelX", self.labelX)
+        if self.labelY != 'Undefined' : print(dec,"labelY", self.labelY)
+        if self.logX != False : print(dec,"logX", self.logX)
+        if self.logY != False : print(dec,"logY", self.logY)
+        if self.format != 'png' : print(dec,"format", self.format)
+        if self.pointSize != 'Undefined' : print(dec,"pointSize", self.pointSize)
+        if self.legende != 'Undefined' : print(dec,"legende", self.legende)
+        if self.grid != 'Undefined' : print(dec,"grid", self.grid)
+        if self.xtics != 'Undefined' : print(dec,"xtics", self.xtics)
+        if self.ytics != 'Undefined' : print(dec,"ytics", self.ytics)
 
 
-        if self.inclureDescCourbes != 1 : print dec,"inclureDescCourbes", self.inclureDescCourbes
-        if self.image != 'Undefined' : print dec,"image", self.image
-        if self.width != "15cm" : print dec,"width", self.width
-        if self.nb_img_without_newline!=-1: print dec, "nb_img_without_newline",self.nb_img_without_newline
+        if self.inclureDescCourbes != 1 : print(dec,"inclureDescCourbes", self.inclureDescCourbes)
+        if self.image != 'Undefined' : print(dec,"image", self.image)
+        if self.width != "15cm" : print(dec,"width", self.width)
+        if self.nb_img_without_newline!=-1: print(dec, "nb_img_without_newline",self.nb_img_without_newline)
         dec='\t'
         for courbe in self.listeCourbes  : courbe.printFichierParametres()
-        print dec,"}"
+        print(dec,"}")
         pass
     #lecture des parametres de la figure dans le fichier de parametres
     def lireParametres(self, fichier):
@@ -169,7 +169,7 @@ class Figure:
                     self.ratio = valeur
                 else:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Figure', dico,motcle_lu,fichier=fichier)
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
         if self.image!='Undefined' and len(self.listeCourbes)>0:
             self.gestMsg.ecrire(GestionMessages._ERR, 'Warning : a figure can not contain a picture AND plots ! (Problem figure "%s")' % self.titre)
@@ -267,7 +267,7 @@ class Figure:
                 ficPlot.write('set terminal fig color\n')
                 self.fichierGraphique = 'fic%03d.fig' % (indice)
             else:
-                print "No output format selected for gnuplot !"
+                print("No output format selected for gnuplot !")
                 sys.exit(-1)
             self.fichierGraphiqueComplet = dest + '/' + self.fichierGraphique
             ficPlot.write('set output "%s"\n' % (self.fichierGraphiqueComplet))
@@ -285,7 +285,7 @@ class Figure:
 
                     os.system(cmd)
                     cmd='epstopdf %s'%(self.fichierGraphiqueComplet.replace('.tex','.eps'))
-                    print cmd
+                    print(cmd)
                     os.system(cmd)
                 #       raise "000"
                     pass
@@ -298,7 +298,7 @@ class Figure:
             # warning juste, car on peut la generer plus tard
 
             if (not os.path.isfile(self.image)):
-                print "No such file or directory:",self.image
+                print("No such file or directory:",self.image)
                 pass
         pass
 
@@ -341,7 +341,7 @@ class Figure:
                     pass
                 pass
             pass
-        print "on a ajoute ",len(newc) ," courbes"
+        print("on a ajoute ",len(newc) ," courbes")
         for c in newc:
             self.listeCourbes.append(c)
             pass

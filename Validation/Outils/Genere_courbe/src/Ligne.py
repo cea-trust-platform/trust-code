@@ -52,23 +52,23 @@ tracee dans le rapport de validation de TRUST.'''
         pass
     def printFichierParametres(self):
         dec='\t\t'
-        print dec,"Ligne {"
+        print(dec,"Ligne {")
         dec='\t\t\t'
         print_description(self.description,dec)
 
-        if self.legende != 'Undefined' : print dec,"legende",self.legende
-        if self.alias != None : print dec,"alias",self.alias
-        if self.origine != 'trio_u' : print dec,"origine",self.origine
-        if self.version != 'Undefined' : print dec,"version",self.version
-        if self.fichier != 'Undefined' : print dec,"fichier",self.fichier
-        if self.valeurs != 'Undefined' : print dec,"valeurs", self.valeurs
-        if self.difference != 'Undefined' : print dec,"difference",self.difference
-        if self.derniere_ligne != 0 : print dec, "derniere_ligne"
-        if self.afficher_ligne != 1 : print dec,"afficher_ligne",self.afficher_ligne
-        if self.colonnes != None : print dec,"colonnes",self.colonnes
-        if self.nb_colonnes_fichier != None : print dec,"nb_colonnes_fichier",self.nb_colonnes_fichier
+        if self.legende != 'Undefined' : print(dec,"legende",self.legende)
+        if self.alias != None : print(dec,"alias",self.alias)
+        if self.origine != 'trio_u' : print(dec,"origine",self.origine)
+        if self.version != 'Undefined' : print(dec,"version",self.version)
+        if self.fichier != 'Undefined' : print(dec,"fichier",self.fichier)
+        if self.valeurs != 'Undefined' : print(dec,"valeurs", self.valeurs)
+        if self.difference != 'Undefined' : print(dec,"difference",self.difference)
+        if self.derniere_ligne != 0 : print(dec, "derniere_ligne")
+        if self.afficher_ligne != 1 : print(dec,"afficher_ligne",self.afficher_ligne)
+        if self.colonnes != None : print(dec,"colonnes",self.colonnes)
+        if self.nb_colonnes_fichier != None : print(dec,"nb_colonnes_fichier",self.nb_colonnes_fichier)
         dec='\t\t'
-        print dec,"}"
+        print(dec,"}")
         pass
     #lecture des parametres de la ligne dans le fichier de parametres
     def lireParametres(self, fichier):
@@ -115,7 +115,7 @@ tracee dans le rapport de validation de TRUST.'''
                 else:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Line', dico,motcle_lu,fichier=fichier)
                     pass
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
                 pass
             pass
         if not(self.alias): self.alias=self.legende.replace(' ','_').replace('"','')
@@ -125,7 +125,7 @@ tracee dans le rapport de validation de TRUST.'''
         val={}
         if self.valeurs!='Undefined':
             valeur_f= self.valeurs.split()
-            for i in xrange(len(valeur_f)):
+            for i in range(len(valeur_f)):
                 try:
                     valeur_f[i]=eval(valeur_f[i])
                 except:
@@ -139,7 +139,7 @@ tracee dans le rapport de validation de TRUST.'''
         elif self.fichier!='Undefined':
             #print "lire_valeur dans",self.fichier
             if not os.path.isfile(self.fichier):
-                print "File not found ",self.fichier
+                print("File not found ",self.fichier)
                 pass
             file=open(self.fichier,'r')
             nb_colonnes_f=nb_colonnes
@@ -152,7 +152,7 @@ tracee dans le rapport de validation de TRUST.'''
                     #print "uu",content_file[last+1:]
                     content_file=content_file[last+1:]
                     if self.verbose>1:
-                        print "Last line of ",self.fichier,":\n %s#"%content_file
+                        print("Last line of ",self.fichier,":\n %s#"%content_file)
                         pass
                     pass
                 content_file=content_file.split()
@@ -209,7 +209,7 @@ tracee dans le rapport de validation de TRUST.'''
                         cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j)
                         exec(cmd)
                         pass
-                    for key in dico.keys():
+                    for key in list(dico.keys()):
                         cmd="formule=formule.replace(\"%s.val\",\"dico[\'%s\']\")"%(key,key)
                         exec( cmd)
                         pass
@@ -261,20 +261,20 @@ tracee dans le rapport de validation de TRUST.'''
         pass
     def printFichierParametres(self):
         dec='\t\t'
-        print dec,"Lignes {"
+        print(dec,"Lignes {")
         dec='\t\t\t'
         print_description(self.description,dec)
 
-        if self.origine != 'trio_u' : print dec,"origine",self.origine
-        if self.fichier != 'Undefined' : print dec,"fichier",self.fichier
-        if self.numero_premiere_ligne != -1 : print dec, "numero_premiere_ligne",self.numero_premiere_ligne
+        if self.origine != 'trio_u' : print(dec,"origine",self.origine)
+        if self.fichier != 'Undefined' : print(dec,"fichier",self.fichier)
+        if self.numero_premiere_ligne != -1 : print(dec, "numero_premiere_ligne",self.numero_premiere_ligne)
 
-        if self.numero_derniere_ligne != -1 : print dec, "numero_derniere_ligne",self.numero_derniere_ligne
-        if self.afficher_ligne != 1 : print dec,"afficher_ligne",self.afficher_ligne
-        if self.nb_colonnes_fichier != None : print dec,"nb_colonnes_fichier",self.nb_colonnes_fichier
-        if self.colonnes != None : print dec,"colonnes",self.colonnes
+        if self.numero_derniere_ligne != -1 : print(dec, "numero_derniere_ligne",self.numero_derniere_ligne)
+        if self.afficher_ligne != 1 : print(dec,"afficher_ligne",self.afficher_ligne)
+        if self.nb_colonnes_fichier != None : print(dec,"nb_colonnes_fichier",self.nb_colonnes_fichier)
+        if self.colonnes != None : print(dec,"colonnes",self.colonnes)
         dec='\t\t'
-        print dec,"}"
+        print(dec,"}")
         pass
     #lecture des parametres de la ligne dans le fichier de parametres
     def lireParametres(self, fichier):
@@ -313,7 +313,7 @@ tracee dans le rapport de validation de TRUST.'''
                 else:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Lines', dico,motcle_lu,fichier=fichier)
                     pass
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
                 pass
             pass
         pass
@@ -323,7 +323,7 @@ tracee dans le rapport de validation de TRUST.'''
         if self.fichier!='Undefined':
             #print "lire_valeur dans",self.fichier
             if not os.path.isfile(self.fichier):
-                print "File not found ",self.fichier
+                print("File not found ",self.fichier)
                 pass
             file=open(self.fichier,'r')
             nb_colonnes_f=nb_colonnes+1
@@ -356,7 +356,7 @@ tracee dans le rapport de validation de TRUST.'''
                     pass
 
                 nb_lignes=derniere-premiere+1
-                print nb_lignes,"lignes  a lire "
+                print(nb_lignes,"lignes  a lire ")
                 for ll in range(nb_lignes):
                     split_content_file=content_file.split()
                     for k in range(nb_colonnes_f):

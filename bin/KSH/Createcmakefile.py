@@ -33,7 +33,7 @@ def read_libs_from_makeliba():
             list2.append(L)
             pass
         pass
-    print "libdeptrio ",libtrio
+    print("libdeptrio ",libtrio)
     out=open(os.getenv("TRUST_ENV")+"/Cmake.libs","w")
 
     out.write('SET (list_path_libs '+' '.join(list1)+')\n')
@@ -401,7 +401,7 @@ ENDIF(NOT ATELIER)
 ''')
 
 
-    print "libtrio ",listlib
+    print("libtrio ",listlib)
     pass
 
 

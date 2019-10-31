@@ -66,13 +66,13 @@ def get_tmax(cas):
     from string import atof
     tmax=atof(split(ligne," ")[0])
     dt_ev.close()
-    print " on coupe le calcul a ",tmax, int(nb/2)
+    print(" on coupe le calcul a ",tmax, int(nb/2))
     if (tmax==0.):
         raise Exception("tmax vaut zero")
     return tmax,int(nb/2)
 if __name__=='__main__':
     import sys
-    print "decoup_cas.py cas.data [format ]"
+    print("decoup_cas.py cas.data [format ]")
     cas=sys.argv[1]
     tmax,nb_max=get_tmax(cas)
 

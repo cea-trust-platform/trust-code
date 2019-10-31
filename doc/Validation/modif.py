@@ -5,7 +5,7 @@ def get_const(cl,name):
         return None
     if (mu):
         return getattr(mu,"val")[0]
-    print name,"ici"
+    print((name,"ici"))
     return mu
 
 def modif_fluide(cl,l):
@@ -54,7 +54,7 @@ def modif_fluide(cl,l):
     return flqc
 
 def modif_keps(eq1,rho):
-    print "coucou"
+    print("coucou")
     mod=eq1.modele_turbulence
     if (isinstance(mod,k_epsilon)):
         eq_t=mod.transport_k_epsilon
@@ -69,7 +69,7 @@ def modif_keps(eq1,rho):
                 cl.ch.val[0]*=rho
                 cl.ch.val[1]*=rho
             except:
-                print "CL sur K_eps non multiplie par rho ",cl.name_trio_,cla.bord
+                print(("CL sur K_eps non multiplie par rho ",cl.name_trio_,cla.bord))
                 pass
             pass
 
@@ -97,7 +97,7 @@ def changer_seuil_solveur_et_efstab(eq_hydro,rho):
     solv=eq_hydro.solveur_pression
     try:
         solv.seuil*=rho
-        print "on modifie le seuil de pression, maintenant: ", solv.seuil , "multiplication par rho",rho
+        print(("on modifie le seuil de pression, maintenant: ", solv.seuil , "multiplication par rho",rho))
 
     except:
         pass
@@ -110,13 +110,13 @@ def modif(l):
     new_ll=[]
     for cl in l:
         if (isinstance(cl,fluide_incompressible)):
-            print cl,"fluide"
+            print((cl,"fluide"))
             flqc=modif_fluide(cl,l)
             new_ll.append(flqc)
             rho=get_const(cl,"rho") # pour calculer Pimp
             pass
         elif  (isinstance(cl,pb_hydraulique) or isinstance(cl,pb_thermohydraulique) ):
-            print cl,"pb"
+            print((cl,"pb"))
             eq_hydro=cl.navier_stokes_standard
             cl_hy=eq_hydro.conditions_limites.listobj
             for cl_li in cl_hy:
@@ -144,7 +144,7 @@ def modif(l):
             tutu.convection_diffusion_chaleur_qc=eq2
             pass
         elif  (isinstance(cl,pb_hydraulique_turbulent) or isinstance(cl,pb_thermohydraulique_turbulent) ):
-            print cl,"pb"
+            print((cl,"pb"))
             eq_hydro=cl.navier_stokes_turbulent
             cl_hy=eq_hydro.conditions_limites.listobj
             for cl_li in cl_hy:
@@ -199,14 +199,14 @@ def modif_incomp(ll):
                             champ_champ=lower(champ.champ)
                             if champ_champ == "pression":
                                 champ.champ="pression_pa"
-                                print "on modifie la ",champ_champ," en ",champ.champ
+                                print(("on modifie la ",champ_champ," en ",champ.champ))
                                 pass
                             if champ_champ == "k" or \
                                champ_champ == "eps" or \
                                champ_champ == "viscosite_turbulente" or  \
                                champ_champ == "y_plus" or \
                                champ_champ == "pression_pa":
-                                print "on retire ", champ.champ
+                                print(("on retire ", champ.champ))
                                 list_a_enlever.append(champ)
                                 pass
                             pass
@@ -224,11 +224,11 @@ def modif_incomp(ll):
             if eq1:
                 # print name,eq1
                 if hasattr(eq1,"sources") and eq1.sources:
-                    print dir(eq1.sources.listobj)
+                    print((dir(eq1.sources.listobj)))
                     for s in eq1.sources.listobj:
                         if isinstance(s,boussinesq_temperature):
                             eq1.sources.listobj.remove(s)
-                            print "on retire le terme de boussinesq"
+                            print("on retire le terme de boussinesq")
                             pass
                         pass
                     pass
@@ -236,7 +236,7 @@ def modif_incomp(ll):
             pass
         elif isinstance(cl,schema_euler_implicite):
             if isinstance(cl.solveur,simpler):
-                print "on passe en piso"
+                print("on passe en piso")
                 cl.solveur=change_type(cl.solveur,piso)
                 pass
             pass

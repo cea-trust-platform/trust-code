@@ -121,7 +121,7 @@ def save_field(LataFile,Field,Probe):
         t = ' '.join(lines[i].split(' ')[1:])
         f.write(t) #+'\n')
     f.close()
-    print ("Writing the %s field at time=%12.10f" %(Field,Time))
+    print(("Writing the %s field at time=%12.10f" %(Field,Time)))
     return current_time, FieldFile
 
 # Add the field being post-processed at the current time to the main lata file
@@ -162,7 +162,7 @@ if __name__=="__main__":
     LataFile = TestCase+'.lata'
     if not (os.path.isfile(PlanFile)):
         parser.print_help()
-        print ("\nError: %s file does not exist!" %(PlanFile))
+        print(("\nError: %s file does not exist!" %(PlanFile)))
         exit(1)
     parser.print_usage()
 
@@ -179,7 +179,7 @@ if __name__=="__main__":
     # Grid
     GridCoordinates = write_coordinates(Nelem,LataFile,Probe,dimension)
     GridConnections = save_connections(LataFile,Probe)
-    print ("%s grid has been correctly generated" %(Probe))
+    print(("%s grid has been correctly generated" %(Probe)))
 
     if opts.lasttime:
         current_line = NumberOfLines-(2*Nelem)
@@ -194,5 +194,5 @@ if __name__=="__main__":
 
     # Write the main lata file
     write_lata_file(LataFile,DataFile,Probe,GridCoordinates,GridConnections,Nelem,Ncells,post_processed_Fields,dimension)
-    print ("\n %s has been successfuly converted to %s" %(PlanFile,LataFile))
-    print ("You can open it with: \nvisit -o %s" %(LataFile))
+    print(("\n %s has been successfuly converted to %s" %(PlanFile,LataFile)))
+    print(("You can open it with: \nvisit -o %s" %(LataFile)))

@@ -92,7 +92,7 @@ def getOptions(argv, gestMsg):
         elif opt in ('--no_visit'):
             novisit=True
         else:
-            print "codage manquant pour "+str(opt)
+            print("codage manquant pour "+str(opt))
             1/0
 
         if os.getenv("PRM_NO_VISIT"):
@@ -198,19 +198,19 @@ TODO
         pass
     def printFichierParametres(self):
         dec='\t'
-        print "parametres {"
-        if self.titre != 'Undefined' : print dec,"titre" ,self.titre
-        if self.auteur != 'Undefined': print dec,"auteur" , self.auteur
+        print("parametres {")
+        if self.titre != 'Undefined' : print(dec,"titre" ,self.titre)
+        if self.auteur != 'Undefined': print(dec,"auteur" , self.auteur)
         print_description(self.description,dec)
 
-        for ref in self.reference :print dec,"reference",ref
-        for cas in self.casTest: print dec,"casTest", cas
-        if self.versionTrioU != '': print dec,"versionTRUST", self.versionTrioU
-        for param in  self.parametresTrioU : print dec,"parametresTrio_u",param
+        for ref in self.reference :print(dec,"reference",ref)
+        for cas in self.casTest: print(dec,"casTest", cas)
+        if self.versionTrioU != '': print(dec,"versionTRUST", self.versionTrioU)
+        for param in  self.parametresTrioU : print(dec,"parametresTrio_u",param)
 
-        if self.inclureData != 2: print dec,'inclureData',self.inclureData
-        for pre in self.preRequis : print dec,'preRequis', pre
-        print "}"
+        if self.inclureData != 2: print(dec,'inclureData',self.inclureData)
+        for pre in self.preRequis : print(dec,'preRequis', pre)
+        print("}")
         indice=0
         for chap in self.listeChapitres:
             indice=chap.printFichierParametres(indice)
@@ -303,7 +303,7 @@ TODO
                         self.preRequis.append(valeur.replace('"',''))
                     else:
                         self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Parameters', dico,motcle_lu,fichier=fichier)
-                    if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                    if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
         else:
             self.gestMsg.ecrire(GestionMessages._ERR, 'We were expecting "Parametres {...} or Parameters {...} ", and not %s' % motcle_lu,fichier=fichier)
@@ -375,7 +375,7 @@ TODO
                 sys.path.append(".")
                 from User_Write_tex import User_Write_tex
                 w=User_Write_tex()
-                print "User_write_tex uses to generate tex"
+                print("User_write_tex uses to generate tex")
             except:
                 from Write_tex import Write_tex
                 w=Write_tex(novisit=self.novisit)
@@ -401,12 +401,12 @@ TODO
             os.chdir(ici)
             nomFicPdf = nomFichierTexComplet[:-3] + 'pdf'
             if os.path.exists(nomFicPdf):
-                print '%s -> %s' % (nomFicPdf, self.sortie)
+                print('%s -> %s' % (nomFicPdf, self.sortie))
                 os.rename(nomFicPdf, self.sortie)
-                print '-> The PDF report %s is available in the build directory.' % (self.sortie)
+                print('-> The PDF report %s is available in the build directory.' % (self.sortie))
                 pass
             else:
-                print "-> PDF generation failed. The PDF report is deleted. ",self.sortie
+                print("-> PDF generation failed. The PDF report is deleted. ",self.sortie)
                 if os.path.isfile(self.sortie): os.remove(self.sortie)
                 raise Exception("Generation failed!")
             pass
@@ -473,32 +473,32 @@ if __name__ == "__main__":
                 pass
             cmd_2='extract_perf %s; [ -f post_run ] && chmod +x post_run && echo "-> Running the post_run script in the %s directory ..." && ./post_run %s)'%(case,dir,case)
             if (get_cmd_to_run=='yes'):
-                print cmd_0,cmd,cmd_2
+                print(cmd_0,cmd,cmd_2)
             elif (get_cmd_to_run=='post_run'):
-                print cmd_0,cmd_2
+                print(cmd_0,cmd_2)
             elif (get_cmd_to_run=='test_run'):
-                print cmd_0,test_cmd," echo KO ; else echo not run;echo;fi)"
+                print(cmd_0,test_cmd," echo KO ; else echo not run;echo;fi)")
                 #print cmd_0,test_cmd,cmd,cmd_2.replace(')','; else echo not run;echo;fi)')
             elif (get_cmd_to_run=='suite_run'):
-                print cmd_0,test_cmd,cmd,cmd_2.replace(')','; else echo not run;echo;fi)')
+                print(cmd_0,test_cmd,cmd,cmd_2.replace(')','; else echo not run;echo;fi)'))
             else:
-                print '# ',get_cmd_to_run , cmd_0,cmd,cmd_2
+                print('# ',get_cmd_to_run , cmd_0,cmd,cmd_2)
                 pass
             pass
         cmd="get_total_time "+" ".join(list_cas)
         if (get_cmd_to_run!='not_run'):
-            print cmd
+            print(cmd)
         else:
-            print '# ',cmd
+            print('# ',cmd)
             pass
         pass
     if len(old_path):
         app.modifie_figures(old_path)
         pass
     if verbose>0:
-        print "-> Generation of test_lu.prm file."
-        import cStringIO
-        s = cStringIO.StringIO()
+        print("-> Generation of test_lu.prm file.")
+        import io
+        s = io.StringIO()
         import sys
         sys.stdout = s
         app.printFichierParametres()

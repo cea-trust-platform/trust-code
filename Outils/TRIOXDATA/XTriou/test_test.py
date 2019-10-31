@@ -25,7 +25,7 @@ def test_all(list,s,fast):
         for file0 in list_cas:
 
             cmd="rm -f "+file0+".data "+"test*_"+file0+".data p_"+file0+".* *.geo"
-            print cmd
+            print(cmd)
 
             try:
                 if (fast):
@@ -35,8 +35,8 @@ def test_all(list,s,fast):
                     pass
                 chaine=str(compt)+"/"+nb+file0+" OK"
                 os.system(cmd)
-            except KeyError,x:
-                print "KeyError",x
+            except KeyError as x:
+                print("KeyError",x)
                 chaine=file0+" rate"
                 list2.append(chaine)
             except:
@@ -49,7 +49,7 @@ def test_all(list,s,fast):
                     pass
                 list2.append(chaine)
                 pass
-            print chaine
+            print(chaine)
             s.write(chaine+'\n')
             s.flush()
             pass
@@ -69,13 +69,13 @@ if __name__ == '__main__':
     for i in range(2,len(sys.argv)):
         list.append(sys.argv[i])
         pass
-    print "nb_cas",len(list)
-    print list
+    print("nb_cas",len(list))
+    print(list)
     s=open("res","w")
     list2=test_all(list,s,fast)
     s.close()
     for cas in list2:
-        print cas #+ " rate"
+        print(cas) #+ " rate"
         #test_cas(cas)
         #s.write(cas+'\n')
         pass

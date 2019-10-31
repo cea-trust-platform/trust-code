@@ -43,7 +43,7 @@ def build_location_in_triou_mode( error_manager ):
 
 def build_location_in_baltik_mode( error_manager ):
     import os
-    import ConfigParser
+    import configparser
 
     directories = []
     ( head, tail ) = os.path.split(  os.getcwd( ) )
@@ -63,7 +63,7 @@ def build_location_in_baltik_mode( error_manager ):
     if ( not os.path.isfile( project_configuration_file ) ) :
         error_manager.error( "Invalid location: can't find BALTIK project configuration file." )
 
-    config_parser = ConfigParser.ConfigParser( )
+    config_parser = configparser.ConfigParser( )
     config_parser.read( project_configuration_file )
     project_name = config_parser.get( "description", "name" )
 

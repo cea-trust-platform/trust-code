@@ -73,7 +73,7 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
                 message(item_id, cls=ChangeToTypeQPopupMenu)
                 try:
                     target = self.item_ids[item_id]
-                except KeyError, AttributeError:
+                except KeyError as AttributeError:
                     return QRect( 0,0, -1,-1 ), None
                 message(item_id, target, cls=ChangeToTypeQPopupMenu)
                 text = target.getToolTip(target)
@@ -98,7 +98,7 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
             self.item_ids[item_id] = c
             return
         # --
-        keys = bases_dict.keys()
+        keys = list(bases_dict.keys())
         keys.sort()
         bases = [ bases_dict[k] for k in keys ]
         # --
@@ -117,7 +117,7 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
         return
     def actionActivated(self, item_id):
         cls = self.item_ids[item_id]
-        print "AAA", self, cls,cls.name_,self.selection.__instance__name__
+        print("AAA", self, cls,cls.name_,self.selection.__instance__name__)
 #        from polygon import Square
 #        exec "s = Square(123)"
         from triou import change_type
@@ -149,11 +149,11 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
                 pass
             cmd += " = s"
             try:
-                exec cmd
+                exec(cmd)
             except:
                 from xdatagui import getMainWindow
                 from xutilities import verbose
-                getMainWindow().displayException(long=verbose())
+                getMainWindow().displayException(int=verbose())
                 pass
             pass
 

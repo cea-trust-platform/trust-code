@@ -44,4 +44,4 @@ if __name__ == "__main__":
     import sys
     filename = sys.argv[ 1 ]
     nb_procs, all_nb_procs = get_nb_procs( filename )
-    print ("\n".join([str(n) for n in all_nb_procs]))
+    print(("\n".join([str(n) for n in all_nb_procs])))

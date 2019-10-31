@@ -127,7 +127,7 @@ class Write_tex:
                 pass
             pass
         else:
-            print "The figure does not really include the picture ",figure.fichierGraphique," because the width <= 0:",figure.width
+            print("The figure does not really include the picture ",figure.fichierGraphique," because the width <= 0:",figure.width)
             pass
         if (minifigure==1):
             fichier.write_Tex('} \end{minipage}')
@@ -212,7 +212,7 @@ class Write_tex:
                     else:
                         fichier.write_Tex('\input{%s}' % fichiercomplet)
                 else:
-                    print "The visu does not really include the picture ",fichiergraphique," because the width <= 0 :",visu.width
+                    print("The visu does not really include the picture ",fichiergraphique," because the width <= 0 :",visu.width)
                     pass
             if (minifigure==1):
                 fichier.write_Tex('} \end{minipage}')
@@ -303,11 +303,11 @@ class Write_tex:
             assert( len(line) == nb_columns )
         if tableau.transposed_display:
             transposed_data=[]
-            for i in xrange( nb_columns ):
+            for i in range( nb_columns ):
                 transposed_data.append( [ ] )
 
-            for i in xrange( nb_lines ):
-                for j in xrange( nb_columns ):
+            for i in range( nb_lines ):
+                for j in range( nb_columns ):
                     transposed_data[ j ].append( data[ i ][ j ] )
 
             for index, line in enumerate(transposed_data):
@@ -391,7 +391,7 @@ class Write_tex:
             pass
         pass
     def ecrire_fichier_maitre(self,maitre,dico):
-        for key in dico.keys():
+        for key in list(dico.keys()):
             cmd=key+'=dico[key]'
             # print cmd
             exec(cmd)
@@ -456,7 +456,7 @@ class Write_tex:
                         ficTex.write_Tex('\lstdefinelanguage{triou}{\nmorecomment=[s]{\#}{\#}, morekeywords={vefprep1b, vdf, lire, lire_fichier, domaine, dimension, postraitement, fluide_incompressible, schema_euler_explicite, pb_hydraulique_turbulent, pb_hydraulique}, sensitive=false\n}')
                         ficTex.write_Tex('\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, language=triou\n}')
                         pass
-                    print '-> File %s is included in the PDF report from %s' % (ficData, os.getcwd())
+                    print('-> File %s is included in the PDF report from %s' % (ficData, os.getcwd()))
                     # nomcas = get_nom_cas(cas[1])
                     ficTex.write_Tex('\subsection{%s}' % (chaine2Tex(nomcas)))
                     if os.path.isfile(ficData):
@@ -471,7 +471,7 @@ class Write_tex:
     def write_fichiers(self,maitre,dico):
         # generation du fichier.tex
 
-        for key in dico.keys():
+        for key in list(dico.keys()):
             cmd=key+'=dico[key]'
             # print cmd
             exec(cmd)
@@ -536,23 +536,23 @@ class Write_tex:
     def get_template(self):
         _templateTEX_ = '''% This file was generated automaticaly with the genererCources.py script
 \documentclass[10pt,twoside,a4paper]{article}
-\usepackage[ascii]{}
-\usepackage{longtable}
-\usepackage[latin1]{inputenc}
-% \usepackage[french]{babel}
-\usepackage{amsmath,amssymb,amsfonts,textcomp}
-\usepackage{color}
-% \usepackage{calc}
-% \usepackage{hyperref}
+\\usepackage[ascii]{}
+\\usepackage{longtable}
+\\usepackage[latin1]{inputenc}
+% \\usepackage[french]{babel}
+\\usepackage{amsmath,amssymb,amsfonts,textcomp}
+\\usepackage{color}
+% \\usepackage{calc}
+% \\usepackage{hyperref}
 % \hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, pagecolor=blue, urlcolor=blue}
-\usepackage{graphicx}
-\usepackage{fancyhdr}
-% \usepackage[pdfpagemode=FullScreen,bookmarksopen=true,bookmarks=true]{hyperref}
-\usepackage[bookmarksopen=true,bookmarks=true]{hyperref}
+\\usepackage{graphicx}
+\\usepackage{fancyhdr}
+% \\usepackage[pdfpagemode=FullScreen,bookmarksopen=true,bookmarks=true]{hyperref}
+\\usepackage[bookmarksopen=true,bookmarks=true]{hyperref}
 
-% \usepackage{verbatim}
-%\usepackage{moreverb}
-\usepackage{listings}
+% \\usepackage{verbatim}
+%\\usepackage{moreverb}
+\\usepackage{listings}
 
 \setlength\hoffset{0cm}
 \setlength\voffset{0cm}

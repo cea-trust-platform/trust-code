@@ -21,7 +21,7 @@ class Equation():
         for (upd, o, fields) in termes:
             ta = time.clock()
             self.operateurs.append(globals()[o](self.mesh, fields, variables, self.ninc, upd, dt))
-            print "Operateur %6s : %5.2f s"%(o, time.clock() - ta)
+            print("Operateur %6s : %5.2f s"%(o, time.clock() - ta))
         self.res = np.zeros((self.ninc, 1))
         self.build_mat()
 

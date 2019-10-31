@@ -18,7 +18,7 @@ def modif(l):
                     #print atr.conditions_limites
                     for condl in atr.conditions_limites.listobj:
                         if isinstance(condl.cl,paroi_flux_impose):
-                            print "On modifie la cl ",condl.bord
+                            print("On modifie la cl ",condl.bord)
                             condl.cl.ch.val[0]= condl.cl.ch.val[0]*0.5
                             pass
                         pass

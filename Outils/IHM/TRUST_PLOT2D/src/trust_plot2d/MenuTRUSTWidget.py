@@ -22,7 +22,7 @@ class MenuTRUSTWidget(QDockWidget):
         return os.path.join(self._showFileView._currDir,cutn)
     def execute(self,cmd):
         import subprocess
-        print "Starting ",cmd
+        print("Starting ",cmd)
         cmd=cmd.split()
         subprocess.Popen(cmd)
 

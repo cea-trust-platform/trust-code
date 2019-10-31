@@ -19,22 +19,22 @@ def readSrc(src_dir):
 
 def writeRunLog(dico, filename):
     st=""
-    for clas in dico.keys():
+    for clas in list(dico.keys()):
         st+="class : "+clas+"\n"
         st+="=======\n"
         st+="  - Desc : "+dico[clas]["desc"]+"\n"
-        if (len(dico[clas]["parameters"].keys())>0):
+        if (len(list(dico[clas]["parameters"].keys()))>0):
             st+="  - Params : \n"
             st+="  ********** \n"
             pass
-        for param in dico[clas]["parameters"].keys():
+        for param in list(dico[clas]["parameters"].keys()):
             st+="     + Param : "+param+"  ==> Desc : "+dico[clas]["parameters"][param]["desc"]+"\n"
             st+="       -----\n"
-            if (len(dico[clas]["parameters"][param]["dict"].keys())>0):
+            if (len(list(dico[clas]["parameters"][param]["dict"].keys()))>0):
                 st+="        + Dicts : \n"
                 st+="          +++++ \n"
                 pass
-            for dic in dico[clas]["parameters"][param]["dict"].keys():
+            for dic in list(dico[clas]["parameters"][param]["dict"].keys()):
                 st+="            Dict : "+dic+"  ==> Desc : "+dico[clas]["parameters"][param]["dict"][dic]["desc"]+"\n"
                 st+="            ----\n"
                 pass
@@ -126,26 +126,26 @@ def getLinesWithRegExp(lines):
 
 def writeOutPutFile(dico, filename,st_add=""):
     st=""
-    for clas in dico.keys():
+    for clas in list(dico.keys()):
         st+=dico[clas]["desc"]+"\n"
         Params=dico[clas]["parameters"]
-        for i in xrange(len(Params.keys())):
+        for i in range(len(list(Params.keys()))):
             ok=0
             for j,param in enumerate(Params.keys()):
                 if (i==Params[param]["numero"]):
                     ok=1
                     break
             if (ok==0):
-                print "pb",clas,"nmero",i,"params",Params
+                print("pb",clas,"nmero",i,"params",Params)
                 1/0
-            if (len(Params[param]["dict"].keys())==0):
+            if (len(list(Params[param]["dict"].keys()))==0):
                 st+="  attr "+Params[param]["desc"]+"\n"
                 pass
             str_dico="  attr "+param+" chaine(into=["
-            for dic in Params[param]["dict"].keys():
+            for dic in list(Params[param]["dict"].keys()):
                 str_dico+='"'+dic+'",'
                 pass
-            if (len(Params[param]["dict"].keys())>0):
+            if (len(list(Params[param]["dict"].keys()))>0):
                 desc=Params[param]["desc"].split()[2:]
                 st+=str_dico+"]) "+' '.join(desc)+"\n"
                 pass

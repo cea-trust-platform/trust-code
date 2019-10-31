@@ -63,7 +63,7 @@ def get_fluide(ll):
     for cl in ll:
         if isinstance(cl,probleme_couple):
             pb=get_pb_fluide(cl,ll)
-            print pb
+            print(pb)
             if (not isinstance(pb,probleme_ft_disc_gen)):
                 if pb.milieu:
                     fluide=trouve_class_list(pb.milieu,ll)
@@ -159,17 +159,17 @@ def test_all(list,s):
         #os.system(cmd2)
 
         compt+=1
-        print "cas ",compt," sur ",nb
+        print("cas ",compt," sur ",nb)
         try:
             res=analyse_cas(file+'.data')
-            if dico.has_key(res):
+            if res in dico:
                 dico[res].append(file)
             else:
                 dico[res]=[file]
                 pass
             pass
         except:
-            print "cas rate " ,file
+            print("cas rate " ,file)
             pass
         #print dico
         pass
@@ -180,19 +180,19 @@ if __name__ == '__main__':
     for i in range(1,len(sys.argv)):
         list.append(sys.argv[i])
         pass
-    print "nb_cas",len(list)
-    print list
+    print("nb_cas",len(list))
+    print(list)
     s=open("res","w")
     list2=test_all(list,s)
 
-    for cas in list2.keys():
+    for cas in list(list2.keys()):
         res=list2[cas]
         chaine=cas + " : "+str(len(res))+ " : "+str(res)
-        print chaine
+        print(chaine)
         s.write(chaine+'\n')
         pass
     s.close()
-    for cas in list2.keys():
+    for cas in list(list2.keys()):
         from string import split
-        print split(cas,'+')
+        print(split(cas,'+'))
     pass

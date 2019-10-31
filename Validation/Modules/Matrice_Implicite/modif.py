@@ -20,24 +20,24 @@ def modif(l,cas):
                         conv=atr.convection.operateur
                         if not((isinstance(conv,convection_negligeable)) or (conv.name_trio_=='amont') ):
 
-                            print "on change la convection de ",conv,"  amont"
+                            print("on change la convection de ",conv,"  amont")
                             atr.convection.operateur=convection_amont()
                             pass
                         pass
                     except:
-                        print "pas de convection ?"
+                        print("pas de convection ?")
                         pass
                     # print atr.convection.operateur
                     try:
                         diff=atr.diffusion.operateur
-                        print diff
+                        print(diff)
                         if not((isinstance(diff,diffusion_negligeable)) or (diff==None)):
-                            print "on change la diffusion de ",diff,"  a { }"
+                            print("on change la diffusion de ",diff,"  a { }")
                             atr.diffusion.operateur=None
                             pass
                         pass
                     except:
-                        print "pas de difusion ?"
+                        print("pas de difusion ?")
                         pass
 
 

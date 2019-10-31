@@ -26,7 +26,7 @@ from lib import _accoladeF
 
 
 dico_plots={"pseudocolor":"Pseudocolor","pseudocolor_with_range":"Pseudocolor","vector":"Vector","blackvector":"Vector","blackvector_with_nb":"Vector","isovaleurs":"Contour","molecule":"Molecule","pseudocolor_with_opacity":"Pseudocolor","histogram":"Histogram"}
-list_plot=dico_plots.keys()
+list_plot=list(dico_plots.keys())
 list_plot.append('mesh')
 
 
@@ -121,28 +121,28 @@ class Visu:
     #lecture des parametres de la visu dans le fichier de parametres
     def printFichierParametres(self):
         dec='\t'
-        print dec,"Visu {"
+        print(dec,"Visu {")
         dec='\t\t'
-        if self.titre != 'Undefined' : print dec,"titre", self.titre
+        if self.titre != 'Undefined' : print(dec,"titre", self.titre)
         print_description(self.description,dec)
 
-        if self.format != 'png' : print dec,"format", self.format
+        if self.format != 'png' : print(dec,"format", self.format)
         from string import join
-        for plot  in self.plot: print dec,join(plot)
-        if self.cycles != ""   : print dec,"cycles",self.cycles
+        for plot  in self.plot: print(dec,join(plot))
+        if self.cycles != ""   : print(dec,"cycles",self.cycles)
 
-        if self.inclureDescCourbes != 1 : print dec,"inclureDescCourbes", self.inclureDescCourbes
-        if self.width != "15cm" : print dec,"width", self.width
-        if self.origine != "trio_u" : print dec,"origine", self.origine
-        if self.nb_img_without_newline!=-1: print dec, "nb_img_without_newline",self.nb_img_without_newline
+        if self.inclureDescCourbes != 1 : print(dec,"inclureDescCourbes", self.inclureDescCourbes)
+        if self.width != "15cm" : print(dec,"width", self.width)
+        if self.origine != "trio_u" : print(dec,"origine", self.origine)
+        if self.nb_img_without_newline!=-1: print(dec, "nb_img_without_newline",self.nb_img_without_newline)
         dec='\t'
-        print dec,"}"
+        print(dec,"}")
         pass
     def lireParametres(self, fichier):
         '''Lecture des parametres de la visu.'''
         self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
         fin = False
-        list_mot=dico_plots.keys()
+        list_mot=list(dico_plots.keys())
         list_mot.extend(['mesh','operator','operator_to_all','instruction_visit','normal3d','up3d','zoom3d','zoom2d','query','upaxis','inserttext' ])
         dico=[]
         for mot in list_mot: dico.append(mot)
@@ -186,7 +186,7 @@ class Visu:
                 else:
                     # self.gestMsg.ecrire(GestionMessages._ERR, 'Parameter %s not recognized. List of parameters for visualization: %s ' % (motcle_lu,dico),fichier=fichier)
                     self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Visu', dico,motcle_lu,fichier=fichier)
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing something for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing something for ",motcle);1/0
 
     #generation du graphique correspondant a la visu
     def genererGraphe(self, dest, indice,debug_figure):
@@ -243,7 +243,7 @@ class Visu:
                 # ficPlot.write('ok=DrawPlots()\n')
                 # ficPlot.write('if (ok==0): 1/0\n')
                 pass
-            elif (plot[0] in dico_plots.keys()):
+            elif (plot[0] in list(dico_plots.keys())):
                 directname=self.is_directname(plot)
 
 
@@ -375,7 +375,7 @@ class Visu:
                 if plot[0]=='operator_to_all': all=1
                 type_op=plot[1].lower()
                 list_base={"threeslice":3,"slice":6,"slice2d":6,"slice2d_x":3,"slice2d_y":3,"slice2d_z":3,"clip_1plane":6,"clip_2planes":12,"no_axes":0,"no_triad":0,"no_bounding_box":0,"no_databaseinfo":0,"no_legend":0}
-                list=list_base.keys()
+                list=list(list_base.keys())
                 if type_op not in list:
                     self.gestMsg.ecrire(GestionMessages._ERR, 'Unknown keyword. We expect for an operator parameter, and not: %s . Expected possible keywords: %s' % (type_op,list))
                 if len(plot)-2!=list_base[type_op]:
@@ -386,7 +386,7 @@ class Visu:
                     ficPlot.write('s.SetOriginType(s.Point)\n')
                     ficPlot.write('s.SetOriginPoint(%s,%s,%s)\n'%(plot[2],plot[3],plot[4]))
                     ficPlot.write('s.SetAxisType(s.Arbitrary)\n')
-                    print type_op
+                    print(type_op)
                     if (type_op=="slice2d_x"):
                         ficPlot.write('s.SetNormal(-1,0,0)\ns.SetUpAxis(0,1,0)\n')
                     elif (type_op=="slice2d_y"):
@@ -472,7 +472,7 @@ class Visu:
 
                     pass
                 else:
-                    print "Missing code"
+                    print("Missing code")
                     1/0
                     pass
 
@@ -515,7 +515,7 @@ class Visu:
         if self.format=='png':
             format=4
         else:
-            print self.format +"not supported yet."
+            print(self.format +"not supported yet.")
             1/0
         ficPlot.write('s.SetFormat('+str(format)+')\n')
         ficPlot.write('SetSaveWindowAttributes(s)\n')
@@ -604,11 +604,11 @@ class Visu:
 
 
                 # elif (( x[0]=="vector") or(  x[0]=="blackvector") or( x[0]=="pseudocolor")   or( x[0]=="isovaleurs") ):
-                elif (x[0] in dico_plots.keys()):
+                elif (x[0] in list(dico_plots.keys())):
                     type="DefineScalarExpression";
                     if ( x[0]=="vector") or(  x[0]=="blackvector")or (  x[0]=="blackvector_with_nb"): type="DefineVectorExpression";
                     if (self.is_directname(x)) :
-                        print "on ne fait pas de delta sur ",x
+                        print("on ne fait pas de delta sur ",x)
                     else:
                         var=x[3]+"_"+x[4]+"_"+x[2]
                         newvisu_delta.plot.append(["instruction_visit",type+"(\"delta_"+var+"\",\""+var+"-pos_cmfe(<"+old+x[1]+"[0]id:"+var+">,"+x[2]+",1000.)\")"])
@@ -627,6 +627,6 @@ class Visu:
                 pass
             newvisus.append(newvisu_delta)
             pass
-        print "on a ajoute",len(newvisus) ,"visu(s)"
+        print("on a ajoute",len(newvisus) ,"visu(s)")
         return newvisus
     pass

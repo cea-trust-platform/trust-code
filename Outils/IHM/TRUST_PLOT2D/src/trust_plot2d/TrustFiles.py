@@ -45,7 +45,7 @@ class TrustFile(object):
         if not len(self._entries):
             hdr = self._populateFromHeader()
             self._reloadEntries(hdr)
-        return self._entries.keys()
+        return list(self._entries.keys())
 
     def getValues(self, entryName):
         """
@@ -172,7 +172,7 @@ class TrustFile(object):
                 if update:
                     self._lastSize = siz
                     self._reset()
-                print "WARNING: file is smaller but reference file has not changed! Will reset. (%s)" % self._filePath
+                print("WARNING: file is smaller but reference file has not changed! Will reset. (%s)" % self._filePath)
                 return "reset"
             elif siz == self._lastSize:
                 return "same"
@@ -328,7 +328,7 @@ class SonFile(TrustFile):
                 self._entries[e] = col
                 col += 1
         # Reset last index:
-        self._lastIndex = dict( zip(self._entries.keys(), [-1] * len(self._entries)) )
+        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
 
 class SonPOINTFile(SonFile):
     def __init__(self, filePath, refPath):
@@ -400,18 +400,18 @@ class SonSEGFile(SonFile):
 
     def _extractValues(self, fileReady, entryName):
         """ Override to handle seg entries. """
-        if self._entries.has_key(entryName):
+        if entryName in self._entries:
             return SonFile._extractValues(self, fileReady, entryName)
-        elif self._segentries.has_key(entryName):
+        elif entryName in self._segentries:
             return self._extractValuesSeg(fileReady, entryName)
         else:
             raise Exception("Invalid column name! '%s'" % entryName)
 
     def _extractNewValues(self, fileReady, entryName):
         """ Override to handle seg entries - the behaviour is also to return None, None everytime a new seg is available. """
-        if self._entries.has_key(entryName):
+        if entryName in self._entries:
             return SonFile._extractNewValues(self, fileReady, entryName)
-        elif self._segentries.has_key(entryName):
+        elif entryName in self._segentries:
             return self._extractNewValuesSeg(fileReady, entryName)
         else:
             raise Exception("Invalid column name! '%s'" % entryName)
@@ -440,7 +440,7 @@ class SonSEGFile(SonFile):
     def getEntriesSeg(self):
         """ Return only seg entries (i.e. not normal point entries) """
         entr = self.getEntries()  # make sure getEntries logic is applied
-        return self._segentries.keys()
+        return list(self._segentries.keys())
 
     def getPointEntries(self, segName):
         self.getEntries()  # make sure getEntries logic is applied
@@ -472,7 +472,7 @@ class SonSEGFile(SonFile):
 
     def _completeValues(self):
         SonFile._completeValues(self)
-        for s in self._segentries.keys():
+        for s in list(self._segentries.keys()):
             self._lastIndex[s] = 0     # 0, new data available, not fetched yet
 
 
@@ -529,7 +529,7 @@ class OutFile(TrustFile):
             #self._entries["Time"]=0
             col=1
             xold=None
-            for c in xrange(nb_co):
+            for c in range(nb_co):
                 x=hdr[2][c+1]
                 # dans le cas periodique le nom du bord est double
                 if x==xold:
@@ -539,7 +539,7 @@ class OutFile(TrustFile):
                     self._entries[self._field+" "+x]=col
                     col+=1
                 else:
-                    for i in xrange(self._dim):
+                    for i in range(self._dim):
                         # print"uuu", i,x
                         self._entries[self._field+" "+x+OutFile._COMPO_NAMES[i]]=col
                         col+=1
@@ -556,7 +556,7 @@ class OutFile(TrustFile):
             # print "uuuuuuuuuuuu"
             #1/0
 
-        self._lastIndex = dict( zip(self._entries.keys(), [-1] * len(self._entries)) )
+        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
 
 
 class CSVFile(TrustFile):
@@ -565,7 +565,7 @@ class CSVFile(TrustFile):
         self._ncols = nbclos
         self._ncols_sa = nbclos
     def reset(self):
-        print "reset"
+        print("reset")
         pass
     def getXLabel(self):
         return "??"
@@ -574,7 +574,7 @@ class CSVFile(TrustFile):
         self._ncols =  self._ncols_sa
         if (hdr is None):
             h1=[]
-            for i in xrange(self._ncols):
+            for i in range(self._ncols):
                 h1.append("c%d"%i)
             hdr=[h1]
 
@@ -585,10 +585,10 @@ class CSVFile(TrustFile):
     def _reloadEntries(self, hdr=None):
 
         if hdr is None:
-            print "euh...;"
+            print("euh...;")
             1/0
         # Adrien ???
-        self._lastIndex = dict( zip(self._entries.keys(), [-1] * len(self._entries)) )
+        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
         # print "QQ",self._lastIndex
         # print "uuu",self._entries.keys()
 
@@ -614,7 +614,7 @@ class DTEVFile(TrustFile):
         if len(hdr[0]) >= 6:
             for i, col in enumerate(hdr[0]):
                 self._entries[col] = i
-        self._lastIndex = dict( zip(self._entries.keys(), [-1] * len(self._entries)) )
+        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
 
 def BuildFromPath(pth, ref_path):
     """ Object factory. """

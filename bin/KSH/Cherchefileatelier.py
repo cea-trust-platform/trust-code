@@ -61,7 +61,7 @@ def create_dico(dirs):
         f=file(fifull)
 
         lines=f.readlines()
-        lines=filter(expr.match,lines)
+        lines=list(filter(expr.match,lines))
         res=[expr.match(line).group("fi") for line in lines]
         for r in res:
             titi=os.path.splitext(fi)[1]
@@ -194,6 +194,6 @@ sys.stdout.write(';'.join(lcpp))        # .replace(ENV,"${TRUST_ROOT}"))
 if 0:
     for c in lcpp:
         cmd="ln "+ c + " ."
-        print cmd
+        print(cmd)
 
 #print len(lcpp)

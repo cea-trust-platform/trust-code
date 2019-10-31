@@ -57,7 +57,7 @@ def create_bord_near(name,calcul,pos,list_grp_def,type="FACE"):
             face=geom.GetEdgeNearPoint(calcul,geom.MakePointStruct(vec[0],vec[1],vec[2]))
             pass
         list_face.append(face)
-        print face
+        print(face)
         pass
     new=create_group_from(name,calcul,list_face,type)
     list_grp_def.append(new)

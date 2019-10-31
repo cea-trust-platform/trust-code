@@ -103,7 +103,7 @@ try:
     Mesh_1.ExportMED( r'Mesh_1.med', 0, SMESH.MED_MINOR_2, 1, None ,1)
     pass
 except:
-    print 'ExportToMEDX() failed. Invalid file name?'
+    print('ExportToMEDX() failed. Invalid file name?')
 
 
 ## Set names of Mesh objects

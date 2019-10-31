@@ -51,23 +51,23 @@ class Tableau:
         pass
     def printFichierParametres(self):
         dec='\t'
-        print dec,"Tableau {"
+        print(dec,"Tableau {")
         dec='\t\t'
-        if self.titre != 'Undefined' : print dec,"titre" ,self.titre
+        if self.titre != 'Undefined' : print(dec,"titre" ,self.titre)
         print_description(self.description,dec)
 
-        if self.nb_colonnes != -1: print dec,"nb_colonnes",self.nb_colonnes
-        if self.textsize: print dec,"textsize",self.textsize
-        if self.formule !=  None: print dec,"formule",self.formule
+        if self.nb_colonnes != -1: print(dec,"nb_colonnes",self.nb_colonnes)
+        if self.textsize: print(dec,"textsize",self.textsize)
+        if self.formule !=  None: print(dec,"formule",self.formule)
 
-        if self.label != 'Undefined' : print dec,"label ",self.label
-        if self.legende != 'Undefined' : print dec,"legende",self.legende
+        if self.label != 'Undefined' : print(dec,"label ",self.label)
+        if self.legende != 'Undefined' : print(dec,"legende",self.legende)
 
-        if self.inclureDescLignes != 0: print dec,"inclureDescLignes", self.inclureDescLignes
-        if self.transposed_display != 0: print dec,"transposed_display", self.transposed_display
+        if self.inclureDescLignes != 0: print(dec,"inclureDescLignes", self.inclureDescLignes)
+        if self.transposed_display != 0: print(dec,"transposed_display", self.transposed_display)
         for ligne in self.listeLignes :  ligne.printFichierParametres()
         dec='\t'
-        print dec,"}"
+        print(dec,"}")
         pass
     #lecture des parametres du tableau dans le fichier de parametres
     def lireParametres(self, fichier):
@@ -95,7 +95,7 @@ class Tableau:
                 elif motcle=='nb_colonnes':
                     self.nb_colonnes = int(valeur)
                 elif motcle=='textsize':
-                    if valeur in sizedico.keys():
+                    if valeur in list(sizedico.keys()):
                         self.textsize = sizedico[valeur]
                 elif motcle=='formule':
                     self.formule=valeur
@@ -129,7 +129,7 @@ class Tableau:
                     self.transposed_display = int(valeur)
                 else:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Table', dico,motcle_lu,fichier=fichier)
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
 
     #generation du graphique correspondant au tableau
@@ -177,7 +177,7 @@ class Tableau:
 
             pass
         if err:
-            print "Error when reading tableau (array) file" , err
+            print("Error when reading tableau (array) file" , err)
             values=[]
             for i in range(nbc): values.append("erreur-compil_  voir plus haut erreur lecture fichier tableau {")
             tableau.append(values)
@@ -230,7 +230,7 @@ class Tableau:
                     pass
                 pass
             pass
-        print "on a ajoute ",len(newt) ," lignes +", len(newc), " delta"
+        print("on a ajoute ",len(newt) ," lignes +", len(newc), " delta")
         for c in newt:
             self.listeLignes.append(c)
             pass

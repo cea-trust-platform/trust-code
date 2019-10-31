@@ -21,11 +21,11 @@ while (line):
     es=line.replace("gen_class","add_class")
     #  print dir(line)
     exec("name="+es)
-    if name in dico.keys():
+    if name in list(dico.keys()):
         if line!=dico[name][1]:
             message="classe deja dans dico "+name+" avec "+dico[name][1]+"\n et maintenant "+line
             # raise Exception (message)
-            print "WARNING", message
+            print("WARNING", message)
         pass
         message="classe deja dans dico "+name
         # raise Exception (message)
@@ -55,14 +55,14 @@ def get_deps(*args,**kwargs):
                 pass
             pass
         pass
-    if "class_type" in kwargs.keys():
+    if "class_type" in list(kwargs.keys()):
         deps.append(kwargs["class_type"])
     return deps
 
 def transforme(chaine):
     import syno
     #print "kkk",chaine
-    for key in syno.synonyme.keys():
+    for key in list(syno.synonyme.keys()):
         chaine=chaine.replace("name_trio='"+key+"'","name_trio='"+syno.synonyme[key]+"'")
         # print key,syno.synonyme[key],chaine
     return chaine
@@ -97,4 +97,4 @@ for cl in list:
     pass
 
 
-print "ok termine ",dico["solve"]
+print("ok termine ",dico["solve"])

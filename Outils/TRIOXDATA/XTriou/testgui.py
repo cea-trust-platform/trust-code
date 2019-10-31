@@ -3,7 +3,7 @@
 
 from xdata import getXClasses
 from triou import dicobases,objet_u
-print getXClasses()
+print(getXClasses())
 #module='triou'
 
 def cree_menu(module,racine,filtre=0):
@@ -13,7 +13,7 @@ def cree_menu(module,racine,filtre=0):
         if issubclass(obj,racine) :
             name_obj = obj.__name__
             #print "DEBUG--> 2:",name_obj
-            if not(dico.has_key(name_obj)) :
+            if not(name_obj in dico) :
                 dico[name_obj] = []
                 pass
             #m_name = obj.__module__
@@ -23,7 +23,7 @@ def cree_menu(module,racine,filtre=0):
             name_pere = obj.__bases__[0].__name__
             #print "DEBUG--> 4:",name_pere
             # name_pere=str(obj.__bases__[0])[lenprefix:-len("'>")]
-            if (dico.has_key(name_pere)) :
+            if (name_pere in dico) :
                 l=dico[name_pere]
                 l.append(name_obj)
                 dico[name_pere]=l
@@ -34,11 +34,11 @@ def cree_menu(module,racine,filtre=0):
         pass
 
 
-    print dico
+    print(dico)
     # on a les classes filles on genere les menus:
-    for cl in dico.keys():
+    for cl in list(dico.keys()):
         if len(dico[cl])>0:
-            print cl
+            print(cl)
             file="menu/menu_"+cl+".py"
             f=open(file,'w')
             f.write('__xdata__name__ = "'+cl+' ..."\n')

@@ -6,7 +6,7 @@ def get_dim(listdata):
         if isinstance(cl,dimension):
             return cl.dim
         pass
-    raise ("Dimension pas trouve dans "+str(listdata))
+    raise "Dimension pas trouve dans "
     pass
 
 from math import cos,sin,asin
@@ -78,7 +78,7 @@ def modifie_champ_non_unif(ch):
         z="("+str(ch.val[2])+")"
         newval.append(0)
         pass
-    print x,y,z
+    print(x,y,z)
     from string import replace
     newval[0]=replace(replace(replace(trans_x,"x",x),"y",y),"z",z)
     if (len(ch.val)>=2):
@@ -116,7 +116,7 @@ def modif(l,nom):
             idis=j
             pass
         if (isinstance(cl,comment)):
-            print cl.comm[-8:]
+            print(cl.comm[-8:])
             if cl.comm[-12:]=="FIN MAILLAGE" or cl.comm[-8:]=="END MESH":
                 iscatt=j
 
@@ -148,9 +148,9 @@ def modif(l,nom):
                         pass
                     for condl in atr.conditions_limites.listobj:
                         if isinstance(condl.cl,frontiere_ouverte_vitesse_imposee):
-                            print "On modifie la cl ",condl.bord
-                            print condl.cl.ch, condl.cl.ch.print_lu()
-                            print modifie_champ_unif(condl.cl.ch)
+                            print("On modifie la cl ",condl.bord)
+                            print(condl.cl.ch, condl.cl.ch.print_lu())
+                            print(modifie_champ_unif(condl.cl.ch))
                             pass
                         pass
                     pass

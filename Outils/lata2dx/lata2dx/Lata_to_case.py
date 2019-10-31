@@ -22,7 +22,7 @@ def buildMEDFileData(latafile,lasttime):
     if ( type( mesh ).__name__ != "MEDCouplingUMesh"  ) :
         raise Exception( "Only implemented for meshes of type MEDCouplingUMesh ( not "+ type( mesh ).__name__ +" )" )
 
-    liste_ite=xrange(a.GetNTimesteps())
+    liste_ite=range(a.GetNTimesteps())
     liste_fields=a.GetFieldNames()
 
 
@@ -122,10 +122,10 @@ if __name__=="__main__":
         cw.setMEDFileDS(mfd)
         listOfWrittenFileNames=cw.write(casefile)
     except MEDLoader.InterpKernelException as e:
-        print "An error occurred during the conversion!"
-        print "#######################################"
+        print("An error occurred during the conversion!")
+        print("#######################################")
         raise e
 
     for l in listOfWrittenFileNames:
-        print "File \"%s\" successfully written !"%(l)
+        print("File \"%s\" successfully written !"%(l))
         pass

@@ -61,7 +61,7 @@ def setDesktop( studyID ):
 
     global moduleDesktop, desktop
 
-    if not moduleDesktop.has_key( studyID ):
+    if studyID not in moduleDesktop:
         moduleDesktop[studyID] = DynamicDesktop( sgPyQt )
         moduleDesktop[studyID].initialize()
     desktop = moduleDesktop[studyID]
@@ -93,11 +93,11 @@ def activate():
     ctv = desktop.showCurveTreeView()
 #    mv = desktop.showMenuTRUST(fv)
 #    outv = desktop.showFileOut(fv)
-    print fv, ctv
+    print(fv, ctv)
 #    desktop.tabifyDockWidget(fv, ctv)
     fv4= desktop.showMenuTRUST(fv)
     fv2= desktop.showFileOut(fv)
-    print "ok"
+    print("ok")
 
     return True
 

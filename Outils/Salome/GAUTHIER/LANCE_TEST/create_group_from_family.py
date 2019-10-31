@@ -23,7 +23,7 @@ def modifie_nom(file):
             pass
         for typ in [MED_CELL,MED_EDGE,MED_FACE]:
             nb_fam= mesh.getNumberOfFamilies(typ)
-            print nb_fam,"i"
+            print(nb_fam,"i")
             for fam in range(nb_fam):
                 Fam=mesh.getFamily(typ,fam+1)
                 fam_name=Fam.getName()
@@ -32,7 +32,7 @@ def modifie_nom(file):
                 gr.setName("group_"+fam_name)
                 Fam.setNumberOfGroups(1)
                 Fam.setGroupsNames(["group_"+fam_name])
-                print fam_name
+                print(fam_name)
                 pass
         pass
     from os import system;

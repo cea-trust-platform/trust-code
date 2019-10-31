@@ -43,7 +43,7 @@ def MakeAxisStruct(x0,y0,z0,x,y,z):
 
 
 def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
-    print "MakeElliposide(x_c,y_c,z_c,r_x,r_y,r_z)"
+    print("MakeElliposide(x_c,y_c,z_c,r_x,r_y,r_z)")
     r_minor=min(r_x,r_y,r_z)
     r_major=max(r_x,r_y,r_z)
     n_minor=0
@@ -53,7 +53,7 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
     elif (r_major == r_x):
         n_major+=1
     else:
-        print "r_x!=r_minor!=r_major"
+        print("r_x!=r_minor!=r_major")
         1/0
         pass
     if (r_minor == r_y):
@@ -61,7 +61,7 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
     elif (r_major == r_y):
         n_major+=1
     else:
-        print "r_y!=r_minor!=r_major"
+        print("r_y!=r_minor!=r_major")
         1/0
         pass
     if (r_minor == r_z):
@@ -69,7 +69,7 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
     elif (r_major == r_z):
         n_major+=1
     else:
-        print "r_z!=r_minor!=r_major"
+        print("r_z!=r_minor!=r_major")
         1/0
         pass
 

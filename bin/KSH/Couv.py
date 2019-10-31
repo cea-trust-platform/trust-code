@@ -16,12 +16,12 @@ def get_d(l):
         pass
     d=d[i:]
     return d
-import cPickle
+import pickle
 
 def ecrit_dico(dico,mode=0):
     #print "Ecriture du dico.pkl"
     f = open("dico.pkl", "wb")
-    cPickle.dump(dico, f,mode)
+    pickle.dump(dico, f,mode)
     f.close()
     f=open('dico.py','w')
     f.write("from Couv import lire_dico_pkl \ndico=lire_dico_pkl()\n")
@@ -34,7 +34,7 @@ def ecrit_dico(dico,mode=0):
 def lire_dico_pkl():
     #print "debut lecture dico.pkl"
     f = open("dico.pkl", "rb")
-    toto = cPickle.load(f)
+    toto = pickle.load(f)
     f.close()
     #print "fin lecture"
     return toto
@@ -70,7 +70,7 @@ def traite_file(file,dico):
             dico[d].append(file)
             #print dico[d]
         except:
-            print "pb avec ",d
+            print("pb avec ",d)
             pass
         pass
     pass
@@ -94,27 +94,27 @@ def traite_tout(list):
     pass
 def util(m=0):
     dico=lire_dico()
-    for key in dico.keys():
+    for key in list(dico.keys()):
         if (len(dico[key])==0):
             if (m==0):
-                print "",key
+                print("",key)
                 pass
             pass
         elif(m!=0):
-            print key,dico[key]
+            print(key,dico[key])
             pass
 def test2():
     dico=lire_dico()
-    for key in dico.keys():
-        print key,dico[key]
+    for key in list(dico.keys()):
+        print(key,dico[key])
         pass
     pass
 
 def test(mot):
     dico=lire_dico()
-    print mot,dico[mot]
+    print(mot,dico[mot])
     for cas in dico[mot]:
-        print cas," CAS_liste"
+        print(cas," CAS_liste")
     pass
 
 
@@ -123,15 +123,15 @@ def nombre_de_cas_par_classe():
 
     dico3={}
     i=0
-    invtot=1./len(dico.keys())*1.
-    for mot in dico.keys():
+    invtot=1./len(list(dico.keys()))*1.
+    for mot in list(dico.keys()):
         mot2=mot.split("::")
         # print i*invtot
         i+=1
         if (len(mot2)>1):
             mot_ref=mot2[0]
             mot_ref=mot_ref.replace("non-virtual thunk to ","")
-            if not (mot_ref in dico3.keys()):
+            if not (mot_ref in list(dico3.keys())):
                 m=[]
 
             else:
@@ -149,12 +149,12 @@ def nombre_de_cas_par_classe():
             pass
         pass
     #print "Traitement_particulier_NS_canal",dico3["Traitement_particulier_NS_canal"]
-    for mot in dico3.keys():
+    for mot in list(dico3.keys()):
         # if (len(dico3[mot])==0):
         par=0
         for m in dico3[mot]:
             if m[0:4]=="PAR_": par+=1
-        print mot, len(dico3[mot])-par,par
+        print(mot, len(dico3[mot])-par,par)
 
         pass
     pass

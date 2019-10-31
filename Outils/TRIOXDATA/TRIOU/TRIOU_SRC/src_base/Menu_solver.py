@@ -26,7 +26,7 @@ def verifyihm():
 
                 l.node.verify(listclass)
             except:
-                print "pb   ",l.node,l
+                print("pb   ",l.node,l)
                 l.status="NoValid"
                 pass
             pass
@@ -56,7 +56,7 @@ def linkref(mode):
                     from types import StringType
                     if (mode==0):
                         if type(val) is StringType:
-                            print "modif ",obj,ref.name," object:",obj.name_u,isAttributeLink(ref)
+                            print("modif ",obj,ref.name," object:",obj.name_u,isAttributeLink(ref))
                             from triou import trouve_class_list
                             val2=trouve_class_list(val,listclass)
                             setattr(obj,ref.name,val2)
@@ -64,7 +64,7 @@ def linkref(mode):
                         pass
                     else:
                         if not type(val) is StringType:
-                            print "modif ",obj,ref.name," object:",obj.name_u,isAttributeLink(ref)
+                            print("modif ",obj,ref.name," object:",obj.name_u,isAttributeLink(ref))
                             from triou import trouve_class_list
                             #val2=trouve_class_list(val,listclass)
                             setattr(obj,ref.name,val.name_u)

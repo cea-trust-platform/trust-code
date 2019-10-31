@@ -47,7 +47,7 @@ class User_Write_tex(Write_tex):
                     pass
                 pass
             else:
-                print "La visu n'inclue pas vraiment l'image ",fichiergraphique," car width <= 0 :",visu.width
+                print("La visu n'inclue pas vraiment l'image ",fichiergraphique," car width <= 0 :",visu.width)
                 pass
             fichier.write_Tex('} \end{minipage}')
 

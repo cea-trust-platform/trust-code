@@ -11,7 +11,7 @@ class FileManager(object):
         if not os.path.isfile(fullPath):
             return None, ""
         shortName = os.path.split(fullPath)[1]
-        if not self._cache.has_key(fullPath):
+        if fullPath not in self._cache:
             self.__addFile(fullPath, refPath)
         return self._cache[fullPath], shortName
 

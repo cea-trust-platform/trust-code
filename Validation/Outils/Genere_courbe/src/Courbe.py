@@ -57,31 +57,31 @@ tracee dans le rapport de validation de TRUST.'''
         pass
     def  printFichierParametres(self):
         dec='\t\t'
-        print dec,"Courbe {"
+        print(dec,"Courbe {")
         dec='\t\t\t'
-        if self.legende != 'Undefined' : print dec,"legende", self.legende
+        if self.legende != 'Undefined' : print(dec,"legende", self.legende)
         print_description(self.description,dec)
 
 
-        if self.origine != 'trio_u' : print dec,"origine", self.origine
-        if self.version != 'Undefined' : print dec,"version", self.version
-        if self.fichier != 'Undefined' : print dec,"fichier", self.fichier
-        if self.plan != 'Undefined' : print dec,"plan", self.plan
-        if self.segment != 'Undefined' : print dec,"segment", self.segment
-        if self.points != 'Undefined' : print dec,"points", self.points
-        if self.fonction != 'Undefined' : print dec,"fonction", self.fonction
-        if self.gnuplot_command != 'Undefined' : print dec,"gnuplot_command", self.gnuplot_command
+        if self.origine != 'trio_u' : print(dec,"origine", self.origine)
+        if self.version != 'Undefined' : print(dec,"version", self.version)
+        if self.fichier != 'Undefined' : print(dec,"fichier", self.fichier)
+        if self.plan != 'Undefined' : print(dec,"plan", self.plan)
+        if self.segment != 'Undefined' : print(dec,"segment", self.segment)
+        if self.points != 'Undefined' : print(dec,"points", self.points)
+        if self.fonction != 'Undefined' : print(dec,"fonction", self.fonction)
+        if self.gnuplot_command != 'Undefined' : print(dec,"gnuplot_command", self.gnuplot_command)
         from string import join
-        if self.colonnes != 'Undefined' : print dec,"colonnes", self.colonnes
-        if self.style != 'Undefined' : print dec,"style", self.style
-        if self.typeLigne != 'Undefined' : print dec,"typeLigne", self.typeLigne
-        if self.typePoints != 'Undefined' : print dec,"typePoints", self.typePoints
-        if self.pointSize != 'Undefined' : print dec,"pointSize", self.pointSize
-        if self.axes != 'Undefined' : print dec,"axes", self.axes
+        if self.colonnes != 'Undefined' : print(dec,"colonnes", self.colonnes)
+        if self.style != 'Undefined' : print(dec,"style", self.style)
+        if self.typeLigne != 'Undefined' : print(dec,"typeLigne", self.typeLigne)
+        if self.typePoints != 'Undefined' : print(dec,"typePoints", self.typePoints)
+        if self.pointSize != 'Undefined' : print(dec,"pointSize", self.pointSize)
+        if self.axes != 'Undefined' : print(dec,"axes", self.axes)
         #if self.description != [] : print dec,"description", self.description
-        if self.largeurLigne != 'Undefined' : print dec,"largeurLigne", self.largeurLigne
+        if self.largeurLigne != 'Undefined' : print(dec,"largeurLigne", self.largeurLigne)
         dec='\t\t'
-        print dec,"}"
+        print(dec,"}")
         pass
     #lecture des parametres de la courbe dans le fichier de parametres
     def lireParametres(self, fichier):
@@ -141,7 +141,7 @@ tracee dans le rapport de validation de TRUST.'''
                     self.description.append(valeur)
                 else:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Curve',dico,motcle_lu,fichier=fichier)
-                if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
+                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
     #ajout des informations de la courbe a la ligne de commande gnuplot
     def ajouterParametresGnuplot(self, cmd):
@@ -191,12 +191,12 @@ tracee dans le rapport de validation de TRUST.'''
                 self.fichier=self.fichier+'.'+temps
                 # print "DEBG", self.fichier
             if not os.path.isfile(ficSon):
-                print "Generating failed File not found",ficSon
+                print("Generating failed File not found",ficSon)
             if not os.path.isfile(self.fichier) or os.path.getmtime(self.fichier)<os.path.getmtime(ficSon):
                 #si la sonde est plus recente que la coupe : on la regenere
                 res = os.system('extrait_coupe %s %s %s' % (param[0], (param[1]).upper(),temps))
                 if not os.path.isfile(self.fichier):
-                    print "Generating failed File not found",self.fichier
+                    print("Generating failed File not found",self.fichier)
             else:
                 if (self.verbose>2):
                     self.gestMsg.ecrire(GestionMessages._DEBOG, 'T(%s)=%d  > T(%s)=%d' % (self.fichier, os.path.getmtime(self.fichier),  ficSon, os.path.getmtime(ficSon)))
@@ -244,7 +244,7 @@ tracee dans le rapport de validation de TRUST.'''
             cmd += ' with %s' % (self.style)
         if self.typeLigne!='Undefined':
             if self.style=="points":
-                print "On a defini des points avec un stylelines..., on ignore"
+                print("On a defini des points avec un stylelines..., on ignore")
             else:
                 cmd += ' linetype %s' % (self.typeLigne)
         if self.typePoints!='Undefined':

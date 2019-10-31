@@ -18,8 +18,8 @@ ite=0
 def interprete_file(file,fileout,traitement_special):
     ''' lit le fichier file et le preprocess, la sortie est dans le ficher fileout'''
     # on recupere la sortie standard pour le mettre en stderr
-    import sys,cStringIO
-    s = cStringIO.StringIO()
+    import sys,io
+    s = io.StringIO()
     #sys.stdout= s
     #print 'lecture de',file
 
@@ -27,7 +27,7 @@ def interprete_file(file,fileout,traitement_special):
     list_macro={}
     list_vars={}
     str_in=interprete_string(in0,list_macro,list_vars)
-    if (str_in.find('#P')>=0): print "en sortie il reste des #P !!!!"
+    if (str_in.find('#P')>=0): print("en sortie il reste des #P !!!!")
     #print 'ecriture de',fileout
     if traitement_special:
         # str_in=str_in.replace('\n\n','\n')
@@ -52,7 +52,7 @@ def interprete_file(file,fileout,traitement_special):
         f3.write(''.join(str_in))
         f3.close()
     else:
-        print str_in
+        print(str_in)
     pass
 
 
@@ -70,12 +70,12 @@ def interprete_string(str_in,list_macro,list_vars):
     pattern,position=cherche_pattern(str_in,list_pattern,list_vars)
 
     while (position>=0):
-        if (debug_level): print "ppp ",position,pattern.get_pattern()
+        if (debug_level): print("ppp ",position,pattern.get_pattern())
         str_in,list_macro,list_vars=pattern.traite_pattern(position,str_in,list_macro,list_vars)
         pattern,position=cherche_pattern(str_in,list_pattern,list_vars,position)
         ite+=1
         if debug_level>0:
-            print "ITE",ite," write to file debug.ITE"
+            print("ITE",ite," write to file debug.ITE")
             f=open('debug.'+str(ite),'w')
             f.write(str_in)
             f.close()
@@ -90,13 +90,13 @@ def cherche_pattern(str_in,list_pattern,list_vars,debut=0):
     position=len(str_in)
     #debut=0
     mot_trouve=None
-    list_mot=list_pattern.keys()
-    for mot in list_vars.keys():
+    list_mot=list(list_pattern.keys())
+    for mot in list(list_vars.keys()):
         if (len(list_vars[mot])>0):
             list_mot.append(mot)
             pass
         pass
-    if (debug_level>2): print "pattertns ",list_mot
+    if (debug_level>2): print("pattertns ",list_mot)
     for mot in list_mot:
         # print "A",mot,str_in[:position]
         n=str_in[:position].find(mot,debut)
@@ -107,7 +107,7 @@ def cherche_pattern(str_in,list_pattern,list_vars,debut=0):
             pass
         pass
     if (mot_trouve):
-        if (mot_trouve in list_pattern.keys()):
+        if (mot_trouve in list(list_pattern.keys())):
             pattern=list_pattern[mot_trouve]
         else:
             pattern=list_vars[mot_trouve][-1]
@@ -124,7 +124,7 @@ def read_file(file):
     f=open(file,'r')
     strin=''.join(f.readlines())
     if (strin.find('#Pset (')>0):
-        print "attention votre fichier",file,"contient '#Pset (' au lieu de '#Pset(', on substitue"
+        print("attention votre fichier",file,"contient '#Pset (' au lieu de '#Pset(', on substitue")
         strin=strin.replace( '#Pset (', '#Pset(')
         pass
     return strin
@@ -145,7 +145,7 @@ def find_fermant(in0,ouvrant='(',fermant=')'):
             pass
         pass
     if fin>=nmax:
-        print "  on n a pas trouve ",fermant,"...."
+        print("  on n a pas trouve ",fermant,"....")
         return -1
     else:
         return fin
@@ -191,13 +191,13 @@ class pattern_base:
                 index2=find_fermant(in2,pate,end_pate)
                 pass
             if (index2<0):
-                print "uu", end_pate, 'not_found in ' , in2
+                print("uu", end_pate, 'not_found in ' , in2)
                 raise Exception(end_pate+' not_found in '+in2[:100]+" .....voir + haut")
             in1=str_in[:position]
             in3=in2[index2+len(end_pate):]
             in2=in2[:index2]
             if (in2.find(pate)!=0):
-                print in2,pate
+                print(in2,pate)
                 raise Exception(in2[100:]+" ne commence par par "+pate)
             in2=in2[len(pate):]
             pass
@@ -231,7 +231,7 @@ class pattern_macro(pattern_base):
     bloc_fin_with_varname=1
     def analyse(self,in2,list_macro,list_vars):
         nom_macro=in2.split('(')[0].strip()
-        if (macro not in list_macro.keys()): list_macro[nom_macro]=[]
+        if (macro not in list(list_macro.keys())): list_macro[nom_macro]=[]
 
         list_macro[nom_macro].append(macro(nom_macro,in2))
         return ""
@@ -301,7 +301,7 @@ class pattern_set(pattern_base):
         value=in2[index+1:-1]
         value=interprete_string(value,list_macro,list_vars)
         # print "uu",name_var,"value",value
-        if (name_var not in list_vars.keys()): list_vars[name_var]=[]
+        if (name_var not in list(list_vars.keys())): list_vars[name_var]=[]
         list_vars[name_var].append(pattern_value(name_var,value))
 
         return ""
@@ -324,8 +324,8 @@ class pattern_unset(pattern_base):
         #index=in2.find(' ')
         name_var=in2[1:-1].strip()
         # print "uu",name_var,"value",value
-        if (name_var not in list_vars.keys()):
-            print "liste variables", list_vars.keys()
+        if (name_var not in list(list_vars.keys())):
+            print("liste variables", list(list_vars.keys()))
             raise Exception(""+name_var+" non defini et on essaye de la retirer")
         if(len(list_vars[name_var])==0):
             raise Exception(name_var+" plus defini et on essaye de la retirer")
@@ -398,8 +398,8 @@ class pattern_if(pattern_base):
                 pass
             pass
         if (np!=0):
-            print nargs2,nargs2_p
-            print np,motsepa,"pb avec in2",in2
+            print(nargs2,nargs2_p)
+            print(np,motsepa,"pb avec in2",in2)
             raise Exception("echec du decoupage du if ")
         return nargs2
 
@@ -437,9 +437,9 @@ class pattern_if(pattern_base):
         if (bloc_true[0]=='\n'): bloc_true=bloc_true[1:]
         if (len(bloc_false)>0) and (bloc_false[0]=='\n'): bloc_false=bloc_false[1:]
         if (debug_level>1):
-            print "TEST" ,condition,testcond
-            print "VRAI",bloc_true
-            print "FAUX",bloc_false
+            print("TEST" ,condition,testcond)
+            print("VRAI",bloc_true)
+            print("FAUX",bloc_false)
             pass
         if testcond:
 

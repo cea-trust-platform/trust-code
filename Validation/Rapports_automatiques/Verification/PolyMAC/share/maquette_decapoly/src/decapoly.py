@@ -22,7 +22,7 @@ def solve(mcum, out_file, dic_CL, eqs, mesh, vn, P, T, facsec, dt_max):
 
     #1/ conditions aux limites
     P_imp = False
-    for key, [pos, type, val, hval, Tval] in dic_CL.iteritems():
+    for key, [pos, type, val, hval, Tval] in dic_CL.items():
         if type == "P": P_imp = True
     mesh.setCL(dic_CL)
 
@@ -45,8 +45,8 @@ def solve(mcum, out_file, dic_CL, eqs, mesh, vn, P, T, facsec, dt_max):
     variables = {"P" : P, "rho" : rho, "rhoD" : rhoD, "v" : vn, "vm" : vn, "T": T, "Tm" : T}
     NS = EquationSystem(mesh, eqs, variables, dt_init)
     # variables du newton : P | T | vn | Pbord | Tbord
-    print >> sys.stderr, "  Time  |  dt    | itN |residual | steady  | CPU t"
-    print >> sys.stderr, "--------+--------+-----+---------+---------+--------"
+    print("  Time  |  dt    | itN |residual | steady  | CPU t", file=sys.stderr)
+    print("--------+--------+-----+---------+---------+--------", file=sys.stderr)
 
     # 4/ boucle en temps
     steady_res = 1.e30
@@ -113,7 +113,7 @@ def solve(mcum, out_file, dic_CL, eqs, mesh, vn, P, T, facsec, dt_max):
 
         t += NS.dt
         steady_res = max((P-P0).normMax(), max((T-T0).normMax(), (vn-vn0).normMax()))
-        print >> sys.stderr, "\r%5.2f s | %5.2f s | %3d | %.1e | %.1e | %4.2f"%(t, NS.dt, iter, res, steady_res, time.clock() - ta)
+        print("\r%5.2f s | %5.2f s | %3d | %.1e | %.1e | %4.2f"%(t, NS.dt, iter, res, steady_res, time.clock() - ta), file=sys.stderr)
         vc = mesh.faces2cell3D(vn)
         vf = mesh.f2f3D(vn)
         io = sortie_med([vc, vn, vf, P, T], t, io, out_file)
@@ -123,7 +123,7 @@ def solve(mcum, out_file, dic_CL, eqs, mesh, vn, P, T, facsec, dt_max):
             if vn.getArray()[f]: dt = min(dt, mesh.distD.getArray()[f] / abs(vn.getArray()[f]))
         NS.upd_dt(min(dt_max, facsec * dt))
 
-    print "termine!"
+    print("termine!")
 
     fic = open("pression.txt",'w')
     for i in range(mesh.Nc): fic.write("%f %f\n"%(mesh.scalaire.computeCellCenterOfMass()[i].getValues()[1], P.getArray()[i]))

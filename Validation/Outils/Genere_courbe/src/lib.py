@@ -92,7 +92,7 @@ class GestionMessages:
         #test l'affichage du message, selon le niveau de verbosite
         if (criticite in (GestionMessages._ERR,GestionMessages._AVERT)) or niveau<=self.NiveauMax:
             if self.ecran:
-                print '%s : %s' % (GestionMessages.__drapeau[criticite], message)
+                print('%s : %s' % (GestionMessages.__drapeau[criticite], message))
             if self.OutputFile!='':
                 self.OutputFileF.write('%s : %s\n' % (GestionMessages.__drapeau[criticite], message))
             if criticite==GestionMessages._ERR:
@@ -101,7 +101,7 @@ class GestionMessages:
                 if frame[2]=="ecrire_usage" or frame[2]=="verifie_accolade_suivante":
                     frame = callStack[-3]
                 if self.ecran:
-                    print '%s  :  Localisation = fonction %s (fichier %s, ligne %d) : \n\t%s' % (GestionMessages.__drapeau[criticite], frame[2], frame[0], frame[1], frame[3])
+                    print('%s  :  Localisation = fonction %s (fichier %s, ligne %d) : \n\t%s' % (GestionMessages.__drapeau[criticite], frame[2], frame[0], frame[1], frame[3]))
                 if self.OutputFile!='':
                     self.OutputFileF.write('%s  :  Localisation = fonction %s (fichier %s, ligne %d) : \n\t%s\n' % (GestionMessages.__drapeau[criticite], frame[2], frame[0], frame[1], frame[3]))
                     if (fichier):
@@ -113,7 +113,7 @@ class GestionMessages:
                         curentline=nb_l0-nb_l
                         message_info="Error at the line %s of %s"%(curentline,self.parametersFile)
                         if self.ecran:
-                            print '%s : %s' % (GestionMessages.__drapeau[criticite], message_info)
+                            print('%s : %s' % (GestionMessages.__drapeau[criticite], message_info))
                         if self.OutputFile!='':
                             self.OutputFileF.write('%s : %s\n' % (GestionMessages.__drapeau[criticite], message_info))
                             pass
@@ -121,7 +121,7 @@ class GestionMessages:
         #imprime l'usage si besoin
         if texteUsage!='':
             if self.ecran:
-                print texteUsage
+                print(texteUsage)
             if self.OutputFile!='':
                 self.OutputFileF.write('%s\n' % (texteUsage))
         if self.OutputFile!='':
@@ -141,7 +141,7 @@ class GestionMessages:
         list=[]
         for m in dico:
             mot=""
-            if m in dico_inverse.keys(): mot=dico_inverse[m]+"|"
+            if m in list(dico_inverse.keys()): mot=dico_inverse[m]+"|"
             mot+=m
             list.append(mot)
         message='Unknown parameter. We were expecting a parameter of %s  like %s, and not %s' %(what,list,motcle)
@@ -198,18 +198,18 @@ def print_description(description,dec):
     for des in description:
         if des.find('\n')!=-1:
             lignes=des.split('\n')
-            print dec,"description", lignes[0], "<<EOF"
-            for l in lignes[1:-1]: print l
-            print lignes[-1],"EOF"
+            print(dec,"description", lignes[0], "<<EOF")
+            for l in lignes[1:-1]: print(l)
+            print(lignes[-1],"EOF")
         else:
-            print dec,"description", des
+            print(dec,"description", des)
     pass
 #extraction du couple mot-cle / valeur d'un ligne
 def extraireMotcleValeur(fichier,ligne, gestMsg):
     '''Renvoie 2 elements de type motcle,valeur : le 1er mot de la chaine passee, suivie du reste de la chaine.'''
     ligneT = ligne.split(' ',1)
     motcle_lu=ligneT[0].lower()
-    if motcle_lu in dico_en.keys():
+    if motcle_lu in list(dico_en.keys()):
         motcle=dico_en[motcle_lu].lower()
     else:
         motcle=motcle_lu
@@ -263,7 +263,7 @@ def verifie_accolade_suivante(ligne,fichier,gestMsg):
             pass
         else: err="to begin the block, we expected { followed by a carriage return but not " +ligne
         if err!="":
-            print err
+            print(err)
             gestMsg.ecrire(GestionMessages._ERR,err,fichier=fichier)
             pass
         pass
@@ -398,10 +398,10 @@ def chaine2Tex(chaine):
         res+="}, sensitive=false}"
         res+="\n\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso}\n"
         import os.path
-        print os.path.abspath(os.curdir )
+        print(os.path.abspath(os.curdir ))
         ff=mots[0].replace("\"","")
         if not(os.path.exists(ff)):
-            print "in prm, incluce_text_file can't read data file :",ff
+            print("in prm, incluce_text_file can't read data file :",ff)
 
 
         res+="\lstinputlisting{\orig/%s}\n"%mots[0]

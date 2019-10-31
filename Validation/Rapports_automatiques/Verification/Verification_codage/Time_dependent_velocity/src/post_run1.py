@@ -15,7 +15,7 @@ for n in range(0,len(lines)):
     uan[n]=lines[n,0]*2+1
     err[n]=abs((lines[n,1]-uan[n])/uan[n])
 
-print n, time[len(lines)-1], max(err[:])
+print(n, time[len(lines)-1], max(err[:]))
 s=[(n, time[len(lines)-1], max(err[:]))]
 
 

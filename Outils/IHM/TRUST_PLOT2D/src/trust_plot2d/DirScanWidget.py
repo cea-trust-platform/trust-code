@@ -13,7 +13,7 @@ def run_TRUST(longcaseName):
     import os
     exe=os.getenv("exec")
     if exe is None:
-        print "exec not defined"
+        print("exec not defined")
         return
     import subprocess
     caseName=longcaseName.split(".data")[0]
@@ -24,7 +24,7 @@ def run_TRUST(longcaseName):
             try:
                 os.remove( fout )
             except:
-                print "pb when remove "+fout
+                print("pb when remove "+fout)
     remove_f(fout)
     remove_f(ferr)
     with open(fout, "w") as out:
@@ -107,7 +107,7 @@ class DirScanWidget(QDockWidget):
         if len(selItems) > 1 or len(selItems) == 0:
             self.plotAllButton.setEnabled(False)
             return
-        txt = unicode(selItems[0].text())
+        txt = str(selItems[0].text())
         longName = self._displayMapRev.get(txt, None)
         obj, _ = self._entryMap.get(longName, None)
         if obj is not None and isinstance(obj, SonSEGFile):
@@ -153,12 +153,12 @@ class DirScanWidget(QDockWidget):
         if self._currDir == "":
             return
         import os
-        print "*fg* DirScanWidget.onRunButton"
+        print("*fg* DirScanWidget.onRunButton")
         self._process = run_TRUST(os.path.join(self._currDir,self._caseName))
         self.runStarted.emit()
     @Slot()
     def onProcessFinished(self):
-        print "*fg* DirScanWidget.onProcessFinished ----"
+        print("*fg* DirScanWidget.onProcessFinished ----")
         self.runTerminated.emit()
         self._process = None
 
@@ -166,7 +166,7 @@ class DirScanWidget(QDockWidget):
     def onStopButton(self):
         """ Stupidly write 1 to the stop file :-)
         """
-        print "*fg* DirScanWidget.onStopButton ---"
+        print("*fg* DirScanWidget.onStopButton ---")
         import os
         if self._currDir == "":
             return
@@ -175,11 +175,11 @@ class DirScanWidget(QDockWidget):
             with open(stopFile, "w") as f:
                 f.write("1\n")
         except IOError:
-            print "Could not write into stop file ..."
+            print("Could not write into stop file ...")
         # wait until the trust process has finished
         status = self._process.wait()
         self.onProcessFinished()
-        print "*fg* DirScanWidget.onStopButton done"
+        print("*fg* DirScanWidget.onStopButton done")
 
     @Slot()
     def onCaseChanged(self):
@@ -187,7 +187,7 @@ class DirScanWidget(QDockWidget):
         activeEntry = self.entryListWidget.currentItem()
         activeText = None
         if activeEntry is not None:
-            activeText = unicode(activeEntry.text())
+            activeText = str(activeEntry.text())
             oldLongName = self._displayMapRev[activeText]
         self._currDir = ""
 
@@ -229,7 +229,7 @@ class DirScanWidget(QDockWidget):
                     s = longName
                 self._entryList.append(s)
                 self._displayMap[longName] = s
-            self._displayMapRev = {v: k for k, v in self._displayMap.items()}
+            self._displayMapRev = {v: k for k, v in list(self._displayMap.items())}
             if activeEntry is not None:
                 self.__selectInListWidget(oldLongName)
             # to update views relatives to input case change (ex: TailFileWidget)
@@ -257,14 +257,14 @@ class DirScanWidget(QDockWidget):
 
     def __refreshCurves(self):
         curveplot.LockRepaint()
-        for e, crvPsIds in self._liveCurves.items():
+        for e, crvPsIds in list(self._liveCurves.items()):
             crvId, psID = crvPsIds
             # Delete from internal map deleted curves
             if curveplot.GetPlotSetID(crvId) == -1:
                 self._liveCurves.pop(e)
                 continue
             # Get new data for the curve
-            if self._entryMap.has_key(e):
+            if e in self._entryMap:
                 fileObj, colName = self._entryMap[e]
                 x, y = fileObj.getNewValues(colName)
                 hasChanged = (x is None or x.shape[0])
@@ -331,7 +331,7 @@ class DirScanWidget(QDockWidget):
                 for e in entr:
                     longName = self.buildLongName(shortName, e)
                     self._entryMap[longName] = (fileObj, e)
-                    res.append((longName, u"%s" % e))
+                    res.append((longName, "%s" % e))
                 for e in entrHidden:
                     longName = self.buildLongName(shortName, e)
                     self._entryMap[longName] = (fileObj, e)
@@ -341,17 +341,17 @@ class DirScanWidget(QDockWidget):
         return res
 
     def buildLongName(self, shortName, varName):
-        return u"[%s] - %s" % (shortName, varName)
+        return "[%s] - %s" % (shortName, varName)
 
     def __plotJob(self, append, entry=None, withLegend=False):
         if entry is not None:
-            e = self._displayMapRev[unicode(entry.text())]
+            e = self._displayMapRev[str(entry.text())]
             fileObj, varName = self._entryMap[e]
             x, y = fileObj.getValues(varName)
             isLogY = fileObj.isLogY()
             xLabel = fileObj.getXLabel()
             # Create curve
-            crvID, psID = curveplot.AddCurve(x, y, curve_label=unicode(entry.text()), x_label=xLabel , append=append)
+            crvID, psID = curveplot.AddCurve(x, y, curve_label=str(entry.text()), x_label=xLabel , append=append)
             if isinstance(fileObj, SonSEGFile):
                 curveplot.SetPlotSetTitle("Time=%f (s)" % fileObj.getLastTime(), psID)
             curveplot.SetYLog(psID, log=isLogY)
@@ -364,7 +364,7 @@ class DirScanWidget(QDockWidget):
 
     def __plotAllJob(self, entry):
         if entry is not None:
-            topEntry = self._displayMapRev[unicode(entry.text())]
+            topEntry = self._displayMapRev[str(entry.text())]
             fileObj, varName = self._entryMap[topEntry]
             if not isinstance(fileObj, SonSEGFile):
                 raise Exception("Internal error: plotAll: not a SEG file!")
@@ -376,10 +376,10 @@ class DirScanWidget(QDockWidget):
             curveplot.SetXLabel("Time", psID)
             curveplot.SetLegendVisible(psID, False)
             # Invert entries:
-            revert = dict((v, k) for (k,(_, v)) in self._entryMap.items())
+            revert = dict((v, k) for (k,(_, v)) in list(self._entryMap.items()))
             for se in subEntries:
                 x, y = fileObj.getValues(se)
-                crvName = unicode(se)
+                crvName = str(se)
                 crvID, _ = curveplot.AddCurve(x, y, curve_label=crvName, append=True)
                 curveplot.SetCurveMarker(crvID, "")
                 # Register it internally, and ensure auto refresh will work:

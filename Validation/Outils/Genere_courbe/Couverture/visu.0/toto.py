@@ -9,12 +9,12 @@ SetAnnotationAttributes(annotation)
 
 
 try:
-    execfile('config_visit.py')
-    print "user config loaded"
+    exec(compile(open('config_visit.py', "rb").read(), 'config_visit.py', 'exec'))
+    print("user config loaded")
 except:
     pass
 res=OpenDatabase("FTD_all_VEF/post1.lata")
-if res==0: print "can't read data file FTD_all_VEF/post1.lata ";quit()
+if res==0: print("can't read data file FTD_all_VEF/post1.lata ");quit()
 ActivateDatabase("FTD_all_VEF/post1.lata")
 ok=AddPlot("Mesh","DOM")
 if (ok==0): 1/0
@@ -54,10 +54,10 @@ for state in cycles:
     time=GetQueryOutputValue()
 
     name=SaveWindow()
-    print name
+    print(name)
     cmd="mv "+name+" ./.tmp/fic_001_%d.png"%num
     import os
-    print cmd
+    print(cmd)
     os.system(cmd)
 #SaveSession("visit_001.session")
 #quit()

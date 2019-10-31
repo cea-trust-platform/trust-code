@@ -2,7 +2,7 @@ from triou import read_file_data,write_file_data,write_file_python,verify_all
 import sys
 def test_cas(file0):
     file=file0+".data"
-    print "test_cas",file
+    print("test_cas",file)
     listclass1=read_file_data(file)
     file1="test_"+file
     file2="test2_"+file
@@ -22,7 +22,7 @@ def test_cas(file0):
 
 
     cdm="from "+namepy+" import *"
-    print "cmd ",cdm
+    print("cmd ",cdm)
     exec(cdm)
     #print "ici",listclass
     write_file_data(file2,listclass)
@@ -43,13 +43,13 @@ def test_cas(file0):
         msg=" cas "+file+" rate"
         raise Exception(msg)
     else:
-        print "cas "+file+" Ok niveau 2"
+        print("cas "+file+" Ok niveau 2")
         pass
     if (c1!=c3):
         msg=" cas "+file+" rate"
         raise Exception(msg)
     else:
-        print "cas "+file+" Ok niveau 3"
+        print("cas "+file+" Ok niveau 3")
         pass
     # raise Exception("expres")
     pass

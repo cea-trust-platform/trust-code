@@ -184,13 +184,13 @@ try:
     problem_read_generic.print_lire=print_lire_pb_ft
     problem_read_generic.get_list_ref=get_list_ref_ft_disc_gen
 except NameError:
-    print "problem_read_generic not defined  ... pass"
+    print("problem_read_generic not defined  ... pass")
     pass
 read.read_data=read_data_read
 try:
     discretize.print_lu=print_lu_discretize
 except NameError:
-    print "discretize not defined  ... pass"
+    print("discretize not defined  ... pass")
     pass
 
 def comment_read_data(self,chaine,niveau,listdata=[]):

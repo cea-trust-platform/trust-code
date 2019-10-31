@@ -11,4 +11,4 @@ if argument == "raf_loc": f = lambda x, y: 2 * (int(x > 0.5 and y < 0.5) + int(x
 else: f = None
 if argument == "checkerboard": n += 1
 
-getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), maillages[argument], func=f).write("mesh.med", 2)
+getWeirdMesh(xmin, xmax, ymin, ymax, list(range(n + 1)), list(range(n + 1)), maillages[argument], func=f).write("mesh.med", 2)

@@ -81,6 +81,6 @@ class TrustFileWatcher(QObject):
                 aByteRead = self.__outputFile.bytesAvailable()
                 simulationData = self.__outputFile.read( aByteRead )
                 if ( len(simulationData) > 0 ):
-                    self.textEdit.append(unicode(simulationData))
+                    self.textEdit.append(str(simulationData))
             except:
-                print "ERROR reading simulation output file"
+                print("ERROR reading simulation output file")

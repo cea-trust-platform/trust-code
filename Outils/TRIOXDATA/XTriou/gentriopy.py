@@ -26,7 +26,7 @@ def type_trio_vers_xdata(type_0):
         else:
             type=type_0[:il-1]+')'
             pass
-        print "yyyyyyyyy", type , type_0
+        print("yyyyyyyyy", type , type_0)
         pass
 
     i=find(type,"(")
@@ -72,7 +72,7 @@ def type_trio_vers_xdata(type_0):
         elif  (type2=='chaine'):
             str='XString'
         else :
-            print "pas code ",type,type2,type[i:]
+            print("pas code ",type,type2,type[i:])
             Exception("rate")
             pass
         return str+type[i:]
@@ -82,9 +82,9 @@ def type_trio_vers_xdata(type_0):
 
 def gen_class(**args):
     " genere la classe python a partir des arguments"
-    print "genclass",args['name']
-    for i in range(len(args))*0:
-        print args.keys()[i],args.values()[i],type(args.values()[i])
+    print("genclass",args['name'])
+    for i in list(range(len(args)))*0:
+        print(list(args.keys())[i],list(args.values())[i],type(list(args.values())[i]))
         pass
     readacc_=-1
     pere_impl_="not_set"
@@ -97,8 +97,8 @@ def gen_class(**args):
     virgule_=-1
     descr_="not_set"
     for i in range(len(args)):
-        cle=args.keys()[i]
-        val=args.values()[i]
+        cle=list(args.keys())[i]
+        val=list(args.values())[i]
         if cmp(type(val),type("a"))==0 :
             cmd=str(cle)+"_=\""+val+"\""
         else:
@@ -114,7 +114,7 @@ def gen_class(**args):
     if pere_[-6:]=='_deriv':
         # print "ici", listderives
         pass
-    if pere_ in listderives.keys():
+    if pere_ in list(listderives.keys()):
         listderives[name_]=listderives[pere_]
         entree=lower(listderives[name_])+'___'+lower(name_trio_)
         dicoclass[entree]=name_
@@ -124,7 +124,7 @@ def gen_class(**args):
     else:
         entree=lower(name_)
         pass
-    if (entree in dicoclass.keys()):
+    if (entree in list(dicoclass.keys())):
         msg=entree+"("+name_+") deja dans le dico " +dicoclass[entree]
         raise Exception(msg)
     dicoclass[entree]=name_
@@ -173,7 +173,7 @@ def gen_class(**args):
         strtot=str(list_mot_)
         strtot=replace(strtot,' ','')
         if strtot!=strsed:
-            print "a modifier", strsed,strtot
+            print("a modifier", strsed,strtot)
             sortie2.write("s?"+strtot+"?"+strsed+"?\n")
             pass
         pass
@@ -254,7 +254,7 @@ def gen_class(**args):
             tri=tri+'optional='+str(list_optional_ex[i])+','
             tri=tri+'descr_=\"'+list_descr_ex[i]+'\",'
             if (len(mots_trio)>1):
-                print str(mots_trio[:-1])
+                print(str(mots_trio[:-1]))
                 tri+="syno="+str(mots_trio[:-1])+','
 
             defaultv="None"
@@ -266,14 +266,14 @@ def gen_class(**args):
                 exec("l=len("+tt+")")
 
                 if l==1:
-                    print "attribut non optionnel avec une seule valeur possible",list_mot_ex[i],tt
+                    print("attribut non optionnel avec une seule valeur possible",list_mot_ex[i],tt)
                     defaultv=tt[1:-1]
                     pass
                 pass
             debut_defaut=list_type_ex[i].rfind("default=")
             if (debut_defaut>-1):
                 defaultv=list_type_ex[i][debut_defaut+8:-1]
-                print "defaultv",defaultv
+                print("defaultv",defaultv)
                 pass
             # tri=tri+'default_value=None),\n'
             tri=tri+'default_value='+defaultv+'),\n'
@@ -383,9 +383,9 @@ sortie.close()
 # on met apres les objets qui dependent de objet_u_spec
 sortie=open('triouint2.py','w')
 if (old):
-    execfile('genclold.py')
+    exec(compile(open('genclold.py', "rb").read(), 'genclold.py', 'exec'))
 else:
-    execfile('gencl.py')
+    exec(compile(open('gencl.py', "rb").read(), 'gencl.py', 'exec'))
     pass
 if (old):
     gen_class(name='bloc_lecture',pere='objet_lecture',name_trio='',list_mot=[['data','chaine']],readacc=0)
@@ -443,7 +443,7 @@ for obj in ll:
                 i=i+1
                 pass
             if ok==0:
-                print obj," non classe"
+                print(obj," non classe")
                 pass
             pass
         pass
@@ -476,12 +476,12 @@ os.system("sleep 1")
 os.system("cat dico.py >> triou.py")
 
 cmd="sed \"s/ //g\" sedfile| sed \"s/\[/\\\\\[/g\" | sed \"s/\]/\\\\\]/g\" > sed2"
-print cmd
+print(cmd)
 os.system(cmd)
 os.system("sed -f sed2 gentriopy.py > gentriopy.py2")
-print "fingen",old
+print("fingen",old)
 
 sortie3.write('\n')
 sortie3.close()
 trace.close()
-print "FIN gen",old
+print("FIN gen",old)
