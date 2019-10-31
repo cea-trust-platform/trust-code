@@ -1,6 +1,7 @@
 ------------------------------------------------------------------
 Developer notes version 1.8.0_beta : Changes since version 1.7.9 :
 ------------------------------------------------------------------
+31/10/19 (TRUST)  First version of a Python module (SWIG) for the ICoCo interface.
 30/10/19 (TRUST)  Convert_ICoCoTrioField: disable MEDCoupling butterfly check (crashes with polyhedra) 
 25/10/19 (TRUST)  Turbulence features (turbulent problems, wall laws, turbulence models and associated boundary conditions) are moved from TRUST to TrioCFD baltik.Base classes remain in TRUST.
 23/10/19 (TRUST)  Improved naming of components in MED format output. 

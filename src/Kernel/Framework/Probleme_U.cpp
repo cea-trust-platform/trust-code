@@ -737,5 +737,5 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 
   const Champ_Generique_base& ch = ref_ch.valeur();
   afield = build_triofield(ch);
+  afield.setName(name.getString());
 }
-

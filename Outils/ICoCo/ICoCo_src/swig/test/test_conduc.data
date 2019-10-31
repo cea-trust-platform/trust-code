@@ -1,0 +1,132 @@
+# Conduction 2D #
+# Temperature imposee en entree et en sortie #
+# Paroi du haut adiabatique et paroi du bas symetrie #
+# PARALLEL OK 8 #
+dimension 2
+bidim_axi
+Domaine dom
+lire_fichier dom maillage.geom
+
+Sous_zone toto
+Associer toto dom
+Lire toto { Rectangle origine 0.0 0.0 cotes .1 1.0 }
+ecrire_fichier_formatte toto toto.geom
+
+/* Dilate dom 4.75e-3 */
+Transformer dom  x*4.75e-3 y*3.6576
+
+# END MESH #
+# BEGIN PARTITION 
+Partition dom 
+  { 
+    Partition_tool tranche   { tranches 2 1   } 
+    Larg_joint 1 
+    zones_name DOM 
+  } 
+End 
+END PARTITION #
+# BEGIN SCATTER 
+Scatter DOM.Zones dom 
+END SCATTER #
+VDF dis
+# VDF dis  #
+scheme_euler_implicit sch
+Read sch
+  { 
+    solveur implicite
+      { 
+	solveur gmres { diag seuil 1e-16 nb_it_max 5 impr }
+      }
+    tinit 0.0
+    dt_min 1e-09
+    facsec 100.0e15
+    facsec_max 100.0e15
+    dt_impr 1e-07
+    seuil_statio 1e-04
+    dt_max 1.e-5
+  }
+
+scheme_euler_explicit sch0
+Read sch0
+  { 
+    tinit 0.0
+    dt_min 1e-05
+    dt_max 0.1
+    dt_sauv 100.0
+    dt_impr 1e-05
+    seuil_statio 1e-08
+   diffusion_implicite 1
+  }
+
+
+solide sol 
+Read sol
+  { 
+    rho uniform_field  1 7800. 
+    cp uniform_field  1 500.
+    lambda champ_fonc_xyz dom 1 15.
+  }
+Read sol
+  { 
+    rho uniform_field  1 1.e-0
+    cp uniform_field  1 500.
+    lambda champ_fonc_xyz dom 1 15.
+  }
+pb_conduction pb 
+Associate pb dom
+Associate pb sch
+Associate pb sol
+discretize pb dis
+Read pb
+  { 
+    conduction 
+      { 
+        diffusion    {   }
+        initial_conditions    {  temperature champ_uniforme 1 291.  }
+/*
+        initial_conditions    {  temperature champ_fonc_reprise binaire init_pb_pb.sauv  pb Temperature last_time } 
+*/
+        boundary_conditions 
+          {
+            Haut paroi_adiabatique 
+            Bas symetrie 
+            Droit paroi_echange_externe_impose h_imp champ_front_uniforme 1 1e10 t_ext ch_front_input 
+              { 
+                nb_comp 1
+                nom Tdroit
+           /*     initial_value 1 291.0 */
+                probleme pb
+              }
+            Gauche symetrie
+          }
+	sources { puissance_thermique champ_input_P0  {  nb_comp 1 nom pvol probleme pb initial_value 1 0. sous_zone toto }  }  
+      }
+    Post_processing 
+      { 
+        Definition_champs {
+         flux_droit Interpolation {
+	 domaine dom_boundaries_Droit
+          localisation elem
+            source Morceau_Equation {
+           type operateur numero 0 option flux_bords
+            source refChamp { Pb_champ pb temperature }
+         }
+	}
+        tmax reduction_0D { methode max  source refChamp { Pb_champ pb temperature } }
+        }
+        Probes 
+          {
+           tmax tmax periode 1e-5 numero_elem_sur_maitre 0
+          }
+        format lml
+        fields  dt_post 30. 
+          {
+            temperature som
+            temperature elem
+	    pvol elem
+          }
+      }
+  }
+end 
+resoudre pb
+
