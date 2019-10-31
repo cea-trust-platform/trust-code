@@ -69,11 +69,13 @@ add_test(NAME TRUST_swig
            ${PYTHON_EXECUTABLE} test_trusticoco.py
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 
-add_test(NAME TRUST_swig_V2
-         COMMAND ${CMAKE_COMMAND} -E env
-              PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
-           ${PYTHON_EXECUTABLE} test_trusticoco_V2.py
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+if(NOT $ENV{TRUST_DISABLE_MEDCOUPLING})
+    add_test(NAME TRUST_swig_V2
+             COMMAND ${CMAKE_COMMAND} -E env
+                  PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
+               ${PYTHON_EXECUTABLE} test_trusticoco_V2.py
+             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+endif()
 
 ##
 ## Installation
