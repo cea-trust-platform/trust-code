@@ -910,9 +910,10 @@ then
     [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
 
     # Then we install miniconda and the different packages
-    echo "Trying to install Miniconda3.7-Linux-x86_64.sh"
-    $TRUST_ROOT/externalpackages/Miniconda/./Miniconda3.7-Linux-x86_64.sh -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
-    [ $? != 0 ] && echo "Error while installing Miniconda3.7-Linux-x86_64.sh. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+    conda_installer=Miniconda3-4.7.12.1-Linux-x86_64.sh
+    echo "Trying to install $conda_installer"
+    $TRUST_ROOT/externalpackages/Miniconda/./$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+    [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
 
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin

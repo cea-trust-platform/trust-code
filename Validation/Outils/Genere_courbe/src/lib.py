@@ -138,13 +138,14 @@ class GestionMessages:
         for m in dico_en:
             dico_inverse[dico_en[m]]=m
 
-        list=[]
+        lst=[]
         for m in dico:
             mot=""
-            if m in list(dico_inverse.keys()): mot=dico_inverse[m]+"|"
+            if m in list(dico_inverse.keys()): 
+                mot=dico_inverse[m]+"|"
             mot+=m
-            list.append(mot)
-        message='Unknown parameter. We were expecting a parameter of %s  like %s, and not %s' %(what,list,motcle)
+            lst.append(mot)
+        message='Unknown parameter. We were expecting a parameter of %s  like %s, and not %s' %(what,lst,motcle)
 
         return self.ecrire(criticite, message, arret, usage, niveau, texteUsage,fichier)
 #GestionnaireMessages = GestionMessages()

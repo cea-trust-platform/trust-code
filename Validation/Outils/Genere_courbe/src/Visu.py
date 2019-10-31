@@ -375,9 +375,9 @@ class Visu:
                 if plot[0]=='operator_to_all': all=1
                 type_op=plot[1].lower()
                 list_base={"threeslice":3,"slice":6,"slice2d":6,"slice2d_x":3,"slice2d_y":3,"slice2d_z":3,"clip_1plane":6,"clip_2planes":12,"no_axes":0,"no_triad":0,"no_bounding_box":0,"no_databaseinfo":0,"no_legend":0}
-                list=list(list_base.keys())
-                if type_op not in list:
-                    self.gestMsg.ecrire(GestionMessages._ERR, 'Unknown keyword. We expect for an operator parameter, and not: %s . Expected possible keywords: %s' % (type_op,list))
+                lst=list(list_base.keys())
+                if type_op not in lst:
+                    self.gestMsg.ecrire(GestionMessages._ERR, 'Unknown keyword. We expect for an operator parameter, and not: %s . Expected possible keywords: %s' % (type_op,lst))
                 if len(plot)-2!=list_base[type_op]:
                     self.gestMsg.ecrire(GestionMessages._ERR, 'We expect %d args for operator %s  and not: %s .' % (list_base[type_op],type_op,len(plot)-2))
                 if type_op=='slice' or (type_op[:7]=='slice2d'):

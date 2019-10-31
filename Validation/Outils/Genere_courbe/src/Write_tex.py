@@ -391,11 +391,7 @@ class Write_tex:
             pass
         pass
     def ecrire_fichier_maitre(self,maitre,dico):
-        for key in list(dico.keys()):
-            cmd=key+'=dico[key]'
-            # print cmd
-            exec(cmd)
-            pass
+        nomFichierTexComplet = dico["nomFichierTexComplet"]
         entete = self.get_template().replace('__TITRECAS__', chaine2Tex(maitre.titre))
         entete = entete.replace('__AUTEUR__', chaine2Tex(maitre.auteur))
         date = time.strftime('%d/%m/%Y')
@@ -470,12 +466,7 @@ class Write_tex:
         pass
     def write_fichiers(self,maitre,dico):
         # generation du fichier.tex
-
-        for key in list(dico.keys()):
-            cmd=key+'=dico[key]'
-            # print cmd
-            exec(cmd)
-            pass
+        destTMP = dico["destTMP"]
         self.ecrire_fichier_maitre(maitre,dico)
 
         ficTex = FileTex( destTMP + '/corps.tex', 'w')
@@ -483,8 +474,6 @@ class Write_tex:
         self.ecrire_introduction(maitre,ficTex)
         self.write_liste_cas(maitre,ficTex)
         self.write_liste_ref(maitre,ficTex)
-
-
 
         for chapitre in maitre.listeChapitres:
             self.inclureChapitreTex(chapitre)
