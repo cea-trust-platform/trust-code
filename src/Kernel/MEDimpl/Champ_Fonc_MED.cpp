@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,9 @@
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
+#include <MEDCouplingField.hxx>
 #include <MEDCouplingFieldDouble.hxx>
+using MEDCoupling::MEDCouplingField;
 using MEDCoupling::MEDCouplingFieldDouble;
 using MEDCoupling::MCAuto;
 using MEDCoupling::GetTimeAttachedOnFieldIteration;
@@ -232,12 +234,19 @@ void Champ_Fonc_MED::lire(double t, int given_it)
               if (given_it != -1 ? given_it == (int) it : est_egal(fieldTime, t))
                 {
                   // ToDo can we avoid reloading the mesh ...
-                  MCAuto<MEDCouplingFieldDouble> field = ReadField(field_type, fileName, meshName, 0, fieldName,
-                                                                   iteration, order);
+                  // Only one MCAuto below to avoid double deletion:
+                  MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName,
+                                                              iteration, order);
+                  MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+                  if (field == 0)
+                    {
+                      Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+                      Process::exit(-1);
+                    }
                   const double *field_values = field->getArray()->begin();
                   assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
                   assert((int) field->getNumberOfComponents() ==
-                         (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
+                      (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
                   memcpy(le_champ().valeurs().addr(), field_values,
                          le_champ().valeurs().size_array() * sizeof(double));
                   read_field = true;
@@ -492,8 +501,16 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
           // Last time:
           if (it==Iterations.size()-1)
             {
-              MCAuto<MEDCouplingFieldDouble> field = ReadField(field_type, fileName, meshName, 0, fieldName, iteration,
-                                                               order);
+              // ToDo can we avoid reloading the mesh ...
+              // Only one MCAuto below to avoid double deletion:
+              MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration,
+                                                          order);
+              MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+              if (field == 0)
+                {
+                  Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+                  Process::exit(-1);
+                }
               size = field->getNumberOfTuplesExpected();
               nbcomp = (int) field->getNumberOfComponents();
             }

@@ -1042,7 +1042,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
       if (nnodes==0)
         points->alloc(0, dimension);
       else
-        points->useArray(sommets.addr(), false, MEDCoupling::CPP_DEALLOC, nnodes, dimension);
+        points->useArray(sommets.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, nnodes, dimension);
       points->setInfoOnComponent(0, "x");
       points->setInfoOnComponent(1, "y");
       if (dimension == 3) points->setInfoOnComponent(2, "z");
@@ -1457,7 +1457,7 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
         {
           int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
           MCAuto<DataArrayDouble> array(DataArrayDouble::New());
-          array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
+          array->useArray(val.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, size, nb_comp);
           // Units:
           if (nb_comp > 1) for (int i = 0; i < nb_comp; i++)
               array->setInfoOnComponent(i, noms_compo[i].getString() + "[" + unite[i].getString() + "]");

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-archive=$1
-medcoupling=`basename $archive .tar.gz`
+archive_mc=$1
+archive_conf=$2
+medcoupling=`basename $archive_mc .tar.gz`
 mc_version=`echo $medcoupling | sed 's/[^0-9]*\([0-9].[0-9].[0-9]\)/\1/'`
 org=`pwd`
 
@@ -50,32 +51,14 @@ then
  ln -sf $MEDCOUPLING_ROOT_DIR $DEST
  exit 0
 fi
-[ ! -f $archive ] && echo $archive no such file && exit 1
-tar zxf $archive
-
-echo patching MEDCouplingMemArray.i
-echo "cp $org/MEDCouplingMemArray.i $medcoupling/src/MEDCoupling_Swig/MEDCouplingMemArray.i"
-cp $org/MEDCouplingMemArray.i $medcoupling/src/MEDCoupling_Swig/MEDCouplingMemArray.i
-
-echo patching MEDCouplingFieldDouble
-cp $org/MEDCouplingFieldDouble.hxx $(find $medcoupling -name  MEDCouplingFieldDouble.hxx )
+[ ! -f $archive_mc ] && echo $archive_mc no such file && exit 1
+[ ! -f $archive_conf ] && echo $archive_conf no such file && exit 1
+tar zxf $archive_mc
+tar zxf $archive_conf
 
 echo patching DisjointDEC
-cp $org/DisjointDEC.hxx $(find $medcoupling -name  DisjointDEC.hxx )
-cp $org/DisjointDEC.cxx $(find $medcoupling -name  DisjointDEC.cxx )
-
-echo patching Interpolation1D0D.txx 
-cp $org/Interpolation1D0D.txx $(find $medcoupling -name Interpolation1D0D.txx )
-
-echo patching MEDCouplingSkyLineArray.cxx 
-cp $org/MEDCouplingSkyLineArray.cxx $(find $medcoupling -name  MEDCouplingSkyLineArray.cxx )
-
-# for swig_import_helper error with icpc 17
-echo patching MEDCouplingMemArray.cxx 
-cp $org/MEDCouplingMemArray.cxx $(find $medcoupling -name  MEDCouplingMemArray.cxx )
-
-echo patching MEDCouplingTimeLabel.hxx 
-cp $org/MEDCouplingTimeLabel.hxx $(find $medcoupling -name  MEDCouplingTimeLabel.hxx )
+sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $medcoupling -name  DisjointDEC.hxx )
+sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $medcoupling -name  DisjointDEC.cxx )
 
 mkdir build
 cd build
@@ -109,7 +92,7 @@ status=$?
 #ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
 
 MC_ENV_FILE=$DEST/env.sh
-version=`python  -c "import sys; print sys.version[:3]"`
+version=`python  -c "import sys; print (sys.version[:3])"`
 echo "export MED_COUPLING_ROOT=$DEST"> $MC_ENV_FILE
 echo "export LD_LIBRARY_PATH=$DEST/lib/:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE
 echo "export PYTHONPATH=$DEST/bin/:$DEST/lib/python$version/site-packages/:\$PYTHONPATH" >> $MC_ENV_FILE
@@ -123,7 +106,7 @@ then
   ## Test de fonctionnement
   ##
   source $MC_ENV_FILE
-  python -c "import MEDCoupling"
+  python -c "import medcoupling"
   if [ $? -eq 0 ]
   then
     echo "MEDCoupling library OK"
