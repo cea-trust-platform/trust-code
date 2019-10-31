@@ -6,7 +6,6 @@ def read_libs_from_makeliba():
     libtrio=[]
     listL=[]
     for mot in a.split():
-        from string import replace
         if (mot.find('-l')>-1):
             libtrio.append(mot.replace('-l',''))
         elif (mot.find('-L')>-1):
@@ -63,9 +62,6 @@ def add_library_for_dir(s2):
 def lire_make_include(file,listlib):
     f=open(file)
     g=f.readlines()
-    from string import join
-    #join(g)
-    from string import replace
     #g=replace(g,'\\\n','')
     t=""
     for s in g:
@@ -96,8 +92,8 @@ def lire_make_include(file,listlib):
             #print s,s.find("Includes") ,s.split('-I')
             s=s.replace('-I.','-I${CMAKE_CURRENT_SOURCE_DIR}')
             s2=s.split('-I')
-
-            strout+="include_directories("+join(s2[1:]).replace('(','{').replace(')','}')+")\n" # .replace('TRUST_ROOT','Trio_SOURCE_DIR')+")\n"
+            inc_dir = " ".join(s2[1:])
+            strout += "include_directories(" + inc_dir.replace('(','{').replace(')','}')+ ")\n" # .replace('TRUST_ROOT','Trio_SOURCE_DIR')+")\n"
             pass
         elif s.find("Lib")>=0:
             s2=s.split("/lib")

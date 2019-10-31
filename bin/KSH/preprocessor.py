@@ -60,11 +60,17 @@ def interprete_file(file,fileout,traitement_special):
 
 def interprete_string(str_in,list_macro,list_vars):
     ''' le preprocesseur modifie str_in tant qu il trouve un pattern ou une variable'''
+    import sys
     global ite,debug_level
+
     list_pattern={}
     for pat in "macro","usemacro","set","unset","if","include","foreach","error","comment":
-        exec("patt=pattern_"+pat+"()")
-        list_pattern[patt.get_pattern()]=patt
+        # Change of behavior of exec() in Python3:
+        #exec("patt=pattern_"+pat+"()", context)
+        # Better to use this:
+        func_name = "pattern_%s" % pat
+        p = getattr(sys.modules[__name__], func_name)()
+        list_pattern[p.get_pattern()] = p 
         pass
 
     pattern,position=cherche_pattern(str_in,list_pattern,list_vars)
