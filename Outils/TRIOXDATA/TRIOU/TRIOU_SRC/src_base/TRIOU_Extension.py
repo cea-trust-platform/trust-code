@@ -27,7 +27,7 @@ myORB = CORBA.ORB_init([''], CORBA.ORB_ID)
 
 # --- Life Cycle CORBA ---
 import LifeCycleCORBA
-myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)                                                            
+myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)
 
 # -----------------------------
 # Find or load TRIOU engine
@@ -76,9 +76,9 @@ class Extension(TRIOU_CORBA__POA.Extension):
            <theWorkingDir> - the working directory, if it is empty, a temporary one is created.
         Returns 1 in success and 0 in failure
         """
-        
+
         self._status = TRIOU_CORBA.FAILED_TO_RUN
-        
+
         # check if solver is already running
         if self._pid != 0:
             if myDebug:
@@ -111,7 +111,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
                 print "* Using default one:", theSolverPath
                 print "*******************************************************"
         self._solverPath = theSolverPath
-            
+
         try:
             # check/create working directory
             if theWorkingDir:
@@ -182,7 +182,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
                         pass
                     pass
 
-                # export the study structure to the data file       
+                # export the study structure to the data file
                 from triou import write_file_data
                 if myDebug: print "TRIOU_Extension.StartSolver: Writing input file: ", self._dataFile
                 write_file_data( self._dataFile, listclass )
@@ -221,19 +221,19 @@ class Extension(TRIOU_CORBA__POA.Extension):
         self._pid = os.spawnlp( os.P_NOWAIT, '/bin/sh', 'sh', '-c', aCmd)
         if myDebug: print 'TRIOU_Extension._RunSolver: PROCESS STARTED -', self._pid
         self._lock.release()
-        
+
         self._status = TRIOU_CORBA.RUNNING
-        
+
         try:
             while 1:
                 # Is the solver alive?
                 aPid, aStatus = os.waitpid(self._pid, os.WNOHANG)
-                
+
                 if self._paused:
                     self._PauseLock.acquire()
                     self._PauseLock.release()
                     pass
-                
+
                 if myDebug: print "TRIOU_Extension._RunSolver: sleep for ", self._delay, "seconds"
                 time.sleep( self._delay )
                 pass
@@ -241,12 +241,12 @@ class Extension(TRIOU_CORBA__POA.Extension):
         except Exception, e:
             if myDebug: print "TRIOU_Extension._RunSolver: Exception - ", e
             pass
-        
+
         self._status = self._PublishData()
         self._ClearWorkingDir()
-            
+
         self._lock.acquire()
-        
+
         # We are not interested in <pid> any longer
         self._pid = 0
 
@@ -269,7 +269,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
         """
         if not self._workDir:
             return TRIOU_CORBA.FAILED_TO_PUBLISH
-        
+
         # look for MED files in the working directory
         aMedFileRE = re.compile( ".+\.med$" )
         aListDir = os.listdir( self._workDir )
@@ -281,7 +281,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
                 aListOfFiles.append( aFile )
                 if myDebug: print "TRIOU_Extension._PublishData: found MED file ", aFile
             pass
-        
+
         # export MED results to VISU if there are any
         status = TRIOU_CORBA.OK_STATUS
         errors = 0
@@ -321,7 +321,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
         if errors > 0:
             status = TRIOU_CORBA.OK_WITH_ERRORS
         return status
-    
+
     def StopSolver(self):
         """
         Stops the solver execution
@@ -373,14 +373,14 @@ class Extension(TRIOU_CORBA__POA.Extension):
         self._lock.acquire()
 
         try:
-            os.kill(self._pid, signal.SIGCONT)        
+            os.kill(self._pid, signal.SIGCONT)
             self._paused = 0
             if myDebug: print 'TRIOU_Extension.ContinueSolver: PROCESS RESUMED!'
 
             self._PauseLock.release()
         except:
             pass
-            
+
         self._lock.release()
 
     def IsSolverRunning(self):

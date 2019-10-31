@@ -6,24 +6,24 @@ try:
     from xcontext import getContext
     context = getContext()
     if context == "clt":
-    
+
         # --- CORBA.ORB instance ---
         from omniORB import CORBA
         myORB = CORBA.ORB_init( [''], CORBA.ORB_ID )
-        
+
         # --- Naming Service ---
         from SALOME_NamingServicePy import *
         myNamingService = SALOME_NamingServicePy_i( myORB )
-        
+
         # --- Life Cycle CORBA ---
         import LifeCycleCORBA
-        myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)                                                            
-        
+        myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)
+
         # --- Study manager ---
         import SALOMEDS
         myStudyManager = myNamingService.Resolve( '/myStudyManager' )
-        
-        # --- TRIOU engine --- 
+
+        # --- TRIOU engine ---
         import TRIOU_CORBA
         myEngine = myLCC.FindOrLoadComponent( "FactoryServerPy", "TRIOU" )
     else:
@@ -83,7 +83,7 @@ def getStudy():
 # -----------------------------
 def getExtension():
     anExtension = myEngine.newGetExtensionObject().GetExtension()
-    return anExtension    
+    return anExtension
 
 # -----------------------------
 # SetSetting(): activate module
@@ -133,7 +133,7 @@ def ImportDataFile():
                                       "(*.data)",
                                       titi,"Import data file","Import data file")
     if not aFile.isEmpty():
-        
+
         from xcontext import getContext
         context = getContext()
         if context == "clt2":
@@ -149,7 +149,7 @@ def ImportDataFile():
             import sys
             syspath=sys.path
             print theWorkingDir
-            s=open(theWorkingDir+"/trad","w")           
+            s=open(theWorkingDir+"/trad","w")
             syspath2=":".join(syspath)
             s.write("#!/bin/bash\nexport PYTHONPATH="+syspath2+'\n')
             s.write('file1=`basename '+str(aFile)+'`\n')
@@ -205,7 +205,7 @@ def ExportDataFile():
             import sys
             syspath=sys.path
             print theWorkingDir
-            s=open(theWorkingDir+"/trad","w")           
+            s=open(theWorkingDir+"/trad","w")
             syspath2=":".join(syspath)
             s.write("#!/bin/bash\nexport PYTHONPATH="+syspath2+'\n')
             s.write('file1=`basename '+str(aFile)+'`\n')

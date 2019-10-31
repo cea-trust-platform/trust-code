@@ -6,4 +6,3 @@ maillages = {"cartesian": "o", "triangle": "///\\//\\", "non_conformal": "o743o5
 xmin, xmax, ymin, ymax = 0., 1., 0., 1.
 n = 12 if argument == "non_conformal" else 26 if argument == "triangle" else 32
 getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), maillages[argument]).write("mesh.med", 2)
-

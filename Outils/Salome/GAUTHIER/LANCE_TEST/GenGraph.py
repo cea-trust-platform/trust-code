@@ -19,7 +19,7 @@ if res:
     from string import split
     MachineToLaunch=split(res,",")
 
-print MachineToLaunch 
+print MachineToLaunch
 ContainerOfDistributor="FactoryServer"
 
 def DefaNewDataFlow(listOfUseCase2, listOfContainers, distribCont):
@@ -75,7 +75,7 @@ def DefaNewDataFlow(listOfUseCase2, listOfContainers, distribCont):
     Ocat_resreturn = cat_res.GetOutPort( 'return' )
     Ocat_resGate = cat_res.GetOutPort( 'Gate' )
     Lwait_for_allGatecat_resGate = aNewDataFlow.Link( Owait_for_allGate , Icat_resGate )
-    
+
     ###
     i=1
     initLaunch=[]
@@ -96,8 +96,8 @@ def DefaNewDataFlow(listOfUseCase2, listOfContainers, distribCont):
         curPyMoreLoop.append('lcc = LifeCycleCORBA.LifeCycleCORBA(orb) ')
         curPyMoreLoop.append('comp=lcc.FindOrLoadComponent("'+distribCont+'","DISTRIBUTOR") ')
         curPyMoreLoop.append('def More'+`i`+'(case): ')
-        curPyMoreLoop.append('	 (DoLoop,case)=comp.getNextElement() ')
-        curPyMoreLoop.append('	 return DoLoop,case ')
+        curPyMoreLoop.append('   (DoLoop,case)=comp.getNextElement() ')
+        curPyMoreLoop.append('   return DoLoop,case ')
         curPyMoreLoop.append('    ')
         curPyNextLoop=[]
         curPyNextLoop.append( '     ' )
@@ -129,7 +129,7 @@ def DefaNewDataFlow(listOfUseCase2, listOfContainers, distribCont):
         loops.append((curLoop,curEndLoop))
         aNewDataFlow.Link(OinitGate,IcurLoopGate)
         ## copie
-           
+
         copiecas1 = aNewDataFlow.FNode( 'SHELLCOMPO' , 'SHELLCOMPO_Gen' , 'copie_cas' )
         copiecas1.SetName( 'copiecas_'+str(i) )
         copiecas1.SetAuthor( '' )
@@ -159,7 +159,7 @@ def DefaNewDataFlow(listOfUseCase2, listOfContainers, distribCont):
         Oexec1return = exec1.GetOutPort( 'return' )
         Oexec1Gate = exec1.GetOutPort( 'Gate' )
         Iexec1machine.Input(container)
-  
+
         ##
         SaveResult = aNewDataFlow.FNode( 'DISTRIBUTOR' , 'DISTRIBUTOR_Gen' , 'SaveResult' )
         SaveResult.SetName( 'SaveResult'+str(i) )
@@ -196,4 +196,3 @@ TEST = DefaNewDataFlow(listOfUseCase, MachineToLaunch, ContainerOfDistributor)
 print "Generation du fichier de supervision"
 TEST.Export("TEST.xml")
 print "Taper TEST.Run() pour lancer en batch"
-

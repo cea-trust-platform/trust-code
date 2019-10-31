@@ -17,7 +17,7 @@ import sys
 
 argv=sys.argv[1:]
 # print argv
-# sys.stderr.write(' '.join(argv)) 
+# sys.stderr.write(' '.join(argv))
 
 i=-1
 for j in range(len(argv)):
@@ -42,7 +42,7 @@ def create_dico(dirs):
     srcs=[]
     for d in dirs:
         root=ENV+"/"+d
- 
+
         for fi in os.listdir(root):
             fifull=os.path.join(root,fi)
             if os.path.splitext(fi)[1] in [".cxx",".cpp",".h",".hxx"]:
@@ -59,7 +59,7 @@ def create_dico(dirs):
     for fi,fifull in srcs:
         # print fifull
         f=file(fifull)
-        
+
         lines=f.readlines()
         lines=filter(expr.match,lines)
         res=[expr.match(line).group("fi") for line in lines]
@@ -72,17 +72,17 @@ def create_dico(dirs):
             except:
                 dico[titi][r]=[f]
                 pass
-        
-        
+
+
         pass
- 
+
     return [dico_h,dico_cpp]
 def create_dico_old(dirs):
     import os
     f=open('deps','w')
     f.close()
     for d0 in dirs:
-        
+
         d=ENV+"/"+d0
         # d=d0
         cmd="egrep  '^#include' "+d+"/*.cpp "+d+"/*.h >>deps 2>/dev/null"
@@ -90,9 +90,9 @@ def create_dico_old(dirs):
         res=os.system(cmd)
         # print "res",res
         # print dir(res)
-    
-    
-    
+
+
+
         pass
 
 
@@ -103,8 +103,8 @@ def create_dico_old(dirs):
     dico_cpp={}
     dico=[dico_h,dico_cpp]
     while (titi):
-    
-    
+
+
         r=titi.split(':')
         r2=r[1].split('<')[1].split('>')[0].strip()
         file=r[0]
@@ -123,7 +123,7 @@ def create_dico_old(dirs):
 
         titi=f.readline()
         pass
-    
+
     os.remove("deps")
     # print dico
     return dico
@@ -165,7 +165,7 @@ while (lena):
         except KeyError:
             pass
         pass
-    
+
     lena=len(files_h)
     for f in files_h:    files_in.append(f)
     # print files_in
@@ -195,7 +195,5 @@ if 0:
     for c in lcpp:
         cmd="ln "+ c + " ."
         print cmd
-    
+
 #print len(lcpp)
-
-

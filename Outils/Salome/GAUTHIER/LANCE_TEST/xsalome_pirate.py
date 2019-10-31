@@ -58,7 +58,7 @@ def getXSalomeSession(*args, **kwargs):
 #
 
 class XSalomeSession(object):
-    
+
     def getKRD(self):
         import os
         KERNEL_ROOT_DIR = os.getenv("KERNEL_ROOT_DIR")
@@ -75,7 +75,7 @@ class XSalomeSession(object):
             system('/bin/rm /tmp/.where_is_runSalome')
             pass
         return KERNEL_ROOT_DIR
-    
+
     def __init__(self, modules, study=0, logger=0, sleeping_time=1):
         try:
             from xcontext import setContext

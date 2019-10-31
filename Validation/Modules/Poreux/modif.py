@@ -1,17 +1,17 @@
 from triou import *
-# on ajoute porosites_champ 
+# on ajoute porosites_champ
 def modif(l):
     new_ll=[]
     for cl in l:
-	new_ll.append(cl)
-	if (isinstance(cl,schema_temps_base)):
+        new_ll.append(cl)
+        if (isinstance(cl,schema_temps_base)):
             if cl.seuil_statio:
                 cl.seuil_statio/=0.5
                 pass
             pass
         if (isinstance(cl,Pb_base)):
-	    porosite_champ=porosites_champ(pb=cl.name_u,ch=uniform_field(val=0.5))
-	    new_ll.append(porosite_champ)
+            porosite_champ=porosites_champ(pb=cl.name_u,ch=uniform_field(val=0.5))
+            new_ll.append(porosite_champ)
             for x in cl.__init__xattributes__:
                 atr=getattr(cl,x.name)
                 if isinstance(atr,eqn_base):

@@ -11,11 +11,11 @@ class TrustFileWatcher(QObject):
         self.__outputFile = None
         self.__outputFileWatcher = None
         self.__outputFileTimer = None
-      
+
     def _getLongCaseName(self):
         cutn=self._showFileView._caseName.split(".data")[0]
         return os.path.join(self._showFileView._currDir,cutn)
-      
+
     @Slot()
     def restart(self):
         """
@@ -27,12 +27,12 @@ class TrustFileWatcher(QObject):
         self.__outputFile = QFile(aCaseOutputFile)
         self.__outputFileWatcher = QFileSystemWatcher(self.parent())
         self.connect( self.__outputFileWatcher, SIGNAL("fileChanged( QString )"), self.__onSimulationFileChanged )
-   
+
         # start timer to detect output file creation
         self.__outputFileTimer = QTimer( self )
         self.__outputFileTimer.timeout.connect( self.__checkOutputFileExists )
         self.__outputFileTimer.start(10)         # start for 10 milliseconds
-        
+
     @Slot()
     def terminate(self):
         """
@@ -84,5 +84,3 @@ class TrustFileWatcher(QObject):
                     self.textEdit.append(unicode(simulationData))
             except:
                 print "ERROR reading simulation output file"
-            
-     

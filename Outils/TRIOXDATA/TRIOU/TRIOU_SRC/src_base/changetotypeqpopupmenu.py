@@ -93,10 +93,10 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
             if cls_name in bases_dict: continue
             bases_dict[cls_name] = cls
             pass
-        if not bases_dict: 
-             item_id = self.insertItem(c.__name__, self.actionActivated)
-             self.item_ids[item_id] = c
-	     return
+        if not bases_dict:
+            item_id = self.insertItem(c.__name__, self.actionActivated)
+            self.item_ids[item_id] = c
+            return
         # --
         keys = bases_dict.keys()
         keys.sort()
@@ -107,9 +107,9 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
         c_self_menu.xtree = self.xtree
         self.insertItem("%s sub-classes ..."%(c.__name__), c_self_menu)
         #
-	item_id=c_self_menu.insertItem(c.__name__, c_self_menu.actionActivated)
-	c_self_menu.item_ids[item_id] = c
-		     
+        item_id=c_self_menu.insertItem(c.__name__, c_self_menu.actionActivated)
+        c_self_menu.item_ids[item_id] = c
+
         for c in bases:
             c_self_menu.insertTypeSubmenu(c)
             pass
@@ -120,11 +120,11 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
         print "AAA", self, cls,cls.name_,self.selection.__instance__name__
 #        from polygon import Square
 #        exec "s = Square(123)"
-	from triou import change_type
-	s = change_type(self.selection,cls)
-        
+        from triou import change_type
+        s = change_type(self.selection,cls)
+
         xtree = self.xtree
-        
+
         if xtree.depth == 1:
             s.__instance__name__=self.selection.__instance__name__
         else:
@@ -156,10 +156,10 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
                 getMainWindow().displayException(long=verbose())
                 pass
             pass
-        
+
         from xmetaclass import __xobjects__
         __xobjects__.remove(s)
-        
+
         if xtree.depth == 1:
             __xobjects__[__xobjects__.index(self.selection)] = s
             pass
@@ -168,4 +168,3 @@ class ChangeToTypeQPopupMenu(QPopupMenu):
         getMainWindow().updateObjectBrowser()
         return
     pass
-

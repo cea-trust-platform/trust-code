@@ -9,10 +9,10 @@ SetAnnotationAttributes(annotation)
 
 
 try:
-  execfile('config_visit.py')
-  print "user config loaded"
+    execfile('config_visit.py')
+    print "user config loaded"
 except:
-  pass
+    pass
 res=OpenDatabase("FTD_all_VEF/post1.lata")
 if res==0: print "can't read data file FTD_all_VEF/post1.lata ";quit()
 ActivateDatabase("FTD_all_VEF/post1.lata")
@@ -45,19 +45,19 @@ SetSaveWindowAttributes(s)
 cycles=[str(TimeSliderGetNStates()-1)]
 num=-1
 for state in cycles:
-  num+=1
-  state_reel=eval(state)
-  if (state_reel<0): state_reel+=TimeSliderGetNStates()
-  ok=SetTimeSliderState(state_reel)
-  if (ok==0): 1/0
-  Query("Time")
-  time=GetQueryOutputValue()
+    num+=1
+    state_reel=eval(state)
+    if (state_reel<0): state_reel+=TimeSliderGetNStates()
+    ok=SetTimeSliderState(state_reel)
+    if (ok==0): 1/0
+    Query("Time")
+    time=GetQueryOutputValue()
 
-  name=SaveWindow()
-  print name
-  cmd="mv "+name+" ./.tmp/fic_001_%d.png"%num
-  import os
-  print cmd
-  os.system(cmd)
+    name=SaveWindow()
+    print name
+    cmd="mv "+name+" ./.tmp/fic_001_%d.png"%num
+    import os
+    print cmd
+    os.system(cmd)
 #SaveSession("visit_001.session")
 #quit()

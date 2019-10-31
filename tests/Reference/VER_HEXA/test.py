@@ -21,7 +21,7 @@ for i in range(fac(n)):
  #   print d
     pass
 for j1 in range(n):
- 
+
     for j2 in range(n):
         if (j2!=j1):
             for j3 in range(n):
@@ -29,7 +29,7 @@ for j1 in range(n):
                     for j4 in range(n):
                         if (j4!=j1) and (j4!=j2) and (j4!=j3):
                             for k1 in range(n):
-                                
+
                                 for k2 in range(n):
                                     if (k2!=k1):
                                         for k3 in range(n):

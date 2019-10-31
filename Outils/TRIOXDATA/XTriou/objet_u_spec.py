@@ -75,7 +75,7 @@ def print_lu_discretize(self,list_class=[]):
     for i in range(i0):
         cl=list_class[i]
         if (isinstance(cl,discretize)):
-            cl.mode_ecr=0 
+            cl.mode_ecr=0
             pass
         pass
     pb=trouve_class_list(self.problem_name,list_class)
@@ -109,13 +109,13 @@ def read_val_pb_ft(self,chaine2,niveau,listdata,mottest):
             else:
                 clref=trouve_class_list(val,listdata)
                 pass
-            
+
             if lmottest == lower(clref.name_u):
                 # print clref
                 clref.read_data(chaine2,niveau,listdata)
                 listdata.remove(clref)
                 listdata.append(clref)
-                return 
+                return
             pass
         pass
     # 1/0
@@ -124,19 +124,19 @@ def print_lire_pb_ft(self,listdata=[]):
     toto=Pb_base.print_lire(self,listdata)
     ok=1
     if toto == "":
-	    ok=0
-	    toto="  Lire " +self.name_u+ " { }"
-	    pass
-	    #return toto
+        ok=0
+        toto="  Lire " +self.name_u+ " { }"
+        pass
+        #return toto
     il=toto.index('{')+1
     #print "ici", self,toto[:il]
-    
+
     list_ref= self.get_list_ref();
     ajout=""
     for ref in list_ref:
         val=getattr(self,ref.name)
         if val!=None:
-            # print list_class
+        # print list_class
             if isinstance(val,objet_u):
                 clref=val
             else:
@@ -152,9 +152,9 @@ def print_lire_pb_ft(self,listdata=[]):
         pass
     # on garde le debit Lire PPPP { , on ajoute ajout et la suite .
     if (ok) or (ajout!= ""):
-      titi=toto[:il]+" "+ajout+" "+toto[il:]
+        titi=toto[:il]+" "+ajout+" "+toto[il:]
     else:
-       titi=""
+        titi=""
     pass
     return titi
 def get_list_ref_ft_disc_gen(self):
@@ -174,7 +174,7 @@ def get_list_ref_ft_disc_gen(self):
     for ref in list:
         listeq.append(ref)
         pass
-    
+
     return listeq
 
 
@@ -196,7 +196,7 @@ except NameError:
 def comment_read_data(self,chaine,niveau,listdata=[]):
     comm,chaine=read_bloc_comm(chaine)
     setattr(self,"comm",comm)
-    
+
     #        print "comm_read",chaine
     return chaine
 def comment_print_lu(self,ll=[]):
@@ -232,23 +232,23 @@ try:
 except NameError:
     coupled=False
 def probleme_couple_print_lire(self,list_class):
-	return ""
+    return ""
 def probleme_couple_print_associer(self,list_class):
     if (self.groupes):
         a=""
-	for g in self.groupes.listobj:
+        for g in self.groupes.listobj:
             for pb in g.listobj:
-		val=pb.mot
+                val=pb.mot
                 if isinstance(val,objet_u):
                     clref=val
-		else:
+                else:
                     clref=trouve_class_list(val,list_class)
                     pass
                 a=a+clref.print_lu(list_class)
                 pass
             pass
-	a+= '\n'+self.print_lire_org(list_class)
-	a+= '\n'+self.print_associer_org(list_class)
+        a+= '\n'+self.print_lire_org(list_class)
+        a+= '\n'+self.print_associer_org(list_class)
         return a
     else:
         return  self.print_associer_org(list_class)
@@ -257,4 +257,3 @@ if coupled:
     coupled_problem.print_associer=probleme_couple_print_associer
     coupled_problem.print_lire=probleme_couple_print_lire
     pass
-

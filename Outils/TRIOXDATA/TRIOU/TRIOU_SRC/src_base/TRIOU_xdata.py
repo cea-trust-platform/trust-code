@@ -28,11 +28,11 @@ class GetExtensionObject(XObject):
                                            )
                 ),
         ]
-    
+
     def GetExtension(self):
         from TRIOU_Extension import Extension
         return Extension()._this()
-    
+
     pass
 
 study_to_cls_to_name_map = {}
@@ -60,7 +60,7 @@ class ExportImportObject(XObject):
                 out_xtype=XInt()
                 ),
         ]
-    
+
     def ImportDataFile(self, study, fileName):
         print study, fileName
         try:
@@ -115,8 +115,7 @@ class ExportImportObject(XObject):
 
 def setSettings():
     if in_tui:
-     from TRIOUGUI_Extension import setSettings
-     setSettings()
-     pass
+        from TRIOUGUI_Extension import setSettings
+        setSettings()
+        pass
     pass
-

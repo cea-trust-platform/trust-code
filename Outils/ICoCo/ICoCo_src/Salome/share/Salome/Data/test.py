@@ -16,8 +16,8 @@ comp.setDataFile("toto")
 comp.initialize()
 comp.terminate()
 if (1):
- comp2 = salome.lcc.FindOrLoadComponent( factory,"Problem" )
- comp2.setDataFile("toto")
- comp2.initialize()
- comp2.terminate()
- print "fin run 2"
+    comp2 = salome.lcc.FindOrLoadComponent( factory,"Problem" )
+    comp2.setDataFile("toto")
+    comp2.initialize()
+    comp2.terminate()
+    print "fin run 2"

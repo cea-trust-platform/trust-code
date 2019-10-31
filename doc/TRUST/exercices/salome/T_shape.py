@@ -112,4 +112,4 @@ smesh.SetName(Mesh_1.GetMesh(), 'Mesh_1')
 
 
 if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser(1)
+    salome.sg.updateObjBrowser(1)

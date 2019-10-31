@@ -129,7 +129,7 @@ class Maillage():
                 if ftype in [3, 4]: n, t = n, n
                 # Matrice M0
                 for i in range(2):
-                    if ftype in [0, 1]: M0[i, shift + a] = n[i] 
+                    if ftype in [0, 1]: M0[i, shift + a] = n[i]
                 # Matrice M1
                 for ij, [i, j] in enumerate([i, j] for i in range(2) for j in range(2)):
                     if ftype in [0, 1]: M1[ij, shift + a] = n[i] * x[j]
@@ -381,8 +381,8 @@ class Maillage():
         pts_fantomes.allocateCells(self.Nf)
         coo = []
         for i, sommets in enumerate(arr):
-           pts_fantomes.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
-           coo.extend(sommets[0]); coo.extend(sommets[1])
+            pts_fantomes.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
+            coo.extend(sommets[0]); coo.extend(sommets[1])
         coords = ml.DataArrayDouble(coo, self.Nf*2, 2)
         pts_fantomes.setCoords(coords)
         pts_fantomes.finishInsertingCells()
@@ -394,10 +394,10 @@ class Maillage():
         pts_interp.allocateCells(nb)
         coo_I = []; i = 0
         for k, v in arr_I.iteritems():
-           for (x, y) in v:
-               pts_interp.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
-               coo_I.extend(x); coo_I.extend(y)
-               i+=1
+            for (x, y) in v:
+                pts_interp.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
+                coo_I.extend(x); coo_I.extend(y)
+                i+=1
         coords_I = ml.DataArrayDouble(coo_I, 2 * nb, 2)
         pts_interp.setCoords(coords_I)
         pts_interp.finishInsertingCells()

@@ -44,7 +44,7 @@ def buildMEDFileData(latafile,lasttime):
         if lasttime:
             liste_ite=[a.GetNTimesteps()-1]
             mf1ts = MEDLoader.MEDFileField1TS()
-        
+
         mfmultits = MEDLoader.MEDFileFieldMultiTS()
 
         #boucle sur les pas de temps
@@ -53,7 +53,7 @@ def buildMEDFileData(latafile,lasttime):
             if name.find('_centerfaces')>0:
                 continue
             f=a.GetFieldDouble(name,ite)
-            
+
             #traitement des sommets
             if name.find('_SOM_')>0:
                 f2 = f.deepCopy()
@@ -129,5 +129,3 @@ if __name__=="__main__":
     for l in listOfWrittenFileNames:
         print "File \"%s\" successfully written !"%(l)
         pass
-
-

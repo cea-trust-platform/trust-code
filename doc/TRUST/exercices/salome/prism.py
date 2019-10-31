@@ -127,4 +127,4 @@ smesh.SetName(Inlet_2, 'Inlet')
 
 
 if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser(1)
+    salome.sg.updateObjBrowser(1)

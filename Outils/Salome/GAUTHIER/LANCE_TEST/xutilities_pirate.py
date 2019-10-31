@@ -401,7 +401,7 @@ def getDisassembledCode(code):
         return disco
     #
     code2disco[code_id] = disco
-    
+
     return getDisassembledCode(code)
 
 

@@ -93,94 +93,94 @@ class Write_tex:
         pass
     # inclusion de la figure dans le fichier latex
     def inclureFigureTex(self, figure,fichier):
-	    '''Inclusion de la figure dans le fichier latex du rapport de validation.'''
-            minifigure=self.minifigure_avt
-            if (figure.nb_img_without_newline>0):
-                minifigure=1
-                pass
-            if (minifigure<1):
-                fichier.write_Tex('\n')
-                pass
-	    fichier.write_Tex('% Debut figure')
-	    if figure.titre!='Undefined':
-	      fichier.write_Tex('\subsection{%s}' % chaine2Tex(figure.titre))
-	      pass
+        '''Inclusion de la figure dans le fichier latex du rapport de validation.'''
+        minifigure=self.minifigure_avt
+        if (figure.nb_img_without_newline>0):
+            minifigure=1
+            pass
+        if (minifigure<1):
+            fichier.write_Tex('\n')
+            pass
+        fichier.write_Tex('% Debut figure')
+        if figure.titre!='Undefined':
+            fichier.write_Tex('\subsection{%s}' % chaine2Tex(figure.titre))
+            pass
 
-            if minifigure:
-                minipage_width=figure.width.split(",")[0]
-                fichier.write_Tex('\hspace*\fill')
-                fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
-                pass
-            fichier.write_description(figure.description)
-            fichier.write_text('')
+        if minifigure:
+            minipage_width=figure.width.split(",")[0]
+            fichier.write_Tex('\hspace*\fill')
+            fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
+            pass
+        fichier.write_description(figure.description)
+        fichier.write_text('')
 
-            self.verifie_existance_fichier(figure.fichierGraphiqueComplet,figure)
+        self.verifie_existance_fichier(figure.fichierGraphiqueComplet,figure)
 
-            width="".join(figure.width.split())
-            if (width!="0cm") and (width[0]!="-"):
-                self.nb_visu+=1
-                if figure.format=='ps' or  figure.format=='png' :
-                    fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (figure.width,figure.fichierGraphique))
-                else:
-                    # fichier.write('\input{%s}\n' % figure.fichierGraphiqueComplet)
-                    fichier.write_Tex('\input{\orig/.tmp/%s}' % figure.fichierGraphique)
-                    pass
-                pass
+        width="".join(figure.width.split())
+        if (width!="0cm") and (width[0]!="-"):
+            self.nb_visu+=1
+            if figure.format=='ps' or  figure.format=='png' :
+                fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (figure.width,figure.fichierGraphique))
             else:
-                print "The figure does not really include the picture ",figure.fichierGraphique," because the width <= 0:",figure.width
-                pass
-            if (minifigure==1):
-                fichier.write_Tex('} \end{minipage}')
-                fichier.write_Tex('\hspace*\fill')
-                pass
-            if (self.nb_visu>=figure.nb_img_without_newline):
-                fichier.write_Tex('\n\n')
-                self.nb_visu=0
-                self.minifigure_avt=0
-            else:
-                self.minifigure_avt=minifigure
+                # fichier.write('\input{%s}\n' % figure.fichierGraphiqueComplet)
+                fichier.write_Tex('\input{\orig/.tmp/%s}' % figure.fichierGraphique)
                 pass
             pass
-	    if len(figure.listeCourbes)>0 and figure.inclureDescCourbes==1:
-                # description des courbes
-                fichier.write_Tex('\n% Debut courbe')
-                fichier.write_text('Description des courbes de la figure %s:'%(figure.fichierGraphique) )
-                fichier.write_Tex('\begin{itemize}')
-                for courbe in figure.listeCourbes:
-                    #   courbe.inclureCourbeTex(fichier)
-                    fichier.write_Tex_sans_nl('\item %s : ' % (chaine2Tex(courbe.legende)))
-                    if len(courbe.description)!=0:
-                        fichier.write_description_sans_nl(courbe.description)
-			fichier.write_Tex_sans_nl('\\\\')
-                        pass
-                    tmp = False
-                    if courbe.origine!='Undefined':
-			fichier.write_text_sans_nl(courbe.origine)
-			tmp = True
-                        pass
-                    if courbe.version!='Undefined':
-			fichier.write_text_sans_nl(' '+courbe.version)
-			tmp = True
-                        pass
-                    if tmp: fichier.write_Tex_sans_nl('\\\\')
+        else:
+            print "The figure does not really include the picture ",figure.fichierGraphique," because the width <= 0:",figure.width
+            pass
+        if (minifigure==1):
+            fichier.write_Tex('} \end{minipage}')
+            fichier.write_Tex('\hspace*\fill')
+            pass
+        if (self.nb_visu>=figure.nb_img_without_newline):
+            fichier.write_Tex('\n\n')
+            self.nb_visu=0
+            self.minifigure_avt=0
+        else:
+            self.minifigure_avt=minifigure
+            pass
+        pass
+        if len(figure.listeCourbes)>0 and figure.inclureDescCourbes==1:
+            # description des courbes
+            fichier.write_Tex('\n% Debut courbe')
+            fichier.write_text('Description des courbes de la figure %s:'%(figure.fichierGraphique) )
+            fichier.write_Tex('\begin{itemize}')
+            for courbe in figure.listeCourbes:
+                #   courbe.inclureCourbeTex(fichier)
+                fichier.write_Tex_sans_nl('\item %s : ' % (chaine2Tex(courbe.legende)))
+                if len(courbe.description)!=0:
+                    fichier.write_description_sans_nl(courbe.description)
+                    fichier.write_Tex_sans_nl('\\\\')
+                    pass
+                tmp = False
+                if courbe.origine!='Undefined':
+                    fichier.write_text_sans_nl(courbe.origine)
+                    tmp = True
+                    pass
+                if courbe.version!='Undefined':
+                    fichier.write_text_sans_nl(' '+courbe.version)
+                    tmp = True
+                    pass
+                if tmp: fichier.write_Tex_sans_nl('\\\\')
 
-                    if (courbe.fichier!='Undefined'):
-                        fichier.write_text_sans_nl('\nfichier %s' % ((courbe.fichier)))
-                        pass
-                    if (courbe.fonction!='Undefined'):
-			fichier.write_text_sans_nl('\nfonction %s' % ((courbe.fonction)))
-                        pass
-		    pass
-                fichier.write_Tex('\end{itemize}')
-                fichier.write_Tex('')
+                if (courbe.fichier!='Undefined'):
+                    fichier.write_text_sans_nl('\nfichier %s' % ((courbe.fichier)))
+                    pass
+                if (courbe.fonction!='Undefined'):
+                    fichier.write_text_sans_nl('\nfonction %s' % ((courbe.fonction)))
+                    pass
                 pass
-	    pass
+            fichier.write_Tex('\end{itemize}')
+            fichier.write_Tex('')
+            pass
+        pass
 
     # inclusion de la visu dans le fichier latex
     def inclureVisuTex(self, visu,fichier):
         '''Inclusion de la visu dans le fichier latex du rapport de validation.'''
         fichier.write_Tex('% Debut visu')
-	if visu.titre!='Undefined':
+        if visu.titre!='Undefined':
             fichier.write_Tex('\subsection{%s}' % chaine2Tex(visu.titre))
             pass
         minifigure=self.minifigure_avt
@@ -233,11 +233,11 @@ class Write_tex:
         valeurT=tableau.label.split('|')
         label=[ x.strip() for x in valeurT ]
         fichier.write_Tex('\n% Debut tableau')
-	if tableau.titre!='Undefined':
-          fichier.write_Tex('\subsection{%s}' % chaine2Tex(tableau.titre))
-	  pass
+        if tableau.titre!='Undefined':
+            fichier.write_Tex('\subsection{%s}' % chaine2Tex(tableau.titre))
+            pass
         fichier.write_description(tableau.description)
-	if len(tableau.listeLignes)==0: return
+        if len(tableau.listeLignes)==0: return
         nbc=tableau.nb_colonnes
         if (tableau.formule): nbc+=1
         data = [ ]
@@ -302,20 +302,20 @@ class Write_tex:
         for  line in data:
             assert( len(line) == nb_columns )
         if tableau.transposed_display:
-                transposed_data=[]
-                for i in xrange( nb_columns ):
-                    transposed_data.append( [ ] )
+            transposed_data=[]
+            for i in xrange( nb_columns ):
+                transposed_data.append( [ ] )
 
-                for i in xrange( nb_lines ):
-                    for j in xrange( nb_columns ):
-                        transposed_data[ j ].append( data[ i ][ j ] )
+            for i in xrange( nb_lines ):
+                for j in xrange( nb_columns ):
+                    transposed_data[ j ].append( data[ i ][ j ] )
 
-                for index, line in enumerate(transposed_data):
-                    fichier.write( ' & '.join( line ) )
-                    if index==0:
-                        fichier.write(' \endhead  \hline \n')
-                    else:
-                        fichier.write(' \\\\  \hline \n')
+            for index, line in enumerate(transposed_data):
+                fichier.write( ' & '.join( line ) )
+                if index==0:
+                    fichier.write(' \endhead  \hline \n')
+                else:
+                    fichier.write(' \\\\  \hline \n')
         else:
             for index, line in enumerate(data):
                 fichier.write( ' & '.join( line ) )
@@ -337,24 +337,24 @@ class Write_tex:
             for ligne in tableau.listeLignes:
                 if (isinstance(ligne,Lignes)):continue
                 # inclusion de la ligne dans le fichier latex
-		fichier.write_Tex_sans_nl('\item %s : ' % (chaine2Tex(ligne.legende)))
-		if len(ligne.description)!=0:
+                fichier.write_Tex_sans_nl('\item %s : ' % (chaine2Tex(ligne.legende)))
+                if len(ligne.description)!=0:
                     fichier.write_description_sans_nl(ligne.description)
                     fichier.write_Tex_sans_nl('\\\\')
                     pass
-		tmp = False
-		if ligne.origine!='Undefined':
+                tmp = False
+                if ligne.origine!='Undefined':
                     fichier.write_text_sans_nl('%s' % ((ligne.origine)))
                     tmp = True
                     pass
-		if ligne.version!='Undefined':
+                if ligne.version!='Undefined':
                     fichier.write_text_sans_nl(' %s' % ((ligne.version)))
                     tmp = True
                     pass
-		if tmp:
+                if tmp:
                     fichier.write('\\\\')
                     pass
-		fichier.write_text_sans_nl('\nfichier %s' % ((ligne.fichier)))
+                fichier.write_text_sans_nl('\nfichier %s' % ((ligne.fichier)))
 
                 #  ligne.inclureLigneTex(fichier)
                 pass
@@ -380,8 +380,8 @@ class Write_tex:
         '''Inclusion du chapitre dans le fichier latex du rapport de validation.'''
         fichier=self.ficTex
         fichier.write_Tex('\n% Debut Chapitre')
-	if chapitre.titre!='Undefined':
-          fichier.write_Tex('\section{%s}' % chaine2Tex(chapitre.titre))
+        if chapitre.titre!='Undefined':
+            fichier.write_Tex('\section{%s}' % chaine2Tex(chapitre.titre))
         fichier.write_description(chapitre.description)
         iter = 0
 
@@ -398,7 +398,7 @@ class Write_tex:
             pass
         entete = self.get_template().replace('__TITRECAS__', chaine2Tex(maitre.titre))
         entete = entete.replace('__AUTEUR__', chaine2Tex(maitre.auteur))
-	date = time.strftime('%d/%m/%Y')
+        date = time.strftime('%d/%m/%Y')
         entete = entete.replace('__DATE__', chaine2Tex(date))
 
         ficTexm = FileTex(nomFichierTexComplet, 'w')
@@ -507,8 +507,8 @@ class Write_tex:
         suite_entete='''Validation made by : __AUTEUR__.\\\\Report generated  __DATE__.'''
         # '
         suite_entete = suite_entete.replace('__AUTEUR__',maitre.auteur)
-	import time
-	date = time.strftime('%d/%m/%Y')
+        import time
+        date = time.strftime('%d/%m/%Y')
         suite_entete = suite_entete.replace('__DATE__',date)
         # suite_entete = suite_entete.replace('\\','\\\\')
         ficTex.write_text(suite_entete)
@@ -534,7 +534,7 @@ class Write_tex:
         ficTex.write_Tex('\end{itemize}')
         pass
     def get_template(self):
-	    _templateTEX_ = '''% This file was generated automaticaly with the genererCources.py script
+        _templateTEX_ = '''% This file was generated automaticaly with the genererCources.py script
 \documentclass[10pt,twoside,a4paper]{article}
 \usepackage[ascii]{}
 \usepackage{longtable}
@@ -590,4 +590,4 @@ class Write_tex:
 \begin{document}
 {\huge\centering __TITRECAS__ \par}
 '''
-            return _templateTEX_
+        return _templateTEX_

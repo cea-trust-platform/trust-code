@@ -11,18 +11,18 @@ def read_libs_from_makeliba():
             libtrio.append(mot.replace('-l',''))
         elif (mot.find('-L')>-1):
             P=mot[2:]
-	    if not P in listL:
+            if not P in listL:
                 listL.append(P)
                 pass
             pass
         elif (mot.find('/lib')>-1)and(mot[0]!='-'):
             libtrio.append(mot[mot.rfind('/lib')+4:-2])
             P=(mot[:mot.rfind('/lib')])
-	    if not P in listL:
+            if not P in listL:
                 listL.append(P)
                 pass
             pass
-        
+
         pass
     list1=[]
     list2=[]
@@ -35,7 +35,7 @@ def read_libs_from_makeliba():
         pass
     print "libdeptrio ",libtrio
     out=open(os.getenv("TRUST_ENV")+"/Cmake.libs","w")
-    
+
     out.write('SET (list_path_libs '+' '.join(list1)+')\n')
     out.write('SET (list_path_sys '+' '.join(list2)+')\n')
     out.write('SET (list_libs '+' '.join(libtrio)+')\n')
@@ -46,7 +46,7 @@ def read_libs_from_makeliba():
 
 
 def add_library_for_dir(s2):
-    strout="add_library(obj_"+s2+" OBJECT  ${srcs} )\n"    
+    strout="add_library(obj_"+s2+" OBJECT  ${srcs} )\n"
     strout += "set(listlibs ${listlibs} " +s2 +" PARENT_SCOPE    )\n"
     strout += "add_custom_target(check_sources_"+s2+"   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} ) #COMMENT  \"checking code validity "+s2+"\" )\n" # MAIN_DEPENDENCY ${file} DEPENDS ${file})\n"
     strout+="add_DEPENDENCIES(obj_"+s2+" check_sources_"+s2+")\n"
@@ -76,19 +76,19 @@ def lire_make_include(file,listlib):
     else:
         import os
         strout="file(GLOB srcs "
-    
+
         l1=os.listdir(os.path.dirname(file))
         for l in l1:
             if ((l[-4:]==".cpp")or (l[-2:]==".c") or (l[-2:]==".f")):
                 strout+=l+" "
                 pass
-            
+
             pass
         strout+=" )\n"
         pass
-    
+
     #  strout+="add_definitions(${ADD_CPPFLAGS})\n"
-    
+
     # print t,type(t)
     for s in t:
         #print s
@@ -96,14 +96,14 @@ def lire_make_include(file,listlib):
             #print s,s.find("Includes") ,s.split('-I')
             s=s.replace('-I.','-I${CMAKE_CURRENT_SOURCE_DIR}')
             s2=s.split('-I')
-            
+
             strout+="include_directories("+join(s2[1:]).replace('(','{').replace(')','}')+")\n" # .replace('TRUST_ROOT','Trio_SOURCE_DIR')+")\n"
             pass
         elif s.find("Lib")>=0:
             s2=s.split("/lib")
             listlib.append(s2[1])
             strout+=add_library_for_dir(s2[1])
-           
+
             pass
         pass
     return strout,listlib
@@ -123,14 +123,14 @@ def generate_cmake(listdirorg,sans_subdir,atelier):
     import os
     if ((sans_subdir==1)):
         for dirmake in listdirorg:
-            
+
             cmake=os.path.join(dirmake,'CMakeLists.txt')
             if os.path.exists(cmake):
                 os.remove(cmake)
                 pass
             pass
         pass
-    
+
     if ((sans_subdir==0)):
         for dirmake in listdirorg:
             strout=""
@@ -143,16 +143,16 @@ def generate_cmake(listdirorg,sans_subdir,atelier):
             out.write(strout)
             pass
         # listinclude+=dirmake.replace('.','${Trio_SOURCE_DIR}')+" "
-       
+
         if 1:
             out=open(os.path.join('src/MAIN','CMakeLists.txt'),'a')
             out.write(add_library_for_dir("main"))
             out.close()
         pass
         # global
-        
+
         pass
-    
+
     if (atelier) :
         out=open('CMakeLists.txt.trio','w')
     else:
@@ -210,7 +210,7 @@ if (NOT ${kernel} STREQUAL "full")
     if (${trouve} EQUAL -1)
       STRING(REPLACE "/" "_" d2 ${d})
       set(oo "${oo} void instancie_${d2}() { } ")
-    endif() 
+    endif()
   endforeach(d)
   set(oo "${oo} \n")
   if (EXISTS  ${special_srcs})
@@ -219,16 +219,16 @@ if (NOT ${kernel} STREQUAL "full")
   else()
     set(update_src 1)
   endif()
-  if (update_src)  
+  if (update_src)
     message( "update ${special_srcs}")
     FILE(WRITE ${special_srcs} "${oo}")
   endif(update_src)
-  
+
   set(listdir ${listdirmod})
 endif()
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
-    
+
 
 
 
@@ -256,7 +256,7 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "semi_opt")
 elseif (CMAKE_BUILD_TYPE STREQUAL "custom")
     set(OPT "_custom")
     include (${TRUST_ROOT}/env/Cmake.custom)
-else(CMAKE_BUILD_TYPE STREQUAL "Release") 
+else(CMAKE_BUILD_TYPE STREQUAL "Release")
    message(FATAL_ERROR  "unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt,Release_avx,custom")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 message("Mode: ${OPT}")
@@ -297,7 +297,7 @@ set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
                     liste_f.append(m)
                     pass
                 pass
-            #print liste_f    
+            #print liste_f
             # out.write('# SET( CMAKE_CXX_FLAGS "'+' '.join(liste_f)+'" CACHE STRING "comme dans trio" FORCE )\n')
             pass
     out.write('include (${TRUST_ROOT}/env/Cmake.env)\n')
@@ -308,10 +308,10 @@ set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
     out.write('FOREACH (liba ${list_libs})\n')
     out.write('''        set (staticlib lib${liba}.a )
          find_library( lib${liba} NAMES ${staticlib} ${liba} PATHS ${list_path_libs} NO_DEFAULT_PATH )
-	if (${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
-	   message("${liba} librairie systeme ?")
-	   find_library( lib${liba} NAMES ${liba} PATHS ${list_path_sys} )
- 	endif(${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
+        if (${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
+           message("${liba} librairie systeme ?")
+           find_library( lib${liba} NAMES ${liba} PATHS ${list_path_sys} )
+        endif(${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
         # pour supermuc on cherche ligfortran.so.3  en dur
         if (${liba} STREQUAL gfortran)
           if (${lib${liba}} STREQUAL libgfortran-NOTFOUND)
@@ -322,7 +322,7 @@ set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
         SET(libs ${libs} ${lib${liba}})
 ENDFOREACH (liba )
 ''')
-    
+
     # out.write('find_library( gfortran lib gfortran)\n')
     # out.write('SET (gfortran gfortran)\n')
 
@@ -341,7 +341,7 @@ ENDIF(NOT VISUAL)
 
     out.write('''
 
- 
+
  set(trio TRUST${COMM}${OPT})
  set(libtrio_name TRUST${COMM}${ajout}${OPT})
  set(libtrio lib${libtrio_name})
@@ -356,15 +356,15 @@ if(NOT COMPIL_DYN)
   foreach(_obj IN LISTS listlibs)
     LIST (APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
   endforeach()
-  
+
  add_library(${libtrio} STATIC  ${special_srcs} ${my_listobj} )
  set_target_properties(${libtrio} PROPERTIES OUTPUT_NAME ${libtrio_name} PREFIX "" )
  install(TARGETS ${libtrio} DESTINATION lib)
 else(NOT COMPIL_DYN)
  set(libtrio ${listlibs})
-  
+
 endif(NOT COMPIL_DYN)
- 
+
  # on ne produit pas d executable en mode partiel
  IF((  "${ajout}" STREQUAL "" ) OR ($ENV{FORCE_LINK}))
    add_executable (${trio} MAIN/the_main.cpp MAIN/mon_main.cpp ${special_srcs}  )
@@ -389,8 +389,8 @@ ADD_TEST(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:${trio}> -check ${l3}  )
 endforeach(f )
 
  ENDIF()
- 
- 
+
+
 ELSE(NOT ATELIER)
 FOREACH(dir ${listdir})
    include_directories(${TRUST_ROOT}/${dir})
@@ -400,7 +400,7 @@ ENDIF(NOT ATELIER)
 
 ''')
 
-    
+
     print "libtrio ",listlib
     pass
 
@@ -418,7 +418,7 @@ if  __name__ == '__main__':
         sans_subdir=1
         rep_dev=os.getenv("rep_dev")
         os.chdir(rep_dev)
-	# g=open("dummy.f","a"); g.close()
+        # g=open("dummy.f","a"); g.close()
         #g=open("dummy.cpp","a"); g.close()
         # os.system("cree_info_atelier.sh")
         atelier=1
@@ -445,7 +445,7 @@ if  __name__ == '__main__':
                 pass
             pass
         pass
-    
+
 
     for make in args:
         from os.path import dirname,basename
@@ -456,7 +456,7 @@ if  __name__ == '__main__':
             pass
         s2=s.replace('./','')
         listdirorg.append(s2)
-        
+
         pass
     # print listdir
     generate_cmake(listdirorg,sans_subdir,atelier)
@@ -525,14 +525,14 @@ target_link_libraries(exe ${libdeps} ${libTrio}  ${syslib})
 ''')
         prog= os.getenv("PROGRAM")
         # print "ici",prog
-        
+
         if (prog):
             out.write('set(EXECUTABLE_OUTPUT_PATH %s) \n' % os.path.dirname(prog))
             out.write('set(PROGRAM %s${OPT})\n '% os.path.basename(prog))
         else:
             out.write('''
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/exec${OPT})
-set(PROGRAM ${trio}) 
+set(PROGRAM ${trio})
 ''')
             pass
         out.write('''

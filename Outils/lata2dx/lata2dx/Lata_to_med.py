@@ -15,7 +15,7 @@ def short_name(m):
 
 def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
     """
-    Load single mesh from latafile and write it to medfile, potentially removing duplicate nodes. 
+    Load single mesh from latafile and write it to medfile, potentially removing duplicate nodes.
     @param latafile
     @param medfile
     @param  domain_name mesh name in the LATA file. Can be None in which case the first (and only one) mesh is taken.
@@ -98,9 +98,9 @@ def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
                 if name.find('_SOM_')>0:
                     f2 = f.deepCopy()
                     if not indices is None: # some renumbering has to be performed (nodes have been merged)
-                      d = f2.getArray()
-                      d2 = indices.invertArrayO2N2N2O(newNbNodes)
-                      f2.setArray(d[d2])
+                        d = f2.getArray()
+                        d2 = indices.invertArrayO2N2N2O(newNbNodes)
+                        f2.setArray(d[d2])
 
                     MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f2)
                 else:
@@ -114,14 +114,14 @@ def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
 
 
 def usage():
-  print "usage: Lata_to_med.py latafile [ medfile ] [ domain_name ] [ mesh_only ] "
+    print "usage: Lata_to_med.py latafile [ medfile ] [ domain_name ] [ mesh_only ] "
 
-  print "   where:"
-  print "      <latafile>   : is the latafile that needs to be converted"
-  print "      <medfile>    : is the final med file to written (optional)"
-  print "      <domain_name>: is the name of the domain to be treated"
-  print "      <mesh_only>  : if set to 1, only the mesh will be written, not the fields"
-  print ""
+    print "   where:"
+    print "      <latafile>   : is the latafile that needs to be converted"
+    print "      <medfile>    : is the final med file to written (optional)"
+    print "      <domain_name>: is the name of the domain to be treated"
+    print "      <mesh_only>  : if set to 1, only the mesh will be written, not the fields"
+    print ""
 
 if __name__=="__main__":
     import sys
@@ -135,11 +135,11 @@ if __name__=="__main__":
     domain_name=None
     mesh_only=False
     if (len_args>2):
-      medfile=sys.argv[2]
+        medfile=sys.argv[2]
     if (len_args>3):
-      domain_name=sys.argv[3]
+        domain_name=sys.argv[3]
     if (len_args>4):
-      mesh_only = (sys.argv[4] == "1")
+        mesh_only = (sys.argv[4] == "1")
 
     convert(latafile,medfile, domain_name, mesh_only)
 
@@ -147,4 +147,3 @@ if __name__=="__main__":
 
 
     pass
-

@@ -40,7 +40,7 @@ def test_b(h0,h1,h2,f0,f1,f2,e0,e2,x):
     if test!=0:
         return []
     return [sol,A,b,e0,e2]
-# f2-f1 = A h1^b *((h2/h1)^b -1) 
+# f2-f1 = A h1^b *((h2/h1)^b -1)
 # f0 ...
 
 # (f2-f1)/(f0-f1)=((h2/h1)^b -1)/ ((h0/h1)^b -1)
@@ -71,7 +71,7 @@ f1-f2=A*h1^b*(1-e2*x)
 
 (f1-f0)/(f1-f2)=(1-e0/x)/(1-e2*x)
 
--> 2 solutions au + pour x .... 
+-> 2 solutions au + pour x ....
 
 on regarde combin de solution x>0
 
@@ -102,7 +102,7 @@ for e0 in [-1,1]:
 pass
 
 
-'''    
+'''
 )/(2*f1*e2+(-(2*e2))*f0),(-f0+f2-sqrt(4*f1^2*e0*e2+(-(4*f1))*e0*e2*f0+(-(4*f1))*e0*e2*f2+4*e0*e2*f0*f2+f0^2+(-(2*f0))*f2+f2^2))/(2*f1*e2+(-(2*e2))*f0)
 sol:(-f0+f2+sqrt(4*f1^2*e0*e2+(-(4*f1))*e0*e2*f0+(-(4*f1))*e0*e2*f2+4*e0*e2*f0*f2+f0^2+(-(2*f0))*f2+f2^2))/(2*f1*e2+(-(2*e2))*f0)
 
@@ -130,6 +130,5 @@ print "A",A
 print "#sol",sol,"+",A ,"*x**(",b ,")"
 if 1:
     for j in range(nbv):
-	inter=sol+A*(a[j][0])**b
+        inter=sol+A*(a[j][0])**b
         print a[j][0],a[j][1],inter,a[j][1]-inter,1-inter/a[j][1]
-    

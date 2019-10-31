@@ -51,4 +51,3 @@ da[3*n_nodes/2] = 15.0
 f.setArray(da)
 f.setMesh(m); f.setName("T_init"); f.setTime(0.0, 0, 0)
 mc.WriteFieldUsingAlreadyWrittenMesh(F_NAME, f)
-

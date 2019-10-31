@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: UTF-8 -*-
 
 
 # Verifier que les mots ajoutes ne sont pas dans le dictionnaire !!!!
@@ -66,9 +66,9 @@ try:
         from xcontext import setContext,getContext
         context=getContext()
         while (getContext()!="quiet"):
-           # print "on change de contexte",getContext()
-           setContext("quiet")
-	   pass
+            # print "on change de contexte",getContext()
+            setContext("quiet")
+            pass
         file_name_import=args[0]
         self.importPythonFile_Org(*args,**kargs)
         is_import_file=0
@@ -95,7 +95,7 @@ def get_dimension(list_cas):
 #
 #
 #
-#  Modification de ObjectEplorerItem -> name_u pas affiche 
+#  Modification de ObjectEplorerItem -> name_u pas affiche
 #  si pas a la racine ou si on a un interprete
 #    pas affiche non plus les attributs optionnonels a None
 #
@@ -104,7 +104,7 @@ try:
     ObjectExplorerItem.initsa=ObjectExplorerItem.__init__
     def myinit(self,parent,after,xtree):
         # print "myinit"
-        
+
         if xtree.name=="name_u":
             #print "ok"
             if (parent.xtree.parent.parent is not None) or isinstance(parent.node,interprete) or isinstance(parent.node,comment):
@@ -126,7 +126,7 @@ try:
                 pass
             if isinstance(attr,Tr_Attribute) and (attr.optional==0):
                 not_ok=1 # self.xtree=xtree
-               
+
             else:
                 self.xtree=None
                 return
@@ -150,25 +150,25 @@ try:
                 pass
             pass
         return
-    
+
     ObjectExplorerItem.__init__=myinit
 
     # surcharge de ObjectExplorer  verificationihm appele
     # print "surcharge de ObjectExplorerOK"
-    
-    
+
+
     from xmainwindow import getMainWindow
     cls = getMainWindow().__class__
     updateObjectBrowser_sa=cls.updateObjectBrowser
     def my_updateObjectBrowser(self):
         from Menu_solver import verifyihm
         from xcontext import getContext
- 
-        if (getContext()!="quiet"): 
+
+        if (getContext()!="quiet"):
             verifyihm()
         return updateObjectBrowser_sa(self)
     cls.updateObjectBrowser=my_updateObjectBrowser
-    
+
 
 except:
     pass
@@ -189,7 +189,7 @@ def ajout_attribute(list_attr,list_pere,list_ref=[]):
     list_ret=list_attr
     list_name_attr_ref=[]
     list_sup=[]
-    
+
     for attr in list_attr:
         list_name_attr_ref.append(attr.name)
         if attr.xtype==My_Suppress:
@@ -224,21 +224,21 @@ trace_active=0
 import  os
 res=os.getenv("TRACE")
 if res=="ON":
-	trace_active=1
-	pass
+    trace_active=1
+    pass
 
-    
+
 def traite_trace(cls,mottest,mot):
     "traite les traces"
-    if (trace_active): 
+    if (trace_active):
         if hasattr(cls.__bases__[0],mot):
             traite_trace(cls.__bases__[0],mottest,mot)
         else:
-	    if cls.readacc_==0:
+            if cls.readacc_==0:
                 print "read_val",cls.name_,lower(mottest)
-	    else:
-		print "read_val_spec",cls.name_,lower(mottest)
-		pass
+            else:
+                print "read_val_spec",cls.name_,lower(mottest)
+                pass
 
             pass
         pass
@@ -282,7 +282,7 @@ class Tr_Attribute(XAttribute):
         XAttribute("descr_", xtype=XString(), default_value="not_set"),
         XAttribute("name_trio", xtype=My_String, default_value=""),
         XAttribute("syno", xtype=Listchaine, default_value=[]),
-       
+
         ]
 
 class Ref_Tr_Attribute(XAttribute):
@@ -291,7 +291,7 @@ class Ref_Tr_Attribute(XAttribute):
         XAttribute("descr_", xtype=XString(), default_value="not_set"),
         XAttribute("type_ref", xtype=My_String,default_value=None),
         ]
-        
+
     pass
 
 
@@ -311,7 +311,7 @@ def verify_ref(val,attr,listclass):
             val.status="NoValid"
             status="NoValid"
             raise Exception(msg)
-        
+
         pass
     #setattr(self,attr.name,val2)
     #print self,val,val2
@@ -321,7 +321,7 @@ def verify_ref(val,attr,listclass):
 
 def decoupe_str(str):
     nstr=str
-    i=1	
+    i=1
     taille=len(str)
     bloc=81
     deb=0
@@ -335,7 +335,7 @@ def decoupe_str(str):
                 break
             pass
         if point==0:
-    
+
             i=0
             for j in range(deb+bloc,taille):
                 if nstr[j]==" ":
@@ -381,7 +381,7 @@ class objet_u(XObject):
         self=XObject.__new__(cls) # ,*args,**kwargs)
         self.status="Valid"
         self.test_valid={}
-	ajout_test('objet_u')
+        ajout_test('objet_u')
         return self
     attdiscr=0
     name_='objet_u'
@@ -395,10 +395,10 @@ class objet_u(XObject):
     def _getToolTip(cls, target):
         try:
             tr=target.descr_
-	    tr=tr.replace("NL1",'\n')
-	    tr=tr.replace("NL2",'\n')
-	    tr=tr.replace('. ','.\n')
-	    tr=tr.replace('\n\n','\n')
+            tr=tr.replace("NL1",'\n')
+            tr=tr.replace("NL2",'\n')
+            tr=tr.replace('. ','.\n')
+            tr=tr.replace('\n\n','\n')
             if (tr!='not_set'):
                 tr=decoupe_str(tr)
                 return tr
@@ -412,17 +412,17 @@ class objet_u(XObject):
         return tr
     getToolTip = classmethod(_getToolTip)
     def _show_item(cls,name,object_to_edit):
-	""" definit les couleurs quand on edit """
+        """ definit les couleurs quand on edit """
         xatt=cls.getAllInitXAttributes()
         attr=None
         for attr in xatt:
             if attr.name==name:
                 break
             pass
-	# ok == 1 si tout va bien 0 , si optionnel ou si objet non valid
-	# a faire le pb des ref 
+        # ok == 1 si tout va bien 0 , si optionnel ou si objet non valid
+        # a faire le pb des ref
 
-	ok=1
+        ok=1
         val=None
         if object_to_edit:
             val=getattr(object_to_edit,name)
@@ -432,7 +432,7 @@ class objet_u(XObject):
                         ok=0
                         pass
                     pass
-		# print val,dir(val)
+                # print val,dir(val)
                 if (isinstance(val,objet_u)):
                     if val.status!="Valid":
                         ok=0
@@ -451,7 +451,7 @@ class objet_u(XObject):
             return 1,"Red"
         pass
     show_item = classmethod(_show_item)
-   
+
     def myCustomPopup(cls, parent, popup, selection):
         if len(selection) > 1: return
         self = selection[0]
@@ -459,15 +459,15 @@ class objet_u(XObject):
         instance_popup_menu = ChangeToTypeQPopupMenu(parent, popup, cls, self)
         popup.insertItem("Change to type", instance_popup_menu)
         return
-    
+
     customPopup = classmethod(myCustomPopup)
-    
+
     def __init2__(self):
         self.status="Valid"
         #self.name_u="not_set"
         self.mode_ecr=1
-        # self.is_read=0 
-	self.listattr=None
+        # self.is_read=0
+        self.listattr=None
         # print "ici args",args,self.__class__
         # print self,"cree"
         return
@@ -481,7 +481,7 @@ class objet_u(XObject):
             pass
         return list
     def get_list_attr(self):
-	if self.listattr==None:
+        if self.listattr==None:
             xatt=self.__class__.getAllInitXAttributes()
             list=[]
             for xprop in xatt:
@@ -499,10 +499,10 @@ class objet_u(XObject):
         list=[ x.name for x in self.get_list_attr() ]
     def read_val(self,chaine2,niveau,listdata,mottest):
         # print "read_val",self.__class__.name_,mottest
-       
+
         listattr=self.get_list_attr()
         attr=None
-	lmottest=lower(mottest)
+        lmottest=lower(mottest)
         for attr2 in listattr:
             if lmottest==lower(attr2.name_trio):
                 attr=attr2
@@ -519,7 +519,7 @@ class objet_u(XObject):
             pass
         if (attr==None):
             msg= mottest+" pas compris par "+getNameEn(self) + " mots compris "+str([ x.name_trio for x in listattr ])
-	    print msg
+            print msg
             raise Exception("dans read_val "+msg)
         mot=attr.name
         traite_trace(self.__class__,mottest,mot)
@@ -541,13 +541,13 @@ class objet_u(XObject):
             setattr(self,mot,"yes")
             return chaine2
         elif type_val==My_String or (isinstance(type_val2,XString)):
-	    is_acc_o=0
-	    try:
-		chaine_into=type_val2.into
-		if (chaine_into==["{"]):
+            is_acc_o=0
+            try:
+                chaine_into=type_val2.into
+                if (chaine_into==["{"]):
                     is_acc_o=1
                     pass
-		pass
+                pass
             except:
                 pass
             if chaine2[0]== '{' and is_acc_o==0:
@@ -558,9 +558,9 @@ class objet_u(XObject):
                     pass
                 #cmd="self."+self.list_mot_[i]+"_=bloc"
                 # exec(cmd)
-               
-	    elif chaine2[0][0]=='"':
-		bloc=read_string(chaine2)
+
+            elif chaine2[0][0]=='"':
+                bloc=read_string(chaine2)
                 setattr(self,mot,bloc)
             else:
                 #cmd="self."+self.list_mot_[i]+"_=chaine[0]"
@@ -577,14 +577,14 @@ class objet_u(XObject):
             return chaine2
         elif (type_val==Listfloat) or (type_val==Listfloat_f) or (type_val==Listentier_f) or (type_val==Listentier):
             if (type_val==Listfloat) or (type_val==Listentier):
-		x=XInt()
+                x=XInt()
                 cmd="n="+chaine2[0]
                 exec(cmd)
-		x(n)
+                x(n)
                 if len(chaine2): chaine2.pop(0)
             else:
                 n=get_dimension(listdata)
-              
+
                 pass
             l=[]
             for i in range(n):
@@ -604,7 +604,7 @@ class objet_u(XObject):
                 if len(chaine2): chaine2.pop(0)
             else:
                 n=get_dimension(listdata)
-                
+
                 pass
             l=[]
             for i in range(n):
@@ -612,21 +612,21 @@ class objet_u(XObject):
                 #exec(cmd)
                 l.append(chaine2[0])
                 if len(chaine2): chaine2.pop(0)
-                
+
                 pass
             setattr(self,mot,l)
             return chaine2
-        
+
         type=type_val2.classes[0]
-	typem=split(str(type),".")[-1]
-	type2=split(typem,"'" )[0]
-    
+        typem=split(str(type),".")[-1]
+        type2=split(typem,"'" )[0]
+
         if (val==None):
             #print "icit", type,typem
             #pr=type.__new__(type)
             #pr.__init2__()
             #type2=pr.name_
-            
+
             cmd="self."+mot+"="+type2+"()"
             try:
                 exec(cmd)
@@ -666,7 +666,7 @@ class objet_u(XObject):
             pass
         if (name_type=='defbord') or (name_type=='circleinnn'):
             dim=get_dimension(listdata)
-            
+
             cmd="self."+mot+"="+name_type+"_"+str(dim)+'()'
             exec(cmd)
             #setattr(self,mot,pr)
@@ -692,7 +692,7 @@ class objet_u(XObject):
             # print "PY",pr.print_py()
             # print "LU",pr.print_lu(),i,self.list_mot_
             # cmd="self."+self.list_mot_[i]+"_=pr"
-            
+
             # print "LA2"
             # try:
             # self.list_val_[i]=pr
@@ -704,13 +704,13 @@ class objet_u(XObject):
             pass
         return chaine2
     def read_data(self,chaine,niveau,listdata=[]):
-        
+
         # print "read_data",self,niveau
         if (getNameEn(self)[-5:]=='_base'):
             if 1:
                 raise Exception("ici")
             # on va typer
-            
+
             type2_=get_class_name(chaine[0])
             # print "ici",name_,type2_,chaine[0]
             cmd="cl1="+type2_
@@ -723,10 +723,10 @@ class objet_u(XObject):
             cmd="self="+type2_+"()"
             exec(cmd)
             print "ERR",self.print_py(),self
-            
+
             if len(chaine): chaine.pop(0)
             chsa=chaine
-         
+
             self.read_data(chaine,niveau,listdata)
             chaine=chsa
             print "ERR",self.print_py()
@@ -745,7 +745,7 @@ class objet_u(XObject):
                 self.name_u=chaine[0]
                 if len(chaine): chaine.pop(0)
             else:
-                self.is_read=1 
+                self.is_read=1
                 # on passe l'accolade
                 if self.__class__.readacc_==1:
                     # on passe l'accolade
@@ -756,13 +756,13 @@ class objet_u(XObject):
                 j=0
                 n=len(listmot)
                 while (((self.__class__.readacc_==1)and(chaine[0]!= '}')) or ((self.__class__.readacc_==0)and(j<n))):
-                    
+
                     # on attend accolade ou on connait le nombre d'argument
                     # print "in readdata",self.__class__,n,j,self.__class__.readacc_,chaine[0]
                     if self.__class__.readacc_==1:
                         mottest=lower(chaine[0])
                         ##if not mottest in self.list_mot_trio_:
-##			    print self.print_py()
+##                          print self.print_py()
 ##                            msg=chaine[0]
 ##                            msg=msg+" pas compris par "
 ##                            msg=msg+name_
@@ -783,22 +783,22 @@ class objet_u(XObject):
                             self.read_val(chaine,niveau,listdata,mottest)
                         except:
                             #raise Exception("verfif")
-			    # print "IIIIIIIIIIII",mottest,self.name_
-			    try:
-			      # on remet a None l'attribut mottest
-			      setattr(self,mottest,None)
+                            # print "IIIIIIIIIIII",mottest,self.name_
+                            try:
+                                # on remet a None l'attribut mottest
+                                setattr(self,mottest,None)
                             except:
-                              #raise Exception("verfif")
-			      pass
+                                #raise Exception("verfif")
+                                pass
                             pass
                         pass
                     else:
                         self.read_val(chaine,niveau,listdata,mottest)
-			# try:
-		        # 	print "la",mottest, getattr(self,mottest)
-			# except:
-			#	print "pb", mottest
-			#	pass
+                        # try:
+                        #       print "la",mottest, getattr(self,mottest)
+                        # except:
+                        #       print "pb", mottest
+                        #       pass
                         pass
                     j=j+1
                     pass
@@ -864,14 +864,14 @@ class objet_u(XObject):
         return a
     def print_associer(self,list_class):
         a=""
-       
+
         for ref in self.get_list_ref():
             val=getattr(self,ref.name)
             if val!=None:
                 # print list_class
-		if isinstance(val,objet_u):
+                if isinstance(val,objet_u):
                     clref=val
-		else:
+                else:
                     clref=trouve_class_list(val,list_class)
                     pass
                 # print "ici associer",clref.mode_ecr,ref[2]
@@ -890,20 +890,20 @@ class objet_u(XObject):
                     pass
                 pass
             pass
-        
+
         return a
     def print_lire(self,list_class=[]):
         # print "print_lire",self
         bloclire=isinstance(self,interprete)
-	# on modifie lec pour voir
-	# on ecrit qd meme si on a rien lu 
-	# sauf pour les objets de base
-	lec=0
+        # on modifie lec pour voir
+        # on ecrit qd meme si on a rien lu
+        # sauf pour les objets de base
+        lec=0
         if (bloclire==0) and (self in list_class):
             stri="Read "+self.name_u
         else:
             stri=""
-	    lec=1
+            lec=1
             pass
         if self.__class__.readacc_==1:
             stri=stri+"\n{ \n"
@@ -919,7 +919,7 @@ class objet_u(XObject):
                 lec=1
                 if self.__class__.readacc_==1:
                     stri=stri+attr.name_trio
-                    pass   
+                    pass
                 stri=stri+" "
                 type_val=attr.xtype
                 #print "titi",val,type_val,type(val),type(val) is MethodType
@@ -939,7 +939,7 @@ class objet_u(XObject):
                 else:
                     # print "dans le else",attr.name,type(val)
                     # print type(type_val)
-                    
+
                     if (type_val==Listfloat) or (type_val==Listfloat_f) or (type_val==Listentier_f) or (type_val==Listentier):
                         if (type_val==Listfloat) or (type_val==Listentier):
                             # print "on a une liste"
@@ -985,21 +985,21 @@ class objet_u(XObject):
         # print self, "print_lu"
         abs_mode_ecr=abs(self.mode_ecr)
         stri=""
-	# pour ne pas ecrire deux fois les noms des eqn
+        # pour ne pas ecrire deux fois les noms des eqn
         if not isinstance(self,mor_eqn):
             stri=getNameTrio(self)
             if (isinstance(self,class_generic)and self in list_class):
                 stri=getNameEn(self)
                 pass
-	elif (self in list_class):
+        elif (self in list_class):
             stri=getNameTrio(self)
             pass
-   
+
         stri+=" "
         stri0=stri
         #print stri," ",name_
         if 1:
-            if abs_mode_ecr<2:                
+            if abs_mode_ecr<2:
                 if (self in list_class):
                     if not isinstance (self,interprete):
                         stri=stri+self.name_u+" \n" #split(self,'.')[1]+" "
@@ -1044,7 +1044,7 @@ class objet_u(XObject):
                         pass
                     #print "attdicscr",self.attdiscr,i0,on_ecrit
                     pass
-                
+
                 if (on_ecrit):
                     if isinstance (self,interprete): stri=stri0
                     stri=stri+self.print_lire(list_class)+'\n'
@@ -1059,31 +1059,31 @@ class objet_u(XObject):
             pass
         return stri
     def verify(self,listclass=[],mode=0,leve=0):
-	self.status="Valid"
-	msg=""
-	tout_vide=1
+        self.status="Valid"
+        msg=""
+        tout_vide=1
         #print "verify",self
         self.test_valid={}
         for attr in self.__class__.getAllInitXAttributes():
             self.test_valid[ attr.name]="Valid"
             val=getattr(self,attr.name)
-	    if val and attr.name!="name_u":
+            if val and attr.name!="name_u":
                 tout_vide=0
                 pass
             #print attr.name,val,isinstance(attr,Tr_Attribute) and (attr.optional==0)
             if (val is None) and  isinstance(attr,Tr_Attribute) and (attr.optional==0):
-               if self.is_read==1:
-                msgn= "Pb "+str(self)+" "+str(self.name_u)+" "+str(self.is_read) + " "+ attr.name+ " is none and no optionnal"
-		msg+=msgn+";"
-                self.status="NoValid"
-                self.test_valid[attr.name]="NoValid"
-                pass
+                if self.is_read==1:
+                    msgn= "Pb "+str(self)+" "+str(self.name_u)+" "+str(self.is_read) + " "+ attr.name+ " is none and no optionnal"
+                    msg+=msgn+";"
+                    self.status="NoValid"
+                    self.test_valid[attr.name]="NoValid"
+                    pass
             if val:
                 st="Valid"
                 if isAttributeLink(attr):
-		    try:
+                    try:
                         st=verify_ref(val,attr,listclass)
-		    except:
+                    except:
                         msg+=self.name_+" "+str(self.name_u)+" "+attr.name+" ref invalid;"
                         st="NoValid"
                         pass
@@ -1096,20 +1096,20 @@ class objet_u(XObject):
                     self.status=st
                     self.test_valid[attr.name]="NoValid"
                     pass
-                
+
                 pass
             pass
-	
-	if self.status!="Valid":
-            
+
+        if self.status!="Valid":
+
             if tout_vide:
-                
+
                 for cl in listclass:
                     if isinstance(cl,partition) and not(isinstance(self,interprete)):
                         self.status="Valid"
                         pass
                     pass
-		pass
+                pass
             pass
         if self.status!="Valid":
             global is_import_file
@@ -1119,7 +1119,7 @@ class objet_u(XObject):
                 raise Exception(msg)
             pass
         return self.status
-    
+
     pass
 
 def verify_all(listclass,mode=0):
@@ -1131,10 +1131,10 @@ def verify_all(listclass,mode=0):
 def trouve_class_list(mot,listclass):
     "trouve la classe de nom mot dans la listclass"
     ok=0
-   
+
     mot2=mot
 
-    
+
     for cl in listclass:
         #print cl.name_u, mot
         if cl.name_u==mot2:
@@ -1174,14 +1174,14 @@ def read_data_read(self,chaine,niveau,listclass=[]):
     return chaine
 
 def read_string(chaine):
-    " lecture d'un string c.a.d \"rtoit otot\" et renvoie de la meme chose"		
+    " lecture d'un string c.a.d \"rtoit otot\" et renvoie de la meme chose"
     for i in xrange(1,len(chaine)):
         if chaine[i][-1] == '"':
-	   break
-	pass
+            break
+        pass
     bloc=""
     for ii in xrange(i+1):
-        bloc=bloc+chaine[ii]+" "   
+        bloc=bloc+chaine[ii]+" "
         pass
     for ii in xrange(ii+1):
         chaine.pop(0)
@@ -1225,7 +1225,7 @@ def read_bloc_comm(c):
     return bloc,c
 def read_bloc_comm_entier(c):
     " lecture d'un bloc de commentaire (cherche le */ fermant) "
-     
+
     z=c.index("*/")
     bloc=' '.join(c[:z])
     if "/*" in bloc:
@@ -1238,10 +1238,10 @@ def read_bloc_comm_entier(c):
 
 def retire_new(c):
     " pour ovap mais pas utilisable.. "
-    
+
     for i in range(len(c)):
         if (lower(c[i])=='new'):
-            
+
             print "on retire new"
             c[i]=c[i+1]
             c[i+1]=c[i+2]
@@ -1254,10 +1254,10 @@ pass
 def modifie_ordre(listclass,mtype1,mtype2):
     "modifie listclass pour que type2 soit apres type1"
     try:
-     cmd="type1="+mtype1
-     exec(cmd)
-     cmd="type2="+mtype2
-     exec(cmd)
+        cmd="type1="+mtype1
+        exec(cmd)
+        cmd="type2="+mtype2
+        exec(cmd)
     except:
         print mtype1," ou ",mtype2," inconnus..."
         return
@@ -1265,7 +1265,7 @@ def modifie_ordre(listclass,mtype1,mtype2):
     listpbf=[]
     for i in range(len(listclass)):
         cl=listclass[i]
-        if isinstance(cl,type1): 
+        if isinstance(cl,type1):
             listpbf.append(i)
             pass
         if isinstance(cl,type2):
@@ -1290,10 +1290,10 @@ def retire_nl(a):
     aa=split(aa,' ')
     # b=' '.join(aa)
     poub,_,listcomm=traite_naif(aa)
-    
+
     rr=' '.join(poub).replace('\n',' ').replace('__NL__','\n')
     # int rr
-    
+
     return rr
     # print "la"
     # aa.append('fin')
@@ -1307,7 +1307,7 @@ def retire_nl(a):
             index1=listcomm[2*i]
             index2=listcomm[2*i+1]
             # print index0,index1,index2
-            
+
             if index0>index2   and index0<index1:
                 in_comm=1
                 pass
@@ -1330,16 +1330,16 @@ def retire_nl(a):
     in_comm=0
     for i in range(len(a)):
         c=a[i]
-	avt_c=" "
-	apres_c=" "
-	if i>0:
-		avt_c=a[i-1]
-		pass
-	if i<len(a)-1:
-		apres_c=a[i+1]
-	else:
-		apres_c=" "
-		pass
+        avt_c=" "
+        apres_c=" "
+        if i>0:
+            avt_c=a[i-1]
+            pass
+        if i<len(a)-1:
+            apres_c=a[i+1]
+        else:
+            apres_c=" "
+            pass
         if (c=="#")and ((avt_c==" ") or (avt_c=='\n')) and  ((apres_c==" ") or (apres_c=='\n')):
             if (in_comm==1):
                 in_comm=0
@@ -1391,12 +1391,12 @@ def lire_fichier(name):
     # important pour ne pas s'arreter au debut du cas
     # si il commence par des blancs....
     while (c[0]==''):
-	if len(c): c.pop(0)
-	pass
+        if len(c): c.pop(0)
+        pass
     # pareil a la fin
     while (c[-1]==''):
         if len(c): c.pop()
-	pass
+        pass
     _,d,listcomm=traite_naif(c)
     return c,d,listcomm
 def read_file_data(name):
@@ -1406,9 +1406,9 @@ def read_file_data(name):
 
     c,d,listcomm=lire_fichier(name)
     # on ajoute fin a la fin au cas ou
-    
+
     c.append('fin')
-        
+
 
 
     #c=map(lower,c)
@@ -1416,12 +1416,12 @@ def read_file_data(name):
     #retire_new(c)
     nbclass=0
     mot="debut"
-    while ( (mot!='fin') and (mot!='end') and (c[0]!='£') ):
+    while ( (mot!='fin') and (mot!='end') and (c[0]!='Â£') ):
         mot=c[0]
         mot=lower(mot)
         fichier_lu=0
         if ((mot=='lire_fichier')or (mot=='read_file') )and (c[2]==';'):
-            try: 
+            try:
                 print 'lecture de',c[1]
                 new_chaine,dd,listcomm2=lire_fichier(c[1])
                 l=c[3:]
@@ -1436,7 +1436,7 @@ def read_file_data(name):
             pass
         if fichier_lu==0:
             if len(c): c.pop(0)
-            
+
             namea="a"+str(nbclass)
             cmd=namea+"="+get_class_name(mot)+"()"
             # print "cmd",cmd
@@ -1448,9 +1448,9 @@ def read_file_data(name):
                 raise Exception("pb")
             niv=0
 
-            
+
             # print len(c),len(d),d[0]
-            
+
             if (mot=="#") or (mot=="/*"):
                 sa=len(c)
                 ok=0
@@ -1475,9 +1475,9 @@ def read_file_data(name):
             else:
                 if len(d): d.pop(0)
                 sa=len(d)
-                            
+
                 exec(namea+".read_data(d,niv,listclass)")
-                
+
                 decal=0
                 lenc=len(c)+1 # on  a retire le premier mot
                 lenc=len(d)
@@ -1489,39 +1489,39 @@ def read_file_data(name):
                         decal+=index1-index2+1
                         lenc=len(d)+decal
                         # print lenc,index1,index2,decal
-                        
+
                         pass
                     pass
-                
+
                 c=c[len(c)-len(d)-1-decal:]
                 # print "d", d[0:4]
                 # print "c", c[0:4]
                 pass
-            
+
             exec("listclass.append("+namea+")")
-            
+
             nbclass=nbclass+1
             pass
         pass
-      
+
     inut=[]
     for cl in listclass:
         # is_associate=isinstance(cl,associate)
         is_associate=(cl.__class__.name_=="associate")
-        
+
         if isinstance(cl,read) or is_associate:
             inut.append(cl)
             pass
     pass
     for cl in inut:
-	listclass.remove(cl)
-        #print cl 
+        listclass.remove(cl)
+        #print cl
         from xmetaclass import removeXObject,getXObjects
         if cl in getXObjects():
             removeXObject(cl)
             pass
         #print "apres",getXObjects()
-	pass
+        pass
     for cl in listclass:
         #print "TEST ECR",cl
         #print cl.print_lu(listclass)
@@ -1579,7 +1579,7 @@ def indent_chaine(c):
             pass
         pass
     return new
-   
+
 
 
 def traite_naif(aa):
@@ -1622,7 +1622,7 @@ def traite_naif(aa):
                     i-=1;
                     print " il manque un */ ?"
                     break;
-                
+
                 te=a[i+1]
                 if (te=="*/"):
                     acc-=1
@@ -1654,7 +1654,7 @@ def write_file_data(name,listclass):
         if  isinstance(c,objet_u):
             # is_associate=isinstance(c,associate)
             is_associate=(c.__class__.name_=="associate")
-        
+
             if isinstance(c,read) or is_associate:
                 pass
             else:
@@ -1664,11 +1664,11 @@ def write_file_data(name,listclass):
             pass
         else:
             print c
-	    throw("pas une classe objet_u ?????")
+            throw("pas une classe objet_u ?????")
     for c in listclass:
         # is_associate=isinstance(c,associate)
         is_associate=(c.__class__.name_=="associate")
-        
+
         if isinstance(c,read) or is_associate:
             continue
         # a=c.print_lu(listclass)
@@ -1688,7 +1688,7 @@ def write_file_data(name,listclass):
     b=indent_chaine(b)
     s=open(name,'w')
     s.write(b)
-    s.close()    
+    s.close()
     return
 
 def write_file_python(name,listclass):
@@ -1705,25 +1705,25 @@ def write_file_python(name,listclass):
         nm="a_"+str(i)
         # is_associate=isinstance(c,associate)
         is_associate=(c.__class__.name_=="associate")
-        
+
         if isinstance(c,read) or is_associate:
             continue
         i=i+1
         if c.name_u != "not_set":
             nm=c.name_u
-	    if nm in list_nom:
-		    nm+="_"+str(i)
-		    pass
+            if nm in list_nom:
+                nm+="_"+str(i)
+                pass
             if nm in dicoclass.values() or nm=="in":
                 nm+="_i"
                 pass
             pass
         #print "print py",nm,c
-	list_nom.append(nm)
+        list_nom.append(nm)
         s.write(nm+"="+c.print_py()+'\n')
         #s.write('listclass.append('+nm+')\n')
         ll2=ll2+nm+","
-        
+
         # s.write('s.write('+nm+'.print_lu()+\'\\n\')\n')
         pass
     ll2=ll2[:-1]+"]"
@@ -1741,26 +1741,26 @@ class listobj_impl(objet_u):
     def __init2__(self):
         # self.class_type="not_set"
         # self.virgule=1
-        objet_u.__init2__(self) 
+        objet_u.__init2__(self)
         return
     def verify(self,listclass,mode,leve):
-	self.status="Valid"
+        self.status="Valid"
         self.test_valid["listobj"]="Valid"
         for obj in self.listobj:
             st=obj.verify(listclass,mode,leve)
-	    if st != "Valid":
-		    self.status=st
-                    self.test_valid["listobj"]=st
+            if st != "Valid":
+                self.status=st
+                self.test_valid["listobj"]=st
             pass
         return self.status
     def read_data(self,chaine,niveau,listdata=[]):
         if niveau==0  :
-           self.name_u=chaine[0]
-           if len(chaine): chaine.pop(0)
-	   return
+            self.name_u=chaine[0]
+            if len(chaine): chaine.pop(0)
+            return
         niveau=niveau+1
         bizarre=0
-        
+
         # on passe l'accolade
         i2=-1
         if (self.__class__.readacc_==0):
@@ -1782,35 +1782,35 @@ class listobj_impl(objet_u):
             # print chaine
             pass
         if self.listobj==None:
-	    self.listobj=[]	
+            self.listobj=[]
             pass
-        
+
         cmd2="tst_titi2="+self.__class__.class_type
         exec(cmd2)
         is_class_generic=issubclass(tst_titi2,class_generic)
-       
+
         while (chaine[0]!= '}') and (i2!=0):
             i2=i2-1
             #   print "lecture ",i2
             self.listobj.append(None)
             newob="self.listobj[-1]"
-	    special=1
-	    if (self.__class__.class_type[-6:]=='_deriv') or (is_class_generic):
+            special=1
+            if (self.__class__.class_type[-6:]=='_deriv') or (is_class_generic):
                 # on va lire un derive
-		type2_=self.__class__.class_type
+                type2_=self.__class__.class_type
                 mot0=type2_+'___'
-	        mot1=lower(chaine[0]);
+                mot1=lower(chaine[0]);
                 if len(chaine): chaine.pop(0)
                 try:
                     type2_=get_class_name(mot0+synonyme[mot1])
                 except KeyError:
                     type2_=get_class_name(mot0+mot1)
                     pass
-	        cmd=newob+"="+type2_+"()"
-	    elif (self.__class__.class_type[-5:]=='_base'):
+                cmd=newob+"="+type2_+"()"
+            elif (self.__class__.class_type[-5:]=='_base'):
                 type2_=get_class_name(chaine[0])
                 if len(chaine): chaine.pop(0)
-                
+
                 cmd="cl1="+type2_
                 exec(cmd)
                 cmd="cl2="+self.__class__.class_type
@@ -1819,8 +1819,8 @@ class listobj_impl(objet_u):
                     print "Pb ",cl1," not asubclass of ",cl2
                     raise Exception("erreur de type")
                 cmd=newob+"="+type2_+"()"
-	    else:
-	    	special=0
+            else:
+                special=0
                 cmd=newob+"="+self.__class__.class_type+"()"
                 pass
             exec(cmd)
@@ -1830,7 +1830,7 @@ class listobj_impl(objet_u):
             newobj=self.listobj[-1]
             lenchaine=len(chaine)
             newobj.read_data(chaine,niveau,listdata)
-            
+
             if (self.__class__.virgule==1):
                 # chaine=chaine2
                 if chaine[0]==',':
@@ -1844,10 +1844,10 @@ class listobj_impl(objet_u):
                         raise Exception(message)
                     pass
                 pass
-	    else:
+            else:
                 if (special==0) and (len(chaine)==lenchaine) and chaine[0]!='}' :
-		    raise Exception("erreur dans lecture "+self.__class__.class_type+" chaine "+' '.join(chaine[:4])+" new chaine2 "+' '.join(chaine[:4]))
-	        
+                    raise Exception("erreur dans lecture "+self.__class__.class_type+" chaine "+' '.join(chaine[:4])+" new chaine2 "+' '.join(chaine[:4]))
+
                 pass
         if (self.__class__.readacc_==1):
             test_accolade(chaine[0])
@@ -1855,7 +1855,7 @@ class listobj_impl(objet_u):
             pass
         niveau=niveau-1
         pass
-    
+
     def print_lu(self,listclass=[]):
         stri=""
         if self in listclass:
@@ -1934,7 +1934,7 @@ def trouve_base(name):
 pass
 
 def trouve_pere(name):
-    " trouve le nom du pere de la classe name" 
+    " trouve le nom du pere de la classe name"
     #base=trouve_base(name)
     #print dicobases[base]
     #ll=[]
@@ -1943,7 +1943,7 @@ def trouve_pere(name):
     #print cl.__bases__,type(cl.__bases__[0]),dir(cl.__bases__[0])
     #cmd="per="+cl.__bases__[0]
     per=cl.__bases__[0]
-   
+
     per=per.name_
     #print per
     name_per=replace(str(per),'triou.','')
@@ -1959,9 +1959,9 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             niveau-=1
             return ""
         pass
-    
+
     if (doc_gen[name] == 1) :
-	if debug: 
+        if debug:
             print "la doc de ",name," a deja ete genere"
             pass
         niveau-=1
@@ -1980,7 +1980,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     #lpere=ipere.list_mot_
     clname=icl.name_trio_
     vrai_name_=icl.name_
-    if debug: 
+    if debug:
         print "gen_doc name",name
         pass
 
@@ -1994,15 +1994,15 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     if fr==0:
         clname=icl.name_
         pass
-    
+
     if clname=='{':
         clname='\{'
-	pb=0
-	pass
+        pb=0
+        pass
     elif clname=='}':
         clname='\}'
-	pb=0
-	pass
+        pb=0
+        pass
         pass
 
     if clname in dicobases.keys(): # si c'est une section, je ferme l'accolade laissee ouverte
@@ -2015,8 +2015,8 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr+='}'
 
     if pb:
-         tstr=tstr+' \index{'+clname+'} '
-	 pass
+        tstr=tstr+' \index{'+clname+'} '
+        pass
     tstra=""
     if clname not in dicobases.keys():
         # if name != vrai_name_:
@@ -2028,33 +2028,33 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             pass
         pass
     # a t on un syno
-   
+
     if clname in synonyme.values():
-	
+
         for k in synonyme.keys():
             if synonyme[k]==clname:
-                tstra+="Synonymous: { \\bf "+ k   + ' } \index{  '+k +'  } \\newline \\newline  \n' 
+                tstra+="Synonymous: { \\bf "+ k   + ' } \index{  '+k +'  } \\newline \\newline  \n'
                 break
-     # ecriture de la description de l'objet
+        # ecriture de la description de l'objet
     tstr = tstr + tstra
     try:
-         descr=replace(replace(icl.descr_,'{','\{'),'}','\}')
-         descr=replace(replace(descr,'\{\{','{'),'\}\}','}')
-         tstr=tstr+"Description: "+descr+'\n \\newline \\newline\n'
-         pass
+        descr=replace(replace(icl.descr_,'{','\{'),'}','\}')
+        descr=replace(replace(descr,'\{\{','{'),'\}\}','}')
+        tstr=tstr+"Description: "+descr+'\n \\newline \\newline\n'
+        pass
     except:
-         pass
+        pass
     if (icl.attdiscr==1):
-         tstr+="Keyword Discretize should have already been used to read the object. \n\n"
+        tstr+="Keyword Discretize should have already been used to read the object. \n\n"
     if fr:
         # print "clname",clname
         tstr=tstr+ "See also: "+ ipere.name_trio_
         # print tstr
-        
+
     else:
         tstr=tstr+ "Class "+ clname +" herits from "+ ipere.name_
         pass
-    
+
     tstr=tstr+" (\\ref{"+replace(ipere.name_,'_','')+"})"
     # tstr=tstr+'.\n \n'
 
@@ -2085,7 +2085,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             pass
         pass
     tstr+="\n\\newline \\newline \n"
-    
+
     tstr+="Usage:\n\n"
 
     # cas particulier d'une liste d'objet
@@ -2096,17 +2096,17 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         if icl.readacc_==1:
             tstr+="\{ "
         else:
-	    tstr+=" n "     
+            tstr+=" n "
             pass
-	tstr+=" object1 "
-	if icl.virgule:
-            tstr+=" ," 
+        tstr+=" object1 "
+        if icl.virgule:
+            tstr+=" ,"
             pass
         tstr+=" object2 ...."
-	if icl.readacc_==1:
+        if icl.readacc_==1:
             tstr+=" \} "
             pass
-        
+
         type="\n\nlist of { \it "+dicoclass.keys()[dicoclass.values().index(icl.class_type)]+"}"
         type2=icl.class_type
         tstr+=type+" (\\ref{"+replace(type2,'_','')+"})"
@@ -2114,7 +2114,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr+=" separeted with , "
             pass
         tstr+="\n\n"
-        
+
         # print type,type2
         cmd="es1="+type2+"()"
         exec(cmd)
@@ -2126,7 +2126,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         return tstr
         pass
 
-    # lcl va contenir la liste des attributs de icl   
+    # lcl va contenir la liste des attributs de icl
     lcl2=icl.getAllInitXAttributes()
     lcl=[]
     list_objet_lecture=[]
@@ -2140,8 +2140,8 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         lcl.append(cl)
         pass
     # lcl contient la liste des attributs de icl
-    
-    
+
+
     lpere=ipere.getAllInitXAttributes()
     clname="{ \\bf "+clname+" } "
     if icl.readacc_==0:
@@ -2151,13 +2151,13 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         pass
     else:
         if len(lcl):
-            
-	    if issubclass(icl,interprete):
-	        tstr=tstr+clname+" "
+
+            if issubclass(icl,interprete):
+                tstr=tstr+clname+" "
             elif issubclass(icl,objet_lecture):
-	        if icl.name_trio_!='':tstr=tstr+clname+" "
-	    else:
-	        if  icl.name_trio_=='': print "objet lecture???? ",clname,icl.name_trio_
+                if icl.name_trio_!='':tstr=tstr+clname+" "
+            else:
+                if  icl.name_trio_=='': print "objet lecture???? ",clname,icl.name_trio_
                 tstr+=clname+" obj\nLire obj "
                 pass
             tstr+="\{  "
@@ -2165,24 +2165,24 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             pass
         pass
 
-     # pour pas generer la doc dans chaque classe
+        # pour pas generer la doc dans chaque classe
     lcl_p=[]
     for xattr in lcl:
         if icl.readacc_==10:
             if xattr in lpere:
                 continue
         lcl_p.append(xattr)
-    
+
     if len(lcl_p)  :
         tstr2=tstr2+'\n\\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\n'
-        
+
         for xattr in lcl_p:
             #xattr=lcl[i]
-           
-           
-            
+
+
+
             mot=xattr.name
-            
+
             if fr:
                 mot=xattr.name_trio
                 pass
@@ -2194,7 +2194,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                 if icl.readacc_:
                     tstr2+=' \index{ {\\bf  '+syn+' } } '
                 pass
-            mot='{ \\bf '+ mot+ ' }' 
+            mot='{ \\bf '+ mot+ ' }'
             motcomprend='\item '+ mot
             her=""
             if icl.readacc_==0:
@@ -2205,14 +2205,14 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                     her=her+' for inheritance'
                     pass
                 pass
-            # debut de la determination du type 
+            # debut de la determination du type
             #type=icl.liste_type_[i]
             into=None
             the_type=xattr.xtype
             try:
                 the_type=the_type.xtypes[1]
             except:
-                pass    
+                pass
             try:
                 cl=the_type.classes
                 # print cl
@@ -2221,7 +2221,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                         list_objet_lecture.append(cl)
                         pass
                     if fr:
-                        
+
                         stype=cl[0].name_trio_
                         stype2=cl[0].name_
                         pass
@@ -2247,7 +2247,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                     stype2="Listfloat_f"
                 elif (xattr.xtype==Listfloat):
                     stype="n x1 x2 ... xn"
-                    stype2="Listfloat"                
+                    stype2="Listfloat"
                 elif (xattr.xtype==Listentier_f):
                     stype="n1 n2 (n3)"
                     stype2="Listentier_f"
@@ -2259,32 +2259,32 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                     stype2="Listentier_f"
                 elif (xattr.xtype==Listchaine):
                     stype="n word1 word2 ... wordn"
-                    stype2="Listentier"                
+                    stype2="Listentier"
                     pass
                 pass
             if into:
                 stype=stype+" into "+str(into)
                 for c in into:
-		    if isinstance(c,str):
-                       stype+='\index{ '+str(c)+' }'
+                    if isinstance(c,str):
+                        stype+='\index{ '+str(c)+' }'
                 pass
             #print "ici", xattr.name,stype2,name,stype
-            
-            gen_ref=1    
+
+            gen_ref=1
             try:
                 strtype=dicoclass.keys()[dicoclass.values().index(stype2)]
             except:
                 if stype2=="list":
                     print "list non code", xattr.name,stype2,name,stype
                     raise Exception("on ne doit plus passer la")
-                
+
                 # print "pas dans dico" , stype
                 gen_ref=0
                 strtype=stype
                 pass
             if (xattr.xtype!=rien) and (gen_ref==1):
                 her=" (\\ref{"+replace(stype2,'_','')+"})"+her
-		pass
+                pass
             if strtype=='':
                 raise Exception("on ne doit plus passer la")
                 # print "ici",xattr.name,stype2,name,stype
@@ -2327,10 +2327,10 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr2='\n \n where'+'\n'+tstr2
             pass
         tstr2=tstr2+'\end{itemize} \n '
-        
+
         tstr+=tstr2
     else:
-        tstr+='\n\n ' 
+        tstr+='\n\n '
         pass
     # print tstr
     tstr=tstr.replace("NL1",'\n')
@@ -2360,7 +2360,7 @@ def gen_doc_base(fr=1):
     " genere toute la doc"
     lutil=None
     if (fr==3):
-	fr=1
+        fr=1
         from lutil import lutil
         pass
 
@@ -2376,13 +2376,13 @@ def gen_doc_base(fr=1):
         pass
     s1=open('doc.tex','w')
 
-    s1.write(r'''\newif\ifppdf 
-\ifx\pdfoutput\undefined 
-  \ppdffalse 
-\else 
- \pdfoutput=1 
-  \ppdftrue 
-\fi 
+    s1.write(r'''\newif\ifppdf
+\ifx\pdfoutput\undefined
+  \ppdffalse
+\else
+ \pdfoutput=1
+  \ppdftrue
+\fi
 \batchmode
 \documentclass{article}[11pt]
 \usepackage[T1]{fontenc}
@@ -2399,8 +2399,8 @@ def gen_doc_base(fr=1):
 \newcommand\includetabfig[4]{{\begin{center} \begin{tabular}{cc} \includegraphics[width=#2cm]{#1} & \includegraphics[width=#4cm]{#3} \tabularnewline \end{tabular} \par\end{center}}}
 \newcommand\jolitheta{\theta}
 
-\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue,urlcolor=darkblue]{hyperref} 
-\pdfcompresslevel=9 
+\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue,urlcolor=darkblue]{hyperref}
+\pdfcompresslevel=9
 \usepackage[pdftex]{graphicx}
 \AtBeginDocument{
     \let\Oldlabel\label
@@ -2413,18 +2413,18 @@ def gen_doc_base(fr=1):
  pdfkeywords={TRUST, guide, howto}
 }
 
-\else 
+\else
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \fi
-\usepackage{a4wide} 
-\setlength{\parindent}{0pt} 
-\makeindex 
+\usepackage{a4wide}
+\setlength{\parindent}{0pt}
+\makeindex
  \begin{document}
 \title{
 \vspace{5cm} 
 \Huge \textbf{TRUST Reference Manual V1.8.0} \vspace{0.5cm}}
 \author{
-\vspace{2cm} 
+\vspace{2cm}
 \LARGE \textbf{Support team: \href{mailto:trust@cea.fr}{trust@cea.fr}} \\
 \vspace{4cm} % espace entre ref manual et ce qui est en dessous
 Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}}\\
@@ -2437,15 +2437,15 @@ Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}
 Here is a list of post-processable fields, but it is not the only ones.
 \input{fieldnames.tex}
 ''')
-    
+
 
     l=[]
     for name in dicobases.keys():
         if lutil:
             # on verifie qu'au moins une classe fille est dans lutil
-             
+
             if name in lutil:
-            
+
                 l.append(name)
                 continue
 
@@ -2459,7 +2459,7 @@ Here is a list of post-processable fields, but it is not the only ones.
         else:
             l.append(name)
             pass
-        
+
         pass
     l.sort()
 
@@ -2474,8 +2474,8 @@ Here is a list of post-processable fields, but it is not the only ones.
             pass
         pass
     l=list_p2+l
-    
-   
+
+
     if 'listobj_impl' in l:
         l.remove('listobj_impl')
         l.append('listobj_impl')
@@ -2497,7 +2497,7 @@ Here is a list of post-processable fields, but it is not the only ones.
         namecl=name
         try:
             tstr=tstr+gen_doc(namecl,doc_gen,fr,lutil)
-	except:
+        except:
             print "generation de la doc de "+name+" rate"
             gen_doc(namecl,doc_gen,fr,lutil)
             raise Exception("doc rate")
@@ -2508,26 +2508,26 @@ Here is a list of post-processable fields, but it is not the only ones.
                 tstr=tstr+gen_doc(l,doc_gen,fr,lutil)
                 pass
             pass
-        tstr=replace(tstr,"\'{\'","\'\{\'") 
-        tstr=replace(tstr,"\'}\'","\'\}\'") 
-        tstr=replace(tstr,"\\xe9","e") 
+        tstr=replace(tstr,"\'{\'","\'\{\'")
+        tstr=replace(tstr,"\'}\'","\'\}\'")
+        tstr=replace(tstr,"\\xe9","e")
         s=open(name+".tex",'w')
         str2=replace(tstr,'_','\-\_')
-	str2=replace(str2,'#','\#')
+        str2=replace(str2,'#','\#')
         s.write(str2)
         s.close()
         pass
-    
+
     s1.write('\section{index\label{objetu}} \printindex\n \end{document}\n')
     s1.close()
     if (lutil):
-	    for cla in getXClasses():
-		    cl=cla.name_
-		    if cl not in lutil:
-			    print "La doc pour ",cl," n a pas ete genere"
-			    pass
-		    pass
-       
+        for cla in getXClasses():
+            cl=cla.name_
+            if cl not in lutil:
+                print "La doc pour ",cl," n a pas ete genere"
+                pass
+            pass
+
     pass
 
 def copy(a):
@@ -2546,8 +2546,8 @@ def change_type(inst,new_type):
     list2=[ x.name for x in pr.__init__xattributes__ ]
     list0=[]
     for x in list2:
-	    if x not in list0:
-		    list0.append(x)
+        if x not in list0:
+            list0.append(x)
     for attr in list1:
         if attr in list2:
             try:
@@ -2582,4 +2582,3 @@ def change_type(inst,new_type):
         pass
     print pr.print_py()
     return pr
-

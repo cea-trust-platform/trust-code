@@ -1,9 +1,9 @@
 from triou import *
-# on ajoute porosites_champ 
+# on ajoute porosites_champ
 def modif(l,cas):
     new_ll=[]
     for cl in l:
-	new_ll.append(cl)
+        new_ll.append(cl)
         if (0) and(isinstance(cl,schema_temps_base)and not(isinstance(cl,schema_euler_implicite))):
             new_ll.remove(cl)
             new_sch=change_type(cl,schema_euler_implicite)
@@ -19,7 +19,7 @@ def modif(l,cas):
                     try:
                         conv=atr.convection.operateur
                         if not((isinstance(conv,convection_negligeable)) or (conv.name_trio_=='amont') ):
-				
+
                             print "on change la convection de ",conv,"  amont"
                             atr.convection.operateur=convection_amont()
                             pass
@@ -27,7 +27,7 @@ def modif(l,cas):
                     except:
                         print "pas de convection ?"
                         pass
-		    # print atr.convection.operateur
+                    # print atr.convection.operateur
                     try:
                         diff=atr.diffusion.operateur
                         print diff
@@ -39,8 +39,8 @@ def modif(l,cas):
                     except:
                         print "pas de difusion ?"
                         pass
-                    
-                    
+
+
                     pass
                 pass
             pass

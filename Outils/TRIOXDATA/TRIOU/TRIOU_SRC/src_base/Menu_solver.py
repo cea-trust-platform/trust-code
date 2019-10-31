@@ -23,14 +23,14 @@ def verifyihm():
     for l in list:
         if isinstance(l.node, XObject):
             try:
-        
+
                 l.node.verify(listclass)
             except:
                 print "pb   ",l.node,l
                 l.status="NoValid"
                 pass
             pass
-        
+
         pass
     pass
 def linkref(mode):
@@ -48,7 +48,7 @@ def linkref(mode):
     list=getXObjects()
     # pour l'instant on se limite aux classes de la racine
     from triou import isAttributeLink
-    for obj in list: 
+    for obj in list:
         for ref in obj.__class__.getAllInitXAttributes():
             if isAttributeLink(ref):
                 val=getattr(obj,ref.name)
