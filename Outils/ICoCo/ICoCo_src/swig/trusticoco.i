@@ -3,22 +3,31 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include <iostream>
-#include "ICoCoField.h"
 #include "ICoCoTrioField.h"
 #include "ProblemTrio.h"
 #include "Exceptions.h"
 %}
+
+#if defined(MEDCOUPLING) && defined(OLD_MEDCOUPLING)
+%{
+   #include "ICoCoMEDField.hxx"
+%}
+#endif
+
 
 #pragma SWIG nowarn=401
 
 %include "typemaps.i"
 %include "std_string.i"
 %include "exception.i"
+
 #if defined(MEDCOUPLING) && defined(OLD_MEDCOUPLING)
-%include "MEDCoupling.i"
+  %include "MEDCoupling.i"
+#else
+  %include "std_vector.i"
+  %template(VecString) std::vector<std::string>;
 #endif
-%include "std_vector.i"
-%template(VecString) std::vector<std::string>;
+
 %exception {
   try {
     $action

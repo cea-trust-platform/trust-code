@@ -1,0 +1,5 @@
+# Test case building and launching the CTest on the swig part of ICoCo  #
+# PARALLEL OK #
+dimension 3
+
+
