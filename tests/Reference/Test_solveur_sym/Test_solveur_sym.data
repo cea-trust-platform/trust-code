@@ -1,0 +1,17 @@
+# Test de la sauvegarde des matrices secmme et du test_sovleur  Optimal #
+# PARALLEL OK #
+# BEGIN PARTITION 
+system "touch DOM_0000.Zones"
+system "touch DOM_0001.Zones"
+End
+END PARTITION #
+/*
+pour faire marcher make_PAR.data
+zones_name DOM
+*/
+test_solveur 
+  { 
+    nb_test 2
+    genere_fichier_solveur 1e-15
+  }
+End 
