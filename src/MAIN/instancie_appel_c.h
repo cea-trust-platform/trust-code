@@ -46,6 +46,7 @@ instancie_src_ThHyd_Quasi_Compressible_EF();
 instancie_src_ThHyd_Quasi_Compressible_VDF();
 instancie_src_ThHyd_Quasi_Compressible_VEF();
 instancie_src_ThHyd_Schemas_Temps();
+instancie_src_ThHyd_Turbulence();
 instancie_src_ThSol();
 instancie_src_VDF();
 instancie_src_VDF_Axi_Operateurs();
