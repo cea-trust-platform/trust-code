@@ -1,0 +1,115 @@
+# Hydraulique 3D laminaire #
+# PARALLEL OK 7 #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file M3DLAM.geo ;
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom 
+{
+	Partition_tool Metis { Nb_parts 2 }
+	Larg_joint 1
+	zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	nb_pas_dt_max 2
+	tinit 0
+	tmax 10.
+	dt_min 0.000001
+	dt_max 0.1
+	dt_impr 0.000001
+	dt_sauv 1000.
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 0.005
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+# DEBOG #
+
+Read pb
+{
+	Navier_Stokes_Standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-09
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_Uniforme 3  0. 0. 0.
+			}
+		boundary_conditions {
+			 Bas1 Paroi_Fixe
+			 Haut1 Paroi_Fixe
+			 Haut2 Paroi_Fixe
+			 Haut3 Paroi_Fixe
+			 Bas2 Paroi_Fixe
+			 Gauche Paroi_Fixe
+			 Bas3 Paroi_Fixe
+			 Sud1 Paroi_Fixe
+			 Nord1 Paroi_Fixe
+			 Sud2 Paroi_Fixe
+			 Nord2 Paroi_Fixe
+			 Sud3 Paroi_Fixe
+			 Nord3 Paroi_Fixe
+			 Sud4 Paroi_Fixe
+			 Nord4 Paroi_Fixe
+			 Sud5 Paroi_Fixe
+			 Nord5 Paroi_Fixe
+
+			 SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3  1. 0. 0.
+		}
+	}
+
+	Post_processing 
+	{
+		Probes 
+		{
+			sonde_pression pression periode 0.1 points 1 7.5 0.9 5.5
+			sonde_vitesse vitesse periode 0.1 points 1 8.0 0.9 5.5
+		}
+		format lml
+		fields dt_post 80.
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+		}
+	}
+}
+Imprimer_flux_sum dom { Entree }
+Calculer_moments dom centre_de_gravite 0 0 0
+Solve pb
+End
+
