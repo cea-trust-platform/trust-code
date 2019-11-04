@@ -1,0 +1,155 @@
+# Test du Post_processing sur un domaine different du domaine de calcul #
+# PARALLEL RUNS #
+
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+Domaine domaine_post
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 4  6  4
+                Longueurs 10. 2.  10
+        }
+        {
+                Bord periox   X = 0.  0. <= Y <= 2.   0. <= Z <= 10.
+                Bord periox   X = 10. 0. <= Y <= 2.   0. <= Z <= 10.
+                Bord bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
+                Bord perioz   Z = 10. 0. <= X <= 10.  0. <= Y <= 2.
+ 
+	}
+} 
+Mailler domaine_post
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 4  6  4
+                Longueurs 5. 2. 5.
+        }
+        {
+                Bord periox   X = 0.  0. <= Y <= 2.   0. <= Z <= 5.
+                Bord periox   X = 5. 0. <= Y <= 2.   0. <= Z <= 5.
+                Bord bas      Y = 0.  0. <= X <= 5.  0. <= Z <= 5.
+                Bord haut     Y = 2.  0. <= X <= 5.  0. <= Z <= 5.
+                Bord perioz   Z = 0.  0. <= X <= 5.  0. <= Y <= 2.
+                Bord perioz   Z = 5. 0. <= X <= 5.  0. <= Y <= 2.
+ 
+	}
+} 
+Tetraedriser_homogene dom
+Corriger_frontiere_periodique { Domaine dom Bord periox }
+Corriger_frontiere_periodique { Domaine dom Bord perioz }
+
+Tetraedriser_homogene domaine_post
+Corriger_frontiere_periodique { Domaine domaine_post Bord periox }
+Corriger_frontiere_periodique { Domaine domaine_post Bord perioz }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 1 2 1 }
+	zones_name DOM
+	Periodique 2 periox perioz
+        Larg_joint 2
+}
+Partition domaine_post
+{
+	Partition_tool tranche { tranches 1 2 1 }
+	zones_name DOM_post
+	Periodique 2 periox perioz
+        Larg_joint 2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Scatter DOM_post.Zones domaine_post
+END SCATTER #
+
+VEFPreP1b dis
+
+Sch_CN_EX_iteratif sch
+
+Read sch 
+{
+        tinit 0.
+        tmax 20.
+        nb_pas_dt_max 3
+        dt_min 1.e-7
+        dt_max 1.e-1
+        dt_impr 0.001
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 1.
+	niter_max 10
+	seuil 0.01
+}
+
+
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme	1 0.00257
+	rho Champ_Uniforme	1 2.0
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+	{
+	Navier_Stokes_standard
+		{
+                solveur_pression Gcp { precond ssor { omega 1.5 }
+                                        seuil 1.e-08 impr
+                                        }
+                convection { muscl }
+                diffusion  { }
+                Sources
+                        {
+                        Canal_perio { bord periox }
+                        }
+		initial_conditions
+			{
+                        vitesse Champ_fonc_xyz dom 3  20. 0. 0. 
+			}
+		boundary_conditions
+			{
+periox periodique 
+perioz periodique 
+			haut     paroi_fixe
+			bas      paroi_fixe
+			}
+	}
+
+	Post_processing
+        	{       
+		Domaine domaine_post
+		fields dt_post 2.
+			{
+			vitesse elem
+			pression elem
+			}
+		Statistiques dt_post 2.
+			{
+		        t_deb 0. t_fin 6.
+			moyenne vitesse elem
+			moyenne pression elem
+			correlation vitesse pression elem
+			}
+		}
+	}
+
+Solve pb
+End
