@@ -170,28 +170,34 @@ do
 		    # echo "linkfile" ${linkfile} ${file_link}
 		    # echo "source " ${sourcefile}
 		    echo "patch file  ?"
-		    if [ ${sourcefile} -nt ${file_link} ]
-			then
-			echo "ok we replace ${file_link} with ${sourcefile}"
-			rm -f ${linkfile}
-			ln -sf ${sourcefile} ${linkfile}
-		    else
-			echo "File in directory ${sourcefile} not newer that" ${file_link}
-			conflicting_files_error ${filename} ${file_link} ${sourcefile}
-		    fi
+                    # on ne verifie plus si plus recent
+		    echo "ok we replace ${file_link} with ${sourcefile}"
+		    rm -f ${linkfile}
+		    ln -sf ${sourcefile} ${linkfile}
+		#    if [ ${sourcefile} -nt ${file_link} ]
+		#	then
+		#	echo "ok we replace ${file_link} with ${sourcefile}"
+		#	rm -f ${linkfile}
+		#	ln -sf ${sourcefile} ${linkfile}
+		#    else
+		#	echo "File in directory ${sourcefile} not newer that" ${file_link}
+		#	conflicting_files_error ${filename} ${file_link} ${sourcefile}
+		#    fi
 		elif  [ "$dirlink" = "patch" ]
 		    then
 		    # echo "linkfile" ${linkfile} ${file_link}
 		    # echo "source " ${sourcefile}
 		    echo "patch file  ?"
-		    if [ ${file_link} -nt ${sourcefile} ]
-			then
-			echo "ok we keep ${file_link} instead of ${sourcefile}"
-		
-		    else
-			echo "File in directory ${sourcefile} not newer that" ${file_link}
-			conflicting_files_error ${filename} ${file_link} ${sourcefile}
-		    fi
+                    # on ne verifie plus si plus recent
+	  	    echo "ok we keep ${file_link} instead of ${sourcefile}"
+		#    if [ ${file_link} -nt ${sourcefile} ]
+		#	then
+		#	echo "ok we keep ${file_link} instead of ${sourcefile}"
+		#
+		#    else
+		#	echo "File in directory ${sourcefile} not newer that" ${file_link}
+		#	conflicting_files_error ${filename} ${file_link} ${sourcefile}
+		#    fi
 		  else
 	      # xterm
 		    conflicting_files_error ${filename} ${file_link} ${sourcefile}
