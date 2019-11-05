@@ -13,6 +13,7 @@
 #include <Exceptions.h>
 
 #include <sstream>
+#include <string.h>
 using namespace std;
 
 using namespace ICoCo;
