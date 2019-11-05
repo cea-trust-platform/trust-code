@@ -18,8 +18,9 @@ def associer_associer(self,listclass):
     for ref in cl1.get_list_ref():
         #print ref
         clref=ref.type_ref
-        cmd="isi=isinstance(cl2,"+clref+")"
-        exec(cmd)
+        # cmd="isi=isinstance(cl2,"+clref+")"
+        # exec(cmd)
+        isi = isinstance(cl2, getattr(sys.modules[__name__], clref))
         if isi:
             if getattr(cl1,ref.name)==None:
                 ok=ref

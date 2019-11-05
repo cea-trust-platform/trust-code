@@ -1,5 +1,8 @@
 from triou import read_file_data,write_file_data,write_file_python,verify_all
 import sys
+from importlib import import_module
+
+
 def test_cas(file0):
     file=file0+".data"
     print("test_cas",file)
@@ -21,17 +24,19 @@ def test_cas(file0):
     verify_all(listclass1)
 
 
-    cdm="from "+namepy+" import *"
-    print("cmd ",cdm)
-    exec(cdm)
+    #cdm="from "+namepy+" import *"
+    #print("cmd ",cdm)
+    #exec(cdm)
+    ze_mod = import_module(namepy)
+    #print("@@@@@@", dir(ze_mod))
     #print "ici",listclass
-    write_file_data(file2,listclass)
+    write_file_data(file2,ze_mod.listclass)
     toto=read_file_data(file2)
     verify_all(toto)
     write_file_python(filepy2,toto)
     write_file_data(file3,toto)
     ti=open('lutil.py','w')
-    ti.write("lutil="+str(lutil)+'\n')
+    ti.write("lutil="+str(ze_mod.lutil)+'\n')
     ti.close()
     s1=open(file1,'r')
     s2=open(file2,'r')

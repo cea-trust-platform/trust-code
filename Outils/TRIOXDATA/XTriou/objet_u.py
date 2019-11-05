@@ -7,6 +7,7 @@
 # voir a ecriture pour mettre les synonymes mais lequel !!!
 
 from xtree import XTree
+import sys
 #
 # Redefinition of saveAs xtree -> ajout de la liste des instances
 #
@@ -17,18 +18,18 @@ def mySave(self,fileName):
     linkref(1)
     self.saveAs_org(fileName)
     from xtree import getMainXTree
-    list=getMainXTree().children
-    str='list_instance=['
+    lst=getMainXTree().children
+    st='list_instance=['
     from xobject import XObject
-    for l in list:
+    for l in lst:
         if isinstance(l.node, XObject):
-            str+=l.name+','
+            st+=l.name+','
             pass
         pass
-    str+=']\n'
+    st+=']\n'
     #print str
     stream = file(fileName, "aw")
-    stream.write(str)
+    stream.write(st)
     stream.close()
     pass
 XTree.saveAs=mySave
@@ -173,8 +174,6 @@ try:
 except:
     pass
 from xdata import XMulTypes,XNone,XObject,XList,XInt,XFloat,XString,XAttribute,XInstance,getXClasses
-from string import replace,split,lower,atoi
-from types import InstanceType,StringType
 from xutilities import value2text
 
 class suppress_param(XObject):
@@ -235,9 +234,9 @@ def traite_trace(cls,mottest,mot):
             traite_trace(cls.__bases__[0],mottest,mot)
         else:
             if cls.readacc_==0:
-                print("read_val",cls.name_,lower(mottest))
+                print("read_val",cls.name_,mottest.lower())
             else:
-                print("read_val_spec",cls.name_,lower(mottest))
+                print("read_val_spec",cls.name_,mottest.lower())
                 pass
 
             pass
@@ -301,7 +300,7 @@ class Ref_Tr_Attribute(XAttribute):
 def verify_ref(val,attr,listclass):
     status="Valid"
     # on verifie le type de l'objet reference
-    if type(val) is StringType:
+    if type(val) == type(""):
         try:
             val2=trouve_class_list(val,listclass)
             x=attr.xtype
@@ -369,7 +368,10 @@ def getNameTrio(self):
 
 # synonyme={'uniform_field':'champ_uniforme'}
 def get_class_name(mot):
-    m=lower(mot)
+    m=mot.lower()
+    #print("@@@@@@@", m)
+    #print("@@@@@@@", synonyme)
+    #print("@@@@@@@", dicoclass)
     try:
         return dicoclass[m]
     except KeyError:
@@ -392,6 +394,7 @@ class objet_u(XObject):
         XAttribute("name_u", xtype=My_String, default_value="not_set"),
         XAttribute("is_read", xtype=XInt(), default_value=0),
         ]
+
     def _getToolTip(cls, target):
         try:
             tr=target.descr_
@@ -410,7 +413,9 @@ class objet_u(XObject):
             tr=target.name
             pass
         return tr
+
     getToolTip = classmethod(_getToolTip)
+
     def _show_item(cls,name,object_to_edit):
         """ definit les couleurs quand on edit """
         xatt=cls.getAllInitXAttributes()
@@ -471,6 +476,7 @@ class objet_u(XObject):
         # print "ici args",args,self.__class__
         # print self,"cree"
         return
+
     def get_list_ref(self):
         xatt=self.__class__.getAllInitXAttributes()
         list=[]
@@ -480,6 +486,7 @@ class objet_u(XObject):
                 pass
             pass
         return list
+
     def get_list_attr(self):
         if self.listattr==None:
             xatt=self.__class__.getAllInitXAttributes()
@@ -492,26 +499,29 @@ class objet_u(XObject):
             self.listattr=list
             pass
         return self.listattr
+
     def get_list_mot_trio(self):
         list=[ x.name_trio for x in self.get_list_attr() ]
         return list
+
     def get_list_mot(self):
         list=[ x.name for x in self.get_list_attr() ]
-    def read_val(self,chaine2,niveau,listdata,mottest):
-        # print "read_val",self.__class__.name_,mottest
 
+    def read_val(self,chaine2,niveau,listdata,mottest):
+        #print ("@@@@@@ read_val", chaine2[0])
+        import ast
         listattr=self.get_list_attr()
         attr=None
-        lmottest=lower(mottest)
+        lmottest=mottest.lower()
         for attr2 in listattr:
-            if lmottest==lower(attr2.name_trio):
+            if lmottest==attr2.name_trio.lower():
                 attr=attr2
                 break
             pass
         if (attr==None):
             for attr2 in listattr:
                 for syno in attr2.syno:
-                    if lmottest==lower(syno):
+                    if lmottest==syno.lower():
                         attr=attr2
                         pass
                     pass
@@ -556,17 +566,11 @@ class objet_u(XObject):
                 if mot!='bloc_lecture':
                     print("a modifier", self.__class__,mottest,mot)
                     pass
-                #cmd="self."+self.list_mot_[i]+"_=bloc"
-                # exec(cmd)
 
             elif chaine2[0][0]=='"':
                 bloc=read_string(chaine2)
                 setattr(self,mot,bloc)
             else:
-                #cmd="self."+self.list_mot_[i]+"_=chaine[0]"
-                # print "cmd",cmd
-                # exec(cmd)
-                #self.list_val_[i]=chaine[0]
                 setattr(self,mot,chaine2[0])
                 if len(chaine2): chaine2.pop(0)
                 pass
@@ -578,28 +582,9 @@ class objet_u(XObject):
         elif (type_val==Listfloat) or (type_val==Listfloat_f) or (type_val==Listentier_f) or (type_val==Listentier):
             if (type_val==Listfloat) or (type_val==Listentier):
                 x=XInt()
-                cmd="n="+chaine2[0]
-                exec(cmd)
-                x(n)
-                if len(chaine2): chaine2.pop(0)
-            else:
-                n=get_dimension(listdata)
-
-                pass
-            l=[]
-            for i in range(n):
-                cmd="v="+chaine2[0]
-                exec(cmd)
-                if len(chaine2): chaine2.pop(0)
-                l.append(v)
-                pass
-            setattr(self,mot,l)
-            return chaine2
-        elif (type_val==Listchaine) or (type_val==Listchaine_f):
-            if  (type_val==Listchaine):
-                x=XInt()
-                cmd="n="+chaine2[0]
-                exec(cmd)
+                #cmd="n="+chaine2[0]
+                #exec(cmd)
+                n = ast.literal_eval(chaine2[0])
                 x(n)
                 if len(chaine2): chaine2.pop(0)
             else:
@@ -610,6 +595,26 @@ class objet_u(XObject):
             for i in range(n):
                 #cmd="v="+chaine2[0]
                 #exec(cmd)
+                v = ast.literal_eval(chaine2[0])
+                if len(chaine2): chaine2.pop(0)
+                l.append(v)
+                pass
+            setattr(self,mot,l)
+            return chaine2
+        elif (type_val==Listchaine) or (type_val==Listchaine_f):
+            if  (type_val==Listchaine):
+                x=XInt()
+#                cmd="n="+chaine2[0]
+#                exec(cmd)
+                n = ast.literal_eval(chaine2[0])
+                x(n)
+                if len(chaine2): chaine2.pop(0)
+            else:
+                n=get_dimension(listdata)
+
+                pass
+            l=[]
+            for i in range(n):
                 l.append(chaine2[0])
                 if len(chaine2): chaine2.pop(0)
 
@@ -617,9 +622,9 @@ class objet_u(XObject):
             setattr(self,mot,l)
             return chaine2
 
-        type=type_val2.classes[0]
-        typem=split(str(type),".")[-1]
-        type2=split(typem,"'" )[0]
+        typ=type_val2.classes[0]
+        typem=str(typ).split(".")[-1]
+        type2=typem.split("'" )[0]
 
         if (val==None):
             #print "icit", type,typem
@@ -627,49 +632,55 @@ class objet_u(XObject):
             #pr.__init2__()
             #type2=pr.name_
 
-            cmd="self."+mot+"="+type2+"()"
+            #cmd="self."+mot+"="+type2+"()"
             try:
-                exec(cmd)
+                #exec(cmd)
+                vv = getattr(sys.modules[__name__], type2)()
+                setattr(self, mot, vv)
             except:
                 raise Exception(cmd)
             pass
             #setattr(self,mot,pr)
             pass
         name_type=getattr(self,mot).name_
-        if (type2[-5:]=='_base') and not(issubclass(type,class_generic)):
+        if (type2[-5:]=='_base') and not(issubclass(typ,class_generic)):
             # on va lire un derive
             type2_=get_class_name(chaine2[0])
-            cmd="self."+mot+"="+type2_+"()"
+            #cmd="self."+mot+"="+type2_+"()"
             if len(chaine2): chaine2.pop(0)
             try:
-                exec(cmd)
+                #exec(cmd)
+                vv = getattr(sys.modules[__name__], type2_)()
+                setattr(self, mot, vv)
             except:
                 raise Exception(cmd)
             #setattr(self,mot,pr)
             pass
-        elif (type2[-6:]=='_deriv') or issubclass(type,class_generic):
+        elif (type2[-6:]=='_deriv') or issubclass(typ,class_generic):
             # on va lire un derive
             mot0=type2+'___'
-            mot1=lower(chaine2[0]);
+            mot1=chaine2[0].lower()
             try:
                 type2_=get_class_name(mot0+synonyme[mot1])
             except KeyError:
                 type2_=get_class_name(mot0+mot1)
                 pass
-            cmd="self."+mot+"="+type2_+"()"
+            #cmd="self."+mot+"="+type2_+"()"
             if len(chaine2): chaine2.pop(0)
             try:
-                exec(cmd)
+                #exec(cmd)
+                vv = getattr(sys.modules[__name__], type2_)()
+                setattr(self, mot, vv)
             except:
                 raise Exception(cmd)
             #setattr(self,mot,pr)
             pass
         if (name_type=='defbord') or (name_type=='circleinnn'):
             dim=get_dimension(listdata)
-
-            cmd="self."+mot+"="+name_type+"_"+str(dim)+'()'
-            exec(cmd)
-            #setattr(self,mot,pr)
+#            cmd="self."+mot+"="++'()'
+#            exec(cmd)
+            vv = getattr(sys.modules[__name__], name_type+"_"+str(dim))()
+            setattr(self,mot, vv)
             pass
         pr=getattr(self,mot)
         if 0:
@@ -678,9 +689,10 @@ class objet_u(XObject):
             # try:
             # pr=self.list_val_[i]
             if pr==None:
-                cmd="pr="+self.list_type_[i]+"()"
+                #cmd="pr="+self.list_type_[i]+"()"
                 try:
-                    exec(cmd)
+                    #exec(cmd)
+                    pr = getattr(sys.modules[__name__], self.list_type_[i])()
                 except:
                     raise Exception(cmd)
                 pass
@@ -713,10 +725,12 @@ class objet_u(XObject):
 
             type2_=get_class_name(chaine[0])
             # print "ici",name_,type2_,chaine[0]
-            cmd="cl1="+type2_
-            exec(cmd)
-            cmd="cl2="+name_
-            exec(cmd)
+            #cmd="cl1="+type2_
+            #exec(cmd)
+            cl1 = getattr(sys.modules[__name__], type2_)
+            # cmd="cl2="+name_
+            # exec(cmd)
+            cl2 = getattr(sys.modules[__name__], name_)            
             if not issubclass(cl1,cl2):
                 print("Pb ",cl1," not asubclass of ",cl2)
                 raise Exception("erreur de type")
@@ -760,7 +774,7 @@ class objet_u(XObject):
                     # on attend accolade ou on connait le nombre d'argument
                     # print "in readdata",self.__class__,n,j,self.__class__.readacc_,chaine[0]
                     if self.__class__.readacc_==1:
-                        mottest=lower(chaine[0])
+                        mottest=chaine[0].lower()
                         ##if not mottest in self.list_mot_trio_:
 ##                          print self.print_py()
 ##                            msg=chaine[0]
@@ -816,16 +830,14 @@ class objet_u(XObject):
         a=getNameEn(self)+'('
         list_attr=self.get_list_attr()
         for attr in list_attr:
-            # exec("val=self."+self.list_mot_[i]+"_")
             val=getattr(self,attr.name)
             # for i in range(len(self.list_mot_)):
             nm=attr.name
             #val=self.get_value(nm)
             # print "icitt ", nm,val,self.__class__,type(val)
             if val!=None:
-                # print "VAL",val,type(val),type(val) is InstanceType
                 type_val=attr.xtype
-                if  type(val) is InstanceType:
+                if  type(val) == type(object):
                     # print "classe_val",val
                     # if isinstance(val,list):
                     if 1:
@@ -913,7 +925,6 @@ class objet_u(XObject):
         #list_mot_trio=self.get_list_mot_trio()
         list_attr=self.get_list_attr()
         for attr in list_attr:
-            # exec("val=self."+self.list_mot_[i]+"_")
             val=getattr(self,attr.name)
             if (val!=None):
                 lec=1
@@ -924,7 +935,7 @@ class objet_u(XObject):
                 type_val=attr.xtype
                 #print "titi",val,type_val,type(val),type(val) is MethodType
                 #print MethodType
-                if type(val) is InstanceType:
+                if type(val) == type(object):
                     # print type(val),val,self.__class__
                     stri=stri+val.print_lu()
                 elif isinstance(val,objet_u):
@@ -1221,7 +1232,7 @@ def read_bloc_comm(c):
     bloc=' '.join(c[:z])
     c=c[z+1:]
     #    print "comm ",bloc, c
-    bloc=replace(bloc,"'"," ")
+    bloc=bloc.replace("'"," ")
     return bloc,c
 def read_bloc_comm_entier(c):
     " lecture d'un bloc de commentaire (cherche le */ fermant) "
@@ -1233,14 +1244,14 @@ def read_bloc_comm_entier(c):
         1/0
     c=c[z+1:]
     #    print "comm ",bloc, c
-    bloc=replace(bloc,"'"," ")
+    bloc=bloc.replace("'"," ")
     return bloc,c
 
 def retire_new(c):
     " pour ovap mais pas utilisable.. "
 
     for i in range(len(c)):
-        if (lower(c[i])=='new'):
+        if (c[i].lower()=='new'):
 
             print("on retire new")
             c[i]=c[i+1]
@@ -1254,10 +1265,8 @@ pass
 def modifie_ordre(listclass,mtype1,mtype2):
     "modifie listclass pour que type2 soit apres type1"
     try:
-        cmd="type1="+mtype1
-        exec(cmd)
-        cmd="type2="+mtype2
-        exec(cmd)
+        type1 = getattr(sys.modules[__name__], mtype1)
+        type2 = getattr(sys.modules[__name__], mtype2)
     except:
         print(mtype1," ou ",mtype2," inconnus...")
         return
@@ -1286,8 +1295,8 @@ def modifie_ordre(listclass,mtype1,mtype2):
     pass
 def retire_nl(a):
     " retire les new line sauf dans les commentaires "
-    aa=a.replace('\n',' \n ')
-    aa=split(aa,' ')
+    aa = a.replace('\n',' \n ')
+    aa = aa.split(' ')
     # b=' '.join(aa)
     poub,_,listcomm=traite_naif(aa)
 
@@ -1303,7 +1312,7 @@ def retire_nl(a):
         index=debut+aa[debut:].index('\n')
         index0=len(aa)-index
         in_comm=0
-        for i  in range(len(listcomm)/2-1,-1,-1):
+        for i  in range(len(listcomm)//2-1,-1,-1):
             index1=listcomm[2*i]
             index2=listcomm[2*i+1]
             # print index0,index1,index2
@@ -1365,7 +1374,7 @@ def strip_data(data):
     """ retire les blancs et les retour chariot"""
     b=data.replace('\n',' ').replace('\t',' ').strip().replace('  ',' ')
     c=b.replace('  ',' ')
-    while (cmp(b,c)!=0):
+    while (b != c):
         b=c
         c=b.replace('  ',' ')
         pass
@@ -1375,18 +1384,18 @@ def lire_fichier(name):
     " lit le fichier et renvoie une liste modififee de chaines de caractere"
     ent=open(name,'r')
     a=ent.read()
-    b=replace(a,"\011"," ")
+    b=a.replace("\011"," ")
     # pour le cas ou le fichier est passe par dos
-    b=replace(b,'\r'," ")
+    b=b.replace('\r'," ")
     b=retire_nl(b);
     #b=replace(a,"\012"," ")
-    b=replace(b,"}"," }")
-    c=replace(b,"  "," ")
-    while (cmp(b,c)!=0):
+    b=b.replace("}"," }")
+    c=b.replace("  "," ")
+    while (b != c):
         b=c
-        c=replace(b,"  "," ")
+        c=b.replace("  "," ")
         pass
-    c=split(c,' ')
+    c=c.split(' ')
 
     # important pour ne pas s'arreter au debut du cas
     # si il commence par des blancs....
@@ -1418,7 +1427,7 @@ def read_file_data(name):
     mot="debut"
     while ( (mot!='fin') and (mot!='end') and (c[0]!='£') ):
         mot=c[0]
-        mot=lower(mot)
+        mot=mot.lower()
         fichier_lu=0
         if ((mot=='lire_fichier')or (mot=='read_file') )and (c[2]==';'):
             try:
@@ -1454,7 +1463,7 @@ def read_file_data(name):
             if (mot=="#") or (mot=="/*"):
                 sa=len(c)
                 ok=0
-                for index  in range(len(listcomm)/2-1,-1,-1):
+                for index  in range(len(listcomm)//2-1,-1,-1):
                     index1=listcomm[2*index]
                     index2=listcomm[2*index+1]
                     #print index1,index2,sa
@@ -1475,14 +1484,14 @@ def read_file_data(name):
             else:
                 if len(d): d.pop(0)
                 sa=len(d)
-
+                #print("@@@@@ ", namea)
                 exec(namea+".read_data(d,niv,listclass)")
 
                 decal=0
                 lenc=len(c)+1 # on  a retire le premier mot
                 lenc=len(d)
                 #nbmotlu= sa-len(d)
-                for index  in range(len(listcomm)/2-1,-1,-1):
+                for index  in range(len(listcomm)//2-1,-1,-1):
                     index1=listcomm[2*index]
                     index2=listcomm[2*index+1]
                     if (lenc>=index2):
@@ -1681,9 +1690,9 @@ def write_file_data(name,listclass):
     s=open(name,'r')
     a=s.read()
     s.close()
-    b=replace(a,'\n\n','\n')
-    b=replace(b,'  ',' ')
-    b=replace(b,'\n\n','\n')
+    b=a.replace('\n\n','\n')
+    b=b.replace('  ',' ')
+    b=b.replace('\n\n','\n')
     # on idente grace aux accolades
     b=indent_chaine(b)
     s=open(name,'w')
@@ -1766,7 +1775,7 @@ class listobj_impl(objet_u):
         if (self.__class__.readacc_==0):
             # print self," ici pb"
             if (type(self.virgule)==type(1)):
-                i2=atoi(chaine[0])
+                i2=int(chaine[0])
             else:
                 bizarre=1
                 i2=1
@@ -1785,45 +1794,52 @@ class listobj_impl(objet_u):
             self.listobj=[]
             pass
 
-        cmd2="tst_titi2="+self.__class__.class_type
-        exec(cmd2)
+        #cmd2="tst_titi2="+self.__class__.class_type
+        #exec(cmd2)
+        tst_titi2 = getattr(sys.modules[__name__], self.__class__.class_type)
         is_class_generic=issubclass(tst_titi2,class_generic)
 
         while (chaine[0]!= '}') and (i2!=0):
             i2=i2-1
             #   print "lecture ",i2
             self.listobj.append(None)
-            newob="self.listobj[-1]"
+            #newob="self.listobj[-1]"
             special=1
             if (self.__class__.class_type[-6:]=='_deriv') or (is_class_generic):
                 # on va lire un derive
                 type2_=self.__class__.class_type
                 mot0=type2_+'___'
-                mot1=lower(chaine[0]);
+                mot1=chaine[0].lower();
                 if len(chaine): chaine.pop(0)
                 try:
                     type2_=get_class_name(mot0+synonyme[mot1])
                 except KeyError:
                     type2_=get_class_name(mot0+mot1)
                     pass
-                cmd=newob+"="+type2_+"()"
+                # cmd=newob+"="+type2_+"()"
+                vv = getattr(sys.modules[__name__],type2_)()
             elif (self.__class__.class_type[-5:]=='_base'):
                 type2_=get_class_name(chaine[0])
                 if len(chaine): chaine.pop(0)
 
-                cmd="cl1="+type2_
-                exec(cmd)
-                cmd="cl2="+self.__class__.class_type
-                exec(cmd)
+#                cmd="cl1="+type2_
+#                exec(cmd)
+#                cmd="cl2="+self.__class__.class_type
+#                exec(cmd)
+                cl1 = getattr(sys.modules[__name__], type2_)
+                cl2 = getattr(sys.modules[__name__], self.__class__.class_type)                
                 if not issubclass(cl1,cl2):
                     print("Pb ",cl1," not asubclass of ",cl2)
                     raise Exception("erreur de type")
-                cmd=newob+"="+type2_+"()"
+                #cmd=newob+"="+type2_+"()"
+                vv = getattr(sys.modules[__name__],type2_)()
             else:
                 special=0
-                cmd=newob+"="+self.__class__.class_type+"()"
+                #cmd=newob+"="+self.__class__.class_type+"()"
+                vv = getattr(sys.modules[__name__],self.__class__.class_type)()
                 pass
-            exec(cmd)
+#            exec(cmd)
+            self.listobj[-1] = vv
             # print newob
             # print chaine
             #  print listdata
@@ -1938,17 +1954,13 @@ def trouve_pere(name):
     #base=trouve_base(name)
     #print dicobases[base]
     #ll=[]
-    cmd="cl="+name
-    exec(cmd)
+    cl = getattr(sys.modules[__name__], name)
     #print cl.__bases__,type(cl.__bases__[0]),dir(cl.__bases__[0])
     #cmd="per="+cl.__bases__[0]
     per=cl.__bases__[0]
-
     per=per.name_
-    #print per
-    name_per=replace(str(per),'triou.','')
+    name_per=str(per).replace('triou.','')
     return name_per
-pass
 
 def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     " genere la doc associee a la classe de base name"
@@ -1970,10 +1982,8 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     pere=trouve_pere(name)
     tstr=""
     tstr2=""
-    cmd="icl="+name
-    exec(cmd)
-    cmd="ipere="+pere
-    exec(cmd)
+    icl = getattr(sys.modules[__name__], name)
+    ipere = getattr(sys.modules[__name__], pere)
     # print "pere",ipere
     #lcl=icl.list_mot_
     #lcltr=icl.list_mot_trio_
@@ -2007,9 +2017,9 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
 
     if clname in list(dicobases.keys()): # si c'est une section, je ferme l'accolade laissee ouverte
         if name!='methode_loi_horaire':
-            tstr+='\label{'+replace(name,'_','')+'}'+"}\n"
+            tstr+='\label{'+name.replace('_','')+'}'+"}\n"
         else:
-            tstr+='\label{'+replace(name,'_','')+"}\n"
+            tstr+='\label{'+name.replace('_','')+"}\n"
     else:
         if clname=='/*' or clname=='#' or clname=='champ_base' or clname=='champ_front_base':
             tstr+='}'
@@ -2020,11 +2030,11 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     tstra=""
     if clname not in list(dicobases.keys()):
         # if name != vrai_name_:
-        tstra = "\subsection{"+clname+"\label{"+replace(name,'_','')+"} }\n"
+        tstra = "\subsection{"+clname+"\label{"+name.replace('_','')+"} }\n"
         pass
     if issubclass(icl,objet_lecture) or issubclass(icl,listobj) :
         if (niveau>1):
-            tstra = "\subsubsection{"+clname+"\label{"+replace(name,'_','')+"} }\n"
+            tstra = "\subsubsection{"+clname+"\label{"+name.replace('_','')+"} }\n"
             pass
         pass
     # a t on un syno
@@ -2038,8 +2048,8 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         # ecriture de la description de l'objet
     tstr = tstr + tstra
     try:
-        descr=replace(replace(icl.descr_,'{','\{'),'}','\}')
-        descr=replace(replace(descr,'\{\{','{'),'\}\}','}')
+        descr = icl.descr_.replace('{','\{').replace('}','\}')
+        descr = descr.replace('\{\{','{').replace('\}\}','}')
         tstr=tstr+"Description: "+descr+'\n \\newline \\newline\n'
         pass
     except:
@@ -2055,7 +2065,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         tstr=tstr+ "Class "+ clname +" herits from "+ ipere.name_
         pass
 
-    tstr=tstr+" (\\ref{"+replace(ipere.name_,'_','')+"})"
+    tstr=tstr+" (\\ref{"+ ipere.name_.replace('_','') +"})"
     # tstr=tstr+'.\n \n'
 
 
@@ -2081,7 +2091,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             if nob is None or nob=='':
                 nob=ob.name_
                 pass
-            tstr+=" "+nob+" (\\ref{"+replace(ob.name_,'_','')+"}) "
+            tstr+=" "+nob+" (\\ref{"+ ob.name_.replace('_','') +"}) "
             pass
         pass
     tstr+="\n\\newline \\newline \n"
@@ -2107,17 +2117,16 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr+=" \} "
             pass
 
-        type="\n\nlist of { \it "+list(dicoclass.keys())[list(dicoclass.values()).index(icl.class_type)]+"}"
+        typ="\n\nlist of { \it "+list(dicoclass.keys())[list(dicoclass.values()).index(icl.class_type)]+"}"
         type2=icl.class_type
-        tstr+=type+" (\\ref{"+replace(type2,'_','')+"})"
+        tstr+=typ+" (\\ref{"+ type2.replace('_','') + "})"
         if icl.virgule:
             tstr+=" separeted with , "
             pass
         tstr+="\n\n"
 
         # print type,type2
-        cmd="es1="+type2+"()"
-        exec(cmd)
+        es1 = getattr(sys.modules[__name__], type2)()
         es=es1.__class__
         if issubclass(es,objet_lecture):
             tstr+=gen_doc(es.name_,doc_gen,fr,l,niveau)
@@ -2283,7 +2292,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                 strtype=stype
                 pass
             if (xattr.xtype!=rien) and (gen_ref==1):
-                her=" (\\ref{"+replace(stype2,'_','')+"})"+her
+                her=" (\\ref{"+stype2.replace('_','')+"})"+her
                 pass
             if strtype=='':
                 raise Exception("on ne doit plus passer la")
@@ -2317,7 +2326,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                 tstr=tstr+"\item[] "+mot+" "+stype
                 pass
             if xattr.descr_!='not_set':
-                tstr2+=': '+replace(replace(xattr.descr_,'{','\{'),'}','\}')
+                tstr2+=': '+xattr.descr_.replace('{','\{').replace('}','\}')
                 pass
             tstr2=tstr2+'\n'
             pass
@@ -2508,12 +2517,12 @@ Here is a list of post-processable fields, but it is not the only ones.
                 tstr=tstr+gen_doc(l,doc_gen,fr,lutil)
                 pass
             pass
-        tstr=replace(tstr,"\'{\'","\'\{\'")
-        tstr=replace(tstr,"\'}\'","\'\}\'")
-        tstr=replace(tstr,"\\xe9","e")
+        tstr=tstr.replace("\'{\'","\'\{\'")
+        tstr=tstr.replace("\'}\'","\'\}\'")
+        tstr=tstr.replace("\\xe9","e")
         s=open(name+".tex",'w')
-        str2=replace(tstr,'_','\-\_')
-        str2=replace(str2,'#','\#')
+        str2=tstr.replace('_','\-\_')
+        str2=str2.replace('#','\#')
         s.write(str2)
         s.close()
         pass
@@ -2533,15 +2542,15 @@ Here is a list of post-processable fields, but it is not the only ones.
 def copy(a):
     " renvoie une copie de a"
     print("copy deb")
-    cmd="c="+a.print_py()
-    exec(cmd)
+    #cmd="c="+a.print_py()
+    #exec(cmd)
+    c = getattr(sys.modules[__name__], a.print_py())
     print("copy fin")
     return c
 
 def change_type(inst,new_type):
     " renvoie une instance de type new_type, initialisee avec les valeurs de inst"
-    cmd="pr="+new_type.name_+"()"
-    exec(cmd)
+    pr = getattr(sys.modules[__name__], new_type.name_)()
     list1=[ x.name for x in inst.__init__xattributes__ ]
     list2=[ x.name for x in pr.__init__xattributes__ ]
     list0=[]

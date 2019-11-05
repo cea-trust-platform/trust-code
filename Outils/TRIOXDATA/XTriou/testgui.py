@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 from xdata import getXClasses
 from triou import dicobases,objet_u

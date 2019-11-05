@@ -11,7 +11,7 @@ def add_class(*args,**kwargs):
 
 
 dico={}
-list=[]
+lst=[]
 for ob in 'suppress_param','objet_u','listobj_impl','chaine','floattant','entier','rien','listentier','listentierf','listchaine','listchainef','list','listf':
     dico[ob]=[1,"yy"]
     pass
@@ -20,7 +20,7 @@ while (line):
 
     es=line.replace("gen_class","add_class")
     #  print dir(line)
-    exec("name="+es)
+    ctxt = {'add_class': add_class}; exec("name="+es, ctxt); name = ctxt['name']
     if name in list(dico.keys()):
         if line!=dico[name][1]:
             message="classe deja dans dico "+name+" avec "+dico[name][1]+"\n et maintenant "+line
@@ -29,7 +29,7 @@ while (line):
         pass
         message="classe deja dans dico "+name
         # raise Exception (message)
-    list.append(name)
+    lst.append(name)
     dico[name]=[0,line]
     #   f2.write(line)
     line=file.readline()
@@ -76,7 +76,7 @@ def gen_class(cl,dico):
         # print "debut",cl
         es=val[1].replace("gen_class","get_deps")
         dico[cl]=[-1,val[1]]
-        exec("listdeps="+es)
+        ctxt = {'get_deps': get_deps}; exec("listdeps="+es, ctxt); listdeps = ctxt['listdeps']
         for cl_d in listdeps:
             if (cl_d!=cl):
                 gen_class(cl_d,dico)
@@ -90,7 +90,7 @@ def gen_class(cl,dico):
         pass
     pass
 
-for cl in list:
+for cl in lst:
     # print 'ici',cl
     gen_class(cl,dico)
 
