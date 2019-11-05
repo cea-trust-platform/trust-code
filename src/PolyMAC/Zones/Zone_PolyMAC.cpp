@@ -970,7 +970,7 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 //stabilisation des matrices m1 et m2 de PolyMAC
 inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M) const
 {
-  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = 2 + n_f * (6 + 2 * n_f), liwork = 2 * (3 + 5 * n_f), info = 0;
+  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = 2 + n_f * (6 + 2 * n_f), liwork = 2 * (3 + 5 * n_f), infoo = 0;
   DoubleTab A, S, b(n_f, 1), N(1, 1), x(1, 1), work(lwork), V;
   IntTab iwork(liwork);
 
@@ -993,8 +993,8 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M) const
   /* decomposition de Schur de M, puis renfort de la diagonale pour rendre toutes les vp plsu grandes que eps */
   char jobz = 'V', uplo = 'U';
   V = M, S.resize(n_f);
-  F77NAME(dsyevd)(&jobz, &uplo, &n_f, &V(0, 0), &n_f, &S(0), &work(0), &lwork, &iwork(0), &liwork, &info);
-  assert(info == 0);
+  F77NAME(dsyevd)(&jobz, &uplo, &n_f, &V(0, 0), &n_f, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
+  assert(infoo == 0);
   //ajout pour garantir des vp plus grandes que eps
   for (i = 0, M = 0; i < n_f; i++) for (j = 0; j < n_f; j++) for (k = 0; k < n_f; k++) M(i, j) += V(k, i) * max(S(k), eps) * V(k, j);
 }
