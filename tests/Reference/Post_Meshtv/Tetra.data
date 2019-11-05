@@ -1,0 +1,80 @@
+# Hydraulique 3D VEF P1NC/P1B Schema MacCormack+EFstab cylindres emboites #
+dimension 3
+Pb_Hydraulique pb
+
+Domaine dom
+Read_file dom MacCormack_3D.geom 
+
+VEFPreP1B dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.0
+	nb_pas_dt_max 2
+	tmax 0.05
+	dt_min 1.e-5
+	dt_max 0.01
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-10
+	facsec 1.0
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu  Champ_Uniforme 1 1.0e-5
+	rho Champ_Uniforme 1 1.0
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-10 
+			impr 
+		}
+		convection { EF_stab { alpha 0.2 } }
+		diffusion { }
+		initial_conditions 
+		        {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+		        PAROI1 paroi_defilante Champ_Front_Tangentiel_VEF
+		               vitesse_tangentielle 0.45
+			PAROI2 paroi_fixe
+			ENTREE paroi_fixe
+			SORTIE symetrie
+		}
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+		  sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
+		  sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
+		}
+		format lml
+		fields dt_post 0.01
+		{
+			vitesse elem
+			vitesse som
+	                pression elem	
+			pression som
+		}
+	}
+}
+
+Solve pb
+End

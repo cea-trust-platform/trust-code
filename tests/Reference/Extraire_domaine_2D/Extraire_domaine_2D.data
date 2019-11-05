@@ -1,0 +1,202 @@
+# Cas test Lire_Tgrid2D #
+
+#  PARALLEL OK #
+
+
+  
+dimension 2
+domaine dom
+
+Pb_Thermohydraulique pb
+
+# BEGIN MESH #
+
+Read_file dom geo_2d.geom
+
+VerifierCoin dom { }
+
+dilate dom 0.1
+ 
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+  {
+
+    Partition_tool metis   { nb_parts 2   }
+    Larg_joint 2
+    zones_name DOM
+  }
+End
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Read dis { P1 }
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.000
+	tmax 20.
+	dt_min 1.e-5
+	dt_max 1.
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio -1
+	nb_pas_dt_max 3
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+   mu      Champ_Uniforme 1 0.000134
+   lambda  Champ_Uniforme 1 0.668
+   Cp      Champ_Uniforme 1 4479.
+   rho     Champ_Uniforme 1 866.
+   beta_th Champ_Uniforme 1 0.001279
+}
+
+
+Champ_Uniforme gravite
+Read gravite 2 0. -9.81 
+Associate eau gravite
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+Postraiter_domaine { domaine dom format lata }
+domaine bas
+extraire_domaine { domaine bas probleme pb condition_elements  (y<(-1)) }
+Postraiter_domaine { domaine bas format lata fichier bas }
+domaine surface 
+extraire_surface 
+  { 
+    domaine surface
+    probleme pb
+    condition_elements (y<(-1))
+    condition_faces (x<1e-6)
+   avec_les_bords
+  }
+postraiter_domaine { domaine surface format lata_v2 fichier surface }
+Read pb
+{
+     Navier_Stokes_standard
+	{
+	        solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-05 impr } 
+		convection { ef_stab { alpha 0.5 } }
+		diffusion { } 
+		sources { boussinesq_temperature { T0 200. } }
+  
+		initial_conditions
+		        {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions
+		{
+			WALL  paroi_fixe
+			WTIN  paroi_fixe
+			WFIN  paroi_fixe
+			INH   frontiere_ouverte_vitesse_imposee
+			      Champ_front_uniforme 2  1.  0.  
+			INV   frontiere_ouverte_vitesse_imposee
+			      Champ_front_uniforme 2  0  -1.
+			OUT0  frontiere_ouverte_pression_imposee
+			      Champ_front_Uniforme 1 0.      
+			OUTG  frontiere_ouverte_pression_imposee
+			      Champ_front_Uniforme 1 0.
+
+		}
+
+        }
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { ef_stab { alpha 1.0 } }
+		initial_conditions
+		        {
+			temperature Champ_Uniforme 1 200.
+			}
+		boundary_conditions
+		{
+		 	WALL paroi_adiabatique
+			WFIN Paroi_flux_impose
+				Champ_front_Uniforme 1 9.e+05
+			WTIN Paroi_temperature_imposee
+				Champ_front_Uniforme 1 216.667
+			INH  frontiere_ouverte_temperature_imposee
+			        Champ_front_Uniforme 1 250.
+                        INV  frontiere_ouverte_temperature_imposee
+			        Champ_front_Uniforme 1 150.
+			OUT0 frontiere_ouverte T_ext
+			      Champ_front_Uniforme 1 200.
+			OUTG frontiere_ouverte T_ext
+			      Champ_front_Uniforme 1 200.       
+
+		}
+	}	
+         Post_processing
+	 {
+
+	     Definition_champs
+	     {
+		vitesse_elem_bas Interpolation 
+        	   { 
+                     localisation elem
+                     domaine bas
+                     source refChamp 
+                       { 
+                	 pb_champ  pb vitesse
+                       }
+        	   }
+		vitesse_bas Interpolation 
+        	   { 
+                     localisation elem
+                     domaine bas
+                     source refChamp 
+                       { 
+                	 pb_champ  pb vitesse
+                       }
+        	   }
+
+		vitesse_min_bas Reduction_0D 
+        	   { 
+                     methode min
+                     sources_reference { vitesse_bas } 
+        	   }
+		vitesse_elem_min_bas Reduction_0D 
+        	   { 
+                     methode min
+                     sources_reference { vitesse_elem_bas } 
+        	   }
+	     } 
+	     Probes {
+			    vitesse_elem_min_bas vitesse_elem_min_bas Periode 1e-6 numero_elem_sur_maitre 0
+			    vitesse_min_bas vitesse_min_bas Periode 1e-6 numero_elem_sur_maitre 0
+			    T_fimp grav temperature Periode 0.0001 Segment  89 0.01 -1.05  0.01 -9.95 
+			    T_Timp grav temperature Periode 0.0001 Segment 109 0.59 +0.95  0.59 -9.95
+			    T_exit grav temperature Periode 0.0001 Segment  10 0.01 -9.50  0.59 -9.50
+	     }
+	     domaine bas fields dt_post 0.2 { vitesse_elem_bas } 
+        } 	
+	Post_processings
+	{
+	    surface	
+	    {
+		format lata domaine surface
+		fields dt_post 0.2 { temperature elem }
+	    }
+	    bas 
+	    { 	
+		format lata
+		fields dt_post 0.2 { vitesse faces } 		
+	    }
+	}
+}
+Solve pb
+End

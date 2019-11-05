@@ -1,4 +1,11 @@
 #!/bin/bash
+# si pas petsc on change de solveur
+if [ "$TRUST_DISABLE_PETSC" = "1" ]
+then
+   echo "Disabling petsc in docond_VEF.data"
+   grep -v petsc docond_VEF.data > p.data
+   mv p.data docond_VEF.data
+fi
 # Lancement du calcul couple TRUST:
 source $TRUST_ROOT/env_TRUST.sh
 data=docond_VEF

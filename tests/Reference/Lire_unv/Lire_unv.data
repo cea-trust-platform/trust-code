@@ -1,0 +1,135 @@
+# Cas pour tester la lecture d'un fichier Unv par ex venant d'Ideas #
+dimension 3
+
+Domaine dom
+
+
+# BEGIN MESH #
+lire_ideas dom ess.unv
+# END MESH #
+
+Pb_thermohydraulique pb_plenum
+VEFPreP1B dis
+
+# Runge_Kutta_Rationnel_ordre_2 sch # 
+Scheme_euler_explicit sch 
+Read sch 
+{ 
+        tinit 0.
+        tmax 60.
+        dt_min 1.e-8
+        dt_max 1.e-1 
+        dt_impr 1e-8
+        dt_sauv 2.
+        seuil_statio 1.e-8 
+        facsec 1.
+	nb_pas_dt_max 2
+} 
+
+
+
+Champ_Uniforme gravite
+Read gravite 3  0.  0. -9.81
+
+
+
+Fluide_Incompressible helium_plenum
+# Proprietes a T=809K calculees avec Sutherland et Godmann #
+# beta=1/T #
+Read helium_plenum
+{ 
+        rho    Champ_Uniforme 1  3.37
+        mu     Champ_Uniforme 1  3.93e-5
+        lambda Champ_Uniforme 1  0.303
+        Cp     Champ_Uniforme 1  5193
+        beta_th Champ_Uniforme 1 1.24e-3
+}
+
+
+
+Associate helium_plenum gravite
+Associate pb_plenum dom
+Associate pb_plenum sch 
+Associate pb_plenum helium_plenum
+
+Discretize pb_plenum dis 
+
+# Attention les conditions limites ne sont pas realistes #
+Read pb_plenum 
+{ 
+ Navier_Stokes_standard
+ { 
+     solveur_pression Gcp { precond ssor { omega 1.5 } 
+                                             seuil 1.e-6 }
+     convection { amont }
+     diffusion  {  }
+
+     Sources { Boussinesq_temperature { T0 936. } }
+
+
+     initial_conditions {  vitesse champ_uniforme  3 0. 0. 0.  }
+
+     boundary_conditions { 
+      paroi   paroi_fixe
+      cl_IHX1 frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+      cl_IHX2 frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+      cl_IHX3 frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+      cl_DHR1 paroi_fixe
+      cl_DHR2 paroi_fixe
+      cl_DHR3 paroi_fixe
+      cl_coeur frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 20. 10. 10. 
+                        } 
+ }
+
+	Convection_Diffusion_Temperature
+		{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+			{
+                        paroi  Paroi_temperature_imposee Champ_Front_Uniforme 1 673.
+                        cl_IHX1    frontiere_ouverte T_ext Champ_Front_Uniforme 1 1000.             
+                        cl_IHX2    frontiere_ouverte T_ext Champ_Front_Uniforme 1 1000.             
+                        cl_IHX3    frontiere_ouverte T_ext Champ_Front_Uniforme 1 1000.             
+                        cl_DHR1    Paroi_temperature_imposee Champ_Front_Uniforme 1 1000.             
+                        cl_DHR2    Paroi_temperature_imposee Champ_Front_Uniforme 1 1000.             
+                        cl_DHR3    Paroi_temperature_imposee Champ_Front_Uniforme 1 1000.             
+                        cl_coeur  frontiere_ouverte_temperature_imposee champ_front_fonc_xyz 1 0.
+		
+			}
+		initial_conditions { Temperature Champ_Uniforme 1 1000. }
+		}
+
+
+
+
+  Post_processing
+    {
+     Probes {
+
+  	    point_vit0 vitesse periode 			1.e-3 point 1   0. 0.0  0.
+  	    point_vit1 vitesse periode 			1.e-3 point 1   0. 0.0  0.4
+  	    point_vit2 vitesse periode 			1.e-3 point 1   0. 0.0  3.
+  	    point_vit3 vitesse periode 			1.e-3 point 1   0. 0.0  7.0
+  	    point_vit4 vitesse periode 			1.e-3 point 1   0. 0.0  10.5
+
+	    point_temperature0 temperature periode     	1.e-3 point 1   0. 0.0  0.
+	    point_temperature1 temperature periode     	1.e-3 point 1   0. 0.0  0.4
+	    point_temperature2 temperature periode     	1.e-3 point 1   0. 0.0  3.
+	    point_temperature3 temperature periode     	1.e-3 point 1   0. 0.0  7.0
+	    point_temperature4 temperature periode     	1.e-3 point 1   0. 0.0  10.5
+
+
+ }
+     fields dt_post 1.
+            {
+             pression elem
+             vitesse elem
+             temperature elem
+             }
+     }
+}
+
+Solve pb_plenum
+End
+
