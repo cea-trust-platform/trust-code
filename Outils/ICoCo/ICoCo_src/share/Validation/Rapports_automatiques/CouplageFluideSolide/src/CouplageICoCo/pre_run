@@ -1,4 +1,11 @@
 #!/bin/bash
+# si pas petsc on change de solveur
+if [ "$TRUST_DISABLE_PETSC" = "1" ]
+then
+   echo "Disabling petsc in docond_VEF_dom2.data"
+   grep -v petsc docond_VEF_dom2.data > p.data
+   mv p.data docond_VEF_dom2.data
+fi
 # Lancement du calcul couple ICOCO:
 sh $project_directory/share/bin/create_Makefile 2
 make check
