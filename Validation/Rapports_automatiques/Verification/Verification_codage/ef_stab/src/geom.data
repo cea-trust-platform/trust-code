@@ -1,0 +1,24 @@
+dimension 2
+domaine dom
+Mailler dom
+{
+Pave Cavite
+       {
+               Origine 0. 0.
+               Nombre_de_Noeuds 4 2
+               Longueurs 6. 2.
+       }
+       {
+               Bord periox   X = 0.  0. <= Y <= 2
+               Bord periox   X = 6.  0. <= Y <= 2
+               Bord bas      Y = 0.  0. <= X <= 6.
+               Bord haut     Y = 2   0. <= X <= 6.
+
+               }
+}
+Trianguler dom
+raffiner_isotrope dom
+raffiner_isotrope dom
+raffiner_isotrope dom 
+ecrire_fichier dom dom.geom
+postraiter_domaine { domaine dom format lml }
