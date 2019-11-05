@@ -44,8 +44,12 @@ done
 
 cat par
 rm -f EN_COURS
-cat par | mail_ -s "Bench_$HOST_BUILD" $TRUST_MAIL
-cat Run_bench.log | mail_ -s "Run_bench.log_$HOST_BUILD" $TRUST_MAIL
+# Envoi un mail si TRUST_ADMIN
+if [ "$TRUST_LOGIN" = triou ]
+then
+   cat par | mail_ -s "Bench_$HOST_BUILD" $TRUST_MAIL
+   cat Run_bench.log | mail_ -s "Run_bench.log_$HOST_BUILD" $TRUST_MAIL
+fi
 
 # Creation d'un rapport PDF sur le speed up et la decomposition du temps CPU
 Run_fiche -post_run `[ "$NUIT" = "" ] && echo -xpdf`
