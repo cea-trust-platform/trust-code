@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $project_directory/swig/build
+cd $project_directory/share/swig/build
 
 ctest
 

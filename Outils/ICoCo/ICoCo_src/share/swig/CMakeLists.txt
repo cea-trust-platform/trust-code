@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 set(ATELIER  ON)
-include(../build/src/CMakeLists.txt.trio)      # Needs to be put before "project()" (it tweaks compiler)
+include(../../build/src/CMakeLists.txt.trio)      # Needs to be put before "project()" (it tweaks compiler)
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BUILD_DIR})   # Make sure we don't pollute TRUST/lib directory
 
 project(ICoCo_SWIG CXX)
