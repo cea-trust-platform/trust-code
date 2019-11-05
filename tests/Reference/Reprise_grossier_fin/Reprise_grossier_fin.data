@@ -1,0 +1,86 @@
+# Test de reprise #
+# PARALLEL OK 8 #
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Lire_med dom dom grossier.med
+Raffiner_isotrope dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Scheme_euler_implicit sch
+Read sch
+{
+	tinit 0
+	tmax 32.
+	dt_min 0.01
+	dt_impr 0.1
+	dt_sauv 1000.
+	seuil_statio 1.e-8
+	solveur implicite { seuil_convergence_solveur 1e-5 }
+	facsec 5.
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression cholesky { }
+		convection { Amont }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_fonc_med last_time grossier.med dom vitesse som 0.
+			}
+		boundary_conditions {
+			 Haut1 Paroi_Fixe
+			 Bas1 Paroi_Fixe
+			 Haut2 Paroi_Fixe
+			 Bas2 Paroi_Fixe
+			 Haut3 Paroi_Fixe
+			 Bas3 Paroi_Fixe
+			 Gauche Paroi_Fixe
+			 SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+		}
+	}
+Post_processing 
+{
+	Probes 
+	{
+		sonde_vitesse vitesse periode 0.01 points 1 10. 0.5
+		sonde_vorticite vorticite periode 0.01 segment 9 7.5 0.01 16.5 0.01
+	}
+	format lml
+	fields dt_post 20.
+	{
+			vitesse som
+	}
+}
+}
+Solve pb
+End
+End

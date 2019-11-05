@@ -11,7 +11,7 @@
 // version 1.2 10/05/2010
 
 #include <Exceptions.h>
-
+#include <string.h>
 #include <sstream>
 using namespace std;
 
