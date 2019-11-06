@@ -413,8 +413,10 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab
       //matrice (sauf si avancement_crank_ == 1) : prise en compte des contributions des sources (et pas des operateurs!)
       if (avancement_crank_ == 0)
         {
-          mat_press = mat_press_orig, matrice.get_set_coeff() = 0;
-          eqn.sources().contribuer_a_avec(current, matrice);
+          mat_press.get_set_tab1().ref_array(mat_press_orig.get_set_tab1());
+          mat_press.get_set_tab2().ref_array(mat_press_orig.get_set_tab2());
+          mat_press.get_set_coeff() = mat_press_orig.get_set_coeff();
+          matrice.get_set_coeff() = 0, eqn.sources().contribuer_a_avec(current, matrice);
           for (int j = 0, off = p_sec[0].dimension_tot(0); j < p_sec[1].dimension(0); j++)
             mat_press(off + j, off + j) += dt * matrice(j, j);
           eqn.solveur_pression().valeur().reinit();
