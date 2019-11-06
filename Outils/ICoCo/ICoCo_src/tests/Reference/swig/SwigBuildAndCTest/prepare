@@ -5,8 +5,8 @@
 source $TRUST_MEDCOUPLING_ROOT/env.sh || echo "MEDCoupling not available"
 cd $project_directory/share/swig
 
+rm -rf install build
 mkdir -p build
-rm -rf install
 
 cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Release
