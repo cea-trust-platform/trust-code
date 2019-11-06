@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for dir in `find . -mindepth 1 -type d`
+do
+   ( cd $dir;rm -f dom.geom;cp ../geom.data ../pre_run ../post_run .)
+done

@@ -11,8 +11,8 @@
 // version 1.2 10/05/2010
 
 #include <Exceptions.h>
-#include <string.h>
 #include <sstream>
+#include <string.h>
 using namespace std;
 
 using namespace ICoCo;
