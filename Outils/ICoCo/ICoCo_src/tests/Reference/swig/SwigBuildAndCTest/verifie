@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $project_directory/share/swig/build
+cd $project_directory/share/swig
 
-ctest
+./test_only.sh || exit 255
 
