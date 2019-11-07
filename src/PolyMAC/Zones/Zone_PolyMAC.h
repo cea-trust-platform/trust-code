@@ -168,7 +168,7 @@ public :
   mutable DoubleTab rfci;
 
   //stabilisation d'une matrice de masse mimetique en un element : dans PolyMAC -> m1 ou m2
-  inline void ajouter_stabilisation(DoubleTab& M) const;
+  inline void ajouter_stabilisation(DoubleTab& M, DoubleTab &N, double eps) const;
 
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;

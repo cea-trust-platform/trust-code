@@ -968,35 +968,46 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 }
 
 //stabilisation des matrices m1 et m2 de PolyMAC
-inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M) const
+inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab &N, double eps) const
 {
-  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = 2 + n_f * (6 + 2 * n_f), liwork = 2 * (3 + 5 * n_f), infoo = 0;
-  DoubleTab A, S, b(n_f, 1), N(1, 1), x(1, 1), work(lwork), V;
-  IntTab iwork(liwork);
+  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, liwork = -1, infoo = 0;
+  DoubleTab A, S, b(dimension, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
+  IntTab iwork(1);
 
-  /* valeurs propres (S) et noyau (N) */
-  kersol(M, b, 1e-12, &N, x, S);
-  assert(N.dimension(1) == n_f - dimension); //M doit etre de rang d
-  double eps = S(dimension - 1); //valeur propre la plus petite de M (hors noyau)
+  /* D : noyau de N (N.D = 0), de taille n_f * (n_f - dimension) */
+  kersol(N, b, 1e-12, &D, x, S);
+  assert(D.dimension(1) == n_f - dimension); //M doit etre de rang d
 
-  /* ajout d'une matrice de forme N P n^t, avec P symetrique pour minimiser les termes hors diag de M */
-  int n_k = N.dimension(1), n_l = n_f * (n_f - 1) / 2, n_c = n_k * (n_k + 1) / 2; //une ligne par coeff M(i, j > i), une colonne par terme P(i, j >= i)
+  /* matrice U telle que M + D.U.Dt mimimise les termes hors diagonale */
+  //une ligne par coeff M(i, j > i), une colonne par terme U(i, j >= i)
+  int n_k = D.dimension(1), n_l = n_f * (n_f - 1) / 2, n_c = n_k * (n_k + 1) / 2, un = 1;
   A.resize(n_l, n_c), b.resize(n_l, 1);
   for (i1 = i = 0; i1 < n_f; i1++) for (i2 = i1 + 1; i2 < n_f; i2++, i++) //(i1, i2, i) -> numero de ligne
       for (j1 = j = 0, b(i, 0) = -M(i1, i2); j1 < n_k; j1++) for (j2 = j1; j2 < n_k; j2++, j++) //(j1, j2, j) -> numero de colonne
-          A(i, j) = N(i1, j1) * N(i2, j2) + (j1 != j2) * N(i1, j2) * N(i2, j1);
-  kersol(A, b, 1e-12, NULL, x, S); //minimise la somme des carres des termes hors diag de M
-  //modification de M
-  for (i1 = 0; i1 < n_f; i1++) for (i2 = 0; i2 < n_f; i2++) for (j1 = j = 0; j1 < n_k; j1++) for (j2 = j1; j2 < n_k; j2++, j++)
-          M(i1, i2) += x(j, 0) * (N(i1, j1) * N(i2, j2) + (j1 != j2) * N(i1, j2) * N(i2, j1));
-
-  /* decomposition de Schur de M, puis renfort de la diagonale pour rendre toutes les vp plsu grandes que eps */
-  char jobz = 'V', uplo = 'U';
-  V = M, S.resize(n_f);
-  F77NAME(dsyevd)(&jobz, &uplo, &n_f, &V(0, 0), &n_f, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
+          A(i, j) = D(i1, j1) * D(i2, j2) + (j1 != j2) * D(i1, j2) * D(i2, j1);
+  char trans = 'T';
+  //minimise la somme des carres des termes hors diag de M
+  F77NAME(dgels)(&trans, &n_c, &n_l, &un, &A(0, 0), &n_c, &b(0, 0), &n_l, &work(0), &lwork, &infoo); //"workspace query"
+  work.resize(lwork = work(0));
+  F77NAME(dgels)(&trans, &n_c, &n_l, &un, &A(0, 0), &n_c, &b(0, 0), &n_l, &work(0), &lwork, &infoo); //le vrai appel
   assert(infoo == 0);
-  //ajout pour garantir des vp plus grandes que eps
-  for (i = 0, M = 0; i < n_f; i++) for (j = 0; j < n_f; j++) for (k = 0; k < n_f; k++) M(i, j) += V(k, i) * max(S(k), eps) * V(k, j);
+  //reconstruction de U
+  for (j1 = j = 0; j1 < n_k; j1++) for (j2 = j1; j2 < n_k; j2++, j++) U(j1, j2) = U(j2, j1) = b(j, 0);
+
+  /* ajustement de U pour que la vp minimale depasse eps */
+  //decomposition de Schur U = Vt.S.V
+  char jobz = 'V', uplo = 'U';
+  V = U, S.resize(n_k);
+  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);//"workspace query"
+  work.resize(lwork = work(0)), iwork.resize(liwork = iwork(0));
+  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
+  assert(infoo == 0);
+  //pour garantir des vp plus grandes que eps : S(k) -> max(S(k), eps)
+  for (i = 0, U = 0; i < n_k; i++) for (j = 0; j < n_k; j++) for (k = 0; k < n_k; k++) U(i, j) += V(k, i) * max(S(k), eps) * V(k, j);
+
+  /* ajout a M */
+  for (i1 = 0; i1 < n_f; i1++) for (i2 = 0; i2 < n_f; i2++) for (j1 = 0; j1 < n_k; j1++) for (j2 = 0; j2 < n_k; j2++)
+          M(i1, i2) += D(i1, j1) * U(j1, j2) * D(i2, j2);
 }
 
 //interpolation normales aux faces -> elements d'ordre 1
@@ -1026,28 +1037,27 @@ void Zone_PolyMAC::init_m2() const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
-  int i, j, k, e, f, n_f, lwork = 2 + e_f.dimension(1) * (6 + 2 * e_f.dimension(1)), liwork = 2 * (3 + 5 * e_f.dimension(1));
+  int i, j, k, e, f, n_f;
 
   if (m2deb.dimension(0)) return;
   init_ve();
   Cerr << zone().domaine().le_nom() << " : initialisation de m2... ";
   std::vector<std::map<std::array<int, 2>, double>> m2(nb_faces_tot());
 
-  DoubleTab A(1, 1), M(1, 1), S(1, 1), b(1, 1), N(1, 1), x(1, 1), V(1, 1), work(lwork);
-  IntTab iwork(liwork);
-  A.set_smart_resize(1), M.set_smart_resize(1), S.set_smart_resize(1), b.set_smart_resize(1), N.set_smart_resize(1), x.set_smart_resize(1), V.set_smart_resize(1);
+  DoubleTab M, N;
+  M.set_smart_resize(1), N.set_smart_resize(1);
   std::map<int, int> idxf;
   for (e = 0; e < nb_elem_tot(); e++, idxf.clear())
     {
       /* matrice non stabilisee */
       for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) idxf[f] = i, n_f++;
-      M.resize(n_f, n_f), b.resize(n_f, 1), x.resize(n_f, 1);
+      M.resize(n_f, n_f), N.resize(dimension, n_f);
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (k = vedeb(e); k < vedeb(e + 1); k++)
-          M(i, idxf[veji(k)]) = dot(&xv_(f, 0), &veci(k, 0), &xp_(e, 0)) * fs(f) * (e == f_e(f, 0) ? 1 : -1);
-
+          M(i, idxf[veji(k)]) = dot(&xv_(f, 0), &veci(k, 0), &xp_(e, 0)) * fs(f) * (e == f_e(f, 0) ? 1 : -1) / ve(e);
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < dimension; j++) N(j, i) = face_normales()(f, j) / fs(f);
       /* stabilisation et stockage */
-      ajouter_stabilisation(M);
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(M(i, j)) > 1e-12 * ve(e)) m2[e_f(e, i)][ {{e_f(e, j), e }}] += M(i, j);
+      ajouter_stabilisation(M, N, 1e-2);
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(M(i, j)) > 1e-8) m2[e_f(e, i)][ {{e_f(e, j), e }}] += M(i, j) * ve(e);
     }
   //remplissage
   m2deb.resize(1), m2deb.set_smart_resize(1), m2ji.resize(0, 2), m2ji.set_smart_resize(1), m2ci.set_smart_resize(1);
@@ -1182,26 +1192,27 @@ void Zone_PolyMAC::init_m1_3d() const
 
   Cerr << zone().domaine().le_nom() << " : initialisation de m1... ";
   std::vector<std::map<std::array<int, 2>, double>> m1(zone().nb_aretes_tot()); //m1[a][{ ab, e }] : contribution de (arete ab, element e)
-  DoubleTab M;
-  M.set_smart_resize(1);
+  DoubleTab M, N;
+  M.set_smart_resize(1), N.set_smart_resize(1);
   std::map<int, int> idxa;
   for (e = 0; e < nb_elem_tot(); e++, idxa.clear())
     {
       /* matrice non stabilisee : contribution par facette (couple face/arete) */
       for (i = 0, n_a = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) idxa[a] = i, n_a++;
-      M.resize(n_a, n_a);
+      M.resize(n_a, n_a), N.resize(dimension, n_a);
       for (i = 0, M = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
           {
             s2 = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0), a = som_arete[min(s, s2)].at(max(s, s2));
             std::array<double, 3> vec = cross(3, 3, &xp_(e, 0), &xv_(f, 0), &xa_(a, 0), &xa_(a, 0));
             //on tourne la facette dans la bonne direction
             int sgn = dot(&ta_(a, 0), &vec[0]) > 0 ? 1 : -1;
-            for (k = wedeb(e); k < wedeb(e + 1); k++) M(idxa[a], idxa[weji(k)]) += sgn * la(a) * dot(&vec[0], &weci(k, 0)) / 2;
+            for (k = wedeb(e); k < wedeb(e + 1); k++) M(idxa[a], idxa[weji(k)]) += sgn * la(a) * dot(&vec[0], &weci(k, 0)) / 2 / ve(e);
           }
+      for (i = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) for (j = 0; j < dimension; j++) N(j, i) = ta_(a, j);
 
       /* stabilisation et stockage */
-      ajouter_stabilisation(M);
-      for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) if (dabs(M(i, j)) > 1e-12 * ve(e)) m1[e_a(e, i)][ {{ e_a(e, j), e }}] += M(i, j);
+      ajouter_stabilisation(M, N, 1e-2);
+      for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) if (dabs(M(i, j)) > 1e-8) m1[e_a(e, i)][ {{ e_a(e, j), e }}] += M(i, j) * ve(e);
     }
 
   //remplissage
