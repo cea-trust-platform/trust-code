@@ -1901,7 +1901,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	do
 	   [ -d $LIB_INTEL/../../$lib ] && LIB_INTEL=`echo $LIB_INTEL | sed -e 's;/bin;/'$lib';g'`
         done
-	SYSLIBS="-L$LIB_INTEL -lifcore -lstdc++"
+	SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -lstdc++"
 	if [ "`ls $LIB_INTEL/libguide.* 2>/dev/null`" != "" ]
 	then
 	   SYSLIBS=$SYSLIBS" -lguide -lpthread" # Intel 10&11
