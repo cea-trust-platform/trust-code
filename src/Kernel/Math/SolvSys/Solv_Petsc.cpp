@@ -203,13 +203,13 @@ void Solv_Petsc::create_solver(Entree& entree)
             // "-option val" ou "-option" ?
             if (valeur.debute_par("-") || valeur==accolade_fermee)
               {
-                add_option(motlu.suffix("-"), "");
+                add_option(motlu.suffix("-"), "", 1);
                 motlu = valeur;
               }
             else
               {
-                if (valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
-                add_option(motlu.suffix("-"), valeur);
+                if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
+                add_option(motlu.suffix("-"), valeur, 1);
                 is >> motlu;
               }
           }
@@ -1217,7 +1217,7 @@ bool Solv_Petsc::enable_ksp_view( void )
   return enable ;
 }
 
-int Solv_Petsc::add_option(const Nom& astring, const Nom& value)
+int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
 {
   Nom option="-";
   // Ajout du prefix si l'option concerne KSP, PC, Mat ou Vec:
@@ -1226,7 +1226,7 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value)
       astring.debute_par("pc_") ||
       astring.debute_par("sub_pc_") ||
       astring.debute_par("mat_") ||
-      astring.debute_par("vec_"))
+      astring.debute_par("vec_") || cli)
     option+=option_prefix_;
 
   option+=astring;
