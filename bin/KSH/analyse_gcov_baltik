@@ -67,10 +67,10 @@ for cas in baltik TRUST  # baltik
 
   echo "Analysis by gcov..."
   rm -f gcov_out gcov_err
-  gcov *.gcno 1>gcov_out 2>gcov_err
-  mkdir cpp.gcov
+  gcov *.gcno 2>&1 | grep -v "has arcs" 1>gcov_out_err # Sinon plein de warnings avec GCC 8.x
+  mkdir -p cpp.gcov
   mv *.cpp.gcov cpp.gcov
-  cd  cpp.gcov
+  cd cpp.gcov
   echo "Analysis of the coverage of $cas part "
   tout 1>monana_out 2>&1
   echo "`pwd`/monana_out file created" 

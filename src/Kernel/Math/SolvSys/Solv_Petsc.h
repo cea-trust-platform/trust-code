@@ -91,7 +91,7 @@ protected :
   int Create_objects(Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc Matrice et SecondMembre
   void Create_MatricePetsc(Mat&, int, Matrice_Morse&);
   bool enable_ksp_view( void );
-  int add_option(const Nom& option, const Nom& value);
+  int add_option(const Nom& option, const Nom& value, int cli = 0);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M); // Temporaire
   void MorseSymHybToMorse(const Matrice_Morse_Sym& , Matrice_Morse& ,const DoubleVect&,DoubleVect&); // Temporaire
   void MorseHybToMorse(const Matrice_Morse& , Matrice_Morse& ,const DoubleVect&,DoubleVect&);

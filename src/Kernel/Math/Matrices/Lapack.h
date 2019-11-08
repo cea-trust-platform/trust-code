@@ -119,10 +119,23 @@ extern "C"
                           const double* const, // W
                           const double* const, // WORK
                           const int*    const, // LWORK
-                          const int*    const, // IORK
+                          const int*    const, // IWORK
                           const int*    const, // LIWORK
                           const int*    const  // INFO
                          );
+
+  void F77DECLARE(DGELS)(const char*   const, // TRANS
+                         const int*    const, // M
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const double* const, // WORK
+                         const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
 
 #else
 
@@ -217,6 +230,19 @@ extern "C"
                           const int*    const, // LIWORK
                           const int*    const  // INFO
                          );
+
+  void F77DECLARE(dgels)(const char*   const, // TRANS
+                         const int*    const, // M
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const double* const, // WORK
+                         const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
 
 #endif
 }
@@ -344,6 +370,38 @@ inline void F77NAME(DGETRI)(const int*    const N,
   F77NAME(dgetri)(N,A,LDA,IPIV,WORK,LWORK,INFO);
 }
 // FIN MODIF ELI LAUCOIN (19/03/2008)
+
+inline void F77NAME(DSYEVD)(const char*   const JOBZ,
+                            const char*   const UPLO,
+                            const int*    const N,
+                            const double* const A,
+                            const int*    const LDA,
+                            const double* const W,
+                            const double* const WORK,
+                            const int*    const LWORK,
+                            const int*    const IWORK,
+                            const int*    const LIWORK,
+                            const int*    const INFO
+                           )
+{
+  F77NAME(dsyevd)(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, IWORK, LIWORK, INFO);
+}
+
+inline void F77NAME(DGELS)(const char*   const TRANS,
+                           const int*    const M,
+                           const int*    const N,
+                           const int*    const NRHS,
+                           const double* const A,
+                           const int*    const LDA,
+                           const double* const B,
+                           const int*    const LDB,
+                           const double* const WORK,
+                           const int*    const LWORK,
+                           const int*    const INFO
+                          )
+{
+  F77NAME(dgels)(TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK, INFO);
+}
 
 #endif
 
