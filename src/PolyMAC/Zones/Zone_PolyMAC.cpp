@@ -968,7 +968,7 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 }
 
 //stabilisation des matrices m1 et m2 de PolyMAC
-inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab &N, double eps) const
+inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N, double eps) const
 {
   int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, liwork = -1, infoo = 0;
   DoubleTab A, S, b(dimension, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
