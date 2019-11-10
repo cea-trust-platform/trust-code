@@ -137,6 +137,20 @@ extern "C"
                          const int*    const  // INFO
                         );
 
+  void F77DECLARE(DPOTRF)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
+  void F77DECLARE(DPOTRI)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
 #else
 
   void F77DECLARE(dpbtrf)(const char* const, const int* const, const int* const, const double* const, const int* const, const int* const);
@@ -243,6 +257,20 @@ extern "C"
                          const int*    const, // LWORK
                          const int*    const  // INFO
                         );
+
+  void F77DECLARE(dpotrf)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
+  void F77DECLARE(dpotri)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
 
 #endif
 }
@@ -401,6 +429,26 @@ inline void F77NAME(DGELS)(const char*   const TRANS,
                           )
 {
   F77NAME(dgels)(TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK, INFO);
+}
+
+inline  void F77DECLARE(DPOTRF)(const char*   const UPLO,
+                                const int*    const N,
+                                const double* const A,
+                                const int*    const LDA,
+                                const int*    const INFO
+                               )
+{
+  F77NAME(dpotrf)(UPLO, N, A, LDA, INFO);
+}
+
+inline  void F77DECLARE(DPOTRI)(const char*   const UPLO,
+                                const int*    const N,
+                                const double* const A,
+                                const int*    const LDA,
+                                const int*    const INFO
+                               )
+{
+  F77NAME(dpotri)(UPLO, N, A, LDA, INFO);
 }
 
 #endif

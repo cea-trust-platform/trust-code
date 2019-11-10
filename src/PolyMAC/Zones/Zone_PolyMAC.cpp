@@ -968,14 +968,18 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 }
 
 //stabilisation des matrices m1 et m2 de PolyMAC
-inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N, double eps) const
+inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const
 {
   int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, liwork = -1, infoo = 0;
-  DoubleTab A, S, b(dimension, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
+  DoubleTab A, S, b(n_f, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
   IntTab iwork(1);
 
+  /* spectre de M */
+  kersol(M, b, 1e-12, NULL, x, S);
+  double eps = S(dimension - 1); //vp la plus petite sans stabilisation
+
   /* D : noyau de N (N.D = 0), de taille n_f * (n_f - dimension) */
-  kersol(N, b, 1e-12, &D, x, S);
+  b.resize(dimension, 1), kersol(N, b, 1e-12, &D, x, S);
   assert(D.dimension(1) == n_f - dimension); //M doit etre de rang d
 
   /* matrice U telle que M + D.U.Dt mimimise les termes hors diagonale */
@@ -1056,7 +1060,7 @@ void Zone_PolyMAC::init_m2() const
           M(i, idxf[veji(k)]) = dot(&xv_(f, 0), &veci(k, 0), &xp_(e, 0)) * fs(f) * (e == f_e(f, 0) ? 1 : -1) / ve(e);
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < dimension; j++) N(j, i) = face_normales()(f, j) / fs(f);
       /* stabilisation et stockage */
-      ajouter_stabilisation(M, N, 1e-2);
+      ajouter_stabilisation(M, N);
       for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(M(i, j)) > 1e-8) m2[e_f(e, i)][ {{e_f(e, j), e }}] += M(i, j) * ve(e);
     }
   //remplissage
@@ -1211,7 +1215,7 @@ void Zone_PolyMAC::init_m1_3d() const
       for (i = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) for (j = 0; j < dimension; j++) N(j, i) = ta_(a, j);
 
       /* stabilisation et stockage */
-      ajouter_stabilisation(M, N, 1e-2);
+      ajouter_stabilisation(M, N);
       for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) if (dabs(M(i, j)) > 1e-8) m1[e_a(e, i)][ {{ e_a(e, j), e }}] += M(i, j) * ve(e);
     }
 

@@ -56,7 +56,8 @@ public:
   /* corrige les vitesses pour une correction en pression donnee de type (-Cp, Cv) */
   virtual void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const
   {
-    for (int f = 0; f < la_zone_PolyMAC->nb_faces_tot(); f++) dv(f) += dP(la_zone_PolyMAC->nb_elem_tot() + f);
+    rec.ajouter_multvect(dP, dv);
+    dv.echange_espace_virtuel();
   }
 
 protected :
@@ -65,6 +66,9 @@ protected :
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC                            ;
   DoubleTab les_coeff_pression                               ;
   int has_P_ref;
+  int stencil_done;
+  IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
+  Matrice_Morse rec; //pour reconstruire les vitesses
 };
 
 inline const Equation_base& Assembleur_P_PolyMAC::equation() const

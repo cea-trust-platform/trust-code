@@ -1143,7 +1143,7 @@ int Navier_Stokes_std::preparer_calcul()
               le_schema_en_temps->set_dt()=0;
           }
 
-        if (discretisation().que_suis_je() != "PolyMAC")
+        if (discretisation().que_suis_je() != "PolyMAC") //PolyMAC -> pas vraiment faisable
           {
             solveur_masse.appliquer(vpoint);
             vpoint.echange_espace_virtuel();
@@ -1155,17 +1155,6 @@ int Navier_Stokes_std::preparer_calcul()
             solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
             // On veut que l'espace virtuel soit a jour, donc all_items
             operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
-          }
-        else //PolyMAC -> plus complique
-          {
-            const Zone_VF& zone = ref_cast(Zone_VF, zone_dis().valeur());
-            for (int f = 0; f < zone.nb_faces_tot(); f++) secmem(zone.nb_elem_tot() + f) += vpoint(f);
-
-            DoubleTrav inc_pre(la_pression.valeur());
-            solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmem, inc_pre);
-            inc_pre *= -1;
-            operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
-            la_pression.valeurs().echange_espace_virtuel();
           }
         gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
         divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
