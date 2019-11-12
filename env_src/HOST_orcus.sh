@@ -45,9 +45,13 @@ define_soumission_batch()
    # test   	40		1 heure		40
    # long 	10		14 jours	200
    # visu	20		18 heures
-   qos=test && [ "$prod" = 1 ] && qos=normal
-   cpu=60 && [ "$prod" = 1 ] && cpu=2880
-   node=0 # exclusive ?
-   mpirun="srun -n \$SLURM_NTASKS"
+   if [ "$prod" = 1 ]
+   then
+      qos=normal && cpu=2880 && node=1 # exclusive
+   else
+      qos=test	 && cpu=60   && node=0 
+   fi
+   binding="-m block:block --cpu-bind=rank" # Ameliore fortement les performances sur AMD
+   mpirun="srun $binding -n \$SLURM_NTASKS"
    sub=SLURM
 }
