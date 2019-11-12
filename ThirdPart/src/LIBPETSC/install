@@ -409,8 +409,8 @@ then
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
    #[ $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
-   # New (Pardiso)
-   [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
+   # New (Pardiso). Uniquement si support d'OpenMP par TRUST:
+   [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
 
    # MUMPS et SUPERLU necessitent desormais parmetis
    [ "$TRUST_INT64" = "1" ] && add_package metis # Only in build 64 since MUMPS has been disabled ?
