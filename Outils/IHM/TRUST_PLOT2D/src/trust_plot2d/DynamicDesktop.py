@@ -3,10 +3,11 @@
 # Author : A. Bruneton
 #
 
-from pyqtside.QtCore import SIGNAL, SLOT, Slot, Qt, QTimer, QDir
-from pyqtside.QtGui import QMainWindow,QMenu, QFileDialog, QDockWidget
-from DirScanWidget import DirScanWidget
+from pyqtside.QtCore import Slot, Qt, QTimer, QDir
+from pyqtside.QtWidgets import QMainWindow,QMenu, QFileDialog, QDockWidget
 import numpy as np
+
+from .DirScanWidget import DirScanWidget
 
 import curveplot
 
@@ -21,6 +22,7 @@ class DynamicDesktop(QMainWindow):
         self._dockFileErr = None
         self._dockFileOut = None
         self._dockMenuTRUST = None
+
     def initialize(self):
         """ Initialize is called later than __init__() so that the Desktop and the SgPyQt
         objects can be properly initialized.
@@ -45,9 +47,9 @@ class DynamicDesktop(QMainWindow):
         self.createMenus()
         self.createView()
 
-        self.connect(self.itemDelAction,SIGNAL("activated()"),self.itemDel)
-        self.connect(self.cpsAction,SIGNAL("activated()"),self.clearPlotSet)
-        self.connect(self.addPSAction,SIGNAL("activated()"),self.addPS)
+        self.itemDelAction.triggered.connect(self.itemDel)
+        self.cpsAction.triggered.connect(self.clearPlotSet)
+        self.addPSAction.triggered.connect(self.addPS)
 
     def isRunningInSALOME(self):
         try:
@@ -103,11 +105,12 @@ class DynamicDesktop(QMainWindow):
 
     def showFileOut(self,fv):
         if self._dockFileOut is None:
-            from TailFileWidget import TailFileWidget
+            from .TailFileWidget import TailFileWidget
             self._dockFileOut = TailFileWidget(fv)
             self._dockFileOut.show()
             self._sgDesktop.addDockWidget(Qt.RightDockWidgetArea, self._dockFileOut)
         return self._dockFileOut
+
     def showFileErr(self):
         if self._dockFileErr is None:
             self._dockFileErr = DirScanWidget()
@@ -117,11 +120,12 @@ class DynamicDesktop(QMainWindow):
 
     def showMenuTRUST(self,fv):
         if self._dockMenuTRUST is None:
-            from MenuTRUSTWidget import MenuTRUSTWidget
+            from .MenuTRUSTWidget import MenuTRUSTWidget
             self._dockMenuTRUST = MenuTRUSTWidget(fv)
             self._dockMenuTRUST.show()
             self._sgDesktop.addDockWidget(Qt.RightDockWidgetArea, self._dockMenuTRUST)
         return self._dockMenuTRUST
+
     def showFileView(self):
         if self._dockFileView is None:
             self._dockFileView = DirScanWidget()

@@ -18,8 +18,7 @@
 # Author : A. Bruneton
 #
 import sys, os
-from pyqtside.QtGui import QApplication
-from pyqtside.QtCore import SIGNAL, SLOT
+from pyqtside.QtWidgets import QApplication
 
 from trust_plot2d.DynamicDesktop import DynamicDesktop
 import trust_plot2d.SalomePyQt_MockUp as SalomePyQt_MockUp
@@ -88,7 +87,7 @@ def main(args) :
                 d.onPlotButton(withLegend=True)
 
     #
-    app.connect(app,SIGNAL("lastWindowClosed()"),app,SLOT("quit()"))
+    app.lastWindowClosed.connect(app.quit)
     app.exec_()
 
 if __name__ == "__main__" :

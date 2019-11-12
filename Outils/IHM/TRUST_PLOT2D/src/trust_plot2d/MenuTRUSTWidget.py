@@ -1,9 +1,10 @@
-from pyqtside.QtCore import Qt, QTimer, QDir, Slot, SIGNAL
-from pyqtside.QtGui import QMainWindow,QMenu, QFileDialog, QDockWidget
+from pyqtside.QtCore import Qt, QTimer, QDir, Slot
+from pyqtside.QtWidgets import QMainWindow,QMenu, QFileDialog, QDockWidget
 from pyqtside.uic import loadUiGen
-from utils import completeResPath
 
-from FileManager import FileManager
+from .utils import completeResPath
+from .FileManager import FileManager
+
 import os
 import curveplot
 

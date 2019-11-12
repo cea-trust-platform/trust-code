@@ -1,6 +1,6 @@
 import os
 
-from pyqtside.QtCore import QTimer,QObject,  QFileSystemWatcher, QFile, QIODevice, Slot, SIGNAL
+from pyqtside.QtCore import QTimer,QObject,  QFileSystemWatcher, QFile, QIODevice, Slot
 
 class TrustFileWatcher(QObject):
     def __init__(self, parent, textEdit, fv, extension):
@@ -26,7 +26,7 @@ class TrustFileWatcher(QObject):
         self.stop()
         self.__outputFile = QFile(aCaseOutputFile)
         self.__outputFileWatcher = QFileSystemWatcher(self.parent())
-        self.connect( self.__outputFileWatcher, SIGNAL("fileChanged( QString )"), self.__onSimulationFileChanged )
+        self.__outputFileWatcher.fileChanged.connect( self.__onSimulationFileChanged )
 
         # start timer to detect output file creation
         self.__outputFileTimer = QTimer( self )
@@ -46,7 +46,7 @@ class TrustFileWatcher(QObject):
         """
         if ( self.__outputFileWatcher is not None ):
             self.__onSimulationFileChanged(None) # on recupere le reste du fichier
-            self.disconnect( self.__outputFileWatcher, SIGNAL("fileChanged( QString )"), self.__onSimulationFileChanged )
+            self.__outputFileWatcher.fileChanged.disconnect( self.__onSimulationFileChanged )
             aMonitorFileList = [str(name) for name in self.__outputFileWatcher.files()]
             for aMonitorFile in aMonitorFileList :
                 self.__outputFileWatcher.removePath( aMonitorFile )

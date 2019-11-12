@@ -1,4 +1,4 @@
-import TrustFiles
+from . import TrustFiles
 
 class FileManager(object):
     """ Class caching the TrustFiles """

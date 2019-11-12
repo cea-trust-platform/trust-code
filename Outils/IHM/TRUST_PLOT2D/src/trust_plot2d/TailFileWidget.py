@@ -1,12 +1,13 @@
 import os
 
-from pyqtside.QtCore import Qt, QTimer, QDir,QObject,  QFileSystemWatcher, QFile, QIODevice, Slot, SIGNAL
-from pyqtside.QtGui import QMainWindow,QMenu, QFileDialog, QDockWidget
+from pyqtside.QtCore import Qt, QTimer, QDir,QObject,  QFileSystemWatcher, QFile, QIODevice, Slot
+from pyqtside.QtWidgets import QMainWindow,QMenu, QFileDialog, QDockWidget
 from pyqtside.uic import loadUiGen
-from utils import completeResPath
 
-from FileManager import FileManager
-from TrustFileWatcher import TrustFileWatcher
+from .utils import completeResPath
+from .FileManager import FileManager
+from .TrustFileWatcher import TrustFileWatcher
+
 import curveplot
 
 class TailFileWidget(QDockWidget):

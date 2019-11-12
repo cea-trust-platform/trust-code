@@ -1,12 +1,13 @@
-from pyqtside.QtCore import Qt, QTimer, QDir, Slot, SIGNAL, Signal
-from pyqtside.QtGui import QMainWindow,QMenu, QFileDialog, QDockWidget
+from pyqtside.QtCore import Qt, QTimer, QDir, Slot, Signal
+from pyqtside.QtWidgets import QMainWindow,QMenu, QFileDialog, QDockWidget
 from pyqtside.uic import loadUiGen
-from utils import completeResPath
+
 import numpy as np
 import time
 
-from FileManager import FileManager
-from TrustFiles import SonSEGFile
+from .utils import completeResPath
+from .FileManager import FileManager
+from .TrustFiles import SonSEGFile
 
 import curveplot
 def run_TRUST(longcaseName):
@@ -44,7 +45,7 @@ class DirScanWidget(QDockWidget):
         QDockWidget.__init__( self)
         loadUiGen(completeResPath("DirScanWidget.ui"), self)
         self._timer = QTimer()
-        self.connect(self._timer, SIGNAL("timeout()"), self.onTimerTrigger)
+        self._timer.timeout.connect(self.onTimerTrigger)
         self._timer.start(self.refreshWidget.value()*1000)
         self._fileManager = FileManager()
         self._liveCurves = {}    # long name / psID, curve ID
@@ -72,7 +73,7 @@ class DirScanWidget(QDockWidget):
                                            os.curdir,
                                            "Data file (*.data)")
         if case:
-            self.caseWidget.setText(case)
+            self.caseWidget.setText(case[0])
             self.onCaseChanged()
             # to update views relatives to input case change (ex: TailFileWidget)
             self.caseChanged.emit()
@@ -99,7 +100,7 @@ class DirScanWidget(QDockWidget):
             if exp.search(t):
                 self.entryListWidget.addItem(t)
 
-    @Slot(str)
+    @Slot()
     def onItemSelectionChanged(self):
         if self._blockSig:
             return
@@ -156,6 +157,7 @@ class DirScanWidget(QDockWidget):
         print("*fg* DirScanWidget.onRunButton")
         self._process = run_TRUST(os.path.join(self._currDir,self._caseName))
         self.runStarted.emit()
+
     @Slot()
     def onProcessFinished(self):
         print("*fg* DirScanWidget.onProcessFinished ----")
@@ -242,6 +244,7 @@ class DirScanWidget(QDockWidget):
     def onOutStateChanged(self,flag):
         self._outfiles=not(flag==0)
         self.onCaseChanged()
+
     @Slot()
     def onPeriodChanged(self):
         self._timer.setInterval(self.refreshWidget.value()*1000)
