@@ -10,37 +10,11 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    # Load modules
-   module=slurm
-   echo "# Module $module detected and loaded on $HOST."
-   # Initialisation de l environnement module $MODULE_PATH 
-   #echo "source /cm/local/apps/environment-modules/3.2.10/init/bash" >> $env
+   module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Utilise par PE ?
+   module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3" # Recommande par AG
+   echo "# Module $module detected and loaded on $HOST."    
    echo "module load $module 1>/dev/null" >> $env
-   #
-   #INTEL 2013_sp1.2.144 2013_sp1.4.211 2015.3.187
-   #intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.2.144"
-   #intel="intel/compiler/64/14.0/2013_sp1.4.211 intel/mkl/64/11.1/2013_sp1.4.211 intel/tbb/64/4.2/2013_sp1.4.211"
-   intel="compilers/intel/2018_update4"
-   #OPENMPI openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 openmpi/icc/64/1.10.3
-   #module="$intel openmpi/icc/64/1.8.3"
-   #module="$intel openmpi/icc/64/1.8.4"
-   #module="$intel openmpi/icc/64/1.10.3"
-   #module="python/2.7.6 $intel openmpi/icc/64/1.8.3"
-   module="$intel mpi/openmpi/intel/2018_update4/3.1.4" # mpi/openmpi/intel/2018_update4/4.0.1"
-   #
-   #GNU gcc/4.4.6 gcc/4.8.1 gcc/4.9.0 gcc/4.9.3 gcc/5.2.0 (4.4.7 default)
-   #intel=""
-   #intel="gcc/5.2.0"
-   #python/2.7.6 (2.6.6 default) et cmake/3.4.1 pour avoir MED_COUPLING_PYTHON=ON
-   #intel="python/2.7.6 cmake/3.4.1"
-   #intel="python/2.7.6"
-   #OPENMPI module openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 openmpi/gcc/64/1.10.3
-   #module="$intel openmpi/gcc/64/1.8.3"
-   #module="$intel openmpi/gcc/64/1.8.4"
-   #module="$intel openmpi/gcc/64/1.10.3"
-   #
-   echo "# Module $module detected and loaded on $HOST."
-   #echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb gcc python cmake 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env     
+   echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
@@ -55,42 +29,25 @@ define_soumission_batch()
 {
    soumission=2 && [ "$prod" = 1 ] && soumission=1
    # sinfo :
-   #PARTITION AVAIL  TIMELIMIT  NODES  STATE
-   #slim*        up   infinite     37    mix
-   #fat          up   infinite      1    mix
-   #large        up   infinite     13    mix
-   #eris         up   infinite     30  alloc
-   #pluton       up   infinite      4    mix
-   queue=slim && [ "$bigmem" = 1 ] && queue=large && soumission=1
-   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
-   # Name     Priority MaxSubmit     MaxWall 
-   #------- ---------- --------- -----------
-   # normal         20            2-00:00:00
-   #   test         40         2    01:00:00
-   #   long         10           14-00:00:00
-   # project_r+     40           31-00:00:00
-   cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
-   ntasks=20 # 20 cores per node for slim or large queue (24 for fat, 8 for eris and 12 for pluton)
-   node=0
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
-   then
-      #node=1
-      #if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
-      #then
-      #   echo "=================================================================================================================="
-      #   echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
-      #   echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
-      #   echo "=================================================================================================================="
-      #fi
-      qos=normal
-      #[ "$prod" = 1 ] && cpu=2880 # 2 days
-      [ "$prod" = 1 ] && cpu=1440 # 1 day
-   else
-      #node=0
-      queue=slim,large,fat,eris,pluton
-      qos=test
-      [ "$prod" = 1 ] && cpu=60 # 1 hour
-   fi
+   # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+   # amdq         up   infinite     34  alloc n[002-035]
+   # amdq         up   infinite      2   idle n[001,036]
+   # intelq*      up   infinite      4  alloc n[101-104]
+   # intelq*      up   infinite     11   idle n[105-115]
+   # gpuq         up   infinite      1   idle gpu01   
+   
+   # On se base sur la frontale pour selectionner la queue par defaut:  
+   queue=intelq && [ "`grep AMD /proc/cpuinfo`" != "" ] && queue=amdq
+
+   # sacctmgr list qos
+   # qos	prority		walltime	ntasks_max 
+   # normal 	20 		2 jours		
+   # test   	40		1 heure		40
+   # long 	10		14 jours	200
+   # visu	20		18 heures
+   qos=test && [ "$prod" = 1 ] && qos=normal
+   cpu=60 && [ "$prod" = 1 ] && cpu=2880
+   node=0 # exclusive ?
    mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
 }
