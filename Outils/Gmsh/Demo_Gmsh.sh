@@ -1,22 +1,27 @@
 #!/bin/bash
-# Demo_Gmsh.ksh: 
+# Demo_Gmsh.sh: 
 # Cet utilitaire permet de tester l'enchainement Gmsh -> TRUST
 # Principe: 
 #    a partir de 2 geometries:
 #              2D (Gmsh2D.geo=carre) et 3D (Gmsh23D.geo=cube),
-#   - lancement en batch de Gmsh, on obtient: Gmsh2D.msh et Gmsh23D.msh
+#   - lancement en batch de Gmsh, on obtient: Gmsh2D.med et Gmsh23D.med
 #   - lancement en batch de TRUST jusqu'a la phase de discretisation
 #       (jusqu'a la creation des faces)
+
 source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
+
 # Test Gmsh if installed
 [ -f ~/.gmshrc ] && mv ~/.gmshrc ~/.gmshrc.bak
 gmsh --version 1>/dev/null 2>&1
 err=$?
 [ -f ~/.gmshrc.bak ] && mv -f ~/.gmshrc.bak ~/.gmshrc
-[ $err != 0 ] && echo "Sorry, can't run the demo, Gmsh is not installed." && exit 1
+[ $err != 0 ] && echo "Sorry, can't run the demo, Gmsh is not (correctly) installed." && exit 1
 j=0
 for i in `ls Gmsh*.geo`
 do
+    #
+    # Lancement GMSH
+    #
     echo $ECHO_OPTS "\nRunning Gmsh on test case $i"
     pref=`basename $i .geo`
     let j=$j+1
@@ -43,8 +48,9 @@ do
        exit -1
     fi
 
-# Lancement en batch de TRUST 
-
+    #
+    # Lancement en batch de TRUST 
+    #
     echo $ECHO_OPTS "Running TRUST ....."
     USE_MPIRUN=1 trust $pref 1>$pref.log 2>&1
     if [ $? != 0 ]
@@ -58,7 +64,9 @@ do
     fi
     sleep 1
 
-# Nettoyage repertoire: les fichiers  *geo *msh *geom et *data doivent etre conserves
+    #
+    # Nettoyage repertoire: les fichiers  *geo *msh *geom et *data doivent etre conserves
+    #
     trust -clean
     rm -f *err *out *dump trace *param *.TU
     if [ $j -lt 1 ]
@@ -68,7 +76,10 @@ do
     fi
     echo $ECHO_OPTS "        "
 done
+
+#
 # Clean
+#
 rm -f *.med *ssz*.geo *.file convert_jdd
 exit 0
 
