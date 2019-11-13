@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------------------
-Release notes version 1.8.0_beta : Enhancements, modifications and corrected bugs since version 1.7.9 :
+Release notes version 1.8.0 : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
 31/10/19 (TRUST)  New feature : First version of a Python module (SWIG) for the ICoCo interface.
 30/10/19 (TRUST)  New feature : PISO scheme now working with PolyMAC.

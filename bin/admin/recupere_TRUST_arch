@@ -187,7 +187,7 @@ do
 	    fi
 	 fi
       fi    	
-      sleep 1
+      sleep 10s
       PERF=`ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST" 2>/dev/null`
       # Test moins severe pour recuperer un executable OK ou ecarts 
       if [ ${#PERF} != 0 ] && [ -f $PERF ]

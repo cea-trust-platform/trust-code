@@ -149,6 +149,11 @@ else
 fi " >> make_install.sh    
 fi
 # on prepare le projet
+sed -i "10a source env_*.sh" make_check.sh
+#sed -i "10a export PATH=\${project_directory}/build/xdata:\$PATH" make_check.sh
+#sed -i "11a export TRUST_TESTS=${project_directory}/build/tests/all/" make_check.sh
+#sed -i "12a export Rapports_auto_root=${project_directory}/build/tests/share/all/ " make_check.sh
+#sed -i "13a export exec=\${project_directory}/$projet_exe_opt" make_check.sh
 
 
 if [ $doclean -ge 2 ]  
