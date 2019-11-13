@@ -1,41 +1,44 @@
 #!/bin/bash
+#
+# Installation script for MEDCoupling
+#
 
 archive_mc=$1
 archive_conf=$2
-medcoupling=`basename $archive_mc .tar.gz`
-mc_version=`echo $medcoupling | sed 's/[^0-9]*\([0-9].[0-9].[0-9]\)/\1/'`
-org=`pwd`
+src_dir=`basename $archive_mc .tar.gz`
+mc_version=`echo $src_dir | sed 's/[^0-9]*\([0-9].[0-9].[0-9]\)/\1/'`
+build_root=$TRUST_ROOT/build/lib
+build_dir=$build_root/medcoupling_build
+install_dir=$TRUST_MEDCOUPLING_ROOT
 
-DEST=$TRUST_MEDCOUPLING_ROOT
-mkdir -p $DEST 
-cd $DEST/.. 
+mkdir -p $install_dir
+mkdir -p $build_dir
+cd $build_dir
 
-dest=$DEST/include/ICoCoMEDField.hxx
-cp -af $dest .
+icocomedfield_hxx=$install_dir/include/ICoCoMEDField.hxx
+cp -af $icocomedfield_hxx .
 
 # include file:
-medcoupling_hxx=$DEST/include/medcoupling++.h
+medcoupling_hxx=$install_dir/include/medcoupling++.h
 cp -af $medcoupling_hxx .
-
-rm -rf build install $medcoupling
 
 # MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
 if [ "$TRUST_INT64" = "1" ]
 then
-    mkdir -p $DEST/include
-    rm -rf $DEST/lib
+    echo "@@@@@@@@@@@@ INT64 specific stuff ..."
+
+    mkdir -p $install_dir/include
+    rm -rf $install_dir/lib
     echo "MEDCOUPLING DISABLE for 64 bits"
     echo "#define NO_MEDFIELD " >  prov.h
 
-    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]
-    then
-	cp prov.h $dest
+    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]; then
+      cp prov.h $icocomedfield_hxx
     else
-	cp -a ICoCoMEDField.hxx $dest
+      cp -a ICoCoMEDField.hxx $icocomedfield_hxx
     fi
     echo "#undef MEDCOUPLING_" > prov2.h
-    if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ] 
-    then
+    if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ];  then
        cp prov2.h $medcoupling_hxx
     else
        cp -a medcoupling++.h $medcoupling_hxx
@@ -45,67 +48,76 @@ then
 fi
 
 rm -f ICoCoMEDField.hxx
-if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]
-then
- echo $MEDCOUPLING_ROOT_DIR
- ln -sf $MEDCOUPLING_ROOT_DIR $DEST
- exit 0
+if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]; then
+  echo "@@@@@@@@@@@@ Using external MEDCoupling: '$MEDCOUPLING_ROOT_DIR'"
+  echo $MEDCOUPLING_ROOT_DIR
+  ln -sf $MEDCOUPLING_ROOT_DIR $install_dir
+  exit 0
 fi
+
+echo "@@@@@@@@@@@@ Unpacking ..."
+
+cd $build_root
+
 [ ! -f $archive_mc ] && echo $archive_mc no such file && exit 1
 [ ! -f $archive_conf ] && echo $archive_conf no such file && exit 1
 tar zxf $archive_mc
 tar zxf $archive_conf
 
-echo patching DisjointDEC
-sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $medcoupling -name  DisjointDEC.hxx )
-sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $medcoupling -name  DisjointDEC.cxx )
+echo "Patching DisjointDEC"
+sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.hxx )
+sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.cxx )
 
-mkdir build
-cd build
+echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 
-#export HDF5_ROOT=$TRUST_MED_ROOT
-#export MED3HOME=$TRUST_MED_ROOT
-
+cd $build_dir
 
 USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
-# We use now python 2.7.16 and swig from conda so:
-MED_COUPLING_PYTHON="ON"
-
-OPTIONS="-DCMAKE_BUILD_TYPE=Release -DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_INSTALL_PREFIX=$DEST -DCMAKE_CXX_COMPILER=$TRUST_CC  -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig"
-OPTIONS=$OPTIONS" -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF" 
+# We use now python and SWIG from conda so:
+OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC "
+OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
+OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
+OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig "
+OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON" 
 # NO_CXX1 pour cygwin
-OPTIONS=$OPTIONS" -DMEDCOUPLING_BUILD_STATIC=ON -DNO_CXX11_SUPPORT=ON"
-cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=$MED_COUPLING_PYTHON
-
+OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=ON"
+echo "About to execute CMake -- options are: $OPTIONS"
+echo "Current directory is : `pwd`"
+cmake ../$src_dir $OPTIONS -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release
 
 # The current CMake of MEDCoupling is badly written: dependencies on .pyc generation do not properly capture SWIG generated Python modules.
 # So we need to do make twice ...
-make -j $TRUST_NB_PROCS
-# si make install fonctionne coorectement ce fichier sera ecrase
-# echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
+$TRUST_MAKE
 make install
 make install
 status=$?
 
-#ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
+if ! [ $status -eq 0 ]; then
+  echo "@@@@@@@@@@@@@@@@@@@@@"
+  echo "Error at compilation."
+  exit -1
+fi
 
-MC_ENV_FILE=$DEST/env.sh
+# Creation of env file. Done in a temporary file, because the final env.sh is the main target of the Makefile
+# but we need an env file for the test below ... 
+echo "@@@@@@@@@@@@ Creating env file ..."
+MC_ENV_FILE_tmp=$install_dir/env_tmp.sh
+MC_ENV_FILE=$install_dir/env.sh
 version=`python  -c "import sys; print (sys.version[:3])"`
-echo "export MED_COUPLING_ROOT=$DEST"> $MC_ENV_FILE
-echo "export LD_LIBRARY_PATH=$DEST/lib/:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE
-echo "export PYTHONPATH=$DEST/bin/:$DEST/lib/python$version/site-packages/:\$PYTHONPATH" >> $MC_ENV_FILE
-echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> $MC_ENV_FILE
+echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
+echo "export LD_LIBRARY_PATH=$install_dir/lib/:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE_tmp
+echo "export PYTHONPATH=$install_dir/bin/:$install_dir/lib/python$version/site-packages/:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
+echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> $MC_ENV_FILE_tmp
 
+echo "@@@@@@@@@@@@ Testing install ..."
 if [ $status -eq 0 ]  # install was successful
 then
-  #cd ..
-  #rm -rf build $medcoupling
   ##
   ## Test de fonctionnement
   ##
-  source $MC_ENV_FILE
+  source $MC_ENV_FILE_tmp
   python -c "import medcoupling"
   if [ $? -eq 0 ]
   then
@@ -116,9 +128,14 @@ then
   fi
 fi
 
-touch $DEST/include/*
+echo "@@@@@@@@@@@@ Updating TRUST include files ..."
+touch $install_dir/include/*
 
-[ ! -f $DEST/include/ICoCoMEDField.hxx ] && echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
-[ ! -f $medcoupling_hxx ] && echo "#define MEDCOUPLING_" > $medcoupling_hxx
+[ ! -f $icocomedfield_hxx ] && echo "#define NO_MEDFIELD " > $icocomedfield_hxx
+[ ! -f $medcoupling_hxx ]  && echo "#define MEDCOUPLING_" > $medcoupling_hxx
 
-exit $status
+# Update env file:
+mv $MC_ENV_FILE_tmp $MC_ENV_FILE
+
+echo "All done!"
+
