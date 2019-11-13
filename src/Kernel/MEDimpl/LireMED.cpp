@@ -197,8 +197,18 @@ extern "C" int MEDimport(char*,char*);
 
 void test_version(Nom& nom)
 {
+  med_bool    hdfok, medok;
+  med_err ret = MEDfileCompatibility (nom,&hdfok, &medok );
+
+  if (ret < 0)
+    Cerr << "MEDfileCompatibility pb!!!" << finl;
+  if(!hdfok)
+    Cerr << "Not HDF compatible " << finl;
+  if(!medok)
+    Cerr << "Not MED compatible " << finl;
+
   // on regarde si le fichier est d'une version differente, si oui
-  // on cree un fichier med2.2 et on change le nom du fichier
+  // on cree un fichier au format MED majeur courant, et on change le nom du fichier
   med_int fid,majeur,mineur,release;
   fid = MEDfileOpen(nom,MED_ACC_RDONLY);
   if (fid<0)
@@ -206,26 +216,12 @@ void test_version(Nom& nom)
       Cerr<<"Problem when trying to open the file "<<nom<<finl;
       Process::exit();
     }
-#ifdef MED30
   MEDfileNumVersionRd(fid,&majeur,&mineur,&release);
   MEDfileClose(fid);
-  if (majeur == 3)
+  if (majeur == MED_MAJOR_NUM)  // defined in med.h
     {
       return ;
     }
-#else
-  MEDversionLire(fid,&majeur,&mineur,&release);
-  MEDfileClose(fid);
-  if (majeur == 2 && mineur >= 2)
-    {
-      return ;
-    }
-  if (majeur>2)
-    {
-      Cerr<<"Conversion of med file version "<<majeur <<" to med file version 2 not possible"<<finl;
-      Process::exit();
-    }
-#endif
 
   // On serialise pour eviter que le fichier soit cree plusieurs fois en //
 
@@ -324,11 +320,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
       Cerr<<"Problem when trying to open the file "<<nom_fic<<finl;
       Process::exit();
     }
-#ifdef MED30
   int nmaillage=MEDnMesh(fid);
-#else
-  int nmaillage=MEDnMaa(fid);
-#endif
 
   if (nmaillage<1)
     {
@@ -338,7 +330,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
   Char_ptr maa;
   dimensionne_char_ptr_taille(maa,MED_NAME_SIZE);
   int monmaillage=-1;
-#ifdef MED30
+
   Char_ptr description,dtunit,axisname,axisunit;
   dimensionne_char_ptr_taille(description,MED_COMMENT_SIZE);
   dimensionne_char_ptr_taille(dtunit,MED_SNAME_SIZE);
@@ -349,17 +341,12 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
   med_int spacedim,meshdim,nstep;
   med_axis_type axistype;
 
-#endif
   for (int i=0; i<nmaillage; i++)
     {
       med_int dim;
-#ifdef MED30
       ret=MEDmeshInfo(fid,i+1,maa,&dim,&meshdim,&meshtype,description,dtunit,&sortingtype,&nstep,&axistype,axisname,axisunit);
       spacedim=MEDmeshnAxis(fid,i+1);
       if (spacedim<0) spacedim=meshdim;
-#else
-      ret = MEDmaaInfo(fid,i+1,maa,&dim);
-#endif
       Nom Nmaa(maa);
       if (nom_dom==Nmaa)
         {
@@ -379,26 +366,15 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
   med_geometry_type type_geo=MED_POINT1;
   med_connectivity_mode type_conn=MED_NODAL;
   //Cerr<<"type_geo"<<type_geo<<finl;
-#ifdef MED30
   dimension=meshdim;
   if (spacedim>-1)
     dimension=spacedim;
   med_bool chgt,transfo;
   int nsommet=MEDmeshnEntity(fid,maa,MED_NO_DT,MED_NO_IT, MED_NODE,type_geo,MED_COORDINATE, type_conn,&chgt,&transfo);
-#else
-  med_int med_dimension=dimension;
-  ret = MEDmaaInfo(fid,monmaillage,maa,&med_dimension);
-  int med_space_dimension=MEDdimEspaceLire(fid,maa);
-  if (med_space_dimension>0)
-    med_dimension=med_space_dimension;
-  dimension=med_dimension;
-  int nsommet=MEDnEntMaa(fid,maa,MED_COOR,MED_NODE,type_geo,type_conn);
-#endif
   //Cerr<<"type_geo "<<type_geo<<" conn "<<type_conn<<finl;
   sommets.resize(nsommet,dimension);
 
   if (nsommet==0) return 0;
-
 
   //   Nom nomcoo="x       y      ";
   //   Nom unicco="m       m      ";
@@ -409,35 +385,8 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
   //     }
   double* sommets2=sommets.addr();
   med_axis_type rep;
-#ifdef MED30
   rep=axistype;
   ret=MEDmeshNodeCoordinateRd(fid,maa,MED_NO_DT,MED_NO_IT,MED_FULL_INTERLACE,sommets2);
-#else
-  {
-    Char_ptr nomcoo;
-    dimensionne_char_ptr_taille(nomcoo,MED_SNAME_SIZE,3);
-    Char_ptr unicco;
-    dimensionne_char_ptr_taille(unicco,MED_SNAME_SIZE,3);
-    //    ArrOfInt nufano(nsommet);
-    med_int* nufano=new med_int[nsommet];
-    med_booleen inonoe,inunoe;
-    med_int *numnoe;
-
-
-    numnoe = new med_int[nsommet] ;
-    Char_ptr nomnoe;
-    dimensionne_char_ptr_taille(nomnoe,MED_SNAME_SIZE,nsommet);
-    ret=MEDnoeudsLire(fid,maa,dimension,sommets2,MED_FULL_INTERLACE,&rep,nomcoo,unicco,nomnoe,&inonoe,numnoe,&inunoe,nufano,nsommet);
-    if (inunoe||inonoe)
-      {
-        Cerr<<"Problem in medliregeom. Contact TRUST support."<<finl;
-        //return -1;
-      }
-
-    delete [] numnoe;
-    delete [] nufano;
-  }
-#endif
   med_int* num_famille_elem;
   // lecture du nbre et du type elt
   const int med_nbr_type_geom=17;//MED_NBR_GEOMETRIE_MAILLE+2;
@@ -452,12 +401,8 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
         {
           nm=0;
           //        Cerr<<nm << " "<<all_cell_type1[i]<<finl;
-#ifdef MED30
           med_bool cght,transfo2;
           nm=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,all_cell_type1[i], MED_CONNECTIVITY,MED_NODAL,&cght,&transfo2);
-#else
-          nm=MEDnEntMaa(fid,nom_dom,MED_CONN,MED_CELL,all_cell_type1[i],MED_NODAL);
-#endif
 
           if (nm!=0)
             {
@@ -559,7 +504,6 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
         IntTab& les_elems2=les_elems;
         //ArrOfInt num_famille_elem(nelem);
         med_int* med_les_elems2=alloue_med_int_from_inttab(les_elems2);
-#ifdef MED30
         double dtb;
         med_int numdt,numit;
         MEDmeshComputationStepInfo(fid,nom_dom,1,&numdt,&numit,&dtb);
@@ -572,16 +516,6 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
               num_famille_elem[ii] = 0;
 
           }
-#else
-        Char_ptr nomse2 ;
-        dimensionne_char_ptr_taille(nomse2,MED_SNAME_SIZE,nelem);
-        med_int *numse2;
-        numse2 = new med_int[nelem];
-        med_booleen inoele1,inuele1;
-
-        ret=MEDelementsLire(fid,nom_dom,dimension,med_les_elems2,MED_FULL_INTERLACE,nomse2,&inoele1,numse2,&inuele1,num_famille_elem,nelem,MED_CELL,type_geo,MED_NODAL);
-        delete [] numse2;
-#endif
         convert_med_int_to_inttab(les_elems2,med_les_elems2);
 
         if (ret<0)
@@ -594,11 +528,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
       {
         // on a des polygone...
         // avant d'oublier on lit les familles
-#ifdef MED30
         if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_geo,num_famille_elem)<0)
-#else
-        abort();
-#endif
           for (int ii=0; ii<nelem; ii++)
             num_famille_elem[ii] = 0;
 
@@ -606,14 +536,12 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
         //med_int ConnectivitySize;
         //med_err err1 = MEDpolygoneInfo(fid,nom_dom,MED_CELL,MED_NODAL, &ConnectivitySize);
         med_int FacesIndexSize;
-#ifdef MED30
         med_bool cght,transfo2;
         // NumberOfNodes=NumberOfPolygone;
         NumberOfPolygone=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON,MED_INDEX_NODE,MED_NODAL,&cght,&transfo2)-1; // -1 a cause du +1 ensuite !!!
         med_err err1=0;
 
         FacesIndexSize=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON, MED_CONNECTIVITY,MED_NODAL,&cght,&transfo2);
-#endif
         if (err1 != 0)
           {
             Cerr<<"Error MEDpolygoneInfo"<<finl;
@@ -626,9 +554,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
           //med_int* med_Nodes=alloue_med_int_from_inttab(Nodes);
           med_int* med_FacesIndex=alloue_med_int_from_inttab(FacesIndex);
           med_int* med_PolygonIndex=alloue_med_int_from_inttab(PolygonIndex);
-#ifdef MED30
           med_err err4 =MEDmeshPolygonRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_PolygonIndex,med_FacesIndex);
-#endif
           if (err4 != 0)
             {
               Cerr<<": MEDpolygoneConnLire returns "<<(int)err4;
@@ -655,11 +581,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
       {
         // on a des polyedres...
         // avant d'oublier on lit les familles
-#ifdef MED30
         if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_geo,num_famille_elem)<0)
-#else
-        if (MEDfamLire(fid,nom_dom,num_famille_elem,nelem,MED_CELL,type_geo) < 0)
-#endif
           for (int ii=0; ii<nelem; ii++)
             num_famille_elem[ii] = 0;
 
@@ -669,18 +591,13 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
         //med_int ConnectivitySize;
         //med_err err1 = MEDpolygoneInfo(fid,nom_dom,MED_CELL,MED_NODAL, &ConnectivitySize);
         med_int FacesIndexSize, NumberOfNodes;
-#ifdef MED30
+
         med_bool cght,transfo2;
         NumberOfNodes=NumberOfPolyedre;
         NumberOfPolyedre=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYHEDRON, MED_INDEX_FACE,MED_NODAL,&cght,&transfo2)-1; // -1 a cause du +1 ensuite !!!
         med_err err1=0;
 
         FacesIndexSize=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYHEDRON, MED_INDEX_NODE,MED_NODAL,&cght,&transfo2);
-#else
-        med_int NumberOfFaces;
-        med_err err1 = MEDpolyedreInfo(fid,nom_dom,MED_NODAL,&FacesIndexSize, &NumberOfNodes);
-        NumberOfFaces = FacesIndexSize-1;
-#endif
         if (err1 != 0)
           {
             Cerr<<"Error MEDpolygoneInfo"<<finl;
@@ -692,18 +609,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
           med_int* med_Nodes=alloue_med_int_from_inttab(Nodes);
           med_int* med_FacesIndex=alloue_med_int_from_inttab(FacesIndex);
           med_int* med_PolyhedronIndex=alloue_med_int_from_inttab(PolyhedronIndex);
-#ifdef MED30
           med_err err4 =MEDmeshPolyhedronRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_PolyhedronIndex,med_FacesIndex,med_Nodes);
-#else
-          med_err err4 = MEDpolyedreConnLire(fid,nom_dom,
-                                             med_PolyhedronIndex,
-                                             NumberOfPolyedre+1,
-                                             med_FacesIndex,
-                                             NumberOfFaces+1,
-                                             med_Nodes,
-                                             MED_NODAL);
-
-#endif
           if (err4 != 0)
             {
               Cerr<<": MEDpolyedreConnLire returns "<<(int)err4;
@@ -742,17 +648,12 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
 
       int nm1=0,nm;
       //  med_geometry_type type_geo;
-#ifdef MED30
       med_entity_type type_ent=MED_DESCENDING_FACE;
       if (dimension==2) type_ent=MED_DESCENDING_EDGE;
       if (jelem==0)
         {
           type_ent=MED_NODE;
         }
-#else
-      med_entity_type type_ent=MED_FACE;
-      if (dimension==2) type_ent=MED_ARETE;
-#endif
       for (int mm=0; mm<2; mm++)
         {
           if (nm1!=0) break;
@@ -764,12 +665,8 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
               if (nm1!=0) break;
 
               nm=0;
-#ifdef MED30
               med_bool cght,transfo3;
               nm=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,all_cell_type1[i], MED_CONNECTIVITY,MED_NODAL,&cght,&transfo3);
-#else
-              nm=MEDnEntMaa(fid,nom_dom,MED_CONN,type_ent,all_cell_type1[i],MED_NODAL);
-#endif
               if (nm!=0)
                 {
                   if (nm1==0)
@@ -863,21 +760,10 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
               {
                 med_int* med_all_faces_bord2=alloue_med_int_from_inttab(all_faces_bord2);
                 med_int* med_familles=alloue_med_int_from_inttab(familles);
-#ifdef MED30
                 med_bool withelementname,withelementnumber, withfamnumber;
                 med_int* elementnumber=numse2;
                 char* elementname=nomse2;
                 ret=MEDmeshElementRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,type_geo,MED_NODAL,MED_FULL_INTERLACE,med_all_faces_bord2,&withelementname,elementname,&withelementnumber,elementnumber,&withfamnumber,med_familles);
-#else
-                med_booleen inoele1,inuele1;
-                ret=MEDelementsLire(fid,nom_dom,dimension,med_all_faces_bord2,MED_FULL_INTERLACE,nomse2,&inoele1,numse2,&inuele1,med_familles,nface,type_ent,type_geo,MED_NODAL);
-                if (inoele1||inuele1)
-                  {
-                    // Cerr<<"bizarre "<<finl;
-                    //return -1;
-                  }
-
-#endif
                 delete [] numse2;
                 convert_med_int_to_inttab(all_faces_bord2,med_all_faces_bord2);
                 convert_med_int_to_inttab(familles,med_familles);
@@ -894,37 +780,20 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
             {
               // familles
               med_int* med_familles=alloue_med_int_from_inttab(familles);
-#ifdef MED30
               if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,type_geo,med_familles)<0)
-#else
-              if (MEDfamLire(fid,nom_dom,med_familles,nface,type_ent,type_geo) < 0)
-#endif
                 for (int ii=0; ii<nface; ii++)
                   med_familles[ii] = 0;
 
               convert_med_int_to_inttab(familles,med_familles);
               med_int size_conn;
-#ifdef MED30
               med_bool cght,transfo3;
               size_conn=nface;
               nface=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON,MED_INDEX_NODE,MED_NODAL,&cght,&transfo3)-1;
-#else
-              int ret=MEDpolygoneInfo(fid,nom_dom,type_ent,MED_NODAL,&size_conn);
-              if (ret != 0)
-                {
-                  Cerr<<"Error MEDpolygoneInfo"<<finl;
-                  Process::exit();
-                }
-#endif
               int taille_index=nface+1;
               ArrOfInt connectivite(size_conn),index(taille_index);
               med_int* med_conn=alloue_med_int_from_inttab(connectivite);
               med_int* med_index=alloue_med_int_from_inttab(index);
-#ifdef MED30
               ret=MEDmeshPolygonRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_index,med_conn);
-#else
-              ret=MEDpolygoneConnLire(fid,nom_dom,med_index,taille_index,med_conn,type_ent,MED_NODAL);
-#endif
               convert_med_int_to_inttab(connectivite,med_conn);
               convert_med_int_to_inttab(index,med_index);
               int max_som_face=0;
@@ -988,7 +857,6 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
             Char_ptr nomfam;
             med_int numfam;
             Char_ptr gro;
-#ifdef MED30
             dimensionne_char_ptr_taille(nomfam,MED_NAME_SIZE);
             ngro=MEDnFamilyGroup(fid,nom_dom,i+1);
             dimensionne_char_ptr_taille(gro,MED_LNAME_SIZE,ngro);
@@ -997,26 +865,6 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
               {
                 ret=MEDfamilyInfo(fid,nom_dom,i+1,nomfam,&numfam,gro);
               }
-#else
-            med_int natt;
-            if ((natt = MEDnFam(fid,nom_dom)) < 0)
-              ret = -1;
-            Char_ptr attdes;
-            med_int *attval,*attide;
-            dimensionne_char_ptr_taille(nomfam,MED_NAME_SIZE);
-
-            if (ret == 0)
-              {
-                attide = new med_int[natt];
-                attval = new med_int[natt];
-                dimensionne_char_ptr_taille(attdes,MED_COMMENT_SIZE,natt);
-                dimensionne_char_ptr_taille(gro,MED_LNAME_SIZE,ngro);
-                ret = MEDfamInfo(fid,nom_dom,i+1,nomfam,&numfam,attide,attval,attdes,
-                                 &natt,gro,&ngro);
-                delete [] attide;
-                delete [] attval;
-              }
-#endif
             if (ret==0)
               {
                 // on raccourcit nomfam
@@ -1260,16 +1108,10 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
   Cerr<<"reading of the joint informations "<<finl;
   int njoint=-1;
   int fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
-#ifdef MED30
-#define MEDnJoint MEDnSubdomainJoint
-#endif
-  njoint=MEDnJoint(fid,nom_dom);
-
-
+  njoint=MEDnSubdomainJoint(fid,nom_dom);
   corres_joint.dimensionner(njoint);
   noms_des_joints.dimensionner(njoint);
   tab_pe_voisin.resize_array(njoint);
-
 
   for (int j=0; j<njoint; j++)
     {
@@ -1279,17 +1121,11 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
       dimensionne_char_ptr_taille(maa_dist,MED_NAME_SIZE);
       Char_ptr name_of_joint(maa_dist);
       Char_ptr desc;
-#ifdef MED30
       dimensionne_char_ptr_taille(desc,MED_COMMENT_SIZE);
       med_int nstep;
       med_int nocstpn;
       MEDsubdomainJointInfo(fid, nom_dom, j+1, name_of_joint, desc,
                             &num_dom, maa_dist, &nstep,&nocstpn);
-#else
-      dimensionne_char_ptr_taille(desc,MED_COMMENT_SIZE);
-      MEDjointInfo(fid, nom_dom, j+1, name_of_joint, desc,
-                   &num_dom, maa_dist);
-#endif
       Cerr<<" ici "<<name_of_joint<<" "<<(int)num_dom<< " "<<desc<<" "<<maa_dist<<finl;
       tab_pe_voisin[j]=num_dom;
       noms_des_joints[j]=name_of_joint;
@@ -1312,12 +1148,8 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
       typ_geo_distant=typ_geo_local;
       typ_ent_local=MED_NODE;
       typ_ent_distant=typ_ent_local;
-#ifdef MED30
       med_int nc;
       MEDsubdomainCorrespondenceSize(fid, nom_dom, name_of_joint,MED_NO_DT,MED_NO_IT,typ_ent_local,typ_geo_local,typ_ent_distant, typ_geo_distant,&nc);
-#else
-      med_int nc= MEDjointnCorres(fid, nom_dom, name_of_joint,typ_ent_local,typ_geo_local,typ_ent_distant, typ_geo_distant);
-#endif
       Cerr<<(int)nc <<" connecting vertices " <<finl;
       // lecture de la correspondance
       ArrOfInt& corres_joint_j =corres_joint[j];
@@ -1327,12 +1159,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
           med_int* cortab;
 
           cortab=new med_int[nc*2];
-#ifdef MED30
           med_int ret =MEDsubdomainCorrespondenceRd(fid,nom_dom,name_of_joint,MED_NO_DT,MED_NO_IT, typ_ent_local,typ_geo_local,typ_ent_distant,typ_geo_distant,cortab) ;
-#else
-          med_int ret =MEDjointLire(fid,nom_dom,name_of_joint,cortab,nc*2,
-                                    typ_ent_local,typ_geo_local,typ_ent_distant,typ_geo_distant) ;
-#endif
           if (ret<0)
             {
               Cerr<<"Error when reading the corresponding informations on the vertices"<<finl;
@@ -2107,7 +1934,6 @@ void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,A
           dimensionne_char_ptr_taille(unit,MED_SNAME_SIZE,ncomp);
 
           /* infos sur les champs */
-#ifdef MED30
           Char_ptr meshname;
           dimensionne_char_ptr_taille(meshname,MED_NAME_SIZE);
           Char_ptr dtunit;
@@ -2117,10 +1943,6 @@ void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,A
           med_int nbofcstp;
           ret=MEDfieldInfo(fid,ch+1,nomcha,meshname,&localmesh,&fieldtype,comp,unit,dtunit,&nbofcstp);
           if (dom.le_nom()==(const char*)meshname)
-#else
-          med_type_champ typcha;
-          ret = MEDchampInfo(fid,ch+1,nomcha,&typcha,comp,unit,ncomp);
-#endif
             // il faut verifier si nom_dom est correct pour le champ
             {
               med_geometry_type type_geo=type_geo_trio_to_type_med(dom.zone(0).type_elem()->que_suis_je());
@@ -2208,7 +2030,6 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
           dimensionne_char_ptr_taille(unit,MED_SNAME_SIZE,ncomp);
 
           /* infos sur les champs */
-#ifdef MED30
           med_field_type typcha;
           Char_ptr meshname;
           dimensionne_char_ptr_taille(meshname,MED_NAME_SIZE);
@@ -2225,10 +2046,6 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
             }
 
           ndt=nbofcstp;
-#else
-          med_type_champ typcha;
-          ret = MEDchampInfo(fid,ch+1,nomcha,&typcha,comp,unit,ncomp);
-#endif
           Nom Nnomcha(nomcha);
           //nomschamp[ch]=nomcha;
           //Cerr<<"Nom du champ "<<nomcha<<" de type "<<typcha<<finl;
@@ -2277,7 +2094,6 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
       Cerr<< "Fields in file : "<<  noms_champ_file<<finl;
       Process::exit();
     }
-#ifdef MED30
   if (verifie_type==0)
     {
       type_ent=MED_CELL;
@@ -2293,12 +2109,6 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
             abort();
         }
     }
-#else
-  if (verifie_type==0)
-    type_ent=MED_CELL;
-
-  ndt=MEDnPasdetemps(fid,nomchamp,type_ent,type_geo);
-#endif
   // on fait une boucle pour le cas ou temperature aux som pour un dom
   // et aux elems pour l'autre
   int fini=0;
@@ -2308,10 +2118,6 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
     {
       if ((ndt==0)&&(verifie_type==0))
         {
-#ifndef MED30
-          type_ent=MED_NODE;
-          ndt=MEDnPasdetemps(fid,nomchamp,type_ent,type_geo);
-#endif
           Cerr<<"No time found for "<<nomchamp<<" on type_ent " << (int)type_ent<<finl;
         }
       temps_sauv.resize_array(ndt);
@@ -2327,20 +2133,11 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
       int ndt2=0;
       for (int i=0; i<ndt; i++)
         {
-#ifdef MED30
           med_int meshnumdt,meshnumit;
           MEDfieldComputingStepMeshInfo(fid,nomchamp,i+1,&numdt,&numo,&dt,&meshnumdt,&meshnumit);
           size=MEDfieldnValue(fid,nomchamp,numdt,numo,type_ent,type_geo);
           // Cerr<<"ici "<<size<<finl;
           if (size)
-#else
-          med_int ngauss;
-          MEDpasdetempsInfo(fid,nomchamp,type_ent,type_geo,
-                            i+1, nom_dom_med, &ngauss, &numdt,
-                            dt_unit, &dt, &numo);
-
-          if (nom_dom==(const char*)nom_dom_med)
-#endif
             {
               temps_sauv[ndt2]=dt;
               ndt2++;
@@ -2366,11 +2163,7 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
     }
   if (ndt>0)
     {
-#ifdef MED30
       size=MEDfieldnValue(fid,nomchamp,numdtsa,numo,type_ent,type_geo);
-#else
-      size=MEDnVal(fid,nomchamp,type_ent,type_geo,numdtsa,numo,nom_dom,MED_COMPACT);
-#endif
       if (size<0)
         {
           Cerr<<"Problem when reading the size for the field "<<nomchamp<<finl;
@@ -2381,8 +2174,8 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
   MEDfileClose(fid);
   return nomchamp;
 }
-
 #endif
+
 void traite_nom_fichier_med(Nom& nom_fic)
 {
   Nom nom_fic2(nom_fic);
@@ -2451,6 +2244,3 @@ void lire_nom_med(Nom& nom_champ, Entree& s)
       Cerr<<nom_champ<<finl;
     }
 }
-
-
-
