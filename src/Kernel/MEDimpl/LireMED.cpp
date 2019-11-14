@@ -197,19 +197,10 @@ extern "C" int MEDimport(char*,char*);
 
 void test_version(Nom& nom)
 {
-  med_bool    hdfok, medok;
-  med_err ret = MEDfileCompatibility (nom,&hdfok, &medok );
-
-  if (ret < 0)
-    Cerr << "MEDfileCompatibility pb!!!" << finl;
-  if(!hdfok)
-    Cerr << "Not HDF compatible " << finl;
-  if(!medok)
-    Cerr << "Not MED compatible " << finl;
-
   // on regarde si le fichier est d'une version differente, si oui
   // on cree un fichier au format MED majeur courant, et on change le nom du fichier
-  med_int fid,majeur,mineur,release;
+  med_int majeur,mineur,release;
+  med_idt fid;   // NOT THE SAME AS med_int!!!!
   fid = MEDfileOpen(nom,MED_ACC_RDONLY);
   if (fid<0)
     {
@@ -314,7 +305,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
   int ret=0;
   test_version(nom_fic);
 
-  int fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
+  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   if (fid<0)
     {
       Cerr<<"Problem when trying to open the file "<<nom_fic<<finl;
@@ -1107,7 +1098,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 {
   Cerr<<"reading of the joint informations "<<finl;
   int njoint=-1;
-  int fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
+  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   njoint=MEDnSubdomainJoint(fid,nom_dom);
   corres_joint.dimensionner(njoint);
   noms_des_joints.dimensionner(njoint);
@@ -1895,7 +1886,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 med_geometry_type type_geo_trio_to_type_med(const Nom& a);
 void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,ArrOfDouble& temps_sauv)
 {
-  int fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
+  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   if (fid<0)
     {
       Cerr <<"Problem when opening "<<nom_fic<<finl;
@@ -1990,7 +1981,7 @@ void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,A
 Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size,const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv)
 {
   Nom nomchamp(nomchamp_utilisateur);
-  int fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
+  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   if (fid<0)
     {
       Cerr <<"Problem when opening "<<nom_fic<<finl;

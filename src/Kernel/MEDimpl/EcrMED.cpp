@@ -303,7 +303,7 @@ med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem)
 }
 
 // ecriture des faces
-int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,int fid,const Nom& nom_dom,int dimension,const ArrOfInt& familles,med_access_mode mode=MED_ACC_RDEXT)
+int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const Nom& nom_dom,int dimension,const ArrOfInt& familles,med_access_mode mode=MED_ACC_RDEXT)
 {
   int ret=0;
   int nface=familles.size_array();
@@ -400,7 +400,7 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
   dimensionne_char_ptr_taille(med_taille_nom,MED_NAME_SIZE);
   //Cerr<<"HERE medecrgeom "<<nom_fic<<" "<<nom_dom<<" "<<mode<<finl;
   int ret=0;
-  int fid ;
+  med_idt fid ;
   // alors ca ou l'autre ????
   // mode =0 on ajoute. mode=-1 on reecrit
   if (mode==0)
@@ -1191,7 +1191,7 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
   dimensionne_char_ptr_taille(med_taille_nom,MED_NAME_SIZE);
   Char_ptr nomcha1(med_taille_nom);
   affecte_nom_med(nomcha1,nomcha1_org);
-  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
+  med_idt fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
 
   int ret=0;
   // on regarde si le champ existe
@@ -1273,7 +1273,7 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
   int ret=0;
   int nbele=val.dimension(0);
   if (nbele==0) return 0;
-  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
+  med_idt fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
 
   //MED_CELL si CHAMPMAILLE
   //MED_NODE si CHAMPNOEUD

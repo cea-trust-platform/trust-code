@@ -264,7 +264,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
   else
 #endif
     {
-      int fid = MEDfileOpen(nom_fic, MED_ACC_RDONLY);
+      med_idt fid = MEDfileOpen(nom_fic, MED_ACC_RDONLY);
       if (fid < 0)
         {
           Cerr << "Problem while opening the file " << nom_fic << finl;
