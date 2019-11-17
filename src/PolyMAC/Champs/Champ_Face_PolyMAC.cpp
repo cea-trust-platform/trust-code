@@ -179,10 +179,10 @@ void Champ_Face_PolyMAC::init_cl() const
 void Champ_Face_PolyMAC::init_ra() const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const IntTab& a_f = zone.arete_faces();
+  const IntTab& a_f = zone.arete_faces(), &e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   const DoubleTab& nf = zone.face_normales(), &ta = zone.ta(), &xs = zone.zone().domaine().coord_sommets(), &xa = dimension < 3 ? xs : zone.xa(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces();
-  int i, j, k, f, fb, a;
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
+  int i, j, k, l, r, e, f, fb, a, idx;
 
   if (radeb.dimension(0)) return;
   init_cl(), zone.init_m2(), init_va();
@@ -202,9 +202,10 @@ void Champ_Face_PolyMAC::init_ra() const
           int sgn = zone.dot(&vec[0], &nf(f, 0)) > 0 ? 1 : -1;
 
           //partie m2
-          for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++) if (icl(fb = zone.m2ji(j, 0), 0) < 2) //vfb calcule
-              rami[fb] += sgn * zone.m2ci(j) / fs(f);
-            else if (icl(fb, 0) == 3) for (k = 0; k < dimension; k++) ramf[fb][k] += sgn * zone.m2ci(j) / fs(f) * nf(fb, k) / fs(fb);
+          for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (k = zone.m2d(e), idx = 0; k < zone.m2d(e + 1); k++, idx++) for (l = zone.m2i(k); f == e_f(e, idx) && l < zone.m2i(k + 1); l++)
+                if (icl(fb = e_f(e, zone.m2j(l)), 0) < 2) rami[fb] += sgn * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * ve(e) * zone.m2c(l) / fs(f);
+                else if (icl(fb, 0) == 3) for (r = 0; r < dimension; r++)
+                    ramf[fb][r] += sgn * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * ve(e) * zone.m2c(l) / fs(f) * nf(fb, r) / fs(fb);
           //partie "bord" -> avec va si Neumann ou Symetrie, avec val_imp si Dirichlet_homogene
           if (icl(f, 0) == 1 || icl(f, 0) == 2)
             {
@@ -224,28 +225,6 @@ void Champ_Face_PolyMAC::init_ra() const
   CRIMP(radeb), CRIMP(raji), CRIMP(rajf), CRIMP(raci), CRIMP(racf);
 }
 
-//met a jour la partie "vorticite" d'un DoubleTab de (v, w)
-void Champ_Face_PolyMAC::update_w(DoubleTab& val) const
-{
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  int i, a, k;
-
-  //calcul de rot v
-  init_ra(), zone.init_m1solv();
-  DoubleTab_parts vw(val);
-  DoubleTrav ra(vw[1]);
-  for (a = 0; a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-    {
-      for (i = radeb(a, 0); i < radeb(a + 1, 0); i++) ra(a) += raci(i) * vw[0](raji(i)); //partie interne
-      for (i = radeb(a, 1); i < radeb(a + 1, 1); i++) for (k = 0; k < dimension; k++)    //partie CLs de Dirichlet
-          ra(a) += racf(i, k) * ref_cast(Dirichlet, cls[icl(rajf(i), 1)].valeur()).val_imp(icl(rajf(i), 2), k);
-    }
-  //resolution de M1 w = rot v a l'aide de la zone
-  zone.m1solv.resoudre_systeme(zone.m1mat, ra, vw[1]);
-  vw[1].echange_espace_virtuel();
-}
-
 //interpolation aux aretes de la vitesse (dans le plan normal a chaque arete)
 void Champ_Face_PolyMAC::init_va() const
 {
@@ -257,7 +236,7 @@ void Champ_Face_PolyMAC::init_va() const
   int i, j, k, l, m, e, f, fb, a;
 
   if (vadeb.dimension(0)) return;
-  zone.init_m1();
+  zone.init_m1(), zone.init_ve();
   std::map<int, std::array<double, 3>> vami;
   std::map<std::array<int, 2>, std::array<double, 3>> vamf;
   vadeb.resize(1, 2), vajf.resize(0, 2), vaci.resize(0, 3), vacf.resize(0, 3);

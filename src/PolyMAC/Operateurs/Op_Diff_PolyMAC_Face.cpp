@@ -34,8 +34,11 @@
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Mod_turb_hyd_base.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Face, "Op_Diff_PolyMAC_Face|Op_Dift_PolyMAC_Face_PolyMAC", Op_Diff_PolyMAC_base ) ;
+Add_synonym(Op_Diff_PolyMAC_Face, "Op_Diff_PolyMAC_var_Face");
+Add_synonym(Op_Diff_PolyMAC_Face, "Op_Dift_PolyMAC_var_Face_PolyMAC");
 
 Sortie& Op_Diff_PolyMAC_Face::printOn( Sortie& os ) const
 {
@@ -69,24 +72,17 @@ void Op_Diff_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
-  int i, j, a, e, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot();
+  const IntTab& e_f = zone.elem_faces();
+  int i, j, k, a, e, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), idx;
 
   zone.init_m2();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  //partie vitesses : nu grad(div) - m2 Rf
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2)
-      {
-        //nu grad(div)
-        if (0 && f_e(f, 1) >= 0) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-              if (ch.icl(fb, 0) < 2) stencil.append_line(f, fb);
-        // m2 Rf
-        for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++)
-          for (fb = zone.m2ji(i, 0), j = zone.rfdeb(fb); j < zone.rfdeb(fb + 1); j++)
-            stencil.append_line(f, nf_tot + zone.rfji(j));
-      }
+  //partie vitesses : m2 Rf
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
+      for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
+        for (fb = e_f(e, zone.m2j(j)), k = zone.rfdeb(fb); k < zone.rfdeb(fb + 1); k++) stencil.append_line(f, nf_tot + zone.rfji(k));
 
   //partie vorticites : Ra m2 - m1 / nu
   for (a = 0; a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
@@ -104,18 +100,18 @@ void Op_Diff_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
 inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const DoubleVect& pe = zone.porosite_elem();
-  int i, j, k, f, fb, a, nf_tot = zone.nb_faces_tot();
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
+  int i, j, k, e, f, fb, a, nf_tot = zone.nb_faces_tot(), idx;
 
   remplir_nu(nu_);
   //partie vitesses : m2 Rf
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2)
-      {
-        for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (fb = zone.m2ji(i, 0), j = zone.rfdeb(fb); j < zone.rfdeb(fb + 1); j++)
-            resu(f) -= zone.m2ci(i) * pe(zone.m2ji(i, 1)) * zone.rfci(j) * inco(nf_tot + zone.rfji(j));
-      }
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
+      for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
+        for (fb = e_f(e, zone.m2j(j)), k = zone.rfdeb(fb); k < zone.rfdeb(fb + 1); k++)
+          resu(f) -= zone.m2c(j) * ve(e) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * pe(e) * zone.rfci(k) * inco(nf_tot + zone.rfji(k));
 
   //partie vorticites : Ra m2 - m1 / nu
   if (resu.dimension_tot(0) == nf_tot) return resu; //resu ne contient que la partie "faces"
@@ -140,15 +136,17 @@ inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
 inline void Op_Diff_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const DoubleVect& pe = zone.porosite_elem();
-  int i, j, f, fb, a, nf_tot = zone.nb_faces_tot();
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
+  int i, j, k, e, f, fb, a, nf_tot = zone.nb_faces_tot(), idx;
 
   remplir_nu(nu_);
   //partie vitesses : m2 Rf
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2)
-      for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (fb = zone.m2ji(i, 0), j = zone.rfdeb(fb); j < zone.rfdeb(fb + 1); j++)
-          matrice(f, nf_tot + zone.rfji(j)) += zone.m2ci(i) * pe(zone.m2ji(i, 1)) * zone.rfci(j);
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
+      for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
+        for (fb = e_f(e, zone.m2j(j)), k = zone.rfdeb(fb); k < zone.rfdeb(fb + 1); k++)
+          matrice(f, nf_tot + zone.rfji(k)) += zone.m2c(j) * ve(e) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * pe(e) * zone.rfci(k);
 
   //partie vorticites : Ra m2 - m1 / nu
   for (a = 0; a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)

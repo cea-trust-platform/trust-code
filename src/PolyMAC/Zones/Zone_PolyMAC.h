@@ -172,8 +172,8 @@ public :
 
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
-  mutable IntTab m2deb, m2ji; //reconstruction de m2 par (m2ji(.,0), m2ci)[m2deb(f), m2deb(f + 1)[ (faces); m2ji(.,1) contient le numero d'element
-  mutable DoubleTab m2ci;
+  mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
+  mutable DoubleTab m2c, w2c;
   void init_m2solv() const; //pour resoudre m2.v = s
   mutable Matrice_Morse_Sym m2mat;
   mutable SolveurSys m2solv;
@@ -191,9 +191,6 @@ public :
   void init_m1_3d() const;
   mutable IntTab m1deb, m1ji; //reconstruction de m1 par (m1ji(.,0), m1ci)[m1deb(a), m1deb(a + 1)[ (sommets en 2D, aretes en 3D); m1ji(.,1) contient le numero d'element
   mutable DoubleTab m1ci;
-  void init_m1solv() const; //pour resoudre
-  mutable Matrice_Morse_Sym m1mat; //matrice et solveur pour resoudre m1.w = s
-  mutable SolveurSys m1solv;
 
   //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;

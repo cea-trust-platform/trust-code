@@ -87,27 +87,6 @@ int Assembleur_P_PolyMAC::assembler_rho_variable(Matrice& la_matrice, const Cham
   */
 }
 
-/* calcule la matrice W^e = (M_2^e)^-1, inverse de la partie de la matrice M2 provenant de l'element e */
-inline void get_W(const Zone_PolyMAC &zone, const DoubleVect diag, int e, DoubleTab &W)
-{
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int i, j, f, n_f, k, done, infoo;
-
-  for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) n_f++;
-  W.resize(n_f, n_f);
-  for (i = 0, W = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++)
-    if (zone.m2ji(j, 1) == e) for (k = 0, done = 0; !done && k < n_f; k++) if (zone.m2ji(j, 0) == e_f(e, k))
-      W(i, k) = zone.m2ci(j) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(zone.m2ji(j, 0), 0) ? 1 : -1), done = 1;
-  //modification de la diagonale
-  for (i = 0; diag.size() && i < n_f; i++) W(i, i) += diag(e_f(e, i));
-
-  //inverse de m2 -> Cholesky. Lapack + on remplit la partie T sup (T inf en Fortran) a la main
-  char uplo = 'U';
-  F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-  F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-  for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
-}
-
 int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
 {
   set_resoudre_increment_pression(incr_pression);
@@ -122,11 +101,11 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   int i, j, k, e, f, fb, n_f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot(),
-      na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), found;
+      na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), infoo;
   zone.init_m2(), ch.init_cl();
 
-  DoubleTrav W(e_f.dimension(1), e_f.dimension(1));
-  W.set_smart_resize(1);
+  DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
+  W.set_smart_resize(1), W0.set_smart_resize(1);
 
   /* 1. stencils de la matrice en pression et de rec : seulement au premier passage */
   if (!stencil_done)
@@ -135,12 +114,11 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
       stencil_M.set_smart_resize(1), stencil_R.set_smart_resize(1);
       for (e = 0; e < ne_tot; e++)
         {
-          get_W(zone, diag, e, W), n_f = W.dimension(0);
-          for (i = 0; i < n_f; i++)
+          for (i = 0, j = zone.m2d(e), n_f = zone.m2d(e + 1) - zone.m2d(e); i < n_f; i++, j++)
             {
-              for (j = 0; (f = e_f(e, i)) < nf && j < n_f; j++) if (dabs(W(i, j)) > 1e-6 / ve(e))
+              for (k = zone.w2i(j), f = e_f(e, i); f < nf && k < zone.w2i(j + 1); k++)
               {
-                fb = e_f(e, j);
+                fb = e_f(e, zone.w2j(k));
                 if (f <= fb) stencil_M.append_line(ne_tot + f, ne_tot + fb);
                 if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
               }
@@ -169,22 +147,32 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   /* 2. remplissage des coefficients */
   for (e = 0; e < ne_tot; e++)
     {
-      get_W(zone, diag, e, W), n_f = W.dimension(0);
+      n_f = zone.m2d(e + 1) - zone.m2d(e), W0.resize(n_f, n_f), W.resize(n_f, n_f);
+      for (i = 0, j = zone.m2d(e), W0 = 0; i < n_f; i++, j++) for (k = zone.w2i(j); k < zone.w2i(j + 1); k++) W0(i, zone.w2j(k)) = zone.w2c(k);
+      if (!diag.size()) W = W0; //pas de correction diagonale -> on prend W telle quelle
+      else //correction diagonale -> on re-inverse m2 + diag
+        {
+          //matrice m2 + correction diagonale
+          for (i = 0, j = zone.m2d(e), W = 0; i < n_f; i++, j++) for (k = zone.m2i(j); k < zone.m2i(j + 1); k++) W(i, zone.m2j(k)) = zone.m2c(k);
+          for (i = 0; i < n_f; i++) W(i, i) += diag(e_f(e, i)) / ve(e);
+          //inversion par Cholesky (Lapack) + annulation des petits coeffs + remplissage a la main de la partir triangulaire inf
+          char uplo = 'U';
+          F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
+          F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
+          for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
+          for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (W0(i, j) == 0) W(i, j) = 0;
+        }
 
       //remplissage de la matrice en (dPe, dPf)
       //sur les CLs de Neumann, on remplace l'equation sur dPf par dPf = 0 et on retire dPf des autres equations (pour symetrie)
       double mee, mef, mff, rfe, rff; //a ajouter a m[e][e], m[e][f] / m[f][e], m[f][f'], r[f][e], r[f][f']
       for (i = 0, mee = 0; i < n_f; mee += mef, i++)
         {
-          for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
+          for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; f < nf && j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
           {
-            fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / pf(f) : 0;
-            //W(i, j) est-il dans le stencil?
-            for (k = tab1(ne_tot + min(f, fb)) - 1, found = 0; !found && k < tab1(ne_tot + min(f, fb) + 1) - 1 && tab2(k) - 1 <= ne_tot + max(f, fb); k++)
-              if (tab2(k) - 1 == ne_tot + max(f, fb)) found = 1;
-            if (!found) continue;
-            if (ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1 && f <= fb) mat(ne_tot + f, ne_tot + fb) += mff;
-            else if (f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
+            fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
+            if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1 && f <= fb) mat(ne_tot + f, ne_tot + fb) += mff;
+            else if (ch.icl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
             if (rff && f < nf) rec(f, ne_tot + fb) += rff;
           }
           if (ch.icl(f, 0) != 1 && (e < ne || f < nf)) mat(e, ne_tot + f) -= mef;

@@ -1041,33 +1041,41 @@ void Zone_PolyMAC::init_m2() const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
-  int i, j, k, e, f, n_f;
+  int i, j, e, f, fb, n_f, infoo;
+  char uplo = 'U';
 
-  if (m2deb.dimension(0)) return;
-  init_ve();
-  Cerr << zone().domaine().le_nom() << " : initialisation de m2... ";
-  std::vector<std::map<std::array<int, 2>, double>> m2(nb_faces_tot());
+  if (m2d.dimension(0)) return;
+  m2d.set_smart_resize(1), m2i.set_smart_resize(1), m2j.set_smart_resize(1), m2c.set_smart_resize(1);
+  w2i.set_smart_resize(1), w2j.set_smart_resize(1), w2c.set_smart_resize(1);
+  Cerr << zone().domaine().le_nom() << " : initialisation de m2/w2... ";
 
-  DoubleTab M, N;
-  M.set_smart_resize(1), N.set_smart_resize(1);
-  std::map<int, int> idxf;
-  for (e = 0; e < nb_elem_tot(); e++, idxf.clear())
+  DoubleTab M, N, W;
+  M.set_smart_resize(1), N.set_smart_resize(1), W.set_smart_resize(1);
+  for (e = 0, m2d.append_line(0), m2i.append_line(0), w2i.append_line(0); e < nb_elem_tot(); e++, m2d.append_line(m2i.size() - 1))
     {
-      /* matrice non stabilisee */
-      for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) idxf[f] = i, n_f++;
+      for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) n_f++;
       M.resize(n_f, n_f), N.resize(dimension, n_f);
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (k = vedeb(e); k < vedeb(e + 1); k++)
-          M(i, idxf[veji(k)]) = dot(&xv_(f, 0), &veci(k, 0), &xp_(e, 0)) * fs(f) * (e == f_e(f, 0) ? 1 : -1) / ve(e);
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < dimension; j++) N(j, i) = face_normales()(f, j) / fs(f);
-      /* stabilisation et stockage */
+
+      /* matrice non stabilisee, normales sortantes et stabilisation */
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
+        f = e_f(e, i), fb = e_f(e, j), M(i, j) = fs(f) * fs(fb) * dot(&xv_(fb, 0), &xv_(f, 0), &xp_(e, 0), &xp_(e, 0)) / (ve(e) * ve(e));
+      for (i = 0; i < n_f; i++) for (j = 0; j < dimension; j++) f = e_f(e, i), N(j, i) = face_normales()(f, j) / fs(f) * (e == f_e(f, 0) ? 1 : -1);
       ajouter_stabilisation(M, N);
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(M(i, j)) > 1e-8) m2[e_f(e, i)][ {{e_f(e, j), e }}] += M(i, j) * ve(e);
+
+      /* W2 : inverse de M2 */
+      W = M;
+      F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
+      F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
+      for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
+
+      /* stockage de M2 et W2 */
+      for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0; j < n_f; j++)
+        if (dabs(M(i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(M(i, j));
+      for (i = 0; i < n_f; i++, w2i.append_line(w2j.size())) for (j = 0; j < n_f; j++)
+        if (dabs(W(i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(W(i, j));
+      assert(m2i.size() == w2i.size());
     }
-  //remplissage
-  m2deb.resize(1), m2deb.set_smart_resize(1), m2ji.resize(0, 2), m2ji.set_smart_resize(1), m2ci.set_smart_resize(1);
-  for (f = 0; f < nb_faces_tot(); f++, m2deb.append_line(m2ji.dimension(0))) for (auto &&kv : m2[f])
-      m2ji.append_line(kv.first[0], kv.first[1]), m2ci.append_line(kv.second);
-  CRIMP(m2deb), CRIMP(m2ji), CRIMP(m2ci);
+  CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
   Process::barrier();
   Cerr << "OK" << finl;
 }
@@ -1236,33 +1244,28 @@ void Zone_PolyMAC::init_m1() const
 }
 
 /* initisalisation de solveurs lineaires pour inverser m1 ou m2 */
-static void init_mat(const IntTab& deb, const IntTab& ji, const DoubleTab& ci, Matrice_Morse_Sym& mat, SolveurSys& solv, int ntot)
-{
-  int i, j;
-  if (solv.non_nul()) return;
-  /* stencil et allocation */
-  IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
-  for (i = 0; i + 1 < deb.dimension(0); i++) for (j = deb(i); j < deb(i + 1); j++) if (i <= ji(j, 0)) stencil.append_line(i, ji(j, 0));
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_symmetric_morse_matrix(ntot, stencil, mat);
-
-  /* remplissage */
-  for (i = 0; i + 1 < deb.dimension(0); i++) for (j = deb(i); j < deb(i + 1); j++) if (i <= ji(j, 0)) mat(i, ji(j, 0)) += ci(j);
-  mat.set_est_definie(1);
-
-  char lu[] = "Petsc Cholesky { quiet }";
-  EChaine ch(lu);
-  ch >> solv;
-}
-
 void Zone_PolyMAC::init_m2solv() const
 {
   init_m2();
-  return init_mat(m2deb, m2ji, m2ci, m2mat, m2solv, nb_faces_tot());
-}
-void Zone_PolyMAC::init_m1solv() const
-{
-  init_m1();
-  return init_mat(m1deb, m1ji, m1ci, m1mat, m1solv, dimension < 3 ? zone().nb_som_tot() : zone().nb_aretes_tot());
+  if (m2solv.non_nul()) return;
+  /* stencil et allocation */
+  const IntTab &e_f = elem_faces(), &f_e = face_voisins();
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+  int e, i, j, k, f, fb;
+  for (e = 0; e < nb_elem_tot(); e++) for (i = 0, j = m2d(e); j < m2d(e + 1); i++, j++)
+    for (f = e_f(e, i), k = m2i(j); f < nb_faces() && k < m2i(j + 1); k++) if (f <= (fb = e_f(e, m2j(k))))
+      stencil.append_line(f, fb);
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_symmetric_morse_matrix(nb_elem_tot() + nb_faces_tot(), stencil, m2mat);
+
+  /* remplissage */
+  for (e = 0; e < nb_elem_tot(); e++) for (i = 0, j = m2d(e); j < m2d(e + 1); i++, j++)
+    for (f = e_f(e, i), k = m2i(j); f < nb_faces() && k < m2i(j + 1); k++) if (f <= (fb = e_f(e, m2j(k))))
+      m2mat(f, fb) += (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * volumes(e) * m2c(k);
+  m2mat.set_est_definie(1);
+
+  char lu[] = "Petsc Cholesky { quiet }";
+  EChaine ch(lu);
+  ch >> m2solv;
 }

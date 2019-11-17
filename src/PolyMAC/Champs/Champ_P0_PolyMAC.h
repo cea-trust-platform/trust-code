@@ -78,32 +78,21 @@ protected :
 inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   /* dimensionnement du tableau de destination x si necessaire */
-  const DoubleTab& src = valeurs(), *nu = NULL, *nu_fac = NULL;
+  const DoubleTab& src = valeurs();
   const Front_VF& fvf = ref_cast(Front_VF, fr);
-  const Operateur_base& op_diff = equation().operateur(0).l_op_base(); //pour acceder a la diffusivite
-  if (&equation().inconnue().valeur() == this && sub_type(Op_Diff_PolyMAC_base, op_diff))
-    nu = &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu(), nu_fac = &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu_fac();
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, zone_dis_base());
   const IntTab& f_e = zone.face_voisins();
-  zone.init_m2();
 
   DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)
-  int i, j, n, e, f, N = src.nb_dim() > 1 ? src.dimension(1): 1, N_nu = nu ? nu->line_size() : 0;
+  int i, n, e, f, N = src.nb_dim() > 1 ? src.dimension(1): 1, has_faces = src.dimension_tot(0) > zone.nb_elem_tot();
   if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
   N > 1 ? dst.resize(zone.nb_faces(), N) : dst.resize(zone.nb_faces()); //aargh
   for (i = 0; i < fvf.nb_faces(); i++) for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++)
-      dst.addr()[N * f + n] = src.addr()[N * e + n]; //on part de la valeur en l'element voisin
+      dst.addr()[N * f + n] = src.addr()[N * (has_faces ? zone.nb_elem_tot() + f : e) + n];
 
-  if (src.dimension_tot(0) > zone.zone().nb_elem_tot() && nu) //si on a les flux aux faces, on corrige avec m2
-    for (i = 0; i < fvf.nb_faces(); i++) for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++) for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++)
-          dst.addr()[N * f + n] -= src.addr()[N * (zone.nb_elem_tot() + zone.m2ji(j, 0)) + n] * zone.m2ci(j) / zone.face_surfaces(f)
-                                   * (nu && nu->addr()[N_nu > 1 ? N * e + n : e] > 1e-12 ? 1. / (nu->addr()[N_nu > 1 ? N * e + n : e] * (*nu_fac)(f)) : 0);
+  if (distant) fr.frontiere().trace_face_distant(dst, x);
+  else fr.frontiere().trace_face_local(dst, x);
 
-  if (distant)
-    fr.frontiere().trace_face_distant(dst, x);
-  else
-    fr.frontiere().trace_face_local(dst, x);
-  // useless ? x.echange_espace_virtuel();
   return x;
 }
 

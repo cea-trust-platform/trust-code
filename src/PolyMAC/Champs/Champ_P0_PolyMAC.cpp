@@ -181,24 +181,17 @@ DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, zone_dis_base());
   const IntTab& f_e = zone.face_voisins();
-  const Operateur_base& op_diff = equation().operateur(0).l_op_base(); //pour acceder a la diffusivite
-  //si le champ est l'inconnue d'un probleme scalaire, alors les flux sont normalises par la diffusivite
-  const DoubleTab& src = valeurs(), *nu = NULL, *nu_fac = NULL;
-  if (&equation().inconnue().valeur() == this && sub_type(Op_Diff_PolyMAC_base, op_diff))
-    nu = &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu(), nu_fac = &ref_cast(Op_Diff_PolyMAC_base, op_diff).get_nu_fac();
+  const DoubleTab& src = valeurs();
 
   /* vals doit etre pre-dimensionne */
-  int i, j, e, f, n, nv, N = (src.nb_dim() == 1 ? 1 : src.dimension(1)), N_nu = nu ? nu->line_size() : 0;
+  int i, e, f, n, N = (src.nb_dim() == 1 ? 1 : src.dimension(1));
   assert(dst.dimension(0) == zone.xv().dimension(0) && N == (dst.nb_dim() == 1 ? 1 : dst.dimension(1)));
-  zone.init_m2();
 
-  for (f = 0; f < dst.dimension(0); f++) for (i = 0, nv = 1 + (f_e(f, 1) >= 0); i < 2 && (e = f_e(f, i)) >= 0; i++) //boucle sur les voisins de chaque face
-      {
-        for (n = 0; n < N; n++) dst.addr()[N * f + n] += src.addr()[N * e + n] / nv;//partie "valeur en l'element"
-        //partie "gradient" : avec les flux
-        if (src.dimension_tot(0) > zone.nb_elem_tot() && nu) for (j = zone.m2deb(f); j < zone.m2deb(f + 1); j++) if (zone.m2ji(j, 1) == e) for (n = 0; n < N; n++)
-                dst.addr()[N * f + n] -= (i ? -1 : 1) * src.addr()[N * (zone.nb_elem_tot() + zone.m2ji(j, 0)) + n] * zone.m2ci(j) / zone.face_surfaces(f)
-                                         * (nu->addr()[N_nu > 1 ? N * e + n : e] > 1e-12 ? 1. / (nu->addr()[N_nu > 1 ? N * e + n : e] * (*nu_fac)(f)) : 0) / nv;
-      }
+  if (src.dimension_tot(0) > zone.nb_elem_tot()) //on a les valeurs aux faces
+    for (f = 0; f < dst.dimension(0); f++) for (n = 0; n < N; n++) dst.addr()[N * f + n] = src.addr()[N * (zone.nb_elem_tot() + f) + n];
+  else for (f = 0; f < dst.dimension(0); f++) //on prend (amont + aval) / 2
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
+          dst.addr()[N * f + n] += src.addr()[N * e + n] * (f < zone.premiere_face_int() ? 1 : 0.5);
+
   return dst;
 }

@@ -34,9 +34,13 @@
 #include <Matrix_tools.h>
 #include <Champ_P0_PolyMAC.h>
 #include <Modele_turbulence_scal_base.h>
+#include <Synonyme_info.h>
 #include <cmath>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Elem, "Op_Diff_PolyMAC_Elem|Op_Dift_PolyMAC_P0_PolyMAC", Op_Diff_PolyMAC_base ) ;
+Add_synonym(Op_Diff_PolyMAC_Elem, "Op_Diff_PolyMAC_var_Elem");
+Add_synonym(Op_Diff_PolyMAC_Elem, "Op_Dift_PolyMAC_var_P0_PolyMAC");
+
 
 Sortie& Op_Diff_PolyMAC_Elem::printOn( Sortie& os ) const
 {
@@ -72,25 +76,30 @@ void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
-  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
+  const IntTab& e_f = zone.elem_faces();
+  int i, j, k, l, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
 
   zone.init_m2();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  /* blocs superieurs de la matrice : divergence */
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-      for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * (ne_tot + f) + n);
-  /* blocs inferieurs de la matrice : grad T = M2 / nu sauf aux faces de bord de Neumann */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4)
-      {
-        //gradient
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) stencil.append_line(N * (ne_tot + f) + n, N * e + n);
-        //m2
-        for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (n = 0; n < N; n++)
-            stencil.append_line(N * (ne_tot + f) + n, N * (ne_tot + zone.m2ji(i, 0)) + n);
-      }
+  for (e = 0; e < zone.nb_elem_tot(); e++)
+    {
+      //dependance en les Te : diagonale -> faces autour de chaque element
+      if (e < zone.nb_elem()) for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * e + n);
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; f < zone.nb_faces() && n < N; n++)
+        stencil.append_line(N * (ne_tot + f) + n, N * e + n);
+
+      //dependence en les Tf
+      for (j = 0, k = zone.m2d(e); k < zone.m2d(e + 1); j++, k++) for (f = e_f(e, j), l = zone.w2i(k); l < zone.w2i(k + 1); l++)
+        {
+          //blocs superieurs : divergence
+          for (n = 0; e < zone.nb_elem() && n < N; n++) stencil.append_line(N * e + n, N * (ne_tot + e_f(e, zone.w2j(l))) + n);
+
+          //blocs inferieurs : continuite
+          for (n = 0; f < zone.nb_faces() && n < N; n++) stencil.append_line(N * (ne_tot + f) + n, N * (ne_tot + e_f(e, zone.w2j(l))) + n);
+        }
+    }
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(N * (ne_tot + nf_tot), N * (ne_tot + nf_tot), stencil, mat);
@@ -117,47 +126,49 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& 
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
-  const DoubleVect& fs = zone.face_surfaces();
-  const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
-  assert(N_nu == 1 || N_nu == N);
+  const IntTab& e_f = zone.elem_faces();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
+  int i, j, k, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
+  double fac;
 
   remplir_nu(nu_), remplir_nu_fac();
-  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++) nu_fac.addr()[N * f + n] *= (*fac_mod)(f);
+  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) nu_fac.addr()[f] *= (*fac_mod)(f);
 
-  /* blocs superieurs de la matrice : divergence hors Neumann */
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4 && n < N; n++)
-        resu(N * e + n) -= fs(f) * nu_fac(f) * (e == f_e(f, 0) ? 1 : -1) * inco.addr()[N * (ne_tot + f) + n];
+  DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
+  flux_bords_ = 0;
+  for (e = 0; e < ne_tot; e++)
+    {
+      int n_f = zone.m2d(e + 1) - zone.m2d(e); //nombre de faces de l'element e
+      /* 1. diffusivites dans l'element e : nu_ef */
+      for (i = 0; i < n_f; i++)
+        {
+          f = e_f(e, i);
+          /* diffusivite de chaque composante dans la direction (xf - xe) */
+          if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
+          else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) //anisotrope diagonal
+            nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
+          else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
+            nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
+          else abort();
+          for (n = 0, fac = nu_fac.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
+        }
 
-  /* blocs inferieurs de la matrice : - grad T - m2 / nu sauf si Neumann */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4)
-      {
-        // grad T : si Echange_impose_base, on ne remplit que si h > 0
-        for (n = 0; n < N; n++) if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0) for (i = 0; i < 2; i++)
-              {
-                if ((e = f_e(f, i)) >= 0)
-                  resu.addr()[N * (ne_tot + f) + n] += (i ? 1 : -1) * fs(f) * nu_fac(f) * inco.addr()[N * e + n];
-                else if (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2) //Echange_impose_base
-                  resu.addr()[N * (ne_tot + f) + n] += fs(f) * nu_fac(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n);
-                else if (ch.icl(f, 0) == 5) //Dirichlet
-                  resu.addr()[N * (ne_tot + f) + n] += fs(f) * nu_fac(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
-              }
-
-        // m2 / nu : attention a ne pas remplir si Echange_impose_base avec h == 0
-        for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (n = 0, fb = zone.m2ji(i, 0); n < N; n++)
-            if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
-              {
-                double fac = zone.m2ci(i) / nu_.addr()[N_nu > 1 ? N * zone.m2ji(i, 1) + n : zone.m2ji(i, 1)];
-                if (f == fb && (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2)) //si Echange_impose_base : on modifie le terme diagonal
-                  fac = (ch.icl(f, 0) == 1) * fac + fs(f) / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-                resu.addr()[N * (ne_tot + f) + n] += fac * inco.addr()[N * (ne_tot + fb) + n];
-              }
-            else resu.addr()[N * (ne_tot + f) + n] += inco.addr()[N * (ne_tot + f) + n];
-      }
-
-  /* remplissage de flux_bords */
-  for (f = 0; f < zone.premiere_face_int(); f++) for (n = 0; n < N; n++) flux_bords_(f, n) = fs(f) * nu_fac(f) * inco.addr()[N * (ne_tot + f) + n];
+      /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
+      for (i = 0, mee = 0; i < n_f; i++, mee += mfe)
+        {
+          for (f = e_f(e, i), j = zone.w2i(zone.m2d(e) + i), mfe = 0; j < zone.w2i(zone.m2d(e) + i + 1); j++, mfe += mff)
+            {
+              for (fb = e_f(e, zone.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * zone.w2c(j); n < N; n++) mff(n) = fac * nu_ef(zone.w2j(j), n);
+              for (n = 0; ch.icl(f, 0) < 5 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
+              for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
+              for (n = 0; n < N; n++) resu.addr()[N * e + n] += mff(n) * inco.addr()[N * (ne_tot + fb) + n];
+            }
+          for (n = 0; ch.icl(f, 0) < 5 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] += mfe(n) * inco.addr()[N * e + n];
+          for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) += mfe(n) * inco.addr()[N * e + n];
+        }
+      for (n = 0; n < N; n++) resu.addr()[N * e + n] -= mee(n) * inco.addr()[N * e + n];
+    }
 
   return resu;
 }
@@ -177,37 +188,47 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
-  const DoubleVect& fs = zone.face_surfaces();
-  const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  int i, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
-  assert(N_nu == 1 || N_nu == N);
+  const IntTab& e_f = zone.elem_faces();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
+  int i, j, k, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
+  double fac;
 
   remplir_nu(nu_), remplir_nu_fac();
-  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++) nu_fac.addr()[N * f + n] *= (*fac_mod)(f);
+  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) nu_fac.addr()[f] *= (*fac_mod)(f);
 
-  /* blocs superieurs de la matrice : divergence hors Neumann */
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4 && n < N; n++)
-        if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
-          matrice(N * e + n, N * (ne_tot + f) + n) += fs(f) * nu_fac(f) * (e == f_e(f, 0) ? 1 : -1);
+  DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
 
-  /* blocs inferieurs de la matrice : grad T = M2 / nu sauf si Neumann ou Echange_impose_base avec h = 0 */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) != 3 && ch.icl(f, 0) != 4)
-      {
-        /* - grad T */
-        for (n = 0; n < N; n++) if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
-            for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0) matrice(N * (ne_tot + f) + n, N * e + n) -= (i ? 1 : -1) * fs(f) * nu_fac(f);
-        /* - m2 / nu */
-        for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) for (n = 0, fb = zone.m2ji(i, 0); n < N; n++)
-            if ((ch.icl(f, 0) != 1 && ch.icl(f, 0) != 2) || ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) > 0)
-              {
-                double fac = zone.m2ci(i) / nu_.addr()[N_nu > 1 ? N * zone.m2ji(i, 1) + n : zone.m2ji(i, 1)];
-                if (f == fb && (ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2)) //si Echange_impose_base : on modifie le terme diagonal
-                  fac = (ch.icl(f, 0) == 1) * fac + fs(f) / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-                matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) -= fac;
-              }
-            else matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) -= (f == fb); //Echange_impose_base avec h = 0 -> 1 sur la diagonale (comme Neumann)
-      }
+  for (e = 0; e < ne_tot; e++)
+    {
+      int n_f = zone.m2d(e + 1) - zone.m2d(e); //nombre de faces de l'element e
+      /* 1. diffusivites dans l'element e : nu_ef */
+      for (i = 0; i < n_f; i++)
+        {
+          f = e_f(e, i);
+          /* diffusivite de chaque composante dans la direction (xf - xe) */
+          if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
+          else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) //anisotrope diagonal
+            nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
+          else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
+            nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
+          else abort();
+          for (n = 0, fac = nu_fac.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
+        }
+
+      /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
+      for (i = 0, mee = 0; i < n_f; i++, mee += mfe)
+        {
+          for (f = e_f(e, i), j = zone.w2i(zone.m2d(e) + i), mfe = 0; j < zone.w2i(zone.m2d(e) + i + 1); j++, mfe += mff)
+            {
+              for (fb = e_f(e, zone.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * zone.w2c(j); n < N; n++) mff(n) = fac * nu_ef(zone.w2j(j), n);
+              for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 5 && ch.icl(fb, 0) < 5 && n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
+              for (n = 0; e < zone.nb_elem() && ch.icl(fb, 0) < 5 && n < N; n++) matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
+            }
+          for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 5 && n < N; n++) matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
+        }
+      for (n = 0; e < zone.nb_elem() && n < N; n++) matrice(N * e + n, N * e + n) += mee(n);
+    }
 }
 
 void Op_Diff_PolyMAC_Elem::modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const
