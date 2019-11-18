@@ -4,9 +4,9 @@
 # Solution Analytique :
  Urayon = 0
 
-               R�  4   r   
+               RÂ²  4   r   
  Uteta = omega./.( / - / ) 
-               3   r   R�  
+               3   r   RÂ²  
 
             10                        
  Moment_z = / .Pi.R.mu = 3.1415927e-7 

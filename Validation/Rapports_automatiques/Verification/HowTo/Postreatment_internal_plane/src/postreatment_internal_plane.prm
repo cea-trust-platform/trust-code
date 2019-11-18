@@ -57,7 +57,7 @@ Chapter {
 		Normal3d -0.08933902773376151 -0.8452608401754738 0.526832658620779
 		Up3D 0.009723968123926105 0.5045979651147583 0.863299680323102
 		Cycles 0
-		# On récupère min et max de Vn
+		# On rÃ©cupÃ¨re min et max de Vn
 		Instruction_visit SetTimeSliderState(0) #TimeSliderGetNStates()-1
 		Instruction_visit DrawPlots()
 		Instruction_visit f=open("Coupe1_extrm_vn_trust","w")
@@ -77,7 +77,7 @@ Chapter {
 		Normal3d -0.08933902773376151 -0.8452608401754738 0.526832658620779
 		Up3D 0.009723968123926105 0.5045979651147583 0.863299680323102
 		Cycles 0
-		# on récupère Min et Max
+		# on rÃ©cupÃ¨re Min et Max
 		Instruction_visit SetTimeSliderState(0)
 		Instruction_visit DrawPlots()
 		Instruction_visit f=open("Coupe1_extrm_trust","w")
@@ -102,7 +102,7 @@ Chapter {
 		Instruction_visit AddPlot("Vector", "v_proj_horiz", 1, 0)
 		Operator Slice2D 0 0 0.1 0 0 1
 		
-		# on récupère Min et Max
+		# on rÃ©cupÃ¨re Min et Max
 		Instruction_visit SetTimeSliderState(0)
 		Instruction_visit DrawPlots()
 		Instruction_visit f=open("Coupe1_extrm_visit","w")
@@ -114,18 +114,18 @@ Chapter {
 	}
 
 	Visu { 
-		#On récupère le débit et min et max 		
+		#On rÃ©cupÃ¨re le dÃ©bit et min et max 		
 		Width 0cm
 		Pseudocolor cylindre_tourbillon.lata dom VITESSE_Z ELEM
 		Operator Slice2D 0 0 0.1 0 0 1
 
 		Instruction_visit f=open("Coupe1_debit","w")
-		# on récupère le débit calculé sur coupe 1 avec trust
+		# on rÃ©cupÃ¨re le dÃ©bit calculÃ© sur coupe 1 avec trust
 		Instruction_visit fichierDebT=open("cylindre_tourbillon_DEBIT_PLAN1.son","r")
 		Instruction_visit DebT=fichierDebT.read()
 		Instruction_visit f.write(DebT[len(DebT)-15:len(DebT)-1])
 
-		# on calcul le débit avec visit
+		# on calcul le dÃ©bit avec visit
 		Instruction_visit SetTimeSliderState(0)
 		Instruction_visit DrawPlots()
 		Instruction_visit Query("Average Value")
@@ -133,7 +133,7 @@ Chapter {
 		Instruction_visit f.write(" "+str(res))
 		Instruction_visit f.close()
 
-		# On récupère min et max de Vn
+		# On rÃ©cupÃ¨re min et max de Vn
 		Instruction_visit f=open("Coupe1_extrm_vn_visit","w")
 		Instruction_visit Query("Min", use_actual_data=1)
 		Instruction_visit f.write(str(GetQueryOutputValue()))
@@ -146,8 +146,8 @@ Chapter {
 
 	
 Chapter {
-	Title "How to postreat a 45° sideway cut plane"
-	Description "\latex_(A sideway cut plane is made at 45° in the cylinder, and the total speed, normal velocity, and tangential velocity to the plane are observed. In the following, this cut plane is called 'coupe2'.\latex_)"
+	Title "How to postreat a 45Â° sideway cut plane"
+	Description "\latex_(A sideway cut plane is made at 45Â° in the cylinder, and the total speed, normal velocity, and tangential velocity to the plane are observed. In the following, this cut plane is called 'coupe2'.\latex_)"
 #	Description " We initially impose a speed composed of a rotation around the $(Oz)$ to $\omega = 20 rad/s$ axis and a parabolic profile corresponding to the analytical solution of a laminar flow in a tube according to $(Oz)$."
 
 	Visu {
@@ -269,12 +269,12 @@ Chapter {
 	}
 
 	Visu {
-		#on récupère le débit de référence (sur tout le volume)
+		#on rÃ©cupÃ¨re le dÃ©bit de rÃ©fÃ©rence (sur tout le volume)
 		Width 0cm
 		Pseudocolor cylindre_tourbillon.lata dom VITESSE_Z ELEM
 
 		Instruction_visit f=open("Global_debit","w")
-		# on récupère le débit calculé par trust
+		# on rÃ©cupÃ¨re le dÃ©bit calculÃ© par trust
 		#Instruction_visit fichierDebR=open("cylindre_tourbillon_pb_Debit.out","r")
 		#Instruction_visit DebR=fichierDebR.read()
 		#Instruction_visit f.write(DebR[11:20])
@@ -284,7 +284,7 @@ Chapter {
 		Instruction_visit f.write(fichierDebR.read())
 		Instruction_visit fichierDebR.close()		
 
-		# on calcul le débit avec visit
+		# on calcul le dÃ©bit avec visit
 		Instruction_visit SetTimeSliderState(0)
 		Instruction_visit DrawPlots()
 		Instruction_visit Query("Average Value")

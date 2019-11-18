@@ -127,8 +127,8 @@ Read pb
         methode weighted_average sources_reference { Vz_e }
       }
 
-      # on calcule E[Vz^2] ie le double de l'énergie cinétique massique moyenne. 
-      Il suffit de soustraire E[Vz]^2 pour avoir l'écart type recherché #
+      # on calcule E[Vz^2] ie le double de l'Ã©nergie cinÃ©tique massique moyenne. 
+      Il suffit de soustraire E[Vz]^2 pour avoir l'Ã©cart type recherchÃ© #
       Ecm reduction_0d
       {
         methode weighted_average
@@ -216,7 +216,7 @@ Read pb
           sources_reference { Vz1 }
         }
 
-        # On a rho=1 donc le débit à travers la surface est la moyenne #
+        # On a rho=1 donc le dÃ©bit Ã  travers la surface est la moyenne #
         debit_plan1 reduction_0d { methode weighted_average sources_reference { Vz1 } }
 
         # energie cinetique massique ie esperance de la vitesse au carre #
@@ -301,7 +301,7 @@ Read pb
             domaine plan_2 localisation elem sources_reference { vs2_plan2 }
           }
 
-          # On a rho=1 donc le débit à travers la surface est la moyenne #
+          # On a rho=1 donc le dÃ©bit Ã  travers la surface est la moyenne #
           debit_plan2 Transformation
           {
             methode norme

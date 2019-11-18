@@ -1,7 +1,7 @@
 # SIMULATION DE POISEUILLE DANS UN CANAL 2D : profil de vitesse demi-poiseuille (symetrie) #
 # PARALLEL OK 8 #
-# u(y)=Umax(1-y�/Y�) #
-#     =3*0.5/2*(1-y�/4) #
+# u(y)=Umax(1-yÂ²/YÂ²) #
+#     =3*0.5/2*(1-yÂ²/4) #
 # y : coordonnee suivant y #
 # Y : coordonnee y max = 2 #
 # U : Vitesse u max = 3/2 Umoy #

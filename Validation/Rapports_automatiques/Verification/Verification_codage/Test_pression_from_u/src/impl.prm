@@ -9,7 +9,7 @@ Chapter {
 	Title Cas avec champ_front_from_u
 	# definition figure 0
 	Figure {
-		Title "Tracé de la pression de sortie  au cours du temps"
+		Title "TracÃ© de la pression de sortie  au cours du temps"
 		labelX "s"
 		labelY "Pa"
 		Include_Description_Curves 0
@@ -29,7 +29,7 @@ Chapter {
 	}
 	# definition figure 1
 	Figure {
-		Title "Tracé de la pression de sortie  au cours du temps"
+		Title "TracÃ© de la pression de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY "Pa"
@@ -50,7 +50,7 @@ Chapter {
 	}
 	# definition figure 2
 	Figure {
-		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "TracÃ© de la vitesse moyenne de sortie  au cours du temps"
 		labelX "s"
 		labelY u_moy
 		Include_Description_Curves 0
@@ -70,7 +70,7 @@ Chapter {
 	}
 	# definition figure 3
 	Figure {
-		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "TracÃ© de la vitesse moyenne de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY u_moy
@@ -99,7 +99,7 @@ Chapter {
 	Title Cas avec perte charge singulier
 	# definition figure 0
 	Figure {
-		Title "Tracé de la pression de sortie  au cours du temps"
+		Title "TracÃ© de la pression de sortie  au cours du temps"
 		labelX "s"
 		labelY "Pa"
 		Include_Description_Curves 0
@@ -119,7 +119,7 @@ Chapter {
 	}
 	# definition figure 1
 	Figure {
-		Title "Tracé de la pression de sortie  au cours du temps"
+		Title "TracÃ© de la pression de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY "Pa"
@@ -140,7 +140,7 @@ Chapter {
 	}
 	# definition figure 2
 	Figure {
-		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "TracÃ© de la vitesse moyenne de sortie  au cours du temps"
 		labelX "s"
 		labelY u_moy
 		Include_Description_Curves 0
@@ -160,7 +160,7 @@ Chapter {
 	}
 	# definition figure 3
 	Figure {
-		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "TracÃ© de la vitesse moyenne de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY u_moy

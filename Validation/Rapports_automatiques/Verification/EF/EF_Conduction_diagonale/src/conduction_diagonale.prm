@@ -1,18 +1,18 @@
 Parameters {
-	Title "Conduction stationnaire unidimensionnelle sur un domaine non aligné avec les axes du repère"
-	Description "On considère un problème de conduction thermique stationnaire unidimensionnel simple.  Afin de tester le codage en trois dimensions, ce problème est résolu sur un parallélépipède rectangles dont les axes principaux ne sont pas alignés avec les axes du repère.  La solution numérique du problème est comparée à sa solution analytique.  Le calcul est fait en trois dimension bien que le problème soit unidimensionnel afin de détecter des erreurs éventuelles de codaage."
+	Title "Conduction stationnaire unidimensionnelle sur un domaine non alignÃ© avec les axes du repÃ¨re"
+	Description "On considÃ¨re un problÃ¨me de conduction thermique stationnaire unidimensionnel simple.  Afin de tester le codage en trois dimensions, ce problÃ¨me est rÃ©solu sur un parallÃ©lÃ©pipÃ¨de rectangles dont les axes principaux ne sont pas alignÃ©s avec les axes du repÃ¨re.  La solution numÃ©rique du problÃ¨me est comparÃ©e Ã  sa solution analytique.  Le calcul est fait en trois dimension bien que le problÃ¨me soit unidimensionnel afin de dÃ©tecter des erreurs Ã©ventuelles de codaage."
 	Author "D. Jamet"
 	TestCase "." "conduction_diagonale.data"
 	IncludeData 1
 }
 
 Chapter {
-	Title "Champ de température calculé"
-	Description "On compare les champs de température calculé par GENEPI et analytique.  Cette comparaison se fait sur le champ de température tridimensionnel."
+	Title "Champ de tempÃ©rature calculÃ©"
+	Description "On compare les champs de tempÃ©rature calculÃ© par GENEPI et analytique.  Cette comparaison se fait sur le champ de tempÃ©rature tridimensionnel."
 
 	visu {
-                Title "Champ calculé"
-                description "On trace le champ calculé par GENEPI."
+                Title "Champ calculÃ©"
+                description "On trace le champ calculÃ© par GENEPI."
                 mesh ./conduction_diagonale.lata dom 
                 pseudocolor ./conduction_diagonale.lata dom TEMPERATURE SOM
         }
@@ -22,11 +22,11 @@ Chapter {
 
 
 Chapter {
-	Title "Comparaison des champs calculé et analytique"
-	Description "On trace la différence entre le champ calculé par GENEPI et le champ analytique."
+	Title "Comparaison des champs calculÃ© et analytique"
+	Description "On trace la diffÃ©rence entre le champ calculÃ© par GENEPI et le champ analytique."
 
 	visu {
-                Title "Erreur sur le champ calculé"
+                Title "Erreur sur le champ calculÃ©"
                 mesh ./conduction_diagonale.lata dom 
                 instruction_visit DefineScalarExpression("ERREUR_T_SOM_dom","TEMPERATURE_SOM_dom-(coord(dom)[0]/2.0+sqrt(2.0)*coord(dom)[1]/2.0+coord(dom)[2]/2.0+2.0)")
                 pseudocolor ./conduction_diagonale.lata dom ERREUR_T SOM

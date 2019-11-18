@@ -1,6 +1,6 @@
 Parameters {
 	Title "Poiseuille en EF"
-	Description "Calculs menés en EF, delta p impos\'e"
+	Description "Calculs menÃ©s en EF, delta p impos\'e"
 	Author "G.F."
 	TestCase . Pois_impl_3D.data
 }

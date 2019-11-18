@@ -1,6 +1,6 @@
 Parameters {
-	Title "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses en 3D -- Cas linéaire implicite"
-	Description "On impose un champ de vitesse à divergence nulle particulier dans tout le domaine.  On choisit une viscosité variable en espace.  Pour ces deux champs, il est possible de déterminer la solution analytique de la force visqueuse.  Dans le cas particulier du champ de vitesse considéré, la force visqueuse peut s'écrire sous la forme d'un gradient d'un champ scalaire.  Le champ de pression calculé doit donc correspondre à ce champ scalaire."
+	Title "VÃ©rification du transposÃ© du gradient de vitesse dans le tenseur des contraintes visqueuses en 3D -- Cas linÃ©aire implicite"
+	Description "On impose un champ de vitesse Ã  divergence nulle particulier dans tout le domaine.  On choisit une viscositÃ© variable en espace.  Pour ces deux champs, il est possible de dÃ©terminer la solution analytique de la force visqueuse.  Dans le cas particulier du champ de vitesse considÃ©rÃ©, la force visqueuse peut s'Ã©crire sous la forme d'un gradient d'un champ scalaire.  Le champ de pression calculÃ© doit donc correspondre Ã  ce champ scalaire."
 	Author "D. Jamet"
 	TestCase "." "grad_u_transpose_partout_3d_implicite.data"
 	IncludeData 1
@@ -8,11 +8,11 @@ Parameters {
 
 Chapter {
 	Title "Champ de pression"
-	Description "On vérifie que le champ de pression calculé est bien correct."
+	Description "On vÃ©rifie que le champ de pression calculÃ© est bien correct."
 
 	visu {
-                Title "Champ de pression calculé"
-                description "Le champ de pression 3D calculé par GENEPI est tracé."
+                Title "Champ de pression calculÃ©"
+                description "Le champ de pression 3D calculÃ© par GENEPI est tracÃ©."
                 mesh ./grad_u_transpose_partout_3d_implicite.lata dom 
                 Normal3d 0.7 -0.5 0.5
                 Up3D -0.4 0.3 0.9
@@ -20,8 +20,8 @@ Chapter {
         }
 
         visu {
-                Title "Différence entre champ de pression calculé et champ de pression analytique"
-                description "Ce champ doit être nul."
+                Title "DiffÃ©rence entre champ de pression calculÃ© et champ de pression analytique"
+                description "Ce champ doit Ãªtre nul."
                 mesh ./grad_u_transpose_partout_3d_implicite.lata dom 
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(4.*coord(dom)[0]-2.*coord(dom)[1]-2.*coord(dom)[2])")
                 instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","PRESSION_PA_ELEM_dom-P_ANALYTIQUE_ELEM_dom")
