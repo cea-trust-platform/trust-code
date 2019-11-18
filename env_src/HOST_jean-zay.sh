@@ -12,18 +12,6 @@ define_modules_config()
    env=$TRUST_ROOT/env/machine.env
    #
    # Load modules
-   #module="intel-compilers/18.0.1 intel-mpi/18.0.1" # petsc a plante
-   # 14/11/2019 : modules intel-mpi et intel-compilers par defaut sont 19.0.4, je les prends pour la compilation
-   #module="intel-compilers/19.0.4 intel-mpi/19.0.4" # yanshu a deja utilise intel-mpi/19-* pour une compilation de trust 176
-   # avec les 2019 j ai eu l erreur :
-   # [100%] Linking CXX executable /gpfswork/rech/ise/usd69jp/TRUST/TRUST-1.7.9/exec/TRUST_mpi_opt
-   #/usr/bin/ld: /gpfswork/rech/ise/usd69jp/TRUST/TRUST-1.7.9/lib/src/LIBMED/MED/lib/libhdf5.a(H5Ztrans.o): undefined reference to symbol '__svml_udiv4'
-   #/gpfslocalsys/intel/parallel_studio_xe_2019_update4_cluster_edition/compilers_and_libraries_2019.4.243/linux/compiler/lib/intel64/libsvml.so: error adding symbols: DSO missing from command line
-   #collect2: error: ld returned 1 exit status
-   #make[2]: *** [/gpfswork/rech/ise/usd69jp/TRUST/TRUST-1.7.9/exec/TRUST_mpi_opt] Error 1
-   #make[1]: *** [CMakeFiles/TRUST_mpi_opt.dir/all] Error 2
-   #make: *** [all] Error 2
-
    # trust compile avec intel 19.0.2
    module="intel-compilers/19.0.2 intel-mpi/19.0.2"
    #
