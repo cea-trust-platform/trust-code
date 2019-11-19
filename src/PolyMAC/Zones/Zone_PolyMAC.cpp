@@ -976,7 +976,7 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) cons
 
   /* spectre de M */
   kersol(M, b, 1e-12, NULL, x, S);
-  double eps = S(dimension - 1); //vp la plus petite sans stabilisation
+  double l_max = S(0), l_min = S(dimension - 1); //vp la plus petite sans stabilisation
 
   /* D : noyau de N (N.D = 0), de taille n_f * (n_f - dimension) */
   b.resize(dimension, 1), kersol(N, b, 1e-12, &D, x, S);
@@ -1007,7 +1007,7 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) cons
   F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
   assert(infoo == 0);
   //pour garantir des vp plus grandes que eps : S(k) -> max(S(k), eps)
-  for (i = 0, U = 0; i < n_k; i++) for (j = 0; j < n_k; j++) for (k = 0; k < n_k; k++) U(i, j) += V(k, i) * max(S(k), eps) * V(k, j);
+  for (i = 0, U = 0; i < n_k; i++) for (j = 0; j < n_k; j++) for (k = 0; k < n_k; k++) U(i, j) += V(k, i) * min(max(S(k), l_min), l_max) * V(k, j);
 
   /* ajout a M */
   for (i1 = 0; i1 < n_f; i1++) for (i2 = 0; i2 < n_f; i2++) for (j1 = 0; j1 < n_k; j1++) for (j2 = 0; j2 < n_k; j2++)
