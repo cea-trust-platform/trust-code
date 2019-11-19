@@ -351,19 +351,19 @@ check_components()
                            WORKBETA=""
                            if  [ "${machine:0:14}" = "callisto-intel" ]
                            then
-		              [ $TRUST_VERSION = 1.7.9 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.7.9/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.8.0/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
                            then
-		              [ $TRUST_VERSION = 1.7.9 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.9.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.0.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.7.9 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.7.9.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.8.0.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
                            then
-		              [ $TRUST_VERSION = 1.7.9 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.7.9.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.0.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
