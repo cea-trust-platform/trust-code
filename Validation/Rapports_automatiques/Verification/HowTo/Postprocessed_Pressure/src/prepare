@@ -44,7 +44,7 @@ sed -i 's/^\s*//' mean_pression_outlet_probe.txt # supprime les espaces en debut
 liste="PAR_VEF_P0P1_g_muscl PAR_VEF_P0P1_g_negligeable PAR_VEF_P0P1_g_ef_stab PAR_VEF_P0P1_gx_muscl PAR_VEF_P0P1_gx_ef_stab PAR_VEF_P0P1_gx_negligeable"
 for i in $liste
 do
-        mkdir $i
+        mkdir -p $i
         cp mesh_gmsh.med mesh.data $i.data $i
         cp post_run pre_run propertiesGeometry.py $i
         cd $i
