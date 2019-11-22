@@ -3,7 +3,7 @@ Parameters
     Title "Tests de convergence de l'operateur de diffusion aux elements"
 #Pset(_listmesh_ %meshes% )
 #Pset(_listdisplay_ 1 2 3 )
-#Pset(_listdisplayT_ 1 2 3 4 5 6 )
+#Pset(_listdisplayT_ 1 2 3 )
 # bloc testcases #
 
     Author "YG"
