@@ -47,7 +47,7 @@ Chapter {
         Title "Probes localisation on Inlet and Outlet boundaries"
         Description "The meshes are the same on the Inlet and Outlet."
         Description "\latex_(Coordinates of the \textcolor{red}{red} probe: \latex_)"include_text_file(PAR_VEF_P0P1_g_muscl/probe1.txt)
-        Description "\latex_(Coordinates of the \textcolor{green}{green} probe: \latex_)"include_text_file(PAR_VEF_P0P1_g_muscl/probe3.txt)
+        Description "\latex_(Coordinates of the \textcolor{green}{green} probe: \latex_)"include_text_file(PAR_VEF_P0P1_g_muscl/probe2.txt)
         Width       12cm
         mesh        PAR_VEF_P0P1_g_muscl/PAR_VEF_P0P1_g_muscl_P_TOT1DRAWA.son      MESH red
         Instruction_visit m.pointSizePixels=10
