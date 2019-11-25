@@ -1,4 +1,4 @@
-import MEDLoader as ml
+import medcoupling as ml
 from make_mesh import getCartesianMesh
 from Maillage import Maillage
 import numpy as np

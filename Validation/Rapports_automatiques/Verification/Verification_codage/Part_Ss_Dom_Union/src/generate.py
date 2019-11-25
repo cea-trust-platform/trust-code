@@ -1,4 +1,4 @@
-import MEDLoader as mc
+import medcoupling as mc
 
 if __name__ == "__main__":
     m = mc.MEDCouplingCMesh("domaine_glob")
@@ -6,7 +6,7 @@ if __name__ == "__main__":
     da.iota()
     m.setCoords(da, da)
     m = m.buildUnstructured()
-    g1 = mc.DataArrayInt(m.getNumberOfCells() / 2)
+    g1 = mc.DataArrayInt(m.getNumberOfCells() // 2)
     g1.setName("sous_zone_dom1")
     g1.iota()
     g2 = g1.buildComplement(m.getNumberOfCells())

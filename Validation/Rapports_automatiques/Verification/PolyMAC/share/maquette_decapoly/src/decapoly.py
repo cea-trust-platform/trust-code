@@ -1,4 +1,4 @@
-import MEDLoader as ml
+import medcoupling as ml
 from Maillage import Maillage
 import numpy as np
 from scipy import sparse
@@ -15,7 +15,7 @@ np.set_printoptions(suppress=True, linewidth=300, precision=2, threshold=1e10)
 def sortie_med(list_field, t, io, outfile):
     for field in list_field:
         field.setTime(t, io, 0)
-        ml.MEDLoader.WriteFieldUsingAlreadyWrittenMesh(outfile, field)
+        ml.WriteFieldUsingAlreadyWrittenMesh(outfile, field)
     return io + 1
 
 def solve(mcum, out_file, dic_CL, eqs, mesh, vn, P, T, facsec, dt_max):

@@ -1,4 +1,4 @@
-import MEDLoader as ml
+import medcoupling as ml
 import numpy as np
 import scipy
 from scipy import sparse
@@ -386,7 +386,7 @@ class Maillage():
         coords = ml.DataArrayDouble(coo, self.Nf*2, 2)
         pts_fantomes.setCoords(coords)
         pts_fantomes.finishInsertingCells()
-        #ml.MEDLoader.WriteUMesh("output.med", pts_fantomes, False)
+        #ml.WriteUMesh("output.med", pts_fantomes, False)
 
         # ... et les choix d'interpolation
         pts_interp   = ml.MEDCouplingUMesh("interp",1)
@@ -401,7 +401,7 @@ class Maillage():
         coords_I = ml.DataArrayDouble(coo_I, 2 * nb, 2)
         pts_interp.setCoords(coords_I)
         pts_interp.finishInsertingCells()
-        #ml.MEDLoader.WriteUMesh("output.med", pts_interp, False)
+        #ml.WriteUMesh("output.med", pts_interp, False)
 
         print("\rinterpolation : ok                     ", file=sys.stderr)
 

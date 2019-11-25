@@ -1,5 +1,5 @@
 
-import MEDLoader as ml
+import medcoupling as ml
 from math import pi, cos, sin
 
 

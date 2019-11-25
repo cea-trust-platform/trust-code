@@ -16,7 +16,7 @@ def inv(d,i,n):
     d[j]=a
     return d
 for i in range(fac(n)):
-    j=i-(i/(n))*(n)
+    j=i-(i//(n))*(n)
     inv(d,j,n)
  #   print d
     pass
