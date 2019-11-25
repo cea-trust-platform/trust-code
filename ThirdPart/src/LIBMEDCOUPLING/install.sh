@@ -5,6 +5,7 @@
 
 archive_mc=$1
 archive_conf=$2
+tool_dir=`readlink -f $(dirname $0)`
 src_dir=`basename $archive_mc .tar.gz`
 mc_version=`echo $src_dir | sed 's/[^0-9]*\([0-9].[0-9].[0-9]\)/\1/'`
 build_root=$TRUST_ROOT/build/lib
@@ -67,6 +68,9 @@ tar zxf $archive_conf
 echo "Patching DisjointDEC"
 sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.hxx )
 sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.cxx )
+
+echo "Patching findClosestTupleId() method"
+patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 
