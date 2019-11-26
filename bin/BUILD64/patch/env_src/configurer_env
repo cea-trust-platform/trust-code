@@ -934,6 +934,9 @@ then
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 fi
+# clean of the install folder
+rm -r $TRUST_ROOT/exec/python/pkgs
+mkdir $TRUST_ROOT/exec/python/pkgs
 # export PATH
 PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
 echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
