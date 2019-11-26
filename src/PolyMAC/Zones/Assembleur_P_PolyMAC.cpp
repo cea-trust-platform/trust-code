@@ -94,14 +94,14 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   Cerr << "Assemblage de la matrice de pression ... " ;
   statistiques().begin_count(assemblage_sys_counter_);
   la_matrice.typer("Matrice_Morse_Sym");
-  Matrice_Morse_Sym &mat = ref_cast(Matrice_Morse_Sym, la_matrice.valeur());
+  Matrice_Morse_Sym& mat = ref_cast(Matrice_Morse_Sym, la_matrice.valeur());
 
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   int i, j, k, e, f, fb, n_f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot(),
-      na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), infoo;
+                              na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), infoo;
   zone.init_m2(), ch.init_cl();
 
   DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
@@ -117,11 +117,11 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
           for (i = 0, j = zone.m2d(e), n_f = zone.m2d(e + 1) - zone.m2d(e); i < n_f; i++, j++)
             {
               for (k = zone.w2i(j), f = e_f(e, i); f < nf && k < zone.w2i(j + 1); k++)
-              {
-                fb = e_f(e, zone.w2j(k));
-                if (f <= fb) stencil_M.append_line(ne_tot + f, ne_tot + fb);
-                if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
-              }
+                {
+                  fb = e_f(e, zone.w2j(k));
+                  if (f <= fb) stencil_M.append_line(ne_tot + f, ne_tot + fb);
+                  if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
+                }
               stencil_M.append_line(ne_tot + f, ne_tot + f);
               if (ch.icl(f, 0) != 1 && (e < ne || f < nf)) stencil_M.append_line(e, ne_tot + f);
               if (e == f_e(f, 0)    && f < nf) stencil_R.append_line(f, e);
@@ -129,11 +129,11 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
           stencil_M.append_line(e, e);
         }
 
-        tableau_trier_retirer_doublons(stencil_M), tableau_trier_retirer_doublons(stencil_R);
-        Matrix_tools::allocate_symmetric_morse_matrix(ne_tot + nf_tot, stencil_M, mat);
-        Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, ne_tot + nf_tot, stencil_R, rec);
-        tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
-        stencil_done = 1;
+      tableau_trier_retirer_doublons(stencil_M), tableau_trier_retirer_doublons(stencil_R);
+      Matrix_tools::allocate_symmetric_morse_matrix(ne_tot + nf_tot, stencil_M, mat);
+      Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, ne_tot + nf_tot, stencil_R, rec);
+      tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
+      stencil_done = 1;
     }
   else //sinon, on recycle
     {
@@ -154,7 +154,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
         {
           //matrice m2 + correction diagonale
           for (i = 0, j = zone.m2d(e), W = 0; i < n_f; i++, j++) for (k = zone.m2i(j); k < zone.m2i(j + 1); k++) W(i, zone.m2j(k)) = zone.m2c(k);
-          for (i = 0; i < n_f; i++) W(i, i) += diag(e_f(e, i)) / ve(e);
+          for (i = 0; i < n_f; i++) f = e_f(e, i), W(i, i) += diag(f) * zone.volumes_entrelaces_dir()(f, e != f_e(f, 0)) / zone.volumes_entrelaces(f) / ve(e);
           //inversion par Cholesky (Lapack) + annulation des petits coeffs + remplissage a la main de la partir triangulaire inf
           char uplo = 'U';
           F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
@@ -169,12 +169,12 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
       for (i = 0, mee = 0; i < n_f; mee += mef, i++)
         {
           for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; f < nf && j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
-          {
-            fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
-            if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1 && f <= fb) mat(ne_tot + f, ne_tot + fb) += mff;
-            else if (ch.icl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
-            if (rff && f < nf) rec(f, ne_tot + fb) += rff;
-          }
+            {
+              fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
+              if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1 && f <= fb) mat(ne_tot + f, ne_tot + fb) += mff;
+              else if (ch.icl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
+              if (rff && f < nf) rec(f, ne_tot + fb) += rff;
+            }
           if (ch.icl(f, 0) != 1 && (e < ne || f < nf)) mat(e, ne_tot + f) -= mef;
           if (e == f_e(f, 0) && f < nf) rec(f, e) -= rfe;
         }
