@@ -246,7 +246,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
                   const double *field_values = field->getArray()->begin();
                   assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
                   assert((int) field->getNumberOfComponents() ==
-                      (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
+                         (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
                   memcpy(le_champ().valeurs().addr(), field_values,
                          le_champ().valeurs().size_array() * sizeof(double));
                   read_field = true;
