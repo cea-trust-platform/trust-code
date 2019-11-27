@@ -52,33 +52,35 @@ make_()
 ########################################################
 run_test_mpi()
 {
-   rm -f test_mpi.log
+   test_mpi=$1
+   rm -f $test_mpi.log
    # Pour aider on ajoute le LD_LIBRARY_PATH de MPI (ex: mars,eris)
    lib=`dirname $mpiCC`
    lib=$lib/../`\ls $lib/.. | grep lib`
    # On essaie d'executer en sequentiel
-   LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib ./test_mpi 1>test_mpi.log 2>&1 &
+   LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib ./$test_mpi 1>$test_mpi.log 2>&1 &
    $TRUST_ROOT/bin/KSH/wait_for $! 30
-   if [ ! -s test_mpi.log ]
+   if [ ! -s $test_mpi.log ]
    then
       err=0
-   elif [ "`grep coucou test_mpi.log`" = "" ]
+   elif [ "`grep coucou $test_mpi.log`" = "" ]
    then
       err=1
    fi
 }
 run_test_mpi_par()
 {
-   rm -f test_mpi.log
+   test_mpi=$1
+   rm -f $test_mpi.log
    lib=`dirname $mpiCC`
    # On essaie d'executer en parallele
-   $lib/mpirun -np 2 ./test_mpi 2 1>test_mpi.log 2>&1 &
+   $lib/mpirun -np 2 ./$test_mpi 2 1>$test_mpi.log 2>&1 &
    $TRUST_ROOT/bin/KSH/wait_for $! 30
-   if [ ! -s test_mpi.log ]
+   if [ ! -s $test_mpi.log ]
    then
       err=0
-   #elif [ "`grep mpi-abort test_mpi.log`" != "" ]
-   elif [ "`grep coucou test_mpi.log`" = "" ]
+   #elif [ "`grep mpi-abort $test_mpi.log`" != "" ]
+   elif [ "`grep coucou $test_mpi.log`" = "" ]
    then
       err=1
    fi
@@ -1186,19 +1188,22 @@ else
 	    m="# Compiler for mpif90" && e="MPICH_F90=\"\$TRUST_F77_BASE\" && export MPICH_F90" && ecrit $m"|"$e"|"$env;eval $e
             # Bizarrerie pour ioulia, il faut specifier le linker en fortran sinon NP ne compile pas:
             m="# Linker pour mpif77"      && e="MPICH_FLINKER=\"\$TRUST_F77_BASE\" && export MPICH_FLINKER" && ecrit $m"|"$e"|"$env;eval $e
-	 elif [ "`$mpiCC -show | grep intel/mpi`" != "" ]
+	 elif [ "`$mpiCC -show | grep mpi/intel`" != "" ]
 	 then
 	    m="# Compiler for mpiCC"  && e="I_MPI_CXX=\"\$TRUST_CC_BASE\"  && export I_MPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpicc"  && e="I_MPI_CC=\"\$TRUST_cc_BASE\"  && export I_MPI_CC"   && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpif77" && e="I_MPI_F77=\"\$TRUST_F77_BASE\" && export I_MPI_F77" && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpif90" && e="I_MPI_F90=\"\$TRUST_F77_BASE\" && export I_MPI_F90" && ecrit $m"|"$e"|"$env;eval $e
+	 else
+	    echo "MPI indicated by $mpiCC by not supported yet." 
+	    exit -1
 	 fi
 	 # Test du MPI trouve avec mpiCC
 	 echo $ECHO_OPTS "# Check `basename $mpiCC` (mpiCC.log file): "
-	 echo $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp
-	 $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp 1>mpiCC.log 2>&1
+	 echo $mpiCC -o ./test_mpi_CC $rep_test_mpi/test_mpi.cpp
+	 $mpiCC -o ./test_mpi_CC $rep_test_mpi/test_mpi.cpp 1>mpiCC.log 2>&1
 	 err=$?
-	 [ $err = 0 ] && run_test_mpi 1>>mpiCC.log 2>&1
+	 [ $err = 0 ] && run_test_mpi test_mpi_CC 1>>mpiCC.log 2>&1 
 	 OK $err
 	 if [ $err = 0 ]
 	 then
@@ -1207,20 +1212,20 @@ else
             then
                mpif=$MPI_BIN/mpif90
                echo $ECHO_OPTS "# Check `basename $mpif` (mpif.log file): "
-               echo $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f
-               $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1
+               echo $mpif -o ./test_mpi_f90 $rep_test_mpi/test_mpi.f
+               $mpif -o ./test_mpi_f90 $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1
                err=$?
-               [ $err = 0 ] && run_test_mpi 1>>mpif.log 2>&1
+               [ $err = 0 ] && run_test_mpi test_mpi_f90 1>>mpif.log 2>&1
                OK $err
             fi
             if [ $err != 0 ] && [ $TRUST_DISABLE_PETSC = 1 ]
             then
                mpif=$MPI_BIN/mpif77
                echo $ECHO_OPTS "# Check `basename $mpif` (mpif.log file): "
-               echo $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f
-               $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1
+               echo $mpif -o ./test_mpi_f77 $rep_test_mpi/test_mpi.f
+               $mpif -o ./test_mpi_f77 $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1
                err=$?
-               [ $err = 0 ] && run_test_mpi 1>>mpif.log 2>&1
+               [ $err = 0 ] && run_test_mpi test_mpi_f77 1>>mpif.log 2>&1
                OK $err
             fi
 	 fi
