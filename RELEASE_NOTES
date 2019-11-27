@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------------------------------
+Release notes version 1.8.1 : Enhancements, modifications and corrected bugs since version 1.8.0 :
+-------------------------------------------------------------------------------------------------------
+XX/XX/10 (TRUST)  Tools       : Trust Wizard tool becomes obsolete
+XX/XX/19 (TRUST)  Tools       : MED-file 4.0.0 insures direct compatibility with Salome 9.2
+XX/XX/19 (TRUST)  Tools       : Update versions for MEDCoupling (9.4.0), MED-file (4.0.0), HDF (1.10.3), Gmsh (4.4.1)
+XX/XX/19 (TRUST)  Tools       : Switch to Python 3. Python 2 scripts are not supported anymore
+-------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0 : Enhancements, modifications and corrected bugs since version 1.7.9 :
 -------------------------------------------------------------------------------------------------------
 31/10/19 (TRUST)  New feature : First version of a Python module (SWIG) for the ICoCo interface.
@@ -1007,7 +1014,7 @@ Release notes version 1.5.6 : Enhancements, modifications and corrected bugs sin
 25/11/08 (TRUST)  Portability : IDRIS AIX cluster named vargas supported (112 nodes of 32 dual-core processors)
 24/11/08 (TRUST)  Minor change: Additional informations are now printed into the _Nusselt.face file with the dt_impr_nusselt option
 24/11/08 (TRUST)  Minor change: Front tracking model is no longer limited to one solid interface with imposed velocity
-14/11/08 (Tools)  Bug fixed   : reprise_auto script failed if a problem have more than one post processing bloc
+14/11/08 (Tools)  Bug fixed   : reprise_auto script failedconda if a problem have more than one post processing bloc
 12/11/08 (Kernel) New keyword : Segmentpoints is used to define a probe segment from specifics points
 06/11/08 (Kernel) Bug fixed   : Possible corruption in LATA format, if the field name does not match to the number of component of the field
 24/10/08 (TRUST)  Bug fixed   : In Sous_Zone Tube, h was not the height of the tube but the coordinate of the end's tube
