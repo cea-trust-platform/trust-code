@@ -1,6 +1,6 @@
 Parametres {
 	Titre "verification conduction"
-	Description "Calculs menÃ©s en EF laminaire"
+	Description "Calculs menés en EF laminaire"
 	Auteur "G.F."
 	CasTest "." "EF_conduc_genepi_S_lin_2_sym.data"
 }
@@ -74,7 +74,7 @@ Tableau {
 	}
 	visu {
                 titre "temperature"
-                description "on trace la temperature et les ecarts Ã  la solution"
+                description "on trace la temperature et les ecarts à la solution"
                 mesh ./EF_conduc_genepi_S_lin_2_sym.lata dom 
                 pseudocolor ./EF_conduc_genepi_S_lin_2_sym.lata dom TEMPERATURE SOM
                 instruction_visit DefineScalarExpression("erreur_SOM_dom","TEMPERATURE_SOM_dom-(-(0.4-1./3.)*coord(dom)[0]-(coord(dom)[0])*(coord(dom)[0]*coord(dom)[0]-1.)/6.)")

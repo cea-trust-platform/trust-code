@@ -9,7 +9,7 @@ Parameters {
 	Author "GF "
 	IncludeData 2
 	Prerequisite "./extract_convergence"
-	Description "Cas test periodique, pour tester convergence en maillage des operateurs de convection"
+	Description "Cas test periodique, pour tester convergence en maillage des opérateurs de convection"
 }
 
 

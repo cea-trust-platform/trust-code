@@ -1,6 +1,6 @@
 arametres {
-	Titre "Conduction couplÃ©e implicite"
-	Description "Calculs menÃ©s en VDF/VEF avec/sans paroi fictive"
+	Titre "Conduction couplée implicite"
+	Description "Calculs menés en VDF/VEF avec/sans paroi fictive"
 	Auteur "G.F."
 	CasTest . EF_Pois_impl.data
 }
