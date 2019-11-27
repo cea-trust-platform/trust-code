@@ -13,6 +13,10 @@ minimal_mumps=0
 scotch=1
 # [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 [ $minimal_mumps = 1 ] && scotch=0
+TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
+# Scotch needs bison and m4 which cannot be installed on recent OS (debian 10,...) with glibc >= 2.28
+# Install bison using sudo apt-get install or yum install fixes this problem
+[ "`eval bison --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "$TEST_LDD_VERSION" != 1 ] && scotch=0
 if [ "$1" = "" ]
 then
    echo "Usage: `basename $0` package.tar.gz"
