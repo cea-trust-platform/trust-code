@@ -2,7 +2,7 @@
 # PARALLEL OK #
 # Visualisation des domaines :
    --------------------------------------------------
-   | epaisseur=5cm      dom2           T=500Â°K     | Conduction
+   | epaisseur=5cm      dom2           T=500°K     | Conduction
    --------------------------------------------------
                      |    longueur=1m
                      |
@@ -10,7 +10,7 @@
                      |
                      V
    --------------------------------------------------
-   | epaisseur=5cm      dom1           T=300Â°K      | Conduction
+   | epaisseur=5cm      dom1           T=300°K      | Conduction
    --------------------------------------------------
 #
 

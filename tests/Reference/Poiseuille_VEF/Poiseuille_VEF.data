@@ -1,8 +1,8 @@
 # Hydraulique 2D : Poiseuille 2D #
 # PARALLEL OK #
-# U(y)=|dP/dx|*DhÂ²/2/mu*(1-yÂ²/DhÂ²) #
+# U(y)=|dP/dx|*Dh²/2/mu*(1-y²/Dh²) #
 # Valeurs prises pour trouver Uc=10m/s, Re=26.6666 #
-# P2-P1=20Pa, Dh=0.5, rho=2kg/m3, U(y)= 10*(1-4*yÂ²) #
+# P2-P1=20Pa, Dh=0.5, rho=2kg/m3, U(y)= 10*(1-4*y²) #
 dimension 2
 Pb_hydraulique pb
 Domaine dom

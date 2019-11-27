@@ -1,6 +1,6 @@
 Parametres {
-	Titre "Tests de vérification"
-	Description "Dans cette fiche de tests, deux cas-tests ont été dévéloppés pour une vérification qualitative des dévéloppements d'une équation de convection-diffusion." 
+	Titre "Tests de vÃ©rification"
+	Description "Dans cette fiche de tests, deux cas-tests ont Ã©tÃ© dÃ©vÃ©loppÃ©s pour une vÃ©rification qualitative des dÃ©vÃ©loppements d'une Ã©quation de convection-diffusion." 
 	IncludeData 0
 	
 	Auteur "A. MEKKAS"
@@ -10,11 +10,11 @@ Parametres {
 
 Chapitre {
 	Titre "Cas-test 1"
-	Description "Ce premier cas-test vise à vérifier la solution d'une équation de convection-diffusion sur un domaine 2D \latex_($[0,0.04]\times[0,0.04]$\latex_) pour une vitesse de convection constante, un coefficent de diffusion constant et des conditions aux limites périodiques:" 
+	Description "Ce premier cas-test vise Ã  vÃ©rifier la solution d'une Ã©quation de convection-diffusion sur un domaine 2D \latex_($[0,0.04]\times[0,0.04]$\latex_) pour une vitesse de convection constante, un coefficent de diffusion constant et des conditions aux limites pÃ©riodiques:" 
         Description "\latex_(\begin{itemize} \item $\overrightarrow{V}(\overrightarrow{X},t)=(1,1)$, \item $D(\overrightarrow{X},t)=0.0005$. \end{itemize}\latex_)"
 Table {
 	titre "Concentration"
-	description "Les figures ci-dessous représentent la concentration à l'instant initial et à l'instant \latex_($t=0.02$\latex_). La figure représentant la solution à \latex_($t=0.02$\latex_) montre la bonne prise en compte de la vitesse de convection, de la diffusion de la concentration initiale et des conditions aux limites périodiques."
+	description "Les figures ci-dessous reprÃ©sentent la concentration Ã  l'instant initial et Ã  l'instant \latex_($t=0.02$\latex_). La figure reprÃ©sentant la solution Ã  \latex_($t=0.02$\latex_) montre la bonne prise en compte de la vitesse de convection, de la diffusion de la concentration initiale et des conditions aux limites pÃ©riodiques."
 	description 
 	description 
 }
@@ -29,7 +29,7 @@ Visu {
 
 Table  {
 	titre "Vitesse de convection et coefficient de diffusion"
-	description "Les figures ci-dessous représentent la vitesse de convection et le coeffcient de diffusion à l'instant initial. Ces figures montrent la bonne prise en compte de la vitesse de convection et du coefficient de diffusion. Ceci vérifie également que le rajout de la vitesse de convection en tant que variable post-traitable est bien pris en compte."
+	description "Les figures ci-dessous reprÃ©sentent la vitesse de convection et le coeffcient de diffusion Ã  l'instant initial. Ces figures montrent la bonne prise en compte de la vitesse de convection et du coefficient de diffusion. Ceci vÃ©rifie Ã©galement que le rajout de la vitesse de convection en tant que variable post-traitable est bien pris en compte."
 	description 
 }
 Visu {
@@ -49,12 +49,12 @@ Visu {
 
 Chapitre {
 	Titre "Cas-test 2"
-	Description "Le deuxieme cas-test vise à vérifier la solution d'une équation de convection-diffusion sur un domaine 2D \latex_($[0,1]\times[0,1]$\latex_) pour une vitesse de convection variable en temps et en espace et un coefficient de diffusion nul:"
+	Description "Le deuxieme cas-test vise Ã  vÃ©rifier la solution d'une Ã©quation de convection-diffusion sur un domaine 2D \latex_($[0,1]\times[0,1]$\latex_) pour une vitesse de convection variable en temps et en espace et un coefficient de diffusion nul:"
 	Description "\latex_(\begin{itemize} \item $\overrightarrow{V}(\overrightarrow{X},t)=(-2\sin(\pi x)^2\sin(\pi y)\cos(\pi y)\cos(t\frac{\pi}{2}), 2\sin(\pi y)^2\sin(\pi x)\cos(\pi x)\cos(t\frac{\pi}{2}))$, \item $D(\overrightarrow{X},t)=0$. \end{itemize}\latex_)"
 
 Table {
 	titre "Concentration"
-	description "Les figures ci-dessous représentent la concentration à l'instant initial et à l'instant \latex_($t=1.2049$\latex_)."
+	description "Les figures ci-dessous reprÃ©sentent la concentration Ã  l'instant initial et Ã  l'instant \latex_($t=1.2049$\latex_)."
 	description 
 	description 
 }
@@ -69,7 +69,7 @@ Visu {
 
 Table {
 	titre "Vitesse de convection"
-	description "Les figures ci-dessous représentent la vitesse de convection à l'instant initial et à l'instant \latex_($t=1.2049$\latex_). La figure représentant la solution à \latex_($t=1.2049$\latex_) montre la bonne prise en compte d'une vitesse de convection variable en temps et en espace. En effet, Les figures ci-dessous mettent en évidence le changement de signe à l'instant \latex_($t=1.2049$\latex_) d\latex_(\^u\latex_) au changement de signe du terme \latex_($\cos(t\frac{\pi}{2})$\latex_)."
+	description "Les figures ci-dessous reprÃ©sentent la vitesse de convection Ã  l'instant initial et Ã  l'instant \latex_($t=1.2049$\latex_). La figure reprÃ©sentant la solution Ã  \latex_($t=1.2049$\latex_) montre la bonne prise en compte d'une vitesse de convection variable en temps et en espace. En effet, Les figures ci-dessous mettent en Ã©vidence le changement de signe Ã  l'instant \latex_($t=1.2049$\latex_) d\latex_(\^u\latex_) au changement de signe du terme \latex_($\cos(t\frac{\pi}{2})$\latex_)."
 	description 
 	description 
 }
