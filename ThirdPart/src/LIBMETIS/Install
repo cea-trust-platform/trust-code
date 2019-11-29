@@ -42,7 +42,7 @@ $TRUST_MAKE #|| exit -1 # Car erreur bizarre (clearmake marche pas make...)
 make install #|| exit -1 # Car meme erreur bizarre
 cd ..
 # On efface les sources
-rm -r -f $package
+rm -r -f $package $metis_dir
 
 # Correction d'une virgule mal placee dans metis.h
 echo $ECHO_OPTS "1,$ s?2048,?2048?g\nw" | ed $METIS_ROOT/include/metis.h 1>/dev/null 2>&1 || exit -1
