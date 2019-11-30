@@ -113,16 +113,7 @@ void Op_Diff_PolyMAC_Elem::calculer_flux_bord(const DoubleTab& inco) const
 // Description:
 // ajoute la contribution de la diffusion au second membre resu
 // renvoie resu
-DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu) const
-{
-  //si on trouve Melange_Thermique_Aiguilles_PolyMAC dans les sources, alors on le laisse faire l'appel
-  for (CONST_LIST_CURSEUR(Source) curseur(equation().sources()); curseur; ++curseur)
-    if (curseur.valeur().que_suis_je() == "Melange_Thermique_Aiguilles_P0_PolyMAC") return resu;
-  return ajouter_mod(inco, resu, NULL);
-}
-
-/* version permettant a Melange_Thermique_Aiguilles_PolyMAC de modifier certaines porosites aux faces */
-DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& resu, const DoubleVect* fac_mod) const
+DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
@@ -133,8 +124,6 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& 
   double fac;
 
   remplir_nu(nu_), remplir_nu_fac();
-  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) nu_fac.addr()[f] *= (*fac_mod)(f);
-
   DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
   flux_bords_ = 0;
   for (e = 0; e < ne_tot; e++)
@@ -146,9 +135,9 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& 
           f = e_f(e, i);
           /* diffusivite de chaque composante dans la direction (xf - xe) */
           if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
-          else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) //anisotrope diagonal
+          else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
             nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
-          else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
+          else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
             nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
           else abort();
           for (n = 0, fac = nu_fac.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
@@ -177,15 +166,6 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter_mod(const DoubleTab& inco,  DoubleTab& 
 //on assemble la matrice.
 void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  //si on trouve Melange_Thermique_Aiguilles_PolyMAC dans les sources, alors on le laisse faire l'appel
-  for (CONST_LIST_CURSEUR(Source) curseur(equation().sources()); curseur; ++curseur)
-    if (curseur.valeur().que_suis_je() == "Melange_Thermique_Aiguilles_P0_PolyMAC") return;
-  contribuer_a_avec_mod(inco, matrice, NULL);
-}
-
-/* version permettant a Melange_Thermique_Aiguilles_PolyMAC de modifier certaines porosites aux faces */
-void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_Morse& matrice, const DoubleVect* fac_mod) const
-{
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const IntTab& e_f = zone.elem_faces();
@@ -195,10 +175,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_
   double fac;
 
   remplir_nu(nu_), remplir_nu_fac();
-  if (fac_mod) for (f = 0; f < zone.nb_faces_tot(); f++) nu_fac.addr()[f] *= (*fac_mod)(f);
-
   DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
-
   for (e = 0; e < ne_tot; e++)
     {
       int n_f = zone.m2d(e + 1) - zone.m2d(e); //nombre de faces de l'element e
@@ -208,9 +185,9 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec_mod(const DoubleTab& inco, Matrice_
           f = e_f(e, i);
           /* diffusivite de chaque composante dans la direction (xf - xe) */
           if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
-          else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) //anisotrope diagonal
+          else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
             nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
-          else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
+          else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
             nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
           else abort();
           for (n = 0, fac = nu_fac.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;

@@ -75,13 +75,14 @@ public:
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
+  mutable DoubleTab nu_fac_mod; //facteur multiplicatif a appliquer a nu_fac
 
 protected:
   REF(Zone_PolyMAC) la_zone_poly_;
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_;
-  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)^2
+  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)
   mutable DoubleTab nu_fac;
 };
 

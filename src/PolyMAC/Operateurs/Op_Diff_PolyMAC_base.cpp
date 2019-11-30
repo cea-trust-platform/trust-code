@@ -311,9 +311,12 @@ void Op_Diff_PolyMAC_base::remplir_nu_fac() const
       int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
           num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
       for (f = deb; f < deb + num; f++) //nu par composante a chaque face
-        if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
-          nu_fac(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
-        else nu_fac(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
+        {
+          if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
+            nu_fac(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
+          else nu_fac(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
+          if (nu_fac_mod.size()) nu_fac(f) *= nu_fac_mod(f); //prise en compte de nu_fac_mod
+        }
     }
   nu_fac.echange_espace_virtuel();
 }

@@ -89,24 +89,63 @@ int Echange_contact_PolyMAC::initialiser(double temps)
 void Echange_contact_PolyMAC::mettre_a_jour(double temps)
 {
   //objets de l'autre cote : equation, zone, inconnue (prefix o_), frontiere (pour faire trace_face_distant)
-  Champ_front_calc&       ch     = ref_cast(Champ_front_calc, T_autre_pb().valeur());
-  const Zone_PolyMAC&     o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
+  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  const Zone_PolyMAC&     zone = ref_cast(Zone_PolyMAC, zone_Cl_dis().zone_dis().valeur()), o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
+  const Equation_base&    o_eqn  = ch.equation();
   const Champ_P0_PolyMAC& o_inc  = ref_cast(Champ_P0_PolyMAC, ch.inconnue());
-  const Front_VF&         o_fvf  = ref_cast(Front_VF, ch.front_dis());
+  const Front_VF&         o_fvf  = ref_cast(Front_VF, ch.front_dis()), &fvf = ref_cast(Front_VF, frontiere_dis());
+  const Milieu_base&      o_mil  = ch.milieu();
+  const IntTab &e_f = o_zone.elem_faces();
+  const DoubleTab &xp = o_zone.xp(), &xv = o_zone.xv();
+  const DoubleVect &fs = o_zone.face_surfaces(), &ve = o_zone.volumes();
+
+  //tableaux "nu_faces" utilises par les operateurs de diffusion de chaque cote
+  const DoubleTab& nu = ref_cast(Op_Diff_PolyMAC_base, zone_Cl_dis().equation().operateur(0).l_op_base()).get_nu(),
+                   &o_nu = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base()).get_nu(),
+                    &o_nu_fac = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base()).get_nu_fac();
+  int N_nu = o_nu.line_size(), ne_tot = o_zone.nb_elem_tot();
+
+  //facteur par lequel on doit multiplier nu pour obtenir lambda
+  double o_rCp = o_eqn.que_suis_je() == "Conduction"
+                 || o_eqn.que_suis_je() == "Convection_Diffusion_Temperature"
+                 || o_eqn.que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
+                 || o_eqn.que_suis_je().debute_par("Transport") ? o_mil.masse_volumique()(0, 0) * o_mil.capacite_calorifique()(0, 0) : 1;
 
   //tableaux aux faces de l'autre cote, a transmettre par o_fr.trace_face_{distant,local} : on ne les remplit que sur les faces de o_fr
+  o_zone.init_m2();
   DoubleTrav o_Text(o_zone.nb_faces()), o_Himp(o_zone.nb_faces());
   for (int i = 0; i < o_fvf.nb_faces(); i++)
     {
-      int f = o_fvf.num_face(i);
-      o_Text(f) = o_inc.valeurs()(o_zone.nb_elem_tot() + f);
-      o_Himp(f) = o_Text(f) ? min(h_paroi ? h_paroi : 1e5, 1e5) : 0; //au premier pas de temps, o_Text ne sera pas a jour!
+      int f = o_fvf.num_face(i), fb, j, k, l, e = o_zone.face_voisins(f, 0), i_f = 0;
+      for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j; //numero de la face f dans l'element e
+
+      /* construction du flux de chaleur sortant, en mettant la partie en T_f dans H_imp et le reste dans T_ext */
+      for (j = o_zone.w2i(o_zone.m2d(e) + i_f); j < o_zone.w2i(o_zone.m2d(e) + i_f + 1); j++)
+        {
+          fb = e_f(e, o_zone.w2j(j));
+          double nu_ef = 0;
+          if (N_nu == 1) nu_ef = o_nu.addr()[e]; //isotrope
+          else if (N_nu == dimension) for (k = 0; k < dimension; k++) //anisotrope diagonal
+            nu_ef += o_nu.addr()[dimension * e + k] * std::pow(xv(fb, k) - xp(e, k), 2);
+          else if (N_nu == dimension * dimension) for (k = 0; k < dimension; k++) for (l = 0; l < dimension; l++)
+            nu_ef += o_nu.addr()[dimension * (dimension * e + k) + l] * (xv(fb, k) - xp(e, k)) * (xv(fb, l) - xp(e, l)); //anisotrope complet
+          else abort();
+          nu_ef *= o_rCp * o_nu_fac.addr()[f] * (N_nu > 1 ? 1. / o_zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1);
+          double fac = fs(fb) / ve(e) * o_zone.w2c(j) * nu_ef;
+          if (f == fb) o_Himp(f) += fac;
+          else o_Text(f) -= fac * o_inc.valeurs()(ne_tot + fb);
+          o_Text(f) += fac * o_inc.valeurs()(e);
+        }
+      if (o_Himp(f) > 1e-10) o_Text(f) /= o_Himp(f); //passage au vrai T_ext
+      if (o_Himp(f) > 1e-10 && h_paroi < 1e9) o_Himp(f) = 1. / (1. / h_paroi + 1. / o_Himp(f)); //prise en compte de la resistance de la paroi
     }
 
   //transmission : soit par Raccord_distant_homogene, soit copie simple
   if (o_fvf.frontiere().que_suis_je() == "Raccord_distant_homogene")
     o_fvf.frontiere().trace_face_distant(o_Text, T_ext()->valeurs()), o_fvf.frontiere().trace_face_distant(o_Himp, h_imp_->valeurs());
   else o_fvf.frontiere().trace_face_local(o_Text, T_ext()->valeurs()), o_fvf.frontiere().trace_face_local(o_Himp, h_imp_->valeurs());
+  //si nu_f n'est pas encore connu de notre cote, alors on n'echange pas
+  for (int i = 0; i < fvf.nb_faces(); i++) if (nu.addr()[zone.face_voisins(fvf.num_face(i), 0)] < 1e-12) h_imp_->valeurs().addr()[i] = 1e-8;
   T_ext()->valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();
   Echange_externe_impose::mettre_a_jour(temps);
 }
