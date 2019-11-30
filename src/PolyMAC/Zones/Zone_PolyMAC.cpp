@@ -970,9 +970,8 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 //stabilisation des matrices m1 et m2 de PolyMAC
 inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const
 {
-  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, liwork = -1, infoo = 0;
+  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, infoo = 0;
   DoubleTab A, S, b(n_f, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
-  IntTab iwork(1);
 
   /* spectre de M */
   kersol(M, b, 1e-12, NULL, x, S);
@@ -1002,9 +1001,9 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) cons
   //decomposition de Schur U = Vt.S.V
   char jobz = 'V', uplo = 'U';
   V = U, S.resize(n_k);
-  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);//"workspace query"
-  work.resize(lwork = work(0)), iwork.resize(liwork = iwork(0));
-  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
+  F77NAME(dsyev)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &infoo);//"workspace query"
+  work.resize(lwork = work(0));
+  F77NAME(dsyev)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &infoo);
   assert(infoo == 0);
   //pour garantir des vp plus grandes que eps : S(k) -> max(S(k), eps)
   for (i = 0, U = 0; i < n_k; i++) for (j = 0; j < n_k; j++) for (k = 0; k < n_k; k++) U(i, j) += V(k, i) * min(max(S(k), l_min), l_max) * V(k, j);
@@ -1058,7 +1057,7 @@ void Zone_PolyMAC::init_m2() const
 
       /* matrice non stabilisee, normales sortantes et stabilisation */
       for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
-        f = e_f(e, i), fb = e_f(e, j), M(i, j) = fs(f) * fs(fb) * dot(&xv_(fb, 0), &xv_(f, 0), &xp_(e, 0), &xp_(e, 0)) / (ve(e) * ve(e));
+          f = e_f(e, i), fb = e_f(e, j), M(i, j) = fs(f) * fs(fb) * dot(&xv_(fb, 0), &xv_(f, 0), &xp_(e, 0), &xp_(e, 0)) / (ve(e) * ve(e));
       for (i = 0; i < n_f; i++) for (j = 0; j < dimension; j++) f = e_f(e, i), N(j, i) = face_normales()(f, j) / fs(f) * (e == f_e(f, 0) ? 1 : -1);
       ajouter_stabilisation(M, N);
 
@@ -1070,9 +1069,9 @@ void Zone_PolyMAC::init_m2() const
 
       /* stockage de M2 et W2 */
       for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0; j < n_f; j++)
-        if (dabs(M(i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(M(i, j));
+          if (dabs(M(i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(M(i, j));
       for (i = 0; i < n_f; i++, w2i.append_line(w2j.size())) for (j = 0; j < n_f; j++)
-        if (dabs(W(i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(W(i, j));
+          if (dabs(W(i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(W(i, j));
       assert(m2i.size() == w2i.size());
     }
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
@@ -1249,20 +1248,20 @@ void Zone_PolyMAC::init_m2solv() const
   init_m2();
   if (m2solv.non_nul()) return;
   /* stencil et allocation */
-  const IntTab &e_f = elem_faces(), &f_e = face_voisins();
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
   int e, i, j, k, f, fb;
   for (e = 0; e < nb_elem_tot(); e++) for (i = 0, j = m2d(e); j < m2d(e + 1); i++, j++)
-    for (f = e_f(e, i), k = m2i(j); f < nb_faces() && k < m2i(j + 1); k++) if (f <= (fb = e_f(e, m2j(k))))
-      stencil.append_line(f, fb);
+      for (f = e_f(e, i), k = m2i(j); f < nb_faces() && k < m2i(j + 1); k++) if (f <= (fb = e_f(e, m2j(k))))
+          stencil.append_line(f, fb);
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_symmetric_morse_matrix(nb_elem_tot() + nb_faces_tot(), stencil, m2mat);
 
   /* remplissage */
   for (e = 0; e < nb_elem_tot(); e++) for (i = 0, j = m2d(e); j < m2d(e + 1); i++, j++)
-    for (f = e_f(e, i), k = m2i(j); f < nb_faces() && k < m2i(j + 1); k++) if (f <= (fb = e_f(e, m2j(k))))
-      m2mat(f, fb) += (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * volumes(e) * m2c(k);
+      for (f = e_f(e, i), k = m2i(j); f < nb_faces() && k < m2i(j + 1); k++) if (f <= (fb = e_f(e, m2j(k))))
+          m2mat(f, fb) += (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * volumes(e) * m2c(k);
   m2mat.set_est_definie(1);
 
   char lu[] = "Petsc Cholesky { quiet }";

@@ -111,6 +111,17 @@ extern "C"
                          );
   // FIN MODIF ELI LAUCOIN (19/03/2008)
 
+  void F77DECLARE(DSYEV)(const char*   const, // JOBZ
+                         const char*   const, // UPLO
+                         const int*    const, // N
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // W
+                         const double* const, // WORK
+                         const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
+
   void F77DECLARE(DSYEVD)(const char*   const, // JOBZ
                           const char*   const, // UPLO
                           const int*    const, // N
@@ -231,6 +242,18 @@ extern "C"
                           const int*    const  // INFO
                          );
   // FIN MODIF ELI LAUCOIN (19/03/2008)
+
+  void F77DECLARE(dsyev)(const char*   const, // JOBZ
+                         const char*   const, // UPLO
+                         const int*    const, // N
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // W
+                         const double* const, // WORK
+                         const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
+
 
   void F77DECLARE(dsyevd)(const char*   const, // JOBZ
                           const char*   const, // UPLO
@@ -398,6 +421,20 @@ inline void F77NAME(DGETRI)(const int*    const N,
   F77NAME(dgetri)(N,A,LDA,IPIV,WORK,LWORK,INFO);
 }
 // FIN MODIF ELI LAUCOIN (19/03/2008)
+
+inline void F77NAME(DSYEV)(const char*   const JOBZ,
+                           const char*   const UPLO,
+                           const int*    const N,
+                           const double* const A,
+                           const int*    const LDA,
+                           const double* const W,
+                           const double* const WORK,
+                           const int*    const LWORK,
+                           const int*    const INFO
+                          )
+{
+  F77NAME(dsyev)(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO);
+}
 
 inline void F77NAME(DSYEVD)(const char*   const JOBZ,
                             const char*   const UPLO,
