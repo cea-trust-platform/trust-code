@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,6 +70,7 @@ public:
   ostream& get_ostream();
   const ostream& get_ostream() const;
   void set_ostream(ostream* os);
+  void set_col_width(const int );
 
   Sortie& operator <<(ostream& (*f)(ostream&));
   Sortie& operator <<(Sortie& (*f)(Sortie&));
@@ -95,6 +96,8 @@ public:
 #ifdef IO_avec_string
   virtual Sortie& operator <<(const string& ob);
 #endif
+  virtual int add_col(const double& ob);
+  virtual int add_col(const char * ob);
   virtual int put(const unsigned* ob, int n, int nb_colonnes=1);
   virtual int put(const int* ob, int n, int nb_colonnes=1);
 #ifndef INT_is_64_
@@ -109,6 +112,7 @@ public:
   bool has_ostream() const;
 protected:
   int bin_;
+  int col_width_;
 private:
   ostream * ostream_;
 };

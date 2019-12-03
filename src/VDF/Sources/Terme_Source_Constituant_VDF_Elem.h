@@ -54,6 +54,16 @@ public:
   {
     Terme_Source_Constituant::mettre_a_jour(temps);
   }
+  void ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const
+  {
+    Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag);
+  }
+  void completer()
+  {
+    Terme_Source_VDF_base::completer();
+    col_width_ = Terme_Source_Constituant::completer(equation().inconnue().valeur());
+  }
+
 };
 
 

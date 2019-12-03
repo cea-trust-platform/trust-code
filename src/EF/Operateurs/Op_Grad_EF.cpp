@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -338,7 +338,8 @@ int Op_Grad_EF::impr(Sortie& os) const
   const int impr_mom=la_zone_EF->zone().Moments_a_imprimer();
   const int impr_sum=(la_zone_EF->zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(la_zone_EF->zone().Bords_a_imprimer().est_vide() ? 0:1);
-  double temps=equation().probleme().schema_temps().temps_courant();
+  const Schema_Temps_base& sch = equation().probleme().schema_temps();
+  double temps = sch.temps_courant();
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& face_voisins = zone_EF.face_voisins();
@@ -353,7 +354,6 @@ int Op_Grad_EF::impr(Sortie& os) const
   const ArrOfDouble& c_grav=la_zone_EF->zone().cg_moments();
   flux_bords_.resize(zone_EF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
-  Nom espace=" \t";
   int flag=je_suis_maitre();
   SFichier Flux_grad;
   ouvrir_fichier(Flux_grad,"",flag);
@@ -365,9 +365,9 @@ int Op_Grad_EF::impr(Sortie& os) const
   ouvrir_fichier_partage(Flux_grad_face,"",impr_bord);
   if (je_suis_maitre())
     {
-      Flux_grad<<temps;
-      if (impr_mom) Flux_grad_moment<< temps;
-      if (impr_sum) Flux_grad_sum<< temps;
+      Flux_grad.add_col(temps);
+      if (impr_mom) Flux_grad_moment.add_col(temps);
+      if (impr_sum) Flux_grad_sum.add_col(temps);
     }
   for ( n_bord=0; n_bord<zone_EF.nb_front_Cl(); n_bord++)
     {
@@ -447,14 +447,14 @@ int Op_Grad_EF::impr(Sortie& os) const
           moment_z=Process::mp_sum(moment_z);
           if (je_suis_maitre())
             {
-              Flux_grad<< espace << fluxx_s;
-              Flux_grad<< espace << fluxy_s;
+              Flux_grad.add_col(fluxx_s);
+              Flux_grad.add_col(fluxy_s);
               if (impr_sum)
                 {
-                  Flux_grad_sum<< espace << fluxx_sum_s;
-                  Flux_grad_sum<< espace << fluxy_sum_s;
+                  Flux_grad_sum.add_col(fluxx_sum_s);
+                  Flux_grad_sum.add_col(fluxy_sum_s);
                 }
-              if (impr_mom) Flux_grad_moment<< espace << moment_z;
+              if (impr_mom) Flux_grad_moment.add_col(moment_z);
             }
         }
       if (dimension == 3)
@@ -470,20 +470,20 @@ int Op_Grad_EF::impr(Sortie& os) const
           moment_z=Process::mp_sum(moment_z);
           if(je_suis_maitre())
             {
-              Flux_grad<< espace << fluxx_s;
-              Flux_grad<< espace << fluxy_s;
-              Flux_grad<< espace << fluxz_s;
+              Flux_grad.add_col(fluxx_s);
+              Flux_grad.add_col(fluxy_s);
+              Flux_grad.add_col(fluxz_s);
               if (impr_sum)
                 {
-                  Flux_grad_sum<< espace << fluxx_sum_s;
-                  Flux_grad_sum<< espace << fluxy_sum_s;
-                  Flux_grad_sum<< espace << fluxz_sum_s;
+                  Flux_grad_sum.add_col(fluxx_sum_s);
+                  Flux_grad_sum.add_col(fluxy_sum_s);
+                  Flux_grad_sum.add_col(fluxz_sum_s);
                 }
               if (impr_mom)
                 {
-                  Flux_grad_moment<< espace << moment_x;
-                  Flux_grad_moment<< espace << moment_y;
-                  Flux_grad_moment<< espace << moment_z;
+                  Flux_grad_moment.add_col(moment_x);
+                  Flux_grad_moment.add_col(moment_y);
+                  Flux_grad_moment.add_col(moment_z);
                 }
             }
         }

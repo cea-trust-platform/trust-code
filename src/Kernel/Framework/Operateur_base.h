@@ -139,6 +139,7 @@ public :
   // que la diffusivite varie ou non.
   // L'implementation par defaut dans Operateur_base.cpp ne fait rien
   virtual void preparer_calcul(void);
+  int col_width_; // minimal size of a column for .out files (based on cl name length)
 
 protected :
   int decal_temps;
@@ -148,8 +149,6 @@ protected :
   Nom out_;                                 // Nom du fichier .out pour l'impression
   Nom description_;                        // Description de l'operateur
   mutable DoubleTab flux_bords_;         // Tableau contenant les flux sur les bords de l'operateur
-
-protected :
 
   Champs_compris champs_compris_;
   REF(Champ_Inc) le_champ_inco;
