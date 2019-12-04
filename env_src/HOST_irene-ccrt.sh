@@ -44,18 +44,9 @@ module () {
 }" >> $env
    #
    # Load modules
-   # intel intel/15.0.6.233  intel/16.0.3.210  intel/17.0.4.196  intel/17.0.6.256(default)  intel/18.0.1.163
    intel="intel/18.0.3.222"
-   # openmpi mpi/openmpi/1.8.8  mpi/openmpi/2.0.2  mpi/openmpi/2.0.4(default)
-   #openmpi="mpi/openmpi/2.0.4"
-   # intelmpi mpi/intelmpi/2017.0.4.196 mpi/intelmpi/2017.0.6.256 mpi/intelmpi/2018.0.1.163  mpi/intelmpi/2018.0.3.222(default)
-   openmpi="mpi/intelmpi/2018.0.3.222"
-   # wi4mpi mpi/wi4mpi/3.1.5  mpi/wi4mpi/3.2.0  mpi/wi4mpi/3.2.1(default)
-   #openmpi="mpi/wi4mpi/3.2.1"
-   #Python version 2.7.5  python/2.7.8  python/2.7.12  python/2.7.14(default)  python/3.6.1  python3/3.6.4(default)
-   #cmake version 2.8.12.2  cmake/3.2.2  cmake/3.9.1(default)
-   #hwloc hwloc/1.11.3(default)
-   module="$intel $openmpi"
+   intelmpi="mpi/intelmpi/2018.0.3.222"
+   module="$intel $intelmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
