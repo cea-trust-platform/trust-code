@@ -52,6 +52,14 @@ if [ "${TRUST_ROOT}" = "" ]
 then
     TRUST_environnement_error
 fi
+# Verification que tout est correcte si TRUST est en 64 bit indices
+if [ "$TRUST_INT64" != "1" ] && [ -f $TRUST_ROOT/.build64 ]
+then
+    TRUST_64bits_environnement_error
+elif [ "$TRUST_INT64" = "1" ] && [ ! -f $TRUST_ROOT/.build64 ]
+then
+    TRUST_64bits_environnement_error
+fi
 
 echo "Initialisation ..."
 
@@ -133,6 +141,21 @@ while read name path
 do
   echo "Adding source files from project $name"
   sourcedir="$path/src"
+
+  # Verification que le baltik est n'est pas en 64 bit integers alors que TRUST est en 32 bit integers
+  if [ "$TRUST_INT64" != "1" ] && [ -f $sourcedir/.build64 ]
+  then
+      BaltikIs64bits_TRUSTis32bits_environnement_error
+  fi
+  # Si ces deux conditions sont satisfaites, nous modifierons int par long
+  if [ "$TRUST_INT64" = "1" ] && [ -f $TRUST_ROOT/.build64 ]
+  then
+      echo "Editing source files from project $name for 64 bit indices"
+      echo ""
+      cp $TRUST_ROOT/bin/BUILD64/GO_baltik $TRUST_ROOT/bin/BUILD64/Modifie $TRUST_ROOT/bin/BUILD64/replace_int_entier.py .
+      ./GO_baltik $sourcedir
+      touch $sourcedir/.build64
+  fi
 
   sub_projects_names=$sub_projects_names" "$name
   sub_projects_paths=$sub_projects_paths" "$path

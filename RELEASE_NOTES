@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 --------------------------------------------------------------------------------------------------
+04/12/19 (TRUST)  Portability : Add the possibility to configure a baltik in 64 bit indices mode (experimental)
 27/11/19 (TRUST)  Portability : orcus (DM2S) and plafrim (INRIA) clusters supported
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.0 : Enhancements, modifications and corrected bugs since version 1.7.9 :

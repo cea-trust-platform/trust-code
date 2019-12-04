@@ -1,0 +1,11 @@
+ORG=`pwd`
+
+# We touch the file .build64 that tells that patch has been applied
+touch .build64
+
+fold=$1
+[ ! -d $fold ] && echo "No folder named $fold ... we exit" && exit 1
+
+./Modifie $(find $fold)
+./Modifie $(find $fold)
+
