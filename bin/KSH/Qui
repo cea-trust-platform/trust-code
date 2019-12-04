@@ -9,7 +9,25 @@ ff="'"$"'"
 list_methodes=list_methodes
 # Si pas de creation en local du fichier list_methodes alors on va sous Coverage
 rep_init=`pwd`
-[ ! -f $list_methodes ] && cd $TRUST_ROOT/doc/Coverage && [ ! -s list_methodes ] && echo "Fichier `pwd`/list_methodes vide ou non existant. Contacter le support TRUST" && exit -1
+if [ ! -f $list_methodes ]
+then
+   # Deux cas possibles Baltik ou Trust
+   if [ ${exec#$project_directory} != $exec ]
+   then
+      if [ ! -d $project_directory/doc/Coverage ]
+      then
+         echo "No Coverage for this Baltik. Contact the project leader of this Baltik to add test coverage."
+      else
+         cd $project_directory/doc/Coverage
+         for gz in `ls *.gz 2>/dev/null`
+         do
+            [ $gz -nt ${gz%.gz} ] && gunzip -c $gz > ${gz%.gz} 
+         done
+      fi
+   else
+      cd $TRUST_ROOT/doc/Coverage && [ ! -s list_methodes ] && echo "Fichier `pwd`/list_methodes vide ou non existant. Contacter le support TRUST" && exit -1
+   fi
+fi
 warning=0 && [ $exec -nt $list_methodes ] && warning=1  
 # PATV vers Couv.py
 export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
