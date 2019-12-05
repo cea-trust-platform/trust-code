@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,5 +79,10 @@ void Iterateur_VDF_base::associer(const Zone_VDF& zone_vdf,
   la_zcl=zone_cl_vdf;
   op_base=op;
   // completer_();
+}
+
+void Iterateur_VDF_base::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
+{
+  // ne fait rien en general
 }
 

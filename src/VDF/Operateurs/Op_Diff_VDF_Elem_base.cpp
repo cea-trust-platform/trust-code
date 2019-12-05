@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,9 @@
 
 #include <Eval_Diff_VDF.h>
 #include <Eval_VDF_Elem.h>
+#include <Echange_contact_VDF.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
 
 Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base,"Op_Diff_VDF_Elem_base",Op_Diff_VDF_base);
 
@@ -155,4 +158,60 @@ const Champ_base& Op_Diff_VDF_Elem_base::diffusivite() const
   const Eval_Diff_VDF& eval_diff = (const Eval_Diff_VDF&) iter.evaluateur();
   ////const Eval_Diff_VDF& eval_diff = (const Eval_Diff_VDF&) dynamic_cast<const Eval_Diff_VDF&>(iter.evaluateur());
   return eval_diff.get_diffusivite();
+}
+
+void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, Matrice_Morse& matrice, const Probleme_base& autre_pb) const
+{
+
+  const Zone_VDF& zone = iter.zone();
+  const Zone_Cl_VDF& zcl = iter.zone_Cl();
+
+  // boucle sur les cl pour trouver un paroi_contact
+  for (int i = 0; i < zone.nb_front_Cl(); i++)
+    {
+      const Cond_lim& la_cl = zcl.les_conditions_limites(i);
+      if (la_cl.valeur().que_suis_je().debute_par("Paroi_Echange_contact"))
+        {
+          const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, la_cl.valeur());
+          if (cl.nom_autre_pb() == autre_pb.le_nom())
+            {
+              const IntTab& elem_dist = cl.get_size_bloc_and_distant_elems();
+              std::map<int, std::pair<int, int>> f2e;
+              // elem_dist(0, :) contient la dimension du bloc rectangulaire
+              for (int j = 1; j < elem_dist.dimension(0); j++)
+                f2e[elem_dist(j, 2)] = std::make_pair(elem_dist(j, 0), elem_dist(j, 1));
+              iter.ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
+            }
+        }
+    }
+
+}
+
+void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb) const
+{
+  const Zone_VDF& zone = iter.zone();
+  const Zone_Cl_VDF& zcl = iter.zone_Cl();
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+  int nl = -1, nc = -1;
+
+  // boucle sur les cl pour trouver un paroi_contact
+  for (int i = 0; i < zone.nb_front_Cl(); i++)
+    {
+      const Cond_lim& la_cl = zcl.les_conditions_limites(i);
+      if (la_cl.valeur().que_suis_je().debute_par("Paroi_Echange_contact"))
+        {
+          const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, la_cl.valeur());
+          if (cl.nom_autre_pb() == autre_pb.le_nom())
+            {
+              const IntTab& elem_dist = cl.get_size_bloc_and_distant_elems();
+              nl = elem_dist(0, 0), nc = elem_dist(0, 1);
+              for (int j = 1; j < elem_dist.dimension(0); j++)
+                stencil.append_line(elem_dist(j, 0), elem_dist(j, 1));
+            }
+        }
+    }
+
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_morse_matrix(nl, nc, stencil, matrice);
 }

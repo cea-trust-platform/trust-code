@@ -172,6 +172,8 @@ public :
   virtual void modifier_pour_Cl( Matrice_Morse& mat_morse,DoubleTab& secmem) const;
   // assemble, ajoute linertie,et modifie_pour_cl.
   virtual void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
+  virtual void dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb);
+  virtual void assembler_termes_croises(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu, const Probleme_base& autre_pb);
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////

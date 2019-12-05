@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,9 +54,9 @@ Entree& Echange_contact_VDF::readOn(Entree& s )
   ch.creer(nom_pb, nom_bord, nom_champ);
   T_ext().typer("Ch_front_var_instationnaire_dep");
   T_ext()->fixer_nb_comp(1);
+  nom_autre_pb_ = nom_pb;
   return s ;
 }
-
 
 void Echange_contact_VDF::completer()
 {
@@ -65,6 +65,34 @@ void Echange_contact_VDF::completer()
   T_autre_pb().associer_fr_dis_base(T_ext().frontiere_dis());
   T_autre_pb()->completer();
   T_autre_pb()->fixer_nb_valeurs_temporelles(nb_cases);
+
+  // remplissage du tableau de faces distantes
+  const Champ_front_calc& ch = ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  const Zone_VDF& ma_zvdf = ref_cast(Zone_VDF,zone_Cl_dis().zone_dis().valeur());
+  const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
+  const Zone_VDF& zvdf_2 = ref_cast(Zone_VDF, ch.zone_dis());
+  const Front_VF& front_vf = ref_cast(Front_VF, ch.front_dis());
+  const int ndeb = ma_front_vf.num_premiere_face();
+  const int ndeb2 = front_vf.num_premiere_face();
+  const int nb_faces_bord = ma_front_vf.nb_faces();
+  const int nl = ma_zvdf.nb_elem_tot();
+  const int nc = zvdf_2.nb_elem_tot();
+
+  size_bloc_and_distant_faces_.resize(0, 4);
+  size_bloc_and_distant_faces_.set_smart_resize(1);
+  size_bloc_and_distant_faces_.append_line(nl, nc, -1, -1);
+
+  for (int f = 0; f < nb_faces_bord; f++)
+    {
+      const int f1 = f + ndeb;
+      const int f2 = f + ndeb2;
+
+      int e1 = (ma_zvdf.face_voisins(f1, 0) != -1) ? ma_zvdf.face_voisins(f1, 0) : ma_zvdf.face_voisins(f1, 1);
+      int e2 = (zvdf_2.face_voisins(f2, 0) != -1) ? zvdf_2.face_voisins(f2, 0) : zvdf_2.face_voisins(f2, 1);
+
+      size_bloc_and_distant_faces_.append_line(e1, e2, f1, f2);
+    }
+
 }
 
 // Description:

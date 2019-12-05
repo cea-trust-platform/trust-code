@@ -2153,6 +2153,16 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
     }
 }
 
+void Equation_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb)
+{
+
+  for(int i = 0; i < nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().dimensionner_termes_croises(matrice, autre_pb);
+
+  // solv_masse().valeur().dimensionner(matrice);
+  matrice.get_set_coeff() = 0.0;
+}
+
 // ajoute les contributions des operateurs et des sources
 void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
@@ -2207,6 +2217,13 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
       Cerr << "Unknown value in Equation_base::assembler for " << type_codage << finl;
       Process::exit();
     }
+}
+
+void Equation_base::assembler_termes_croises(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu, const Probleme_base& autre_pb)
+{
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().contribuer_termes_croises(inco, matrice, autre_pb);
+  matrice.ajouter_multvect(inco, resu);
 }
 
 

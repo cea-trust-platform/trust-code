@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Debog.h>
 #include <Matrice_Bloc.h>
 #include <Matrice_Morse_Sym.h>
+#include <Matrice_Nulle.h>
 #include <Assembleur_base.h>
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>
@@ -33,6 +34,9 @@
 #include <Schema_Euler_Implicite.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Probleme_base.h>
+#include <MD_Vector_composite.h>
+#include <MD_Vector_tools.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable_sans_constructeur(Simple,"Simple",Simpler_Base);
 
@@ -332,6 +336,97 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
 
   solveur->reinit();
   return (converge==1);
+}
+
+bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_convergence)
+{
+  // on recupere le solveur de systeme lineaire
+  Parametre_implicite& param = get_and_set_parametre_implicite(eqs[0]);
+  SolveurSys& solveur = param.solveur();
+  double seuil_convg = param.seuil_convergence_implicite();
+
+  // creation du MV_Vector composite pour les inconnues et le residu
+  MD_Vector md_TT;
+  {
+    MD_Vector_composite mds;
+    for(int i = 0; i < eqs.size(); i++)
+      mds.add_part(eqs[i]->inconnue().valeurs().get_md_vector());
+    md_TT.copy(mds);
+  }
+  DoubleTab inconnues, residus, dudt;
+  MD_Vector_tools::creer_tableau_distribue(md_TT, inconnues);
+  MD_Vector_tools::creer_tableau_distribue(md_TT, residus);
+  MD_Vector_tools::creer_tableau_distribue(md_TT, dudt);
+  DoubleTab_parts residu_parts(residus), inconnues_parts(inconnues), dudt_parts(dudt);
+  Matrice_Bloc Mglob(eqs.size(), eqs.size());
+
+  // remplissage vecteur d'inconnues et des blocs diagonaux de la matrice
+  for(int i = 0; i < eqs.size(); i++)
+    {
+      inconnues_parts[i] = eqs[i]->inconnue().valeurs();
+      dudt_parts[i] = inconnues_parts[i];
+      Mglob.get_bloc(i, i).typer("Matrice_Morse");
+      Matrice_Morse& matrice = ref_cast(Matrice_Morse, Mglob.get_bloc(i, i).valeur());
+      eqs[i]->dimensionner_matrice(matrice);
+      eqs[i]->assembler_avec_inertie(matrice, eqs[i]->inconnue().valeurs(), residu_parts[i]);
+    }
+
+  // remplissage blocs extra-diagonaux
+  for(int i = 0; i < eqs.size(); i++) for(int j = 0; j < eqs.size(); j++) if (i != j)
+        {
+          Mglob.get_bloc(i, j).typer("Matrice_Morse");
+          Matrice_Morse& matrice = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+          eqs[i]->dimensionner_termes_croises(matrice, eqs[j]->probleme());
+          if (matrice.nb_colonnes())
+            eqs[i]->assembler_termes_croises(matrice, inconnues_parts[j], residu_parts[i], eqs[j]->probleme());
+          else
+            {
+              const int nl = Mglob.get_bloc(i, i).valeur().nb_lignes();
+              const int nc = Mglob.get_bloc(j, j).valeur().nb_colonnes();
+              ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()).dimensionner(nl, nc, 0);
+            }
+        }
+
+  // Matrice_Morse mat_morse_glob;
+  // Mglob.BlocToMatMorse(mat_morse_glob);
+  // mat_morse_glob.imprimer_formatte(Cerr);
+  // mat_morse_glob.imprimer_image(Cerr);
+
+  // resolution
+  solveur.valeur().reinit();
+  solveur.resoudre_systeme(Mglob, residus, inconnues);
+
+  // mise a jour
+  bool converge = true;
+  for(int i = 0; i < eqs.size(); i++)
+    {
+      dudt_parts[i] -= inconnues_parts[i];
+      double dudt_norme = mp_norme_vect(dudt_parts[i]);
+      eqs[i]->inconnue().valeurs() = inconnues_parts[i];
+
+      if (test_convergence)
+        {
+          converge &= (dudt_norme < seuil_convg);
+          if (!converge)
+            {
+              Cout<<eqs[i]->que_suis_je()<<" is not converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" > implicit threshold "<<seuil_convg<<" )"<<finl;
+              if (nb_iter>=10) Cout << "Consider lowering facsec_max value. Look at the reference manual for advice to set facsec_max value according to the problem type." << finl;
+            }
+          else
+            Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
+        }
+      else
+        Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" )"<<finl;
+      eqs[i]->inconnue().futur() = eqs[i]->inconnue().valeurs();
+      const double t = eqs[i]->schema_temps().temps_courant() + eqs[i]->schema_temps().pas_de_temps();
+      eqs[i]->zone_Cl_dis()->imposer_cond_lim(eqs[i]->inconnue(), t);
+      eqs[i]->inconnue().valeurs() = eqs[i]->inconnue().futur();
+      eqs[i]->inconnue().valeur().Champ_base::changer_temps(t);
+    }
+
+  // avec une resolution monolithique, on est forcement converge
+  // (la deuxieme iteration donnera des residus de 1e-13)
+  return test_convergence ? converge : true;
 }
 
 void Simple::calculer_correction_en_vitesse(const DoubleTrav& correction_en_pression,DoubleTrav& gradP,DoubleTrav& correction_en_vitesse,const Matrice_Morse& matrice,const Operateur_Grad& gradient)

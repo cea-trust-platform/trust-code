@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@ class Front_VF;
 class Zone_VDF;
 class Faces;
 #include <Ref_Champ_Inc.h>
+#include <IntTab.h>
 
 ////////////////////////////////////////////////////////////////
 
@@ -73,6 +74,16 @@ public :
   {
     return autre_h;
   };
+  inline const IntTab& get_size_bloc_and_distant_elems() const
+  {
+    // renvoie nl, nc puis e_pb1 -> e_pb2 pour e voisin d'une face de paroi contact
+    // avec nl, nc  le nombre de lignes et de colonnes de la matrice de couplage entre le pb1 et le pb2
+    return size_bloc_and_distant_faces_;
+  };
+  inline const Nom& nom_autre_pb() const
+  {
+    return nom_autre_pb_;
+  };
 
   virtual void changer_temps_futur(double temps,int i);
   virtual int avancer(double temps);
@@ -83,5 +94,7 @@ protected :
   DoubleTab autre_h;
   Champ_front T_autre_pb_;
   DoubleTab T_wall_;
+  Nom nom_autre_pb_;
+  IntTab size_bloc_and_distant_faces_;
 };
 #endif

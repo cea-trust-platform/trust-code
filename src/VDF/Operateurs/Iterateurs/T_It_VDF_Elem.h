@@ -90,6 +90,7 @@ protected:
   void ajouter_contribution_bords(const DoubleTab&, Matrice_Morse&, int ) const;
   void ajouter_contribution_interne(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_interne(const DoubleTab&, Matrice_Morse&, int ) const;
+  void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
   const Milieu_base& milieu() const;
   IntTab elem;
 };
@@ -2345,5 +2346,24 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_intern
     }
 }
 
+template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
+{
+  double aii=0, ajj=0;
+
+  const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+  const int ndeb = frontiere_dis.num_premiere_face();
+  const int nfin = ndeb + frontiere_dis.nb_faces();
+  // assert(cl est bien paroi contact)
+  if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+    {
+      const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
+      for (int f = ndeb; f < nfin; f++)
+        {
+          flux_evaluateur.coeffs_face(f, ndeb, cl, aii, ajj);
+          const int e1 = f2e[f].first, e2 = f2e[f].second;
+          matrice(e1, e2) = -(elem(f, 0) > -1 ? aii : ajj);
+        }
+    }
+}
 
 #endif
