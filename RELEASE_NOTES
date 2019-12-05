@@ -1,11 +1,12 @@
---------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
---------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+05/12/19 (TRUST)  New feature : Add possibility to post-process Y_PLUS on moving boundaries in VEF discretization 
 04/12/19 (TRUST)  Portability : Add the possibility to configure a baltik in 64 bit indices mode (experimental)
 27/11/19 (TRUST)  Portability : orcus (DM2S) and plafrim (INRIA) clusters supported
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.8.0 : Enhancements, modifications and corrected bugs since version 1.7.9 :
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 31/10/19 (TRUST)  New feature : First version of a Python module (SWIG) for the ICoCo interface.
 30/10/19 (TRUST)  New feature : PISO scheme now working with PolyMAC.
 30/10/19 (TRUST)  Bug fixed   : Several bug fixes for polyhedrons and PolyMAC discretisation. 
@@ -31,9 +32,9 @@ Release notes version 1.8.0 : Enhancements, modifications and corrected bugs sin
 23/08/19 (TRUST)  Bug fixed   : Regression introduced in 1.7.7: using MED format post-processingcluster during parallel calculation with empty zones crashed
 21/08/19 (TRUST)  New keyword : Champ_Fonc_MED_Tabule to interpolate each time step among a list of fields from a MED file
 20/08/19 (TRUST)  Portability : Fedora 30 and GNU compilers 9.0.1 supported
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.7.9 : Enhancements, modifications and corrected bugs since version 1.7.8 :
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 26/06/19 (TRUST)  Bug fixed   : Probes on polyhedral meshes
 28/05/19 (TRUST)  New feature : 'Create_domaine_from_sous_zone' now propagates the zone information to the sub-domains.
 28/05/19 (TRUST)  New keyword : 'Sous_domaine' and 'Union' partitioners, enabling the creation of conform partitions from sub-zones.
