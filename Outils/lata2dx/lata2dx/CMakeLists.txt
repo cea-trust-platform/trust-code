@@ -3,6 +3,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4.7 FATAL_ERROR)
     
 project(lata2dx)
 add_definitions(-fPIC)
+add_definitions(-std=gnu++11)
+#set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 SET(CMAKE_INSTALL_MESSAGE LAZY)
 

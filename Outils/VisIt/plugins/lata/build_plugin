@@ -65,7 +65,7 @@ $DIR/src/generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
    # tkdiff  CMakeLists.txt p
    mv p CMakeLists.txt
   # rm -f CMakeCache*
-   cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc
+   cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_STANDARD=11
    [ ! -f Makefile ] && echo "Echec du construction du Makefile par xml2makefile dans ${Build}_plugin" && exit -1
 
    cd ..

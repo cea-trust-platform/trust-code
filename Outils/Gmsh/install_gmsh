@@ -71,7 +71,8 @@ if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
 then
    # Vu sur 2 machines de Saclay dont is213120:
    # gfortran non trouve au link de Gmsh
-   options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
+   #options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
+   options="-lgfortran"
 fi
 
 # By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB) and MED.
@@ -83,7 +84,7 @@ $TRUST_ROOT/exec/python/bin/cmake $options $plugins  \
 -DCMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib \
 -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
--DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$TRUST_ROOT/lib/src/LIBLAPACK;$FLTK_ROOT" \
+-DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$TRUST_ROOT/lib/src/LIBLAPACK $options;$FLTK_ROOT" \
 -DHDF5_ROOT="$TRUST_MED_ROOT" ../$GMSH_SRC 2>&1 || exit -1
 
 # Check that FLTK has been found correctly:
