@@ -1755,7 +1755,7 @@ case $TRUST_ARCH_CC in
 linux_clang++) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	# 06/02/14, Added -Wshadow
 	CppFlags=$CppFlags" -Wshadow"
 	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
