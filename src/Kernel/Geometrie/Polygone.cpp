@@ -333,7 +333,7 @@ void Polygone::calculer_volumes(DoubleVect& volumes) const
       int s0=elem(num_poly,0);
       for (int d=0; d<dimension; d++)
         pos(0,d)=coord(s0,d);
-      for (int s=1; s<nb_som_elem_max_-1 ; s++)
+      for (int s=1; s<get_nb_som_elem_max()-1 ; s++)
         {
           int s1=elem(num_poly,s);
           int s2=elem(num_poly,s+1);
@@ -506,7 +506,7 @@ void Polygone::calculer_centres_gravite(DoubleTab& xp) const
       int s0=elem(num_poly,0);
       for (int d=0; d<dimension; d++)
         pos(0,d)=coord(s0,d);
-      for (int s=1; s<nb_som_elem_max_-1 ; s++)
+      for (int s=1; s<get_nb_som_elem_max()-1 ; s++)
         {
           int s1=elem(num_poly,s);
           int s2=elem(num_poly,s+1);
