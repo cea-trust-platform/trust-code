@@ -60,11 +60,13 @@ module () {
 ##############################
 define_soumission_batch()
 {
+   amd=`grep AuthenticAMD /proc/cpuinfo`
    soumission=2 && [ "$prod" = 1 ] && soumission=1
    # ram=16000 # 16 GB asked
    # So we use now n cores for one task to have 4*n GB per task
    [ "$bigmem" = 1 ] && cpus_per_task=4 && soumission=1 # To have 16GB per task
-   ntasks=48 # 48 cores per node for skylake queue (68 for KNL queue)
+   # 48 cores per node for skylake queue (68 for KNL queue), 128 for AMD rome
+   ntasks=48 && [ "$amd" != "" ] && ntasks=128
    # ccc_mqinfo : 
    #Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime
    #-------  ---------  --------  -------  -------  --------  ------  ------  ----------
@@ -85,7 +87,9 @@ define_soumission_batch()
    #PARTITION    STATUS TOT_CPUS TOT_NODES    MpC  CpN SpN CpS TpC
    #skylake      up        74256      1547    3750  48   2  24   1
    #knl          up        38284       563    1411  68   1  68   1
-   queue=skylake && [ "$bigmem" = 1 ] && queue=knl && ntasks=68
+   #rome         up       269056      2102    1875  128  8  16   1
+   queue=skylake && [ "$amd" != "" ] && queue=rome
+   [ "$bigmem" = 1 ] && queue=knl && ntasks=68
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1
