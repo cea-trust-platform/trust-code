@@ -44,7 +44,8 @@ module () {
 }" >> $env
    #
    # Load modules
-   intel="intel/18.0.3.222"
+   amd=`grep AuthenticAMD /proc/cpuinfo`
+   intel="intel/18.0.3.222" && [ "$amd" != "" ] && intel="intel/19.0.5.281"
    intelmpi="mpi/intelmpi/2018.0.3.222"
    module="$intel $intelmpi"
    #
