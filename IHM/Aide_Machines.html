@@ -30,8 +30,8 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
-Linux x86_64		2*64@2.5Ghz			AMD EPYC 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
 Linux x86_64		 1*4@2.5Ghz	16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
+Linux x86_64		2*64@2.5Ghz			AMD EPYC 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
 Linux x86_64	        2*24@2.7Ghz	96Go:33Mo	Xeon Gold 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
 Linux x86_64	        2*14@2.4Ghz	64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
 Linux x86_64		1*4@3.00Ghz	16Go:8Mo	Xeon E3-1220 v5	2.4s	is231771.intra.cea.fr   (g++ 4.8.5, MPICH 3.2)		1.56	cpu_3D	 v1.7.7
@@ -213,15 +213,15 @@ nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite   
 ######################################
 Cas VDF (512000 inconnues en pression)
 ######################################
-Calcul parallele TRUST 1.8.1_beta Tue Dec 10 14:09:20 CET 2019 sur irene-amd : (AMD, Intel 19.0.5, Intelmpi/2018 update 3):
+Calcul parallele TRUST 1.8.1_beta Tue Dec 10 14:09:20 CET 2019 sur irene-amd : (AMD, Intel 19.0.5, Intelmpi/2018 update 3, binding "-m block:block --cpu-bind=rank"):
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
-1       | 1.73466       | 110.25        | 0.0118527     | 1.000         | 1.000         |
-2       | 1.15638       | 110.25        | 0.00774743    | 1.500         | .750          |
-4       | 0.700188      | 110.25        | 0.00472329    | 2.477         | .619          |
-8       | 0.365439      | 110.25        | 0.00245953    | 4.746         | .593          |
-16      | 0.179053      | 110.25        | 0.00111827    | 9.687         | .605          |
+1       | 1.80951       | 110.25        | 0.011859      | 1.000         | 1.000         |
+2       | 1.09602       | 110.25        | 0.00772919    | 1.650         | .825          |
+4       | 0.56875       | 110.25        | 0.00360593    | 3.181         | .795          |
+8       | 0.342191      | 110.25        | 0.00213176    | 5.288         | .661          |
+16      | 0.149209      | 110.25        | 0.00088457    | 12.127        | .757          |
 ------------------------------------------------------------------------------------
 Calcul parallele TRUST 1.8.0_beta Tue Nov 12 17:29:26 CET 2019 sur orcus-amd : (AMD, Intel 19.0.3, Intelmpi/2019 update 3, binding "-m block:block --cpu-bind=rank"):
 ------------------------------------------------------------------------------------

@@ -102,8 +102,8 @@ define_soumission_batch()
    else
       node=0
    fi
-   #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
-   mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
+   binding="" && [ "$amd" != "" ] && binding="-e '-m block:block --cpu-bind=rank'" # Optimisation des perfs en // comme sur orcus (+30%)
+   mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
    project="dendm2s" && [ "`id | grep gch0406`" != "" ] && project="gch0406"
