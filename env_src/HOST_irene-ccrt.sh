@@ -110,6 +110,6 @@ define_soumission_batch()
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
-   #project="genden"
+   project="dendm2s"
    [ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
