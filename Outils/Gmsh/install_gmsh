@@ -34,7 +34,7 @@ then
    tar xfz $fltk
    cd ${fltk%-source.tar.gz}
    export CC=$TRUST_cc_BASE
-   env CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-ldl ./configure --enable-xdbe=no --prefix $FLTK_ROOT || exit -1
+   env CFLAGS=-fPIC CXXFLAGS=-fPIC ./configure --enable-xdbe=no --prefix $FLTK_ROOT LIBS='-ldl' || exit -1
    $TRUST_MAKE || exit -1
    make install || exit -1 
    cd ..
