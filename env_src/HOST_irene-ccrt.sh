@@ -80,7 +80,7 @@ define_soumission_batch()
       qos=normal
       [ "$prod" = 1 ] && cpu=86400
    else
-      qos=test
+      qos=test && [ "$amd" != "" ] && qos=normal
       cpu=1800
    fi
    # ccc_mpinfo : 
@@ -106,6 +106,6 @@ define_soumission_batch()
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
-   project="dendm2s"
+   project="dendm2s" && [ "`id | grep gch0406`" != "" ] && project="gch0406"
    [ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
