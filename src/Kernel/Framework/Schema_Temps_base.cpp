@@ -1074,6 +1074,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
   else
     mp_max_abs_tab(tab_critere, residu_equation);
 
+  equation.set_residuals(tab_critere);
   // On calcule le residu_initial_equation sur les 5 premiers pas de temps
   if (seuil_statio_relatif_deconseille_)
     {
