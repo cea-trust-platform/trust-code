@@ -1,0 +1,21 @@
+# Verification de merge_meds.py 
+if [ -f PAR_MergeMEDs_POST_MED_0000.med ] ; then
+   echo "Merge parallel med files into a single one and compare it with the sequential med"
+   source $TRUST_MEDCOUPLING_ROOT/env.sh || exit -1
+
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/merge_meds.py PAR_MergeMEDs_POST_MED_0000.med 9 PAR_MergeMEDs.med 1>merge_meds.log 2>&1
+   
+   compare_lata MergeMEDs_POST_MED_0000.med PAR_MergeMEDs.med  1>compare_med.log 2>&1
+   err=$?
+   if [ $err -eq 0 ] ; then
+      echo "sequential medfile and merged medfile match"
+      exit 0
+   else
+      echo "sequential medfile and merged medfile DOES NOT match!!!"
+      exit -1
+   fi
+else
+echo "Parallel computation have not been performed for instance"
+exit 0
+fi
+
