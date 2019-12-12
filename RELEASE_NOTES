@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/19 (Tools)  New feature : Add merge_meds.py python script to merge MED files in parallel into single one
 05/12/19 (TRUST)  New feature : Add possibility to post-process Y_PLUS on moving boundaries in VEF discretization 
 04/12/19 (TRUST)  Portability : Add the possibility to configure a baltik in 64 bit indices mode (experimental)
 27/11/19 (TRUST)  Portability : orcus (DM2S) and plafrim (INRIA) clusters supported

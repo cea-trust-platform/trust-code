@@ -1,7 +1,6 @@
 from __future__ import print_function
 import medcoupling as mc
 import MEDLoader as ml
-import time
 from optparse import OptionParser
 import sys
 import os
