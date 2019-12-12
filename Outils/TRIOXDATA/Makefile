@@ -1,7 +1,8 @@
 IHMTRIO.sh:  Installer  Makefile XDATA.sh XTriou/update_xd
 	./Installer TRIOU #1>>TRIOXDATA.log 2>&1
 
-XDATA.sh: Installer Makefile 
+XDATA.sh: Installer Makefile
+	make clean 
 	./Installer XDATA #1>>TRIOXDATA.log 2>&1
 XTriou/update_xd: all
 all:	XDATA.sh
