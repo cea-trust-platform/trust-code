@@ -170,7 +170,6 @@ tracee dans le rapport de validation de TRUST.'''
                 self.gestMsg.ecrire(GestionMessages._ERR, 'unable to read %d values in file %s.'% (nb_colonnes_f,self.fichier))
                 pass
             pass
-
         elif self.difference!='Undefined':
             args=self.difference.split()
             methode=args[0]
@@ -194,6 +193,7 @@ tracee dans le rapport de validation de TRUST.'''
                     pass
             else:
                 self.gestMsg.ecrire(GestionMessages._ERR, 'Unknown parameter. We were expecting a difference parameter, and not %s.' % (methode))
+
         else:
             # les verif auraient du etre faite au dessus
             1/0
@@ -206,12 +206,16 @@ tracee dans le rapport de validation de TRUST.'''
                 if formule!="rien":
                     for j0 in range(nb_colonnes_f):
                         j=nb_colonnes_f-j0-1
-                        cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j)
-                        exec(cmd)
+                        original_string="$%d"%(j+1)
+                        replacement_string="val[%d]"%j
+                        formule=formule.replace(original_string, replacement_string)
                         pass
                     for key in list(dico.keys()):
-                        cmd="formule=formule.replace(\"%s.val\",\"dico[\'%s\']\")"%(key,key)
-                        exec( cmd)
+                        # cmd="formule=formule.replace(\"%s.val\",\"dico[\'%s\']\")"%(key,key)
+                        # exec(cmd)
+                        original_string="%s.val"%key
+                        replacement_string="dico['%s']"%key
+                        formule=formule.replace(original_string, replacement_string)
                         pass
                     # print formule
                     val2[i]=eval(formule)
@@ -383,8 +387,11 @@ tracee dans le rapport de validation de TRUST.'''
 
                             for j0 in range(nb_colonnes_f):
                                 j=nb_colonnes_f-j0-1
-                                cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j+ll*nb_colonnes_f)
-                                exec(cmd)
+                                # cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j+ll*nb_colonnes_f)
+                                # exec(cmd)
+                                original_string="$%d"%(j+1)
+                                replacement_string="val[%d]"%(j+ll*nb_colonnes_f)
+                                formule=formule.replace(original_string, replacement_string)                                
                                 pass
                             # print formule
                             val2[i+ll*(nb_colonnes+1)]=eval(formule)
