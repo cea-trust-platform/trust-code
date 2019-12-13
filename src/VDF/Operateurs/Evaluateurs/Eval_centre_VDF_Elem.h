@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,6 +125,20 @@ public:
   inline void coeffs_face(int, int,const Periodique&, double& aii, double& ajj ) const;
   inline void coeffs_face(int, int,const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
+
+  // contribution de la derivee en vitesse d'une equation scalaire
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Echange_global_impose&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_paroi&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Symetrie&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const NSCBC&, int ) const;
+  inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite pour les grandeurs scalaires.
@@ -354,6 +368,33 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int face, int num1,const Dirichlet
     }
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                             const Dirichlet_entree_fluide& la_cl,
+                                                             int num1) const
+{
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  double flux;
+  double psc = surface(face)*porosite(face);
+  double T_imp = la_cl.val_imp(face-num1);
+  if (n0 != -1)
+    {
+      if (dt_vitesse[face] > 0)
+        flux= psc*inco[n0];
+      else
+        flux= psc*T_imp;
+    }
+  else   // n1 != -1
+    {
+      if (dt_vitesse[face]>0)
+        flux= psc*T_imp;
+      else
+        flux= psc*inco[n1];
+    }
+  return flux;
+}
+
+
 //// secmem_face avec Dirichlet_entree_fluide
 //
 
@@ -396,6 +437,12 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int,int, const Dirichlet_paroi_def
   ;
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const Dirichlet_paroi_defilante&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Dirichlet_paroi_defilante
 //
 
@@ -419,6 +466,12 @@ inline double Eval_centre_VDF_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_centre_VDF_Elem::coeffs_face(int ,int,const Dirichlet_paroi_fixe&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const Dirichlet_paroi_fixe&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Dirichlet_paroi_fixe
@@ -447,6 +500,12 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int,int,int,int, const Echange_ext
   ;
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int,
+                                                             const Echange_externe_impose&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Echange_externe_impose
 //
 
@@ -470,6 +529,12 @@ inline double Eval_centre_VDF_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_centre_VDF_Elem::coeffs_face(int, int,const Echange_global_impose&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const Echange_global_impose&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Echange_global_impose
@@ -497,6 +562,12 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int , int,const Neumann_paroi&, do
   ;
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const Neumann_paroi&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Neumann_paroi
 //
 
@@ -520,6 +591,12 @@ inline double Eval_centre_VDF_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_centre_VDF_Elem::coeffs_face(int,int, const Neumann_paroi_adiabatique&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const Neumann_paroi_adiabatique&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Neumann_paroi_adiabatique
@@ -578,6 +655,31 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int face,int num1, const Neumann_s
     }
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                             const Neumann_sortie_libre& la_cl, int num1) const
+{
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  double flux;
+  double psc = surface(face)*porosite(face);
+  if (n0 != -1)
+    {
+      if (dt_vitesse[face] > 0)
+        flux= psc*inco[n0];
+      else
+        flux= psc*la_cl.val_ext(face-num1);
+    }
+  else   // n1 != -1
+    {
+      if (dt_vitesse[face] > 0)
+        flux=psc*la_cl.val_ext(face-num1);
+      else
+        flux= psc*inco[n1];
+    }
+  return flux;
+}
+
+
 //// secmem_face avec Neumann_sortie_libre
 //
 
@@ -618,6 +720,12 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int, int,const Symetrie&, double&,
   ;
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const Symetrie&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Symetrie
 //
 
@@ -642,6 +750,12 @@ inline double Eval_centre_VDF_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_centre_VDF_Elem::coeffs_face(int, int,const NSCBC&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                             const NSCBC&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec NSCBC
@@ -691,6 +805,23 @@ inline void Eval_centre_VDF_Elem::coeffs_face(int face, int,const Periodique& la
     ajj = -qcentre(psc,i,j,i0_0,j1_1,face,inconnue->valeurs());
 }
 
+inline double Eval_centre_VDF_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                             const Periodique& la_cl, int ) const
+{
+  // 30/05/2002 : Codage Periodicite.
+  // ALEX C.
+  double flux;
+  double psc = surface(face)*porosite(face);
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  int n0_0 = amont_amont(face,0);
+  int n1_1 = amont_amont(face,1);
+
+  // on applique le schema centre2
+  flux = qcentre(psc,n0,n1,n0_0,n1_1,face,inco);
+  return flux;
+}
+
 //// secmem_face avec Periodique
 //
 
@@ -737,6 +868,19 @@ inline void Eval_centre_VDF_Elem::coeffs_faces_interne(int face, double& aii, do
       aii = -qcentre(psc,i,j,i0_0,j1_1,face,inconnue->valeurs());
     else
       ajj = -qcentre(psc,i,j,i0_0,j1_1,face,inconnue->valeurs());
+}
+
+inline double Eval_centre_VDF_Elem::coeffs_faces_interne_bloc_vitesse(const DoubleTab& inco, int face) const
+{
+  double flux;
+  double psc = surface(face)*porosite(face);
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  int n0_0 = amont_amont(face,0);
+  int n1_1 = amont_amont(face,1);
+
+  flux = qcentre(psc,n0,n1,n0_0,n1_1,face,inco);
+  return flux;
 }
 
 //// secmem_faces_interne

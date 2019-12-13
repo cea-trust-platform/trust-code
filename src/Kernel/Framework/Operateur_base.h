@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,8 +72,10 @@ public :
                         const Champ_Inc& inco) =0;
   virtual void associer_zone_cl_dis(const Zone_Cl_dis_base&);
   virtual void dimensionner(Matrice_Morse& ) const /* =0 */;
+  virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;
   virtual void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const /* =0 */;
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
+  virtual void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
   virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
   void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
   virtual double calculer_dt_stab() const;

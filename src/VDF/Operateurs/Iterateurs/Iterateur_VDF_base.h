@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,6 +86,7 @@ public:
   virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const=0;
   virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
+  virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual Evaluateur_VDF& evaluateur() =0;
   virtual const Evaluateur_VDF& evaluateur() const=0;
   inline const Zone_VDF& zone() const;
@@ -122,6 +123,7 @@ public:
   inline DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   inline void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  inline void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   inline Evaluateur_VDF& evaluateur();
   inline const Evaluateur_VDF& evaluateur() const;
   inline const Zone_VDF& zone() const;
@@ -223,6 +225,10 @@ inline void Iterateur_VDF::contribuer_au_second_membre(DoubleTab& resu) const
 inline void Iterateur_VDF::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   valeur().ajouter_contribution(inco, matrice);
+}
+inline void Iterateur_VDF::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  valeur().ajouter_contribution_vitesse(inco, matrice);
 }
 
 inline void Iterateur_VDF::associer(const Zone_VDF& zone_vdf,

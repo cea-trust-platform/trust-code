@@ -219,6 +219,13 @@ void Operateur_base::dimensionner(Matrice_Morse& ) const
   exit();
 }
 
+void Operateur_base::dimensionner_bloc_vitesse(Matrice_Morse& ) const
+{
+  Cerr << "You must overload the method " << que_suis_je()
+       << "::dimensionner_bloc_vitesse(Matrice_Morse& )" << finl;
+  exit();
+}
+
 
 // Description:
 //    NE FAIT RIEN
@@ -279,6 +286,12 @@ void Operateur_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const
   exit();
 }
 
+void Operateur_base::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const
+{
+  Cerr << "You must overload the method " << que_suis_je()
+       << "::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&)" << finl;
+  exit();
+}
 
 // Description:
 //    NE FAIT RIEN

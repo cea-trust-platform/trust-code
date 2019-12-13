@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,6 +55,7 @@ public:
   inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const;
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  inline void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   virtual const Champ_base& vitesse() const=0;
   virtual Champ_base& vitesse()=0;
@@ -96,6 +97,12 @@ inline void Op_Conv_VDF_base::contribuer_a_avec(const DoubleTab& inco,
                                                 Matrice_Morse& matrice) const
 {
   iter.ajouter_contribution(inco, matrice);
+}
+
+inline void Op_Conv_VDF_base::contribuer_bloc_vitesse(const DoubleTab& inco,
+                                                      Matrice_Morse& matrice) const
+{
+  iter.ajouter_contribution_vitesse(inco, matrice);
 }
 
 //Description:

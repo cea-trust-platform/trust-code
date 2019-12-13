@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,7 @@ public :
   inline DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
+  inline void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline void associer_zone_cl_dis(const Zone_Cl_dis_base&)
   {
@@ -136,6 +137,10 @@ inline void  Op_Conv_negligeable::contribuer_a_avec(const DoubleTab& inco,
   ;
 }
 
+inline void Op_Conv_negligeable::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const
+{
+  ;
+}
 
 
 //Description:

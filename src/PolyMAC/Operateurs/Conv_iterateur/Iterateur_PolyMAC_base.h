@@ -88,6 +88,7 @@ public:
   virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const=0;
   virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
+  virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual Evaluateur_PolyMAC& evaluateur() =0;
   virtual const Evaluateur_PolyMAC& evaluateur() const=0;
   inline const Zone_PolyMAC& zone() const;
@@ -124,6 +125,7 @@ public:
   inline DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   inline void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  inline void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   inline Evaluateur_PolyMAC& evaluateur();
   inline const Evaluateur_PolyMAC& evaluateur() const;
   inline const Zone_PolyMAC& zone() const;
@@ -226,6 +228,10 @@ inline void Iterateur_PolyMAC::contribuer_au_second_membre(DoubleTab& resu) cons
 inline void Iterateur_PolyMAC::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   valeur().ajouter_contribution(inco, matrice);
+}
+inline void Iterateur_PolyMAC::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  valeur().ajouter_contribution_vitesse(inco, matrice);
 }
 
 inline void Iterateur_PolyMAC::associer(const Zone_PolyMAC& zone_vdf,
