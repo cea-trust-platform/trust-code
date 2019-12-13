@@ -206,15 +206,16 @@ tracee dans le rapport de validation de TRUST.'''
                 if formule!="rien":
                     for j0 in range(nb_colonnes_f):
                         j=nb_colonnes_f-j0-1
-                        # cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j)
-                        # exec(cmd)
                         original_string="$%d"%(j+1)
                         replacement_string="val[%d]"%j
                         formule=formule.replace(original_string, replacement_string)
                         pass
                     for key in list(dico.keys()):
-                        cmd="formule=formule.replace(\"%s.val\",\"dico[\'%s\']\")"%(key,key)
-                        exec(cmd)
+                        # cmd="formule=formule.replace(\"%s.val\",\"dico[\'%s\']\")"%(key,key)
+                        # exec(cmd)
+                        original_string="%s.val"%key
+                        replacement_string="dico['%s']"%key
+                        formule=formule.replace(original_string, replacement_string)
                         pass
                     # print formule
                     val2[i]=eval(formule)
@@ -386,8 +387,11 @@ tracee dans le rapport de validation de TRUST.'''
 
                             for j0 in range(nb_colonnes_f):
                                 j=nb_colonnes_f-j0-1
-                                cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j+ll*nb_colonnes_f)
-                                exec(cmd)
+                                # cmd="formule=formule.replace(\"$%d\",\"val[%d]\")"%(j+1,j+ll*nb_colonnes_f)
+                                # exec(cmd)
+                                original_string="$%d"%(j+1)
+                                replacement_string="val[%d]"%(j+ll*nb_colonnes_f)
+                                formule=formule.replace(original_string, replacement_string)                                
                                 pass
                             # print formule
                             val2[i+ll*(nb_colonnes+1)]=eval(formule)
