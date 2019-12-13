@@ -68,7 +68,7 @@ class Figure:
         print_description(self.description,dec)
 
         if self.dimension != 2 : print(dec,"dimension", self.dimension)
-        from string import join
+        #from string import join
         if self.rangeX != 'auto' : print(dec,"rangeX", self.rangeX)
         if self.rangeY != 'auto' : print(dec,"rangeY", self.rangeY)
         if self.labelX != 'Undefined' : print(dec,"labelX", self.labelX)

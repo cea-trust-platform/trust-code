@@ -107,13 +107,14 @@ class Visu:
                 elif  nb_args-5==abs(nb_args_after)-1:
                     directname=False
                 else:
-                    from string import join
-                    self.gestMsg.ecrire(GestionMessages._ERR, '1,3 4 or 5 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                    #from string import join
+                    #self.gestMsg.ecrire(GestionMessages._ERR, '1,3 4 or 5 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                    self.gestMsg.ecrire(GestionMessages._ERR, '1,3 4 or 5 parameters expected after %s and not %s'% (plot[0], ' '.join(plot)))
                     pass
                 pass
             else:
-                from string import join
-                self.gestMsg.ecrire(GestionMessages._ERR, '%d or %d parameters expected after %s and not %s'% (nb_args_after+2,nb_args_after+4,plot[0],join(plot)))
+                #from string import join
+                self.gestMsg.ecrire(GestionMessages._ERR, '%d or %d parameters expected after %s and not %s'% (nb_args_after+2,nb_args_after+4,plot[0],' '.join(plot)))
                 pass
             pass
         return directname
@@ -127,8 +128,8 @@ class Visu:
         print_description(self.description,dec)
 
         if self.format != 'png' : print(dec,"format", self.format)
-        from string import join
-        for plot  in self.plot: print(dec,join(plot))
+        #from string import join
+        for plot  in self.plot: print(dec,' '.join(plot))
         if self.cycles != ""   : print(dec,"cycles",self.cycles)
 
         if self.inclureDescCourbes != 1 : print(dec,"inclureDescCourbes", self.inclureDescCourbes)
@@ -234,7 +235,7 @@ class Visu:
                     color=plot[3]
                     listcolor=["red","green","blue","black"]
                     if color not in listcolor:
-                        from string import join
+                        #from string import join
                         self.gestMsg.ecrire(GestionMessages._ERR, 'color expected in %s and not %s'% (listcolor,color))
                     ficPlot.write('red=(255,0,0,255);green=(0,255,0,255);black=(0,0,0,255);blue=(0,0,255,255)\n')
                     ficPlot.write('m=MeshAttributes()\nm.SetMeshColorSource(1)\nm.SetMeshColor(%s)\nSetPlotOptions(m)\n'%color)
@@ -290,16 +291,16 @@ class Visu:
                     pass
                 if (plot[0]=="pseudocolor_with_opacity"):
                     if (len(plot)!=2+decal):
-                        from string import join
-                        self.gestMsg.ecrire(GestionMessages._ERR, '3 or 5 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                        #from string import join
+                        self.gestMsg.ecrire(GestionMessages._ERR, '3 or 5 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                         pass
                     ficPlot.write('pb=PseudocolorAttributes()\npb.SetOpacity(%s)\npb.SetOpacityType(2)\nSetPlotOptions(pb)\n'%plot[decal+1])
 
                     pass
                 if (plot[0]=="pseudocolor_with_range"):
                     if (len(plot)!=decal+3):
-                        from string import join
-                        self.gestMsg.ecrire(GestionMessages._ERR, '6 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                        #from string import join
+                        self.gestMsg.ecrire(GestionMessages._ERR, '6 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                         pass
                     ficPlot.write('pb=PseudocolorAttributes()\n')
                     if (plot[decal+1].upper()!="MIN"):
@@ -312,8 +313,8 @@ class Visu:
                     pass
                 if (plot[0]=="histogram"):
                     if (len(plot)!=decal+4):
-                        from string import join
-                        self.gestMsg.ecrire(GestionMessages._ERR, '5 or 7 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                        #from string import join
+                        self.gestMsg.ecrire(GestionMessages._ERR, '5 or 7 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                         pass
                     ficPlot.write('pb=HistogramAttributes()\n')
                     min_user=0
@@ -330,16 +331,16 @@ class Visu:
                         max_user=1
                         pass
                     if (min_user!=max_user):
-                        from string import join
-                        self.gestMsg.ecrire(GestionMessages._ERR, 'if you specify the min (or the max) you should specify also the max (or the min) in %s'% (join(plot)))
+                        #from string import join
+                        self.gestMsg.ecrire(GestionMessages._ERR, 'if you specify the min (or the max) you should specify also the max (or the min) in %s'% (' '.join(plot)))
                         pass
                     ficPlot.write('pb.SetNumBins(%s)\n'%plot[decal+3])
                     ficPlot.write('SetPlotOptions(pb)\n')
                     pass
                 if (plot[0]=="molecule"):
                     if (len(plot)!=decal+2):
-                        from string import join
-                        self.gestMsg.ecrire(GestionMessages._ERR, '5 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                        #from string import join
+                        self.gestMsg.ecrire(GestionMessages._ERR, '5 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                         pass
                     ficPlot.write('pb=MoleculeAttributes()\npb.SetRadiusFixed(%s)\nSetPlotOptions(pb)\n'%plot[decal+1])
                     pass
@@ -358,15 +359,15 @@ class Visu:
                 ficPlot.write('SetView3D(v)\n');
             elif (plot[0]=="zoom3d"):
                 if (len(plot)!=4):
-                    from string import join
-                    self.gestMsg.ecrire(GestionMessages._ERR, '3 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                    #from string import join
+                    self.gestMsg.ecrire(GestionMessages._ERR, '3 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                     pass
                 ficPlot.write('v=GetView3D()\nv.SetImagePan(%s,%s)\nv.SetImageZoom(%s)\n'%(plot[1],plot[2],plot[3]))
                 ficPlot.write('SetView3D(v)\n')
             elif (plot[0]=="zoom2d"):
                 if (len(plot)!=5):
-                    from string import join
-                    self.gestMsg.ecrire(GestionMessages._ERR, '4 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                    #from string import join
+                    self.gestMsg.ecrire(GestionMessages._ERR, '4 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                     pass
                 ficPlot.write('v=GetView2D()\nv.SetWindowCoords(%s,%s,%s,%s)\n'%(plot[1],plot[2],plot[3],plot[4]))
                 ficPlot.write('SetView2D(v)\n')
@@ -481,8 +482,8 @@ class Visu:
                 pass
             elif (plot[0]=="query"):
                 if (len(plot)!=3):
-                    from string import join
-                    self.gestMsg.ecrire(GestionMessages._ERR, '2 parameters expected after %s and not %s'% (plot[0],join(plot)))
+                    #from string import join
+                    self.gestMsg.ecrire(GestionMessages._ERR, '2 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
                     pass
                 query=plot[1].replace('_',' ')
                 # le Query(...,1) permet d'avoir le "bon" query c.a.d  restreint

@@ -6,7 +6,7 @@
 
 
 # GF on va dans le vrai repertoire en cas de lien ... python a la bonne methode
-cd $(python -c "import os;print os.path.realpath('.')")
+cd $(python -c "import os;print(os.path.realpath('.'))")
 echo "usage $0 src/file.prm [archive_name]"
 rm -rf preserve
 mkdir preserve
@@ -57,17 +57,17 @@ while [ $ok -ne 1 ]; do
   rm -f build/test.pdf
   prm=`basename $1`
   if [ $prem -eq -999 ]; then
-      origp=`pwd`;cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm;$DIR/src/genererCourbes.py -p  $prm -v 1 --get_cmd_to_run=yes 1>/dev/null;prem=`grep  " definition figure" test_lu.prm|tail -1| awk '{print -$NF}'`; rm test_lu.prm ;cd $origp && [ "$prem" = "" ] && prem=1      
+      origp=`pwd`;cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm;python $DIR/src/genererCourbes.py -p  $prm -v 1 --get_cmd_to_run=yes 1>/dev/null;prem=`grep  " definition figure" test_lu.prm|tail -1| awk '{print -$NF}'`; rm test_lu.prm ;cd $origp && [ "$prem" = "" ] && prem=1      
   fi
   echo "@@@ LOG 1"
   if [ $prem -lt 1 ]; then
     fig=`echo -1*$prem |bc`
     echo generation image $fig
-    (cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm; echo "quit()" | $DIR/src/genererCourbes.py -p  $prm --debug_figure=$fig -nodisplay 1>../err 2>&1)
+    (cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm; echo "quit()" | python $DIR/src/genererCourbes.py -p  $prm --debug_figure=$fig -nodisplay 1>../err 2>&1)
   else
       if [ $prem -eq 1 ]; then
          echo generation rapport
-        (cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm; echo "quit()" | $DIR/src/genererCourbes.py -p  $prm -o ../build/test.pdf 1>../err 2>&1)
+        (cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm; echo "quit()" | python $DIR/src/genererCourbes.py -p  $prm -o ../build/test.pdf 1>../err 2>&1)
       else
          echo generation rapport de comparaison
          echo "quit()" | $DIR/Run  $1 -not_run --compare=../preserve/ -o test.pdf 1>err 2>&1

@@ -71,7 +71,7 @@ tracee dans le rapport de validation de TRUST.'''
         if self.points != 'Undefined' : print(dec,"points", self.points)
         if self.fonction != 'Undefined' : print(dec,"fonction", self.fonction)
         if self.gnuplot_command != 'Undefined' : print(dec,"gnuplot_command", self.gnuplot_command)
-        from string import join
+        #from string import join
         if self.colonnes != 'Undefined' : print(dec,"colonnes", self.colonnes)
         if self.style != 'Undefined' : print(dec,"style", self.style)
         if self.typeLigne != 'Undefined' : print(dec,"typeLigne", self.typeLigne)

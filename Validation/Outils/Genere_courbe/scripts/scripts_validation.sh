@@ -263,7 +263,7 @@ echo def genere_new_rap_old_rap  [ -perf ] [-data]  newarchives oldarchives
 gen_fiche()
 {
     cd preserve
-    $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p `ls *prm| grep -v test_lu.prm`
+    python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p `ls *prm| grep -v test_lu.prm`
     if [ "$?" != "0" ]; then return 1; fi
     cd ..
     return 0

@@ -147,8 +147,9 @@ tracee dans le rapport de validation de TRUST.'''
             try:
                 content_file=file.read()
                 if self.derniere_ligne:
-                    from string import rfind
-                    last=rfind(content_file[:-1],'\n')
+                    #from string import rfind
+                    #last=rfind(content_file[:-1],'\n')
+                    last=content_file[:-1].rfind('\n')
                     #print "uu",content_file[last+1:]
                     content_file=content_file[last+1:]
                     if self.verbose>1:
