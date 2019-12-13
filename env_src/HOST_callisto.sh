@@ -42,7 +42,6 @@ define_modules_config()
    module=""
    module="$module gcc/4.8.1"
    #module="$module gcc/5.2.0"
-   #python/2.7.6 (2.6.6 default) et cmake/3.4.1 pour avoir MED_COUPLING_PYTHON=ON
    #module="$module python/2.7.6 cmake/3.4.1"
    #module="$module python/2.7.6"
    #OPENMPI module openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 openmpi/gcc/64/1.10.3

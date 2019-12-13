@@ -443,13 +443,6 @@ do
       else 
 	 echo "MEDCOUPLING=KO"
       fi
-      if [ -f $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh ]
-      then
-	 source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh 1>/dev/null 2>&1
-	 echo "MED_COUPLING_PYTHON="$MED_COUPLING_PYTHON
-      else 
-	 echo "MED_COUPLING_PYTHON=NOT"
-      fi
       ########################
       # PETSC est il compile ?
       ########################
