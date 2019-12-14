@@ -63,7 +63,7 @@ public :
       double moyenne(int ) const;
       int imprime(Sortie& , int ) const ;
   */
-  void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
+  int creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
 
 #ifdef MEDCOUPLING_
   MCAuto<MEDCoupling::MEDCouplingField> lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order);
@@ -118,6 +118,7 @@ protected:
 #endif
   Champ_Fonc vrai_champ_;
   Nom nom_champ_dans_fichier_med_;
+  ArrOfInt filter;
   ArrOfDouble temps_sauv_;
   int last_time_only_;
   bool use_medcoupling_;

@@ -23,6 +23,7 @@
 #include <Champ_Fonc_MED.h>
 #include <LireMED.h>
 #include <Char_ptr.h>
+#include <EFichier.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
@@ -65,11 +66,11 @@ Sortie& Champ_Fonc_MED::printOn(Sortie& s) const
 
 Entree& Champ_Fonc_MED::readOn(Entree& s)
 {
-  Nom nom_fic2,nom_dom,nom_champ;
+  Nom nom_fic2,nom_dom,nom_champ, nom_decoup;
   Motcle localisation;
   double un_temps;
   s>>nom_fic2;
-  int use_existing_domain=0;
+  int use_existing_domain=0, nom_decoup_lu = 0, field_size;
   last_time_only_=0;
   if (nom_fic2=="use_existing_domain")
     {
@@ -82,9 +83,17 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       s>>nom_fic2;
     }
 
+  if (nom_fic2=="decoup")
+    {
+      s>>nom_decoup;
+      s>>nom_fic2;
+      nom_decoup_lu = 1;
+    }
+
   lire_nom_med(nom_dom,s);
   lire_nom_med(nom_champ,s);
 
+  if (!nom_decoup_lu) nom_decoup = Nom("decoup/") + nom_dom + ".txt";
   s>>localisation;
   s>>un_temps;
   traite_nom_fichier_med(nom_fic2);
@@ -187,7 +196,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
           dom=Domaine();
         }
 #endif
-      creer(nom_fic2,le_domaine,localisation,temps_sauv_);
+      field_size = creer(nom_fic2,le_domaine,localisation,temps_sauv_);
     }
   else
     {
@@ -203,7 +212,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       liremed.lire_geom(nom_fic2,dom,nom_dom,nom_dom_trio_non_nomme);
       // MODIF ELI LAUCOIN (06/03/2012) :
       // j'ajoute l'attribut temps_sauv_
-      creer(nom_fic2,dom,localisation,temps_sauv_);
+      field_size = creer(nom_fic2,dom,localisation,temps_sauv_);
     }
   if (last_time_only_)
     {
@@ -211,6 +220,23 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       Cout << "The resumption time is "<<un_temps<<finl;
     }
   // FIN MODIF ELI LAUCOIN (06/03/2012)
+  /* si on est en parallele : creation du filtre */
+  if (Process::nproc() > 1 && field_size != le_champ().valeurs().dimension(0))
+    {
+      EFichier fdec(nom_decoup);
+      ArrOfInt dec;
+      fdec >> dec;
+      filter.set_smart_resize(1);
+      for (int i = 0; i < dec.size_array(); i++) if (dec(i) == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
+      filter.set_smart_resize(0), filter.resize(filter.size_array());
+      if (filter.size_array() != le_champ().valeurs().dimension(0))
+        Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and domain!" << finl, Process::exit();
+      if (field_size != dec.size_array())
+        Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl, Process::exit();
+    }
+  else if (field_size != le_champ().valeurs().dimension(0))
+    Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field!" << finl, Process::exit();
+
   le_champ().nommer(nom_champ);
   le_champ().corriger_unite_nom_compo();
   mettre_a_jour(un_temps);
@@ -325,7 +351,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       // on cherche le numero du pas de temps
       med_int numdt, numo;
       double dt = -2;
-      int ret;
+      int ret, size = 0;
       Char_ptr maa_ass;
       maa_ass.allocate(MED_NAME_SIZE);
       //Cerr<<"nb_dt"<<nb_dt<<finl;
@@ -361,7 +387,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           Nom Nmaa_ass(maa_ass);
           if (est_egal(dt, t))
             {
-              int size = MEDfieldnValue(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo);
+              size = MEDfieldnValue(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo);
               if ((size != 0) && (nom_dom == Nmaa_ass))
                 break;
             }
@@ -379,8 +405,8 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       //dt=t;
       //numdt=1;
       //numo=MED_NONOR;
-      Cerr << "temps=" << temps_sauv_ << finl;
-      Cerr << "temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_ << finl;
+      // Cerr << "Provisoire temps=" << temps_sauv_ << finl;
+      // Cerr << "Provisoire temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_ << finl;
       if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
         {
           Cout << "We assume that the field " << le_nom_du_champ << " is stationary." << finl;
@@ -402,8 +428,17 @@ void Champ_Fonc_MED::lire(double t, int given_it)
             }
           Cerr << "Reading the time step " << (int) numdt << " of field " << le_nom_du_champ << " time " << t
                << " type ent " << (int) type_ent << finl;
-          ret = MEDfieldValueRd(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo, MED_FULL_INTERLACE,
-                                MED_ALL_CONSTITUENT, (unsigned char *) le_champ().valeurs().addr());
+          if (filter.size_array() > 0) //lecture sur domaine parallele -> avec un filtre
+            {
+              med_filter flt = MED_FILTER_INIT;
+              if(MEDfilterEntityCr(fid, size, 1, le_champ().valeurs().nb_dim() > 1 ? le_champ().valeurs().dimension(1) : 1, MED_ALL_CONSTITUENT,
+                                   MED_FULL_INTERLACE, MED_COMPACT_STMODE, MED_ALLENTITIES_PROFILE, filter.size_array(), filter.addr(), &flt) < 0)
+                Cerr << "Champ_Fonc_MED on parallel domain : error at filter creation!" << finl, Process::exit();
+              ret = MEDfieldValueAdvancedRd(fid,le_nom_du_champ,numdt,numo,type_ent,type_geo,&flt,(unsigned char*)le_champ().valeurs().addr());
+            }
+          else if (le_champ().valeurs().dimension(0) > 0)//lecture complete
+            ret = MEDfieldValueRd(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo, MED_FULL_INTERLACE,
+                                  MED_ALL_CONSTITUENT, (unsigned char *) le_champ().valeurs().addr());
           if (ret < 0)
             {
               Cerr << "Problem while reading field " << le_nom_du_champ << " name of domain " << mon_dom.le_nom() << finl;
@@ -431,7 +466,7 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
 #endif
 #endif
 
-void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
+int Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
 {
 #ifdef MED_
 
@@ -543,22 +578,17 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
   le_champ().fixer_nb_comp(nbcomp);
   zonebidon_inst.associer_zone(un_dom.zone(0));
   le_champ().associer_zone_dis_base(zonebidon_inst);
-  // Cas d'une zone vide
-  if (zonebidon_inst.nb_elem()==0) size = 0;
-  le_champ().fixer_nb_valeurs_nodales(size);
-  if (size != le_champ().valeurs().dimension(0))
-    {
-      Cerr << "Error in " << que_suis_je() << " : nb_ddl incorrect" << finl;
-      Process::exit();
-    }
+  le_champ().fixer_nb_valeurs_nodales(type_champ == "Champ_Fonc_P0_MED" ? un_dom.zone(0).nb_elem() : un_dom.nb_som());
   //pour forcer la lecture lors du mettre a jour
   changer_temps(-1e3);
 
   //corriger_unite_nom_compo();
   le_champ().nommer(le_nom());
   //le_champ().corriger_unite_nom_compo();
+  return size;
 #else
   med_non_installe();
+  return 0;
 #endif
 }
 
