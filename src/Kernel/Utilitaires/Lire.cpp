@@ -22,6 +22,7 @@
 
 #include <Lire.h>
 #include <Synonyme_info.h>
+#include <Interprete_bloc.h>
 
 Implemente_instanciable(Lire,"Lire|Read",Interprete);
 
@@ -71,7 +72,21 @@ Entree& Lire::interpreter(Entree& is)
   // Lire name { ... }
   Nom name;
   is >> name; // The object name is read from the input stream is
-  Objet_U& object=objet(name);
-  return is >> object; // Then "{ ... }" is read by the object readOn
+
+  if (objet_existant(name)) //nom d'un objet existant -> on le lit
+    {
+      Objet_U& object=objet(name);
+      return is >> object; // Then "{ ... }" is read by the object readOn
+    }
+  else //pas le nom d'un objet existant -> on lit le type, on cree l'objet, puis on le lit
+    {
+      DerObjU ref;
+      Nom type;
+      is >> type;
+      ref.typer(type);
+      //on ajoute l'objet a l'interprete courant...
+      Objet_U& obj = Interprete_bloc::interprete_courant().ajouter(name, ref);
+      return is >> obj;           //et on lit
+    }
 }
 
