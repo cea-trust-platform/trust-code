@@ -722,9 +722,11 @@ then
    echo $ECHO_OPTS "clean:\n\t(source ./env_TRUST.sh && compile clean)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "validation:\n\t(source ./env_TRUST.sh && cd Validation/Rapports_automatiques && ./lance_tout)" >> $TRUST_ROOT/Makefile
    #echo $ECHO_OPTS "init:\n\tsource ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_opt $Build )" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check_optim:\tcheck" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check_semi_opt:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_semi_opt $Build )" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check_debug:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_debug $Build )" >> $TRUST_ROOT/Makefile
    [ "${#ECHO_OPTS}" = 0 ] && echo "Error: Check "$TRUST_ROOT"/Makefile !!! (ECHO_OPTS="$ECHO_OPTS")" && exit -1
    ##################################
