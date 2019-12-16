@@ -171,8 +171,7 @@ def get_detail_cas(cas0):
         # a t on defini nb_proc
         try:
             nb_proc_p=eval(cas[2])
-            from types import IntType
-            if (type(nb_proc_p) is IntType):
+            if (type(nb_proc_p) is int):
                 debut=3
                 nb_proc=nb_proc_p
             else:
