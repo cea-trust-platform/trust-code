@@ -58,6 +58,7 @@ public :
     ;
   } ;
   inline void dimensionner(Matrice_Morse&) const;
+  inline void dimensionner_bloc_vitesse(Matrice_Morse&) const;
   inline void mettre_a_jour(double);
   void associer_vitesse(const Champ_base& ) ;
   const Champ_base& vitesse() const;
@@ -158,6 +159,11 @@ inline void  Op_Conv_negligeable::modifier_pour_Cl(Matrice_Morse& amatrice, Doub
 }
 
 inline void  Op_Conv_negligeable::dimensionner(Matrice_Morse& amatrice) const
+{
+  ;
+}
+
+inline void  Op_Conv_negligeable::dimensionner_bloc_vitesse(Matrice_Morse& amatrice) const
 {
   ;
 }
