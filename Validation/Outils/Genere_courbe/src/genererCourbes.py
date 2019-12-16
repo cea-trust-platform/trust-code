@@ -226,8 +226,7 @@ TODO
         self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
         if not os.path.isfile(self.parametersFile):
             self.gestMsg.ecrire(GestionMessages._ERR, 'The parameter file does not exist : %s' % self.parametersFile, texteUsage=Usage(gestMsg))
-        fichier = open(self.parametersFile, 'r')
-
+        fichier = open(self.parametersFile, 'r', errors='ignore')
         #On commence par lire les parametres generaux du rapport
         self.lireParametresGeneraux(fichier)
 
