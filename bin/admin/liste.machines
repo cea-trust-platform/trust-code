@@ -6,6 +6,7 @@ linux	rsync_ssh	tache		is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 	
 linux	rsync_ssh	cible		is212957.intra.cea.fr	        -all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC		-gcov 	-force_provided_mpich	 			# Ubuntu 16     Bat 451 LMEC    bureau TMA TRUST
 linux	rsync_ssh	tache		irene-ccrt.ccc.cea.fr		-limited	-TrioCFD						-benchmark						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	non		irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD						-build_64_bit						# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	non		irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD													# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache		cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 					-benchmark						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache		ceres2.intra.cea.fr		-limited															# CentOS 6.9	CEA Marcoule	NB: bench desactive
 linux	rsync_ssh	tache		callisto.intra.cea.fr		-limited	-TrioCFD -IJK-FT 						-disable-mpiio				# CentOS 6.4	CEA Saclay	NB: bench desactive
