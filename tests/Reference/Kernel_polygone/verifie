@@ -11,7 +11,7 @@ KO=0
 PAR=""
 [ -f PAR_Kernel_polygone.lata ] && PAR=PAR_
 
-$TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p ${PAR}Kernel_polygone.prm  1>${PAR}log 2>&1
+python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p ${PAR}Kernel_polygone.prm  1>${PAR}log 2>&1
 [ $? -ne 0 ] && KO=1 && cat ${PAR}log
 exit $KO
 

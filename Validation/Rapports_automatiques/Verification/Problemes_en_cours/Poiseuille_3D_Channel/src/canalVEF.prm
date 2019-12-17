@@ -76,11 +76,11 @@ Chapter {
         nb_columns 1
                 Label Valeur
                 line {
-                        legend "$\rho$ en kg/m$^3$"
+                        legend "$\rho$ en kg/m"
                         file ./rho.dat
                 }
                 line {
-                        legend "$\mu$ en N/m$^2$/s"
+                        legend "$\mu$ en N/m/s"
                         file ./mu.dat
                 }
         }
