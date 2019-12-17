@@ -406,7 +406,7 @@ do
    #############
    # export utiles si ce script est lance en soumission de job sur clusters dans le script envoie_TRUST_arch
    export USE_MPIRUN=1
-   [ "$HOST" = irene-ccrt ] && export project="genden"
+   [ "$HOST" = irene-ccrt ] && export project="dendm2s"
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    make && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp && make opt_avx

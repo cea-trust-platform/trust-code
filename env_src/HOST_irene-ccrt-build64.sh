@@ -45,7 +45,7 @@ module () {
    #
    # Load modules
    # intel intel/15.0.6.233  intel/16.0.3.210  intel/17.0.4.196  intel/17.0.6.256(default)  intel/18.0.1.163
-   intel="intel/2019.0.5.281"
+   intel="intel/19.0.5.281"
    # openmpi mpi/openmpi/1.8.8  mpi/openmpi/2.0.2  mpi/openmpi/2.0.4(default)
    #openmpi="mpi/openmpi/2.0.4"
    # intelmpi mpi/intelmpi/2017.0.4.196 mpi/intelmpi/2017.0.6.256 mpi/intelmpi/2018.0.1.163  mpi/intelmpi/2018.0.3.222(default)
