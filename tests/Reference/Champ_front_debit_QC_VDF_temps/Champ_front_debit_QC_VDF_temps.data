@@ -1,0 +1,130 @@
+# Thermohydraulique 2D : Quasi_compressible gaz parfait VDF #
+# PARALLEL OK #
+dimension 2
+
+schema_euler_explicite sch
+read sch
+{
+    tinit 0.
+    tmax 10
+    dt_min 0.001
+    dt_max 0.05
+    facsec 0.7
+    nb_pas_dt_max 3
+    dt_impr 1.
+    seuil_statio 1.e-8
+}
+
+Pb_Thermohydraulique_QC pb
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_fluide
+{
+    Pave Cavite3
+        {
+        Origine 0.3 0.3
+        Nombre_de_Noeuds 11 11 
+        Longueurs 0.7 0.7
+        }
+        {
+        Bord Droit1    X = 0.3  0.3 <= Y <= 1.0
+        Bord Entree    Y = 1.0  0.3 <= X <= 0.7
+        Bord Haut3     Y = 1.0  0.7 <= X <= 1.0
+        Bord Haut2     Y = 0.3  0.3 <= X <= 1.0
+        Bord Sortie    X = 1.0  0.3 <= Y <= 0.7
+        Bord Droit2    X = 1.0  0.7 <= Y <= 1.0
+        }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_fluide
+{
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VDF dis
+
+Fluide_Quasi_Compressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 0.001
+    pression 84000
+    lambda Champ_Uniforme 1 1.0
+    loi_etat gaz_parfait
+    {
+        Prandtl 1.
+        Cp 1000.
+        gamma 1.4
+    }
+    Traitement_pth constant
+    Traitement_rho_gravite moins_rho_moyen
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+Associate fluide gravite
+Associate pb dom_fluide
+Associate pb fluide
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_QC
+    {
+        solveur_pression Petsc cholesky { impr }
+        convection { amont }
+        diffusion { }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee     Champ_front_debit_QC_VDF_fonc_t  2 { 0 2*t+0.1 } moyen  pb
+            Sortie frontiere_ouverte_pression_imposee    Champ_front_Uniforme 1 0.
+            Droit1 paroi_fixe
+            Haut3  paroi_fixe
+            Haut2  paroi_fixe
+            Droit2 paroi_fixe
+        }
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions 
+        {
+            Entree frontiere_ouverte_temperature_imposee    Champ_front_Uniforme 1 293.
+            Sortie frontiere_ouverte_temperature_imposee    Champ_front_Uniforme 1 293.
+            Haut3  paroi_temperature_imposee                Champ_front_Uniforme 1 293.
+            Droit2 paroi_temperature_imposee                Champ_front_Uniforme 1 293.
+            Droit1 paroi_adiabatique
+            Haut2  paroi_adiabatique
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 294. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression     periode 1. points   1    0.55 0.55
+            sonde_seg      temperature  periode 5. segment 10    0. 0.75  1. 0.75
+        }
+	format lml
+        fields dt_post 1.
+        {
+            temperature elem
+	    vitesse     elem
+        }
+    }
+}
+
+Solve pb
+End
