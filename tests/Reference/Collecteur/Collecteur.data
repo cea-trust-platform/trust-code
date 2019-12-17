@@ -96,6 +96,12 @@ Read pb
 	}
 	Convection_diffusion_temperature
         {
+            /* l'equation n'est plus divisee par rhoCp -> les residus ont un facteur rhoCp
+            on augmente le seuil du solveur */
+            parametre_equation parametre_implicite
+            {
+                solveur gmres { seuil 1e-6 impr diag }
+            }
 		convection { amont }
 		diffusion { }
 		initial_conditions { temperature Champ_Uniforme 1 303.7 }
