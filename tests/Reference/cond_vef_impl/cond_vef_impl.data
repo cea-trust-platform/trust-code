@@ -21,7 +21,7 @@ Read sch
 	solveur simpler
 	{
 		no_qdm
-		seuil_convergence_solveur 1e-12
+		seuil_convergence_solveur 1e-10
 		seuil_convergence_implicite 1e-6
 	}
 }
