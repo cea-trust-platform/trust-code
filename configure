@@ -660,19 +660,6 @@ then
 
 fi
 
-if [ "$TRUST_DISABLE_PETSC" != 1 ]
-then
-  TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
-  if [ "`eval bison --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "$TEST_LDD_VERSION" != 1 ]
-  then
-     # Bison from TRUST cannot be installed if glibc version is at least 2.28
-     [ -f NON_INSTALLED ] && echo "" >> NON_INSTALLED
-     echo "Petsc install will fail when installing bison provided by TRUST since your glibc version is too recent." >> NON_INSTALLED
-     echo "  => Contact your system administrator to install bison using 'sudo apt-get install bison' for example." >> NON_INSTALLED
-     exiterror=1
-  fi
-fi
-
 if [ -f $TRUST_ROOT/NON_INSTALLED ]
 then
    echo ""
