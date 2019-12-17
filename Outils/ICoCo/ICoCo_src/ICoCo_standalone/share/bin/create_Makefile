@@ -2,19 +2,19 @@
 
 if [ "${project_directory}" = "" ]
 then
-build=`dirname $0`/../../build/src
-build=`cd $build; pwd`
-project_directory=`cd $build/../..;pwd`
+   build=`dirname $0`/../../build/src
+   build=`cd $build; pwd`
+   project_directory=`cd $build/../..;pwd`
 else
-build=`cd $project_directory/build/src;pwd` 
+   build=`cd $project_directory/build/src;pwd` 
 fi
 
 makeincludedeps=$build/cmake.deps
-[ ! -f $makeincludedeps ] && echo $makeincludedeps doenst exist && exit
+[ ! -f $makeincludedeps ] && echo $makeincludedeps doesnt exist && exit
 cp $makeincludedeps .
 
 makeincludeatelier=$build/make.include.atelier
-[ ! -f $makeincludeatelier ] && echo $makeincludeatelier doenst exist && exit
+[ ! -f $makeincludeatelier ] && echo $makeincludeatelier doesnt exist && exit
 cp $makeincludeatelier .
 [ ! -f main.cpp ] && cp `dirname $0`/main.cpp . && chmod +w main.cpp
 nn=`grep LD_LIBRARY_PATH make.include.atelier  | sed "s/#//"| awk -F: '{printf ("%s:",$2)}' | sed "s?\\${LD_LIBRARY_PATH}:??"`":\${LD_LIBRARY_PATH}"
@@ -32,29 +32,31 @@ else
 fi
 echo "nproc=$nproc
 include \$(TRUST_ENV)/make.\$(TRUST_ARCH_CC)\$(OPT) 
-#include \$(TRUST_ENV)/make.Com\$(COMM)
 include \$(TRUST_ENV)/make.lib\$(LIB_EXTENSION)
 include \$(TRUST_ENV)/make.all_Includes.TRUST " > makefile
 cat $makeincludeatelier | grep -v project_directory >>makefile
 
-echo "# on refait a chaque fois l executable" >>makefile
+# PL: Mecanisme de lock pour eviter un build concurentiel lors des tests ICoCo via ctest
+flock="" && [ -f /usr/bin/flock ] && flock="/usr/bin/flock make.lock"
 
-echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
+echo "# on refait a chaque fois l executable
+TRUSTmodule=$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
+
+couplage: $lib_dyn main.cpp makefile ld_env.sh \$(TRUSTmodule)
 	echo end >>  couplage.data
 	@echo Linking.. 
-	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
-	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
-$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION): $lib_dyn
-dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
+	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp \$(TRUSTmodule) .; fi
+	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) \$(TRUSTmodule) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+\$(TRUSTmodule): $lib_dyn
+dynamique: $lib_dyn main.cpp makefile ld_env.sh \$(TRUSTmodule)
 	touch dynamique.data
 	@echo Linking.. 
-	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
-	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"\$(TRUSTmodule)\"' -Wl,-R $build/exec\$(OPT) \$(TRUSTmodule) \$(CppFlags) \$(Libs) \$(SYSLIBS)
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
-	(cd $build; [ -O . ] && (cd ../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))" >>makefile
-echo "check: couplage">> makefile
-echo "	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
+	(cd $build; [ -O . ] && (cd ../..;$flock \$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))
+check: couplage
+	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
 	if [ -f check.sh ]; then bash check.sh ;fi
 	@echo ok
 check_dynamique: dynamique
@@ -65,11 +67,11 @@ ld_env.sh: makefile
 	@echo \"echo on charge ld_env.sh\" > ld_env.sh
 	@echo export LD_LIBRARY_PATH=$nn >>ld_env.sh
 exe:
-	if [ \"\$(OPT)\" = \"_opt\" ]; then (cd  $build/../..; make optim);else  (cd  $build/../..; make debug); fi
+	if [ \"\$(OPT)\" = \"_opt\" ]; then (cd $build/../..; $flock make optim);else (cd $build/../..; $flock make debug); fi
 valgrind: couplage
 	  env exec=./couplage VALGRIND=1 trust couplage \$(nproc)
 clean:
-	rm -f couplage *dump *lata* *out *err *TU *log  *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh 
+	rm -f couplage *dump *lata* *out *err *TU *log  *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop make.include.atelier makefile ld_env.sh 
 	if [ -f Clean.sh ] ; then bash Clean.sh ; fi">> makefile
 
 
@@ -77,3 +79,4 @@ sed "s?${project_directory}?\$(project_directory)?g" makefile > mm
 echo "project_directory=$project_directory" > makefile
 cat mm >> makefile
 rm mm
+
