@@ -1,11 +1,18 @@
-#gunzip -f interass.geom.gz
-#./configure
+#!/bin/bash
+
+# Guess OPT from executable name.
+OPT=""
+list="_semi_opt _opt _opt_avx _opt_pg _custom _opt_gcov"
+for option in $list; do 
+   [ `echo $exec | grep $option$ 1>/dev/null 2>&1; echo $?` -eq 0  ] && OPT=$option && break
+done
+export OPT
+
 make check
 status=$?
 if [ $status -eq 0 ]
 then
   echo OK > is_ok
 else
-  #echo KO > is_ok
   rm -f is_ok
 fi

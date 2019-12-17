@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # si pas petsc on change de solveur
 if [ "$TRUST_DISABLE_PETSC" = "1" ]
 then
@@ -6,6 +7,15 @@ then
    grep -v petsc docond_VEF_dom2.data > p.data
    mv p.data docond_VEF_dom2.data
 fi
+
+# Guess OPT from executable name.
+OPT=""
+list="_semi_opt _opt _opt_avx _opt_pg _custom _opt_gcov"
+for option in $list; do 
+   [ `echo $exec | grep $option$ 1>/dev/null 2>&1; echo $?` -eq 0  ] && OPT=$option && break
+done
+export OPT
+
 # Lancement du calcul couple ICOCO:
 sh $project_directory/share/bin/create_Makefile 2
 make check
@@ -15,5 +25,4 @@ then
 else
   rm -f is_ok
 fi
-#touch ok.data
 mv -f docond_VEF_dom2.TU ok.TU
