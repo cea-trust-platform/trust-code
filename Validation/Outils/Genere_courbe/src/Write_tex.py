@@ -260,7 +260,7 @@ class Write_tex:
             if ligne.afficher_ligne:
 
                 if (isinstance(ligne,Lignes)):
-                    nb_ligne=len(values)/(nbc+1)
+                    nb_ligne=len(values)//(nbc+1)
                     for ll in range(nb_ligne):
                         decal=(nbc+1)*ll
                         line = [ chaine2Tex(str(values[decal])), ]
