@@ -2,11 +2,8 @@
 #./configure
 
 make ld_env.sh
-# modification pour que ctest -jN passe : on ne regenere pas l'executable, on suppose qu'il a deja ete construit
-#exec=`make exe | grep Executable |awk '{print $NF}'`
-exec=$exec_opt && [ "$OPT" != "_opt" ] && exec=$exec_debug
+exec=`make exe | grep Executable |awk '{print $NF}'`
 export exec
-
 if [ "$1" != "grossier" ]
 then
 trust dec_canal

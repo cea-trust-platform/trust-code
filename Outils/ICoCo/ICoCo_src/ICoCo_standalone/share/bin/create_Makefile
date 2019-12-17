@@ -52,7 +52,7 @@ dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\
 	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
-	#(cd $build; [ -O . ] && (cd ../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))" >>makefile
+	(cd $build; [ -O . ] && (cd ../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))" >>makefile
 echo "check: couplage">> makefile
 echo "	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
 	if [ -f check.sh ]; then bash check.sh ;fi
