@@ -125,9 +125,14 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   remote_item.resize(fvf.nb_faces(), c_max), remote_item = -1;
   for (i = 0; i < fvf.nb_faces(); i++) for (j = 0; j < c_max && item(i, j) >= 0; j++)
       if (proc(i, j) == Process::me()) remote_item(i, j) = item(i, j);                 //item local (reel)
-      else if (o_zone.virt_ef_map.count({{ (int) proc(i, j), (int) item(i, j) }}))     //item local (virtuel)
-        remote_item(i, j) = o_zone.virt_ef_map.at({{ (int) proc(i, j),  (int) item(i, j) }});
-  else extra_items[ {{ (int) proc(i, j), (int) item(i, j) }}] = {{ i, j }};            //item manquant
+      else
+        {
+          if (o_zone.virt_ef_map.count({{ (int) proc(i, j), (int) item(i, j) }}))     //item local (virtuel)
+          {
+            remote_item(i, j) = o_zone.virt_ef_map.at({{ (int) proc(i, j),  (int) item(i, j) }});
+          }
+          else extra_items[ {{ (int) proc(i, j), (int) item(i, j) }}] = {{ i, j }};            //item manquant
+        }
 
   //remote_coeff : 1 coeff de plus que remote_item -> celui de la diagonale de W2 (mis au debut)
   remote_coeff.resize(0, 1 + remote_item.dimension(1)), remote_contrib.resize(0, 1);
