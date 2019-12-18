@@ -146,10 +146,9 @@ void Echange_contact_PolyMAC::mettre_a_jour(double temps)
   //objets de l'autre cote : equation, zone, inconnue (prefix o_), frontiere (pour faire trace_face_distant)
   Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
   const Zone_PolyMAC& o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
-  const Equation_base&    o_eqn  = ch.equation(), &eqn = zone_Cl_dis().equation();
+  const Equation_base&    o_eqn  = ch.equation();
   const Champ_P0_PolyMAC& o_inc  = ref_cast(Champ_P0_PolyMAC, ch.inconnue());
   const Front_VF&         o_fvf  = ref_cast(Front_VF, ch.front_dis());
-  const Milieu_base&      o_mil  = ch.milieu(), &mil = eqn.milieu();
   const IntTab& e_f = o_zone.elem_faces();
   const DoubleTab& xp = o_zone.xp(), &xv = o_zone.xv();
   const DoubleVect& fs = o_zone.face_surfaces(), &ve = o_zone.volumes();
@@ -158,16 +157,6 @@ void Echange_contact_PolyMAC::mettre_a_jour(double temps)
   const DoubleTab& o_nu = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base()).get_nu(),
                    &o_nu_fac = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base()).get_nu_fac();
   int N_nu = o_nu.line_size(), ne_tot = o_zone.nb_elem_tot();
-
-  //facteur par lequel on doit multiplier nu pour obtenir lambda
-  double o_rCp = o_eqn.que_suis_je() == "Conduction"
-                 || o_eqn.que_suis_je() == "Convection_Diffusion_Temperature"
-                 || o_eqn.que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
-                 || o_eqn.que_suis_je().debute_par("Transport") ? o_mil.masse_volumique()(0, 0) * o_mil.capacite_calorifique()(0, 0) : 1,
-                 rCp = eqn.que_suis_je() == "Conduction"
-                       || eqn.que_suis_je() == "Convection_Diffusion_Temperature"
-                       || eqn.que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
-                       || eqn.que_suis_je().debute_par("Transport") ? mil.masse_volumique()(0, 0) * mil.capacite_calorifique()(0, 0) : 1;
 
   //tableaux aux faces de l'autre cote, a transmettre par o_fr.trace_face_{distant,local} : on ne les remplit que sur les faces de o_fr
   o_zone.init_m2();
@@ -190,12 +179,12 @@ void Echange_contact_PolyMAC::mettre_a_jour(double temps)
           else if (N_nu == dimension * dimension) for (k = 0; k < dimension; k++) for (l = 0; l < dimension; l++)
                 nu_ef += o_nu.addr()[dimension * (dimension * e + k) + l] * (xv(fb, k) - xp(e, k)) * (xv(fb, l) - xp(e, l)); //anisotrope complet
           else abort();
-          nu_ef *= o_rCp * o_nu_fac.addr()[f] * (N_nu > 1 ? 1. / o_zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1);
+          nu_ef *= o_nu_fac.addr()[f] * (N_nu > 1 ? 1. / o_zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1);
           double fac = fs(fb) / ve(e) * o_zone.w2c(j) * nu_ef;
           if (monolithic)
             {
-              o_coeff(f, idx ? idx + 1 : 0) += fs(f) * fac / rCp, o_coeff(f, 1) -= fs(f) * fac / rCp;
-              o_contrib(f) += fs(f) * fac / rCp * ((idx ? o_inc.valeurs()(ne_tot + fb) : 0) - o_inc.valeurs()(e));
+              o_coeff(f, idx ? idx + 1 : 0) += fs(f) * fac, o_coeff(f, 1) -= fs(f) * fac;
+              o_contrib(f) += fs(f) * fac * ((idx ? o_inc.valeurs()(ne_tot + fb) : 0) - o_inc.valeurs()(e));
             }
           else
             {
@@ -207,7 +196,7 @@ void Echange_contact_PolyMAC::mettre_a_jour(double temps)
       if (!monolithic && o_Himp(f) > 1e-10) o_Text(f) /= o_Himp(f); //passage au vrai T_ext
       if (h_paroi < 1e9) //prise en compte de la resistance de la paroi
         {
-          double fac = h_paroi / (h_paroi + (monolithic ? o_coeff(f, 0) * rCp / fs(f) : o_Himp(f)));
+          double fac = h_paroi / (h_paroi + (monolithic ? o_coeff(f, 0) / fs(f) : o_Himp(f)));
           if (monolithic) for (j = 0, o_contrib(f) *= fac; j < o_coeff.dimension(1); j++) o_coeff(f, j) *= fac;
           else o_Himp(f) *= fac;
         }
