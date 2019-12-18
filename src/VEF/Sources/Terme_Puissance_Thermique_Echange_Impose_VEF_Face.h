@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,9 +52,8 @@ public:
 
   virtual DoubleTab& ajouter(DoubleTab& )  const ;
   virtual DoubleTab& calculer(DoubleTab& ) const ;
-  void associer_pb(const Probleme_base& );
   void mettre_a_jour(double );
-
+  void associer_pb(const Probleme_base& ) { };
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
 
 protected:
@@ -63,8 +62,6 @@ protected:
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
   Champ_Don himp_,Text_;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
-
-  double inv_rhocp_;
 
 };
 

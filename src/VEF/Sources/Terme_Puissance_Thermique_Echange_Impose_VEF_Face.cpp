@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,14 +106,6 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
 //
 ////////////////////////////////////////////////////////////////////
 
-void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  const Fluide_Incompressible le_fluide = ref_cast(Fluide_Incompressible,eqn.milieu());
-  double rhocp=le_fluide.masse_volumique()(0,0)*le_fluide.capacite_calorifique()(0,0);
-  inv_rhocp_=1./rhocp;
-}
-
 void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_zones(const Zone_dis& zone_dis,
                                                                        const Zone_Cl_dis& zone_Cl_dis)
 {
@@ -158,7 +150,7 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::ajouter(DoubleTab&
       double hm = (h0 * vol0 + h1 * vol1) / (vol0 + vol1);
       double htextm = (h0 * text0 * vol0 + h1 * text1 * vol1) / (vol0 + vol1);
 
-      resu(num_face) -= (hm*T(num_face)-htextm) * vol* inv_rhocp_;
+      resu(num_face) -= (hm*T(num_face)-htextm) * vol;
 
     }
 
@@ -210,7 +202,7 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::contribuer_a_avec(const 
       double hm = (h0 * vol0 + h1 * vol1) / (vol0 + vol1);
       // double textm = (text0 * vol0 + text1 * vol1) / (vol0 + vol1);
 
-      matrice(num_face,num_face) += hm* vol* inv_rhocp_;
+      matrice(num_face,num_face) += hm* vol;
 
     }
 }
