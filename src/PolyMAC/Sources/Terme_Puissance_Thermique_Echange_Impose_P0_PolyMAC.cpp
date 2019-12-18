@@ -82,14 +82,6 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::mettre_a_jour(double t
 //
 ////////////////////////////////////////////////////////////////////
 
-void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  const Fluide_Incompressible le_fluide = ref_cast(Fluide_Incompressible,eqn.milieu());
-  double rhocp=le_fluide.masse_volumique()(0,0)*le_fluide.capacite_calorifique()(0,0);
-  inv_rhocp_=1./rhocp;
-}
-
 void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::associer_zones(const Zone_dis& zone_dis,
                                                                          const Zone_Cl_dis& zone_Cl_dis)
 {
@@ -108,7 +100,7 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::ajouter(DoubleTa
   const DoubleTab& T = equation().inconnue().valeurs();
 
   for (int e = 0; e < nb_elem; e++)
-    resu(e) -= inv_rhocp_ * volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0] * (T(e) - Text.addr()[Text.dimension(0) > 1 ? e : 0]);
+    resu(e) -= volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0] * (T(e) - Text.addr()[Text.dimension(0) > 1 ? e : 0]);
 
   return resu;
 }
@@ -126,5 +118,5 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::contribuer_a_avec(cons
   const DoubleTab& himp = himp_.valeur().valeurs();
 
   for (int e = 0; e < nb_elem; e++)
-    matrice(e, e) += inv_rhocp_ * volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0];
+    matrice(e, e) += volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0];
 }

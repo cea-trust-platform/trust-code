@@ -52,7 +52,7 @@ public:
 
   virtual DoubleTab& ajouter(DoubleTab& )  const ;
   virtual DoubleTab& calculer(DoubleTab& ) const ;
-  void associer_pb(const Probleme_base& );
+  void associer_pb(const Probleme_base& ) { };
   void mettre_a_jour(double );
 
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
@@ -63,8 +63,6 @@ protected:
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
   Champ_Don himp_,Text_;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
-
-  double inv_rhocp_;
 
 };
 

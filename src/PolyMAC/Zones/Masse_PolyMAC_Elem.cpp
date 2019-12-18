@@ -33,7 +33,7 @@
 #include <Operateur.h>
 #include <Op_Diff_negligeable.h>
 #include <Echange_impose_base.h>
-#include <Milieu_base.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem",Solveur_Masse_base);
 
@@ -76,6 +76,10 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
   const DoubleVect& volumes = zone_PolyMAC.volumes();
   const DoubleVect& porosite_elem = zone_PolyMAC.porosite_elem();
+  DoubleVect coef(zone_PolyMAC.porosite_elem());
+  coef = 1.;
+  if (has_coefficient_temporel_) appliquer_coef(coef);
+
   int nb_elem = zone_PolyMAC.nb_elem();
   if(nb_elem==0)
     {
@@ -85,22 +89,15 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   int nb_comp = sm.size()/nb_elem;
   int nb_dim=sm.nb_dim();
   assert((nb_comp*nb_elem == sm.size())||(nb_dim==3));
-  const Champ_Don& rho = equation().milieu().masse_volumique(), Cp = equation().milieu().capacite_calorifique();
-  int rCp = equation().que_suis_je() == "Conduction"
-            || equation().que_suis_je() == "Convection_Diffusion_Temperature"
-            || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
-            || equation().que_suis_je().debute_par("Convection_Diffusion_Concentration")
-            || equation().que_suis_je().debute_par("Equation_") // equations F5
-            || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
 
   if (nb_dim == 1)
     for (int num_elem=0; num_elem<nb_elem; num_elem++)
-      sm(num_elem) *= (rCp ? rho(num_elem, 0) * Cp(num_elem, 0) : 1) / (volumes(num_elem)*porosite_elem(num_elem));
+      sm(num_elem) *= coef(num_elem) / (volumes(num_elem)*porosite_elem(num_elem));
   else if (nb_dim == 2)
     {
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<nb_comp; k++)
-          sm(num_elem,k) *= (rCp ? rho(num_elem, 0) * Cp(num_elem, 0) : 1) / (volumes(num_elem)*porosite_elem(num_elem));
+          sm(num_elem,k) *= coef(num_elem) / (volumes(num_elem)*porosite_elem(num_elem));
     }
   else if (sm.nb_dim() == 3)
     {
@@ -110,7 +107,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<d1; k++)
           for (int d=0; d<d2; d++)
-            sm(num_elem,k,d) *= (rCp ? rho(num_elem, 0) * Cp(num_elem, 0) : 1) / (volumes(num_elem)*porosite_elem(num_elem));
+            sm(num_elem,k,d) *= coef(num_elem) / (volumes(num_elem)*porosite_elem(num_elem));
     }
   else
     {
@@ -151,19 +148,14 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   int e, f, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
-
-  const Champ_Don& rho = equation().milieu().masse_volumique(), Cp = equation().milieu().capacite_calorifique();
-  int rCp = equation().que_suis_je() == "Conduction"
-            || equation().que_suis_je() == "Convection_Diffusion_Temperature"
-            || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
-            || equation().que_suis_je().debute_par("Convection_Diffusion_Concentration")
-            || equation().que_suis_je().debute_par("Equation_") // equations F5
-            || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
+  DoubleVect coef(zone.porosite_elem());
+  coef = 1.;
+  if (has_coefficient_temporel_) appliquer_coef(coef);
 
   ch.init_cl();
   //partie superieure : diagonale
   for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
-      secmem.addr()[N * e + n] += (rCp ? rho(e, 0) * Cp(e, 0) : 1) * pe(e) * ve(e) * inco.addr()[N * e + n] / dt;
+      secmem.addr()[N * e + n] += coef(e) * pe(e) * ve(e) * inco.addr()[N * e + n] / dt;
 
   //partie inferieure : valeur imposee pour les CLs de Neumann, 0
   if (secmem.get_md_vector( ) == zone.mdv_elems_faces)
@@ -184,19 +176,14 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
   int e, f, ne_tot = zone.nb_elem_tot(), n, N = ch.valeurs().line_size();
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
-
-  const Champ_Don& rho = equation().milieu().masse_volumique(), Cp = equation().milieu().capacite_calorifique();
-  int rCp = equation().que_suis_je() == "Conduction"
-            || equation().que_suis_je() == "Convection_Diffusion_Temperature"
-            || equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent"
-            || equation().que_suis_je().debute_par("Convection_Diffusion_Concentration")
-            || equation().que_suis_je().debute_par("Equation_") // equations F5
-            || equation().que_suis_je().debute_par("Transport") ? 0 : 1;
+  DoubleVect coef(zone.porosite_elem());
+  coef = 1.;
+  if (has_coefficient_temporel_) appliquer_coef(coef);
 
   zone.init_m2(), ch.init_cl();
   //partie superieure : diagonale
   for (e = 0; e < zone.nb_elem(); e++)
-    for (n = 0; n < N; n++) mat(N * e + n, N * e + n) += (rCp ? rho(e, 0) * Cp(e, 0) : 1) * pe(e) * ve(e) / dt; //diagonale
+    for (n = 0; n < N; n++) mat(N * e + n, N * e + n) += coef(e) * pe(e) * ve(e) / dt; //diagonale
 
   //partie inferieure : 1 pour les flux imposes par CLs aux faces (si diffusion) ou pour toutes les faces (sinon)
   if (mat.nb_lignes() > N * ne_tot) for (f = 0; f < zone.nb_faces(); f++)
@@ -204,4 +191,35 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
         for (n = 0; n < N; n++) mat(N * (ne_tot + f) + n, N * (ne_tot + f) + n) = 1;
 
   return matrice;
+}
+
+void Masse_PolyMAC_Elem::appliquer_coef(DoubleVect& coef) const
+{
+  if (has_coefficient_temporel_)
+    {
+      REF(Champ_base) ref_coeff;
+      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
+
+      DoubleTab values;
+      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
+        {
+          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
+          ConstDoubleTab_parts val_parts(coeff.valeurs());
+          values.ref(val_parts[0]);
+
+        }
+      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
+        {
+          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
+          values.ref(coeff.valeurs());
+
+        }
+      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
+        {
+          DoubleTab nodes;
+          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
+          ref_coeff.valeur().valeur_aux(nodes,values);
+        }
+      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
+    }
 }
