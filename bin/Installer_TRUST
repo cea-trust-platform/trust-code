@@ -18,7 +18,7 @@ then
     for command in `cd bin;\ls`
     do
        $command --help 1>/dev/null 2>&1
-       [ $? = 0 ] && rm -f bin/$command
+       [ $? = 0 ] && [ "`whereis $command | cut -d' ' -f 2`" != "$TRUST_ROOT/exec/utils/bin/$command" ] && rm -f bin/$command
     done
     rm -f makefile
     # Si toutes les commandes existent on efface le repertoire

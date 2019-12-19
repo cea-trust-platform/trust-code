@@ -29,6 +29,7 @@ fi
 prm=$1.prm
 data=$1.data
 dtev=$1.dt_ev
+list=$1.list
 if [ "$genonly" = "1" ]
     then 
     REP=""
@@ -56,6 +57,15 @@ then
    echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"Evolution of residue\"\n\t\tinclude_description_curves 0\n\t\tlabelX \"TIME\"\n\t\tlabelY \"$residu\"\n\t\tlogX\n\t\tlogY" >> $prm
    echo $ECHO_OPTS "\t\tcurve {\n\t\t\tfile ${REP}$dtev\n\t\t\tcolumns (\$1) (\$4)" >> $prm
    #echo $ECHO_OPTS "\t\t\tlegend \"column 4\"" >> $prm
+   echo $ECHO_OPTS "\t\t\tstyle linespoints\n\t\t}\n\t}\n}\n" >> $prm
+fi
+
+if [ -f ${REP}$list ]
+then
+   echo $ECHO_OPTS "Chapter {
+	Title \"Time step convergence\" " >> $prm
+   echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"Evolution of Newton convergence\"\n\t\tinclude_description_curves 0\n\t\tlabelX \"TIME\"\n\t\tlabelY \"Newton iterations\"\n\t\tlogX\n\t" >> $prm
+   echo $ECHO_OPTS "\t\tcurve {\n\t\t\tfile ${REP}$list\n\t\t\tcolumns (\$3) (\$8)" >> $prm
    echo $ECHO_OPTS "\t\t\tstyle linespoints\n\t\t}\n\t}\n}\n" >> $prm
 fi
 

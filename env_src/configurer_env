@@ -175,7 +175,7 @@ update_file()
 	 if [ ${2%_opt} != $2 ]
 	 then
 	    echo "Cleaning now..."
-	    (cd $TRUST_ROOT;make clean 1>/dev/null 2>&1)
+	    (cd $TRUST_ROOT;make clean 1>/dev/null 2>&1;./configure -clean)
 	 fi
       else
 	 rm -f $1

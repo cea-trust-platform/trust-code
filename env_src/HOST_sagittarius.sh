@@ -19,7 +19,7 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
-   module="slurm intel/compiler intel/mkl openmpi/intel" # openmpi/gcc bloque
+   module="slurm intel/compilers/2019.3.199 openmpi/intel/3.1.3 mkl/2019.3.199 hwloc" # openmpi/gcc bloque
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
@@ -37,32 +37,9 @@ squeue" > $TRUST_ROOT/bin/qstat
 define_soumission_batch()
 {
    soumission=2 && [ "$prod" = 1 ] && soumission=1
-   cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
-   #ram=64G && [ "$bigmem" = 1 ] && ram=128G # 64 GB or 128 GB
-   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :
-   qos=""
-   # sinfo :
-   queue=""
-   # specific data cluster
-   #ntasks=20
-   #if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
-   #then
-   #   node=1
-   #   if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
-   #   then
-   #      echo "=================================================================================================================="
-   #      echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
-   #      echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
-   #      echo "=================================================================================================================="
-   #   fi
-   #else
-   #  node=0
-   #fi
-   #noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
-   #[ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
-   #[ "$noeuds" = 0 ] && noeuds=1
-   # Slurm srun support
+   queue=compute && [ "$bigmem" = 1 ] && queue=compute && soumission=1
+   cpu=30 && [ "$prod" = 1 ] && cpu=20160
+   ntasks=20
    mpirun="srun -n \$SLURM_NTASKS"
-   #mpirun="mpirun -np \$SLURM_NTASKS"
    sub=SLURM
 }
