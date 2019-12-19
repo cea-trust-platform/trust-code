@@ -39,7 +39,7 @@ petsc,SuiteSparse-4.4.3.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/dav
 petsc,ViennaCL-1.5.1.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisée ????"
 petsc,scotch_6.0.6-p1.tar.gz,,SV," CeCILL-C license",http://scotch.gforge.inria.fr/,https://bitbucket.org/petsc/pkg-scotch/get/6.0.6-p1.tar.gz,
 petsc,bison-3.3.2.tar.gz,,ND,"GNU GPL",https://www.gnu.org/software/bison/,http://ftp.gnu.org/gnu/bison/bison-3.3.2.tar.gz,
-petsc,flex-2.6.4.tar.gz,,ND,"BSD",https://github.com/westes/flex,https://github.com/westes/flex/releases,
+petsc,flex-2.6.4.tar.gz,,ND,"BSD",https://github.com/westes/flex,https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz,
 petsc,parmetis-4.0.3-p4.tar.gz,,SV+GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download",http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview,https://bitbucket.org/petsc/pkg-parmetis/get/v4.0.3-p4.tar.gz,"pour la licence (je ne sais pas ce que c'est) voir http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download"
 petsc,superlu_dist-5.4.0.tar.gz,,GF,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,https://github.com/xiaoyeli/superlu_dist/archive/v5.4.0.tar.gz,
 petsc,hypre-2.14.0.tar.gz,,GF,LGPL,http://files.salome-platform.org,https://github.com/LLNL/hypre/archive/v2.14.0.tar.gz,
