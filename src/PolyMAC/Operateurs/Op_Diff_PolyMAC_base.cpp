@@ -60,7 +60,8 @@ void Op_Diff_PolyMAC_base::completer()
   Operateur_base::completer();
   if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
   la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
-  la_zone_poly_.valeur().creer_tableau_faces(nu_fac);
+  la_zone_poly_.valeur().creer_tableau_faces(nu_fac_);
+  t_nu_ = -1e8;
 }
 
 int Op_Diff_PolyMAC_base::impr(Sortie& os) const
@@ -224,99 +225,97 @@ const Champ_base& Op_Diff_PolyMAC_base::diffusivite() const
 }
 
 
-void Op_Diff_PolyMAC_base::remplir_nu(DoubleTab& nu) const
+void Op_Diff_PolyMAC_base::update_nu(double t) const
 {
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_poly_.valeur();
-  // On dimensionne nu
+  if (t == t_nu_) return; //on a deja fait le travail
+  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
+  int i, j, f;
+
+  /* 1. nu_ */
+  //dimensionnement
   const DoubleTab& diffu=diffusivite().valeurs();
   if (equation().que_suis_je() != "Transport_K_Eps")
     {
-      if (!nu.get_md_vector().non_nul())
+      if (!nu_.get_md_vector().non_nul())
         {
           if (diffu.nb_dim() > 1 && diffu.dimension(1) > 1)
-            nu.resize(0, diffu.dimension(1));
-          zone_PolyMAC.zone().creer_tableau_elements(nu, Array_base::NOCOPY_NOINIT);
+            nu_.resize(0, diffu.dimension(1));
+          zone.zone().creer_tableau_elements(nu_, Array_base::NOCOPY_NOINIT);
         }
-      if (! diffu.get_md_vector().non_nul())
+      if (!diffu.get_md_vector().non_nul())
         {
           // diffusvite uniforme
-          const int n = nu.dimension_tot(0);
-          const int nb_comp = nu.line_size();
+          int n = nu_.dimension_tot(0), nb_comp = nu_.line_size();
           // Tableaux vus comme uni-dimenionnels:
           const DoubleVect& arr_diffu = diffu;
-          DoubleVect& arr_nu = nu;
-          for (int i = 0; i < n; i++)
-            for (int j = 0; j < nb_comp; j++)
+          DoubleVect& arr_nu = nu_;
+          for (i = 0; i < n; i++)
+            for (j = 0; j < nb_comp; j++)
               arr_nu[i*nb_comp + j] = arr_diffu[j];
         }
       else
         {
-          assert(nu.get_md_vector() == diffu.get_md_vector());
+          assert(nu_.get_md_vector() == diffu.get_md_vector());
           assert_espace_virtuel_vect(diffu);
-          nu.inject_array(diffu);
+          nu_.inject_array(diffu);
         }
     }
 
   /* ajout de la diffusivite turbulente si elle existe */
-  if (!has_diffusivite_turbulente()) return;
+  if (has_diffusivite_turbulente())
+    {
 
-  const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
-  if (equation().que_suis_je() == "Transport_K_Eps")
-    {
-      bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());
-      double val_nu = diffu(0, 0);
-      for (int i = 0; i < diffu_turb.dimension(0); i++) for (int j = 0; j < 2; j++)
-          {
-            if (!nu_uniforme) val_nu = diffu(i, 0);
-            nu(i, j) = val_nu + diffu_turb(i, j);
-          }
-    }
-  else
-    {
-      if (!diffu_turb.get_md_vector().non_nul())
+      const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
+      if (equation().que_suis_je() == "Transport_K_Eps")
         {
-          // diffusvite uniforme
-          const int n = nu.dimension_tot(0);
-          const int nb_comp = nu.line_size();
-          // Tableaux vus comme uni-dimenionnels:
-          const DoubleVect& arr_diffu_turb = diffu_turb;
-          DoubleVect& arr_nu = nu;
-          for (int i = 0; i < n; i++)
-            for (int j = 0; j < nb_comp; j++)
-              arr_nu[i*nb_comp + j] += arr_diffu_turb[j];
+          bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());
+          double val_nu = diffu(0, 0);
+          for (i = 0; i < diffu_turb.dimension(0); i++) for (j = 0; j < 2; j++)
+              {
+                if (!nu_uniforme) val_nu = diffu(i, 0);
+                nu_(i, j) = val_nu + diffu_turb(i, j);
+              }
         }
       else
         {
-          assert(nu.get_md_vector() == diffu_turb.get_md_vector());
-          assert_espace_virtuel_vect(diffu_turb);
-
-          nu += diffu_turb;
+          if (!diffu_turb.get_md_vector().non_nul())
+            {
+              // diffusvite uniforme
+              int n = nu_.dimension_tot(0), nb_comp = nu_.line_size();
+              // Tableaux vus comme uni-dimenionnels:
+              const DoubleVect& arr_diffu_turb = diffu_turb;
+              DoubleVect& arr_nu = nu_;
+              for (i = 0; i < n; i++)
+                for (j = 0; j < nb_comp; j++)
+                  arr_nu[i*nb_comp + j] += arr_diffu_turb[j];
+            }
+          else
+            {
+              assert(nu_.get_md_vector() == diffu_turb.get_md_vector());
+              assert_espace_virtuel_vect(diffu_turb);
+              nu_ += diffu_turb;
+            }
         }
     }
-}
 
-void Op_Diff_PolyMAC_base::remplir_nu_fac() const
-{
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  int i, f;
+    /* 2. nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
+    // utilise-t-on des lois de paroi ?
+    const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
+    int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
+                  ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
 
-  /* utilise-t-on des lois de paroi ? */
-  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
-                ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
-
-  for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
-    {
-      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
-          num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
-      for (f = deb; f < deb + num; f++) //nu par composante a chaque face
-        {
-          if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
-            nu_fac(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
-          else nu_fac(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
-          if (nu_fac_mod.size()) nu_fac(f) *= nu_fac_mod(f); //prise en compte de nu_fac_mod
-        }
-    }
-  nu_fac.echange_espace_virtuel();
+    for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
+      {
+        int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
+            num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
+        for (f = deb; f < deb + num; f++) //nu par composante a chaque face
+          {
+            if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
+              nu_fac_(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
+            else nu_fac_(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
+            if (nu_fac_mod.size()) nu_fac_(f) *= nu_fac_mod(f); //prise en compte de nu_fac_mod
+          }
+      }
+  t_nu_ = t;
 }

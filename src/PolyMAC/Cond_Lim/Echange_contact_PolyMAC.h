@@ -51,6 +51,7 @@ public :
   virtual void completer();
   virtual int initialiser(double temps);
   void calculer_correspondance();
+  void update_coeffs(double t);
   virtual void mettre_a_jour(double );
   inline Champ_front& T_autre_pb()
   {
@@ -72,8 +73,9 @@ public :
   //extra_item[ numero de proc, numero d'item ] = (indice (i, j) dans remote_item)
   //-> infos pour rendre les items manquants de remote_item accessibles
   std::map<std::array<int, 2>, std::array<int, 2>> extra_items;
-protected :
   int monolithic; //1 si on resout la thermique en monolithique
+protected :
+  double t_coeffs_; //dernier temps auquel on a mis a jour les coeffs
   double h_paroi;
   Champ_front T_autre_pb_;
   Nom nom_autre_pb_;

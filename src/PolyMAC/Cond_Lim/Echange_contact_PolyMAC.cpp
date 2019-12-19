@@ -55,6 +55,7 @@ Entree& Echange_contact_PolyMAC::readOn(Entree& s )
   ch.creer(nom_autre_pb_, nom_bord, nom_champ);
   T_ext().typer("Ch_front_var_instationnaire_dep");
   T_ext()->fixer_nb_comp(1);
+  t_coeffs_ = -1e8;
   return s ;
 }
 
@@ -141,12 +142,14 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   return 1;
 }
 
-void Echange_contact_PolyMAC::mettre_a_jour(double temps)
+void Echange_contact_PolyMAC::update_coeffs(double t)
 {
+  if (monolithic && t == t_coeffs_) return;
   //objets de l'autre cote : equation, zone, inconnue (prefix o_), frontiere (pour faire trace_face_distant)
   Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
   const Zone_PolyMAC& o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
   const Equation_base&    o_eqn  = ch.equation();
+  const Op_Diff_PolyMAC_base &o_op_diff = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base());
   const Champ_P0_PolyMAC& o_inc  = ref_cast(Champ_P0_PolyMAC, ch.inconnue());
   const Front_VF&         o_fvf  = ref_cast(Front_VF, ch.front_dis());
   const IntTab& e_f = o_zone.elem_faces();
@@ -154,8 +157,8 @@ void Echange_contact_PolyMAC::mettre_a_jour(double temps)
   const DoubleVect& fs = o_zone.face_surfaces(), &ve = o_zone.volumes();
 
   //tableaux "nu_faces" utilises par les operateurs de diffusion de chaque cote
-  const DoubleTab& o_nu = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base()).get_nu(),
-                   &o_nu_fac = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base()).get_nu_fac();
+  o_op_diff.update_nu(t);
+  const DoubleTab& o_nu = o_op_diff.get_nu(), &o_nu_fac = o_op_diff.get_nu_fac();
   int N_nu = o_nu.line_size(), ne_tot = o_zone.nb_elem_tot();
 
   //tableaux aux faces de l'autre cote, a transmettre par o_fr.trace_face_{distant,local} : on ne les remplit que sur les faces de o_fr
@@ -215,6 +218,12 @@ void Echange_contact_PolyMAC::mettre_a_jour(double temps)
     }
 
   if (monolithic) remote_coeff.echange_espace_virtuel(), remote_contrib.echange_espace_virtuel();
-  else T_ext()->valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();
+  else T_ext()->valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();  
+  t_coeffs_ = t;
+}
+
+void Echange_contact_PolyMAC::mettre_a_jour(double temps)
+{
+  update_coeffs(temps);
   Echange_externe_impose::mettre_a_jour(temps);
 }

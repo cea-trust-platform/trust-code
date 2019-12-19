@@ -153,6 +153,9 @@ void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, Matr
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
 
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+    ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(equation().schema_temps().temps_courant());
+
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
   for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
@@ -185,7 +188,10 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
   int i, j, k, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
   double fac;
 
-  remplir_nu(nu_), remplir_nu_fac();
+  update_nu(equation().schema_temps().temps_courant());
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+    ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(equation().schema_temps().temps_courant());
+    
   DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
   flux_bords_ = 0;
   for (e = 0; e < ne_tot; e++)
@@ -202,7 +208,7 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
           else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
                   nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
           else abort();
-          for (n = 0, fac = nu_fac.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
+          for (n = 0, fac = nu_fac_.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
         }
 
       /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
@@ -245,7 +251,9 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   int i, j, k, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size(), N_nu = nu_.line_size();
   double fac;
 
-  remplir_nu(nu_), remplir_nu_fac();
+  update_nu(equation().schema_temps().temps_courant());
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+    ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(equation().schema_temps().temps_courant());
   DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
   for (e = 0; e < ne_tot; e++)
     {
@@ -261,7 +269,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
           else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
                   nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
           else abort();
-          for (n = 0, fac = nu_fac.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
+          for (n = 0, fac = nu_fac_.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
         }
 
       /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */

@@ -62,28 +62,27 @@ public:
   void completer();
   const Champ_base& diffusivite() const;
 
-  void remplir_nu(DoubleTab& nu) const;
-  void remplir_nu_fac() const;
+  
+  void update_nu(double t) const; //met a jour nu et nu_fac
   const DoubleTab& get_nu() const
   {
     return nu_;
   }
   const DoubleTab& get_nu_fac() const
   {
-    return nu_fac;
+    return nu_fac_;
   }
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
-  mutable DoubleTab nu_fac_mod; //facteur multiplicatif a appliquer a nu_fac
+  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:
   REF(Zone_PolyMAC) la_zone_poly_;
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_;
-  //facteur pour moduler la conductivite par face : le flux a la face f est multiplie par nu_fac(f)
-  mutable DoubleTab nu_fac;
+  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
+  mutable double t_nu_; //dernier temps auquel on a mis a jour nu / nu_fac
 };
 
 
