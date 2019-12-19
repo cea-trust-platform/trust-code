@@ -251,6 +251,12 @@ void Source_base::dimensionner(Matrice_Morse&) const
 {
   ;
 }
+
+void Source_base::dimensionner_bloc_vitesse(Matrice_Morse&) const
+{
+  ;
+}
+
 // Description:
 // contribution a la matrice implicite des termes sources
 // par defaut pas de contribution

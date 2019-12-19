@@ -56,6 +56,7 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual void completer();
   virtual void dimensionner(Matrice_Morse&) const ;
+  virtual void dimensionner_bloc_vitesse(Matrice_Morse&) const ;
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
   virtual void contribuer_au_second_membre(DoubleTab& ) const ;
   virtual int impr(Sortie& os) const;
