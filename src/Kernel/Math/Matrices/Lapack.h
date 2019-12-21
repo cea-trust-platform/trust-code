@@ -162,6 +162,15 @@ extern "C"
                           const int*    const  // INFO
                          );
 
+  void F77DECLARE(DPPSV)(const char*   const, // UPLO
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // AP
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const int*    const  // INFO
+                        );
+
 #else
 
   void F77DECLARE(dpbtrf)(const char* const, const int* const, const int* const, const double* const, const int* const, const int* const);
@@ -294,6 +303,15 @@ extern "C"
                           const int*    const, // LDA
                           const int*    const  // INFO
                          );
+
+  void F77DECLARE(dppsv)(const char*   const, // UPLO
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // AP
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const int*    const  // INFO
+                        );
 
 #endif
 }
@@ -488,6 +506,17 @@ inline  void F77DECLARE(DPOTRI)(const char*   const UPLO,
   F77NAME(dpotri)(UPLO, N, A, LDA, INFO);
 }
 
+inline void F77DECLARE(DPPSV)(const char*   const UPLO,
+                              const int*    const N,
+                              const int*    const NRHS,
+                              const double* const AP,
+                              const double* const B,
+                              const int*    const LDB,
+                              const int*    const INFO
+                             )
+{
+    F77NAME(dppsv)(UPLO, N, NRHS, AP, B, LDB, INFO);
+}
 #endif
 
 #endif
