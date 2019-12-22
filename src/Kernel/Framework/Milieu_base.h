@@ -97,7 +97,7 @@ public:
   virtual const Champ_base& get_champ(const Motcle& nom) const;
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
   /////////////////////////////////////////////////////
-  void update_rho_cp(double temps);
+  virtual void update_rho_cp(double temps);
 
 protected:
 

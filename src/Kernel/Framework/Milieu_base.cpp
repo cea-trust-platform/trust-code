@@ -390,8 +390,8 @@ void Milieu_base::update_rho_cp(double temps)
   rho_cp_comme_T_.valeur().changer_temps(temps);
   const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().domaine_dis().domaine().md_vector_sommets(),
                    &md_faces = ref_cast(Zone_VF,rho_cp_elem_.zone_dis_base()).md_vector_faces();
-  if (rho_cp_comme_T_.valeurs().get_md_vector()==rho_cp_elem_.valeurs().get_md_vector())
-    rho_cp_comme_T_.valeurs()= rho_cp;
+  if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_.valeurs().get_md_vector())
+    rho_cp_comme_T_.valeurs() = rho_cp;
   else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_som)
     Discretisation_tools::cells_to_nodes(rho_cp_elem_,rho_cp_comme_T_);
   else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_faces)
