@@ -64,6 +64,7 @@ Read sch
 	seuil_statio 1.e-12
 	facsec 1
 	max_iter_implicite 10
+	precision_impr 3
 	solveur simpler
 	{
 		seuil_convergence_implicite 1.e-6

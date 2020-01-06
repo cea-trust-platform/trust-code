@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
-XX/XX/20 (TRUST)  Output      : Change of .son file format (header, column alignment,..) + add gnuplot_header option to have a gnuplot5 compatible header
+XX/XX/20 (TRUST)  Output      : Change of .son file format (header, column alignment, precision_impr by default 8 and not 3 as before) + add gnuplot_header option to have a gnuplot5 compatible header
 05/12/19 (TRUST)  New feature : Add possibility to post-process Y_PLUS on moving boundaries in VEF discretization 
 04/12/19 (TRUST)  Portability : Add the possibility to configure a baltik in 64 bit indices mode (experimental)
 27/11/19 (TRUST)  Portability : orcus (DM2S) and plafrim (INRIA) clusters supported
