@@ -1,2 +1,0 @@
-gunzip -c cylindre.geom.gz > cylindre.geom
-
