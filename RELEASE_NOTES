@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+06/01/20 (TRUST)  Portabilit06y : AMD partition Rome on irene CCRT cluster is supported (built with Intel 19.0.5 & IntelMPI 2018.0.3)
 16/12/19 (TRUST)  New keyword : Add Champ_front_debit_QC_VDF_fonc_t keyword to set time-dependent flow rates in quasi-compressible flows with VDF discretization
 05/12/19 (TRUST)  New feature : Add possibility to post-process Y_PLUS on moving boundaries in VEF discretization 
 04/12/19 (TRUST)  Portability : Add the possibility to configure a baltik in 64 bit indices mode (experimental)

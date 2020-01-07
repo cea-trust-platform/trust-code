@@ -1,19 +1,19 @@
 #!/bin/bash
-###########################################
-#    ______      __          ____         #
-#   / ____/___  / /_  ____ _/ / /_        #
-#  / /   / __ \/ __ \/ __ `/ / __/        #
-# / /___/ /_/ / /_/ / /_/ / / /_          #
-# \____/\____/_.___/\__,_/_/\__/          #
-#                                         #
-#   Hotline: hotline.tgcc@cea.fr          #
-#            +33 17757 4242               #
-#                                         #
-#      Help: $ machine.info               #
-#                                         #
-#  Web site: https://www-tgcc.ccc.cea.fr/ #
-#                                         #
-###########################################
+##########################################
+#      (_)_______  ____  ___             #
+#     / / ___/ _ \/ __ \/ _ \            #
+#    / / /  /  __/ / / /  __/            #
+#   /_/_/   \___/_/ /_/\___/             #
+#                                        #
+#                                        #
+#  Hotline: hotline.tgcc@cea.fr          #
+#           +33 17757 4242               #
+#                                        #
+#     Help: $ machine.info               #
+#                                        #
+# Web site: https://www-tgcc.ccc.cea.fr/ #
+#                                        #
+##########################################
 
 ##################################
 # Variables for configure script #
@@ -44,22 +44,13 @@ module () {
 }" >> $env
    #
    # Load modules
-   intel="intel/18.0.3.222"
-   intelmpi="mpi/intelmpi/2018.0.3.222"
+   intel="intel/19.0.5.281"
+   intelmpi="mpi/intelmpi/2019.0.5.281"
    module="$intel $intelmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
-   #
-   # If libccc_user module found, load it (this module helps to know the CPU)
-   module=libccc_user
-   if [ "`tclsh $modulecmd sh show $module 2>&1`" != "" ]
-   then
-      echo "Module $module detected and loaded on $HOST."
-      module load $module  >> $env
-   fi
-   #
    . $env
 }
 
@@ -69,32 +60,34 @@ module () {
 define_soumission_batch()
 {
    soumission=2 && [ "$prod" = 1 ] && soumission=1
-   # -M ram with ram>4000 is not supported anymore (06/2014)
-   # ram=64000 # 64 GB asked
+   # ram=16000 # 16 GB asked
    # So we use now n cores for one task to have 4*n GB per task
-   [ "$bigmem" = 1 ] && cpus_per_task=16 && soumission=1 # To have 64GB per task
-   ntasks=28 # 28 cores per node for broadwell or hybrid queue (64 for xlarge)
+   [ "$bigmem" = 1 ] && cpus_per_task=4 && soumission=1 # To have 16GB per task
+   # 48 cores per node for skylake queue (68 for KNL queue), 128 for AMD rome
+   ntasks=128
    # ccc_mqinfo : 
    #Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime
    #-------  ---------  --------  -------  -------  --------  ------  ------  ----------
-   #long             *        20     2048     2048                        32  3-00:00:00
-   #normal           *        20                                         128  1-00:00:00
-   #test     broadwell        40      280      280        10               2    00:30:00
+   #long             *        18     2064     2064                        32  3-00:00:00
+   #normal           *        20                                         300  1-00:00:00
+   #test       skylake        40     1344     1344        28               2    00:30:00
    cpu=1800 && [ "$prod" = 1 ] && cpu=86400 # 30 minutes or 1 day
-   # Priorite superieure avec test si pas plus de 8 nodes (28 cores)
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 224 ]
+   # Priorite superieure avec test si pas plus de 28 nodes (48 cores)
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 1344 ]
    then
       qos=normal
       [ "$prod" = 1 ] && cpu=86400
    else
-      qos=test
+      qos=normal
       cpu=1800
    fi
    # ccc_mpinfo : 
    #PARTITION    STATUS TOT_CPUS TOT_NODES    MpC  CpN SpN CpS TpC
-   #broadwell    up        39256      7597    4392  28   4   7   1
-   #xlarge       up          192       192   48000  64   4  16   1
-   queue=broadwell && [ "$bigmem" = 1 ] && queue=xlarge && ntasks=64
+   #skylake      up        74256      1547    3750  48   2  24   1
+   #knl          up        38284       563    1411  68   1  68   1
+   #rome         up       269056      2102    1875  128  8  16   1
+   queue=rome
+   [ "$bigmem" = 1 ] && queue=knl && ntasks=68
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1
@@ -107,11 +100,10 @@ define_soumission_batch()
    else
       node=0
    fi
-   #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
-   mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
+   binding="-e '-m block:block --cpu-bind=rank'" # Optimisation des perfs en // comme sur orcus (+30%)
+   mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
-   #project="gch0202"
-   #project="den"
-   #Your account : 'user' is not attached to an existant project
-   #[ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   espacedir="work,scratch"
+   project="dendm2s" && [ "`id | grep gch0406`" != "" ] && project="gch0406"
+   [ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
