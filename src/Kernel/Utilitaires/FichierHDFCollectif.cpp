@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,11 +42,14 @@ FichierHDFCollectif::~FichierHDFCollectif()
 void FichierHDFCollectif::prepare_file_props()
 {
 #ifdef MPI_
+
   MPI_Info infos;
   MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
 
+#ifdef MED_
   file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio( file_prop_lst_, Comm_Group_MPI::get_trio_u_world(), infos);
+#endif
 
   MPI_Info_free(&infos);
 #endif
@@ -54,11 +57,13 @@ void FichierHDFCollectif::prepare_file_props()
 
 void FichierHDFCollectif::prepare_read_dataset_props(Nom dataset_name)
 {
-  int rank = Process::me();
+  dataset_full_name_ = dataset_name.getChar() ;
+  dataset_prop_lst_ = H5P_DEFAULT;
+  //int rank = Process::me();
 
   // Build expected dataset name for the current proc (with the trailing _000x stuff)
-  Nom dataset_full_name = dataset_name;
-  dataset_full_name.nom_me(rank);
+  //Nom dataset_full_name = dataset_name;
+  //dataset_full_name.nom_me(rank);
 
   //status = H5Pset_dxpl_mpio( propList, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
 }

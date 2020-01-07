@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,8 @@
 #include <Sortie_Brute.h>
 #include <Nom.h>
 
+#define MED_
+
 #ifdef MED_
 #include <hdf5.h>
 #endif
@@ -51,8 +53,8 @@ public:
   virtual void open(Nom filename, bool readOnly);
   virtual void close();
 
-  virtual Entree_Brute read_dataset(Nom dataset_name);
-  virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute data);
+  virtual void read_dataset(Nom dataset_name, Entree_Brute& entree);
+  virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute& data);
   virtual void close_dataset(Nom dataset_name);
 
 protected:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 using std::istringstream;
 
 Entree_Brute::Entree_Brute():
-  Entree()
+  Entree(), data_(0)
 {
   set_bin(1);
   istrstream_ = new istringstream();
@@ -55,10 +55,11 @@ void Entree_Brute::set_data(char * data, unsigned sz)
 {
   const std::istream& iss = get_istream();
   std::streambuf * sb = iss.rdbuf();
-  if(!data_)
+
+  if(data_)
     {
       // For now forbid multiple calls ... could try deleting data_
-      Cerr << "Entree_Brute::set_data(): Multiple calls forbidden!" << finl;
+      Cerr << "Entree_Brute::set_data(): Multiple calls forbidden!  " << finl;
       Process::exit(-1);
     }
   data_ = new char[sz];

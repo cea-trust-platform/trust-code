@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,8 @@
 #include <Entree_Brute.h>
 #include <hdf5.h>
 #include <Comm_Group_MPI.h>
+
+#include <FichierHDFCollectif.h>
 
 extern Stat_Counter_Id interprete_scatter_counter_;
 
@@ -349,14 +351,21 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
     {
       FichierHDFCollectif fic_hdf;
 
-      fic_hdf.open(nomentree);
+      fic_hdf.open(nomentree, false);
       Entree_Brute data;
-      fic_hdf.read_dataset("zone", data);
+
+      std::ostringstream oss;
+      oss << "/zone" << Process::me();
+      std::string s(oss.str());
+      const char * dataset_name(s.c_str());
+      fic_hdf.read_dataset(dataset_name, data);
 
       // Feed TRUST objects:
       data >> dom;
       dom.set_fichier_lu(nomentree);
       data >> liste_bords_periodiques;
+
+      fic_hdf.close();
     }
   else
     {

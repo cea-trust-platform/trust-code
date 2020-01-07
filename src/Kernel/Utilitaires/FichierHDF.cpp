@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,18 +23,19 @@
 #include <FichierHDF.h>
 
 #ifndef MED_
-FichierHDF::FichierHDF() {}
+FichierHDF::FichierHDF()
+{
+  Cerr << "FichierHDF needs HDF (so MED) to be used!" << finl;
+  Process::exit(-1);
+}
 FichierHDF::~FichierHDF() {}
 
 void FichierHDF::create(Nom filename) {}
 void FichierHDF::open(Nom filename, bool readOnly) {}
 void FichierHDF::close() {}
 
-Entree_Brute FichierHDF::read_dataset(Nom dataset_name)
-{
-  return Entree_Brute();
-}
-void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute data) {}
+void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree) {}
+void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& data) {}
 void FichierHDF::close_dataset(Nom dataset_name) {}
 
 
@@ -42,22 +43,16 @@ void FichierHDF::prepare_file_props() {}
 void FichierHDF::prepare_read_dataset_props(Nom dataset_name) {}
 #else
 
-FichierHDF::FichierHDF()
-  :  file_id_(0), file_prop_lst_(0), dataset_prop_lst_(0)
-{
-  Cerr << "FichierHDF needs HDF (so MED) to be used!" << finl;
-  Process::exit(-1);
-
-}
+FichierHDF::FichierHDF():  file_id_(0), file_prop_lst_(0), dataset_prop_lst_(0) {}
 
 FichierHDF::~FichierHDF()
 {
-  close();
+  //close();
 }
 
 void FichierHDF::create(Nom filename)
 {
-  H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 }
 
 void FichierHDF::open(Nom filename, bool readOnly)
@@ -69,21 +64,24 @@ void FichierHDF::open(Nom filename, bool readOnly)
 
 void FichierHDF::prepare_file_props()
 {
-  file_prop_lst_ = H5P_DEFAULT;
+  file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS); // H5P_DEFAULT;
 }
 
 void FichierHDF::prepare_read_dataset_props(Nom dataset_name)
 {
-  dataset_full_name_ = dataset_name;
+  dataset_full_name_ = dataset_name.getChar() ;
   dataset_prop_lst_ = H5P_DEFAULT;
-};
+}
 
 
 void FichierHDF::close()
 {
   H5Fclose(file_id_);
-  H5Pclose(file_prop_lst_);
+  if(file_prop_lst_)
+    H5Pclose(file_prop_lst_);
 }
+
+void FichierHDF::close_dataset(Nom dataset_name) {}
 
 void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
 {
@@ -93,7 +91,7 @@ void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
   hid_t dataspace_id =  H5Dget_space(dataset_id);
   hssize_t sz = H5Sget_simple_extent_npoints(dataspace_id);
   char * dset_data = new char[sz];
-  H5Dread(dataset_id, H5T_NATIVE_OPAQUE, H5S_ALL, H5S_ALL, H5P_DEFAULT, dset_data);
+  H5Dread(dataset_id, H5T_NATIVE_OPAQUE, H5S_ALL, H5S_ALL, dataset_prop_lst_, dset_data);
 
   // Put extracted data in a standard Entree_Brute from TRUST, that we then use to feed TRUST objects
   entree.set_data(dset_data, sz);  // data are copied into the Entree
@@ -104,7 +102,7 @@ void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
   H5Pclose(dataset_prop_lst_);
 }
 
-void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute sortie)
+void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
 {
   hsize_t lenData = sortie.get_size();
   const char * data = sortie.get_data();

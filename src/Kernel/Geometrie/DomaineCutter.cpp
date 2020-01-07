@@ -32,6 +32,7 @@
 #include <Sparskit.h>
 #include <Poly_geom_base.h>
 #include <Sortie_Brute.h>
+#include <FichierHDF.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
@@ -1250,7 +1251,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         {
           Nom nom_fichier_hdf5;
           construire_nom_fichier_sous_domaine(basename, -1, nb_parties_, nom_fichier_hdf5);
-          fic_hdf.open(nom_fichier_hdf5, false);
+          fic_hdf.create(nom_fichier_hdf5);
+          //fic_hdf.open(nom_fichier_hdf5, false);
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
@@ -1351,6 +1353,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   Process::exit(1);
                 }
             }
+
           // Ecritures des fichiers sous-zones .ssz
           const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine.ss_zones();
           const int nb_sous_zones = liste_sous_zones.size();
