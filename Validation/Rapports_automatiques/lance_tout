@@ -8,7 +8,7 @@ do
    fichier=`basename $file`
    direct=`dirname $file`
    direct=`dirname $direct`
-   cmd="(echo $file; cd $direct;$TRUST_ROOT/Validation/Outils/Genere_courbe/Run $fichier $*  )"
+   cmd="(echo $file; cd $direct;Run_fiche -parallel_run)"
    echo $cmd >> check
    echo "[ ! -f $direct/build/rapport.pdf ] && echo pb avec $direct && pb=1" >> check
    direct2=`echo $direct |sed "s/_/./g"`
