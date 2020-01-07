@@ -39,7 +39,7 @@ Read sch
 	seuil_statio	1.e-8
 	solveur implicite
 	{
-		seuil_convergence_solveur	1e-8
+		seuil_convergence_solveur	1e-10
 		seuil_convergence_implicite	1e+1
 		controle_residu
 	}
