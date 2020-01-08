@@ -71,6 +71,10 @@ public :
   virtual int mettre_a_jour();
   virtual int reprendre(Entree& );
   inline virtual void completer(void) { } ;
+  int thermique_monolithique() const
+  {
+    return thermique_monolithique_;
+  }
 protected:
   int nb_ite_max;
   double residu_old_,facsec_max_;

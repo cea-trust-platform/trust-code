@@ -86,6 +86,8 @@ protected :
   virtual Entree& lire(const Motcle&, Entree&);
   void calculer_correction_en_vitesse(const DoubleTrav& correction_en_pression, DoubleTrav& gradP, DoubleTrav& correction_en_vitesse,const Matrice_Morse& matrice, const Operateur_Grad& gradient );
 
+  /* memoization de iterer_eqs */
+  std::map<std::vector<intptr_t>, std::pair<Matrice_Bloc, MD_Vector>> mat_mdv;
 };
 
 void diviser_par_rho_np1_face(Equation_base& eqn, DoubleTab& tab);

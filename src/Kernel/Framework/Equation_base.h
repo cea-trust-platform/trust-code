@@ -38,6 +38,7 @@
 #include <Matrice_Morse.h>
 #include <vector>
 #include <map>
+#include <MD_Vector_tools.h>
 
 class Operateur;
 class DoubleTab;
@@ -86,6 +87,7 @@ enum Type_modele { TURBULENCE };
 //////////////////////////////////////////////////////////////////////////////
 
 Declare_liste(RefObjU);
+
 class Equation_base : public Champs_compris_interface, public Objet_U
 {
   Declare_base(Equation_base);
@@ -172,8 +174,10 @@ public :
   virtual void modifier_pour_Cl( Matrice_Morse& mat_morse,DoubleTab& secmem) const;
   // assemble, ajoute linertie,et modifie_pour_cl.
   virtual void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  virtual void dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb);
-  virtual void assembler_termes_croises(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu, const Probleme_base& autre_pb);
+  virtual void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items);
+  virtual void dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc);
+  virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const;
+  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////

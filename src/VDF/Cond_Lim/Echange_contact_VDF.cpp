@@ -75,12 +75,7 @@ void Echange_contact_VDF::completer()
   const int ndeb = ma_front_vf.num_premiere_face();
   const int ndeb2 = front_vf.num_premiere_face();
   const int nb_faces_bord = ma_front_vf.nb_faces();
-  const int nl = ma_zvdf.nb_elem_tot();
-  const int nc = zvdf_2.nb_elem_tot();
-
-  size_bloc_and_distant_faces_.resize(0, 4);
-  size_bloc_and_distant_faces_.set_smart_resize(1);
-  size_bloc_and_distant_faces_.append_line(nl, nc, -1, -1);
+  remote_elems_.resize(nb_faces_bord, 4);
 
   for (int f = 0; f < nb_faces_bord; f++)
     {
@@ -89,8 +84,7 @@ void Echange_contact_VDF::completer()
 
       int e1 = (ma_zvdf.face_voisins(f1, 0) != -1) ? ma_zvdf.face_voisins(f1, 0) : ma_zvdf.face_voisins(f1, 1);
       int e2 = (zvdf_2.face_voisins(f2, 0) != -1) ? zvdf_2.face_voisins(f2, 0) : zvdf_2.face_voisins(f2, 1);
-
-      size_bloc_and_distant_faces_.append_line(e1, e2, f1, f2);
+      remote_elems_(f, 0) = e1, remote_elems_(f, 1) = e2, remote_elems_(f, 2) = f1, remote_elems_(f, 3) = f2;
     }
 
 }

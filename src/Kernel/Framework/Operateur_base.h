@@ -76,8 +76,12 @@ public :
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
   virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
   void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
-  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb) const;
-  virtual void contribuer_termes_croises(const DoubleTab& inco, Matrice_Morse& matrice, const Probleme_base& autre_pb) const;
+
+  virtual void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const { };
+  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const { };
+  virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const { };
+  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const { };
+
   virtual double calculer_dt_stab() const;
   virtual void calculer_dt_local(DoubleTab&) const;//Local time step calculation
   virtual void completer();

@@ -219,12 +219,6 @@ void Operateur_base::dimensionner(Matrice_Morse& ) const
   exit();
 }
 
-void Operateur_base::dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb) const
-{
-
-}
-
-
 // Description:
 //    NE FAIT RIEN
 //    A surcharger dans les classes derivees.
@@ -675,8 +669,4 @@ void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matri
       if (test_op==1)
         exit();
     }
-}
-
-void Operateur_base::contribuer_termes_croises(const DoubleTab& inco, Matrice_Morse& matrice, const Probleme_base& autre_pb) const
-{
 }

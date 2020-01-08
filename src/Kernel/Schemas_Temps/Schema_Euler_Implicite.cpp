@@ -323,27 +323,16 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
   int compteur;
   // structure pour ranger les equations par domaine d'application
   // -> les hydrauliques, les thermiques, et les autres
-  std::vector<std::pair<int, int>> eq_ns;
-  std::vector<std::pair<int, int>> eq_th;
-  std::vector<std::pair<int, int>> eq_other;
-
-  for(i = 0; i < pbc.nb_problemes(); i++)
-    {
-      Probleme_base& pb = ref_cast(Probleme_base,pbc.probleme(i));
-      for(int j = 0; j < pb.nombre_d_equations(); j++)
-        {
-          if (pb.equation(j).domaine_application() == "Hydraulique")    eq_ns.push_back(std::make_pair(i, j));
-          else if (pb.equation(j).domaine_application() == "Thermique") eq_th.push_back(std::make_pair(i, j));
-          else eq_other.push_back(std::make_pair(i, j));
-        }
-    }
-  std::map<std::string, std::vector<std::pair<int, int>>> map_problems;
-  map_problems["Hydraulique"] = eq_ns;
-  map_problems["Thermique"] = eq_th;
-  map_problems["Other"] = eq_other;
+  std::map<std::string, std::vector<std::array<int, 2>>> map_problems;
+  for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+      {
+        Motcle type = ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application();
+        if (type != "Hydraulique" && type != "Thermique") type = "Autres";
+        map_problems[type.getString()].push_back({{ i, j}});
+      }
 
   //ordre de resolution des domaines d'application
-  std::vector<std::string> dom_app = {"Hydraulique", "Thermique", "Other"};
+  std::vector<std::string> dom_app = {"HYDRAULIQUE", "THERMIQUE", "AUTRES"};
 
   while (!ok)
     {
@@ -366,45 +355,45 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
             }
 
-          for (auto && da : dom_app)
-            {
-              Cout << "Resolution des equations " << da.c_str() << finl;
-              Cout << "-------------------------" << finl;
-              if (da == "Thermique" && map_problems[da].size() > 1 && thermique_monolithique_)
-                {
-                  LIST(REF(Equation_base)) eqs;
+          for (auto && da : dom_app) if (map_problems.count(da))
+              {
+                Cout << "RESOLUTION " << da.c_str() << finl;
+                Cout << "-------------------------" << finl;
+                if (da == "THERMIQUE" && map_problems[da].size() > 1 && thermique_monolithique_)
+                  {
+                    LIST(REF(Equation_base)) eqs;
+                    for (auto && pbeqs : map_problems[da])
+                      {
+                        pbc.probleme(pbeqs[0]).updateGivenFields();
+                        eqs.add(ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]));
+                      }
+                    bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
+                    convergence_pbc = convergence_pbc && convergence_eqs;
+                  }
+                else
                   for (auto && pbeqs : map_problems[da])
                     {
-                      pbc.probleme(pbeqs.first).updateGivenFields();
-                      eqs.add(ref_cast(Probleme_base,pbc.probleme(pbeqs.first)).equation(pbeqs.second));
+                      pbc.probleme(pbeqs[0]).updateGivenFields();
+
+                      Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                      DoubleTab& present = eqn.inconnue().valeurs();
+                      DoubleTab& futur = eqn.inconnue().futur();
+                      double temps = temps_courant_ + dt_;
+
+                      // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
+                      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                      Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
+                      const DoubleTab& inut=futur;
+                      bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+                      convergence_pbc = convergence_pbc && convergence_eqn;
+                      futur = present;
+                      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                      present = futur;
+
+                      eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+                      Cout << finl;
                     }
-                  bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
-                  convergence_pbc = convergence_pbc && convergence_eqs;
-                }
-              else
-                for (auto && pbeqs : map_problems[da])
-                  {
-                    pbc.probleme(pbeqs.first).updateGivenFields();
-
-                    Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs.first)).equation(pbeqs.second);
-                    DoubleTab& present = eqn.inconnue().valeurs();
-                    DoubleTab& futur = eqn.inconnue().futur();
-                    double temps = temps_courant_ + dt_;
-
-                    // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
-                    eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-                    Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
-                    const DoubleTab& inut=futur;
-                    bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
-                    convergence_pbc = convergence_pbc && convergence_eqn;
-                    futur = present;
-                    eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-                    present = futur;
-
-                    eqn.inconnue().valeur().Champ_base::changer_temps(temps);
-                    Cout << finl;
-                  }
-            }
+              }
         }
       if ((!convergence_pbc)&&(compteur==nb_ite_max))
         {

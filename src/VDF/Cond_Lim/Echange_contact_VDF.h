@@ -74,11 +74,11 @@ public :
   {
     return autre_h;
   };
-  inline const IntTab& get_size_bloc_and_distant_elems() const
+  inline const IntTab& get_remote_elems() const
   {
-    // renvoie nl, nc puis e_pb1 -> e_pb2 pour e voisin d'une face de paroi contact
+    // renvoie e_pb1 -> e_pb2 pour e voisin d'une face de paroi contact
     // avec nl, nc  le nombre de lignes et de colonnes de la matrice de couplage entre le pb1 et le pb2
-    return size_bloc_and_distant_faces_;
+    return remote_elems_;
   };
   inline const Nom& nom_autre_pb() const
   {
@@ -95,6 +95,6 @@ protected :
   Champ_front T_autre_pb_;
   DoubleTab T_wall_;
   Nom nom_autre_pb_;
-  IntTab size_bloc_and_distant_faces_;
+  IntTab remote_elems_;
 };
 #endif
