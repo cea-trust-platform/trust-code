@@ -32,6 +32,7 @@ class Faces;
 #include <IntTab.h>
 #include <Ref_Champ_Inc.h>
 #include <MD_Vector_tools.h>
+#include <vector>
 
 ////////////////////////////////////////////////////////////////
 
@@ -51,7 +52,8 @@ public :
   virtual void completer();
   virtual int initialiser(double temps);
   void calculer_correspondance();
-  void update_coeffs(double t);
+  void update_coeffs();
+  void update_delta() const;
   virtual void mettre_a_jour(double );
   inline Champ_front& T_autre_pb()
   {
@@ -65,17 +67,19 @@ public :
   {
     return nom_autre_pb_;
   };
-  //remote_item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
-  //peut contenir des -1 si il n'est pas accessible (parallelisme)
-  mutable IntTab remote_item;
-  //remote_coeff(i, j) : coefficient de la face, puis coefficient de remote_item(i, j - 1) dans la formule du flux entrant a la face num_face(i)
-  DoubleTab remote_coeff, remote_contrib;
-  //extra_item[ numero de proc, numero d'item ] = (indice (i, j) dans remote_item)
+  //item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
+  //initialiement non rempli si l'item n'est pas accessible (parallelisme) : extra_items permet de le completer
+  mutable IntTab item;
+  //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
+  //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
+  mutable DoubleTab coeff, delta_int, delta;
+  //extra_item[ numero de proc, numero d'item ] = (indices (i, j) dans item ayant besoin de cet item)
   //-> infos pour rendre les items manquants de remote_item accessibles
-  std::map<std::array<int, 2>, std::array<int, 2>> extra_items;
+  std::map<std::array<int, 2>, std::vector<std::array<int, 2>>> extra_items;
   int monolithic; //1 si on resout la thermique en monolithique
 protected :
-  double t_coeffs_; //dernier temps auquel on a mis a jour les coeffs
+  int stab_; //1 si on utilise la stabilisation de Le Potier
+  mutable int coeffs_a_jour_, delta_a_jour_; //dernier temps auquel on a mis a jour les coeffs
   double h_paroi;
   Champ_front T_autre_pb_;
   Nom nom_autre_pb_;

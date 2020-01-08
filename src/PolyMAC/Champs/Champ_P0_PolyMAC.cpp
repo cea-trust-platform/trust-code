@@ -144,17 +144,10 @@ int Champ_P0_PolyMAC::fixer_nb_valeurs_nodales(int n)
 
 Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)
 {
-  DoubleTab noeuds;
-  remplir_coord_noeuds(noeuds);
-
-  // Modif B.M. pour ne pas faire d'interpolation sur les cases virtuelles
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,la_zone_VF.valeur());
   DoubleTab_parts part(valeurs());
-  int n = part[0].dimension(0);
-  DoubleTab pos, val;
-  pos.ref_tab(noeuds, 0, n);
-  val.ref_tab(part[0], 0, n);
-  ch.valeur_aux(pos, val);
-
+  for (int i = 0; i < part.size(); i++) ch.valeur_aux(i ? zone.xv() : zone.xp(), part[i]);
+  valeurs().echange_espace_virtuel();
   return *this;
 }
 

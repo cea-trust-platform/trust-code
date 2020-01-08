@@ -106,7 +106,7 @@ inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
   int i, j, k, e, f, fb, a, nf_tot = zone.nb_faces_tot(), idx;
 
-  update_nu(equation().schema_temps().temps_courant());
+  update_nu();
   //partie vitesses : m2 Rf
   for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
       for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
@@ -141,7 +141,7 @@ inline void Op_Diff_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
   int i, j, k, e, f, fb, a, nf_tot = zone.nb_faces_tot(), idx;
 
-  update_nu(equation().schema_temps().temps_courant());
+  update_nu();
   //partie vitesses : m2 Rf
   for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
       for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)

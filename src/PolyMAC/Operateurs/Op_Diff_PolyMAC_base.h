@@ -29,6 +29,7 @@
 #include <Op_Diff_Turbulent_base.h>
 #include <Ref_Zone_PolyMAC.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
+#include <Zone_PolyMAC.h>
 class Champ_Fonc;
 
 
@@ -61,9 +62,14 @@ public:
   void associer_diffusivite(const Champ_base& );
   void completer();
   const Champ_base& diffusivite() const;
+  const Champ_base& diffusivite_turbulente() const;
+  void mettre_a_jour(double t)
+  {
+    Operateur_base::mettre_a_jour(t);
+    nu_a_jour_ = 0;
+  }
 
-  
-  void update_nu(double t) const; //met a jour nu et nu_fac
+  void update_nu() const; //met a jour nu et nu_fac
   const DoubleTab& get_nu() const
   {
     return nu_;
@@ -72,6 +78,8 @@ public:
   {
     return nu_fac_;
   }
+
+  inline void remplir_nu_ef(int e, DoubleTab& nu_ef) const;
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
@@ -82,7 +90,7 @@ protected:
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
-  mutable double t_nu_; //dernier temps auquel on a mis a jour nu / nu_fac
+  mutable int nu_a_jour_; //si on doit mettre a jour nu
 };
 
 
@@ -90,6 +98,26 @@ protected:
 //
 // Fonctions inline de la classe Op_Diff_PolyMAC_base
 //
+/* diffusivite a l'interieur d'un element e : nu_ef(i, n) : diffusivite de la composante n entre le centre de l'element et celui de la face i */
+inline void Op_Diff_PolyMAC_base::remplir_nu_ef(int e, DoubleTab& nu_ef) const
+{
+  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const IntTab& e_f = zone.elem_faces();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
+  int i, j, k, f, n, N = nu_ef.dimension(1), N_nu = nu_.line_size();
+  double fac;
 
-
+  for (i = 0; i < zone.m2d(e + 1) - zone.m2d(e); i++)
+    {
+      f = e_f(e, i);
+      /* diffusivite de chaque composante dans la direction (xf - xe) */
+      if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
+      else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
+            nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
+      else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
+              nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
+      else abort();
+      for (n = 0, fac = nu_fac_.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
+    }
+}
 #endif

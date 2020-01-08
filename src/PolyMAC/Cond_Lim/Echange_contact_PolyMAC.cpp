@@ -31,7 +31,7 @@
 #include <Equation_base.h>
 #include <Champ_P0_PolyMAC.h>
 #include <Operateur.h>
-#include <Op_Diff_PolyMAC_base.h>
+#include <Op_Diff_PolyMAC_Elem.h>
 
 #include <cmath>
 
@@ -55,7 +55,6 @@ Entree& Echange_contact_PolyMAC::readOn(Entree& s )
   ch.creer(nom_autre_pb_, nom_bord, nom_champ);
   T_ext().typer("Ch_front_var_instationnaire_dep");
   T_ext()->fixer_nb_comp(1);
-  t_coeffs_ = -1e8;
   return s ;
 }
 
@@ -75,14 +74,13 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   const Equation_base&    o_eqn  = ch.equation();
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis());
   const Zone_PolyMAC& o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
-  const Milieu_base& le_milieu=ch.milieu();
   const IntTab& o_f_e = o_zone.face_voisins(), &o_e_f = o_zone.elem_faces();
-  int i, j, k, l, e, f, nb_comp = le_milieu.conductivite()->nb_comp(), o_n_f = o_e_f.dimension(1);
+  int i, j, k, l, e, f, N = ch.nb_comp(), o_n_f = o_e_f.dimension(1);
   Nom nom_racc1=frontiere_dis().frontiere().le_nom();
 
   h_imp_.typer("Champ_front_fonc");
-  h_imp_->fixer_nb_comp(nb_comp);
-  h_imp_.valeurs().resize(0, nb_comp);
+  h_imp_->fixer_nb_comp(N);
+  h_imp_.valeurs().resize(0, N);
   fvf.frontiere().creer_tableau_faces(h_imp_.valeurs());
 
   ch.initialiser(temps,zone_Cl_dis().equation().inconnue());
@@ -99,9 +97,9 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   src.echange_espace_virtuel();
 
   /* o_proc, o_item -> processeur/item de l'element, puis des autres faces utilisees dans W2(f,.) pour chaque face de la frontiere */
-  DoubleTrav o_proc(0, o_n_f), o_item(0, o_n_f), proc(0, o_n_f), item(0, o_n_f);
+  DoubleTrav o_proc(0, o_n_f), o_item(0, o_n_f), proc(0, o_n_f), l_item(0, o_n_f);
   o_zone.creer_tableau_faces(o_proc), o_zone.creer_tableau_faces(o_item);
-  fvf.frontiere().creer_tableau_faces(proc), fvf.frontiere().creer_tableau_faces(item);
+  fvf.frontiere().creer_tableau_faces(proc), fvf.frontiere().creer_tableau_faces(l_item);
   int c_max = 1; //nombre max d'items/coeffs a echanger par face
   for (i = 0; i < o_fvf.nb_faces(); i++)
     {
@@ -119,111 +117,145 @@ int Echange_contact_PolyMAC::initialiser(double temps)
 
   //projection sur la frontiere locale
   if (o_fvf.frontiere().que_suis_je() == "Raccord_distant_homogene")
-    o_fvf.frontiere().trace_face_distant(o_proc, proc), o_fvf.frontiere().trace_face_distant(o_item, item);
-  else o_fvf.frontiere().trace_face_local(o_proc, proc), o_fvf.frontiere().trace_face_local(o_item, item);
+    o_fvf.frontiere().trace_face_distant(o_proc, proc), o_fvf.frontiere().trace_face_distant(o_item, l_item);
+  else o_fvf.frontiere().trace_face_local(o_proc, proc), o_fvf.frontiere().trace_face_local(o_item, l_item);
 
   //remplissage
-  remote_item.resize(fvf.nb_faces(), c_max), remote_item = -1;
-  for (i = 0; i < fvf.nb_faces(); i++) for (j = 0; j < c_max && item(i, j) >= 0; j++)
-      if (proc(i, j) == Process::me()) remote_item(i, j) = item(i, j);                 //item local (reel)
+  item.resize(fvf.nb_faces(), c_max), item = -1;
+  for (i = 0; i < fvf.nb_faces(); i++) for (j = 0; j < c_max && l_item(i, j) >= 0; j++)
+      if (proc(i, j) == Process::me()) item(i, j) = l_item(i, j);                     //item local (reel)
       else
         {
-          if (o_zone.virt_ef_map.count({{ (int) proc(i, j), (int) item(i, j) }}))     //item local (virtuel)
+          if (o_zone.virt_ef_map.count({{ (int) proc(i, j), (int) l_item(i, j) }}))   //item local (virtuel)
           {
-            remote_item(i, j) = o_zone.virt_ef_map.at({{ (int) proc(i, j),  (int) item(i, j) }});
+            item(i, j) = o_zone.virt_ef_map.at({{ (int) proc(i, j),  (int) l_item(i, j) }});
           }
-          else extra_items[ {{ (int) proc(i, j), (int) item(i, j) }}] = {{ i, j }};            //item manquant
+          else extra_items[ {{ (int) proc(i, j), (int) l_item(i, j) }}].push_back({{ i, j }}), item(i, j) = -2; //item manquant
         }
 
-  //remote_coeff : 1 coeff de plus que remote_item -> celui de la diagonale de W2 (mis au debut)
-  remote_coeff.resize(0, 1 + remote_item.dimension(1)), remote_contrib.resize(0, 1);
-  fvf.frontiere().creer_tableau_faces(remote_coeff), fvf.frontiere().creer_tableau_faces(remote_contrib);
+  //coeff : 1 coeff de plus que item -> celui de la face elle-meme (mis au debut)
+  coeff.resize(0, 1 + item.dimension(1), N), delta_int.resize(0, N, 2),
+               fvf.frontiere().creer_tableau_faces(coeff);
 
+  //tableaux lies a la stabilisation de Le Potier / Mahamane (cf. Op_Diff_PolyMAC_Elem)
+  stab_ = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base()).stab_;
+  if (stab_)
+    {
+      delta.resize(0, item.dimension(1), N);
+      fvf.frontiere().creer_tableau_faces(delta_int), fvf.frontiere().creer_tableau_faces(delta);
+    }
+  coeffs_a_jour_ = 0, delta_a_jour_ = (stab_ ? 1 : 0);
   return 1;
 }
 
-void Echange_contact_PolyMAC::update_coeffs(double t)
+void Echange_contact_PolyMAC::update_coeffs()
 {
-  if (monolithic && t == t_coeffs_) return;
+  if (coeffs_a_jour_) return;
   //objets de l'autre cote : equation, zone, inconnue (prefix o_), frontiere (pour faire trace_face_distant)
   Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
   const Zone_PolyMAC& o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
   const Equation_base&    o_eqn  = ch.equation();
-  const Op_Diff_PolyMAC_base &o_op_diff = ref_cast(Op_Diff_PolyMAC_base, o_eqn.operateur(0).l_op_base());
+  const Op_Diff_PolyMAC_Elem& o_op_diff = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base());
   const Champ_P0_PolyMAC& o_inc  = ref_cast(Champ_P0_PolyMAC, ch.inconnue());
   const Front_VF&         o_fvf  = ref_cast(Front_VF, ch.front_dis());
   const IntTab& e_f = o_zone.elem_faces();
-  const DoubleTab& xp = o_zone.xp(), &xv = o_zone.xv();
   const DoubleVect& fs = o_zone.face_surfaces(), &ve = o_zone.volumes();
 
   //tableaux "nu_faces" utilises par les operateurs de diffusion de chaque cote
-  o_op_diff.update_nu(t);
-  const DoubleTab& o_nu = o_op_diff.get_nu(), &o_nu_fac = o_op_diff.get_nu_fac();
-  int N_nu = o_nu.line_size(), ne_tot = o_zone.nb_elem_tot();
+  o_op_diff.update_nu(), o_op_diff.update_delta_int();
+  int ne_tot = o_zone.nb_elem_tot(), N = ch.nb_comp();
 
   //tableaux aux faces de l'autre cote, a transmettre par o_fr.trace_face_{distant,local} : on ne les remplit que sur les faces de o_fr
   o_zone.init_m2();
-  DoubleTrav o_Text, o_Himp, o_coeff, o_contrib;
-  if (monolithic) o_coeff.resize(o_zone.nb_faces(), 1 + remote_item.dimension(1)), o_contrib.resize(o_zone.nb_faces());
-  else o_Text.resize(o_zone.nb_faces()), o_Himp.resize(o_zone.nb_faces());
+  DoubleTrav o_Text, o_Himp, o_coeff, o_delta_int, nu_ef(e_f.dimension(1), N);
+  if (monolithic) o_coeff.resize(o_zone.nb_faces(), 1 + item.dimension(1), N), o_delta_int.resize(o_zone.nb_faces(), N, 2);
+  else o_Text.resize(o_zone.nb_faces(), N), o_Himp.resize(o_zone.nb_faces(), N);
   for (int i = 0; i < o_fvf.nb_faces(); i++)
     {
-      int f = o_fvf.num_face(i), fb, j, k, l, e = o_zone.face_voisins(f, 0), i_f = 0, idx;
+      int f = o_fvf.num_face(i), e = o_zone.face_voisins(f, 0), fb, j, k, n, i_f = 0, idx;
       for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j; //numero de la face f dans l'element e
+      o_op_diff.remplir_nu_ef(e, nu_ef);
 
       /* construction du flux de chaleur sortant, en mettant la partie en T_f dans H_imp et le reste dans T_ext */
       for (j = o_zone.w2i(o_zone.m2d(e) + i_f), idx = 0; j < o_zone.w2i(o_zone.m2d(e) + i_f + 1); j++, idx++)
+        for (fb = e_f(e, o_zone.w2j(j)), n = 0; n < N; n++)
+          {
+            double fac = fs(fb) / ve(e) * o_zone.w2c(j) * nu_ef(o_zone.w2j(j), n);
+            if (monolithic)
+              o_coeff(f, idx ? idx + 1 : 0, n) += fs(f) * fac, o_coeff(f, 1, n) -= fs(f) * fac; //cote face, cote element
+            else
+              {
+                if (f == fb) o_Himp(f, n) += fac;
+                else o_Text(f, n) -= fac * o_inc.valeurs().addr()[N * (ne_tot + fb) + n];
+                o_Text(f, n) += fac * o_inc.valeurs().addr()[N * e + n];
+              }
+          }
+      for (n = 0; stab_ && monolithic && n < N; n++) for (k = 0; k < 2; k++) o_delta_int(f, n, k) = o_op_diff.delta_f_int(f, n, k);
+      for (n = 0; !monolithic && n < N; n++) if (o_Himp(f, n) > 1e-10) o_Text(f, n) /= o_Himp(f, n); //passage au vrai T_ext
+      for (n = 0; h_paroi < 1e9 && n < N; n++) //prise en compte de la resistance de la paroi
         {
-          fb = e_f(e, o_zone.w2j(j));
-          double nu_ef = 0;
-          if (N_nu == 1) nu_ef = o_nu.addr()[e]; //isotrope
-          else if (N_nu == dimension) for (k = 0; k < dimension; k++) //anisotrope diagonal
-              nu_ef += o_nu.addr()[dimension * e + k] * std::pow(xv(fb, k) - xp(e, k), 2);
-          else if (N_nu == dimension * dimension) for (k = 0; k < dimension; k++) for (l = 0; l < dimension; l++)
-                nu_ef += o_nu.addr()[dimension * (dimension * e + k) + l] * (xv(fb, k) - xp(e, k)) * (xv(fb, l) - xp(e, l)); //anisotrope complet
-          else abort();
-          nu_ef *= o_nu_fac.addr()[f] * (N_nu > 1 ? 1. / o_zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1);
-          double fac = fs(fb) / ve(e) * o_zone.w2c(j) * nu_ef;
+          double fac = h_paroi / (h_paroi + (monolithic ? o_coeff(f, 0, n) / fs(f) : o_Himp(f, n)));
           if (monolithic)
             {
-              o_coeff(f, idx ? idx + 1 : 0) += fs(f) * fac, o_coeff(f, 1) -= fs(f) * fac;
-              o_contrib(f) += fs(f) * fac * ((idx ? o_inc.valeurs()(ne_tot + fb) : 0) - o_inc.valeurs()(e));
+              if (stab_) o_delta_int(f, n, 0) *= fac;
+              for (j = 0; j < o_coeff.dimension(1); j++) o_coeff(f, j, n) *= fac;
             }
-          else
-            {
-              if (f == fb) o_Himp(f) += fac;
-              else o_Text(f) -= fac * o_inc.valeurs()(ne_tot + fb);
-              o_Text(f) += fac * o_inc.valeurs()(e);
-            }
-        }
-      if (!monolithic && o_Himp(f) > 1e-10) o_Text(f) /= o_Himp(f); //passage au vrai T_ext
-      if (h_paroi < 1e9) //prise en compte de la resistance de la paroi
-        {
-          double fac = h_paroi / (h_paroi + (monolithic ? o_coeff(f, 0) / fs(f) : o_Himp(f)));
-          if (monolithic) for (j = 0, o_contrib(f) *= fac; j < o_coeff.dimension(1); j++) o_coeff(f, j) *= fac;
-          else o_Himp(f) *= fac;
+          else o_Himp(f, n) *= fac;
         }
     }
 
   //transmission : soit par Raccord_distant_homogene, soit copie simple
   if (o_fvf.frontiere().que_suis_je() == "Raccord_distant_homogene")
     {
-      if (monolithic) o_fvf.frontiere().trace_face_distant(o_coeff, remote_coeff), o_fvf.frontiere().trace_face_distant(o_contrib, remote_contrib);
+      if (monolithic) o_fvf.frontiere().trace_face_distant(o_coeff, coeff);
       else o_fvf.frontiere().trace_face_distant(o_Text, T_ext()->valeurs()), o_fvf.frontiere().trace_face_distant(o_Himp, h_imp_->valeurs());
+      if (monolithic && stab_) o_fvf.frontiere().trace_face_distant(o_delta_int, delta_int);
     }
   else
     {
-      if (monolithic) o_fvf.frontiere().trace_face_local(o_coeff, remote_coeff), o_fvf.frontiere().trace_face_local(o_contrib, remote_contrib);
+      if (monolithic) o_fvf.frontiere().trace_face_local(o_coeff, coeff);
       else o_fvf.frontiere().trace_face_local(o_Text, T_ext()->valeurs()), o_fvf.frontiere().trace_face_local(o_Himp, h_imp_->valeurs());
+      if (monolithic && stab_) o_fvf.frontiere().trace_face_local(o_delta_int, delta_int);
     }
 
-  if (monolithic) remote_coeff.echange_espace_virtuel(), remote_contrib.echange_espace_virtuel();
-  else T_ext()->valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();  
-  t_coeffs_ = t;
+  if (monolithic) coeff.echange_espace_virtuel();
+  else T_ext()->valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();
+  if (monolithic && stab_) delta_int.echange_espace_virtuel();
+  coeffs_a_jour_ = 1;
+}
+
+void Echange_contact_PolyMAC::update_delta() const
+{
+  if (!monolithic || delta_a_jour_) return; //deja fait
+  const Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  const Front_VF& o_fvf = ref_cast(Front_VF, ch.front_dis());
+  const Zone_PolyMAC& o_zone = ref_cast(Zone_PolyMAC, ch.zone_dis());
+  const Equation_base&    o_eqn  = ch.equation();
+  const Op_Diff_PolyMAC_Elem& o_op_diff = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base());
+  const IntTab& e_f = o_zone.elem_faces();
+
+  //remplissage
+  o_op_diff.update_delta();
+  int i, j, n, N = ch.nb_comp();
+  DoubleTrav o_delta(o_zone.nb_faces(), item.dimension(1), N);
+  for (i = 0; i < o_fvf.nb_faces(); i++)
+    {
+      int f = o_fvf.num_face(i), fb, e = o_zone.face_voisins(f, 0), i_f = 0, idx;
+      for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j; //numero de la face f dans l'element e
+      for (n = 0; n < N; n++) o_delta(f, 0, n) = o_op_diff.delta_e(e, n);
+      for (j = o_zone.w2i(o_zone.m2d(e) + i_f) + 1, idx = 1; j < o_zone.w2i(o_zone.m2d(e) + i_f + 1); j++, idx++) //on saute le premier coeff (diagonale)
+        for (n = 0; n < N; n++) o_delta(f, idx, n) = o_op_diff.delta_f(e_f(e, o_zone.w2j(j)), n);
+    }
+
+  //transmission
+  if (o_fvf.frontiere().que_suis_je() == "Raccord_distant_homogene") o_fvf.frontiere().trace_face_distant(o_delta, delta);
+  else o_fvf.frontiere().trace_face_local(o_delta, delta);
+  delta.echange_espace_virtuel();
+  delta_a_jour_ = 1;
 }
 
 void Echange_contact_PolyMAC::mettre_a_jour(double temps)
 {
-  update_coeffs(temps);
   Echange_externe_impose::mettre_a_jour(temps);
+  coeffs_a_jour_ = 0, delta_a_jour_ = (stab_ ? 0 : 1);
 }

@@ -515,7 +515,7 @@ inline void F77DECLARE(DPPSV)(const char*   const UPLO,
                               const int*    const INFO
                              )
 {
-    F77NAME(dppsv)(UPLO, N, NRHS, AP, B, LDB, INFO);
+  F77NAME(dppsv)(UPLO, N, NRHS, AP, B, LDB, INFO);
 }
 #endif
 

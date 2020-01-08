@@ -61,7 +61,7 @@ void Op_Diff_PolyMAC_base::completer()
   if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
   la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
   la_zone_poly_.valeur().creer_tableau_faces(nu_fac_);
-  t_nu_ = -1e8;
+  nu_a_jour_ = 0;
 }
 
 int Op_Diff_PolyMAC_base::impr(Sortie& os) const
@@ -225,9 +225,9 @@ const Champ_base& Op_Diff_PolyMAC_base::diffusivite() const
 }
 
 
-void Op_Diff_PolyMAC_base::update_nu(double t) const
+void Op_Diff_PolyMAC_base::update_nu() const
 {
-  if (t == t_nu_) return; //on a deja fait le travail
+  if (nu_a_jour_) return; //on a deja fait le travail
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, f;
@@ -265,7 +265,6 @@ void Op_Diff_PolyMAC_base::update_nu(double t) const
   /* ajout de la diffusivite turbulente si elle existe */
   if (has_diffusivite_turbulente())
     {
-
       const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
       if (equation().que_suis_je() == "Transport_K_Eps")
         {
@@ -299,23 +298,24 @@ void Op_Diff_PolyMAC_base::update_nu(double t) const
         }
     }
 
-    /* 2. nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
-    // utilise-t-on des lois de paroi ?
-    const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-    int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
-                  ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
+  /* 2. nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
+  // utilise-t-on des lois de paroi ?
+  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
+  int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
+                ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
 
-    for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
-      {
-        int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
-            num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
-        for (f = deb; f < deb + num; f++) //nu par composante a chaque face
-          {
-            if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
-              nu_fac_(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
-            else nu_fac_(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
-            if (nu_fac_mod.size()) nu_fac_(f) *= nu_fac_mod(f); //prise en compte de nu_fac_mod
-          }
-      }
-  t_nu_ = t;
+  for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
+    {
+      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
+          num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
+      for (f = deb; f < deb + num; f++) //nu par composante a chaque face
+        {
+          if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
+            nu_fac_(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
+          else nu_fac_(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
+          if (nu_fac_mod.size()) nu_fac_(f) *= nu_fac_mod(f); //prise en compte de nu_fac_mod
+        }
+    }
+  nu_fac_.echange_espace_virtuel();
+  nu_a_jour_ = 1;
 }
