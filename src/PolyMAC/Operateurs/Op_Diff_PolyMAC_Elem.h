@@ -48,6 +48,10 @@ public :
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const;
   void completer();
   void dimensionner(Matrice_Morse& mat) const;
+
+  void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const;
+  void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const;
+  void contribuer_termes_croises(const DoubleTab& inco, Matrice_Morse& matrice, const Probleme_base& autre_pb) const;
 };
 
 #endif /* Op_Diff_PolyMAC_Elem_included */

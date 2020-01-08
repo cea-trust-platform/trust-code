@@ -28,8 +28,10 @@
 class Front_VF;
 class Zone_PolyMAC;
 class Faces;
+#include <Ref_IntTab.h>
 #include <IntTab.h>
 #include <Ref_Champ_Inc.h>
+#include <MD_Vector_tools.h>
 
 ////////////////////////////////////////////////////////////////
 
@@ -58,8 +60,19 @@ public :
   {
     return T_autre_pb_;
   };
+  inline const Nom& nom_autre_pb() const
+  {
+    return nom_autre_pb_;
+  };
+  //remote_item(i) : indice de l'item correspondant a la temperature i dans l'autre probleme
+  //peut contenir des -1 si il n'est pas accessible (parallelisme)
+  mutable IntTab remote_item;
+  //extra_item[ numero de proc, numero d'item ] = (indice dans remote_item)
+  //-> infos pour rendre les items manquants de remote_item accessibles
+  extra_item_t extra_items;
 protected :
   double h_paroi;
   Champ_front T_autre_pb_;
+  Nom nom_autre_pb_;
 };
 #endif
