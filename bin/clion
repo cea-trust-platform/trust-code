@@ -31,5 +31,9 @@ rm -r -f cmake-build-debug
 echo "Creating a link $PROJECT_ROOT/cmake-build-debug -> $BUILD_ROOT"
 ln -s -f $BUILD_ROOT cmake-build-debug
 echo "Running Clion on $CMakeLists project..."
+echo "Raccourcis:"
+echo "ctrl+F12          : liste des methodes de la classe"
+echo "alt+haut|bas      : naviguer d'une methode a l'autre"
+echo "ctrl+E            : derniers fichiers ouverts"
 $clion $CMakeLists
 
