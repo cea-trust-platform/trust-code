@@ -6,28 +6,28 @@ try:
     from xcontext import getContext
     context = getContext()
     if context == "clt":
-    
+
         # --- CORBA.ORB instance ---
         from omniORB import CORBA
         myORB = CORBA.ORB_init( [''], CORBA.ORB_ID )
-        
+
         # --- Naming Service ---
         from SALOME_NamingServicePy import *
         myNamingService = SALOME_NamingServicePy_i( myORB )
-        
+
         # --- Life Cycle CORBA ---
         import LifeCycleCORBA
-        myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)                                                            
-        
+        myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)
+
         # --- Study manager ---
         import SALOMEDS
         myStudyManager = myNamingService.Resolve( '/myStudyManager' )
-        
-        # --- TRIOU engine --- 
+
+        # --- TRIOU engine ---
         import TRIOU_CORBA
         myEngine = myLCC.FindOrLoadComponent( "FactoryServerPy", "TRIOU" )
     else:
-        print "On est HORS salome"
+        print("On est HORS salome")
         pass
     pass
 except:
@@ -83,7 +83,7 @@ def getStudy():
 # -----------------------------
 def getExtension():
     anExtension = myEngine.newGetExtensionObject().GetExtension()
-    return anExtension    
+    return anExtension
 
 # -----------------------------
 # SetSetting(): activate module
@@ -91,7 +91,7 @@ def getExtension():
 def setSettings():
     if str( getSalomePyQt().getSetting( "TRIOU:SolverFile" ) ) == "":
         aFile = "TRUST_mpich_opt_st"
-        if os.environ.has_key( "TRIOU_ROOT_DIR" ):
+        if "TRIOU_ROOT_DIR" in os.environ:
             aFile = os.getenv( "TRIOU_ROOT_DIR" ) + "/bin/" + aFile
         getSalomePyQt().addStringSetting( "TRIOU:SolverFile", aFile, 1 )
     pass
@@ -101,7 +101,7 @@ def setSettings():
 # -----------------------------
 def SetSolverLocation():
     aFile = getSalomePyQt().getSetting( "TRIOU:SolverFile" )
-    if aFile.isEmpty() and os.environ.has_key( "TRIOU_ROOT_DIR" ):
+    if aFile.isEmpty() and "TRIOU_ROOT_DIR" in os.environ:
         aFile = os.getenv( "TRIOU_ROOT_DIR" ) + "/bin/TRUST_mpich_opt_st"
         pass
     aFile = getSalomePyQt().getFileName( getSalomePyQt().getDesktop(), aFile, QStringList(), "Select solver executable", 1 )
@@ -126,19 +126,19 @@ def StartSolver():
 def ImportDataFile():
     aFilters = QStringList(); aFilters.append( qApp.tr( "Data files (*.data)" ) ); aFilters.append( qApp.tr( "All files (*.*)" ) )
     #aFile = getSalomePyQt().getFileName( getSalomePyQt().getDesktop(), "", aFilters, "Import data file", 1 )
-    print "ici"
+    print("ici")
     from xmainwindow import getMainWindow
     titi=getMainWindow()
     aFile=QFileDialog.getOpenFileName(QString.null,
                                       "(*.data)",
                                       titi,"Import data file","Import data file")
     if not aFile.isEmpty():
-        
+
         from xcontext import getContext
         context = getContext()
         if context == "clt2":
             ret = myEngine.newExportImportObject().ImportDataFile( getStudy(), str( aFile ) )
-            if myDebug: print "TRIOUGUI_Extension:ImportDataFile: ret =", ret
+            if myDebug: print("TRIOUGUI_Extension:ImportDataFile: ret =", ret)
             getSalomeSwig().updateObjBrowser( 0 )
             pass
         else:
@@ -148,8 +148,8 @@ def ImportDataFile():
             os.system("ln -sf "+str(aFile)+' '+theWorkingDir)
             import sys
             syspath=sys.path
-            print theWorkingDir
-            s=open(theWorkingDir+"/trad","w")           
+            print(theWorkingDir)
+            s=open(theWorkingDir+"/trad","w")
             syspath2=":".join(syspath)
             s.write("#!/bin/bash\nexport PYTHONPATH="+syspath2+'\n')
             s.write('file1=`basename '+str(aFile)+'`\n')
@@ -157,14 +157,14 @@ def ImportDataFile():
             s.write('python -c \"from triou import *;list=read_file_data(\'$file1\');write_file_python(\'jdd.py\',list)\"\n')
             s.close()
             os.system("sh "+theWorkingDir+"/trad")
-            print "ici"
+            print("ici")
             if context == "clt":
                 from xdatagui import importPy
                 importPy(theWorkingDir+"/jdd.py","salome")
             else:
                 getMainWindow().importpy(theWorkingDir+"/jdd.py")
                 pass
-            print "la"
+            print("la")
             #from triou import read_file_data
             #listclass=read_file_data(str(aFile))
             #print listclass
@@ -183,7 +183,7 @@ def ExportDataFile():
         aFile = getSalomePyQt().getFileName( getSalomePyQt().getDesktop(), "", aFilters, "Export data file", 0 )
         if not aFile.isEmpty():
             ret = myEngine.newExportImportObject().ExportDataFile( getStudy(), str( aFile ) )
-            if myDebug: print "TRIOUGUI_Extension:ExportDataFile: ret =", ret
+            if myDebug: print("TRIOUGUI_Extension:ExportDataFile: ret =", ret)
             pass
         pass
     else:
@@ -204,8 +204,8 @@ def ExportDataFile():
             #
             import sys
             syspath=sys.path
-            print theWorkingDir
-            s=open(theWorkingDir+"/trad","w")           
+            print(theWorkingDir)
+            s=open(theWorkingDir+"/trad","w")
             syspath2=":".join(syspath)
             s.write("#!/bin/bash\nexport PYTHONPATH="+syspath2+'\n')
             s.write('file1=`basename '+str(aFile)+'`\n')
@@ -228,8 +228,8 @@ id2extaction[92]  = ExportDataFile
 # OnGUIEvent(): process event
 # -----------------------------
 def OnGUIEvent( command_id ):
-    if myDebug: print "TRIOUGUI_Extension::OnGUIEvent:", command_id
-    if id2extaction.has_key( command_id ):
+    if myDebug: print("TRIOUGUI_Extension::OnGUIEvent:", command_id)
+    if command_id in id2extaction:
         id2extaction[ command_id ]()
     else:
         from xdatasalome import OnGUIEvent

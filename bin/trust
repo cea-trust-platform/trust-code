@@ -117,7 +117,7 @@ help()
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                       : Monitor the TRUST calculation only."
    echo "-evol                         : Monitor the TRUST calculation (new IHM)."
-   echo "-wiz                          : Create a TRUST datafile from a MED file (new IHM)."
+#   echo "-wiz                          : Create a TRUST datafile from a MED file (new IHM)."
    echo "-prm                          : Write a prm file."
    echo "-clean                        : Clean the current directory from all the generated files by TRUST."
    echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
@@ -285,10 +285,10 @@ do
    elif [ "$1" = "-evol" ]
    then
       probes=2
-   elif [ "$1" = "-wiz" ]
-   then
-      bash  $TRUST_ROOT/exec/TRUST_WIZARD/TRUST_Wizard.sh
-      exit $?
+#   elif [ "$1" = "-wiz" ]
+#   then
+#      bash  $TRUST_ROOT/exec/TRUST_WIZARD/TRUST_Wizard.sh
+#      exit $?
    elif [ "$1" = "-create_sub_file" ]
    then
       create_sub_file=1 && prod=1 #&& node=1

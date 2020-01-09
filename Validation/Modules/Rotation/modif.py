@@ -6,7 +6,7 @@ def get_dim(listdata):
         if isinstance(cl,dimension):
             return cl.dim
         pass
-    raise ("Dimension pas trouve dans "+str(listdata))
+    raise "Dimension pas trouve dans "
     pass
 
 from math import cos,sin,asin
@@ -26,7 +26,7 @@ inv_trans_y=str(cos(angle))+"*y+"+str(sin(-angle))+"*x"
 inv_trans_z="z"
 
 def generate_roration(theta,phi,alpha):
-    # Transformation 
+    # Transformation
     # 1. Rotation autour de l'axe Oz d'un angle theta
     # 2. Rotation autour de l'axe Oy d'un angle phi
     # 3. Rotation autour de l'axe Ox d'un angle alpha
@@ -42,7 +42,7 @@ def modifie_champ_unif(ch):
     try:
         newval=[0]
         x=ch.val[0]
-	y=0
+        y=0
         z=0
         if (len(ch.val)>=2):
             y=ch.val[1]
@@ -55,7 +55,7 @@ def modifie_champ_unif(ch):
         newval[0]=eval(trans_x)
         if (len(ch.val)>=2):
             newval[1]=eval(trans_y)
-	    pass
+            pass
         if (len(ch.val)==3):
             newval[2]=eval(trans_z)
             pass
@@ -78,7 +78,7 @@ def modifie_champ_non_unif(ch):
         z="("+str(ch.val[2])+")"
         newval.append(0)
         pass
-    print x,y,z
+    print(x,y,z)
     from string import replace
     newval[0]=replace(replace(replace(trans_x,"x",x),"y",y),"z",z)
     if (len(ch.val)>=2):
@@ -110,18 +110,18 @@ def modif(l,nom):
     list_rot=[]
     for cl in l:
         j+=1
-       
-	new_ll.append(cl)
+
+        new_ll.append(cl)
         if (isinstance(cl,discretize)):
             idis=j
             pass
         if (isinstance(cl,comment)):
-            print cl.comm[-8:]
+            print(cl.comm[-8:])
             if cl.comm[-12:]=="FIN MAILLAGE" or cl.comm[-8:]=="END MESH":
                 iscatt=j
-               
-            
-	if (isinstance(cl,domaine)):
+
+
+        if (isinstance(cl,domaine)):
             list_rot.extend(rotate_dom(new_ll,cl))
             pass
         if (isinstance(cl,milieu_base)):
@@ -129,7 +129,7 @@ def modif(l,nom):
                 from triou import trouve_class_list
                 gravite=trouve_class_list(cl.gravite,l)
                 modifie_champ_unif(gravite)
-		grav_fait=1
+                grav_fait=1
                 pass
             pass
 
@@ -138,29 +138,29 @@ def modif(l,nom):
                 atr=getattr(cl,x.name)
                 if isinstance(atr,eqn_base):
                     #print atr.conditions_limites
-		    try:
-			atr.traitement_particulier=None
-		    except:
-                        pass 
+                    try:
+                        atr.traitement_particulier=None
+                    except:
+                        pass
                     cond=atr.conditions_initiales.condinit
                     if (lower(cond.nom)=="vitesse"):
-                            modifie_champ_unif(cond.ch)
-                            pass
+                        modifie_champ_unif(cond.ch)
+                        pass
                     for condl in atr.conditions_limites.listobj:
                         if isinstance(condl.cl,frontiere_ouverte_vitesse_imposee):
-                            print "On modifie la cl ",condl.bord
-                            print condl.cl.ch, condl.cl.ch.print_lu()
-                            print modifie_champ_unif(condl.cl.ch)
+                            print("On modifie la cl ",condl.bord)
+                            print(condl.cl.ch, condl.cl.ch.print_lu())
+                            print(modifie_champ_unif(condl.cl.ch))
                             pass
                         pass
                     pass
                 pass
-            
+
             cl.postraitement.format="lata"
-	    if cl.postraitement.champs:
-	      cl.postraitement.champs.format="formatte"
-	    if cl.postraitement.statistiques:
-		    cl.postraitement.statistiques.format="formatte"
+            if cl.postraitement.champs:
+                cl.postraitement.champs.format="formatte"
+            if cl.postraitement.statistiques:
+                cl.postraitement.statistiques.format="formatte"
 
             cl.postraitement.fichier="org"
             pass
@@ -170,7 +170,7 @@ def modif(l,nom):
     for tr in list_rot:
         new_ll.insert(idis-1+i,tr)
         i=i+1
-        
+
     from triou import system,fin
     # au cas ou
     if (isinstance(new_ll[-1],fin)):
@@ -193,7 +193,7 @@ def test_cas(nom):
     is_vdf=0
     for cl in ll0:
         if (isinstance(cl,vdf)): is_vdf=1
-    
+
     theta=asin(1.)/2.
 
     if is_vdf:
@@ -207,13 +207,13 @@ def test_cas(nom):
         pass
     generate_roration(theta,phi,alpha)
 
-    
+
     new_ll=modif(ll0,nom)
     # print new_ll
     write_file_data('mod_'+nom2,new_ll)
     # on ecrit la rotation
     f=open("rotate_xyz.py","w")
-    f.write('''def corr(x):   
+    f.write('''def corr(x):
     if (abs(x)<1e-14): x=0
     return x
 ''')
@@ -226,7 +226,7 @@ def test_cas(nom):
     f.write('  Y=corr('+inv_trans_y+')\n')
     f.write('  Z=corr('+inv_trans_z+')\n')
     f.write('  return X,Y,Z\n')
-    f.close() 
+    f.close()
 if __name__ == '__main__':
     import sys
     test_cas(sys.argv[1])

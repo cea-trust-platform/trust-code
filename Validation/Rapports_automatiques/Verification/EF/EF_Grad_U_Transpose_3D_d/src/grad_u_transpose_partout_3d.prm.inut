@@ -1,6 +1,6 @@
 Parametres {
-	Titre "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses en 3D -- Cas linéaire"
-	Description "On impose un champ de vitesse à divergence nulle particulier dans tout le domaine.  On choisit une viscosité variable en espace.  Pour ces deux champs, il est possible de déterminer la solution analytique de la force visqueuse.  On impose alors un terme source égal à l'opposé de cette force.  Le champ de pression doit ainsi être nul."
+	Titre "VÃ©rification du transposÃ© du gradient de vitesse dans le tenseur des contraintes visqueuses en 3D -- Cas linÃ©aire"
+	Description "On impose un champ de vitesse Ã  divergence nulle particulier dans tout le domaine.  On choisit une viscositÃ© variable en espace.  Pour ces deux champs, il est possible de dÃ©terminer la solution analytique de la force visqueuse.  On impose alors un terme source Ã©gal Ã  l'opposÃ© de cette force.  Le champ de pression doit ainsi Ãªtre nul."
 	Auteur "D. Jamet"
 	CasTest "." "grad_u_transpose_partout_3d.data"
 	incluredata 1
@@ -8,11 +8,11 @@ Parametres {
 
 Chapitre {
 	Titre "Champ de pression"
-	Description "On vérifie que le champ de pression calculé est bien nul."
+	Description "On vÃ©rifie que le champ de pression calculÃ© est bien nul."
 
 	visu {
-                titre "Champ de pression calculé"
-                description "Le champ de pression 3D calculé par GENEPI est tracé."
+                titre "Champ de pression calculÃ©"
+                description "Le champ de pression 3D calculÃ© par GENEPI est tracÃ©."
                 mesh ./grad_u_transpose_partout_3d.lata dom 
                 Normal3d 0.7 -0.5 0.5
                 Up3D -0.4 0.3 0.9
@@ -20,8 +20,8 @@ Chapitre {
         }
 
         visu {
-                titre "Différence entre champ de pression calculé et champ de pression analytique"
-                description "Ce champ doit être nul."
+                titre "DiffÃ©rence entre champ de pression calculÃ© et champ de pression analytique"
+                description "Ce champ doit Ãªtre nul."
                 mesh ./grad_u_transpose_partout_3d.lata dom 
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(4.*coord(dom)[0]-2.*coord(dom)[1]-2.*coord(dom)[2])")
                 instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","PRESSION_PA_ELEM_dom-P_ANALYTIQUE_ELEM_dom")

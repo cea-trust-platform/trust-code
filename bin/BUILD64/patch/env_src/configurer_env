@@ -892,12 +892,12 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
    # check of python version
-   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*100+a[3];print (v==2716?1:0)}'`
+   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
 
    INSTALL_OK=1 
    # list of packages already-installed/to-install in conda
-   pkgs="pyqt nomkl numpy fontconfig matplotlib jsonschema swig cmake"
+   pkgs="pyqt nomkl numpy matplotlib swig cmake"
    for pkg in $pkgs ; do
      [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && INSTALL_OK=0
    done
@@ -918,19 +918,20 @@ then
     [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
 
     # Then we install miniconda and the different packages
-    echo "Trying to install Miniconda2-4.6.14-Linux-x86_64.sh"
-    $TRUST_ROOT/externalpackages/Miniconda/./Miniconda2-4.6.14-Linux-x86_64.sh -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
-    [ $? != 0 ] && echo "Error while installing Miniconda2-4.6.14-Linux-x86_64.sh. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+    conda_installer=Miniconda3-4.6.14-Linux-x86_64.sh
+    echo "Trying to install $conda_installer"
+    $TRUST_ROOT/externalpackages/Miniconda/./$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+    [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
 
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
 
-    pkgs="pyqt=4 nomkl numpy fontconfig=2.12.1 matplotlib jsonschema swig cmake"
+    pkgs="pyqt=5.6 nomkl numpy matplotlib swig=3.0.12 cmake=3.14"
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
       ./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels $pkg -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
-      [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+      [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda3 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
     cd -
     # If a package has not been correctly installed, we exit with an error
@@ -945,8 +946,6 @@ echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
 echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chemin vers python2.6
-# Ligne commenté à cause des warnings gdb 
-#echo "ADD_PYTHONPATH \$PYTHONLIBS_ROOT_DIR/lib/python`$TRUST_ROOT/exec/python/bin/python -c "import sys; print sys.version[:3]"`/site-packages" >> $env
 
 ####################
 # Compilateurs C/C++
@@ -1805,7 +1804,7 @@ case $TRUST_ARCH_CC in
 linux_clang++) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	# 06/02/14, Added -Wshadow
 	CppFlags=$CppFlags" -Wshadow"
 	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"

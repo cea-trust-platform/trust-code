@@ -1,4 +1,4 @@
-import MEDLoader as mc
+import medcoupling as mc
 
 # genere un maillage de N cubes alignes sur une ligne entre -1 et 1. Les N/2 premiers elem sont dans le groupe 'left_elem'
 # les autres dans le groupe 'right_elem'
@@ -42,13 +42,12 @@ mfu.write(F_NAME, 2)
 f = mc.MEDCouplingFieldDouble(mc.ON_NODES, mc.ONE_TIME)
 n_nodes = N_ELEM+1
 da = mc.DataArrayDouble(n_nodes*2)
-da[:n_nodes/2] = 20.0
-da[n_nodes/2:n_nodes] = 10.0
-da[n_nodes:3*n_nodes/2] = 20.0
-da[3*n_nodes/2:] = 10.0
-da[n_nodes/2] = 15.0
-da[3*n_nodes/2] = 15.0
+da[:n_nodes//2] = 20.0
+da[n_nodes//2:n_nodes] = 10.0
+da[n_nodes:3*n_nodes//2] = 20.0
+da[3*n_nodes//2:] = 10.0
+da[n_nodes//2] = 15.0
+da[3*n_nodes//2] = 15.0
 f.setArray(da)
 f.setMesh(m); f.setName("T_init"); f.setTime(0.0, 0, 0)
 mc.WriteFieldUsingAlreadyWrittenMesh(F_NAME, f)
-

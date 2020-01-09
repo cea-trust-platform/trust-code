@@ -50,7 +50,7 @@ if (NOT ${kernel} STREQUAL "full")
     if (${trouve} EQUAL -1)
       STRING(REPLACE "/" "_" d2 ${d})
       set(oo "${oo} void instancie_${d2}() { } ")
-    endif() 
+    endif()
   endforeach(d)
   set(oo "${oo} 
 ")
@@ -60,16 +60,16 @@ if (NOT ${kernel} STREQUAL "full")
   else()
     set(update_src 1)
   endif()
-  if (update_src)  
+  if (update_src)
     message( "update ${special_srcs}")
     FILE(WRITE ${special_srcs} "${oo}")
   endif(update_src)
-  
+
   set(listdir ${listdirmod})
 endif()
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
-    
+
 
 
 
@@ -97,7 +97,7 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "semi_opt")
 elseif (CMAKE_BUILD_TYPE STREQUAL "custom")
     set(OPT "_custom")
     include (${TRUST_ROOT}/env/Cmake.custom)
-else(CMAKE_BUILD_TYPE STREQUAL "Release") 
+else(CMAKE_BUILD_TYPE STREQUAL "Release")
    message(FATAL_ERROR  "unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt,Release_avx,custom")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 message("Mode: ${OPT}")
@@ -125,10 +125,10 @@ include (${TRUST_ROOT}/env/Cmake.libs)
 FOREACH (liba ${list_libs})
         set (staticlib lib${liba}.a )
          find_library( lib${liba} NAMES ${staticlib} ${liba} PATHS ${list_path_libs} NO_DEFAULT_PATH )
-	if (${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
-	   message("${liba} librairie systeme ?")
-	   find_library( lib${liba} NAMES ${liba} PATHS ${list_path_sys} )
- 	endif(${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
+        if (${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
+           message("${liba} librairie systeme ?")
+           find_library( lib${liba} NAMES ${liba} PATHS ${list_path_sys} )
+        endif(${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
         # pour supermuc on cherche ligfortran.so.3  en dur
         if (${liba} STREQUAL gfortran)
           if (${lib${liba}} STREQUAL libgfortran-NOTFOUND)
@@ -155,7 +155,7 @@ include_directories(${METIS_ROOT}/include  ${TRUST_MED_ROOT}/include  ${TRUST_ME
 add_definitions(${ADD_CPPFLAGS})
 
 
- 
+
  set(trio TRUST${COMM}${OPT})
  set(libtrio_name TRUST${COMM}${ajout}${OPT})
  set(libtrio lib${libtrio_name})
@@ -170,15 +170,15 @@ if(NOT COMPIL_DYN)
   foreach(_obj IN LISTS listlibs)
     LIST (APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
   endforeach()
-  
+
  add_library(${libtrio} STATIC  ${special_srcs} ${my_listobj} )
  set_target_properties(${libtrio} PROPERTIES OUTPUT_NAME ${libtrio_name} PREFIX "" )
  install(TARGETS ${libtrio} DESTINATION lib)
 else(NOT COMPIL_DYN)
  set(libtrio ${listlibs})
-  
+
 endif(NOT COMPIL_DYN)
- 
+
  # on ne produit pas d executable en mode partiel
  IF((  "${ajout}" STREQUAL "" ) OR ($ENV{FORCE_LINK}))
    add_executable (${trio} MAIN/the_main.cpp MAIN/mon_main.cpp ${special_srcs}  )
@@ -203,8 +203,8 @@ ADD_TEST(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:${trio}> -check ${l3}  )
 endforeach(f )
 
  ENDIF()
- 
- 
+
+
 ELSE(NOT ATELIER)
 FOREACH(dir ${listdir})
    include_directories(${TRUST_ROOT}/${dir})

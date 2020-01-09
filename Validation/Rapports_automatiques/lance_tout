@@ -9,13 +9,13 @@ do
    direct=`dirname $file`
    direct=`dirname $direct`
    cmd="(echo $file; cd $direct;$TRUST_ROOT/Validation/Outils/Genere_courbe/Run $fichier $*  )"
-   echo $cmd
-  echo "[ ! -f $direct/build/rapport.pdf ] && echo pb avec $direct && pb=1" >> check
-    direct2=`echo $direct |sed "s/_/./g"`
+   echo $cmd >> check
+   echo "[ ! -f $direct/build/rapport.pdf ] && echo pb avec $direct && pb=1" >> check
+   direct2=`echo $direct |sed "s/_/./g"`
    echo "\chapter{$direct2}
 \def\orig{$direct/build}
 \input{\orig/.tmp/corps}" >>dirs.tex
 done
 echo exit \$pb >> check
 chmod +x check
-echo sh check
+sh check

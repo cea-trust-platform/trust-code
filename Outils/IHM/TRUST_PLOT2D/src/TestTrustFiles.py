@@ -1,8 +1,8 @@
 try:
- import rlcompleter, readline
- readline.parse_and_bind('tab:complete')
+    import rlcompleter, readline
+    readline.parse_and_bind('tab:complete')
 except:
- pass
+    pass
 
 
 def norme_L2(x):
@@ -27,10 +27,10 @@ def ecart2(aa,ref,fout=None):
     delta=abs(b-a)
     nd=norme_L2(delta)
 
-    print "Ecart max",delta.max(),"Ecart max relatif au delta",delta.max()/ (0.5*(b.max()-b.min()+a.max()-a.min())+1e-10) 
-    print "norme L2 ecart",nd,"ecart relatif en L2",(nd)/(0.5/(na+nb+1e-10))
+    print("Ecart max",delta.max(),"Ecart max relatif au delta",delta.max()/ (0.5*(b.max()-b.min()+a.max()-a.min())+1e-10))
+    print("norme L2 ecart",nd,"ecart relatif en L2",(nd)/(0.5/(na+nb+1e-10)))
     if fout is not None:
-        print "Wrinting in ",fout," x, new_inetr,ref_inter"
+        print("Wrinting in ",fout," x, new_inetr,ref_inter")
         numpy.savetxt(fout,numpy.column_stack([new_x,a,b])) # ,header="essai")
         pass
     pass
@@ -40,9 +40,8 @@ if __name__=='__main__':
     ref=TrustFiles.CSVFile("Cas_1_Phi",2)
     #print ref.getEntries()
     refv=ref.getValues("c1")
-    
+
     f=TrustFiles.SonSEGFile("prem_0_PHI.son",None)
     # print dir(f)
     res=f.getValues(f.getEntriesSeg()[0])
     ecart2(res,refv,"test3_0")
-    

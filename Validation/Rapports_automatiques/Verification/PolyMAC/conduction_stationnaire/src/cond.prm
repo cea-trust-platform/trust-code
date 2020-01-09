@@ -1,6 +1,6 @@
 Parameters {
-	Title "Vérification de la conduction thermique stationnaire avec terme source : terme source linéaire"
-	Description "On considère un problème de conduction thermique stationnaire avec un terme source volumique variant linéairement dans la direction $x$.  On compare la solution obtenue par PolyMAC à la solution analytique.  La température est imposée en entrée et sortie du domaine (cf. jeu de données).  On compare le profil de température dans la direction $x$ ainsi que le champ de température bidimensionnel.  On compare également les flux conductifs sur les parois en entrée et sortie."
+	Title "VÃ©rification de la conduction thermique stationnaire avec terme source : terme source linÃ©aire"
+	Description "On considÃ¨re un problÃ¨me de conduction thermique stationnaire avec un terme source volumique variant linÃ©airement dans la direction $x$.  On compare la solution obtenue par PolyMAC Ã  la solution analytique.  La tempÃ©rature est imposÃ©e en entrÃ©e et sortie du domaine (cf. jeu de donnÃ©es).  On compare le profil de tempÃ©rature dans la direction $x$ ainsi que le champ de tempÃ©rature bidimensionnel.  On compare Ã©galement les flux conductifs sur les parois en entrÃ©e et sortie."
 	Author "D. Jamet, Y.Gorsse"
     TestCase "cartesian" "jdd.data"
     TestCase "triangle" "jdd.data"
@@ -9,12 +9,12 @@ Parameters {
 }
 
 Chapter {
-	Title "Champs de température"
-	Description "On compare les champs de température calculé par PolyMAC et analytique.  Cette comparaison se fait sur un profil en $y=cte$ et sur le champ 2D."
+	Title "Champs de tempÃ©rature"
+	Description "On compare les champs de tempÃ©rature calculÃ© par PolyMAC et analytique.  Cette comparaison se fait sur un profil en $y=cte$ et sur le champ 2D."
 
 	Figure {
 		Include_Description_Curves 0
-		Title "Comparaison des profils calculé et analytique"
+		Title "Comparaison des profils calculÃ© et analytique"
 		Dimension 2
 	        LabelX "x"
 	        LabelY "T"
@@ -53,8 +53,8 @@ Chapter {
 	}
 
 	visu {
-                Title "Comparaison des champs 2D calculé et analytique"
-                description "On trace le champ d'écart entre la température calculée et la solution analytique.  La solution analytique est représentée par des isovaleurs du champ de température."
+                Title "Comparaison des champs 2D calculÃ© et analytique"
+                description "On trace le champ d'Ã©cart entre la tempÃ©rature calculÃ©e et la solution analytique.  La solution analytique est reprÃ©sentÃ©e par des isovaleurs du champ de tempÃ©rature."
                 mesh cartesian/jdd.lata dom 
                 Isovalues cartesian/jdd.lata dom TEMPERATURE ELEM
                 #instruction_visit DefineScalarExpression("ERREUR_SOM_dom","TEMPERATURE_ELEM_dom-(-3./(6.*0.25)*(coord(dom)[0])/2.*((coord(dom)[0])*(coord(dom)[0])-2.*2.))")
@@ -66,12 +66,12 @@ Chapter {
 
 
 Chapter {
-	Title "Flux conductifs aux frontières du domaine"
-	Description "Les flux conductifs calculés par GENEPI en $x=0$ et $x=L$ sont comparés aux flux théoriques.  L'erreur correspondante est également donnée."
+	Title "Flux conductifs aux frontiÃ¨res du domaine"
+	Description "Les flux conductifs calculÃ©s par GENEPI en $x=0$ et $x=L$ sont comparÃ©s aux flux thÃ©oriques.  L'erreur correspondante est Ã©galement donnÃ©e."
 
 
 	Table {
-		Title "Comparaison théorie/numérique"
+		Title "Comparaison thÃ©orie/numÃ©rique"
 		nb_columns 2
 		label  flux  gauche  | flux droit
 		line {

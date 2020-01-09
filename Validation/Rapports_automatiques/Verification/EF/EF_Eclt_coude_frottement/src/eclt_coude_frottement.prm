@@ -14,8 +14,8 @@ Chapter {
 
 
 	visu {
-                Title "Champs de pression et de vitesse calculés"
-                description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
+                Title "Champs de pression et de vitesse calculÃ©s"
+                description "Les champs de pression et de vitesse calculÃ©s par GENEPI sont tracÃ©s."
                 mesh ./eclt_coude_frottement.lata dom 
                 pseudocolor ./eclt_coude_frottement.lata dom PRESSION_PA ELEM
 		vector  ./eclt_coude_frottement.lata dom VITESSE SOM
@@ -32,7 +32,7 @@ Chapter {
 
 
 	Table {
-		Title "Comparaison théorie/numérique"
+		Title "Comparaison thÃ©orie/numÃ©rique"
 		nb_columns 1
 		label  Perte de pression
 		line {
@@ -73,8 +73,8 @@ Chapter {
 
 
 	visu {
-                Title "Champs de pression et de vitesse calculés"
-                description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
+                Title "Champs de pression et de vitesse calculÃ©s"
+                description "Les champs de pression et de vitesse calculÃ©s par GENEPI sont tracÃ©s."
                 mesh ./eclt_coude_frottement2.lata dom 
                 pseudocolor ./eclt_coude_frottement2.lata dom PRESSION_PA ELEM
 		vector  ./eclt_coude_frottement2.lata dom VITESSE SOM
@@ -90,7 +90,7 @@ Chapter {
         }
 
 	Table {
-		Title "Comparaison théorie/numérique"
+		Title "Comparaison thÃ©orie/numÃ©rique"
 		nb_columns 1
 		label  Perte de pression
 		line {
@@ -131,8 +131,8 @@ Chapter {
 
 
 	visu {
-                Title "Champs de pression et de vitesse calculés"
-                description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
+                Title "Champs de pression et de vitesse calculÃ©s"
+                description "Les champs de pression et de vitesse calculÃ©s par GENEPI sont tracÃ©s."
                 mesh ./eclt_coude_frottement3.lata dom 
                 pseudocolor ./eclt_coude_frottement3.lata dom PRESSION_PA ELEM
 		vector  ./eclt_coude_frottement3.lata dom VITESSE SOM
@@ -148,7 +148,7 @@ Chapter {
         }
 
 	Table {
-		Title "Comparaison théorie/numérique"
+		Title "Comparaison thÃ©orie/numÃ©rique"
 		nb_columns 1
 		label  Perte de pression
 		line {

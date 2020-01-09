@@ -1,60 +1,22 @@
 #!/bin/bash
-check_gl()
-{
-   echo "============"
-   echo "Checking GL:"
-   # On cree des liens si OpenGL partiellement installe 
-   export MISSING_GL=""
-   uname=`uname -m`
-   model="" && [ "$uname" = x86_64 ] && model=64
-   reps="/usr/X11R6/lib$model /usr/lib$model /usr/lib/$uname-linux-gnu/mesa /usr/lib/$uname-linux-gnu"
-   for rep in $reps
-   do
-      # libGL et libGLU servent a Gmsh
-      # libXext, libXrender serviront a VisIt (a reporter dans configurer_env?)
-      for lib in libGL libGLU libXext libXt libXrender
-      do
-	 if [ -f $rep/$lib.so.1 ] && [ ! -f $rep/$lib.so ]
-	 then
-            echo "$lib partially installed..."
-            (mkdir -p missing/lib;cd missing/lib;ln -sf $rep/$lib.so.1 $lib.so)
-	    MISSING_GL="--x-libraries=$TRUST_ROOT/Outils/Gmsh/missing/lib --x-includes=$TRUST_ROOT/Outils/Gmsh/missing/include"
-	 fi
-	 if [ -f $rep/$lib.so.6 ] && [ ! -f $rep/$lib.so ]
-	 then
-            echo "$lib partially installed..."
-            (mkdir -p missing/lib;cd missing/lib;ln -sf $rep/$lib.so.6 $lib.so)
-	 fi
-      done
-   done
-   echo "============"
-}
 
-#   archives
+# Setup build directory and cd to it
+BUILD_DIR=$TRUST_ROOT/build/Outils/Gmsh
+mkdir -p $BUILD_DIR
+cd $BUILD_DIR
 
-OLDPATH_=$PATH
-NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
-export PATH=$NEWPATH_
-
-for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`
-do
-ln -sf $file .
+# Link to sources:
+for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`; do
+  ln -sf $file .
 done
-
-
-
-#########
-# Begin #
-#########
-check_gl
-[ "$1" = -check ] && exit 0
 
 ########
 # FLTK #
 ########
-if [ ! -d fltk ]
+FLTK_ROOT=$TRUST_ROOT/Outils/Gmsh/fltk
+if [ ! -d "$FLTK_ROOT" ]
 then
-   fltk_version=1.3.3
+   fltk_version=1.3.5
    fltk=fltk-$fltk_version"-source.tar.gz"
    if [ ! -f $fltk ]
    then
@@ -66,22 +28,23 @@ then
 	 exit 0
       fi
    fi
+   echo "#########################"
    echo "Installing $fltk..." 
+   echo "#########################"
    tar xfz $fltk
    cd ${fltk%-source.tar.gz}
    export CC=$TRUST_cc_BASE
-   env CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-ldl ./configure $MISSING_GL --enable-xdbe=no --prefix $TRUST_ROOT/Outils/Gmsh/fltk || exit -1
+   env CFLAGS=-fPIC CXXFLAGS=-fPIC ./configure --enable-xdbe=no --prefix $FLTK_ROOT LIBS='-ldl' || exit -1
    $TRUST_MAKE || exit -1
    make install || exit -1 
    cd ..
    rm -r -f ${fltk%-source.tar.gz}
 fi
-FLTK_ROOT=`pwd`/fltk
 
 ########
 # GMSH #
 ########   
-gmsh_version=2.16.0
+gmsh_version=4.4.1
 gmsh=gmsh-$gmsh_version"-source.tgz"
 if [ ! -f $gmsh ]
 then
@@ -96,74 +59,55 @@ fi
 rm -r -f ${gmsh%.tgz}
 echo "Install $gmsh..." 
 tar mxfz $gmsh
-cd ${gmsh%.tgz}
+GMSH_SRC=${gmsh%.tgz}
 
 #echo Patching ratio.c for clang
 #sed "s?if ( abs(mesh->info.imprim) < 5 )  return;?if ( abs(mesh->info.imprim) < 5 )  return 1;?" -i ./contrib/mmg3d/build/sources/ratio.c
-mkdir -p build
-cd build
+mkdir -p gmsh-build
+cd gmsh-build
 
 options=""
 if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
 then
    # Vu sur 2 machines de Saclay dont is213120:
    # gfortran non trouve au link de Gmsh
-   options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
+   #options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
+   options="-lgfortran"
 fi
-# Gmsh 2.6.1 is not compatible with PETSc>=3.5
-options=$options" -DENABLE_PETSC=0"
-# Build avec GUI (FLTK), et support MED,LAPACK
-[ "$MISSING_GL" != "" ] && MISSING_GL=$TRUST_ROOT/Outils/Gmsh/missing
 
-$TRUST_ROOT/exec/python/bin/cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENABLE_CAIRO=OFF \
--DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_Fortran_COMPILER=$TRUST_F77 \
+# By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB) and MED.
+plugins="-DDEFAULT=OFF -DENABLE_MED=ON -DENABLE_FLTK=ON -DENABLE_MESH=ON -DENABLE_POST=ON -DENABLE_PLUGINS=ON -DENABLE_ONELAB=ON -DENABLE_PARSER=ON"
+
+# Important: pour utiliser le cmake Python sans l'environnement Python:
+# Specifier CMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib
+$TRUST_ROOT/exec/python/bin/cmake $options $plugins  \
+-DCMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib \
+-DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
--DCMAKE_PREFIX_PATH="$TRUST_ROOT/lib/src/LIBMED/MED;$TRUST_ROOT/lib/src/LIBLAPACK;$FLTK_ROOT;$MISSING_GL" .. 2>&1 || exit -1
+-DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$TRUST_ROOT/lib/src/LIBLAPACK $options;$FLTK_ROOT" \
+-DHDF5_ROOT="$TRUST_MED_ROOT" ../$GMSH_SRC 2>&1 || exit -1
 
-# Hack Gmsh pour eviter le message penible: 
-# undefined reference to symbol '_gfortran_concat_string@@GFORTRAN_1.0'
-# Voir http://stackoverflow.com/questions/13247107/cmake-dso-linking
-EXTRA_LINK_LIB=""
-# locate command is not available by default on all plateforms such as on CCRT clusters
-which locate 1>/dev/null 2>&1
-err=$?
-if [ $err -eq 0 ]
-then
-   font_file=`locate -r "/usr/.*/libfontconfig.so$"`
-else
-   font_file=`ldconfig -p | grep libfontconfig.so$ | awk '{ print $4 }'`
+# Check that FLTK has been found correctly:
+grep "define HAVE_FLTK" Common/GmshConfig.h 
+if ! [ $? -eq 0 ]; then
+  echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  echo Error: FLTK not correctly detected by GMSH CMake !!
+  echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  exit -1
 fi
 
-if [ -f  "$font_file" ]; then
-  need_uuid=0 && ldd -r "$font_file" | grep -q uuid && need_uuid=1
-  need_freetype=0 && ldd -r "$font_file" | grep -q freetype && need_freetype=1
-  if [ $need_uuid -eq 1 ]; then
-    EXTRA_LINK_LIB="$EXTRA_LINK_LIB uuid "
-  fi
-  if [ $need_freetype -eq 1 ]; then
-    EXTRA_LINK_LIB="$EXTRA_LINK_LIB freetype "
-  fi
+# Check that MED has been found correctly
+grep "define HAVE_MED" Common/GmshConfig.h 
+if ! [ $? -eq 0 ]; then
+  echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  echo Error: MED file not correctly detected by GMSH CMake !!
+  echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  exit -1
 fi
-
-echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_link_libraries(gmsh \${LINK_LIBRARIES} gfortran $EXTRA_LINK_LIB )?g\nw" | ed ../CMakeLists.txt 1>/dev/null 2>&1
-[ $? != 0 ] && echo "Fail to change CMakeLists.txt. Contact TRUST support." && exit -1
-
 
 # Build and install
-$TRUST_MAKE || exit -1
+#VERBOSE="VERBOSE=1"
+$TRUST_MAKE $VERBOSE || exit -1
 make install || exit -1
-cd ../.. 
-rm -r -f fltk ${gmsh%.tgz}
-# on retire les liens 
-for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`
-do
- f=`basename $file`
- [ -h $f ] && rm  $f 
-done
 
-# Now rename final executable to gmsh-exec which will be invoked with the proper LD_LIBRARY_PATH by bin/gmsh
-mv $TRUST_ROOT/exec/gmsh/bin/gmsh $TRUST_ROOT/exec/gmsh/bin/gmsh_exec
-cp $TRUST_ROOT/Outils/Gmsh/gmsh.sh $TRUST_ROOT/exec/gmsh/bin/gmsh
-
-export PATH=$OLDPATH_
 

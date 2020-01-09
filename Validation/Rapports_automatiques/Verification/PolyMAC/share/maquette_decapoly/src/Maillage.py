@@ -1,4 +1,4 @@
-import MEDLoader as ml
+import medcoupling as ml
 import numpy as np
 import scipy
 from scipy import sparse
@@ -129,7 +129,7 @@ class Maillage():
                 if ftype in [3, 4]: n, t = n, n
                 # Matrice M0
                 for i in range(2):
-                    if ftype in [0, 1]: M0[i, shift + a] = n[i] 
+                    if ftype in [0, 1]: M0[i, shift + a] = n[i]
                 # Matrice M1
                 for ij, [i, j] in enumerate([i, j] for i in range(2) for j in range(2)):
                     if ftype in [0, 1]: M1[ij, shift + a] = n[i] * x[j]
@@ -211,7 +211,7 @@ class Maillage():
     def setCL(self, cl):
         # pour chaque bord, on repere les faces
         ghost_cl = {}
-        for key, [pos, type, val, hval, Tval] in cl.iteritems():
+        for key, [pos, type, val, hval, Tval] in cl.items():
             dir = key in ["nord", "sud"]
             cl_faces = []
             for i in range(self.Nf):
@@ -381,29 +381,29 @@ class Maillage():
         pts_fantomes.allocateCells(self.Nf)
         coo = []
         for i, sommets in enumerate(arr):
-           pts_fantomes.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
-           coo.extend(sommets[0]); coo.extend(sommets[1])
+            pts_fantomes.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
+            coo.extend(sommets[0]); coo.extend(sommets[1])
         coords = ml.DataArrayDouble(coo, self.Nf*2, 2)
         pts_fantomes.setCoords(coords)
         pts_fantomes.finishInsertingCells()
-        #ml.MEDLoader.WriteUMesh("output.med", pts_fantomes, False)
+        #ml.WriteUMesh("output.med", pts_fantomes, False)
 
         # ... et les choix d'interpolation
         pts_interp   = ml.MEDCouplingUMesh("interp",1)
-        nb = sum([len(v) for k, v in arr_I.iteritems()])
+        nb = sum([len(v) for k, v in arr_I.items()])
         pts_interp.allocateCells(nb)
         coo_I = []; i = 0
-        for k, v in arr_I.iteritems():
-           for (x, y) in v:
-               pts_interp.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
-               coo_I.extend(x); coo_I.extend(y)
-               i+=1
+        for k, v in arr_I.items():
+            for (x, y) in v:
+                pts_interp.insertNextCell(ml.NORM_SEG2, [2 * i, 2 * i + 1])
+                coo_I.extend(x); coo_I.extend(y)
+                i+=1
         coords_I = ml.DataArrayDouble(coo_I, 2 * nb, 2)
         pts_interp.setCoords(coords_I)
         pts_interp.finishInsertingCells()
-        #ml.MEDLoader.WriteUMesh("output.med", pts_interp, False)
+        #ml.WriteUMesh("output.med", pts_interp, False)
 
-        print >> sys.stderr, "\rinterpolation : ok                     "
+        print("\rinterpolation : ok                     ", file=sys.stderr)
 
         mat_cl_hyd = np.zeros((self.nb_faces_bord, 2 * self.Nc + self.Nf + 2 * self.nb_faces_bord))
         mat_cl_T   = np.zeros((self.nb_faces_bord, 2 * self.Nc + self.Nf + 2 * self.nb_faces_bord))
@@ -442,8 +442,8 @@ class Maillage():
         distD.setName("dist") ; distD.setArray(arr)
         volD = distD.clone(True) ; volD.setName("volume controle decale")
         volD *= self.sec
-        print "Volume maillage primal :", self.vol.accumulate()[0]
-        print "Volume maillage dual   :", volD.accumulate()[0] * 0.5
+        print("Volume maillage primal :", self.vol.accumulate()[0])
+        print("Volume maillage dual   :", volD.accumulate()[0] * 0.5)
         if abs(self.vol.accumulate()[0] -volD.accumulate()[0] * 0.5)>1e-6: raise Exception("Le maillage dual n'est pas bien construit")
         return distD, dist1, dist2, volD
 

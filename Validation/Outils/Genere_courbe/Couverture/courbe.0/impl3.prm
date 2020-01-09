@@ -17,8 +17,8 @@ Parameters {
 
 Chapitre {
 	Titre "sans paroi fictive"
-	Description "Problème coupl\'e solide/fluide en implicite. La solution est compar\'ee à la solution analytique au cours du temps. <<EOF 
-La solution analytique n'existe que pour une famille particulière de valeurs de conductivit\'e."  
+	Description "ProblÃ¨me coupl\'e solide/fluide en implicite. La solution est compar\'ee Ã  la solution analytique au cours du temps. <<EOF 
+La solution analytique n'existe que pour une famille particuliÃ¨re de valeurs de conductivit\'e."  
 titi EOF
 Figure {
 #	Titre "Trac\'e de l erreur  au cours du temps"
@@ -68,7 +68,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 	RangeY -1. auto
-	LabelY "°"
+	LabelY "Â°"
 	Courbe {
 		Legende "VDF t=0.5"
 		Origine "TRUST"
@@ -139,7 +139,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Courbe {
 		Legende "VDF t=0.5"
 		Origine "TRUST"
@@ -208,7 +208,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Courbe {
 		Legende "VDF"
 		Origine "TRUST"
@@ -283,7 +283,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Courbe {
 		Legende "VDF"
 		Origine "TRUST"
@@ -362,7 +362,7 @@ Figure {
 	legende bottom right
 	logx
 	logy
-	LabelY "°"
+	LabelY "Â°"
 	Courbe {
 		Legende "VDF"
 		Origine "TRUST"
@@ -393,7 +393,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	legende sans
 	width 7cm
 	Courbe {
@@ -445,7 +445,7 @@ Figure {
 	Titre "test plan"
 	Dimension 3
 	LabelX "x"
-	LabelY "°"
+	LabelY "Â°"
 	
 	Courbe {
 		 Legende "VEF 1."

@@ -1,6 +1,6 @@
 import os
 
-from pyqtside.QtCore import QTimer,QObject,  QFileSystemWatcher, QFile, QIODevice, Slot, SIGNAL
+from pyqtside.QtCore import QTimer,QObject,  QFileSystemWatcher, QFile, QIODevice, Slot
 
 class TrustFileWatcher(QObject):
     def __init__(self, parent, textEdit, fv, extension):
@@ -11,11 +11,11 @@ class TrustFileWatcher(QObject):
         self.__outputFile = None
         self.__outputFileWatcher = None
         self.__outputFileTimer = None
-      
+
     def _getLongCaseName(self):
         cutn=self._showFileView._caseName.split(".data")[0]
         return os.path.join(self._showFileView._currDir,cutn)
-      
+
     @Slot()
     def restart(self):
         """
@@ -26,13 +26,13 @@ class TrustFileWatcher(QObject):
         self.stop()
         self.__outputFile = QFile(aCaseOutputFile)
         self.__outputFileWatcher = QFileSystemWatcher(self.parent())
-        self.connect( self.__outputFileWatcher, SIGNAL("fileChanged( QString )"), self.__onSimulationFileChanged )
-   
+        self.__outputFileWatcher.fileChanged.connect( self.__onSimulationFileChanged )
+
         # start timer to detect output file creation
         self.__outputFileTimer = QTimer( self )
         self.__outputFileTimer.timeout.connect( self.__checkOutputFileExists )
         self.__outputFileTimer.start(10)         # start for 10 milliseconds
-        
+
     @Slot()
     def terminate(self):
         """
@@ -46,7 +46,7 @@ class TrustFileWatcher(QObject):
         """
         if ( self.__outputFileWatcher is not None ):
             self.__onSimulationFileChanged(None) # on recupere le reste du fichier
-            self.disconnect( self.__outputFileWatcher, SIGNAL("fileChanged( QString )"), self.__onSimulationFileChanged )
+            self.__outputFileWatcher.fileChanged.disconnect( self.__onSimulationFileChanged )
             aMonitorFileList = [str(name) for name in self.__outputFileWatcher.files()]
             for aMonitorFile in aMonitorFileList :
                 self.__outputFileWatcher.removePath( aMonitorFile )
@@ -81,8 +81,6 @@ class TrustFileWatcher(QObject):
                 aByteRead = self.__outputFile.bytesAvailable()
                 simulationData = self.__outputFile.read( aByteRead )
                 if ( len(simulationData) > 0 ):
-                    self.textEdit.append(unicode(simulationData))
+                    self.textEdit.append(str(simulationData))
             except:
-                print "ERROR reading simulation output file"
-            
-     
+                print("ERROR reading simulation output file")

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh
-[ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
+
 source $TRUST_ROOT/exec/lata2dx_install/env.sh
 
 mystudy=$1

@@ -1,6 +1,6 @@
 Parameters {
 	Title "Ecoulement laminaire dans un coude 3D"
-	Description "On calcule l'écoulement tridimensionnel dans un coude.  L'écoulement est laminaire et on néglige la convection.  La pression est imposée sur les frontières d'entrée et de sortie du domaine de calcul.  Sur les parois supérieure et inférieure, une condition d'adhérence est imposée alors que les parois avant et arrière, une condition de symétrie est imposée.  Les champs initiaux de vitesse et de pression sont ceux du cas bidimensionnel pour lequel il existe une solution analytique."
+	Description "On calcule l'Ã©coulement tridimensionnel dans un coude.  L'Ã©coulement est laminaire et on nÃ©glige la convection.  La pression est imposÃ©e sur les frontiÃ¨res d'entrÃ©e et de sortie du domaine de calcul.  Sur les parois supÃ©rieure et infÃ©rieure, une condition d'adhÃ©rence est imposÃ©e alors que les parois avant et arriÃ¨re, une condition de symÃ©trie est imposÃ©e.  Les champs initiaux de vitesse et de pression sont ceux du cas bidimensionnel pour lequel il existe une solution analytique."
 	Author "D. Jamet"
 	TestCase "." "eclt_coude_pression_3D.data"
 	IncludeData 1
@@ -8,12 +8,12 @@ Parameters {
 
 Chapter {
 	Title "Champs de pression et de vitesse"
-	Description "Dans cette partie, on trace les champs de pression et de vitesse calculés par GENEPI."
+	Description "Dans cette partie, on trace les champs de pression et de vitesse calculÃ©s par GENEPI."
 
 
 	visu {
-                Title "Champs de pression et de vitesse calculés"
-                description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
+                Title "Champs de pression et de vitesse calculÃ©s"
+                description "Les champs de pression et de vitesse calculÃ©s par GENEPI sont tracÃ©s."
                 Normal3d -0.7 0.1 0.7
                 Up3D 0. 0.7 0.
                 mesh ./eclt_coude_pression_3D.lata dom 
@@ -24,7 +24,7 @@ Chapter {
 
 	visu {
                 Title "Champs de pression et de vitesse analytiques"
-                description "Le champ de pression analytique est tracé et le champ de pression calculé par GENEPI est donné par des iso-valeurs."
+                description "Le champ de pression analytique est tracÃ© et le champ de pression calculÃ© par GENEPI est donnÃ© par des iso-valeurs."
                 Normal3d -0.7 0.1 0.7
                 Up3D 0. 0.7 0.
                 mesh ./eclt_coude_pression_3D.lata dom 
@@ -36,7 +36,7 @@ Chapter {
 
 	visu {
                 Title "Erreurs sur les champs de pression et de vitesse"
-                description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont superposés le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clarté, le maillage n'est pas tracé)."
+                description "On trace l'erreur entre le champ de pression calculÃ© par GENEPI et le champ de pression analytique.  Sont superposÃ©s le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clartÃ©, le maillage n'est pas tracÃ©)."
                 Normal3d -0.7 0.1 0.7
                 Up3D 0. 0.7 0.
                 mesh ./eclt_coude_pression_3D.lata dom 

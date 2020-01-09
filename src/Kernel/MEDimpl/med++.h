@@ -12,20 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        med++.h
-// Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
+
 #ifndef MEDpp_H
 #define MEDpp_H
 
 #include <med.h>
 
 #ifdef MED_H
-#define MED30
+#define MED40
 
 #ifndef MED_
 #define MED_

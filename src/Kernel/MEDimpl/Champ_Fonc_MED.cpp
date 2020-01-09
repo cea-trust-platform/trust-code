@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,9 @@
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
+#include <MEDCouplingField.hxx>
 #include <MEDCouplingFieldDouble.hxx>
+using MEDCoupling::MEDCouplingField;
 using MEDCoupling::MEDCouplingFieldDouble;
 using MEDCoupling::MCAuto;
 using MEDCoupling::GetTimeAttachedOnFieldIteration;
@@ -232,8 +234,15 @@ void Champ_Fonc_MED::lire(double t, int given_it)
               if (given_it != -1 ? given_it == (int) it : est_egal(fieldTime, t))
                 {
                   // ToDo can we avoid reloading the mesh ...
-                  MCAuto<MEDCouplingFieldDouble> field = ReadField(field_type, fileName, meshName, 0, fieldName,
-                                                                   iteration, order);
+                  // Only one MCAuto below to avoid double deletion:
+                  MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName,
+                                                              iteration, order);
+                  MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+                  if (field == 0)
+                    {
+                      Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+                      Process::exit(-1);
+                    }
                   const double *field_values = field->getArray()->begin();
                   assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
                   assert((int) field->getNumberOfComponents() ==
@@ -255,7 +264,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
   else
 #endif
     {
-      int fid = MEDfileOpen(nom_fic, MED_ACC_RDONLY);
+      med_idt fid = MEDfileOpen(nom_fic, MED_ACC_RDONLY);
       if (fid < 0)
         {
           Cerr << "Problem while opening the file " << nom_fic << finl;
@@ -281,7 +290,6 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       Nom nom_dom(mon_dom.le_nom());
       int i2 = 0;
       Nom& le_nom_du_champ = nom_champ_dans_fichier_med_;
-#ifdef MED30
       med_field_type typcha;
       //  Nom meshname; dimensionne_nom_taille(meshname,MED_NAME_SIZE);
       Char_ptr dtunit;
@@ -295,42 +303,23 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       unit.allocate(MED_SNAME_SIZE * ncomp);
       ret = MEDfieldInfoByName(fid, le_nom_du_champ, maa_ass, &localmesh, &typcha, comp, unit, dtunit, &nbofcstp);
       int nb_dt_tot = nbofcstp;
-#else
-      int nb_dt_tot=MEDnPasdetemps(fid,le_nom_du_champ,type_ent,type_geo);
-#endif
       double tmax = -1;
       for (int j = 0; j < nb_dt_tot; j++)
         {
-#ifdef MED30
           med_int meshnumdt, meshnumit;
           MEDfieldComputingStepMeshInfo(fid, le_nom_du_champ, j + 1, &numdt, &numo, &dt, &meshnumdt, &meshnumit);
-#else
-          med_int ngauss;
-          MEDpasdetempsInfo(fid,le_nom_du_champ,type_ent,type_geo,
-                            j+1, maa_ass,&ngauss, &numdt,dt_unit, &dt, &numo);
-#endif
           tmax = dt;
         }
       for (int j = 0; j < nb_dt_tot; j++)
         {
           if (i2 >= nb_dt) exit();
 
-#ifdef MED30
           med_int meshnumdt, meshnumit;
           MEDfieldComputingStepMeshInfo(fid, le_nom_du_champ, j + 1, &numdt, &numo, &dt, &meshnumdt, &meshnumit);
-#else
-          med_int ngauss;
-          MEDpasdetempsInfo(fid,le_nom_du_champ,type_ent,type_geo,
-                            j+1, maa_ass,&ngauss, &numdt,dt_unit, &dt, &numo);
-#endif
           Nom Nmaa_ass(maa_ass);
           if (est_egal(dt, t))
             {
-#ifdef MED30
               int size = MEDfieldnValue(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo);
-#else
-              int size=1;
-#endif
               if ((size != 0) && (nom_dom == Nmaa_ass))
                 break;
             }
@@ -363,26 +352,16 @@ void Champ_Fonc_MED::lire(double t, int given_it)
               Cerr << "Available times for " << le_nom_du_champ << " domain " << nom_dom << " are:" << finl;
               for (int j = 0; j < nb_dt; j++)
                 {
-#ifdef MED30
                   med_int meshnumdt, meshnumit;
                   MEDfieldComputingStepMeshInfo(fid, le_nom_du_champ, j + 1, &numdt, &numo, &dt, &meshnumdt, &meshnumit);
-#else
-                  int ngauss;
-                  MEDpasdetempsInfo(fid,le_nom_du_champ,type_ent,type_geo,
-                                    j+1, nom_dom, &ngauss, &numdt,dt_unit, &dt, &numo);
-#endif
                   Cerr << dt << finl;
                 }
               exit();
             }
           Cerr << "Reading the time step " << (int) numdt << " of field " << le_nom_du_champ << " time " << t
                << " type ent " << (int) type_ent << finl;
-#ifdef MED30
           ret = MEDfieldValueRd(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo, MED_FULL_INTERLACE,
                                 MED_ALL_CONSTITUENT, (unsigned char *) le_champ().valeurs().addr());
-#else
-          ret=MEDchampLire(fid,nom_dom,le_nom_du_champ,(unsigned char*)le_champ().valeurs().addr(),MED_FULL_INTERLACE,MED_ALL,pflname,type_ent,type_geo,numdt,numo);
-#endif
           if (ret < 0)
             {
               Cerr << "Problem while reading field " << le_nom_du_champ << " name of domain " << mon_dom.le_nom() << finl;
@@ -492,8 +471,16 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
           // Last time:
           if (it==Iterations.size()-1)
             {
-              MCAuto<MEDCouplingFieldDouble> field = ReadField(field_type, fileName, meshName, 0, fieldName, iteration,
-                                                               order);
+              // ToDo can we avoid reloading the mesh ...
+              // Only one MCAuto below to avoid double deletion:
+              MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration,
+                                                          order);
+              MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+              if (field == 0)
+                {
+                  Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+                  Process::exit(-1);
+                }
               size = field->getNumberOfTuplesExpected();
               nbcomp = (int) field->getNumberOfComponents();
             }

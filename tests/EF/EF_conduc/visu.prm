@@ -1,6 +1,6 @@
 Parametres {
-	Titre "Conduction couplée implicite"
-	Description "Calculs menés en VDF/VEF avec/sans paroi fictive"
+	Titre "Conduction couplÃ©e implicite"
+	Description "Calculs menÃ©s en VDF/VEF avec/sans paroi fictive"
 	Auteur "G.F."
 	CasTest FTD_all_VEF FTD_all_VEF.data
 }

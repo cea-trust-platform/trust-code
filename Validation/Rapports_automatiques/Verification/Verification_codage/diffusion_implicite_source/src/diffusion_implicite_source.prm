@@ -3,7 +3,7 @@ Parameters {
 	Author fauchet 
 	Description On verifie que les pertes de charge en VDF sont bien implicites en diffusion_implicite 
 	Description les calculs PCS_expl et PCR_impl divergent (K grand) et ne sont pas lances
-	Description les calculs *10 *11 avec crank ne sont pas lances et sont à la limite de la convergence
+	Description les calculs *10 *11 avec crank ne sont pas lances et sont Ã  la limite de la convergence
 	TestCase PCS PCS_impl
 	TestCase PCS PCS00
 	TestCase PCS PCS01

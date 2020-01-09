@@ -1,39 +1,30 @@
-MED_INSTALL_BUILDER=./scripts/provided/install_MED_builder.sh
-HDF_INSTALL_BUILDER=./scripts/provided/install_HDF_builder.sh
- 
-MED_INSTALLER=./scripts/generated/install_MED.sh
-HDF_INSTALLER=./scripts/generated/install_HDF.sh
+ext_pkg=$(TRUST_ROOT)/externalpackages/MED
+
+HDF5_ARCHIVE=$(ext_pkg)/hdf5-1.10.3.tar.gz
+MED_ARCHIVE=$(ext_pkg)/med-4.0.0.tar.gz
 
 MED=$(TRUST_MED_ROOT)/lib/libmed.a
-HDF=$(TRUST_MED_ROOT)/lib/libhdf5.a
+HDF5=$(TRUST_MED_ROOT)/lib/libhdf5.a
 
-MED_ARCHIVES= ./archives/med-3.3.1.tar.gz
-HDF_ARCHIVES= ./archives/hdf5-1.8.14.tar.gz
+install_dir=$(TRUST_MED_ROOT)
 
+all : $(HDF5) $(MED)
 
-HDF_CONFIG=scripts/generated/install_HDF.sh
-MED_CONFIG=scripts/generated/install_MED.sh	
+$(MED) : $(HDF5) $(MED_ARCHIVE) makefile install_med.sh
+	@rm -f `readlink -f $(MED)`
+	@./install_med.sh $(MED_ARCHIVE)
 
-all : $(HDF_CONFIG) $(MED_CONFIG) $(HDF) $(MED)
+$(HDF5) : $(HDF5_ARCHIVE) makefile install_hdf5.sh
+	@rm -f `readlink -f $(HDF5)`
+	@./install_hdf5.sh $(HDF5_ARCHIVE)
+	
+	
+ 
+hdf5 : $(HDF5) 
 
-archives:
-	@ln -sf $(TRUST_ROOT)/externalpackages/MED archives
-$(MED_CONFIG) : $(MED_INSTALL_BUILDER) $(HDF_INSTALLER) archives
-	@sh $(MED_INSTALL_BUILDER)
-
-$(HDF_CONFIG) : $(HDF_INSTALL_BUILDER) makefile ./scripts/provided/HDF_installers.sh ./scripts/provided/MED_installers.sh ./scripts/provided/checkers.sh ./scripts/provided/exceptions.sh ./scripts/provided/install_HDF_builder.sh ./scripts/provided/install_MED_builder.sh ./scripts/provided/installers.sh ./scripts/provided/utils.sh
-	@sh $(HDF_INSTALL_BUILDER)
-
-$(MED) : $(HDF) $(MED_ARCHIVES) makefile
-	@sh $(MED_INSTALLER)
-	@rm -f archives 
-
-$(HDF) : $(HDF_INSTALLER) $(HDF_ARCHIVES) makefile
-	@sh $(HDF_INSTALLER)
-
+med : $(HDF5) $(MED)
 
 clean :
-	@rm -rf build
-	@rm -rf $(TRUST_MED_ROOT)/../install
-	@rm -rf $(TRUST_MED_ROOT)/../MED
-	@rm -rf archives scripts/generated/*.sh
+	rm -rf $(TRUST_ROOT)/build/lib/hdf5*
+	rm -rf $(TRUST_ROOT)/build/lib/med*	
+	rm -rf $(install_dir)

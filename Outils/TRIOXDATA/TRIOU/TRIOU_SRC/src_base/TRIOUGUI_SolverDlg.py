@@ -30,21 +30,21 @@ class SolverDlg(QDialog):
 
         self.filePath = QLineEdit( self.frame )
         self.filePath.setMinimumWidth( 200 )
-        
+
         self.browseBtn = QPushButton( self.tr( "Browse..." ), self.frame )
         self.connect( self.browseBtn, SIGNAL( "clicked()" ), self.onBrowse )
 
         self.workDirLab = QLabel( self.tr( "Woking directory:" ), self.frame )
         self.workDir = QLineEdit( self.frame )
         self.workDir.setMinimumWidth( 200 )
-        
+
         self.browseDirBtn = QPushButton( self.tr( "Browse..." ), self.frame )
         self.connect( self.browseDirBtn, SIGNAL( "clicked()" ), self.onBrowseDir )
 
         frameLayout = QGridLayout( self.frame.layout() )
         frameLayout.setAlignment( Qt.AlignTop )
         frameLayout.setMargin( 0 ); frameLayout.setSpacing( __SPACING_SIZE__ )
-        
+
         frameLayout.addWidget( self.studyRB,      0, 0 )
         frameLayout.addWidget( self.fileRB,       1, 0 )
         frameLayout.addWidget( self.filePath,     1, 1 )
@@ -55,18 +55,18 @@ class SolverDlg(QDialog):
 
         self.autoClose = QCheckBox( self.tr( "Auto close after finishing" ), self )
         self.autoClose.setChecked( 1 )
-        
+
         self.status = QLabel( self )
         self.status.setAlignment( Qt.AlignCenter )
         self.status.setFrameStyle( QFrame.Panel | QFrame.Sunken )
 
         self.startBtn = QPushButton( self.tr( "&Start" ), self )
         self.connect( self.startBtn, SIGNAL( "clicked()" ), self.onStart )
-        
+
         self.pauseBtn = QPushButton( self.tr( "&Pause" ), self )
         self.pauseBtn.setEnabled( 0 )
         self.connect( self.pauseBtn, SIGNAL( "clicked()" ), self.onPause )
-        
+
         self.stopBtn = QPushButton( self.tr( "S&top" ), self )
         self.stopBtn.setEnabled( 0 )
         self.connect( self.stopBtn, SIGNAL( "clicked()" ), self.onStop )
@@ -89,14 +89,14 @@ class SolverDlg(QDialog):
 
         self.timer = QTimer( self )
         self.connect( self.timer, SIGNAL( "timeout()" ), self.onTimer )
-        
+
         self.onInputChanged()
         pass
 
     def onInputChanged( self ):
         self.filePath.setEnabled( not self.studyRB.isChecked() )
         self.browseBtn.setEnabled( not self.studyRB.isChecked() )
-        
+
     def onBrowse( self ):
         aFile = self.filePath.text()
         aFilters = QStringList(); aFilters.append( self.tr( "Data files (*.data)" ) ); aFilters.append( self.tr( "All files (*.*)" ) )
@@ -134,7 +134,7 @@ class SolverDlg(QDialog):
 
         self.timer.start( __TIMER_INTERVAL__ )
         pass
-    
+
     def onPause( self ):
         if self.extension is None or not self.extension.IsSolverRunning() or self.extension.IsSolverPaused():
             return
@@ -144,7 +144,7 @@ class SolverDlg(QDialog):
         # if failed, return
         if not self.extension.IsSolverPaused():
             return
-        
+
         self.pauseBtn.setText( self.tr( "&Resume" ) )
         try:
             self.disconnect( self.pauseBtn, SIGNAL( "clicked()" ), self.onPause )
@@ -166,7 +166,7 @@ class SolverDlg(QDialog):
             pass
         self.connect( self.pauseBtn, SIGNAL( "clicked()" ), self.onPause )
         self.status.setText( self.tr( "Solver is running..." ) )
-        self.timer.start( __TIMER_INTERVAL__ )        
+        self.timer.start( __TIMER_INTERVAL__ )
         pass
 
     def onStop( self ):

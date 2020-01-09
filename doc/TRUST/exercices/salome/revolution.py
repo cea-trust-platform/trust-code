@@ -86,4 +86,4 @@ geompy.addToStudyInFather( Cylinder_1, Outlet, 'Outlet' )
 
 
 if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser(1)
+    salome.sg.updateObjBrowser(1)

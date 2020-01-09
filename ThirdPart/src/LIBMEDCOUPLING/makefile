@@ -1,10 +1,15 @@
-archive=$(TRUST_ROOT)/externalpackages/medcoupling-8.5.0.tar.gz
-patchs=DisjointDEC.cxx DisjointDEC.hxx MEDCouplingFieldDouble.hxx MEDCouplingMemArray.cxx MEDCouplingSkyLineArray.cxx
-$(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh $(archvive) $(TRUST_MED_ROOT)/include/med.h $(patchs)
-	./install.sh $(archive)
+archive_mc=$(TRUST_ROOT)/externalpackages/SALOME/medcoupling-9.4.0.tar.gz
+archive_conf=$(TRUST_ROOT)/externalpackages/SALOME/configuration-9.4.0.tar.gz
+
+all : $(TRUST_MEDCOUPLING_ROOT)/env.sh
+
+$(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh $(archvive_mc) $(archive_conf) $(TRUST_MED_ROOT)/include/med.h
+	rm -f $(TRUST_MEDCOUPLING_ROOT)/env.sh
+	./install.sh $(archive_mc) $(archive_conf)
 
 test:
 	./test.sh
-clean_build:
-	rm -rf build install $(medcoupling) *~ $(TRUST_MEDCOUPLING_ROOT)
-clean: clean_build
+
+clean:
+	rm -rf $(TRUST_ROOT)/build/lib/medcoupling* $(TRUST_ROOT)/lib/src/LIBMEDCOUPLING
+

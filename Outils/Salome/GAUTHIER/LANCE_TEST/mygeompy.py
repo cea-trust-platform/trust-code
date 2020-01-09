@@ -31,19 +31,19 @@ else:
 
 
 def MakePointStruct(x,y,z):
-	return  BasicOp.MakePointXYZ(x,y,z)
+    return  BasicOp.MakePointXYZ(x,y,z)
 
 def MakeDirection(point):
-	OO = BasicOp.MakePointXYZ(0, 0, 0)
-	return BasicOp.MakeVectorTwoPnt(OO,point)
+    OO = BasicOp.MakePointXYZ(0, 0, 0)
+    return BasicOp.MakeVectorTwoPnt(OO,point)
 def MakeAxisStruct(x0,y0,z0,x,y,z):
-	O1=BasicOp.MakePointXYZ(x0, y0, z0)
-	point=BasicOp.MakePointXYZ(x0+x,y0+y,z0+z)
-	return  BasicOp.MakeVectorTwoPnt(O1,point)
+    O1=BasicOp.MakePointXYZ(x0, y0, z0)
+    point=BasicOp.MakePointXYZ(x0+x,y0+y,z0+z)
+    return  BasicOp.MakeVectorTwoPnt(O1,point)
 
 
 def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
-    print "MakeElliposide(x_c,y_c,z_c,r_x,r_y,r_z)"
+    print("MakeElliposide(x_c,y_c,z_c,r_x,r_y,r_z)")
     r_minor=min(r_x,r_y,r_z)
     r_major=max(r_x,r_y,r_z)
     n_minor=0
@@ -53,7 +53,7 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
     elif (r_major == r_x):
         n_major+=1
     else:
-        print "r_x!=r_minor!=r_major"
+        print("r_x!=r_minor!=r_major")
         1/0
         pass
     if (r_minor == r_y):
@@ -61,7 +61,7 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
     elif (r_major == r_y):
         n_major+=1
     else:
-        print "r_y!=r_minor!=r_major"
+        print("r_y!=r_minor!=r_major")
         1/0
         pass
     if (r_minor == r_z):
@@ -69,10 +69,10 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
     elif (r_major == r_z):
         n_major+=1
     else:
-        print "r_z!=r_minor!=r_major"
+        print("r_z!=r_minor!=r_major")
         1/0
         pass
-    
+
     el=MakeEllipse(MakePointStruct(0,0,0),MakeDirection(MakePointStruct(1,0,0)),r_major,r_minor)
     el=MakeWire([el])
     el=MakeFace(el,1)
@@ -93,7 +93,7 @@ def MakeEllipsoide(x,y,z,r_x,r_y,r_z):
         pass
     # addToStudy(face,"face")
 
-    
+
     # addToStudy(res,"res_intermediaire")
     # dans le cas n_minor==2 on a un ellipse de grand axe en z
     # dans le cas n_major==2 on a un ellipse de petit axe en y

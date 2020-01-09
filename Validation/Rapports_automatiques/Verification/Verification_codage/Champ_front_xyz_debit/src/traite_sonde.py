@@ -25,5 +25,5 @@ def traite_fichier(args):
 
 
 if __name__ == "__main__":
-    print "\nUsage : python traite_sonde.py fichier1 fichier2 ... fichierN\n"
+    print("\nUsage : python traite_sonde.py fichier1 fichier2 ... fichierN\n")
     traite_fichier(sys.argv[1:])

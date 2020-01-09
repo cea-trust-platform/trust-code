@@ -1,6 +1,6 @@
 Parameters {
 	Title "Ecoulement laminaire dans un coude"
-	Description "On calcule l'écoulement bidimensionnel dans un coude.  L'écoulement est laminaire et on néglige la convection.  Les parois du domaine sont fixes et une condition d'adhérence y est imposée.  Une solution analytique à ce problème existe et on compare les résultats calculés par GENEPI à cette solution analytique."
+	Description "On calcule l'Ã©coulement bidimensionnel dans un coude.  L'Ã©coulement est laminaire et on nÃ©glige la convection.  Les parois du domaine sont fixes et une condition d'adhÃ©rence y est imposÃ©e.  Une solution analytique Ã  ce problÃ¨me existe et on compare les rÃ©sultats calculÃ©s par GENEPI Ã  cette solution analytique."
 	Author "D. Jamet"
 	TestCase "." "eclt_coude_pression.data"
 	IncludeData 1
@@ -8,12 +8,12 @@ Parameters {
 
 Chapter {
 	Title "Champs de pression et de vitesse"
-	Description "Dans cette partie, on compare le champ de pression calculé par GENEPI et le champ de pression analytique."
+	Description "Dans cette partie, on compare le champ de pression calculÃ© par GENEPI et le champ de pression analytique."
 
 
 	visu {
-                Title "Champs de pression et de vitesse calculés"
-                description "Le champ de pression calculé par GENEPI est tracé et le champ de pression analytique est donné par des iso-valeurs."
+                Title "Champs de pression et de vitesse calculÃ©s"
+                description "Le champ de pression calculÃ© par GENEPI est tracÃ© et le champ de pression analytique est donnÃ© par des iso-valeurs."
                 mesh ./eclt_coude_pression.lata dom 
                 pseudocolor ./eclt_coude_pression.lata dom PRESSION_PA ELEM
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
@@ -23,7 +23,7 @@ Chapter {
 
 	visu {
                 Title "Champs de pression et de vitesse analytiques"
-                description "Le champ de pression analytique est tracé et le champ de pression calculé par GENEPI est donné par des iso-valeurs."
+                description "Le champ de pression analytique est tracÃ© et le champ de pression calculÃ© par GENEPI est donnÃ© par des iso-valeurs."
                 mesh ./eclt_coude_pression.lata dom 
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
 		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{(-(8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*sqrt(coord(dom)[1]*coord(dom)[1]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0),((8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*coord(dom)[0]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0)}")
@@ -33,7 +33,7 @@ Chapter {
 
 	visu {
                 Title "Erreurs sur les champs de pression et de vitesse"
-                description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont superposés le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clarté, le maillage n'est pas tracé)."
+                description "On trace l'erreur entre le champ de pression calculÃ© par GENEPI et le champ de pression analytique.  Sont superposÃ©s le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clartÃ©, le maillage n'est pas tracÃ©)."
                 instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","PRESSION_PA_ELEM_dom-(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
                 pseudocolor ./eclt_coude_pression.lata dom ERREUR_P ELEM
 		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{(-(8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*sqrt(coord(dom)[1]*coord(dom)[1]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0),((8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*coord(dom)[0]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0)}")
@@ -43,12 +43,12 @@ Chapter {
 }
 
 Chapter {
-	Title "Débit dans la conduite"
-	Description "Le champ de vitesse étant connu analytiquement, on peut calculer la valeur analytique du débit et la comparer à la valeur calculée par GENEPI.  Ces valeurs sont donnés dans le tableau suivant ainsi que l'erreur correspondante."
+	Title "DÃ©bit dans la conduite"
+	Description "Le champ de vitesse Ã©tant connu analytiquement, on peut calculer la valeur analytique du dÃ©bit et la comparer Ã  la valeur calculÃ©e par GENEPI.  Ces valeurs sont donnÃ©s dans le tableau suivant ainsi que l'erreur correspondante."
 
 
 	Table {
-		Title "Comparaison théorie/numérique"
+		Title "Comparaison thÃ©orie/numÃ©rique"
 		nb_columns 1
 		label  Perte de pression
 		line {

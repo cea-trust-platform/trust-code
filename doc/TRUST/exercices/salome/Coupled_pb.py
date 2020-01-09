@@ -100,10 +100,10 @@ Solid_lateral_walls_1 = Mesh_1.GroupOnGeom(Solid_lateral_walls,'Solid_lateral_wa
 Solid_Fluid_Interface_1 = Mesh_1.GroupOnGeom(Solid_Fluid_Interface,'Solid_Fluid_Interface',SMESH.FACE)
 smesh.SetName(Mesh_1, 'Mesh_1')
 try:
-  Mesh_1.ExportMED( r'Mesh_1.med', 0, SMESH.MED_MINOR_2, 1, None ,1)
-  pass
+    Mesh_1.ExportMED( r'Mesh_1.med', 0, SMESH.MED_MINOR_2, 1, None ,1)
+    pass
 except:
-  print 'ExportToMEDX() failed. Invalid file name?'
+    print('ExportToMEDX() failed. Invalid file name?')
 
 
 ## Set names of Mesh objects
@@ -121,4 +121,4 @@ smesh.SetName(Solid_1, 'Solid')
 
 
 if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser(True)
+    salome.sg.updateObjBrowser(True)

@@ -3,8 +3,6 @@
 seuil=0.005
 jdd=$1
 
-[ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
-
 case $jdd in
   *conduc_mil_var_jdd1)
     compare_sonde "$jdd_SONDE_HORIZ.son" conduc_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1

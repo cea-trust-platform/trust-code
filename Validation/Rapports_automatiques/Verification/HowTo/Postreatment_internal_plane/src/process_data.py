@@ -11,7 +11,3 @@ debit_ref=file[1]/S
 f=open("Debit_ref","w")
 f.write(str(debit_ref))
 f.close()
-
-
-
-

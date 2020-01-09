@@ -10,5 +10,3 @@ def compute_rho(T, P):
     frho = T.clone(True) ; frho.setName("densite")
     frho.setArray(rhoa)
     return frho
-
-
