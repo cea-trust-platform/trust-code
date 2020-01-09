@@ -549,24 +549,49 @@ void Zone_PolyMAC::discretiser()
   Zone_VF::calculer_diametres_hydrauliques();
   calculer_volumes_entrelaces();
 
+  /* ordre canonique dans elem_faces_ */
+  std::map<std::array<double, 3>, int> xv_fsa;
+  for (int e = 0, i, j, f; e < nb_elem_tot(); e++)
+    {
+      for (i = 0, j = 0, xv_fsa.clear(); i < elem_faces_.dimension(1) && (f = elem_faces_(e, i)) >= 0; i++)
+        xv_fsa[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
+      for (auto &&c_f : xv_fsa) elem_faces_(e, j) = c_f.second, j++;
+    }
+
   //diverses quantites liees aux aretes
   if (dimension > 2)
     {
       zone().creer_aretes();
       md_vector_aretes_ = zone().aretes_som().get_md_vector();
+
+      /* ordre canonique dans aretes_som */
+      IntTab& a_s = zone().set_aretes_som(), &e_a = zone().set_elem_aretes();
+      const DoubleTab& xs = zone().domaine().coord_sommets();
+      for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
+        {
+          for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
+          for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
+        }
+
       //remplissage de som_aretes
       som_arete.resize(zone().nb_som_tot());
-      for (int i = 0; i < zone().aretes_som().dimension_tot(0); i++) som_arete[zone().aretes_som()(i, 0)][zone().aretes_som()(i, 1)] = i;
+      for (int i = 0; i < a_s.dimension_tot(0); i++) for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
+
       //remplissage de xa (CGs des aretes), de ta_ (vecteur tangent aux aretes) et de longueur_arete_ (longueurs des aretes)
       xa_.resize(0, 3), ta_.resize(0, 3);
       creer_tableau_aretes(xa_), creer_tableau_aretes(ta_), creer_tableau_aretes(longueur_aretes_);
-      const DoubleTab& xs = zone().domaine().coord_sommets();
       for (int i = 0, k; i < zone().nb_aretes_tot(); i++)
         {
-          int s1 = zone().aretes_som()(i, 0), s2 = zone().aretes_som()(i, 1), sgn = 0;
+          int s1 = a_s(i, 0), s2 = a_s(i, 1);
           longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
-          for (k = 0; k < 3 && !sgn; k++) if (dabs(xs(s2, k) - xs(s1, k)) > 1e-8) sgn = xs(s2, k) > xs(s1, k) ? 1 : -1;
-          for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = sgn * (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
+          for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
+        }
+
+      /* ordre canonique dans elem_aretes_ */
+      for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
+        {
+          for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
+          for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
         }
     }
 
@@ -615,7 +640,7 @@ void Zone_PolyMAC::orthocentrer()
         for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
           {
             int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0),
-                a = som_arete[min(s, s2)].at(max(s, s2));
+                a = som_arete[s].at(s2);
             std::array<double, 3> vec = cross(3, 3, &xv_(f, 0), &ta_(a, 0), &xs(s, 0));
             r2min = min(r2min, dot(&vec[0], &vec[0]));
           }
@@ -966,9 +991,8 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 //stabilisation des matrices m1 et m2 de PolyMAC
 inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const
 {
-  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, liwork = -1, infoo = 0;
+  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, infoo = 0;
   DoubleTab A, S, b(n_f, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
-  IntTab iwork(1);
 
   /* spectre de M */
   kersol(M, b, 1e-12, NULL, x, S);
@@ -998,9 +1022,9 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) cons
   //decomposition de Schur U = Vt.S.V
   char jobz = 'V', uplo = 'U';
   V = U, S.resize(n_k);
-  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);//"workspace query"
-  work.resize(lwork = work(0)), iwork.resize(liwork = iwork(0));
-  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
+  F77NAME(dsyev)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &infoo);//"workspace query"
+  work.resize(lwork = work(0));
+  F77NAME(dsyev)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &infoo);
   assert(infoo == 0);
   //pour garantir des vp plus grandes que eps : S(k) -> max(S(k), eps)
   for (i = 0, U = 0; i < n_k; i++) for (j = 0; j < n_k; j++) for (k = 0; k < n_k; k++) U(i, j) += V(k, i) * min(max(S(k), l_min), l_max) * V(k, j);
@@ -1037,7 +1061,7 @@ void Zone_PolyMAC::M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, 
   OSQPData data;
   OSQPSettings settings;
   osqp_set_default_settings(&settings);
-  settings.scaled_termination = 1, settings.polish = 1;
+  settings.scaled_termination = 1, settings.polish = 1, settings.eps_abs = settings.eps_rel = 1e-8;
 
   //idx(i, j, 0 / 1) : indice du coefficient W_{ij}
   IntTrav idx(n_f, n_f);
@@ -1054,7 +1078,7 @@ void Zone_PolyMAC::M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, 
   std::vector<int> P_c(1, 0), P_l, A_c, A_l; //coeffs de la colonne c : indices [P_c(c), P_c(c + 1)[ dans P_l, P_v
   std::vector<double> P_v, A_v, Q(nv, 0.);
   for (i = 0, l = 0; i < n_f; i++) for (j = i; j < n_f; j++, l++)
-      P_l.push_back(l), P_v.push_back(i < j ? 1 : 0), P_c.push_back(l + 1);
+      P_l.push_back(l), P_v.push_back(i < j ? 1 : 1e-2), P_c.push_back(l + 1);
   data.P = csc_matrix(nv, nv, nv, P_v.data(), P_l.data(), P_c.data()), data.q = Q.data();
 
   /* solution initiale : M0 */
@@ -1164,9 +1188,15 @@ void Zone_PolyMAC::init_m2() const
 
   DoubleTab M, N, W, F;
   M.set_smart_resize(1), N.set_smart_resize(1), W.set_smart_resize(1), F.set_smart_resize(1);
-  for (e = 0, m2d.append_line(0), m2i.append_line(0), w2i.append_line(0); e < nb_elem_tot(); e++, m2d.append_line(m2i.size() - 1))
+
+  /* tableaux paralleles */
+  DoubleTrav m2e(0, e_f.dimension(1), e_f.dimension(1)), w2e(0, e_f.dimension(1), e_f.dimension(1));
+  zone().creer_tableau_elements(m2e), zone().creer_tableau_elements(w2e);
+
+  /* calcul sur les elements reels */
+  for (e = 0; e < nb_elem(); e++)
     {
-      for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) n_f++;
+      for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++;
       M.resize(n_f, n_f), W.resize(n_f, n_f), N.resize(dimension, n_f), F.resize(n_f);
 
       /* matrice non stabilisee, normales sortantes et stabilisation */
@@ -1174,15 +1204,23 @@ void Zone_PolyMAC::init_m2() const
           fb = e_f(e, j), M(i, j) = fs(f) * fs(fb) * dot(&xv_(fb, 0), &xv_(f, 0), &xp_(e, 0), &xp_(e, 0)) / (ve(e) * ve(e));
       for (i = 0; i < n_f; i++) for (j = 0, f = e_f(e, i); j < dimension; j++) N(j, i) = face_normales()(f, j) / F(i) * (e == f_e(f, 0) ? 1 : -1);
 
-      M_stabiliser(M, W, N, F, e < nb_elem() ? ctr : NULL, e < nb_elem() ? spectre : NULL);
+      /* matrice satbilisee et stockage */
+      M_stabiliser(M, W, N, F, ctr, spectre);
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) m2e(e, i, j) = M(i, j), w2e(e, i, j) = W(i, j);
+    }
 
-      /* stockage de M2 / W2 : diagonale en premier */
-      for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0, m2j.append_line(i), m2c.append_line(M(i, i)); j < n_f; j++) if (j != i)
-            if (dabs(M(i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(M(i, j));
-      for (i = 0; i < n_f; i++, w2i.append_line(w2j.size())) for (j = 0, w2j.append_line(i), w2c.append_line(W(i, i)); j < n_f; j++) if (j != i)
-            if (dabs(W(i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(W(i, j));
+  /* echange et remplissage */
+  m2e.echange_espace_virtuel(), w2e.echange_espace_virtuel();
+  for (e = 0, m2d.append_line(0), m2i.append_line(0), w2i.append_line(0); e < nb_elem_tot(); e++, m2d.append_line(m2i.size() - 1))
+    {
+      for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++;
+      for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0, m2j.append_line(i), m2c.append_line(m2e(e, i, i)); j < n_f; j++) if (j != i)
+            if (dabs(m2e(e, i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(m2e(e, i, j));
+      for (i = 0; i < n_f; i++, w2i.append_line(w2j.size())) for (j = 0, w2j.append_line(i), w2c.append_line(w2e(e, i, i)); j < n_f; j++) if (j != i)
+            if (dabs(w2e(e, i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(w2e(e, i, j));
       assert(m2i.size() == w2i.size());
     }
+
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
   Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "/" << 100. * Process::mp_sum(ctr[1]) / n_tot << "/"
        << 100. * Process::mp_sum(ctr[2]) / n_tot << "% co/max/cv lambda : " << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1])
@@ -1204,7 +1242,7 @@ void Zone_PolyMAC::init_rf() const
     for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
       {
         int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0),
-            a = dimension < 3 ? s : som_arete[min(s, s2)].at(max(s, s2));
+            a = dimension < 3 ? s : som_arete[s].at(s2);
         std::array<double, 3> taz = {{ 0, 0, 1 }}, vec; //vecteur tangent a l'arete et produit vectoriel de celui-ci avec xa - xv
         vec = cross(dimension, 3, dimension < 3 ? &xs(a, 0) : &xa_(a, 0), dimension < 3 ? &taz[0] : &ta_(a, 0), &xv_(f, 0));
         int sgn = dot(&vec[0], &nf(f, 0)) > 0 ? 1 : -1;
@@ -1225,7 +1263,7 @@ void Zone_PolyMAC::init_we() const
   for (int f = 0, i, s1; f < nb_faces_tot(); f++) for (i = 0; i < f_s.dimension(1) && (s1 = f_s(f, i)) >= 0; i++)
       {
         int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0);
-        a_f_vect[dimension < 3 ? s1 : som_arete[min(s1, s2)].at(max(s1, s2))].push_back(f);
+        a_f_vect[dimension < 3 ? s1 : som_arete[s1].at(s2)].push_back(f);
       }
   int a_f_max = 0;
   for (int i = 0; i < (int) a_f_vect.size(); i++) a_f_max = max(a_f_max, (int) a_f_vect[i].size());
@@ -1271,7 +1309,7 @@ void Zone_PolyMAC::init_we_3d() const
         for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++) //contrib. de chaque sommet de chaque face
           {
             int s2 = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0),
-                a = som_arete[min(s, s2)].at(max(s, s2));
+                a = som_arete[s].at(s2);
             std::array<double, 3> vec = cross(3, 3, &xp_(e, 0), &xv_(f, 0), &xa_(a, 0), &xa_(a, 0));
             //on tourne la facette dans la bonne direction
             int sgn = dot(&ta_(a, 0), &vec[0]) > 0 ? 1 : -1;
@@ -1311,21 +1349,24 @@ void Zone_PolyMAC::init_m1_3d() const
 {
   const IntTab& f_s = face_sommets_, &e_a = zone().elem_aretes(), &e_f = elem_faces_;
   const DoubleVect& la = longueur_aretes_, &ve = volumes();
-  int a, i, j, k, e, f, s, s2, n_a;
+  int a, ab, i, j, k, e, f, s, s2, n_a;
 
   Cerr << zone().domaine().le_nom() << " : initialisation de m1... ";
-  std::vector<std::map<std::array<int, 2>, double>> m1(zone().nb_aretes_tot()); //m1[a][{ ab, e }] : contribution de (arete ab, element e)
   DoubleTab M, N;
   M.set_smart_resize(1), N.set_smart_resize(1);
+
+  /* tableau parallele */
+  DoubleTrav m1e(0, e_a.dimension(1), e_a.dimension(1));
+  zone().creer_tableau_elements(m1e);
   std::map<int, int> idxa;
-  for (e = 0; e < nb_elem_tot(); e++, idxa.clear())
+  for (e = 0; e < nb_elem(); e++)
     {
       /* matrice non stabilisee : contribution par facette (couple face/arete) */
-      for (i = 0, n_a = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) idxa[a] = i, n_a++;
+      for (i = 0, idxa.clear(), n_a = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) idxa[a] = i, n_a++;
       M.resize(n_a, n_a), N.resize(dimension, n_a);
       for (i = 0, M = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
           {
-            s2 = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0), a = som_arete[min(s, s2)].at(max(s, s2));
+            s2 = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0), a = som_arete[s].at(s2);
             std::array<double, 3> vec = cross(3, 3, &xp_(e, 0), &xv_(f, 0), &xa_(a, 0), &xa_(a, 0));
             //on tourne la facette dans la bonne direction
             int sgn = dot(&ta_(a, 0), &vec[0]) > 0 ? 1 : -1;
@@ -1335,10 +1376,17 @@ void Zone_PolyMAC::init_m1_3d() const
 
       /* stabilisation et stockage */
       ajouter_stabilisation(M, N);
-      for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) if (dabs(M(i, j)) > 1e-8) m1[e_a(e, i)][ {{ e_a(e, j), e }}] += M(i, j) * ve(e);
+      for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++) m1e(e, i, j) = M(i, j);
     }
 
-  //remplissage
+  /* echange et remplissage d'un map global */
+  m1e.echange_espace_virtuel();
+  std::vector<std::map<std::array<int, 2>, double>> m1(zone().nb_aretes_tot()); //m1[a][{ ab, e }] : contribution de (arete ab, element e)
+  for (e = 0; e < nb_elem_tot(); e++)
+    for (i = 0; i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) for (j = 0; j < e_a.dimension(1) && (ab = e_a(e, j)) >= 0; j++)
+        if (dabs(m1e(e, i, j)) > 1e-8) m1[a][ {{ ab, e }}] += ve(e) * m1e(e, i, j);
+
+  /* remplissage final */
   m1deb.resize(1), m1deb.set_smart_resize(1), m1ji.resize(0, 2), m1ji.set_smart_resize(1), m1ci.set_smart_resize(1);
   for (a = 0; a < zone().nb_aretes_tot(); m1deb.append_line(m1ji.dimension(0)), a++) for (auto &&kv : m1[a])
       m1ji.append_line(kv.first[0], kv.first[1]), m1ci.append_line(kv.second);

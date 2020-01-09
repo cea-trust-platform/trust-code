@@ -134,6 +134,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
 
   int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
   double div;
+  zone.init_ve();
 
   //element e -> contribution de la face fb a l'equation a la face f
   for (e = 0; e < zone.nb_elem_tot(); e++)

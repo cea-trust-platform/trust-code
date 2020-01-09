@@ -26,6 +26,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
 #include <Champ_Face_PolyMAC.h>
+#include <ConstDoubleTab_parts.h>
 
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
@@ -93,8 +94,8 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   set_resoudre_en_u(resoudre_en_u);
   Cerr << "Assemblage de la matrice de pression ... " ;
   statistiques().begin_count(assemblage_sys_counter_);
-  la_matrice.typer("Matrice_Morse_Sym");
-  Matrice_Morse_Sym& mat = ref_cast(Matrice_Morse_Sym, la_matrice.valeur());
+  la_matrice.typer("Matrice_Morse");
+  Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
@@ -106,6 +107,12 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
   W.set_smart_resize(1), W0.set_smart_resize(1);
+
+  //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
+  has_P_ref=0;
+  for (int n_bord=0; n_bord<la_zone_PolyMAC->nb_front_Cl(); n_bord++)
+    if (sub_type(Neumann_sortie_libre, la_zone_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
+      has_P_ref=1;
 
   /* 1. stencils de la matrice en pression et de rec : seulement au premier passage */
   if (!stencil_done)
@@ -119,18 +126,19 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
               for (k = zone.w2i(j), f = e_f(e, i); f < nf && k < zone.w2i(j + 1); k++)
                 {
                   fb = e_f(e, zone.w2j(k));
-                  if (f <= fb) stencil_M.append_line(ne_tot + f, ne_tot + fb);
+                  stencil_M.append_line(ne_tot + f, ne_tot + fb);
                   if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
                 }
-              stencil_M.append_line(ne_tot + f, ne_tot + f);
-              if (ch.icl(f, 0) != 1 && (e < ne || f < nf)) stencil_M.append_line(e, ne_tot + f);
+              if (ch.icl(f, 0) != 1 && e < ne) stencil_M.append_line(e, ne_tot + f);
+              if (ch.icl(f, 0) != 1 && f < nf) stencil_M.append_line(ne_tot + f, e);
               if (e == f_e(f, 0)    && f < nf) stencil_R.append_line(f, e);
             }
-          stencil_M.append_line(e, e);
+          if (e < ne) stencil_M.append_line(e, e);
+          // if (!has_P_ref && !Process::me() && e < ne) stencil_M.append_line(0, e);
         }
 
       tableau_trier_retirer_doublons(stencil_M), tableau_trier_retirer_doublons(stencil_R);
-      Matrix_tools::allocate_symmetric_morse_matrix(ne_tot + nf_tot, stencil_M, mat);
+      Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil_M, mat);
       Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, ne_tot + nf_tot, stencil_R, rec);
       tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
       stencil_done = 1;
@@ -171,28 +179,22 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
           for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; f < nf && j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
             {
               fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
-              if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1 && f <= fb) mat(ne_tot + f, ne_tot + fb) += mff;
+              if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1) mat(ne_tot + f, ne_tot + fb) += mff;
               else if (ch.icl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
-              if (rff && f < nf) rec(f, ne_tot + fb) += rff;
+              if (rff) rec(f, ne_tot + fb) += rff;
             }
-          if (ch.icl(f, 0) != 1 && (e < ne || f < nf)) mat(e, ne_tot + f) -= mef;
+          if (ch.icl(f, 0) != 1 && e < ne) mat(e, ne_tot + f) -= mef;
+          if (ch.icl(f, 0) != 1 && f < nf) mat(ne_tot + f, e) -= mef;
           if (e == f_e(f, 0) && f < nf) rec(f, e) -= rfe;
         }
       if (e < ne) mat(e, e) += mee;
     }
 
-  //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
-  has_P_ref=0;
-  for (int n_bord=0; n_bord<la_zone_PolyMAC->nb_front_Cl(); n_bord++)
-    {
-      const Cond_lim& la_cl = la_zone_Cl_PolyMAC->les_conditions_limites(n_bord);
-      if (sub_type(Neumann_sortie_libre,la_cl.valeur()) )
-        {
-          has_P_ref=1;
-        }
-    }
-  if (!has_P_ref && !Process::me()) mat(0, 0) += 1;
-  mat.set_est_definie(1);
+  if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
+  // {
+  //   double coeff = mat(0, 0) / ne;
+  //   for (e = 0; e < ne; e++) mat(0, e) += coeff;
+  // }
 
   statistiques().end_count(assemblage_sys_counter_);
   Cerr << statistiques().last_time(assemblage_sys_counter_) << " s" << finl;
@@ -321,25 +323,9 @@ int Assembleur_P_PolyMAC::modifier_secmem(DoubleTab& secmem)
 int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)
 {
   Debog::verifier("pression dans modifier solution in",pression);
-  // Projection :
-  double press_0;
-  if(!has_P_ref)
-    {
-      //abort();
-      // On prend la pression minimale comme pression de reference
-      // afin d'avoir la meme pression de reference en sequentiel et parallele
-      press_0=DMAXFLOAT;
-      int n,nb_elem=la_zone_PolyMAC.valeur().zone().nb_elem();
-      for(n=0; n<nb_elem; n++)
-        if (pression[n] < press_0)
-          press_0 = pression[n];
-      press_0 = Process::mp_min(press_0);
-
-      for(n=0; n<nb_elem; n++)
-        pression[n] -=press_0;
-
-      pression.echange_espace_virtuel();
-    }
+  //on ne considere pas les pressions aux faces dans le min (solveur_U_P ne les met pas a jour)
+  DoubleTab_parts ppart(pression);
+  if(!has_P_ref) pression -= mp_min_vect(ppart[0]);
   return 1;
 }
 

@@ -992,7 +992,7 @@ void Navier_Stokes_std::projeter()
       assembleur_pression_.modifier_solution(lagrange);
       lagrange.echange_espace_virtuel();
       if (discretisation().que_suis_je() == "PolyMAC") //en PolyMAC, on a deja les vitesses
-        assembleur_pression_.valeur().corriger_vitesses(lagrange, tab_vitesse);
+        lagrange *= -dt, assembleur_pression_.valeur().corriger_vitesses(lagrange, tab_vitesse);
       else
         {
           // M-1 Bt l
