@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#preparation VDF/PolyMAC
+sed "s/__tm__/0/;s/__cv__/1e30/" base.data > VDF_seq_sans_iteration.data
+sed "s/__tm__/0/;s/__cv__/1e-8/" base.data > VDF_seq_avec_iteration.data
+sed "s/__tm__/1/;s/__cv__/1e30/" base.data > VDF_mono_sans_iteration.data
+sed "s/__tm__/2/;s/__cv__/1e-8/" base.data > VDF_mono_avec_iteration.data
+# pour plus tard
+# sed "s/VDF/PolyMAC/" docond_diff_impl.data > PolyMAC_diff_impl.data
