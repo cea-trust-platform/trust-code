@@ -361,12 +361,16 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                 Cout << "-------------------------" << finl;
                 if (da == "THERMIQUE" && map_problems[da].size() > 1 && thermique_monolithique_)
                   {
+                    Cout << "Thermique monolithique! Les equations {";
                     LIST(REF(Equation_base)) eqs;
                     for (auto && pbeqs : map_problems[da])
                       {
+                        Equation_base& eq = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                        Cout << " " << eq.que_suis_je();
                         pbc.probleme(pbeqs[0]).updateGivenFields();
-                        eqs.add(ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]));
+                        eqs.add(eq);
                       }
+                    Cout << " } sont resolues en assemblant une unique matrice." << finl;
                     bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
                     convergence_pbc = convergence_pbc && convergence_eqs;
                   }

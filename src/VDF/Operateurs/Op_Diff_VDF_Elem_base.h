@@ -67,8 +67,8 @@ public:
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   double calculer_dt_stab() const;
   virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const;
-  virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  DoubleTab& resu) const;
   virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  Matrice_Morse& matrice) const;
+  void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const;
 
 protected:
   virtual Eval_VDF_Elem& get_eval_elem()=0;

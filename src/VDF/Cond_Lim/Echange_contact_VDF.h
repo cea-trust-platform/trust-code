@@ -30,6 +30,8 @@ class Zone_VDF;
 class Faces;
 #include <Ref_Champ_Inc.h>
 #include <IntTab.h>
+#include <vector>
+#include <map>
 
 ////////////////////////////////////////////////////////////////
 
@@ -88,7 +90,13 @@ public :
   virtual void changer_temps_futur(double temps,int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
-
+  //item(i) : indice du ieme item dont on a besoin pour la face i de la frontiere
+  //initialiement non rempli si l'item n'est pas accessible (parallelisme) : extra_items permet de le completer
+  mutable IntTab item;
+  //extra_item[ numero de proc, numero d'item ] = (indices (i, j) dans item ayant besoin de cet item)
+  //-> infos pour rendre les items manquants de remote_item accessibles
+  std::map<std::array<int, 2>, std::vector<int>> extra_items;
+  int monolithic; //1 si on resout la thermique en monolithique
 protected :
   double h_paroi;
   DoubleTab autre_h;
