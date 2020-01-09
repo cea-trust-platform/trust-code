@@ -355,49 +355,62 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
             }
 
-          for (auto && da : dom_app) if (map_problems.count(da))
-              {
-                Cout << "RESOLUTION " << da.c_str() << finl;
-                Cout << "-------------------------" << finl;
-                if (da == "THERMIQUE" && map_problems[da].size() > 1 && thermique_monolithique_)
+          if (thermique_monolithique_ > 0)
+            {
+              for (auto && da : dom_app) if (map_problems.count(da))
                   {
-                    Cout << "Thermique monolithique! Les equations {";
-                    LIST(REF(Equation_base)) eqs;
-                    for (auto && pbeqs : map_problems[da])
+                    Cout << "RESOLUTION " << da.c_str() << finl;
+                    Cout << "-------------------------" << finl;
+                    if (da == "THERMIQUE" && map_problems[da].size() > 1)
                       {
-                        Equation_base& eq = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
-                        Cout << " " << eq.que_suis_je();
-                        pbc.probleme(pbeqs[0]).updateGivenFields();
-                        eqs.add(eq);
+                        Cout << "Thermique monolithique! Les equations {";
+                        LIST(REF(Equation_base)) eqs;
+                        for (auto && pbeqs : map_problems[da])
+                          {
+                            Equation_base& eq = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                            Cout << " " << eq.que_suis_je();
+                            pbc.probleme(pbeqs[0]).updateGivenFields();
+                            eqs.add(eq);
+                          }
+                        Cout << " } sont resolues en assemblant une unique matrice." << finl;
+                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
+                        convergence_pbc = convergence_pbc && convergence_eqs;
                       }
-                    Cout << " } sont resolues en assemblant une unique matrice." << finl;
-                    bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
-                    convergence_pbc = convergence_pbc && convergence_eqs;
+                    else
+                      for (auto && pbeqs : map_problems[da])
+                        {
+                          pbc.probleme(pbeqs[0]).updateGivenFields();
+
+                          Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                          DoubleTab& present = eqn.inconnue().valeurs();
+                          DoubleTab& futur = eqn.inconnue().futur();
+                          double temps = temps_courant_ + dt_;
+
+                          // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
+                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
+                          const DoubleTab& inut=futur;
+                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+                          convergence_pbc = convergence_pbc && convergence_eqn;
+                          futur = present;
+                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          present = futur;
+
+                          eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+                          Cout << finl;
+                        }
                   }
-                else
-                  for (auto && pbeqs : map_problems[da])
-                    {
-                      pbc.probleme(pbeqs[0]).updateGivenFields();
+            }
+          else
+            {
+              for(i=0; i<pbc.nb_problemes(); i++)
+                {
+                  pbc.probleme(i).updateGivenFields();
+                  int convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur);
+                  convergence_pbc = convergence_pbc * convergence_pb ;
+                }
 
-                      Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
-                      DoubleTab& present = eqn.inconnue().valeurs();
-                      DoubleTab& futur = eqn.inconnue().futur();
-                      double temps = temps_courant_ + dt_;
-
-                      // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
-                      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-                      Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
-                      const DoubleTab& inut=futur;
-                      bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
-                      convergence_pbc = convergence_pbc && convergence_eqn;
-                      futur = present;
-                      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-                      present = futur;
-
-                      eqn.inconnue().valeur().Champ_base::changer_temps(temps);
-                      Cout << finl;
-                    }
-              }
+            }
         }
       if ((!convergence_pbc)&&(compteur==nb_ite_max))
         {
