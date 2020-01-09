@@ -11,6 +11,7 @@ en_tete()
 }
 tmp=`mktemp_ -d`
 org=`pwd`
+export LC_ALL=C # Pour eviter d'avoir des fichiers instancie_src differents selon la variable LANG ou LC_ALL
 # On ne cree pas de fichier instancie dans le MAIN et les ateliers ou il y'a pourtant un make.include 
 if [ -f make.include ] && [ "`basename $org`" != MAIN ] && [ ${org#$rep_dev} = $org ]
 then
