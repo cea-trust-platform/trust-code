@@ -898,20 +898,15 @@ void Zone_PolyMAC::creer_faces_virtuelles_non_std()
 void disp(const DoubleTab& A)
 {
   int i, j, k;
-  if (A.get_md_vector().non_nul() && sub_type(MD_Vector_composite, A.get_md_vector().valeur()))
-    {
-      ConstDoubleTab_parts Ap(A);
-      for (i = 0; i < Ap.size(); i++) disp(Ap[i]);
-    }
-  else if (A.nb_dim() == 3) for (i = 0; i < A.dimension(0); i++)
+  if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "},{" : "{"); k < A.dimension(2); k++)
           fprintf(stderr, "%.10E%s ", A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
-  else if (A.nb_dim() == 2) for (i = 0; i < A.dimension(0); i++)
+  else if (A.nb_dim() == 2) for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "},{" : "{{"); j < A.dimension(1); j++)
         fprintf(stderr, "%.10E%s ", A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
-  else for (i = 0, fprintf(stderr, "{"); i < A.dimension(0); i++)
-      fprintf(stderr, "%.10E%s ", A.addr()[i], i + 1 < A.dimension(0) ? "," : "");
+  else for (i = 0, fprintf(stderr, "{"); i < A.dimension_tot(0); i++)
+      fprintf(stderr, "%.10E%s ", A.addr()[i], i + 1 < A.dimension_tot(0) ? "," : "");
   fprintf(stderr, A.nb_dim() == 3 ? "}}}\n" : (A.nb_dim() == 2 ? "}}\n" : "}\n"));
 }
 
@@ -1020,7 +1015,7 @@ void Zone_PolyMAC::init_ve() const
   const DoubleVect& ve = volumes_, &fs = face_surfaces();
   int i, k, e, f;
 
-  if (vedeb.dimension(0)) return;
+  if (is_init["ve"]) return;
   Cerr << zone().domaine().le_nom() << " : initialisation de ve... ";
   vedeb.resize(1), vedeb.set_smart_resize(1), veji.set_smart_resize(1), veci.resize(0, 3), veci.set_smart_resize(1);
   //formule (1) de Basumatary et al. (2014) https://doi.org/10.1016/j.jcp.2014.04.033 d'apres Perot
@@ -1032,7 +1027,7 @@ void Zone_PolyMAC::init_ve() const
         veji.append_line(f), veci.append_line(x[0], x[1], x[2]);
       }
   CRIMP(vedeb), CRIMP(veji), CRIMP(veci);
-  Cerr << "OK" << finl;
+  is_init["ve"] = 1, Cerr << "OK" << finl;
 }
 
 //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees, multipliee par la surface de la face)
@@ -1043,7 +1038,7 @@ void Zone_PolyMAC::init_m2() const
   int i, j, e, f, fb, n_f, infoo;
   char uplo = 'U';
 
-  if (m2d.dimension(0)) return;
+  if (is_init["m2"]) return;
   m2d.set_smart_resize(1), m2i.set_smart_resize(1), m2j.set_smart_resize(1), m2c.set_smart_resize(1);
   w2i.set_smart_resize(1), w2j.set_smart_resize(1), w2c.set_smart_resize(1);
   Cerr << zone().domaine().le_nom() << " : initialisation de m2/w2... ";
@@ -1067,16 +1062,16 @@ void Zone_PolyMAC::init_m2() const
       F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
       for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
 
-      /* stockage de M2 et W2 */
-      for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0; j < n_f; j++)
-          if (dabs(M(i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(M(i, j));
-      for (i = 0; i < n_f; i++, w2i.append_line(w2j.size())) for (j = 0; j < n_f; j++)
-          if (dabs(W(i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(W(i, j));
+      /* stockage de M2 / W2 : diagonale en premier */
+      for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0, m2j.append_line(i), m2c.append_line(M(i, i)); j < n_f; j++) if (j != i)
+            if (dabs(M(i, j)) > 1e-8) m2j.append_line(j), m2c.append_line(M(i, j));
+      for (i = 0; i < n_f; i++, w2i.append_line(w2j.size())) for (j = 0, w2j.append_line(i), w2c.append_line(W(i, i)); j < n_f; j++) if (j != i)
+            if (dabs(W(i, j)) > 1e-8) w2j.append_line(j), w2c.append_line(W(i, j));
       assert(m2i.size() == w2i.size());
     }
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
   Process::barrier();
-  Cerr << "OK" << finl;
+  is_init["m2"] = 1, Cerr << "OK" << finl;
 }
 
 //rotationnel aux faces d'un champ tangent aux aretes
@@ -1086,7 +1081,7 @@ void Zone_PolyMAC::init_rf() const
   const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales();
   const DoubleVect& la = longueur_aretes(), &fs = face_surfaces();
 
-  if (rfdeb.dimension(0)) return;
+  if (is_init["rf"]) return;
   int i, s, f;
   rfdeb.resize(1), rfdeb.set_smart_resize(1), rfji.set_smart_resize(1), rfci.set_smart_resize(1);
   for (f = 0; f < nb_faces_tot(); rfdeb.append_line(rfji.dimension(0)), f++)
@@ -1100,12 +1095,13 @@ void Zone_PolyMAC::init_rf() const
         rfji.append_line(a), rfci.append_line(sgn * (dimension < 3 ? 1 : la(a)) / fs(f));
       }
   CRIMP(rfdeb), CRIMP(rfji), CRIMP(rfci);
+  is_init["rf"] = 1;
 }
 
 //interpolation aux elements d'un champ dont on connait la composante tangente aux aretes (en 3D ), ou la composante verticale aux sommets en 2D
 void Zone_PolyMAC::init_we() const
 {
-  if (wedeb.dimension(0)) return;
+  if (is_init["we"]) return;
 
   //remplissage de arete_faces_ (liste des faces touchant chaque arete en 3D, chaque sommet en 2D)
   std::vector<std::vector<int> > a_f_vect(dimension < 3 ? nb_som_tot() : zone().nb_aretes_tot());
@@ -1121,7 +1117,7 @@ void Zone_PolyMAC::init_we() const
   for (int i = 0, j; i < arete_faces_.dimension(0); i++) for (j = 0; j < (int) a_f_vect[i].size(); j++) arete_faces_(i, j) = a_f_vect[i][j];
 
   dimension < 3 ? init_we_2d() : init_we_3d();
-
+  is_init["we"] = 1;
 }
 
 void Zone_PolyMAC::init_we_2d() const
@@ -1237,16 +1233,17 @@ void Zone_PolyMAC::init_m1_3d() const
 
 void Zone_PolyMAC::init_m1() const
 {
-  if (m1deb.dimension(0)) return;
+  if (is_init["m1"]) return;
   init_we();
   dimension < 3 ? init_m1_2d() : init_m1_3d();
+  is_init["m1"] = 1;
 }
 
 /* initisalisation de solveurs lineaires pour inverser m1 ou m2 */
 void Zone_PolyMAC::init_m2solv() const
 {
   init_m2();
-  if (m2solv.non_nul()) return;
+  if (is_init["m2solv"]) return;
   /* stencil et allocation */
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
   IntTab stencil(0, 2);
@@ -1267,4 +1264,19 @@ void Zone_PolyMAC::init_m2solv() const
   char lu[] = "Petsc Cholesky { quiet }";
   EChaine ch(lu);
   ch >> m2solv;
+  is_init["m2solv"] = 1;
+}
+
+void Zone_PolyMAC::init_virt_ef_map() const
+{
+  if (is_init["virt_ef"]) return; //deja initialisa
+  int e, f;
+  IntTrav p_e(0, 2), p_f(0, 2);
+  zone().creer_tableau_elements(p_e), creer_tableau_faces(p_f);
+  for (e = 0; e < nb_elem() ; e++) p_e(e, 0) = Process::me(), p_e(e, 1) = e;
+  for (f = 0; f < nb_faces(); f++) p_f(f, 0) = Process::me(), p_f(f, 1) = nb_elem_tot() + f;
+  p_e.echange_espace_virtuel(), p_f.echange_espace_virtuel();
+  for (e = nb_elem() ; e < nb_elem_tot() ; e++) virt_ef_map[ {{ p_e(e, 0), p_e(e, 1) }}] = e;
+  for (f = nb_faces(); f < nb_faces_tot(); f++) virt_ef_map[ {{ p_f(f, 0), p_f(f, 1) }}] = nb_elem_tot() + f;
+  is_init["virt_ef"] = 1;
 }

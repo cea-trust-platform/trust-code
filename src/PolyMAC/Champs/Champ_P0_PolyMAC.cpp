@@ -29,9 +29,11 @@
 #include <Symetrie.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_paroi.h>
-#include <Echange_externe_impose.h>
+#include <Echange_contact_PolyMAC.h>
 #include <Connectivite_som_elem.h>
 #include <ConstDoubleTab_parts.h>
+#include <Schema_Euler_Implicite.h>
+#include <Equation_base.h>
 #include <array>
 #include <cmath>
 
@@ -169,8 +171,10 @@ void Champ_P0_PolyMAC::init_cl() const
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
       int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
-                + 3 * sub_type(Neumann_paroi, cls[n].valeur())      + 4 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
-                + 5 * sub_type(Dirichlet, cls[n].valeur())          + 6 * sub_type(Dirichlet_homogene, cls[n].valeur());
+                + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
+                + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
+      if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) && sub_type(Schema_Euler_Implicite, equation().schema_temps())
+          && ref_cast(Schema_Euler_Implicite, equation().schema_temps()).thermique_monolithique()) idx = 3;
       if (!idx) Cerr << "Champ_P0_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;

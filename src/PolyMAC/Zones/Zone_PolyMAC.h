@@ -49,6 +49,7 @@
 #include <Champ_front_var_instationnaire.h>
 #include <vector>
 #include <map>
+#include <string>
 
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -157,6 +158,8 @@ public :
   //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
   std::vector<std::map<int, int> > som_arete;
 
+  //quelles structures optionelles on a initialise
+  mutable std::map<std::string, int> is_init;
   //interpolations d'ordre 1 du vecteur vitesse aux elements
   void init_ve() const;
   mutable IntTab vedeb, veji; //reconstruction de ve par (veji, veci)[vedeb(e), vedeb(e + 1)[ (faces)
@@ -173,7 +176,7 @@ public :
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
   mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
-  mutable DoubleTab m2c, w2c;
+  mutable DoubleTab m2c, w2c;             //          avec le coeff diagonal en premier (facilite Echange_contact_PolyMAC)
   void init_m2solv() const; //pour resoudre m2.v = s
   mutable Matrice_Morse_Sym m2mat;
   mutable SolveurSys m2solv;
@@ -194,6 +197,10 @@ public :
 
   //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
+
+  //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem_faces
+  void init_virt_ef_map() const;
+  mutable std::map<std::array<int, 2>, int> virt_ef_map;
 
 private:
   double h_carre;			 // carre du pas du maillage

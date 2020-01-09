@@ -124,7 +124,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, c
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  int i, j, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
+  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
@@ -133,11 +133,13 @@ void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, c
         const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
         if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
         /* mise a jour de remote_item a l'aide de extra_items */
-        for (auto &&kv : cl.extra_items) cl.remote_item(kv.second) = extra_items.at(kv.first);
+        for (auto &&kv : cl.extra_items) cl.remote_item(kv.second[0], kv.second[1]) = extra_items.at(kv.first);
 
         /* stencil */
         const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
-        for (j = 0; j < cl.remote_item.dimension(0); j++) for (n = 0, f = fvf.num_face(j); n < N; n++) stencil.append_line(N * (ne_tot + f) + n, N * cl.remote_item(j) + n);
+        for (j = 0; j < cl.remote_item.dimension(0); j++)
+          for (k = 0, f = fvf.num_face(j); k < cl.remote_item.dimension(1) && (l = cl.remote_item(j, k)) >= 0; k++)
+            for (n = 0; n < N; n++) stencil.append_line(N * (ne_tot + f) + n, N * l + n);
       }
 
   tableau_trier_retirer_doublons(stencil);
@@ -149,8 +151,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, Matr
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  const DoubleVect& fs = zone.face_surfaces();
-  int i, j, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
+  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
@@ -159,8 +160,9 @@ void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, Matr
         const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
         if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
         const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
-        for (j = 0; j < fvf.nb_faces(); j++) for (n = 0, f = fvf.num_face(j); n < N; n++)
-            matrice(N * (ne_tot + f) + n, N * cl.remote_item(j) + n) -= fs(f) * cl.h_imp(j, n);
+        for (j = 0; j < fvf.nb_faces(); j++)
+          for (k = 0, f = fvf.num_face(j); k < cl.remote_item.dimension(1) && (l = cl.remote_item(j, k)) >= 0; k++) for (n = 0; n < N; n++)
+              matrice(N * (ne_tot + f) + n, N * l + n) += cl.remote_coeff(j, k + 1);
       }
 }
 
@@ -209,17 +211,20 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
           for (f = e_f(e, i), j = zone.w2i(zone.m2d(e) + i), mfe = 0; j < zone.w2i(zone.m2d(e) + i + 1); j++, mfe += mff)
             {
               for (fb = e_f(e, zone.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * zone.w2c(j); n < N; n++) mff(n) = fac * nu_ef(zone.w2j(j), n);
-              for (n = 0; ch.icl(f, 0) < 5 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
+              for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
               for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
               for (n = 0; n < N; n++) resu.addr()[N * e + n] += mff(n) * inco.addr()[N * (ne_tot + fb) + n];
             }
-          for (n = 0; ch.icl(f, 0) < 5 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] += mfe(n) * inco.addr()[N * e + n];
+          for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] += mfe(n) * inco.addr()[N * e + n];
           for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) += mfe(n) * inco.addr()[N * e + n];
 
           //Echange_impose_base
-          if ((ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2) && f < zone.nb_faces()) for (n = 0; n < N; n++)
+          if (ch.icl(f, 0) > 0 && ch.icl(f, 0) < 2 && f < zone.nb_faces()) for (n = 0; n < N; n++)
               resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n)
                                                    * (inco.addr()[N * (ch.icl(f, 0) == 1 ? ne_tot + f : e) + n] - ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n));
+          else if (ch.icl(f, 0) == 3 && f < zone.nb_faces()) for (n = 0; n < N; n++) //paroi_contact gere en monolithique
+              resu.addr()[N * (ne_tot + f) + n] -= inco.addr()[N * (ne_tot + f) + n] * ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur()).remote_coeff(ch.icl(f, 2), 0)
+                                                   + ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur()).remote_contrib(ch.icl(f, 2), 0);
         }
       for (n = 0; n < N; n++) resu.addr()[N * e + n] -= mee(n) * inco.addr()[N * e + n];
     }
@@ -265,17 +270,20 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
           for (f = e_f(e, i), j = zone.w2i(zone.m2d(e) + i), mfe = 0; j < zone.w2i(zone.m2d(e) + i + 1); j++, mfe += mff)
             {
               for (fb = e_f(e, zone.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * zone.w2c(j); n < N; n++) mff(n) = fac * nu_ef(zone.w2j(j), n);
-              for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 5 && ch.icl(fb, 0) < 5 && n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
-              for (n = 0; e < zone.nb_elem() && ch.icl(fb, 0) < 5 && n < N; n++) matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
+              for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 6 && ch.icl(fb, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
+              for (n = 0; e < zone.nb_elem() && ch.icl(fb, 0) < 6 && n < N; n++) matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
             }
-          for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 5 && n < N; n++) matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
+          for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
 
           //Echange_impose_base
-          if ((ch.icl(f, 0) == 1 || ch.icl(f, 0) == 2) && f < zone.nb_faces()) for (n = 0; n < N; n++)
+          if (ch.icl(f, 0) > 0 && ch.icl(f, 0) < 2 && f < zone.nb_faces()) for (n = 0; n < N; n++)
               matrice(N * (ne_tot + f) + n, N * (ch.icl(f, 0) == 1 ? ne_tot + f : e) + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
+          else if (ch.icl(f, 0) == 3 && f < zone.nb_faces()) for (n = 0; n < N; n++) //paroi_contact gere en monolithique
+              matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur()).remote_coeff(ch.icl(f, 2), 0);
         }
       for (n = 0; e < zone.nb_elem() && n < N; n++) matrice(N * e + n, N * e + n) += mee(n);
     }
+  i++;
 }
 
 void Op_Diff_PolyMAC_Elem::modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const
