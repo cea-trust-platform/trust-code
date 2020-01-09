@@ -101,6 +101,7 @@
  Champ_front_debit Champ_front_debit Champ_front_debit.h
  Champ_front_debit_massique Champ_front_debit_massique Champ_front_debit_massique.h
  Champ_front_debit_QC_VDF Champ_front_debit_QC Champ_front_debit_QC.h
+ Champ_front_debit_QC_VDF_fonc_t Champ_front_debit_QC_fonc_t Champ_front_debit_QC_fonc_t.h
  Champ_front_fonc Champ_front_fonc Champ_front_fonc.h
  Champ_Front_Fonction Champ_Front_Fonction Champ_Front_Fonction.h
  Champ_front_fonc_gradient Champ_front_fonc_gradient Champ_front_fonc_gradient.h
