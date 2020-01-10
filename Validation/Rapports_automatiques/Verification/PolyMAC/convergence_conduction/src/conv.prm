@@ -223,24 +223,6 @@ Chapter
             segment Triangles/jdd_3/cas temperature_diag
             style linespoints
         }
-                Curve
-        {
-            legend "Triangles,4"
-            segment Triangles/jdd_4/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Triangles,5"
-            segment Triangles/jdd_5/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Triangles,6"
-            segment Triangles/jdd_6/cas temperature_diag
-            style linespoints
-        }
             }
         Figure
     {
@@ -264,24 +246,6 @@ Chapter
         {
             legend "Quadrangles,3"
             segment Quadrangles/jdd_3/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Quadrangles,4"
-            segment Quadrangles/jdd_4/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Quadrangles,5"
-            segment Quadrangles/jdd_5/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Quadrangles,6"
-            segment Quadrangles/jdd_6/cas temperature_diag
             style linespoints
         }
             }
@@ -309,24 +273,6 @@ Chapter
             segment Cartesian/jdd_3/cas temperature_diag
             style linespoints
         }
-                Curve
-        {
-            legend "Cartesian,4"
-            segment Cartesian/jdd_4/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Cartesian,5"
-            segment Cartesian/jdd_5/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Cartesian,6"
-            segment Cartesian/jdd_6/cas temperature_diag
-            style linespoints
-        }
             }
         Figure
     {
@@ -350,24 +296,6 @@ Chapter
         {
             legend "Locally_Refined,3"
             segment Locally_Refined/jdd_3/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Locally_Refined,4"
-            segment Locally_Refined/jdd_4/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Locally_Refined,5"
-            segment Locally_Refined/jdd_5/cas temperature_diag
-            style linespoints
-        }
-                Curve
-        {
-            legend "Locally_Refined,6"
-            segment Locally_Refined/jdd_6/cas temperature_diag
             style linespoints
         }
             }
