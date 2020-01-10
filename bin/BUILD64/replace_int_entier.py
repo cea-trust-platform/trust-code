@@ -15,7 +15,7 @@ def replace(text):
     new = p.sub(r'\1long\2', text)
     # removing the added ' '
     new = new[1:-1]
-    print(new, end=' ')
+    print(new, end='')
     return
 
 def main(filename):
