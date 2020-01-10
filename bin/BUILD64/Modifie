@@ -5,8 +5,7 @@ do
  [ "`grep int $f`" = "" ] && continue
  [ -f $f.P ] && chmod gu+w $f
  $TRUST_ROOT/exec/python/bin/python replace_int_entier.py $f > $f.p
-#	xterm
  cat $f.p > $f
-rm $f.p
+ rm $f.p
  [ -f $f.P ] && chmod gu-w $f
 done 

@@ -12,9 +12,16 @@ def replace(text):
     # adding ' ' before and after if text begins or ends with 'int'
     text = " " + text + " "
     # \1 represents leading char and \2 trailing one
-    new = p.sub(r'\1long\2', text)
+    # Loop avoids to call modifie twice. If no loop, this example fails to replace the int at the second line :
+    # test='this is an int\nint is integer int'
+    # print(p.sub(r'\1long\2',test))
+    while True:
+        newS = p.sub(r'\1long\2', text)
+        if newS == text:
+            break
+        text = newS
     # removing the added ' '
-    new = new[1:-1]
+    new = newS[1:-1]
     print(new, end='')
     return
 
