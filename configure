@@ -577,8 +577,6 @@ then
     echo "Contact support at trust@cea.fr"
     exit -1
 fi
-[ "$TRUST_INT64" = "1" ] && echo "We will edit sources to build 64 bits version, please wait..." && ./bin/BUILD64/GO
-
 
 ################################
 # Check options for some hosts #
