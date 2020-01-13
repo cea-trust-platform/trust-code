@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/20 (TRUST)  New feature : New option thermique_monolithique (VDF only) for Scheme_Euler_Implicit keyword to enable full thermal impliciting for coupled problems (single matrix solved)
 07/01/20 (TRUST)  Tools       : Trust Wizard tool becomes obsolete
 07/01/20 (TRUST)  Tools       : MED-file 4.0.0 insures direct compatibility with Salome 9.2
 07/01/20 (TRUST)  Tools       : Update versions for MEDCoupling (9.4.0), MED-file (4.0.0), HDF (1.10.3), Gmsh (4.4.1)
