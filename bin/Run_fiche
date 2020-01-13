@@ -224,7 +224,7 @@ else
    # Changement eventuel du binaire
    [ "$binary" != "" ] && binary="export exec=$binary;"
    # Lancement de la fichier sur la machine distante
-   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export USE_MPIRUN=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
+   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export prod=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
    scp $adr:$rep/build/rapport.pdf .
    pdf=`pwd`/rapport.pdf
    echo "PDF report $adr:$rep/build/rapport.pdf copied here: $pdf"
