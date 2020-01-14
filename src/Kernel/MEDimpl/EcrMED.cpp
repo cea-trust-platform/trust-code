@@ -1450,4 +1450,4 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
     }
 }
 
-#endif  //  #ifndef MED_: line 128
+#endif
