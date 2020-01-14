@@ -78,6 +78,10 @@ check_components()
 	          make_option="make check_optim check_debug"
 	       fi
 	    fi
+            if [[ "$Composant" == "triocfd" ]]
+            then
+                 git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+            fi
 	    [ "$Composant" = Test_Baltik ] && ./Configure_Tests
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
 	    make optim module_optim debug module_debug optim_avx &&
@@ -250,8 +254,8 @@ check_components()
 	       for adr in $machines
 	       do
 	          machine=`echo $adr` # | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-	          if [[ "$build64_machines" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines build64 (test actuel uniquement sur TRUST)
-		  then
+	         # if [[ "$build64_machines" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines build64 (test actuel uniquement sur TRUST)
+		 # then
 	             liste_options="--with-efface-dir-before"
 	             if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
 		     then
@@ -380,7 +384,7 @@ check_components()
                            echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		        fi
 		     fi
-		  fi
+		 # fi
 	       done
                echo " "
 	       cat Run.liste
@@ -516,7 +520,7 @@ ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
 ComposantsOfficial="triocfd ijk mpcube genepi3 flica5"
 #export ComposantsBeta="polymac triomc mathys"
-export ComposantsBeta="triomc mathys triocfd"
+export ComposantsBeta="triomc mathys"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 
@@ -625,25 +629,28 @@ echo>>$instanc_log
 verifie_instanciable 1>>$instanc_log 2>&1
 grep -i error $instanc_log
 tail -n1 $instanc_log 
-# Verifie la validite de la classe mere dans les instanciations
-# Verification du nom de la classe pere dans les macros implemente_...
-verif_log=$REP_NUIT/Verifie_pere_$HOST.log
-echo " "
-echo "Call to "$TRUST_ROOT"/bin/KSH/Verifie_pere"
-echo "  See $verif_log"
-echo "TRUST father class check on $HOST the `date` ...">$verif_log
-echo>>$verif_log
-Verifie_pere 1>>$verif_log 2>&1
-verif_error=$?
-tail -n1 $verif_log
-if [ $verif_error != 0 ]
-then
-   echo>>$verif_log
-   cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
-   cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
-fi
-echo>>$verif_log
-cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log 
+##############################################################
+# verifie pere doit etre appele apres la compilation de TRUST
+##############################################################
+# # Verifie la validite de la classe mere dans les instanciations
+# # Verification du nom de la classe pere dans les macros implemente_...
+# verif_log=$REP_NUIT/Verifie_pere_$HOST.log
+# echo " "
+# echo "Call to "$TRUST_ROOT"/bin/KSH/Verifie_pere"
+# echo "  See $verif_log"
+# echo "TRUST father class check on $HOST the `date` ...">$verif_log
+# echo>>$verif_log
+# Verifie_pere 1>>$verif_log 2>&1
+# verif_error=$?
+# tail -n1 $verif_log
+# if [ $verif_error != 0 ]
+# then
+#    echo>>$verif_log
+#    cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
+#    cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
+# fi
+# echo>>$verif_log
+# cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log 
 
 # Gestion externalpackages
 cd $TRUST_ROOT/bin/gestion_externalpackages
@@ -852,7 +859,7 @@ fi
       else
          git remote update
          git checkout .
-         git checkout portage_180
+         git checkout portage_181
          git pull
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
@@ -938,7 +945,9 @@ echo "###############################################"
 #	          [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
                  git remote update
                  git checkout .
-                 git checkout portage_180
+#                On test uniquement mpcube sur la verison Kernel !
+#                La branche est appele portage car elle ne bouge pas beacoup
+                 git checkout portage
                  git pull
 	         cd - 1>/dev/null 2>&1
                  echo>>$rebase_log
@@ -1233,6 +1242,31 @@ echo "###############################################"
 TRUST_ROOT=${0%/bin/admin/lance_test_nuit}
 cd $TRUST_ROOT
 source env_TRUST.sh 1>/dev/null 2>&1
+
+##############################################################
+# verifie pere doit etre appele apres la compilation de TRUST
+##############################################################
+
+# Verifie la validite de la classe mere dans les instanciations
+# Verification du nom de la classe pere dans les macros implemente_...
+verif_log=$REP_NUIT/Verifie_pere_$HOST.log
+echo " "
+echo "Call to "$TRUST_ROOT"/bin/KSH/Verifie_pere"
+echo "  See $verif_log"
+echo "TRUST father class check on $HOST the `date` ...">$verif_log
+echo>>$verif_log
+Verifie_pere 1>>$verif_log 2>&1
+verif_error=$?
+tail -n1 $verif_log
+if [ $verif_error != 0 ]
+then
+   echo>>$verif_log
+   cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
+   cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
+fi
+echo>>$verif_log
+cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log 
+
 echo " "
 echo "------------------------------------------------------"
 echo " "
@@ -3175,7 +3209,7 @@ then
 fi
 force_validation_etudes=~/force_validation_etudes && [ -f $force_validation_etudes ] && validation_etudes=1 && rm -f $force_validation_etudes
 # je force le critere etude
-validation_etudes=1
+# validation_etudes=1
 if [ "$NB" -eq -1 ]
 then
   echo "$validation_etudes  Studies $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
@@ -3785,16 +3819,16 @@ then
 	    echo "from `pwd`"
 	    # On pose le meme tag sur les BALTIK
             echo "    Call git commit --all -m Commit for an official Release $label version."
-	#    if [ "$Composant" = triocfd ]
-	#    then
-	#       cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
-	#       if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
-	#       then
-	#          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
-	#       #else
-	#       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
-	#       fi
-	#    fi
+	    if [ "$Composant" = triocfd ]
+	    then
+	       cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
+	       if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
+	       then
+	          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
+	       #else
+	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
+	       fi
+	    fi
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git tag $label"
 	    git tag $label_pose
@@ -3812,10 +3846,10 @@ then
 	       git push origin Livraison:triou/TMA
 	       git push origin Livraison:triou/$label
             fi
-	#    if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
-        #    then
-	#       git push --tags origin Livraison:master
-        #    fi
+	    if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
+            then
+	       git push --tags origin Livraison:master
+            fi
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
@@ -3828,19 +3862,19 @@ then
             else
 	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
             fi
-	#    if [ $Composant = "triocfd" ]
-        #    then
-	#       # Appel du Create_Light_archive.sh
-	#       echo "    Call Create_Light_archive.sh"
-	#       rm -rf Prov
-	#       ./share/Distribution/Create_light_archive.sh
-        #       if [ $? != 0 ]
-        #       then
-        #          mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
-        #       else
-	#          cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
-        #       fi
-	#    fi
+	    if [ $Composant = "triocfd" ]
+            then
+	       # Appel du Create_Light_archive.sh
+	       echo "    Call Create_Light_archive.sh"
+	       rm -rf Prov
+	       ./share/Distribution/Create_light_archive.sh
+               if [ $? != 0 ]
+               then
+                  mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
+               else
+	          cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
+               fi
+	    fi
 	    echo | mail_ -s\"[lance_test_nuit] $Composant v$new is released under $WORKDIR/archives/ARCHIVES_$Composant\" $TRUST_MAIL	 
 	    # Changement de la vue Maintenance
             if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
