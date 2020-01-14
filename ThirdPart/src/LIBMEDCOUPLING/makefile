@@ -12,5 +12,5 @@ test:
 	./test.sh
 
 clean:
-	rm -rf $(TRUST_ROOT)/build/lib/medcoupling* $(TRUST_ROOT)/lib/src/LIBMEDCOUPLING
+	rm -rf $(TRUST_ROOT)/build/lib/medcoupling* $(TRUST_ROOT)/lib/src/LIBMEDCOUPLING $(TRUST_ROOT)/build/lib/configuration*
 
