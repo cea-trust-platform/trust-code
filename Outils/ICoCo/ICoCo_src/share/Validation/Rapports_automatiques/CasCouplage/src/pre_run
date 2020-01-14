@@ -1,22 +1,25 @@
-#gunzip -f interass.geom.gz
-#./configure
+#!/bin/bash
+
+# Guess OPT from executable name.
+OPT=""
+list="_semi_opt _opt _opt_avx _opt_pg _custom _opt_gcov"
+for option in $list; do 
+   [ `echo $exec | grep $option$ 1>/dev/null 2>&1; echo $?` -eq 0  ] && OPT=$option && break
+done
+export OPT
 
 make ld_env.sh
-exec=`make exe | grep Executable |awk '{print $NF}'`
-export exec
 if [ "$1" != "grossier" ]
 then
-trust dec_canal
-trust dec_boite
+   trust dec_canal
+   trust dec_boite
 else
-sed "s/10 9 9/4 3 3/" dec_canal.data > dec_c.data
-sed "s/10 10 11/5 3 3/" dec_boite.data > dec_b.data
-trust dec_c
-trust dec_b
+   sed "s/10 9 9/4 3 3/" dec_canal.data > dec_c.data
+   sed "s/10 10 11/5 3 3/" dec_boite.data > dec_b.data
+   trust dec_c
+   trust dec_b
 fi
 gunzip -c ref_lml.gz > ref_lml
-
-
 
 make check
 status=$?
@@ -24,6 +27,5 @@ if [ $status -eq 0 ]
 then
   echo OK > is_ok
 else
-  #echo KO > is_ok
   rm -f is_ok
 fi

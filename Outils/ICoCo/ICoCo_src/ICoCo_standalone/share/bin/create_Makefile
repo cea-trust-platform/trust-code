@@ -14,7 +14,7 @@ makeincludedeps=$build/cmake.deps
 cp $makeincludedeps .
 
 makeincludeatelier=$build/make.include.atelier
-[ ! -f $makeincludeatelier ] && echo $makeincludeatelier doesnt exist && exit
+[ ! -f $makeincludeatelier ] && echo $makeincludeatelier does not exist && exit
 cp $makeincludeatelier .
 [ ! -f main.cpp ] && cp `dirname $0`/main.cpp . && chmod +w main.cpp
 nn=`grep LD_LIBRARY_PATH make.include.atelier  | sed "s/#//"| awk -F: '{printf ("%s:",$2)}' | sed "s?\\${LD_LIBRARY_PATH}:??"`":\${LD_LIBRARY_PATH}"
@@ -39,22 +39,20 @@ cat $makeincludeatelier | grep -v project_directory >>makefile
 # PL: Mecanisme de lock pour eviter un build concurentiel lors des tests ICoCo via ctest
 flock="" && [ -f /usr/bin/flock ] && flock="/usr/bin/flock make.lock"
 
-echo "# on refait a chaque fois l executable
-TRUSTmodule=$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
-
-couplage: $lib_dyn main.cpp makefile ld_env.sh \$(TRUSTmodule)
+echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
 	echo end >>  couplage.data
 	@echo Linking.. 
-	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp \$(TRUSTmodule) .; fi
-	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) \$(TRUSTmodule) \$(CppFlags) \$(Libs) \$(SYSLIBS)
-\$(TRUSTmodule): $lib_dyn
-dynamique: $lib_dyn main.cpp makefile ld_env.sh \$(TRUSTmodule)
+	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
+	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION): $lib_dyn
+dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
 	touch dynamique.data
 	@echo Linking.. 
-	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"\$(TRUSTmodule)\"' -Wl,-R $build/exec\$(OPT) \$(TRUSTmodule) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+
+	"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
-	(cd $build; [ -O . ] && (cd ../..;$flock \$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))
+	(cd $build; [ -O . ] && (cd ../..;$flock \$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ; echo \$OPT) ||( [ ! -O . ] && echo  No Compilation  ))
 check: couplage
 	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
 	if [ -f check.sh ]; then bash check.sh ;fi
@@ -79,4 +77,3 @@ sed "s?${project_directory}?\$(project_directory)?g" makefile > mm
 echo "project_directory=$project_directory" > makefile
 cat mm >> makefile
 rm mm
-

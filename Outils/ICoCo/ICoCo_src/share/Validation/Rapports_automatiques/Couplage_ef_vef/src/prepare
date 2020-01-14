@@ -1,3 +1,4 @@
+#!/bin/bash
 cd vef_ef
 cp sa/* .
 if [ "$TRUST_DISABLE_PETSC" = "1" ]
