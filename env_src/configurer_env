@@ -928,6 +928,9 @@ then
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 fi
+# Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.26 sur Fedora30 pour libstdc++.so.25), on vire:
+[ -f $TRUST_ROOT/exec/python/lib/libstdc++.so.6.0.25 ] && [ -f /usr/lib64/libstdc++.so.6.0.26 ] && rm -f $TRUST_ROOT/exec/python/lib/libstdc++.so*
+
 # export PATH
 PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
 echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
