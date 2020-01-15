@@ -1,4 +1,4 @@
-This document constitutes the generic guide for \textbf{TRUST software} and his \textbf{Baltik projects}.\\
+This document constitutes the generic guide for \textbf{TRUST software} and its \textbf{Baltik projects}.\\
 
 \trust is a thermohydraulic software package for CFD simulations for incompressible monophasic flow.\\
 
@@ -177,7 +177,7 @@ Here is the structure of \trust platform (cf Figure \ref{TRUST}):
 \draw (0.75,0.75) node[above]{\textbf{MPCube}} ;
 \end{scope}
 \end{tikzpicture}
-\caption{TRUST platform \& his BALTIKs}
+\caption{TRUST platform \& its BALTIKs}
 \label{TRUST}
 \end{center}
 \end{figure}
@@ -203,6 +203,7 @@ The project starts in 1994 and improved versions were built ever since:
 \item 02/2006: v1.5 (VDF/VEF Front Tracking)
 \item 10/2009: v1.6 (data structure revamped)
 \item 06/2015: v1.7 (cut into \trust and \textbf{TrioCFD} + switch to open source)
+\item 11/2019: v1.8 (Turbulence features are moved from \trust to \textbf{TrioCFD})
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -213,7 +214,7 @@ The project starts in 1994 and improved versions were built ever since:
 \section{Data file}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To launch a calculation with \trust, you need to write a "data file" which is an input file for \trust and will contain all the informations about your simulation.
+To launch a calculation with \trust, you need to write a "data file" which is an input file for \trust and will contain all the information about your simulation.
 Data files are written following some rules as shown below. But their language is not a programming language, users can't make loops or switch...\\
 
 \Note that:
@@ -441,7 +442,7 @@ You can run your sequential calculation:
 \end{verbatim}
 
 where "trust" command call the "trust" script.
-You can have the list of his options with:
+You can have the list of its options with:
 \begin{verbatim}
 > trust -help
 \end{verbatim}
@@ -467,7 +468,6 @@ Where option may be:
 -mesh                         : Visualize the mesh(es) contained in the data file.
 -probes                       : Monitor the TRUST calculation only.
 -evol                         : Monitor the TRUST calculation (new IHM).
--wiz                          : Create a TRUST datafile from a MED file (new IHM).
 -prm                          : Write a prm file.
 -clean                        : Clean the current directory from all the generated 
                                 files by TRUST.
@@ -519,8 +519,8 @@ You have to make two data files:
 \item \textit{Calculation.data}.
 \end{itemize}
 
-The \textit{BuildMeshes.data} file only contains the same informations as the 
-begining of the sequential data file and partitioning informations.
+The \textit{BuildMeshes.data} file only contains the same information as the 
+begining of the sequential data file and partitioning information.
 This file will create the sub-domains (cf .Zones files).
 
 
@@ -582,7 +582,7 @@ To see your sub-domains, you can run:
 > trust -mesh Calculation
 \end{alltt}
 
-In the \textit{Calculation.data} file contains the domain definition, the block which will read the sub-domains and the problem definition (as in sequential calculation).
+The \textit{Calculation.data} file contains the domain definition, the block which will read the sub-domains and the problem definition (as in sequential calculation).
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.8\textwidth}
 \begin{center}
@@ -655,7 +655,7 @@ This will read your \textit{DOM\_000n}\textbf{.Zones} files. You can see the doc
 \end{itemize}
 
 
-For more information, you can go to see this \href{TRUST_tutorial.pdf\#exo_para_1}{exercise in the \trust tutorial}.
+For more information, you can see this \href{TRUST_tutorial.pdf\#exo_para_1}{exercise in the \trust tutorial}.
 
 
 
@@ -663,6 +663,6 @@ For more information, you can go to see this \href{TRUST_tutorial.pdf\#exo_para_
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Visualization}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-To learn how to use the "\textbf{-evol}" option, you can go to see the first exercise of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.
+To learn how to use the "\textbf{-evol}" option, you can go to see the first exercise of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo1}{Flow around an obstacle}.
 
 

@@ -23,7 +23,7 @@ You can see methods to run your data file in section \ref{Run}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Stop a running calculation} \label{stopfile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Your calculation will automatically stops if it has reached:
+Your calculation will automatically stop if it has reached:
 \begin{itemize}
 \item the end of the calculation time,
 \item the maximal allowed cpu time,
@@ -35,7 +35,7 @@ You may use the \textit{my\_data\_file}\textbf{.stop} file, if you want to stop 
 
 When the simulation is running, you can see the "\textbf{0}" value in that file.
 To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.
-When you don't change any thing to that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
+When you don't change anything to that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
 
 
 
@@ -95,10 +95,10 @@ For more details, see the \href{\REFERENCEMANUAL\#Pbbase}{\trustref Reference Ma
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Restart}
+\section{Resume}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To restart your calculation, you may:
+To resume your calculation, you may:
 \begin{itemize}
 \item change your initial time, the new initial time will be the real final calculation time of the previous calculation (cf .err file),
 \item change your final calculation time to the new wanted value and
@@ -113,10 +113,10 @@ To restart your calculation, you may:
 \end{itemize}
 \vspace{0.5cm}
 
-You can restart your calculation:
+You can resume your calculation:
 \begin{itemize}
-\item from .sauv file(s) (one file per process): you can only restart the calculation with the \textbf{same number of equations} on \textbf{the same number of processes},
-\item or from a .xyz file: here you can restart your calculation by \textbf{changing the number of equations solved} and/or with a \textbf{different number of processes}.
+\item from .sauv file(s) (one file per process): you can only resume the calculation with the \textbf{same number of equations} on \textbf{the same number of processes},
+\item or from a .xyz file: here you can resume your calculation by \textbf{changing the number of equations solved} and/or with a \textbf{different number of processes}.
 \end{itemize}
 
 Instead of \textbf{"reprise"} keyword, you can use \textbf{"resume\_last\_time"} where \textbf{tinit} is automatically set to the last time of saved files (but you may change \textbf{tmax}):
