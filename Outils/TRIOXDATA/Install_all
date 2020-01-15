@@ -1,2 +1,5 @@
 #!/bin/bash
-. ./XDATA.sh;cd XTriou;make doc;make update_xd
+. ./XDATA.sh
+cd XTriou
+make doc || exit -1
+make update_xd || exit -1

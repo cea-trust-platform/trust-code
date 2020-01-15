@@ -20,11 +20,11 @@ else
   then
   mkdir -p XDATA
   cd XDATA
-  tar zxvf $TRUST_ROOT/externalpackages/xdata-0.9.10.tar.gz
+  tar zxf $TRUST_ROOT/externalpackages/xdata-0.9.10.tar.gz
   # mkdir XDATA_SRC
   mv xdata-0.9.10  XDATA_SRC
   cd XDATA_SRC
-  tar zxvf ../../modif_xdata_0.9.10.tgz 
+  tar zxf $TRUST_ROOT/Outils/TRIOXDATA/modif_xdata_0.9.10.tgz 
   cd ../..
  [ "$2" = "" ] && ( cd XTriou; make clean)   
  fi
