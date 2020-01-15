@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,9 +42,8 @@ class Eval_Puiss_Th_VEF_Face: public Evaluateur_Source_VEF_Face
 
 public:
 
-  inline Eval_Puiss_Th_VEF_Face();
   void completer();
-  void associer_champs(const Champ_Don& ,const Champ_Don& , const Champ_Don& );
+  void associer_champs(const Champ_Don& );
   void mettre_a_jour();
   inline double calculer_terme_source_standard(int ) const ;
   inline double calculer_terme_source_non_standard(int ) const ;
@@ -53,10 +52,6 @@ public:
 
 protected:
 
-  REF(Champ_Don) rho_ref;
-  double rho_ref_;
-  REF(Champ_Don) Cp;
-  double Cp_;
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
   IntTab face_voisins;
@@ -70,47 +65,41 @@ protected:
 //   Fonctions inline de la classe Eval_Puiss_Th_VEF_Face
 //
 
-inline Eval_Puiss_Th_VEF_Face::Eval_Puiss_Th_VEF_Face():rho_ref_(-123.),Cp_(-123.)  {}
-
 inline double Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard(int num_face) const
 {
-  assert(!est_egal(Cp_,-123.));
-  assert(!est_egal(rho_ref_,-123.));
   double source;
   if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0)*volumes_entrelaces(num_face) / (Cp_*rho_ref_);
+    source = puissance(0,0)*volumes_entrelaces(num_face);
   else
     {
       if (puissance.nb_dim()==1)
-        source = (puissance(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1))*volumes(face_voisins(num_face,1)))/(Cp_*rho_ref_*nb_faces_elem);
+        source = (puissance(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1))*volumes(face_voisins(num_face,1)))/(nb_faces_elem);
       else
-        source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/(Cp_*rho_ref_*nb_faces_elem);
+        source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/(nb_faces_elem);
     }
   return (source*porosite_surf(num_face));
 }
 
 inline double Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard(int num_face) const
 {
-  assert(!est_egal(Cp_,-123.));
-  assert(!est_egal(rho_ref_,-123.));
   double source;
   if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0)*volumes_entrelaces_Cl(num_face) / (Cp_*rho_ref_);
+    source = puissance(0,0)*volumes_entrelaces_Cl(num_face);
   else
     {
       if (puissance.nb_dim()==1)
         {
           if (face_voisins(num_face,1) != -1)
-            source = (puissance(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1))*volumes(face_voisins(num_face,1)))/(Cp_*rho_ref_*nb_faces_elem);
+            source = (puissance(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1))*volumes(face_voisins(num_face,1)))/(nb_faces_elem);
           else
-            source = (puissance(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)))/(Cp_*rho_ref_*nb_faces_elem);
+            source = (puissance(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)))/(nb_faces_elem);
         }
       else
         {
           if (face_voisins(num_face,1) != -1)
-            source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/(Cp_*rho_ref_*nb_faces_elem);
+            source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/(nb_faces_elem);
           else
-            source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)))/(Cp_*rho_ref_*nb_faces_elem);
+            source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)))/(nb_faces_elem);
         }
     }
   return (source*porosite_surf(num_face));

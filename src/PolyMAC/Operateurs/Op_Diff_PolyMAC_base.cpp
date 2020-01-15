@@ -70,8 +70,6 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
   const int impr_sum=(ma_zone.Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(ma_zone.Bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();
-  const Champ_Don& rho = la_zcl_poly_->equation().milieu().masse_volumique(),
-                   Cp = la_zcl_poly_->equation().milieu().capacite_calorifique();
   DoubleTab& tab_flux_bords= flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
   DoubleVect bilan(nb_comp);
@@ -122,9 +120,6 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
         } /* fin for face */
     }
   mp_sum_for_each_item(flux_bords2);
-  if (la_zcl_poly_->equation().que_suis_je() == "Conduction" ||
-      la_zcl_poly_->equation().que_suis_je() == "Convection_Diffusion_Temperature" ||
-      la_zcl_poly_->equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent") flux_bords2 *= rho(0, 0) * Cp(0, 0);
 
   if (je_suis_maitre() && nb_comp > 0)
     {

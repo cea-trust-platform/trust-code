@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -102,8 +102,8 @@ double Op_Diff_P1NC_barprim::calculer_dt_stab() const
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   double alpha = 1.e-38;
   // pas mp_max ?
-  if (diffusivite().valeurs().size() > 0)
-    alpha = local_max_vect(diffusivite().valeurs());
+  if (diffusivite_pour_pas_de_temps().valeurs().size() > 0)
+    alpha = local_max_vect(diffusivite_pour_pas_de_temps().valeurs());
   dt_stab = zone_VEF.carre_pas_du_maillage()/(2.*dimension*(alpha+DMINFLOAT));
   return dt_stab;
 }

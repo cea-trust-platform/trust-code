@@ -53,7 +53,7 @@ void Terme_Puissance_Thermique_VEF_Face::associer_pb(const Probleme_base& pb)
 {
   preparer_source(pb);
   Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_champs(rho_ref.valeur(),Cp.valeur(),la_puissance);
+  eval_puis.associer_champs(la_puissance);
 }
 
 

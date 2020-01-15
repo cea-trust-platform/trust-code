@@ -112,35 +112,6 @@ Entree& Echange_impose_base::readOn(Entree& s )
 
   return s ;
 }
-// Description:
-// Test si h_imp_ doit etre divise ou non par rho*Cp
-// et fixe la valeur de l attribut division_par_rhoCp_
-void Echange_impose_base::completer()
-{
-  Cond_lim_base::completer();
-  Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
-
-  if (nom_pb != "Probleme_SG")
-    {
-
-      const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-      const Champ_Don& rho=mil.masse_volumique();
-      if (sub_type(Champ_Uniforme,rho.valeur())
-          && !nom_pb.debute_par("Probleme_Interface")
-          && !nom_pb.debute_par("Probleme_Thermo_Front_Tracking")
-          && !nom_pb.debute_par("Pb_Conduction_Milieu_Variable")
-          && !nom_pb.debute_par("Probleme_Front_Tracking")
-          && !nom_pb.debute_par("Pb_Conduction_Combustible"))
-
-        division_par_rhoCp_=1;
-
-      else
-        division_par_rhoCp_=0;
-    }
-  else
-    division_par_rhoCp_=0;
-
-}
 
 // Description:
 //    Renvoie la valeur de la temperature imposee
@@ -223,30 +194,12 @@ double Echange_impose_base::h_imp(int i) const
 {
 
 
-  if (division_par_rhoCp_)
-    {
-      const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-      const Champ_Don& rho=mil.masse_volumique();
-      const Champ_Don& Cp =mil.capacite_calorifique();
-      double d_Cp= Cp(0,0);
-      double d_rho= rho(0,0);
-      if (h_imp_.valeurs().size()==1)
-        return h_imp_(0,0)/(d_Cp*d_rho);
-      else if (h_imp_.valeurs().dimension(1)==1)
-        return h_imp_(i,0)/(d_Cp*d_rho);
-      else
-        Cerr << "Echange_impose_base::h_imp erreur" << finl;
-    }
+  if (h_imp_.valeurs().size()==1)
+    return h_imp_(0,0);
+  else if (h_imp_.valeurs().dimension(1)==1)
+    return h_imp_(i,0);
   else
-    {
-      // On ne devise pas par Rho*Cp (Quasi compressible, Front_Tracking,...)
-      if (h_imp_.valeurs().size()==1)
-        return h_imp_(0,0);
-      else if (h_imp_.valeurs().dimension(1)==1)
-        return h_imp_(i,0);
-      else
-        Cerr << "Echange_impose_base::h_imp erreur" << finl;
-    }
+    Cerr << "Echange_impose_base::h_imp erreur" << finl;
 
   exit();
   return 0.;
@@ -277,29 +230,10 @@ double Echange_impose_base::h_imp(int i) const
 double Echange_impose_base::h_imp(int i, int j) const
 {
 
-
-  if (division_par_rhoCp_)
-    {
-      const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-      const Champ_Don& rho=mil.masse_volumique();
-      const Champ_Don& Cp =mil.capacite_calorifique();
-      double d_Cp= Cp(0,0);
-      double d_rho= rho(0,0);
-
-      if (h_imp_.valeurs().dimension(0)==1)
-        return h_imp_(0,j)/(d_Cp*d_rho);
-      else
-        return h_imp_(i,j)/(d_Cp*d_rho);
-
-    }
+  if (h_imp_.valeurs().dimension(0)==1)
+    return h_imp_(0,j);
   else
-    {
-      // On ne devise pas par Rho*Cp (Quasi compressible, Front_Tracking,...)
-      if (h_imp_.valeurs().dimension(0)==1)
-        return h_imp_(0,j);
-      else
-        return h_imp_(i,j);
-    }
+    return h_imp_(i,j);
 
 }
 

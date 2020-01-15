@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -435,6 +435,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
           flux_bords_(face,0) *= (rho_*Cp_);
         }
     }
+
 
   // On multiplie par rho si Navier Stokes incompressible
   Nom nom_eqn=op.equation().que_suis_je();

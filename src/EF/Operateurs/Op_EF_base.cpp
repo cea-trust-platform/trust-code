@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -307,30 +307,6 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
   DoubleTab& flux_bords_=op.flux_bords();
   int nb_compo=flux_bords_.dimension(1);
   const Probleme_base& pb=op.equation().probleme();
-  // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
-  if (op.equation().inconnue().le_nom()=="temperature"
-      && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite" ) )
-    {
-      const Champ_Don& rho = (op.equation()).milieu().masse_volumique();
-      const Champ_Don& Cp = (op.equation()).milieu().capacite_calorifique();
-      const IntTab& face_voisins=la_zone_EF.face_voisins();
-      int rho_uniforme=(sub_type(Champ_Uniforme,rho.valeur()) ? 1:0);
-      int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
-      double Cp_=0,rho_=0;
-      const int& nb_faces_bords=la_zone_EF.nb_faces_bord();
-      for (int face=0; face<nb_faces_bords; face++)
-        {
-          int num_elem=face_voisins(face,0);
-          if (num_elem == -1) num_elem = face_voisins(face,1);
-          if (cp_uniforme) Cp_=Cp(0,0);
-          else if (Cp.nb_comp()==1) Cp_=Cp(num_elem);
-          else Cp_=Cp(num_elem,0);
-          if (rho_uniforme) rho_=rho(0,0);
-          else if (rho.nb_comp()==1) rho_=rho(num_elem);
-          else rho_=rho(num_elem,0);
-          flux_bords_(face,0) *= (rho_*Cp_);
-        }
-    }
 
   // On multiplie par rho si Navier Stokes incompressible
   Nom nom_eqn=op.equation().que_suis_je();

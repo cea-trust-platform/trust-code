@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,25 +33,13 @@ class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
 
 public:
-  Eval_Echange_Himp_VDF_Elem()
-  {
-    rho_cst=true;
-    rho_=DMAXFLOAT;
-    Cp_cst=true;
-    Cp_=DMAXFLOAT;
-  }
-  void associer_champs(const Champ_Don& ,const Champ_Don& , const Champ_Inc& ,const Champ_Inc& ,const double );
+  Eval_Echange_Himp_VDF_Elem() {}
+  void associer_champs(const Champ_Inc& ,const Champ_Inc& ,const double );
   void mettre_a_jour( );
   inline double calculer_terme_source(int ) const;
   inline void calculer_terme_source(int , DoubleVect& ) const;
 
 protected:
-  REF(Champ_Don) rho;
-  bool rho_cst;
-  double rho_;
-  REF(Champ_Don) champ_Cp_;
-  bool Cp_cst;
-  double Cp_;
   REF(Champ_Inc) T;
   REF(Champ_Inc) T_voisin;
   DoubleTab Tcourant;
@@ -61,8 +49,7 @@ protected:
 
 inline double Eval_Echange_Himp_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  double rhocp=(rho_cst?rho_:rho->valeurs()(num_elem,0))*(Cp_cst?Cp_:champ_Cp_->valeurs()(num_elem,0));
-  return h_*(Tvois(num_elem)-Tcourant(num_elem))/rhocp * volumes(num_elem)*porosite_vol(num_elem);
+  return h_*(Tvois(num_elem)-Tcourant(num_elem)) * volumes(num_elem)*porosite_vol(num_elem);
 }
 
 inline void Eval_Echange_Himp_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const { }

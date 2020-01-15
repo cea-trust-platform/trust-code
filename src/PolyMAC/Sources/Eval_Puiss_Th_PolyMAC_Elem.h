@@ -41,18 +41,13 @@ class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_PolyMAC_Elem
 
 public:
 
-  inline Eval_Puiss_Th_PolyMAC_Elem();
-  void associer_champs(const Champ_Don& ,const Champ_Don& , const Champ_Don& );
+  void associer_champs(const Champ_Don& );
   virtual void mettre_a_jour();
   inline double calculer_terme_source(int ) const;
   inline void calculer_terme_source(int , DoubleVect& ) const;
 
 protected:
 
-  REF(Champ_Don) rho_ref;
-  double rho_ref_;
-  REF(Champ_Don) Cp;
-  double Cp_;
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
@@ -62,24 +57,17 @@ protected:
 //   Fonctions inline de la classe Eval_Puiss_Th_PolyMAC_Elem
 //
 
-inline Eval_Puiss_Th_PolyMAC_Elem::Eval_Puiss_Th_PolyMAC_Elem():rho_ref_(-123.),Cp_(-123.) {}
 
 inline double Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int num_elem) const
 {
-  assert(!est_egal(Cp_,-123.));
-  assert(!est_egal(rho_ref_,-123.));
-  double rcp = 1.;
-  if (la_zcl.valeur().equation().que_suis_je() == "Conduction" ||
-      la_zcl.valeur().equation().que_suis_je() == "Convection_Diffusion_Temperature" ||
-      la_zcl.valeur().equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent") rcp = Cp_ * rho_ref_;
   if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    return puissance(0,0)*volumes(num_elem)*porosite_vol(num_elem) / rcp;
+    return puissance(0,0)*volumes(num_elem)*porosite_vol(num_elem);
   else
     {
       if (puissance.nb_dim()==1)
-        return puissance(num_elem)*volumes(num_elem)*porosite_vol(num_elem) / rcp;
+        return puissance(num_elem)*volumes(num_elem)*porosite_vol(num_elem);
       else
-        return puissance(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem) / rcp;
+        return puissance(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem);
     }
 }
 

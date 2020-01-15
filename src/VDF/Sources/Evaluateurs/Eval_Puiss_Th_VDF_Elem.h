@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,18 +40,13 @@ class Eval_Puiss_Th_VDF_Elem: public Evaluateur_Source_VDF_Elem
 
 public:
 
-  inline Eval_Puiss_Th_VDF_Elem();
-  void associer_champs(const Champ_Don& ,const Champ_Don& , const Champ_Don& );
+  void associer_champs(const Champ_Don& );
   virtual void mettre_a_jour();
   inline double calculer_terme_source(int ) const;
   inline void calculer_terme_source(int , DoubleVect& ) const;
 
 protected:
 
-  REF(Champ_Don) rho_ref;
-  double rho_ref_;
-  REF(Champ_Don) Cp;
-  double Cp_;
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
@@ -61,20 +56,16 @@ protected:
 //   Fonctions inline de la classe Eval_Puiss_Th_VDF_Elem
 //
 
-inline Eval_Puiss_Th_VDF_Elem::Eval_Puiss_Th_VDF_Elem():rho_ref_(-123.),Cp_(-123.) {}
-
 inline double Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  assert(!est_egal(Cp_,-123.));
-  assert(!est_egal(rho_ref_,-123.));
   if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    return puissance(0,0)*volumes(num_elem)*porosite_vol(num_elem)/(Cp_*rho_ref_);
+    return puissance(0,0)*volumes(num_elem)*porosite_vol(num_elem);
   else
     {
       if (puissance.nb_dim()==1)
-        return puissance(num_elem)*volumes(num_elem)*porosite_vol(num_elem)/(Cp_*rho_ref_);
+        return puissance(num_elem)*volumes(num_elem)*porosite_vol(num_elem);
       else
-        return puissance(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem)/(Cp_*rho_ref_);
+        return puissance(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem);
     }
 }
 

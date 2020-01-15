@@ -183,7 +183,6 @@
  Comm_Group_Noparallel Comm_Group_Noparallel Comm_Group_Noparallel.h
  Conds_lim Conds_lim Conds_lim.h
  Conduction Conduction Conduction.h
- Conduction_Milieu_Variable Conduction_Milieu_Variable Conduction_Milieu_Variable.h
  Cond_lim Cond_lim Cond_lim.h
  Cond_lim_base Cond_lim_base Cond_lim_base.h
  Cond_lim_utilisateur_base Cond_lim_utilisateur_base Cond_lim_utilisateur_base.h
@@ -627,7 +626,6 @@
  Pave Pave Pave.h
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h
- Pb_Conduction_Milieu_Variable Pb_Conduction_Milieu_Variable Pb_Conduction_Milieu_Variable.h
  Pb_Hydraulique Pb_Hydraulique Pb_Hydraulique.h
  Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration.h
  Pb_MED Pb_MED Pb_MED.h

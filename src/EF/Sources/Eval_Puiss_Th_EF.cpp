@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,14 +30,8 @@ void Eval_Puiss_Th_EF::completer()
   //  nb_som_elem_=(la_zone->zone().nb_som_elem());
 }
 
-void Eval_Puiss_Th_EF::associer_champs(const Champ_Don& rho,
-                                       const Champ_Don& capa,
-                                       const Champ_Don& Q)
+void Eval_Puiss_Th_EF::associer_champs(const Champ_Don& Q)
 {
-  rho_ref = rho;
-  rho_ref_ = rho(0,0);
-  Cp = capa;
-  Cp_ = capa(0,0);
   la_puissance = Q;
   puissance.ref(Q.valeurs());
 }

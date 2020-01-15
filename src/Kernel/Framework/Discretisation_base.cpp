@@ -392,8 +392,6 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
                      && (eqn.que_suis_je()!="Transport_K_Eps_Realisable")
                      && (eqn.que_suis_je()!="Transport_K_Eps_V2")))
         type+="_QC";
-      if (eqn.que_suis_je()=="Conduction_Milieu_Variable")
-        type+="_QC";
 
       // sauf pour le term boussinesq
       if( disc=="VEFPreP1B" )

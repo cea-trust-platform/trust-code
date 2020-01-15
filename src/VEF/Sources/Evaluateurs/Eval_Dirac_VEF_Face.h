@@ -41,7 +41,7 @@ class Eval_Dirac_VEF_Face: public Evaluateur_Source_VEF_Face
 public:
 
   inline Eval_Dirac_VEF_Face();
-  void associer_champs(const Champ_Don& ,const Champ_Don& , const Champ_Don& );
+  void associer_champs(const Champ_Don& );
   void mettre_a_jour();
   inline double calculer_terme_source_standard(int ) const;
   inline double calculer_terme_source_non_standard(int ) const ;
@@ -52,10 +52,6 @@ public:
   DoubleVect le_point;
 protected:
 
-  REF(Champ_Don) rho_ref;
-  double rho_ref_;
-  REF(Champ_Don) Cp;
-  double Cp_;
   REF(Champ_Don) la_puissance;
   double puissance;
   REF(Zone) ma_zone;
@@ -68,7 +64,7 @@ protected:
 //   Fonctions inline de la classe Eval_Dirac_VDF_Elem
 //
 
-inline Eval_Dirac_VEF_Face::Eval_Dirac_VEF_Face():rho_ref_(-123.),Cp_(-123.),puissance(-123.),nb_dirac(-123.) {}
+inline Eval_Dirac_VEF_Face::Eval_Dirac_VEF_Face():puissance(-123.),nb_dirac(-123.) {}
 
 
 inline double Eval_Dirac_VEF_Face::calculer_terme_source_standard(int num_face) const
@@ -88,11 +84,9 @@ inline double Eval_Dirac_VEF_Face::calculer_terme_source_standard(int num_face) 
 
   if (test == 1)
     {
-      assert(rho_ref_!=-123.);
-      assert(Cp_!=-123.);
       assert(nb_dirac!=-123.);
       assert(puissance!=-123.);
-      double source =  nb_dirac*puissance/(Cp_*rho_ref_);
+      double source =  nb_dirac*puissance;
       return source;
     }
   else
@@ -122,11 +116,9 @@ inline double Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_fa
   int test =  ma_zone.valeur().type_elem().contient(le_point,elem) ;
   if (test == 1)
     {
-      assert(rho_ref_!=-123.);
-      assert(Cp_!=-123.);
       assert(nb_dirac!=-123.);
       assert(puissance!=-123.);
-      double source =  nb_dirac*puissance/(Cp_*rho_ref_);
+      double source =  nb_dirac*puissance;
       return source;
     }
   else

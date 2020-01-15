@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -151,19 +151,6 @@ return 1 ; \
                   }                                                        \
                 coef(fac) /= vol;                                        \
               }                                                                \
-          }                                                                \
-      }                                                                        \
-    if (equation_divisee_par_rho_cp())                                        \
-      {                                                                        \
-        const Milieu_base& milieu = la_zcl->equation().milieu();        \
-        const Champ_Don& rho = milieu.masse_volumique();                \
-        const Champ_Don& Cp = milieu.capacite_calorifique();                \
-        if ( (sub_type(Champ_Uniforme,rho.valeur())) && (sub_type(Champ_Uniforme,Cp.valeur())))        \
-          coef = rho(0,0)*Cp(0,0);                                        \
-        else                                                                \
-          {                                                                \
-            Cerr << "Cas non prevu dans It_Sou_VEF_Face(_TYPE_)::ajouter(DoubleTab& resu) const" << finl; \
-            exit();                                                        \
           }                                                                \
       }                                                                        \
     if(ncomp == 1)                                                        \

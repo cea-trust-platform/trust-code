@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ void Source_Dirac_VEF_Face::associer_pb(const Probleme_base& pb )
 {
   preparer_source(pb);
   Eval_Dirac_VEF_Face& eval_puis = (Eval_Dirac_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_champs(rho_ref.valeur(),Cp.valeur(),la_puissance);
+  eval_puis.associer_champs(la_puissance);
   eval_puis.le_point.copy(point);
 }
 

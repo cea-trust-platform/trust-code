@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,10 +33,13 @@
 //
 // .DESCRIPTION
 //    Classe Pb_Conduction
-//    Cette classe represente un probleme de conduction standard:
-//      - dT/dt -div (k grad T) = f
+//    Cette classe represente un probleme de conduction avec rho et Cp non uniformes :
+//      (rho.Cp) dT/dt -div (k grad T) = (rho.Cp) f
+//    Cette classe est exactement identique a Pb_Conduction si ce n'est qu'elle force l'utilisateur a l'usage d'un probleme
+//    de nature differente.
 // .SECTION voir aussi
 //     Probleme_base
+//     Pb_Conduction
 //////////////////////////////////////////////////////////////////////////////
 class Pb_Conduction : public Probleme_base
 {
