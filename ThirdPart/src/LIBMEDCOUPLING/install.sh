@@ -16,6 +16,13 @@ mkdir -p $install_dir
 mkdir -p $build_dir
 cd $build_dir
 
+icocomedfield_hxx=$install_dir/include/ICoCoMEDField.hxx
+cp -af $icocomedfield_hxx .
+
+# include file:
+medcoupling_hxx=$install_dir/include/medcoupling++.h
+cp -af $medcoupling_hxx .
+
 # MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
 if [ "$TRUST_INT64" = "1" ]
 then
