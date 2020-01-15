@@ -1571,7 +1571,7 @@ Composant="triocfd"
   [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
 #done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-#echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://triocfd.cea.fr" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
@@ -3980,8 +3980,8 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
-#   echo " " >> $MESSAGES_NUIT
-#   echo "TRUST support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+   echo " " >> $MESSAGES_NUIT
+   echo "TRUST support team: $TRUST_MAIL  Web: http://triocfd.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
@@ -4025,8 +4025,6 @@ then
       echo "
 TRUST is a thermohydraulic software package for CFD 
 simulations of incompressible monophasic flows.
-TRUST platform name means TRrio_U Software for Thermohydraulics
-(\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models).
 This software is OpenSource (BSD license).
 
 ---------------------------------
@@ -4045,7 +4043,7 @@ Table of contents
 6. Version tested on several OS
 7. Version portability with several compilers
 
-TRUST support team: $TRUST_MAIL  
+TRUST support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4132,7 +4130,7 @@ source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
       then
          echo "
 TrioCFD (previously named \"Trio_U\") is the Computational Fluid Dynamics (CFD) code 
-based on the TRUST platform (\"TRUST\" with Front_Tracking, Radiation, Zoom and LES models).
+based on the TRUST platform (\"TRUST\" with Front_Tracking, Radiation, Zoom and Turbulence LES & RANS models).
 This software is OpenSource (BSD license).
 
 -----------------------------------
@@ -4147,7 +4145,7 @@ Table of contents
 2. How to run preinstalled version?
 3. $Composant Release notes
 
-TRUST/TrioCFD support team: $TRUST_MAIL  
+TRUST/TrioCFD support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4220,7 +4218,7 @@ source /panfs/panasas/softs/applications/trio_u/env_TrioCFD-$new.sh
 #1. How to run preinstalled version?
 #2. $Composant Release notes
 #
-#TRUST/TrioMC support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+#TRUST/TrioMC support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
 #MATHYS support team: mathys@cea.fr
 #
 #To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
@@ -4237,7 +4235,7 @@ New TrioMC version released v"$new"
 1. How to run preinstalled version?
 2. $Composant Release notes
 
-TRUST/TrioMC support team: $TRUST_MAIL 
+TRUST/TrioMC support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
 MATHYS support team: mathys@cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
