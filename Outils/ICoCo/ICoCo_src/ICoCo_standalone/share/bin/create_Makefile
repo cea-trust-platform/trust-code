@@ -49,7 +49,7 @@ dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\
 	touch dynamique.data
 	@echo Linking.. 
 
-	"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
 	(cd $build; [ -O . ] && (cd ../..;$flock \$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ; echo \$OPT) ||( [ ! -O . ] && echo  No Compilation  ))
