@@ -119,8 +119,8 @@ if [ $ok_only -ne 1 ]
 then
     cd ../cove
     DEST=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html
-    mkdir -p $DEST $DEST/lib/python2.7/site-packages/
-    export PYTHONPATH=$DEST/lib/python2.7/site-packages/
+    mkdir -p $DEST $DEST/lib/python3.7/site-packages/
+    export PYTHONPATH=$DEST/lib/python3.7/site-packages/
     (cd ../trace2html-0.2.1; python setup.py install --prefix=$DEST)
     export PATH=$DEST/bin/:${PATH}
     if [ "`which trace2html.py 2>/dev/null`" != "" ]
