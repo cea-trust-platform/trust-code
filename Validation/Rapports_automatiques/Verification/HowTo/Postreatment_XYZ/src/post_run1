@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# On verifie que le fichier xyz a bien ete genere
+file_xyz=champ_xyz_a_lire.xyz
+if [ -f $file_xyz ]
+then
+    echo "The file "$file_xyz" was generated !" > my_text11
+else
+    echo "Error !! The file "$file_xyz" was not generated !" > my_text11
+fi
+
+# On verifie que la lecture de fichier xyz s'est bien deroulee
+cat champ_front_lu_xyz.stop >>my_text12
+
+# On compare au resultat trust 
+
+ref=ChFrontLu_read_file.lml.gz
+cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_read_file/$ref .
+gunzip $ref
+ref=ChFrontLu_read_file.lml
+res=champ_front_lu_xyz.lml
+compare_lata $res $ref --max_delta 1>my_text14 2>/dev/null
+sed '$d' my_text14 > my_text13
+
+# On copie tous les fichiers au bon endroit
+mv my_text11 my_text12 my_text13 ../
