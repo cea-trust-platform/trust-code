@@ -311,10 +311,11 @@ Entree& Postraitement::readOn(Entree& s )
       && (Motcle(format)!="MED_MAJOR")
       && (Motcle(format)!="LATA")
       && (Motcle(format)!="LATA_V1")
-      && (Motcle(format)!="LATA_V2"))
+      && (Motcle(format)!="LATA_V2")
+      && (Motcle(format)!="XYZ"))
     {
       Cerr<<"The postprocessing format " << format << " is not recognized"<<finl;
-      Cerr<<"The recognized formats are lml, meshtv, med, medfile, med_major, lata, lata_V1 and lata_V2"<<finl;
+      Cerr<<"The recognized formats are lml, meshtv, med, medfile, med_major, xyz, lata, lata_V1 and lata_V2"<<finl;
       exit();
     }
   // Changement pour la 1.6.4, le format LATA par defaut est LATA_V2
@@ -1095,14 +1096,15 @@ void Postraitement::init()
   Schema_Temps_base& sch = mon_probleme->schema_temps();
   double temps_courant = sch.temps_courant();
   double tinit = sch.temps_init();
-  Postraitement::formats_supportes=Motcles(4);
-  assert(formats_supportes.size()==4);
+  Postraitement::formats_supportes=Motcles(5);
+  assert(formats_supportes.size()==5);
   if(formats_supportes[0]!="lml")
     {
       formats_supportes[0]="lml";
       formats_supportes[1]="lata";
       formats_supportes[2]="meshtv";
       formats_supportes[3]="med";
+      formats_supportes[4]="xyz";
     }
 
   const Domaine& dom=le_domaine.valeur();
@@ -1147,7 +1149,7 @@ void Postraitement::init()
             const Noms nom = champ->get_property("nom");
             const Noms composantes = champ->get_property("composantes");
 
-            if (Motcle(loc_post) == "FACES" && Motcle(format).debute_par("lata")==0 && Motcle(format).debute_par("med")==0)
+            if (Motcle(loc_post) == "FACES" && Motcle(format).debute_par("lata")==0 && Motcle(format).debute_par("med")==0 && Motcle(format).debute_par("xyz")==0)
               {
                 Cerr<<"The field "<<nom[0]<<" can not be postprocessed to the faces in the format "<<format<<finl;
                 Cerr<<"The postprocessing to the faces is allowed only in the format lata or med"<<finl;
@@ -1559,7 +1561,35 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
     }
 
   const DoubleTab& val_post_ecrit = valeurs_tmp;
-  format_post->ecrire_champ(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit);
+  if (Motcle(format)=="XYZ")
+    {
+      if (localisation == "SOM")
+        {
+          const DoubleTab coord = dom.coord_sommets();
+          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
+        }
+      else if (localisation == "ELEM")
+        {
+          /*  Cerr << "Coucou Lamia 1" << finl;
+            const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
+            Cerr << "Coucou Lamia 2" << finl;
+            const DoubleTab coord = zone_vf.xp();
+            Cerr << "Coucou Lamia 3" << finl;
+          */
+          const Zone& zone=dom.zone(0);
+          DoubleTab coord;
+          zone.calculer_centres_gravite(coord);
+          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
+        }
+      else if (localisation == "FACES")
+        {
+          const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
+          const DoubleTab coord = zone_vf.xv();
+          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
+        }
+    }
+  else
+    format_post->ecrire_champ(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit);
   return 1;
 }
 
@@ -1664,7 +1694,7 @@ Nom Postraitement::set_expression_champ(const Motcle& motlu1,const Motcle& motlu
 // -lecture du champ generique
 // -association du domaine au champ et creation d un domaine discretise si le domaine n est pas celui du calcul
 // -le champ est nomme
-// -les sources son nommees (sauf si creation d un Champ_Generique_refChamp)
+// -les sources sont nommees (sauf si creation d un Champ_Generique_refChamp)
 //  et les composantes sont fixees (permet de tester la non regression avec format lml)
 // -le champ est ajoute a la liste champs_post_complet_
 // -l identifiant du champ est ajoute a la liste noms_champs_a_post_
