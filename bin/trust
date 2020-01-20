@@ -581,11 +581,8 @@ then
     fi
     if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
     then
-       MonoDir=$TRUST_ROOT/`ls -rt $TRUST_ROOT | grep MonoDir | tail -1`
-       XTERM="/usr/bin/xterm -e"
-       ATTACH="--extra-debuginfo-path=$MonoDir/src --db-attach=yes --db-command=\'/usr/bin/gdb --readnow --directory $MonoDir/src --directory $MonoDir/include -nw %f %p\'"
-       gdb=""
-       log_file=""
+       gdb.sh -valgrind $exec
+       exit
     fi
     if [ "$VALGRIND_LOG_FILE" = 1 ]
     then

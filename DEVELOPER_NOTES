@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.1_beta : Changes since version 1.8.0 :
 -------------------------------------------------------------
+20/01/20 (TRUST)  Memory leak debugging with "trust -gdb -valgrind datafile.data" fixed with valgrind versions using gdbserver
 ------------------------------------------------------------------
 Developer notes version 1.8.0 : Changes since version 1.7.9 :
 ------------------------------------------------------------------
