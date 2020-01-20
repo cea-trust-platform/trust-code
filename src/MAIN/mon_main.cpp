@@ -196,47 +196,6 @@ void mon_main::finalize()
       if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
         PETSC_COMM_WORLD = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
 #endif
-      // Nouveau PL: on verifie strictement les options PETSc non utilisees:
-      {
-        bool unused_option = 0;
-        int n;
-        char **OptionsLeft;
-        PetscOptionsLeftGet(NULL, &n, &OptionsLeft, NULL);
-        for (int i = 0; i < n; i++)
-          {
-            Nom OptionLeft(OptionsLeft[i]);
-            // Rajouter ici des options Trust (-log?):
-            if (OptionLeft != "no_verify" &&
-                OptionLeft != "log_view" &&
-                OptionLeft != "journal=0" &&
-                OptionLeft != "journal=1" &&
-                OptionLeft != "journal=2" &&
-                OptionLeft != "journal=3" &&
-                OptionLeft != "journal=4" &&
-                OptionLeft != "journal=5" &&
-                OptionLeft != "journal=6" &&
-                OptionLeft != "journal=7" &&
-                OptionLeft != "journal=8" &&
-                OptionLeft != "journal=9" &&
-                OptionLeft != "petsc=0" &&
-                OptionLeft != "check_enabled=0" &&
-                OptionLeft != "check_enabled=1" &&
-                OptionLeft != "mpi" &&
-                OptionLeft != "help" &&
-                OptionLeft != "journal_master" &&
-                OptionLeft != "disable_ieee" &&
-                OptionLeft != "disable_stop" &&
-                OptionLeft != "options_left" &&
-                OptionLeft != "options_view")
-              {
-                // Option qui ne sera pas resolue par le PetscFinalize():
-                unused_option = true;
-                Cerr << "Error, unused database options for PETSc (misspelled or obsolete): -" << OptionLeft << finl;
-              }
-          }
-        PetscOptionsLeftRestore(NULL, &n, &OptionsLeft, NULL); // Release memory
-        if (unused_option) Process::exit();
-      }
       PetscFinalize();
     }
 #endif
