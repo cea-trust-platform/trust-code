@@ -161,7 +161,7 @@ suppression_file=""
 [ "$bigmem" = "" ] && bigmem=0
 [ "$gpu" = "" ] && gpu=0
 [ "$node" = "" ] && node=0
-[ "$USE_MPIRUN" = "" ] && USE_MPIRUN=0
+USE_MPIRUN=0
 
 ####################
 # Loop for options #
