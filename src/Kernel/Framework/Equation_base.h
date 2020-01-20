@@ -220,6 +220,17 @@ public :
     return calculate_time_derivative_;
   };
 
+  inline const DoubleTab get_residuals() const
+  {
+    return residuals_;
+  };
+
+  inline void set_residuals(DoubleTab r)
+  {
+    residuals_ = r;
+  };
+
+
   mutable std::vector<std::map<int, int> > matrice_map;
 
 protected :
@@ -270,6 +281,9 @@ private :
 //  Champs_Fonc list_champ_combi;
   DoubleVect residu_;
   DoubleVect residu_initial_;
+  // retourne le CHAMP (et non la norme) des residus de chaque inconnu du probleme
+  DoubleTab residuals_;
+
   mutable DoubleTab NULL_;
   mutable Parser_U equation_non_resolue_;
 
