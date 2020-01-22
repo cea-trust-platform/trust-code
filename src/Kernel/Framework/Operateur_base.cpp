@@ -129,11 +129,11 @@ void Operateur_base::abortTimeStep()
 void Operateur_base::completer()
 {
   assert(mon_equation.non_nul());
-  Equation_base& eqn = equation();
-  Zone_dis& zdis= eqn.zone_dis();
+  const Equation_base& eqn = equation();
+  const Zone_dis& zdis= eqn.zone_dis();
 
-  Zone_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->zone_Cl_dis() : eqn.zone_Cl_dis();
-  Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
+  const Zone_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->zone_Cl_dis() : eqn.zone_Cl_dis();
+  const Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
   associer(zdis, zcl, inco);
   const Conds_lim& les_cl = zcl->les_conditions_limites();
   for (int i = 0; i < les_cl.size(); i++)
@@ -149,7 +149,7 @@ void Operateur_base::completer()
   Noms noms_compo_courts(inco->noms_compo());
   if (noms_compo_courts.size() > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
       {
-        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(equation().inconnue().le_nom());
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
         w_suffix = max(w_suffix, noms_compo_courts[i].longueur());
       }
   col_width_ += w_suffix;
@@ -356,7 +356,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
       Cerr<<"Pb with "<<type<<finl;
       ::abort();
     }
-  const Probleme_base& pb=equation().probleme();
+  const Equation_base& eqn = equation();
+  const Probleme_base& pb=eqn.probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
   const int precision = sch.precision_impr(), wcol = max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
   os.set_col_width(wcol);
@@ -370,14 +371,14 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
       os.ouvrir(nomfichier);
 
       std::vector<std::string> comp_m = {"_Mx", "_My", "_Mz"};
-      os << (Nom)"# Printing on the boundaries of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
+      os << (Nom)"# Printing on the boundaries of the equation "+eqn.que_suis_je()+" of the problem "+eqn.probleme().le_nom() << finl;
       os << "# " << (type=="moment" ? "Moment of " : "") << description() << finl;
 
       if (!gnuplot_header) os << "#";
       os.set_col_width(wcol - !gnuplot_header);
       os.add_col("Time");
       os.set_col_width(wcol);
-      const Conds_lim& les_cls=equation().inconnue()->zone_Cl_dis().les_conditions_limites();
+      const Conds_lim& les_cls=eqn.inconnue()->zone_Cl_dis().les_conditions_limites();
 
       if (flux_bords_.nb_dim()!=2)
         {
@@ -388,9 +389,9 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
       // s'il y a plusieurs composantes par CL, on se sert des noms de composante de l'inconnue
       int nb_compo = flux_bords_.dimension(1);
       if (type=="moment" && dimension == 2) nb_compo=1;
-      Noms noms_compo_courts(equation().inconnue()->noms_compo());
+      Noms noms_compo_courts(eqn.inconnue()->noms_compo());
       if (nb_compo > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
-          noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(equation().inconnue().le_nom());
+          noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
 
       // ecriture de l'entete des colonnes de la forme
       // Time cl1  cl2  cl3  ...
@@ -399,7 +400,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
         {
           const Frontiere_dis_base& la_fr = les_cls[num_cl].frontiere_dis();
-          if (type!="sum" || equation().zone_dis().zone().Bords_a_imprimer_sum().contient(la_fr.le_nom()))
+          if (type!="sum" || eqn.zone_dis().zone().Bords_a_imprimer_sum().contient(la_fr.le_nom()))
             {
               Nom ch = la_fr.le_nom();
               if (type=="moment")
@@ -420,7 +421,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
                 }
             }
         }
-      if (type!="sum" && type!="moment") if (Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_Force_pression"!=out_)
+      if (type!="sum" && type!="moment") if (Objet_U::nom_du_cas()+"_"+eqn.probleme().le_nom()+"_Force_pression"!=out_)
           {
             if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
                 os.add_col((Nom("Total_") + noms_compo_courts[d]).getChar());
