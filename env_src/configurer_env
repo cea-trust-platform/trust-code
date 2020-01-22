@@ -771,7 +771,10 @@ case $arch in
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
 	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
-	
+	# Tentative de support du nouveau compilateur Intel DPC++ (clang en compilateur C)
+	# Trop de problemes (MPICH/PETSc/MED) donc on switche sur clang++ pour profiter de MKl
+	[ "`dpcpp --version 2>&1 | grep oneAPI`" != "" ] && TRUST_CC_BASE="clang++ "$TRUST_CC_BASE && TRUST_cc_BASE="clang "$TRUST_cc_BASE
+
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
@@ -1795,7 +1798,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	ccFLAGS="-O3 -fPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	;;
-   linux_icpc) TRUST_SUPPORTED=1
+   linux_icpc|linux_dpcpp) TRUST_SUPPORTED=1
    	# Par defaut O3, mais cas test CN_iteratif_VEF ne marche pas sauf si on empeche l'inline (voir methode Champ_Inc_base::avancer) !
 	# Intel 13.x semblerait OK
         Cpp_flag_optim="-O3"
