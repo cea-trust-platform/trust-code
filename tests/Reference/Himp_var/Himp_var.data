@@ -49,9 +49,10 @@ Read sch
 	dt_min 0.001
 	dt_max 0.01
 	dt_impr 0.001
+	precision_impr 3
 	dt_sauv 100
 	seuil_statio 1.e-8
-nb_pas_dt_max 1
+	nb_pas_dt_max 1
 }
 
 Fluide_Incompressible fluide

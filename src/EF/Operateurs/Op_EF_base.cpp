@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -377,7 +377,6 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 
   const int impr_sum=(la_zone_EF.zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(la_zone_EF.zone().Bords_a_imprimer().est_vide() ? 0:1);
-  Nom espace=" \t";
   int flag=0;
   if (Process::je_suis_maitre()) flag=1;
   SFichier Flux;
@@ -394,9 +393,9 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   double temps=sch.temps_courant();
   if(Process::je_suis_maitre())
     {
-      Flux << temps;
-      if (impr_mom) Flux_moment << temps;
-      if (impr_sum) Flux_sum << temps;
+      Flux.add_col(temps);
+      if (impr_mom) Flux_moment.add_col(temps);
+      if (impr_sum) Flux_sum.add_col(temps);
     }
 
   // Calcul des moments
@@ -455,14 +454,11 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
       // Ecriture dans les fichiers
       if (Process::je_suis_maitre())
         {
-          Flux << espace;
-          if (impr_mom) Flux_moment << espace;
-          if (impr_sum) Flux_sum << espace;
           for(int k=0; k<nb_compo; k++)
             {
-              Flux << espace << flux_bord(k);
-              if (impr_mom) Flux_moment<< espace << moment(k);
-              if (la_zone_EF.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum<< espace << flux_bord(k);
+              Flux.add_col(flux_bord(k));
+              if (impr_mom) Flux_moment.add_col(moment(k));
+              if (la_zone_EF.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bord(k);
@@ -473,11 +469,8 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   // On imprime les bilans et on va a la ligne
   if(Process::je_suis_maitre())
     {
-      Flux << espace;
-      if (impr_mom) Flux_moment << espace;
-      if (impr_sum) Flux_sum << espace;
       for(int k=0; k<nb_compo; k++)
-        Flux << espace << bilan(k);
+        Flux.add_col(bilan(k));
 
       Flux << finl;
       if (impr_mom) Flux_moment << finl;

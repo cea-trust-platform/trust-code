@@ -86,8 +86,6 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
     }
-  Nom espace=" \t";
-  \
   int k,face;
   int nb_front_Cl=la_zone_poly_->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , nb_comp) ;
@@ -134,29 +132,29 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
       ouvrir_fichier(Flux_moment,"moment",impr_mom);
       SFichier Flux_sum;
       ouvrir_fichier(Flux_sum,"sum",impr_sum);
-      sch.imprimer_temps_courant(Flux);
-      if (impr_mom) sch.imprimer_temps_courant(Flux_moment);
-      if (impr_sum) sch.imprimer_temps_courant(Flux_sum);
+      Flux.add_col(sch.temps_courant());
+      if (impr_mom) Flux_moment.add_col(sch.temps_courant());
+      if (impr_sum) Flux_sum.add_col(sch.temps_courant());
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
           for(k=0; k<nb_comp; k++)
             {
-              Flux<< espace << flux_bords2(0,num_cl,k);
-              if (impr_sum) Flux_sum << espace << flux_bords2(3,num_cl,k);
+              Flux.add_col(flux_bords2(0,num_cl,k));
+              if (impr_sum) Flux_sum.add_col(flux_bords2(3,num_cl,k));
               bilan(k)+=flux_bords2(0,num_cl,k);
             }
           if (dimension==3)
             {
               for (k=0; k<nb_comp; k++)
-                if (impr_mom) Flux_moment << espace << flux_bords2(4,num_cl,k);
+                if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,k));
             }
           else
             {
-              if (impr_mom) Flux_moment << espace << flux_bords2(4,num_cl,0);
+              if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,0));
             }
         } /* fin for num_cl */
       for(k=0; k<nb_comp; k++)
-        Flux<< espace << bilan(k);
+        Flux.add_col(bilan(k));
       Flux << finl;
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;

@@ -38,6 +38,7 @@ Operateur_base::Operateur_base()
 {
   decal_temps=0;
   nb_ss_pas_de_temps=1;
+  col_width_ = -1;
 }
 
 // Description:
@@ -131,18 +132,27 @@ void Operateur_base::completer()
   Equation_base& eqn = equation();
   Zone_dis& zdis= eqn.zone_dis();
 
-  if (!le_champ_inco.non_nul())
+  Zone_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->zone_Cl_dis() : eqn.zone_Cl_dis();
+  Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
+  associer(zdis, zcl, inco);
+  const Conds_lim& les_cl = zcl->les_conditions_limites();
+  for (int i = 0; i < les_cl.size(); i++)
     {
-      Zone_Cl_dis& zcl = eqn.zone_Cl_dis();
-      Champ_Inc& inco= eqn.inconnue();
-      associer(zdis, zcl, inco);
+      const Frontiere_dis_base& la_fr = les_cl[i].frontiere_dis();
+      col_width_ = max(col_width_, la_fr.le_nom().longueur());
     }
-  else
-    {
-      Zone_Cl_dis& zcl = le_champ_inco.valeur()->zone_Cl_dis();
-      associer(zdis, zcl, le_champ_inco.valeur());
-    }
-  return ;
+  int w_suffix = 3; // pour ajout _Mx (moment)
+
+  // pour les champs a plusieurs composantes, le header des colonnes des fichiers .out prend la forme
+  // Time cl1_compo1  cl1_compo2 ...
+  // on prend en compte la longueur de compo1, compo2, etc...
+  Noms noms_compo_courts(inco->noms_compo());
+  if (noms_compo_courts.size() > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
+      {
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(equation().inconnue().le_nom());
+        w_suffix = max(w_suffix, noms_compo_courts[i].longueur());
+      }
+  col_width_ += w_suffix;
 }
 
 void Operateur_base::associer_champ(const Champ_Inc& ch)
@@ -348,7 +358,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
     }
   const Probleme_base& pb=equation().probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
-  const int& precision=sch.precision_impr();
+  const int precision = sch.precision_impr(), wcol = max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
+  os.set_col_width(wcol);
   Nom nomfichier(out_);
   if (type!="") nomfichier+=(Nom)"_"+type;
   nomfichier+=".out";
@@ -357,83 +368,66 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
   if (stat(nomfichier,&f) || (sch.nb_impr()==1 && !pb.reprise_effectuee()))
     {
       os.ouvrir(nomfichier);
-      SFichier& fic=os;
-      Nom espace="\t\t";
-      Nom tab="\t";
-      fic << (Nom)"# Printing on the boundaries of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
-      fic << "# " << (type=="moment" ? "Moment of " : "") << description() << finl;
-      fic << "# Boundary:";
+
+      std::vector<std::string> comp_m = {"_Mx", "_My", "_Mz"};
+      os << (Nom)"# Printing on the boundaries of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
+      os << "# " << (type=="moment" ? "Moment of " : "") << description() << finl;
+
+      if (!gnuplot_header) os << "#";
+      os.set_col_width(wcol - !gnuplot_header);
+      os.add_col("Time");
+      os.set_col_width(wcol);
       const Conds_lim& les_cls=equation().inconnue()->zone_Cl_dis().les_conditions_limites();
+
       if (flux_bords_.nb_dim()!=2)
         {
           Cerr << "flux_bords_ not dimensioned for the operator " << que_suis_je() << finl;
-          exit();
+          Process::exit();
         }
-      int nb_compo=flux_bords_.dimension(1);
-      if (type=="moment" && dimension==2) nb_compo=1;
+
+      // s'il y a plusieurs composantes par CL, on se sert des noms de composante de l'inconnue
+      int nb_compo = flux_bords_.dimension(1);
+      if (type=="moment" && dimension == 2) nb_compo=1;
+      Noms noms_compo_courts(equation().inconnue()->noms_compo());
+      if (nb_compo > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
+          noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(equation().inconnue().le_nom());
+
+      // ecriture de l'entete des colonnes de la forme
+      // Time cl1  cl2  cl3  ...
+      // ou s'il y a plusieurs composantes :
+      // Time cl1_compo1  cl1_compo2 cl2 compo1 cl2_compo2 ...
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
         {
           const Frontiere_dis_base& la_fr = les_cls[num_cl].frontiere_dis();
           if (type!="sum" || equation().zone_dis().zone().Bords_a_imprimer_sum().contient(la_fr.le_nom()))
             {
-              fic         << (num_cl==0?tab:espace) << la_fr.le_nom();
-              if (Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_Force_pression"!=out_)
+              Nom ch = la_fr.le_nom();
+              if (type=="moment")
                 {
-                  if (sub_type(Periodique, les_cls[num_cl].valeur()))
-                    fic << espace << la_fr.le_nom();
-                }
-              for (int i=1; i<nb_compo; i++)
-                fic << espace;
-            }
-        }
-      if (type!="sum")
-        if (Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_Force_pression"!=out_)
-          fic << espace << "Total";
-      fic << finl << "# Time";
-
-      for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
-        {
-          Nom ch=espace;
-          if (type=="moment")
-            {
-              if (dimension==2) ch+="Mz";
-              else
-                {
-                  ch+="Mx";
-                  ch+=espace+"My";
-                  ch+=espace+"Mz";
-                }
-            }
-          else
-            {
-              if (Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_Force_pression"!=out_)
-                {
-                  if (sub_type(Periodique,les_cls[num_cl].valeur()))
-                    {
-                      if (nb_compo>1) ch+="Fx";
-                      if (nb_compo>=2) ch+=espace+espace+"Fy"+espace;
-                      if (nb_compo>=3) ch+=espace+"Fz"+espace;
-                    }
+                  if (dimension==2)
+                    os.add_col((ch + comp_m[2].c_str()).getChar());
                   else
-                    {
-                      if (nb_compo>1) ch+="Fx";
-                      if (nb_compo>=2) ch+=espace+"Fy";
-                      if (nb_compo>=3) ch+=espace+"Fz";
-                    }
+                    for (int d = 0; d < dimension; ++d)
+                      os.add_col((ch + comp_m[d].c_str()).getChar());
                 }
               else
                 {
-                  if (nb_compo>1) ch+="Fx";
-                  if (nb_compo>=2) ch+=espace+"Fy";
-                  if (nb_compo>=3) ch+=espace+"Fz";
+                  if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
+                      {
+                        os.add_col((ch + "_" + noms_compo_courts[d]).getChar());
+                      }
+                  else os.add_col(ch.getChar());
                 }
             }
-          const Frontiere_dis_base& la_fr = les_cls[num_cl].frontiere_dis();
-          if (type!="sum" || equation().zone_dis().zone().Bords_a_imprimer_sum().contient(la_fr.le_nom()))
-            fic << ch;
         }
+      if (type!="sum" && type!="moment") if (Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_Force_pression"!=out_)
+          {
+            if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
+                os.add_col((Nom("Total_") + noms_compo_courts[d]).getChar());
+            else os.add_col("Total");
+          }
 
-      fic << finl;
+      os << finl;
     }
   // Sinon on l'ouvre
   else

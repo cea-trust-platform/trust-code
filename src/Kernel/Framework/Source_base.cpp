@@ -129,6 +129,7 @@ void Source_base::completer()
   // Initialize the bilan_ array:
   bilan_.resize(eqn.inconnue().valeur().nb_comp());
   bilan_=0;
+  col_width_=0;
 }
 
 // Description:
@@ -216,7 +217,6 @@ int Source_base::impr(Sortie& os) const
       else
         {
           int flag=je_suis_maitre();
-          Nom espace=" \t";
           SFichier Flux;
           ouvrir_fichier(Flux,"",flag);
           const Probleme_base& pb=equation().probleme();
@@ -224,7 +224,7 @@ int Source_base::impr(Sortie& os) const
           double temps=sch.temps_courant();
 
           if(Process::je_suis_maitre())
-            Flux << temps;
+            Flux.add_col(temps);
           DoubleVect bilan_p(bilan_);
           mp_sum_for_each_item(bilan_p);
           /*
@@ -235,9 +235,8 @@ int Source_base::impr(Sortie& os) const
 
           if (Process::je_suis_maitre())
             {
-              Flux << espace;
               for(int k=0; k<nb_compo; k++)
-                Flux << espace << bilan_p(k);
+                Flux.add_col(bilan_p(k));
               Flux << finl;
             }
         }
@@ -315,7 +314,9 @@ void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) 
 
   const Probleme_base& pb=equation().probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
-  const int& precision=sch.precision_impr();
+  const int& precision = sch.precision_impr(), wcol = max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
+  os.set_col_width(wcol);
+
   Nom nomfichier(out_);
   if (type!="") nomfichier+=(Nom)"_"+type;
   nomfichier+=".out";
@@ -328,7 +329,10 @@ void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) 
       Nom espace="\t\t";
       fic << (Nom)"# Printing of the source term "+que_suis_je()+" of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
       fic << "# " << description() << finl;
-      fic << "# Time ";
+      if (!gnuplot_header) fic << "#";
+      os.set_col_width(wcol - !gnuplot_header);
+      fic.add_col("Time");
+      os.set_col_width(wcol);
       fic << finl;
     }
   // Sinon on l'ouvre
