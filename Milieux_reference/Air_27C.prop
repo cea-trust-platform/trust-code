@@ -1,7 +1,0 @@
-{
-   mu      Champ_Uniforme 1 1.983e-5
-   rho     Champ_Uniforme 1 1.177
-   lambda  Champ_Uniforme 1 2.624e-2
-   Cp      Champ_Uniforme 1 1006.
-   beta_th Champ_Uniforme 1 3.33e-3
-}

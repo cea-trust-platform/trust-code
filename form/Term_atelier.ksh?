@@ -1,9 +1,0 @@
-#!/bin/bash
-cd $rep_dev
-titre="" && [ ${MA_VUE:=vide} != "vide" ] && titre="-title \"Vue: $MA_VUE\""
-if [ ${MA_VUE:=vide} != "vide" ]
-then
-   $Dtterm -title "Vue: $MA_VUE"
-else
-   $Dtterm -title "Terminal TRUST" &
-fi

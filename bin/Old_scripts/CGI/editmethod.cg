@@ -1,9 +1,0 @@
-#!/bin/bash
-# Copie du fichier dans l'atelier :
-
-[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
-ORDRE=$1
-[ "$UTILISE_APPACHE" = "1" ] && ORDRE=$QUERY_STRING
-
-pw=`dirname $0`
-execute.ksh "$pw/editmethod.ksh \"$ORDRE\" &"
