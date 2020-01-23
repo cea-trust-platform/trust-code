@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+23/01/20 (Tools)  New feature : Add merge_meds.py python script to merge MED files in parallel into single one
 21/01/20 (TRUST)  Output      : Change of .son file format (header, column alignment, precision_impr by default 8 and not 3 as before) + add gnuplot_header option to have a gnuplot5 compatible header
 07/01/20 (TRUST)  Tools       : Trust Wizard tool becomes obsolete
 07/01/20 (TRUST)  Tools       : MED-file 4.0.0 insures direct compatibility with Salome 9.2

@@ -1,0 +1,22 @@
+# Verification de merge_meds.py
+# NB : post-processed fields to merge should be located on elements centers
+if [ -f PAR_3D_P0P1Pa_MED_0000.med ] ; then
+   echo "Merge parallel med files into a single one and compare it with the sequential med"
+
+   source $TRUST_MEDCOUPLING_ROOT/env.sh || exit -1
+
+   python $TRUST_ROOT/Outils/lata2dx/lata2dx/merge_meds.py PAR_3D_P0P1Pa_MED_0000.med 4 PAR_MergeMEDs.med 1>merge_meds.log 2>&1
+   
+   compare_lata 3D_P0P1Pa_MED_0000.med PAR_MergeMEDs.med  1>compare_med.log 2>&1
+   err=$?
+   if [ $err -eq 0 ] ; then
+      echo "Sequential medfile and merged medfile match. Everything is OK"
+      exit 0
+   else
+      echo "Sequential medfile and merged medfile DOES NOT match!!!"
+      exit -1
+   fi
+else
+   echo "Parallel computation have not been yet performed"
+   exit 0
+fi
