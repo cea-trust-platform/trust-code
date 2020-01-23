@@ -129,7 +129,6 @@ void Source_base::completer()
   // Initialize the bilan_ array:
   bilan_.resize(eqn.inconnue().valeur().nb_comp());
   bilan_=0;
-  col_width_=0;
 }
 
 // Description:

@@ -100,7 +100,7 @@ protected :
 
   virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
   virtual void associer_pb(const Probleme_base& ) =0;
-  int col_width_;
+  int col_width_ = 0;
   Nom out_;                  // Nom du fichier .out pour l'impression
   Nom description_;          // Description du terme source
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
