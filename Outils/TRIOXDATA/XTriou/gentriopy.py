@@ -3,7 +3,7 @@
 from xdata import *
 
 import xdata as xd
-print(dir(xd))
+#print(dir(xd))
 
 sortie=open('triouint.py','w')
 trace=open('trace','w')
