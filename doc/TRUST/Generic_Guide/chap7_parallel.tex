@@ -1,4 +1,4 @@
-\trust is a plateform which allow to make parallel calculation following some basic rules:
+\trust is a plateform which allows to make parallel calculation following some basic rules:
 \begin{itemize}
 \item \textbf{S}ingle \textbf{P}rogram, \textbf{M}ultiple \textbf{D}ata model: tasks are split up and run simultaneously on multiple processors with different input in order to obtain results faster,
 \item messages exchange by \textbf{M}essage \textbf{P}assing \textbf{I}nterface,
@@ -66,7 +66,7 @@ First you may add the tags "\# BEGIN MESH \#" and "\# END MESH \#" before and af
 \end{alltt}
 \end{minipage}}
 \end{center}
-You can refer to section \ref{Mesh} to have more informations.
+You can refer to section \ref{Mesh} to have more information.
 
 
 
@@ -104,7 +104,7 @@ You can see the documentation of \href{\REFERENCEMANUAL\#partition}{this part in
 
 \Note the "End" before the last line. It will be useful for the cutting step.\\
 
-This block will made the partitioning of your domain into the specified number of sub-domains during the partitioning run.
+This block will make the partitioning of your domain into the specified number of sub-domains during the partitioning run.
 
 
 \item \textbf{\textcolor{darkblue}{Adding a block to read the sub-domains}}\\
@@ -185,7 +185,7 @@ In \trust, you can make partitioning with:
 \end{minipage}}
 \end{center}
 
-\item internal \trust partitioning tool: \href{\REFERENCEMANUAL\#partitionneurtranche}{\textbf{Tranche}} which make parts by cutting the domain following x, y and/or z directions.
+\item internal \trust partitioning tool: \href{\REFERENCEMANUAL\#partitionneurtranche}{\textbf{Tranche}} which makes parts by cutting the domain following x, y and/or z directions.
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.4\textwidth}
     \begin{alltt} 
@@ -264,7 +264,7 @@ You can see the documentation of \href{\REFERENCEMANUAL\#partition}{this part in
 \subsection{Overlapping width value}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To make the partitioning, you will have to specify the \underline{overlapping width value}.
-This value correspond to the thickness of the virtual ghost zone (data known by one processor though not owned by it) i.e. the number of vertices or elements on the remote sub-domain known by the local sub-domain (cf Figure \ref{overlap}).
+This value corresponds to the thickness of the virtual ghost zone (data known by one processor though not owned by it) i.e. the number of vertices or elements on the remote sub-domain known by the local sub-domain (cf Figure \ref{overlap}).
 
 \begin{figure}[h!]
 \begin{center}
@@ -274,10 +274,10 @@ This value correspond to the thickness of the virtual ghost zone (data known by 
 \end{center}
 \end{figure}
 
-This value depends on the space scheme orders:
+This value depends on the space discretization scheme orders:
 \begin{itemize}
-\item 1 if 1-2nd order,
-\item 2 if 3-4th order.
+\item 1 if 1st or 2nd order,
+\item 2 if 3rd or 4th order.
 \end{itemize}
 
 \Note that in general, you will use "2"!
@@ -297,7 +297,7 @@ To launch the calculation, you have to run the calculation by the usual command 
 \end{verbatim}
 and \textit{procs\_number} is the number of processors used. In fact it is the same as the number of sub-domains.\\
 
-You can see \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{TrioCFD} user slides} in the "Parallel calculation" section for more informations and those two exercise of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo_para_1}{exercise 1} and \href{TRUST_tutorial.pdf\#prm_para}{exercise 2}.
+You can see the \trust \& \textbf{TrioCFD} user slides in the "Parallel calculation" section for more information and those two exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo_para_1}{exercise 1} and \href{TRUST_tutorial.pdf\#prm_para}{exercise 2}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{On a cluster}
@@ -328,7 +328,7 @@ following the queue system of the cluster.\\
 %\end{verbatim}
 %\trust will automatically submit your simulation.\\
 
-You can see \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{TrioCFD} user slides} in the "Parallel calculation" section for more informations and \href{TRUST_tutorial.pdf\#exo_para_3}{this exercise of the \trust tutorial}.
+You can see the \trust \& \textbf{TrioCFD} user slides in the "Parallel calculation" section for more information and \href{TRUST_tutorial.pdf\#exo_para_3}{this exercise of the \trust tutorial}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -349,13 +349,13 @@ There are three ways to visualize your parallel results with VisIt:
 \end{verbatim}
 \end{itemize}
 
-You can have a look at \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{TrioCFD} user slides} in the "Parallel calculation description" section.
+You can have a look at the \trust \& \textbf{TrioCFD} user slides in the "Parallel calculation description" section.
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Useful informations}
+\section{Useful information}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Modify the mesh}
@@ -367,7 +367,7 @@ If you want to modify your mesh, you have two possibilities:
 > trust -partition my_data_file [parts_number]
 \end{verbatim}
 Be carefull it will erase the \textit{SEQ\_my\_data\_file.data}, \textit{DEC\_my\_data\_file.data} and \\
-\textit{PAR\_my\_data\_file.data} files and create new ones.\\
+\textit{PAR\_my\_data\_file.data} files and creates new ones.\\
 Then it will run the new \textit{DEC\_my\_data\_file.data} file which gives your new \textit{DOM\_000n}\textbf{.Zones} files.
 
 \item modify the meshing part of file \textit{DEC\_my\_data\_file.data} and run it with:
