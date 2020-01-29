@@ -99,8 +99,9 @@ void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const dou
 
 void Schema_Euler_Implicite::set_param(Param& param)
 {
+  // XD schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicit scheme.
   param.ajouter("max_iter_implicite",&nb_ite_max);
-  param.ajouter("facsec_max", &facsec_max_);
+  param.ajouter("facsec_max", &facsec_max_); // XD_ADD_P floattant 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
   param.ajouter("thermique_monolithique", &thermique_monolithique_); // XD_ADD_P int Activate monolithic thermal coupling of equations for coupled problems. 0 = no, 1 = yes, 2 = yes and test convergence
   Schema_Implicite_base::set_param(param);
 }
@@ -363,7 +364,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                     Cout << "-------------------------" << finl;
                     if (da == "THERMIQUE" && map_problems[da].size() > 1)
                       {
-                        Cout << "Thermique monolithique! Les equations {";
+                        Cout << "Thermique monolithique! the equations {";
                         LIST(REF(Equation_base)) eqs;
                         for (auto && pbeqs : map_problems[da])
                           {
@@ -372,7 +373,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                             pbc.probleme(pbeqs[0]).updateGivenFields();
                             eqs.add(eq);
                           }
-                        Cout << " } sont resolues en assemblant une unique matrice." << finl;
+                        Cout << " } are solved by assembling a single matrix." << finl;
                         bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
                         convergence_pbc = convergence_pbc && convergence_eqs;
                       }
