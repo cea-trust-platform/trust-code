@@ -37,6 +37,8 @@ FichierHDFCollectif::FichierHDFCollectif() :
 
 FichierHDFCollectif::~FichierHDFCollectif()
 {
+  H5Pclose(dataset_prop_lst_);
+  H5Pclose(file_prop_lst_);
 }
 
 void FichierHDFCollectif::prepare_file_props()
@@ -58,14 +60,18 @@ void FichierHDFCollectif::prepare_file_props()
 void FichierHDFCollectif::prepare_read_dataset_props(Nom dataset_name)
 {
   dataset_full_name_ = dataset_name.getChar() ;
-  dataset_prop_lst_ = H5P_DEFAULT;
+
+#ifdef MED_
+  dataset_prop_lst_ = H5Pcreate(H5P_DATASET_XFER);
+  H5Pset_dxpl_mpio(dataset_prop_lst_, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
+#endif
+
   //int rank = Process::me();
 
   // Build expected dataset name for the current proc (with the trailing _000x stuff)
   //Nom dataset_full_name = dataset_name;
   //dataset_full_name.nom_me(rank);
 
-  //status = H5Pset_dxpl_mpio( propList, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
 }
 
 

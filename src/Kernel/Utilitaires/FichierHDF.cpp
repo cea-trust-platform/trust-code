@@ -64,7 +64,7 @@ void FichierHDF::open(Nom filename, bool readOnly)
 
 void FichierHDF::prepare_file_props()
 {
-  file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS); // H5P_DEFAULT;
+  file_prop_lst_ = H5P_DEFAULT; // H5Pcreate(H5P_FILE_ACCESS);
 }
 
 void FichierHDF::prepare_read_dataset_props(Nom dataset_name)
@@ -77,8 +77,6 @@ void FichierHDF::prepare_read_dataset_props(Nom dataset_name)
 void FichierHDF::close()
 {
   H5Fclose(file_id_);
-  if(file_prop_lst_)
-    H5Pclose(file_prop_lst_);
 }
 
 void FichierHDF::close_dataset(Nom dataset_name) {}
@@ -99,7 +97,7 @@ void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
   delete[] dset_data;
   H5Dclose(dataset_id);
   H5Sclose(dataspace_id);
-  H5Pclose(dataset_prop_lst_);
+
 }
 
 void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
