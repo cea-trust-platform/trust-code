@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -158,6 +158,7 @@ void ArrOfFloat::invalidate(int first_element, int nb_elements)
      (__extension__ ((union {
      int __l __attribute__((__mode__(__DI__)));
      float __d; }) { __l: 0x7ff7ffffffffffffULL }).__d);; */
+#pragma GCC diagnostic ignored "-Wimplicit-int-float-conversion" /* no diagnostic for this one (clang++ Intel) */
   static const float VALEUR_INVALIDE = 0x7ff7ffffffffffffULL ;
 
   const int n = first_element + nb_elements;

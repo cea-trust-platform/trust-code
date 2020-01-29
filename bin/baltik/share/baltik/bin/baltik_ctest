@@ -1,0 +1,173 @@
+#!/bin/bash
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+baltik_environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd `dirname $bindir`
+	pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ "${BALTIK_ROOT}" = "" ]
+then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+
+# verification/chargement de TRUST
+. ${BALTIK_ROOT}/bin/baltik_check_init_TRUST
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ "${TRUST_ROOT}" = "" ]
+then
+    TRUST_environnement_error
+fi
+
+
+# verification du nombre d'arguments
+if [ $# = 0 ]
+then
+    number_of_compilation_arguments_error
+fi
+
+# source de l'environnement du baltik
+for envsh in $( ls env_* )
+do
+    source $envsh
+done
+
+# recuperation des options de compilation
+
+OPT=`TRUST_opt_from_name $1`
+[  $? != 0 ] && eval $OPT
+export OPT
+
+[ "${1%_valgrind}" != "$1" ] && export VALGRIND=1 && extension="_valgrind"
+
+# initialisation des variables utiles
+project_directory=`pwd`
+export project_directory
+
+project_configuration_file="${project_directory}/project.cfg"
+if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
+then
+    no_configuration_file_error "$project_directory=$"
+fi
+
+project_description=`extract_section "$project_configuration_file" description`
+
+project_executable_name=`extract_executable_name ${project_description}`
+project_executable_name="${project_executable_name}${OPT}"
+
+project_test_directory="${project_directory}/build/tests"
+project_report_file="${project_test_directory}/.tests_${project_executable_name}${extension}"
+project_report_directory="${project_test_directory}/tests_${project_executable_name}${extension}"
+project_reference_directory="${project_directory}/tests/Reference"
+
+project_executable_name="${project_directory}/${project_executable_name}"
+
+cd ${project_directory}/build/src/exec$OPT
+ctest -j$TRUST_NB_PROCS
+exit $?
+
+
+# lancement des tests
+mkdir -p $project_test_directory
+cd $project_test_directory
+TRUST_TESTS=$project_reference_directory
+
+# Pas encore OK .... il faudrait regarder les fiches....
+# on essaye ....
+Rapports_auto_root=${project_directory}/share
+export Rapports_auto_root
+mode=""
+liste_cas=0
+if [ $# -gt 1 ]
+then
+    param=$2
+    if [ "$param" = "last_pb" ]
+	then
+	last_pb=`ls -rt ${project_directory}/liste_pb*|tail -1`
+	echo $last_pb
+	cp $last_pb $project_test_directory
+	mode2=`echo $last_pb | awk -F. '{if (NF>1) {print $NF}}'`
+	echo "Last problem mode : $mode2"
+	param=$mode2
+	liste_cas=`basename $last_pb`
+    fi
+    [ "$param" = "deps" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/deps&& Rapports_auto_root=$project_test_directory/share/deps
+    [ "$param" = "trio" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
+    [ "$param" = "trust" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
+    [ "$param" = "all" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/all&& Rapports_auto_root=$project_test_directory/share/all
+    [ "$param" = "full" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/full&& Rapports_auto_root=$project_test_directory/share/full
+    [ "$param" = "" ] && mode=$param &&shift && shift
+    
+    [ $# -ne 0 ] && echo "Error in $0 with option: $* " && exit -1
+    
+    
+fi
+export TRUST_TESTS
+export Rapports_auto_root
+# Pour compatibilite anciennes versions de Trio
+Reference_dir=$TRUST_TESTS
+export Reference_dir
+LC_COLLATE=C
+export LC_COLLATE
+
+rm -f $project_report_file
+
+# on met le flag a 1 pour creer les cas tests de NR a partir des fiches de valid
+if [ "$mode" != "trust" ] && [ "$mode" != "trio" ]
+then
+TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=1
+export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS
+fi
+export PATH=$BALTIK_ROOT/bin:${PATH} 
+#echo $liste_cas | lance_test -nomail $project_executable_name $project_test_directory | tee lance_test_out
+rm -f .pb
+(echo $liste_cas | lance_test -nomail -no_timeout  $project_executable_name $project_test_directory ; status=$?;  [ $status -ne 0 ]  && echo 1 > .pb )| tee lance_test_out
+
+cat $project_report_file 2>/dev/null
+status=$?
+[ $status -ne 0 ]  && exit 2 
+echo Info_global test_seq `grep 'Successful tests cases :' $project_report_file| awk -F: '{print $NF}'` 
+echo Info_global test_par `grep 'Successful tests cases in parallel mode :' $project_report_file| awk -F: '{print $NF}'` 
+liste_pb_file=$project_directory/liste_pb
+[ "$mode" != "" ] && liste_pb_file=${liste_pb_file}.$mode
+rm -f $liste_pb_file
+if [ -s  $project_report_directory/liste ] 
+    then
+    cp  $project_report_directory/liste  $liste_pb_file
+    exit 1
+fi
+[ -f .pb ] && echo pb with lance_test && exit 2
+exit 0
+
+
+
