@@ -93,7 +93,7 @@ if [ $run -ne -2 ]
       do
           mv $jdd $jdd.save
       # comme dans copie_cas_test sans le solveur 
-        $TRUST_Awk -v NBPASMAX=$NBPASMAX '/tinit/ {print $0;print "\tnb_pas_dt_max", NBPASMAX ;getline}\
+        $TRUST_Awk -v NBPASMAX=$NBPASMAX '/^[ \t]*tinit[ \t]*/ {print $0;print "\tnb_pas_dt_max", NBPASMAX ;getline}\
    !/nb_pas_dt_max/ {print $0}\
 ' $jdd.save > $jdd
     done
