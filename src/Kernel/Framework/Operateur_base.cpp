@@ -229,7 +229,6 @@ void Operateur_base::dimensionner(Matrice_Morse& ) const
   exit();
 }
 
-
 // Description:
 //    NE FAIT RIEN
 //    A surcharger dans les classes derivees.

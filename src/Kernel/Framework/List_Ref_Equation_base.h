@@ -14,39 +14,18 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Solveur_Implicite_Base.h
+// File:        List_Ref_Equation_base.h
 // Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/17
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef List_Ref_Equation_base_included
+#define List_Ref_Equation_base_included
 
-#ifndef Solveur_Implicite_Base_included
-#define Solveur_Implicite_Base_included
+#include <List.h>
+#include <Ref_Equation_base.h>
 
-
-
-//
-// .DESCRIPTION class Solveur_Implicite_Base
-//
-
-#include <Objet_U.h>
-#include <List_Ref_Equation_base.h>
-
-class Equation_base;
-class DoubleTab;
-
-class Solveur_Implicite_Base : public  Objet_U
-{
-  Declare_base(Solveur_Implicite_Base);
-
-public :
-  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration) =0;
-  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence);
-
-protected :
-
-};
+Declare_liste(REF(Equation_base));
 
 #endif
-

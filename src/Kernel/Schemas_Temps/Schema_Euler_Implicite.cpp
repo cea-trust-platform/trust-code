@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,7 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
   nb_ite_max=200;
   residu_old_=0;
   facsec_max_=DMAXFLOAT;
+  thermique_monolithique_ = 0;
   Schema_Implicite_base::readOn(s);
   if(!le_solveur.non_nul())
     {
@@ -100,6 +101,7 @@ void Schema_Euler_Implicite::set_param(Param& param)
 {
   param.ajouter("max_iter_implicite",&nb_ite_max);
   param.ajouter("facsec_max", &facsec_max_);
+  param.ajouter("thermique_monolithique", &thermique_monolithique_); // XD_ADD_P int Activate monolithic thermal coupling of equations for coupled problems. 0 = no, 1 = yes, 2 = yes and test convergence
   Schema_Implicite_base::set_param(param);
 }
 
@@ -311,7 +313,6 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
   //    ref_cast(Probleme_base,pbc.probleme(i)).sauver();
 
   int convergence_pbc = 0;
-  int convergence_pb;
   int i;
 
   for(i=0; i<pbc.nb_problemes(); i++)
@@ -320,6 +321,18 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
   int ok=0;
   int compteur;
+  // structure pour ranger les equations par domaine d'application
+  // -> les hydrauliques, les thermiques, et les autres
+  std::map<std::string, std::vector<std::array<int, 2>>> map_problems;
+  for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+      {
+        Motcle type = ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application();
+        if (type != "Hydraulique" && type != "Thermique") type = "Autres";
+        map_problems[type.getString()].push_back({{ i, j}});
+      }
+
+  //ordre de resolution des domaines d'application
+  std::vector<std::string> dom_app = {"HYDRAULIQUE", "THERMIQUE", "AUTRES"};
 
   while (!ok)
     {
@@ -342,13 +355,62 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
             }
 
-          for(i=0; i<pbc.nb_problemes(); i++)
+          if (thermique_monolithique_ > 0)
             {
-              pbc.probleme(i).updateGivenFields();
-              convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur);
-              convergence_pbc = convergence_pbc * convergence_pb ;
-            }
+              for (auto && da : dom_app) if (map_problems.count(da))
+                  {
+                    Cout << "RESOLUTION " << da.c_str() << finl;
+                    Cout << "-------------------------" << finl;
+                    if (da == "THERMIQUE" && map_problems[da].size() > 1)
+                      {
+                        Cout << "Thermique monolithique! Les equations {";
+                        LIST(REF(Equation_base)) eqs;
+                        for (auto && pbeqs : map_problems[da])
+                          {
+                            Equation_base& eq = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                            Cout << " " << eq.que_suis_je();
+                            pbc.probleme(pbeqs[0]).updateGivenFields();
+                            eqs.add(eq);
+                          }
+                        Cout << " } sont resolues en assemblant une unique matrice." << finl;
+                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
+                        convergence_pbc = convergence_pbc && convergence_eqs;
+                      }
+                    else
+                      for (auto && pbeqs : map_problems[da])
+                        {
+                          pbc.probleme(pbeqs[0]).updateGivenFields();
 
+                          Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                          DoubleTab& present = eqn.inconnue().valeurs();
+                          DoubleTab& futur = eqn.inconnue().futur();
+                          double temps = temps_courant_ + dt_;
+
+                          // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
+                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
+                          const DoubleTab& inut=futur;
+                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+                          convergence_pbc = convergence_pbc && convergence_eqn;
+                          futur = present;
+                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          present = futur;
+
+                          eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+                          Cout << finl;
+                        }
+                  }
+            }
+          else
+            {
+              for(i=0; i<pbc.nb_problemes(); i++)
+                {
+                  pbc.probleme(i).updateGivenFields();
+                  int convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur);
+                  convergence_pbc = convergence_pbc * convergence_pb ;
+                }
+
+            }
         }
       if ((!convergence_pbc)&&(compteur==nb_ite_max))
         {

@@ -140,6 +140,10 @@ public :
   void creer_elements_fictifs(const Zone_Cl_dis_base& );
   DoubleVect& dist_norm_bord(DoubleVect& , const Nom& nom_bord) const;
 
+  //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem
+  void init_virt_e_map() const;
+  mutable std::map<std::array<int, 2>, int> virt_e_map;
+
 private:
 
   IntVect orientation_;                    // orientation des faces

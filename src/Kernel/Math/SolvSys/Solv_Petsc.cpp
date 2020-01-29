@@ -1556,6 +1556,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
     }
   int cpt=0;
   int size=items_to_keep_.size_array();
+  renum_ = INT_MAX; //pour crasher si le MD_Vector est incoherent
   ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
   for(int i=0; i<size; i++)
     {

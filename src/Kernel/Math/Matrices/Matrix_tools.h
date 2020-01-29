@@ -151,9 +151,8 @@ public :
                                              Matrice_Morse& mat,
                                              const bool& inverse );
 
-
-
-
+  //add empty rows/columns to matrix
+  static void extend_matrix(Matrice_Morse& mat, int nl, int nc);
 };
 
 #endif /* Matrix_tools_included */
