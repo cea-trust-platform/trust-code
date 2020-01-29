@@ -1,0 +1,18 @@
+#!/bin/bash
+export PETSC_DIR=$PETSC_ROOT/linux_opt
+mkdir -p ../build
+cd ../build
+cp -r $PETSC_DIR/src/benchmarks/streams/* . 
+target=MPIVersion
+make $target
+exec=`pwd`/$target
+let NP=1
+touch empty.data
+while [ $NP -le $TRUST_NB_PHYSICAL_CORES ]
+do
+   trust empty $NP | grep -v empty
+   let NP=$NP+1
+done | tee scaling.log
+./process.py createfile
+./process.py 
+
