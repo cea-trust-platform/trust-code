@@ -32,7 +32,7 @@ class Faces;
 #include <IntTab.h>
 #include <vector>
 #include <map>
-
+#include <array>
 ////////////////////////////////////////////////////////////////
 
 //

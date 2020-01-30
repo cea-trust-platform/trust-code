@@ -447,10 +447,13 @@ void Frontiere::trace_face_local(const DoubleVect& y, DoubleVect& x) const
 // Renvoie la trace sur la frontiere du tableau aux faces y
 void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
 {
-  int size = nb_faces(), N = x.line_size();
+  int size = nb_faces(), N = x.line_size(), M = y.line_size();
   assert(x.dimension(0)==size);
-  for (int i = 0, face = num_premiere_face(); i < size; i++, face++)
-    for (int n = 0; n < N; n++) x.addr()[N * i + n] = y.addr()[N * face + n];
+  for (int i = 0; i < size; i++)
+    {
+      int face = num_premiere_face() + i;
+      for (int n = 0; n < N; n++) x.addr()[N * i + n] = y.addr()[M * face + n];
+    }
 }
 
 void Frontiere::trace_som_distant(const DoubleTab&, DoubleTab&) const
