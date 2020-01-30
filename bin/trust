@@ -387,8 +387,8 @@ do
       rm -f *_Channel_Flow_Rate_* *_Pressure_Gradient_*
       echo "rm Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat"
       rm -f Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat
-      echo "rm evol_glob"
-      rm -f evol_glob
+      echo "rm *.evol_glob"
+      rm -f *.evol_glob
       echo "rm iter.dat sauvegarde_tble_* tble_mesh.dat"
       rm -f iter.dat sauvegarde_tble_* tble_mesh.dat
       exit 0

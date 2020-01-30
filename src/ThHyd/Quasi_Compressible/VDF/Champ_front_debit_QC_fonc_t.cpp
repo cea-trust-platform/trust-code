@@ -214,6 +214,8 @@ void Champ_front_debit_QC_fonc_t::mettre_a_jour(double tps)
           S+=s;
           rho_moy+=s*tab_rhonp1P0(n0);
         }
+      S = mp_sum(S);
+      rho_moy = mp_sum(rho_moy);
       rho_moy/=S;
       for ( num_face=ndeb; num_face<nfin; num_face++)
         for (int ori=0; ori<dim; ori++)
