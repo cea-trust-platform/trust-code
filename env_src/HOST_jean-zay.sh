@@ -13,7 +13,8 @@ define_modules_config()
    #
    # Load modules
    # trust compile avec intel 19.0.2
-   module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
+   #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
+   module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -40,7 +41,7 @@ define_soumission_batch()
    #prepost      up   20:00:00      4    mix 
 
 
-   queue=cpu_p1 # && [ "$bigmem" = 1 ] && queue=large && soumission=1
+   queue=cpu_p1
    # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
    #   Name   Priority MaxSubmit     MaxWall MaxNodes 
    #---------- ---------- --------- ----------- -------- 
@@ -58,8 +59,10 @@ define_soumission_batch()
    #qos_cpu-cp         50     10000                      
    #qos_gpu-cp         50     10000                      
    #qos_prepo+          0     10000                  
+   cpus_per_task=40
+   hintnomultithread=1
    cpu=30 && [ "$prod" = 1 ] && cpu=110 # 30 minutes or 1 day
-   ntasks=20 # 20 cores per node for slim or large queue (24 for fat, 8 for eris and 12 for pluton)
+   ntasks=20 # number of cores ?
    node=0
    mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
