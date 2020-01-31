@@ -26,6 +26,7 @@
 
 #include <math.h>
 #include <map>
+#include <array>
 #include <Zone_VF.h>
 #include <Domaine.h>
 class Geometrie;
