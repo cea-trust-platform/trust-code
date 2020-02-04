@@ -33,6 +33,11 @@ installation_visit()
    fi
 }
 
+# suppression de python/conda du path :
+OLDPATH_=$PATH
+NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+export PATH=$NEWPATH_
+
 # Definition de TMPDIR car utilise par Visit pour l'installation
 # Si faite par sudo et que TMPDIR vide, $HOME est pris ce qui cree des permission denied (cezanne30)
 # Donc on anticipe le probleme en fixant un TMPDIR qui marchera toujours:
@@ -379,6 +384,8 @@ then
    fi
 else
    echo "$what unknown."
+   export PATH=$OLDPATH_
    exit -1
 fi
+export PATH=$OLDPATH_
 exit 0
