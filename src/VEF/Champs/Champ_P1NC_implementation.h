@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -220,8 +220,10 @@ inline DoubleTab& Champ_P1NC_implementation::trace(const Frontiere_dis_base& fr,
   if (distant)
     fr.frontiere().trace_face_distant(y, x);
   else
-    fr.frontiere().trace_face_local(y, x);
-  // useless ? x.echange_espace_virtuel();
+    {
+      fr.frontiere().trace_face_local(y, x);
+      x.echange_espace_virtuel();
+    }
   return x;
 }
 #endif
