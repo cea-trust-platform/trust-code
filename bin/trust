@@ -560,7 +560,7 @@ fi
 ############
 # VALGRIND #
 ############
-val=`which valgrind`
+val=`which valgrind 2>/dev/null`
 if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
 then    
     suppressions=""
