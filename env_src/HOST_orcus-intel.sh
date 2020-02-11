@@ -9,6 +9,8 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
+   # Initialisation de l environnement module $MODULE_PATH 
+   echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
    module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Utilise par PE ?
    module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3" # Recommande par AG
@@ -37,7 +39,7 @@ define_soumission_batch()
    # gpuq         up   infinite      1   idle gpu01   
    
    # On se base sur la frontale pour selectionner la queue par defaut:  
-   queue=intelq && [ "`grep AMD /proc/cpuinfo`" != "" ] && queue=amdq
+   queue=intelq
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max 
