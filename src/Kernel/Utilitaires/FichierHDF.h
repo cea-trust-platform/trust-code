@@ -26,6 +26,8 @@
 #include <Sortie_Brute.h>
 #include <Nom.h>
 
+#include <SChaine.h>
+
 #define MED_
 
 #ifdef MED_
@@ -64,6 +66,8 @@ public:
   // (not possible to write multiple datasets in parallel as they overwrite each other)
   virtual void read_dataset(Nom dataset_name, Entree_Brute& entree);
   virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie);
+  virtual void create_and_fill_dataset(Nom dataset_name, SChaine& sortie);
+  virtual void create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data);
 
   virtual void close_dataset(Nom dataset_name);
 

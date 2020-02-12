@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,11 @@
 #include <unistd.h> // sleep() pour certaines machines
 #include <stat_counters.h>
 
+#include <SChaine.h>
+#include <FichierHDFCollectif.h>
+
+#define JOURNAL_HDF5
+
 // Chacun des fichiers Cerr, Cout et Journal(i)
 // peut etre redirige vers l'un des quatre fichiers suivants:
 // Instance de la Sortie nulle (equivalent de /dev/null)
@@ -46,7 +51,12 @@ static Sortie        std_err_(cerr);
 // Instance de la Sortie pointant vers cout
 static Sortie        std_out_(cout);
 // Instance du fichier Journal
+#ifdef JOURNAL_HDF5
+static SChaine      journal_file_;
+#else
 static SFichier      journal_file_;
+#endif
+
 static int        journal_file_open_;
 static Nom           journal_file_name_;
 // Niveau maximal des messages ecrits. La valeur initiale determine
@@ -364,11 +374,16 @@ void Process::imprimer_ram_totale(int all_process)
 // Signification: indique si on ouvre le fichier en mode append ou pas.
 void init_journal_file(int verbose_level, const char * file_name, int append)
 {
+#ifdef JOURNAL_HDF5
+  if(journal_file_open_) end_journal(verbose_level);
+#else
   end_journal(verbose_level);
+#endif
   if (verbose_level > 0)
     {
       if (file_name)
         {
+#ifndef JOURNAL_HDF5
           IOS_OPEN_MODE mode = ios::out;
           if (append)
             mode = ios::app;
@@ -377,6 +392,7 @@ void init_journal_file(int verbose_level, const char * file_name, int append)
               Cerr << "Fatal error in init_journal_file: cannot open journal file" << finl;
               Process::exit();
             }
+#endif
           journal_file_open_ = 1;
           journal_file_name_ = file_name;
         }
@@ -388,8 +404,16 @@ void end_journal(int verbose_level)
 {
   // Attention: acrobatie pour que ca "plante proprement" si le destructeur
   // ecrit dans le journal !
-  journal_file_open_ = 0;
+#ifdef JOURNAL_HDF5
+  FichierHDFCollectif fic_hdf;
+  fic_hdf.create(journal_file_name_);
+  fic_hdf.create_and_fill_dataset("/log", journal_file_);
+  fic_hdf.close();
+#else
   journal_file_.close();
+#endif
+  journal_file_open_ = 0;
+
 }
 
 // Description: Renvoie l'objet Sortie sur lequel seront redirigees les

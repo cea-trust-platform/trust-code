@@ -24,6 +24,7 @@
 #include <communications.h>
 #include <ArrOfInt.h>
 
+
 #ifndef MED_
 FichierHDF::FichierHDF()
 {
@@ -136,15 +137,27 @@ void FichierHDF::read_datasets(Nom dataset_name, Entree_Brute& entree)
 
 void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
 {
-  prepare_dataset_props(dataset_name);
   hsize_t lenData = sortie.get_size();
+  const char * data = sortie.get_data();
+  create_and_fill_dataset(dataset_name, lenData, data);
+}
+
+void FichierHDF::create_and_fill_dataset(Nom dataset_name, SChaine& sortie)
+{
+  hsize_t lenData = sortie.get_size();
+  const char * data = sortie.get_str();
+  create_and_fill_dataset(dataset_name, lenData, data);
+}
+
+void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data)
+{
+  prepare_dataset_props(dataset_name);
+
   hsize_t sumLenData = Process::mp_sum((int)lenData);
   hsize_t fileSize[1] = {sumLenData};
   hid_t fileSpace_id = H5Screate_simple(1, fileSize, NULL);
   hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, fileSpace_id,
                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-  const char * data = sortie.get_data();
 
   hsize_t dims[1] = {lenData};
   hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
@@ -152,7 +165,7 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
   H5Sselect_hyperslab(fileSpace_id, H5S_SELECT_SET, &offset, NULL, &lenData, NULL);
 
   // Writing into it:
-  Cout << "Writing into HDF dataset " << dataset_name << finl;
+  //Cout << "Writing into HDF dataset " << dataset_name << finl;
   H5Dwrite(dataset_id, H5T_NATIVE_OPAQUE, dataspace_id, fileSpace_id, dataset_prop_lst_, data);
 
   // Close dataset and dataspace
@@ -172,7 +185,6 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
   H5Awrite(attr_id, H5T_STD_I32BE, sizes.addr() );
   H5Aclose(attr_id);
   H5Sclose(space_id);
-
 }
 
 void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie)

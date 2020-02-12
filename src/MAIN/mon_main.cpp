@@ -242,7 +242,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   //  du processeur et le nom du cas)
   {
     Nom filename(nom_du_cas);
-    if (Process::nproc() > 1)
+    if (Process::nproc() > 1 && 0)
       {
         filename += "_";
         char s[20];
@@ -255,7 +255,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
         verbose_level_ = 0;
       }
     init_journal_file(verbose_level_, filename, 0 /* append=0 */);
-    Process::Journal() << "Journal logging started" << finl;
+    Process::Journal() << "\n[Proc " << Process::me() << "] : Journal logging started" << finl;
   }
 
   Nom nomfic( nom_du_cas );
@@ -346,12 +346,13 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
 mon_main::~mon_main()
 {
+  // On peut arreter le journal apres les communications:
+  // EDIT 12/02/2020: journal needs communication to be turned on if it's written in HDF5 format
+  Process::Journal() << "End of Journal logging" << finl;
+  end_journal(verbose_level_);
   end_stat_counters();
   // Destruction de l'interprete principal avant d'arreter le parallele
   interprete_principal_.vide();
-  // On peut arreter le journal apres les communications:
-  Process::Journal() << "End of Journal logging" << finl;
-  end_journal(verbose_level_);
   // PetscFinalize/MPI_Finalize
   finalize();
   // on peut arreter maintenant que l'on a arrete les journaux
