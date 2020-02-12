@@ -43,6 +43,8 @@
 #include <sys/stat.h>
 #include <Loi_Fermeture_base.h>
 
+#include <FichierHDFCollectif.h>
+
 #define CHECK_ALLOCATE 0
 #ifdef CHECK_ALLOCATE
 #include <unistd.h> // Pour acces a int close(int fd); avec PGI
@@ -487,10 +489,11 @@ Entree& Probleme_base::readOn(Entree& is)
           EcritureLectureSpecial::mode_lec=0;
           Motcle format_rep;
           is >> format_rep;
-          if ((format_rep != "formatte") && (format_rep != "binaire") && (format_rep!="xyz"))
+          if ((format_rep != "formatte") && (format_rep != "binaire")
+              && (format_rep!="xyz") && (format_rep!="single_hdf") )
             {
               Cerr << "Restarting calculation... : keyword " << format_rep << " not understood. Waiting for:" << finl
-                   << motlu << " formatte|binaire|xyz Filename" << finl;
+                   << motlu << " formatte|binaire|xyz|single_hdf Filename" << finl;
               exit();
             }
           // Read the filename:
@@ -498,6 +501,9 @@ Entree& Probleme_base::readOn(Entree& is)
           is >> nomfic;
           // Open the file:
           DERIV(Entree_Fichier_base) fic;
+          Entree_Brute input_data;
+          FichierHDFCollectif fic_hdf; //FichierHDF fic_hdf;
+
           if (format_rep == "formatte")
             fic.typer("LecFicDistribue");
           else if (format_rep == "binaire")
@@ -507,12 +513,22 @@ Entree& Probleme_base::readOn(Entree& is)
               EcritureLectureSpecial::mode_lec=1;
               fic.typer(EcritureLectureSpecial::Input);
             }
-          fic->ouvrir(nomfic);
-          if(fic->fail())
+
+          if( format_rep == "single_hdf")
             {
-              Cerr<<"Error during the opening of the restart file : " <<nomfic<<finl;
-              exit();
+              fic_hdf.open(nomfic, true);
+              fic_hdf.read_dataset("/sauv", input_data);
             }
+          else
+            {
+              fic->ouvrir(nomfic);
+              if(fic->fail())
+                {
+                  Cerr<<"Error during the opening of the restart file : " <<nomfic<<finl;
+                  exit();
+                }
+            }
+
           // Restart from the last time
           if (resume_last_time)
             {
@@ -523,7 +539,11 @@ Entree& Probleme_base::readOn(Entree& is)
               //     exit();
               //   }
               // Look for the last time and set it to tinit if tinit not set
-              double last_time = get_last_time(fic);
+              double last_time;
+              if(format_rep == "single_hdf")
+                last_time = get_last_time(input_data);
+              else
+                last_time = get_last_time(fic);
               // Set the time to restart the calculation
               schema_temps().set_temps_courant()=last_time;
               // Initialize tinit and current time according last_time
@@ -535,8 +555,13 @@ Entree& Probleme_base::readOn(Entree& is)
               schema_temps().set_temps_precedent()=last_time;
               Cerr << "==================================================================================================" << finl;
               Cerr << "In the " << nomfic << " file, we find the last time: " << last_time << " and read the fields." << finl;
-              fic->close();
-              fic->ouvrir(nomfic);
+              if( format_rep != "single_hdf")
+                {
+                  fic->close();
+                  fic->ouvrir(nomfic);
+                }
+              else
+                fic_hdf.read_dataset("/sauv", input_data);
             }
           // Lecture de la version du format de sauvegarde si c'est une reprise classique
           // Depuis la 1.5.1, on marque le format de sauvegarde en tete des fichiers de sauvegarde
@@ -546,7 +571,11 @@ Entree& Probleme_base::readOn(Entree& is)
           // de prevenir les utilisateurs: il leur faudra faire une reprise xyz pour poursuivre
           // avec la 1.5.1 un calcul lance avec une version anterieure
           // Depuis la 1.5.5, Il y a pas une version de format pour le xyz
-          fic.valeur() >> motlu;
+          if(format_rep != "single_hdf")
+            fic.valeur() >> motlu;
+          else
+            input_data >> motlu;
+
           if (motlu!="FORMAT_SAUVEGARDE:")
             {
               if (format_rep == "xyz")
@@ -573,7 +602,10 @@ Entree& Probleme_base::readOn(Entree& is)
           else
             {
               // Lecture du format de sauvegarde
-              fic.valeur() >> reprise_version_;
+              if(format_rep != "single_hdf")
+                fic.valeur() >> reprise_version_;
+              else
+                input_data >> reprise_version_;
               if (mp_min(reprise_version_)!=mp_max(reprise_version_))
                 {
                   Cerr << "The version of the format backup/resumption is not the same in the resumption files " << nomfic << finl;
@@ -588,7 +620,13 @@ Entree& Probleme_base::readOn(Entree& is)
             }
           // Ecriture du format de reprise
           Cerr << "The version of the resumption format of file " << nomfic << " is " << reprise_version_ << finl;
-          reprendre(fic.valeur());
+          if( format_rep != "single_hdf")
+            reprendre(fic.valeur());
+          else
+            {
+              reprendre(input_data);
+              fic_hdf.close();
+            }
           reprise_effectuee_=1;
         }
       ////////////////////////////////////////////////
@@ -599,7 +637,10 @@ Entree& Probleme_base::readOn(Entree& is)
           // restart_file=1: le fichier est ecrasee a chaque sauvegarde (et ne donc contient qu'un seul instant)
           if (motlu == "sauvegarde_simple") restart_file=1;
           is >> format_sauv;
-          if( (Motcle(format_sauv) != "binaire") && (Motcle(format_sauv) != "formatte") && (Motcle(format_sauv) != "xyz"))
+          if( (Motcle(format_sauv) != "binaire")
+              && (Motcle(format_sauv) != "formatte")
+              && (Motcle(format_sauv) != "xyz")
+              && (Motcle(format_sauv) != "single_hdf") )
             {
               nom_fich=format_sauv;
               format_sauv="binaire";
@@ -618,10 +659,13 @@ Entree& Probleme_base::readOn(Entree& is)
       is >> motlu;
     }
   ficsauv_.detach();
-  if ( (Motcle(format_sauv) != "binaire") && (Motcle(format_sauv) != "formatte") && (Motcle(format_sauv) != "xyz"))
+  if ( (Motcle(format_sauv) != "binaire")
+       && (Motcle(format_sauv) != "formatte")
+       && (Motcle(format_sauv) != "xyz")
+       && (Motcle(format_sauv) != "single_hdf") )
     {
       Cerr << "Error of backup format" << finl;
-      Cerr << "We expected formatte, binaire or xyz." << finl;
+      Cerr << "We expected formatte, binaire, xyz, or single_hdf." << finl;
       exit();
     }
   if (schema_temps().temps_init()<=-DMAXFLOAT)
@@ -954,6 +998,7 @@ int Probleme_base::expression_predefini(const Motcle& motlu, Nom& expression)
 void Probleme_base::sauver() const
 {
   statistiques().begin_count(sauvegarde_counter_);
+
   // Si le fichier de sauvegarde n'a pas ete ouvert alors on cree le fichier de sauvegarde:
   if (!ficsauv_.non_nul())
     {
@@ -973,7 +1018,7 @@ void Probleme_base::sauver() const
           ficsauv_.typer(EcritureLectureSpecial::get_Output());
           ficsauv_->ouvrir(nom_fich);
         }
-      else
+      else if (Motcle(format_sauv) != "single_hdf")
         {
           Cerr << "Error in Probleme_base::sauver() " << finl;
           Cerr << "The format for the backup file must be either binary or formatted" << finl;
@@ -986,13 +1031,20 @@ void Probleme_base::sauver() const
           if (Process::je_suis_maitre())
             ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
         }
+      else if((Motcle(format_sauv) == "single_hdf"))
+        osauv_hdf_ << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
       else
         ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
     }
 
   // On realise l'ecriture de la sauvegarde
+  int bytes;
   EcritureLectureSpecial::mode_ecr=(Motcle(format_sauv)=="xyz");
-  int bytes = sauvegarder(ficsauv_.valeur());
+  if(Motcle(format_sauv) != "single_hdf")
+    bytes = sauvegarder(ficsauv_.valeur());
+  else
+    bytes = sauvegarder(osauv_hdf_);
+
   EcritureLectureSpecial::mode_ecr=-1;
 
   // Si c'est une sauvegarde simple, on referme immediatement et proprement le fichier
@@ -1004,6 +1056,15 @@ void Probleme_base::sauver() const
             ficsauv_.valeur() << Nom("fin");
           (ficsauv_.valeur()).flush();
           (ficsauv_.valeur()).syncfile();
+        }
+      else if(Motcle(format_sauv)=="single_hdf")
+        {
+          osauv_hdf_ << Nom("fin");
+          FichierHDFCollectif fic_hdf;
+          fic_hdf.create(nom_fich);
+          fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
+          fic_hdf.close();
+          Cout << "HDF5 backup file written and closed" << finl;
         }
       else
         {
@@ -1038,9 +1099,10 @@ void Probleme_base::finir()
   les_postraitements.finir();
   if (lsauv())
     sauver();
+
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
-  if (restart_file!=1 && ficsauv_.non_nul())
+  if (restart_file!=1 && (ficsauv_.non_nul() || Motcle(format_sauv) == "single_hdf") )
     {
       if (Motcle(format_sauv)=="xyz")
         {
@@ -1049,11 +1111,21 @@ void Probleme_base::finir()
           (ficsauv_.valeur()).flush();
           (ficsauv_.valeur()).syncfile();
         }
+      else if(Motcle(format_sauv) == "single_hdf")
+        {
+          osauv_hdf_ << Nom("fin");
+          FichierHDFCollectif fic_hdf;
+          fic_hdf.create(nom_fich);
+          fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
+          fic_hdf.close();
+          Cout << "HDF5 backup file written and closed" << finl;
+        }
       else
         {
           ficsauv_.valeur() << Nom("fin");
           (ficsauv_.valeur()).flush();
         }
+
       ficsauv_.detach();
     }
   // Si la sauvegarde est classique et que l'utilisateur n'a pas desactive la sauvegarde finale xyz

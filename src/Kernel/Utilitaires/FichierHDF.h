@@ -53,13 +53,23 @@ public:
   virtual void open(Nom filename, bool readOnly);
   virtual void close();
 
+  // Single Writer Multiple Readers method:
+  // a single proc writes all the datasets (one per proc)
+  // and each proc reads its own dataset in the given file
+  virtual void read_datasets(Nom dataset_name, Entree_Brute& entree);
+  virtual void create_and_fill_datasets(Nom dataset_name, Sortie_Brute& data);
+
+  // Multiple Writers Multiple Readers method:
+  // each processor writes (and reads) its portion from the (unique) dataset in the given file
+  // (not possible to write multiple datasets in parallel as they overwrite each other)
   virtual void read_dataset(Nom dataset_name, Entree_Brute& entree);
-  virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute& data);
+  virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie);
+
   virtual void close_dataset(Nom dataset_name);
 
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_read_dataset_props(Nom dataset_name);
+  virtual void prepare_dataset_props(Nom dataset_name);
 
 #ifdef MED_
   hid_t file_id_;

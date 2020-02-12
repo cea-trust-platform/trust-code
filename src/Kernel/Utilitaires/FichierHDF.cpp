@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <EntreeSortie.h>
 #include <FichierHDF.h>
+#include <communications.h>
+#include <ArrOfInt.h>
 
 #ifndef MED_
 FichierHDF::FichierHDF()
@@ -52,7 +54,8 @@ FichierHDF::~FichierHDF()
 
 void FichierHDF::create(Nom filename)
 {
-  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  prepare_file_props();
+  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC /*H5F_ACC_EXCL*/, H5P_DEFAULT, file_prop_lst_);
 }
 
 void FichierHDF::open(Nom filename, bool readOnly)
@@ -67,7 +70,7 @@ void FichierHDF::prepare_file_props()
   file_prop_lst_ = H5P_DEFAULT; // H5Pcreate(H5P_FILE_ACCESS);
 }
 
-void FichierHDF::prepare_read_dataset_props(Nom dataset_name)
+void FichierHDF::prepare_dataset_props(Nom dataset_name)
 {
   dataset_full_name_ = dataset_name.getChar() ;
   dataset_prop_lst_ = H5P_DEFAULT;
@@ -83,7 +86,38 @@ void FichierHDF::close_dataset(Nom dataset_name) {}
 
 void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
 {
-  prepare_read_dataset_props(dataset_name);
+  prepare_dataset_props(dataset_name);
+  ArrOfInt sizes(Process::nproc());
+  hid_t attr = H5Aopen(file_id_, "/sizes", H5P_DEFAULT);
+  H5Aread (attr, H5T_STD_I32BE, sizes.addr());
+  H5Aclose(attr);
+
+  hid_t dataset_id = H5Dopen2(file_id_, dataset_name, H5P_DEFAULT);
+  hid_t dataspace_id =  H5Dget_space(dataset_id);
+
+  hsize_t sz = sizes[Process::me()];
+  hsize_t offset = mppartial_sum((int)sz);
+
+  hid_t memspace = H5Screate_simple(1, &sz, NULL);
+
+  H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, &offset, NULL, &sz, NULL);
+
+  char * dset_data = new char[sz];
+  H5Dread(dataset_id, H5T_NATIVE_OPAQUE, memspace, dataspace_id, dataset_prop_lst_, dset_data);
+
+  // Put extracted data in a standard Entree_Brute from TRUST, that we then use to feed TRUST objects
+  entree.set_data(dset_data, sz);  // data are copied into the Entree
+
+  delete[] dset_data;
+  H5Dclose(dataset_id);
+  H5Sclose(dataspace_id);
+  H5Sclose(memspace);
+
+}
+
+void FichierHDF::read_datasets(Nom dataset_name, Entree_Brute& entree)
+{
+  prepare_dataset_props(dataset_name);
 
   hid_t dataset_id = H5Dopen2(file_id_, dataset_full_name_, H5P_DEFAULT);
   hid_t dataspace_id =  H5Dget_space(dataset_id);
@@ -102,6 +136,47 @@ void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
 
 void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
 {
+  prepare_dataset_props(dataset_name);
+  hsize_t lenData = sortie.get_size();
+  hsize_t sumLenData = Process::mp_sum((int)lenData);
+  hsize_t fileSize[1] = {sumLenData};
+  hid_t fileSpace_id = H5Screate_simple(1, fileSize, NULL);
+  hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, fileSpace_id,
+                                H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  const char * data = sortie.get_data();
+
+  hsize_t dims[1] = {lenData};
+  hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+  hsize_t offset = mppartial_sum((int)lenData);
+  H5Sselect_hyperslab(fileSpace_id, H5S_SELECT_SET, &offset, NULL, &lenData, NULL);
+
+  // Writing into it:
+  Cout << "Writing into HDF dataset " << dataset_name << finl;
+  H5Dwrite(dataset_id, H5T_NATIVE_OPAQUE, dataspace_id, fileSpace_id, dataset_prop_lst_, data);
+
+  // Close dataset and dataspace
+  H5Dclose(dataset_id);
+  H5Sclose(dataspace_id);
+  H5Sclose(fileSpace_id);
+
+  //writing length of the data owned by each proc as an attribute to keep track of it
+  ArrOfInt sizes(Process::nproc());
+  sizes = 0;
+  sizes[Process::me()] = lenData;
+  mp_sum_for_each_item(sizes);
+
+  hsize_t dimsAttr = Process::nproc();
+  hid_t space_id = H5Screate_simple(1, &dimsAttr, NULL);
+  hid_t attr_id = H5Acreate2(file_id_, "/sizes", H5T_STD_I32BE, space_id, H5P_DEFAULT, H5P_DEFAULT);
+  H5Awrite(attr_id, H5T_STD_I32BE, sizes.addr() );
+  H5Aclose(attr_id);
+  H5Sclose(space_id);
+
+}
+
+void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie)
+{
   hsize_t lenData = sortie.get_size();
   const char * data = sortie.get_data();
 
@@ -113,12 +188,14 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   // Writing into it:
-  Cerr << "Writing into HDF dataset " << dataset_name << finl;
+  Cout << "Writing into HDF dataset " << dataset_name << finl;
   H5Dwrite(dataset_id, H5T_NATIVE_OPAQUE, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
 
   // Close dataset and dataspace
   H5Dclose(dataset_id);
   H5Sclose(dataspace_id);
+
 }
+
 
 #endif

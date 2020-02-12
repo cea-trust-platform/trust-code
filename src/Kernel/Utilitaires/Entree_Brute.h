@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ public:
   int set_bin(int bin);
 
   // [ABN] TODO should be const char * data ...
-  void set_data(char * data, unsigned sz);
+  void set_data(const char * data, unsigned sz);
 
 protected:
   istringstream* istrstream_;

@@ -1345,7 +1345,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   oss2 << "/zone" << i_part;
                   Nom dataset_name(oss2.str().c_str());
 
-                  fic_hdf.create_and_fill_dataset(dataset_name, os_hdf);
+                  fic_hdf.create_and_fill_datasets(dataset_name, os_hdf);
                 }
               else
                 {

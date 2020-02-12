@@ -20,6 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <FichierHDFCollectif.h>
+#include <communications.h>
+#include <ArrOfInt.h>
 
 #ifdef MPI_
 #include <mpi.h>
@@ -57,7 +59,7 @@ void FichierHDFCollectif::prepare_file_props()
 #endif
 }
 
-void FichierHDFCollectif::prepare_read_dataset_props(Nom dataset_name)
+void FichierHDFCollectif::prepare_dataset_props(Nom dataset_name)
 {
   dataset_full_name_ = dataset_name.getChar() ;
 
@@ -73,5 +75,3 @@ void FichierHDFCollectif::prepare_read_dataset_props(Nom dataset_name)
   //dataset_full_name.nom_me(rank);
 
 }
-
-

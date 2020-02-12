@@ -350,15 +350,15 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   if (is_hdf)
     {
       FichierHDFCollectif fic_hdf;
-
-      fic_hdf.open(nomentree, false);
+      //FichierHDF fic_hdf;
+      fic_hdf.open(nomentree, true);
       Entree_Brute data;
 
       std::ostringstream oss;
       oss << "/zone" << Process::me();
       std::string s(oss.str());
       const char * dataset_name(s.c_str());
-      fic_hdf.read_dataset(dataset_name, data);
+      fic_hdf.read_datasets(dataset_name, data);
 
       // Feed TRUST objects:
       data >> dom;

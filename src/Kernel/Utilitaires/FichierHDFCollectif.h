@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ public:
 
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_read_dataset_props(Nom dataset_name);
+  virtual void prepare_dataset_props(Nom dataset_name);
 
 private:
   // Forbid copy:
