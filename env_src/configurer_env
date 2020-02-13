@@ -504,6 +504,17 @@ print_GNU_VERSION()
    # Verifie que le compilateur est bien GNU:
    [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'
 }
+########################################################
+clean_previous_install()
+{
+   cd $TRUST_ROOT
+   echo "TRUST_ROOT changed since previous install... cleaning TRUST installation"
+   rm -rf exec/python MonoDir_mpi* Outils/ICoCo/ICoCo_src/configure
+   for f in `find ThirdPart Outils -type f -name "?akefile"` ; do
+      touch $f
+   done
+   cd -
+}
 #
 #########################################################################################################################################################################
 #########################################################################################################################################################################
@@ -864,6 +875,13 @@ m="# Path to make command used";e="TRUST_MAKE=\"$TRUST_MAKE\" && export TRUST_MA
 unset CCACHE_DIR
 unset CCACHE_PREFIX
 export CCACHE_DISABLE=1 # pas de ccache lors de la configuration
+
+###############################################################################################################
+# Contournement d'un pb rencontre lors du deplacement/renommage d'une installation TRUST. touch des makefile  #
+# plus efficace que make clean : si MPI installee lors du configure, make clean de TRUST ne la nettoie pas    #
+###############################################################################################################
+conda="$TRUST_ROOT/exec/python/bin/conda"
+[ -f $conda ] && [ "`grep $TRUST_ROOT/exec/python $conda`" = "" ] && clean_previous_install
 
 ########################################################################################
 # Installation de ccache pour instaurer un cache du preprocessing lors de la compilation

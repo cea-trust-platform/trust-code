@@ -88,7 +88,16 @@ make_tools()
 # DEBUT DU SCRIPT #
 ###################
 [ "$TRUST_ROOT" = "" ] && echo "Error. TRUST_ROOT is empty. Initialize TRUST environment." && echo "BUILD_EXEC=KO" && exit -1 
-
+if [ "`grep $TRUST_ROOT/exec/python $TRUST_ROOT/exec/python/bin/conda`" = "" ]
+then
+   echo ""
+   echo "Fatal error: You should configure trust before make using:"
+   Num_opts_configure=`tail -1 configure.log | awk '{print NF-1}'`
+   opts_configure=`tail -1 configure.log | cut -d ' ' -f 2-$Num_opts_configure`
+   echo "./configure \$OPTIONS && make # where your previous configure options are OPTIONS=$opts_configure"
+   echo ""
+   exit -1
+fi
 # if trust is configured with -enable-petsc-debug option and the user needs only $exec_debug (via make debug)
 # uncomment the following two lines and lines containing only_make_debug_with_petsc_debug in $TRUST_ROOT/ThirdPart/src/LIBPETSC/install
 # Caution: if the user do: "make debug gcov" for example, this cannot work since the optimized build of petsc is not constructed.
