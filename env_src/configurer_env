@@ -509,7 +509,7 @@ clean_previous_install()
 {
    cd $TRUST_ROOT
    echo "TRUST_ROOT changed since previous install... cleaning TRUST installation"
-   rm -rf exec/python MonoDir_mpi* Outils/ICoCo/ICoCo_src/configure
+   rm -rf exec/python MonoDir* Outils/ICoCo/ICoCo_src/configure
    for f in `find ThirdPart Outils -type f -name "?akefile"` ; do
       touch $f
    done
