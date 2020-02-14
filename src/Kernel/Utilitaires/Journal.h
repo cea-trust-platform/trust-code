@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 // Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
-void init_journal_file(int verbose_level, const char * filename, int append);
+void init_journal_file(int verbose_level, int journal_shared, const char * filename, int append);
 int get_journal_level();
 void change_journal_level(int new_level);
 void end_journal(int verbose_level);

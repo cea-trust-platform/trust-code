@@ -41,13 +41,14 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, int journal_master, bool apply_verification, int disable_stop)
+mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bool apply_verification, int disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
+  journal_shared_ = journal_shared;
   apply_verification_ = apply_verification;
   // Creation d'un journal temporaire qui ecrit dans Cerr
-  init_journal_file(verbose_level, 0 /* filename = 0 => Cerr */, 0 /* append */);
+  init_journal_file(verbose_level, 0, 0 /* filename = 0 => Cerr */, 0 /* append */);
   trio_began_mpi_=0;
   disable_stop_=disable_stop;
   change_disable_stop(disable_stop);
@@ -242,7 +243,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   //  du processeur et le nom du cas)
   {
     Nom filename(nom_du_cas);
-    if (Process::nproc() > 1 && 0)
+    if (Process::nproc() > 1 && !journal_shared_)
       {
         filename += "_";
         char s[20];
@@ -254,8 +255,9 @@ void mon_main::dowork(const Nom& nom_du_cas)
       {
         verbose_level_ = 0;
       }
-    init_journal_file(verbose_level_, filename, 0 /* append=0 */);
-    Process::Journal() << "\n[Proc " << Process::me() << "] : Journal logging started" << finl;
+    init_journal_file(verbose_level_, journal_shared_,filename, 0 /* append=0 */);
+    if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";
+    Process::Journal() << "Journal logging started" << finl;
   }
 
   Nom nomfic( nom_du_cas );

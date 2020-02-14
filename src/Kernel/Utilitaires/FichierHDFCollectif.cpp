@@ -37,11 +37,7 @@ FichierHDFCollectif::FichierHDFCollectif() :
 #endif
 }
 
-FichierHDFCollectif::~FichierHDFCollectif()
-{
-  H5Pclose(dataset_prop_lst_);
-  H5Pclose(file_prop_lst_);
-}
+FichierHDFCollectif::~FichierHDFCollectif() {}
 
 void FichierHDFCollectif::prepare_file_props()
 {

@@ -68,19 +68,21 @@ void FichierHDF::open(Nom filename, bool readOnly)
 
 void FichierHDF::prepare_file_props()
 {
-  file_prop_lst_ = H5P_DEFAULT; // H5Pcreate(H5P_FILE_ACCESS);
+  file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS);
 }
 
 void FichierHDF::prepare_dataset_props(Nom dataset_name)
 {
   dataset_full_name_ = dataset_name.getChar() ;
-  dataset_prop_lst_ = H5P_DEFAULT;
+  dataset_prop_lst_ = H5Pcreate(H5P_DATASET_XFER);
 }
 
 
 void FichierHDF::close()
 {
   H5Fclose(file_id_);
+  if(file_prop_lst_)    H5Pclose(file_prop_lst_);
+  if(dataset_prop_lst_) H5Pclose(dataset_prop_lst_);
 }
 
 void FichierHDF::close_dataset(Nom dataset_name) {}
@@ -156,6 +158,7 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, cons
   hsize_t sumLenData = Process::mp_sum((int)lenData);
   hsize_t fileSize[1] = {sumLenData};
   hid_t fileSpace_id = H5Screate_simple(1, fileSize, NULL);
+
   hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, fileSpace_id,
                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -206,7 +209,6 @@ void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie
   // Close dataset and dataspace
   H5Dclose(dataset_id);
   H5Sclose(dataspace_id);
-
 }
 
 
