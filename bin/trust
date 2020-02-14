@@ -161,7 +161,7 @@ suppression_file=""
 [ "$bigmem" = "" ] && bigmem=0
 [ "$gpu" = "" ] && gpu=0
 [ "$node" = "" ] && node=0
-[ "$USE_MPIRUN" = "" ] && USE_MPIRUN=0
+USE_MPIRUN=0 # Variable interne, plus modifiable par l'utilisateur
 
 ####################
 # Loop for options #
@@ -639,7 +639,7 @@ if [ $PETSC_HAVE_CUDA = 1 ] && [ $USE_PETSC = 1 ]
 then
    gpu=1
 fi
-
+USE_MPIRUN
 ######################
 # Selon les machines #
 ######################
