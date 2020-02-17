@@ -80,7 +80,8 @@ const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
   Nom nom_champ;
   while (curseur)
     {
-      const Champ_base& ch = curseur.valeur().valeur();
+      REF(Champ_base) ch_tmp = curseur.valeur();
+      const Champ_base& ch = ch_tmp.valeur();
       nom_champ = ch.le_nom();
       if (nom_champ.majuscule()==nom)
         {
@@ -139,23 +140,25 @@ void rebuild_liste_noms( const  LIST(REF(Champ_base))& liste_champs_, const Noms
   Nom nom_champ;
   while (curseur)
     {
-      nom_champ = (curseur.valeur().valeur().le_nom());
+      REF(Champ_base) ch_tmp = curseur.valeur();
+      const Champ_base& ch = ch_tmp.valeur();
+      nom_champ = ch.le_nom();
       //Cerr<<" ok "<<nom_champ<<finl;
       if (nom_champ!=Nom())
         new_liste_add_if_not(new_liste,nom_champ);
 
 
-      const Noms&  syno= curseur.valeur().valeur().get_synonyms();
+      const Noms&  syno= ch.get_synonyms();
       int nb_syno=syno.size();
       for (int s=0; s<nb_syno; s++)
         {
           if (syno[s]!=Nom())
             new_liste_add_if_not(new_liste,syno[s]);
         }
-      int nb_composantes = curseur.valeur().valeur().nb_comp();
+      int nb_composantes = ch.nb_comp();
       for (int i=0; i<nb_composantes; i++)
         {
-          nom_champ = (curseur.valeur().valeur().nom_compo(i));
+          nom_champ = (ch.nom_compo(i));
           if (nom_champ!=Nom())
             new_liste_add_if_not(new_liste,nom_champ);
         }
@@ -213,17 +216,19 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
   Motcle nom_champ_add = champ.le_nom();
   while (curseur)
     {
-      const Champ_base& ch= curseur.valeur().valeur();
+      //const Champ_base& ch= curseur.valeur().valeur();
+      REF(Champ_base) ch_tmp = curseur.valeur();
+      const Champ_base& ch = ch_tmp.valeur();
       const Nom& nom_champ = ch.le_nom();
       if (nom_champ==nom_champ_add)
         {
           Cerr<<champ.le_nom()<<" is already in the list of names of field !!"<<finl;
+          return;
           //  exit();
         }
 
       ++curseur;
     }
-
 
   liste_champs_.add(champ_ref);
   Cerr<<"Champs_compris::ajoute_champ " <<champ.le_nom()<<finl;
