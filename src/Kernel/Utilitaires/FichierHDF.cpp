@@ -211,5 +211,10 @@ void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie
   H5Sclose(dataspace_id);
 }
 
+htri_t FichierHDF::exists(const char* dataset_name)
+{
+  htri_t exists = H5Lexists( file_id_, dataset_name, H5P_DEFAULT );
+  return exists;
+}
 
 #endif

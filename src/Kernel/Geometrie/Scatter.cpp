@@ -359,12 +359,17 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       fic_hdf.open(nomentree, true);
       Entree_Brute data;
 
-      std::ostringstream oss;
-      oss << "/zone" << Process::me();
-      std::string s(oss.str());
-      const char * dataset_name(s.c_str());
-      fic_hdf.read_datasets(dataset_name, data);
-
+      int single_dataset = fic_hdf.exists("/zones");
+      if(single_dataset)
+        fic_hdf.read_dataset("/zones", data);
+      else
+        {
+          std::ostringstream oss;
+          oss << "/zone" << Process::me();
+          std::string s(oss.str());
+          const char * dataset_name(s.c_str());
+          fic_hdf.read_datasets(dataset_name, data);
+        }
       // Feed TRUST objects:
       data >> dom;
       dom.set_fichier_lu(nomentree);

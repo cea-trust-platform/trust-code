@@ -1343,8 +1343,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   // Name of the dataset that will be created for this part:
                   std::ostringstream oss2;
                   oss2 << "/zone" << i_part;
-                  Nom dataset_name(oss2.str().c_str());
-
+                  std::string s(oss2.str());
+                  Nom dataset_name(s.c_str());
                   fic_hdf.create_and_fill_datasets(dataset_name, os_hdf);
                 }
               else

@@ -71,6 +71,8 @@ public:
 
   virtual void close_dataset(Nom dataset_name);
 
+  // checks if a dataset named dataset_name exists in the file
+  virtual htri_t exists(const char* dataset_name);
 protected:
   virtual void prepare_file_props();
   virtual void prepare_dataset_props(Nom dataset_name);
