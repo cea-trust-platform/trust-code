@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+ Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -347,10 +347,15 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   // instead of the multiple binary files.
   bool is_hdf = EFichier::Can_be_read(nomentree);
 
+  static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
+
+  statistiques().begin_count(stats);
+
+
   if (is_hdf)
     {
       FichierHDFCollectif fic_hdf;
-      //FichierHDF fic_hdf;
+      //FichierHDF fic_hdf
       fic_hdf.open(nomentree, true);
       Entree_Brute data;
 
@@ -383,6 +388,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
       fichier_binaire.close();
     }
+
+  statistiques().end_count(stats);
+
   barrier();
 }
 

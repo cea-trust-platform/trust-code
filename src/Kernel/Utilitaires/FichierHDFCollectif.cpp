@@ -49,6 +49,8 @@ void FichierHDFCollectif::prepare_file_props()
 #ifdef MED_
   file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio( file_prop_lst_, Comm_Group_MPI::get_trio_u_world(), infos);
+  hsize_t stripe_size = 1572864; //voir avec lfs getstripe la taille d'un stripe
+  H5Pset_alignment(file_prop_lst_, 0, stripe_size);
 #endif
 
   MPI_Info_free(&infos);
@@ -61,7 +63,7 @@ void FichierHDFCollectif::prepare_dataset_props(Nom dataset_name)
 
 #ifdef MED_
   dataset_prop_lst_ = H5Pcreate(H5P_DATASET_XFER);
-  H5Pset_dxpl_mpio(dataset_prop_lst_, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
+  //H5Pset_dxpl_mpio(dataset_prop_lst_, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
 #endif
 
   //int rank = Process::me();
