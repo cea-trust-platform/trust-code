@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,6 +64,10 @@ public :
       int imprime(Sortie& , int ) const ;
   */
   void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
+
+  virtual void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
+                                  ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
+
   const Domaine& domaine() const;
   virtual void lire(double tps,int given_iteration=-1);
   int nb_pas_temps()
