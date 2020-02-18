@@ -63,19 +63,16 @@ fi
 c_compiler_found=0
 CC_compiler_found=0
 f77_compiler_found=0
-dtterm_found=0
 list_c_found=""
 list_CC_found=""
 
 # This list is token from the env_src/configurer_env script
 list_of_c_compilers="cc"
 list_of_f77_compilers="f90 f77 g77"
-list_of_dtterm="dtterm xterm"
 
 arch=`uname -s`
 case $arch in
  HP-UX) list_of_CC_compilers="aCC CC g++"
-        list_of_dtterm=$list_of_dtterm" hpterm"
         ;;
  IRIX*) list_of_CC_compilers="CC g++"
         ;;
@@ -90,23 +87,19 @@ case $arch in
  Linux) list_of_CC_compilers="g++ icpc icc ecc pgCC"
         list_of_c_compilers="gcc icc ecc pgcc cc"
         list_of_f77_compilers="f90 f77 g77 gfortran ifort ifc efc pgf90 pgf77"
-        list_of_dtterm=$list_of_dtterm" nxterm rxvt konsole"
         ;;
 CYGWIN*) list_of_CC_compilers="g++ icpc icc ecc pgCC"
          list_of_f77_compilers="f90 f77 g77 gfortran ifort ifc efc pgf90 pgf77"
          list_of_c_compilers="gcc icc ecc pgcc cc"
-         list_of_dtterm=$list_of_dtterm" nxterm rxvt konsole"
         ;;
 Darwin) list_of_CC_compilers="g++ gcc"
         list_of_c_compilers="gcc cc"
-        list_of_dtterm=$list_of_dtterm" nxterm"
         ;;
  cobea) list_of_CC_compilers="CC g++"
         list_of_f77_compilers="fort77 g77 f90"
         ;;
 UNIX_System_V) list_of_CC_compilers="CC g++"
         list_of_f77_compilers="frt f77 f90"
-        list_of_dtterm="xterm"
         ;;
      *) list_of_CC_compilers="g++ CC"
         list_of_f77_compilers="f90 f77 g77 fort77"
@@ -138,16 +131,12 @@ else
    f77_compiler_found=2
 fi
 
-for comm in $list_of_dtterm; do
-   [ "`whence2_ $comm`" != "$comm:" ] && [ "`whence2_ $comm`" != "" ] && dtterm_found=1
-done
 
 [ "$list_c_found" = " gcc" ] && [ "`eval gcc --version 1>/dev/null 2>&1;echo $?`" != 0 ] && c_compiler_found=0 && list_c_found=""
 
 [ "$c_compiler_found" = 0 ] && multiple_choices=1 && echo "    C compiler: $list_of_c_compilers  (*)" >> NON_INSTALLED
 [ "$CC_compiler_found" = 0 ] && multiple_choices=1 && echo "    C++ compiler: $list_of_CC_compilers  (*)" >> NON_INSTALLED
 [ "$f77_compiler_found" = 0 ] && multiple_choices=1 && echo "    Fortran compiler: $list_of_f77_compilers  (*)" >> NON_INSTALLED
-[ "$dtterm_found" = 0 ] && multiple_choices=1 && echo "    $list_of_dtterm  (*)" >> NON_INSTALLED
 
 ######################
 # Checking prerequis #
