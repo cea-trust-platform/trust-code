@@ -4,7 +4,7 @@
 #MSUB -Q normal
 #MSUB -T 43200
 #MSUB -o ~/myjob_irene-ccrt-build64.%J.o
-#MSUB -e ~/myjob_irene-ccrt-buil64.%J.e
+#MSUB -e ~/myjob_irene-ccrt-build64.%J.e
 #MSUB -A dendm2s
 #MSUB -E "--no-requeue"
 #MSUB -n 1
