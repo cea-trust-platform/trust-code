@@ -542,6 +542,7 @@ do
    fi
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
+   export TMPDIR=$TRUST_TMP # Par defaut, les fichiers temporaires de PETSC sont sous /tmp, cela peut probleme si pas de droit d'execution donnes
    ./configure --help 1>../configure.help 2>&1
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages
    # en etudiant ce qu'il y'a dans ./$CONFIG
