@@ -254,14 +254,11 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           // nb_dt nombre de pas de temps dans le fichier MED
           // ndt taille du tableau temps_sauv contenant les pas de temps du champ dans le fichier MED
           // tmax dernier temps du tableau temps_sauv ?
-          // dt ? ToDo
+          // dt ?
           // t temps courant pour lequel on veut remplir le champ
           // last_time_only_ specifie dans le jeu de donnees ou non
           double tmax = temps_sauv_(nb_dt - 1);
           double dt = temps_sauv_(nb_dt - 1);
-          Cerr << "temps=" << temps_sauv_ << finl;
-          Cerr << "temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_
-               << finl;
           if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
             {
               Cout << "We assume that the field " << fieldName.c_str() << " is stationary." << finl;
@@ -270,50 +267,42 @@ void Champ_Fonc_MED::lire(double t, int given_it)
         }
       if (search_field)
         {
-          bool read_field = false;
-          Cerr << "Searching for the field " << fieldName.c_str() << " at ";
-          if (given_it != -1)
-            Cerr << "iteration " << given_it + 1;
-          else
-            Cerr << "time " << t;
-          Cerr << " on the mesh " << meshName.c_str() << " in " << fileName.c_str() << " ..." << finl;
-          // Loop on field iterations to find the good time:
-          std::vector<std::pair<int, int> > Iterations = GetFieldIterations(field_type, fileName, meshName,
-                                                                            fieldName);
-          for (unsigned it = 0; it < Iterations.size(); it++)
+          Cerr << "Champ_Fonc_MED::lire() Reading the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str();
+          if (temps_sauv_.size_array()==0)
+            temps_sauv_ = lire_temps_champ(fileName, fieldName);
+          unsigned int nn = temps_sauv_.size_array();
+          if (given_it == -1)
             {
-              int iteration = Iterations[it].first;
-              int order = Iterations[it].second;
-              // Either, given iteration matches or fieldTime matches given time t:
-              double fieldTime = GetTimeAttachedOnFieldIteration(fileName, fieldName, iteration, order);
-              if (given_it != -1 ? given_it == (int) it : est_egal(fieldTime, t))
+              for (given_it = 0; given_it < (int) nn; given_it++)
+                if (est_egal(temps_sauv_[given_it], t)) break;
+              if (given_it == (int)nn)
                 {
-                  // ToDo can we avoid reloading the mesh ...
-                  // Only one MCAuto below to avoid double deletion:
-                  MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName,
-                                                              iteration, order);
-                  MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
-                  if (field == 0)
-                    {
-                      Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
-                      Process::exit(-1);
-                    }
-                  const double *field_values = field->getArray()->begin();
-                  assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
-                  assert((int) field->getNumberOfComponents() ==
-                         (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
-                  memcpy(le_champ().valeurs().addr(), field_values,
-                         le_champ().valeurs().size_array() * sizeof(double));
-                  read_field = true;
-                  Cerr << "OK, reading the field." << finl;
-                  break;
+                  Cerr << finl << "Error. Time " << t << " not found in the times list of the MED file:" << finl;
+                  for (unsigned int n=0; n<nn; n++)
+                    Cerr << temps_sauv_[n] << finl;
+                  Process::exit();
                 }
             }
-          if (!read_field)
+          int iteration = time_steps_[given_it].first;
+          int order = time_steps_[given_it].second;
+          Cerr << " at time " << t << " ... " << finl;
+
+          // ToDo can we avoid reloading the mesh ...
+          // Only one MCAuto below to avoid double deletion:
+          MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName,
+                                                      iteration, order);
+          MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+          if (field == 0)
             {
-              Cerr << "Field not found !" << finl;
-              Process::exit();
+              Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+              Process::exit(-1);
             }
+          const double *field_values = field->getArray()->begin();
+          assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
+          assert((int) field->getNumberOfComponents() ==
+                 (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
+          memcpy(le_champ().valeurs().addr(), field_values,
+                 le_champ().valeurs().size_array() * sizeof(double));
         }
     }
   else
@@ -575,23 +564,36 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
 #endif
 }
 
+// Remplissage des temps du champ fieldName depuis le fichier fileName
+ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const std::string& fieldName)
+{
+  ArrOfDouble temps_sauv;
+  MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName, fieldName));
+  std::vector<double> tps;
+  time_steps_ = ft1->getTimeSteps(tps);
+  unsigned int nn = tps.size();
+  temps_sauv.resize_array(nn);
+  for (unsigned it = 0; it < nn; it++)
+    temps_sauv[it] = tps[it];
+  return temps_sauv;
+}
+
+// Lecture du dernier champ dans le fichier juste pour decouvrir et stocker:
+// les temps (temps_sauv)
+// sa taille (size)
+// le nombre de composantes (nbcomp)
+// le type (type_champ)
 void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
                                         ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ)
 {
-  MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName,fieldName));
-  std::vector<double> tps;
-  std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);
-  unsigned int nn = tps.size();
-  temps_sauv.resize_array(nn);
-
-  int last_iter  = tst[nn-1].first;
-  int last_order = tst[nn-1].second;
-
-  for (unsigned it=0; it<nn; it++)
-    temps_sauv[it] = tps[it];
+  temps_sauv = lire_temps_champ(fileName, fieldName);
+  unsigned int nn = temps_sauv.size_array();
+  int last_iter  = time_steps_[nn-1].first;
+  int last_order = time_steps_[nn-1].second;
 
   // ToDo can we avoid reloading the mesh ...
   // Only one MCAuto below to avoid double deletion:
+  Cerr << "Champ_Fonc_MED::lire_donnees_champ() Reading " << fileName.c_str() << " for infos on field " << fieldName.c_str() << " at (" << last_iter << "," << last_order << ")" << finl;
   MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName, last_iter,
                                               last_order);
   MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
@@ -644,6 +646,3 @@ Entree& Champ_Fonc_MEDfile::readOn(Entree& is)
 {
   return Champ_Fonc_MED::readOn(is);
 }
-
-
-

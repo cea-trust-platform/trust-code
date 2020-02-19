@@ -65,6 +65,7 @@ public :
   */
   void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
 
+  ArrOfDouble lire_temps_champ(const std::string& fileName, const std::string& fieldName);
   virtual void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
                                   ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
 
@@ -109,6 +110,7 @@ protected:
 #ifdef MEDCOUPLING_
   INTERP_KERNEL::NormalizedCellType cell_type;
   MEDCoupling::TypeOfField field_type;
+  std::vector< std::pair<int,int> > time_steps_;
 #endif
 #endif
   Champ_Fonc vrai_champ_;
