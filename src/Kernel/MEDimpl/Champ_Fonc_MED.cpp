@@ -36,6 +36,7 @@ using MEDCoupling::MCAuto;
 using MEDCoupling::GetTimeAttachedOnFieldIteration;
 using MEDCoupling::GetAllFieldNamesOnMesh;
 using MEDCoupling::MEDFileFieldMultiTS;
+using MEDCoupling::MEDFileField1TS;
 #endif
 
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
@@ -267,7 +268,6 @@ void Champ_Fonc_MED::lire(double t, int given_it)
         }
       if (search_field)
         {
-          Cerr << "Champ_Fonc_MED::lire() Reading the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str();
           if (temps_sauv_.size_array()==0)
             temps_sauv_ = lire_temps_champ(fileName, fieldName);
           unsigned int nn = temps_sauv_.size_array();
@@ -277,7 +277,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
                 if (est_egal(temps_sauv_[given_it], t)) break;
               if (given_it == (int)nn)
                 {
-                  Cerr << finl << "Error. Time " << t << " not found in the times list of the MED file:" << finl;
+                  Cerr << "Error. Time " << t << " not found in the times list of the " << fileName.c_str() << " file" << finl;
                   for (unsigned int n=0; n<nn; n++)
                     Cerr << temps_sauv_[n] << finl;
                   Process::exit();
@@ -287,10 +287,8 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           int order = time_steps_[given_it].second;
           Cerr << " at time " << t << " ... " << finl;
 
-          // ToDo can we avoid reloading the mesh ...
           // Only one MCAuto below to avoid double deletion:
-          MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName,
-                                                      iteration, order);
+          MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
           MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
           if (field == 0)
             {
@@ -578,6 +576,23 @@ ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const 
   return temps_sauv;
 }
 
+MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order)
+{
+  // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
+  bool fast = meshName.c_str() == domaine().le_nom() && domaine().getUMesh() != NULL;
+  Cerr << "Champ_Fonc_MED::lire() Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str();
+  MCAuto<MEDCouplingField> ffield;
+  if (fast)
+    {
+      // Lecture plus rapide du field sans lecture du mesh associe
+      MCAuto<MEDFileField1TS> file = MEDCoupling::MEDFileField1TS::New(fileName, fieldName, iteration, order);
+      ffield = file->getFieldOnMeshAtLevel(field_type, domaine().getUMesh(), 0);
+    }
+  else   // Lecture ~deux fois plus lente du field avec lecture du mesh associe
+    ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration, order);
+  return ffield;
+}
+
 // Lecture du dernier champ dans le fichier juste pour decouvrir et stocker:
 // les temps (temps_sauv)
 // sa taille (size)
@@ -591,11 +606,8 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
   int last_iter  = time_steps_[nn-1].first;
   int last_order = time_steps_[nn-1].second;
 
-  // ToDo can we avoid reloading the mesh ...
   // Only one MCAuto below to avoid double deletion:
-  Cerr << "Champ_Fonc_MED::lire_donnees_champ() Reading " << fileName.c_str() << " for infos on field " << fieldName.c_str() << " at (" << last_iter << "," << last_order << ")" << finl;
-  MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName, last_iter,
-                                              last_order);
+  MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, last_iter, last_order);
   MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
   if (field == 0)
     {
