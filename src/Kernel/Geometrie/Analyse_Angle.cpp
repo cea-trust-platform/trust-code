@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,8 @@ double largest_angle(const DoubleTab& coords)
               coords(n,2)-coords(prem,2));
       Vecteur3::produit_vectoriel(edge[0],edge[1],normals[n]);
       //normals[n]=edge[0]*edge[1];
-      normals[n]*=1./normals[n].length();
+      double l = normals[n].length();
+      normals[n]*=(l>0 ? 1./l : 0);
       if (Vecteur3::produit_scalaire(normals[n],opp)<0)
         normals[n]*=-1;
     }
@@ -92,7 +93,7 @@ double largest_angle(const DoubleTab& coords)
         if (pscal>max_pscal)
           max_pscal=pscal;
       }
-  double tet=acos(max_pscal)/acos(-1.)*180; // acos(-1) ne compile pas avec xlC
+  double tet=acos(max_pscal<=1. ? max_pscal : 1.)/acos(-1.)*180; // acos(-1) ne compile pas avec xlC
 
   tet=180-tet;
   return tet;
@@ -119,7 +120,7 @@ void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
       return;
     }
 
-  ArrOfInt histo(nb_histo);
+  ArrOfInt histo(nb_histo+1);
   int nb_elem=dom.zone(0).nb_elem();
   const DoubleTab& som=dom.les_sommets();
   const IntTab& les_elems=dom.zone(0).les_elems();
@@ -139,8 +140,11 @@ void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
 
       int test=(int)(teta/180*nb_histo);
       histo(test)++;
-
+      if (test==nb_histo)
+        Cerr << "Error, the mesh cell " << elem << " is flat. Fix your mesh." << finl;
     }
+  if (histo(nb_histo)>0)
+    Process::exit();
   int nb_elem_tot=(int)Process::mp_sum(nb_elem);
   if (nb_elem_tot>0)
     {
