@@ -639,7 +639,6 @@ if [ $PETSC_HAVE_CUDA = 1 ] && [ $USE_PETSC = 1 ]
 then
    gpu=1
 fi
-USE_MPIRUN
 ######################
 # Selon les machines #
 ######################
