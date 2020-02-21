@@ -1328,7 +1328,6 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       // Get cells:
       int ncells = mesh->getNumberOfCells();
       bool cell_from_boundary = false;
-      Cerr << "Detecting " << ncells << " cells." << finl;
       //const int *conn = mesh->getNodalConnectivity()->begin();
       //const int *connIndex = mesh->getNodalConnectivityIndex()->begin();
       // Use ArrOfInt to benefit from assert:
@@ -1338,6 +1337,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 
       int mesh_type_cell = conn[connIndex[0]];
       type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary);
+      Cerr << "Detecting " << ncells << " cells (" << type_elem << ")." << finl;
       type_ele.typer(type_elem);
       // Detect a mesh with different cells (not supported):
       for (int i = 0; i < ncells; i++)
@@ -1345,7 +1345,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           int type_cell = conn[connIndex[i]];
           if (type_cell != mesh_type_cell)
             {
-              Cerr << "Elements of kind " << type_elem << " has already been readen" << finl;
+              Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
               Cerr << "TRUST does not support different element types for the mesh." << finl;
               Cerr << "The new elements of kind "
                    << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary)
@@ -1494,11 +1494,17 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
                 {
                   type_cell = conn[connIndex[i]];
-                  type_face[tp] = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary);
+                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary);
+                  if (tp>=type_face.size())
+                    {
+                      Cerr << "Error, it does not support another face type: " << type_face_lu << finl;
+                      Process::exit();
+                    }
+                  type_face[tp] = type_face_lu;
                   familles[tp].resize_array(nface);
                   all_faces_bord[tp].resize(nface, max_som_face);
                   all_faces_bord[tp] = 0;
-                  Cerr << "Detecting " << nface << " boundary faces (" << type_face[tp] << ")." << finl;
+                  Cerr << "Detecting " << nface << " faces (" << type_face[tp] << ")." << finl;
                   max_som_face = 0;
                   nface = 0;
                   tp++;
