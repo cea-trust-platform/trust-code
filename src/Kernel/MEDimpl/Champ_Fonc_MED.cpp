@@ -28,11 +28,15 @@
 #include <MEDLoader.hxx>
 #include <MEDCouplingField.hxx>
 #include <MEDCouplingFieldDouble.hxx>
+#pragma GCC diagnostic ignored "-Wreorder"
+#include <MEDFileField.hxx>
 using MEDCoupling::MEDCouplingField;
 using MEDCoupling::MEDCouplingFieldDouble;
 using MEDCoupling::MCAuto;
 using MEDCoupling::GetTimeAttachedOnFieldIteration;
 using MEDCoupling::GetAllFieldNamesOnMesh;
+using MEDCoupling::MEDFileFieldMultiTS;
+using MEDCoupling::MEDFileField1TS;
 #endif
 
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
@@ -104,42 +108,86 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
     }
   nommer(nom_champ);
 
-  bool domain_exist=((interprete().objet_existant(nom_dom))&& ( sub_type(Domaine, interprete().objet(nom_dom))));
-  if (( use_existing_domain) && (!domain_exist))
+  bool domain_exist=( interprete().objet_existant(nom_dom) && sub_type(Domaine, interprete().objet(nom_dom)) );
+  if (use_existing_domain)
     {
-      Cerr<<"The domain "<< nom_dom << " does not exist !!!! In Champ_Fonc_MED "<< nom_fic2<<" "<<nom_dom<<" "<<nom_champ<<" "<<localisation<<" "<<un_temps <<finl;
-      exit();
+      if (!domain_exist)
+        {
+          Cerr << "The domain " << nom_dom << " does not exist !!!! In Champ_Fonc_MED " << nom_fic2 << " " << nom_dom
+               << " " << nom_champ << " " << localisation << " " << un_temps << finl;
+          exit();
+        }
+      else
+        {
+          // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine:
+          Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
+          if (Process::nproc()>1 && mp_max(le_domaine.nb_som()>0) != 0)
+            {
+              Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom << finl;
+              Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;
+              Cerr << "Try suppress use_existing_domain option." << finl;
+              //Process::exit();
+              use_existing_domain = 0;
+            }
+        }
     }
   if (domain_exist && use_existing_domain)
     {
       Cerr<<nom_dom<<" was not read into the med file because it already exists." <<finl;
 
-      Domaine& un_dom=ref_cast(Domaine, interprete().objet(nom_dom));
+      Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
+
 #ifndef NDEBUG
       // on va verifier que l'on a le meme domaine en mode debug car lent
-      if (1)
+      // Ce test ne peut etre fait qu'en sequentiel car en parallele, dom=domaine_complet, un_dom=domaine_local
+      if (nproc()==1)
         {
           LireMED liremed;
           dom.nommer(nom_dom);
           // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous zones
           Nom nom_dom_trio_non_nomme;
           liremed.lire_geom(nom_fic2,dom,nom_dom,nom_dom_trio_non_nomme);
-          dom.les_sommets().set_md_vector(un_dom.les_sommets().get_md_vector());
-          dom.les_sommets()-=un_dom.les_sommets();
+
+          DoubleTab diff_som(dom.les_sommets());
+          IntTab diff_elem(dom.zone(0).les_elems());
+          diff_som.set_md_vector(le_domaine.les_sommets().get_md_vector());
+          diff_elem.set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
+          diff_som-=le_domaine.les_sommets();
+          diff_elem-=le_domaine.zone(0).les_elems();
+          /*
+                    diff_som.set_md_vector(un_dom.les_sommets().get_md_vector());
+                    diff_som-=un_dom.les_sommets();
+                    diff_som.set_md_vector(MD_Vector());
+                    diff_elem.set_md_vector(un_dom.zone(0).les_elems().get_md_vector());
+                    diff_elem-=un_dom.zone(0).les_elems();
+                    diff_elem.set_md_vector(MD_Vector());
+          */
+          double err_som0 = max_abs_array(diff_som);
+          int err_elem0 = max_abs_array(diff_elem);
+
+
+          // Le domaine un_dom a peut etre ete reordonne, on refait le test en reordonnant le domaine dom .....
+          dom.reordonner();
+          dom.les_sommets().set_md_vector(le_domaine.les_sommets().get_md_vector());
+          dom.les_sommets()-=le_domaine.les_sommets();
           dom.les_sommets().set_md_vector(MD_Vector());
-          dom.zone(0).les_elems().set_md_vector(un_dom.zone(0).les_elems().get_md_vector());
-          dom.zone(0).les_elems()-=un_dom.zone(0).les_elems();
+          dom.zone(0).les_elems().set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
+          dom.zone(0).les_elems()-=le_domaine.zone(0).les_elems();
           dom.zone(0).les_elems().set_md_vector(MD_Vector());
-          if ((max_abs_array(dom.les_sommets())>1e-5)||(max_abs_array(dom.zone(0).les_elems())>0))
+          double err_som = max_abs_array(dom.les_sommets());
+          int err_elem = max_abs_array(dom.zone(0).les_elems());
+
+          if ((err_som>1e-5 || err_elem>0) && (err_som0>1e-5 || err_elem0>0))
             {
               Cerr<<"Error the domain in the file "<<nom_fic2<<" and domain "<<nom_dom<<" are not the same (coords,conn)."<<finl;
               exit();
             }
+
           //
           dom=Domaine();
         }
 #endif
-      creer(nom_fic2,un_dom,localisation,temps_sauv_);
+      creer(nom_fic2,le_domaine,localisation,temps_sauv_);
     }
   else
     {
@@ -151,6 +199,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       dom.nommer(nom_dom);
       // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous zones
       Nom nom_dom_trio_non_nomme;
+      // Remplit dom:
       liremed.lire_geom(nom_fic2,dom,nom_dom,nom_dom_trio_non_nomme);
       // MODIF ELI LAUCOIN (06/03/2012) :
       // j'ajoute l'attribut temps_sauv_
@@ -183,6 +232,13 @@ void Champ_Fonc_MED::mettre_a_jour(double t)
 
 void Champ_Fonc_MED::lire(double t, int given_it)
 {
+  if (zonebidon_inst.nb_elem()==0) // Cas d'une zone vide
+    {
+      // Mise a jour:
+      Champ_Fonc_base::mettre_a_jour(t);
+      le_champ().Champ_Fonc_base::mettre_a_jour(t);
+      return;
+    }
 #ifdef MED_
 #ifdef MEDCOUPLING_
   if (use_medcoupling_)
@@ -199,14 +255,11 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           // nb_dt nombre de pas de temps dans le fichier MED
           // ndt taille du tableau temps_sauv contenant les pas de temps du champ dans le fichier MED
           // tmax dernier temps du tableau temps_sauv ?
-          // dt ? ToDo
+          // dt ?
           // t temps courant pour lequel on veut remplir le champ
           // last_time_only_ specifie dans le jeu de donnees ou non
           double tmax = temps_sauv_(nb_dt - 1);
           double dt = temps_sauv_(nb_dt - 1);
-          Cerr << "Provisoire temps=" << temps_sauv_ << finl;
-          Cerr << "Provisoire temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_
-               << finl;
           if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
             {
               Cout << "We assume that the field " << fieldName.c_str() << " is stationary." << finl;
@@ -215,50 +268,39 @@ void Champ_Fonc_MED::lire(double t, int given_it)
         }
       if (search_field)
         {
-          bool read_field = false;
-          Cerr << "Searching for the field " << fieldName.c_str() << " at ";
-          if (given_it != -1)
-            Cerr << "iteration " << given_it + 1;
-          else
-            Cerr << "time " << t;
-          Cerr << " on the mesh " << meshName.c_str() << " in " << fileName.c_str() << " ..." << finl;
-          // Loop on field iterations to find the good time:
-          std::vector<std::pair<int, int> > Iterations = GetFieldIterations(field_type, fileName, meshName,
-                                                                            fieldName);
-          for (unsigned it = 0; it < Iterations.size(); it++)
+          if (temps_sauv_.size_array()==0)
+            temps_sauv_ = lire_temps_champ(fileName, fieldName);
+          unsigned int nn = temps_sauv_.size_array();
+          if (given_it == -1)
             {
-              int iteration = Iterations[it].first;
-              int order = Iterations[it].second;
-              // Either, given iteration matches or fieldTime matches given time t:
-              double fieldTime = GetTimeAttachedOnFieldIteration(fileName, fieldName, iteration, order);
-              if (given_it != -1 ? given_it == (int) it : est_egal(fieldTime, t))
+              for (given_it = 0; given_it < (int) nn; given_it++)
+                if (est_egal(temps_sauv_[given_it], t)) break;
+              if (given_it == (int)nn)
                 {
-                  // ToDo can we avoid reloading the mesh ...
-                  // Only one MCAuto below to avoid double deletion:
-                  MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName,
-                                                              iteration, order);
-                  MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
-                  if (field == 0)
-                    {
-                      Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
-                      Process::exit(-1);
-                    }
-                  const double *field_values = field->getArray()->begin();
-                  assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
-                  assert((int) field->getNumberOfComponents() ==
-                         (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
-                  memcpy(le_champ().valeurs().addr(), field_values,
-                         le_champ().valeurs().size_array() * sizeof(double));
-                  read_field = true;
-                  Cerr << "OK, reading the field." << finl;
-                  break;
+                  Cerr << "Error. Time " << t << " not found in the times list of the " << fileName.c_str() << " file" << finl;
+                  for (unsigned int n=0; n<nn; n++)
+                    Cerr << temps_sauv_[n] << finl;
+                  Process::exit();
                 }
             }
-          if (!read_field)
+          int iteration = time_steps_[given_it].first;
+          int order = time_steps_[given_it].second;
+          Cerr << " at time " << t << " ... " << finl;
+
+          // Only one MCAuto below to avoid double deletion:
+          MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
+          MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+          if (field == 0)
             {
-              Cerr << "Field not found !" << finl;
-              Process::exit();
+              Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+              Process::exit(-1);
             }
+          const double *field_values = field->getArray()->begin();
+          assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
+          assert((int) field->getNumberOfComponents() ==
+                 (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
+          memcpy(le_champ().valeurs().addr(), field_values,
+                 le_champ().valeurs().size_array() * sizeof(double));
         }
     }
   else
@@ -337,8 +379,8 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       //dt=t;
       //numdt=1;
       //numo=MED_NONOR;
-      Cerr << "Provisoire temps=" << temps_sauv_ << finl;
-      Cerr << "Provisoire temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_ << finl;
+      Cerr << "temps=" << temps_sauv_ << finl;
+      Cerr << "temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_ << finl;
       if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
         {
           Cout << "We assume that the field " << le_nom_du_champ << " is stationary." << finl;
@@ -458,42 +500,9 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
         }
       else
         Cerr << "Ok, we find into file " << fileName.c_str() << " a field named " << nom_champ_dans_fichier_med_ << finl;
+
       std::string fieldName = nom_champ_dans_fichier_med_.getString();
-      std::vector< std::pair<int,int> > Iterations = GetFieldIterations(field_type, fileName, meshName, fieldName);
-      temps_sauv.resize_array(Iterations.size());
-      for (unsigned it=0; it<Iterations.size(); it++)
-        {
-          int iteration = Iterations[it].first;
-          int order = Iterations[it].second;
-          // Either, given iteration matches or fieldTime matches given time t:
-          double fieldTime = GetTimeAttachedOnFieldIteration(fileName, fieldName, iteration, order);
-          temps_sauv[it] = fieldTime;
-          // Last time:
-          if (it==Iterations.size()-1)
-            {
-              // ToDo can we avoid reloading the mesh ...
-              // Only one MCAuto below to avoid double deletion:
-              MCAuto<MEDCouplingField> ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration,
-                                                          order);
-              MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
-              if (field == 0)
-                {
-                  Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
-                  Process::exit(-1);
-                }
-              size = field->getNumberOfTuplesExpected();
-              nbcomp = (int) field->getNumberOfComponents();
-            }
-        }
-      if (field_type == MEDCoupling::ON_NODES)
-        {
-          if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
-            type_champ = "Champ_Fonc_Q1_MED";
-          else
-            type_champ = "Champ_Fonc_P1_MED";
-        }
-      else if (field_type == MEDCoupling::ON_CELLS)
-        type_champ = "Champ_Fonc_P0_MED";
+      lire_donnees_champ(fileName,meshName,fieldName,temps_sauv,size,nbcomp,type_champ);
     }
   else
 #endif
@@ -534,11 +543,13 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
   le_champ().fixer_nb_comp(nbcomp);
   zonebidon_inst.associer_zone(un_dom.zone(0));
   le_champ().associer_zone_dis_base(zonebidon_inst);
+  // Cas d'une zone vide
+  if (zonebidon_inst.nb_elem()==0) size = 0;
   le_champ().fixer_nb_valeurs_nodales(size);
   if (size != le_champ().valeurs().dimension(0))
     {
-      Cerr << "Error in Champ_Fonc_MED: nb_ddl incorrect" << finl;
-      exit();
+      Cerr << "Error in " << que_suis_je() << " : nb_ddl incorrect" << finl;
+      Process::exit();
     }
   //pour forcer la lecture lors du mettre a jour
   changer_temps(-1e3);
@@ -549,6 +560,72 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
 #else
   med_non_installe();
 #endif
+}
+
+// Remplissage des temps du champ fieldName depuis le fichier fileName
+ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const std::string& fieldName)
+{
+  ArrOfDouble temps_sauv;
+  MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName, fieldName));
+  std::vector<double> tps;
+  time_steps_ = ft1->getTimeSteps(tps);
+  unsigned int nn = tps.size();
+  temps_sauv.resize_array(nn);
+  for (unsigned it = 0; it < nn; it++)
+    temps_sauv[it] = tps[it];
+  return temps_sauv;
+}
+
+MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order)
+{
+  // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
+  bool fast = meshName.c_str() == domaine().le_nom() && domaine().getUMesh() != NULL;
+  Cerr << "Champ_Fonc_MED::lire() Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str();
+  MCAuto<MEDCouplingField> ffield;
+  if (fast)
+    {
+      // Lecture plus rapide du field sans lecture du mesh associe
+      MCAuto<MEDFileField1TS> file = MEDCoupling::MEDFileField1TS::New(fileName, fieldName, iteration, order);
+      ffield = file->getFieldOnMeshAtLevel(field_type, domaine().getUMesh(), 0);
+    }
+  else   // Lecture ~deux fois plus lente du field avec lecture du mesh associe
+    ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration, order);
+  return ffield;
+}
+
+// Lecture du dernier champ dans le fichier juste pour decouvrir et stocker:
+// les temps (temps_sauv)
+// sa taille (size)
+// le nombre de composantes (nbcomp)
+// le type (type_champ)
+void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
+                                        ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ)
+{
+  temps_sauv = lire_temps_champ(fileName, fieldName);
+  unsigned int nn = temps_sauv.size_array();
+  int last_iter  = time_steps_[nn-1].first;
+  int last_order = time_steps_[nn-1].second;
+
+  // Only one MCAuto below to avoid double deletion:
+  MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, last_iter, last_order);
+  MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+  if (field == 0)
+    {
+      Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+      Process::exit(-1);
+    }
+  size = field->getNumberOfTuplesExpected();
+  nbcomp = (int) field->getNumberOfComponents();
+
+  if (field_type == MEDCoupling::ON_NODES)
+    {
+      if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
+        type_champ = "Champ_Fonc_Q1_MED";
+      else
+        type_champ = "Champ_Fonc_P1_MED";
+    }
+  else if (field_type == MEDCoupling::ON_CELLS)
+    type_champ = "Champ_Fonc_P0_MED";
 }
 
 const Zone_dis_base& Champ_Fonc_MED::zone_dis_base() const
@@ -581,6 +658,3 @@ Entree& Champ_Fonc_MEDfile::readOn(Entree& is)
 {
   return Champ_Fonc_MED::readOn(is);
 }
-
-
-

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,6 +64,12 @@ public :
       int imprime(Sortie& , int ) const ;
   */
   void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
+
+  MCAuto<MEDCoupling::MEDCouplingField> lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order);
+  ArrOfDouble lire_temps_champ(const std::string& fileName, const std::string& fieldName);
+  virtual void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
+                                  ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
+
   const Domaine& domaine() const;
   virtual void lire(double tps,int given_iteration=-1);
   int nb_pas_temps()
@@ -105,6 +111,7 @@ protected:
 #ifdef MEDCOUPLING_
   INTERP_KERNEL::NormalizedCellType cell_type;
   MEDCoupling::TypeOfField field_type;
+  std::vector< std::pair<int,int> > time_steps_;
 #endif
 #endif
   Champ_Fonc vrai_champ_;

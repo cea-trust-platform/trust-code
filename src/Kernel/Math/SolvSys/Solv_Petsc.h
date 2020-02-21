@@ -103,6 +103,7 @@ protected :
   int nb_matrices_creees_;
   int solveur_cree_;
   double seuil_;
+  double seuil_relatif_;
   double divtol_;
 
   // Objets Petsc
@@ -206,6 +207,7 @@ inline void Solv_Petsc::initialize()
   matrice_symetrique_=-1;
   preconditionnement_non_symetrique_=0;
   seuil_ = 1e-12;
+  seuil_relatif_ = 0;
   divtol_ = 0;
   nb_matrices_creees_ = 0;
   solveur_cree_ = 0;
