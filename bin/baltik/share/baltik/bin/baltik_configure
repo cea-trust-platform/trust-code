@@ -686,7 +686,8 @@ do
     the_path=${list_path[$idx]}
     if [ "$the_path" != $project_directory ] && [ "$name" != ":" ]
     then
-	echo "export "$name"_project_directory="$the_path >> $env_file
+       the_relative_path=`echo $the_path | sed "s?${project_directory}?\$\{project_directory\}?"`
+       echo "export "$name"_project_directory="$the_relative_path >> $env_file
     fi
     let idx++
 done

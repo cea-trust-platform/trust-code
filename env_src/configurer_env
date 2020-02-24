@@ -45,7 +45,7 @@ make_()
       echo "---" >> $TRUST_ROOT/NON_INSTALLED
    fi
    # On ecrit dans prog.log pour la desinstallation
-   echo `pwd` >> $TRUST_ROOT/env/prog.log
+   echo `pwd` | sed "s?$TRUST_ROOT/??" >> $TRUST_ROOT/env/prog.log
    cd - 1>/dev/null 2>&1
 }
 
@@ -578,7 +578,7 @@ then
    then
       for prog in `cat prog.log`
       do
-         cd $prog
+         cd ../$prog
          make clean
          cd -
       done
