@@ -562,6 +562,7 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
 #endif
 }
 
+#ifdef MEDCOUPLING_
 // Remplissage des temps du champ fieldName depuis le fichier fileName
 ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const std::string& fieldName)
 {
@@ -627,6 +628,7 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
   else if (field_type == MEDCoupling::ON_CELLS)
     type_champ = "Champ_Fonc_P0_MED";
 }
+#endif
 
 const Zone_dis_base& Champ_Fonc_MED::zone_dis_base() const
 {

@@ -65,10 +65,12 @@ public :
   */
   void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
 
+#ifdef MEDCOUPLING_
   MCAuto<MEDCoupling::MEDCouplingField> lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order);
   ArrOfDouble lire_temps_champ(const std::string& fileName, const std::string& fieldName);
   virtual void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
                                   ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
+#endif
 
   const Domaine& domaine() const;
   virtual void lire(double tps,int given_iteration=-1);
