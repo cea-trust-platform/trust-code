@@ -1,7 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
-XX/XX/20 (TRUST)  Bug fixed   : Rewrite Champ_Fonc_MED class for a faster Champ_Fonc_MED_tabule keyword (read of several time steps in a MED file for field time-tabulation)
+25/02/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model was not computed correctly
+21/02/20 (TRUST)  Bug fixed   : Rewrite Champ_Fonc_MED class for a faster Champ_Fonc_MED_tabule keyword (read of several time steps in a MED file for field time-tabulation)
 29/01/20 (TRUST)  New feature : New option thermique_monolithique (VDF only) for Scheme_Euler_Implicit keyword to enable full thermal impliciting for coupled problems (single matrix solved)
 23/01/20 (Tools)  New feature : Add merge_meds.py python script to merge MED files in parallel into single one
 21/01/20 (TRUST)  Output      : Change of .son file format (header, column alignment, precision_impr by default 8 and not 3 as before) + add gnuplot_header option to have a gnuplot5 compatible header

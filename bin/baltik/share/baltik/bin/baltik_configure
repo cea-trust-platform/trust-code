@@ -415,6 +415,14 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
+printf "# help ctest_$type \t: Running baltik test suite in `human_name_from_name $type` mode with ctest\n" >>$project_makefile
+printf "ctest_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
 printf "# help check_deps_$type : Running dependencies test suite in `human_name_from_name $type` mode \n" >>$project_makefile
 printf "check_deps_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
