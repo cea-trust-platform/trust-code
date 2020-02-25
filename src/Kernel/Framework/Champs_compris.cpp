@@ -80,8 +80,7 @@ const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
   Nom nom_champ;
   while (curseur)
     {
-      REF(Champ_base) ch_tmp = curseur.valeur();
-      const Champ_base& ch = ch_tmp.valeur();
+      const Champ_base& ch= curseur.valeur().valeur();
       nom_champ = ch.le_nom();
       if (nom_champ.majuscule()==nom)
         {
@@ -140,8 +139,7 @@ void rebuild_liste_noms( const  LIST(REF(Champ_base))& liste_champs_, const Noms
   Nom nom_champ;
   while (curseur)
     {
-      REF(Champ_base) ch_tmp = curseur.valeur();
-      const Champ_base& ch = ch_tmp.valeur();
+      const Champ_base& ch= curseur.valeur().valeur();
       nom_champ = ch.le_nom();
       //Cerr<<" ok "<<nom_champ<<finl;
       if (nom_champ!=Nom())
@@ -216,17 +214,13 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
   Motcle nom_champ_add = champ.le_nom();
   while (curseur)
     {
-      //const Champ_base& ch= curseur.valeur().valeur();
-      REF(Champ_base) ch_tmp = curseur.valeur();
-      const Champ_base& ch = ch_tmp.valeur();
+      const Champ_base& ch= curseur.valeur().valeur();
       const Nom& nom_champ = ch.le_nom();
       if (nom_champ==nom_champ_add)
         {
           Cerr<<champ.le_nom()<<" is already in the list of names of field !!"<<finl;
-          return;
           //  exit();
         }
-
       ++curseur;
     }
 

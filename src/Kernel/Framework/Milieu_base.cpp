@@ -163,10 +163,13 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (rho.non_nul() && Cp.non_nul())
     {
-      const double temps = pb.schema_temps().temps_courant();
-      dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", 1, temps, rho_cp_comme_T_);
-      dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", 1, temps,    rho_cp_elem_);
-      champs_compris_.ajoute_champ(rho_cp_comme_T_);
+      if(!rho_cp_comme_T_.non_nul())
+        {
+          const double temps = pb.schema_temps().temps_courant();
+          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", 1, temps, rho_cp_comme_T_);
+          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", 1, temps,    rho_cp_elem_);
+        }
+      champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
     }
 }
 // Description:
