@@ -41,16 +41,14 @@ FichierHDFCollectif::~FichierHDFCollectif() {}
 
 void FichierHDFCollectif::prepare_file_props()
 {
+  FichierHDF::prepare_file_props();
 #ifdef MPI_
 
   MPI_Info infos;
   MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
 
 #ifdef MED_
-  file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS);
-  H5Pset_fapl_mpio( file_prop_lst_, Comm_Group_MPI::get_trio_u_world(), infos);
-  hsize_t stripe_size = 1572864; //voir avec lfs getstripe la taille d'un stripe
-  H5Pset_alignment(file_prop_lst_, 0, stripe_size);
+  H5Pset_fapl_mpio( file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos);
 #endif
 
   MPI_Info_free(&infos);
@@ -59,11 +57,9 @@ void FichierHDFCollectif::prepare_file_props()
 
 void FichierHDFCollectif::prepare_dataset_props(Nom dataset_name)
 {
-  dataset_full_name_ = dataset_name.getChar() ;
-
+  FichierHDF::prepare_dataset_props(dataset_name);
 #ifdef MED_
-  dataset_prop_lst_ = H5Pcreate(H5P_DATASET_XFER);
-  //H5Pset_dxpl_mpio(dataset_prop_lst_, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
+  H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
 #endif
 
   //int rank = Process::me();

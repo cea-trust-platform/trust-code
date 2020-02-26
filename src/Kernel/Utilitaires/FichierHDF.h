@@ -67,7 +67,6 @@ public:
   virtual void read_dataset(Nom dataset_name, Entree_Brute& entree);
   virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie);
   virtual void create_and_fill_dataset(Nom dataset_name, SChaine& sortie);
-  virtual void create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data);
 
   virtual void close_dataset(Nom dataset_name);
 
@@ -76,11 +75,14 @@ public:
 protected:
   virtual void prepare_file_props();
   virtual void prepare_dataset_props(Nom dataset_name);
+  virtual void create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data);
+
 
 #ifdef MED_
   hid_t file_id_;
-  hid_t file_prop_lst_;
-  hid_t dataset_prop_lst_;
+  hid_t file_access_plst_;
+  hid_t dataset_transfer_plst_;
+  hid_t dataset_creation_plst_;
 #endif
 
   Nom dataset_full_name_; // the full name of the data set to be opened (with potential trailing _000x)
