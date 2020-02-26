@@ -51,7 +51,7 @@ if [ $prepsrc -eq 1 ]
     echo "fin preparation, makefile non modifie" && exit 0
 fi
       
-cmake .
+$TRUST_ROOT/exec/python/bin/cmake .
 
 make
 cd ..
