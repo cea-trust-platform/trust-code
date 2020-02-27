@@ -170,7 +170,7 @@ then
    then
       nb_pas_dt_max=3
    fi
-   $TRUST_Awk -v FT=$FT -v nb_pas_dt_max=$nb_pas_dt_max '/^[ \t]*tinit[ \t]*/ {print $0;print "\tnb_pas_dt_max "nb_pas_dt_max;getline}\
+   $TRUST_Awk -v FT=$FT -v nb_pas_dt_max=$nb_pas_dt_max '/[ \t]*tinit[ \t]*/ {print $0;print "\tnb_pas_dt_max "nb_pas_dt_max;getline}\
     #(FT==0) && /solveur_pression/ && / [Gg][Cc][Pp] / && /seuil/ && /precond/ && /}/ {print "solveur_pression petsc cholesky { }";getline}\
     !/nb_pas_dt_max/ {print $0}\
    ' $old > $test.data
