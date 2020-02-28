@@ -71,11 +71,18 @@ public:
   virtual void close_dataset(Nom dataset_name);
 
   // checks if a dataset named dataset_name exists in the file
-  virtual htri_t exists(const char* dataset_name);
+  virtual bool exists(const char* dataset_name);
+  //check if the file file_name is in the HDF5 format
+  static bool is_hdf5(const char *file_name);
+
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_dataset_props(Nom dataset_name);
-  virtual void create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data);
+  virtual void prepare_dataset_props(Nom dataset_name, bool chunked=false);
+  virtual void create_and_fill_dataset(Nom dataset_name, hsize_t lenData,
+                                       const char* data, hid_t datatype,
+                                       bool write_attribute);
+  virtual void create_and_fill_attribute(int data, const char* attribute_name);
+  virtual void read_attribute(hsize_t& attribute, const char* attribute_name);
 
 
 #ifdef MED_

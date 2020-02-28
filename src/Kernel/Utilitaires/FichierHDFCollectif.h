@@ -39,7 +39,7 @@ public:
 
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_dataset_props(Nom dataset_name);
+  virtual void prepare_dataset_props(Nom dataset_name, bool chunked=false);
 
 private:
   // Forbid copy:

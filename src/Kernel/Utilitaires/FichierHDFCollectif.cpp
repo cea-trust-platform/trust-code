@@ -55,7 +55,7 @@ void FichierHDFCollectif::prepare_file_props()
 #endif
 }
 
-void FichierHDFCollectif::prepare_dataset_props(Nom dataset_name)
+void FichierHDFCollectif::prepare_dataset_props(Nom dataset_name, bool chunked)
 {
   FichierHDF::prepare_dataset_props(dataset_name);
 #ifdef MED_

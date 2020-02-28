@@ -74,14 +74,18 @@ void FichierHDF::prepare_file_props()
   H5Pset_alignment(file_access_plst_, 0, stripe_size);
 }
 
-void FichierHDF::prepare_dataset_props(Nom dataset_name)
+void FichierHDF::prepare_dataset_props(Nom dataset_name, bool chunked)
 {
   dataset_full_name_ = dataset_name.getChar() ;
   dataset_transfer_plst_ = H5Pcreate(H5P_DATASET_XFER);
   dataset_creation_plst_ = H5Pcreate(H5P_DATASET_CREATE);
-  H5Pset_layout(dataset_transfer_plst_, H5D_CHUNKED);
-  hsize_t chunk_size = 1572864; //524288;
-  H5Pset_chunk(dataset_transfer_plst_, 1, &chunk_size);
+  if(chunked)
+    {
+      H5Pset_layout(dataset_creation_plst_, H5D_CHUNKED);
+      hsize_t chunk_size = 1024; //524288;//1572864;
+      H5Pset_chunk(dataset_creation_plst_, 1, &chunk_size);
+    }
+
 }
 
 
@@ -98,15 +102,12 @@ void FichierHDF::close_dataset(Nom dataset_name) {}
 void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
 {
   prepare_dataset_props(dataset_name);
-  ArrOfInt sizes(Process::nproc());
-  hid_t attr = H5Aopen(file_id_, "/sizes", H5P_DEFAULT);
-  H5Aread (attr, H5T_STD_I32BE, sizes.addr());
-  H5Aclose(attr);
 
   hid_t dataset_id = H5Dopen2(file_id_, dataset_name, H5P_DEFAULT);
   hid_t dataspace_id =  H5Dget_space(dataset_id);
 
-  hsize_t sz = sizes[Process::me()];
+  hsize_t sz;
+  read_attribute(sz, "/sizes");
   hsize_t offset = mppartial_sum((int)sz);
 
   hid_t memspace = H5Screate_simple(1, &sz, NULL);
@@ -149,25 +150,26 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
 {
   hsize_t lenData = sortie.get_size();
   const char * data = sortie.get_data();
-  create_and_fill_dataset(dataset_name, lenData, data);
+  create_and_fill_dataset(dataset_name, lenData, data, H5T_NATIVE_OPAQUE, true /*write_attribute*/);
 }
 
 void FichierHDF::create_and_fill_dataset(Nom dataset_name, SChaine& sortie)
 {
   hsize_t lenData = sortie.get_size();
   const char * data = sortie.get_str();
-  create_and_fill_dataset(dataset_name, lenData, data);
+  create_and_fill_dataset(dataset_name, lenData, data, H5T_C_S1, false /*write_attribute*/);
 }
 
-void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data)
+void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data,
+                                         hid_t datatype, bool write_attribute)
 {
-  prepare_dataset_props(dataset_name);
+  prepare_dataset_props(dataset_name, true /*chunked dataset*/);
 
   hsize_t sumLenData = Process::mp_sum((int)lenData);
   hsize_t fileSize[1] = {sumLenData};
   hid_t fileSpace_id = H5Screate_simple(1, fileSize, NULL);
 
-  hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, fileSpace_id,
+  hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, datatype, fileSpace_id,
                                 H5P_DEFAULT, dataset_creation_plst_, H5P_DEFAULT);
 
   hsize_t dims[1] = {lenData};
@@ -177,7 +179,7 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, cons
 
   // Writing into it:
   //Cout << "Writing into HDF dataset " << dataset_name << finl;
-  H5Dwrite(dataset_id, H5T_NATIVE_OPAQUE, dataspace_id, fileSpace_id, dataset_transfer_plst_, data);
+  H5Dwrite(dataset_id, datatype, dataspace_id, fileSpace_id, dataset_transfer_plst_, data);
 
   // Close dataset and dataspace
   H5Dclose(dataset_id);
@@ -185,17 +187,37 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, cons
   H5Sclose(fileSpace_id);
 
   //writing length of the data owned by each proc as an attribute to keep track of it
-  ArrOfInt sizes(Process::nproc());
-  sizes = 0;
-  sizes[Process::me()] = lenData;
-  mp_sum_for_each_item(sizes);
+  //(necessary if we want to re-read the datas)
+  if(write_attribute)
+    create_and_fill_attribute(lenData, "/sizes");
+
+}
+
+void FichierHDF::create_and_fill_attribute(int data, const char* attribute_name)
+{
+  //attributes must be written collectively so every processor needs to write the same datas
+  ArrOfInt attributes(Process::nproc());
+  attributes = 0;
+  attributes[Process::me()] = data;
+  mp_sum_for_each_item(attributes);
 
   hsize_t dimsAttr = Process::nproc();
   hid_t space_id = H5Screate_simple(1, &dimsAttr, NULL);
-  hid_t attr_id = H5Acreate2(file_id_, "/sizes", H5T_STD_I32BE, space_id, H5P_DEFAULT, H5P_DEFAULT);
-  H5Awrite(attr_id, H5T_STD_I32BE, sizes.addr() );
+  hid_t attr_id = H5Acreate2(file_id_, attribute_name, H5T_STD_I32BE, space_id, H5P_DEFAULT, H5P_DEFAULT);
+  H5Awrite(attr_id, H5T_STD_I32BE, attributes.addr() );
   H5Aclose(attr_id);
   H5Sclose(space_id);
+
+}
+
+void FichierHDF::read_attribute(hsize_t& attribute, const char* attribute_name)
+{
+  ArrOfInt attributes(Process::nproc());
+  hid_t attr = H5Aopen(file_id_, attribute_name, H5P_DEFAULT);
+  H5Aread (attr, H5T_STD_I32BE, attributes.addr());
+  H5Aclose(attr);
+
+  attribute = attributes[Process::me()];
 }
 
 void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie)
@@ -219,10 +241,16 @@ void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie
   H5Sclose(dataspace_id);
 }
 
-htri_t FichierHDF::exists(const char* dataset_name)
+bool FichierHDF::exists(const char* dataset_name)
 {
   htri_t exists = H5Lexists( file_id_, dataset_name, H5P_DEFAULT );
-  return exists;
+  return (exists>0);
+}
+
+bool FichierHDF::is_hdf5(const char * file_name)
+{
+  htri_t is_hdf5 = H5Fis_hdf5(file_name);
+  return (is_hdf5>0);
 }
 
 #endif
