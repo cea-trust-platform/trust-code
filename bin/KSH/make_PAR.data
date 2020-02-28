@@ -96,11 +96,22 @@ fi
 NB_CPUS=""
 for nom_zone in $nom_zones
 do
-   NB_CPUS_ZONE=`\ls $nom_zone"_"????.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
+   #NB_CPUS_ZONE=`\ls $nom_zone"_"????.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
+    NB_CPUS_ZONE=`\ls | grep -E "$nom_zone"_[0-9]+.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
+    
+   # if there's a single .Zones file (written in HDF format), the grep above is wrong
+    if [ $NB_CPUS_ZONE = 0 ]
+    then
+	FILE_NAME=`find . -name "$nom_zone"_p'*'.Zones | xargs basename`
+	NB_CPUS_ZONE=`echo $FILE_NAME | cut -d '.' -f 1 | $TRUST_Awk -F '_p' '{print $2}'`
+    fi
+       
    # Verification
    [ "$NB_CPUS" != "" ] && [ "$NB_CPUS_ZONE" != "$NB_CPUS" ] && echo "Found $NB_CPUS_ZONE $nom_zone.Zones != $NB_CPUS zones." && exit -1 
    NB_CPUS=$NB_CPUS_ZONE
 done
+
+
 # Creation du fichier $PAR_NOM.data
 SUBSTITUE $PAR_NOM
 sed -i \

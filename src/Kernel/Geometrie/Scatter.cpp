@@ -343,9 +343,11 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
   Domaine& dom = domaine();
 
-  // if the file exists without the "_000x" part in the name, then it means we have a single HDF file
-  // instead of the multiple binary files.
-  bool is_hdf = EFichier::Can_be_read(nomentree);
+
+  Nom copy(nomentree);
+  copy = copy.nom_me(Process::nproc(), "p", 1);
+
+  bool is_hdf = FichierHDF::is_hdf5(copy);
 
   static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
 
@@ -355,11 +357,12 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   if (is_hdf)
     {
       FichierHDFCollectif fic_hdf;
-      //FichierHDF fic_hdf
+      //FichierHDF fic_hdf;
+      nomentree = copy;
       fic_hdf.open(nomentree, true);
       Entree_Brute data;
 
-      int single_dataset = fic_hdf.exists("/zones");
+      bool single_dataset = fic_hdf.exists("/zones");
       if(single_dataset)
         fic_hdf.read_dataset("/zones", data);
       else

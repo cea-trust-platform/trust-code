@@ -1180,29 +1180,37 @@ void DomaineCutter::construire_sous_domaine(const int part,
 //   instead of
 //          DOM_0001.Zones
 // [ABN] TODO : should somehow merge and be placed close to Nom::nom_me() ...
-static void construire_nom_fichier_sous_domaine(const Nom& basename,
-                                                const int partie, const int nb_parties_,
-                                                Nom& fichier)
-{
-  fichier = basename;
-
-  if (partie > 100000)
-    {
-      Cerr << "Error while generating filename: nb_parties_ too large" << finl;
-      Process::exit();
-    }
-  char s[20];
-  if (partie < 0)  // single file name for all procs (HDF5)
-    sprintf(s, ".Zones");
-  else
-    {
-      if (nb_parties_ > 10000)
-        sprintf(s, "_%05d.Zones", (True_int)partie);
-      else
-        sprintf(s, "_%04d.Zones",(True_int) partie);
-    }
-  fichier += Nom(s);
-}
+//static void construire_nom_fichier_sous_domaine(const Nom& basename,
+//                                                const int partie, const int nb_parties_,
+//                                                Nom& fichier)
+//{
+//  fichier = basename;
+//
+//  if (partie > 100000)
+//    {
+//      Cerr << "Error while generating filename: nb_parties_ too large" << finl;
+//      Process::exit();
+//    }
+//  char s[20];
+//  // single file name for all procs (HDF5)
+//  // the number of parts is still included in the file name
+//  // (make_PAR.data needs to know how many zones there are)
+//  if (partie < 0)
+//    {
+//      if (nb_parties_ > 10000)
+//        sprintf(s, "_p%05d.Zones", (True_int)nb_parties_);
+//      else
+//        sprintf(s, "_p%04d.Zones",(True_int) nb_parties_);
+//    }
+//  else
+//    {
+//      if (nb_parties_ > 10000)
+//        sprintf(s, "_%05d.Zones", (True_int)partie);
+//      else
+//        sprintf(s, "_%04d.Zones",(True_int) partie);
+//    }
+//  fichier += Nom(s);
+//}
 
 void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 {
@@ -1249,8 +1257,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       if (format == Decouper::HDF5_SINGLE && loop == 0)  // create HDF5 file only once!
         {
-          Nom nom_fichier_hdf5;
-          construire_nom_fichier_sous_domaine(basename, -1, nb_parties_, nom_fichier_hdf5);
+          Nom nom_fichier_hdf5(basename);
+          nom_fichier_hdf5+=Nom(".Zones");
+          nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
+          //construire_nom_fichier_sous_domaine(basename, -1, nb_parties_, nom_fichier_hdf5);
           fic_hdf.create(nom_fichier_hdf5);
           //fic_hdf.open(nom_fichier_hdf5, false);
         }
@@ -1312,10 +1322,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
               // Write .Zones file(s):
               if (format == Decouper::BINARY_MULTIPLE || format == Decouper::ASCII_MULTIPLE)
                 {
-                  Nom nom_fichier;
-                  construire_nom_fichier_sous_domaine(basename,
-                                                      i_part, nb_parties_,
-                                                      nom_fichier);
+                  Nom nom_fichier(basename);
+                  nom_fichier+=Nom(".Zones");
+                  nom_fichier = nom_fichier.nom_me(i_part);
+                  //construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_,nom_fichier);
                   Cerr << "Writing part " << i_part << " into the "
                        << (format == Decouper::BINARY_MULTIPLE ? "binary" : "ascii")
                        << " file " << nom_fichier << finl;

@@ -548,11 +548,11 @@ int Nom::est_egal_a(const Objet_U& x) const
 }
 
 // Description:
-// Insere _000n (n=me()) dans un nom de fichier (par ex:toto.titi) pour donner toto_000n.titi
+// Insere _prefix000n (n=me() ou nproc()) dans un nom de fichier (par ex:toto.titi) pour donner toto_prefix000n.titi
 // Precondition:
-// Parametre:
-//    Signification
-//    Valeurs par defaut:
+// Parametre: without_padding
+//    Signification: flag indiquant que l'on ne souhaite pas ajouter de zeros devant n
+//    Valeurs par defaut: 0
 //    Contraintes:
 //    Acces:
 // Retour:
@@ -561,7 +561,7 @@ int Nom::est_egal_a(const Objet_U& x) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Nom Nom::nom_me(int n) const
+Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
 {
   // char* newname = new char[strlen(nom_.c_str())+6];
   int compteur=strlen(nom_.c_str());
@@ -583,26 +583,54 @@ Nom Nom::nom_me(int n) const
     }
   std::string newname=nom_.substr(0,compteur);
 
-  int digits=-1,diviseur=-1;
-  if (Process::nproc()<=10000)
+  //searching for the number of digits we want to write
+  int digits=2,diviseur=1;
+  int nproc =  Process::nproc();
+  //if we don't want to write a zero-padded number,
+  //then there's no need to know the total number of procs
+  if(without_padding)
+    nproc = n;
+  bool no_case_found = true;
+  for(int p=10; p<=100000 && no_case_found; p*=10)
     {
-      digits=5;
-      diviseur=1000;
+      if( nproc >= p )
+        {
+          digits++;
+          diviseur *= 10;
+        }
+      if(nproc <= p)
+        no_case_found = false;
     }
-  else if (Process::nproc()<=100000)
-    {
-      digits=6;
-      diviseur=10000;
-    }
-  else
+  if(no_case_found)
     {
       Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
       exit();
     }
-  char *c_numero=new char[digits+1];
+
+//  if (Process::nproc()<=10000)
+//    {
+//      digits=5;
+//      diviseur=1000;
+//    }
+//  else if (Process::nproc()<=100000)
+//    {
+//      digits=6;
+//      diviseur=10000;
+//    }
+//  else
+//    {
+//      Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
+//      exit();
+//    }
+
+  int prefix_len = 0;
+  if(prefix) prefix_len=strlen(prefix);
+
+  char *c_numero=new char[prefix_len+digits+1];
   int resultat;
   c_numero[0]='_';
-  for (int i=1; i<digits; i++)
+  if(prefix) strcpy(c_numero+1, prefix);
+  for (int i=1+prefix_len; i<prefix_len+digits; i++)
     {
       resultat=n/diviseur;
       char c=('0'+resultat);
@@ -610,7 +638,7 @@ Nom Nom::nom_me(int n) const
       n-=resultat*diviseur;
       diviseur/=10;
     }
-  c_numero[digits]='\0';
+  c_numero[prefix_len+digits]='\0';
   newname+=c_numero;
   if (pas_de_point==0)
     newname+=ptr;
