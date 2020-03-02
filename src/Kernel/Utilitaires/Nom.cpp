@@ -586,42 +586,45 @@ Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
   //searching for the number of digits we want to write
   int digits=2,diviseur=1;
   int nproc =  Process::nproc();
-  //if we don't want to write a zero-padded number,
-  //then there's no need to know the total number of procs
   if(without_padding)
-    nproc = n;
-  bool no_case_found = true;
-  for(int p=10; p<=100000 && no_case_found; p*=10)
     {
-      if( nproc >= p )
+      nproc = n;
+      bool no_case_found = true;
+      for(int p=10; p<=100000 && no_case_found; p*=10)
         {
-          digits++;
-          diviseur *= 10;
+          if( nproc >= p )
+            {
+              digits++;
+              diviseur *= 10;
+            }
+          if(nproc <= p)
+            no_case_found = false;
         }
-      if(nproc <= p)
-        no_case_found = false;
+      if(no_case_found)
+        {
+          Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
+          exit();
+        }
     }
-  if(no_case_found)
+  else
     {
-      Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
-      exit();
-    }
+      if (nproc<=10000)
+        {
+          digits=5;
+          diviseur=1000;
+        }
+      else if (nproc<=100000)
+        {
+          digits=6;
+          diviseur=10000;
+        }
+      else
+        {
+          Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
+          exit();
+        }
 
-//  if (Process::nproc()<=10000)
-//    {
-//      digits=5;
-//      diviseur=1000;
-//    }
-//  else if (Process::nproc()<=100000)
-//    {
-//      digits=6;
-//      diviseur=10000;
-//    }
-//  else
-//    {
-//      Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
-//      exit();
-//    }
+    }
 
   int prefix_len = 0;
   if(prefix) prefix_len=strlen(prefix);

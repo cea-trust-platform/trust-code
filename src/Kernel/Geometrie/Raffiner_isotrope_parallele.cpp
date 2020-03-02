@@ -215,7 +215,9 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
   Noms liste_bords_periodiques;
   org+=".Zones";
 
-  bool is_hdf = EFichier::Can_be_read(org);
+  Nom copy(org);
+  copy = copy.nom_me(Process::nproc(), "p", 1);
+  bool is_hdf = FichierHDF::is_hdf5(copy);
 
   if (!is_hdf)
     {
@@ -230,10 +232,11 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
     {
       FichierHDFCollectif fic_hdf;
       //FichierHDF fic_hdf;
+      org = copy;
       fic_hdf.open(org, true);
       Entree_Brute data;
 
-      int single_dataset = fic_hdf.exists("/zones");
+      bool single_dataset = fic_hdf.exists("/zones");
       if(single_dataset)
         fic_hdf.read_dataset("/zones", data);
       else
@@ -293,7 +296,6 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       // else
       {
 
-
         Scatter::construire_correspondance_sommets_par_coordonnees(dom_new);
         Scatter::calculer_renum_items_communs(dom_new.zone(0).faces_joint(), Joint::SOMMET);
 
@@ -342,6 +344,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
                 os_hdf << dom_new;
                 os_hdf << liste_bords_periodiques;
                 FichierHDFCollectif fic_hdf;
+                newd = newd.nom_me(Process::nproc(), "p", 1);
                 fic_hdf.create(newd);
                 fic_hdf.create_and_fill_dataset("/zones", os_hdf);
                 fic_hdf.close();
