@@ -226,6 +226,10 @@ void Process::exit(const Nom& message ,int i)
         }
     }
   Journal() << message << finl;
+  if( journal_shared_ && journal_file_open_)
+	  end_journal(verbose_level_);
+
+
   if (exception_sur_exit)
     {
       // Lancement d'une exception (utilise par Execute_parallel)

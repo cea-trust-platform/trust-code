@@ -35,18 +35,21 @@ def clean(FILE_NAME, NEW_FILE_NAME):
     # second stage of cleaning:
     # removing the unreadable binary part at the end of the log of each process    
     separator = '\n============================================================================================================================================================================='
-    end = "End of Journal logging"
     journalStart = 0
     proc = 1
     while True:
         #searching the end of the log of the current proc
+        end = "End of Journal logging"
         journalEnd = hdf5_text.find(end, journalStart)
-        journalEnd += len(end)
+        if journalEnd == -1:
+            end = "TRUST has caused an error and will stop."
+            journalEnd = hdf5_text.find(end, journalStart)
         if journalEnd == -1:
             print("[Error] This file doesn't seem to be a shared journal...")
             print("[Error] To transform any other HDF5 file into ascii format, use h5dump")
             exit()
-        
+            
+        journalEnd += len(end)
         #searching the beginning of the log of the next proc
         begin = "[Proc %d] : Journal logging started" % proc
         journalStart = hdf5_text.find(begin, journalEnd)
@@ -77,4 +80,4 @@ if __name__ == "__main__":
     basename = file_name.split(".")[0]
     new_file_name = basename + ".ascii"
     clean(tmp_file, new_file_name)
-    #os.system("[ -f %s ] && rm %s -f" % tmp_file)
+    os.system("[ -f %s ] && rm %s -f" % (tmp_file, tmp_file))
