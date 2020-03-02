@@ -41,8 +41,7 @@
 #include <Entree_Brute.h>
 #include <hdf5.h>
 #include <Comm_Group_MPI.h>
-
-#include <FichierHDFCollectif.h>
+#include <FichierHDFPar.h>
 
 extern Stat_Counter_Id interprete_scatter_counter_;
 
@@ -356,7 +355,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
   if (is_hdf)
     {
-      FichierHDFCollectif fic_hdf;
+      FichierHDFPar fic_hdf;
       //FichierHDF fic_hdf;
       nomentree = copy;
       fic_hdf.open(nomentree, true);
@@ -364,7 +363,10 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
       bool single_dataset = fic_hdf.exists("/zones");
       if(single_dataset)
-        fic_hdf.read_dataset("/zones", data);
+        {
+          fic_hdf.set_collective_op(true);
+          fic_hdf.read_dataset("/zones", data);
+        }
       else
         {
           std::ostringstream oss;

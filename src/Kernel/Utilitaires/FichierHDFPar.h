@@ -14,58 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        FichierHDFCollectif.cpp
+// File:        FichierHDFPar.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <FichierHDFCollectif.h>
-#include <communications.h>
-#include <ArrOfInt.h>
-
-#ifdef MPI_
+#ifndef FichierHDFPar_included
+#define FichierHDFPar_included
+#include <FichierHDF.h>
 #include <mpi.h>
-#include <Comm_Group_MPI.h>
-#endif
 
-FichierHDFCollectif::FichierHDFCollectif() :
-  FichierHDF()
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//   Parallel collective version of FichierHDF, to be used for all concurrent reading/writing on HDF files.
+// .SECTION voir aussi
+//
+//////////////////////////////////////////////////////////////////////////////
+class FichierHDFPar: public FichierHDF
 {
-#ifndef MPI_
-  Cerr << "FichierHDFCollectif needs MPI to be used!" << finl;
-  Process::exit(-1);
+public:
+  FichierHDFPar();
+  virtual ~FichierHDFPar();
+  inline void set_collective_op(bool b)
+  {
+    collective_op_ = b;
+  }
+
+protected:
+  virtual void prepare_file_props();
+  virtual void prepare_dataset_props(Nom dataset_name, bool chunked=false);
+
+private:
+  // Forbid copy:
+  FichierHDFPar& operator=(const FichierHDFPar&);
+  FichierHDFPar(const FichierHDFPar&);
+
+  bool collective_op_; //flag to enable collective data transfering
+};
 #endif
-}
-
-FichierHDFCollectif::~FichierHDFCollectif() {}
-
-void FichierHDFCollectif::prepare_file_props()
-{
-  FichierHDF::prepare_file_props();
-#ifdef MPI_
-
-  MPI_Info infos;
-  MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
-
-#ifdef MED_
-  H5Pset_fapl_mpio( file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos);
-#endif
-
-  MPI_Info_free(&infos);
-#endif
-}
-
-void FichierHDFCollectif::prepare_dataset_props(Nom dataset_name, bool chunked)
-{
-  FichierHDF::prepare_dataset_props(dataset_name);
-#ifdef MED_
-  H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
-#endif
-
-  //int rank = Process::me();
-
-  // Build expected dataset name for the current proc (with the trailing _000x stuff)
-  //Nom dataset_full_name = dataset_name;
-  //dataset_full_name.nom_me(rank);
-
-}

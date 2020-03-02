@@ -38,7 +38,7 @@
 #include <stat_counters.h>
 
 #include <SChaine.h>
-#include <FichierHDFCollectif.h>
+#include <FichierHDFPar.h>
 
 // Chacun des fichiers Cerr, Cout et Journal(i)
 // peut etre redirige vers l'un des quatre fichiers suivants:
@@ -227,7 +227,7 @@ void Process::exit(const Nom& message ,int i)
     }
   Journal() << message << finl;
   if( journal_shared_ && journal_file_open_)
-	  end_journal(verbose_level_);
+    end_journal(verbose_level_);
 
 
   if (exception_sur_exit)
@@ -424,7 +424,8 @@ void end_journal(int verbose_level)
   // ecrit dans le journal !
   if(journal_shared_)
     {
-      FichierHDFCollectif fic_hdf;
+      FichierHDFPar fic_hdf;
+      fic_hdf.set_collective_op(true);
       fic_hdf.create(journal_file_name_);
       fic_hdf.create_and_fill_dataset("/log", journal_shared_stream_);
       fic_hdf.close();

@@ -14,36 +14,59 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        FichierHDFCollectif.h
+// File:        FichierHDFPar.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef FichierHDFCollectif_included
-#define FichierHDFCollectif_included
-#include <FichierHDF.h>
+#include <FichierHDFPar.h>
+#include <communications.h>
+#include <ArrOfInt.h>
+
+#ifdef MPI_
 #include <mpi.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Parallel collective version of FichierHDF, to be used for all concurrent reading/writing on HDF files.
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
-class FichierHDFCollectif: public FichierHDF
-{
-public:
-  FichierHDFCollectif();
-  virtual ~FichierHDFCollectif();
-
-protected:
-  virtual void prepare_file_props();
-  virtual void prepare_dataset_props(Nom dataset_name, bool chunked=false);
-
-private:
-  // Forbid copy:
-  FichierHDFCollectif& operator=(const FichierHDFCollectif&);
-  FichierHDFCollectif(const FichierHDFCollectif&);
-};
+#include <Comm_Group_MPI.h>
 #endif
+
+FichierHDFPar::FichierHDFPar() :
+  FichierHDF(), collective_op_(false)
+{
+#ifndef MPI_
+  Cerr << "FichierHDFPar needs MPI to be used!" << finl;
+  Process::exit(-1);
+#endif
+}
+
+FichierHDFPar::~FichierHDFPar() {}
+
+void FichierHDFPar::prepare_file_props()
+{
+  FichierHDF::prepare_file_props();
+#ifdef MPI_
+
+  MPI_Info infos;
+  MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
+
+#ifdef MED_
+  H5Pset_fapl_mpio( file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos);
+#endif
+
+  MPI_Info_free(&infos);
+#endif
+}
+
+void FichierHDFPar::prepare_dataset_props(Nom dataset_name, bool chunked)
+{
+  FichierHDF::prepare_dataset_props(dataset_name, chunked);
+#ifdef MED_
+  if(collective_op_)
+    H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);
+#endif
+
+  //int rank = Process::me();
+
+  // Build expected dataset name for the current proc (with the trailing _000x stuff)
+  //Nom dataset_full_name = dataset_name;
+  //dataset_full_name.nom_me(rank);
+
+}

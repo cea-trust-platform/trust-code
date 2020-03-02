@@ -42,8 +42,7 @@
 #include <Deriv_Entree_Fichier_base.h>
 #include <sys/stat.h>
 #include <Loi_Fermeture_base.h>
-
-#include <FichierHDFCollectif.h>
+#include <FichierHDFPar.h>
 
 #define CHECK_ALLOCATE 0
 #ifdef CHECK_ALLOCATE
@@ -502,7 +501,8 @@ Entree& Probleme_base::readOn(Entree& is)
           // Open the file:
           DERIV(Entree_Fichier_base) fic;
           Entree_Brute input_data;
-          FichierHDFCollectif fic_hdf; //FichierHDF fic_hdf;
+          FichierHDFPar fic_hdf; //FichierHDF fic_hdf;
+          fic_hdf.set_collective_op(true);
 
           if (format_rep == "formatte")
             fic.typer("LecFicDistribue");
@@ -1060,7 +1060,8 @@ void Probleme_base::sauver() const
       else if(Motcle(format_sauv)=="single_hdf")
         {
           osauv_hdf_ << Nom("fin");
-          FichierHDFCollectif fic_hdf;
+          FichierHDFPar fic_hdf;
+          fic_hdf.set_collective_op(true);
           fic_hdf.create(nom_fich);
           fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
           fic_hdf.close();
@@ -1114,7 +1115,8 @@ void Probleme_base::finir()
       else if(Motcle(format_sauv) == "single_hdf")
         {
           osauv_hdf_ << Nom("fin");
-          FichierHDFCollectif fic_hdf;
+          FichierHDFPar fic_hdf;
+          fic_hdf.set_collective_op(true);
           fic_hdf.create(nom_fich);
           fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
           fic_hdf.close();

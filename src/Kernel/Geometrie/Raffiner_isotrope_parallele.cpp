@@ -34,7 +34,7 @@
 #include <Schema_Comm.h>
 #include <Vect_ArrOfInt.h>
 
-#include <FichierHDFCollectif.h>
+#include <FichierHDFPar.h>
 
 Implemente_instanciable( Raffiner_isotrope_parallele, "Raffiner_isotrope_parallele", Raffiner_Simplexes ) ;
 
@@ -230,7 +230,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
     }
   else
     {
-      FichierHDFCollectif fic_hdf;
+      FichierHDFPar fic_hdf;
       //FichierHDF fic_hdf;
       org = copy;
       fic_hdf.open(org, true);
@@ -238,7 +238,10 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
 
       bool single_dataset = fic_hdf.exists("/zones");
       if(single_dataset)
-        fic_hdf.read_dataset("/zones", data);
+        {
+          fic_hdf.set_collective_op(true);
+          fic_hdf.read_dataset("/zones", data);
+        }
       else
         {
           std::ostringstream oss;
@@ -343,7 +346,8 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
                 Sortie_Brute os_hdf;
                 os_hdf << dom_new;
                 os_hdf << liste_bords_periodiques;
-                FichierHDFCollectif fic_hdf;
+                FichierHDFPar fic_hdf;
+                fic_hdf.set_collective_op(true);
                 newd = newd.nom_me(Process::nproc(), "p", 1);
                 fic_hdf.create(newd);
                 fic_hdf.create_and_fill_dataset("/zones", os_hdf);
