@@ -55,15 +55,17 @@ void FichierHDFPar::prepare_file_props()
 #endif
 }
 
-void FichierHDFPar::prepare_write_dataset_props(Nom dataset_name, hsize_t datasetLen)
+#ifdef MED_
+void FichierHDFPar::prepare_write_dataset_props(hsize_t datasetLen)
 {
-  FichierHDF::prepare_write_dataset_props(dataset_name, datasetLen);
+  FichierHDF::prepare_write_dataset_props(datasetLen);
   prepare_dataset_props();
 }
+#endif
 
-void FichierHDFPar::prepare_read_dataset_props(Nom dataset_name)
+void FichierHDFPar::prepare_read_dataset_props()
 {
-  FichierHDF::prepare_read_dataset_props(dataset_name);
+  FichierHDF::prepare_read_dataset_props();
   prepare_dataset_props();
 }
 

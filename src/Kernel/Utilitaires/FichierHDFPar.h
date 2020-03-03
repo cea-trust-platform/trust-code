@@ -43,8 +43,10 @@ public:
 
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_write_dataset_props(Nom dataset_name, hsize_t datasetLen);
-  virtual void prepare_read_dataset_props(Nom dataset_name);
+#ifdef MED_
+  virtual void prepare_write_dataset_props(hsize_t datasetLen);
+#endif
+  virtual void prepare_read_dataset_props();
   void prepare_dataset_props();
 
 private:
