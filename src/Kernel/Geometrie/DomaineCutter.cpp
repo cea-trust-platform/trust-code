@@ -1179,7 +1179,6 @@ void DomaineCutter::construire_sous_domaine(const int part,
 //          DOM.Zones
 //   instead of
 //          DOM_0001.Zones
-// [ABN] TODO : should somehow merge and be placed close to Nom::nom_me() ...
 //static void construire_nom_fichier_sous_domaine(const Nom& basename,
 //                                                const int partie, const int nb_parties_,
 //                                                Nom& fichier)

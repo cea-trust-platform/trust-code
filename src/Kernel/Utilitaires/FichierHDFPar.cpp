@@ -55,9 +55,20 @@ void FichierHDFPar::prepare_file_props()
 #endif
 }
 
-void FichierHDFPar::prepare_dataset_props(Nom dataset_name, bool chunked)
+void FichierHDFPar::prepare_write_dataset_props(Nom dataset_name, hsize_t datasetLen)
 {
-  FichierHDF::prepare_dataset_props(dataset_name, chunked);
+  FichierHDF::prepare_write_dataset_props(dataset_name, datasetLen);
+  prepare_dataset_props();
+}
+
+void FichierHDFPar::prepare_read_dataset_props(Nom dataset_name)
+{
+  FichierHDF::prepare_read_dataset_props(dataset_name);
+  prepare_dataset_props();
+}
+
+void FichierHDFPar::prepare_dataset_props()
+{
 #ifdef MED_
   if(collective_op_)
     H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);

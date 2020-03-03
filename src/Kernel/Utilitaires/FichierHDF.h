@@ -77,19 +77,24 @@ public:
 
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_dataset_props(Nom dataset_name, bool chunked=false);
+  virtual void prepare_write_dataset_props(Nom dataset_name, hsize_t datasetLen);
+  virtual void prepare_read_dataset_props(Nom dataset_name);
+
   virtual void create_and_fill_dataset(Nom dataset_name, hsize_t lenData,
                                        const char* data, hid_t datatype,
                                        bool write_attribute);
   virtual void create_and_fill_attribute(int data, const char* attribute_name);
   virtual void read_attribute(hsize_t& attribute, const char* attribute_name);
 
+  //evaluates a decent chunking size according to the data length
+  virtual void get_chunking(hsize_t datasetLen);
 
 #ifdef MED_
   hid_t file_id_;
   hid_t file_access_plst_;
   hid_t dataset_transfer_plst_;
   hid_t dataset_creation_plst_;
+  hsize_t chunk_size_;
 #endif
 
   Nom dataset_full_name_; // the full name of the data set to be opened (with potential trailing _000x)
