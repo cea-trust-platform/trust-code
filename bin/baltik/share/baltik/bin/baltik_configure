@@ -415,6 +415,14 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
+printf "# help ctest_$type \t: Running baltik test suite in `human_name_from_name $type` mode with ctest\n" >>$project_makefile
+printf "ctest_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
 printf "# help check_deps_$type : Running dependencies test suite in `human_name_from_name $type` mode \n" >>$project_makefile
 printf "check_deps_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
@@ -686,7 +694,8 @@ do
     the_path=${list_path[$idx]}
     if [ "$the_path" != $project_directory ] && [ "$name" != ":" ]
     then
-	echo "export "$name"_project_directory="$the_path >> $env_file
+       the_relative_path=`echo $the_path | sed "s?${project_directory}?\$\{project_directory\}?"`
+       echo "export "$name"_project_directory="$the_relative_path >> $env_file
     fi
     let idx++
 done

@@ -1317,6 +1317,10 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           Cerr << "as the algorithm will try to detect the useless direction in the mesh." << finl;
           //assert(dim == dimension);
         }
+      // Stockage du mesh au niveau du domaine, utile pour:
+      // Champ_Fonc_MED plus rapide (maillage non relu)
+      // Futurs developpements avec MEDCoupling
+      dom.setUMesh(mesh);
 
       // Get the nodes: size and fill sommets2:
       int nnodes = mesh->getNumberOfNodes();
