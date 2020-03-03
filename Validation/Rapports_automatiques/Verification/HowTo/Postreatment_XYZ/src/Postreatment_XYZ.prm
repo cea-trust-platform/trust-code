@@ -1,0 +1,47 @@
+Parameters {
+        Title "Example of use of the keywords champ_front_lu and champ_don_lu with fields post-processed in xyz format"
+        Author "A. L."
+        description "This validation form aims is to check the new postprocessing format triokeyword(xyz)."
+		description "The files generated when the keyword triokeyword(format xyz) is in the triokeyword(post_processing) block could be used as boundary conditions or initial conditions with the keywords : champ_front_lu or champ_don_lu, respectively. For that the localisation of the postprocessing must be on the elements."
+        TestCase ./ChFrontLu_read_file champ_front_lu_xyz.data
+        TestCase ./ChDonLu_read_file champ_don_lu_xyz.data
+}
+Chapter {	
+	Title "Example of the use of the keyword champ_front_lu"
+	description "First, the data file ChFrontLu_gen_file is modified to obtain the same file as with the keyword :"
+	description "triokeyword(Ecrire_fichier_xyz_valeur vitesse 100. bords 1 PERIO)."
+	description "For that, we use the following block :"
+	description "triokeyword(Post_processing)"
+	description "{"
+	description "\latex_( \qquad \latex_) triokeyword(format xyz)" 
+	description "\latex_( \qquad \latex_) triokeyword(domaine) DOM_EXTR_boundaries_PERIO"
+	description "\latex_( \qquad \latex_) triokeyword(fields dt_post) 10."
+	description "\latex_( \qquad \latex_){"
+	description "\latex_( \qquad \qquad \latex_)triokeyword(vitesse elem)"
+	description "\latex_( \qquad \latex_)}"
+	description "}"
+	description "The previous pb is solved :"
+	description include_text_file("my_text11")
+	description "Then the data file ChFrontLu_read_file is modified to define the PERIO boundary condition with the generated triokeyword(xyz) file. The end of the new problem resolution : "
+	description include_text_file("my_text12")
+	description "Finaly we compare the results with those of the test case ChFrontLu_read_file :"
+	description include_text_file("my_text13")
+}
+Chapter {	
+	Title "Example of the use of the keyword champ_don_lu"
+	description "Now, the data file ChFrontLu_gen_file is modified to postprocess in the xyz format:"
+	description "For that, we use the following block :"
+	description "triokeyword(Post_processing)"
+	description "{"
+	description "\latex_( \qquad \latex_) triokeyword(format xyz)" 
+	description "\latex_( \qquad \latex_) triokeyword(fields dt_post) 10."
+	description "\latex_( \qquad \latex_){"
+	description "\latex_( \qquad \qquad \latex_)triokeyword(vitesse elem)"
+	description "\latex_( \qquad \latex_)}"
+	description "}"
+	description "The previous pb is solved :"
+	description include_text_file("my_text21")
+	description "Then the data file ChFrontLu_read_file is modified to define the initial condition with the generated triokeyword(xyz) file. The end of the new problem resolution : "
+	description include_text_file("my_text22")
+	description "The existant test cases that use the keyword champ_don_lu don't generated the inital condition file so we can't compare the results !"
+}
