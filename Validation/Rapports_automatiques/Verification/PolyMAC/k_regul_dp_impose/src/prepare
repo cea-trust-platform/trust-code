@@ -1,0 +1,10 @@
+#!/bin/bash
+for dir in "poly" #"cartesian" "tetra"
+do
+    ( mkdir -p $dir; cp jdd.data $dir )
+done
+sed -i "s/__tetra__//;s/__dis__/PolyMAC/" poly/jdd.data
+#sed -i "s/__tetra__//;s/__dis__/VDF/" cartesian/jdd.data
+#sed -i "s/__tetra__/tetraedriser dom/;s/__dis__/VEFPreP1b" tetra/jdd.data
+#cp mesh_hexa.med cartesian/mesh.med
+cp mesh_poly.med poly/mesh.med
