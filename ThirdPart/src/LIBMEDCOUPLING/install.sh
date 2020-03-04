@@ -12,6 +12,7 @@ mc_version=`echo $src_dir | sed 's/[^0-9]*\([0-9].[0-9].[0-9]\)/\1/'`
 build_root=$TRUST_ROOT/build/lib
 build_dir=$build_root/medcoupling_build
 install_dir=$TRUST_MEDCOUPLING_ROOT
+org=`pwd`
 
 mkdir -p $install_dir
 mkdir -p $build_dir
@@ -71,7 +72,7 @@ echo "Patching findClosestTupleId() method"
 patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch
 
 echo "Patching HDF detection procedure"
-cp $build_root/FindSalomeHDF5.cmake $(find $src_dir/.. -name  FindSalomeHDF5.cmake )
+cp $org/FindSalomeHDF5.cmake $(find $src_dir/.. -name  FindSalomeHDF5.cmake )
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir

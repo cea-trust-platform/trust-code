@@ -60,6 +60,8 @@ rm -r -f ${gmsh%.tgz}
 echo "Install $gmsh..." 
 tar mxfz $gmsh
 GMSH_SRC=${gmsh%.tgz}
+# Patch Gmsh pour MPI lorsque HDF est compile avec -enable-parallel:
+sed -i "1,$ s?#include <sstream>?#define OMPI_SKIP_MPICXX\n#include <sstream>?" $GMSH_SRC/Fltk/helpWindow.cpp
 
 #echo Patching ratio.c for clang
 #sed "s?if ( abs(mesh->info.imprim) < 5 )  return;?if ( abs(mesh->info.imprim) < 5 )  return 1;?" -i ./contrib/mmg3d/build/sources/ratio.c
