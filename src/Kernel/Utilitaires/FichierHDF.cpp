@@ -273,12 +273,14 @@ bool FichierHDF::is_hdf5(const char * file_name)
 
 void FichierHDF::get_chunking(hsize_t datasetLen)
 {
-  hsize_t OneMG = 1048576;
+  hsize_t OneMB = 1048576;
+  hsize_t FourGB = 4294967296; //maximum limit tolerated by HDF5
   //if the dataset is not big enough, there's no need for chunking
-  if(datasetLen > OneMG)
+  if(datasetLen > OneMB)
     {
       int nproc = Process::nproc();
-      chunk_size_ = datasetLen / nproc;
+      hsize_t tmp = datasetLen / nproc;
+      chunk_size_ = (tmp >= FourGB) ? FourGB-1 : tmp;
     }
 }
 

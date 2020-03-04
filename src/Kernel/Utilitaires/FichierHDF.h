@@ -27,6 +27,15 @@
 #include <Nom.h>
 #include <SChaine.h>
 
+#include <med.h>
+#ifdef MED_H
+#ifndef MED_
+#define MED_
+#endif
+#else
+#undef MED_
+#endif
+
 #ifdef MED_
 #include <hdf5.h>
 #endif
