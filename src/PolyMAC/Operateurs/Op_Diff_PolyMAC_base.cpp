@@ -260,9 +260,9 @@ void Op_Diff_PolyMAC_base::remplir_nu(DoubleTab& nu) const
     }
 
   /* ajout de la diffusivite turbulente si elle existe */
-  if (!la_diffusivite_turbulente.non_nul()) return;
+  if (!has_diffusivite_turbulente()) return;
 
-  const DoubleTab& diffu_turb = la_diffusivite_turbulente->valeurs();
+  const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
   if (equation().que_suis_je() == "Transport_K_Eps")
     {
       bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());

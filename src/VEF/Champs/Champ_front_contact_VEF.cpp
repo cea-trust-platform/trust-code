@@ -246,7 +246,7 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
   if (mod.non_nul())
     {
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,mod.valeur());
-      coeff_turb = mod_turb_scal.diffusivite_turbulente().valeurs();
+      coeff_turb = mod_turb_scal.conductivite_turbulente().valeurs();
 
       const Turbulence_paroi_scal& loipar = mod_turb_scal.loi_paroi();
 

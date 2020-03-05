@@ -45,7 +45,7 @@ public:
   inline int preparer_calcul();
   inline void completer();
   inline void mettre_a_jour(double );
-  inline const Champ_Fonc& diffusivite_turbulente() const;
+  inline const Champ_Fonc& conductivite_turbulente() const;
   inline const Turbulence_paroi_scal& loi_paroi() const;
   inline int loi_paroi_non_nulle() const;
   inline int sauvegarde(Sortie& ) const;
@@ -83,9 +83,9 @@ inline void Modele_turbulence_scal::mettre_a_jour(double temps)
   valeur().mettre_a_jour(temps);
 }
 
-inline const Champ_Fonc& Modele_turbulence_scal::diffusivite_turbulente() const
+inline const Champ_Fonc& Modele_turbulence_scal::conductivite_turbulente() const
 {
-  return valeur().diffusivite_turbulente();
+  return valeur().conductivite_turbulente();
 }
 
 inline const Turbulence_paroi_scal& Modele_turbulence_scal::loi_paroi() const
