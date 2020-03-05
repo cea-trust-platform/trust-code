@@ -147,7 +147,7 @@ if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ] ; then
       lz=$lz"-lintlc "
       intlcso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so | cut -d' ' -f 3`
       intlcpath=`dirname $intlcso`
-      [ "$svmlpath" != "$intlcpath" ] && lz=" -L$b "$lz
+      [ "$svmlpath" != "$intlcpath" ] && lz=" -L$intlcpath "$lz
    fi
 fi
 MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a $lz-lm -ldl"
