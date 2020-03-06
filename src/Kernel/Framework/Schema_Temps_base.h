@@ -377,8 +377,8 @@ protected :
   double seuil_statio_;
   int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
   double dt_sauv_;
-  int limite_cpu_sans_sauvegarde_;
-  int periode_cpu_sans_sauvegarde_;
+  double limite_cpu_sans_sauvegarde_;
+  double periode_cpu_sans_sauvegarde_;
   double temps_cpu_ecoule_;
   double dt_impr_;                        // Pas de temps d'impression
   int precision_impr_;                // Nombre de chiffres significatifs impression
