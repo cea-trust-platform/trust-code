@@ -1099,9 +1099,6 @@ bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
 partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
   attr domaine ref_domaine domaine 0 Name of the domain to be cut.
   attr bloc_decouper bloc_decouper bloc_decouper 0 Description how to cut a domain.
-reordonner_faces_periodiques interprete reordonner_faces_periodiques -1 The Reordonner_faces_periodiques keyword is mandatory to first define the periodic boundaries and also to reorder the faces of theses boundaries.
-  attr domaine ref_domaine domaine 0 Name of domain.
-  attr nom_bord_perio chaine nom_bord_perio 0 boundary_name.
 corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 The Corriger_frontiere_periodique keyword is mandatory to first define the periodic boundaries, to reorder the faces and eventually fix unaligned nodes of these boundaries. Faces on one side of the periodic domain are put first, then the faces on the opposite side, in the same order. It must be run in sequential before mesh splitting.
   attr domaine chaine domaine 0 Name of domain.
   attr bord chaine bord 0 the name of the boundary (which must contain two opposite sides of the domain)

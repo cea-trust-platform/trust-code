@@ -1,4 +1,4 @@
-# Test de l'ancienne syntaxe de Reordonner_Faces_Periodiques #
+# Test de la syntaxe de Corriger_frontiere_periodique #
 # PARALLEL OK 8 #
 dimension 3
 
@@ -25,9 +25,9 @@ Mailler dom
 	}
 }
 Tetraedriser dom
-Reordonner_Faces_Periodiques dom periox
-Reordonner_Faces_Periodiques dom perioy
-Reordonner_Faces_Periodiques dom perioz
+Corriger_frontiere_periodique { domaine dom bord periox }
+Corriger_frontiere_periodique { domaine dom bord perioy }
+Corriger_frontiere_periodique { domaine dom bord perioz }
 
 # END MESH #
 # BEGIN PARTITION

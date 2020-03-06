@@ -324,6 +324,7 @@
  Format_Post_Med Format_Post_Med Format_Post_Med.h
  Format_Post_Medfile Format_Post_Medfile Format_Post_Medfile.h
  Format_Post_Med_major Format_Post_Med_major Format_Post_Med_major.h
+ Format_Post_XYZ Format_Post_XYZ Format_Post_XYZ.h
  Frontiere Frontiere Frontiere.h
  Frontiere_dis_base Frontiere_dis_base Frontiere_dis_base.h
  Frontiere_ouverte Neumann_sortie_libre Neumann_sortie_libre.h
@@ -730,7 +731,6 @@
  Remove_elem Remove_elem Remove_elem.h
  Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries.h
  Reordonner Reordonner Reordonner.h
- Reordonner_faces_periodiques Reordonner_faces_periodiques Reordonner_faces_periodiques.h
  Reorienter_tetraedres Reorienter_tetraedres Reorienter_tetraedres.h
  Reorienter_triangles Reorienter_triangles Reorienter_triangles.h
  Resoudre|Solve Resoudre Resoudre.h

@@ -5,7 +5,7 @@ Pb_Hydraulique pb
 Domaine dom
 
 Read_file dom dom.geom
- Reordonner_faces_periodiques dom periox
+Corriger_frontiere_periodique { domaine dom bord periox }
 
 VEFPreP1b dis
 

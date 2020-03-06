@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,9 +37,7 @@ class Frontiere;
 //  meme ordre, les faces jumelles sur le bord oppose).
 class Reordonner_faces_periodiques : public Interprete_geometrique_base
 {
-  Declare_instanciable(Reordonner_faces_periodiques);
 public:
-  Entree& interpreter_(Entree& is);
   static int reordonner_faces_periodiques(const Domaine& domaine,
                                           IntTab& faces,
                                           const ArrOfDouble& direction_perio,
