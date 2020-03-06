@@ -24,7 +24,6 @@
 #include <communications.h>
 #include <ArrOfInt.h>
 
-
 #ifndef MED_
 FichierHDF::FichierHDF()
 {
@@ -58,7 +57,7 @@ void FichierHDF::prepare_read_dataset_props() {}
 void FichierHDF::create_and_fill_attribute(int data, const char* attribute_name) {}
 #else
 
-FichierHDF::FichierHDF():  file_id_(0), file_access_plst_(0),
+FichierHDF::FichierHDF():  file_id_(0), file_access_plst_(0), file_creation_plst_(0),
   dataset_transfer_plst_(0), dataset_creation_plst_(0),
   chunk_size_(0) {}
 
@@ -70,7 +69,8 @@ FichierHDF::~FichierHDF()
 void FichierHDF::create(Nom filename)
 {
   prepare_file_props();
-  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC /*H5F_ACC_EXCL*/, H5P_DEFAULT, file_access_plst_);
+  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC /*H5F_ACC_EXCL*/, file_creation_plst_, file_access_plst_);
+
 }
 
 void FichierHDF::open(Nom filename, bool readOnly)
@@ -86,6 +86,13 @@ void FichierHDF::prepare_file_props()
   //on cluster, type lfs getstripe . to see the default striping of the current repository
   hsize_t stripe_size = 1048576; //1572864;
   H5Pset_alignment(file_access_plst_, 0, stripe_size);
+
+  //increasing size of the B-tree containing metadata info (to approximately match the size striping)
+  //useful when we are writing a lot of chunks
+  // see https://www.nersc.gov/users/training/online-tutorials/introduction-to-scientific-i-o/?show_all=1
+  file_creation_plst_ = H5Pcreate(H5P_FILE_CREATE);
+  hsize_t btree_ik = (stripe_size - 4096) / 96;
+  H5Pset_istore_k(file_creation_plst_, btree_ik);
 }
 
 void FichierHDF::prepare_write_dataset_props(hsize_t datasetLen)
@@ -112,6 +119,7 @@ void FichierHDF::close()
 {
   H5Fclose(file_id_);
   if(file_access_plst_)    H5Pclose(file_access_plst_);
+  if(file_creation_plst_)    H5Pclose(file_creation_plst_);
   if(dataset_transfer_plst_) H5Pclose(dataset_transfer_plst_);
   if(dataset_creation_plst_) H5Pclose(dataset_creation_plst_);
 }

@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef FichierHDF_included
 #define FichierHDF_included
+
 #include <Process.h>
 #include <Entree_Brute.h>
 #include <Sortie_Brute.h>
@@ -39,6 +40,7 @@
 #ifdef MED_
 #include <hdf5.h>
 #endif
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -99,6 +101,7 @@ protected:
 #ifdef MED_
   hid_t file_id_;
   hid_t file_access_plst_;
+  hid_t file_creation_plst_;
   hid_t dataset_transfer_plst_;
   hid_t dataset_creation_plst_;
   hsize_t chunk_size_;
