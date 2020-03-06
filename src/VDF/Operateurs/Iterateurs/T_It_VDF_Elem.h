@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,6 +90,7 @@ protected:
   void ajouter_contribution_bords(const DoubleTab&, Matrice_Morse&, int ) const;
   void ajouter_contribution_interne(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_interne(const DoubleTab&, Matrice_Morse&, int ) const;
+  void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
   const Milieu_base& milieu() const;
   IntTab elem;
 };
@@ -1081,8 +1082,8 @@ template <class _TYPE_>  int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
   const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
   const Zone& mazone=la_zone->zone();
   const int impr_bord=(mazone.Bords_a_imprimer().est_vide() ? 0:1);
-  double temps=la_zcl->equation().probleme().schema_temps().temps_courant();
-  Nom espace=" \t";
+  const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
+  double temps = sch.temps_courant();
   DoubleTab& flux_bords=op_base->flux_bords();
   DoubleVect bilan(flux_bords.dimension(1));
   int k,face;
@@ -1117,7 +1118,7 @@ template <class _TYPE_>  int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
     {
       SFichier Flux;
       op_base->ouvrir_fichier(Flux,"",1);
-      Flux<< temps;
+      Flux.add_col(temps);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
@@ -1126,13 +1127,16 @@ template <class _TYPE_>  int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
             {
               bilan(k)+=flux_bords2(0,num_cl,k);
               if(periodicite)
-                Flux<< espace << flux_bords2(1,num_cl,k) << espace << flux_bords2(2,num_cl,k);
+                {
+                  Flux.add_col(flux_bords2(1,num_cl,k));
+                  Flux.add_col(flux_bords2(2,num_cl,k));
+                }
               else
-                Flux<< espace << flux_bords2(0,num_cl,k);
+                Flux.add_col(flux_bords2(0,num_cl,k));
             }
         }
       for(k=0; k<flux_bords.dimension(1); k++)
-        Flux<< espace << bilan(k);
+        Flux.add_col(bilan(k));
       Flux << finl;
     }
   const LIST(Nom)& Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
@@ -2345,5 +2349,24 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_intern
     }
 }
 
+template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
+{
+  double aii=0, ajj=0;
+
+  const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+  const int ndeb = frontiere_dis.num_premiere_face();
+  const int nfin = ndeb + frontiere_dis.nb_faces();
+  // assert(cl est bien paroi contact)
+  if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+    {
+      const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
+      for (int f = ndeb; f < nfin; f++)
+        {
+          flux_evaluateur.coeffs_face(f, ndeb, cl, aii, ajj);
+          const int e1 = f2e[f].first, e2 = f2e[f].second;
+          matrice(e1, e2) = -(elem(f, 0) > -1 ? aii : ajj);
+        }
+    }
+}
 
 #endif

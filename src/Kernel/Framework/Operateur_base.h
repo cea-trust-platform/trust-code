@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,6 +76,12 @@ public :
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
   virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
   void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
+
+  virtual void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const { };
+  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const { };
+  virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const { };
+  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const { };
+
   virtual double calculer_dt_stab() const;
   virtual void calculer_dt_local(DoubleTab&) const;//Local time step calculation
   virtual void completer();
@@ -139,6 +145,7 @@ public :
   // que la diffusivite varie ou non.
   // L'implementation par defaut dans Operateur_base.cpp ne fait rien
   virtual void preparer_calcul(void);
+  int col_width_; // minimal size of a column for .out files (based on cl name length)
 
 protected :
   int decal_temps;
@@ -148,8 +155,6 @@ protected :
   Nom out_;                                 // Nom du fichier .out pour l'impression
   Nom description_;                        // Description de l'operateur
   mutable DoubleTab flux_bords_;         // Tableau contenant les flux sur les bords de l'operateur
-
-protected :
 
   Champs_compris champs_compris_;
   REF(Champ_Inc) le_champ_inco;

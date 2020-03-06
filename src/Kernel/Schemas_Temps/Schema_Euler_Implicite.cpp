@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,7 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
   nb_ite_max=200;
   residu_old_=0;
   facsec_max_=DMAXFLOAT;
+  thermique_monolithique_ = 0;
   Schema_Implicite_base::readOn(s);
   if(!le_solveur.non_nul())
     {
@@ -98,8 +99,10 @@ void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const dou
 
 void Schema_Euler_Implicite::set_param(Param& param)
 {
+  // XD schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicit scheme.
   param.ajouter("max_iter_implicite",&nb_ite_max);
-  param.ajouter("facsec_max", &facsec_max_);
+  param.ajouter("facsec_max", &facsec_max_); // XD_ADD_P floattant 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
+  param.ajouter("thermique_monolithique", &thermique_monolithique_); // XD_ADD_P int Activate monolithic thermal coupling of equations for coupled problems. 0 = no, 1 = yes, 2 = yes and test convergence
   Schema_Implicite_base::set_param(param);
 }
 
@@ -311,7 +314,6 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
   //    ref_cast(Probleme_base,pbc.probleme(i)).sauver();
 
   int convergence_pbc = 0;
-  int convergence_pb;
   int i;
 
   for(i=0; i<pbc.nb_problemes(); i++)
@@ -320,6 +322,18 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
   int ok=0;
   int compteur;
+  // structure pour ranger les equations par domaine d'application
+  // -> les hydrauliques, les thermiques, et les autres
+  std::map<std::string, std::vector<std::array<int, 2>>> map_problems;
+  for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+      {
+        Motcle type = ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application();
+        if (type != "Hydraulique" && type != "Thermique") type = "Autres";
+        map_problems[type.getString()].push_back({{ i, j}});
+      }
+
+  //ordre de resolution des domaines d'application
+  std::vector<std::string> dom_app = {"HYDRAULIQUE", "THERMIQUE", "AUTRES"};
 
   while (!ok)
     {
@@ -342,13 +356,62 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
             }
 
-          for(i=0; i<pbc.nb_problemes(); i++)
+          if (thermique_monolithique_ > 0)
             {
-              pbc.probleme(i).updateGivenFields();
-              convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur);
-              convergence_pbc = convergence_pbc * convergence_pb ;
-            }
+              for (auto && da : dom_app) if (map_problems.count(da))
+                  {
+                    Cout << "RESOLUTION " << da.c_str() << finl;
+                    Cout << "-------------------------" << finl;
+                    if (da == "THERMIQUE" && map_problems[da].size() > 1)
+                      {
+                        Cout << "Thermique monolithique! the equations {";
+                        LIST(REF(Equation_base)) eqs;
+                        for (auto && pbeqs : map_problems[da])
+                          {
+                            Equation_base& eq = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                            Cout << " " << eq.que_suis_je();
+                            pbc.probleme(pbeqs[0]).updateGivenFields();
+                            eqs.add(eq);
+                          }
+                        Cout << " } are solved by assembling a single matrix." << finl;
+                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
+                        convergence_pbc = convergence_pbc && convergence_eqs;
+                      }
+                    else
+                      for (auto && pbeqs : map_problems[da])
+                        {
+                          pbc.probleme(pbeqs[0]).updateGivenFields();
 
+                          Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+                          DoubleTab& present = eqn.inconnue().valeurs();
+                          DoubleTab& futur = eqn.inconnue().futur();
+                          double temps = temps_courant_ + dt_;
+
+                          // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
+                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
+                          const DoubleTab& inut=futur;
+                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+                          convergence_pbc = convergence_pbc && convergence_eqn;
+                          futur = present;
+                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          present = futur;
+
+                          eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+                          Cout << finl;
+                        }
+                  }
+            }
+          else
+            {
+              for(i=0; i<pbc.nb_problemes(); i++)
+                {
+                  pbc.probleme(i).updateGivenFields();
+                  int convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur);
+                  convergence_pbc = convergence_pbc * convergence_pb ;
+                }
+
+            }
         }
       if ((!convergence_pbc)&&(compteur==nb_ite_max))
         {

@@ -1,0 +1,86 @@
+Parameters {
+    Title "Resolution thermique monolithique"
+    Author "A. Gerschenfeld, Y. Gorsse"
+    description "Comparaison des resultats obtenus en VDF sur un couplage ThHyd/ThSol selon differents algos de couplage :  couplage sequentiel (avec et sans iteration), resolution monolithique (avec et sans iteration). On s'attend a avoir des resultats identique entre sequentiel avec iteration, et monolithique avec ou sans iteration."
+    TestCase . VDF_seq_sans_iteration
+    TestCase . VDF_seq_avec_iteration
+    TestCase . VDF_mono_sans_iteration
+    TestCase . VDF_mono_avec_iteration
+}
+Chapter
+{
+    Title Resultats
+
+    Figure
+    {
+        Title "Difference entre le flux calcule dans le pb1 et le flux calcule dans le pb2 au bord couple Droit1"
+        titre_figure ""
+        labelx time
+        labely Erreur dans l'echange de chaleur a l'interface [W]
+
+        Include_Description_Curves 0
+        legend bottom
+        Curve
+        {
+            file <paste VDF_seq_sans_iteration_pb1_Diffusion_chaleur.out VDF_seq_sans_iteration_pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend VDF - seq - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file <paste VDF_seq_avec_iteration_pb1_Diffusion_chaleur.out VDF_seq_avec_iteration_pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend VDF - seq - avec iteration
+            style linespoints
+        }
+        Curve
+        {
+            file <paste VDF_mono_sans_iteration_pb1_Diffusion_chaleur.out VDF_mono_sans_iteration_pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend VDF - monolithique - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file <paste VDF_mono_avec_iteration_pb1_Diffusion_chaleur.out VDF_mono_avec_iteration_pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend VDF - monolithique - avec iteration
+            style linespoints
+        }
+    }
+    Figure
+    {
+        Title "Nombre d'iterations"
+        titre_figure ""
+        labelx numero pas de temps
+        labely Nombre d'iterations
+
+        Include_Description_Curves 0
+        legend bottom
+        Curve
+        {
+            file <grep 'The Probleme_Couple problem pbc has converged after' VDF_seq_sans_iteration.out | awk '{print $8}'
+            legend VDF - seq - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file <grep 'The Probleme_Couple problem pbc has converged after' VDF_seq_avec_iteration.out | awk '{print $8}'
+            legend VDF - seq - avec iteration
+            style linespoints
+        }
+        Curve
+        {
+            file <grep 'The Probleme_Couple problem pbc has converged after' VDF_mono_sans_iteration.out | awk '{print $8}'
+            legend VDF - monolithique - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file <grep 'The Probleme_Couple problem pbc has converged after' VDF_mono_avec_iteration.out | awk '{print $8}'
+            legend VDF - monolithique - avec iteration
+            style linespoints
+        }
+    }
+}

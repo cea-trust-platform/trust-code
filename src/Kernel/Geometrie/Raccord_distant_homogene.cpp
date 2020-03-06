@@ -180,9 +180,7 @@ void Raccord_distant_homogene::trace_elem_distant(const DoubleTab& y, DoubleTab&
 void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
-  int nb_compo_=1;
-  if (y.nb_dim() == 2)
-    nb_compo_ = y.dimension(1);
+  int n, N = y.line_size();
 
   const IntTab& send_data = Tab_Envoi();
   const ArrOfInt& recv_data = Tab_Recep();
@@ -191,7 +189,12 @@ void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab&
 
   // On dimensionne x si ce n'est pas fait
   if (x.size_array()==0 && n2!=0)
-    x.resize(n2);
+    {
+      if (y.nb_dim() == 1) x.resize(n2);
+      else if (y.nb_dim() == 2) x.resize(n2, y.dimension(1));
+      else if (y.nb_dim() == 3) x.resize(n2, y.dimension(1), y.dimension(2));
+      else if (y.nb_dim() == 4) x.resize(n2, y.dimension(1), y.dimension(2), y.dimension(3));
+    }
 
   Schema_Comm schema;
   schema.set_send_recv_pe_list(send_pe_list_, recv_pe_list_);
@@ -200,21 +203,13 @@ void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab&
     {
       const int pe_dest = send_data(i, 0);
       const int face  = num_premiere_face() + send_data(i, 1);
-      if(y.nb_dim()==2)
-        for (int j=0; j<nb_compo_; j++)
-          schema.send_buffer(pe_dest) << y(face,j);
-      else
-        schema.send_buffer(pe_dest) << y(face);
+      for (n = 0; n < N; n++) schema.send_buffer(pe_dest) << y.addr()[N * face + n];
     }
   schema.echange_taille_et_messages();
   for (int i = 0; i < n2; i++)
     {
       const int pe_source = recv_data[i];
-      if (x.nb_dim()==2)
-        for(int j=0; j<nb_compo_; j++)
-          schema.recv_buffer(pe_source) >> x(i,j);
-      else
-        schema.recv_buffer(pe_source) >> x(i);
+      for (n = 0; n < N; n++) schema.recv_buffer(pe_source) >> x.addr()[N * i + n];
     }
   schema.end_comm();
 }

@@ -1,0 +1,15 @@
+#!/bin/bash
+jdd=champ_xyz_genere.data
+[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data $jdd 1>/dev/null 2>&1
+# On lance un calcul en sequentiel et parallele pour generer
+# un .dat en sequentiel et un .dat en parallele pour tester
+# la reprise
+trust $jdd 1>/dev/null 2>&1 || exit -1 
+# Renomme un fichier .dat
+mv `ls -rt champ_xyz_genere.VITESSE.ELEM*xyz | tail -1` champ_xyz_a_lire.xyz
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+    trust PAR_$jdd 2 1>/dev/null 2>&1 || exit -1
+fi
+
+

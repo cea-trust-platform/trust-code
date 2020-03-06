@@ -11,6 +11,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
+	-I$(TRUST_ROOT)/src/PolyMAC/Cond_Lim\
 	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/ThHyd/Quasi_Compressible\

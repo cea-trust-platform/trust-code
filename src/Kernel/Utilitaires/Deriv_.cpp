@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,6 +116,9 @@ Objet_U * Deriv_::typer(const char* type)
           Cerr << finl;
           Cerr << type << " is not a recognized keyword." << finl;
           Cerr << "Check your data set." << finl;
+          Nom nompb = type;
+          if (nompb.find("TURBULENT")!=-1 )
+            Cerr << "Since TRUST V1.8.0, turbulence models are in TrioCFD and not anymore in TRUST.\nTry using TrioCFD executable or contact trust support." << finl;
           exit();
         }
     }

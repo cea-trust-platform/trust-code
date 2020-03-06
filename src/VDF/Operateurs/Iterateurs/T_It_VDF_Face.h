@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,6 @@
 #include <EcrFicPartage.h>
 #include <communications.h>
 #include <DoubleTrav.h>
-
 
 template <class _TYPE_>
 class T_It_VDF_Face : public Iterateur_VDF_base
@@ -1079,8 +1078,6 @@ int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
     }
-  Nom espace=" \t";
-  \
   int k,face;
   int nb_front_Cl=la_zone->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , tab_flux_bords.dimension(1)) ;
@@ -1131,9 +1128,9 @@ int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
       op_base->ouvrir_fichier(Flux_moment,"moment",impr_mom);
       SFichier Flux_sum;
       op_base->ouvrir_fichier(Flux_sum,"sum",impr_sum);
-      sch.imprimer_temps_courant(Flux);
-      if (impr_mom) sch.imprimer_temps_courant(Flux_moment);
-      if (impr_sum) sch.imprimer_temps_courant(Flux_sum);
+      Flux.add_col(sch.temps_courant());
+      if (impr_mom) Flux_moment.add_col(sch.temps_courant());
+      if (impr_sum) Flux_sum.add_col(sch.temps_courant());
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
@@ -1141,24 +1138,27 @@ int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
           for(k=0; k<tab_flux_bords.dimension(1); k++)
             {
               if(periodicite)
-                Flux<< espace << flux_bords2(1,num_cl,k) << espace << flux_bords2(2,num_cl,k);
+                {
+                  Flux.add_col(flux_bords2(1,num_cl,k));
+                  Flux.add_col(flux_bords2(2,num_cl,k));
+                }
               else
-                Flux<< espace << flux_bords2(0,num_cl,k);
-              if (impr_sum) Flux_sum << espace << flux_bords2(3,num_cl,k);
+                Flux.add_col(flux_bords2(0,num_cl,k));
+              if (impr_sum) Flux_sum.add_col(flux_bords2(3,num_cl,k));
               bilan(k)+=flux_bords2(0,num_cl,k);
             }
           if (dimension==3)
             {
               for (k=0; k<tab_flux_bords.dimension(1); k++)
-                if (impr_mom) Flux_moment << espace << flux_bords2(4,num_cl,k);
+                if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,k));
             }
           else
             {
-              if (impr_mom) Flux_moment << espace << flux_bords2(4,num_cl,0);
+              if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,0));
             }
         } /* fin for num_cl */
       for(k=0; k<tab_flux_bords.dimension(1); k++)
-        Flux<< espace << bilan(k);
+        Flux.add_col(bilan(k));
       Flux << finl;
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;

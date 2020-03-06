@@ -1,3 +1,0 @@
-#!/bin/bash
-# Pose d'un label
-echo "$* non reconnu par MKLABEL" 

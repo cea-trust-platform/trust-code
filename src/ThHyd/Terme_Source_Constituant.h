@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,11 +23,10 @@
 #ifndef Terme_Source_Constituant_included
 #define Terme_Source_Constituant_included
 
-
-
-
 #include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
+#include <SFichier.h>
+#include <Equation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -49,6 +48,9 @@ public :
 
   inline void associer_champs(const Champ_Don&);
   void lire_donnees(Entree& );
+  void ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int& flag) const;
+  int completer(const Champ_Inc_base& inco);
+
   inline const Champ_Don& get_source() const
   {
     return la_source_constituant ;
@@ -60,7 +62,7 @@ public :
   };
 
 protected:
-
+  int colw_;
   REF(Champ_Don) rho_ref;
   Champ_Don la_source_constituant;
 

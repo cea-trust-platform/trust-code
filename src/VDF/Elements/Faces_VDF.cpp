@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,6 +62,12 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
         }
       else if(dimension == 3)
         {
+          if (nb_som_faces() != 4 )
+            {
+              Cerr << "We found a VDF face with nb_som_faces = " << nb_som_faces() << ". Aren't you trying to read a VEF mesh in VDF ?" << finl;
+              Cerr << "There is a problem with mesh or with chosen discretization." << finl;
+              exit();
+            }
           dx = dabs(dom.coord(sommet(face, 3), 0)-dom.coord(sommet(face, 0), 0));
           dy = dabs(dom.coord(sommet(face, 3), 1)-dom.coord(sommet(face, 0), 1));
           dz = dabs(dom.coord(sommet(face, 3), 2)-dom.coord(sommet(face, 0), 2));

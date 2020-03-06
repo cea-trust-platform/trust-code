@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,8 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Constituant.h>
-
-
+#include <Schema_Temps_base.h>
+#include <Probleme_base.h>
 
 // Description:
 //    Lit le terme de puissance a partir
@@ -46,5 +46,50 @@ void Terme_Source_Constituant::lire_donnees(Entree& is)
   is >> la_source_constituant;
 }
 
+int Terme_Source_Constituant::completer(const Champ_Inc_base& inco)
+{
+  colw_ = -1;
+  for (int i = 0; i < inco.nb_comp(); ++i)
+    colw_ = max(colw_, inco.noms_compo()[i].longueur());
+  return colw_;
+}
 
+void Terme_Source_Constituant::ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int& flag) const
+{
+  // flag nul on n'ouvre pas le fichier
+  if (flag==0)
+    return ;
 
+  const Probleme_base& pb = eq.probleme();
+  const Schema_Temps_base& sch = pb.schema_temps();
+
+  Nom nomfichier(out);
+  if (type!="") nomfichier+=(Nom)"_"+type;
+  nomfichier+=".out";
+
+  // On cree le fichier a la premiere impression avec l'en tete
+  const int wcol = max(colw_, sch.wcol());
+  os.set_col_width(wcol);
+  if (sch.nb_impr()==1 && !pb.reprise_effectuee())
+    {
+      const int& gnuplot_header = sch.gnuplot_header();
+      os.ouvrir(nomfichier);
+      SFichier& fic=os;
+      fic << (Nom)"# Printing of the source term " + qsj + " of the equation "+ eq.que_suis_je() +" of the problem "+ eq.probleme().le_nom() << finl;
+      fic << "# " << description << finl;
+      if (!gnuplot_header) fic << "#";
+      os.set_col_width(wcol - !gnuplot_header);
+      fic.add_col("Time");
+      os.set_col_width(wcol);
+      for (int i = 0; i < eq.inconnue()->nb_comp(); ++i)
+        fic.add_col(eq.inconnue()->noms_compo()[i].getChar());
+      fic << finl;
+    }
+  // Sinon on l'ouvre
+  else
+    {
+      os.ouvrir(nomfichier,ios::app);
+    }
+  os.precision(sch.precision_impr());
+  os.setf(ios::scientific);
+}

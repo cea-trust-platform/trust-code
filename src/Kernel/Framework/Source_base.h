@@ -72,7 +72,7 @@ public :
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
   /////////////////////////////////////////////////////
 
-  void ouvrir_fichier(SFichier& os,const Nom&, const int& flag=1) const;
+  virtual void ouvrir_fichier(SFichier& os,const Nom&, const int& flag=1) const;
   void set_fichier(const Nom&);
   inline void set_description(const Nom& nom)
   {
@@ -100,7 +100,7 @@ protected :
 
   virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
   virtual void associer_pb(const Probleme_base& ) =0;
-
+  int col_width_ = 0;
   Nom out_;                  // Nom du fichier .out pour l'impression
   Nom description_;          // Description du terme source
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine

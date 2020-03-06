@@ -31,6 +31,7 @@
 #include <Neumann_sortie_libre.h>
 #include <EcrFicCollecte.h>
 #include <math.h>
+#include <IntTrav.h>
 
 Implemente_instanciable(Zone_VDF,"Zone_VDF",Zone_VF);
 
@@ -1056,3 +1057,11 @@ DoubleVect& Zone_VDF::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) cons
   return dist;
 }
 
+void Zone_VDF::init_virt_e_map() const
+{
+  IntTrav p_e(0, 2);
+  zone().creer_tableau_elements(p_e);
+  for (int e = 0; e < nb_elem() ; e++) p_e(e, 0) = Process::me(), p_e(e, 1) = e;
+  p_e.echange_espace_virtuel();
+  for (int e = nb_elem() ; e < nb_elem_tot() ; e++) virt_e_map[ {{ p_e(e, 0), p_e(e, 1) }}] = e;
+}

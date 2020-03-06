@@ -1,5 +1,5 @@
 We will now explain how to fill a data file.
-First you must specify some basic informations like the dimension of your domain, his name, the problem type...
+First you must specify some basic information like the dimension of your domain, its name, the problem type...
 To define the problem dimension, we use the following keyword:
 
     \begin{center}
@@ -43,9 +43,9 @@ where:
 \item \textbf{hydraulique}: means that we will solve Navier Stokes equations without energy equation,
 \item \textbf{\textcolor{magenta}{Thermo}}: means that we will solve Navier Stokes equations with energy equation,
 \item \textbf{\textcolor{darkblue}{Concentration}}: that we will solve multiple constituent transportation equations,
-\item \textbf{\textcolor{Greeen}{Turbulent}}: that we will simulate a turbulent flow and specify a turbulent model (RANS or LES),
+\item \textbf{\textcolor{Greeen}{Turbulent}}: that we will simulate a turbulent flow and specify a turbulent model (RANS or LES). (Since version v1.8.0, \textcolor{Greeen}{Turbulence} models are in TrioCFD not in TRUST).
 \item \textbf{Conduction}: resolution of the heat equation,
-\item \textbf{QC}: Navier Stokes equations with energy equation for quasi-compressible fluid under low Mach numbers,
+\item \textbf{QC}: Navier Stokes equations with energy equation for quasi-compressible fluid under low Mach approach,
 %\item \textbf{\textcolor{mauve}{fraction\_massique}}: hydraulic and energy equations are solved and a list of passive scalar equations may be added.
 \end{itemize}
 
@@ -200,7 +200,7 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Import a mesh file}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-If your mesh was generated with an external tool like \href{http://www.salome-platform.org}{Salom\'e} (open source software), \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM} (commercial software), \href{http://gmsh.info/}{Gmsh} (open source software, included in \trust package) or \href{http://www-cast3m.cea.fr/}{Cast3M} (CEA software), then you must use one of the following keyword into your data file:
+If your mesh was generated with an external tool like \href{http://www.salome-platform.org}{Salom\'e} (open source software), \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM} (commercial software), \href{http://gmsh.info/}{Gmsh} (open source software, included in \trust package) or \href{http://www-cast3m.cea.fr/}{Cast3M} (CEA software), then you must use one of the following keywords into your data file:
 
 \begin{itemize}
 \item \href{\REFERENCEMANUAL\#readmed}{\textbf{Read\_MED}} for a MED file from \href{http://www.salome-platform.org}{Salom\'e}, \href{http://gmsh.info/}{Gmsh},... ,
@@ -208,7 +208,7 @@ If your mesh was generated with an external tool like \href{http://www.salome-pl
 \item for another format, see the \href{\REFERENCEMANUAL\#read}{\trustref Reference Manual}.
 \end{itemize}
 
-If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can look at the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
+If you want to learn how to build a mesh with Salom\'e or Gmsh and read it with \trust, you can look at the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
 
 
 
@@ -274,7 +274,7 @@ To use this mesh in your data file, you just have to add the previous block in y
 \end{minipage}}
 \end{center}
 
-\underline{Do not forget the semi-colonn at the end of the line!}\\
+\underline{Do not forget the semicolon at the end of the line!}\\
 
 
 
@@ -374,7 +374,7 @@ To use it, launch in a bash terminal:
 > visit -o my_data_file.lata &
 \end{verbatim}
 
-To see how to use VisIt, look at the first \trust tutorial exercise: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.\\
+To see how to use VisIt, look at the first \trust tutorial exercise: \href{TRUST_tutorial.pdf\#exo1}{Flow around an obstacle}.\\
 
 If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can look at the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
 
@@ -389,7 +389,7 @@ If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 You have to specify the discretization type which can be \href{\REFERENCEMANUAL\#vdf}{\textbf{VDF}}, \href{\REFERENCEMANUAL\#ef}{\textbf{EF}} or \href{\REFERENCEMANUAL\#vefprep1b}{\textbf{VEFPreP1B}}.\\
 
-In \textbf{VDF} discretization, the locations of the unknown are drawn in the Figure \ref{fig_VDF}.\\
+In \textbf{VDF} discretization, the locations of the unknowns are drawn in the Figure \ref{fig_VDF}.\\
 
 \begin{figure}[h!]
 \begin{center}
@@ -427,12 +427,12 @@ In \textbf{VDF} discretization, the locations of the unknown are drawn in the Fi
 \draw[red] (4,0.5) node {$P, T, k, \varepsilon, ...$} ;
 \draw[red] [<-] (1.6,1.4) -- (3.45,0.55);
 \end{tikzpicture}
-\caption{VDF unknown localisations}
+\caption{VDF unknown locations}
 \label{fig_VDF}
 \end{center}
 \end{figure}
 
-For \textbf{VEFPreP1B}, the locations of the unknown are drawn in the Figure \ref{fig_VEF}.\\
+For \textbf{VEFPreP1B}, the locations of the unknowns are drawn in the Figure \ref{fig_VEF}.\\
 
 \begin{figure}[h!]
 \begin{center}
@@ -496,7 +496,7 @@ For \textbf{VEFPreP1B}, the locations of the unknown are drawn in the Figure \re
 \draw[black] (11.5,1) node {$P$ for P1 discretization} ;
 \draw[black] [->] [>=latex] (9.25,1) -- (6.25,0.5);
 \end{tikzpicture}
-\caption{VEF unknown localisations in 2D}
+\caption{VEF unknown locations in 2D}
 \label{fig_VEF}
 \end{center}
 \end{figure}
@@ -533,7 +533,7 @@ In this case P0+P1 pressure gradient has trouble to match the source term so we 
 \draw[Greeen] [->] [>=latex] (7.75,1) -- (3.7,1.5);
 \draw[Greeen] [->] [>=latex] (7.75,1) -- (2,0.75);
 \end{tikzpicture}
-\caption{VEF pressure localisation in 3D}
+\caption{VEF pressure location in 3D}
 \label{fig_VEF_pressure_loc}
 \end{center}
 \end{figure}
@@ -552,10 +552,10 @@ To specify the wanted discretization, you have to add the following block to you
 
 You can add parameters to your discretization with the optional keyword \href{\REFERENCEMANUAL\#read}{\textbf{Read}} (see \href{\REFERENCEMANUAL\#vefprep1b}{\textbf{VEFPreP1B discretization}}).
 
-On the \href{http://www-trio-u.cea.fr/scripts/home/publigen/content/templates/show.asp?L=EN&P=55&vTicker=alleza&ITEMID=3}{TRUST website}, you can find information about:
+On the \href{http://triocfd.cea.fr/}{TrioCFD website}, you can find information about:
 \begin{itemize}
-\item \textbf{VDF} discretization in the \href{http://www-trio-u.cea.fr/home/liblocal/docs/Theses/these_chatelain_2004.pdf}{PhD thesis of A. Chatelain},
-\item \textbf{VEFPreP1B} discretization (Crouzet-Raviart elements) in the \href{http://www-trio-u.cea.fr/home/liblocal/docs/Theses/these_fortin_2006.pdf}{PhD thesis of T. Fortin} and \href{http://www-trio-u.cea.fr/home/liblocal/docs/Theses/These_Heib_2003.pdf}{PhD thesis of S. Heib}.
+\item \textbf{VDF} discretization in the \href{http://triocfd.cea.fr/Documents/DOCS THESES/these_chatelain_2004.pdf}{PhD thesis of A. Chatelain},
+\item \textbf{VEFPreP1B} discretization (Crouzet-Raviart elements) in the \href{http://triocfd.cea.fr/Documents/DOCS THESES/these_fortin_2006.pdf}{PhD thesis of T. Fortin} and \href{http://triocfd.cea.fr/Documents/DOCS THESES/These_Heib_2003.pdf}{PhD thesis of S. Heib}.
 \end{itemize}
 
 
@@ -605,7 +605,7 @@ And also some available types of implicit schemes:
 %\item \textbf{Schema\_Backward\_Differentiation\_order\_3}
 \end{itemize}
 
-For other scheme, see \href{\REFERENCEMANUAL\#schematempsbase}{this section} of the Reference Manual.\\
+For other schemes, see \href{\REFERENCEMANUAL\#schematempsbase}{this section} of the Reference Manual.\\
 
 \Note that you can use semi-implicit schemes activating the \textbf{diffusion\_implicite} keyword in your explicit time scheme.
 
@@ -630,7 +630,7 @@ When the simulation is running, you can see the "\textbf{0}" value in that file.
 
 To stop it, put a "\textbf{1}" instead of the "\textbf{0}", save the file and at the next iteration the calculation will stop properly.\\
 
-When you don't change any thing in that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
+When you don't change anything in that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -658,7 +658,7 @@ To specify the medium or fluid, you must add the following block.
 \item for other types and more information see \href{\REFERENCEMANUAL\#milieubase}{\trustref Reference Manual}.
 \end{itemize}
 
-If you want to use more than one medium, you can add an other blocks for each medium or fluid.\\
+If you want to use more than one medium, you can add another blocks for each medium or fluid.\\
 
 
 

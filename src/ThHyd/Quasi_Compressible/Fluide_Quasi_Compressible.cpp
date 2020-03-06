@@ -33,6 +33,7 @@
 #include <Param.h>
 #include <Champ_Fonc_Fonction.h>
 #include <Neumann_sortie_libre.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Incompressible);
 
@@ -719,12 +720,21 @@ void Fluide_Quasi_Compressible::preparer_calcul()
 // Postcondition:
 void Fluide_Quasi_Compressible::calculer_pression_tot()
 {
-  // Cerr<<"Fluide_Quasi_Compressible::calculer_pression_tot  -->Pth="<<Pth_<<finl;
-  const DoubleTab& tab_PHyd = pression_->valeurs();
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
-  int i, n = tab_Ptot.dimension_tot(0);
+  int n = tab_Ptot.dimension_tot(0);
+  DoubleTab tab_PHyd(n);
+  if( n != pression_->valeurs().dimension_tot(0) )
+    {
+      // Interpolation de pression_ aux elements (ex: P1P0)
+      const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
+      const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
+      const DoubleTab& centres_de_gravites=zone.xp();
+      pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
+    }
+  else
+    tab_PHyd = pression_->valeurs();
 
-  for (i=0 ; i<n ; i++)
+  for (int i=0 ; i<n ; i++)
     {
       tab_Ptot(i) = tab_PHyd(i) + Pth_;
     }

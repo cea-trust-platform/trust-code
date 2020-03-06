@@ -323,6 +323,7 @@
  Format_Post_Med Format_Post_Med Format_Post_Med.h
  Format_Post_Medfile Format_Post_Medfile Format_Post_Medfile.h
  Format_Post_Med_major Format_Post_Med_major Format_Post_Med_major.h
+ Format_Post_XYZ Format_Post_XYZ Format_Post_XYZ.h
  Frontiere Frontiere Frontiere.h
  Frontiere_dis_base Frontiere_dis_base Frontiere_dis_base.h
  Frontiere_ouverte Neumann_sortie_libre Neumann_sortie_libre.h

@@ -482,7 +482,6 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 
   const int impr_sum=(la_zone_vef.zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(la_zone_vef.zone().Bords_a_imprimer().est_vide() ? 0:1);
-  Nom espace=" \t";
 
   // Calcul des moments
   const int nb_faces =  la_zone_vef.nb_faces_tot();
@@ -559,9 +558,9 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       op.ouvrir_fichier(Flux_sum,"sum",impr_sum);
 
       // Write time
-      sch.imprimer_temps_courant(Flux);
-      if (impr_mom) sch.imprimer_temps_courant(Flux_moment);
-      if (impr_sum) sch.imprimer_temps_courant(Flux_sum);
+      Flux.add_col(sch.temps_courant());
+      if (impr_mom) Flux_moment.add_col(sch.temps_courant());
+      if (impr_sum) Flux_sum.add_col(sch.temps_courant());
 
       // Write flux on boundaries
       for (int num_cl=0; num_cl<nb_cl; num_cl++)
@@ -572,11 +571,14 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
           for(int k=0; k<nb_compo; k++)
             {
               if(perio)
-                Flux << espace << flux_bords(1,num_cl,k) << espace << flux_bords(2,num_cl,k);
+                {
+                  Flux.add_col(flux_bords(1,num_cl,k));
+                  Flux.add_col(flux_bords(2,num_cl,k));
+                }
               else
-                Flux << espace << flux_bords(0,num_cl,k);
-              if (impr_mom) Flux_moment<< espace << flux_bords(3,num_cl,k);
-              if (la_zone_vef.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum<< espace << flux_bords(0,num_cl,k);
+                Flux.add_col(flux_bords(0,num_cl,k));
+              if (impr_mom) Flux_moment.add_col(flux_bords(3,num_cl,k));
+              if (la_zone_vef.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bords(0,num_cl,k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bords(0,num_cl,k);
@@ -585,7 +587,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 
       // On imprime les bilans et on va a la ligne
       for(int k=0; k<nb_compo; k++)
-        Flux << espace << bilan(k);
+        Flux.add_col(bilan(k));
       Flux << finl;
       if (impr_mom) Flux_moment << finl;
       if (impr_sum) Flux_sum << finl;

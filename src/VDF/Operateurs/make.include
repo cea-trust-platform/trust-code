@@ -15,9 +15,10 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/VDF\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
+    -I$(TRUST_ROOT)/src/VDF/Cond_Lim\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Iterateurs\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
-	
+
 
 Lib = $(TRUST_LIB)/libopvdf

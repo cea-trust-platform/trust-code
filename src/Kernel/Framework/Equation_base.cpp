@@ -1322,7 +1322,9 @@ bool Equation_base::updateGivenFields()
   // Calcul du taux d'accroissement des CLs entre les temps present et futur.
   zone_Cl_dis()->Gpoint(temps_present,temps_futur);
 
-
+  //MaJ des operateurs
+  for (int i = 0; i < nombre_d_operateurs(); i++) if (operateur(i).op_non_nul())
+      operateur(i).l_op_base().mettre_a_jour(temps_present);
 
   // Mise a jour des sources au temps present
   les_sources.mettre_a_jour(temps_present);
@@ -2153,6 +2155,35 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
     }
 }
 
+void Equation_base::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items)
+{
+  for(int i = 0; i < nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().get_items_croises(autre_pb, extra_items);
+}
+
+void Equation_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc)
+{
+  matrice.dimensionner(nl, nc, 0);
+  for(int i = 0; i < nombre_d_operateurs(); i++)
+    {
+      Matrice_Morse mat2;
+      operateur(i).l_op_base().dimensionner_termes_croises(mat2, autre_pb, extra_items, nl, nc);
+      if (mat2.nb_colonnes()) matrice += mat2;
+    }
+}
+
+void Equation_base::ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const
+{
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().ajouter_termes_croises(inco, autre_pb, autre_inco, resu);
+}
+
+void Equation_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
+{
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().contribuer_termes_croises(inco, autre_pb, autre_inco, matrice);
+}
+
 // ajoute les contributions des operateurs et des sources
 void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
@@ -2208,7 +2239,6 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
       Process::exit();
     }
 }
-
 
 // modifie la matrice et le second mmebre en fonction des CL
 void Equation_base::modifier_pour_Cl(Matrice_Morse& mat_morse, DoubleTab& secmem) const
