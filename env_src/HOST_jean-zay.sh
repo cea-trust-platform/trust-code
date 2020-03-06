@@ -12,9 +12,12 @@ define_modules_config()
    env=$TRUST_ROOT/env/machine.env
    #
    # Load modules
-   # trust compile avec intel 19.0.2
+   # avec intel/intelmpi 19.0.2, les calculs bloquent
    #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
-   module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
+   # avec intel/intelmpi 19.0.5, impossible de compiler TrioCFD ou autre BALTIK (meme vide)
+   #module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
+   # avec intel 19.0.5 et openmpi 3.1.4, trust et TrioCFD compilent
+   module="intel-compilers/19.0.5 intel-mkl/19.0.5 openmpi/3.1.4"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
