@@ -124,13 +124,9 @@ then
    then
       echo "Le cas test $test est obsolete car le jeu de donnees correspondant de"
       echo "la fiche de validation $FICHE_ROOT n'existe plus."
-      #cd $TRUST_TESTS/Validation
-      #CHECKOUT . 1>/dev/null 2>&1
-      #cleartool rmname -force $test 1>/dev/null 2>&1
-      #echo "Le repertoire $test est efface."
       # Pierre il est important de ne pas effacer automatiquement, car si une erreur se glisse dans un prm, on perd les references, meme si apres il recee le cas
       echo "Si c'est bien le cas, le repertoire $test peut etre efface par:"
-      echo cd `pwd`";" cleartool rmname -force $test
+      echo cd `pwd`";" git rm $test
       rm -r -f $TMP_BUILD
       exit -1
    fi
@@ -170,7 +166,7 @@ then
    then
       nb_pas_dt_max=3
    fi
-   $TRUST_Awk -v FT=$FT -v nb_pas_dt_max=$nb_pas_dt_max '/[ \t]*tinit[ \t]*/ {print $0;print "\tnb_pas_dt_max "nb_pas_dt_max;getline}\
+   $TRUST_Awk -v FT=$FT -v nb_pas_dt_max=$nb_pas_dt_max '/tinit/ {print $0;print "\tnb_pas_dt_max "nb_pas_dt_max;getline}\
     #(FT==0) && /solveur_pression/ && / [Gg][Cc][Pp] / && /seuil/ && /precond/ && /}/ {print "solveur_pression petsc cholesky { }";getline}\
     !/nb_pas_dt_max/ {print $0}\
    ' $old > $test.data
