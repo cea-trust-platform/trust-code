@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,6 @@ public:
   virtual Evaluateur_Source_VDF& evaluateur() =0;
   virtual void completer_()=0;
 
-  virtual inline int equation_divisee_par_rho_cp() const;
   virtual inline int equation_divisee_par_rho() const;
 
 protected:
@@ -63,19 +62,6 @@ protected:
   REF(Source_base) so_base;
 
 };
-// J'espere que quelqu'un, un jour, prendra le temps de supprimer
-// des horreurs pareilles, en reecrivant les equations:
-int Iterateur_Source_VDF_base::equation_divisee_par_rho_cp() const
-{
-  if (la_zcl->equation().que_suis_je() == "Conduction")
-    return 1;
-  if (la_zcl->equation().que_suis_je() == "Convection_Diffusion_Temperature")
-    return 1;
-  else if (la_zcl->equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent")
-    return 1;
-  else
-    return 0;
-}
 int Iterateur_Source_VDF_base::equation_divisee_par_rho() const
 {
   Nom nom_eqn=la_zcl->equation().que_suis_je();

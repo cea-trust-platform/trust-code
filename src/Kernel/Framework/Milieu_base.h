@@ -24,6 +24,7 @@
 #define Milieu_base_included
 
 #include <Champ_Don.h>
+#include <Champ_Fonc.h>
 #include <Ref_Champ_Don_base.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
@@ -96,6 +97,7 @@ public:
   virtual const Champ_base& get_champ(const Motcle& nom) const;
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
   /////////////////////////////////////////////////////
+  virtual void update_rho_cp(double temps);
 
 protected:
 
@@ -104,6 +106,7 @@ protected:
   Champ_Don lambda;
   Champ_Don Cp;
   Champ_Don beta_th;
+  Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
 
   REF(Champ_Don_base) g;
 

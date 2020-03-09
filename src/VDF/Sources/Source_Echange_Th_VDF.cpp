@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,8 +71,6 @@ void Source_Echange_Th_VDF::associer_zones(const Zone_dis& zone_dis,
 void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)
 {
   // Associe les zones a l'iterateur et a l'evaluateur
-  const Champ_Don& le_Cp = pb.milieu().capacite_calorifique();
-  const Champ_Don& rho = pb.milieu().masse_volumique();
   Eval_Echange_Himp_VDF_Elem& eval = (Eval_Echange_Himp_VDF_Elem&) iter.evaluateur();
   REF(Equation_base) eqn;
   bool eq_OK=false;
@@ -88,7 +86,7 @@ void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)
       Cerr << "Source_Echange_Th_VDF is not coupled to a problem solving temperature." << finl;
       exit();
     }
-  eval.associer_champs(rho,le_Cp,equation().inconnue(), eqn->inconnue(),h);
+  eval.associer_champs(equation().inconnue(), eqn->inconnue(),h);
 
 }
 

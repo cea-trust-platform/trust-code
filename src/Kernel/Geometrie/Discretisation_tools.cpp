@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -173,17 +173,15 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
 
   if (nb_dim==1)
     {
+      DoubleTab vol_tot(tabHf);
       for (int ele=0; ele<nb_elem_tot; ele++)
-        {
-          for (int s=0; s<nb_face_elem; s++)
-            {
-              tabHf(elem_faces(ele,s))+=tabHe(ele)*volumes(ele);
-            }
-        }
-      for (int f=0; f<zone_vf.premiere_face_int(); f++)
-        tabHf(f)/=volumes_entrelaces(f)*coeffb;
-      for (int f=zone_vf.premiere_face_int(); f<zone_vf.nb_faces(); f++)
-        tabHf(f)/=volumes_entrelaces(f)*coeffi;
+        for (int s=0; s<nb_face_elem; s++)
+          {
+            tabHf(elem_faces(ele,s))+=tabHe(ele)*volumes(ele);
+            vol_tot(elem_faces(ele,s)) += volumes(ele);
+          }
+      for (int f = 0; f < zone_vf.nb_faces(); f++)
+        tabHf(f) /= vol_tot(f);
 
     }
   else

@@ -2,7 +2,7 @@
 # PARALLEL OK 4 #
 dimension 2
 
-Pb_conduction_milieu_variable pb
+Pb_conduction pb
 Domaine dom
 
 # BEGIN MESH #
@@ -75,7 +75,7 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction_milieu_variable
+	Conduction
 	{
 		diffusion { }
 		initial_conditions {

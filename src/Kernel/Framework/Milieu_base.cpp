@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,8 @@
 #include <Equation_base.h>
 #include <Param.h>
 #include <Champ_Fonc_MED.h>
+#include <Discretisation_tools.h>
+#include <Schema_Temps_base.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 
@@ -158,6 +160,16 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     {
       dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
       champs_compris_.ajoute_champ(rho.valeur());
+    }
+  if (rho.non_nul() && Cp.non_nul())
+    {
+      if(!rho_cp_comme_T_.non_nul())
+        {
+          const double temps = pb.schema_temps().temps_courant();
+          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", 1, temps, rho_cp_comme_T_);
+          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", 1, temps,    rho_cp_elem_);
+        }
+      champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
     }
 }
 // Description:
@@ -355,6 +367,43 @@ void Milieu_base::mettre_a_jour(double temps)
       calculer_alpha();
       alpha.valeur().changer_temps(temps);
     }
+  if (rho_cp_comme_T_.non_nul())
+    update_rho_cp(temps);
+
+}
+
+void Milieu_base::update_rho_cp(double temps)
+{
+  rho_cp_elem_.changer_temps(temps);
+  rho_cp_elem_.valeur().changer_temps(temps);
+  DoubleTab& rho_cp=rho_cp_elem_.valeurs();
+  if (sub_type(Champ_Uniforme,rho.valeur()))
+    rho_cp=rho.valeurs()(0,0);
+  else
+    {
+      // AB: rho_cp = rho.valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
+      rho_cp = 1.;
+      tab_multiply_any_shape(rho_cp, rho.valeurs());
+    }
+  if (sub_type(Champ_Uniforme,Cp.valeur()))
+    rho_cp*=Cp.valeurs()(0,0);
+  else
+    tab_multiply_any_shape(rho_cp,Cp.valeurs());
+  rho_cp_comme_T_.changer_temps(temps);
+  rho_cp_comme_T_.valeur().changer_temps(temps);
+  const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().domaine_dis().domaine().md_vector_sommets(),
+                   &md_faces = ref_cast(Zone_VF,rho_cp_elem_.zone_dis_base()).md_vector_faces();
+  if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_.valeurs().get_md_vector())
+    rho_cp_comme_T_.valeurs() = rho_cp;
+  else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_som)
+    Discretisation_tools::cells_to_nodes(rho_cp_elem_,rho_cp_comme_T_);
+  else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_faces)
+    Discretisation_tools::cells_to_faces(rho_cp_elem_,rho_cp_comme_T_);
+  else
+    {
+      Cerr<< que_suis_je()<<(int)__LINE__<<finl;
+      Process::exit();
+    }
 }
 
 void Milieu_base::abortTimeStep()
@@ -445,6 +494,8 @@ int Milieu_base::initialiser(const double& temps)
       calculer_alpha();
       alpha.valeur().changer_temps(temps);
     }
+  if (rho_cp_comme_T_.non_nul())
+    update_rho_cp(temps);
   return 1;
 }
 

@@ -436,6 +436,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
         }
     }
 
+
   // On multiplie par rho si Navier Stokes incompressible
   Nom nom_eqn=op.equation().que_suis_je();
   if (nom_eqn.debute_par("Navier_Stokes") && pb.milieu().que_suis_je()=="Fluide_Incompressible")

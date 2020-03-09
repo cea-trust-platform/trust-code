@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ double Op_Diff_VEF_Face_Q1::calculer_dt_stab() const
   remplir_nu(nu_);
   double dt_stab;
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-  double alpha = local_max_vect((diffusivite().valeurs()));
+  double alpha = local_max_vect((diffusivite_pour_pas_de_temps().valeurs()));
   if (alpha==0)
     dt_stab = DMAXFLOAT;
   else

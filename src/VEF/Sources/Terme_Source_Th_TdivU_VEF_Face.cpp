@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Convection_Diffusion_std.h>
 #include <Op_Conv_Muscl_VEF_Face.h>
 #include <EChaine.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable(Terme_Source_Th_TdivU_VEF_Face,"Source_Th_TdivU_VEF_P1NC",Source_base);
 
@@ -188,6 +189,10 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
       Cerr << "It seems useless cause TdivU=0" << finl;
       Cerr << "May be the advection operator is calculated with the non-conservative formulation." << finl;
     }
+
+  // la partie en TdivU est un bout de l'operateur de convection -> il doit etre multiplie par rhoCp
+  const double rhoCp = equation().milieu().capacite_calorifique().valeurs()(0, 0) * equation().milieu().masse_volumique().valeurs()(0, 0);
+  TdivU *= rhoCp;
   resu-=TdivU;
   // on remet la bonne zone_cl_dis
   optype.associer_zone_cl_dis(zonecl_sa.valeur());

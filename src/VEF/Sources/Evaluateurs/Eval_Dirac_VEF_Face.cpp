@@ -26,14 +26,8 @@
 #include <Zone_VEF.h>
 
 
-void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& rho,
-                                          const Champ_Don& capa,
-                                          const Champ_Don& Q)
+void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& Q)
 {
-  rho_ref = rho;
-  rho_ref_ = rho(0,0);
-  Cp = capa;
-  Cp_ = capa(0,0);
   la_puissance = Q;
   puissance = Q(0);
 }

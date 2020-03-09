@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,6 +57,8 @@ public :
   Milieu_base& milieu();
   void associer_milieu_base(const Milieu_base& );
   virtual int impr(Sortie& os) const;
+  virtual const Champ_Don& diffusivite_pour_transport();
+  virtual const Champ_base& diffusivite_pour_pas_de_temps();
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
@@ -67,6 +69,8 @@ public :
   virtual const Motcle& domaine_application() const;
 
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
+  DoubleTab& derivee_en_temps_inco_eq_base(DoubleTab& );
+  virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
 
 protected :
 

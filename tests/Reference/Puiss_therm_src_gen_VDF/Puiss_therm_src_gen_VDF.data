@@ -78,7 +78,7 @@ Read pb
         {
             /* Puissance_thermique  Champ_Uniforme 1 25. */
             Source_Generique Transformation { 
-                methode formule expression 1 25./(rho*cp)
+                methode formule expression 1 25./(1.+0.*rho*cp)
                 localisation elem
                 sources {
                     RefChamp { Pb_champ pb masse_volumique nom_source rho } ,

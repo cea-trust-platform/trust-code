@@ -399,7 +399,7 @@ inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc_base& ch_fonc_base)
 // Postcondition:
 inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc& ch_fonc)
 {
-  DERIV(Champ_Fonc_base)::operator=(ch_fonc.valeur());
+  if (ch_fonc.non_nul()) DERIV(Champ_Fonc_base)::operator=(ch_fonc.valeur());
   return *this;
 }
 

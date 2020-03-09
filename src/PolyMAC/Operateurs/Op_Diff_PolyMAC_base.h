@@ -61,7 +61,6 @@ public:
   void associer_diffusivite(const Champ_base& );
   void completer();
   const Champ_base& diffusivite() const;
-  const Champ_base& diffusivite_turbulente() const;
 
   void remplir_nu(DoubleTab& nu) const;
   void remplir_nu_fac() const;
