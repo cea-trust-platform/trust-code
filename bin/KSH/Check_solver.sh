@@ -218,7 +218,7 @@ then
    # On lance le calcul (qui fera un pas de temps puis qui testera les solveurs apres la resolution)
    output=test_solveur_$ref.out_err
    trust test_solveur_$ref $NB_PROCS 1>out 2>err
-   run_err=$? 
+   run_err=$?
    cat out err > $output ; rm -f out err
    OK $run_err $output
    echo $ECHO_OPTS $titre $size
@@ -266,10 +266,11 @@ do
          rm -f gmon.out
 	 # trust $jdd $NB_PROCS 1>$output 2>&1
 	 # Bug vu sur trust sur castor ou CCRT, il faut rediriger dans 2 fichiers distincts:
-	 trust $jdd $NB_PROCS 1>out 2>err
+	 trust $jdd $NB_PROCS -options_left 1>out 2>err
 	 run_err=$?
 	 cat out err > $output
 	 rm -f out err
+         [ "`grep 'Option left:' $output`" != "" ] && run_err=1
 	 OK $run_err $output
 	 if [ $run_err = 0 ] && [ $lml = 1 ]
 	 then

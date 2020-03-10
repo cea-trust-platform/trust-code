@@ -1,0 +1,129 @@
+# Verification que le raffinement en sequentiel (raffiner_isotrope) est identique au raffinement en parallele (raffiner_isotrope_parallele) #
+# PARALLEL OK 9 #
+
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Domaine initial_dom
+Mailler initial_dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 5 5 5
+        Longueurs 1 1 1
+    }
+    {
+        Bord Entree   	X = 0.  0. <= Y <= 1.   0. <= Z <= 1
+        Bord Sortie  	X = 1.  0. <= Y <= 1.   0. <= Z <= 1
+        Bord Box   	Y = 0.  0. <= X <= 1.  	0. <= Z <= 1
+        Bord Box   	Y = 1.  0. <= X <= 1.  	0. <= Z <= 1
+        Bord Box  	Z = 0.  0. <= X <= 1.   0. <= Y <= 1.
+        Bord Box  	Z = 1 	0. <= X <= 1.   0. <= Y <= 1.
+    }
+}
+Tetraedriser_par_prisme initial_dom
+Transformer initial_dom
+x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)
+y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x)
+z
+Ecrire_fichier initial_dom initial_dom.geom
+
+Read_file dom initial_dom.geom
+Raffiner_isotrope dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition initial_dom
+{
+    Partition_tool metis { Nb_parts 9 }
+    Larg_joint 2
+    zones_name INITIAL_DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Raffiner_isotrope_parallele { name_of_initial_zones INITIAL_DOM name_of_new_zones DOM }
+Scatter DOM.Zones dom
+END SCATTER #
+
+# Je choisis une discretisation #
+VEFPreP1B ma_discretisation
+
+Scheme_euler_explicit mon_schema
+Read mon_schema
+{
+    nb_pas_dt_max 10
+    tinit 0
+    tmax 5.0
+}
+
+# A fluid is defined #
+Fluide_Incompressible milieu
+Read milieu
+{
+    mu  Champ_Fonc_XYZ dom 1 0.01*(1+x+y+z)*0.25
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Fonc_XYZ dom 1 2*(1-x-y-z)*0.25
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
+}
+
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+Domaine Entree
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression Petsc Cholesky { impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
+        }
+        boundary_conditions {
+            Box  		paroi_fixe
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            Box 		paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Fonc_XYZ dom 1 20.*(1+x+y+z)*0.25 }
+    }
+    Post_processings
+    {
+        lml {
+            format lml fichier Raffiner_isotrope_parallele
+            fields dt_post 100.
+            {
+                pression elem
+                temperature elem
+            }
+        }
+        lata {
+            format lata fichier Raffiner_isotrope_parallele
+            fields dt_post 100.
+            {
+                pression elem
+                temperature elem
+            }
+        }
+    }
+}
+Solve pb

@@ -59,7 +59,7 @@ Read sch
            Implicite 
 	   {
 		seuil_convergence_solveur 1.e-12
-		solveur PETSC BICGSTAB { precond PILUT { level 20 epsilon 0.01 } seuil 1.e-8 impr }
+		solveur PETSC BICGSTAB { precond PILUT { level 20 epsilon 0.01 } atol 1.e-8 impr rtol 1.e-10 }
 	   }
 }
 
