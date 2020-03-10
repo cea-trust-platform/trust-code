@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,6 +54,16 @@ public:
   {
     Terme_Source_Constituant::mettre_a_jour(temps);
   }
+  void ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const
+  {
+    Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag);
+  }
+  void completer()
+  {
+    Terme_Source_VDF_base::completer();
+    col_width_ = Terme_Source_Constituant::completer(equation().inconnue().valeur());
+  }
+
 };
 
 

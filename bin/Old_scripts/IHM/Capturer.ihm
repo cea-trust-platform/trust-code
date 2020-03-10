@@ -1,6 +1,0 @@
-#!/bin/bash
-ETUDE_TRUST=`QUELLE_ETUDE.ihm`
-export ETUDE_TRUST
-cd $ETUDE_TRUST
-echo "C" > .ordre_IHM
-kill -15 `cat .pcs_Run_sonde`

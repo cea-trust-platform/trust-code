@@ -70,8 +70,6 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
   const int impr_sum=(ma_zone.Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(ma_zone.Bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();
-  const Champ_Don& rho = la_zcl_poly_->equation().milieu().masse_volumique(),
-                   Cp = la_zcl_poly_->equation().milieu().capacite_calorifique();
   DoubleTab& tab_flux_bords= flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
   DoubleVect bilan(nb_comp);
@@ -86,8 +84,6 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
     }
-  Nom espace=" \t";
-  \
   int k,face;
   int nb_front_Cl=la_zone_poly_->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , nb_comp) ;
@@ -122,9 +118,6 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
         } /* fin for face */
     }
   mp_sum_for_each_item(flux_bords2);
-  if (la_zcl_poly_->equation().que_suis_je() == "Conduction" ||
-      la_zcl_poly_->equation().que_suis_je() == "Convection_Diffusion_Temperature" ||
-      la_zcl_poly_->equation().que_suis_je() == "Convection_Diffusion_Temperature_Turbulent") flux_bords2 *= rho(0, 0) * Cp(0, 0);
 
   if (je_suis_maitre() && nb_comp > 0)
     {
@@ -134,29 +127,29 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
       ouvrir_fichier(Flux_moment,"moment",impr_mom);
       SFichier Flux_sum;
       ouvrir_fichier(Flux_sum,"sum",impr_sum);
-      sch.imprimer_temps_courant(Flux);
-      if (impr_mom) sch.imprimer_temps_courant(Flux_moment);
-      if (impr_sum) sch.imprimer_temps_courant(Flux_sum);
+      Flux.add_col(sch.temps_courant());
+      if (impr_mom) Flux_moment.add_col(sch.temps_courant());
+      if (impr_sum) Flux_sum.add_col(sch.temps_courant());
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
           for(k=0; k<nb_comp; k++)
             {
-              Flux<< espace << flux_bords2(0,num_cl,k);
-              if (impr_sum) Flux_sum << espace << flux_bords2(3,num_cl,k);
+              Flux.add_col(flux_bords2(0,num_cl,k));
+              if (impr_sum) Flux_sum.add_col(flux_bords2(3,num_cl,k));
               bilan(k)+=flux_bords2(0,num_cl,k);
             }
           if (dimension==3)
             {
               for (k=0; k<nb_comp; k++)
-                if (impr_mom) Flux_moment << espace << flux_bords2(4,num_cl,k);
+                if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,k));
             }
           else
             {
-              if (impr_mom) Flux_moment << espace << flux_bords2(4,num_cl,0);
+              if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,0));
             }
         } /* fin for num_cl */
       for(k=0; k<nb_comp; k++)
-        Flux<< espace << bilan(k);
+        Flux.add_col(bilan(k));
       Flux << finl;
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;
@@ -265,9 +258,9 @@ void Op_Diff_PolyMAC_base::remplir_nu(DoubleTab& nu) const
     }
 
   /* ajout de la diffusivite turbulente si elle existe */
-  if (!la_diffusivite_turbulente.non_nul()) return;
+  if (!has_diffusivite_turbulente()) return;
 
-  const DoubleTab& diffu_turb = la_diffusivite_turbulente->valeurs();
+  const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
   if (equation().que_suis_je() == "Transport_K_Eps")
     {
       bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());

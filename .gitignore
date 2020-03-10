@@ -47,10 +47,6 @@ Outils/ICoCo/ICoCo_src/full_env_MEDICoCo.sh
 Outils/Python_modules/distribute-0.6.28/
 Outils/Python_modules/distribute-0.7.3/
 
-# MED
-ThirdPart/src/LIBMED/archives
-ThirdPart/src/LIBMED/scripts/generated
-
 # Doc
 doc/Coverage/dico.pkl
 doc/Coverage/html/

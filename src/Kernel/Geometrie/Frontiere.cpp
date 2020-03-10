@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -447,27 +447,13 @@ void Frontiere::trace_face_local(const DoubleVect& y, DoubleVect& x) const
 // Renvoie la trace sur la frontiere du tableau aux faces y
 void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
 {
-  int size = nb_faces();
-  int nb_compo_=1;
+  int size = nb_faces(), N = x.line_size(), M = y.line_size();
   assert(x.dimension(0)==size);
-  if (y.nb_dim() == 2)
+  for (int i = 0; i < size; i++)
     {
-      nb_compo_ = y.dimension(1);
-      assert(x.dimension(1)==nb_compo_);
+      int face = num_premiere_face() + i;
+      for (int n = 0; n < N; n++) x.addr()[N * i + n] = y.addr()[M * face + n];
     }
-  if (nb_compo_ > 1 )
-    for (int i=0; i<size; i++)
-      {
-        int face=num_premiere_face()+i;
-        for(int j=0 ; j<nb_compo_; j++)
-          x(i,j)=y(face,j);
-      }
-  else
-    for (int i=0; i<size; i++)
-      {
-        int face=num_premiere_face()+i;
-        x(i,0)=y(face);
-      }
 }
 
 void Frontiere::trace_som_distant(const DoubleTab&, DoubleTab&) const

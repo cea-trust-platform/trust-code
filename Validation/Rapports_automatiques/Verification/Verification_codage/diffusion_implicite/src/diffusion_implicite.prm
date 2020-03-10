@@ -20,7 +20,7 @@ Chapter {
 	{
 	Title " "
 	labelx time
-	labely °
+	labely Â°
 	
 
 	Description les 4 courbes vont elles vers la meme solution ?
@@ -57,7 +57,7 @@ Chapter {
 	{
 	Title " "
 	labelx time
-	labely °
+	labely Â°
 	
 
 	Description les 4 courbes vont elles vers la meme solution ?
@@ -93,7 +93,7 @@ Chapter {
 	Description solution of the problem : T(x,t)=x*t
 	Figure {
 	     labelx x
-	    labely °
+	    labely Â°
 	       Include_Description_Curves 0
           Curve {
               style linespoints

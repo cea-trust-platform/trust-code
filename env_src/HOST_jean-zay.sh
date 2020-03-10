@@ -13,7 +13,7 @@ define_modules_config()
    #
    # Load modules
    # trust compile avec intel 19.0.2
-   module="intel-compilers/19.0.2 intel-mpi/19.0.2"
+   module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

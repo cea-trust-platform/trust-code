@@ -117,7 +117,7 @@ help()
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                       : Monitor the TRUST calculation only."
    echo "-evol                         : Monitor the TRUST calculation (new IHM)."
-   echo "-wiz                          : Create a TRUST datafile from a MED file (new IHM)."
+#   echo "-wiz                          : Create a TRUST datafile from a MED file (new IHM)."
    echo "-prm                          : Write a prm file."
    echo "-clean                        : Clean the current directory from all the generated files by TRUST."
    echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
@@ -161,7 +161,7 @@ suppression_file=""
 [ "$bigmem" = "" ] && bigmem=0
 [ "$gpu" = "" ] && gpu=0
 [ "$node" = "" ] && node=0
-[ "$USE_MPIRUN" = "" ] && USE_MPIRUN=0
+USE_MPIRUN=0 # Variable interne, plus modifiable par l'utilisateur
 
 ####################
 # Loop for options #
@@ -285,10 +285,10 @@ do
    elif [ "$1" = "-evol" ]
    then
       probes=2
-   elif [ "$1" = "-wiz" ]
-   then
-      bash  $TRUST_ROOT/exec/TRUST_WIZARD/TRUST_Wizard.sh
-      exit $?
+#   elif [ "$1" = "-wiz" ]
+#   then
+#      bash  $TRUST_ROOT/exec/TRUST_WIZARD/TRUST_Wizard.sh
+#      exit $?
    elif [ "$1" = "-create_sub_file" ]
    then
       create_sub_file=1 && prod=1 #&& node=1
@@ -387,8 +387,8 @@ do
       rm -f *_Channel_Flow_Rate_* *_Pressure_Gradient_*
       echo "rm Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat"
       rm -f Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat
-      echo "rm evol_glob"
-      rm -f evol_glob
+      echo "rm *.evol_glob"
+      rm -f *.evol_glob
       echo "rm iter.dat sauvegarde_tble_* tble_mesh.dat"
       rm -f iter.dat sauvegarde_tble_* tble_mesh.dat
       exit 0
@@ -581,11 +581,8 @@ then
     fi
     if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
     then
-       MonoDir=$TRUST_ROOT/`ls -rt $TRUST_ROOT | grep MonoDir | tail -1`
-       XTERM="/usr/bin/xterm -e"
-       ATTACH="--extra-debuginfo-path=$MonoDir/src --db-attach=yes --db-command=\'/usr/bin/gdb --readnow --directory $MonoDir/src --directory $MonoDir/include -nw %f %p\'"
-       gdb=""
-       log_file=""
+       gdb.sh -valgrind $exec
+       exit
     fi
     if [ "$VALGRIND_LOG_FILE" = 1 ]
     then
@@ -642,7 +639,6 @@ if [ $PETSC_HAVE_CUDA = 1 ] && [ $USE_PETSC = 1 ]
 then
    gpu=1
 fi
-
 ######################
 # Selon les machines #
 ######################

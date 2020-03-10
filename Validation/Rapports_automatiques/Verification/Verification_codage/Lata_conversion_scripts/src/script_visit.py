@@ -1,10 +1,10 @@
 nb_args = len( sys.argv )
 
 if( nb_args < 4 ) :
-    print "Erreur, pas assez d'arguments"
+    print("Erreur, pas assez d'arguments")
     y=1/0
 if ( nb_args > 4 ) :
-    print "Erreur, il y a trop d'arguments"
+    print("Erreur, il y a trop d'arguments")
     y=1/0
 
 input_file_name=sys.argv[1]

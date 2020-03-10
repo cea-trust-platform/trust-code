@@ -87,6 +87,8 @@ public:
   virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const=0;
+  virtual void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
+
   virtual Evaluateur_VDF& evaluateur() =0;
   virtual const Evaluateur_VDF& evaluateur() const=0;
   inline const Zone_VDF& zone() const;
@@ -124,6 +126,7 @@ public:
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   inline void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
   inline void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
+  inline void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
   inline Evaluateur_VDF& evaluateur();
   inline const Evaluateur_VDF& evaluateur() const;
   inline const Zone_VDF& zone() const;
@@ -252,5 +255,9 @@ inline int Iterateur_VDF::impr(Sortie& os) const
   return valeur().impr(os);
 }
 
+inline void Iterateur_VDF::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
+{
+  return valeur().ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
+}
 
 #endif

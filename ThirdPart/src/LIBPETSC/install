@@ -13,6 +13,10 @@ minimal_mumps=0
 scotch=1
 # [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 [ $minimal_mumps = 1 ] && scotch=0
+TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
+# Scotch needs bison and m4 which cannot be installed on recent OS (debian 10,...) with glibc >= 2.28
+# Install bison using sudo apt-get install or yum install fixes this problem
+[ "`eval bison --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "$TEST_LDD_VERSION" != 1 ] && scotch=0
 if [ "$1" = "" ]
 then
    echo "Usage: `basename $0` package.tar.gz"
@@ -503,14 +507,8 @@ package_valgrind=$TRUST_ROOT/exec/valgrind
 #if [ "`python --version 2>/dev/null;echo $?`" != 0 ]
 if [ "`python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`" != 1 ]
 then
-   if [ -f $TRUST_ROOT/exec/python/env.sh ]
-   then
-      echo "Initializing Python..."
-      source $TRUST_ROOT/exec/python/env.sh
-   else
-      echo "Error, PETSc needs python!"
-      exit -1
-   fi
+   echo "Error, PETSc needs python!"
+   exit -1
 fi
 
 with_64bit_indices="" && [ "$TRUST_INT64" = "1" ] && with_64bit_indices="--with-64-bit-indices"
@@ -542,6 +540,7 @@ do
    fi
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
+   export TMPDIR=$TRUST_TMP # Par defaut, les fichiers temporaires de PETSC sont sous /tmp, cela peut probleme si pas de droit d'execution donnes
    ./configure --help 1>../configure.help 2>&1
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages
    # en etudiant ce qu'il y'a dans ./$CONFIG

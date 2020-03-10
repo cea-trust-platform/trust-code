@@ -31,7 +31,6 @@
 #include <distances_VEF.h>
 #include <Interprete.h>
 #include <Pb_Conduction.h>
-#include <Pb_Conduction_Milieu_Variable.h>
 #include <Zone_Cl_VEF.h>
 #include <Domaine.h>
 #include <Champ_Fonc_P0_VEF.h>
@@ -162,7 +161,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1,
   REF(Champ_base) rch1;
   Probleme_base& pb1=ref_cast(Probleme_base, Interprete::objet(nompb1));
 
-  if (!sub_type(Pb_Conduction,pb1) && !sub_type(Pb_Conduction_Milieu_Variable,pb1))
+  if (!sub_type(Pb_Conduction,pb1))
     if (pb1.equation(1).inconnue().le_nom()!="temperature")
       nom_inco1 = "concentration";
 
@@ -172,7 +171,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1,
   REF(Champ_base) rch2 ;
   Probleme_base& pb2=ref_cast(Probleme_base, Interprete::objet(nompb2));
 
-  if (!sub_type(Pb_Conduction,pb2) && !sub_type(Pb_Conduction_Milieu_Variable,pb2))
+  if (!sub_type(Pb_Conduction,pb2))
     if (pb2.equation(1).inconnue().le_nom()!="temperature")
       nom_inco2 = "concentration";
 
@@ -237,8 +236,6 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
   DoubleVect d_equiv;
   //DoubleTab positions_Pf;
 
-  double rho=-1,Cp=-1;
-
   if (!sub_type(Convection_Diffusion_Concentration,inco.equation()))
     coeff_lam = le_milieu.conductivite().valeurs();
   else
@@ -249,35 +246,7 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
   if (mod.non_nul())
     {
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,mod.valeur());
-      coeff_turb = mod_turb_scal.diffusivite_turbulente().valeurs();
-
-      // dans le cas QC Attention le modele renvoit lambdat
-      // on n'a pas besoin de multiplier ensuite par rho Cp
-      if (sub_type(Convection_Diffusion_Temperature,inco.equation())
-          || sub_type(Convection_Diffusion_Concentration,inco.equation()))
-        {
-          const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,le_milieu);
-          const Champ_Don& c_cp = le_fluide.capacite_calorifique();
-          const Champ_Don& c_rho = le_fluide.masse_volumique();
-
-          if (sub_type(Champ_Uniforme,c_rho.valeur()))
-            {
-              rho=c_rho.valeur()(0,0);
-            }
-          else
-            {
-              exit();
-            }
-          if (sub_type(Champ_Uniforme,c_cp.valeur()))
-            {
-              Cp = c_cp.valeur()(0,0);
-            }
-          else
-            {
-              exit();
-            }
-          coeff_turb *= rho*Cp;
-        }
+      coeff_turb = mod_turb_scal.conductivite_turbulente().valeurs();
 
       const Turbulence_paroi_scal& loipar = mod_turb_scal.loi_paroi();
 

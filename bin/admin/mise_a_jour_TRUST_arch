@@ -404,9 +404,7 @@ do
    #############
    # compilation
    #############
-   # export utiles si ce script est lance en soumission de job sur clusters dans le script envoie_TRUST_arch
-   export USE_MPIRUN=1
-   [ "$HOST" = irene-ccrt ] && export project="genden"
+   [ "$HOST" = irene-ccrt ] && export project="dendm2s"
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    make && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp && make opt_avx
@@ -442,13 +440,6 @@ do
 	 echo "MEDCOUPLING=OK"
       else 
 	 echo "MEDCOUPLING=KO"
-      fi
-      if [ -f $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh ]
-      then
-	 source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh 1>/dev/null 2>&1
-	 echo "MED_COUPLING_PYTHON="$MED_COUPLING_PYTHON
-      else 
-	 echo "MED_COUPLING_PYTHON=NOT"
       fi
       ########################
       # PETSC est il compile ?
@@ -576,7 +567,6 @@ do
    echo "--------------------------------------------------------"
    echo "End compilations on $HOST_BUILD at "`date '+%H:%M:%S'` # Message important pour le run de Validation/Etudes 
    echo "--------------------------------------------------------"
-   export USE_MPIRUN=1
    # Remplissage des caracteristiques de la machine :
    echo "TRUST performance on $HOST_BUILD the `date` ...">$PERF
    echo "--------------------------------------------------------" >> $PERF
@@ -686,7 +676,7 @@ do
 	    # Passage d'un cas test du Kernel:
 	    cp $TRUST_TESTS/Reference/Kernel/Kernel.data exec_opt.data
 	    exec=$rep_dev/exec_opt/TRUST$COMM$OPT
-	    OK="KO" && rm -f err && [ -f $exec ] && USE_MPIRUN=1 trust exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
+	    OK="KO" && rm -f err && [ -f $exec ] && trust exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
 	    # On verifie qu'il est alle jusqu'a la fin aussi...
 	    [ "`grep 'Arret des processes.' atelier.log`" = "" ] && OK=KO
 	    # Nouveau test pour l'atelier, il doit etre capable de creer un objet partage pour certains projets Baltik
@@ -744,7 +734,7 @@ do
          rm -rf $Build/PRE_3DVDF;
          cp -r $TRUST_ROOT/Outils/PRE_3DVDF $Build/.;
          cd $Build/PRE_3DVDF;
-	 USE_MPIRUN=1 ./testfort2
+	 ./testfort2
 	 ###################################################
 	 # On lance le test sur les assertions en mode debug
 	 ###################################################
@@ -768,7 +758,7 @@ do
          then
 	    echo "NOT"
          else
-	    USE_MPIRUN=1 ./Test_baltik 1>Test_baltik.log 2>&1
+	    ./Test_baltik 1>Test_baltik.log 2>&1
 	    if [ $? = 0 ]
 	    then
 	       echo "OK"
@@ -888,7 +878,7 @@ do
          echo "--------------------------------------------------------" 
 	 echo "Start of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 echo "echo $NUM | lance_test $lance_test_exec"
-	 export USE_MPIRUN=1 && echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
+	 echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
 	 echo "End of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 
 	 ################################
@@ -954,7 +944,7 @@ do
             rm -rf $Build/reprise_auto;
             mkdir -p $Build/reprise_auto;
 	    cd $Build/reprise_auto;
-	    USE_MPIRUN=1 $TRUST_ROOT/bin/admin/test_reprise_auto.sh
+	    $TRUST_ROOT/bin/admin/test_reprise_auto.sh
 	    cd $TRUST_ROOT
 	 fi	 
 	 ########################################################
@@ -981,9 +971,9 @@ do
 	    then
 	       if [ "${HOST:0:6}" = cobalt ] # Test provisoire : en attente d une solution via SLURM
 	       then
-	          USE_MPIRUN=1 Run_fiche -no_visit 1>$log 2>&1
+	          Run_fiche -no_visit 1>$log 2>&1
                else
-	          USE_MPIRUN=1 Run_fiche 1>$log 2>&1
+	          Run_fiche 1>$log 2>&1
 	       fi
 	       Run_fiche_KO=$?
 	    else

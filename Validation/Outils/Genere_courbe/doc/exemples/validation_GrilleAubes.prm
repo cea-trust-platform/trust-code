@@ -4,7 +4,7 @@ Parameters {
 	Description "Grandeurs caracteritisques :"
 	Description "-corde (c) = 12.725cm"
 	Description "-pas d'aube (s) = 7.62cm"
-	Description "-angle de calage = 14.4°"
+	Description "-angle de calage = 14.4Â°"
 
 	VersionTRUST "1.5.4_beta build 051007"
 
@@ -15,11 +15,11 @@ Parameters {
 	ParametersTRUST Convection kEpsilon : EF_Stab
 	ParametersTRUST Lois de Paroi : standard \& TBLE
 
-	TestCase "./CasNominal/0CalculGrossier/2CalculEFStab/aube.data"     "angle d'attaque 40°, loi de paroi standard, maillage grossier."
-	TestCase "./CasNominal/1CalculFin/2CalculEFStab/aube.data"          "angle d'attaque 40°, loi de paroi standard, maillage fin."
-	TestCase "./CasNominal/1CalculFin/3CalculTBLE/aube.data"            "angle d'attaque 40°, loi de paroi TBLE, maillage fin."
-	TestCase "./CasHorsNominal/0CalculGrossier/2CalculEFStab/aube.data" "angle d'attaque 46°, loi de paroi standard, maillage grossier."
-	TestCase "./CasHorsNominal/1CalculFin/2CalculEFStab/aube.data"      "angle d'attaque 46°, loi de paroi standard, maillage grossier."
+	TestCase "./CasNominal/0CalculGrossier/2CalculEFStab/aube.data"     "angle d'attaque 40Â°, loi de paroi standard, maillage grossier."
+	TestCase "./CasNominal/1CalculFin/2CalculEFStab/aube.data"          "angle d'attaque 40Â°, loi de paroi standard, maillage fin."
+	TestCase "./CasNominal/1CalculFin/3CalculTBLE/aube.data"            "angle d'attaque 40Â°, loi de paroi TBLE, maillage fin."
+	TestCase "./CasHorsNominal/0CalculGrossier/2CalculEFStab/aube.data" "angle d'attaque 46Â°, loi de paroi standard, maillage grossier."
+	TestCase "./CasHorsNominal/1CalculFin/2CalculEFStab/aube.data"      "angle d'attaque 46Â°, loi de paroi standard, maillage grossier."
 
 	Reference "1. 'Viscous flow in controlled diffusion compressor cascade with increasing indidence', Y. Elazar, R.P. Shreeve, Journal of turbomachinery, april 1990, vol. 112, pp 256-266."
 	Reference "2. 'Computational prediction of flow around highly loaded compressors-cascade blades with non-linear eddy viscosity models', W.L. Chen, F.S. Lien, M.A. Leschziner, Internation journal of heat and fluid flow 19 (1998), pp307-319."
@@ -38,7 +38,7 @@ Parameters {
 
 Chapter {
 	Title "Cas nominal"
-	Description "Angle d'attaque : 40°"
+	Description "Angle d'attaque : 40Â°"
 	Description "Nombre de Reynolds : 740000 (soit une vitesse d'entree : 66.8220 56.0703, norme = 87.2299).
 	#########################################################################################################################
 	# CP
@@ -3198,7 +3198,7 @@ Chapter {
 
 Chapter {
 	Title "Cas hors nominal"
-	Description "Angle d'attaque : 46°"
+	Description "Angle d'attaque : 46Â°"
 	Description "Nombre de Reynolds : 700000 (soit une vitesse d'entree : 57.3196 59.3561, norme = 82.5147).
 	Figure {
 		Title "Cp sur l'aube"

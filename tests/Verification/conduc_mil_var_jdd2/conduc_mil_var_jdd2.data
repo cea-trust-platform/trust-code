@@ -1,8 +1,8 @@
-# Conduction_milieu_variable 2D : Diverses conditions limites thermiques #
+# Conduction 2D : Diverses conditions limites thermiques #
 # PARALLEL OK 8 #
 dimension 2
 
-Pb_conduction_milieu_variable pb
+Pb_conduction pb
 Domaine dom
 # BEGIN MESH #
 Mailler dom
@@ -68,7 +68,7 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction_milieu_variable
+	Conduction
 	{
 		diffusion { }
 		initial_conditions {

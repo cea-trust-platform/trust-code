@@ -126,6 +126,14 @@ Read pb
 			pression som
 			}		
 		}
+                med
+                {
+                format med
+                fields dt_post 2.
+                        {
+                        pression elem
+                        }
+                }
 	}
 }
 Solve pb

@@ -181,8 +181,8 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
 Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
   Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
-  int sz=matmo.nb_lignes();
   DoubleTrav diag(equation().inconnue().valeurs());
+  const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
   diag=1.;
   appliquer(diag);
   int prems=0;

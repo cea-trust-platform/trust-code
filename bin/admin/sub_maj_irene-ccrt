@@ -5,7 +5,7 @@
 #MSUB -T 43200
 #MSUB -o ~/myjob_irene-ccrt.%J.o
 #MSUB -e ~/myjob_irene-ccrt.%J.e
-#MSUB -A genden
+#MSUB -A dendm2s
 #MSUB -E "--no-requeue"
 #MSUB -n 1
 #MSUB -X bash

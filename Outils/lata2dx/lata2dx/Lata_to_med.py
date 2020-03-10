@@ -15,7 +15,7 @@ def short_name(m):
 
 def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
     """
-    Load single mesh from latafile and write it to medfile, potentially removing duplicate nodes. 
+    Load single mesh from latafile and write it to medfile, potentially removing duplicate nodes.
     @param latafile
     @param medfile
     @param  domain_name mesh name in the LATA file. Can be None in which case the first (and only one) mesh is taken.
@@ -41,12 +41,12 @@ def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
 
     indices, newNbNodes = None, -1
     if typ_nam == "MEDCouplingUMesh":
-        print "Dealing with an unstructured mesh - merging nodes"
+        print("Dealing with an unstructured mesh - merging nodes")
         indices, areMerged, newNbNodes = mesh.mergeNodes( EPS )
         if areMerged:
-            print "Merged nodes in the domain '%s'!" % meshname
+            print("Merged nodes in the domain '%s'!" % meshname)
         else:
-            print "No nodes to be merged in '%s'!" % meshname
+            print("No nodes to be merged in '%s'!" % meshname)
 
     # Write mesh
     if write_med :
@@ -54,12 +54,12 @@ def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
 
     meshnamedual=meshname+"_dual"
     if meshnamedual in meshes:
-        print "A dual mesh '%s' has been found." % meshnamedual
+        print("A dual mesh '%s' has been found." % meshnamedual)
         mesh_dual=a.GetMesh(meshnamedual,0)
         if typ_nam == "MEDCouplingUMesh":
             indices_dual, areMerged_dual, newNbNodes_dual = mesh_dual.mergeNodes( EPS_DUAL )
             if areMerged_dual:
-                print "Merged nodes in the dual domain '%s'" % meshnamedual
+                print("Merged nodes in the dual domain '%s'" % meshnamedual)
         # Write dual mesh
         MEDLoader.WriteMesh(medfile,mesh_dual,False)
 
@@ -76,7 +76,7 @@ def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
     if mesh_only:
         return
 
-    liste_ite=xrange(a.GetNTimesteps())
+    liste_ite=range(a.GetNTimesteps())
 
     # liste_fields=('VITESSE_ELEM_dom', 'VITESSE_SOM_dom', 'TEMPERATURE_ELEM_dom', 'TEMPERATURE_SOM_dom', 'DIVERGENCE_U_ELEM_dom', 'VITESSE_FACES_dom_dual',  'TEMPERATURE_FACES_dom_dual')
     # Ligne suivante a commenter si besoin. Voir si la methode fonctionne
@@ -98,9 +98,9 @@ def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
                 if name.find('_SOM_')>0:
                     f2 = f.deepCopy()
                     if not indices is None: # some renumbering has to be performed (nodes have been merged)
-                      d = f2.getArray()
-                      d2 = indices.invertArrayO2N2N2O(newNbNodes)
-                      f2.setArray(d[d2])
+                        d = f2.getArray()
+                        d2 = indices.invertArrayO2N2N2O(newNbNodes)
+                        f2.setArray(d[d2])
 
                     MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f2)
                 else:
@@ -110,18 +110,18 @@ def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
             pass
         pass
     else:
-        print "WARNING: not extracting any field value on a Cartesian mesh (was never tested)"
+        print("WARNING: not extracting any field value on a Cartesian mesh (was never tested)")
 
 
 def usage():
-  print "usage: Lata_to_med.py latafile [ medfile ] [ domain_name ] [ mesh_only ] "
+    print("usage: Lata_to_med.py latafile [ medfile ] [ domain_name ] [ mesh_only ] ")
 
-  print "   where:"
-  print "      <latafile>   : is the latafile that needs to be converted"
-  print "      <medfile>    : is the final med file to written (optional)"
-  print "      <domain_name>: is the name of the domain to be treated"
-  print "      <mesh_only>  : if set to 1, only the mesh will be written, not the fields"
-  print ""
+    print("   where:")
+    print("      <latafile>   : is the latafile that needs to be converted")
+    print("      <medfile>    : is the final med file to written (optional)")
+    print("      <domain_name>: is the name of the domain to be treated")
+    print("      <mesh_only>  : if set to 1, only the mesh will be written, not the fields")
+    print("")
 
 if __name__=="__main__":
     import sys
@@ -129,22 +129,21 @@ if __name__=="__main__":
     len_args=len(sys.argv)
     if (len_args<2) or (len_args>5):
         raise Exception("wrong number of arguments")
-    print len_args
+    print(len_args)
     latafile=sys.argv[1]
     medfile=latafile+".med"
     domain_name=None
     mesh_only=False
     if (len_args>2):
-      medfile=sys.argv[2]
+        medfile=sys.argv[2]
     if (len_args>3):
-      domain_name=sys.argv[3]
+        domain_name=sys.argv[3]
     if (len_args>4):
-      mesh_only = (sys.argv[4] == "1")
+        mesh_only = (sys.argv[4] == "1")
 
     convert(latafile,medfile, domain_name, mesh_only)
 
-    print "File "+str(medfile)+" successfully written !"
+    print("File "+str(medfile)+" successfully written !")
 
 
     pass
-

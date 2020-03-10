@@ -240,7 +240,6 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
 
   flux_bords_.resize(zpolymac.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
-  Nom espace=" \t";
   // flux_bords contains the sum of flux on each boundary:
   DoubleTrav tab_flux_bords(3,zpolymac.nb_front_Cl(),3);
   tab_flux_bords=0.;
@@ -307,18 +306,18 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
       ouvrir_fichier(Flux_grad_moment,"moment",impr_mom);
       SFichier Flux_grad_sum;
       ouvrir_fichier(Flux_grad_sum,"sum",impr_sum);
-      sch.imprimer_temps_courant(Flux_grad);
-      if (impr_mom) sch.imprimer_temps_courant(Flux_grad_moment);
-      if (impr_sum) sch.imprimer_temps_courant(Flux_grad_sum);
+      Flux_grad.add_col(sch.temps_courant());
+      if (impr_mom) Flux_grad_moment.add_col(sch.temps_courant());
+      if (impr_sum) Flux_grad_sum.add_col(sch.temps_courant());
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           for (int r = 0; r < dimension; r++)
             {
-              Flux_grad<< espace << tab_flux_bords(0, n_bord, r);
-              if (impr_sum) Flux_grad_sum<< espace << tab_flux_bords(1, n_bord, r);
+              Flux_grad.add_col(tab_flux_bords(0, n_bord, r));
+              if (impr_sum) Flux_grad_sum.add_col(tab_flux_bords(1, n_bord, r));
             }
           if (impr_mom) for (int r = (dimension < 3 ? 2 : 0); r < max(dimension, 3); r++)
-              Flux_grad_moment<< espace << tab_flux_bords(2, n_bord, r);
+              Flux_grad_moment.add_col(tab_flux_bords(2, n_bord, r));
         }
       Flux_grad << finl;
       if (impr_sum) Flux_grad_sum << finl;

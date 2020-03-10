@@ -5,48 +5,28 @@ ORG=`pwd`
 # We touch the file .build64 that tells that patch has been applied
 touch .build64
 
+# Apply patch
 cp -r bin/BUILD64/patch/*  .
-cp bin/BUILD64/* .
+cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/GO .
 
-#exit
+# Apply Modifie script and exclude many file extensions that should not be edited if possible
+# arch.h is already compatible with BUILD64, it provides from patch, so we do not edit it
+./Modifie $(find src -type f -not -name "*.f" -not -name "*.txt" -not -name "*.include" -not -name "*.sh" -not -name "arch.h")
 
-./Modifie $(find src)
-./Modifie $(find src)
- export TRUST_ROOT=$PWD
-#(cd Outils/astyle; make)
+./Modifie $(find Outils/lata2dx/lata2dx -not -name "*.py" )
+./Modifie Outils/lata2dx/lata_dx_filter.cpp
 
-#for d in $(find src/ -type d) ;do echo $d; (cd $d ; check_sources.sh) ; done
 
- ./Modifie $(find ThirdPart/src/LIBMFFT_C)
-
-./Modifie $(find Outils/lata2dx -not -name "*.py" )
-./Modifie $(find Outils/lata2dx -not -name "*.py")
-
+# Perform supplementary sed on some files
 sed "s/long long long/long long/" -i Outils/lata2dx//lata2dx/commun_triou/LataDB.cpp
 sed s"/long compare_indirect/int compare_indirect/" -i  Outils/lata2dx//lata2dx/commun_triou/Lata_tools.cpp
-
 
 sed "s/long fonction/int fonction/" -i Outils/lata2dx/lata2dx/triou_compat/ArrOf*.cpp 
 sed "s/long main(long/int main(int/" -i  Outils/lata2dx/lata2dx//*cpp
 
-
-cp  bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h  src/Kernel/Utilitaires/arch.h
-
 sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
 sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
-
 
 # For ICoCo, we cannot use 64 bits because it is MEDCoupling (only 32bits) based
 sed -i "s/long [*]p/int *p/" src/Kernel/Champs/Champ_input_P0.cpp
 sed -i "s/long [*]p/int *p/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
-
-
-#cp arch.h64 src/Kernel/Utilitaires/arch.h
-#cp configurer_env64 env_src/configurer_env
-
-#cp ThirdPart/src/LIBMETIS/Install64 ThirdPart/src/LIBMETIS/Install
-#cp ThirdPart/src/LIBSKIT/Installer64 ThirdPart/src/LIBSKIT/Installer
-
-# color.f
-# configurer_env les 64
-# configure

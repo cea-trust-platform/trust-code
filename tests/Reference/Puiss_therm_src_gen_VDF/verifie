@@ -2,7 +2,7 @@
 # on impose 25W/m3 sur un volume de 4m3 => on doit donc obtenir 100W #
 jdd=`pwd`
 jdd=`basename $jdd`
-[ -f PAR_$jdd.dt_ev ] && jdd=PAR_$jdd
+#[ -f PAR_$jdd.dt_ev ] && jdd=PAR_$jdd
 
 puissance=`awk '{print $5}' $jdd"_pb_Diffusion_chaleur.out" | tail -n1`
 valeurref=-100

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Premiere partie : champ frontiere
+jdd0=ChFrontLu_gen_file.data
+cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_gen_file/*.geom .
+cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_gen_file/$jdd0 .
+chmod +w $jdd0
+sed "s/format lml/format xyz\n           domaine DOM_EXTR_boundaries_PERIO /" $jdd0  > champ_xyz_genere.data
+jdd1=ChFrontLu_read_file.data
+cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_read_file/$jdd1 .
+chmod +w $jdd1
+sed "s/entree frontiere_ouverte_vitesse_imposee Champ_Front_lu DOM_DOM 3 pb_VITESSE_PERIO.dat/entree frontiere_ouverte_vitesse_imposee Champ_Front_lu DOM_DOM 3 champ_xyz_a_lire.xyz/" $jdd1  > champ_front_lu_xyz.data
+mkdir -p ChFrontLu_read_file 
+mv champ_xyz_genere.data champ_front_lu_xyz.data ChFrontLu_read_file/
+cp pre_run *.geom ChFrontLu_read_file/ 
+cp post_run1 ChFrontLu_read_file/post_run
+# Deuxieme partie : champ domaine
+sed "s/format lml/format xyz/" $jdd0  > champ_xyz_genere.data
+sed "s/vitesse Champ_Uniforme 3 0.01 0. 0./vitesse Champ_Don_lu dom 3 champ_xyz_a_lire.xyz/" $jdd1  > champ_don_lu_xyz.data
+mkdir -p ChDonLu_read_file 
+mv champ_xyz_genere.data champ_don_lu_xyz.data ChDonLu_read_file/
+echo "mv \`ls -rt pb_VITESSE_PERIO*dat | tail -1\` pb_VITESSE_PERIO.dat" >> pre_run
+cp pre_run *.geom ChDonLu_read_file/ 
+cp post_run2 ChDonLu_read_file/post_run
+ 

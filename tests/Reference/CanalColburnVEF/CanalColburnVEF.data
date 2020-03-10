@@ -38,7 +38,7 @@ Read sch
         seuil_statio 1.e-6
         facsec 1.
 	diffusion_implicite 1
-	seuil_diffusion_implicite 1.e-3
+	seuil_diffusion_implicite 1.e-12
 }
 
 VEFPreP1B cubes

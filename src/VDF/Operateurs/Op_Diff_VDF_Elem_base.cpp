@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,9 @@
 
 #include <Eval_Diff_VDF.h>
 #include <Eval_VDF_Elem.h>
+#include <Echange_contact_VDF.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
 
 Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base,"Op_Diff_VDF_Elem_base",Op_Diff_VDF_base);
 
@@ -155,4 +158,75 @@ const Champ_base& Op_Diff_VDF_Elem_base::diffusivite() const
   const Eval_Diff_VDF& eval_diff = (const Eval_Diff_VDF&) iter.evaluateur();
   ////const Eval_Diff_VDF& eval_diff = (const Eval_Diff_VDF&) dynamic_cast<const Eval_Diff_VDF&>(iter.evaluateur());
   return eval_diff.get_diffusivite();
+}
+
+void Op_Diff_VDF_Elem_base::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const
+{
+  const Conds_lim& cls = iter.zone_Cl().les_conditions_limites();
+  for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_VDF, cls[i].valeur()))
+      {
+        const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, cls[i].valeur());
+        if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
+        for (auto && kv : cl.extra_items) extra_items[kv.first] = -1; //on ajoute les items dont la CL a besoin
+      }
+}
+
+void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
+{
+  const Zone_VDF& zone = iter.zone();
+  const IntTab& f_e = zone.face_voisins();
+  const Zone_Cl_VDF& zcl = iter.zone_Cl();
+  int l;
+
+  // boucle sur les cl pour trouver un paroi_contact
+  for (int i = 0; i < zone.nb_front_Cl(); i++)
+    {
+      const Cond_lim& la_cl = zcl.les_conditions_limites(i);
+      if (!la_cl.valeur().que_suis_je().debute_par("Paroi_Echange_contact")) continue; //pas un Echange_contact
+      const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, la_cl.valeur());
+      if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
+
+      std::map<int, std::pair<int, int>> f2e;
+      const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
+      for (int j = 0; j < cl.item.dimension(0); j++)
+        if ((l = cl.item(j)) >= 0)
+          {
+            int f = fvf.num_face(j);
+            int e = f_e(f, 0) == -1 ? f_e(f, 1) : f_e(f, 0);
+            f2e[f] = std::make_pair(e, l);
+          }
+      iter.ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
+    }
+}
+
+void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const
+{
+  const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
+  const Zone_VDF& zone = iter.zone();
+  const IntTab& f_e = zone.face_voisins();
+  const Conds_lim& cls = iter.zone_Cl().les_conditions_limites();
+  int i, j, l, f, n, N = ch.valeurs().line_size();
+
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_VDF, cls[i].valeur()))
+      {
+        const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, cls[i].valeur());
+        if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
+        /* mise a jour de item a l'aide de extra_items */
+        for (auto &&kv : cl.extra_items) for (auto &k : kv.second) cl.item(k) = extra_items.at(kv.first);
+
+        /* stencil */
+        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
+        for (j = 0; j < cl.item.dimension(0); j++)
+          if ((l = cl.item(j)) >= 0)
+            {
+              f = fvf.num_face(j);
+              int e = f_e(f, 0) == -1 ? f_e(f, 1) : f_e(f, 0);
+              for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * l + n);
+            }
+      }
+
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_morse_matrix(nl, nc, stencil, matrice);
 }

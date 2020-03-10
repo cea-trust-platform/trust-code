@@ -46,7 +46,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Curve {
 		legend "VDF t=0.5"
 		origin "Trio_U"
@@ -117,7 +117,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Curve {
 		legend "VDF t=0.5"
 		origin "Trio_U"
@@ -186,7 +186,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Curve {
 		legend "VDF"
 		origin "Trio_U"
@@ -261,7 +261,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Curve {
 		legend "VDF"
 		origin "Trio_U"
@@ -331,7 +331,7 @@ Figure {
 #	RangeX 0. 2.5
 	LabelX "x"
 #	RangeY 0. 2.
-	LabelY "°"
+	LabelY "Â°"
 	Curve {
 		legend "VDF"
 		origin "Trio_U"

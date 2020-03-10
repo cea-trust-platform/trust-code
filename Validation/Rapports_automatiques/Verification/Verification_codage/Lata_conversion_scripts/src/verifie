@@ -1,7 +1,13 @@
 #!/bin/bash
+quit()
+{
+   echo "Error."
+   cat log
+   exit -1
+}
 
 source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh
-[ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
+
 source $TRUST_ROOT/exec/lata2dx_install/env.sh
 
 mystudy=$1
@@ -11,22 +17,18 @@ mystudyCase=$mystudy".case"
 mystudyCase2=$mystudy"2.case"
 mystudyLastTS=$mystudy"2_LastTS.case"
 
-python $LATALOADER_ROOT/lib/Lata_to_med.py $mystudyLata $mystudyMed 1>/dev/null 2>&1
-$MED_COUPLING_ROOT/bin/med2case $mystudyMed 1>/dev/null 2>&1
-python $LATALOADER_ROOT/lib/Lata_to_case.py $mystudyLata $mystudyCase2 1>/dev/null 2>&1
-python $LATALOADER_ROOT/lib/Lata_to_case.py -l $mystudyLata $mystudyLastTS 1>/dev/null 2>&1
+python $LATALOADER_ROOT/lib/Lata_to_med.py $mystudyLata $mystudyMed 		1>log 2>&1 || quit
+$MED_COUPLING_ROOT/bin/med2case $mystudyMed 					1>log 2>&1 || quit
+python $LATALOADER_ROOT/lib/Lata_to_case.py $mystudyLata $mystudyCase2 		1>log 2>&1 || quit
+python $LATALOADER_ROOT/lib/Lata_to_case.py -l $mystudyLata $mystudyLastTS 	1>log 2>&1 || quit
 
-
-all_files_are_here="FALSE"
-
-if [ -e $mystudyLata ] && [ -e $mystudyMed ] && [ -e $mystudyCase ] && [ -e $mystudyCase2 ] && [ -e $mystudyLastTS ] 
-then
-    all_files_are_here="TRUE"
-else
-    echo "Error ! Not all files were generated ! Aborting..."
-    exit -1
-fi
-
+for file in $mystudyLata $mystudyMed $mystudyCase $mystudyCase2 $mystudyLastTS
+do
+   if [ ! -f $file ] || [ $file -ot ./verifie ]
+   then
+      echo "File $file not created !" && exit -1
+   fi
+done
 
 good="TRUE"
 for i in {0..1}

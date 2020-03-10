@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #include <Champ_front_calc.h>
 #include <Probleme_base.h>
 #include <Champ_Uniforme.h>
-#include <Schema_Temps_base.h>
+#include <Schema_Euler_Implicite.h>
 #include <Milieu_base.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Zone_VDF.h>
@@ -33,6 +33,7 @@
 #include <Ref_Turbulence_paroi_scal.h>
 #include <Schema_Comm.h>
 #include <ArrOfBit.h>
+#include <DoubleTrav.h>
 
 Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_global_impose);
 
@@ -54,9 +55,9 @@ Entree& Echange_contact_VDF::readOn(Entree& s )
   ch.creer(nom_pb, nom_bord, nom_champ);
   T_ext().typer("Ch_front_var_instationnaire_dep");
   T_ext()->fixer_nb_comp(1);
+  nom_autre_pb_ = nom_pb;
   return s ;
 }
-
 
 void Echange_contact_VDF::completer()
 {
@@ -297,12 +298,15 @@ int Echange_contact_VDF::initialiser(double temps)
     return 0;
 
   Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  const Equation_base& o_eqn = ch.equation();
+  const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis());
+  const Zone_VDF& o_zone = ref_cast(Zone_VDF, ch.zone_dis());
+  const IntTab& o_f_e = o_zone.face_voisins();
   const Milieu_base& le_milieu=ch.milieu();
   int nb_comp = le_milieu.conductivite()->nb_comp();
   Nom nom_racc1=frontiere_dis().frontiere().le_nom();
   Zone_dis_base& zone_dis1 = zone_Cl_dis().zone_dis().valeur();
   int nb_faces_raccord1 = zone_dis1.zone().raccord(nom_racc1).valeur().nb_faces();
-
 
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(nb_comp);
@@ -313,7 +317,51 @@ int Echange_contact_VDF::initialiser(double temps)
 
   autre_h.resize(nb_faces_raccord1,nb_comp);
 
-  return ch.initialiser(temps,zone_Cl_dis().equation().inconnue());
+  ch.initialiser(temps,zone_Cl_dis().equation().inconnue());
+
+  monolithic = sub_type(Schema_Euler_Implicite, o_eqn.schema_temps()) ?
+               ref_cast(Schema_Euler_Implicite, o_eqn.schema_temps()).thermique_monolithique() : 0;
+  if (!monolithic) return 1; //pas besoin du reste
+  o_zone.init_virt_e_map();
+
+  /* src(i) = (proc, j) : source de l'item i de mdv_elem */
+  IntTab src(0, 2);
+  MD_Vector_tools::creer_tableau_distribue(o_zone.zone().md_vector_elements(), src);
+  for (int i = 0; i < src.dimension_tot(0); i++) src(i, 0) = Process::me(), src(i, 1) = i;
+  src.echange_espace_virtuel();
+
+  /* o_proc, o_item -> processeur/item de l'element pour chaque face de la frontiere */
+  DoubleTrav o_proc, o_item, proc, l_item;
+  o_zone.creer_tableau_faces(o_proc), o_zone.creer_tableau_faces(o_item);
+  fvf.frontiere().creer_tableau_faces(proc), fvf.frontiere().creer_tableau_faces(l_item);
+  for (int i = 0; i < o_fvf.nb_faces(); i++)
+    {
+      int f = o_fvf.num_face(i), e = o_f_e(f, 0) == -1 ? o_f_e(f, 1) : o_f_e(f, 0);
+      o_proc(f) = src(e, 0), o_item(f) = src(e, 1); //element
+    }
+
+  //projection sur la frontiere locale
+  if (o_fvf.frontiere().que_suis_je() == "Raccord_distant_homogene")
+    o_fvf.frontiere().trace_face_distant(o_proc, proc), o_fvf.frontiere().trace_face_distant(o_item, l_item);
+  else o_fvf.frontiere().trace_face_local(o_proc, proc), o_fvf.frontiere().trace_face_local(o_item, l_item);
+
+  //remplissage
+  item.resize(fvf.nb_faces()), item = -1;
+  for (int i = 0; i < fvf.nb_faces(); i++) if (l_item(i) >= 0)
+      {
+        if (proc(i) == Process::me()) item(i) = l_item(i);                     //item local (reel)
+        else
+          {
+            if (o_zone.virt_e_map.count({{ (int) proc(i), (int) l_item(i) }}))   //item local (virtuel)
+            item(i) = o_zone.virt_e_map.at({{ (int) proc(i),  (int) l_item(i) }});
+            else
+              {
+                extra_items[ {{ (int) proc(i), (int) l_item(i) }}].push_back(i);
+                item(i) = -2; //item manquant
+              }
+          }
+      }
+  return 1;
 }
 
 void Echange_contact_VDF::mettre_a_jour(double temps)

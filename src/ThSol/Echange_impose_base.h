@@ -84,14 +84,11 @@ public:
   inline Champ_front& h_imp();
   inline const Champ_front& h_imp() const;
 
-  inline Echange_impose_base();
   virtual int compatible_avec_eqn(const Equation_base&) const;
   virtual int compatible_avec_discr(const Discretisation_base& ) const;
-  virtual void completer();
 protected :
 
   Champ_front h_imp_;
-  int division_par_rhoCp_;
 };
 
 
@@ -149,10 +146,6 @@ inline const Champ_front& Echange_impose_base::T_ext() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline Echange_impose_base::Echange_impose_base()
-{
-  division_par_rhoCp_=-1;
-}
 
 inline Champ_front& Echange_impose_base::h_imp()
 {

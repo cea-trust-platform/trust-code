@@ -1,12 +1,12 @@
 try:
- import rlcompleter, readline
- readline.parse_and_bind('tab:complete')
+    import rlcompleter, readline
+    readline.parse_and_bind('tab:complete')
 except:
- pass
+    pass
 
 import triou
 import json
-#import for_triou 
+#import for_triou
 def read_template(file):
     ll=triou.read_file_data(file)
     return ll
@@ -19,7 +19,7 @@ def find_obj_of_type(aclass,ll):
         pass
     return None
 
-    
+
 
 def find_obj_of_name(name,ll):
     for f in ll:
@@ -42,11 +42,11 @@ def change_obj_of_name(name,ll,dis):
             pass
         pass
     if trouve==0:
-        print new_t
-        print name
+        print(new_t)
+        print(name)
         1/0
     return new_t
-            
+
 
 
 def trouve_eqn(cl,name0):
@@ -71,7 +71,7 @@ def create_cl(eq,inco,clglobal):
     cl=clglobal[inco]
     group=clglobal["group_name"]
     type=clglobal["bc_type"]
-    acl=triou.condlimlu(bord=group) 
+    acl=triou.condlimlu(bord=group)
     if cl=={}:
         # condlim generique
         dico_cl= {"symetry":"symetrie","periodic":"periodic","wall":"Paroi"}
@@ -95,14 +95,14 @@ def create_cl(eq,inco,clglobal):
             acl.cl=triou.frontiere_ouverte_pression_imposee()
         elif inco=="k-epsilon":
             acl.cl=triou.frontiere_ouverte()
-            acl.cl.setVarName("K_Eps_ext")  
+            acl.cl.setVarName("K_Eps_ext")
         else:
-            print inco
+            print(inco)
             1/0
         acl.cl.setCh(triou.champ_front_uniforme(val=cl))
-        
+
     else:
-        print type,inco,"ici",cl
+        print(type,inco,"ici",cl)
         # cas particulier
         isdico=1
         try:
@@ -110,13 +110,13 @@ def create_cl(eq,inco,clglobal):
         except:
             isdico=0
             type_cl=cl
-        print "type_tr",type_cl
+        print("type_tr",type_cl)
         dico_cl2={"forced_flux":"paroi_flux_impose","forced_temperature":"paroi_temperature_imposee","adherent":"paroi_fixe","paroi_adiab":"paroi_adiabatique"}
         type_tr=dico_cl2[type_cl]
         acl.cl=triou.__dict__[type_tr]()
-        if isdico and "value" in cl.keys():
+        if isdico and "value" in list(cl.keys()):
             acl.cl.setCh(triou.champ_front_uniforme(val=cl["value"]))
-        
+
     return acl
 
 
@@ -130,13 +130,13 @@ def convert_json_to_jdd(sch,filename):
     #resetXClasses()
     #resetXObjects()
     while (getContext()!="quiet"):
-        print "on change de contexte"
+        print("on change de contexte")
         setContext("quiet")
         pass
 
-    
-    assert(len(sch.keys())==1)
-    type_pb=sch.keys()[0]
+
+    assert(len(list(sch.keys()))==1)
+    type_pb=list(sch.keys())[0]
     sch=sch[type_pb]
 
     if type_pb=="solid_pb":
@@ -148,55 +148,55 @@ def convert_json_to_jdd(sch,filename):
         pass
     data="templates/"+data+".data"
     try:
-       f=open(data,"r")
+        f=open(data,"r")
     except:
-       import os
-       data=os.getenv("TRIOU_ROOT_DIR")+"/"+data
-       try:
-           f=open(data,"r")
-       except:
-           raise Exception("Unable to open "+data)
+        import os
+        data=os.getenv("TRIOU_ROOT_DIR")+"/"+data
+        try:
+            f=open(data,"r")
+        except:
+            raise Exception("Unable to open "+data)
     template=read_template(data)
-    
+
     # print template
     if 0:
-        print find_obj_of_type(triou.domaine,template)
-        print find_obj_of_name("dom",template)
+        print(find_obj_of_type(triou.domaine,template))
+        print(find_obj_of_name("dom",template))
 
 
     pb=find_obj_of_name("pb",template)
 
     if 0:
         pb2=triou.change_type(pb,triou.pb_hydraulique)
-        print "pb2",pb2
+        print("pb2",pb2)
         template=change_obj_of_name("pb",template,pb2)
         pb=find_obj_of_name("pb",template)
-    
-    for cle in sch.keys():
-        print "cle",cle
+
+    for cle in list(sch.keys()):
+        print("cle",cle)
         val=sch[cle]
         # print "val",val
         if cle=="domain":
             dim=find_obj_of_type(triou.dimension,template)
             dim.setDim(val["dimension"])
             fre=find_obj_of_type(triou.Read_MED,template)
-            
+
             fre.setFile(val["med_file"])
             fre.setNomDomMed(val["mesh_name"])
             geo= val["geo_types"]
-            if ((geo==[u'NORM_TETRA4'])or(geo==[u'NORM_TRI3'])):
+            if ((geo==['NORM_TETRA4'])or(geo==['NORM_TRI3'])):
                 dis=triou.vefprep1b()
-            elif ((geo==[u'NORM_HEXA8']) or (geo==[u'NORM_QUAD4'])):
+            elif ((geo==['NORM_HEXA8']) or (geo==['NORM_QUAD4'])):
                 dis=triou.vdf()
             else:
                 raise Exception(str(geo)+" not implemented")
             template=change_obj_of_name("dis",template,dis)
-            
+
             #print dis
         elif cle=="medium":
             fluide=find_obj_of_type(triou.milieu_base,template)
             if "preset" in val:
-                
+
                 preset=val["preset"]
                 if preset=="Water 20 deg":
                     fl={"mu":1e-3,
@@ -213,13 +213,13 @@ def convert_json_to_jdd(sch,filename):
                         }
                 else:
                     raise Exception(str(preset)+" not implemented")
-                
+
             elif "user-defined" in val:
-		fl=val["user-defined"]
+                fl=val["user-defined"]
             else:
-                print val
+                print(val)
                 1/0
-            for prop in fl.keys():
+            for prop in list(fl.keys()):
                 fluide.read_val(["champ_uniforme","1",str(fl[prop])],1,[],prop)
                 #print fluide.print_py()
             #fluide.set(triou.uniform_field(val=[mu]))
@@ -227,12 +227,12 @@ def convert_json_to_jdd(sch,filename):
             # fluide.setCp(triou.uniform_field(val=[cp]))
             #template=change_obj_of_name(fluide.name_u,template,new_fluide)
         elif cle=="init_cond":
-            for key in val.keys():
+            for key in list(val.keys()):
                 try:
                     eq=trouve_eqn(pb,key)
                     eq.conditions_initiales.condinit.ch=triou.uniform_field(val=val[key])
                 except:
-                    print "pb with",key
+                    print("pb with",key)
                 if key=="temperature":
                     eq=None
                     # on ajoute boussinesq
@@ -244,35 +244,35 @@ def convert_json_to_jdd(sch,filename):
                         if eq.sources is None:
                             eq.sources=triou.sources(listobj=[])
                             pass
-                
+
                         bou=triou.boussinesq_temperature()
                         bou.setT0(str(val[key]))
                         eq.sources.listobj.append(bou)
-                    
+
                         pass
                     pass
                 pass
         elif cle=="bound_cond":
             first=1
             for cl in val:
-                for key in cl.keys():
+                for key in list(cl.keys()):
                     if key=="group_name" or key=="bc_type": continue
                     # print key
                     try:
                         eq=trouve_eqn(pb,key)
                     except:
-                        print key,"not found"
+                        print(key,"not found")
                         continue
                         pass
                     if first:
                         eq.conditions_limites=triou.condlims(listobj=[])
                     les_cl=eq.conditions_limites.listobj
                     if 0:
-                        print "uu",val
-                        print "uuu",key,cl[key]
+                        print("uu",val)
+                        print("uuu",key,cl[key])
                     acl=create_cl(eq,key,cl)
                     les_cl.append(acl)
-                    
+
                     # 1/0
                 first=0
                 pass
@@ -281,12 +281,12 @@ def convert_json_to_jdd(sch,filename):
             name_of_gravity=fluide.gravite
             gravity=find_obj_of_name(name_of_gravity,template)
             gravity.setVal(sch[cle])
-            
+
         else:
-            print cle," not implemented"
+            print(cle," not implemented")
             pass
         pass
-    
+
     # print template
     triou.write_file_data(filename,template)
 
@@ -295,7 +295,7 @@ if __name__ == '__main__':
     import sys
     file="gauthier.json"
     if len(sys.argv) > 1:
-	file=sys.argv[1]
+        file=sys.argv[1]
     with open(file) as f:
         sch = json.loads(f.read())  # sch is a Python dic
-        convert_json_to_jdd(sch,"essai.data") 
+        convert_json_to_jdd(sch,"essai.data")

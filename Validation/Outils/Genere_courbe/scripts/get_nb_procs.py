@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 # Given a PRM file, extract for each test case the number of procs required.
 # This is echoed on stdout in the same order the tests were found in the PRM.
@@ -35,14 +34,13 @@ def get_nb_procs( filename ) :
                         all_nb_procs.append(nb_proc)
 
     if all_nb_procs == []:
-      nb_procs = 0
+        nb_procs = 0
     else:
-      nb_procs = max( all_nb_procs )
+        nb_procs = max( all_nb_procs )
     return nb_procs, all_nb_procs
 
 if __name__ == "__main__":
     import sys
     filename = sys.argv[ 1 ]
     nb_procs, all_nb_procs = get_nb_procs( filename )
-    print ("\n".join([str(n) for n in all_nb_procs]))
-
+    print(("\n".join([str(n) for n in all_nb_procs])))

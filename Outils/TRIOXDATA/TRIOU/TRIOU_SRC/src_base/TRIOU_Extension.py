@@ -27,7 +27,7 @@ myORB = CORBA.ORB_init([''], CORBA.ORB_ID)
 
 # --- Life Cycle CORBA ---
 import LifeCycleCORBA
-myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)                                                            
+myLCC = LifeCycleCORBA.LifeCycleCORBA(myORB)
 
 # -----------------------------
 # Find or load TRIOU engine
@@ -76,16 +76,16 @@ class Extension(TRIOU_CORBA__POA.Extension):
            <theWorkingDir> - the working directory, if it is empty, a temporary one is created.
         Returns 1 in success and 0 in failure
         """
-        
+
         self._status = TRIOU_CORBA.FAILED_TO_RUN
-        
+
         # check if solver is already running
         if self._pid != 0:
             if myDebug:
-                print "*******************************************************"
-                print "* TRIOU_Extension.StartSolver: ERROR!"
-                print "* Solver is already started!"
-                print "*******************************************************"
+                print("*******************************************************")
+                print("* TRIOU_Extension.StartSolver: ERROR!")
+                print("* Solver is already started!")
+                print("*******************************************************")
             return 0
 
         # study
@@ -94,33 +94,33 @@ class Extension(TRIOU_CORBA__POA.Extension):
         # check solver binary path
         if not theSolverPath:
             theSolverPath = "TRUST_mpich_opt_st"
-            if os.environ.has_key( "TRIOU_ROOT_DIR" ):
+            if "TRIOU_ROOT_DIR" in os.environ:
                 aDir = os.getenv( "TRIOU_ROOT_DIR" ) + "/bin/"
                 if os.path.exists( aDir ):
                     theSolverPath = aDir + theSolverPath
             if not os.path.exists( theSolverPath ) or not os.path.isfile( theSolverPath ):
                 if myDebug:
-                    print "*******************************************************"
-                    print "* TRIOU_Extension.StartSolver: ERROR!"
-                    print "* Cannot start solver: solver is not found!"
-                    print "*******************************************************"
+                    print("*******************************************************")
+                    print("* TRIOU_Extension.StartSolver: ERROR!")
+                    print("* Cannot start solver: solver is not found!")
+                    print("*******************************************************")
                 return 0
             if myDebug:
-                print "*******************************************************"
-                print "* WARNING! No solver executable name is given."
-                print "* Using default one:", theSolverPath
-                print "*******************************************************"
+                print("*******************************************************")
+                print("* WARNING! No solver executable name is given.")
+                print("* Using default one:", theSolverPath)
+                print("*******************************************************")
         self._solverPath = theSolverPath
-            
+
         try:
             # check/create working directory
             if theWorkingDir:
                 if not os.path.exists( theWorkingDir ) or not os.path.isdir( theWorkingDir ):
                     if myDebug:
-                        print "*******************************************************"
-                        print "* TRIOU_Extension.StartSolver: ERROR!"
-                        print "* Cannot start solver: wrong working directory!"
-                        print "*******************************************************"
+                        print("*******************************************************")
+                        print("* TRIOU_Extension.StartSolver: ERROR!")
+                        print("* Cannot start solver: wrong working directory!")
+                        print("*******************************************************")
                     return 0
             else:
                 # create temporary directory
@@ -129,17 +129,17 @@ class Extension(TRIOU_CORBA__POA.Extension):
                 os.makedirs( theWorkingDir )
                 self._workDirCreated = 1
             self._workDir  = theWorkingDir
-            if myDebug: print "TRIOU_Extension.StartSolver: working directory : ", self._workDir
+            if myDebug: print("TRIOU_Extension.StartSolver: working directory : ", self._workDir)
             self._dataFile = self._workDir + os.sep + "Result.data"
 
             if theInputFile:
                 # if <theInputFile> is given, create link to it in the working directory
                 if not os.path.exists( theInputFile ):
                     if myDebug:
-                        print "*******************************************************"
-                        print "* TRIOU_Extension.StartSolver: ERROR!"
-                        print "* Cannot start solver: wrong input file!"
-                        print "*******************************************************"
+                        print("*******************************************************")
+                        print("* TRIOU_Extension.StartSolver: ERROR!")
+                        print("* Cannot start solver: wrong input file!")
+                        print("*******************************************************")
                     self._ClearWorkingDir()
                     return 0
                 os.symlink( theInputFile, self._dataFile )
@@ -148,20 +148,20 @@ class Extension(TRIOU_CORBA__POA.Extension):
                 # first check if study is given
                 if self._study is None:
                     if myDebug:
-                        print "*******************************************************"
-                        print "* TRIOU_Extension.StartSolver: ERROR!"
-                        print "* Cannot start solver: no study is given!"
-                        print "*******************************************************"
+                        print("*******************************************************")
+                        print("* TRIOU_Extension.StartSolver: ERROR!")
+                        print("* Cannot start solver: no study is given!")
+                        print("*******************************************************")
                     self._ClearWorkingDir()
                     return 0
                 # then look for the TRIOU component
                 aComp = self._study.FindComponent( "TRIOU" )
                 if aComp is None:
                     if myDebug:
-                        print "*******************************************************"
-                        print "* TRIOU_Extension.StartSolver: ERROR!"
-                        print "* Cannot start solver: TRIOU component is not found!"
-                        print "*******************************************************"
+                        print("*******************************************************")
+                        print("* TRIOU_Extension.StartSolver: ERROR!")
+                        print("* Cannot start solver: TRIOU component is not found!")
+                        print("*******************************************************")
                     self._ClearWorkingDir()
                     return 0
 
@@ -171,20 +171,20 @@ class Extension(TRIOU_CORBA__POA.Extension):
                 while anIter.More():
                     aSObj = anIter.Value()
                     anIter.Next()
-                    if myDebug: print "TRIOU_Extension.StartSolver: SObject:", aSObj
+                    if myDebug: print("TRIOU_Extension.StartSolver: SObject:", aSObj)
                     aObject = aSObj.GetObject()
-                    if myDebug: print "TRIOU_Extension.StartSolver: CORBA Object:", aObject
+                    if myDebug: print("TRIOU_Extension.StartSolver: CORBA Object:", aObject)
                     if aObject:
                         aPObj = corba2python( aObject )
-                        if myDebug: print "TRIOU_Extension.StartSolver: Python Object:", aPObj
+                        if myDebug: print("TRIOU_Extension.StartSolver: Python Object:", aPObj)
                         if aPObj:
                             listclass.append( aPObj )
                         pass
                     pass
 
-                # export the study structure to the data file       
+                # export the study structure to the data file
                 from triou import write_file_data
-                if myDebug: print "TRIOU_Extension.StartSolver: Writing input file: ", self._dataFile
+                if myDebug: print("TRIOU_Extension.StartSolver: Writing input file: ", self._dataFile)
                 write_file_data( self._dataFile, listclass )
 
             # starting execution
@@ -200,13 +200,13 @@ class Extension(TRIOU_CORBA__POA.Extension):
 
             self._lock.acquire()
             self._lock.release()
-        except Exception, e:
+        except Exception as e:
             if myDebug:
-                print "*******************************************************"
-                print "* TRIOU_Extension.StartSolver: ERROR!"
-                print "* An exception has bee caught!"
-                print "*", e
-                print "*******************************************************"
+                print("*******************************************************")
+                print("* TRIOU_Extension.StartSolver: ERROR!")
+                print("* An exception has bee caught!")
+                print("*", e)
+                print("*******************************************************")
             self._ClearWorkingDir()
             return 0
         return 1
@@ -219,34 +219,34 @@ class Extension(TRIOU_CORBA__POA.Extension):
         aBaseName = os.path.basename( self._dataFile ).split( '.' )[ 0 ] # remove extension
         aCmd = 'cd ' + self._workDir + '; exec ' +  self._solverPath + ' ' + aBaseName + ' >& ' + self._workDir + os.sep + 'TRIOU.log'
         self._pid = os.spawnlp( os.P_NOWAIT, '/bin/sh', 'sh', '-c', aCmd)
-        if myDebug: print 'TRIOU_Extension._RunSolver: PROCESS STARTED -', self._pid
+        if myDebug: print('TRIOU_Extension._RunSolver: PROCESS STARTED -', self._pid)
         self._lock.release()
-        
+
         self._status = TRIOU_CORBA.RUNNING
-        
+
         try:
             while 1:
                 # Is the solver alive?
                 aPid, aStatus = os.waitpid(self._pid, os.WNOHANG)
-                
+
                 if self._paused:
                     self._PauseLock.acquire()
                     self._PauseLock.release()
                     pass
-                
-                if myDebug: print "TRIOU_Extension._RunSolver: sleep for ", self._delay, "seconds"
+
+                if myDebug: print("TRIOU_Extension._RunSolver: sleep for ", self._delay, "seconds")
                 time.sleep( self._delay )
                 pass
             pass
-        except Exception, e:
-            if myDebug: print "TRIOU_Extension._RunSolver: Exception - ", e
+        except Exception as e:
+            if myDebug: print("TRIOU_Extension._RunSolver: Exception - ", e)
             pass
-        
+
         self._status = self._PublishData()
         self._ClearWorkingDir()
-            
+
         self._lock.acquire()
-        
+
         # We are not interested in <pid> any longer
         self._pid = 0
 
@@ -269,7 +269,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
         """
         if not self._workDir:
             return TRIOU_CORBA.FAILED_TO_PUBLISH
-        
+
         # look for MED files in the working directory
         aMedFileRE = re.compile( ".+\.med$" )
         aListDir = os.listdir( self._workDir )
@@ -279,9 +279,9 @@ class Extension(TRIOU_CORBA__POA.Extension):
             if re.match( aMedFileRE, aFileName ):
                 aFile = self._workDir + os.sep + aFileName
                 aListOfFiles.append( aFile )
-                if myDebug: print "TRIOU_Extension._PublishData: found MED file ", aFile
+                if myDebug: print("TRIOU_Extension._PublishData: found MED file ", aFile)
             pass
-        
+
         # export MED results to VISU if there are any
         status = TRIOU_CORBA.OK_STATUS
         errors = 0
@@ -296,32 +296,32 @@ class Extension(TRIOU_CORBA__POA.Extension):
                         except:
                             errors = errors + 1
                             if myDebug:
-                                print "********************************************************"
-                                print "* TRIOU_Extension._PublishData: ERROR!"
-                                print "* Can't Import MED file", aFile
-                                print "********************************************************"
+                                print("********************************************************")
+                                print("* TRIOU_Extension._PublishData: ERROR!")
+                                print("* Can't Import MED file", aFile)
+                                print("********************************************************")
                             pass
                 else:
                     errors = errors + 1
             else:
                 status = TRIOU_CORBA.OK_NO_VISU
                 if myDebug:
-                    print "********************************************************"
-                    print "* TRIOU_Extension._PublishData: ERROR!"
-                    print "* Can't find VISU module"
-                    print "********************************************************"
+                    print("********************************************************")
+                    print("* TRIOU_Extension._PublishData: ERROR!")
+                    print("* Can't find VISU module")
+                    print("********************************************************")
                 pass
         else:
             status = TRIOU_CORBA.OK_NO_MED_FILES
             if myDebug:
-                print "********************************************************"
-                print "* TRIOU_Extension._PublishData: WARNING!"
-                print "* No result MED files is produced"
-                print "********************************************************"
+                print("********************************************************")
+                print("* TRIOU_Extension._PublishData: WARNING!")
+                print("* No result MED files is produced")
+                print("********************************************************")
         if errors > 0:
             status = TRIOU_CORBA.OK_WITH_ERRORS
         return status
-    
+
     def StopSolver(self):
         """
         Stops the solver execution
@@ -340,7 +340,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
             pass
         self._pid = 0
         self._paused = 0
-        if myDebug: print 'TRIOU_Extension.StopSolver: PROCESS KILLED!'
+        if myDebug: print('TRIOU_Extension.StopSolver: PROCESS KILLED!')
 
         self._lock.release()
 
@@ -357,7 +357,7 @@ class Extension(TRIOU_CORBA__POA.Extension):
         try:
             os.kill(self._pid, signal.SIGSTOP)
             self._paused = 1
-            if myDebug: print 'TRIOU_Extension.PauseSolver: PROCESS PAUSED!'
+            if myDebug: print('TRIOU_Extension.PauseSolver: PROCESS PAUSED!')
         except:
             self._PauseLock.release()
 
@@ -373,14 +373,14 @@ class Extension(TRIOU_CORBA__POA.Extension):
         self._lock.acquire()
 
         try:
-            os.kill(self._pid, signal.SIGCONT)        
+            os.kill(self._pid, signal.SIGCONT)
             self._paused = 0
-            if myDebug: print 'TRIOU_Extension.ContinueSolver: PROCESS RESUMED!'
+            if myDebug: print('TRIOU_Extension.ContinueSolver: PROCESS RESUMED!')
 
             self._PauseLock.release()
         except:
             pass
-            
+
         self._lock.release()
 
     def IsSolverRunning(self):

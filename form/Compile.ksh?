@@ -1,2 +1,0 @@
-#!/bin/bash
-$Xterm -title "Compile TRUST (lib et exec)" -e compile depend opt

@@ -1,4 +1,4 @@
-# Thermohydraulique 2D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi n°4 (0.4 mm) #
+# Thermohydraulique 2D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi nÂ°4 (0.4 mm) #
 # PARALLEL OK #
 
 dimension 2
@@ -57,7 +57,7 @@ Read sch
 
 VEFPreP1b cubesregu
 
-# Proprietes He vers 700°C #
+# Proprietes He vers 700Â°C #
 Fluide_Incompressible He
 Read He
 {

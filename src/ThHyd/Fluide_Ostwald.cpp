@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,7 @@ Sortie& Fluide_Ostwald::printOn(Sortie& s ) const
 // cf Milieu_base::readOn
 Entree& Fluide_Ostwald::readOn(Entree& is)
 {
-  Milieu_base::readOn(is);
+  Fluide_Incompressible::readOn(is);
   return is;
 }
 

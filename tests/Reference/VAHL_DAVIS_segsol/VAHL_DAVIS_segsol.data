@@ -54,7 +54,7 @@ Read sch
            Simple
 	   {
 		seuil_convergence_implicite 1.e-2
-		seuil_convergence_solveur 1.e-16
+		seuil_convergence_solveur 1.e-14
 		relax_pression 0.25
 	   }
 }

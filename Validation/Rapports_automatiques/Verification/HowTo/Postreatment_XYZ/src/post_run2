@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# On verifie que le fichier xyz a bien ete genere
+file_xyz=champ_xyz_a_lire.xyz
+if [ -f $file_xyz ]
+then
+    echo "The file "$file_xyz" was generated !" > my_text21
+else
+    echo "Error !! The file "$file_xyz" was not generated !" > my_text21
+fi
+
+# On verifie que la lecture de fichier xyz s'est bien deroulee
+cat champ_don_lu_xyz.stop >>my_text22
+
+# On copie tous les fichiers au bon endroit
+mv my_text21 my_text22 ../

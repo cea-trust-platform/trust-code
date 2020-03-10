@@ -1820,8 +1820,8 @@ int libere_trio(T_Trio contenu1,T_Trio  contenu2,T_Equiv   *equi)
  *                                                               *
  *---------------------------------------------------------------*
  * Sorties :                                                     *
- * int          argc   - Nombre d'arguments retourn≈s.           *
- * char**       argv   - Liste des arguments retourn≈s.          *
+ * int          argc   - Nombre d'arguments retournes.           *
+ * char**       argv   - Liste des arguments retournes.          *
  *---------------------------------------------------------------*
  * Auteur :                                                      *
  *           G.DEGENEVE                                          *

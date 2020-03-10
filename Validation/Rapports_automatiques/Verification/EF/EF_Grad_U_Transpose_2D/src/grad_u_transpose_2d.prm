@@ -1,6 +1,6 @@
 Parameters {
-	Title "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses"
-	Description "On impose un champ de vitesse à divergence nulle particulier dans tout le domaine.  On choisit une viscosité variable en espace.  Pour ces deux champs, il est possible de déterminer la solution analytique de la force visqueuse.  Dans le cas particulier considéré, cette force est un gradient et doit être pris en compte par la pression.  On compare donc la pression analytique à la pression calculée par GENEPI."
+	Title "VÃ©rification du transposÃ© du gradient de vitesse dans le tenseur des contraintes visqueuses"
+	Description "On impose un champ de vitesse Ã  divergence nulle particulier dans tout le domaine.  On choisit une viscositÃ© variable en espace.  Pour ces deux champs, il est possible de dÃ©terminer la solution analytique de la force visqueuse.  Dans le cas particulier considÃ©rÃ©, cette force est un gradient et doit Ãªtre pris en compte par la pression.  On compare donc la pression analytique Ã  la pression calculÃ©e par GENEPI."
 	Author "D. Jamet"
 	TestCase "." "grad_u_transpose_2d.data"
 	IncludeData 1
@@ -8,12 +8,12 @@ Parameters {
 
 Chapter {
 	Title "Champ de pression"
-	Description "Dans cette partie, on compare le champ de pression calculé par GENEPI et le champ de pression analytique"
+	Description "Dans cette partie, on compare le champ de pression calculÃ© par GENEPI et le champ de pression analytique"
 
 
 	visu {
-                Title "Champs de pression calculé et analytique"
-                description "Le champ de pression calculé par GENEPI est tracé et le champ de pression analytique est donné par des iso-valeurs."
+                Title "Champs de pression calculÃ© et analytique"
+                description "Le champ de pression calculÃ© par GENEPI est tracÃ© et le champ de pression analytique est donnÃ© par des iso-valeurs."
                 mesh ./grad_u_transpose_2d.lata dom 
                 pseudocolor ./grad_u_transpose_2d.lata dom PRESSION_PA ELEM
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(4+2*coord(dom)[0]-2*coord(dom)[1])")
@@ -22,7 +22,7 @@ Chapter {
 
 	visu {
                 Title "Erreur sur le champ de pression"
-                description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont tracés le champ de l'erreur et les iso-valeurs de l'erreur."
+                description "On trace l'erreur entre le champ de pression calculÃ© par GENEPI et le champ de pression analytique.  Sont tracÃ©s le champ de l'erreur et les iso-valeurs de l'erreur."
                 mesh ./grad_u_transpose_2d.lata dom 
                 instruction_visit DefineScalarExpression("ERREUR_ELEM_dom","PRESSION_PA_ELEM_dom-(4+2*coord(dom)[0]-2*coord(dom)[1])")
                 pseudocolor ./grad_u_transpose_2d.lata dom ERREUR ELEM

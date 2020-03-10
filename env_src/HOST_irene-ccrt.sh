@@ -44,18 +44,9 @@ module () {
 }" >> $env
    #
    # Load modules
-   # intel intel/15.0.6.233  intel/16.0.3.210  intel/17.0.4.196  intel/17.0.6.256(default)  intel/18.0.1.163
-   intel="intel/18.0.3.222"
-   # openmpi mpi/openmpi/1.8.8  mpi/openmpi/2.0.2  mpi/openmpi/2.0.4(default)
-   #openmpi="mpi/openmpi/2.0.4"
-   # intelmpi mpi/intelmpi/2017.0.4.196 mpi/intelmpi/2017.0.6.256 mpi/intelmpi/2018.0.1.163  mpi/intelmpi/2018.0.3.222(default)
-   openmpi="mpi/intelmpi/2018.0.3.222"
-   # wi4mpi mpi/wi4mpi/3.1.5  mpi/wi4mpi/3.2.0  mpi/wi4mpi/3.2.1(default)
-   #openmpi="mpi/wi4mpi/3.2.1"
-   #Python version 2.7.5  python/2.7.8  python/2.7.12  python/2.7.14(default)  python/3.6.1  python3/3.6.4(default)
-   #cmake version 2.8.12.2  cmake/3.2.2  cmake/3.9.1(default)
-   #hwloc hwloc/1.11.3(default)
-   module="$intel $openmpi"
+   intel="intel/18.0.3.222" 
+   intelmpi="mpi/intelmpi/2018.0.3.222"
+   module="$intel $intelmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -72,7 +63,8 @@ define_soumission_batch()
    # ram=16000 # 16 GB asked
    # So we use now n cores for one task to have 4*n GB per task
    [ "$bigmem" = 1 ] && cpus_per_task=4 && soumission=1 # To have 16GB per task
-   ntasks=48 # 48 cores per node for skylake queue (68 for KNL queue)
+   # 48 cores per node for skylake queue (68 for KNL queue), 128 for AMD rome
+   ntasks=48 
    # ccc_mqinfo : 
    #Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime
    #-------  ---------  --------  -------  -------  --------  ------  ------  ----------
@@ -86,14 +78,16 @@ define_soumission_batch()
       qos=normal
       [ "$prod" = 1 ] && cpu=86400
    else
-      qos=test
+      qos=test 
       cpu=1800
    fi
    # ccc_mpinfo : 
    #PARTITION    STATUS TOT_CPUS TOT_NODES    MpC  CpN SpN CpS TpC
    #skylake      up        74256      1547    3750  48   2  24   1
    #knl          up        38284       563    1411  68   1  68   1
-   queue=skylake && [ "$bigmem" = 1 ] && queue=knl && ntasks=68
+   #rome         up       269056      2102    1875  128  8  16   1
+   queue=skylake 
+   [ "$bigmem" = 1 ] && queue=knl && ntasks=68
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1
@@ -106,10 +100,10 @@ define_soumission_batch()
    else
       node=0
    fi
-   #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
-   mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
+   binding=""
+   mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
-   project="dendm2s"
-   [ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   project="dendm2s" 
+   [ "$project" = "" ] && project=`PYTHONPATH=/usr/lib64/python2.7/site-packages ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }

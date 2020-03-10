@@ -41,10 +41,10 @@ Chapter {
         Description " Discretization:                 VEFPreP1b"            
         Description " Type of boundary conditions:    Momentum: periodic and symetry"
         Description "                                 Energy: periodic and imposed temperature" 
-        Description " Type of fluid:                  properties of helium gas at 700°C           
+        Description " Type of fluid:                  properties of helium gas at 700Â°C           
 	Description " "
 	Description "\latex_(\textbf{Physical properties}\latex_)"
-	Description " The physical properties correspond to the properties of Helium at 700°C"
+	Description " The physical properties correspond to the properties of Helium at 700Â°C"
 	Description "\latex_($\rho = 4.40684\: kg.m^{-3}$\latex_)"
 	Description "\latex_($\mu$\latex_) = 4.46437e-05 Pa.s"
 	Description "\latex_($\lambda = 0.344964 \: W.m^{-1}.K^{-1}$\latex_)"

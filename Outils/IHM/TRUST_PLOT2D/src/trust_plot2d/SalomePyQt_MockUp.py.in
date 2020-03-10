@@ -2,9 +2,10 @@
 # Author : A. Bruneton
 #
 
-from pyqtside.QtGui import QApplication, QTabWidget 
-from pyqtside.QtGui import QAction, QMenu, QIcon, QPixmap, QDesktopWidget, QFileDialog
-from pyqtside.QtCore import SIGNAL, SLOT, QObject, Slot, Signal
+from pyqtside.QtWidgets import QApplication, QTabWidget 
+from pyqtside.QtWidgets import QAction, QMenu, QDesktopWidget, QFileDialog
+from pyqtside.QtGui import QIcon, QPixmap
+from pyqtside.QtCore import QObject, Slot, Signal
 
 RESOURCE_DIR = "@SGPYQT_RES_DIR@"
 
@@ -27,7 +28,7 @@ class SalomePyQt(QObject):
     if self._mainWindow:
       self._menuBar = self._mainWindow.menuBar()
       self._mainWindow.setCentralWidget(self._tabWidget)
-    self.connect(self._tabWidget, SIGNAL("currentChanged(int)"), self, SLOT("onTabChanged(int)"))
+    self._tabWidget.currentChanged.connect(self.onTabChanged)
     self._blockSignal = False
   
   def getDesktop(self):
@@ -42,8 +43,8 @@ class SalomePyQt(QObject):
   def onTabChanged(self, index):
     if self._blockSignal:
       return
-    invDict = dict([(v, k) for k,v in self._viewIDs.items()])
-    if invDict.has_key(index):
+    invDict = dict([(v, k) for k,v in list(self._viewIDs.items())])
+    if index in invDict:
       self._blockSignal = True
       self.currentTabChanged.emit(invDict[index])
       self._blockSignal = False
@@ -74,7 +75,7 @@ class SalomePyQt(QObject):
     except:
       pass
     # Update the other tab indices which are now shifted:
-    for k, idx in self._viewIDs.items():
+    for k, idx in list(self._viewIDs.items()):
       if idx > idxClosed:
         self._viewIDs[k] -= 1
     self._blockSignal = False

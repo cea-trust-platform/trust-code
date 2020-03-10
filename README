@@ -6,7 +6,7 @@ You can then edit this file and some others (env/make.linux*)
 to change some default values.
 
 To initialize:
-source env_TRUST.sh
+source ./env_TRUST.sh
 
 To build a binary with a single directory build:
 make # Create an optimized debug binaries
@@ -35,8 +35,6 @@ src/		TRUST sources
 tests/		TRUST tests
 Outils/		Tools to build TRUST
 Validation/	Location of Validation forms
-IHM/		GUI tools
-form/ Milieux_reference/ Modeles/ (obsolete)
 
 # Quick files description:
 DEVELOPER_NOTES	Developer notes (manually and regulary updated by support)

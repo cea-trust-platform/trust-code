@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,6 @@
     DoubleTab& ajouter_(DoubleTab& , int ) const;                        \
                                                                         \
     int nb_elem_;                                                        \
-    mutable DoubleTab coef;                                                \
                                                                         \
   };                                                                        \
                                                                         \
@@ -85,36 +84,6 @@
       ncomp=resu.dimension(1);                                                \
     DoubleVect& bilan = so_base->bilan();                                \
     bilan=0;                                                                \
-    coef.resize(nb_elem_,Array_base::NOCOPY_NOINIT);                        \
-    coef=1;                                                                \
-    if (equation_divisee_par_rho_cp())                                        \
-      {                                                                        \
-        const Milieu_base& milieu = la_zcl->equation().milieu();        \
-        const Champ_Don& rho = milieu.masse_volumique();                \
-        const Champ_Don& Cp = milieu.capacite_calorifique();                \
-        if ((sub_type(Champ_Uniforme,rho.valeur())) && (sub_type(Champ_Uniforme,Cp.valeur()))) \
-          coef = rho(0,0)*Cp(0,0);                                        \
-        else                                                                \
-          {                                                                \
-            const DoubleTab& val_rho = rho.valeur().valeurs();                \
-            const DoubleTab& val_Cp = Cp.valeur().valeurs();                \
-            if (sub_type(Champ_Uniforme,rho.valeur()))                        \
-              {                                                                \
-                for (int num_elem=0; num_elem<nb_elem_; num_elem++)        \
-                  coef(num_elem) = val_rho(0,0)*val_Cp(num_elem);        \
-              }                                                                \
-            else if (sub_type(Champ_Uniforme,Cp.valeur()))                \
-              {                                                                \
-                for (int num_elem=0; num_elem<nb_elem_; num_elem++)        \
-                  coef(num_elem) = val_rho(num_elem)*val_Cp(0,0);        \
-              }                                                                \
-            else                                                        \
-              {                                                                \
-                for (int num_elem=0; num_elem<nb_elem_; num_elem++)        \
-                  coef(num_elem) = val_rho(num_elem)*val_Cp(num_elem);        \
-              }                                                                \
-          }                                                                \
-      }                                                                        \
     if( ncomp == 1)                                                        \
       ajouter_(resu) ;                                                        \
     else                                                                \
@@ -128,7 +97,7 @@
       {                                                                        \
         double source = evaluateur_source_elem.calculer_terme_source(num_elem);        \
         resu[num_elem] += source;                                        \
-        bilan(0) += coef(num_elem) * source;                                \
+        bilan(0) += source;                                \
       }                                                                        \
     return resu;                                                        \
   }                                                                        \
@@ -141,7 +110,7 @@
       for (int k=0; k<ncomp; k++)                                        \
         {                                                                \
           resu(num_elem,k) += source(k);                                \
-          bilan(k) += coef(num_elem) * source(k);                        \
+          bilan(k) += source(k);                        \
         }                                                                \
     }                                                                        \
     return resu;                                                        \

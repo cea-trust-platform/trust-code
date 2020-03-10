@@ -9,12 +9,12 @@ from xutilities_pirate import message
 #
 
 def searchFreePort():
-    print "Searching a free port for naming service:",
+    print("Searching a free port for naming service:", end=' ')
     NSPORT=2810
     limit=NSPORT
     limit=limit+100
     while 1:
-        print "%s "%(NSPORT),
+        print("%s "%(NSPORT), end=' ')
         import os
         status = os.system("netstat -ltn | grep -E :%s"%(NSPORT))
         if status:
@@ -24,7 +24,7 @@ def searchFreePort():
             f = open(os.environ['OMNIORB_CONFIG'], "w")
             f.write("ORBInitRef NameService=corbaname::%s:%s\n"%(hostname, NSPORT))
             f.close()
-            print "- Ok"
+            print("- Ok")
             break
         if NSPORT == limit:
             msg  = ""
@@ -58,7 +58,7 @@ def getXSalomeSession(*args, **kwargs):
 #
 
 class XSalomeSession(object):
-    
+
     def getKRD(self):
         import os
         KERNEL_ROOT_DIR = os.getenv("KERNEL_ROOT_DIR")
@@ -75,7 +75,7 @@ class XSalomeSession(object):
             system('/bin/rm /tmp/.where_is_runSalome')
             pass
         return KERNEL_ROOT_DIR
-    
+
     def __init__(self, modules, study=0, logger=0, sleeping_time=1):
         try:
             from xcontext import setContext
@@ -196,11 +196,11 @@ class XSalomeSession(object):
         self.lcc = lcc
         #
         from time import sleep
-        print "You have %s seconds to launch whatever you want ..."%(sleeping_time)
+        print("You have %s seconds to launch whatever you want ..."%(sleeping_time))
         import os
-        print "OMNIORB_CONFIG: %s"%(os.environ['OMNIORB_CONFIG'])
+        print("OMNIORB_CONFIG: %s"%(os.environ['OMNIORB_CONFIG']))
         sleep(sleeping_time)
-        print "... finished."
+        print("... finished.")
         #
         import sys
         sys.argv = argv_ini
@@ -442,9 +442,9 @@ def python2corba(python_object, component, xtype=None, depth=0):
                 xtype = XDict()
                 pass
             # --
-            values = python_object.values()
+            values = list(python_object.values())
             values = [ python2corba(v, component, xtype.values, depth+1) for v in values ]
-            keys = python_object.keys()
+            keys = list(python_object.keys())
             idl_type = xtype.getIdlType()
             if 0:
                 pass
@@ -510,7 +510,7 @@ def python2corba(python_object, component, xtype=None, depth=0):
             pass
         pass
     elif isinstance(python_object, dict):
-        keys = python_object.keys()
+        keys = list(python_object.keys())
         # --
         # if xtype is None put an empty XDict
         if xtype is None:
@@ -657,7 +657,7 @@ def corba2python(corba_object):
             message('python dict reconstruction ...', clt=1)
             python_object = {}
             message('get keys ...', clt=1)
-            keys = corba_object.keys()
+            keys = list(corba_object.keys())
             message('keys are %s'%keys, clt=1)
             for key in keys:
                 message("get corba_value for key:", key, clt=1)
@@ -759,7 +759,7 @@ _service2component = {}
 
 def getComponentFromService(service):
     global _service2component
-    if _service2component.has_key(service):
+    if service in _service2component:
         return _service2component[service]
     names = getComponentsNames()
     component_name = None

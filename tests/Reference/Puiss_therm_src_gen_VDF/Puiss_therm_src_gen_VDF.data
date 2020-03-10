@@ -52,6 +52,7 @@ Read sch
     dt_impr 0.1
     dt_sauv 1.e+6
     seuil_statio 1.e-12
+    precision_impr 3
     diffusion_implicite 1
 }
 
@@ -77,7 +78,7 @@ Read pb
         {
             /* Puissance_thermique  Champ_Uniforme 1 25. */
             Source_Generique Transformation { 
-                methode formule expression 1 25./(rho*cp)
+                methode formule expression 1 25./(1.+0.*rho*cp)
                 localisation elem
                 sources {
                     RefChamp { Pb_champ pb masse_volumique nom_source rho } ,

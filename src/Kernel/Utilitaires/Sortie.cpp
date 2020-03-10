@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Separateur.h>
 #include <assert.h>
 #include <iostream>
+#include <iomanip>
 
 const Separateur finl(Separateur::ENDL);
 const Separateur space(Separateur::SPACE);
@@ -37,6 +38,7 @@ Sortie::Sortie()
 {
   bin_=0;
   ostream_=0;
+  col_width_ = -1;
 }
 
 void Sortie::setf(IOS_FORMAT code)
@@ -49,6 +51,11 @@ void Sortie::precision(int pre)
 {
   if(ostream_)
     ostream_->precision(pre);
+}
+
+void Sortie::set_col_width(int w)
+{
+  col_width_ = w;
 }
 
 Sortie::Sortie(ostream& os)
@@ -116,6 +123,27 @@ void Sortie::set_ostream(ostream* os)
   ostream_ = os;
 }
 
+int Sortie::add_col(const double& ob)
+{
+  if (bin_ or col_width_ == -1)
+    abort();
+  else
+    {
+      (*ostream_) << std::right << std::setw(col_width_) << ob;
+    }
+  return ostream_->good();
+}
+
+int Sortie::add_col(const char * ob)
+{
+  if (bin_ or col_width_ == -1)
+    abort();
+  else
+    {
+      (*ostream_) << std::right << std::setw(col_width_) << ob;
+    }
+  return ostream_->good();
+}
 
 
 // Description:

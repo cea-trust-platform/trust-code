@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 #include <Interprete.h>
 
 Implemente_instanciable(Champ_front_debit_QC,"Champ_front_debit_QC_VDF",Ch_front_var_instationnaire_indep);
-// XD Champ_front_debit_QC_VDF front_field_base Champ_front_debit_QC_VDF 0 This field is used to define a flow rate field for quasi-compressible fluids in VDF discretization. The flow rate is kept constant during a transient.
+// XD Champ_front_debit_QC_VDF front_field_base Champ_front_debit_QC_VDF 0 This keyword is used to define a flow rate field for quasi-compressible fluids in VDF discretization. The flow rate is kept constant during a transient.
 // XD attr dimension int  dim 0 Problem dimension
 // XD attr liste bloc_lecture liste 0 List of the mass flow rate values [kg/s/m2] with the following syntaxe: { val1 ... valdim }
 // XD attr moyen chaine moyen 1 Option to use rho mean value
@@ -199,6 +199,8 @@ void Champ_front_debit_QC::mettre_a_jour(double tps)
           S+=s;
           rho_moy+=s*tab_rhonp1P0(n0);
         }
+      S = mp_sum(S);
+      rho_moy = mp_sum(rho_moy);
       rho_moy/=S;
       for ( num_face=ndeb; num_face<nfin; num_face++)
         for (int ori=0; ori<dim; ori++)

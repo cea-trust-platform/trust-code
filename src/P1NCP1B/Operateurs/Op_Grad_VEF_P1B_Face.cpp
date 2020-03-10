@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -677,7 +677,6 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
     }
   flux_bords_.resize(zone_VEF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
-  Nom espace=" \t";
 
   DoubleTrav tab_flux_bords(3,zone_VEF.nb_front_Cl(),dimension);
   tab_flux_bords=0.;
@@ -815,40 +814,40 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       ouvrir_fichier(Flux_grad_sum,"sum",impr_sum);
 
       // Write time
-      sch.imprimer_temps_courant(Flux_grad);
-      if (impr_sum) sch.imprimer_temps_courant(Flux_grad_sum);
-      if (impr_mom) sch.imprimer_temps_courant(Flux_grad_moment);
+      Flux_grad.add_col(sch.temps_courant());
+      if (impr_sum) Flux_grad_sum.add_col(sch.temps_courant());
+      if (impr_mom) Flux_grad_moment.add_col(sch.temps_courant());
 
       // Write flux on boundaries
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           if (dimension == 2)
             {
-              Flux_grad<< espace << tab_flux_bords(0,n_bord,0);
-              Flux_grad<< espace << tab_flux_bords(0,n_bord,1);
+              Flux_grad.add_col(tab_flux_bords(0,n_bord,0));
+              Flux_grad.add_col(tab_flux_bords(0,n_bord,1));
               if (impr_sum)
                 {
-                  Flux_grad_sum<< espace << tab_flux_bords(1,n_bord,0);
-                  Flux_grad_sum<< espace << tab_flux_bords(1,n_bord,1);
+                  Flux_grad_sum.add_col(tab_flux_bords(1,n_bord,0));
+                  Flux_grad_sum.add_col(tab_flux_bords(1,n_bord,1));
                 }
-              if (impr_mom) Flux_grad_moment<< espace << tab_flux_bords(2,n_bord,0);
+              if (impr_mom) Flux_grad_moment.add_col(tab_flux_bords(2,n_bord,0));
             }
           else if (dimension == 3)
             {
-              Flux_grad<< espace << tab_flux_bords(0,n_bord,0);
-              Flux_grad<< espace << tab_flux_bords(0,n_bord,1);
-              Flux_grad<< espace << tab_flux_bords(0,n_bord,2);
+              Flux_grad.add_col(tab_flux_bords(0,n_bord,0));
+              Flux_grad.add_col(tab_flux_bords(0,n_bord,1));
+              Flux_grad.add_col(tab_flux_bords(0,n_bord,2));
               if (impr_sum)
                 {
-                  Flux_grad_sum<< espace << tab_flux_bords(1,n_bord,0);
-                  Flux_grad_sum<< espace << tab_flux_bords(1,n_bord,1);
-                  Flux_grad_sum<< espace << tab_flux_bords(1,n_bord,2);
+                  Flux_grad_sum.add_col(tab_flux_bords(1,n_bord,0));
+                  Flux_grad_sum.add_col(tab_flux_bords(1,n_bord,1));
+                  Flux_grad_sum.add_col(tab_flux_bords(1,n_bord,2));
                 }
               if (impr_mom)
                 {
-                  Flux_grad_moment<< espace << tab_flux_bords(2,n_bord,0);
-                  Flux_grad_moment<< espace << tab_flux_bords(2,n_bord,1);
-                  Flux_grad_moment<< espace << tab_flux_bords(2,n_bord,2);
+                  Flux_grad_moment.add_col(tab_flux_bords(2,n_bord,0));
+                  Flux_grad_moment.add_col(tab_flux_bords(2,n_bord,1));
+                  Flux_grad_moment.add_col(tab_flux_bords(2,n_bord,2));
                 }
             }
         }

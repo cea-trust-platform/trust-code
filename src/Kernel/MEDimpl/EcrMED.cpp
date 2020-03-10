@@ -284,10 +284,8 @@ med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_,med_axis_type&
     type_elem_med=MED_POLYGON;
   else if(type_elem=="SEGMENT")
     type_elem_med=MED_SEG2;
-#ifdef MED30
   else if(type_elem=="PRISME_HEXAG")
     type_elem_med=MED_OCTA12;
-#endif
   else if(type_elem=="POINT_1D")
     type_elem_med=MED_POINT1;
   else
@@ -305,7 +303,7 @@ med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem)
 }
 
 // ecriture des faces
-int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,int fid,const Nom& nom_dom,int dimension,const ArrOfInt& familles,med_access_mode mode=MED_ACC_RDEXT)
+int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const Nom& nom_dom,int dimension,const ArrOfInt& familles,med_access_mode mode=MED_ACC_RDEXT)
 {
   int ret=0;
   int nface=familles.size_array();
@@ -327,12 +325,8 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,int fid,const Nom
         {
           med_int *med_all_faces_bord=convert_int_med_int(all_faces_bord);
           med_int *med_familles=convert_int_med_int(familles);
-#ifdef MED30
           double dtb=0;
           ret=MEDmeshElementWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,dtb,type_ent,type_elem_med,MED_NODAL,MED_FULL_INTERLACE,nface,med_all_faces_bord,MED_FALSE,NULL,MED_FALSE,NULL,MED_TRUE,med_familles);
-#else
-          ret=MEDelementsEcr(fid,nom_dom,dimension,med_all_faces_bord,MED_FULL_INTERLACE,NULL,MED_FAUX,NULL,MED_FAUX,med_familles,nface,type_ent,type_elem_med,MED_NODAL);
-#endif
           if (sizeof(med_int)!=sizeof(int))
             {
               delete []  med_all_faces_bord;
@@ -376,11 +370,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,int fid,const Nom
           med_int med_size_index=index.size_array();
           // ret=MEDelementsEcr(fid,nom_dom,dimension,med_all_faces_bord,MED_FULL_INTERLACE,NULL,MED_FAUX,NULL,MED_FAUX,med_familles,nface,type_ent,type_elem_med,MED_NODAL,mode);
           //Cerr<<" ecriture "<<index<<" conn "<<conn<<" "<<all_faces_bord<<finl;
-#ifdef MED30
           ret=MEDmeshPolygonWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,0.,MED_CELL,MED_NODAL,med_size_index,med_index,med_conn);
-#else
-          ret=MEDpolygoneConnEcr(fid,nom_dom,med_index,med_size_index,med_conn,type_ent,MED_NODAL);
-#endif
           // ATTENTION MED_ACC_CREAT au lieu de MED_ACC_RDEXT
           if (ret<0)
             {
@@ -388,11 +378,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,int fid,const Nom
               Process::exit();
               // on ecrit les familles avant d'oublier....
             }
-#ifdef MED30
           if ((ret = MEDmeshEntityFamilyNumberWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,type_elem_med,nface,med_familles)) < 0)
-#else
-          if ((ret = MEDfamEcr(fid,nom_dom,med_familles,nface,type_ent,type_elem_med)) < 0)
-#endif
             Process::exit();
           if (sizeof(med_int)!=sizeof(int))
             {
@@ -414,7 +400,7 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
   dimensionne_char_ptr_taille(med_taille_nom,MED_NAME_SIZE);
   //Cerr<<"HERE medecrgeom "<<nom_fic<<" "<<nom_dom<<" "<<mode<<finl;
   int ret=0;
-  int fid ;
+  med_idt fid ;
   // alors ca ou l'autre ????
   // mode =0 on ajoute. mode=-1 on reecrit
   if (mode==0)
@@ -443,7 +429,6 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
   med_geometry_type type_elem_med;
   med_axis_type rep;
   type_elem_med=type_geo_trio_to_type_med(type_elem,rep);
-#ifdef MED30
   Char_ptr desc;
   desc.allocate(MED_COMMENT_SIZE);
   strcpy(desc,"no description");
@@ -451,10 +436,6 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
   dtunit.allocate(MED_SNAME_SIZE);
   strcpy(dtunit,"s");
   ret=MEDmeshCr(fid,nom_dom,dimension,dimension,MED_UNSTRUCTURED_MESH,desc,dtunit,MED_SORT_DTIT,rep,nomcoo,unicco );
-
-#else
-  ret = MEDmaaCr(fid,nom_dom,dimension);
-#endif
   double* sommets2=(double *)sommets.addr();
 
   int nsommet=sommets.dimension(0);
@@ -468,12 +449,8 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
     nufano=new med_int[nsommet];
     for (int i=0; i<nsommet; i++)
       nufano[i]=0;
-#ifdef MED30
     double dtb=0;
     ret=MEDmeshNodeWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,dtb,MED_FULL_INTERLACE,nsommet,sommets2,MED_FALSE,NULL,MED_FALSE,NULL,MED_TRUE,nufano);
-#else
-    ret=MEDnoeudsEcr(fid,nom_dom,dimension,sommets2,MED_FULL_INTERLACE,rep,nomcoo,unicco,NULL,MED_FAUX,NULL,MED_FAUX,nufano,nsommet);
-#endif
     if (ret<0)
       {
         Cerr<<"Problem when writing vertex in "<<nom_fic<<finl;
@@ -500,14 +477,10 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
     if ((type_elem_med==MED_POLYHEDRON)||(type_elem_med==MED_POLYGON))
       is_poly=1;
     if (is_poly==0)
-#ifdef MED30
       {
         double dtb=0;
         ret=MEDmeshElementWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,dtb,MED_CELL,type_elem_med,MED_NODAL,MED_FULL_INTERLACE,nelem,med_les_elems,MED_FALSE,NULL,MED_FALSE,NULL,MED_TRUE,nufano);
       }
-#else
-      ret=MEDelementsEcr(fid,nom_dom,dimension,med_les_elems,MED_FULL_INTERLACE,NULL,MED_FAUX,NULL,MED_FAUX,nufano,nelem,MED_CELL,type_elem_med,MED_NODAL);
-#endif
     else
       {
         ArrOfInt Nodes_glob;
@@ -537,7 +510,6 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
         med_int* med_PolyhedronIndex=convert_int_med_int(PolyhedronIndex);
         int size_index=PolyhedronIndex.size_array();
         int size_f=FacesIndex.size_array();
-#ifdef MED30
         if (type_elem_med==MED_POLYHEDRON)
           {
             ret=MEDmeshPolyhedronWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,0.,MED_CELL,MED_NODAL,size_index,med_PolyhedronIndex,size_f,med_FacesIndex,med_Nodes);
@@ -546,17 +518,6 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
           {
             ret=MEDmeshPolygonWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_UNDEF_DT,MED_CELL,MED_NODAL,size_index,med_PolyhedronIndex,med_FacesIndex);
           }
-#else
-        ret=MEDpolyedreConnEcr(fid,nom_dom,
-                               med_PolyhedronIndex,
-                               size_index,
-                               med_FacesIndex,
-                               size_f,
-                               med_Nodes,
-                               MED_NODAL);
-        if (type_geo!=MED_POLYGON)
-          abort();
-#endif
         if (ret<0)
           {
             Cerr<<" Problem MEDpolyedreConnEcr"<<finl;
@@ -569,11 +530,7 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
             delete [] med_PolyhedronIndex;
           }
         // on ecrit les familles avant d'oublier....
-#ifdef MED30
         if ((ret = MEDmeshEntityFamilyNumberWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_elem_med,nelem,nufano)) < 0)
-#else
-        if ((ret = MEDfamEcr(fid,nom_dom,nufano,nelem,MED_CELL,type_elem_med)) < 0)
-#endif
           Process::exit();
 
       }
@@ -609,10 +566,7 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
     nom_zone_bis+=nom_zone;
     //strcpy(nomfz,nom_zone_bis);
     nomfz="elems";
-#ifdef MED30
-#define MEDfamCr(fid,nom_dom,nomf,num,a,b,c,d,group,ngroup)  MEDfamilyCr(fid,nom_dom,nomf,num,ngroup,group);
-#endif
-    ret=MEDfamCr(fid,nom_dom,nomfz,0,NULL,NULL,NULL,0,NULL,0);
+    ret=MEDfamilyCr(fid,nom_dom,nomfz,0,0,NULL);
     if (ret<0)
       {
         Cerr<<"Problem when writing nom_zone family in "<<nom_fic<<finl;
@@ -621,7 +575,7 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
     if (nom_zone_bis=="elems") nom_zone_bis+="_cpy";
     nomfz=nom_zone_bis;
     //strcpy(nomfz,"elems");
-    ret=MEDfamCr(fid,nom_dom,nomfz,famglob,NULL,NULL,NULL,0,NULL,0);
+    ret=MEDfamilyCr(fid,nom_dom,nomfz,famglob,0,NULL);
     if (ret<0)
       {
         Cerr<<"Problem when writing the elements family in "<<nom_fic<<finl;
@@ -636,15 +590,10 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
     for (int i=0; i<noms_bords.size(); i++)
       {
         attval[0]=i+1;
-#ifdef MED30
         Char_ptr groupname;
         dimensionne_char_ptr_taille(groupname,MED_LNAME_SIZE);
         affecte_nom_med(groupname,noms_bords[i]);
         ret=MEDfamilyCr(fid,nom_dom,noms_bords[i],-(i+1),1,groupname);
-
-#else
-        ret=MEDfamCr(fid,nom_dom,noms_bords[i],-(i+1),attide,attval,attdes,natt,NULL,0);
-#endif
         if (ret<0)
           {
             Cerr<<"Problem when writing the family " <<i+1<<" in "<<nom_fic<<finl;
@@ -811,9 +760,7 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
       {
         break ;
       }
-#ifdef MED30
     case MED_OCTA12 :
-#endif
     case MED_POLYGON:
     case MED_POLYHEDRON:
       {
@@ -1042,7 +989,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
       if (nnodes==0)
         points->alloc(0, dimension);
       else
-        points->useArray(sommets.addr(), false, MEDCoupling::CPP_DEALLOC, nnodes, dimension);
+        points->useArray(sommets.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, nnodes, dimension);
       points->setInfoOnComponent(0, "x");
       points->setInfoOnComponent(1, "y");
       if (dimension == 3) points->setInfoOnComponent(2, "z");
@@ -1244,7 +1191,7 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
   dimensionne_char_ptr_taille(med_taille_nom,MED_NAME_SIZE);
   Char_ptr nomcha1(med_taille_nom);
   affecte_nom_med(nomcha1,nomcha1_org);
-  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
+  med_idt fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
 
   int ret=0;
   // on regarde si le champ existe
@@ -1277,7 +1224,6 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
           dimensionne_char_ptr_taille(unit,MED_SNAME_SIZE,ncomp);
 
           /* infos sur les champs */
-#ifdef MED30
           Char_ptr meshname;
           dimensionne_char_ptr_taille(meshname,MED_NAME_SIZE);
           Char_ptr dtunit;
@@ -1286,10 +1232,6 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
           med_field_type fieldtype;
           // med_int nbofcstp;
           ret=MEDfieldInfo(fid,ch+1,nomcha,meshname,&localmesh,&fieldtype,comp,unit,dtunit,&nbofcstp);
-#else
-          med_type_champ typcha;
-          ret = MEDchampInfo(fid,ch+1,nomcha,&typcha,comp,unit,ncomp);
-#endif
           //printf("Nom du champ : %s de type %d\n",nomcha,typcha);
           //printf("Nom des composantes : %s\n",comp);
           //printf("Unites des composantes : %s \n",unit);
@@ -1298,14 +1240,12 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
             {
               trouve=1;
               assert(ncomp==nbcomp);
-#ifdef MED30
               if ((meshname!=nom_dom))
 
                 {
                   Cerr<< nomcha1<<" is alrady on "<<meshname<<". You can't add this field on "<<nom_dom<<finl;
                   Process::exit();
                 }
-#endif
               //Cerr<<"This field is already in hand"<<finl;
               break;
             }
@@ -1315,15 +1255,11 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
     {
       // il n existe pas on le cree
       //Cerr<<"creation of the field "<<nomcha1<<finl;
-#ifdef MED30
       Char_ptr dtunit;
       dimensionne_char_ptr_taille(dtunit,MED_SNAME_SIZE);
       strcpy(dtunit,"s");
       ret=MEDfieldCr(fid,nomcha1,MED_FLOAT64,nbcomp,comp2,unit2,dtunit,nom_dom);
       nbofcstp=0;
-#else
-      ret=MEDchampCr(fid,nomcha1,MED_FLOAT64,comp2,unit2,nbcomp);
-#endif
     }
   MEDfileClose(fid);
   return ret;
@@ -1337,7 +1273,7 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
   int ret=0;
   int nbele=val.dimension(0);
   if (nbele==0) return 0;
-  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
+  med_idt fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
 
   //MED_CELL si CHAMPMAILLE
   //MED_NODE si CHAMPNOEUD
@@ -1367,22 +1303,14 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
     }
 
   //
-#ifdef MED30
   int nn=nboft;
-#else
-  int nn=MEDnPasdetemps(fid,nomcha1,type_ent,type_geo_trio_to_type_med(type_elem));
-#endif
   //Cerr<<nn <<" Pas de temps Champ"<<nomcha1<<finl;
   Char_ptr nom_dom_med(med_taille_nom);
   strcpy(nom_dom_med,nom_dom);
 
   Char_ptr nom_chp_med(med_taille_nom);
   affecte_nom_med(nom_chp_med,nomcha1);
-#ifdef MED30
   ret+=MEDfieldValueWr(fid,nom_chp_med,nn,MED_NO_IT,dt,type_ent,type_geo_trio_to_type_med(type_elem),MED_FULL_INTERLACE, MED_ALL_CONSTITUENT,nbele,(unsigned char*) val.addr());
-#else
-  ret+=MEDchampEcr(fid,nom_dom_med,nom_chp_med,(unsigned char*) val.addr(),MED_FULL_INTERLACE,nbele,(char*)MED_NOGAUSS,MED_ALL,(char*)MED_NOPFL,MED_NO_PFLMOD,type_ent,type_geo_trio_to_type_med(type_elem),nn,(char*)"s",dt,MED_NONOR);
-#endif
 
   MEDfileClose(fid);
   return ret;
@@ -1457,7 +1385,7 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
         {
           int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
           MCAuto<DataArrayDouble> array(DataArrayDouble::New());
-          array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
+          array->useArray(val.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, size, nb_comp);
           // Units:
           if (nb_comp > 1) for (int i = 0; i < nb_comp; i++)
               array->setInfoOnComponent(i, noms_compo[i].getString() + "[" + unite[i].getString() + "]");
@@ -1522,127 +1450,4 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
     }
 }
 
-
-
-
-
-// methode proche de celle standard
-// le but ecrire les champs aux faces
-// on lui passe en plus le Champ_Inc pour recuperer la zone_dis
-
-// ne marche pas si l'on a pas ecrit des le depart toutes les faces...
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_ch)
-{
-  if (use_medcoupling_)
-    {
-      Cerr << "Todo " << finl;
-      Process::exit();
-      return;
-    }
-#ifndef MED30
-  if (type!="CHAMPFACE")
 #endif
-    {
-      Cerr<<"EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_ch) is assessed only for fields of type Champ_Face"<<finl;
-      exit();
-    }
-#ifndef MED30
-  const Zone_VF& la_zone_dis=ref_cast(Zone_VF,le_ch.zone_dis_base());
-  DoubleTab valeurs(la_zone_dis.nb_faces(),le_ch.nb_comp());
-
-  // Pour les faces
-  Cerr<<" checking that all the sides are written"<<finl;
-  med_entity_type type_ent;
-  type_ent=MED_CELL;
-  if (type=="CHAMPPOINT")
-    {
-      type_ent=MED_NODE;
-    }
-  else if (type=="CHAMPFACE")
-    {
-      if (Objet_U::dimension==2)
-        type_ent=MED_ARETE;
-      else
-        type_ent=MED_FACE;
-#ifdef POURSATURNE
-      type_ent=MED_CELL;
-#endif
-    }
-  else if (type!="CHAMPMAILLE")
-    {
-      Cerr<<type<<"to check"<<finl;
-      exit();
-    }
-  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDONLY, major_mode);
-  int nm=MEDnEntMaa(fid,nom_dom,MED_CONN,type_ent,type_geo_trio_to_type_med(type_elem),MED_NODAL);
-  MEDfileClose(fid);
-  Cerr<<"nm "<<nm<<" " <<valeurs.dimension(0)<<finl;
-
-  if (nm!=valeurs.dimension(0))
-    {
-      Cerr<<"one rewrites the sides"<<finl;
-
-      Noms type_face_;
-      VECT(IntTab) all_faces_bord_;
-      Noms noms_bords;
-      VECT(ArrOfInt) familles_;
-      const Zone_VF& la_zone_dis=ref_cast(Zone_VF,ref_cast(Champ_Inc_base, le_ch).zone_dis_base());
-      const Domaine& dom=la_zone_dis.zone().domaine();
-      creer_all_faces_bord( dom, type_face_, all_faces_bord_,  noms_bords,familles_);
-      assert(type_face_.size()==1);
-      Nom& type_face=type_face_[0];
-      IntTab& all_faces_bord=all_faces_bord_[0];
-      ArrOfInt& familles=familles_[0];
-      // on recupere les faces internes
-
-      int premiere_face_int=la_zone_dis.premiere_face_int();
-      int nbfaces=la_zone_dis.nb_faces();
-      int nbsomfa=all_faces_bord.dimension(1);
-      int nbbord=familles.size_array();
-      if (0)
-        {
-          Cerr<<"before "<<all_faces_bord(20,0)<<finl;
-          all_faces_bord.resize(nbfaces,nbsomfa);
-          Cerr<<"after "<<all_faces_bord(20,0)<<finl;
-          familles.resize_array(nbfaces);
-          const IntTab& face_sommets= la_zone_dis.face_sommets();
-          int nb_som_fa=face_sommets.dimension(1);
-          for (int fac=premiere_face_int; fac<nbfaces; fac++)
-            {
-              for (int som=0; som<nb_som_fa; som++) all_faces_bord(fac,som)=face_sommets(fac,som);
-              familles(fac)=-11*0;
-            }
-        }
-
-      if (nbbord!= premiere_face_int) abort();
-
-      renum_conn(all_faces_bord,type_face,1);
-      Cerr<<"here "<<(int)MED_ACC_RDEXT <<" "<<(int)MED_ACC_CREAT<<finl;
-      med_access_mode es=MED_ACC_RDEXT;
-      // if (1) es=MED_ACC_CREAT;
-      //es=MED_ACC_RDEXT;
-      int fid = trustMEDfileOpen(nom_fic,es, major_mode);
-      Cerr<<" fid "<<fid<<finl;
-      //int nm2=MEDnEntMaa(fid,nom_dom,MED_CONN,type_ent,type_geo_trio_to_type_med(type_elem),MED_NODAL);
-      int nm2=nm;
-      Cerr<<" number "<<nm<<" "<<nm2<<finl;
-      //MEDfileClose(fid);
-      //exit();
-      med_access_mode es2=MED_ACC_RDEXT;
-      //if (1) es2=MED_ACC_CREAT;
-      Cerr<<"Ok HERE "<<medecrirefaces( all_faces_bord,type_face, fid, nom_dom, Objet_U::dimension, familles,es2)<<" "<<(int)es<<" "<<(int)es2<<finl;
-
-      MEDfileClose(fid);
-      // on bloque tout
-      // on n'arrive pas a reecrire les faces !!!
-      //  abort();
-    }
-
-  const   DoubleTab& xv =la_zone_dis.xv();
-  le_ch.valeur_aux(xv, valeurs);
-
-  ecrire_champ(type, nom_fic,nom_dom, nom_cha1,valeurs,unite,type_elem, time,compteur);
-#endif
-}
-#endif
-

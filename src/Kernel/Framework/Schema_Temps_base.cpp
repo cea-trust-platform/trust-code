@@ -355,6 +355,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter_non_std( "no_check_disk_space",(this)); // XD_ADD_P flag To disable the check of the available amount of disk space during the calculation.
   param.ajouter_flag( "disable_progress",&disable_progress_); // XD_ADD_P flag To disable the writing of the .progress file.
   param.ajouter_flag( "disable_dt_ev",&disable_dt_ev_); // XD_ADD_P flag To disable the writing of the .dt_ev file.
+  param.ajouter( "gnuplot_header",&gnuplot_header_); // XD_ADD_P int Optional keyword to modify the header of the .out files. Allows to use the column title instead of columns number.
 }
 // Description:
 //    Surcharge Objet_U::printOn(Sortie&)
@@ -562,7 +563,7 @@ Schema_Temps_base::Schema_Temps_base()
   periode_cpu_sans_sauvegarde_ = 23 * 3600; // Par defaut 23 heures
   limite_cpu_sans_sauvegarde_ = periode_cpu_sans_sauvegarde_;
   temps_cpu_ecoule_ = 0;
-  precision_impr_ = 3;
+  precision_impr_ = 8;
   stationnaire_atteint_=0;
   stationnaires_atteints_=0;
   residu_=0;
@@ -588,6 +589,7 @@ Schema_Temps_base::Schema_Temps_base()
   cumul_slope_=1e-20;
   disable_progress_ = 0;
   disable_dt_ev_ = 0;
+  gnuplot_header_ = 0;
 }
 // Description:
 //    Impression du numero du pas de temps, la valeur du pas de temps.
@@ -1074,6 +1076,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
   else
     mp_max_abs_tab(tab_critere, residu_equation);
 
+  equation.set_residuals(tab_critere);
   // On calcule le residu_initial_equation sur les 5 premiers pas de temps
   if (seuil_statio_relatif_deconseille_)
     {

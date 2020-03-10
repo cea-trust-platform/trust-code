@@ -41,7 +41,7 @@ public:
 
   inline Eval_Dirac_VDF_Elem();
   inline virtual ~Eval_Dirac_VDF_Elem() {};
-  void associer_champs(const Champ_Don& ,const Champ_Don& , const Champ_Don& );
+  void associer_champs(const Champ_Don& );
   void mettre_a_jour( );
   inline double calculer_terme_source(int ) const;
   inline void calculer_terme_source(int , DoubleVect& ) const;
@@ -50,10 +50,6 @@ public:
   DoubleVect le_point;
 protected:
 
-  REF(Champ_Don) rho_ref;
-  double rho_ref_;
-  REF(Champ_Don) Cp;
-  double Cp_;
   REF(Champ_Don) la_puissance;
   double puissance;
   REF(Zone) ma_zone;
@@ -69,15 +65,9 @@ inline Eval_Dirac_VDF_Elem::Eval_Dirac_VDF_Elem() {}
 
 inline double Eval_Dirac_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  //Cout << "point = " << le_point << finl;
-  //Cout << "elem = " << num_elem << " " << ma_zone.valeur().type_elem().contient(le_point,num_elem) << finl;
   int test =  ma_zone.valeur().type_elem().contient(le_point,num_elem) ;
   if (test == 1)
-    {
-      //Cout << "coucou dans Eval_Dirac_VDF_Elem !!!" << finl;
-      return nb_dirac*puissance/(Cp_*rho_ref_);
-
-    }
+    return nb_dirac*puissance;
   else
     return 0;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,8 +109,6 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
   else
     {
       // Case Energy, s is non uniform
-      const double& Rho = equation().milieu().masse_volumique().valeurs()(0,0);
-      const double& Cp = equation().milieu().capacite_calorifique().valeurs()(0,0);
       bilan_=0;
       const ArrOfInt& fd=zone_VF.faces_doubles();
       for (int num_face = 0 ; num_face<premiere_face_std; num_face++)
@@ -128,7 +126,6 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
           resu(num_face)+= contrib;
           bilan_(0)+= contrib*(1-0.5*fd(num_face));
         }
-      bilan_(0)*=Rho*Cp;
     }
   return resu;
 }

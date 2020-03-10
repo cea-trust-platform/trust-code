@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,9 +88,9 @@ void Op_Div_VEF_Elem::volumique(DoubleTab& div) const
 
 int Op_Div_VEF_Elem::impr(Sortie& os) const
 {
-  Nom espace=" \t";
   const int impr_bord=(la_zone_vef->zone().Bords_a_imprimer().est_vide() ? 0:1);
-  double temps=equation().probleme().schema_temps().temps_courant();
+  const Schema_Temps_base& sch = equation().probleme().schema_temps();
+  double temps = sch.temps_courant();
 
   int nb_compo=flux_bords_.dimension(1);
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
@@ -127,7 +127,7 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
     {
       SFichier Flux_div;
       ouvrir_fichier(Flux_div,"",1);
-      Flux_div<< temps;
+      Flux_div.add_col(temps);
       for (int num_cl=0; num_cl<nb_cl; num_cl++)
         {
           const Cond_lim& la_cl = la_zcl_vef->les_conditions_limites(num_cl);
@@ -135,15 +135,18 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
           for(int k=0; k<nb_compo; k++)
             {
               if(perio)
-                Flux_div<< espace << tab_flux_bords(1,num_cl,k) << espace << tab_flux_bords(2,num_cl,k);
+                {
+                  Flux_div.add_col(tab_flux_bords(1,num_cl,k));
+                  Flux_div.add_col(tab_flux_bords(2,num_cl,k));
+                }
               else
-                Flux_div<< espace << tab_flux_bords(0,num_cl,k);
+                Flux_div.add_col(tab_flux_bords(0,num_cl,k));
               bilan(k)+=tab_flux_bords(0,num_cl,k);
             }
         }
 
       for(int k=0; k<nb_compo; k++)
-        Flux_div<< espace << bilan(k) ;
+        Flux_div.add_col(bilan(k));
       Flux_div << finl;
     }
 

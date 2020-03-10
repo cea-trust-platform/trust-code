@@ -19,8 +19,8 @@ set(CMAKE_SKIP_RULE_DEPENDENCY 0)
 message("Utilisation de la librairie : ${libtrio_name} " )
 find_library(libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH )
 
-find_package(PythonInterp 2 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
-find_package(PythonLibs 2 REQUIRED)    # ... so that TRUST Python libs are found too.
+find_package(PythonInterp 3 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
+find_package(PythonLibs 3 REQUIRED)    # ... so that TRUST Python libs are found too.
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -30,14 +30,15 @@ include(${SWIG_USE_FILE})
 ##
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${TRUST_ROOT}/include/backward
   ${TRUST_ROOT}/src/Kernel/ICoCo
   ${TRUST_ROOT}/lib/src/LIBICOCOAPI/include
   ${MEDCOUPLING_DIR}/include
   ${PYTHON_INCLUDE_PATH})
 
 set_source_files_properties(trusticoco.i PROPERTIES CPLUSPLUS ON)
+set_source_files_properties(trusticoco.i PROPERTIES SWIG_FLAGS "-py3")
 set_source_files_properties(trusticoco_V2.i PROPERTIES CPLUSPLUS ON)
+set_source_files_properties(trusticoco_V2.i PROPERTIES SWIG_FLAGS "-py3")
 if(NOT $ENV{TRUST_DISABLE_MEDCOUPLING})
   set_source_files_properties(trusticoco.i PROPERTIES COMPILE_DEFINITIONS "MEDCOUPLING")
   #set_source_files_properties(trusticoco.i PROPERTIES COMPILE_DEFINITIONS "OLD_MEDCOUPLING")
@@ -70,11 +71,11 @@ add_test(NAME TRUST_swig
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 
 if(NOT $ENV{TRUST_DISABLE_MEDCOUPLING})
-#    add_test(NAME TRUST_swig_V2
-#             COMMAND ${CMAKE_COMMAND} -E env
-#                  PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
-#               ${PYTHON_EXECUTABLE} test_trusticoco_V2.py
-#             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+    add_test(NAME TRUST_swig_V2
+             COMMAND ${CMAKE_COMMAND} -E env
+                  PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
+               ${PYTHON_EXECUTABLE} test_trusticoco_V2.py
+             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 endif()
 
 ##

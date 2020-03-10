@@ -1,6 +1,18 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+09/03/20 (TRUST)  Keyword     : Conduction_milieu_variable becomes obsolete and Conduction keyword can be used for conduction equation with non-uniform Rho*Cp 
+25/02/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model was not computed correctly
+21/02/20 (TRUST)  Bug fixed   : Rewrite Champ_Fonc_MED class for a faster Champ_Fonc_MED_tabule keyword (read of several time steps in a MED file for field time-tabulation)
+29/01/20 (TRUST)  New feature : New option thermique_monolithique (VDF only) for Scheme_Euler_Implicit keyword to enable full thermal impliciting for coupled problems (single matrix solved)
+23/01/20 (Tools)  New feature : Add merge_meds.py python script to merge MED files in parallel into single one
+21/01/20 (TRUST)  Output      : Change of .son file format (header, column alignment, precision_impr by default 8 and not 3 as before) + add gnuplot_header option to have a gnuplot5 compatible header
+07/01/20 (TRUST)  Tools       : Trust Wizard tool becomes obsolete
+07/01/20 (TRUST)  Tools       : MED-file 4.0.0 insures direct compatibility with Salome 9.2
+07/01/20 (TRUST)  Tools       : Update versions for MEDCoupling (9.4.0), MED-file (4.0.0), HDF (1.10.3), Gmsh (4.4.1)
+07/01/20 (TRUST)  Tools       : Switch to Python 3. Python 2 scripts are not supported anymore
+06/01/20 (TRUST)  Portability : AMD partition Rome on irene CCRT cluster is supported (built with Intel 19.0.5 & IntelMPI 2018.0.3)
+16/12/19 (TRUST)  New keyword : Add Champ_front_debit_QC_VDF_fonc_t keyword to set time-dependent flow rates in quasi-compressible flows with VDF discretization
 05/12/19 (TRUST)  New feature : Add possibility to post-process Y_PLUS on moving boundaries in VEF discretization 
 04/12/19 (TRUST)  Portability : Add the possibility to configure a baltik in 64 bit indices mode (experimental)
 27/11/19 (TRUST)  Portability : orcus (DM2S) and plafrim (INRIA) clusters supported
@@ -1013,7 +1025,7 @@ Release notes version 1.5.6 : Enhancements, modifications and corrected bugs sin
 25/11/08 (TRUST)  Portability : IDRIS AIX cluster named vargas supported (112 nodes of 32 dual-core processors)
 24/11/08 (TRUST)  Minor change: Additional informations are now printed into the _Nusselt.face file with the dt_impr_nusselt option
 24/11/08 (TRUST)  Minor change: Front tracking model is no longer limited to one solid interface with imposed velocity
-14/11/08 (Tools)  Bug fixed   : reprise_auto script failed if a problem have more than one post processing bloc
+14/11/08 (Tools)  Bug fixed   : reprise_auto script failedconda if a problem have more than one post processing bloc
 12/11/08 (Kernel) New keyword : Segmentpoints is used to define a probe segment from specifics points
 06/11/08 (Kernel) Bug fixed   : Possible corruption in LATA format, if the field name does not match to the number of component of the field
 24/10/08 (TRUST)  Bug fixed   : In Sous_Zone Tube, h was not the height of the tube but the coordinate of the end's tube

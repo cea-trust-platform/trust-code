@@ -700,9 +700,9 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
 // Postcondition:
 Matrice_Morse& Matrice_Morse::operator=(const Matrice_Morse& a )
 {
-  tab1_.copy(a.get_tab1());
-  tab2_.copy(a.get_tab2());
-  coeff_.copy(a.get_coeff());
+  tab1_.reset(), tab1_.copy(a.get_tab1());
+  tab2_.reset(), tab2_.copy(a.get_tab2());
+  coeff_.reset(), coeff_.copy(a.get_coeff());
   m_=a.nb_colonnes();
   morse_matrix_structure_has_changed_=1;
   is_stencil_up_to_date_=a.is_stencil_up_to_date();

@@ -12,7 +12,7 @@ while (1):
     if l=="": break
     l=l.split()
 #    print i,l
-    
+
     a[nbv]=[eval(l[0])*1.,eval(l[1])*1.]
     nbv+=1
     pass
@@ -39,7 +39,7 @@ def test_b(h0,h1,h2,f0,f1,f2,e0,e2,x):
     if test!=0:
         return []
     return [sol,A,b,e0,e2]
-# f2-f1 = A h1^b *((h2/h1)^b -1) 
+# f2-f1 = A h1^b *((h2/h1)^b -1)
 # f0 ...
 
 # (f2-f1)/(f0-f1)=((h2/h1)^b -1)/ ((h0/h1)^b -1)
@@ -50,7 +50,7 @@ def test_b(h0,h1,h2,f0,f1,f2,e0,e2,x):
 
 
 
-print sqrt(h2/h0)
+print(sqrt(h2/h0))
 
 
 '''
@@ -70,7 +70,7 @@ f1-f2=A*h1^b*(1-e2*x)
 
 (f1-f0)/(f1-f2)=(1-e0/x)/(1-e2*x)
 
--> 2 solutions au + pour x .... 
+-> 2 solutions au + pour x ....
 
 on regarde combin de solution x>0
 
@@ -93,7 +93,7 @@ for e0 in [-1,1]:
                 b=(-f0+f2+i*det)/(2*f1*e2+(-(2*e2))*f0)
                 sol=test_b(h0,h1,h2,f0,f1,f2,e0,e2,b)
                 if len(sol):
-                    print '#',sol[0],'+(',sol[1],')*x**(',sol[2],')', " E0 ",e0," E2", e2
+                    print('#',sol[0],'+(',sol[1],')*x**(',sol[2],')', " E0 ",e0," E2", e2)
                 pass
             pass
         pass
@@ -101,7 +101,7 @@ for e0 in [-1,1]:
 pass
 
 
-'''    
+'''
 )/(2*f1*e2+(-(2*e2))*f0),(-f0+f2-sqrt(4*f1^2*e0*e2+(-(4*f1))*e0*e2*f0+(-(4*f1))*e0*e2*f2+4*e0*e2*f0*f2+f0^2+(-(2*f0))*f2+f2^2))/(2*f1*e2+(-(2*e2))*f0)
 sol:(-f0+f2+sqrt(4*f1^2*e0*e2+(-(4*f1))*e0*e2*f0+(-(4*f1))*e0*e2*f2+4*e0*e2*f0*f2+f0^2+(-(2*f0))*f2+f2^2))/(2*f1*e2+(-(2*e2))*f0)
 
@@ -111,24 +111,23 @@ sol:(-f0+f2+sqrt(4*f1^2*e0*e2+(-(4*f1))*e0*e2*f0+(-(4*f1))*e0*e2*f2+4*e0*e2*f0*f
 '''
 #print 'oiii',(f2-f1)/(f0-f1),
 b=log(fabs(-(f2-f1)/(f0-f1)))/log(sqrt(h2/h0))
-print b
-print (f2+f0), (h2**b+h0**b)
+print(b)
+print((f2+f0), (h2**b+h0**b))
 if ((f2-f1)*(f1-f0))>0:
     A=(f2-f0)/(h2**b-h0**b)
     sol=f1-A*h1**b
 else:
     A=(f2-f1)/(h2**b+h1**b)
     sol=f1-A*h1**b
-    print "iiiii",f1,A*h1**b,sol
-print "A",A
+    print("iiiii",f1,A*h1**b,sol)
+print("A",A)
 
 #print f2-f1, A*h2**b-A*h1**b
 #print f0-f1, A*h0**b-A*h1**b
 
 
-print "#sol",sol,"+",A ,"*x**(",b ,")"
+print("#sol",sol,"+",A ,"*x**(",b ,")")
 if 1:
     for j in range(nbv):
-	inter=sol+A*(a[j][0])**b
-        print a[j][0],a[j][1],inter,a[j][1]-inter,1-inter/a[j][1]
-    
+        inter=sol+A*(a[j][0])**b
+        print(a[j][0],a[j][1],inter,a[j][1]-inter,1-inter/a[j][1])

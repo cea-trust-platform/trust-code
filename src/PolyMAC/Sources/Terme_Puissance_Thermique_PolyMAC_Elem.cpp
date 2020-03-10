@@ -53,5 +53,5 @@ void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb
 {
   preparer_source(pb);
   Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_champs(rho_ref.valeur(),Cp.valeur(),la_puissance);
+  eval_puis.associer_champs(la_puissance);
 }

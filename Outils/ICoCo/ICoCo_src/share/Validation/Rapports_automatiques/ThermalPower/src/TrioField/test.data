@@ -54,6 +54,7 @@ Read sch
     dt_sauv 1.e+6
     seuil_statio 1.e-12
     diffusion_implicite 1
+    precision_impr 3
 }
 
 Solide medium

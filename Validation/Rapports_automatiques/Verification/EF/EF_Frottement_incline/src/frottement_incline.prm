@@ -12,8 +12,8 @@ Chapter {
 
 
 	visu {
-                Title "Erreurs des champs de pression et de vitesse calculés"
-                description "L'erreur des champs de pression et de vitesse calculés par GENEPI par rapport à la solution analytique est tracée."
+                Title "Erreurs des champs de pression et de vitesse calculÃ©s"
+                description "L'erreur des champs de pression et de vitesse calculÃ©s par GENEPI par rapport Ã  la solution analytique est tracÃ©e."
 		instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","((sqrt(3.)/4.)*coord(dom)[0]-7./4.*coord(dom)[1])") 
 		instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","(PRESSION_PA_ELEM_dom-P_ANALYTIQUE_ELEM_dom)") 
 		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{(0.),(1.)}") 

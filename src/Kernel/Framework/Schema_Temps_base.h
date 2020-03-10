@@ -188,6 +188,16 @@ public :
   {
     return precision_impr_;
   };
+  inline int wcol() const
+  {
+    // largeur minimale des colonnes des fichiers .out
+    // precision_impr_ + 8 car : -1.000e+01 on ajoute la longueur de "-1." et de "e+01" plus un espace
+    return precision_impr_ + 8;
+  };
+  inline int gnuplot_header() const
+  {
+    return gnuplot_header_;
+  };
   inline double seuil_statio() const ;
   inline int nb_pas_dt_max() const ;
   inline int nb_pas_dt() const ;
@@ -376,6 +386,7 @@ protected :
   double residu_;        // Residu
   double residu_old_slope_;
   double cumul_slope_;
+  int gnuplot_header_;
 
   int ind_tps_final_atteint;
   int ind_nb_pas_dt_max_atteint;
@@ -389,6 +400,7 @@ protected :
   int no_error_if_not_converged_diff_impl_;
   int schema_impr_;                  // 1 si le schema a le droit d'imprimer dans le .out et dt_ev
   int file_allocation_;                // 1 = allocation espace disque (par defaut), 0 sinon
+  int max_length_cl_;
 private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)

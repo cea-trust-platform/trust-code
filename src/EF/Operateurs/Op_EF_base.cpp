@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -307,30 +307,6 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
   DoubleTab& flux_bords_=op.flux_bords();
   int nb_compo=flux_bords_.dimension(1);
   const Probleme_base& pb=op.equation().probleme();
-  // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
-  if (op.equation().inconnue().le_nom()=="temperature"
-      && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite" ) )
-    {
-      const Champ_Don& rho = (op.equation()).milieu().masse_volumique();
-      const Champ_Don& Cp = (op.equation()).milieu().capacite_calorifique();
-      const IntTab& face_voisins=la_zone_EF.face_voisins();
-      int rho_uniforme=(sub_type(Champ_Uniforme,rho.valeur()) ? 1:0);
-      int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
-      double Cp_=0,rho_=0;
-      const int& nb_faces_bords=la_zone_EF.nb_faces_bord();
-      for (int face=0; face<nb_faces_bords; face++)
-        {
-          int num_elem=face_voisins(face,0);
-          if (num_elem == -1) num_elem = face_voisins(face,1);
-          if (cp_uniforme) Cp_=Cp(0,0);
-          else if (Cp.nb_comp()==1) Cp_=Cp(num_elem);
-          else Cp_=Cp(num_elem,0);
-          if (rho_uniforme) rho_=rho(0,0);
-          else if (rho.nb_comp()==1) rho_=rho(num_elem);
-          else rho_=rho(num_elem,0);
-          flux_bords_(face,0) *= (rho_*Cp_);
-        }
-    }
 
   // On multiplie par rho si Navier Stokes incompressible
   Nom nom_eqn=op.equation().que_suis_je();
@@ -377,7 +353,6 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 
   const int impr_sum=(la_zone_EF.zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(la_zone_EF.zone().Bords_a_imprimer().est_vide() ? 0:1);
-  Nom espace=" \t";
   int flag=0;
   if (Process::je_suis_maitre()) flag=1;
   SFichier Flux;
@@ -394,9 +369,9 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   double temps=sch.temps_courant();
   if(Process::je_suis_maitre())
     {
-      Flux << temps;
-      if (impr_mom) Flux_moment << temps;
-      if (impr_sum) Flux_sum << temps;
+      Flux.add_col(temps);
+      if (impr_mom) Flux_moment.add_col(temps);
+      if (impr_sum) Flux_sum.add_col(temps);
     }
 
   // Calcul des moments
@@ -455,14 +430,11 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
       // Ecriture dans les fichiers
       if (Process::je_suis_maitre())
         {
-          Flux << espace;
-          if (impr_mom) Flux_moment << espace;
-          if (impr_sum) Flux_sum << espace;
           for(int k=0; k<nb_compo; k++)
             {
-              Flux << espace << flux_bord(k);
-              if (impr_mom) Flux_moment<< espace << moment(k);
-              if (la_zone_EF.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum<< espace << flux_bord(k);
+              Flux.add_col(flux_bord(k));
+              if (impr_mom) Flux_moment.add_col(moment(k));
+              if (la_zone_EF.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bord(k);
@@ -473,11 +445,8 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   // On imprime les bilans et on va a la ligne
   if(Process::je_suis_maitre())
     {
-      Flux << espace;
-      if (impr_mom) Flux_moment << espace;
-      if (impr_sum) Flux_sum << espace;
       for(int k=0; k<nb_compo; k++)
-        Flux << espace << bilan(k);
+        Flux.add_col(bilan(k));
 
       Flux << finl;
       if (impr_mom) Flux_moment << finl;

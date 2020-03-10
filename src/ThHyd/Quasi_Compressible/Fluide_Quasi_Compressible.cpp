@@ -33,6 +33,7 @@
 #include <Param.h>
 #include <Champ_Fonc_Fonction.h>
 #include <Neumann_sortie_libre.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Incompressible);
 
@@ -432,8 +433,6 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   dis.discretiser_champ("vitesse", zone_dis,"rho_comme_v","kg/m3",1,temps,rho_comme_v);
   champs_compris_.ajoute_champ(rho_comme_v);
 
-  dis.discretiser_champ("temperature", zone_dis,"rho_cp","",1,temps,rho_cp);
-  champs_compris_.ajoute_champ(rho_cp);
   // mu_sur_Schmidt
   dis.discretiser_champ("champ_elem",zone_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
   champs_compris_.ajoute_champ(mu_sur_Sc);
@@ -596,6 +595,7 @@ void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
   // lambda.mettre_a_jour(temps);  // Useless cause updated in calculer_coeff_T
   lambda->changer_temps(temps);
   Cp.mettre_a_jour(temps);
+  update_rho_cp(temps);
 
   calculer_pression_tot();
   pression_tot_.mettre_a_jour(temps);
@@ -608,6 +608,25 @@ void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
       SFichier fic (output_file_,ios::app);
       fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;
     }
+}
+
+void Fluide_Quasi_Compressible::update_rho_cp(double temps)
+{
+  rho_cp_comme_T_.changer_temps(temps);
+  rho_cp_comme_T_.valeur().changer_temps(temps);
+  DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
+  if (sub_type(Champ_Uniforme,rho.valeur()))
+    rho_cp = rho.valeurs()(0, 0);
+  else
+    {
+      // AB: rho_cp = rho.valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
+      rho_cp = 1.;
+      tab_multiply_any_shape(rho_cp, rho.valeurs());
+    }
+  if (sub_type(Champ_Uniforme, Cp.valeur()))
+    rho_cp *= Cp.valeurs()(0, 0);
+  else
+    tab_multiply_any_shape(rho_cp,Cp.valeurs());
 }
 
 // Description:
@@ -631,6 +650,7 @@ int Fluide_Quasi_Compressible::initialiser(const double& temps)
   mu.initialiser(temps);
   lambda.initialiser(temps);
   Cp.initialiser(temps);
+  update_rho_cp(temps);
 
   // Initialisation des proprietes radiatives du fluide incompressible
   // (Pour un fluide incompressible semi transparent).
@@ -700,12 +720,21 @@ void Fluide_Quasi_Compressible::preparer_calcul()
 // Postcondition:
 void Fluide_Quasi_Compressible::calculer_pression_tot()
 {
-  // Cerr<<"Fluide_Quasi_Compressible::calculer_pression_tot  -->Pth="<<Pth_<<finl;
-  const DoubleTab& tab_PHyd = pression_->valeurs();
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
-  int i, n = tab_Ptot.dimension_tot(0);
+  int n = tab_Ptot.dimension_tot(0);
+  DoubleTab tab_PHyd(n);
+  if( n != pression_->valeurs().dimension_tot(0) )
+    {
+      // Interpolation de pression_ aux elements (ex: P1P0)
+      const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
+      const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
+      const DoubleTab& centres_de_gravites=zone.xp();
+      pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
+    }
+  else
+    tab_PHyd = pression_->valeurs();
 
-  for (i=0 ; i<n ; i++)
+  for (int i=0 ; i<n ; i++)
     {
       tab_Ptot(i) = tab_PHyd(i) + Pth_;
     }

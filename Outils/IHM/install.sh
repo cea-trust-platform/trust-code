@@ -6,16 +6,28 @@ mkdir -p $DEST
 
 cd  $DEST
 
-[ ! -d CURVEPLOT ] && tar zxf $TRUST_ROOT/externalpackages/CURVEPLOT.tgz
+# Unarchive
+[ ! -d CURVEPLOT ] && tar zxf $TRUST_ROOT/externalpackages/SALOME/CurvePlot-9.4.0.tar.gz
+mv CurvePlot CURVEPLOT
+[ ! -d CONFIGURATION ] && tar zxf $TRUST_ROOT/externalpackages/SALOME/configuration-9.4.0.tar.gz
+mv configuration-9.4.0 CONFIGURATION
+
+# Patching
 file=CURVEPLOT/src/python/controller/utils.py.in
 echo patching $file 
- [ ! -f  $file.sa ] && cp $file $file.sa
-sed "s/LOG_LEVEL = 0/LOG_LEVEL = 1/g" $file.sa > $file.2
-[ "`diff $file.2 $file`" != "" ] && cp $file.2 $file
+[ ! -f  $file.sa ] && cp $file $file.sa
+sed -i "s/LOG_LEVEL = 0/LOG_LEVEL = 1/g" $file
 diff $file $file.sa
 
+file=CONFIGURATION/cmake/FindSalomePyQt5.cmake
+echo patching $file 
+[ ! -f  $file.sa ] && cp $file $file.sa
+sed -i "s/FIND_PACKAGE(SalomeSIP REQUIRED)//" $file
+diff $file $file.sa
+
+# Building and installing
 STANDALONE=ON
-export  CONFIGURATION_ROOT_DIR=$PWD/configuration
+export  CONFIGURATION_ROOT_DIR=$PWD/CONFIGURATION
 if [ "$KERNEL_ROOT_DIR" != "" ]
 then
 echo "verification of modules"
@@ -25,11 +37,13 @@ echo "verification of modules"
 fi
 export MED_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT
 export MEDCOUPLING_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT
+export QT5_ROOT_DIR=$PYTHONLIBS_ROOT_DIR
 export MAKELEVEL=0
 
 
 ICI=`pwd`
-for rep in CURVEPLOT TRUST_PLOT2D TRUST_WIZARD
+#for rep in CURVEPLOT TRUST_PLOT2D TRUST_WIZARD
+for rep in CURVEPLOT TRUST_PLOT2D
 do
   ORG=$DIR
   [ "$rep" = "CURVEPLOT" ] && ORG=$ICI

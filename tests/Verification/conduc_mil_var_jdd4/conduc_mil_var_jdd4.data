@@ -1,8 +1,8 @@
-# Conduction_milieu_variable 1D : une barre horizontale faite de deux materiaux  #
+# Conduction 1D : une barre horizontale faite de deux materiaux  #
 # PARALLEL NOT #
 dimension 2
 
-Pb_conduction_milieu_variable pb
+Pb_conduction pb
 Domaine dom
 
 # BEGIN MESH #
@@ -67,7 +67,7 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction_milieu_variable
+	Conduction
 	{
 		diffusion { }
 		initial_conditions {

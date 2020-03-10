@@ -1,6 +1,0 @@
-#!/bin/bash
-[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
-fic=${1%\"};fic=${fic#\"}
-fic2=`extrait_nom doc/html/$fic`
-. $TRUST_ROOT/bin/CGI/entete
-cat $fic2 | sed "s? href=\"? href=\"index.cg\??g" | sed "s? src=\"? src=\"index.cg\??g"

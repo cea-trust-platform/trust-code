@@ -1,5 +1,0 @@
-#!/bin/bash
-# Renvoi le nom de l'etude
-echo $ECHO_OPTS $pcs_webbrowser
-
-echo $ECHO_OPTS $ETUDE_TRUST

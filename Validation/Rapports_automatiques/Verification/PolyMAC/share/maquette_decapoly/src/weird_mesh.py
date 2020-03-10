@@ -1,5 +1,5 @@
-from __future__ import division
-import MEDLoader as ml
+
+import medcoupling as ml
 from math import pi, cos, sin
 
 
@@ -32,11 +32,11 @@ def getWeirdMesh(xmin, xmax, ymin, ymax, lx, ly, str, func=None, extr=-1, unpo=F
     mesh.allocateCells(len(polys))
     off = 0
     for p in polys:
-        mesh.insertNextCell(ml.NORM_POLYGON, len(p), [off + i for i in xrange(len(p))])
+        mesh.insertNextCell(ml.NORM_POLYGON, len(p), [off + i for i in range(len(p))])
         off += len(p)
     mesh.finishInsertingCells()
 
-    pts = [p for i in xrange(len(polys)) for p in polys[i]]
+    pts = [p for i in range(len(polys)) for p in polys[i]]
     co = ml.DataArrayDouble(pts, len(pts), 2)
     mesh.setCoords(co)
 
@@ -70,8 +70,8 @@ def getWeirdMesh(xmin, xmax, ymin, ymax, lx, ly, str, func=None, extr=-1, unpo=F
     noms_cl = [["left", "right"]]
     if extr > 0: noms_cl.append(["front", "back"])
     noms_cl.append(["down", "up"])
-    for i in xrange(2 + (extr > 0)):  # frontieres en x puis y (puis en z si extr)
-        for j in xrange(2):  # min puis max
+    for i in range(2 + (extr > 0)):  # frontieres en x puis y (puis en z si extr)
+        for j in range(2):  # min puis max
             g = []
             for idx, b in enumerate(bf):
                 if abs(b[i] - [[xmin, xmax], [ymin, ymax], [0., 1.]][i][j]) < 1e-5:
@@ -88,23 +88,23 @@ if __name__ == "__main__":
     n = 4
 
     # maillage non conforme
-    getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), "o7/43ox5*2").write("mesh1.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, list(range(n + 1)), list(range(n + 1)), "o7/43ox5*2").write("mesh1.med", 2)
     # maillage strech en x
-    getWeirdMesh(xmin, xmax, ymin, ymax, [i ** 3 for i in range(n + 1)], range(n + 1), "o").write("mesh2.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, [i ** 3 for i in range(n + 1)], list(range(n + 1)), "o").write("mesh2.med", 2)
     # maillage random
     import random
     paterns = "o123456789+x*|/\\"
     f = lambda x, y: random.randint(0, len(paterns))
-    getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), paterns, f).write("mesh3.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, list(range(n + 1)), list(range(n + 1)), paterns, f).write("mesh3.med", 2)
     # maillage raffine en fonction d'un champ spatial
     paterns = "o123456789"
     f = lambda x, y: 9 * (x ** 2 + y ** 2)
-    getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), paterns, f).write("mesh4.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, list(range(n + 1)), list(range(n + 1)), paterns, f).write("mesh4.med", 2)
     # maillage 3D
-    getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), "o7/43ox5*2", extr=4).write("mesh5.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, list(range(n + 1)), list(range(n + 1)), "o7/43ox5*2", extr=4).write("mesh5.med", 2)
     # maillage raffinement local type fvca
     f = lambda x, y: 2 * (int(x > 0.5 and y < 0.5) + int(x > 0.75 and y < 0.25))
-    getWeirdMesh(xmin, xmax, ymin, ymax, range(n + 1), range(n + 1), paterns, f).write("mesh6.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, list(range(n + 1)), list(range(n + 1)), paterns, f).write("mesh6.med", 2)
     # maillage checkerboard
     m = n - (n % 2) + 1
-    getWeirdMesh(xmin, xmax, ymin, ymax, range(m + 1), range(m + 1), "o+").write("mesh7.med", 2)
+    getWeirdMesh(xmin, xmax, ymin, ymax, list(range(m + 1)), list(range(m + 1)), "o+").write("mesh7.med", 2)

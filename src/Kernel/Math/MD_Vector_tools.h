@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef MD_Vector_tools_included
 #define MD_Vector_tools_included
+#include <map>
+#include <array>
 #include <ArrOfBit.h>
 #include <IntVect.h>
 class MD_Vector;
@@ -29,6 +31,9 @@ class ArrOfBit;
 class Zone_VF;
 class DoubleTab;
 class MD_Vector_renumber;
+
+//format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()
+typedef std::map<std::array<int, 2>, int> extra_item_t;
 
 class MD_Vector_tools
 {
@@ -55,6 +60,8 @@ public:
 
   static void dump_vector_with_md(const DoubleVect&, Sortie&);
   static void restore_vector_with_md(DoubleVect&, Entree&);
+  //etend les espaces distants de src pour contenir items et renseigne leurs nouveaux numeros dedans
+  static MD_Vector extend(const MD_Vector& src, extra_item_t& items);
 };
 
 class MD_Vector_renumber

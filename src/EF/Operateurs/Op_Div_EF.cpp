@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,14 +120,14 @@ DoubleTab& Op_Div_EF::calculer(const DoubleTab& vit, DoubleTab& div) const
 int Op_Div_EF::impr(Sortie& os) const
 {
 
-  Nom espace=" \t";
   const int impr_bord=(la_zone_EF->zone().Bords_a_imprimer().est_vide() ? 0:1);
   SFichier Flux_div;
   ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
   ouvrir_fichier_partage(Flux_face,"",impr_bord);
-  double temps=equation().probleme().schema_temps().temps_courant();
-  if (je_suis_maitre()) Flux_div<< temps;
+  const Schema_Temps_base& sch = equation().probleme().schema_temps();
+  double temps = sch.temps_courant();
+  if (je_suis_maitre()) Flux_div.add_col(temps);
 
   int nb_compo=flux_bords_.dimension(1);
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
@@ -152,7 +152,7 @@ int Op_Div_EF::impr(Sortie& os) const
           for(int k=0; k<nb_compo; k++)
             {
               //Ajout pour impression sur fichiers separes
-              Flux_div<< espace << flux_bord(k);
+              Flux_div.add_col(flux_bord(k));
               bilan(k)+=flux_bord(k);
             }
         }
@@ -162,7 +162,7 @@ int Op_Div_EF::impr(Sortie& os) const
     {
       for(int k=0; k<nb_compo; k++)
         {
-          Flux_div<< espace << bilan(k) ;
+          Flux_div.add_col(bilan(k));
         }
       Flux_div << finl;
     }

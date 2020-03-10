@@ -93,7 +93,6 @@ do
 <TD>Petsc</TD>
 <TD>Med</TD>
 <TD>MedC</TD>
-<TD>MedP</TD>
 <TD>lata2</TD>
 <TD>plot2</TD>
 <TD>ICoCo</TD>
@@ -338,7 +337,6 @@ do
 	[ "`grep BALTIK=NOT $CR`" != "" ] && BALTIK="<TD $BLANC>NOT</TD>"
 	# Si certains elements sont disabled au configure:
 	NOT="<TD $BLANC>NOT</TD>"
-	MEDCOUPLPYT=$NOT && [ "`grep MED_COUPLING_PYTHON=ON $CR`" != "" ] && MEDCOUPLPYT="<TD $VERT>ON</TD>" && [ "`grep MED_COUPLING_PYTHON=OFF $CR`" != "" ] && MEDCOUPLPYT="<TD $ROUGE>OFF</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
@@ -400,7 +398,6 @@ $TOOLS
 $PETSC
 $MED
 $MEDCOUPL
-$MEDCOUPLPYT
 $LATA2DX
 $PLOT2D
 $ICOCO

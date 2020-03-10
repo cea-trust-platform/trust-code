@@ -37,10 +37,14 @@ class Champ_Don;
 // .DESCRIPTION
 //    Classe Conduction
 //    Cette classe represente l'equation d'evolution
-//    de la temperature dans un solide de conductivite k
-//       - dT/dt -div (k grad T) = f
+//    de la temperature dans un solide de conductivite k et de masse volumique rho et chaleur specifique Cp
+//        (rho.Cp) . dT/dt - div (k grad T) = (rho.Cp) . f
+//    Les termes rho et Cp peuvent etre non uniformes car cette classe
+//    ne fait pas le raccourci de calculer la diffusivite k/(rho*Cp).
+//
 // .SECTION voir aussi
 //     Equation_base
+//     Conduction
 //////////////////////////////////////////////////////////////////////////////
 class Conduction : public Equation_base
 {

@@ -17,7 +17,7 @@ else(WINDOWS)
   set(PYTHON_EXE python)
 endif(WINDOWS)
 
-set(CMD "import xdata ; print xdata.getInstallationDirectory()")
+set(CMD "import xdata ; print (xdata.getInstallationDirectory())")
 execute_process(
   COMMAND ${PYTHON_EXE} -c "${CMD}"
   OUTPUT_VARIABLE XDATA_INSTALLATION_DIR

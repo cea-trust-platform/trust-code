@@ -2,15 +2,15 @@ import mygeompy
 geom=mygeompy
 def create_defaut(name,calcul,list_grp_def,type="FACE"):
     if type=="FACE":
-      all_faces_id=geom.GetFreeFacesIDs(calcul)
-      # print all_faces_id
-      
-      all_faces= [ geom.GetSubShape(calcul,[ x ] ) for x in all_faces_id ]
-      # print all_faces
-      
+        all_faces_id=geom.GetFreeFacesIDs(calcul)
+        # print all_faces_id
+
+        all_faces= [ geom.GetSubShape(calcul,[ x ] ) for x in all_faces_id ]
+        # print all_faces
+
     else:
-      all_faces=geom.SubShapeAll(calcul, geom.ShapeType[type])
-      pass
+        all_faces=geom.SubShapeAll(calcul, geom.ShapeType[type])
+        pass
     defaut=create_group_from(name,calcul,all_faces,type)
     for grp in list_grp_def:
         for id in grp.GetSubShapeIndices():
@@ -57,7 +57,7 @@ def create_bord_near(name,calcul,pos,list_grp_def,type="FACE"):
             face=geom.GetEdgeNearPoint(calcul,geom.MakePointStruct(vec[0],vec[1],vec[2]))
             pass
         list_face.append(face)
-        print face
+        print(face)
         pass
     new=create_group_from(name,calcul,list_face,type)
     list_grp_def.append(new)

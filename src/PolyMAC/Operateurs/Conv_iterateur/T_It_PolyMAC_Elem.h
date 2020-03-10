@@ -1088,8 +1088,8 @@ template <class _TYPE_>  int T_It_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) const
   const Zone& mazone=la_zone->zone();
   const Zone_PolyMAC& zpoly=ref_cast(Zone_PolyMAC,op_base->equation().zone_dis().valeur());
   const int impr_bord=(mazone.Bords_a_imprimer().est_vide() ? 0:1);
-  double temps=la_zcl->equation().probleme().schema_temps().temps_courant();
-  Nom espace=" \t";
+  const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
+  double temps = sch.temps_courant();
   const DoubleTab& inco = la_zcl->equation().inconnue().valeurs();
   DoubleTab& flux_bords=op_base->flux_bords();
   int ncomp=1;
@@ -1129,7 +1129,7 @@ template <class _TYPE_>  int T_It_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) const
     {
       SFichier Flux;
       op_base->ouvrir_fichier(Flux,"",1);
-      Flux<< temps;
+      Flux.add_col(temps);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
@@ -1138,13 +1138,16 @@ template <class _TYPE_>  int T_It_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) const
             {
               bilan(k)+=flux_bords2(0,num_cl,k);
               if(periodicite)
-                Flux<< espace << flux_bords2(1,num_cl,k) << espace << flux_bords2(2,num_cl,k);
+                {
+                  Flux.add_col(flux_bords2(1,num_cl,k));
+                  Flux.add_col(flux_bords2(2,num_cl,k));
+                }
               else
-                Flux<< espace << flux_bords2(0,num_cl,k);
+                Flux.add_col(flux_bords2(0,num_cl,k));
             }
         }
       for(k=0; k<flux_bords.dimension(1); k++)
-        Flux<< espace << bilan(k);
+        Flux.add_col(bilan(k));
       Flux << finl;
     }
   const LIST(Nom)& Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();

@@ -719,8 +719,8 @@ bool geometry_reactor::build_exterior_normal_surface()
       const int second_vertex = vertex_per_face(face,1);
       const int third_vertex = vertex_per_face(face,2);
       
-      //Evaluation of the cross-product between to edge of ¨face¨ :
-      //we thus have a vector that is orhtogonal to ¨face¨ 
+      //Evaluation of the cross-product between to edge of face :
+      //we thus have a vector that is orhtogonal to face
       const double x1 = positions(first_vertex,0)-positions(second_vertex,0);  
       const double y1 = positions(first_vertex,1)-positions(second_vertex,1);  
       const double z1 = positions(first_vertex,2)-positions(second_vertex,2);  
@@ -734,9 +734,9 @@ bool geometry_reactor::build_exterior_normal_surface()
       const double nz = exterior_normal_surface_(face_loc,2)=(x1*y2-x2*y1)/coeff;
       
       //Evaluation of the dot-product between the previous calculated vector
-      //and the vector built with one vertex of ¨face¨ and the opposite vertex of ¨face¨
+      //and the vector built with one vertex of face and the opposite vertex of face
       //We use the sign of the dot-product to choose appropriate orientation of 
-      //¨exterior_normal_surfaces_¨
+      //exterior_normal_surfaces_
       const double x_opposite = positions(opposite_vertex,0)-positions(first_vertex,0);
       const double y_opposite = positions(opposite_vertex,1)-positions(first_vertex,1);
       const double z_opposite = positions(opposite_vertex,2)-positions(first_vertex,2);

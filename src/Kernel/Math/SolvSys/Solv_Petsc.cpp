@@ -374,10 +374,10 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(20);
+      Motcles les_parametres_solveur(22);
       {
         les_parametres_solveur[0] = "impr";
-        les_parametres_solveur[1] = "seuil";
+        les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
         les_parametres_solveur[2] = "precond";
         les_parametres_solveur[3] = "precond_nul"; // To accept the TRUST syntax
         les_parametres_solveur[4] = "nb_it_max";
@@ -396,6 +396,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[17] = "restart";
         les_parametres_solveur[18] = "cli_verbose";
         les_parametres_solveur[19] = "dropping_parameter";
+        les_parametres_solveur[20] = "rtol"; // Seuil relatif
+        les_parametres_solveur[21] = "atol"; // Seuil absolu <=> seuil
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -435,6 +437,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 break;
               }
             case 1:
+            case 21:
               {
                 if (solveur_direct_)
                   {
@@ -710,6 +713,18 @@ void Solv_Petsc::create_solver(Entree& entree)
                 add_option("mat_mumps_cntl_7",dropping_parameter);    // Dropping parameter
                 break;
               }
+            case 20:
+              {
+                if (solveur_direct_)
+                  {
+                    Cerr << "Definition of " << les_parametres_solveur(les_parametres_solveur.search(motlu)) << " is useless for a direct method." << finl;
+                    Cerr << "Suppress the keyword." << finl;
+                    exit();
+                  }
+                is >> seuil_relatif_;
+                convergence_with_seuil=1;
+                break;
+              }
             default:
               {
                 Cerr << motlu << " : unrecognized option from those available in the Petsc solver:" << finl;
@@ -884,6 +899,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                 // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
                 // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
                 add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
+                // Voir https://mooseframework.inl.gov/application_development/hypre.html
+                if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -962,7 +979,8 @@ void Solv_Petsc::create_solver(Entree& entree)
           add_option("ksp_check_norm_iteration",(Nom)(nb_it_max_-1));
           nb_it_max_ = NB_IT_MAX_DEFINED;
         }
-      KSPSetTolerances(SolveurPetsc_, 0., seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
+      // Convergence si residu(it) < MAX (seuil_relatif_ * residu(0), seuil_);
+      KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
     }
   // Change le calcul du test de convergence relative (||Ax-b||/||Ax(0)-b|| au lieu de ||Ax-b||/||b||)
   // Peu utilisee dans TRUST car on utilise la convergence sur la norme absolue
@@ -1556,6 +1574,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
     }
   int cpt=0;
   int size=items_to_keep_.size_array();
+  renum_ = INT_MAX; //pour crasher si le MD_Vector est incoherent
   ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
   for(int i=0; i<size; i++)
     {
@@ -1585,6 +1604,11 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
 
   // Dans le cas de CUDA, seul le format AIJ est supporte pour le moment:
   if (cuda_==1) mataij_=1;
+
+#ifdef PETSC_HAVE_OPENMP
+  // Dans le cas d'OpenMP, seul le format aij est multithreade:
+  mataij_=1;
+#endif
 
   // Dans le cas de save_matrix_ en parallele
   // Sinon, cela bloque avec sbaij:

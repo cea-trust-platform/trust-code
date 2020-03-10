@@ -21,6 +21,7 @@ help()
    echo "-remote login@machine:PATH     : Copy the src directory on a remote machine (generally a cluster) under PATH directory and run there the build."
    echo "-rsync login@machine:PATH      : Rsync only the needed files from the remote build directory in order to build locally the PDF report."
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
+   echo "-compare_pdf pdf_path          : Compare the produced rapport.pdf with a pdf file."
    echo "-compare path_build            : Build one PDF report which compares results from the default build directory and several ones specified by one or more -compare option."
    echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other." 
    echo "-save                          : If the build is processed remotely on a cluster, save the previous build in a different directory."
@@ -121,6 +122,12 @@ do
       shift
       binary=$1
       shift
+   elif [ "$1" = -compare_pdf ]
+   then
+      shift
+      compare_pdf=$1
+      [ ! -f $compare_pdf ] && echo "PDF file `pwd`/$compare_pdf not found!" && exit -1
+      shift
    elif [ "$1" = -compare ]
    then
       shift
@@ -217,11 +224,19 @@ else
    # Changement eventuel du binaire
    [ "$binary" != "" ] && binary="export exec=$binary;"
    # Lancement de la fichier sur la machine distante
-   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export USE_MPIRUN=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
+   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export prod=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
    scp $adr:$rep/build/rapport.pdf .
    pdf=`pwd`/rapport.pdf
    echo "PDF report $adr:$rep/build/rapport.pdf copied here: $pdf"
    echo "Run_fiche complete log is in this file: `pwd`/Run.log"
+fi
+# Comparaison eventuelle du PDF avec un autre PDF
+if [ "$compare_pdf" != "" ] && [ -f $pdf ]
+then
+   source $TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/scripts_validation.sh 1>/dev/null 2>&1
+   echo "======================================="
+   echo compare_pdf $pdf $compare_pdf ...
+   compare_pdf $pdf $compare_pdf
 fi
 # Affichage eventuel du PDF
 if [ "$xpdf" = "-xpdf" ]

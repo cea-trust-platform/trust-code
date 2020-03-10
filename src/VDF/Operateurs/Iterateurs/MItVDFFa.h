@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1029,9 +1029,9 @@
        SFichier Flux;op_base->ouvrir_fichier(Flux,"",1);                        \
        SFichier Flux_moment;op_base->ouvrir_fichier(Flux_moment,"moment",impr_mom); \
        SFichier Flux_sum;op_base->ouvrir_fichier(Flux_sum,"sum",impr_sum);        \
-       sch.imprimer_temps_courant(Flux);                                        \
-       if (impr_mom) sch.imprimer_temps_courant(Flux_moment);                \
-       if (impr_sum) sch.imprimer_temps_courant(Flux_sum);                \
+       Flux.add_col(sch.temps_courant();                                        \
+       if (impr_mom) Flux_moment.add_col(sch.temps_courant();                \
+       if (impr_sum) Flux_sum.add_col(sch.temps_courant();                \
        for (int num_cl=0; num_cl<nb_front_Cl; num_cl++) {                          \
 	 const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);              \
 	 int periodicite = (type_cl(la_cl)==periodique?1:0);                          \

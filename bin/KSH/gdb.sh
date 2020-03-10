@@ -10,10 +10,12 @@ then
    # Pour prendre en compte l'atelier on ajoute aussi le repertoire du binaire
    directory=$directory" --directory `dirname $1`"
 fi
-
 if [ "$valgrind" = 1 ]
 then
-   valgrind --leak-check=full --track-origins=yes --show-reachable=yes --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions --num-callers=15 --db-attach=yes --db-command="/usr/bin/gdb $directory -nw %f %p" $*
+   valgrind --vgdb=yes --vgdb-error=0 --leak-check=full --track-origins=yes --show-reachable=yes --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions --num-callers=15 $* &
+   pid=$!
+   sleep 1
+   $Xterm -e /usr/bin/gdb $directory $* -ex "target remote | $TRUST_ROOT/exec/valgrind/lib/valgrind/../../bin/vgdb --pid=$pid" -ex "echo Please wait few seconds... It is slow to start.\n " -ex continue
 else
    # Surcharge de gdb pour pouvoir afficher des tableaux
    # Lancement de valgrind

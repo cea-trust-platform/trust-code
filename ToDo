@@ -2,7 +2,6 @@ Version	Qui				Tache
 
 
 1.8.1   trust@cea.fr            AGL: remettre dans lance test_nuit le tag de TrioCFD si sortie en même temps
-1.8.1   trust@cea.fr            AGL: suppression de trio-u.cea.fr -> mettre le nvo site dans lance_test_nuit, bin/admin/checkin_patch.ct, bin/admin/cree_index.html retiré pour 179
 1.8.1   trust@cea.fr            LDC: ouvrir une DI pour "Branches a intégrer dans TRUST pour prochaine version 181" (cf DI162165)
 1.8.1   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 174197)
 1.8.1   trust@cea.fr            LDC: ouvrir une DI pour installation réseau (cf di 174198)
@@ -24,7 +23,6 @@ Version	Qui				Tache
 
 
 1.8.x   trust@cea.fr            AGL: remettre dans lance test_nuit le tag de TrioCFD si sortie en même temps
-1.8.x   trust@cea.fr            AGL: suppression de trio-u.cea.fr -> mettre le nvo site dans lance_test_nuit, bin/admin/checkin_patch.ct, bin/admin/cree_index.html retiré pour 179
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a intégrer dans TRUST pour prochaine version 181" (cf DI162165)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 174197)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation réseau (cf di 174198)

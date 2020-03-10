@@ -119,7 +119,7 @@ def message(*args, **kwargs):
         pass
     #
     if ( not args ) and ( not kwargs ) :
-        print
+        print()
         return
     # Construction of the message ...
     msg  = "-> "
@@ -151,7 +151,7 @@ def message(*args, **kwargs):
         try:
             msg += str(arg)+" "
         except UnicodeEncodeError:
-            msg += unicode(arg)+ " "
+            msg += str(arg)+ " "
             pass
         pass
     # --
@@ -159,10 +159,10 @@ def message(*args, **kwargs):
     if clt or isClt():
         # It's really too long to write in color :(
         # system("tput setaf 1")
-        print "    clt " + msg
+        print("    clt " + msg)
         # system("tput setaf 0")
     else:
-        print msg
+        print(msg)
         pass
     #
     return
@@ -229,10 +229,10 @@ def getModule(name):
     return module
 
 def getClasses(module, base=None):
-    list = module.__dict__.values()
+    list = list(module.__dict__.values())
     from inspect import isclass
     test = isclass
-    list = filter(test, list)
+    list = list(filter(test, list))
     if base is not None:
         l = []
         for c in list:
@@ -268,20 +268,20 @@ def getRealClassFromString(string):
 # --
 
 def exception2message(e=None, long=None):
-    from __builtin__ import str
+    from builtins import str
     if e:
         cls = e.__class__
         val = str(e)
         msg = "%s: %s"%(cls.__name__, val)
         return msg
-    import sys, StringIO, traceback
+    import sys, io, traceback
     type, value, tb = sys.exc_info()
     if isinstance(type, str):
         value = type
         type = None
         pass
-    if not long: return str(value)
-    s = StringIO.StringIO()
+    if not int: return str(value)
+    s = io.StringIO()
     traceback.print_tb(tb, file=s)
     msg  = "Traceback (most recent call last):\n"
     msg += s.getvalue()
@@ -364,7 +364,7 @@ def Disassemble(co, lasti=-1):
             continue
         #
         aList = []
-        aList.append(`i`)
+        aList.append(repr(i))
         aList.append(dis.opname[op])
         i = i+1
         if op >= dis.HAVE_ARGUMENT:
@@ -401,7 +401,7 @@ def getDisassembledCode(code):
         return disco
     #
     code2disco[code_id] = disco
-    
+
     return getDisassembledCode(code)
 
 
@@ -421,13 +421,13 @@ def getCreationInformations(shift=0):
         code = frame.f_code
         code = getDisassembledCode(code)
         item = code.lasti2item[frame.f_lasti]
-        item = item.next
+        item = item.__next__
         # --
         next_operation, name = item.instruction, item.name
         # --
         if next_operation == 'LOAD_FAST':
             # -- shift to the next item
-            item = item.next
+            item = item.__next__
             next_operation, name = item.instruction, item.name
             pass
         # --

@@ -44,18 +44,8 @@ module () {
 }" >> $env
    #
    # Load modules
-   # intel/15.0.6.233  intel/16.0.3.210  intel/17.0.4.196  intel/17.0.6.256(default)  intel/18.0.1.163
    intel="intel/18.0.3.222"
-   #intel="intel/17.0.6.256"
-   # gnu/4.8.5  gnu/4.9.2  gnu/5.4.0  gnu/6.3.0  gnu/6.4.0  gnu/7.1.0  gnu/7.3.0(default)
-   #intel="gnu/7.3.0"
-   # openmpi mpi/openmpi/1.8.8 mpi/openmpi/2.0.2 mpi/openmpi/2.0.4(default) mpi/wi4mpi/3.1.5
-   #openmpi="mpi/openmpi/2.0.4"
-   # intelmpi mpi/intelmpi/2017.0.4.196 mpi/intelmpi/2017.0.6.256 mpi/intelmpi/2018.0.1.163(default)
    intelmpi="mpi/intelmpi/2018.0.3.222"
-   #openmpi="mpi/intelmpi/2018.0.1.163"
-   # wi4mpi mpi/wi4mpi/3.1.5 mpi/wi4mpi/3.2.0 mpi/wi4mpi/3.2.1(default)
-   #openmpi="mpi/wi4mpi/3.2.1"
    module="$intel $intelmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
@@ -120,8 +110,5 @@ define_soumission_batch()
    #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
-   #project="gch0202"
-   #project="den"
-   #Your account : 'user' is not attached to an existant project
-   #[ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   [ "$project" = "" ] && project=`PYTHONPATH=/usr/lib64/python2.7/site-packages ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }

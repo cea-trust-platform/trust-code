@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,10 @@ class Front_VF;
 class Zone_VDF;
 class Faces;
 #include <Ref_Champ_Inc.h>
-
+#include <IntTab.h>
+#include <vector>
+#include <map>
+#include <array>
 ////////////////////////////////////////////////////////////////
 
 //
@@ -73,15 +76,33 @@ public :
   {
     return autre_h;
   };
+  inline const IntTab& get_remote_elems() const
+  {
+    // renvoie e_pb1 -> e_pb2 pour e voisin d'une face de paroi contact
+    // avec nl, nc  le nombre de lignes et de colonnes de la matrice de couplage entre le pb1 et le pb2
+    return remote_elems_;
+  };
+  inline const Nom& nom_autre_pb() const
+  {
+    return nom_autre_pb_;
+  };
 
   virtual void changer_temps_futur(double temps,int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
-
+  //item(i) : indice du ieme item dont on a besoin pour la face i de la frontiere
+  //initialiement non rempli si l'item n'est pas accessible (parallelisme) : extra_items permet de le completer
+  mutable IntTab item;
+  //extra_item[ numero de proc, numero d'item ] = (indices (i, j) dans item ayant besoin de cet item)
+  //-> infos pour rendre les items manquants de remote_item accessibles
+  std::map<std::array<int, 2>, std::vector<int>> extra_items;
+  int monolithic; //1 si on resout la thermique en monolithique
 protected :
   double h_paroi;
   DoubleTab autre_h;
   Champ_front T_autre_pb_;
   DoubleTab T_wall_;
+  Nom nom_autre_pb_;
+  IntTab remote_elems_;
 };
 #endif
