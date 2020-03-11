@@ -512,8 +512,8 @@ class Write_tex:
             from os import popen
             a=os.popen('egrep "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
             chaine=a.read().split()
-            version=chaine[0]+" ("+chaine[1]+")"
-            ficTex.write_Tex('\item Version Trio\_U from out: %s' % chaine2Tex(version))
+            version=chaine[0]+" (built on TRUST v"+chaine[1]+")"
+            ficTex.write_Tex('\item Binary: %s' % chaine2Tex(version))
         except:
             pass
 
