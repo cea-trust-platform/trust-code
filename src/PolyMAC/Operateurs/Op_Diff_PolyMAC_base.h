@@ -62,7 +62,6 @@ public:
   void associer_diffusivite(const Champ_base& );
   void completer();
   const Champ_base& diffusivite() const;
-  const Champ_base& diffusivite_turbulente() const;
   void mettre_a_jour(double t)
   {
     Operateur_base::mettre_a_jour(t);
