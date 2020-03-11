@@ -527,7 +527,7 @@ class Write_tex:
 \documentclass[10pt,twoside,a4paper]{article}
 \\usepackage[ascii]{}
 \\usepackage{longtable}
-\\usepackage[latin1]{inputenc}
+\\usepackage[utf8]{inputenc}
 % \\usepackage[french]{babel}
 \\usepackage{amsmath,amssymb,amsfonts,textcomp}
 \\usepackage{color}
