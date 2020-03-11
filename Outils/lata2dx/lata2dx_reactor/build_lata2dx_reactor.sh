@@ -44,6 +44,7 @@ then
       cd $TRUST_ROOT/Outils/lata2dx/lata2dx_reactor
       mv build/lata2dx_reactor $TRUST_ROOT/exec/lata2dx_reactor
       rm -rf build test/build 
+      rm -rf $TRUST_ROOT/build/Outils/lata2dx
    else 
       echo "Test lata2dx_reactor KO!"
    fi

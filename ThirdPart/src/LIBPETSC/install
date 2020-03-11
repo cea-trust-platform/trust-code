@@ -637,4 +637,11 @@ fi
 cp $package/configure.log .
 [ "$liste_debug" = "0" ] && rm -r -f $package
 echo "Leaving install PETSc, it seems OK."
+
+# On supprime la doc et autres dossiers de petsc si trust a ete configure avec l'option -without-doc
+# Ceci permet de reduire le nombre de fichiers dans l'installation TRUST
+if [ $TRUST_WITHOUT_DOC -eq 1 ]
+then
+   (cd $PETSC_ROOT/$TRUST_ARCH"_opt" ; rm -rf docs share src)
+fi
 exit 0

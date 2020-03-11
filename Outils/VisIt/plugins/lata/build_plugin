@@ -74,10 +74,12 @@ fi
 cd ${Build}
 
 #######################
-   # Compilation du plugin
-   # ######################
-$TRUST_MAKE    
+# Compilation du plugin
+# ######################
+$TRUST_MAKE || exit -1
 echo
    # Inutile d'essayer rajouter dans le package les librairies car visit-install les efface a l'installation
 
 echo "$plugin plugin is up to date under VisIt."
+cd ../../../
+rm -rf plugins
