@@ -31,13 +31,12 @@ Partition dom
 	Larg_joint 2
 	zones_name dom
 	periodique 1 Perio
-	formatte
 }
 End
 END PARTITION #
 
 # BEGIN SCATTER
-ScatterFormatte dom.Zones dom
+Scatter dom.Zones dom
 END SCATTER #
 
 VDF dis

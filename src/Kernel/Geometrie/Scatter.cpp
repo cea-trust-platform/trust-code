@@ -46,14 +46,8 @@
 extern Stat_Counter_Id interprete_scatter_counter_;
 
 Implemente_instanciable_sans_constructeur(Scatter,"Scatter",Interprete);
-Implemente_instanciable_sans_constructeur(ScatterFormatte,"ScatterFormatte",Scatter);
-
 Scatter::Scatter()
 {}
-
-ScatterFormatte::ScatterFormatte()
-{}
-
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
@@ -92,30 +86,6 @@ Sortie& Scatter::printOn(Sortie& os) const
 Entree& Scatter::readOn(Entree& is)
 {
   return Interprete::readOn(is);
-}
-
-Sortie& ScatterFormatte::printOn(Sortie& os) const
-{
-  return Scatter::printOn(os);
-}
-
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& ScatterFormatte::readOn(Entree& is)
-{
-  return Scatter::readOn(is);
 }
 
 // Description :
