@@ -48,7 +48,7 @@ module () {
    # intelmpi="mpi/intelmpi/2019.0.5.281"
    # module="$intel $intelmpi"
    # car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
-   openmpi="mpi/openmpi/2.0.4"
+   openmpi="mpi/openmpi/4.0.2"
    module="$intel $openmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
