@@ -71,8 +71,10 @@ sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.
 echo "Patching findClosestTupleId() method"
 patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch
 
-echo "Patching HDF detection procedure"
-cp $org/FindSalomeHDF5.cmake $(find $src_dir/.. -name  FindSalomeHDF5.cmake )
+echo "Patching HDF detection procedure and exit if procedure has changed..."
+FindSalomeHDF5=$(find $src_dir/.. -name FindSalomeHDF5.cmake )
+sed -i "1,$ s?GET_PROPERTY(?#GET_PROPERTY(?" 			$FindSalomeHDF5 || exit -1 
+sed -i "1,$ s?MESSAGE(FATAL_ERROR?#MESSAGE(FATAL_ERROR ?" 	$FindSalomeHDF5 || exit -1 
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
@@ -81,16 +83,13 @@ USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
 # We use now python and SWIG from conda so:
-OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC "
+OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc "
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig "
 OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON" 
 # NO_CXX1 pour cygwin
 OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
-
-CC=$MPI_ROOT/bin/mpicc
-CXX=$MPI_ROOT/bin/mpicxx
 
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
