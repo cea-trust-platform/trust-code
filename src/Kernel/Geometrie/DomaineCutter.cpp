@@ -1319,7 +1319,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           else
             {
               // Write .Zones file(s):
-              if (format == Decouper::BINARY_MULTIPLE || format == Decouper::ASCII_MULTIPLE)
+              if (format == Decouper::BINARY_MULTIPLE)
                 {
                   Nom nom_fichier(basename);
                   nom_fichier+=Nom(".Zones");
@@ -1336,11 +1336,6 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                     {
                       Cerr << "DomaineCutter::ecrire_zones : Error while opening file " << finl;
                       exit();
-                    }
-                  if (format == Decouper::ASCII_MULTIPLE)
-                    {
-                      os.setf(ios::scientific);
-                      os.precision(Objet_U::format_precision_geom);
                     }
                   writeData(sous_domaine, os);
                 }

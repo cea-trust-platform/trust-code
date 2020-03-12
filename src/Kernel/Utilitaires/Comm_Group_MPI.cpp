@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -231,6 +231,47 @@ void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, const Collective_
   internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
 #endif
 }
+
+void Comm_Group_MPI::mp_collective_op(const long long *x, long long *resu, int n, Collective_Op op) const
+{
+#ifdef MPI_
+  if (n <= 0)
+    return;
+  switch(op)
+    {
+      // Note B.M.: cast en non const a cause de l'interface de MPI,
+      // plusieurs posts sur newsgroups incitent a penser que c'est ok
+      // (x ne sera jamais modifie par la librairie, sauf bug !)
+    case COLL_SUM:
+      statistiques().begin_count(mpi_sumint_counter_);
+      mpi_error(MPI_Allreduce((long long*) x, resu, n, MPI_LONG_LONG_INT, MPI_SUM, mpi_comm_));
+      statistiques().end_count(mpi_sumint_counter_);
+      break;
+    case COLL_MIN:
+      statistiques().begin_count(mpi_minint_counter_);
+      mpi_error(MPI_Allreduce((long long*) x, resu, n, MPI_LONG_LONG_INT, MPI_MIN, mpi_comm_));
+      statistiques().end_count(mpi_minint_counter_);
+      break;
+    case COLL_MAX:
+      statistiques().begin_count(mpi_maxint_counter_);
+      mpi_error(MPI_Allreduce((long long*) x, resu, n, MPI_LONG_LONG_INT, MPI_MAX, mpi_comm_));
+      statistiques().end_count(mpi_maxint_counter_);
+      break;
+    case COLL_PARTIAL_SUM:
+      internal_collective(x, resu, n, &op, -1 /* only one operation */, 0 /* recursion level */);
+      break;
+    }
+#endif
+}
+void Comm_Group_MPI::mp_collective_op(const long long *x, long long *resu, const Collective_Op *op, int n) const
+{
+#ifdef MPI_
+  if (n <= 0)
+    return;
+  internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
+#endif
+}
+
 
 // Description:
 // Point de synchronisation de tous les processeurs du groupe (permet
@@ -657,6 +698,19 @@ void Comm_Group_MPI::internal_collective(const int *x, int *resu, int nx, const 
     }
 }
 
+void Comm_Group_MPI::internal_collective(const long long *x, long long *resu, int nx, const Collective_Op *op, int nop, int level) const
+{
+  // Pour l'instant algo bourrin, a optimiser...
+  for (int i = 0; i < nx; i++)
+    {
+      int j = (nop < 0) ? 0 : i;
+      if (op[j] != COLL_PARTIAL_SUM)
+        mp_collective_op(x+i, resu+i, 1, op[j]);
+      else
+        resu[i] = mppartial_sum(x[i]);
+    }
+}
+
 void Comm_Group_MPI::internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const
 {
   // Pour l'instant algo bourrin, a optimiser...
@@ -703,6 +757,36 @@ int Comm_Group_MPI::mppartial_sum(int x) const
   statistiques().end_count(mpi_partialsum_counter_);
   return somme;
 }
+
+// Description:
+// Renvoie la somme des x sur les processeurs precedents du groupe (moi non
+// compris). Le resultat sur le premier processeur du groupe est donc toujours 0.
+// Le resultat depend de l'ordre dans lequel les processeurs ont ete
+// fournis dans le constructeur.
+long long Comm_Group_MPI::mppartial_sum(long long x) const
+{
+  statistiques().begin_count(mpi_partialsum_counter_);
+  long long somme = 0;
+  MPI_Status status;
+  int tag = get_new_tag();
+  int rang = rank();
+  int np = nproc();
+
+  if (rang > 0)
+    {
+      // Recoit la somme partielle du precedent
+      mpi_error(MPI_Recv(& somme, 1, MPI_LONG_LONG_INT, rang-1, tag, mpi_comm_, &status));
+    }
+  if (rang+1 < np)
+    {
+      // Envoie la somme partielle au suivant
+      long long s = somme + x;
+      mpi_error(MPI_Send(& s, 1, MPI_LONG_LONG_INT, rang+1, tag, mpi_comm_));
+    }
+  statistiques().end_count(mpi_partialsum_counter_);
+  return somme;
+}
+
 
 #endif
 

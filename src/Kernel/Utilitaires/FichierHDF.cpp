@@ -23,7 +23,7 @@
 #include <FichierHDF.h>
 #include <communications.h>
 #include <ArrOfInt.h>
-
+#include <vector>
 
 #ifndef MED_
 FichierHDF::FichierHDF()
@@ -55,10 +55,9 @@ bool FichierHDF::is_hdf5(const char *file_name)
 
 void FichierHDF::prepare_file_props() {}
 void FichierHDF::prepare_read_dataset_props() {}
-void FichierHDF::create_and_fill_attribute(int data, const char* attribute_name) {}
 #else
 
-FichierHDF::FichierHDF():  file_id_(0), file_access_plst_(0),
+FichierHDF::FichierHDF():  file_id_(0), file_access_plst_(0), file_creation_plst_(0),
   dataset_transfer_plst_(0), dataset_creation_plst_(0),
   chunk_size_(0) {}
 
@@ -70,7 +69,8 @@ FichierHDF::~FichierHDF()
 void FichierHDF::create(Nom filename)
 {
   prepare_file_props();
-  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC /*H5F_ACC_EXCL*/, H5P_DEFAULT, file_access_plst_);
+  file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC /*H5F_ACC_EXCL*/, file_creation_plst_, file_access_plst_);
+
 }
 
 void FichierHDF::open(Nom filename, bool readOnly)
@@ -86,6 +86,13 @@ void FichierHDF::prepare_file_props()
   //on cluster, type lfs getstripe . to see the default striping of the current repository
   hsize_t stripe_size = 1048576; //1572864;
   H5Pset_alignment(file_access_plst_, 0, stripe_size);
+
+  //increasing size of the B-tree containing metadata info (to approximately match the size striping)
+  //useful when we are writing a lot of chunks
+  // see https://www.nersc.gov/users/training/online-tutorials/introduction-to-scientific-i-o/?show_all=1
+  file_creation_plst_ = H5Pcreate(H5P_FILE_CREATE);
+  hsize_t btree_ik = (stripe_size - 4096) / 96;
+  H5Pset_istore_k(file_creation_plst_, btree_ik);
 }
 
 void FichierHDF::prepare_write_dataset_props(hsize_t datasetLen)
@@ -112,6 +119,7 @@ void FichierHDF::close()
 {
   H5Fclose(file_id_);
   if(file_access_plst_)    H5Pclose(file_access_plst_);
+  if(file_creation_plst_)    H5Pclose(file_creation_plst_);
   if(dataset_transfer_plst_) H5Pclose(dataset_transfer_plst_);
   if(dataset_creation_plst_) H5Pclose(dataset_creation_plst_);
 }
@@ -125,7 +133,7 @@ void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree)
 
   hsize_t sz;
   read_attribute(sz, "/sizes");
-  hsize_t offset = mppartial_sum((int)sz);
+  hsize_t offset = mppartial_sum((long long)sz);
   hid_t memspace = H5Screate_simple(1, &sz, NULL);
 
   H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, &offset, NULL, &sz, NULL);
@@ -178,7 +186,7 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, SChaine& sortie)
 void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, const char* data,
                                          hid_t datatype, bool write_attribute)
 {
-  hsize_t sumLenData = Process::mp_sum((int)lenData);
+  hsize_t sumLenData = Process::mp_sum((long long)lenData);
   prepare_write_dataset_props(sumLenData);
 
   hsize_t fileSize[1] = {sumLenData};
@@ -189,7 +197,7 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_name, hsize_t lenData, cons
 
   hsize_t dims[1] = {lenData};
   hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
-  hsize_t offset = mppartial_sum((int)lenData);
+  hsize_t offset = mppartial_sum((long long)lenData);
   H5Sselect_hyperslab(fileSpace_id, H5S_SELECT_SET, &offset, NULL, &lenData, NULL);
 
   // Writing into it:
@@ -232,28 +240,26 @@ void FichierHDF::create_and_fill_datasets(Nom dataset_name, Sortie_Brute& sortie
   H5Sclose(dataspace_id);
 }
 
-void FichierHDF::create_and_fill_attribute(int data, const char* attribute_name)
+void FichierHDF::create_and_fill_attribute(hsize_t data, const char* attribute_name)
 {
   //attributes must be written collectively so every processor needs to write the same datas
-  ArrOfInt attributes(Process::nproc());
-  attributes = 0;
-  attributes[Process::me()] = data;
-  mp_sum_for_each_item(attributes);
+  long long init_value = data;
+  std::vector<long long> attributes(Process::nproc(), init_value);
+  envoyer_all_to_all(attributes, attributes);
 
   hsize_t dimsAttr = Process::nproc();
   hid_t space_id = H5Screate_simple(1, &dimsAttr, NULL);
-  hid_t attr_id = H5Acreate2(file_id_, attribute_name, H5T_STD_I32BE, space_id, H5P_DEFAULT, H5P_DEFAULT);
-  H5Awrite(attr_id, H5T_STD_I32BE, attributes.addr() );
+  hid_t attr_id = H5Acreate2(file_id_, attribute_name, H5T_STD_I64BE, space_id, H5P_DEFAULT, H5P_DEFAULT);
+  H5Awrite(attr_id, H5T_STD_I64BE, attributes.data() );
   H5Aclose(attr_id);
   H5Sclose(space_id);
-
 }
 
 void FichierHDF::read_attribute(hsize_t& attribute, const char* attribute_name)
 {
-  ArrOfInt attributes(Process::nproc());
+  std::vector<long long> attributes(Process::nproc());
   hid_t attr = H5Aopen(file_id_, attribute_name, H5P_DEFAULT);
-  H5Aread (attr, H5T_STD_I32BE, attributes.addr());
+  H5Aread (attr, H5T_STD_I64BE, attributes.data());
   H5Aclose(attr);
 
   attribute = attributes[Process::me()];
@@ -280,7 +286,7 @@ void FichierHDF::get_chunking(hsize_t datasetLen)
     {
       int nproc = Process::nproc();
       hsize_t tmp = datasetLen / nproc;
-      chunk_size_ = (tmp >= FourGB) ? FourGB-1 : tmp;
+      chunk_size_ = (tmp >= FourGB) ? FourGB : tmp;
     }
 }
 
