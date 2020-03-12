@@ -23,6 +23,8 @@
 #include <Nom.h>
 #include <stdio.h>
 #include <string>
+#include <math.h>
+
 int Nom::nb_noms=0;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Nom,"Nom",Objet_U);
@@ -584,38 +586,26 @@ Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
   std::string newname=nom_.substr(0,compteur);
 
   //searching for the number of digits we want to write
-  int digits=2,diviseur=1;
-  int nproc =  Process::nproc();
+  int digits=0,diviseur=0;
   if(without_padding)
     {
-      nproc = n;
-      bool no_case_found = true;
-      for(int p=10; p<=100000 && no_case_found; p*=10)
-        {
-          if( nproc >= p )
-            {
-              digits++;
-              diviseur *= 10;
-            }
-          if(nproc <= p)
-            no_case_found = false;
-        }
-      if(no_case_found)
-        {
-          Cerr << "Error in Nom::nom_me. Contact TRUST support." << finl;
-          exit();
-        }
+      digits = log10(n)+1;
+      diviseur = pow(10, digits-1);
     }
   else
     {
-      if (nproc<=10000)
+      if (Process::nproc()<=10000)
         {
-          digits=5;
+    	  //the underscore will be taken into account later
+          //digits=5;
+          digits=4;
           diviseur=1000;
         }
-      else if (nproc<=100000)
+      else if (Process::nproc()<=100000)
         {
-          digits=6;
+    	  //the underscore will be taken into account later
+          //digits=6;
+          digits=5;
           diviseur=10000;
         }
       else
@@ -626,14 +616,14 @@ Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
 
     }
 
-  int prefix_len = 0;
-  if(prefix) prefix_len=strlen(prefix);
+  int prefix_len = 1; //for the underscore
+  if(prefix) prefix_len+=strlen(prefix);
 
   char *c_numero=new char[prefix_len+digits+1];
   int resultat;
   c_numero[0]='_';
   if(prefix) strcpy(c_numero+1, prefix);
-  for (int i=1+prefix_len; i<prefix_len+digits; i++)
+  for (int i=prefix_len; i<prefix_len+digits; i++)
     {
       resultat=n/diviseur;
       char c=('0'+resultat);
