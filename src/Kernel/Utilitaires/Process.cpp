@@ -174,6 +174,18 @@ int Process::mp_sum(int x)
 }
 
 // Description:
+//  Calcule la somme de x sur tous les processeurs du groupe courant.
+//  Voir aussi mp_max()
+long long Process::mp_sum(long long x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  long long y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_SUM);
+  return y;
+}
+
+
+// Description:
 //  Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
 bool Process::mp_and(bool b)
 {

@@ -95,8 +95,8 @@ protected:
                                        bool write_attribute);
 
   virtual void read_attribute(hsize_t& attribute, const char* attribute_name);
+  virtual void create_and_fill_attribute(hsize_t data, const char* attribute_name);
 #endif
-  virtual void create_and_fill_attribute(int data, const char* attribute_name);
 
 #ifdef MED_
   hid_t file_id_;

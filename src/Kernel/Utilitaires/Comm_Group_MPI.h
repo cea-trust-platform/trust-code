@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,8 @@ public:
   void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const;
   void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const;
   void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const;
+  void mp_collective_op(const long long *x, long long *resu, int n, Collective_Op op) const;
+  void mp_collective_op(const long long *x, long long *resu, const Collective_Op *op, int n) const;
 
   void barrier(int tag) const;
   void send_recv_start(const ArrOfInt& send_list,
@@ -88,8 +90,10 @@ public:
 protected:
   void init_group(const ArrOfInt& pe_list);
   void internal_collective(const int *x, int *resu, int nx, const Collective_Op *op, int nop, int level) const;
+  void internal_collective(const long long *x, long long *resu, int nx, const Collective_Op *op, int nop, int level) const;
   void internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const;
   int  mppartial_sum(int x) const;
+  long long mppartial_sum(long long x) const;
 
 private:
   // Voir set_must_mpi_initialize() et init_group_trio()
