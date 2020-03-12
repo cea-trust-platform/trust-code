@@ -43,6 +43,8 @@ if [ "$TRUST_WITHOUT_PDFLATEX" = 1 ]
 then
   echo "WARNING! You have disabled the build of pdf documentation. You probably have a problem with latex packages." | tee Run.log
   echo "  `basename $0` WILL PROBABLY NOT produce the PDF report." | tee -a Run.log
+else
+  rm -f Run.log
 fi
 
 options=""
