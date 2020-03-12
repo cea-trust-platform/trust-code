@@ -673,19 +673,24 @@ define_soumission_batch
 shortbin=${binary##*/}
 if [ $soumission != 999 ] && [ ${shortbin#TRUST} != $shortbin ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ] && [ $NB_PROCS -gt 1 ]
 then
-   echo $ECHO_OPTS "Checking the syntax of the $NOM.data file before submitting the job...\c"
-   VerifData $NOM.data 1>/dev/null 2>&1
-   if [ $? != 0 ]
+   if [ ! -f $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh ]
    then
-       echo KO
-       echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-       echo "Check your data file. Syntax error detected:"
-       echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-       VerifData $NOM.data
-       echo "Error: Check your $NOM.data file."
-       #exit -1
+        echo $ECHO_OPTS "Warning no Check of the syntax of the $NOM.data file before submitting the job !!!! "
    else
-       echo OK
+        echo $ECHO_OPTS "Checking the syntax of the $NOM.data file before submitting the job...\c"
+        VerifData $NOM.data 1>/dev/null 2>&1
+        if [ $? != 0 ]
+        then
+            echo KO
+            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo "Check your data file. Syntax error detected:"
+            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            VerifData $NOM.data
+            echo "Error: Check your $NOM.data file."
+            #exit -1
+            else
+            echo OK
+        fi
    fi
 fi
 

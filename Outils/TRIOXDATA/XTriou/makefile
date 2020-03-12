@@ -13,7 +13,10 @@ gencl.py: syno.py GENCLASS2 TRAD_2 sort_gen_cl.py
 triou_old.py: objet_u.py objet_u_spec.py genclold.py gentriopy.py
 	python gentriopy.py 1
 doc: doc.pdf
-doc.pdf: triou.py 
+doc.pdf: triou.py
+ifeq ($(TRUST_WITHOUT_PDFLATEX),1)
+	@echo "TRUST_WITHOUT_PDFLATEX=1 ... so we will not build the PDF documentation."
+else
 	mkdir -p doc
 	(cd doc; ln -sf ../doc_ressources/* .;ln -sf ${TRUST_ROOT}/doc/TRUST/Generic_Guide/fieldnames.tex .)
 	python -c "from triou import *;gen_doc_base(1)"
@@ -22,8 +25,12 @@ doc.pdf: triou.py
 	@grep -v batchmode  doc/doc.tex  > doc/doc_inter.tex
 	(cd doc ;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc.idx;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ..)
 	./create_Keywords.sh
+endif
 doc_reduit: doc_r.pdf
 doc_r.pdf: triou.py tests/ref/lutil.py
+ifeq ($(TRUST_WITHOUT_PDFLATEX),1)
+	@echo "TRUST_WITHOUT_PDFLATEX=1 ... so we will not build the PDF documentation."
+else
 	mkdir -p doc_r
 	(cd doc_r; ln -sf ../doc_ressources/* .)
 	cp tests/ref/lutil.py .
@@ -31,6 +38,7 @@ doc_r.pdf: triou.py tests/ref/lutil.py
 	mv *.tex doc_r
 	cp *.sty doc_r/.
 	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
+endif
 test:	triou.py
 	(mkdir -p tests; cat tests_src/makefile > tests/makefile; cd tests; time $(MAKE))
 	touch test
