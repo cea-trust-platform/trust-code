@@ -58,3 +58,6 @@ do
   export CURVEPLOT_ROOT_DIR=$TRUST_ROOT/exec/CURVEPLOT
   cd -
 done
+cd ../
+rm -rf IHM
+

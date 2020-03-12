@@ -38,7 +38,7 @@ then
    $TRUST_MAKE || exit -1
    make install || exit -1 
    cd ..
-   rm -r -f ${fltk%-source.tar.gz}
+   rm -r -f fltk*
 fi
 
 ########
@@ -109,5 +109,6 @@ fi
 #VERBOSE="VERBOSE=1"
 $TRUST_MAKE $VERBOSE || exit -1
 make install || exit -1
-
+cd ../..
+rm -rf Gmsh
 

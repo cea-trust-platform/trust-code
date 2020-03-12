@@ -53,7 +53,10 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   env CC=$TRUST_cc_BASE CXX=$TRUST_CC_BASE F77=$TRUST_F77_BASE ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
   
   $TRUST_MAKE  || exit -1
-  make install || exit -1 
+  make install || exit -1
+
+  # Clean build folder
+  (cd .. ; rm -rf med*)
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_MED" ]; then
     echo "Variable TRUST_USE_EXTERNAL_MED has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_MED"
