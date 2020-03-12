@@ -765,7 +765,7 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
     }
   else
     {
-      Cerr << "Unknown value in Equation_base::assembler for " << type_codage << finl;
+      Cerr << "Unknown value in Equation_base::assembler for " << (int)type_codage << finl;
       Process::exit();
     }
 }
