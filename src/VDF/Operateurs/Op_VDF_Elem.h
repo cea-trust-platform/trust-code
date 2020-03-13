@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ class Op_VDF_Elem
 public :
 
   void dimensionner(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&) const;
+  void dimensionner_bloc_vitesse(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&) const;
   void modifier_pour_Cl(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
 };
 

@@ -33,6 +33,7 @@ class Op_PolyMAC_Elem
 public :
 
   void dimensionner(const Zone_PolyMAC&, const Zone_Cl_PolyMAC&, Matrice_Morse&) const;
+  void dimensionner_bloc_vitesse(const Zone_PolyMAC&, const Zone_Cl_PolyMAC&, Matrice_Morse&) const;
   void modifier_pour_Cl(const Zone_PolyMAC&, const Zone_Cl_PolyMAC&, Matrice_Morse&, DoubleTab&) const;
 };
 

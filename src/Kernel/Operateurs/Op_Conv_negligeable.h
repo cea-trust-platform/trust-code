@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,12 +51,14 @@ public :
   inline DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
+  inline void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline void associer_zone_cl_dis(const Zone_Cl_dis_base&)
   {
     ;
   } ;
   inline void dimensionner(Matrice_Morse&) const;
+  inline void dimensionner_bloc_vitesse(Matrice_Morse&) const;
   inline void mettre_a_jour(double);
   void associer_vitesse(const Champ_base& ) ;
   const Champ_base& vitesse() const;
@@ -136,6 +138,10 @@ inline void  Op_Conv_negligeable::contribuer_a_avec(const DoubleTab& inco,
   ;
 }
 
+inline void Op_Conv_negligeable::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const
+{
+  ;
+}
 
 
 //Description:
@@ -153,6 +159,11 @@ inline void  Op_Conv_negligeable::modifier_pour_Cl(Matrice_Morse& amatrice, Doub
 }
 
 inline void  Op_Conv_negligeable::dimensionner(Matrice_Morse& amatrice) const
+{
+  ;
+}
+
+inline void  Op_Conv_negligeable::dimensionner_bloc_vitesse(Matrice_Morse& amatrice) const
 {
   ;
 }

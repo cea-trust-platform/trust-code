@@ -73,6 +73,7 @@ public:
   void calculer_flux_bord(const DoubleTab&) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   inline void completer_();
   int impr(Sortie& os) const;
   void modifier_flux() const;
@@ -90,6 +91,8 @@ protected:
   void ajouter_contribution_bords(const DoubleTab&, Matrice_Morse&, int ) const;
   void ajouter_contribution_interne(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_interne(const DoubleTab&, Matrice_Morse&, int ) const;
+  void ajouter_contribution_interne_vitesse(const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_bords_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   const Milieu_base& milieu() const;
   IntTab elem;
 };
@@ -2357,5 +2360,214 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_in
     }
 }
 
+template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  ((_TYPE_&) flux_evaluateur).mettre_a_jour();
+  assert(inco.nb_dim() < 3);
+  assert(la_zcl.non_nul());
+  assert(la_zone.non_nul());
+  int ncomp=1;
+  if (inco.nb_dim() == 2)
+    ncomp=inco.dimension(1);
+  // DoubleTab& flux_bords=op_base->flux_bords();
+  // flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
+  // flux_bords=0;
+  if( ncomp == 1) /* cas scalaire */
+    {
+      ajouter_contribution_bords_vitesse(inco, matrice);
+      ajouter_contribution_interne_vitesse(inco, matrice);
+    }
+  else /* cas vectoriel */
+    {
+      abort();
+      // ajouter_contribution_bords(inco, matrice, ncomp) ;
+      // ajouter_contribution_interne(inco, matrice, ncomp) ;
+    }
+}
+
+template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  const Zone_PolyMAC& zone_PolyMAC = la_zone.valeur();
+  double aef = 0;
+  const int ndeb = zone_PolyMAC.premiere_face_int();
+  const int nfin = zone_PolyMAC.nb_faces();
+  for (int f = ndeb; f < nfin; f++)
+    {
+      const int e1 = elem(f, 0);
+      const int e2 = elem(f, 1);
+      aef = flux_evaluateur.coeffs_faces_interne_bloc_vitesse(inco, f);
+      matrice(e1, f) += aef;
+      matrice(e2, f) -= aef;
+    }
+}
+
+template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const DoubleTab& inco, Matrice_Morse& matrice ) const
+{
+  int e1, e2;
+  double aef=0;
+  int ndeb, nfin;
+  int nb_front_Cl=la_zone->nb_front_Cl();
+  for (int num_cl = 0; num_cl<nb_front_Cl; num_cl++)
+    {
+      /* pour chaque Condition Limite on regarde son type */
+      const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      ndeb = frontiere_dis.num_premiere_face();
+      nfin = ndeb + frontiere_dis.nb_faces();
+      switch(type_cl(la_cl))
+        {
+        case symetrie :
+          if (flux_evaluateur.calculer_flux_faces_symetrie())
+            {
+              const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case sortie_libre :
+          if (flux_evaluateur.calculer_flux_faces_sortie_libre())
+            {
+              const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case entree_fluide :
+          if (flux_evaluateur.calculer_flux_faces_entree_fluide())
+            {
+              const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case paroi_fixe :
+          if (flux_evaluateur.calculer_flux_faces_paroi_fixe())
+            {
+              const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case paroi_defilante :
+          if (flux_evaluateur.calculer_flux_faces_paroi_defilante())
+            {
+              const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case paroi_adiabatique :
+          if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique())
+            {
+              const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case paroi :
+          if (flux_evaluateur.calculer_flux_faces_paroi())
+            {
+              const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case echange_externe_impose :
+          if (flux_evaluateur.calculer_flux_faces_echange_externe_impose())
+            {
+              const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
+              int boundary_index=-1;
+              if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+                boundary_index=num_cl;
+
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(f);
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, f, local_face, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) += aef;
+                }
+            }
+          break;
+        case echange_global_impose :
+          if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+            {
+              const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case nscbc :
+          if (flux_evaluateur.calculer_flux_faces_NSCBC())
+            {
+              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                }
+            }
+          break;
+        case periodique :
+          if (flux_evaluateur.calculer_flux_faces_periodique())
+            {
+              const Periodique& cl =(const Periodique&) (la_cl.valeur());
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+                  if ( (e1 = elem(f, 0)) > -1)
+                    {
+                      if ( f < (ndeb+frontiere_dis.nb_faces()/2) )
+                        matrice(e1, f) += aef;
+                    }
+                  if ( (e2 = elem(f, 1)) > -1)
+                    {
+                      if ( (ndeb+frontiere_dis.nb_faces()/2) <= f )
+                        matrice(e2, f) += aef;
+                    }
+                }
+            }
+          break;
+        default :
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
+          exit();
+          break;
+        }
+
+    }
+}
 
 #endif

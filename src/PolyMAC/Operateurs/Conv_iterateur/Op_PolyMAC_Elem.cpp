@@ -27,6 +27,8 @@
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Champ_Inc.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
 void Op_PolyMAC_Elem::dimensionner(const Zone_PolyMAC& la_zone,
                                    const Zone_Cl_PolyMAC& la_zone_cl,
@@ -182,6 +184,39 @@ void Op_PolyMAC_Elem::dimensionner(const Zone_PolyMAC& la_zone,
     }
   // Cerr << "tab2 = " << tab2 << finl;
 }
+
+void Op_PolyMAC_Elem::dimensionner_bloc_vitesse(const Zone_PolyMAC& la_zone,
+                                                const Zone_Cl_PolyMAC& la_zone_cl,
+                                                Matrice_Morse& matrice) const
+{
+
+  int nb_faces=la_zone.nb_faces();
+  int nb_faces_tot=la_zone.nb_faces_tot();
+  int nb_elem_tot=la_zone.nb_elem_tot();
+  IntTab stencyl(0,2);
+  stencyl.set_smart_resize(1);
+  const IntTab& face_voisins = la_zone.face_voisins();
+
+  int nb_coef=0;
+  for (int face=0; face<nb_faces; face++)
+    {
+      for (int dir=0; dir<2; dir++)
+        {
+          int elem=face_voisins(face,dir);
+          if (elem!=-1)
+            {
+              stencyl.resize(nb_coef+1,2);
+              stencyl(nb_coef,0)=elem;
+              stencyl(nb_coef,1)=face;
+              nb_coef++;
+            }
+        }
+    }
+  tableau_trier_retirer_doublons(stencyl);
+  Matrix_tools::allocate_morse_matrix(nb_elem_tot,nb_faces_tot,stencyl,matrice);
+
+}
+
 
 void Op_PolyMAC_Elem:: modifier_pour_Cl(const Zone_PolyMAC& la_zone,
                                         const Zone_Cl_PolyMAC& la_zone_cl,
