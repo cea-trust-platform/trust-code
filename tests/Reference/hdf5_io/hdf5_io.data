@@ -1,7 +1,5 @@
-#  SIMULATION D UN CANAL 2D   #
+# Test hdf parallele: .Zone unique et .sauv unique + test reprise et .log unique dans verifie #
 # PARALLEL OK 8 #
-# Tests de l initialisation de la vitesse avec la classe champ_init_canal_sinal #
-# + Test de la force de volume permettant de conserver le debit en presence de periodicite dans la direction de l'ecoulement #
 
 dimension 2
 Pb_Hydraulique pb
@@ -78,7 +76,7 @@ Read pb
 			}
 		sources { Canal_perio { bord periox } }
 		boundary_conditions {
-periox periodique 
+			periox periodique 
 			haut  paroi_fixe
 	                bas  paroi_fixe		
 		}
