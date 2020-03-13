@@ -1,0 +1,133 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+# PARALLEL OK 8 #
+dimension 2
+Pb_Thermohydraulique pb
+
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_fluide
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 3 3
+        Longueurs 1. 1.
+    }
+    {
+        bord gauche X = 0.0  0.0 <= Y <= 1.0
+        bord droite X = 1.0  0.0 <= Y <= 1.0
+        Bord bas    Y = 0.0  0.0 <= X <= 1.0
+        Bord haut   Y = 1.0  0.0 <= X <= 1.0
+    }
+}
+trianguler_h dom_fluide
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_fluide
+{
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0.
+    tmax 300.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 1e-30
+    seuil_statio 1.e-20
+    solveur implicite { solveur petsc cholesky { } }
+}
+
+__dis__  dis
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 1.0
+    Cp Champ_Uniforme 1 500
+    beta_th Champ_Uniforme 1 0.0001
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+Associate fluide gravite
+
+Associate pb dom_fluide
+Associate pb fluide
+
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+            }
+        boundary_conditions {
+            gauche paroi_fixe
+            droite paroi_fixe
+            bas    paroi_fixe
+            haut   paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            gauche paroi_adiabatique
+            droite paroi_adiabatique
+            bas    paroi_adiabatique
+            haut   paroi_adiabatique
+        }
+        sources
+        {
+            terme_puissance_thermique_echange_impose
+            {
+                himp Champ_Uniforme 1 100 Text Champ_Uniforme 1 10
+            }
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 30. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 1. points 1 0.55 0.55
+            sonde_vitesse vitesse periode 1. points 1 0.55 0.55
+            sonde_tflu temperature periode 1. points 1 0.55 0.55
+            sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
+        }
+        format lata
+        fields dt_post 10.
+        {
+            pression elem
+            pression som
+            vitesse elem
+            temperature elem
+        }
+    }
+}
+Solve pb
+End
