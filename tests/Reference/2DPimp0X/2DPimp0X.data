@@ -71,8 +71,8 @@ Read pb
 		{
 		dt_projection 1.e5 1.e-10
 
-		Solveur_Pression cholesky { }
-		solveur_bar Cholesky { }
+		Solveur_Pression petsc cholesky { }
+		solveur_bar petsc Cholesky { }
 
                 convection { negligeable }
                 diffusion  { negligeable }

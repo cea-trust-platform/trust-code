@@ -81,7 +81,7 @@ Read pb
 			seuil 1e-14 impr 
 		} 
 
-		solveur_bar Cholesky { }
+		solveur_bar petsc cholesky { }
 
                 convection { muscl }
                 diffusion { }

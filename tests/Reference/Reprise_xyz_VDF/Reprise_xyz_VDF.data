@@ -101,7 +101,7 @@ Read pb
 	Navier_Stokes_standard
 	{
 		projection_initiale 0
-		solveur_pression cholesky { }
+		solveur_pression petsc cholesky { }
 		convection { Amont }
 		diffusion { }
 		initial_conditions {

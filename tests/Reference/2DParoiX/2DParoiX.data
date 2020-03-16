@@ -78,7 +78,7 @@ Read pb
 			seuil 1e-15 impr 
 		} 
 
-		solveur_bar Cholesky { }
+		solveur_bar petsc cholesky { }
 
                 convection { negligeable  }
                 diffusion  { negligeable }

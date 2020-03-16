@@ -77,7 +77,7 @@ Read pb
 			seuil 1.e-12 impr 
 		} 
 
-		solveur_bar Cholesky { }
+		solveur_bar petsc cholesky { }
 
                 convection { EF filtrer_resu 0 antisym 0 transporte_bar 0 transportant_bar 0  }
                 diffusion  { negligeable }

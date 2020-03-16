@@ -76,7 +76,7 @@ Read pb
 {
         Navier_Stokes_standard
         {
-                solveur_pression Cholesky { }
+                solveur_pression petsc cholesky { }
                 convection { quick }
                 diffusion { }
                 initial_conditions { vitesse Champ_Fonc_XYZ Canal 2

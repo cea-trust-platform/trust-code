@@ -75,7 +75,7 @@ Read pb
 			impr 
 		}
 		convection { negligeable }
-		diffusion { implicite solveur Cholesky { impr } }
+		diffusion { implicite solveur petsc Cholesky { impr } }
 		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
