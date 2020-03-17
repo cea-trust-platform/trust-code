@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,11 +50,13 @@ public :
   inline void fixer_dt_stab_conv(double dt);
   virtual void associer_norme_vitesse(const Champ_base& norme_vitesse);
   virtual void associer_vitesse_pour_pas_de_temps(const Champ_base& vitesse);
+  virtual void set_incompressible(const int);
 
 protected :
   REF(Champ_base) la_norme_vitesse;
   REF(Champ_base) vitesse_pour_pas_de_temps_;
   double dt_stab_conv_;
+  int incompressible_ = 1; // incompressible_= 1 -> l'operateur discretise div(v x inco), incompressible_ = 0 -> il discretise v.grad(inco)
 };
 
 //Descrition

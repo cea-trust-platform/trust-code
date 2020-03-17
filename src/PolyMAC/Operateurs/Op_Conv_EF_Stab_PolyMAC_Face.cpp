@@ -83,7 +83,8 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
             if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++;
           }
   if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
-  porosite_surf.ref(zone.porosite_face());
+  porosite_f.ref(zone.porosite_face());
+  porosite_e.ref(zone.porosite_elem());
 }
 
 void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
@@ -130,7 +131,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;
 
   int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
   double div;
@@ -158,8 +159,9 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
             }
 
       //partie - (div v) v
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2i(zone.m2d(e) + i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(zone.m2d(e) + i); j++)
-          fb = e_f(e, zone.m2j(j)), resu(f) += (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div * inco(fb);
+      if (!incompressible_)
+        for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2i(zone.m2d(e) + i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(zone.m2d(e) + i); j++)
+            fb = e_f(e, zone.m2j(j)), resu(f) += (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div * inco(fb);
     }
 
   return resu;
@@ -174,7 +176,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = porosite_e, &pf = porosite_f;
   int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
   double div;
 
@@ -202,8 +204,9 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
             }
 
       //partie - (div v) v
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2i(zone.m2d(e) + i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(zone.m2d(e) + i); j++)
-          if (ch.icl(fb = e_f(e, zone.m2j(j)), 0) < 2) matrice(f, fb) -= (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div;
+      if (!incompressible_)
+        for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2i(zone.m2d(e) + i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(zone.m2d(e) + i); j++)
+            if (ch.icl(fb = e_f(e, zone.m2j(j)), 0) < 2) matrice(f, fb) -= (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div;
     }
 }
 
@@ -214,4 +217,14 @@ void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_au_second_membre(DoubleTab& resu) 
 {
   abort();
 
+}
+
+void Op_Conv_EF_Stab_PolyMAC_Face::set_incompressible(const int flag)
+{
+  if (flag == 0)
+    {
+      Cerr << "Compressible form of operator \"" << que_suis_je() << "\" :" << finl;
+      Cerr << "Discretization of \u2207(inco \u2297 v) - v \u2207.(inco)" << finl;
+    }
+  incompressible_ = flag;
 }
