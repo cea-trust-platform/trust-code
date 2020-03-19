@@ -1217,7 +1217,12 @@ else
 	    m="# Compiler for mpicc"  && e="I_MPI_CC=\"\$TRUST_cc_BASE\"  && export I_MPI_CC"   && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpif77" && e="I_MPI_F77=\"\$TRUST_F77_BASE\" && export I_MPI_F77" && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpif90" && e="I_MPI_F90=\"\$TRUST_F77_BASE\" && export I_MPI_F90" && ecrit $m"|"$e"|"$env;eval $e
-	 else
+	 elif [ "`$mpiCC -show | grep wi4mpi`" != "" ]
+         then
+            m="" # Rien pour le moment, depend du MPI
+            echo "wi4mpi not supported yet."
+            exit -1
+         else
 	    echo "MPI indicated by $mpiCC by not supported yet." 
 	    exit -1
 	 fi

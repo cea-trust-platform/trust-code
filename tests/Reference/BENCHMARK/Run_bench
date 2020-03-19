@@ -6,10 +6,10 @@ echo $exec > par
 touch EN_COURS
 
 # Par defaut, bench sur 512000 mailles
-NB_PROCS_TOT=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-NUMBER_CORES_TESTED="1 2 4" # (->128000 mailles/core)
-[ $NB_PROCS_TOT -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  # (->64000 mailles/core)
-[ $NB_PROCS_TOT -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" # (->32000 mailles/core)
+NUMBER_CORES_TESTED="1 2" # (->256000 mailles/core)
+[ $TRUST_NB_PHYSICAL_CORES -ge  4 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 4"  # (->128000 mailles/core)
+[ $TRUST_NB_PHYSICAL_CORES -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  # (->64000 mailles/core)
+[ $TRUST_NB_PHYSICAL_CORES -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" # (->32000 mailles/core)
 echo $NUMBER_CORES_TESTED > liste_nb_proc   
 
 # Mais on peut modifier ces valeurs:
@@ -20,7 +20,7 @@ echo $NUMBER_CORES_TESTED > liste_nb_proc
 #############################
 
 rm -rf PAR[0-9]*
-listcas="VDF VEF"
+listcas=$1 && [ "$1" = "" ] && listcas="VDF VEF"
 #listcas="VDF"
 for cas in $listcas
 do
