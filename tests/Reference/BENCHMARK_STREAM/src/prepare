@@ -10,7 +10,7 @@ let NP=1
 touch empty.data
 while [ $NP -le $TRUST_NB_PHYSICAL_CORES ]
 do
-   trust empty $NP | grep -v empty
+   trust empty $NP | grep -e Number -e Triad
    let NP=$NP+1
 done | tee scaling.log
 ./process.py createfile

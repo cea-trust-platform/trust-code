@@ -3,7 +3,7 @@ mkdir -p ../build
 cp * ../build
 cd ../build
 
-[ ! -f cylindre.geom ] && gunzip -c ../Cx/cylindre.geom.gz > cylindre.geom
+[ ! -s cylindre.geom ] && gunzip -c ../../Cx/cylindre.geom.gz > cylindre.geom
 if [ cylindre.geom -nt DOM_0000.Zones ] || [ test.data -nt DOM_0000.Zones ]
 then
    # Decoupage:
