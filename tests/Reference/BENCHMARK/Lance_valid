@@ -16,7 +16,7 @@ do
    done
 done
 # Pour attendre la fin des ecritures
-sleep 20
+[ "$TRUST_WITHOUT_HOST" = 0 ] && sleep 20
 err=PAR$nb_proc/bench1-$nb_proc.err
 echo $ECHO_OPTS "#################################################"
 echo "Calcul parallele TRUST `awk '/version :/ {print $NF}' $err 2>/dev/null` `date` sur $HOST :"
