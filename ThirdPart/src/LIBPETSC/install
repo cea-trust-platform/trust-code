@@ -202,7 +202,7 @@ fi
 ####################
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
-   with_openmp="--with-openmp" 
+   with_openmp="--with-openmp"
    # Pour MPI-OpenMP hybride:
    # voir: https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
    # with_openmp=$with_openmp" -L$TRUST_ROOT/exec/hwloc --with-hwloc"
@@ -260,9 +260,9 @@ add_package()
    fi
    echo "PETSc needs to build it with $with_package"
    with_packages=$with_packages" "$with_package
-   
+
    ###############################
-   # Hack pour un parallel build # 
+   # Hack pour un parallel build #
    ###############################
    # PL: Si le parallel build echoue retour au build sequentiel avec typiquement "make $j lib || make lib"
    # Utilisation de flock pour eviter des ar/ranlib en concurrence
@@ -276,7 +276,7 @@ add_package()
          sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
 	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
       elif [ $lower_name = "mumps_marche_pas" ]
-      then 
+      then
          sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
          sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
          sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
@@ -295,7 +295,7 @@ add_package()
 # Construction de la liste des packages a utiliser pour le build de petsc #
 ###########################################################################
 with_packages=""
-
+add_package ml
 #################################################
 # Choix de Scalapack & Blacs (natives ou de base)
 #################################################
@@ -386,11 +386,11 @@ fi
 ##############
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # Si les compilateurs sont dans le bin 
+   # Si les compilateurs sont dans le bin
    if [ -d $MPI_ROOT/bin ]
    then
        with_mpi="--with-mpi-dir=$MPI_ROOT"
-   # Si les compilateurs sont dans le usr/bin 
+   # Si les compilateurs sont dans le usr/bin
    else
       echo "Error LIBPETSC can't be installed because mpirun is not found in $MPI_ROOT/bin"
       echo "To workaround, re-configure TRUST with ./configure -force_provided_mpich or ./configure -force_provided_openmpi"
@@ -550,7 +550,7 @@ do
    --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
-   --with-fortran=yes \
+   --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
    --with-clean=1 \
    --with-ssl=0 \
    $with_packages \

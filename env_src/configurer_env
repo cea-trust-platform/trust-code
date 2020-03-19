@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script de recherche automatique de
 # certaines variables d'environnement
-# Strategie : 
+# Strategie :
 # Une liste de variable par defaut :
 # On verifie qu'une d'entre elle existe par whence
 # Puis eventuellement, on fait un find.... Dans le cas ou le compte
@@ -300,7 +300,7 @@ xxx()
 		   # Elimination de LAM qui n est pas supporte par TRUST et en voie d obsolescence:
 		   [ "`echo $f | grep LAM6`" != "" ] && ok=0;
 		   [ -f /usr/bin/mpirun ] && [ "`/usr/bin/mpirun -v 2>&1 | grep LAM/MPI`" != "" ] && ok=0;
-		   # Elimination de mpiCC sur RedHat Enterprise qui compile en 32 bits (-m32) sur des machines 64 bits		
+		   # Elimination de mpiCC sur RedHat Enterprise qui compile en 32 bits (-m32) sur des machines 64 bits
 		   [ "`$f --show 2>/dev/null | grep m32`" != "" ] && ok=0;
 		   # Elimination de mpicxx sur tantale
 		   [ "`basename $f`" = mpicxx ] && [ -f /opt/hpmpi/bin/mpiCC ] && ok=0;
@@ -533,11 +533,11 @@ then
       if [ "$OS" != "" ] && [ "`grep 'OS for the machine' $TRUST_ROOT/env/machine.env`" != "" ] && [ "`grep "$OS" $TRUST_ROOT/env/machine.env`" = "" ]
       then
          err="The OS of your machine has changed"
-      else 
+      else
 	 GNU_VERSION=`print_GNU_VERSION`
 	 if [ "$GNU_VERSION" != "" ]
 	 then
-	    GNU_VERSION_ENV=`awk '/TRUST_VERSION_GNU/ {print $1}' $TRUST_ROOT/env/machine.env | awk -F= '{print $2}'`  
+	    GNU_VERSION_ENV=`awk '/TRUST_VERSION_GNU/ {print $1}' $TRUST_ROOT/env/machine.env | awk -F= '{print $2}'`
             # Check if the machine.env file is corrupted:
 	    if [ "$GNU_VERSION_ENV" = "" ]
 	    then
@@ -801,7 +801,7 @@ case $arch in
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
 	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
-	
+
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
@@ -909,7 +909,7 @@ then
    PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
 
-   INSTALL_OK=1 
+   INSTALL_OK=1
    # list of packages already-installed/to-install in conda
    pkgs="pyqt nomkl numpy matplotlib swig cmake scipy"
    for pkg in $pkgs ; do
@@ -926,7 +926,7 @@ else
    INSTALL_CONDA=1
 fi
 
-if [ "$INSTALL_CONDA" = 1 ] 
+if [ "$INSTALL_CONDA" = 1 ]
 then
     # If a previous installation folder exists, we remove it.
     [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
@@ -979,7 +979,7 @@ then
    # NB: g++ --version n'est pas terrible non plus (peyrolle retournera gcc-4.0.1)
    TRUST_VERSION_GNU=`print_GNU_VERSION`
    if [ "$TRUST_VERSION_GNU" = "" ] ; then
-      echo "`$TRUST_CC_BASE -v 2>&1`" && echo "GNU version not found. Contact TRUST support." 
+      echo "`$TRUST_CC_BASE -v 2>&1`" && echo "GNU version not found. Contact TRUST support."
       [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
       exit -1
    fi
@@ -997,7 +997,7 @@ compiler_found=1
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
 if [ "$compiler_found" = 0 ] ; then
-  echo "Then install again the code." 
+  echo "Then install again the code."
   [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
   exit -1
 fi
@@ -1194,13 +1194,13 @@ else
 	 then
             m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC"  && ecrit $m"|"$e"|"$env;eval $e
-            m="# Compiler for mpif77" && e="OMPI_F77=\"\$TRUST_F77_BASE\" && export OMPI_F77" && ecrit $m"|"$e"|"$env;eval $e     
+            m="# Compiler for mpif77" && e="OMPI_F77=\"\$TRUST_F77_BASE\" && export OMPI_F77" && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpif90" && e="OMPI_FC=\"\$TRUST_F77_BASE\"  && export OMPI_FC"  && ecrit $m"|"$e"|"$env;eval $e
 	 elif [ "`$mpiCC -show | grep mpibull`" != "" ]
 	 then
             m="# Compiler for mpiCC"  && e="MPIBULL_CXX=\"\$TRUST_CC_BASE\"  && export MPIBULL_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="MPIBULL_CC=\"\$TRUST_cc_BASE\"   && export MPIBULL_CC"  && ecrit $m"|"$e"|"$env;eval $e
-            m="# Compiler for mpif77" && e="MPIBULL_F77=\"\$TRUST_F77_BASE\" && export MPIBULL_F77" && ecrit $m"|"$e"|"$env;eval $e     
+            m="# Compiler for mpif77" && e="MPIBULL_F77=\"\$TRUST_F77_BASE\" && export MPIBULL_F77" && ecrit $m"|"$e"|"$env;eval $e
 	 elif [ "`$mpiCC -show | grep mpich`" != "" ]
 	 then
 	    # MPICH_CCC peut etre obsolete, a remplacer par MPICH_CXX ?
@@ -1291,12 +1291,12 @@ else
 	       do
 	          MPI_ROOT=`dirname $MPI_ROOT`
 	          [ -d $MPI_ROOT/lib ] && break # On trouve le repertoire pour MPI_ROOT
-	       done      
+	       done
 	       export MPI_ROOT
 	       # Recherche de mpirun
 	       em="`cherche_file Mpirun $MPI_BIN/mpirun $MPI_ROOT/bin/mpirun $MPI_ROOT/bin/poe dmpirun prun mpirun mpiexec srun`";eval $em
 	       # Si pas trouve (comme sur is213120) alors on quitte:
-	       [ "$Mpirun" = "" ] && mpi_detecte=0 && echo "mpiexec/mpirun not found for MPI_ROOT=$MPI_ROOT..."      
+	       [ "$Mpirun" = "" ] && mpi_detecte=0 && echo "mpiexec/mpirun not found for MPI_ROOT=$MPI_ROOT..."
 	       # Pb decouvert sur machine is202803 et ioulia : il ne faut pas inclure mpi++.h dans le mpi.h sinon warning qui font des erreurs avec -Wall -Werror:
 	       [ -f `dirname $mpiCC`/mpicxx ] && COMFLAGS=$COMFLAGS" -DMPICH_SKIP_MPICXX"
                # Test du MPI_Abort en parallel (KO avec openmpi 1.10.3 1.10.4 1.10.5)
@@ -1362,7 +1362,7 @@ else
       mpiCC="\$MPI_ROOT/bin/mpiCC";export mpiCC
       COMFLAGS="-DMPI_"
       if [ "`basename $MPI_ROOT`" = openmpi ]
-      then      
+      then
 	 COMLIBS=""
 	 # Pour OpenMPI on prend desormais mpiCC pour compiler en changeant le compilateur
 	 m="# Compiler for mpiCC" && e="OMPI_CXX=\"\$TRUST_CC_BASE\" && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
@@ -1633,7 +1633,7 @@ case $TRUST_ARCH_CC in
 	F77Flags="-O2 -fPIC"
 	ccFLAGS="+O2 -Aa -Ae"
 	ShLibFlag="ld -b"
-	;;   
+	;;
    SGI_CC) TRUST_SUPPORTED=0
 	SYSINC="-I/usr/include/CC"
 	# G8 car sinon marche pas sur picasso
@@ -1703,7 +1703,7 @@ case $TRUST_ARCH_CC in
 	# ar ruv *.so *.a puis link ok mais plante a l'execution
 	ShLibFlag="\$(SLD) -berok -p 2000"
 	LINK_MALIB="\$(MALIB)"
-	;;   
+	;;
    RS6000_g++*) TRUST_SUPPORTED=0
 	#CppFlags="-O3 -qtune=pwr2 -qarch=pwr2"
 	CppFlags="-O3 -fPIC -w -mminimal-toc"
@@ -1829,7 +1829,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare"
-	
+
 	CppFlags=$CppFlags" -Werror"
 	if [ "`basename $TRUST_F77_BASE`" = g77 ]
         then

@@ -1,16 +1,16 @@
 petsc=$(PETSC_ROOT) $(PETSC_ROOT)/$(TRUST_ARCH)_opt/lib/libpetsc.a
-# petsc name changed from petsc-X.Y-pZ to petsc-X.Y.Z 
-package_petsc=petsc-3.10.0
+# petsc name changed from petsc-X.Y-pZ to petsc-X.Y.Z
+package_petsc=petsc-3.12.2
 mpi=$(MPI_INCLUDE)/mpi.h
 path_include=$(PETSC_ROOT)/$(TRUST_ARCH)
 all:$(petsc) check
 
 
 $(petsc): install makefile $(mpi)
-	make clean; 
+	make clean;
 	./install $(package_petsc).tar.gz #1>petsc.log 2>&1
 
-check: 
+check:
 	./install check
 
 clean:

@@ -398,7 +398,7 @@ void Statistiques::begin_count_(const int id)
 
   si.time_begin[id].get_time();
   si.counter_running[id] = 1;
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   Nom info(si.description[id]);
   info+="\n";
   PetscInfo(0,info);
