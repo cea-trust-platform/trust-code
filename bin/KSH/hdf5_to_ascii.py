@@ -7,8 +7,9 @@ import os
 #
 
 def usage():
-    print("Usage: python hdf5_to_ascii.py file_name")
-    return 
+    print("Usage: python hdf5_to_ascii.py file_name nb_proc")
+    print("file_name : name of the HDF5 file we want to convert")
+    print("nb_proc   : how many processors have written their logs into file_name")
     
 def open_file(FILE_NAME):
     f=open (FILE_NAME, "r")
@@ -68,13 +69,18 @@ def clean(FILE_NAME, NEW_FILE_NAME):
 
 if __name__ == "__main__":
     
-    if len(sys.argv) == 1:
+    if len(sys.argv) == 2:
         usage()
         exit()
 
     file_name = sys.argv[1]
+    nb_proc = int(sys.argv[2])
     tmp_file = file_name+".tmp"
-    cmd = "h5dump -d /log -o %s -y -w 0 %s" % (tmp_file, file_name)
+    datasets_name = ""
+    for p in range(nb_proc):
+        datasets_name += "-d /log_%d " % p
+
+    cmd = "h5dump %s -o %s -y -w 0 %s" % (datasets_name, tmp_file, file_name)
     os.system(cmd)
 
     basename = file_name.split(".")[0]

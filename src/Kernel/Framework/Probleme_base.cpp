@@ -502,7 +502,6 @@ Entree& Probleme_base::readOn(Entree& is)
           DERIV(Entree_Fichier_base) fic;
           Entree_Brute input_data;
           FichierHDFPar fic_hdf; //FichierHDF fic_hdf;
-          fic_hdf.set_collective_op(true);
 
           if (format_rep == "formatte")
             fic.typer("LecFicDistribue");
@@ -517,7 +516,7 @@ Entree& Probleme_base::readOn(Entree& is)
           if( format_rep == "single_hdf")
             {
               fic_hdf.open(nomfic, true);
-              fic_hdf.read_dataset("/sauv", input_data);
+              fic_hdf.read_dataset("/sauv", Process::me(),input_data);
             }
           else
             {
@@ -561,7 +560,7 @@ Entree& Probleme_base::readOn(Entree& is)
                   fic->ouvrir(nomfic);
                 }
               else
-                fic_hdf.read_dataset("/sauv", input_data);
+                fic_hdf.read_dataset("/sauv", Process::me(), input_data);
             }
           // Lecture de la version du format de sauvegarde si c'est une reprise classique
           // Depuis la 1.5.1, on marque le format de sauvegarde en tete des fichiers de sauvegarde
@@ -1061,7 +1060,6 @@ void Probleme_base::sauver() const
         {
           osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
-          fic_hdf.set_collective_op(true);
           fic_hdf.create(nom_fich);
           fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
           fic_hdf.close();
@@ -1116,7 +1114,6 @@ void Probleme_base::finir()
         {
           osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
-          fic_hdf.set_collective_op(true);
           fic_hdf.create(nom_fich);
           fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
           fic_hdf.close();

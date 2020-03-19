@@ -34,12 +34,9 @@ then
 else
    make_PAR.data sauvegarde_reprise
    trust PAR_sauvegarde_reprise 2 -journal_shared
-   python $TRUST_ROOT/bin/KSH/hdf5_to_ascii.py PAR_sauvegarde_reprise.log
+   python $TRUST_ROOT/bin/KSH/hdf5_to_ascii.py PAR_sauvegarde_reprise.log 2
    journals=`grep "End of Journal logging" PAR_sauvegarde_reprise.ascii | wc -l`
-   echo JOURNAL_NB $journals
-   echo GREP RESULTS
-   grep "End of Journal logging" PAR_sauvegarde_reprise.ascii
-   [ journals -ne 2 ] && echo "Writing of shared journal failed..." && exit -1
+   [[ "$journals" -ne 2 ]] && echo "Writing of shared journal failed..." && exit -1
    for bord in $bords
    do  
       compare_sonde PAR_$jdd"_Channel_Flow_Rate_pb_$bord" PAR_sauvegarde_reprise_Channel_Flow_Rate_pb_$bord || exit -1

@@ -22,6 +22,7 @@
 #include <FichierHDFPar.h>
 #include <communications.h>
 #include <ArrOfInt.h>
+#include <vector>
 
 #ifdef MPI_
 #include <mpi.h>
@@ -55,31 +56,70 @@ void FichierHDFPar::prepare_file_props()
 #endif
 }
 
-#ifdef MED_
-void FichierHDFPar::prepare_write_dataset_props(hsize_t datasetLen)
-{
-  FichierHDF::prepare_write_dataset_props(datasetLen);
-  prepare_dataset_props();
-}
-#endif
-
-void FichierHDFPar::prepare_read_dataset_props()
-{
-  FichierHDF::prepare_read_dataset_props();
-  prepare_dataset_props();
-}
-
 void FichierHDFPar::prepare_dataset_props()
 {
+  FichierHDF::prepare_dataset_props();
 #ifdef MED_
   if(collective_op_)
     H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);
 #endif
 
-  //int rank = Process::me();
+  // int rank = Process::me();
 
-  // Build expected dataset name for the current proc (with the trailing _000x stuff)
-  //Nom dataset_full_name = dataset_name;
-  //dataset_full_name.nom_me(rank);
-
+  // //Build expected dataset name for the current proc (with the trailing _000x stuff)
+  // Nom dataset_full_name = dataset_name;
+  // dataset_full_name.nom_me(rank);
 }
+
+void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie)
+{
+  hsize_t lenData = sortie.get_size();
+  const char * data = sortie.get_data();
+
+  create_and_fill_dataset(dataset_basename, data, lenData, H5T_NATIVE_OPAQUE);
+}
+
+
+void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, SChaine& sortie)
+{
+  hsize_t lenData = sortie.get_size();
+  const char * data = sortie.get_str();
+
+  create_and_fill_dataset(dataset_basename, data, lenData, H5T_C_S1);
+}
+
+
+#ifdef MED_
+void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype)
+{
+  //collecting the lengths of the datasets from every other processors
+  long long init_value = lenData;
+  std::vector<long long> datasets_len(Process::nproc(), init_value);
+  envoyer_all_to_all(datasets_len, datasets_len);
+
+  // Creating the datasets from every processor
+  // (metadata have to be written collectively)
+  std::vector<hid_t> datasets_id(Process::nproc());
+  for(int p = 0; p < Process::nproc(); p++)
+    {
+      Nom dname = dataset_basename;
+      dname = dname.nom_me(p, 0, 1 /*without_padding*/);
+      hsize_t dlen= datasets_len[p];
+      hid_t dspace = H5Screate_simple(1, &dlen, NULL);
+
+      datasets_id[p] = H5Dcreate2(file_id_, dname, datatype, dspace,
+                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+      H5Sclose(dspace);
+    }
+
+  hid_t dataspace_id = H5Screate_simple(1, &lenData, NULL);
+
+  // Writing my own dataset
+  H5Dwrite(datasets_id[Process::me()], datatype, dataspace_id, H5S_ALL, dataset_transfer_plst_, data);
+
+  // Close dataset and dataspace
+  for(int p = 0; p < Process::nproc(); p++)
+    H5Dclose(datasets_id[p]);
+  H5Sclose(dataspace_id);
+}
+#endif

@@ -589,21 +589,21 @@ Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
   int digits=0,diviseur=0;
   if(without_padding)
     {
-      digits = log10(n)+1;
+      digits = (n==0) ? 1 : log10(n)+1;
       diviseur = pow(10, digits-1);
     }
   else
     {
       if (Process::nproc()<=10000)
         {
-    	  //the underscore will be taken into account later
+          //the underscore will be taken into account later
           //digits=5;
           digits=4;
           diviseur=1000;
         }
       else if (Process::nproc()<=100000)
         {
-    	  //the underscore will be taken into account later
+          //the underscore will be taken into account later
           //digits=6;
           digits=5;
           diviseur=10000;

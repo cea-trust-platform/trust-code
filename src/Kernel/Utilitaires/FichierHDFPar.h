@@ -23,6 +23,7 @@
 #define FichierHDFPar_included
 #include <FichierHDF.h>
 #include <mpi.h>
+#include <SChaine.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,14 +42,18 @@ public:
     collective_op_ = b;
   }
 
+  // Multiple Writers methods
+  // every processor writes their own dataset into the file
+  void create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie);
+  void create_and_fill_dataset(Nom dataset_basename, SChaine& sortie);
+
 protected:
   virtual void prepare_file_props();
-#ifdef MED_
-  virtual void prepare_write_dataset_props(hsize_t datasetLen);
-#endif
-  virtual void prepare_read_dataset_props();
-  void prepare_dataset_props();
+  virtual void prepare_dataset_props();
 
+#ifdef MED_
+  void create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
+#endif
 private:
   // Forbid copy:
   FichierHDFPar& operator=(const FichierHDFPar&);

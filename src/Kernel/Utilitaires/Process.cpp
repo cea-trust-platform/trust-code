@@ -437,7 +437,6 @@ void end_journal(int verbose_level)
   if(journal_shared_)
     {
       FichierHDFPar fic_hdf;
-      fic_hdf.set_collective_op(true);
       fic_hdf.create(journal_file_name_);
       fic_hdf.create_and_fill_dataset("/log", journal_shared_stream_);
       fic_hdf.close();
