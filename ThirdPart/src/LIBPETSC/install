@@ -413,8 +413,12 @@ then
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
    #[ $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
-   # New (Pardiso). Uniquement si support d'OpenMP par TRUST:
-   [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
+   # PARDISO
+   if [ -f $MKLROOT/include/mkl_pardiso.h ]
+   then
+      with_packages=$with_packages" --with-mkl_cpardiso=1 --with-mkl_pardiso-dir=$MKLROOT" 	# Cluster Pardiso (MPI)
+      [ "$PETSC_HAVE_OPENMP" = 1 ] && with_packages=$with_packages" --with-mkl_pardiso=1" 	# Pardiso (OpenMP) Uniquement si support d'OpenMP par TRUST
+   fi
 
    # MUMPS et SUPERLU necessitent desormais parmetis
    [ "$TRUST_INT64" = "1" ] && add_package metis # Only in build 64 since MUMPS has been disabled ?
@@ -511,7 +515,16 @@ then
    exit -1
 fi
 
-with_64bit_indices="" && [ "$TRUST_INT64" = "1" ] && with_64bit_indices="--with-64-bit-indices"
+#############
+# TRUST_INT64
+#############
+with_64bit_indices=""
+if [ "$TRUST_INT64" = "1" ]
+then
+   with_64bit_indices="--with-64-bit-indices" 
+   # with_64bit_indices="--with-64-bit-indices --with-64-bit-blas-indices" # Si on veut aussi activer int64 dans MKL Blas ou OpenBlas, pas d'interet pour le moment. Voir:
+   # https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBLASInt.html
+fi
 
 ###############
 # Loop on build
@@ -534,7 +547,7 @@ do
 
    if [ "$TRUST_INT64" = "1" ]
    then
-      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env |sed "s/-fdefault-integer-8//g" `
+      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" `
    else
       FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
    fi
