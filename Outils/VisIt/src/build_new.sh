@@ -1,0 +1,100 @@
+#!/bin/bash
+# PL: Reecrit depuis VisIt 3.1.1
+clean()
+{
+   # On ne nettoie plus ?
+   echo $ECHO_OPTS "Not cleaning for the moment...\c"
+   return
+   # Nettoyage des paquets
+   echo $ECHO_OPTS "Cleaning...\c"
+   for suffix in tar.gz tgz zip tar.bz2 tar.xz
+   do
+      [ -d ${paquet%.$suffix} ] 	&& rm -r -f ${paquet%.$suffix}
+      rm -f $paquet.$suffix
+   done
+   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  
+   rm -f build_visit2_5_2* build_visit*help
+   rm -f build_visit*"_log" *.cmake *.conf tmp* *.py releases
+   echo "OK"
+}
+
+#########
+# Options
+#########
+[ "$1" = "" ] && echo "Usage: `basename $0` clean | package [parallel]" && exit -1
+package=$1 && [ "$package" = clean ] && clean && exit 0
+build_parallel=$2
+# Variables:
+vp=`echo $package | $TRUST_Awk -F. '{gsub("visit","",$1);gsub("_",".",$1);print $1}'`
+vt=`echo $vp | $TRUST_Awk '{gsub("\\\.","_",$1);print $1}'`
+src=visit$vp.tar.gz
+build=build_visit$vt
+
+###########################
+# Recuperation des packages
+###########################
+for file in `ls $TRUST_ROOT/externalpackages/VisIt/*`
+do
+   ln -sf $file .
+done
+
+###############
+# Configuration
+###############
+conda=$TRUST_ROOT/exec/python
+options="--tarball $src"					# Construction de VisIt depuis les sources
+options=$options" --prefix $TRUST_ROOT/exec/VisIt"		# Repertoire installation
+options=$options" --cc $TRUST_cc_BASE"				# Compilateur C
+options=$options" --cxx $TRUST_CC_BASE"				# Compilateur C++
+options=$options" --fc $TRUST_F77_BASE" 			# Compilateur Fortran
+options=$options" --makeflags -j$TRUST_NB_PROCS"		# Parallel build
+options=$options" --thirdparty-path $TRUST_TMP" 		# Pour partage par plusieurs installations TRUST des 3rd party
+options=$options" --system-cmake --alt-cmake-dir $conda" 	# Cmake de Miniconda
+options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
+options=$options" --no-sphinx"					# Disable pour eviter l'installation de Python3 et pas mal de modules...
+#options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
+if [ "$build_parallel" != "" ]
+then
+   export PAR_COMPILER=$TRUST_cc
+   export PAR_COMPILER_CXX=$TRUST_CC
+   export PAR_INCLUDE=-I$MPI_INCLUDE
+   export PAR_LIBS=""
+   options=$options" --parallel"			# Construction de VisIt parallele
+   options=$options" --osmesa --llvm"			# OsMesa3D en // pour faster rendering (LLVM prerequis de OsMesa3D)
+   options=$options" --no-icet"				# Car icet (optimisation du rendering en //) ne compile pas
+fi
+if [ "`hostnamectl status | grep Virtualization`" != "" ]
+then
+   # https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/gui_manual/Building/Advanced_Usage.html#building-with-mesa-as-the-opengl-implementation
+   options=$options" -mesagl" 				# Si machine virtuelle (pas teste) ou OpenGL trop vieux pour VTK
+fi
+
+########
+# Hacks:
+########
+unset OPT 												# Sinon numpy plante a la compilation car $OPT utilise...
+pkg=xorg-libsm && [ "`conda list $pkg | grep -v '\#'`" = "" ] && conda install -c conda-forge $pkg -y	# Sinon /usr/bin/ld: /usr/lib64/libSM.so: undefined reference to `uuid_generate@UUID_1.0'
+VISIT_QT_DIR="VISIT_OPTION_DEFAULT(VISIT_QT_DIR \${QT_BIN_DIR}/..)"					# VISIT_QT_DIR non fixe lors du build de VisIt
+if [ "`grep "$VISIT_QT_DIR" $build`" = "" ]
+then
+   sed -i "1,$ s?VISIT_OPTION_DEFAULT(VISIT_QT_BIN?$VISIT_QT_DIR\nVISIT_OPTION_DEFAULT(VISIT_QT_BIN?" $build	
+fi
+
+########
+# Build:
+########
+./$build --help | tee ./$build.help
+log=build_visit$vt"_log"
+rm -r -f $log
+echo -e "yes\n" | ./$build $options
+if [ $? != 0 ]
+then
+   echo "$build_visit failed in `basename $0`. See $log"
+   exit -1
+else
+   echo "$build_visit succeeds."
+   (cd $TRUST_ROOT/exec/VisIt && ln -s -f $vp current)	# Creation d'un lien current pour fonctionnement du script install
+   #rm -r -f visit$vt 		# Sources inutiles une fois le build construit
+   #rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
+   #rm -f $log
+fi

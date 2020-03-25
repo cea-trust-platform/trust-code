@@ -9,34 +9,16 @@ installation_visit()
       # Securite on verifie que le visit_install va pas tourner sur lui meme et remplir le disque
       [ `echo $ECHO_OPTS "1\n"` != 1 ] && echo "Problem in installation_visit" && exit -1
       # Desormais le visit-install a le numero de version
-      echo $ECHO_OPTS "1\nn" | ./$visit_install $version_visit $ARCH $TRUST_ROOT/exec/VisIt  1>visit-install.log 2>&1
-      [ $? != 0 ] && cat visit-install.log && echo "Installation of VisIt failed. See `pwd`/visit-install.log" && exit -1
+      echo $ECHO_OPTS "1\nn" | ./$visit_install ${version_visit#v} $ARCH $TRUST_ROOT/exec/VisIt 1>visit-install.log 2>&1
+      [ $? != 0 ] && cat visit-install.log && echo "Installation of VisIt failed!" && echo "See `pwd`/visit-install.log" && exit -1
       rm -f $package
    fi
    # Ajout en debut du script visit d'un appel a check_visit
    # pour faire des verifications et ajouter des messages 
    # pour les utilisateurs:
-   # 2.6.1 desormais le script est en shell pas en perl
-   # Le chargement de l'environnement personnel TRUST est fait pour contourner 
-   # le plantage VisIt sur certaines machines
-   # en activant eventuellement la variable LIBGL_ALWAYS_INDIRECT=1 
-   if [ "`grep 'exec perl' $TRUST_ROOT/exec/VisIt/bin/visit`" != "" ]
-   then
-      echo $ECHO_OPTS "1,$ s?exec perl ?\${0%visit}/../check_visit \$\*;[ -f ~/.perso_TRUST.env ] \&\& . ~/.perso_TRUST.env;exec perl ?g\nw" | ed $TRUST_ROOT/exec/VisIt/bin/visit 1>/dev/null 2>&1
-      [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
-   else
-      # source ne marche pas en /bin/sh donc .
-      # Pour les versions 2.6.x, l'environnement Python doit etre charge
-      python_env=";" # && [ -f $TRUST_ROOT/exec/python/env.sh ] && python_env=";. $TRUST_ROOT/exec/python/env.sh"
-      echo $ECHO_OPTS "1,$ s?# Determine VisIt architecture?\${0%visit}/../check_visit \$\* 2\>/dev/null;[ -f ~/.perso_TRUST.env ] \&\& . ~/.perso_TRUST.env$python_env?g\nw" | ed $TRUST_ROOT/exec/VisIt/bin/visit 1>/dev/null 2>&1
-      [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
-   fi
+   sed -i "1,$ s?#!\/bin/sh?#!\/bin/bash\nsource \$TRUST_ROOT/Outils/VisIt/check_visit \$\*?g" $TRUST_ROOT/exec/VisIt/bin/visit 1>/dev/null 2>&1
+   [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
 }
-
-# suppression de python/conda du path :
-OLDPATH_=$PATH
-NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
-export PATH=$NEWPATH_
 
 # Definition de TMPDIR car utilise par Visit pour l'installation
 # Si faite par sudo et que TMPDIR vide, $HOME est pris ce qui cree des permission denied (cezanne30)
@@ -62,13 +44,38 @@ then
 fi
 version=$1
 what=$2
-echo $version $what
+parallel=""
+# PL: Migration progressive avec les nouvelles machines vers une procedure plus propre a partir de VisIt 3.1.1
+# Ajouter les OS uniquement si l'ancienne procedure avec VisIt 2.12.1 ne marche pas:
+[ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]             && new=1
+[ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]             && new=1
+[ "`grep 'Ubuntu 18' /etc/issue 2>/dev/null`" != "" ] 	                        && new=1
+[ "`grep 'Ubuntu 19' /etc/issue 2>/dev/null`" != "" ]                        	&& new=1
+[ "`grep 'Fedora release 27' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
+[ "`grep 'Fedora release 28' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
+[ "`grep 'Fedora release 29' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
+[ "`grep 'Fedora release 30' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
+if [ "$new" = 1 ]
+then
+   # Nouvelle procedure
+   build=build_new.sh
+   version=$3
+   export HTTPS="https://github.com/visit-dav/visit/releases/download"
+   version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
+   [ "$MPI_ROOT" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ] && parallel="parallel" # Construction de VisIt parallele uniquement sur cluster desormais
+else
+   # Ancienne procedure, peu a peu obsolete
+   build=build.sh
+   # suppression de python/conda du path :
+   OLDPATH_=$PATH
+   NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
+   export PATH=$NEWPATH_
+   export HTTPS="http://portal.nersc.gov/project/visit/releases https://wci.llnl.gov/simulation/computer-codes/visit/executables http://visit.ilight.com/svn/visit/trunk/releases"
+   version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
+  [ "$MPI_ROOT" != "" ] && parallel="parallel"
+fi   
 
-########################
-# Encore des variables #
-########################
-version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
-export HTTPS="http://portal.nersc.gov/project/visit/releases https://wci.llnl.gov/simulation/computer-codes/visit/executables http://visit.ilight.com/svn/visit/trunk/releases"
+echo $version $what $version_visit
 
 ##############################
 # Script visit-install a jour?
@@ -111,7 +118,6 @@ if [ $what = visit ]
 then
    if [ ! -f $package ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
-      parallel="" && [ "$MPI_ROOT" != "" ] && parallel="parallel"
       echo "#################################################"
       echo "# Trying to build a $parallel version for VisIt..."
       echo "#################################################"
@@ -125,7 +131,7 @@ then
 	  cd $build_dir
       fi
       cd src
-      ./build.sh $package $parallel 
+      ./$build $package $parallel 
       status=$?
       if [ $status -ne 0 ]
       then
@@ -134,13 +140,13 @@ then
 	 LDADD=$(find $PWD/visit/python/ -name python | grep bin | sed "s?/bin/python?/lib?")
          export LD_LIBRARY_PATH=$LDADD:$LD_LIBRARY_PATH
 
-         ./build.sh $package $parallel
+         ./$build $package $parallel
          status=$?
          if [ $status -ne 0 ] && [ "$parallel" != "" ]
          then
             echo "Try sequentiel compilation"
-	    ./build.sh clean
-            ./build.sh $package
+	    ./$build clean
+            ./$build $package
          fi
       fi 
       cd $org_dir
@@ -182,7 +188,22 @@ then
             else
                ARCH=linux-x86_64-rhel7-wmesa
             fi
-	 else
+	 elif [ $version = 3_1_1 ]
+	 then
+            [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu16
+            [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu18
+            [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu19
+            [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
+            [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
+            [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
+            [ "`grep 'Fedora release 27' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
+            [ "`grep 'Fedora release 28' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
+            [ "`grep 'Fedora release 29' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
+            [ "`grep 'Fedora release 30' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
+            [ "`grep 'Red' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7
+            [ "$os" = "" ] && echo "OS not detected." && exit -1
+	    ARCH=linux-x86_64-$os
+	 else   
             echo "No ARCH defined yet for $version."
 	    exit -1
 	 fi
@@ -327,7 +348,6 @@ then
       echo $ECHO_OPTS "1,$ s?root, tuser, tdate?root, tuser, string.replace(tdate, \":\", \"-\")?g\nw" | ed $file 1>/dev/null 2>&1
       [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1   
    fi
-   
    ########################################################################
    # Customize customlauncher for several tasks (called by internalauncher)
    ########################################################################
@@ -379,7 +399,7 @@ then
 #      if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
 #      then
 	 cd $TRUST_ROOT/Outils/VisIt/src 
-	 ./build.sh clean
+	 ./$build clean
 #      fi      
    fi
 else
