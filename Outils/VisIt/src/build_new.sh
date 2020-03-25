@@ -79,11 +79,13 @@ if [ "`grep "$VISIT_QT_DIR" $build`" = "" ]
 then
    sed -i "1,$ s?VISIT_OPTION_DEFAULT(VISIT_QT_BIN?$VISIT_QT_DIR\nVISIT_OPTION_DEFAULT(VISIT_QT_BIN?" $build	
 fi
+mkdir -p $TRUST_ROOT/exec/VisIt  									# Important sinon current pas cree au premier make install
 
 ########
 # Build:
 ########
-./$build --help | tee ./$build.help
+echo "Creating `pwd`/$build.help ..."
+./$build --help 1>./$build.help 2>&1 
 log=build_visit$vt"_log"
 rm -r -f $log
 echo -e "yes\n" | ./$build $options
@@ -93,7 +95,7 @@ then
    exit -1
 else
    echo "$build_visit succeeds."
-   (cd $TRUST_ROOT/exec/VisIt && ln -s -f $vp current)	# Creation d'un lien current pour fonctionnement du script install
+   #(cd $TRUST_ROOT/exec/VisIt && ln -s -f $vp current)	# Creation d'un lien current pour fonctionnement du script install
    #rm -r -f visit$vt 		# Sources inutiles une fois le build construit
    #rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
    #rm -f $log

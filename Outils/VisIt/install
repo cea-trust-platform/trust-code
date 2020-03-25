@@ -116,6 +116,7 @@ ARCH=`uname -s | awk '{print tolower($1)}'`
 export package=visit$version.$ARCH.tar.gz
 if [ $what = visit ] 
 then
+   status=0
    if [ ! -f $package ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
       echo "#################################################"
@@ -147,13 +148,14 @@ then
             echo "Try sequentiel compilation"
 	    ./$build clean
             ./$build $package
+	    status=$?
          fi
       fi 
       cd $org_dir
    fi
    # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe
    # auquel cas la construction parallele DOIT avoir fonctionne
-   if [ "$TRUST_DOWNLOAD_VISIT" = 1 ]
+   if [ "$TRUST_DOWNLOAD_VISIT" = 1 ] || [ "$status" != 0 ]
    then
       echo "###########################################"
       echo "# Trying to download a version for VisIt..."
