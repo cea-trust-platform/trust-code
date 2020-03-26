@@ -74,7 +74,7 @@ make_tools()
    done
    if [ "$err_tool" = 1 ]
    then
-      echo "A tool failed to build. Contact TRUST support." && echo "BUILD_TOOLS=KO" | tee -a $COMPILE && exit -1
+      echo "A tool failed to build. Contact TRUST support by sending $COMPILE and $TRUST_ENV/machine.env files." && echo "BUILD_TOOLS=KO" | tee -a $COMPILE && exit -1
    else
       echo "END"
       echo >>$COMPILE
@@ -82,7 +82,6 @@ make_tools()
       echo >>$COMPILE
    fi
 }
-
 
 ###################
 # DEBUT DU SCRIPT #
@@ -241,7 +240,7 @@ then
 	       echo $ECHO_OPTS "-> $exec is deleted."
 	       rm -f $exec
 	    fi 
-	    echo "A library failed to build. Contact TRUST support."
+	    echo "A library failed to build. Contact TRUST support by sending $COMPILE and $TRUST_ENV/machine.env files."
 	    echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
 	 fi
          \cd ..
