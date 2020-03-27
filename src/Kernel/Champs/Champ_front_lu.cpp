@@ -254,7 +254,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
         if (compteur[face] == 0)
           Cerr << "No value found for the face " << face << "/" << nb_faces-1 << " of the boundary " << frontiere.le_nom() << " on the processor " << Process::me() << ".";
         else
-          Cerr << "Several valeurs found for the face " << face << "/" << nb_faces-1 << " of the boundary " << frontiere.le_nom() << " on the processor " << Process::me() << ".";
+          Cerr << "Several values found for the face " << face << "/" << nb_faces-1 << " of the boundary " << frontiere.le_nom() << " on the processor " << Process::me() << ".";
         Cerr << " Coordinates: " << xv(ndeb+face,0) << " " << xv(ndeb+face,1);
         if (dimension==3) Cerr << " " << xv(ndeb+face,2);
         Cerr << finl;
