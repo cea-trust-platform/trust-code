@@ -1896,7 +1896,7 @@ void operator_divide(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt
         {
           const double x = *x_ptr;
           double& p_resu = *(resu_ptr++);
-          assert(x!=0.0);
+          assert(x!=0.);
           p_resu /= x;
           x_ptr++;
         }
@@ -2196,6 +2196,7 @@ void operator_divide(DoubleVect& resu, const double x, Mp_vect_options opt)
       for (; count; count--)
         {
           double& p_resu = *(resu_ptr++);
+          assert(x!=0.);
           p_resu /= x;
         }
     }
