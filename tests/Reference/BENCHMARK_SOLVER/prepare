@@ -1,0 +1,9 @@
+# Decoupage du cas parallele #
+cas=1680 # Cas 1680 mailles
+cas=""	 # Cas 326152 mailles
+gunzip -c $TRUST_ROOT/tests/Reference/Cx/cylindre.geom.gz > cylindre.geom
+trust dec$cas
+
+# Preparation du verifie #
+echo "Check_solver.sh -all -not_lml par$cas" > verifie
+chmod +x verifie

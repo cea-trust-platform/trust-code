@@ -1,0 +1,31 @@
+
+dimension 3
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Cavite
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 8 4 3
+                Longueurs 0.02 0.01 0.006
+                Facteurs 1. 1.1 1.1
+                Symy Symz
+                }
+                {
+                Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
+                Bord Haut   Y = 0.01  0. <= X <= 0.02 0. <= Z <= 0.006
+                Bord Bas    Y = 0.    0. <= X <= 0.02 0. <= Z <= 0.006
+                Bord Droit  X = 0.02  0. <= Y <= 0.01 0. <= Z <= 0.006
+                Bord Sud    Z = 0.    0. <= X <= 0.02 0. <= Y <= 0.01
+                Bord Nord   Z = 0.006 0. <= X <= 0.02 0. <= Y <= 0.01
+                }
+}
+Tetraedriser_homogene dom
+Partition dom
+{
+        Partition_tool Metis { Nb_parts 4 }
+        Larg_joint 2
+        zones_name DOM
+}
+
