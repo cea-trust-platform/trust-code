@@ -33,7 +33,7 @@ build=build_visit$vt
 ###########################
 # Recuperation des packages
 ###########################
-for file in `ls $TRUST_ROOT/externalpackages/VisIt/*`
+for file in `ls ../../../externalpackages/VisIt/*`
 do
    ln -sf $file .
 done
@@ -66,7 +66,7 @@ fi
 if [ "`hostnamectl status | grep Virtualization`" != "" ]
 then
    # https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/gui_manual/Building/Advanced_Usage.html#building-with-mesa-as-the-opengl-implementation
-   options=$options" -mesagl" 				# Si machine virtuelle (pas teste) ou OpenGL trop vieux pour VTK
+   options=$options" --mesagl --llvm" 			# Si machine virtuelle (pas teste) ou OpenGL trop vieux (ex: is213120)
 fi
 
 ########
@@ -95,8 +95,7 @@ then
    exit -1
 else
    echo "$build_visit succeeds."
-   #(cd $TRUST_ROOT/exec/VisIt && ln -s -f $vp current)	# Creation d'un lien current pour fonctionnement du script install
-   #rm -r -f visit$vt 		# Sources inutiles une fois le build construit
-   #rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
+   rm -r -f visit$vt 		# Sources inutiles une fois le build construit
+   rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
    #rm -f $log
 fi
