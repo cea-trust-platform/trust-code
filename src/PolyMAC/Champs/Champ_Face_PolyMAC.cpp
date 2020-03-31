@@ -378,7 +378,7 @@ void Champ_Face_PolyMAC::init_va() const
 }
 
 /* vitesse aux elements */
-void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val) const
+void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit) const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
@@ -390,9 +390,15 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val) const
   val = 0;
   for (e = 0; e < val.dimension(0); e++) for (j = zone.vedeb(e); j < zone.vedeb(e + 1); j++)
       if (icl(f = zone.veji(j), 0) < 2) //vitesse calculee
-        for (r = 0; r < dimension; r++) val(e, r) += zone.veci(j, r) * inco(f) * pf(f) / pe(e);
+        {
+          const double coef = is_vit ? pf(f) / pe(e) : 1.0;
+          for (r = 0; r < dimension; r++) val(e, r) += zone.veci(j, r) * inco(f) * coef;
+        }
       else if (icl(f, 0) == 3) for (k = 0; k < dimension; k++) for (r = 0; r < dimension; r++) //Dirichlet
-            val(e, r) += zone.veci(j, r) * ref_cast(Dirichlet, cls[icl(f, 1)].valeur()).val_imp(icl(f, 2), k) * nf(f, k) / fs(f) * pf(f) / pe(e);
+            {
+              const double coef = is_vit ? pf(f) / pe(e) : 1.0;
+              val(e, r) += zone.veci(j, r) * ref_cast(Dirichlet, cls[icl(f, 1)].valeur()).val_imp(icl(f, 2), k) * nf(f, k) / fs(f) * coef;
+            }
 }
 
 /* gradient d_j v_i aux elements */
@@ -471,7 +477,8 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   DoubleTrav ve(0, dimension);
   zone.zone().domaine().creer_tableau_elements(ve);
-  interp_ve(cha.valeurs(), ve);
+  bool is_vit = cha.le_nom().debute_par("vitesse");
+  interp_ve(cha.valeurs(), ve, is_vit);
   for (int p = 0; p < les_polys.size(); p++) for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < dimension; r++) val(p, r) = ve(e, r);
   return val;
 }

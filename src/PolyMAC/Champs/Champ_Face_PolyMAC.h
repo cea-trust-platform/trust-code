@@ -96,7 +96,7 @@ public :
   mutable DoubleTab vaci, vacf;       // + (vajf, vacf)[vadeb(a, 1), vadeb(a + 1, 1)[ (val_imp aux faces de bord) + (vaja, vaca)[vadeb(., 2)] (val_imp aux aretes)
 
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void interp_ve (const DoubleTab& inco, DoubleTab& val) const;
+  void interp_ve (const DoubleTab& inco, DoubleTab& val, bool is_vit=true) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
 
