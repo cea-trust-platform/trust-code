@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/20 (TRUST)  Portability : Update PETSc to 3.12.2 version + fix build with OpenMPI 4.x + add ML the multilevel preconditionning package from Trilinos
 09/03/20 (TRUST)  Keyword     : Conduction_milieu_variable becomes obsolete and Conduction keyword can be used for conduction equation with non-uniform Rho*Cp 
 25/02/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model was not computed correctly
 21/02/20 (TRUST)  Bug fixed   : Rewrite Champ_Fonc_MED class for a faster Champ_Fonc_MED_tabule keyword (read of several time steps in a MED file for field time-tabulation)

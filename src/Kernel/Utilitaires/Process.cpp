@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -324,7 +324,7 @@ Sortie& Process::Journal(int message_level)
 // Renvoie la ram occupee par un processeur
 double Process::ram_processeur()
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   PetscLogDouble memoire;
   PetscMemoryGetCurrentUsage(&memoire);
   return memoire;

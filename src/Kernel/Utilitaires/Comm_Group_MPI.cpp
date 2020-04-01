@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -552,7 +552,7 @@ void Comm_Group_MPI::set_trio_u_world(MPI_Comm world)
            << " set_trio_u_world call is forbidden" << finl;
       exit();
     }
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   PETSC_COMM_WORLD= world;
 #endif
   trio_u_world_ = world;
