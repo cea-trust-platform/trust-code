@@ -73,7 +73,7 @@ fi
 # Hacks:
 ########
 unset OPT 												# Sinon numpy plante a la compilation car $OPT utilise...
-pkg=xorg-libsm && [ "`conda list $pkg | grep -v '\#'`" = "" ] && conda install -c conda-forge $pkg -y	# Sinon /usr/bin/ld: /usr/lib64/libSM.so: undefined reference to `uuid_generate@UUID_1.0'
+#pkg=xorg-libsm && [ "`conda list $pkg | grep -v '\#'`" = "" ] && conda install -c conda-forge $pkg -y	# Sinon /usr/bin/ld: /usr/lib64/libSM.so: undefined reference to `uuid_generate@UUID_1.0'
 VISIT_QT_DIR="VISIT_OPTION_DEFAULT(VISIT_QT_DIR \${QT_BIN_DIR}/..)"					# VISIT_QT_DIR non fixe lors du build de VisIt
 if [ "`grep "$VISIT_QT_DIR" $build`" = "" ]
 then
