@@ -8,7 +8,7 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 14 14 14 # 109760 cells after tetraedrized (14*14*14*40) #
+        Nombre_de_Noeuds 15 15 15 # 109760 cells after tetraedrized (14*14*14*40) #
         Longueurs 10 10 3
     }
     {
