@@ -161,7 +161,7 @@ void Op_Diff_PolyMAC_Elem::update_delta() const
 
   //prerequis : delta_int interne + dans les CL Echange_contact
   update_delta_int();
-  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs();
   //calcul final de delta_f
   for (f = 0; f < zone.nb_faces_tot(); f++) for (n = 0; n < N; n++)
@@ -256,7 +256,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_termes_croises(const DoubleTab& inco, const P
 
   //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
   update_nu(), update_delta();
-  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).update_delta();
 
   for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
@@ -288,7 +288,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, cons
 
   //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
   update_nu(), update_delta();
-  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).update_delta();
 
   for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
@@ -322,7 +322,7 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
 
   //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
   update_nu(), update_delta();
-  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).update_delta();
   flux_bords_ = 0;
 
@@ -379,7 +379,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
 
   //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
   update_nu(), update_delta();
-  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()) && ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).monolithic)
+  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       ref_cast_non_const(Echange_contact_PolyMAC, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).update_delta();
 
   /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
