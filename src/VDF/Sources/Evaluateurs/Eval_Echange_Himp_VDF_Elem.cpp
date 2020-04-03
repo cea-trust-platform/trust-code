@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,18 +24,8 @@
 #include <Champ_Inc.h>
 #include <Champ_Uniforme.h>
 
-void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Don& ch_rho,
-                                                 const Champ_Don& Cp,const Champ_Inc& tc, const Champ_Inc& tv,
-                                                 const double dh)
+void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Inc& tc, const Champ_Inc& tv, const double dh)
 {
-  std::cerr << rho_cst << " " << Cp_cst << std::endl;
-  this->rho=ch_rho;
-  rho_cst=sub_type(Champ_Uniforme,ch_rho.valeur())?true:false;
-  rho_=ch_rho(0,0);
-  this->champ_Cp_=Cp;
-  Cp_cst=sub_type(Champ_Uniforme,Cp.valeur())?true:false;
-  Cp_=Cp(0,0);
-  std::cerr << rho_cst << " " << Cp_cst << std::endl;
   this->h_ = dh;
   T = tc;
   T_voisin = tv;

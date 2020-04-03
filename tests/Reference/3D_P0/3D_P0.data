@@ -78,7 +78,7 @@ Read pb
 			precond ssor { omega 1.6 }
 			seuil 1.e-11 impr 
 		} 
-		solveur_bar Cholesky { }
+		solveur_bar petsc cholesky { }
 
                 convection { muscl }
                 diffusion  {  }

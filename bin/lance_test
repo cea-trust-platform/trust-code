@@ -1156,8 +1156,8 @@ then
 			       TPS=`echo $ECHO_OPTS $DEB:$FIN | $TRUST_Awk '{split($0,a,":");tps=3600*(a[4]-a[1])+60*(a[5]-a[2])+a[6]-a[3];if (tps<0) {tps+=86400};printf("%5.1f",tps)}'`
 			    fi
 			    TPS=$TPS"s"
-			    # Analyse de la memoire prise :
-			    MEM=`$TRUST_Awk 'BEGIN {mem=0} / RAM / {if ($1>mem) mem=$1} END {if (mem==0) print "?"; else print mem}' $NOM2.out`
+			    # Analyse de la memoire max prise :
+			    MEM=`$TRUST_Awk 'BEGIN {mem=0} / MBytes of RAM / {if ($1>mem) mem=$1} END {if (mem==0) print "?"; else print mem}' $NOM2.out`
 			    l=${#MEM}
 			    case $l in
 				1) MEM="..."$MEM"Mo";;

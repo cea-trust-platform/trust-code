@@ -46,7 +46,10 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   cmake $options -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
   
   $TRUST_MAKE  || exit -1
-  make install || exit -1 
+  make install || exit -1
+
+  # Clean build folder
+  ( cd .. ; rm -rf hdf5* )
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_HDF" ]; then
     echo "Variable TRUST_USE_EXTERNAL_HDF has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_HDF"

@@ -29,7 +29,7 @@
 #include <Champ_Uniforme.h>
 
 Implemente_instanciable_sans_constructeur(Conduction,"Conduction",Equation_base);
-
+// XD Conduction eqn_base Conduction -1 Heat equation.
 Conduction::Conduction()
 {
   // champs_compris_.ajoute_nom_compris("temperature_paroi");
@@ -89,16 +89,21 @@ void Conduction::set_param(Param& param)
   param.ajouter_non_std("Traitement_particulier",(this));
 }
 
+//  Modification par rapport a Conduction::lire_motcle_non_standard()!
 int Conduction::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
   if (mot=="diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : " << finl;
+
       terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
       is >> terme_diffusif;
-      // le champ pour le dt_stab est le meme que celui de l'operateur
-      terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
+      // le champ pour le dt_stab est le meme que celui de l'operateur. On prend toujours la diffusivite()
+      // comme dans le cas de Conduction
+      terme_diffusif.associer_diffusivite_pour_pas_de_temps(milieu().diffusivite());
+      solveur_masse->set_name_of_coefficient_temporel("rho_cp_comme_T");
+
       return 1;
     }
   else if (mot=="Traitement_particulier")
@@ -142,9 +147,10 @@ int Conduction::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return 1;
 }
 
+// retourne la *conductivite* et non la diffusivite comme dans Conduction
 const Champ_Don& Conduction::diffusivite_pour_transport()
 {
-  return milieu().diffusivite();
+  return milieu().conductivite();
 }
 
 const Champ_base& Conduction::diffusivite_pour_pas_de_temps()
@@ -192,13 +198,6 @@ void Conduction::associer_solide(const Solide& un_solide)
   const Champ_Don& rho = un_solide.masse_volumique();
   const Champ_Don& Cp = un_solide.capacite_calorifique();
 
-  if (! ( (sub_type(Champ_Uniforme,rho.valeur())) &&
-          (sub_type(Champ_Uniforme,Cp.valeur())) )   )
-    {
-      Cerr << "ERROR: Conduction equation: one of the physical properties rho ou Cp is not of type Champ_Uniforme!" << finl;
-      Cerr << "Consider using Conduction_Milieu_Variable instead of Conduction." << finl;
-      Process::exit(-1);
-    }
   if  ( (rho(0,0) <= 0) || (Cp(0,0) <= 0) )
     {
       Cerr << "ERROR: Conduction equation: one of the physical properties rho ou Cp is not striclty positive." << finl;
@@ -401,6 +400,13 @@ void Conduction::creer_champ(const Motcle& motlu)
 
 const Champ_base& Conduction::get_champ(const Motcle& nom) const
 {
+  /*
+    if (nom=="rho_cp")
+      {
+        const Champ_base& rho_cp=solide().get_rho_cp();
+        return rho_cp;
+      }
+  */
   try
     {
       return Equation_base::get_champ(nom);
@@ -427,6 +433,11 @@ const Champ_base& Conduction::get_champ(const Motcle& nom) const
 void Conduction::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   Equation_base::get_noms_champs_postraitables(nom,opt);
+  if (opt==DESCRIPTION)
+    Cerr<<"Conduction : "<<champs_compris_.liste_noms_compris()<<finl;
+  else
+    nom.add(champs_compris_.liste_noms_compris());
+
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->get_noms_champs_postraitables(nom,opt);
 }

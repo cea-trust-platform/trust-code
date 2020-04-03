@@ -38,7 +38,7 @@ Read pb1
 {
 	Navier_Stokes_standard
 	{
-		solveur_pression cholesky { }
+		solveur_pression petsc cholesky { }
 		convection { muscl }
 		diffusion { }
 		initial_conditions {

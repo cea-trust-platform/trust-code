@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1571,6 +1571,7 @@ void operator_divide(IntVect& resu, const int x, Mp_vect_options opt)
       for (; count; count--)
         {
           int& p_resu = *(resu_ptr++);
+          assert(x!=0.);
           p_resu /= x;
         }
     }

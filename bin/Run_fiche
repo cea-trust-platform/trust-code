@@ -43,6 +43,8 @@ if [ "$TRUST_WITHOUT_PDFLATEX" = 1 ]
 then
   echo "WARNING! You have disabled the build of pdf documentation. You probably have a problem with latex packages." | tee Run.log
   echo "  `basename $0` WILL PROBABLY NOT produce the PDF report." | tee -a Run.log
+else
+  rm -f Run.log
 fi
 
 options=""
@@ -197,6 +199,15 @@ then
       echo ".prm files found: $prm"
       echo "There should be ONE .prm file in the src directory."
       exit -1
+   fi
+   # On verifie que la fiche prm a un format correct pour Python3, sinon on convertit
+   if [ "`file $prm | grep ISO-8859`" != "" ]
+   then
+       echo "Bad format detected for $prm:"
+       file $prm
+       echo "Converting to UTF-8..."
+       iconv -f ISO-8859-15 -t UTF-8//TRANSLIT -o $TRUST_TMP/tmp_file $prm || exit -1
+       mv -f $TRUST_TMP/tmp_file $prm
    fi
    $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee -a Run.log
    error=${PIPESTATUS[0]}

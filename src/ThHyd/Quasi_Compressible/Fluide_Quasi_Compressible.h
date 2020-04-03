@@ -61,6 +61,7 @@ public :
   void preparer_calcul();
   void preparer_pas_temps();
   virtual void abortTimeStep();
+  void update_rho_cp(double temps);
 
   inline const Loi_Etat& loi_etat() const;
   //Ajout de la methode en non const pour pouvoir modifier cahmps_compris_
@@ -142,7 +143,7 @@ protected :
   double Pth_n;  //Pression thermodynamique a l'etape precedente
   double Pth1; //Pression thermodynamique calculee pour conserver la masse
   double temps_debut_prise_en_compte_drho_dt_;
-  Champ_Don mu_sur_Sc,rho_gaz,rho_comme_v,rho_cp;
+  Champ_Don mu_sur_Sc,rho_gaz,rho_comme_v;
   mutable DoubleTab tab_W_old_;
   double omega_drho_dt_; // Facteur de relaxation sur drho_dt
   Nom output_file_; // Fichier evolution (anciennement "evol_glob")

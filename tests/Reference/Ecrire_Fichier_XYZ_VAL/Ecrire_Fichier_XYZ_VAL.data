@@ -126,7 +126,7 @@ Read pbF1
 {
  Navier_Stokes_standard
         {
-                solveur_pression Cholesky {    }
+                solveur_pression petsc cholesky { }
                 convection { amont }
                 diffusion { }
                 sources { boussinesq_temperature { T0 20. } }

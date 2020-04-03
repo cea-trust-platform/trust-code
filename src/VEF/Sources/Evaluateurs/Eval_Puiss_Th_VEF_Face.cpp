@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,14 +31,8 @@ void Eval_Puiss_Th_VEF_Face::completer()
   nb_faces_elem=la_zone->zone().nb_faces_elem();
 }
 
-void Eval_Puiss_Th_VEF_Face::associer_champs(const Champ_Don& rho,
-                                             const Champ_Don& capa,
-                                             const Champ_Don& Q)
+void Eval_Puiss_Th_VEF_Face::associer_champs(const Champ_Don& Q)
 {
-  rho_ref = rho;
-  rho_ref_ = rho(0,0);
-  Cp = capa;
-  Cp_ = capa(0,0);
   la_puissance = Q;
   puissance.ref(Q.valeurs());
 }

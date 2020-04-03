@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -193,17 +193,12 @@ void Modele_turbulence_scal_base::associer(const Zone_dis& , const Zone_Cl_dis& 
 void Modele_turbulence_scal_base::discretiser()
 {
   Cerr << "Turbulence scalar model discretization" << finl;
-  discretiser_diff_turb(mon_equation->schema_temps(),mon_equation->zone_dis(),
-                        la_diffusivite_turbulente);
-  champs_compris_.ajoute_champ(la_diffusivite_turbulente);
-}
-
-void Modele_turbulence_scal_base::discretiser_diff_turb(const Schema_Temps_base& sch,
-                                                        Zone_dis& z, Champ_Fonc& ch) const
-{
-  Cerr << "Turbulent diffusivity discretization" << finl;
+  const Schema_Temps_base& sch = mon_equation->schema_temps();
   const Discretisation_base& dis = mon_equation->discretisation();
-  dis.discretiser_champ("champ_elem",z.valeur(),"diffusivite_turbulente","m2/s",1,sch.temps_courant(),ch);
+  const Zone_dis& z = mon_equation->zone_dis();
+  dis.discretiser_champ("champ_elem",z.valeur(),"diffusivite_turbulente","m2/s",1, sch.temps_courant(),diffusivite_turbulente_);
+  dis.discretiser_champ("champ_elem",z.valeur(),"conductivite_turbulente","W/m/K",1, sch.temps_courant(),conductivite_turbulente_);
+  champs_compris_.ajoute_champ(diffusivite_turbulente_);
 }
 
 // Description:

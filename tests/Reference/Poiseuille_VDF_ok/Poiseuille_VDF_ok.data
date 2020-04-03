@@ -71,7 +71,7 @@ Read pb
 {
 	Navier_Stokes_standard
 	{
-		solveur_pression Cholesky { }
+		solveur_pression petsc cholesky { }
 		convection { negligeable }
 		diffusion { }
 		initial_conditions {

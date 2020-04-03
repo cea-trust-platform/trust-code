@@ -60,6 +60,7 @@ public:
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   inline void completer_();
   int impr(Sortie& os) const;
 protected:
@@ -1961,6 +1962,14 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_
       ajouter_contribution_fa7_elem(inco, matrice, ncomp);
     }
 }
+
+template <class _TYPE_>
+void T_It_VDF_Face<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  Cerr << "ajouter_contribution_vitesse should not be called from " <<  op_base.que_suis_je() << finl;
+  abort();
+}
+
 template <class _TYPE_>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& inco, Matrice_Morse& matrice ) const
 {

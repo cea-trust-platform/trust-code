@@ -76,12 +76,12 @@ Read pb
 
 		Solveur_Pression GCP_NS { 
 			seuil 1.e-9 impr 
-			solveur1 Cholesky { }
-			solveur0 Cholesky { }
+			solveur1 petsc cholesky { }
+			solveur0 petsc cholesky { }
 			impr	
 		} 
 
-		solveur_bar Cholesky { }
+		solveur_bar petsc cholesky { }
 
                 convection { negligeable }
                 diffusion  { negligeable }

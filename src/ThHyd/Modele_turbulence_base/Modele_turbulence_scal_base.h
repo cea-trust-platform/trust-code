@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,12 +62,19 @@ public:
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double ) =0;
-  inline const Champ_Fonc& diffusivite_turbulente() const;
+  inline const Champ_Fonc& conductivite_turbulente() const
+  {
+    return conductivite_turbulente_;
+  };
+  inline const Champ_Fonc& diffusivite_turbulente() const
+  {
+    return diffusivite_turbulente_;
+  };
   inline const Turbulence_paroi_scal& loi_paroi() const;
   inline int loi_paroi_non_nulle() const;
   inline Turbulence_paroi_scal& loi_paroi();
   virtual void discretiser();
-  void discretiser_diff_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
+  //void discretiser_diff_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
   void associer_eqn(const Equation_base& );
   virtual void completer();
   virtual void associer(const Zone_dis& , const Zone_Cl_dis& );
@@ -91,7 +98,7 @@ public:
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 protected:
 
-  Champ_Fonc la_diffusivite_turbulente;
+  Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
   REF(Convection_Diffusion_std) mon_equation;
   Turbulence_paroi_scal loipar;
   double dt_impr_nusselt_;
@@ -101,27 +108,6 @@ protected :
   Champs_compris champs_compris_;
 
 };
-
-
-// Description:
-//    Renvoie la diffusivite turbulente.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Fonc&
-//    Signification: le champ representant la diffusivite turbulente
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Champ_Fonc& Modele_turbulence_scal_base::diffusivite_turbulente() const
-{
-  return la_diffusivite_turbulente;
-}
-
 
 // Description:
 //    Renvoie la loi de turbulence sur la paroi

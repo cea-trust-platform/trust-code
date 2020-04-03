@@ -45,10 +45,11 @@ module () {
    #
    # Load modules
    intel="intel/19.0.5.281"
-   mpi="mpi/wi4mpi" 			# Pour pouvoir ensuite switcher entre intelmpi et openmpi...
-   mpi="mpi/intelmpi/2019.0.5.281"
-   mpi="mpi/openmpi/4.0.2" 		# Performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
-   module="$intel $mpi"
+   # intelmpi="mpi/intelmpi/2019.0.5.281"
+   # module="$intel $intelmpi"
+   # car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
+   openmpi="mpi/openmpi/4.0.2"
+   module="$intel $openmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

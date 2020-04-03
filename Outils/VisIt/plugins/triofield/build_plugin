@@ -47,4 +47,6 @@ fi
 #######################
 # Compilation du plugin
 #######################
-make
+make || exit -1
+(cd ../../.. ; rm -rf plugins)
+

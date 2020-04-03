@@ -191,9 +191,10 @@ class Figure:
             self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
             nomFichierPlot = 'fic%03d.plot' % (indice)
             nomFichierPlotComplet = dest + '/fic%03d.plot' % (indice)
-            ficPlot = open(nomFichierPlotComplet, 'w')
+            '''Gnuplot supporte mal le UTF-8'''      
+            ficPlot = open(nomFichierPlotComplet, 'w', encoding='iso_8859_1')
             ficPlot.write('#Fichier de plot correspondant a la figure "%s"\n' % chaine2Ascii(self.titre))
-            ficPlot.write('#set encoding iso_8859_15\n')
+            ficPlot.write('set encoding iso_8859_1\n')
             if self.pointSize!='Undefined':
                 ficPlot.write('set pointsize %s\n' % (self.pointSize))
             titre=None
@@ -279,7 +280,7 @@ class Figure:
             #import subprocess
             #subprocess.Popen(self.cmd, shell=True, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             if (debug_figure==None) or (debug_figure==-1) or (debug_figure==indice):
-                pipe = os.system('gnuplot %s' % nomFichierPlotComplet)
+                pipe = os.system('LC_ALL=C.UTF-8 gnuplot %s' % nomFichierPlotComplet)
                 if self.format=='epslatex':
                     cmd='sed "s/\.\/\.tmp/\\\\\orig/.tmp/" %s > .pp; mv .pp %s '%(self.fichierGraphiqueComplet,self.fichierGraphiqueComplet)
 

@@ -5,23 +5,25 @@ echo $exec > par
 [ -f EN_COURS ] && echo "The bench already running, the EN_COURS file exists." && exit
 touch EN_COURS
 
-# Par defaut, bench sur 512000 mailles
-NB_PROCS_TOT=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-NUMBER_CORES_TESTED="1 2 4" # (->128000 mailles/core)
-[ $NB_PROCS_TOT -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  # (->64000 mailles/core)
-[ $NB_PROCS_TOT -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" # (->32000 mailles/core)
-echo $NUMBER_CORES_TESTED > liste_nb_proc   
+# Par defaut, bench sur 512000 mailles en VDF, 109760 mailles en VEF
+NUMBER_CORES_TESTED="1" 								# VDF (cells/core)	VEF (cells/core)
+[ $TRUST_NB_PHYSICAL_CORES -ge  2 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 2"  	# 256000		54880
+[ $TRUST_NB_PHYSICAL_CORES -ge  4 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 4"  	# 128000		27440
+[ $TRUST_NB_PHYSICAL_CORES -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  	#  64000		13720
+[ $TRUST_NB_PHYSICAL_CORES -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" 	#  32000 
 
 # Mais on peut modifier ces valeurs:
-#   # 4,000,000 mailles et de 1 a 64 procs !
-#   echo $ECHO_OPTS "1,$ s?81 81 81?161 161 161?g\nw" | ed Geom_VDF.data
-#   echo "1 2 4 8 16 32 64" > liste_nb_proc
+# echo $ECHO_OPTS "1,$ s?81 81 81?161 161 161?g\nw" | ed Geom_VDF.data ; NUMBER_CORES_TESTED="1 2 4 8 16 32 64"	#  4,000,000 mailles et de 1 a 64 cores
+# echo $ECHO_OPTS "1,$ s?15 15 15?201 201 61?g\nw"  | ed Geom_VEF.data ; NUMBER_CORES_TESTED="1000 2000 4000" 	# 96,000,000 mailles et de 1000 a 4000 cores
 
 #############################
 
 rm -rf PAR[0-9]*
-listcas="VDF VEF"
-#listcas="VDF"
+echo "Usage: $0 [VDF|VEF] [-np cpu_numbers_list]"
+echo "Example: $0 VEF -np 1 2 4 16 	# -> Run the benchmark with VEF test on 1, 2, 4, and 16 cores."
+listcas="VDF VEF" && [ "$1" != "" ] && listcas=$1 && shift
+[ "$1" = -np ] && shift && NUMBER_CORES_TESTED=$*
+echo $NUMBER_CORES_TESTED > liste_nb_proc   
 for cas in $listcas
 do
    export cas
@@ -51,15 +53,19 @@ then
    cat Run_bench.log | mail_ -s "Run_bench.log_$HOST_BUILD" $TRUST_MAIL
 fi
 
-# Creation d'un rapport PDF sur le speed up et la decomposition du temps CPU
-Run_fiche -post_run `[ "$NUIT" = "" ] && echo -xpdf`
-if [ -f `pwd`/build/rapport.pdf ]
+if [ "$listcas" = "VDF VEF" ]
 then
-echo "************************************************"
-echo "A PDF file is created with speed up plots there:"
-echo "`pwd`/build/rapport.pdf with speed up plots."
-else
-echo "************************************************"
-echo "The PDF file is NOT CREATED !!!"
-echo "See `pwd`/Run.log"
+   # Creation d'un rapport PDF sur le speed up et la decomposition du temps CPU
+   Run_fiche -post_run `[ "$NUIT" = "" ] && echo -xpdf`
+   if [ -f `pwd`/build/rapport.pdf ]
+   then
+      echo "************************************************"
+      echo "A PDF file is created with speed up plots there:"
+      echo "`pwd`/build/rapport.pdf with speed up plots."
+   else
+      echo "************************************************"
+      echo "The PDF file is NOT CREATED !!!"
+      echo "See `pwd`/Run.log"
+   fi
 fi
+echo

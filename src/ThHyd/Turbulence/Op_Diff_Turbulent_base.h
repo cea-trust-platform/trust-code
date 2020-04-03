@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,16 @@ class Op_Diff_Turbulent_base
 public :
   virtual ~Op_Diff_Turbulent_base() {};
   void associer_diffusivite_turbulente(const Champ_Fonc& );
+  inline const Champ_Fonc& diffusivite_turbulente() const
+  {
+    return la_diffusivite_turbulente.valeur();
+  }
+  inline bool has_diffusivite_turbulente() const
+  {
+    return la_diffusivite_turbulente.non_nul();
+  }
 
-protected:
+private:
 
   REF(Champ_Fonc) la_diffusivite_turbulente;
 };

@@ -84,7 +84,7 @@ Read pb
 {
 	Navier_Stokes_standard
 	{
-		solveur_pression cholesky { }
+		solveur_pression petsc cholesky { }
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }

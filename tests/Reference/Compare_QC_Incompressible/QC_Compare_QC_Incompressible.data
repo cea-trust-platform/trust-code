@@ -110,7 +110,7 @@ Read pb
 {
 	Navier_Stokes_QC
 	{
-		solveur_pression cholesky { }
+		solveur_pression petsc cholesky { }
 		convection { Amont }
 		diffusion { }
 		initial_conditions {

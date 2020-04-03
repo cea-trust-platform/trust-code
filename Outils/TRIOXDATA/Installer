@@ -50,6 +50,7 @@ if [ $1 = "XDATA" ]; then
    then
    echo "export KERNEL_ROOT_DIR=$KERNEL_ROOT_DIR" >> XDATA.sh
    fi
+   (cd XDATA; rm -rf build XDATA_SRC CONFIGURATION_SRC)
 else
    fileout=IHMTRIO.sh
     [ $1 != "TRIOU" ] && fileout=IHM_$1.sh
@@ -59,5 +60,6 @@ else
    echo export PYTHONPATH=`pwd`/$1/dist/lib/$version/site-packages/salome/:\${PYTHONPATH} >> ${fileout}
    echo export PATH=\${PATH}:`pwd`>> ${fileout}
    chmod +x ${fileout}
+   (cd TRIOU ; rm -rf build ) # TRIOU_SRC
 fi
 chmod -R +w $1

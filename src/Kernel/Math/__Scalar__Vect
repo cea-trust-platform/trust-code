@@ -860,7 +860,7 @@ int local_imin_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
                                         void carre(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu *= p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
 void operator_divide(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
-#Pusemacro(patternVect)( , p_resu /= x;, "with_resu", "no_any_shape", "with_vx", "without_vy", opt,)
+#Pusemacro(patternVect)( , assert(x!=0.);p_resu /= x;, "with_resu", "no_any_shape", "with_vx", "without_vy", opt,)
                                             void operator_inverse(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu = 1. / p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
                                               static void tab_multiply_any_shape_(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
@@ -905,7 +905,7 @@ void tab_divide_any_shape(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_v
 }
 #Pendif
 void operator_divide(__Scalar__Vect & resu, const __scalar__ x, Mp_vect_options opt)
-#Pusemacro(patternVect)( , p_resu /= x;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
+#Pusemacro(patternVect)( , assert(x!=0.);p_resu /= x;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
 
   __scalar__ __Scalar__Vect::local_min_vect(Mp_vect_options opt) const
 {

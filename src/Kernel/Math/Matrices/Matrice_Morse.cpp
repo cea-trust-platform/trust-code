@@ -1572,7 +1572,7 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
 // Exception:
 // Effets de bord:
 // Postcondition:
-Matrice_Morse& Matrice_Morse::operator *=(DoubleVect& x)
+Matrice_Morse& Matrice_Morse::operator *=(const DoubleVect& x)
 {
   int i,k;
   for(i = 0; i<nb_lignes(); i++)

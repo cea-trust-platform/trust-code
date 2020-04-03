@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -344,8 +344,6 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
           // Compute heat_flux:
           const Zone_VF& zone_vf = ref_cast(Zone_VF,equation().zone_dis().valeur());
           const double& Volume = zone_vf.zone().volume_total();
-          const double& Rho = equation().milieu().masse_volumique().valeurs()(0,0);
-          const double& Cp = equation().milieu().capacite_calorifique().valeurs()(0,0);
 
           // On recupere flux_bords operateur de diffusion
           const Operateur_base& op_base = equation().operateur(0).l_op_base(); // Diffusion operator
@@ -380,7 +378,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
             {
               // Compute source term for Energy
               // Expression from TU Delft Master Thesis
-              // Source = -u*Sum(imposed_heat_flux)/(Volume*Rho*Cp*Ubulk)
+              // Source = -u*Sum(imposed_heat_flux)/(Volume*Ubulk)
               // Ubulk=FlowRate/Area(PeriodicBoundary)
               // Loop on the faces
               const DoubleTab& vitesse = ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante().valeurs();
@@ -392,16 +390,16 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
                   else // Cas general
                     for (int i=0; i<dimension; i++)
                       velocity += vitesse(num_face,i) * dir_source_(i);
-                  s(num_face)=-velocity*heat_flux/(Volume*Rho*Cp*debit_e/surface_bord_);
+                  s(num_face)=-velocity*heat_flux/(Volume*debit_e/surface_bord_);
                 }
             }
           else
             {
               // Compute source term with
-              // Source = -Sum(imposed_heat_flux)/(Volume*Rho*Cp)
+              // Source = -Sum(imposed_heat_flux)/Volume
               // Loop on the faces
               for (int num_face=0; num_face<size; num_face++)
-                s(num_face)=-heat_flux/(Volume*Rho*Cp);
+                s(num_face)=-heat_flux/Volume;
             }
           return s;
         }

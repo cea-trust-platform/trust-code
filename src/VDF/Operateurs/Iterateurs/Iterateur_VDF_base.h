@@ -86,6 +86,7 @@ public:
   virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const=0;
   virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
+  virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
 
   virtual Evaluateur_VDF& evaluateur() =0;
@@ -124,6 +125,7 @@ public:
   inline DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   inline void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  inline void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   inline void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
   inline Evaluateur_VDF& evaluateur();
   inline const Evaluateur_VDF& evaluateur() const;
@@ -226,6 +228,10 @@ inline void Iterateur_VDF::contribuer_au_second_membre(DoubleTab& resu) const
 inline void Iterateur_VDF::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   valeur().ajouter_contribution(inco, matrice);
+}
+inline void Iterateur_VDF::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  valeur().ajouter_contribution_vitesse(inco, matrice);
 }
 
 inline void Iterateur_VDF::associer(const Zone_VDF& zone_vdf,

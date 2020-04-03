@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,8 @@
 #include <Pb_Conduction.h>
 
 Implemente_instanciable(Pb_Conduction,"Pb_Conduction",Probleme_base);
+// XD Pb_Conduction Pb_base Pb_Conduction -1 Resolution of the heat equation.
+// XD   attr Conduction Conduction Conduction 1 Heat equation.
 
 // Description:
 //    NE FAIT RIEN
@@ -104,11 +106,7 @@ int Pb_Conduction::nombre_d_equations() const
 // Postcondition: la methode ne modifie pas l'objet
 const Equation_base& Pb_Conduction::equation(int i) const
 {
-  if ( !( i==0 ) )
-    {
-      Cerr << "\nError in Pb_Conduction::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
+  assert (i==0);
   return eq_conduction;
 }
 
@@ -131,11 +129,7 @@ const Equation_base& Pb_Conduction::equation(int i) const
 // Postcondition:
 Equation_base& Pb_Conduction::equation(int i)
 {
-  if ( !( i==0 ) )
-    {
-      Cerr << "\nError in Pb_Conduction::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
+  assert (i==0);
   return eq_conduction;
 }
 

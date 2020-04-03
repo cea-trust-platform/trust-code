@@ -126,7 +126,7 @@ BEGIN {
 	     getline < fichier_son[ns]	
 	     type[ns]=tolower($3);
 	     # On lit des infos supplementaires pour les segments
-	     typeSegment = substr(type[ns],0,7)
+	     typeSegment = substr(type[ns],1,7)
 	     if (typeSegment=="segment")
 	     {
 		if (NF==7)
@@ -294,7 +294,7 @@ BEGIN {
    ##################
    # Sondes segment :
    ##################      
-      typeSegment = substr(type[ns],0,7)
+      typeSegment = substr(type[ns],1,7)
       if (typeSegment=="segment") {
 	 xa=Xmax-Xmin;
 	 ya=Ymax-Ymin;

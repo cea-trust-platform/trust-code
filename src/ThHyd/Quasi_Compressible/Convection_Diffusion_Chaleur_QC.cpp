@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -429,39 +429,18 @@ DoubleTab& Convection_Diffusion_Chaleur_QC::derivee_en_temps_inco_sans_solveur_m
   les_sources.ajouter(derivee);
 
   // on stocke rho_cp
-  const Champ_base& champ_rho_cp=get_champ("rho_cp");
-  DoubleTab& rho_cp=ref_cast_non_const(DoubleTab,champ_rho_cp.valeurs());
   // On divise derivee par rho*Cp dans le cas d'un gaz parfait, par rho dans le cas d'un gaz reel
   if (le_fluide->type_fluide()=="Gaz_Parfait")
     {
-      if (sub_type(Champ_Uniforme,le_fluide->capacite_calorifique().valeur()))
-        {
-          double Cp = le_fluide->capacite_calorifique().valeurs()(0,0);
-          for (int som=0 ; som<n ; som++)
-            {
-              double rhocp=tab_rho(som)*Cp;
-
-              derivee(som) /= rhocp;
-              rho_cp(som)=rhocp;
-            }
-        }
-      else
-        {
-          rho_cp = le_fluide->capacite_calorifique().valeurs();
-          for (int som=0 ; som<n ; som++)
-            {
-              rho_cp(som) *= tab_rho(som);
-              derivee(som) /= rho_cp(som);
-            }
-        }
-
+      le_fluide->update_rho_cp(schema_temps().temps_courant());
+      const DoubleTab& rhoCp = get_champ("rho_cp_comme_T").valeurs();
+      for (int som=0 ; som<n ; som++)
+        derivee(som) /= rhoCp(som);
     }
   else
     {
       for (int som=0 ; som<n ; som++)
-        {
-          derivee(som) /= tab_rho(som);
-        }
+        derivee(som) /= tab_rho(som);
     }
   derivee.echange_espace_virtuel();
 
@@ -492,7 +471,7 @@ DoubleTab& Convection_Diffusion_Chaleur_QC::derivee_en_temps_inco_sans_solveur_m
       secmem=derivee;
       solv_masse().appliquer(secmem);
       derivee=(Tfutur);
-      solveur_masse->set_name_of_coefficient_temporel("rho_cp");
+      solveur_masse->set_name_of_coefficient_temporel("rho_cp_comme_T");
       Equation_base::Gradient_conjugue_diff_impl( secmem, derivee ) ;
       solveur_masse->set_name_of_coefficient_temporel("no_coeff");
     }
@@ -541,19 +520,15 @@ void Convection_Diffusion_Chaleur_QC::assembler( Matrice_Morse& matrice,const Do
   int som;
   if (le_fluide->type_fluide()=="Gaz_Parfait")
     {
-      double Cp=-5;
-      int is_cp_unif=sub_type(Champ_Uniforme,le_fluide->capacite_calorifique().valeur());
-      const DoubleTab& tab_cp =le_fluide->capacite_calorifique().valeurs();
-      if (is_cp_unif)
-        Cp=tab_cp(0,0);
+      le_fluide->update_rho_cp(schema_temps().temps_courant());
+      const DoubleTab& rhoCp = get_champ("rho_cp_comme_T").valeurs();
+
       for (som=0 ; som<n ; som++)
         {
-          if (!is_cp_unif)
-            Cp=tab_cp(som);
-          double inv_rho=1./tab_rho(som);
+          double inv_rho = 1. / tab_rho(som);
           if (mode_convection_!=2)
-            inv_rho=1;
-          double rapport=1./(tab_rho(som)*Cp);
+            inv_rho = 1.;
+          double rapport = 1. / rhoCp(som);
           // il faut multiplier toute la ligne de la matrice par rapport
           //derivee(som) /= tab_rho(som)*Cp;
           for (int k=tab1(som)-1; k<tab1(som+1)-1; k++)

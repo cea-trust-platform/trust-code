@@ -673,8 +673,6 @@ Nom  EF_discretisation::get_name_of_type_for(const Nom& class_operateur, const N
   if (class_operateur=="Source")
     {
       type=type_operateur;
-      if (eqn.que_suis_je()=="Conduction_Milieu_Variable" || eqn.que_suis_je().debute_par("Conduction_Combustible"))
-        type+="_QC";
       type+="_EF";
       return type;
 
