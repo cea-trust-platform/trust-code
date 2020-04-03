@@ -3,31 +3,21 @@ WHERE=$PWD
 echo "#################################################"
 echo " Preparation des benchmarks TRUST"
 echo " "
-if [ ! -f $exec ]
-then
-   echo "ERREUR : l'executable TRUST \$exec=$exec n'existe pas"
-   exit
-fi
+[ ! -f $exec ] && echo "Erro : binary TRUST \$exec=$exec not found." && exit -1
 ECHO_OPTS="" && [ "`uname -s`" = Linux ]  && ECHO_OPTS="-e"
 
 echo "-------------------------------------------------"
 echo "Creation de la geometrie ..."
-trust Geom 1>Geom.out 2>Geom.err
 
 # Sequential
 mkdir -p PAR1
 cd PAR1
 cat ../TpltPar.data > bench1-1.data
-sed -i "1,$ s?# BEGIN MESH?# BEGIN MESH #?g" 	./bench1-1.data
-sed -i "1,$ s?END MESH #?# END MESH #?g" 	./bench1-1.data
-ln -sf ../dom.geom .
 cd ..
 
 # Partition
 mkdir -p DEC
 cd DEC
-cat ../TpltDec.data > TpltDec.data 
-ln -sf  ../dom.geom .
 
 # Parallel
 cd ..
@@ -39,17 +29,17 @@ do
       	echo "-------------------------------------------------"
       	echo "Creation des donnees pour $nb_proc processeurs"
       	cd $WHERE/DEC
-	# Metis only
-	sed "s/nb_parts n/nb_parts $nb_proc/g" TpltDec.data > dec$nb_proc.data || exit -1
-	
-        # Partition (-bigmem?)
-	trust dec$nb_proc 1>dec.out 2>dec.err
+
+	# Patition with Metis only (-bigmem?)
+	cat ../TpltPar.data > TpltPar.data
+	trust -partition TpltPar.data $nb_proc 1>/dev/null 2>&1
+	mv -f DEC_TpltPar.data TpltDec.data 
+        trust dec$nb_proc 1>dec.out 2>dec.err
+
 	cd ..
 	mkdir -p PAR$nb_proc
-	cat TpltPar.data > PAR$nb_proc/bench1-$nb_proc.data
-	sed -i "1,$ s?# BEGIN PARTITION?# BEGIN PARTITION #?g" PAR$nb_proc/bench1-$nb_proc.data
-	sed -i "1,$ s?END PARTITION #?# END PARTITION #?g" PAR$nb_proc/bench1-$nb_proc.data
-	# On deplace les .Zones dans le repertoire de calcul
+	# On deplace les donnees dans le repertoire de calcul
+	cat DEC/PAR_TpltPar.data > PAR$nb_proc/bench1-$nb_proc.data
 	mv DEC/*.Zones PAR$nb_proc/.
    fi
 done

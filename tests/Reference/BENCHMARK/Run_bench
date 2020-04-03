@@ -12,13 +12,13 @@ NUMBER_CORES_TESTED="1" 								# VDF (cells/core)	VEF (cells/core)
 [ $TRUST_NB_PHYSICAL_CORES -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  	#  64000		13720
 [ $TRUST_NB_PHYSICAL_CORES -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" 	#  32000 
 
-# Mais on peut modifier ces valeurs en corriger les fichiers Geom_VDF.data et Geom_VEF.data
-
 #############################
 
 rm -rf PAR[0-9]*
 echo "Usage: $0 [VDF|VEF] [-np cpu_numbers_list]"
 echo "Example: $0 VEF -np 1 2 4 16 	# -> Run the benchmark with VEF test on 1, 2, 4, and 16 cores."
+echo "Change the mesh into the following data files if necessay:"
+ls TpltParV*.data
 listcas="VDF VEF" && [ "$1" != "" ] && listcas=$1 && shift
 [ "$1" = -np ] && shift && NUMBER_CORES_TESTED=$*
 echo $NUMBER_CORES_TESTED > liste_nb_proc   
@@ -26,9 +26,7 @@ for cas in $listcas
 do
    export cas
    echo " Cas "$cas
-   cp -f Geom_${cas}.data Geom.data
    cp -f TpltPar${cas}.data TpltPar.data
-   cp -f TpltDec_${cas}.data TpltDec.data
    ./Gen_bench;
    ./Lance_bench;
    ./Lance_valid resultats >>par

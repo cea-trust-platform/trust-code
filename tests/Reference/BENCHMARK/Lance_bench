@@ -19,14 +19,9 @@
 #################################################
 # Verification de l'environnement TRUST
 #################################################
-echo "Verification de l'environnement TRUST "
 echo "Valeur de TRUST_ROOT : "$TRUST_ROOT
 echo "Valeur de l'executable par defaut : "$exec
-if [ ! -f $exec ]
-then
-   echo "ERREUR : l'executable TRUST \$exec=$exec n'existe pas"
-   exit
-fi
+[ ! -f $exec ] && echo "Error : binary TRUST \$exec=$exec not found" && exit
 
 #################################################
 # Generation des benchs

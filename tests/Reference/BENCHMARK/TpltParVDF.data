@@ -3,13 +3,41 @@ dimension 3
 Pb_Thermohydraulique pb
 Domaine dom
 
-# BEGIN MESH
-Lire_fichier_bin dom dom.geom 
-END MESH #
+
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Cavite 
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 81 81 81		/*   512,000 cells */ 
+             /* Nombre_de_Noeuds 161 161 161 */  	/* 4,000,000 cells */
+                Longueurs 0.01 0.01 0.003
+                }
+                {
+                Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.003
+                Bord Haut   Y = 0.01  0. <= X <= 0.01 0. <= Z <= 0.003
+                Bord Bas    Y = 0.    0. <= X <= 0.01 0. <= Z <= 0.003
+                Bord Droit  X = 0.01  0. <= Y <= 0.01 0. <= Z <= 0.003
+                Bord Sud    Z = 0.    0. <= X <= 0.01 0. <= Y <= 0.01
+                Bord Nord   Z = 0.003 0. <= X <= 0.01 0. <= Y <= 0.01
+                }
+}
+# END MESH #
 
 # BEGIN PARTITION
-Scatter DOM.Zones dom
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
 END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
 
 VDF dis
 
