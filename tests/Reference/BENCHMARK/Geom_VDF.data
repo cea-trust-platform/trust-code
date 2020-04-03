@@ -7,7 +7,8 @@ Mailler dom
         Pave Cavite 
                 {
                 Origine 0. 0. 0.
-                Nombre_de_Noeuds 81 81 81
+                Nombre_de_Noeuds 81 81 81		#   512,000 cells # 
+              # Nombre_de_Noeuds 161 161 161 #  	# 4,000,000 cells #
                 Longueurs 0.01 0.01 0.003
                 }
                 {

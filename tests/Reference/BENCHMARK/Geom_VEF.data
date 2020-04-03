@@ -2,13 +2,13 @@
 # End #
 dimension 3
 Domaine dom
-
 Mailler dom
 {
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 15 15 15 # 109760 cells after tetraedrized (14*14*14*40) #
+        Nombre_de_Noeuds 8 8 8 		# 109760 cells after tetraedrized (7*7*7*40) et isotrope raffined *8 #
+      # Nombre_de_Noeuds 101 101 31 # 	# 96,000,000 cells #
         Longueurs 10 10 3
     }
     {

@@ -12,9 +12,7 @@ NUMBER_CORES_TESTED="1" 								# VDF (cells/core)	VEF (cells/core)
 [ $TRUST_NB_PHYSICAL_CORES -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  	#  64000		13720
 [ $TRUST_NB_PHYSICAL_CORES -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" 	#  32000 
 
-# Mais on peut modifier ces valeurs:
-# echo $ECHO_OPTS "1,$ s?81 81 81?161 161 161?g\nw" | ed Geom_VDF.data ; NUMBER_CORES_TESTED="1 2 4 8 16 32 64"	#  4,000,000 mailles et de 1 a 64 cores
-# echo $ECHO_OPTS "1,$ s?15 15 15?201 201 61?g\nw"  | ed Geom_VEF.data ; NUMBER_CORES_TESTED="1000 2000 4000" 	# 96,000,000 mailles et de 1000 a 4000 cores
+# Mais on peut modifier ces valeurs en corriger les fichiers Geom_VDF.data et Geom_VEF.data
 
 #############################
 

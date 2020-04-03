@@ -36,10 +36,10 @@ echo "#################################"
 echo "# Lancement des benchmarks TRUST"
 echo "#################################"
 liste_nb_proc=`cat ./liste_nb_proc`
+let i=0
 for nb_proc in $liste_nb_proc
 do
-   echo ""
-   echo ""
+   let i=$i+1
    echo "-------------------------------------------------"
    echo "Lancement du bench $cas sur $nb_proc processeurs ..."
    cd PAR$nb_proc
@@ -57,5 +57,8 @@ do
    echo "rm -f *.FACES *.ele *.meshtv *.dump *.sauv *.xyz intfile*" >> run
    chmod +x run
    ./run
+   # Number of nodes
+   dis=VDF && [ "`grep VEFPreP1B bench1-$nb_proc.data`" != "" ] && dis=VEFPreP1B
+   [ $i = 1 ] && $TRUST_Awk -v dis=$dis -F= '/Total number of elements/ {i+=$2} /Total number of nodes/ && (dis=="VEFPreP1B") {i+=$2} END {print "Cas "dis" ("i" inconnues en pression)"}' bench1-$nb_proc.err >>../par
    cd ..
 done

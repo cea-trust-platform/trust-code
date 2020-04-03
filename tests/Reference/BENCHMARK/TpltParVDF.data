@@ -2,7 +2,14 @@
 dimension 3
 Pb_Thermohydraulique pb
 Domaine dom
+
+# BEGIN MESH
+Lire_fichier_bin dom dom.geom 
+END MESH #
+
+# BEGIN PARTITION
 Scatter DOM.Zones dom
+END PARTITION #
 
 VDF dis
 

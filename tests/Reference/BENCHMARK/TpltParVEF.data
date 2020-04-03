@@ -1,7 +1,17 @@
 dimension 3
 Pb_Hydraulique pb
 Domaine dom
-Scatter DOM.Zones dom
+
+# BEGIN MESH
+Lire_fichier_bin dom dom.geom 
+Raffiner_isotrope dom
+END MESH #
+
+# BEGIN PARTITION
+Raffiner_isotrope_parallele { name_of_initial_zones DOM name_of_new_zones DOM_REFINED } 
+Scatter DOM_REFINED.Zones dom
+END PARTITION #
+
 VEFPreP1B dis
 
 # Runge_Kutta_ordre_3 #

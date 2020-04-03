@@ -16,7 +16,7 @@ do
    done
 done
 # Pour attendre la fin des ecritures
-[ "$TRUST_WITHOUT_HOST" = 0 ] && sleep 20
+sleep 2
 err=PAR$nb_proc/bench1-$nb_proc.err
 echo $ECHO_OPTS "#################################################"
 echo "Calcul parallele TRUST `awk '/version :/ {print $NF}' $err 2>/dev/null` `date` sur $HOST :"
@@ -28,9 +28,9 @@ for nb_proc in $nb_procs
 do
    let i=$i+1
    time=`awk '/un pas de temps :/ {print $NF}' PAR$nb_proc/RES1-$nb_proc.perf`
-   [ $i = 1 ] && seq=$time
+   [ $i = 1 ] && seq=$time && nb_proc0=$nb_proc
    s=`echo $ECHO_OPTS scale=3"\n"$seq/$time | bc -l`
-   e=`echo $ECHO_OPTS scale=3"\n"$seq/$time/$nb_proc | bc -l`
+   e=`echo $ECHO_OPTS scale=3"\n"$seq*$nb_proc0/$time/$nb_proc | bc -l`
    n=`awk '/Nombre moyen iterations GCP:/ {print $NF}' PAR$nb_proc/RES1-$nb_proc.perf`
    it=`awk '/Temps moyen iteration GCP:/ {print $NF}' PAR$nb_proc/RES1-$nb_proc.perf`
    echo $ECHO_OPTS "$nb_proc\t| $time\t| $n\t| $it\t| $s\t\t| $e\t\t|"
