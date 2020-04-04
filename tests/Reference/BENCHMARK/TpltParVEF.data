@@ -1,7 +1,48 @@
 dimension 3
 Pb_Hydraulique pb
+Domaine coarse_dom
 Domaine dom
+# BEGIN MESH #
+Mailler coarse_dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 8 8 8 		/* 109760 cells after tetraedrized (7*7*7*40) et isotrope raffined *8 */
+     /* Nombre_de_Noeuds 101 101 31 */	/* 96,000,000 cells */
+        Longueurs 10 10 3
+    }
+    {
+        Bord entree X = 0.    0. <= Y <= 10. 0. <= Z <= 3.
+        Bord paroi  Y = 10.   0. <= X <= 10. 0. <= Z <= 3.
+        Bord paroi  Y = 0.    0. <= X <= 10. 0. <= Z <= 3.
+        Bord sortie X = 10.   0. <= Y <= 10. 0. <= Z <= 3.
+        Bord paroi  Z = 0.    0. <= X <= 10. 0. <= Y <= 10.
+        Bord paroi  Z = 3.    0. <= X <= 10. 0. <= Y <= 10.
+    }
+}
+Dilate coarse_dom 1.e-3
+Tetraedriser_homogene coarse_dom
+Ecrire_fichier coarse_dom coarse_dom.geom
+Lire_fichier dom coarse_dom.geom  
+Raffiner_isotrope dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition coarse_dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name COARSE_DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones DOM } 
 Scatter DOM.Zones dom
+END SCATTER #
+
 VEFPreP1B dis
 
 # Runge_Kutta_ordre_3 #

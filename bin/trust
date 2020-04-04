@@ -128,7 +128,8 @@ help()
    echo "-valgrind                     : Run under valgrind."
    echo "-suppressions_val             : Add a suppression file."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
-   echo "-callgrind                    : Run callgrind tool."
+   echo "-callgrind                    : Run callgrind tool (profiling) from valgrind."
+   echo "-massif		       : Run massif tool (heap profile) from valgrind."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
@@ -324,6 +325,9 @@ do
    elif [ "$1" = "-callgrind" ]
    then 
       CALLGRIND=1
+   elif [ "$1" = "-massif" ]
+   then 
+      MASSIF=1
    elif [ "$1" = "-gdb" ]
    then
       gdb=gdb.sh && mpirun_options="-gdb"
@@ -612,8 +616,12 @@ fi
 #############
 if [ "$CALLGRIND" = "1" ]
 then
-echo $binary
+   echo $binary
    exec="$val --tool=callgrind --dump-instr=yes --trace-jump=yes --callgrind-out-file=$NOM.callgrind $binary"
+fi
+if [ "$MASSIF" = 1 ]
+then
+   exec="$val --tool=massif --massif-out-file=$NOM.massif $binary"
 fi
 ###############################################
 # Utilisation de Petsc dans le jeu de donnees ?
@@ -1019,6 +1027,11 @@ if [ "$CALLGRIND" = 1 ]
 then
    echo "Callgrind log $NOM.callgrind is created."
    echo "You could try now: kcachegrind $NOM.callgrind" && [ ! -f /usr/bin/kcachegrind ] && echo "But kcachegrind is not installed."
+fi
+if [ "$MASSIF" = 1 ]
+then
+   echo "Massif log $NOM.massif is created."
+   echo "You could try now: massif-visualizer $NOM.massif" && [ ! -f /usr/bin/massif-visualizer ] && echo "But massif-visualizer is not installed."
 fi
 exit $err
 
