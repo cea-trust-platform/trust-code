@@ -219,6 +219,7 @@ public :
   void formeC() ;
   void formeF() ;
 
+  bool has_same_morse_matrix_structure(const Matrice_Morse&) const;
   bool check_morse_matrix_structure( void ) const;
   bool check_sorted_morse_matrix_structure( void ) const;
   void assert_check_morse_matrix_structure( void ) const;
