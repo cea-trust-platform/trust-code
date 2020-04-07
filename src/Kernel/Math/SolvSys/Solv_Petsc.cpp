@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -755,25 +755,6 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[7] = "BOOMERAMG";          // Multigrid preconditioner
         les_precond[8] = "BLOCK_JACOBI_ICC";   // Block Jacobi ICC preconditioner (code dans PETSc, optimise)
         les_precond[9] = "BLOCK_JACOBI_ILU";   // Block Jacobi ILU preconditioner (code dans PETSc, optimise)
-        /*
-          les_precond[3] = "ICC";                // Incomplete Cholesky
-          les_precond[7] = "ASM";                // Additive Schwarz method (ILU as local precondioner)
-          les_precond[9] = "POLY";                // Polynomial preconditioner
-          les_precond[10] = "ADD_ILU0";        // Additive Schwarz method with ILU(0)
-          les_precond[11] = "ADD_ILUT";        // Additive Schwarz method with dual-threshold incomplete LU factorisation
-          les_precond[12] = "ADD_ILUK";        // Additive Schwarz method with ILU(k)
-          les_precond[13] = "ADD_ARMS";        // Additive Schwarz method with Algebric Recursive Multilevel Solver
-          les_precond[14] = "LSCH_ILU0";        // Left Schur complement with ILU(0)
-          les_precond[15] = "LSCH_ILUT";        // Left Schur complement with dual-threshold incomplete LU factorisation
-          les_precond[16] = "LSCH_ILUK";        // Left Schur complement with ILU(k)
-          les_precond[17] = "LSCH_ARMS";        // Left Schur complement with Algebric Recursive Multilevel Solver
-          les_precond[18] = "RSCH_ILU0";        // Right Schur complement with ILU(0)
-          les_precond[19] = "RSCH_ILUT";        // Right Schur complement with dual-threshold incomplete LU factorisation
-          les_precond[20] = "RSCH_ILUK";        // Right Schur complement with ILU(k)
-          les_precond[21] = "RSCH_ARMS";        // Right Schur complement with Algebric Recursive Multilevel Solver
-          les_precond[22] = "SCH_GILU0";        // Schur complement with ILU(0)
-          les_precond[23] = "SCH_SGS";        // Schur complement with Gauss Seidel
-        */
       }
 
       if (pc!="")
@@ -1039,73 +1020,14 @@ void sortie_maple(Sortie& s, const Matrice_Morse& M)
   s<<"]):"<<finl;
 }
 
-void Solv_Petsc::MorseSymHybToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M,
-                                    const DoubleVect& secmem,
-                                    DoubleVect& solution)
-{
-  // Transposition de la matrice initiale
-  Matrice_Morse MM_tot;
-  MorseSymToMorse(MS,MM_tot);
-  MorseHybToMorse(MM_tot, M, secmem, solution);
-}
-
-// Conversion d'une matrice morse hybride (format TRUST avec items communes) en une matrice morse (sans items communs)
-void Solv_Petsc::MorseHybToMorse(const Matrice_Morse& MM_tot, Matrice_Morse& M, const DoubleVect& b, DoubleVect& solution)
-{
-  if (items_to_keep_.size_array()==0)
-    nb_items_to_keep_ = MD_Vector_tools::get_sequential_items_flags(b.get_md_vector(), items_to_keep_, b.line_size());
-
-  // Dimensionnement de la matrice
-  int nbrows_M=nb_items_to_keep_;
-  M.dimensionner(nbrows_M,0);
-
-  const IntVect& tab1_tot = MM_tot.get_tab1();
-  const IntVect& tab2_tot = MM_tot.get_tab2();
-  const DoubleVect& coeff_tot = MM_tot.get_coeff();
-  IntVect& tab1 = M.get_set_tab1();
-  IntVect& tab2 = M.get_set_tab2();
-  DoubleVect& coeff = M.get_set_coeff();
-
-  // Construction de tab1 de la matrice morse hybride
-  tab1(0)=1;
-  int cpt=0;
-  int size = b.size_array();
-  for (int ii=0; ii<size; ii++)
-    {
-      if(items_to_keep_[ii])
-        {
-          tab1(cpt+1) = tab1_tot(ii+1)-tab1_tot(ii)+tab1(cpt);
-          cpt++;
-        }
-    }
-
-  M.dimensionner(nbrows_M,MM_tot.nb_colonnes(),tab1(nbrows_M)-1);
-
-  // Construction de tab2 et coeff de la matrice morse hybride
-  cpt=0;
-  for (int ii=0; ii<size; ii++)
-    {
-      if(items_to_keep_[ii])
-        {
-          int dl = tab1_tot(ii);
-          int fl = tab1_tot(ii+1);
-          for(int jj=dl; jj<fl; jj++)
-            {
-              tab2(cpt)=tab2_tot(jj-1);
-              coeff(cpt++)=coeff_tot(jj-1);
-            }
-        }
-    }
-}
-
 void Solv_Petsc::MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M)
 {
   M = MS;
   Matrice_Morse mattmp(MS);
-  int i, ordre;
-  ordre = M.ordre();
   M.transpose(mattmp);
-  for (i=0; i<ordre; i++) if (M.nb_vois(i))
+  int ordre = M.ordre();
+  for (int i=0; i<ordre; i++)
+    if (M.nb_vois(i))
       M(i, i) = 0.;
   M = mattmp + M;
 }
@@ -1323,43 +1245,48 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           MatDestroy(&MatricePetsc_);
         }
       nb_matrices_creees_ += 1;
+
+      // Construction de la numerotation globale:
+      construit_renum(secmem);
+
+      // Matrice morse intermedaire de conversion
+      Matrice_Morse matrice_morse_intermediaire;
       if (read_matrix_)
         {
           // New in 1.6.9, it is possible to read the matrix
-          Matrice_Morse mat; // Create a useless mat (cause no conversion from an existing one)
-          Create_objects(mat,secmem);
+          // Read the PETSc matrix
+          RestoreMatrixFromFile();
+          int nb_local_rows,nb_local_cols;
+          MatGetLocalSize(MatricePetsc_,&nb_local_rows,&nb_local_cols);
+          if (nb_local_rows!=nb_items_to_keep_)
+            {
+              Cerr << "The matrix read has " << nb_local_rows << " local columns whereas" << finl;
+              Cerr << "the RHS/Solution vectors have a size of " << nb_items_to_keep_ << "." << finl;
+              Cerr << "Check your data file or the file containing the PETSc matrix." << finl;
+              exit();
+            }
         }
       else if(sub_type(Matrice_Morse_Sym,la_matrice))
         {
           // Exemple: matrice de pression en VEFPreP1B
-          const Matrice_Morse_Sym& matrice = ref_cast(Matrice_Morse_Sym,la_matrice);
-          assert(matrice.get_est_definie());
-          Matrice_Morse mat;
-          MorseSymHybToMorse(matrice,mat,secmem,solution);
-          // Construction de la matrice NP : NP_mat_ et des vecteurs solutions et second_membre
-          Create_objects(mat,secmem);
+          const Matrice_Morse_Sym& matrice_morse_sym = ref_cast(Matrice_Morse_Sym,la_matrice);
+          assert(matrice_morse_sym.get_est_definie());
+          MorseSymToMorse(matrice_morse_sym, matrice_morse_intermediaire);
         }
       else if(sub_type(Matrice_Bloc_Sym,la_matrice))
         {
           // Exemple : matrice de pression en VEF P0+P1+Pa
           const Matrice_Bloc_Sym& matrice = ref_cast(Matrice_Bloc_Sym,la_matrice);
           // Conversion de la matrice Matrice_Bloc_Sym au format Matrice_Morse_Sym
-          Matrice_Morse_Sym mat_sym;
-          matrice.BlocSymToMatMorseSym(mat_sym);
-          Matrice_Morse mat;
-          MorseSymHybToMorse(mat_sym,mat,secmem,solution);
-          // Destruction de la matrice morse desormais inutile
-          mat_sym.dimensionner(0,0);
-          Create_objects(mat,secmem);
+          Matrice_Morse_Sym matrice_morse_sym;
+          matrice.BlocSymToMatMorseSym(matrice_morse_sym);
+          MorseSymToMorse(matrice_morse_sym, matrice_morse_intermediaire);
+          matrice_morse_sym.dimensionner(0,0); // Destruction de la matrice morse sym desormais inutile
         }
       else if(sub_type(Matrice_Morse,la_matrice))
         {
           // Exemple : matrice implicite
           matrice_symetrique_=0;
-          const Matrice_Morse& mat_morse_hyb = ref_cast(Matrice_Morse,la_matrice);
-          Matrice_Morse mat;
-          MorseHybToMorse(mat_morse_hyb,mat,secmem,solution);
-          Create_objects(mat,secmem);
         }
       else if(sub_type(Matrice_Bloc,la_matrice))
         {
@@ -1374,22 +1301,21 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
               if (solveur_direct_ && mat00.get_est_definie()==0 && Process::je_suis_maitre())
                 mat00(0,0)*=2;
             }
-          Matrice_Morse mat_morse_hyb;
-          matrice_bloc.BlocToMatMorse(mat_morse_hyb);
-          // Conversion de la matrice au format Matrice_Morse hybride vers le format Morse
-          Matrice_Morse mat;
-          MorseHybToMorse(mat_morse_hyb,mat,secmem,solution);
-          Create_objects(mat,secmem);
+          matrice_bloc.BlocToMatMorse(matrice_morse_intermediaire);
         }
       else
         {
           Cerr<<"Solv_Petsc : Warning, we do not know yet treat a matrix of type " << la_matrice.que_suis_je() <<finl;
           exit();
         }
+      // Verification stockage de la matrice
+      check_aij(matrice_morse_intermediaire);
+
+      // Construit les objets PETSc:
+      bool la_matrice_est_morse_non_symetrique = sub_type(Matrice_Morse, la_matrice) && !sub_type(Matrice_Morse_Sym, la_matrice);
+      const Matrice_Morse& matrice_morse = la_matrice_est_morse_non_symetrique ? ref_cast(Matrice_Morse, la_matrice) : matrice_morse_intermediaire;
+      Create_objects(matrice_morse, secmem);
     }
-  // Il semble que Hypre/Boomeramg plante si secmem est nul (residu nul)
-  // donc on quitte avant... A generaliser pour tout le monde ?
-  //  if (type_pc_==PCHYPRE && mp_max_abs_vect(secmem)==0) return 0; // Not true in 1.6.9
 
   // Assemblage du second membre et de la solution
   int size=secmem.size_array();
@@ -1522,21 +1448,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 }
 
 #ifdef PETSCKSP_H
-inline int ligne_inutile(const Matrice_Morse& mat, const DoubleVect& secmem, int& i)
-{
-  if (secmem(i)==0.                         // Le second membre est nul
-      && mat.get_tab1()(i+1)-mat.get_tab1()(i)==1        // Et il n'y a qu'un terme non nul sur la ligne
-      && mat.get_tab2()(mat.get_tab1()(i)-1)-1==i)        // Et c'est la diagonale
-    {
-      Cerr << "[" << Process::me() << "] Line " << i << " useless..." << finl;
-      return 1;                        // Alors cette ligne est inutile (item periodique, arete superflue,...)
-    }
-  else
-    return 0;
-}
 
-// Creation d'une MatricePetsc et d'un SecondMembrePetsc a partir de mat et b
-int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
+void Solv_Petsc::construit_renum(const DoubleVect& b)
 {
   // Initialisation du tableau items_to_keep_ si ce n'est pas deja fait
   if (items_to_keep_.size_array()==0)
@@ -1547,21 +1460,6 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
   nb_rows_tot_ = mp_sum(nb_rows_);
   decalage_local_global_ = mppartial_sum(nb_rows_);
   //Journal()<<"nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << " decalage_local_global_=" << decalage_local_global_ << finl;
-  if (read_matrix_)
-    {
-      // Read the PETSc matrix
-      RestoreMatrixFromFile();
-      int nb_local_rows,nb_local_cols;
-      MatGetLocalSize(MatricePetsc_,&nb_local_rows,&nb_local_cols);
-      if (nb_local_rows!=nb_items_to_keep_)
-        {
-          Cerr << "The matrix read has " << nb_local_rows << " local columns whereas" << finl;
-          Cerr << "the RHS/Solution vectors have a size of " << nb_items_to_keep_ << "." << finl;
-          Cerr << "Check your data file or the file containing the PETSc matrix." << finl;
-          exit();
-        }
-    }
-
 
   /**********************/
   /* Build renum_ array */
@@ -1586,7 +1484,10 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         }
     }
   renum_.echange_espace_virtuel();
+}
 
+void Solv_Petsc::check_aij(const Matrice_Morse& mat)
+{
   /*******************/
   /* Setting mataij_ */
   /*******************/
@@ -1619,77 +1520,70 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
   // so aij is selected instead:
   if (factored_matrix_!="") mataij_=1;
 
-  // Ajout d'un test de verification de la symetrie supposee de la matrice PETSc
-  // Ce test a permis de trouver un defaut de parallelisme sur le remplissage
-  // de la matrice en pression lors de l'introduction de l'option volume etendu
-  int check_matrice_symetrique_=1;
-  // Check cancelled for:
+  if (!read_matrix_)
+    {
+      // Ajout d'un test de verification de la symetrie supposee de la matrice PETSc
+      // Ce test a permis de trouver un defaut de parallelisme sur le remplissage
+      // de la matrice en pression lors de l'introduction de l'option volume etendu
+      int check_matrice_symetrique_ = matrice_symetrique_;
+      // Check cancelled for:
 #ifdef PETSC_HAVE_CUDA
-  check_matrice_symetrique_=0; // Bug with CUDA ?
+      check_matrice_symetrique_=0; // Bug with CUDA ?
 #endif
 #ifdef NDEBUG
-  check_matrice_symetrique_=0; // Not done in production
+      check_matrice_symetrique_=0; // Not done in production
 #endif
-  check_matrice_symetrique_*=(matrice_symetrique_?1:0);
-  Mat MatricePetscComplete;
-  if (check_matrice_symetrique_)
-    {
-      // On construit une matrice PETSc complete sans hypothese sur la symetrie
-      Create_MatricePetsc(MatricePetscComplete, 1, mat);
+      if (mataij_ == 0)
+        {
+          /***************************************/
+          /* Test de verification de la symetrie */
+          /***************************************/
+          if (check_matrice_symetrique_)
+            {
+              Mat MatricePetscComplete;
+              // On construit une matrice PETSc complete sans hypothese sur la symetrie
+              Create_MatricePetsc(MatricePetscComplete, 1, mat);
+              Mat MatricePetsc;
+              Create_MatricePetsc(MatricePetsc, mataij_, mat);
+              PetscBool matrices_identiques;
+              // On teste l'egalite des 2 matrices en faisant n produits matrice-vecteur
+              int n = 10;
+              MatMultAddEqual(MatricePetsc, MatricePetscComplete, n, &matrices_identiques);
+              if (!matrices_identiques)
+                {
+                  Cerr << "Error: matrix PETSc are different according to the symmetric storage or not." << finl;
+                  if (Process::nproc() > 1) Cerr << "Check if the matrix is correct in parallel." << finl;
+                  Cerr << "Contact TRUST support team." << finl;
+                  if (nb_rows_ < 10)
+                    {
+                      MatView(MatricePetsc, PETSC_VIEWER_STDOUT_WORLD);
+                      MatView(MatricePetscComplete, PETSC_VIEWER_STDOUT_WORLD);
+                      exit();
+                    }
+                }
+              MatDestroy(&MatricePetsc);
+              MatDestroy(&MatricePetscComplete);
+            }
+        }
     }
-
-  /*************************/
-  /* Preconditioner matrix */
-  /*************************/
+}
+// Creation d'une MatricePetsc et d'un SecondMembrePetsc a partir de mat et b
+int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
+{
   // Remplissage d'une matrice de preconditionnement non symetrique
   // pour certains precondionneurs (ILU pour HYPRE et SPAI)
   // Sinon message MatGetRow non supporte par MATMPISBAIJ
   Mat MatricePrecondionnementPetsc;
   if (matrice_symetrique_ && (type_pc_=="hypre" || type_pc_=="spai"))
     preconditionnement_non_symetrique_=1;
+
   if (preconditionnement_non_symetrique_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
 
-  /**********************************************************************/
-  /* Creation de la matrice Petsc avec hypothese ou non sur la symetrie */
-  /**********************************************************************/
+  // Creation de la matrice Petsc
   if (!read_matrix_)
-    {
-      // Dans le cas d'une matrice symetrique, on elimine les coefficients
-      // qui seront dans la partie inferieure a la diagonale. Pour cela on
-      // les mets a 0 et on appelle compacte qui les supprime
-      if (mataij_==0)
-        {
-          IntVect& tab1=mat.get_set_tab1();
-          IntVect& tab2=mat.get_set_tab2();
-          DoubleVect& coeff=mat.get_set_coeff();
-          for (int i=0; i<nb_rows_; i++)
-            for (int k=tab1(i)-1; k<tab1(i+1)-1; k++)
-              if (renum_array[tab2(k)-1]<i+decalage_local_global_)
-                coeff(k)=0;
-          mat.compacte(1);
-        }
-      Create_MatricePetsc(MatricePetsc_, mataij_, mat);
+    Create_MatricePetsc(MatricePetsc_, mataij_, mat);
 
-      /***************************************/
-      /* Test de verification de la symetrie */
-      /***************************************/
-      if (check_matrice_symetrique_)
-        {
-          PetscBool matrices_identiques;
-          // On teste l'egalite des 2 matrices en faisant n produits matrice-vecteur
-          int n=10;
-          MatMultAddEqual(MatricePetsc_,MatricePetscComplete,n,&matrices_identiques);
-          if (!matrices_identiques)
-            {
-              Cerr << "Error: matrix PETSc are different according to the symmetric storage or not." << finl;
-              if (Process::nproc()>1) Cerr << "Check if the matrix is correct in parallel." << finl;
-              Cerr << "Contact TRUST support team." << finl;
-              exit();
-            }
-          MatDestroy(&MatricePetscComplete);
-        }
-    }
   if (limpr()==1)
     Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ " << (petsc_cpus_selection_?(int)(nb_rows_tot_/petsc_nb_cpus_):nb_rows_) << " unknowns per PETSc process )" << finl;
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
@@ -2067,15 +1961,21 @@ int Solv_Petsc::compute_nb_rows_petsc(int nb_rows_tot)
   return nb_rows_petsc;
 }
 
-// Creation d'une matrice Petsc en fonction d'une matrice stockee au format CSR
-void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Morse& mat)
+// Creation d'une matrice Petsc depuis une matrice Matrice_Morse
+void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matrice_Morse& mat_morse)
 {
   // Recuperation des donnees
-  IntVect& tab1_=mat.get_set_tab1();
-  IntVect& tab2_=mat.get_set_tab2();
-  DoubleVect& coeff_=mat.get_set_coeff();
-  int nb_rows = mat.nb_lignes();
-  int nb_rows_tot = mp_sum(nb_rows);
+  bool journal = nb_rows_tot_ < 20 ? true : false;
+  assert(!sub_type(Matrice_Morse_Sym, mat_morse));
+  if (journal)   // Impressions provisoires
+    {
+      Journal() << "mat=" << finl;
+      mat_morse.imprimer_formatte(Journal());
+      Journal() << "renum_=" << finl;
+      renum_.ecrit(Journal());
+      Journal() << "items_to_keep_=" << finl;
+      Journal() << items_to_keep_ << finl;
+    }
 
   /////////////////////////////////////
   // On cree et dimensionne la matrice
@@ -2083,48 +1983,62 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
   // Based on src/ksp/ksp/examples/tutorials/ex2.c
   MatCreate(PETSC_COMM_WORLD, &MatricePetsc);
   if (petsc_decide_)
-    MatSetSizes(MatricePetsc, PETSC_DECIDE, PETSC_DECIDE, nb_rows_tot, nb_rows_tot);
+    MatSetSizes(MatricePetsc, PETSC_DECIDE, PETSC_DECIDE, nb_rows_tot_, nb_rows_tot_);
   else if (petsc_cpus_selection_)
     {
-      int nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot);
+      int nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
       Journal() << "Process " << Process::me() << " has " << nb_rows_petsc << " rows of the matrix PETSc." << finl;
       MatSetSizes(MatricePetsc, nb_rows_petsc, nb_rows_petsc, PETSC_DECIDE, PETSC_DECIDE);
     }
-  else // Normal use: partition of PETSc matrix is dicted by TRUST matrix:
-    MatSetSizes(MatricePetsc, nb_rows, nb_rows, PETSC_DECIDE, PETSC_DECIDE);
+  else     // Normal use: partition of PETSc matrix is dicted by TRUST matrix:
+    MatSetSizes(MatricePetsc, nb_rows_, nb_rows_, PETSC_DECIDE, PETSC_DECIDE);
 
   //////////////////////////////////////////////
   // Determination du nombre d'elements non nuls
   //////////////////////////////////////////////
-  ArrOfInt nnz(nb_rows);
-  ArrOfInt d_nnz(nb_rows);
-  ArrOfInt o_nnz(nb_rows);
-  d_nnz=0;
-  o_nnz=0;
+  ArrOfInt nnz(nb_rows_);
+  ArrOfInt d_nnz(nb_rows_);
+  ArrOfInt o_nnz(nb_rows_);
+  nnz = 0;
+  d_nnz = 0;
+  o_nnz = 0;
   ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
   int premiere_colonne_globale = decalage_local_global_;
-  int derniere_colonne_globale = nb_rows+decalage_local_global_;
-  for(int i=0; i<nb_rows; i++)
+  int derniere_colonne_globale = nb_rows_ + decalage_local_global_;
+  const ArrOfInt& tab1 = mat_morse.get_tab1();
+  const ArrOfInt& tab2 = mat_morse.get_tab2();
+  int cpt = 0;
+  for (int i = 0; i < tab1.size_array() - 1; i++)
     {
-      nnz(i)=tab1_(i+1)-tab1_(i); // Nombre d'elements non nuls sur la ligne i
-      for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
+      if (items_to_keep_[i])
         {
-          int colonne_locale = tab2_(k) - 1;
-          int colonne_globale = renum_array[colonne_locale];
-          if (colonne_globale>=premiere_colonne_globale && colonne_globale<derniere_colonne_globale)
-            d_nnz(i)++;
-          else
-            o_nnz(i)++;
+          nnz(cpt) = tab1(i + 1) - tab1(i); // Nombre d'elements non nuls sur la ligne i
+          for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+            {
+              int colonne_locale = tab2(k) - 1;
+              int colonne_globale = renum_array[colonne_locale];
+              if (colonne_globale >= premiere_colonne_globale && colonne_globale < derniere_colonne_globale)
+                d_nnz(cpt)++;
+              else
+                o_nnz(cpt)++;
+            }
+          cpt++;
         }
-      //Journal() << i+decalage_local_global_ << " " << d_nnz(i) << " " <<o_nnz(i) << finl;
+    }
+
+  if (journal)
+    {
+      Journal() << "nnz=" << nnz << finl;
+      Journal() << "d_nnz=" << d_nnz << finl;
+      Journal() << "o_nnz=" << o_nnz << finl;
     }
   /************************/
   /* Typage de la matrice */
   /************************/
-  if (mataij==0)
+  if (mataij == 0)
     {
       // On utilise SBAIJ pour une matrice symetrique (plus rapide que AIJ)
-      MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQSBAIJ:MATMPISBAIJ));
+      MatSetType(MatricePetsc, (Process::nproc() == 1 ? MATSEQSBAIJ : MATMPISBAIJ));
     }
   else
     {
@@ -2134,7 +2048,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
         MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJCUSP:MATMPIAIJCUSP));
       else
 #endif
-        MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJ:MATMPIAIJ));
+        MatSetType(MatricePetsc, (Process::nproc() == 1 ? MATSEQAIJ : MATMPIAIJ));
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
   // Example: now possible to change aijcusp to aijcusparse via CLI
@@ -2145,13 +2059,13 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
   /* Preallocation de la taille de la matrice */
   /********************************************/
   // TRES important pour la vitesse de construction de la matrice
-  if (mataij==0)
+  if (mataij == 0)
     {
       if (different_partition_)
         {
           // If partition of TRUST and PETSc differs, difficult to preallocate the matrix finely so:
           // ToDo, try to optimize:
-          int nz=(int)mp_max((nnz.size_array()==0?0:max_array(nnz)));
+          int nz = (int) mp_max((nnz.size_array() == 0 ? 0 : max_array(nnz)));
           MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULL);
           MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULL, nz, PETSC_NULL);
         }
@@ -2159,7 +2073,8 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
         {
           MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, PETSC_DEFAULT, nnz.addr());
           // Test on nb_rows==0 is to avoid PAR_docond_anisoproc hangs
-          MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, (nb_rows==0?0:PETSC_DEFAULT), d_nnz.addr(), (nb_rows==0?0:PETSC_DEFAULT), o_nnz.addr());
+          MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), d_nnz.addr(),
+                                      (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), o_nnz.addr());
         }
     }
   else
@@ -2168,7 +2083,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
         {
           // If partition of TRUST and PETSc differs, difficult to preallocate the matrix finely so:
           // ToDo, try to optimize:
-          int nz=(int)mp_max((nnz.size_array()==0?0:max_array(nnz)));
+          int nz = (int) mp_max((nnz.size_array() == 0 ? 0 : max_array(nnz)));
           MatSeqAIJSetPreallocation(MatricePetsc, nz, PETSC_NULL);
           MatMPIAIJSetPreallocation(MatricePetsc, nz, PETSC_NULL, nz, PETSC_NULL);
         }
@@ -2176,33 +2091,49 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Mors
         {
           MatSeqAIJSetPreallocation(MatricePetsc, PETSC_DEFAULT, nnz.addr());
           // Test on nb_rows==0 is to avoid PAR_docond_anisoproc hangs
-          MatMPIAIJSetPreallocation(MatricePetsc, (nb_rows==0?0:PETSC_DEFAULT), d_nnz.addr(), (nb_rows==0?0:PETSC_DEFAULT), o_nnz.addr());
+          MatMPIAIJSetPreallocation(MatricePetsc, (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), d_nnz.addr(),
+                                    (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), o_nnz.addr());
         }
     }
-
   /*****************************/
   /* Remplissage de la matrice */
   /*****************************/
+  // Genere une erreur si une case de la matrice est remplie sans allocation auparavant:
+  MatSetOption(MatricePetsc, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_TRUE);
+
   // ligne par ligne avec un tableau coeff et tab2 qui contiennent
   // les coefficients et les colonnes globales pour chaque ligne
   // On dimensionne ces tableaux a la taille la plus grande possible
-  int size = (nb_rows==0?0:max_array(nnz)); // Test sur nb_rows si nul (cas proc vide) car sinon max_array plante
-  ArrOfDouble coeff(size);
-  ArrOfInt tab2(size);
-  for(int i=0; i<nb_rows; i++)
+  int size = (nb_rows_ == 0 ? 0 : max_array(
+                nnz)); // Test sur nb_rows si nul (cas proc vide) car sinon max_array plante
+  ArrOfDouble coeff_(size);
+  ArrOfInt tab2_(size);
+  const ArrOfDouble& coeff = mat_morse.get_coeff();
+  cpt = 0;
+  for(int i=0; i<tab1.size_array() - 1; i++)
     {
-      int ligne_globale = i + decalage_local_global_;
-      int ncol=0;
-      for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
+      if (items_to_keep_[i])
         {
-          coeff[ncol]=coeff_(k);
-          tab2[ncol]=renum_array[tab2_(k)-1];
-          //Journal() << "Inserting a(" << ligne_globale <<","<<tab2[ncol]<<")="<<coeff[ncol]<<finl;
-          ncol++;
+          int ligne_globale = cpt + decalage_local_global_;
+          int ncol = 0;
+          for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+            {
+              coeff_[ncol] = coeff(k);
+              tab2_[ncol] = renum_array[tab2(k) - 1];
+              ncol++;
+            }
+          assert(ncol == nnz(cpt));
+          if (journal)
+            {
+              Journal() << ligne_globale << " ";
+              for (int j = 0; j < ncol; j++) Journal() << coeff_[j] << " ";
+              Journal() << finl;
+            }
+          MatSetValues(MatricePetsc, 1, &ligne_globale, ncol, tab2_.addr(), coeff_.addr(), INSERT_VALUES);
+          cpt++;
         }
-      assert(ncol==nnz(i));
-      MatSetValues(MatricePetsc, 1, &ligne_globale, ncol, tab2.addr(), coeff.addr(), INSERT_VALUES);
     }
+
   /****************************/
   /* Assemblage de la matrice */
   /****************************/
