@@ -57,7 +57,7 @@ Entree& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::readOn(Entree& s )
 void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double temps)
 {
   int nb_faces = la_zone_VEF.valeur().nb_faces();
-  const Zone_VF& zone = la_zone_VEF.valeur();
+  const Zone_VEF& zone = ref_cast(Zone_VEF, la_zone_VEF.valeur());
   const IntTab& face_voisins = zone.face_voisins();
   const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();
   const DoubleTab& himp = himp_.valeur().valeurs();
@@ -88,11 +88,12 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
           vol1 = volumes_elements(elem1);
         }
       double hm = (h0 * vol0 + h1 * vol1) / (vol0 + vol1);
-      double textm = (text0 * vol0 + text1 * vol1) / (vol0 + vol1);
+      double htextm = (h0 * text0 * vol0 + h1 * text1 * vol1) / (vol0 + vol1);
 
-      bilan()(0) += hm * vol * (textm - T(num_face));
+      double c = (zone.faces_doubles()(num_face)==1) ? 0.5 : 1 ;
+      bilan()(0) -= c * (hm*T(num_face)-htextm) * vol;
+
     }
-
   himp_.mettre_a_jour(temps);
   Text_.mettre_a_jour(temps);
 }
