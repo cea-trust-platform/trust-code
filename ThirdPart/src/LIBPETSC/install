@@ -403,8 +403,8 @@ fi
 # Add other package if MPI is used:
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # SUPERLU_DIST
-   [ $minimal_mumps = 0 ] && add_package superlu_dist
+   # SUPERLU_DIST (supprime dans 1.8.1 car probleme avec OpenMPI natif)
+   # [ $minimal_mumps = 0 ] && add_package superlu_dist
 
    # New (Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
