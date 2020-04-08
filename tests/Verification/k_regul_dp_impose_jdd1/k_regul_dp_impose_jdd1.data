@@ -5,7 +5,7 @@ Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
 Lire_med family_names_from_group_names dom mesh mesh.med
-__tetra__
+
 regroupebord dom wall { left right front back down up wall wall_dup }
 # END MESH #
 
@@ -23,7 +23,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-__dis__ dis
+PolyMAC dis
 
 domaine surf1
 domaine surf2
@@ -34,6 +34,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     dt_max  0.01
     seuil_statio 1e-12
     dt_impr 1e-10
