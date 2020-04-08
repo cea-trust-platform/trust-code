@@ -403,8 +403,8 @@ fi
 # Add other package if MPI is used:
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # SUPERLU_DIST
-   [ $minimal_mumps = 0 ] && add_package superlu_dist
+   # SUPERLU_DIST (supprime dans 1.8.1 car probleme avec OpenMPI natif)
+   # [ $minimal_mumps = 0 ] && add_package superlu_dist
 
    # New (Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
@@ -413,11 +413,11 @@ then
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
    #[ $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
-   # PARDISO
-   if [ -f $MKLROOT/include/mkl_pardiso.h ]
+   # PARDISO (Uniquement si support d'OpenMP par TRUST)
+   if [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f $MKLROOT/include/mkl_pardiso.h ]
    then
-      with_packages=$with_packages" --with-mkl_cpardiso=1 --with-mkl_pardiso-dir=$MKLROOT" 	# Cluster Pardiso (MPI)
-      [ "$PETSC_HAVE_OPENMP" = 1 ] && with_packages=$with_packages" --with-mkl_pardiso=1" 	# Pardiso (OpenMP) Uniquement si support d'OpenMP par TRUST
+      with_packages=$with_packages" --with-mkl_cpardiso=1 --with-mkl_pardiso-dir=$MKLROOT" 	# Cluster Pardiso (MPI/OpenMP)
+      with_packages=$with_packages" --with-mkl_pardiso=1" 					# Pardiso (OpenMP)
    fi
 
    # MUMPS et SUPERLU necessitent desormais parmetis

@@ -54,7 +54,11 @@ let i=$i+1;solver[$i]="Petsc Cholesky { ordering scotch impr }"							;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering parmetis impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=6;
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering pt-scotch impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=7;
 let i=$i+1;solver[$i]="Petsc Cholesky_out_of_core { impr }"							;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
+# Si PETSc est construit avec SuperLu:
+if [ "`grep -i superlu $TRUST_ENV/make.liba`" != "" ]
+then
+   i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
+fi
 #if [ $exec = $exec_opt ] # Pastix crashes in debug...
 #then
 # Crash also in optimized when feenableexcept activated
