@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,9 @@
 #include <unistd.h> // sleep() pour certaines machines
 #include <stat_counters.h>
 
+#include <SChaine.h>
+#include <FichierHDFPar.h>
+
 // Chacun des fichiers Cerr, Cout et Journal(i)
 // peut etre redirige vers l'un des quatre fichiers suivants:
 // Instance de la Sortie nulle (equivalent de /dev/null)
@@ -45,8 +48,13 @@ static Sortie_Nulle  journal_zero_;
 static Sortie        std_err_(cerr);
 // Instance de la Sortie pointant vers cout
 static Sortie        std_out_(cout);
-// Instance du fichier Journal
-static SFichier      journal_file_;
+// Instances du fichier Journal
+// (if the journal is shared between all the procs, journal_file_ is not used
+//  and the processors' output is redirected to journal_shared_stream_ before being written in a HDF5 file)
+static SFichier     journal_file_;
+static SChaine      journal_shared_stream_;
+static int 			journal_shared_;
+
 static int        journal_file_open_;
 static Nom           journal_file_name_;
 // Niveau maximal des messages ecrits. La valeur initiale determine
@@ -166,6 +174,18 @@ int Process::mp_sum(int x)
 }
 
 // Description:
+//  Calcule la somme de x sur tous les processeurs du groupe courant.
+//  Voir aussi mp_max()
+long long Process::mp_sum(long long x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  long long y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_SUM);
+  return y;
+}
+
+
+// Description:
 //  Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
 bool Process::mp_and(bool b)
 {
@@ -218,6 +238,10 @@ void Process::exit(const Nom& message ,int i)
         }
     }
   Journal() << message << finl;
+  if( journal_shared_ && journal_file_open_)
+    end_journal(verbose_level_);
+
+
   if (exception_sur_exit)
     {
       // Lancement d'une exception (utilise par Execute_parallel)
@@ -314,7 +338,12 @@ Sortie& Process::Journal(int message_level)
   if (message_level <= verbose_level_ && verbose_level_ > 0)
     {
       if (journal_file_open_)
-        return journal_file_;
+        {
+          if(journal_shared_)
+            return journal_shared_stream_;
+          else
+            return journal_file_;
+        }
       else
         return std_err_;
     }
@@ -362,20 +391,37 @@ void Process::imprimer_ram_totale(int all_process)
 //   c'est le nom du fichier (doit etre different sur chaque processeur)
 // Parametre: append
 // Signification: indique si on ouvre le fichier en mode append ou pas.
-void init_journal_file(int verbose_level, const char * file_name, int append)
+void init_journal_file(int verbose_level, int journal_shared, const char * file_name, int append)
 {
-  end_journal(verbose_level);
+  journal_shared_ = journal_shared;
+  if( journal_shared_ )
+    {
+      if(journal_file_open_)
+        end_journal(verbose_level);
+    }
+  else
+    end_journal(verbose_level);
+
   if (verbose_level > 0)
     {
       if (file_name)
         {
-          IOS_OPEN_MODE mode = ios::out;
-          if (append)
-            mode = ios::app;
-          if (!journal_file_.ouvrir(file_name, mode))
+          if(!journal_shared_)
             {
-              Cerr << "Fatal error in init_journal_file: cannot open journal file" << finl;
-              Process::exit();
+              IOS_OPEN_MODE mode = ios::out;
+              if (append)
+                mode = ios::app;
+              if (!journal_file_.ouvrir(file_name, mode))
+                {
+                  Cerr << "Fatal error in init_journal_file: cannot open journal file" << finl;
+                  Process::exit();
+                }
+            }
+          else
+            {
+              if(append)
+                Cerr << "Process.cpp::init_journal_file : append mode is not possible with HDF5!\n"
+                     << "If " << file_name << " already exists, it will be overwritten" << finl;
             }
           journal_file_open_ = 1;
           journal_file_name_ = file_name;
@@ -388,8 +434,16 @@ void end_journal(int verbose_level)
 {
   // Attention: acrobatie pour que ca "plante proprement" si le destructeur
   // ecrit dans le journal !
+  if(journal_shared_)
+    {
+      FichierHDFPar fic_hdf;
+      fic_hdf.create(journal_file_name_);
+      fic_hdf.create_and_fill_dataset("/log", journal_shared_stream_);
+      fic_hdf.close();
+    }
+  else
+    journal_file_.close();
   journal_file_open_ = 0;
-  journal_file_.close();
 }
 
 // Description: Renvoie l'objet Sortie sur lequel seront redirigees les
@@ -397,7 +451,12 @@ void end_journal(int verbose_level)
 Sortie& get_Cerr()
 {
   if (journal_file_open_ && cerr_to_journal_)
-    return journal_file_;
+    {
+      if(journal_shared_)
+        return journal_shared_stream_;
+      else
+        return journal_file_;
+    }
   else
     {
       // dans le cas ou on a pas initialise les groupes
@@ -408,7 +467,12 @@ Sortie& get_Cerr()
       if (Process::je_suis_maitre())
         return std_err_;
       else if (verbose_level_)
-        return journal_file_;
+        {
+          if(journal_shared_)
+            return journal_shared_stream_;
+          else
+            return journal_file_;
+        }
       else
         return journal_zero_;
     }
@@ -422,7 +486,12 @@ Sortie& get_Cout()
   if (Process::je_suis_maitre())
     {
       if (journal_file_open_ && cerr_to_journal_)
-        return journal_file_;
+        {
+          if(journal_shared_)
+            return journal_shared_stream_;
+          else
+            return journal_file_;
+        }
       else
         return std_out_;
     }

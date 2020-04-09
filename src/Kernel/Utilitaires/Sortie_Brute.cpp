@@ -14,63 +14,54 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        Sortie_Brute.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <Sortie_Brute.h>
+#include <Process.h>
+#include <EntreeSortie.h>
+#include <sstream>
 
-#ifndef Process_included
-#define Process_included
+using std::ostringstream;
 
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
-
-int get_disable_stop();
-void change_disable_stop(int new_stop);
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
-// .SECTION voir aussi
-//   Objet_U
-//////////////////////////////////////////////////////////////////////////////
-
-class Process
+// In its implementation use an ostringstream. This is by far the simplest method.
+Sortie_Brute::Sortie_Brute() :
+  Sortie()
 {
-public:
-  Process();
-  virtual ~Process();
+  set_bin(1);
+  ostringstream *os = new ostringstream();  // deletion in Sortie destructor
+  set_ostream(os);
+}
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static long long mp_sum(long long x);
-  static bool mp_and(bool);
+Sortie_Brute::~Sortie_Brute()
+{
+}
 
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
+// Description:
+//   returns a pointer to the internal data. The data is valid as long as no other write operation is done on
+//   the Sortie_Brute object.
+const char* Sortie_Brute::get_data() const
+{
+  const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
+  string_ = std::string(os.str());
+  return string_.c_str();
+}
 
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-private:
-};
+unsigned Sortie_Brute::get_size() const
+{
+  const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
+  return os.str().size();
+}
 
-#endif
-
+int Sortie_Brute::set_bin(int bin)
+{
+  if (bin != 1)
+    {
+      Cerr << "Error in Sortie_Brute::set_bin(int bin) : only binary format supported. Use SChaine otherwise." << finl;
+      Process::exit();
+    }
+  Sortie::set_bin(bin);
+  return bin;
+}

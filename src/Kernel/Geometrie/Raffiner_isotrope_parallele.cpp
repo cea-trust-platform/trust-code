@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,8 @@
 #include <DoubleTabs.h>
 #include <Schema_Comm.h>
 #include <Vect_ArrOfInt.h>
+
+#include <FichierHDFPar.h>
 
 Implemente_instanciable( Raffiner_isotrope_parallele, "Raffiner_isotrope_parallele", Raffiner_Simplexes ) ;
 
@@ -194,27 +196,55 @@ void mon_construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 
 Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
 {
-  int form=0;
+  int form=0, format_hdf = 0;
   Nom org,newd;
   Param param(que_suis_je());
 // XD Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
   param.ajouter("name_of_initial_zones",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Zones
   param.ajouter("name_of_new_zones",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Zones
   param.ajouter("ascii",&form);  // XD_ADD_P flag writing Zones in ascii format
+  param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P flag writing Zones in hdf format
   param.lire_avec_accolades(is);
   int binaire=!form;
-
+  if (form && format_hdf)
+    {
+      Cerr << "Raffiner_isotrope_parallele::interpreter(): options 'ascii' and 'single_hdf' are mutually exclusive!" << finl;
+      Process::exit(1);
+    }
   Domaine dom_org;
   Noms liste_bords_periodiques;
   org+=".Zones";
 
-  LecFicDistribue    fichier;
-  fichier.set_bin(binaire);
-  fichier.ouvrir(org);
-  fichier >> dom_org;
-  dom_org.set_fichier_lu(org);
+  Nom copy(org);
+  copy = copy.nom_me(Process::nproc(), "p", 1);
+  bool is_hdf = FichierHDF::is_hdf5(copy);
 
-  fichier >> liste_bords_periodiques;
+  if (!is_hdf)
+    {
+      LecFicDistribue    fichier;
+      fichier.set_bin(binaire);
+      fichier.ouvrir(org);
+      fichier >> dom_org;
+      dom_org.set_fichier_lu(org);
+      fichier >> liste_bords_periodiques;
+    }
+  else
+    {
+      FichierHDFPar fic_hdf;
+      //FichierHDF fic_hdf;
+      org = copy;
+      fic_hdf.open(org, true);
+      Entree_Brute data;
+
+      fic_hdf.read_dataset("/zone", Process::me(), data);
+
+      // Feed TRUST objects:
+      data >> dom_org;
+      dom_org.set_fichier_lu(org);
+      data >> liste_bords_periodiques;
+
+      fic_hdf.close();
+    }
 
   Scatter::uninit_sequential_domain(dom_org);
   Domaine dom_new(dom_org);
@@ -256,7 +286,6 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       // else
       {
 
-
         Scatter::construire_correspondance_sommets_par_coordonnees(dom_new);
         Scatter::calculer_renum_items_communs(dom_new.zone(0).faces_joint(), Joint::SOMMET);
 
@@ -284,22 +313,32 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
             dom_new.les_sommets().resize(nb_sommet_avant_completion,dimension);
 
             Scatter::uninit_sequential_domain(dom_new);
-
-
             newd+=".Zones";
-            EcrFicCollecte os;
-            os.set_bin(binaire);
 
-            os.ouvrir(newd);
-            if (!binaire)
+            if( !format_hdf )
               {
-                os.setf(ios::scientific);
-                os.precision(Objet_U::format_precision_geom);
+                EcrFicCollecte os;
+                os.set_bin(binaire);
+                os.ouvrir(newd);
+                if (!binaire)
+                  {
+                    os.setf(ios::scientific);
+                    os.precision(Objet_U::format_precision_geom);
+                  }
+                os << dom_new;
+                os << liste_bords_periodiques;
               }
-
-            os << dom_new;
-
-            os << liste_bords_periodiques;
+            else
+              {
+                Sortie_Brute os_hdf;
+                os_hdf << dom_new;
+                os_hdf << liste_bords_periodiques;
+                FichierHDFPar fic_hdf;
+                newd = newd.nom_me(Process::nproc(), "p", 1);
+                fic_hdf.create(newd);
+                fic_hdf.create_and_fill_dataset("/zone", os_hdf);
+                fic_hdf.close();
+              }
           }
       }
     }

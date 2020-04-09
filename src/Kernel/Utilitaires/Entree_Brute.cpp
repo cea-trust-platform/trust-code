@@ -14,63 +14,61 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        Entree_Brute.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <Entree_Brute.h>
+#include <Process.h>
+#include <EntreeSortie.h>
+#include <sstream>
 
-#ifndef Process_included
-#define Process_included
+using std::istringstream;
 
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
-
-int get_disable_stop();
-void change_disable_stop(int new_stop);
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
-// .SECTION voir aussi
-//   Objet_U
-//////////////////////////////////////////////////////////////////////////////
-
-class Process
+Entree_Brute::Entree_Brute():
+  Entree(), data_(0)
 {
-public:
-  Process();
-  virtual ~Process();
+  set_bin(1);
+  istrstream_ = new istringstream();
+  set_istream(istrstream_);
+}
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static long long mp_sum(long long x);
-  static bool mp_and(bool);
 
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
+Entree_Brute::~Entree_Brute()
+{
+  delete[] data_;
+}
 
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-private:
-};
+int Entree_Brute::set_bin(int bin)
+{
+  if (bin != 1)
+    {
+      Cerr << "Error in Entree_Brute::set_bin(int bin) : only binary format supported. Use EChaine otherwise." << finl;
+      Process::exit();
+    }
+  Entree::set_bin(bin);
+  return bin;
+}
 
-#endif
+void Entree_Brute::set_data(const char * data, unsigned sz)
+{
+  if(data_)
+    {
+      // For now forbid multiple calls ... could try deleting data_
+      //Cerr << "Entree_Brute::set_data(): Multiple calls forbidden!  " << finl;
+      //Process::exit(-1);
+      delete[] data_;
+      if (istrstream_)
+        delete istrstream_;
+      istrstream_ = new istringstream();
+      set_istream(istrstream_);
+    }
 
+  const std::istream& iss = get_istream();
+  std::streambuf * sb = iss.rdbuf();
+
+  data_ = new char[sz];
+  std::copy(data, data+sz, data_);
+  sb->pubsetbuf(data_, sz);
+}

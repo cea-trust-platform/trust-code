@@ -744,7 +744,6 @@
  Runge_Kutta_Rationnel_ordre_2 RRK2 RRK2.h
  Scalaire_impose_paroi Scalaire_impose_paroi Scalaire_impose_paroi.h
  Scatter Scatter Scatter.h
- ScatterFormatte ScatterFormatte Scatter.h
  ScatterMED ScatterMED ScatterMED.h
  Schema_Adams_Bashforth_base Schema_Adams_Bashforth_base Schema_Adams_Bashforth_base.h
  Schema_Adams_Bashforth_order_2 Schema_Adams_Bashforth_order_2 Schema_Adams_Bashforth_order_2.h

@@ -14,63 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        FichierHDFPar.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-
-#ifndef Process_included
-#define Process_included
-
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
-
-int get_disable_stop();
-void change_disable_stop(int new_stop);
+#ifndef FichierHDFPar_included
+#define FichierHDFPar_included
+#include <FichierHDF.h>
+#include <mpi.h>
+#include <SChaine.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
+//   Parallel collective version of FichierHDF, to be used for all concurrent reading/writing on HDF files.
 // .SECTION voir aussi
-//   Objet_U
+//
 //////////////////////////////////////////////////////////////////////////////
-
-class Process
+class FichierHDFPar: public FichierHDF
 {
 public:
-  Process();
-  virtual ~Process();
+  FichierHDFPar();
+  virtual ~FichierHDFPar();
+  inline void set_collective_op(bool b)
+  {
+    collective_op_ = b;
+  }
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static long long mp_sum(long long x);
-  static bool mp_and(bool);
+  // Multiple Writers methods
+  // every processor writes their own dataset into the file
+  void create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie);
+  void create_and_fill_dataset(Nom dataset_basename, SChaine& sortie);
 
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
+protected:
+  virtual void prepare_file_props();
+  virtual void prepare_dataset_props();
 
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-private:
-};
-
+#ifdef MED_
+  void create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
 #endif
+private:
+  // Forbid copy:
+  FichierHDFPar& operator=(const FichierHDFPar&);
+  FichierHDFPar(const FichierHDFPar&);
 
+  bool collective_op_; //flag to enable collective data transfering
+};
+#endif

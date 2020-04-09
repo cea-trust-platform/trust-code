@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+ Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,15 +38,16 @@
 #include <unistd.h> // PGI
 #include <Poly_geom_base.h>
 
+#include <Entree_Brute.h>
+#include <hdf5.h>
+#include <Comm_Group_MPI.h>
+#include <FichierHDFPar.h>
+
 extern Stat_Counter_Id interprete_scatter_counter_;
 
 Implemente_instanciable_sans_constructeur(Scatter,"Scatter",Interprete);
-Implemente_instanciable_sans_constructeur(ScatterFormatte,"ScatterFormatte",Scatter);
-
-Scatter::Scatter() :
-  fichier_zone_format_binaire_(1)
-{
-}
+Scatter::Scatter()
+{}
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
@@ -85,30 +86,6 @@ Sortie& Scatter::printOn(Sortie& os) const
 Entree& Scatter::readOn(Entree& is)
 {
   return Interprete::readOn(is);
-}
-
-Sortie& ScatterFormatte::printOn(Sortie& os) const
-{
-  return Scatter::printOn(os);
-}
-
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& ScatterFormatte::readOn(Entree& is)
-{
-  return Scatter::readOn(is);
 }
 
 // Description :
@@ -324,58 +301,60 @@ Entree& Scatter::interpreter(Entree& is)
 // Description:
 //  Lit le domaine dans le fichier de nom "nomentree",
 //  de type LecFicDistribueBin ou LecFicDistribue
-//  (selon fichier_zone_format_binaire_)
-//  Le format historique n'est plus supporte.
 //  Format attendu : Domaine::ReadOn
 //  La zone est renommee comme le domaine (pour lance_test_seq_par)
 void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
-  LecFicDistribueBin fichier_binaire;
-  LecFicDistribue    fichier_ascii;
-  EFichier& entree_binaire = fichier_binaire;
-  EFichier& entree_ascii   = fichier_ascii;
-
-  EFichier& fichier =
-    fichier_zone_format_binaire_ ? entree_binaire : entree_ascii;
-
-  if (Process::je_suis_maitre())
-    {
-      Cerr << "Scatter::lire_domaine format "
-           << (fichier_zone_format_binaire_ ? "binaire" : "ascii")
-           << "\n If crash, your file is probably the other format\n then try "
-           << (fichier_zone_format_binaire_ ? "ScatterFormatte" : "Scatter")
-           << finl;
-    }
-
   // On determine si le fichier est au nouveau format ou a l'ancien
   if (Process::je_suis_maitre())
-    Cerr << "Expecting new format (old format not any more supported)" << finl;
+    Cerr << "Reading geometry from .Zones file(s) ..." << finl;
   barrier(); // Attendre que le message soit affiche
 
-  // Lecture du domaine
-  // Nouveau format:
-  if (Process::je_suis_maitre())
-    Cerr << "Reading geometry file, file format: Domaine::printOn" << finl;
-
-  int ok;
-  // Probleme : la methode "ouvrir" n'est pas virtuelle,
-  //  il faut appeler explicitement celle de la classe derivee.
-  if (fichier_zone_format_binaire_)
-    ok = fichier_binaire.ouvrir(nomentree);
-  else
-    ok = fichier_ascii.ouvrir(nomentree);
-
-  if (ok == 0) exit(); // Useless to print the reason (written in .log files if .Zones files not found)
-
   Domaine& dom = domaine();
-  fichier >> dom;
 
-  // Renseigne dans quel fichier le domaine a ete lu
-  dom.set_fichier_lu(nomentree);
 
-  fichier >> liste_bords_periodiques;
+  Nom copy(nomentree);
+  copy = copy.nom_me(Process::nproc(), "p", 1);
 
-  fichier.close();
+  bool is_hdf = FichierHDF::is_hdf5(copy);
+
+  static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
+
+  statistiques().begin_count(stats);
+
+
+  if (is_hdf)
+    {
+      FichierHDFPar fic_hdf;
+      //FichierHDF fic_hdf;
+      nomentree = copy;
+      fic_hdf.open(nomentree, true);
+      Entree_Brute data;
+      fic_hdf.read_dataset("/zone", Process::me(), data);
+
+      // Feed TRUST objects:
+      data >> dom;
+      dom.set_fichier_lu(nomentree);
+      data >> liste_bords_periodiques;
+
+      fic_hdf.close();
+    }
+  else
+    {
+      LecFicDistribueBin fichier_binaire;
+      int ok = fichier_binaire.ouvrir(nomentree);
+
+      if (ok == 0) exit(); // Useless to print the reason (written in .log files if .Zones files not found)
+
+      fichier_binaire >> dom;
+
+      // Renseigne dans quel fichier le domaine a ete lu
+      dom.set_fichier_lu(nomentree);
+
+      fichier_binaire >> liste_bords_periodiques;
+
+      fichier_binaire.close();
+    }
 
   barrier();
 }

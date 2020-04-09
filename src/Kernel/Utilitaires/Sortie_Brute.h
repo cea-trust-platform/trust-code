@@ -14,63 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        Sortie_Brute.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
-
-#ifndef Process_included
-#define Process_included
-
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
-
-int get_disable_stop();
-void change_disable_stop(int new_stop);
+#ifndef Sortie_Brute_included
+#define Sortie_Brute_included
+#include <Sortie.h>
+#include <sstream>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
+//   This derived class of Sortie stacks whatever it receives in an internal binary buffer.
+//   Data can be accessed through get_data().
 // .SECTION voir aussi
-//   Objet_U
+//    SChaine
 //////////////////////////////////////////////////////////////////////////////
-
-class Process
+class Sortie_Brute :  public Sortie
 {
 public:
-  Process();
-  virtual ~Process();
+  Sortie_Brute();
+  ~Sortie_Brute();
+  const char* get_data() const;
+  unsigned get_size() const;
+  int set_bin(int bin);
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static long long mp_sum(long long x);
-  static bool mp_and(bool);
-
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
-
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-private:
+protected:
+  mutable std::string string_;
 };
-
 #endif
-

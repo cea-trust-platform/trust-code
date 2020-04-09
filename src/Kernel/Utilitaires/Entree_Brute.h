@@ -14,63 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        Entree_Brute.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     /main/16
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Process_included
-#define Process_included
+#ifndef Entree_Brute_included
+#define Entree_Brute_included
 
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
-
-int get_disable_stop();
-void change_disable_stop(int new_stop);
-
+#include <Entree.h>
+#include <sstream>
+using std::istringstream;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
+//   An Entree whose main source of data is an arbitrary binary buffer set using the
+//   set_data() method. This Entree can then be used to feed any standard TRUST objects.
 // .SECTION voir aussi
-//   Objet_U
+//    EChaine
 //////////////////////////////////////////////////////////////////////////////
 
-class Process
+class Entree_Brute : public Entree
 {
+
 public:
-  Process();
-  virtual ~Process();
+  Entree_Brute();
+  ~Entree_Brute();
+  int set_bin(int bin);
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static long long mp_sum(long long x);
-  static bool mp_and(bool);
+  // [ABN] TODO should be const char * data ...
+  void set_data(const char * data, unsigned sz);
 
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
-
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-private:
+protected:
+  istringstream* istrstream_;
+  char * data_;
 };
 
 #endif
-

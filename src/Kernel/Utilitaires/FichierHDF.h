@@ -14,63 +14,78 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        FichierHDF.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
+#ifndef FichierHDF_included
+#define FichierHDF_included
 
-#ifndef Process_included
-#define Process_included
+#include <Process.h>
+#include <Entree_Brute.h>
+#include <Sortie_Brute.h>
+#include <Nom.h>
 
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
+#include <med.h>
+#ifdef MED_H
+#ifndef MED_
+#define MED_
+#endif
+#else
+#undef MED_
+#endif
 
-int get_disable_stop();
-void change_disable_stop(int new_stop);
+#ifdef MED_
+#include <hdf5.h>
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
+//   This abstract class provides all the functionalities to open and manipulate HDF files and related
+//   concepts (datasets, groups, etc ...)
+//   It intentionally does not place itself in the Sortie_Fichier_base or Entree_Fichier_base hierarchy
+//   since it is rather the datasets inside the HDF file that are regarded as TRUST Fichier objects.
 // .SECTION voir aussi
-//   Objet_U
+//
 //////////////////////////////////////////////////////////////////////////////
-
-class Process
+class FichierHDF
 {
 public:
-  Process();
-  virtual ~Process();
+  FichierHDF();
+  virtual ~FichierHDF();
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static long long mp_sum(long long x);
-  static bool mp_and(bool);
+  // Creates (and open) the HDF file.
+  virtual void create(Nom filename);
+  virtual void open(Nom filename, bool readOnly);
+  virtual void close();
 
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
+  // Single Writer Multiple Readers methods:
+  // a single proc writes all the datasets (one per proc)
+  // and each proc reads its own dataset in the given file
+  void create_and_fill_dataset(Nom dataset_basename, int proc_rank, Sortie_Brute& data);
+  virtual void read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute& entree);
 
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-private:
-};
+  // checks if a dataset named dataset_name exists in the file
+  virtual bool exists(const char* dataset_name);
+  //check if the file file_name is in the HDF5 format
+  static bool is_hdf5(const char *file_name);
 
+protected:
+  virtual void prepare_file_props();
+  virtual void prepare_dataset_props();
+#ifdef MED_
+  hid_t file_id_;
+  hid_t file_access_plst_;
+  hid_t dataset_transfer_plst_;
 #endif
 
+private:
+  // Forbid copy:
+  FichierHDF& operator=(const FichierHDF&);
+  FichierHDF(const FichierHDF&);
+
+};
+#endif
