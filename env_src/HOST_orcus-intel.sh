@@ -13,10 +13,11 @@ define_modules_config()
    echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
    module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Utilise par PE ?
-   module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3" # Recommande par AG
-   echo "# Module $module detected and loaded on $HOST."    
+   module="slurm compilers/intel/2019_update5 mpi/openmpi/intel/2019_update5/4.0.1" # Recommande par AG
+   echo "# Module $module detected and loaded on $HOST." 
+   echo "module purge 1>/dev/null" >> $env   
    echo "module load $module 1>/dev/null" >> $env
-   echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
+   #echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
@@ -39,7 +40,7 @@ define_soumission_batch()
    # gpuq         up   infinite      1   idle gpu01   
    
    # On se base sur la frontale pour selectionner la queue par defaut:  
-   queue=intelq
+   queue=intelq_5118
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max 

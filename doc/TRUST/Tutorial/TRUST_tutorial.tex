@@ -1213,7 +1213,7 @@ You can also see the instructions at the end of the Heat transfer VDF/VEF exerci
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Constituents and turbulent flow}
-\begin{block}{}
+\begin{block}{TrioCFD}
 
 \begin{figure}
 \includegraphics[width=0.75\textwidth]{PICTURES/marche.pdf}
@@ -1227,8 +1227,32 @@ Inlet with imposed velocity: $U_0=1 m.s^{-1}$ and constant values of $k=10^{-2}$
 Outlet with constant pressure: $P_0=0$ and constant values of $k=0$ and $\varepsilon=0$ \\
 Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ null.
 
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Constituents and turbulent flow}
+\begin{block}{TrioCFD}
+
 \begin{itemize}
-\item Copy the study named \textbf{Marche} as explained page \pageref{method_copy}. It simulates a 2D incompressible turbulent flow in the configuration described above using the k-$\varepsilon$ model.
+
+\item First initialize TrioCFD full environment to have acces to TrioCFD and TRUST studies :\\
+{\small{
+\textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
+\textbf{echo \$exec} \\
+\textbf{echo \$project\_directory} \\
+}}
+
+\item Copy the study named \textbf{Marche} (\textcolor{blue}{TrioCFD}) as explained page \pageref{method_copy} in the directory Formation\_TRUST/yourname. It simulates a 2D incompressible turbulent flow in the configuration described above using the k-$\varepsilon$ model.
+
+\item We want to add a source of constituent's diffusion so copy the \textbf{Constituants\index{Constituants}} study (\textcolor{blue}{TRUST}) which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
+
+\item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the TrioCFD Reference Manual).\\
+{\small{
+\textbf{evince \$project\_directory/share/doc/TrioCFD\_Reference\_Manual.pdf}\\
+}}
+
 \end{itemize}
 
 \end{block}
@@ -1237,12 +1261,9 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Constituents and turbulent flow}
-\begin{block}{}
+\begin{block}{TrioCFD}
 
 \begin{itemize}
-\item We want to add a source of constituent's diffusion so copy the \textbf{Constituants\index{Constituants}} study which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
-
-\item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the Reference Manual).
 
 \item Add 3 constituents of equal diffusivities ($\alpha=1m/s$) and associate the constituents to the problem.
 
@@ -1251,6 +1272,10 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 \item Use the Schmidt model to close the turbulence model in the concentration equation.
 
 \item Change the sources of the Navier-Stokes turbulence model to a \textbf{Source\_Transport\_K\_Eps\_aniso\_concen\index{Source\_Transport\_K\_Eps\_aniso\_concen} \{ C1\_eps 1.44 C2\_eps 1.92 C3\_eps 1. \} } to fit with the new concentration equation.
+
+\item Add into the fluid definition, the volume expansion coefficient for the concentration: \textbf{beta\_co\index{beta\_co}} as a uniform field set to 0.
+
+\item You have also to add a gravity field which can be initialized to 0.
 \end{itemize}
 
 \end{block}
@@ -1259,16 +1284,13 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Constituents and turbulent flow}
-\begin{block}{}
+\begin{block}{TrioCFD}
 
 \begin{itemize}
-\item Add into the fluid definition, the volume expansion coefficient for the concentration: \textbf{beta\_co\index{beta\_co}} as a uniform field set to 0.
-
-\item You have also to add a gravity field which can be initialized to 0.
 
 \item Run the calculation to see if it is ok.
 
-\item Define a sub domain (in grey on the previous picture) with the keyword \textbf{Sous\_Zone\index{Sous\_Zone}} (like in \textbf{PCR} data file).
+\item Define a sub domain (in grey on the previous picture) with the keyword \textbf{Sous\_Zone\index{Sous\_Zone}} (like in \textbf{PCR} data file (\textcolor{blue}{TRUST}) ).
 
 \item Add a source term for the second constituent only ($S_2=1m^{-3}$) applied on the sub domain thanks to the keyword \textbf{Champ\_Uniforme\_Morceaux\index{Champ\_Uniforme\_Morceaux}}.
 
@@ -2032,7 +2054,7 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 
 \item Select the Cylinder\_1 geometry in the Object Browser.
 
-\item Select the "Tetrahedron (Netgen)" or "MG-Tetra" 3D algorithm.
+\item Select the "Netgen 3D" or "MG-Tetra" 3D algorithm.
 
 \item Click on the wheel of "Add. Hypothesis" $\rightarrow$ "Viscous Layers" with:
     \begin{itemize}
@@ -2450,7 +2472,7 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
 \begin{block}{Create a mesh}
 
 \begin{itemize}
-\item Choose "Tetrahedron (Netgen)" for 3D algorithm.
+\item Choose "Netgen 3D" for 3D algorithm.
 \item Click on the wheel of "Add. Hypothesis" $\rightarrow$ "Viscous Layers" and set:
     \begin{itemize}
     \item [$\circ$] Total thickness: 0.05
@@ -2465,8 +2487,8 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
     \begin{itemize}
     \item [$\circ$] Max. Size: 0.6
     \item [$\circ$] Min. Size: 0
-    \item [$\circ$] without "Second Order"
     \item [$\circ$] Finess: Custom
+    \item [$\circ$] Growth rate: 0.1
     \end{itemize}
 
 \end{itemize}
@@ -2479,12 +2501,11 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
 \frametitle{T-shape}
 \begin{block}{Create a mesh}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Growth rate: 0.1}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Nb. segs per Edge: 2}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Nb. segs per Radius: 4}}\\
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Select "Limit size by Surface Curvature", "Optimize", "Fuse Coincident Nodes \\
-\hspace{1,3cm} on Edges and Vertices".}}\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Select "Limit size by Surface Curvature", "Optimize".}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Unselect "Allow Quadrangles".}}\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Unselect "Second Order".}}\\
 
 \begin{itemize}
 \item For "Local Size" menu:
@@ -2492,6 +2513,10 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
     \item [$\circ$] Select "Corner" object in the Object Browser and click on "On Vertex" in the "Hypothesis Construction" window.
     \item [$\circ$] Double-click on the value in the table and set it to "0.01".
     \item [$\circ$] Click "OK".
+    \end{itemize}
+\item For "Advanced" menu:
+    \begin{itemize}
+    \item [$\circ$] Select "Fuse Coincident Nodes on Edges and Vertices".
     \end{itemize}
 \item Click on "Apply and Close".
 \item Select the Mesh\_1 object in the Object Browser and Right click $\rightarrow$ Compute.

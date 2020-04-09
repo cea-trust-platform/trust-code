@@ -27,9 +27,9 @@ Mailler dom
         }
 
 tetraedriser_homogene dom
-Reordonner_faces_periodiques dom periox
+Corriger_frontiere_periodique { domaine dom bord periox }
 
-Reordonner_faces_periodiques dom perioz
+Corriger_frontiere_periodique { domaine dom bord perioz }
 
 # END MESH #
 

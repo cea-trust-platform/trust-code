@@ -14,9 +14,10 @@ define_modules_config()
    # Load modules
    module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Utilise par PE ?
    module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3" # Recommande par AG
-   echo "# Module $module detected and loaded on $HOST."    
+   echo "# Module $module detected and loaded on $HOST."   
+   echo "module purge 1>/dev/null" >> $env 
    echo "module load $module 1>/dev/null" >> $env
-   echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
+   # echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash

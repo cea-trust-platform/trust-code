@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,20 +24,6 @@
 #include <Scatter.h>
 #include <Octree_Double.h>
 #include <Param.h>
-
-Implemente_instanciable(Reordonner_faces_periodiques,"Reordonner_faces_periodiques",Interprete_geometrique_base);
-
-Sortie& Reordonner_faces_periodiques::printOn(Sortie& os) const
-{
-  exit();
-  return os;
-}
-
-Entree& Reordonner_faces_periodiques::readOn(Entree& is)
-{
-  exit();
-  return is;
-}
 
 inline void message()
 {
@@ -387,46 +373,3 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
   assert(renum.dimension_tot(0) == domaine.nb_som_tot());
   renum_som_perio = renum;
 }
-
-// Description
-//  Reordonne les faces d'un bord periodique selon la convention attendue par le
-//  decoupeur.
-//  Syntaxe du jeu de donnees:
-//    Reordonner_faces_periodiques NOM_DOMAIN NOM_BORD_PERIO
-Entree& Reordonner_faces_periodiques::interpreter_(Entree& is)
-{
-  if (Process::nproc() > 1)
-    {
-      Cerr << "Error : Reordonner_faces_periodiques::reordonner_faces_periodiques do not run in parallel calculation." << finl;
-      exit();
-    }
-  Cerr << "Reordonner_faces_periodiques::interpreter" << finl;
-  associer_domaine(is);
-  Cerr << " Domain name to be treated: " << domaine().le_nom() << finl;
-  Nom nom_bord;
-  is >> nom_bord;
-  Cerr << " Boundary name to be treated: " << nom_bord << finl;
-
-  Cerr << "*************** WARNING *********************" << finl;
-  Cerr << "Reordonner_faces_periodiques is obsolete and will be removed in the future." << finl;
-  Cerr << "Please use instead the following keyword which is more general." << finl;
-  Cerr << "Corriger_frontiere_periodique { Domaine name Bord name [ direction 2|3 nx ny nz ] }" << finl;
-  Cerr << "See TRUST documentation for more detail." << finl;
-  Cerr << "*********************************************" << finl;
-  ArrOfDouble direction_perio;
-  Domaine& dom = domaine();
-  Zone& zone = dom.zone(0);
-  Bord& bord = zone.bord(nom_bord);
-  Cerr << " Searching periodic direction automatically:" << finl;
-  chercher_direction_perio(direction_perio, dom, nom_bord);
-  Cerr << "  Periodic direction: " << direction_perio << finl;
-
-  IntTab& faces = bord.faces().les_sommets();
-  const double epsilon = Objet_U::precision_geom;
-  const int ok = reordonner_faces_periodiques(dom, faces, direction_perio, epsilon);
-  if (!ok)
-    exit();
-  return is;
-}
-
-

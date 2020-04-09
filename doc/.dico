@@ -729,7 +729,6 @@
  Remove_elem Remove_elem Remove_elem.h
  Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries.h
  Reordonner Reordonner Reordonner.h
- Reordonner_faces_periodiques Reordonner_faces_periodiques Reordonner_faces_periodiques.h
  Reorienter_tetraedres Reorienter_tetraedres Reorienter_tetraedres.h
  Reorienter_triangles Reorienter_triangles Reorienter_triangles.h
  Resoudre|Solve Resoudre Resoudre.h
