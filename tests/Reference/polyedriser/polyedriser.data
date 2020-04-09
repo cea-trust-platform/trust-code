@@ -1,5 +1,6 @@
 # Thermohydraulique 3D et Boussinesq #
-# PARALLEL RUNS #
+# Transforme les hexaedres du maillage TRUST en polyedres pour les rendre compatible avec Polymac #
+# PARALLEL OK #
 dimension 3
 Pb_Thermohydraulique pb
 Domaine dom
