@@ -1375,8 +1375,10 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
       else
         {
           // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
-          const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
-          const MCAuto<MEDCouplingUMesh> umesh = file_mesh->getMeshAtLevel(0);
+          //const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
+          //const MCAuto<MEDCouplingUMesh> umesh = file_mesh->getMeshAtLevel(0);
+          std::string mesh_name = nom_dom.getString();
+          const MCAuto<MEDCouplingUMesh> umesh = MEDCoupling::ReadUMeshFromFile(file_name, mesh_name, 0);
           field->setMesh(umesh);
         }
       // Fill array:
