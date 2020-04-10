@@ -563,7 +563,7 @@ int Nom::est_egal_a(const Objet_U& x) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
+Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
 {
   // char* newname = new char[strlen(nom_.c_str())+6];
   int compteur=strlen(nom_.c_str());
@@ -617,12 +617,12 @@ Nom Nom::nom_me(int n, const char* prefix, int without_padding) const
     }
 
   int prefix_len = 1; //for the underscore
-  if(prefix) prefix_len+=strlen(prefix);
+  if(prefixe) prefix_len+=strlen(prefixe);
 
   char *c_numero=new char[prefix_len+digits+1];
   int resultat;
   c_numero[0]='_';
-  if(prefix) strcpy(c_numero+1, prefix);
+  if(prefixe) strcpy(c_numero+1, prefixe);
   for (int i=prefix_len; i<prefix_len+digits; i++)
     {
       resultat=n/diviseur;

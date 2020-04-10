@@ -150,14 +150,12 @@ void FichierHDF::create_and_fill_dataset(Nom dataset_basename, int proc_rank, So
 
 bool FichierHDF::exists(const char* dataset_name)
 {
-  htri_t exists = H5Lexists( file_id_, dataset_name, H5P_DEFAULT );
-  return (exists>0);
+  return H5Lexists( file_id_, dataset_name, H5P_DEFAULT )>0;
 }
 
 bool FichierHDF::is_hdf5(const char * file_name)
 {
-  htri_t is_hdf5 = H5Fis_hdf5(file_name);
-  return (is_hdf5>0);
+  return H5Fis_hdf5(file_name)>0;
 }
 
 // void FichierHDF::get_chunking(hsize_t datasetLen)

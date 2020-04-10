@@ -20,30 +20,16 @@ cd $build_dir
 
 # include file:
 medcoupling_hxx=$install_dir/include/medcoupling++.h
-cp -af $medcoupling_hxx .
 
 # MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
 if [ "$TRUST_INT64" = "1" ]
 then
     echo "@@@@@@@@@@@@ INT64 specific stuff ..."
-
     mkdir -p $install_dir/include
     rm -rf $install_dir/lib
     echo "MEDCOUPLING DISABLE for 64 bits"
-    echo "#define NO_MEDFIELD " >  prov.h
-
-    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]; then
-      cp prov.h $icocomedfield_hxx
-    else
-      cp -a ICoCoMEDField.hxx $icocomedfield_hxx
-    fi
-    echo "#undef MEDCOUPLING_" > prov2.h
-    if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ];  then
-       cp prov2.h $medcoupling_hxx
-    else
-       cp -a medcoupling++.h $medcoupling_hxx
-    fi
-    rm -f prov.h prov2.h ICoCoMEDField.hxx medcoupling++.h
+    echo "#define NO_MEDFIELD " > $install_dir/include/ICoCoMEDField.hxx
+    echo "#undef MEDCOUPLING_"  > $medcoupling_hxx
     exit 0
 fi
 
@@ -156,4 +142,5 @@ touch $install_dir/include/*
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
 
 echo "All done!"
+
 
