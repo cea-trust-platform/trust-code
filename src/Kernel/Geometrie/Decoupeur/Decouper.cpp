@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -137,7 +137,7 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
 }
 
 static void ecrire_sous_zones(const Nom& nom_zones_decoup,
-                              const int format_binaire,
+                              const Decouper::ZonesFileOutputType format,
                               const Domaine& domaine,
                               ArrOfInt& elem_part,
                               const int nb_parties,
@@ -153,7 +153,7 @@ static void ecrire_sous_zones(const Nom& nom_zones_decoup,
   // Donc apres renumerotation des PEs et donc de elem_part, il faudrait
   // reinitialiser ? Ou bien, tout renumeroter apres le calcul des joints...
   // Cela parait mieux...
-  cutter.ecrire_zones(nom_zones_decoup, format_binaire, elem_part, reorder);
+  cutter.ecrire_zones(nom_zones_decoup, format, elem_part, reorder);
 }
 
 // Description:
@@ -174,7 +174,7 @@ Entree& Decouper::interpreter(Entree& is)
   Nom nom_fichier_decoupage("?");
   Nom nom_fichier_lata("?");
   int format_binaire = 1;
-  int format_ascii = 0;
+  int format_hdf = 0;
   int nb_parts_tot = -1;
   int reorder = 0;
   Noms liste_bords_periodiques;
@@ -194,11 +194,10 @@ Entree& Decouper::interpreter(Entree& is)
   param.ajouter("ecrire_lata",&nom_fichier_lata);
   param.ajouter("nb_parts_tot",&nb_parts_tot);
   param.ajouter("reorder",&reorder);
-  param.ajouter_flag("formatte",&format_ascii);
+  param.ajouter_flag("single_hdf",&format_hdf);
   param.ajouter("periodique",&liste_bords_periodiques);
   param.lire_avec_accolades_depuis(is);
 
-  format_binaire -= format_ascii;
   Partitionneur_base& partitionneur = deriv_partitionneur.valeur();
 
   // On recupere le resultat: un tableau qui donne pour chaque element
@@ -234,9 +233,14 @@ Entree& Decouper::interpreter(Entree& is)
     postraiter_decoupage(nom_fichier_lata, domaine, elem_part);
 
   if (nom_zones_decoup != "?")
-    ecrire_sous_zones(nom_zones_decoup, format_binaire,
-                      domaine, elem_part, nb_parties, epaisseur_joint, reorder,
-                      liste_bords_periodiques);
+    {
+      Decouper::ZonesFileOutputType typ;
+      if (format_binaire) typ = BINARY_MULTIPLE;
+      if (format_hdf) typ = HDF5_SINGLE;
+      ecrire_sous_zones(nom_zones_decoup, typ,
+                        domaine, elem_part, nb_parties, epaisseur_joint, reorder,
+                        liste_bords_periodiques);
+    }
 
   Cerr << "End of the interpreter Decouper" << finl;
   return is;

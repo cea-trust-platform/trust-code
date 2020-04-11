@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,8 @@
 #include <List_Ref_Field_base.h>
 #include <Deriv_Sortie_Fichier_base.h>
 #include <List_Ref_Loi_Fermeture_base.h>
+
+#include <Sortie_Brute.h>
 
 
 class Equation_base;
@@ -226,6 +228,8 @@ protected :
   LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
 
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
+  mutable Sortie_Brute osauv_hdf_;
+
   int reprise_effectuee_;
   int reprise_version_;
   Nom nom_fich;

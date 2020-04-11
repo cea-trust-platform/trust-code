@@ -685,6 +685,8 @@ int Postraitement::reprendre(Entree& is)
             }
           else  // lecture pour sauter le bloc
             {
+              Motcle tmp;
+              is >> tmp >> tmp;
               int n;
               is >> n;
               double tstat_deb_sauv,temps_derniere_mise_a_jour_stats;

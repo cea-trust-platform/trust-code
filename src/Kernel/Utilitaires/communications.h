@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 // .DESCRIPTION Methodes de communications
 // Voir la documentation de envoyer_() dans communications.cpp
 #include <Vect.h>
-
+#include <vector>
 class Objet_U;
 class DoubleTabs;
 class ArrOfInt;
@@ -67,9 +67,11 @@ int envoyer_broadcast(double&   t, int source);
 int envoyer_broadcast(Objet_U& t, int source);
 
 int mppartial_sum(int i);
+long long mppartial_sum(long long i);
 int mp_max(int i);
 int mp_min(int i);
 void mpsum_multiple(double& x1, double& x2);
+
 void mp_sum_for_each_item(ArrOfInt&);
 void mp_sum_for_each_item(ArrOfDouble&);
 void mp_max_for_each_item(ArrOfInt&);
@@ -81,6 +83,7 @@ int envoyer_all_to_all(const DoubleTabs& src, DoubleTabs& dest);
 int envoyer_all_to_all(const VECT(ArrOfInt) & src, VECT(ArrOfInt) & dest);
 int envoyer_all_to_all(const ArrOfInt& src, ArrOfInt& dest);
 int envoyer_all_to_all(const ArrOfDouble& src, ArrOfDouble& dest);
+int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
 void   envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
 
 int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list);

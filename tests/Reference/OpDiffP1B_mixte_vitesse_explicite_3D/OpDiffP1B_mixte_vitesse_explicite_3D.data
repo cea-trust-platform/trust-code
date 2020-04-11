@@ -23,7 +23,7 @@ Mailler dom_pbF1
                }
 }
 tetraedriser_homogene dom_pbF1
-Reordonner_Faces_Periodiques dom_pbF1 perio
+Corriger_frontiere_periodique { domaine dom_pbF1 bord perio }
 # END MESH #
 
 Pb_Hydraulique pbF1

@@ -108,6 +108,9 @@ conflicting_files_error() {
     echo $2" and "$3
     echo "Please, rename your files to avoid conflicts."
     echo ""
+    echo "Or create a \$project_directory/src/patch directory and move the modified file $2 inside it." 
+    echo "Then, run './configure' again before build."
+    echo ""
     echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "---------------------------------------------"
     echo ""

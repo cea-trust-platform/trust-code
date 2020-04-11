@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,44 +20,47 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <SChaine.h>
-#include <EChaine.h>
+#include <EntreeSortie.h>
 #include <sstream>
-using std::ostringstream;
+//using std::ostringstream;
+using namespace std;
 
-void SChaine::self_test()
-{
-  char *toto =new char[100];
-  strcpy(toto,"toto");
-  (*this)<<toto<<finl;
-  Nom titi(toto);
-  (*this)<<titi;
-  double t=0.1;
-  (*this)<<t;
-  // (*this)<<finl;
+// [ABN] TODO the below should be part of the unit tests ...
 
-  //  int es=ostream_p->pcount();
-  const char* s=get_str();
-  Cerr<<"there"<<s<<finl;
-  (*this)<<"tutu"<<finl;
-  (*this)<<"tralala"<<finl;
-  const char* s2=get_str();
-  std::cerr<<strlen(s2);
-
-  Cerr<<"HERE"<<s2<<finl;
-  //Cerr<<"FIN"<<finl;
-  const char *ref="toto\ntoto0.1tutu\ntralala\n";
-  EChaine test(s2);
-  if ((strcmp(test.get_str(),ref))!=0)
-    {
-      Cerr<<"Problem with Echaine SChaine"<<finl;
-      Cerr<<"ref: "<<ref<<"#"<<finl;
-      Cerr<<"SChaine: "<< s2<<"#"<<(int)strcmp(s2,ref)<<finl;
-      Cerr<<"EChaine: "<< test.get_str()<<"#"<<(int)strcmp(test.get_str(),ref)<<finl;
-      Process::exit();
-    }
-
-  delete [] toto;
-}
+//void SChaine::self_test()
+//{
+//  char *toto =new char[100];
+//  strcpy(toto,"toto");
+//  (*this)<<toto<<finl;
+//  Nom titi(toto);
+//  (*this)<<titi;
+//  double t=0.1;
+//  (*this)<<t;
+//  // (*this)<<finl;
+//
+//  //  int es=ostream_p->pcount();
+//  const char* s=get_str();
+//  Cerr<<"there"<<s<<finl;
+//  (*this)<<"tutu"<<finl;
+//  (*this)<<"tralala"<<finl;
+//  const char* s2=get_str();
+//  std::cerr<<strlen(s2);
+//
+//  Cerr<<"HERE"<<s2<<finl;
+//  //Cerr<<"FIN"<<finl;
+//  const char *ref="toto\ntoto0.1tutu\ntralala\n";
+//  EChaine test(s2);
+//  if ((strcmp(test.get_str(),ref))!=0)
+//    {
+//      Cerr<<"Problem with Echaine SChaine"<<finl;
+//      Cerr<<"ref: "<<ref<<"#"<<finl;
+//      Cerr<<"SChaine: "<< s2<<"#"<<(int)strcmp(s2,ref)<<finl;
+//      Cerr<<"EChaine: "<< test.get_str()<<"#"<<(int)strcmp(test.get_str(),ref)<<finl;
+//      Process::exit();
+//    }
+//
+//  delete [] toto;
+//}
 
 SChaine::SChaine()
 {
@@ -78,12 +81,20 @@ SChaine::~SChaine()
 
 }
 
+// Description:
+//   returns a copy of the string stored by the SChaine
 const char* SChaine::get_str() const
 {
-  ostringstream& os= *((ostringstream*)(&((SChaine*)this)->get_ostream()));
-  // Need a copy
+  const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
+  // Need a copy to make sure the char * remains unchanged even if the SChaine is further filled.
   string_=string(os.str());
   return string_.c_str();
+}
+
+unsigned SChaine::get_size() const
+{
+  const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
+  return os.str().size();
 }
 
 int SChaine::set_bin(int bin)

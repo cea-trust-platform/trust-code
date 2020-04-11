@@ -1,6 +1,7 @@
 Version	Qui				Tache
 
 
+1.8.1   trust@cea.fr            MC:  corriger le trust -evol pour qu'il detecte les .son
 1.8.1   trust@cea.fr            AGL: remettre dans lance test_nuit le tag de TrioCFD si sortie en même temps
 1.8.1   trust@cea.fr            LDC: ouvrir une DI pour "Branches a intégrer dans TRUST pour prochaine version 181" (cf DI162165)
 1.8.1   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 174197)

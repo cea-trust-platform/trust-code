@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -142,3 +142,12 @@ void Entree_Fichier_base::setf(IOS_FORMAT code)
   if(ifstream_)
     ifstream_->setf(code);
 }
+
+// Description:
+//    Return True if the file can be opened for reading, false otherwise.
+bool Entree_Fichier_base::Can_be_read(const char * name)
+{
+  std::ifstream ifs(name,ios::in);
+  return ifs.good();
+}
+
