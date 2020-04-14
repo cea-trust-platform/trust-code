@@ -42,6 +42,7 @@
 #include <hdf5.h>
 #include <Comm_Group_MPI.h>
 #include <FichierHDFPar.h>
+#include <LecFicDiffuse.h>
 
 extern Stat_Counter_Id interprete_scatter_counter_;
 
@@ -316,7 +317,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   Nom copy(nomentree);
   copy = copy.nom_me(Process::nproc(), "p", 1);
 
-  bool is_hdf = FichierHDF::is_hdf5(copy);
+  //bool is_hdf = FichierHDF::is_hdf5(copy);
+  LecFicDiffuse test;
+  bool is_hdf = test.ouvrir(copy) && FichierHDF::is_hdf5(copy);
 
   static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
 
