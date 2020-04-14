@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+14/04/20 (TRUST)  Tools       : VisIt updated to 3.1.1 version for recent Linux (Fedora 27-30, Ubuntu 18, Debian 9-10)
 09/04/20 (TRUST)  Keyword     : Formatte option (ASCII written Zones) partition/scratter is obsolete
 09/04/20 (TRUST)  New keyword : Add single_hdf option for backup/restart keywords Sauvegarde/Reprise to use a single .sauv file thanks to HDF parallel I/O
 09/04/20 (TRUST)  New keyword : Add single_hdf option for Partition keyword to create a single "zones_name_pN.Zone" file instead of N "zones_name_*.Zones" files thanks to HDF parallel I/O

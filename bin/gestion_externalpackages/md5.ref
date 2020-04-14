@@ -7,7 +7,7 @@ f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 718259965f234088d785cad1fbd7de03  Miniconda/Miniconda3-4.6.14-Linux-x86_64.sh
-0bb48250a064a019c9dbe8564d865efd  Miniconda/local_channel/linux-64/_libgcc_mutex-0.1-main.tar.bz2
+aeab635f2cfd266ff89877d8daa56435  Miniconda/local_channel/linux-64/_libgcc_mutex-0.1-main.tar.bz2
 671f6e045d03a842f379145e7fc43c0d  Miniconda/local_channel/linux-64/blas-1.0-openblas.tar.bz2
 f52e60deb7f4c82821be9a868e889348  Miniconda/local_channel/linux-64/bzip2-1.0.8-h7b6447c_0.tar.bz2
 92d2c78935c63b58e289791eea20773c  Miniconda/local_channel/linux-64/ca-certificates-2019.11.27-0.tar.bz2
@@ -46,6 +46,8 @@ a8ead2420cd69179b6024f61c95f1ee7  Miniconda/local_channel/linux-64/rhash-1.3.8-h
 cd3d7885462372262350ab83724ec095  Miniconda/local_channel/linux-64/sip-4.18.1-py37hf484d3e_2.tar.bz2
 1abbbc5f00ed5a1305a5948431b03df9  Miniconda/local_channel/linux-64/swig-3.0.12-h38cdd7d_3.tar.bz2
 b7339cc0a2e4df93a6043a3d8b4cc79f  Miniconda/local_channel/linux-64/tornado-6.0.3-py37h7b6447c_0.tar.bz2
+4dfda1ccfd0cc90c4fe6786acece9a30  Miniconda/local_channel/linux-64/xorg-libice-1.0.10-h516909a_0.tar.bz2
+78c03347efc45f0df5f79d20e1544c92  Miniconda/local_channel/linux-64/xorg-libsm-1.2.2-h470a237_5.tar.bz2
 5bdf7b9b44c894dddb0b193c453232c6  Miniconda/local_channel/noarch/pyparsing-2.4.5-py_0.tar.bz2
 58a898b1a4a13e8c0cfd0d4b1a999ba9  Miniconda/local_channel/noarch/python-dateutil-2.8.1-py_0.tar.bz2
 d65fd5cd636e65a731b82e9678c6f40c  Miniconda/local_channel/noarch/pytz-2019.3-py_0.tar.bz2
@@ -54,13 +56,20 @@ e5a2625b1e041f0e9c4adf5f9021afa5  SALOME/configuration-9.4.0.tar.gz
 fffe6924ce25ba0eefc6587d20d259a6  SALOME/medcoupling-9.4.0.tar.gz
 a2bdb92e4a31ff4e5c89dab762d1c95c  SALOME/xdata-9.2.1.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
+642c81285e1bb833b14ab3f439964086  VisIt/Cython-0.25.2.tar.gz
 90a93507b8fdc88f46b9a8d7ed651c6c  VisIt/IceT-1-0-0.tar.gz
 fc14a54e1ce02a0225be8854bfba478e  VisIt/Imaging-1.1.7.tar.gz
 2f9f444265534a2cfd9a99d1a8291089  VisIt/MesaLib-7.10.2.tar.gz
 6b6076ec9e93f05dd63e47eb9c15728b  VisIt/Python-2.7.11.tgz
+cee2e4b33ad3750da77b2e85f2f8b724  VisIt/Python-2.7.14.tgz
 25e4dfb3bad778722dcaec80cd5dab7d  VisIt/VTK-6.1.0.tar.gz
+4fa5eadbc8723ba0b8d203f05376d932  VisIt/VTK-8.1.0.tar.gz
 db4c687a31444a929d2fdc36c4dfb95f  VisIt/cmake-3.0.2.tar.gz
+5ce9c5ad55243347ea0fdb4c16754be0  VisIt/llvm-5.0.0.src.tar.xz
+19832be1bc5784fc7bbad4d138537619  VisIt/mesa-17.2.8.tar.gz
 90347ff0b20bd00f2547ef4950ab3523  VisIt/numpy-1.11.2.tar.gz
+b8324ef90ac9064cd0eac46b8b388674  VisIt/numpy-1.14.1.zip
+96322138f0b69e61b7212bc53d5e912b  VisIt/openssl-1.0.2j.tar.gz
 13aed3cb21a427f8aeb0fe7ca472ba42  VisIt/pyparsing-1.5.2.tar.gz
 692b1d06a2ab53d5323681c1764b3a83  VisIt/qt-everywhere-opensource-src-4.8.3.tar.gz
 9c88db1774fa7e3045af063bbde44d7d  VisIt/qwt-6.1.2.tar.bz2
@@ -68,6 +77,8 @@ a89558d5dd35a5cb667e9a6e5d4f06f1  VisIt/requests-2.5.1.tar.gz
 84960d455073fd2f51c31b7fcbc64d58  VisIt/seedme-python-client-v1.2.4.zip
 9b23df90e1510c7353a5cf07873dcd22  VisIt/setuptools-28.0.0.tar.gz
 4d37a21f1bee651e5341ef7bcaa7669f  VisIt/visit2.12.1.tar.gz
+c5da7d98b11b57d319ef0c97b6d0b10d  VisIt/visit3.1.1.tar.gz
+85adef240c5f370b308da8c938951a68  VisIt/zlib-1.2.11.tar.xz
 60df6a37c56e7c1366cca812414f7b85  VisIt/zlib-1.2.7.tar.gz
 ba84eaa8564155babd4ba1458d4eaa11  astyle_2.03_linux.tar.gz
 d43a8fbe83767978098ba7f8ee25d3d1  ccache-3.1.4.tar.gz
