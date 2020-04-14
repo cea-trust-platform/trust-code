@@ -60,8 +60,10 @@ void FichierHDFPar::prepare_dataset_props()
 {
   FichierHDF::prepare_dataset_props();
 #ifdef MED_
+#ifdef MPI_
   if(collective_op_)
     H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);
+#endif
 #endif
 
   // int rank = Process::me();
