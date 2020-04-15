@@ -238,6 +238,7 @@ echo "[-fc=<prog>]                      Force the use of a specified Fortran com
 echo "[-cxxflags=<flags>]               Add C++ compiler options."
 echo "[-cflags=<flags>]                 Add C compiler options."
 echo "[-fflags=<flags>]                 Add Fortran compiler options."
+echo "[-native]				Add compiler optimizations relative to native architecture. Warning: binary is not portable and segfault are possible..."
 echo "[-force_provided_mpich]           Use the provided MPICH `awk '/version=/ {gsub("version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_mpich` version (default if a native and valid MPI is not found)."
 echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk '/default_version=/ {gsub("default_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_old_openmpi]              Download and use the OpenMPI `awk '/old_version=/ {gsub("old_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version (valgrind free)."
@@ -358,6 +359,10 @@ do
    then
       export TRUST_ADD_FFLAGS=${1#-fflags=}
 
+   elif [ "${1#-native}" != "$1" ]
+   then
+      export TRUST_ADD_NATIVE_FLAGS=1
+
    elif [ "${1#-fc=}" != "$1" ]
    then
       export TRUST_FORCE_F77=${1#-fc=}
@@ -365,7 +370,8 @@ do
    elif [ "${1#-add_search=}" != "$1" ]
    then
       export TRUST_FORCE_SEARCH=$TRUST_FORCE_SEARCH" "${1#-add_search=}
-    elif [ "${1#-with-medcoupling=}" != "$1" ]
+   
+   elif [ "${1#-with-medcoupling=}" != "$1" ]
    then
       export TRUST_USE_EXTERNAL_MEDCOUPLING=${1#-with-medcoupling=}
 
