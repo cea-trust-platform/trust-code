@@ -2303,6 +2303,24 @@ then
    update_file $tmp make.$suffixe5
 fi
 
+# Options de compilation sur native
+if [ "$TRUST_ADD_NATIVE_FLAGS" = 1 ]
+then
+   # PL: -xHOST ou -march=native ajoute des flags de vectorisation comme -mavx2 ou mieux... L'option opt_avx va devenir inutile
+   # Pas mal d'erreurs encore a corriger:
+   # The following tests FAILED:
+   #     251 - Obstacle_reprise (Failed)
+   #     271 - PETSC_VDF (Failed)
+   #     339 - Reprise_Statistiques_Definition_Champs (Failed)
+   #     631 - conv_poiseuille_jdd2 (Failed)
+   if [ "$TRUST_VERSION_GNU" = "" ]
+   then
+      sed -i "1,$ s? -O3 ? -O3 -xHOST ?" make.$TRUST_ARCH_CC"_opt"
+   else	
+      # -ffast-math -mtune=native fait des exceptions arithmetiques: ToDo a voir...
+      sed -i "1,$ s? -O3 ? -O3 -g -march=native ?" make.$TRUST_ARCH_CC"_opt"
+   fi
+fi
 ############################################################
 # Liste des outils possibles pour la creation de dependances
 ############################################################

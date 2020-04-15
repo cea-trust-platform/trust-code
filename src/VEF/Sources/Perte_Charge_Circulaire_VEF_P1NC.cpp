@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -210,7 +210,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   for (int dim=0; dim<dimension; dim++)
     u_l+=u[dim]*av_valeur[dim];
 
-  double u_ortho=sqrt(norme_u*norme_u-u_l*u_l);
+  double u_ortho=sqrt(dmax(norme_u*norme_u-u_l*u_l,0));
   // calcule de Re_l et Re_ortho
   // Calcul du reynolds
   /* PL: To avoid a possible division by zero, we replace:
