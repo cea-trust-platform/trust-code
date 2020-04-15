@@ -911,7 +911,7 @@ then
 
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda
-   pkgs="pyqt nomkl numpy matplotlib swig cmake scipy xorg-libsm"
+   pkgs="pyqt nomkl numpy matplotlib swig cmake scipy xorg-libsm sympy"
    for pkg in $pkgs ; do
      [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && INSTALL_OK=0
    done
@@ -940,7 +940,7 @@ then
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
 
-    pkgs="pyqt=5.6 nomkl numpy matplotlib swig=3.0.12 cmake=3.14 scipy xorg-libsm"
+    pkgs="pyqt=5.6 nomkl numpy matplotlib swig=3.0.12 cmake=3.14 scipy xorg-libsm sympy"
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
