@@ -48,7 +48,16 @@ nb_fiches=`grep _jdd liste_cas | awk -F"_jdd" '{print $1}' | sort -u | wc -l`
 rm -f $TRUST_TMP/out
 if [ $nb_cas = 0 ]
 then
-   echo "The class|method|function $* is NOT covered by any test case!" && err=1
+   echo
+   echo "*** The class|method|function $* is NOT covered by any test case! ***" && err=1
+   echo
+   echo "To create a Trust or Baltik test case:"
+   echo "Create a directory named XXX under tests/Reference (choose appropriate name)"
+   echo "In this directory: create XXX.data file (same name !)"
+   echo "Execute your test case, make it output an XXX.lml postprocessing files with the fields that you want to check for regression"
+   echo "To check parallelism, you can add on the top of the XXX.data file: # PARALLEL OK #"
+   echo "Zip this output file to XXX.lml.gz and put into the test directory XXX"
+   [ "$project_dir" != "" ] && echo "To register your new test case: cd $project_dir;baltik_build_configure -execute"
 else
    echo "The class|method|function $* is covered by $nb_fiches validation forms and a total of $nb_cas test cases." && err=0
    echo "You can run all the test cases with: echo liste_cas | lance_test"

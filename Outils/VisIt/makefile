@@ -7,22 +7,23 @@
 
 name=visit
 version=2_12_1
+new_version=3_1_1
 install=$(TRUST_ROOT)/exec/VisIt
 cible=$(install)/bin/$(name)
 #cible=bin/$(name)
 check=$(TRUST_ROOT)/build/Outils/VisIt/test/ok   
 
 all: $(cible)
-	./install $(version) plugins
+	./install $(version) plugins $(new_version)
 	make $(check)
 
-$(cible): ./makefile ./install ./src/build.sh $(MPI_INCLUDE)/mpi.h
+$(cible): ./makefile ./install ./src/build.sh ./src/build_new.sh $(MPI_INCLUDE)/mpi.h
 	make clean
-	./install $(version) visit
+	./install $(version) visit $(new_version)
 
 $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	# On ajoute la mise a jour des host profiles et on test
-	./install $(version) check
+	./install $(version) check $(new_version)
 
 clean:
 	rm -r -f $(install) $(TRUST_ROOT)/build/Outils/VisIt src/*.help 
