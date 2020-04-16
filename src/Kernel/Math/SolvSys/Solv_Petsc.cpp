@@ -1567,14 +1567,14 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
         }
     }
 }
-// Creation d'une MatricePetsc et d'un SecondMembrePetsc a partir de mat et b
+// Creation des objets PETSc
 int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
 {
   // Remplissage d'une matrice de preconditionnement non symetrique
-  // pour certains precondionneurs (ILU pour HYPRE et SPAI)
-  // Sinon message MatGetRow non supporte par MATMPISBAIJ
   Mat MatricePrecondionnementPetsc;
-  if (matrice_symetrique_ && (type_pc_=="hypre" || type_pc_=="spai"))
+  /* Semble plus vrai pour spai dans Petsc 3.10.0:
+  if (matrice_symetrique_ && (type_pc_=="hypre" || type_pc_=="spai")) */
+  if (matrice_symetrique_ && type_pc_=="hypre")
     preconditionnement_non_symetrique_=1;
 
   if (preconditionnement_non_symetrique_)
@@ -1681,7 +1681,6 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       Cout << " OK "<<finl;
       message_affi = 0;
     }
-
 
   /****************************************/
   /* Association de la matrice au solveur */
@@ -1966,6 +1965,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
 {
   // Recuperation des donnees
   bool journal = nb_rows_tot_ < 20 ? true : false;
+  journal = false;
   assert(!sub_type(Matrice_Morse_Sym, mat_morse));
   if (journal)   // Impressions provisoires
     {
