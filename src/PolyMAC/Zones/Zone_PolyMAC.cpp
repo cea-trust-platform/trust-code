@@ -62,7 +62,6 @@
 #include <IntLists.h>
 #include <DoubleLists.h>
 
-//#include <osqp/osqp.h>
 #include <unistd.h>
 
 #include <vector>
@@ -72,9 +71,11 @@
 #include <cfloat>
 #include <numeric>
 
-
-
-
+#include <cfenv>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#include <osqp/osqp.h>
+#pragma GCC diagnostic pop
 
 Implemente_instanciable(Zone_PolyMAC,"Zone_PolyMAC",Zone_VF);
 
@@ -1009,6 +1010,123 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) cons
           M(i1, i2) += D(i1, j1) * U(j1, j2) * D(i2, j2);
 }
 
+/* renvoie une version de M dont l'inverse (W) essaie de satisfaire au principe du maximum */
+/* valeur retour : 1 si on y est arrive */
+void Zone_PolyMAC::M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, const DoubleTab& F, int *ctr, double *spectre) const
+{
+  /* la condition de consistance de M est M.Nt = R : celle de W est W.R = Nt */
+  int i, j, k, l, n_f = M.dimension(0), nfmd = n_f - dimension, infoo = 0, lwork = -1, it, cv;
+  DoubleTab M0 = M, Nt = transp(N), R = prod(M0, Nt), S, work(1), D, b(dimension, 1), x(1, 1), U(nfmd, nfmd), V(nfmd, nfmd), v(n_f), M1(n_f, n_f);
+
+  /* D : noyau de N (N.D = 0), de taille n_f * (n_f - dimension) */
+  kersol(N, b, 1e-12, &D, x, S);
+  assert(D.dimension(1) == nfmd); //M doit etre de rang d
+  DoubleTab Dt = transp(D);
+
+  /* spectre de M0 */
+  char jobz = 'N', uplo = 'U';
+  S.resize(n_f);
+  F77NAME(dsyev)(&jobz, &uplo, &n_f, &M(0, 0), &n_f, &S(0), &work(0), &lwork, &infoo);//"workspace query"
+  work.resize(lwork = work(0));
+  F77NAME(dsyev)(&jobz, &uplo, &n_f, &M(0, 0), &n_f, &S(0), &work(0), &lwork, &infoo);
+  if (spectre) spectre[0] = min(spectre[0], S(n_f - dimension)), spectre[2] = max(spectre[2], S(n_f - 1));
+  double l_min = min(S(n_f - dimension), S(n_f - 1) / 1.2), l_max = max(S(n_f - 1), S(n_f - dimension) * 1.2); //bornes sur le spectre de la stabilisation
+
+  /* probleme d'optimisation : sur les coeffs M_{ij} de la matrice M */
+  int nv = n_f * (n_f + 1) / 2;
+  OSQPData data;
+  OSQPSettings settings;
+  osqp_set_default_settings(&settings);
+  settings.scaled_termination = 1, settings.polish = 1;
+
+  //idx(i, j, 0 / 1) : indice du coefficient W_{ij}
+  IntTrav idx(n_f, n_f);
+  for (i = 0, l = 0; i < n_f; i++) for (j = i; j < n_f; j++, l++) idx(i, j) = idx(j, i) = l;
+
+  /* contrainte : M.Nt = R */
+  std::vector<std::pair<std::vector<int>, std::vector<double>>> C(nv); //stockage CSC : C[j][i] = M_{ij}
+  std::vector<double> lb, ub; //bornes inf/sup
+  int il = 0; //suivi de la ligne qu'on est en train de creer
+  for (i = 0; i < n_f; i++) for (j = 0; j < dimension; j++, il++) for (k = 0, lb.push_back(R(i, j)), ub.push_back(R(i, j)); k < n_f; k++)
+        C[idx(i, k)].first.push_back(il), C[idx(i, k)].second.push_back(Nt(k, j));
+
+  /* objectif: minimiser la norme l2 des termes hors diagonale (on rajoute un petit bout sur celle-ci) */
+  std::vector<int> P_c(1, 0), P_l, A_c, A_l; //coeffs de la colonne c : indices [P_c(c), P_c(c + 1)[ dans P_l, P_v
+  std::vector<double> P_v, A_v, Q(nv, 0.);
+  for (i = 0, l = 0; i < n_f; i++) for (j = i; j < n_f; j++, l++)
+      P_l.push_back(l), P_v.push_back(i < j ? 1 : 0), P_c.push_back(l + 1);
+  data.P = csc_matrix(nv, nv, nv, P_v.data(), P_l.data(), P_c.data()), data.q = Q.data();
+
+  /* solution initiale : M0 */
+  std::vector<double> sol(nv);
+  for (i = 0, l = 0; i < n_f; i++) for (j = i; j < n_f; j++, l++) sol[l] = M0(i, j);
+
+  //iterations : on resout et on ajoute des contraintes tant que la partie variable de M a un spectre hors de [l_min, l_max]
+  std::fenv_t fenv;
+  for (cv = 0, it = 0; !cv && it < 10; it++)
+    {
+      /* assemblage de A : matrice des contraintes */
+      for (j = 0, A_c.resize(1), A_l.resize(0), A_v.resize(0); j < nv; j++, A_c.push_back(A_l.size()))
+        A_l.insert(A_l.end(), C[j].first.begin(), C[j].first.end()), A_v.insert(A_v.end(), C[j].second.begin(), C[j].second.end());
+      data.A = csc_matrix(lb.size(), nv, A_v.size(), A_v.data(), A_l.data(), A_c.data());
+      data.l = lb.data(), data.u = ub.data(), data.n = nv, data.m = lb.size();
+
+      /* resolution en partant de sol */
+      std::feholdexcept(&fenv); //suspend les exceptions FP
+      OSQPWorkspace *osqp = osqp_setup(&data, &settings);
+      osqp_warm_start_x(osqp, sol.data());
+      osqp_solve(osqp);
+      std::fesetenv(&fenv);     //les remet
+      assert(osqp->info->status_val == OSQP_SOLVED);
+      sol.assign(osqp->solution->x, osqp->solution->x + nv);
+      for (i = 0, l = 0; i < n_f; i++) for (j = i; j < n_f; j++, l++) M(i, j) = M(j, i) = sol[l];
+
+      /* extraction de la partie variable de W : U, puis calcul de son spectre */
+      M1 = M, M1 -= M0, U = prod(Dt, prod(M1, D)), V = U;
+      jobz = 'V', F77NAME(dsyev)(&jobz, &uplo, &nfmd, &V(0, 0), &nfmd, &S(0), &work(0), &lwork, &infoo);
+
+      /* pour chaque vp sortant de [ l_min, l_max ], on ajoute une contrainte pour la restreindre a [l_min * 1.1, l_max / 1.1 ] */
+      for (i = 0, cv = 1; i < nfmd; i++) if (S(i) < l_min || S(i) > l_max)
+          {
+            //vecteur propre de M : D.(vecteur propre de v), produit v.M0.v
+            for (j = 0, v = 0; j < n_f; j++) for (k = 0; k < nfmd; k++) v(j) += D(j, k) * V(i, k);
+            double vM0v = 0;
+            for (j = 0, l = 0; j < n_f; j++) for (k = j; k < n_f; k++, l++)
+                vM0v += (1 + (k > j)) * v(j) * M0(j, k) * v(k), C[l].first.push_back(il), C[l].second.push_back((1 + (k > j)) * v(j) * v(k));
+            lb.push_back(vM0v + l_min * (S(i) < l_min ? 1.1 : 1)), ub.push_back(vM0v + l_max / (S(i) > l_max ? 1.1 : 1));
+            cv = 0, il++; //on repart avec une ligne en plus
+          }
+      osqp_cleanup(osqp), free(data.A);
+    }
+
+  if (!cv) //si on n'a pas converge, alors on corrige M "a la main"
+    {
+      //on reconstruit U en bornant les vp...
+      for (i = 0, U = 0; i < nfmd; i++) for (j = 0; j < nfmd; j++) for (k = 0; k < nfmd; k++)
+            U(i, j) += V(k, i) * min(max(S(k), l_min), l_max) * V(k, j);
+      //et on repasse a M
+      M1 = prod(D, prod(U, Dt)), M = M0, M += M1;
+    }
+  for (i = 0; spectre && i < nfmd; i++) spectre[1] = min(spectre[1], max(S(i), l_min)), spectre[3] = max(spectre[3], min(S(i), l_max));
+
+  //calcul de M
+  W = M;
+  F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
+  F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
+  assert(infoo == 0);
+  for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
+
+  //statistiques
+  if (!ctr) return;
+  //ctr[0] : on est consistant, ctr[1] : principe du maximum, ctr[2] : les iterations ont marche
+  DoubleTab MNt = prod(M, Nt);
+  int consist = 1, pmax = 1;
+  for (i = 0; i < n_f; i++) for (j = 0; j < dimension; j++) consist &= dabs(MNt(i, j) - R(i, j)) < 1e-6;
+  for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) pmax &= W(i, j) < 1e-6;
+  ctr[0] += consist, ctr[1] += pmax, ctr[2] += cv;
+}
+
+
 //interpolation normales aux faces -> elements d'ordre 1
 void Zone_PolyMAC::init_ve() const
 {
@@ -1036,32 +1154,27 @@ void Zone_PolyMAC::init_m2() const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
-  int i, j, e, f, fb, n_f, infoo;
-  char uplo = 'U';
+  int i, j, e, f, fb, n_f, ctr[3] = {0, 0, 0 }, n_tot = Process::mp_sum(nb_elem());
+  double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
   if (is_init["m2"]) return;
   m2d.set_smart_resize(1), m2i.set_smart_resize(1), m2j.set_smart_resize(1), m2c.set_smart_resize(1);
   w2i.set_smart_resize(1), w2j.set_smart_resize(1), w2c.set_smart_resize(1);
   Cerr << zone().domaine().le_nom() << " : initialisation de m2/w2... ";
 
-  DoubleTab M, N, W;
-  M.set_smart_resize(1), N.set_smart_resize(1), W.set_smart_resize(1);
+  DoubleTab M, N, W, F;
+  M.set_smart_resize(1), N.set_smart_resize(1), W.set_smart_resize(1), F.set_smart_resize(1);
   for (e = 0, m2d.append_line(0), m2i.append_line(0), w2i.append_line(0); e < nb_elem_tot(); e++, m2d.append_line(m2i.size() - 1))
     {
       for (i = 0, n_f = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) n_f++;
-      M.resize(n_f, n_f), N.resize(dimension, n_f);
+      M.resize(n_f, n_f), W.resize(n_f, n_f), N.resize(dimension, n_f), F.resize(n_f);
 
       /* matrice non stabilisee, normales sortantes et stabilisation */
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
-          f = e_f(e, i), fb = e_f(e, j), M(i, j) = fs(f) * fs(fb) * dot(&xv_(fb, 0), &xv_(f, 0), &xp_(e, 0), &xp_(e, 0)) / (ve(e) * ve(e));
-      for (i = 0; i < n_f; i++) for (j = 0; j < dimension; j++) f = e_f(e, i), N(j, i) = face_normales()(f, j) / fs(f) * (e == f_e(f, 0) ? 1 : -1);
-      ajouter_stabilisation(M, N);
+      for (i = 0; i < n_f; i++) for (j = 0, F(i) = fs(f = e_f(e, i)); j < n_f; j++)
+          fb = e_f(e, j), M(i, j) = fs(f) * fs(fb) * dot(&xv_(fb, 0), &xv_(f, 0), &xp_(e, 0), &xp_(e, 0)) / (ve(e) * ve(e));
+      for (i = 0; i < n_f; i++) for (j = 0, f = e_f(e, i); j < dimension; j++) N(j, i) = face_normales()(f, j) / F(i) * (e == f_e(f, 0) ? 1 : -1);
 
-      /* W2 : inverse de M2 */
-      W = M;
-      F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-      F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-      for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
+      M_stabiliser(M, W, N, F, e < nb_elem() ? ctr : NULL, e < nb_elem() ? spectre : NULL);
 
       /* stockage de M2 / W2 : diagonale en premier */
       for (i = 0; i < n_f; i++, m2i.append_line(m2j.size())) for (j = 0, m2j.append_line(i), m2c.append_line(M(i, i)); j < n_f; j++) if (j != i)
@@ -1071,8 +1184,10 @@ void Zone_PolyMAC::init_m2() const
       assert(m2i.size() == w2i.size());
     }
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
-  Process::barrier();
-  is_init["m2"] = 1, Cerr << "OK" << finl;
+  Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "/" << 100. * Process::mp_sum(ctr[1]) / n_tot << "/"
+       << 100. * Process::mp_sum(ctr[2]) / n_tot << "% co/max/cv lambda : " << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1])
+       << " -> " << Process::mp_max(spectre[2]) << " / " << Process::mp_max(spectre[3]) << finl;
+  is_init["m2"] = 1;
 }
 
 //rotationnel aux faces d'un champ tangent aux aretes
@@ -1281,3 +1396,4 @@ void Zone_PolyMAC::init_virt_ef_map() const
   for (f = nb_faces(); f < nb_faces_tot(); f++) virt_ef_map[ {{ p_f(f, 0), p_f(f, 1) }}] = nb_elem_tot() + f;
   is_init["virt_ef"] = 1;
 }
+

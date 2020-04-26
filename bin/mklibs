@@ -170,6 +170,8 @@ do
    echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"	>> $fic
    [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"				>> $fic
    [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"				>> $fic
+   [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
+   [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic
    LIBS_MEDC=""
    LISTP=""
    [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 

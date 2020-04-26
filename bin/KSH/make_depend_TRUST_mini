@@ -51,6 +51,8 @@ echo "s?$TRUST_MED_ROOT? /include/?g">>$tmp
 
 echo "s?$TRUST_MEDCOUPLING_ROOT/include?\$(TRUST_MEDCOUPLING_ROOT)/include?g">>$tmp
 
+echo "s?$TRUST_OSQP_ROOT/include?\$(TRUST_OSQP_ROOT)/include?g">>$tmp
+
 echo "s?$MPI_INCLUDE/mpi.h?\$(MPI_INCLUDE)/mpi.h?g">>$tmp
 echo "s?$MPI_INCLUDE? /include/?g">>$tmp
 

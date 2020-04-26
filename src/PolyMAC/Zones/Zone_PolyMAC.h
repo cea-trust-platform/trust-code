@@ -172,6 +172,7 @@ public :
 
   //stabilisation d'une matrice de masse mimetique en un element : dans PolyMAC -> m1 ou m2
   inline void ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const;
+  inline void M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, const DoubleTab& F, int *ctr, double *spectre) const;
 
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
@@ -372,7 +373,7 @@ static inline DoubleTab transp(DoubleTab a)
 }
 
 /* minimise ||M.x - b||_2, met le noyau de M dans P et retourne le residu */
-static inline double kersol(DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x, DoubleTab& S)
+static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x, DoubleTab& S)
 {
   int i, nk, m = M.dimension(0), n = M.dimension(1), k = min(m, n), l = max(m, n), w = 5 * l, info, iP, jP;
   double res2 = 0;
