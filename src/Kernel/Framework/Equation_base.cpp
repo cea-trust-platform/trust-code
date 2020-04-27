@@ -2176,7 +2176,7 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 
   matrice.get_set_coeff() = 0.0;  // just to be sure ...
 
-  if (probleme().discretisation().que_suis_je().debute_par("PolyMAC"))
+  if (probleme().discretisation().que_suis_je().finit_par("MAC"))
     {
       matrice_stockee.get_set_tab1().ref_array(matrice.get_set_tab1());
       matrice_stockee.get_set_tab2().ref_array(matrice.get_set_tab2());

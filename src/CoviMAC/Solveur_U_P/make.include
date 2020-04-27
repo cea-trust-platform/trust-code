@@ -1,0 +1,17 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
+	-I$(TRUST_ROOT)/src/Kernel/Framework\
+	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
+	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
+	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
+	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
+	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/CoviMAC/Zones\
+	-I$(TRUST_ROOT)/src/ThHyd/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/ThHyd
+
+Lib = $(TRUST_LIB)/libpolymac_solveur_u_p

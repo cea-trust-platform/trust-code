@@ -104,6 +104,8 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
     return 1;
   else if (type_discr == "PolyMAC")
     return 1;
+  else if (type_discr == "CoviMAC")
+    return 1;
   else
     {
       err_pas_compatible(discr);
