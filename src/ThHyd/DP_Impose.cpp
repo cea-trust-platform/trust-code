@@ -14,46 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Perte_Charge_Singuliere_VEF_Face.h
-// Directory:   $TRUST_ROOT/src/VEF/Sources
-// Version:     /main/9
+// File:        DP_Impose.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <DP_Impose.h>
 
-#ifndef Perte_Charge_Singuliere_VEF_Face_included
-#define Perte_Charge_Singuliere_VEF_Face_included
-
-#include <Perte_Charge_VEF_Face.h>
-#include <Perte_Charge_Singuliere.h>
-
-class Domaine;
-class IntList;
-
-//
-// .DESCRIPTION class Perte_Charge_Singuliere_VEF_Face
-//
-
-//
-// .SECTION voir aussi Perte_Charge_VEF_Face
-//
-//
-
-class Perte_Charge_Singuliere_VEF_Face : public Perte_Charge_VEF_Face,
-  public Perte_Charge_Singuliere
+// Description:
+//    Lit les specifications d'un Delta P impose
+//    a partir d'un flot d'entree.
+// Precondition:
+// Parametre: Entree& is
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception: pas un champ
+// Effets de bord:
+// Postcondition:
+Entree& DP_Impose::lire_donnees(Entree& is)
 {
+  //juste le champ de DP!
+  is >> DP_;
+  regul_ = 0;
+  return is;
+}
 
-  Declare_instanciable(Perte_Charge_Singuliere_VEF_Face);
-
-public:
-
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps);
-
-protected:
-  IntVect sgn;
-};
-#endif
+void DP_Impose::mettre_a_jour(double temps)
+{
+  DP_.mettre_a_jour(temps);
+}

@@ -14,46 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Perte_Charge_Singuliere_VEF_Face.h
-// Directory:   $TRUST_ROOT/src/VEF/Sources
-// Version:     /main/9
+// File:        DP_Impose.h
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef DP_Impose_included
+#define DP_Impose_included
 
-#ifndef Perte_Charge_Singuliere_VEF_Face_included
-#define Perte_Charge_Singuliere_VEF_Face_included
 
-#include <Perte_Charge_VEF_Face.h>
 #include <Perte_Charge_Singuliere.h>
 
-class Domaine;
-class IntList;
-
+//////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class Perte_Charge_Singuliere_VEF_Face
-//
-
-//
-// .SECTION voir aussi Perte_Charge_VEF_Face
-//
-//
-
-class Perte_Charge_Singuliere_VEF_Face : public Perte_Charge_VEF_Face,
-  public Perte_Charge_Singuliere
+// .DESCRIPTION
+//    Classe DP_Impose
+//    Cette classe derivee de Perte_Charge_Singuliere est utilisee lorsque l'on veut
+//    impose un Delta P (pour simuler une pompe) depuis un champ exterieur
+//    par exemple)
+// .SECTION voir aussi
+//     Perte_Charge Perte_Charge_Reguliere
+//////////////////////////////////////////////////////////////////////////////
+class DP_Impose : public Perte_Charge_Singuliere
 {
 
-  Declare_instanciable(Perte_Charge_Singuliere_VEF_Face);
+public :
 
-public:
-
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
-  void remplir_num_faces(Entree& );
+  virtual ~DP_Impose() {}
+  Entree& lire_donnees(Entree&);
   void mettre_a_jour(double temps);
 
-protected:
-  IntVect sgn;
+protected :
+
+  Champ_Don DP_; //le champ de delta P qu'on veut imposer
 };
 #endif

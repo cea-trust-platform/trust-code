@@ -15,6 +15,7 @@
 #include <Source_Generique_VEF.h>
 #include <Terme_Boussinesq_VEFPreP1B_Face.h>
 #include <Terme_Boussinesq_VEF_Face.h>
+#include <Terme_Puissance_Thermique_Echange_Impose_VEF_Face.h>
 #include <Terme_Puissance_Thermique_VEF_Face.h>
 #include <Terme_Source_Acceleration_VEF_Face.h>
 #include <Terme_Source_Canal_RANS_LES_VEF_Face.h>
@@ -38,14 +39,15 @@ Source_Forchheimer_VEF_Face inst9;verifie_pere(inst9);
 Source_Generique_VEF inst10;verifie_pere(inst10);
 Terme_Boussinesq_VEFPreP1B_Face inst11;verifie_pere(inst11);
 Terme_Boussinesq_VEF_Face inst12;verifie_pere(inst12);
-Terme_Puissance_Thermique_VEF_Face inst13;verifie_pere(inst13);
-Terme_Source_Acceleration_VEF_Face inst14;verifie_pere(inst14);
-Terme_Source_Canal_RANS_LES_VEF_Face inst15;verifie_pere(inst15);
-Terme_Source_Canal_perio_VEF_P1NC inst16;verifie_pere(inst16);
-Terme_Source_Canal_perio_QC_VEF_P1NC inst17;verifie_pere(inst17);
-Terme_Source_Constituant_VEF_Face inst18;verifie_pere(inst18);
-Terme_Source_Qdm_VEF_Face inst19;verifie_pere(inst19);
-Terme_Source_Qdm_lambdaup_VEF_Face inst20;verifie_pere(inst20);
-Terme_Source_Rappel_T_VEF_Face inst21;verifie_pere(inst21);
-Terme_Source_Th_TdivU_VEF_Face inst22;verifie_pere(inst22);
+Terme_Puissance_Thermique_Echange_Impose_VEF_Face inst13;verifie_pere(inst13);
+Terme_Puissance_Thermique_VEF_Face inst14;verifie_pere(inst14);
+Terme_Source_Acceleration_VEF_Face inst15;verifie_pere(inst15);
+Terme_Source_Canal_RANS_LES_VEF_Face inst16;verifie_pere(inst16);
+Terme_Source_Canal_perio_VEF_P1NC inst17;verifie_pere(inst17);
+Terme_Source_Canal_perio_QC_VEF_P1NC inst18;verifie_pere(inst18);
+Terme_Source_Constituant_VEF_Face inst19;verifie_pere(inst19);
+Terme_Source_Qdm_VEF_Face inst20;verifie_pere(inst20);
+Terme_Source_Qdm_lambdaup_VEF_Face inst21;verifie_pere(inst21);
+Terme_Source_Rappel_T_VEF_Face inst22;verifie_pere(inst22);
+Terme_Source_Th_TdivU_VEF_Face inst23;verifie_pere(inst23);
 }

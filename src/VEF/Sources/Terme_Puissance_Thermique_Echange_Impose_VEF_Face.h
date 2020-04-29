@@ -14,46 +14,55 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Perte_Charge_Singuliere_VEF_Face.h
+// File:        Terme_Puissance_Thermique_Echange_Impose_VEF_Face.h
 // Directory:   $TRUST_ROOT/src/VEF/Sources
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Perte_Charge_Singuliere_VEF_Face_included
-#define Perte_Charge_Singuliere_VEF_Face_included
+#ifndef Terme_Puissance_Thermique_Echange_Impose_VEF_Face_included
+#define Terme_Puissance_Thermique_Echange_Impose_VEF_Face_included
 
-#include <Perte_Charge_VEF_Face.h>
-#include <Perte_Charge_Singuliere.h>
+#include <Source_base.h>
 
-class Domaine;
-class IntList;
+#include <Ref_Zone_VEF.h>
+#include <Ref_Zone_Cl_VEF.h>
+#include <Champ_Don.h>
 
-//
-// .DESCRIPTION class Perte_Charge_Singuliere_VEF_Face
-//
+class Probleme_base;
 
 //
-// .SECTION voir aussi Perte_Charge_VEF_Face
+// .DESCRIPTION class Terme_Puissance_Thermique_Echange_Impose_VEF_Face
+//
+
+//
+// .SECTION voir aussi Source_base
 //
 //
 
-class Perte_Charge_Singuliere_VEF_Face : public Perte_Charge_VEF_Face,
-  public Perte_Charge_Singuliere
+class Terme_Puissance_Thermique_Echange_Impose_VEF_Face :  public Source_base
+
+
 {
 
-  Declare_instanciable(Perte_Charge_Singuliere_VEF_Face);
+  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_VEF_Face);
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const ;
+  virtual DoubleTab& ajouter(DoubleTab& )  const ;
+  virtual DoubleTab& calculer(DoubleTab& ) const ;
+  void mettre_a_jour(double );
+  void associer_pb(const Probleme_base& ) { };
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps);
 
 protected:
-  IntVect sgn;
+
+  REF(Zone_VEF) la_zone_VEF;
+  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
+  Champ_Don himp_,Text_;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+
 };
+
 #endif
