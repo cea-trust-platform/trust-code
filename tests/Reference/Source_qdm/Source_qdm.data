@@ -77,7 +77,10 @@ Read pb
 			Entree frontiere_ouverte_pression_imposee 
 			    Champ_front_Uniforme 1 0.
 		}
-		Sources { Source_Qdm champ_uniforme 2 4.94 0. }
+		Sources { 
+			Source_Qdm champ_uniforme 2 2.47 0. ,
+			Source_Generique Transformation { localisation faces methode vecteur expression 2 2.47 0. }
+		} 
 	}
 
 	Post_processing

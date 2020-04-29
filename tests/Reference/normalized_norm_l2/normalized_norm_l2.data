@@ -76,7 +76,12 @@ Read pb
 					Bottom	paroi_fixe
 					}
 		Sources			{
-					Source_Qdm champ_fonc_xyz dom 2 256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2)
+						Source_Qdm champ_fonc_xyz dom 
+							2 0.5*256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -0.5*256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2) ,
+ 						Source_Generique Transformation { localisation faces methode vecteur expression 
+							2 0.5*256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -0.5*256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2) 
+						} 	
+
 					}
 	}
 	Post_processing
