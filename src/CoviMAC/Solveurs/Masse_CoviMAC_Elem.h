@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Masse_CoviMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Zones
+// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -44,17 +44,10 @@ public:
   void associer_zone_dis_base(const Zone_dis_base& );
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
 
-  virtual void dimensionner(Matrice_Morse& matrix) const;
-  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
-  virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
-
   DoubleTab& appliquer_impl(DoubleTab& ) const;
-  void completer();
-  void appliquer_coef(DoubleVect& coef) const;
 
 private:
 
-  bool no_diff_;
   REF(Zone_CoviMAC) la_zone_CoviMAC;
   REF(Zone_Cl_CoviMAC) la_zone_Cl_CoviMAC;
 };

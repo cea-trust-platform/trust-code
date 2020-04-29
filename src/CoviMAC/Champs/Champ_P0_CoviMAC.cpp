@@ -135,18 +135,15 @@ int Champ_P0_CoviMAC::imprime(Sortie& os, int ncomp) const
 
 int Champ_P0_CoviMAC::fixer_nb_valeurs_nodales(int n)
 {
-  if (n == zone_dis_base().zone().nb_elem()) //champ sans flux aux faces (ex. aiguilles)
-    creer_tableau_distribue(zone_dis_base().zone().md_vector_elements());
-  else //champ avec flux
-    creer_tableau_distribue(ref_cast(Zone_CoviMAC, zone_dis_base()).mdv_elems_faces);
+  assert(n == zone_dis_base().zone().nb_elem());
+  creer_tableau_distribue(zone_dis_base().zone().md_vector_elements());
   return n;
 }
 
 Champ_base& Champ_P0_CoviMAC::affecter_(const Champ_base& ch)
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,la_zone_VF.valeur());
-  DoubleTab_parts part(valeurs());
-  for (int i = 0; i < part.size(); i++) ch.valeur_aux(i ? zone.xv() : zone.xp(), part[i]);
+  ch.valeur_aux(zone.xp(), valeurs());
   valeurs().echange_espace_virtuel();
   return *this;
 }
@@ -172,23 +169,4 @@ void Champ_P0_CoviMAC::init_cl() const
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;
     }
-}
-
-DoubleTab& Champ_P0_CoviMAC::valeur_aux_faces(DoubleTab& dst) const
-{
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, zone_dis_base());
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleTab& src = valeurs();
-
-  /* vals doit etre pre-dimensionne */
-  int i, e, f, n, N = (src.nb_dim() == 1 ? 1 : src.dimension(1));
-  assert(dst.dimension(0) == zone.xv().dimension(0) && N == (dst.nb_dim() == 1 ? 1 : dst.dimension(1)));
-
-  if (src.dimension_tot(0) > zone.nb_elem_tot()) //on a les valeurs aux faces
-    for (f = 0; f < dst.dimension(0); f++) for (n = 0; n < N; n++) dst.addr()[N * f + n] = src.addr()[N * (zone.nb_elem_tot() + f) + n];
-  else for (f = 0; f < dst.dimension(0); f++) //on prend (amont + aval) / 2
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
-          dst.addr()[N * f + n] += src.addr()[N * e + n] * (f < zone.premiere_face_int() ? 1 : 0.5);
-
-  return dst;
 }

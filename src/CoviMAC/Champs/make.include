@@ -20,4 +20,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol
 
-Lib = $(TRUST_LIB)/libpolymac_champs
+Lib = $(TRUST_LIB)/libcovimac_champs

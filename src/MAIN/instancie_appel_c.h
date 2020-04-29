@@ -3,6 +3,13 @@
 // To update this file, run: make depend
 //
 #include <verifie_pere.h>
+instancie_src_CoviMAC_Champs();
+instancie_src_CoviMAC_Cond_Lim();
+instancie_src_CoviMAC_Operateurs();
+instancie_src_CoviMAC_Operateurs_Conv_iterateur();
+instancie_src_CoviMAC_Solveurs();
+instancie_src_CoviMAC_Sources();
+instancie_src_CoviMAC_Zones();
 instancie_src_EF_Champs();
 instancie_src_EF_Operateurs();
 instancie_src_EF_Sources();

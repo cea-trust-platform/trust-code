@@ -140,57 +140,6 @@ Entree& Zone_CoviMAC::readOn(Entree& is)
   return is;
 }
 
-
-MD_Vector condensed_md_vector(const IntVect& renum)
-{
-  MD_Vector mdr;
-  const MD_Vector& mds = renum.get_md_vector();
-  if (!mds.non_nul()) return mdr;
-  const MD_Vector_std& mdstd = ref_cast(MD_Vector_std, mds.valeur());
-
-  //items[proc] = { items a envoyer, items a recevoir, debut/fin de blocs a recevoir }
-  std::map<int, std::array<std::vector<int>, 3> > items;
-  int i, j, k, l, p;
-  for (i = 0; i < mdstd.pe_voisins_.size_array(); i++)
-    {
-      p = mdstd.pe_voisins_(i);
-      //filtre sur les items a envoyer
-      for (j = 0; j < mdstd.items_to_send_.get_list_size(i); j++) if ((k = renum(mdstd.items_to_send_(i, j))) >= 0)
-          items[p][0].push_back(k);
-      //filtre sur les items a recevoir
-      for (j = 0; j < mdstd.items_to_recv_.get_list_size(i); j++) if ((k = renum(mdstd.items_to_recv_(i, j))) >= 0)
-          items[p][1].push_back(k);
-      //filtre sur les blocs a recevoir
-      for (j = 0; j < mdstd.blocs_to_recv_.get_list_size(i); j += 2) for (k = mdstd.blocs_to_recv_(i, j); k < mdstd.blocs_to_recv_(i, j + 1); k++)
-          if ((l = renum(k)) >= 0)
-            {
-              if (items[p][2].size() && l == items[p][2].back()) items[p][2].back()++; //on s'ajoute au dernier bloc...
-              else items[p][2].insert(items[p][2].end(), { l, l + 1 });                //ou on en cree un autre
-            }
-    }
-  ArrOfInt pe_voisins(items.size());
-  VECT(ArrOfInt) items_to_send(items.size()), items_to_recv(items.size()), blocs_to_recv(items.size());
-  i = 0;
-  for (auto &&kv : items)
-    {
-      for (j = 0, items_to_send(i).resize(k = kv.second[0].size()); j < k; j++) items_to_send(i)(j) = kv.second[0][j];
-      for (j = 0, items_to_recv(i).resize(k = kv.second[1].size()); j < k; j++) items_to_recv(i)(j) = kv.second[1][j];
-      for (j = 0, blocs_to_recv(i).resize(k = kv.second[2].size()); j < k; j++) blocs_to_recv(i)(j) = kv.second[2][j];
-      pe_voisins(i) = kv.first, i++;
-    }
-  int nb_items = 0, nb_items_tot = 0;
-  for (i = 0; i < renum.size(); i++) nb_items += (renum(i) >= 0);
-  for (i = renum.size(), nb_items_tot = nb_items; i < renum.size_totale(); i++) nb_items_tot += (renum(i) >= 0);
-  MD_Vector_std mdrs(nb_items_tot, nb_items, pe_voisins, items_to_send, items_to_recv, blocs_to_recv);
-  mdr.copy(mdrs);
-  return mdr;
-}
-
-void Zone_CoviMAC::swap(int fac1, int fac2, int nb_som_faces )
-{
-
-}
-
 // Description:
 //  Methode appelee par Zone_VF::discretiser apres la creation
 //  des faces reelles.
@@ -554,10 +503,10 @@ void Zone_CoviMAC::discretiser()
     {
       zone().creer_aretes();
       md_vector_aretes_ = zone().aretes_som().get_md_vector();
-      //remplissage de som_aretes
+      //som_aretes_[i][j] : indice de l'arete connectant les sommets i et j
       som_arete.resize(zone().nb_som_tot());
       for (int i = 0; i < zone().aretes_som().dimension_tot(0); i++) som_arete[zone().aretes_som()(i, 0)][zone().aretes_som()(i, 1)] = i;
-      //remplissage de xa (CGs des aretes), de ta_ (vecteur tangent aux aretes) et de longueur_arete_ (longueurs des aretes)
+      //xa_ (CGs des aretes), ta_ (vecteur tangent aux aretes), longueur_arete_ (longueurs des aretes)
       xa_.resize(0, 3), ta_.resize(0, 3);
       creer_tableau_aretes(xa_), creer_tableau_aretes(ta_), creer_tableau_aretes(longueur_aretes_);
       const DoubleTab& xs = zone().domaine().coord_sommets();
@@ -569,6 +518,19 @@ void Zone_CoviMAC::discretiser()
           for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = sgn * (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
         }
     }
+
+  //arete_faces_ : liste des faces touchant chaque arete en 3D, chaque sommet en 2D
+  std::vector<std::vector<int> > a_f_vect(dimension < 3 ? nb_som_tot() : zone().nb_aretes_tot());
+  const IntTab& f_s = face_sommets_;
+  for (int f = 0, i, s1; f < nb_faces_tot(); f++) for (i = 0; i < f_s.dimension(1) && (s1 = f_s(f, i)) >= 0; i++)
+      {
+        int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0);
+        a_f_vect[dimension < 3 ? s1 : som_arete[min(s1, s2)].at(max(s1, s2))].push_back(f);
+      }
+  int a_f_max = 0;
+  for (int i = 0; i < (int) a_f_vect.size(); i++) a_f_max = max(a_f_max, (int) a_f_vect[i].size());
+  arete_faces_.resize(a_f_vect.size(), a_f_max), arete_faces_ = -1;
+  for (int i = 0, j; i < arete_faces_.dimension(0); i++) for (j = 0; j < (int) a_f_vect[i].size(); j++) arete_faces_(i, j) = a_f_vect[i][j];
 
   //MD_vector pour Champ_P0_CoviMAC (elems + faces)
   MD_Vector_composite mdc_ef;
@@ -714,21 +676,17 @@ void Zone_CoviMAC::calculer_volumes_entrelaces()
   creer_tableau_faces(volumes_entrelaces_dir_);
   const DoubleVect& fs = face_surfaces();
 
-  for (int num_face=0; num_face<nb_faces(); num_face++)
+  for (int f = 0; f < premiere_face_int(); f++) volumes_entrelaces_(f) = volumes_entrelaces_dir_(f, 0) = dist_norm_bord(f) * fs(f);
+  for (int f = premiere_face_int(); f < nb_faces(); f++)
     {
-      for (int dir=0; dir<2; dir++)
-        {
-          int elem = face_voisins_(num_face,dir);
-          if (elem!=-1)
-            {
-              volumes_entrelaces_dir_(num_face, dir) = sqrt(dot(&xp_(elem, 0), &xp_(elem, 0), &xv_(num_face, 0), &xv_(num_face, 0))) * fs[num_face];
-              volumes_entrelaces_[num_face] += volumes_entrelaces_dir_(num_face, dir);
-            }
-        }
+      double *x[2] = { &xp_(face_voisins_(f, 0), 0), &xp_(face_voisins_(f, 1), 0)}, vol = volumes_entrelaces_(f) = fs(f) * sqrt(dot(x[0], x[0], x[1], x[1]));
+      for (int i = 0; i < 2; i++) volumes_entrelaces_dir_(f, i) = vol * dot(x[i], &face_normales_(f, 0), &xv_(f, 0)) / dot(x[i], &face_normales_(f, 0), x[!i]);
     }
+
   volumes_entrelaces_.echange_espace_virtuel();
   volumes_entrelaces_dir_.echange_espace_virtuel();
 }
+
 void Zone_CoviMAC::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
@@ -963,6 +921,206 @@ DoubleVect& Zone_CoviMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
   return dist;
 }
 
+void Zone_CoviMAC::init_w1() const
+{
+  if (is_init["w1"]) return;
+  init_w1_elem();
+  is_init["w1"] = 1;
+}
+//matrice mimetique faces duales -> faces passant par les sommets
+void Zone_CoviMAC::init_w1_som() const
+{
+  const IntTab& f_e = face_voisins();
+  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
+  const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales();
+  int i, j, e0, e1, f, a, s, n_f, ctr[4] = {0, }, ns_tot = Process::mp_sum(zone().nb_som()), r;
+  double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
+
+  w1d.set_smart_resize(1), w1j.set_smart_resize(1), w1c.set_smart_resize(1);
+  Cerr << zone().domaine().le_nom() << " : initialisation de w1... ";
+  IntTab proc_som;
+  zone().domaine().creer_tableau_sommets(proc_som);
+  proc_som = Process::me(), proc_som.echange_espace_virtuel(); //le proc local ne "possede" que les sommets tq proc_som(s) == Process::me()
+
+  DoubleTab W, N, R, Xn, Xr, S, poids;
+  W.set_smart_resize(1), N.set_smart_resize(1), R.set_smart_resize(1), Xn.set_smart_resize(1), Xr.set_smart_resize(1), S.set_smart_resize(1), poids.set_smart_resize(1);
+  std::vector<std::map<int, double>> w1map(nb_faces_tot());
+  std::map<int, int> f_i; //f_i[f] : indice de la face f dans les matrices
+  std::vector<int> i_f; //i_f[i] : face correspondant a l'indice i
+  for (s = 0; s < zone().nb_som_tot(); s++, S.resize(0), f_i.clear(), i_f.clear())
+    {
+      //varie selon 2D/3D : remplissage de f_i, i_f et S (surfaces partielles des faces)
+      if (dimension < 3) for (i = 0; i < arete_faces_.dimension(1) && (f = arete_faces_(s, i)) >= 0; i++)
+          f_i[f] = i, i_f.push_back(f), S.append_line(fs(f) / 2);
+      else for (auto && sb_a : som_arete[s]) //3D : som_arete puis arete_faces
+          for (i = 0, a = sb_a.second; i < arete_faces_.dimension(1) && (f = arete_faces_(a, i)) >= 0; i++)
+            {
+              if (!f_i.count(f)) f_i[f] = i_f.size(), i_f.push_back(f), S.append_line(0);
+              auto vec = cross(3, 3, &xs(s, 0), &xa_(a, 0), &xv_(f, 0), &xv_(f, 0));
+              S(f_i[f]) += sqrt(dot(&vec[0], &vec[0])) / 2;
+            }
+
+      //identique en 2D / 3D : N (normales aux faces),  R (vecteurs unitaires amont -> aval)
+      for (i = 0, n_f = i_f.size(), N.resize(n_f, dimension), R.resize(n_f, dimension), Xn.resize(n_f, dimension), Xr.resize(n_f, dimension); i < n_f; i++)
+        for (r = 0, f = i_f[i], e0 = f_e(f, 0), e1 = f_e(f, 1); r < dimension; r++)
+          N(i, r) = nf(f, r) / fs(f), R(i, r) = e1 < 0 ? N(i, r) : fs(f) * (xp_(e1, r) - xp_(e0, r)) / vf(f), Xn(i, r) = xv_(f, r) - xs(s, r), Xr(i, r) = e1 < 0 ? Xn(i, r) : (xp(e0, r) + xp(e1, r)) / 2 - xs(s, r);
+      //poids
+      for (i = 0, poids.resize(n_f, n_f); i < n_f; i++) for (j = 0; j < n_f; j++)
+          poids(i, j) = i != j ? std::pow(S(i) * fs(i_f[j]) / vf(i_f[j]), 2) : 0;
+      double xmax = max(max_abs_array(Xn), max_abs_array(Xr)), pmax = max_abs_array(poids);
+      Xn /= xmax, Xr /= xmax, poids /= 100 * pmax; //on renormalise
+
+      //calcul de W stable tel que W.R = N
+      W_stabiliser(W, R, N, Xr, Xn, poids, proc_som(s) == Process::me() ? ctr : NULL, proc_som(s) == Process::me() ? spectre : NULL);
+
+      //contribution a w1map
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(W(i, j)) > 1e-6) w1map[i_f[i]][i_f[j]] += S(i) / fs(i_f[i]) * W(i, j);
+    }
+
+  //stockage dans w1d / w1j / w1c
+  for (f = 0, w1d.append_line(0); f < nb_faces_tot(); f++, w1d.append_line(w1j.dimension(0))) for (auto fb_c : w1map[f])
+      if (dabs(fb_c.second) > 1e-16) w1j.append_line(fb_c.first), w1c.append_line(fb_c.second);
+  CRIMP(w1d), CRIMP(w1j), CRIMP(w1c);
+  Cerr << 100. * Process::mp_sum(ctr[0]) / ns_tot << "/" << 100. * Process::mp_sum(ctr[1]) / ns_tot << "% D/S "
+       << 100. * Process::mp_sum(ctr[2]) / Process::mp_sum(ctr[3]) << "% nnz lambda : " << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1])
+       << " -> " << Process::mp_max(spectre[2]) << " / " << Process::mp_max(spectre[3]) << finl;
+}
+
+//matrice mimetique faces duales -> faces passant par les elements
+void Zone_CoviMAC::init_w1_elem() const
+{
+  if (is_init["w1"]) return;
+  const IntTab& f_e = face_voisins(), &e_f = elem_faces();
+  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
+  const DoubleTab& nf = face_normales(), &vfd = volumes_entrelaces_dir();
+  int i, j, e, e0, e1, f, fb, n_f, ctr[4] = {0, }, ne_tot = Process::mp_sum(nb_elem()), r;
+  double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
+
+  w1d.set_smart_resize(1), w1j.set_smart_resize(1), w1c.set_smart_resize(1);
+  Cerr << zone().domaine().le_nom() << " : initialisation de w1... ";
+
+  DoubleTab W, N, R, Xn, Xr, S, poids;
+  W.set_smart_resize(1), N.set_smart_resize(1), R.set_smart_resize(1), Xn.set_smart_resize(1), Xr.set_smart_resize(1), S.set_smart_resize(1), poids.set_smart_resize(1);
+  std::vector<std::map<int, double>> w1map(nb_faces_tot());
+  for (e = 0; e < nb_elem_tot(); e++)
+    {
+      for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++;
+      N.resize(n_f, dimension), R.resize(n_f, dimension), Xn.resize(n_f, dimension), Xr.resize(n_f, dimension), S.resize(n_f), poids.resize(n_f, n_f);
+      for (i = 0; i < n_f; i++) for (r = 0, f = e_f(e, i), e0 = f_e(f, 0), e1 = f_e(f, 1), S(i) = vfd(f, e != e0) / vf(f); r < dimension; r++)
+          N(i, r) = nf(f, r) / fs(f), R(i, r) = e1 < 0 ? N(i, r) : (xp(e1, r) - xp(e0, r)) * fs(f) / vf(f), Xn(i, r) = xv_(f, r) - xp(e, r), Xr(i, r) = e1 < 0 ? Xn(i, r) : (xp(e0, r) + xp(e1, r)) / 2 - xp(e, r);
+      for (i = 0; i < n_f; i++) for (f = e_f(e, i), j = 0; j < n_f; j++)
+          fb = e_f(e, j), poids(i, j) = i != j ? S(i) * fs(f) * fs(fb) / vf(fb) : 0;
+      double xmax = max(max_abs_array(Xn), max_abs_array(Xr)), pmax = max_abs_array(poids);
+      Xn /= xmax, Xr /= xmax, poids /= 100 * pmax;
+      W_stabiliser(W, R, N, Xr, Xn, poids, e < nb_elem() ? ctr : NULL, e < nb_elem() ? spectre : NULL);
+
+      //contribution a w1map
+      for (i = 0; i < n_f; i++) for (f = e_f(e, i), j = 0; j < n_f; j++) if (dabs(W(i, j)) > 1e-6) w1map[f][e_f(e, j)] += S(i) * W(i, j);
+    }
+
+  //stockage dans w1d / w1j / w1c
+  for (f = 0, w1d.append_line(0); f < nb_faces_tot(); f++, w1d.append_line(w1j.dimension(0))) for (auto fb_c : w1map[f])
+      if (dabs(fb_c.second) > 1e-16) w1j.append_line(fb_c.first), w1c.append_line(fb_c.second);
+  CRIMP(w1d), CRIMP(w1j), CRIMP(w1c);
+  Cerr << 100. * Process::mp_sum(ctr[0]) / ne_tot << "/" << 100. * Process::mp_sum(ctr[1]) / ne_tot << "% D/S "
+       << 100. * Process::mp_sum(ctr[2]) / Process::mp_sum(ctr[3]) << "% nnz lambda : " << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1])
+       << " -> " << Process::mp_max(spectre[2]) << " / " << Process::mp_max(spectre[3]) << finl;
+}
+
+/* recherche d'une matrice W verifiant W.R = N avec sum_{i!=j} poids(i, j) w_{ij}^2 minimal et un spectre acceptable */
+void Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, DoubleTab& Xr, DoubleTab& Xn, DoubleTab& poids, int *ctr, double *spectre) const
+{
+  int i, j, k, l, n_f = R.dimension(0), nv = n_f * n_f, d = R.dimension(1), infoo = 0, lwork = -1, it, cv;
+  W.resize(n_f, n_f), W = 0;
+
+  /* 1. version non stabilisee : W0 = N.(Nt.R)^{-1}.Nt */
+  Matrice33 NtR(0, 0, 0, 0, 0, 0, 0, 0, d < 3 ? 1 : 0), iNtR;
+  for (i = 0; i < d; i++) for (j = 0; j < d; j++) for (k = 0; k < n_f; k++) NtR(i, j) += N(k, i) * R(k, j);
+  Matrice33::inverse(NtR, iNtR); //crash si NtR non inversible
+  DoubleTrav Ws(n_f, n_f), S(n_f), work(1);
+  for (i = 0; i < n_f; i++) for (j = 0; j < d; j++) for (k = 0; k < d; k++) for (l = 0; l < n_f; l++) W(i, l) += N(i, j) * iNtR(j, k) * N(l, k);
+  //spectre
+  for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) Ws(i, j) = (W(i, j) + W(j, i)) / 2;
+  char jobz = 'N', uplo = 'U';
+
+  /* spectre de W0 */
+  F77NAME(dsyev)(&jobz, &uplo, &n_f, &Ws(0, 0), &n_f, &S(0), &work(0), &lwork, &infoo);//"workspace query"
+  work.resize(lwork = work(0));
+  F77NAME(dsyev)(&jobz, &uplo, &n_f, &Ws(0, 0), &n_f, &S(0), &work(0), &lwork, &infoo);//vrai appel
+  assert(S(0) > -1e-8 && S(n_f - dimension) > 0);
+  if (spectre) spectre[0] = min(spectre[0], S(n_f - dimension)), spectre[2] = max(spectre[2], S(n_f - 1));
+  double l_min = min(S(n_f - dimension) / 1.101, 0.1), l_max = max(S(n_f - 1) * 1.101, 10.); //bornes sur le spectre
+
+  /* probleme d'optimisation : sur les W_{ij} */
+  OSQPData data;
+  OSQPSettings settings;
+  osqp_set_default_settings(&settings);
+  settings.scaled_termination = 1, settings.polish = 1, settings.eps_abs = settings.eps_rel = 1e-6;
+
+  /* contrainte : W.R = N */
+  std::vector<std::pair<std::vector<int>, std::vector<double>>> C(nv); //stockage CSC : C[j][i] = M_{ij}
+  std::vector<double> lb, ub; //bornes inf/sup
+  int il = 0; //suivi de la ligne qu'on est en train de creer
+  for (i = 0; i < n_f; i++) for (j = 0; j < d; j++, il++) for (k = 0, lb.push_back(N(i, j)), ub.push_back(N(i, j)); k < n_f; k++)
+        C[n_f * i + k].first.push_back(il), C[n_f * i + k].second.push_back(R(k, j));
+
+  /* objectif: minimiser l'erreur d'interpolation, puis la norme l2 des termes hors diagonale */
+  std::vector<int> P_c(1, 0), P_l, A_c, A_l; //coeffs de la colonne c : indices [P_c(c), P_c(c + 1)[ dans P_l, P_v
+  std::vector<double> P_v, A_v, Q;
+  for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++, P_c.push_back(P_l.size())) for (k = 0, Q.push_back( -dot(&N(i, 0), &R(j, 0)) * dot(&Xn(i, 0), &Xr(j, 0))); k <= j; k++)
+        P_l.push_back(n_f * i + k), P_v.push_back(dot(&R(j, 0), &R(k, 0)) * dot(&Xr(j, 0), &Xr(k, 0)) + (k == j) * poids(i, j));
+  data.P = csc_matrix(nv, nv, P_v.size(), P_v.data(), P_l.data(), P_c.data()), data.q = Q.data();
+
+  //iterations : on resout et on ajoute des contraintes tant que W a un spectre hors de [l_min, l_max]
+  std::fenv_t fenv;
+  for (cv = 0, it = 0; !cv && it < 100; it++)
+    {
+      /* assemblage de A : matrice des contraintes */
+      for (j = 0, A_c.resize(1), A_l.resize(0), A_v.resize(0); j < nv; j++, A_c.push_back(A_l.size()))
+        A_l.insert(A_l.end(), C[j].first.begin(), C[j].first.end()), A_v.insert(A_v.end(), C[j].second.begin(), C[j].second.end());
+      data.A = csc_matrix(lb.size(), nv, A_v.size(), A_v.data(), A_l.data(), A_c.data());
+      data.l = lb.data(), data.u = ub.data(), data.n = nv, data.m = lb.size();
+
+      /* resolution en partant de sol */
+      std::feholdexcept(&fenv); //suspend les exceptions FP
+      OSQPWorkspace *osqp = osqp_setup(&data, &settings);
+      osqp_warm_start_x(osqp, W.addr());
+      osqp_solve(osqp);
+      std::fesetenv(&fenv);     //les remet
+      assert(osqp->info->status_val == OSQP_SOLVED);
+      memcpy(W.addr(), osqp->solution->x, nv * sizeof(double));
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) Ws(i, j) = (W(i, j) + W(j, i)) / 2;
+
+      /* calcul du spectre */
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) Ws(i, j) = (W(i, j) + W(j, i)) / 2;
+      jobz = 'V', F77NAME(dsyev)(&jobz, &uplo, &n_f, &Ws(0, 0), &n_f, &S(0), &work(0), &lwork, &infoo);
+
+      /* pour chaque vp sortant de [ l_min, l_max ], on ajoute une contrainte pour la restreindre a [l_min * 1.1, l_max / 1.1 ] */
+      for (i = 0, cv = 1; i < n_f; i++) if (S(i) < l_min || S(i) > l_max)
+          {
+            for (j = 0, l = 0; j < n_f; j++) for (k = 0; k < n_f; k++, l++) C[l].first.push_back(il), C[l].second.push_back(Ws(i, j) * Ws(i, k));
+            lb.push_back(l_min * (S(i) < l_min ? 1.1 : 1)), ub.push_back(l_max / (S(i) > l_max ? 1.1 : 1));
+            cv = 0, il++; //on repart avec une ligne en plus
+          }
+      osqp_cleanup(osqp), free(data.A);
+    }
+
+  if (!cv) abort(); //ca passe ou ca casse
+  if (spectre) for (i = 0; i < n_f; i++) spectre[1] = min(spectre[1], S(i)), spectre[3] = max(spectre[3], S(i));
+
+  //statistiques
+  if (!ctr) return;
+  //ctr[0] : diagonale, ctr[1] : symetrique, ctr[2] : nnz, ctr[3] : nnz max
+  int diag = 1, sym = 1;
+  for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
+      {
+        if (i != j && dabs(W(i, j)) > 1e-6) diag = 0, ctr[2]++;
+        sym &= (dabs(sqrt(poids(i, j)) * W(i, j) - sqrt(poids(j, i)) * W(j, i)) < 1e-6);
+      }
+  ctr[0] += diag, ctr[1] += sym && !diag, ctr[3] += n_f * (n_f - 1);
+}
+
+
 //stabilisation des matrices m1 et m2 de CoviMAC
 inline void Zone_CoviMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const
 {
@@ -1072,9 +1230,7 @@ void Zone_CoviMAC::M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, 
 
       /* resolution en partant de sol */
       std::feholdexcept(&fenv); //suspend les exceptions FP
-      OSQPWorkspace *osqp;
-      if ((i = osqp_setup(&osqp, &data, &settings)) != 0)
-        Cerr << "Zone_CoviMAC::M_stabiliser: osqp_setup error " << i << finl, Process::exit();
+      OSQPWorkspace *osqp = osqp_setup(&data, &settings);
       osqp_warm_start_x(osqp, sol.data());
       osqp_solve(osqp);
       std::fesetenv(&fenv);     //les remet
@@ -1219,20 +1375,6 @@ void Zone_CoviMAC::init_rf() const
 void Zone_CoviMAC::init_we() const
 {
   if (is_init["we"]) return;
-
-  //remplissage de arete_faces_ (liste des faces touchant chaque arete en 3D, chaque sommet en 2D)
-  std::vector<std::vector<int> > a_f_vect(dimension < 3 ? nb_som_tot() : zone().nb_aretes_tot());
-  const IntTab& f_s = face_sommets_;
-  for (int f = 0, i, s1; f < nb_faces_tot(); f++) for (i = 0; i < f_s.dimension(1) && (s1 = f_s(f, i)) >= 0; i++)
-      {
-        int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0);
-        a_f_vect[dimension < 3 ? s1 : som_arete[min(s1, s2)].at(max(s1, s2))].push_back(f);
-      }
-  int a_f_max = 0;
-  for (int i = 0; i < (int) a_f_vect.size(); i++) a_f_max = max(a_f_max, (int) a_f_vect[i].size());
-  arete_faces_.resize(a_f_vect.size(), a_f_max), arete_faces_ = -1;
-  for (int i = 0, j; i < arete_faces_.dimension(0); i++) for (j = 0; j < (int) a_f_vect[i].size(); j++) arete_faces_(i, j) = a_f_vect[i][j];
-
   dimension < 3 ? init_we_2d() : init_we_3d();
   is_init["we"] = 1;
 }

@@ -52,10 +52,6 @@ public :
 
   virtual int fixer_nb_valeurs_nodales(int n);
 
-  /* fonctions reconstruisant de maniere plus precise le champ aux faces */
-  DoubleTab& valeur_aux_faces(DoubleTab& vals) const;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const;
-
   //tableaux utilitaires sur les CLs
   //types de CL : 0 -> pas de CL
   //              1 -> Echange_externe_impose
@@ -74,26 +70,5 @@ protected :
 
 
 };
-
-inline DoubleTab& Champ_P0_CoviMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
-{
-  /* dimensionnement du tableau de destination x si necessaire */
-  const DoubleTab& src = valeurs();
-  const Front_VF& fvf = ref_cast(Front_VF, fr);
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, zone_dis_base());
-  const IntTab& f_e = zone.face_voisins();
-
-  DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)
-  int i, n, e, f, N = src.nb_dim() > 1 ? src.dimension(1): 1, has_faces = src.dimension_tot(0) > zone.nb_elem_tot();
-  if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
-  N > 1 ? dst.resize(zone.nb_faces(), N) : dst.resize(zone.nb_faces()); //aargh
-  for (i = 0; i < fvf.nb_faces(); i++) for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++)
-      dst.addr()[N * f + n] = src.addr()[N * (has_faces ? zone.nb_elem_tot() + f : e) + n];
-
-  if (distant) fr.frontiere().trace_face_distant(dst, x);
-  else fr.frontiere().trace_face_local(dst, x);
-
-  return x;
-}
 
 #endif

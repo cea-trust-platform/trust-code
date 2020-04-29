@@ -100,7 +100,6 @@ class Zone_CoviMAC : public Zone_VF
 public :
   void typer_elem(Zone& zone_geom);
   void discretiser();
-  void swap(int, int, int);
   virtual void reordonner(Faces&);
   void modifier_pour_Cl(const Conds_lim& );
 
@@ -173,6 +172,14 @@ public :
   //stabilisation d'une matrice de masse mimetique en un element : dans CoviMAC -> m1 ou m2
   inline void ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const;
   inline void M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, const DoubleTab& F, int *ctr, double *spectre) const;
+  inline void W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, DoubleTab& Xr, DoubleTab& Xn, DoubleTab& poids, int *ctr, double *spectre) const;
+
+  //matrice mimetique W1 : faces duales -> faces
+  void init_w1() const;
+  void init_w1_elem() const; //en interpolant dans chaque element
+  void init_w1_som() const;  //en interpolant aux sommets
+  mutable IntTab w1d, w1j; //stockage de la ligne f dans [wd(f), wd(f + 1)[ : indices de colonne dans wj, coeffs dans wc
+  mutable DoubleTab w1c;
 
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;

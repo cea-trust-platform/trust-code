@@ -35,6 +35,7 @@
 #include <communications.h>
 #include <EcrFicPartage.h>
 #include <Modele_turbulence_scal_base.h>
+#include <cfloat>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);
 
@@ -61,6 +62,8 @@ void Op_Diff_CoviMAC_base::completer()
   if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
   la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
   la_zone_poly_.valeur().creer_tableau_faces(nu_fac_);
+  nu_faces_.resize(0, equation().inconnue().valeurs().line_size());
+  la_zone_poly_.valeur().creer_tableau_faces(nu_faces_);
   nu_a_jour_ = 0;
 }
 
@@ -280,7 +283,7 @@ void Op_Diff_CoviMAC_base::update_nu() const
         {
           if (!diffu_turb.get_md_vector().non_nul())
             {
-              // diffusvite uniforme
+              // diffusivite uniforme
               int n = nu_.dimension_tot(0), nb_comp = nu_.line_size();
               // Tableaux vus comme uni-dimenionnels:
               const DoubleVect& arr_diffu_turb = diffu_turb;
@@ -317,5 +320,33 @@ void Op_Diff_CoviMAC_base::update_nu() const
         }
     }
   nu_fac_.echange_espace_virtuel();
+
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
+  const DoubleTab& xp = zone.xp(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
+  int e, e0, e1, k, n, N = nu_faces_.dimension(1), N_nu = nu_.line_size();
+  double vec[3] = {0, }, nu_e = 0;
+  DoubleTrav v_sur_nu(N);
+
+  for (f = 0; f < zone.nb_faces(); f++)
+    {
+      /* vecteur unitaire de la face duale a f */
+      if ((e1 = f_e(f, 1)) < 0) for (n = 0; n < dimension; n++) vec[n] = nf(f, n) / fs(f);
+      else for (n = 0, e0 = f_e(f, 0), e1 = f_e(f, 1); n < dimension; n++) vec[n] = (xp(e1, n) - xp(e0, n)) * fs(f) / vf(f);
+
+      /* moyenne harmonique de la diffusivite (directionelle) de chaque cote */
+      for (i = 0, v_sur_nu = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
+          {
+            if (N_nu == N) nu_e = nu_.addr()[N * e + n]; //isotrope
+            else if (N_nu == N * dimension) for (j = 0, nu_e = 0; j < dimension; j++) nu_e += nu_.addr()[dimension * (N * e + n) + j] * vec[j] * vec[j]; //anisotrope diagonal
+            else if (N_nu == N * dimension * dimension) for (j = 0, nu_e = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
+                  nu_e += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * vec[j] * vec[k];
+            v_sur_nu(n) = nu_e > 0 && v_sur_nu(n) != DBL_MAX ? v_sur_nu(n) + vfd(f, i) / nu_e : DBL_MAX;
+          }
+      /* diffusivite finale*/
+      for (n = 0; n < N; n++) nu_faces_(f, n) = v_sur_nu(n) != DBL_MAX ? nu_fac_(f) * vf(f) / v_sur_nu(n) : 0;
+    }
+  nu_faces_.echange_espace_virtuel();
+
   nu_a_jour_ = 1;
 }

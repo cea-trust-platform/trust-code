@@ -73,6 +73,12 @@ public:
   {
     return nu_;
   }
+
+  const DoubleTab& get_nu_faces() const
+  {
+    return nu_faces_;
+  }
+
   const DoubleTab& get_nu_fac() const
   {
     return nu_fac_;
@@ -88,11 +94,9 @@ protected:
   REF(Zone_CoviMAC) la_zone_poly_;
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
+  mutable DoubleTab nu_, nu_fac_, nu_faces_; //conductivite aux elements, facteur multiplicatif a appliquer par face
   mutable int nu_a_jour_; //si on doit mettre a jour nu
 };
-
-
 
 //
 // Fonctions inline de la classe Op_Diff_CoviMAC_base

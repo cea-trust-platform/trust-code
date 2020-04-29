@@ -19,4 +19,4 @@ Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBOSQP/include -I$(TRUST_ROOT)/include/b
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol
 
-Lib = $(TRUST_LIB)/libpolymac_zones
+Lib = $(TRUST_LIB)/libcovimac_zones

@@ -52,8 +52,6 @@ public :
   virtual void completer();
   virtual int initialiser(double temps);
   void calculer_correspondance();
-  void update_coeffs();
-  void update_delta() const;
   virtual void mettre_a_jour(double );
   inline Champ_front& T_autre_pb()
   {
