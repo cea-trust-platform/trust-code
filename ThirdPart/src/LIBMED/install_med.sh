@@ -50,7 +50,7 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
 
   # Options: no Python, static libraries and path to HDF5 
   options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
-  env CC=$TRUST_cc_BASE CXX=$TRUST_CC_BASE F77=$TRUST_F77_BASE ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
+  env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
   
   $TRUST_MAKE  || exit -1
   make install || exit -1

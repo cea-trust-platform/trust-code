@@ -23,8 +23,8 @@ Pave Cavite
 } 
 
 tetraedriser_homogene_fin dom
-Reordonner_Faces_Periodiques  dom periox
-Reordonner_Faces_Periodiques  dom perioy
+Corriger_frontiere_periodique { domaine dom bord periox }
+Corriger_frontiere_periodique { domaine dom bord perioy }
 
 Sous_zone zone_tout
 Associate zone_tout dom

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #
 # Installation script for MEDCoupling
 #
@@ -11,40 +12,24 @@ mc_version=`echo $src_dir | sed 's/[^0-9]*\([0-9].[0-9].[0-9]\)/\1/'`
 build_root=$TRUST_ROOT/build/lib
 build_dir=$build_root/medcoupling_build
 install_dir=$TRUST_MEDCOUPLING_ROOT
+org=`pwd`
 
 mkdir -p $install_dir
 mkdir -p $build_dir
 cd $build_dir
 
-icocomedfield_hxx=$install_dir/include/ICoCoMEDField.hxx
-cp -af $icocomedfield_hxx .
-
 # include file:
 medcoupling_hxx=$install_dir/include/medcoupling++.h
-cp -af $medcoupling_hxx .
 
 # MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
 if [ "$TRUST_INT64" = "1" ]
 then
     echo "@@@@@@@@@@@@ INT64 specific stuff ..."
-
     mkdir -p $install_dir/include
     rm -rf $install_dir/lib
     echo "MEDCOUPLING DISABLE for 64 bits"
-    echo "#define NO_MEDFIELD " >  prov.h
-
-    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]; then
-      cp prov.h $icocomedfield_hxx
-    else
-      cp -a ICoCoMEDField.hxx $icocomedfield_hxx
-    fi
-    echo "#undef MEDCOUPLING_" > prov2.h
-    if [ "`diff medcoupling++.h prov2.h 2>&1`" != "" ];  then
-       cp prov2.h $medcoupling_hxx
-    else
-       cp -a medcoupling++.h $medcoupling_hxx
-    fi
-    rm -f prov.h prov2.h ICoCoMEDField.hxx medcoupling++.h
+    echo "#define NO_MEDFIELD " > $install_dir/include/ICoCoMEDField.hxx
+    echo "#undef MEDCOUPLING_"  > $medcoupling_hxx
     exit 0
 fi
 
@@ -72,21 +57,26 @@ sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.
 echo "Patching findClosestTupleId() method"
 patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch
 
-echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
+echo "Patching HDF detection procedure and exit if procedure has changed..."
+FindSalomeHDF5=$(find $src_dir/.. -name FindSalomeHDF5.cmake )
+sed -i "1,$ s?GET_PROPERTY(?#GET_PROPERTY(?" 			$FindSalomeHDF5 || exit -1 
+sed -i "1,$ s?MESSAGE(FATAL_ERROR?#MESSAGE(FATAL_ERROR ?" 	$FindSalomeHDF5 || exit -1 
 
+echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
 
 USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
 # We use now python and SWIG from conda so:
-OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC "
+OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc "
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig "
 OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON" 
 # NO_CXX1 pour cygwin
 OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
+
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
 cmake ../$src_dir $OPTIONS -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release
@@ -152,4 +142,5 @@ touch $install_dir/include/*
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
 
 echo "All done!"
+
 

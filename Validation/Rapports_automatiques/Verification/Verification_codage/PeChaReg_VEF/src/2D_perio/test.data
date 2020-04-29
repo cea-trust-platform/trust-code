@@ -21,7 +21,7 @@ Pave Cavite
 } 
 
 trianguler_fin dom
-Reordonner_Faces_Periodiques  dom periox
+Corriger_frontiere_periodique { domaine dom bord periox }
 
 Sous_zone zone_tout
 Associate zone_tout dom

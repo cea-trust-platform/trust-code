@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #ifndef EChaine_included
 #define EChaine_included
 
-#include <Nom.h>
+#include <Entree.h>
 #include <sstream>
 using std::istringstream;
 //////////////////////////////////////////////////////////////////////////////
@@ -40,36 +40,13 @@ class EChaine : public Entree
 {
 
 public:
-  EChaine() : Entree(), istrstream_(0)
-  {
-    set_check_types(1);
-  }
-  EChaine(const char* str) : Entree(),  istrstream_(0)
-  {
-    set_check_types(1);
-    init(str);
-  }
-  ~EChaine()  { }
-  void init(const char *str)
-  {
-    if (istrstream_)
-      delete istrstream_;
-    // On cree une copie de la chaine:
-    string_ = str;
-    istrstream_ = new istringstream(string_);
-    set_istream(istrstream_);
-  }
-  inline const char* get_str() const;
+  EChaine();
+  EChaine(const char* str);
+  ~EChaine();
+  void init(const char *str);
 
 protected:
   istringstream* istrstream_;
-  std::string string_;
-private:
-
 };
 
-inline const char* EChaine::get_str() const
-{
-  return string_.c_str();
-}
 #endif

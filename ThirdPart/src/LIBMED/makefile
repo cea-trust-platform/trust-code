@@ -11,10 +11,12 @@ install_dir=$(TRUST_MED_ROOT)
 all : $(HDF5) $(MED)
 
 $(MED) : $(HDF5) $(MED_ARCHIVE) makefile install_med.sh
+	make clean_med
 	@rm -f `readlink -f $(MED)`
 	@./install_med.sh $(MED_ARCHIVE)
 
 $(HDF5) : $(HDF5_ARCHIVE) makefile install_hdf5.sh
+	make clean_hdf
 	@rm -f `readlink -f $(HDF5)`
 	@./install_hdf5.sh $(HDF5_ARCHIVE)
 	
@@ -24,7 +26,11 @@ hdf5 : $(HDF5)
 
 med : $(HDF5) $(MED)
 
-clean :
+clean_hdf:
 	rm -rf $(TRUST_ROOT)/build/lib/hdf5*
-	rm -rf $(TRUST_ROOT)/build/lib/med*	
+clean_med:
+	rm -rf $(TRUST_ROOT)/build/lib/med*
+clean :
+	make clean_hdf
+	make clean_med
 	rm -rf $(install_dir)

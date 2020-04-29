@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ static Motcles motcle_obsolete;
 // Parcours du jeu de donnees pour verification des mots cles obsoletes
 void verifie(const Nom& type)
 {
-  int n=57;
+  int n=58;
   if( motcle_obsolete.size()!=n)
     {
       int i=0;
@@ -91,6 +91,7 @@ void verifie(const Nom& type)
       motcle_obsolete[i++] = "Boussinesq";
       motcle_obsolete[i++] = "Temperature_paroi_NOPASPOURGENEPI";
       motcle_obsolete[i++] = "Read_MED_For_Testing_No_Verify_Option";
+      motcle_obsolete[i++] = "Reordonner_faces_periodiques";
       assert(i==n);
     }
   // GF on ne constuit les noms de la nouvelle syntaxe que si necessaire
@@ -159,6 +160,7 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.6.8, you should use now: Boussinesq_temperature { ... } , Boussinesq_concentration { ... }";
       nouvelle_syntaxe[i++] = "1.6.9.";
       nouvelle_syntaxe[i++] = "1.7.6, never use that keyword!!!";
+      nouvelle_syntaxe[i++] = "1.8.1, use corriger_frontiere_periodique keyword instead";
       assert(i==n);
       Cerr << "The keyword " << motcle_obsolete[rang] << " is now obsolete," << finl;
       Cerr << "since the version " << nouvelle_syntaxe[rang] << finl << finl;

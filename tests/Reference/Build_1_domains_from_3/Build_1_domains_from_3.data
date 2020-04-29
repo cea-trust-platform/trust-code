@@ -24,13 +24,12 @@ Partition dom {
         Partition_tool metis { Nb_parts 2 }
         Larg_joint 2
         zones_name dom
-        formatte
 } 
 End
 END PARTITION #
 
 # BEGIN SCATTER
-ScatterFormatte dom.Zones dom
+Scatter dom.Zones dom
 END SCATTER #
 
 VDF dis

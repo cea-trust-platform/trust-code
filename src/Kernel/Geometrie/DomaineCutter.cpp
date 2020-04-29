@@ -31,6 +31,8 @@
 #include <Sous_Zone.h>
 #include <Sparskit.h>
 #include <Poly_geom_base.h>
+#include <Sortie_Brute.h>
+#include <FichierHDF.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
@@ -1171,23 +1173,51 @@ void DomaineCutter::construire_sous_domaine(const int part,
   Scatter::trier_les_joints(zone_partie.faces_joint());
 }
 
-static void construire_nom_fichier_sous_domaine(const Nom& basename,
-                                                const int partie, const int nb_parties_,
-                                                Nom& fichier)
-{
-  fichier = basename;
+// Description:
+//   Build the name of the ".Zones" file for a given proc and a domain.
+//   If partie == -1 a single filename is returned. For example
+//          DOM.Zones
+//   instead of
+//          DOM_0001.Zones
+//static void construire_nom_fichier_sous_domaine(const Nom& basename,
+//                                                const int partie, const int nb_parties_,
+//                                                Nom& fichier)
+//{
+//  fichier = basename;
+//
+//  if (partie > 100000)
+//    {
+//      Cerr << "Error while generating filename: nb_parties_ too large" << finl;
+//      Process::exit();
+//    }
+//  char s[20];
+//  // single file name for all procs (HDF5)
+//  // the number of parts is still included in the file name
+//  // (make_PAR.data needs to know how many zones there are)
+//  if (partie < 0)
+//    {
+//      if (nb_parties_ > 10000)
+//        sprintf(s, "_p%05d.Zones", (True_int)nb_parties_);
+//      else
+//        sprintf(s, "_p%04d.Zones",(True_int) nb_parties_);
+//    }
+//  else
+//    {
+//      if (nb_parties_ > 10000)
+//        sprintf(s, "_%05d.Zones", (True_int)partie);
+//      else
+//        sprintf(s, "_%04d.Zones",(True_int) partie);
+//    }
+//  fichier += Nom(s);
+//}
 
-  if (partie > 100000)
-    {
-      Cerr << "Error while generating filename: nb_parties_ too large" << finl;
-      Process::exit();
-    }
-  char s[20];
-  if (nb_parties_ > 10000)
-    sprintf(s, "_%05d.Zones", (True_int)partie);
-  else
-    sprintf(s, "_%04d.Zones",(True_int) partie);
-  fichier += Nom(s);
+void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
+{
+  os << sous_domaine;
+  // Benoit Mathieu: Scatter a besoin de la liste des bords periodiques pour le
+  // calcul des elements distants. Je l'ecris apres le domaine dans le fichier .Zones.
+  // Pas genial mais c'est pour depanner en attendant mieux.
+  os << liste_bords_periodiques_;
 }
 
 // Description:
@@ -1195,11 +1225,14 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
 //  fichiers basename_000n.Zones pour 0 <= n < nb_parties_.
 //  Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
 //  on genere aussi un fichier par sous-zone.
-void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfInt& elem_part, const int& reorder)
+void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, ArrOfInt& elem_part, const int& reorder)
 {
   assert(nb_parties_ >= 0);
   const Domaine& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
+
+  // Needed for HDF5 Zones output:
+  FichierHDF fic_hdf;
 
   // Build temp arrays to eventually reorder the partition numbering
   ArrOfInt ia(nb_parties_+1);
@@ -1220,6 +1253,15 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
           else
             Cerr << "SECOND PASS, after reordering the partition:" << finl;
           Cerr << "====================================" << finl;
+        }
+      if (format == Decouper::HDF5_SINGLE && loop == 0)  // create HDF5 file only once!
+        {
+          Nom nom_fichier_hdf5(basename);
+          nom_fichier_hdf5+=Nom(".Zones");
+          nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
+          //construire_nom_fichier_sous_domaine(basename, -1, nb_parties_, nom_fichier_hdf5);
+          fic_hdf.create(nom_fichier_hdf5);
+          //fic_hdf.open(nom_fichier_hdf5, false);
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
@@ -1276,34 +1318,41 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
             }
           else
             {
-              // Write .Zones files:
-              Nom nom_fichier;
-              construire_nom_fichier_sous_domaine(basename,
-                                                  i_part, nb_parties_,
-                                                  nom_fichier);
-              Cerr << "Writing part " << i_part << " into the "
-                   << (binaire ? "binary" : "ascii")
-                   << " file " << nom_fichier << finl;
-              SFichier os;
-              if (binaire)
-                os.set_bin(1);
-              const int ok = os.ouvrir(nom_fichier);
-              if (!ok)
+              // Write .Zones file(s):
+              if (format == Decouper::BINARY_MULTIPLE)
                 {
-                  Cerr << "DomaineCutter::ecrire_zones : Error while opening file " << finl;
-                  exit();
+                  Nom nom_fichier(basename);
+                  nom_fichier+=Nom(".Zones");
+                  nom_fichier = nom_fichier.nom_me(i_part);
+                  //construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_,nom_fichier);
+                  Cerr << "Writing part " << i_part << " into the "
+                       << (format == Decouper::BINARY_MULTIPLE ? "binary" : "ascii")
+                       << " file " << nom_fichier << finl;
+                  SFichier os;
+                  if (format == Decouper::BINARY_MULTIPLE)
+                    os.set_bin(1);
+                  const int ok = os.ouvrir(nom_fichier);
+                  if (!ok)
+                    {
+                      Cerr << "DomaineCutter::ecrire_zones : Error while opening file " << finl;
+                      exit();
+                    }
+                  writeData(sous_domaine, os);
                 }
-              if (! binaire)
+              else if (format == Decouper::HDF5_SINGLE)
                 {
-                  os.setf(ios::scientific);
-                  os.precision(Objet_U::format_precision_geom);
+                  Sortie_Brute os_hdf;
+                  writeData(sous_domaine, os_hdf);
+
+                  fic_hdf.create_and_fill_dataset("/zone", i_part, os_hdf);
                 }
-              (os) << sous_domaine;
-              // Benoit Mathieu: Scatter a besoin de la liste des bords periodiques pour le
-              // calcul des elements distants. Je l'ecris apres le domaine dans le fichier .Zones.
-              // Pas genial mais c'est pour depanner en attendant mieux.
-              (os) << liste_bords_periodiques_;
+              else
+                {
+                  Cerr << "DomaineCutter::ecrire_zones : Unsupported output file type!" << finl;
+                  Process::exit(1);
+                }
             }
+
           // Ecritures des fichiers sous-zones .ssz
           const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine.ss_zones();
           const int nb_sous_zones = liste_sous_zones.size();
@@ -1403,5 +1452,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
         Cerr << "Interface ratio variation   = (   4.5% -    8.7%)
         Cerr << "Global interface ratio      =    3.4%
         Cerr << "Neighbor variation          = (1 - 2) */
+    }
+  if (format == Decouper::HDF5_SINGLE)
+    {
+      fic_hdf.close();
+      Cout << "HDF5 Zones file written and closed" << finl;
     }
 }

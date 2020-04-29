@@ -51,7 +51,8 @@ void usage()
   Cerr << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n";
   Cerr << " -petsc=0            => disable call to PetscInitialize\n";
   Cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
-  Cerr << " -journal_master     => only master processor writes a journal\n";
+  Cerr << " -journal_master     => only master processor writes a journal (not compatible with journal_shared)\n";
+  Cerr << " -journal_shared     => each processor writes in a single log file (not compatible with journal_master)\n";
   Cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
   Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
   Cerr << " -disable_stop       => Disable the writing of the .stop file.\n";
@@ -84,6 +85,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int nproc = -1;
   int verbose_level = 1;
   int journal_master = 0;
+  int journal_shared = 0;
   int helptrust = 0;
   int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
   //int ieee = 0;              // PolyMAC ?
@@ -161,7 +163,24 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
       else if (strcmp(argv[i], "-journal_master") == 0)
         {
           journal_master = 1;
-          arguments_info += "-journal_master => Only the master processor will write a journal\n";
+          arguments_info += "-journal_master => Only the master processor will write a journal";
+          if(journal_shared)
+            {
+              journal_shared = 0;
+              arguments_info += " (journal_shared is thus ignored)";
+            }
+          arguments_info += "\n";
+        }
+      else if (strcmp(argv[i], "-journal_shared") == 0)
+        {
+          journal_shared = 1;
+          arguments_info += "-journal_shared => all the processors are going to write in a unique journal file";
+          if(journal_master)
+            {
+              journal_master = 0;
+              arguments_info += " (journal_master is thus ignored)";
+            }
+          arguments_info += "\n";
         }
       else if (strcmp(argv[i], "-disable_stop") == 0)
         {
@@ -255,7 +274,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     // .. et demarrage du journal
     // (tout ce qu'on veut faire en commun avec l'interface python doit etre
     //  mis dans mon_main)
-    main_process=new  mon_main(verbose_level, journal_master, apply_verification, disable_stop);
+    main_process=new  mon_main(verbose_level, journal_master, journal_shared, apply_verification, disable_stop);
 
     main_process->init_parallel(argc, argv, with_mpi, check_enabled, with_petsc);
 

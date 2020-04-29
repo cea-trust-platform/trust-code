@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #define SChaine_included
 #include <Sortie.h>
 #include <Process.h>
-using std::string;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -38,11 +38,15 @@ public:
   SChaine();
   ~SChaine();
   const char* get_str() const;
+  unsigned get_size() const;
   void setf(IOS_FORMAT code);
-  void self_test();
+//  void self_test();   // [ABN] to be put in unit tests ...
   int set_bin(int bin);
+
 protected:
+  mutable std::string string_;
+
 private:
-  mutable string string_;
+
 };
 #endif

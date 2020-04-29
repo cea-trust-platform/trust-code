@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@
 #include <Motcle.h>
 #include <DerOu_.h>
 #include <IntTab.h>
-
+#include <vector>
 // Description:
 //  Envoi de messages point-to-point synchrone entre la source et la cible.
 //  La fonction envoyer se termine au plus tard lorsque le message a ete
@@ -513,6 +513,29 @@ int envoyer_all_to_all(const ArrOfDouble& src, ArrOfDouble& dest)
   return 1;
 }
 
+// Description: On suppose que les tableaux en entree et en sortie
+//  sont de taille nproc() . On envoie src[0] au proc 0,
+//  src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans
+//  dest[0], processeur 1 dans dest[1], etc...
+//  Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  assert(static_cast<int>(src.size()) == grp.nproc());
+  assert(static_cast<int>(dest.size()) == grp.nproc());
+  if (src.data() == dest.data())
+    {
+      std::vector<long long> tmp(grp.nproc(),0);
+      grp.all_to_all(src.data(), tmp.data(), sizeof(long long));
+      dest = tmp;
+    }
+  else
+    {
+      grp.all_to_all(src.data(), dest.data(), sizeof(long long));
+    }
+  return 1;
+}
+
 // Description:
 //  Calcule la transposee d'une liste de processeurs:
 //    On construit le tableau dest_list tel que:
@@ -589,6 +612,17 @@ int mppartial_sum(int x)
   grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
   return y;
 }
+
+// Description: Calul de la somme partielle de i sur les processeurs 0 a me()-1
+//  (renvoie 0 sur le processeur 0). Voir Comm_Group::mppartial_sum()
+long long mppartial_sum(long long x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  long long y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
+  return y;
+}
+
 
 void mpsum_multiple(double& x1, double& x2)
 {

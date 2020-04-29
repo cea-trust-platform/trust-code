@@ -1,0 +1,148 @@
+# Test hdf parallele: .Zone unique et .sauv unique + test reprise et .log unique dans verifie #
+# PARALLEL OK 8 #
+
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 
+		Nombre_de_Noeuds 21 21
+		Longueurs 6.283185307 2. 
+	}
+	{
+		Bord periox  X = 0.            0. <= Y <= 2.0          
+		Bord periox  X = 6.283185307   0. <= Y <= 2.0           
+		Bord bas     Y = 0.            0. <= X <= 6.283185307           
+		Bord haut    Y = 2.            0. <= X <= 6.283185307           
+		}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 1 2 }
+	Larg_joint 1
+	zones_name DOM
+	Periodique 1 periox
+	single_hdf
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.0
+	tmax 0.08
+	dt_min 0.004
+	dt_max 0.004
+	dt_impr 0.00001
+	dt_sauv 1.5
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible air
+Read air
+{
+	mu Champ_Uniforme 1 2.0
+ 	rho Champ_Uniforme 1 2.0
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }	
+		convection { negligeable  }
+		diffusion {  }
+		initial_conditions {
+			vitesse champ_init_canal_sinal  2 { Ucent 0.5 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
+			}
+		sources { Canal_perio { bord periox } }
+		boundary_conditions {
+			periox periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		
+		}
+     }
+	      
+	Post_processing
+	{
+	     Probes
+	          {
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15  
+			sonde_vit40 vitesse periode 0.05 segment 20   2. 0.05   2. 1.95 
+			sonde_vit_x vitesse periode 0.05 segment 20   0.157 1.      6.123 1. 
+	        }
+		Definition_champs
+		{
+        		vitesse_norme_moyenne Interpolation {
+                  		localisation som
+                 		source
+                 		Moyenne {
+                     			t_deb 0 t_fin 10
+                    			source Transformation
+                              		{
+						methode formule expression 1 sqrt(vitesse_natif_dom*vitesse_natif_dom)
+						sources { refChamp { Pb_champ pb vitesse } }
+                     			}
+                 		}
+        		}
+        		vitesse_norme_ecart_type Interpolation {
+                  		localisation som
+                 		source
+                 		Ecart_Type {
+                     			t_deb 0 t_fin 10
+                     			source Transformation
+                                     	{
+                                          	methode formule expression 1 sqrt(vitesse_natif_dom*vitesse_natif_dom)
+                                           	sources { refChamp { Pb_champ pb vitesse } }
+                     			}
+                 		}
+        		}
+                        vorticite_moyenne Interpolation {
+                                localisation som
+                                source
+                                Moyenne {
+                                        t_deb 0 t_fin 10
+                                        source refChamp { Pb_champ pb vorticite }
+                                }
+                        }			
+		}
+		fields dt_post 4.0
+		{
+			pression som			
+			pression elem			
+			vitesse som
+			vitesse elem
+			vitesse_norme_moyenne
+			vitesse_norme_ecart_type
+			vorticite_moyenne
+		}
+		Statistiques dt_post 4.0
+		{
+			t_deb 0 t_fin 10
+			Moyenne vitesse elem
+		}
+	}
+	sauvegarde single_hdf canal.sauv
+}
+
+Solve pb
+End

@@ -131,7 +131,7 @@ if [ "`uname -m`" = i686 ] && [ "$lz" != "" ] && [ -f /usr/lib/libz.a ]
 then
    lz="/usr/lib/libz.a "
 fi
-MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a $lz-lm -ldl"
+MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a $lz-lm -ldl"
 
 #################################################
 # Construction des fichiers $TRUST_ENV/make.lib?

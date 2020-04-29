@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ public:
   const Nom getSuffix(const char* const) const ;
   Nom& prefix(const char* const) ;
   const Nom getPrefix(const char* const) const ;
-  Nom nom_me(int) const;
+  Nom nom_me(int, const char* prefix=0, int without_padding=0) const;
   Nom substr_old(const int, const int) const;
   Nom basename() const;
   virtual int debute_par(const char* const) const;

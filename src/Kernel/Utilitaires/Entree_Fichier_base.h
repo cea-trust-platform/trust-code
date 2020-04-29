@@ -49,22 +49,21 @@ public:
   Entree_Fichier_base(const char* name,IOS_OPEN_MODE mode=ios::in);
   ifstream& get_ifstream();
   void close();
-
-
-  virtual int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in);
-
   int eof();
   int fail();
   int good();
   void precision(int pre);
   void setf(IOS_FORMAT code);
 
+  virtual int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in);
 
+  static bool Can_be_read(const char * name);
+
+protected:
   ifstream* ifstream_;
 
 private:
-  Entree_Fichier_base& operator=(const Entree_Fichier_base&);
-
+  Entree_Fichier_base& operator=(const Entree_Fichier_base&);  // copy is forbidden
 };
 
 #endif

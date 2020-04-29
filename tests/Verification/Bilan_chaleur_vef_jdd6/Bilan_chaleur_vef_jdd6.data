@@ -20,7 +20,7 @@ Mailler dom_pb2
                 }
 }
 trianguler_h dom_pb2
-Reordonner_faces_periodiques dom_pb2 periox
+Corriger_frontiere_periodique { domaine dom_pb2 bord periox }
 
 
 # END MESH #

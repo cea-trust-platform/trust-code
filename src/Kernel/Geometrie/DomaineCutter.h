@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #include <Static_Int_Lists.h>
 #include <Noms.h>
 #include <DomaineCutter_Correspondance.h>
+#include <Decouper.h>
 
 #ifndef DomaineCutter_included
 #define DomaineCutter_included
@@ -39,7 +40,6 @@ class DomaineCutter : public Objet_U
 {
   Declare_instanciable(DomaineCutter);
 public:
-
   void initialiser(const Domaine&   domaine_global,
                    const ArrOfInt& elem_part,
                    const int     nb_parts,
@@ -58,7 +58,7 @@ public:
     DomaineCutter_Correspondance  correspondance;
     construire_sous_domaine(part,correspondance,sous_domaine_);
   };
-  void ecrire_zones(const Nom& basename, const int binaire, ArrOfInt& elem_part, const int& reorder);
+  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, ArrOfInt& elem_part, const int& reorder);
   inline const Noms& bords_internes() const
   {
     return bords_a_pb_;
@@ -84,6 +84,8 @@ private:
                                           const ArrOfInt& liste_sommets,
                                           const ArrOfInt& liste_inverse_elements,
                                           Zone& zone_partie) const;
+
+  void writeData(const Domaine& sous_domaine, Sortie& os) const;
 
   // Ne pas utiliser ces deux methodes:
   const DomaineCutter& operator=(const DomaineCutter& dc);
