@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,23 +88,25 @@ void Source_Generique_base::completer()
   Source_base::completer();
 
   Postraitement post_bidon;
+  post_bidon.associer_nom_et_pb_base("", equation().probleme());
   ch_source_->completer(post_bidon);
   Entity loc = ch_source_->get_localisation();
-  if (((loc==ELEMENT) && (localisation_source()!="elem"))
-      || ((loc==FACE) && (localisation_source()!="faces")))
+  if (((loc == ELEMENT) && (localisation_source() != "elem"))
+      || ((loc == FACE) && (localisation_source() != "faces")))
     {
       Nom nom_loc;
-      if (loc==ELEMENT)
-        nom_loc ="elem";
-      else if (loc==FACE)
+      if (loc == ELEMENT)
+        nom_loc = "elem";
+      else if (loc == FACE)
         nom_loc = "faces";
-      Cerr<<"----------------------------------------------------------------"<<finl;
-      Cerr<<"Error during TRUST calculation :"<<finl;
-      Cerr<<"----------------------------------------------------------------"<<finl;
-      Cerr<<"The generic source field associated to the "<<que_suis_je()<<" source term "<<finl;
-      Cerr<<"of the equation "<<equation().que_suis_je()<<" will be evaluated at localisation "<<nom_loc<<finl;
-      Cerr<<"while the source term itself must be computed at location "<<localisation_source()<<finl;
-      Cerr<<"Please contact TRUST support."<<finl;
+      Cerr << "----------------------------------------------------------------" << finl;
+      Cerr << "Error during TRUST calculation :" << finl;
+      Cerr << "----------------------------------------------------------------" << finl;
+      Cerr << "The generic source field associated to the " << que_suis_je() << " source term " << finl;
+      Cerr << "of the equation " << equation().que_suis_je() << " will be evaluated at localisation " << nom_loc
+           << finl;
+      Cerr << "while the source term itself must be computed at location " << localisation_source() << finl;
+      Cerr << "Please contact TRUST support." << finl;
       exit();
     }
 }
