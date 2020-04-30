@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+XX/XX/20 (TRUST)  New keyword : New keyword Polyedriser to convert a VDF mesh (Quadrangle/Hexaedre) to a PolyMAC mesh (Polyedre)
 XX/XX/20 (TRUST)  Bug fixed   : Regression when post processing y+ with null value on boundaries in VDF
 01/04/20 (TRUST)  Tools       : VisIt updated to 3.1.1 version for recent Linux (Fedora 27-30, Ubuntu 18, Debian 9-10)
 01/04/20 (TRUST)  Tools       : Update PETSc to 3.12.2 version + fix build with OpenMPI 4.x + add ML the multilevel preconditionning package from Trilinos

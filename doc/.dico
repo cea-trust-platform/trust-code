@@ -669,6 +669,7 @@
  Point_EF Point_EF Point_EF.h
  Polyedre Polyedre Polyedre.h
  Polyedre_PolyMAC Polyedre_PolyMAC Polyedre_PolyMAC.h
+ Polyedriser Polyedriser Polyedriser.h
  Polygone Polygone Polygone.h
  Polygone_PolyMAC Polygone_PolyMAC Polygone_PolyMAC.h
  PolyMAC PolyMAC_discretisation PolyMAC_discretisation.h

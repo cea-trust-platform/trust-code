@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.1_beta : Changes since version 1.8.0 :
 -------------------------------------------------------------
+30/04/20 (TRUST)  Add sympy module in Conda environment
 13/03/20 (TRUST)  New methods contribuer_vitesse() for operators for scalar equations to contribute with velocity derivative into Jacobian matrix  
 25/02/20 (TRUST)  Add ctest targets into the Trust and Baltik makefiles to use ctest for testing purpose
 20/01/20 (TRUST)  Memory leak debugging with "trust -gdb -valgrind datafile.data" fixed with valgrind versions using gdbserver
