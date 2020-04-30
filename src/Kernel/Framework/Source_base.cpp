@@ -121,9 +121,9 @@ void Source_base::mettre_a_jour(double )
 // Postcondition: la source est liee a tous les objets concernes
 void Source_base::completer()
 {
-  Equation_base& eqn = equation();
-  Zone_dis& zdis= eqn.zone_dis();
-  Zone_Cl_dis& zcldis = eqn.zone_Cl_dis();
+  const Equation_base& eqn = equation();
+  const Zone_dis& zdis= eqn.zone_dis();
+  const Zone_Cl_dis& zcldis = eqn.zone_Cl_dis();
   associer_zones(zdis, zcldis);
   associer_pb(eqn.probleme());
   // Initialize the bilan_ array:
