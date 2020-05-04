@@ -31,7 +31,7 @@
 #include <SolveurSys_base.h>
 #include <ArrOfDouble.h>
 
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
 #include <petscdm.h>
 #endif
 
@@ -66,7 +66,7 @@ public :
   {
     return read_matrix_ == 1;
   }
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   inline Solv_Petsc& operator=(const Solv_Petsc&);
   inline Solv_Petsc(const Solv_Petsc&);
 
@@ -87,7 +87,7 @@ public :
   static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
 
 protected :
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   int Create_objects(Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc Matrice et SecondMembre
   void Create_MatricePetsc(Mat&, int, Matrice_Morse&);
   bool enable_ksp_view( void );
@@ -160,7 +160,7 @@ public :
 inline Solv_Petsc::Solv_Petsc()
 {
   read_matrix_=0;
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   initialize();
   instance++;
   //  Journal()<<"creation solv_petsc "<<instance<<finl;
@@ -175,7 +175,7 @@ inline Solv_Petsc::~Solv_Petsc()
 }
 inline void Solv_Petsc::reset()
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   if (solveur_cree_)
     {
       assert(solveur_cree_==1);
@@ -201,7 +201,7 @@ inline void Solv_Petsc::reset()
 #endif
 }
 
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
 inline void Solv_Petsc::initialize()
 {
   matrice_symetrique_=-1;

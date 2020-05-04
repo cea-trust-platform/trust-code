@@ -71,13 +71,8 @@ case $Mpirun in
 		   ##################
 		   # Cas de OPENMPI #
 		   ##################
-		   # Pour eviter une lenteur sur certains PCs (OpenMPI 1.2.9 seulement):
-                   [ "`$Mpirun -V 2>&1 | $TRUST_Awk '{print $4;exit}'`" = 1.2.9 ] && TRUST_MPIRUN_OPTIONS=$TRUST_MPIRUN_OPTIONS" -mca paffinity off"
-		   # Ne marche pas bien avec 1.1.5: un repertoire est cree sous $TRUST_TMP l'autre sous $TMPDIR
-		   # Ecriture sous $TRUST_TMP au lieu de ~/tmp pour la session
-		   #TRUST_MPIRUN_OPTIONS=$TRUST_MPIRUN_OPTIONS" --tmpdir $TRUST_TMP" 		
-		   # On prefere donc cela qui semble bien marcher:
-		   Mpirun="env TMPDIR=$TRUST_TMP $Mpirun" 		   
+                   # Message erreur sur OpenMPI 3.x sur PCs avec pas assez de coeurs: There are not enough slots available in the system to satisfy the ...
+                   [ "`$Mpirun --help all 2>&1 | grep "\-oversubscribe"`" != "" ] && Mpirun="$Mpirun -oversubscribe" 
 		fi	
 			
 		#######################

@@ -56,7 +56,7 @@ mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bo
 
 static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_mpi_)
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   static char help[] = "TRUST may solve linear systems with Petsc library.\n\n" ;
   Nom pwd(::pwd());
   // On initialise Petsc
@@ -186,7 +186,7 @@ void mon_main::finalize()
   if (sub_type(Comm_Group_MPI,groupe_trio_.valeur()))
     ref_cast(Comm_Group_MPI,groupe_trio_.valeur()).free();
 #endif
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   // On PetscFinalize que si c'est necessaire
   PetscBool isInitialized;
   PetscInitialized(&isInitialized);

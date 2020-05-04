@@ -50,6 +50,7 @@ public:
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
   void completer();
+  void appliquer_coef(DoubleVect& coef) const;
 
 private:
 

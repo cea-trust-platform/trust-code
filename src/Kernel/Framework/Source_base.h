@@ -96,6 +96,10 @@ public :
   {
     return bilan_;
   };
+  inline Champs_compris& champs_compris()
+  {
+    return champs_compris_;
+  };
 
 protected :
 

@@ -71,15 +71,18 @@ do
          ./configure --prefix=$GD --with-png=$PNG || exit -1
       fi
    else
+      # Hack du configure de gnuplot pour accepter gd meme si jpeg pas present
+      sed -i "1,$ s?-ljpeg??" configure || exit -1
       # Probleme sur kata en crontab, lib64 pas trouve
       XLIB="" && [ -d /usr/X11R6/lib64 ] && XLIB="--x-lib=/usr/X11R6/lib64" 
       # --without-tutorial car plantage sur is209003 pour un probleme Latex 
-      # --without-lisp-files car plantage sur VRH797979.intra.cea.fr car emacs mal installe
-      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --without-lua --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
+      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --without-lua --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
    fi
    # 17-05-2019: if you update gnuplot to a new version using cmake, use cmake from conda as is the case for gmsh
    $TRUST_MAKE || exit -1
-   make install  || echo error on installation, but we hope that is ok
+   make install || echo error on installation, but we hope that is ok
+   # Test gnuplot
+   echo "set terminal png" | gnuplot || exit -1
    cd ..
    rm -r -f ${package%.tar.gz}
 done

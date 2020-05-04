@@ -243,6 +243,7 @@
  DoubleTrav DoubleTrav DoubleTrav.h
  DoubleVect DoubleVect DoubleVect.h
  DoubleVects DoubleVects DoubleVects.h
+ DP_Impose_Face_PolyMAC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
  Echange_thermique_h_imp_VDF_P0_VDF Source_Echange_Th_VDF Source_Echange_Th_VDF.h
  EcrFicCollecte EcrFicCollecte EcrFicCollecte.h
@@ -669,6 +670,7 @@
  Point_EF Point_EF Point_EF.h
  Polyedre Polyedre Polyedre.h
  Polyedre_PolyMAC Polyedre_PolyMAC Polyedre_PolyMAC.h
+ Polyedriser Polyedriser Polyedriser.h
  Polygone Polygone Polygone.h
  Polygone_PolyMAC Polygone_PolyMAC Polygone_PolyMAC.h
  PolyMAC PolyMAC_discretisation PolyMAC_discretisation.h
@@ -860,6 +862,8 @@
  Tayl_Green Tayl_Green Tayl_Green.h
  Temperature_imposee_paroi Temperature_imposee_paroi Temperature_imposee_paroi.h
  Terme_Boussinesq_base Terme_Boussinesq_base Terme_Boussinesq_base.h
+ Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC.h
+ Terme_Puissance_Thermique_Echange_Impose_VEF_P1NC Terme_Puissance_Thermique_Echange_Impose_VEF_Face Terme_Puissance_Thermique_Echange_Impose_VEF_Face.h
  Terme_Puissance_Thermique_PolyMAC_base Terme_Puissance_Thermique_PolyMAC_base Terme_Puissance_Thermique_PolyMAC_base.h
  Terme_Puissance_Thermique_VDF_base Terme_Puissance_Thermique_VDF_base Terme_Puissance_Thermique_VDF_base.h
  Terme_Puissance_Thermique_VEF_base Terme_Puissance_Thermique_VEF_base Terme_Puissance_Thermique_VEF_base.h

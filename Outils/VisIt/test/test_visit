@@ -36,7 +36,8 @@ then
       # -noconfig evite de charger le fichier de configuration du login
       # et permet ainsi d'eviter un blocage potentiel si le fichier est mal configure 
       # Filtrage des problemes de display
-      ($visit $np -debug 5 -cli -nowin -noconfig -s quit.py 2>&1 | grep -iv display 1>visit.log;echo $? > err) &
+      rm -f err
+      ($visit $np -debug 5 -cli -nowin -noconfig -s quit.py 1>visit.log 2>&1;echo ${PIPESTATUS[0]} > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
@@ -46,7 +47,7 @@ then
       then
 	 echo "VisIt $test installation is OK."
       else
-	 echo "Problem when running VisIt. See $tmp_visit/visit.log"
+	 echo "Problem when running VisIt. See $tmp_visit/visit.log"	 
 	 echo "and VisIt debug files *.vlog under $tmp_visit." 
 	 if [ "`grep SIGSEGV $tmp_visit/*.5.vlog 2>/dev/null`" != "" ] && [ "$test" = parallel ]
 	 then
@@ -54,6 +55,7 @@ then
 	    echo "It you REALLY need a parallel version of VisIt then contact"
 	    echo "TRUST support and consider rebuilding TRUST with MPICH." 
 	 fi
+	 cat $tmp_visit/visit.log
 	 exit -1
       fi
    done
@@ -67,7 +69,7 @@ then
    for option in $options
    do
       rm -f err
-      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s lata.py 2>&1 | grep -iv display 1>lata.log;echo $? > err) &
+      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s lata.py 1>lata.log 2>&1;echo ${PIPESTATUS[0]} > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
@@ -82,6 +84,7 @@ then
 	 find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
 	 echo "See $tmp_visit/lata.log"
 	 echo "and VisIt debug files *.vlog under $tmp_visit." 
+	 cat $tmp_visit/visit.log
 	 exit -1
       else
 	 echo "VisIt + LATA plugin are OK with $option option."
