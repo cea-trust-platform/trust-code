@@ -202,7 +202,7 @@ fi
 ####################
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
-   with_openmp="--with-openmp" 
+   with_openmp="--with-openmp"
    # Pour MPI-OpenMP hybride:
    # voir: https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
    # with_openmp=$with_openmp" -L$TRUST_ROOT/exec/hwloc --with-hwloc"
@@ -260,9 +260,9 @@ add_package()
    fi
    echo "PETSc needs to build it with $with_package"
    with_packages=$with_packages" "$with_package
-   
+
    ###############################
-   # Hack pour un parallel build # 
+   # Hack pour un parallel build #
    ###############################
    # PL: Si le parallel build echoue retour au build sequentiel avec typiquement "make $j lib || make lib"
    # Utilisation de flock pour eviter des ar/ranlib en concurrence
@@ -276,7 +276,7 @@ add_package()
          sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
 	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
       elif [ $lower_name = "mumps_marche_pas" ]
-      then 
+      then
          sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
          sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
          sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
@@ -295,7 +295,7 @@ add_package()
 # Construction de la liste des packages a utiliser pour le build de petsc #
 ###########################################################################
 with_packages=""
-
+add_package ml
 #################################################
 # Choix de Scalapack & Blacs (natives ou de base)
 #################################################
@@ -386,11 +386,11 @@ fi
 ##############
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # Si les compilateurs sont dans le bin 
+   # Si les compilateurs sont dans le bin
    if [ -d $MPI_ROOT/bin ]
    then
        with_mpi="--with-mpi-dir=$MPI_ROOT"
-   # Si les compilateurs sont dans le usr/bin 
+   # Si les compilateurs sont dans le usr/bin
    else
       echo "Error LIBPETSC can't be installed because mpirun is not found in $MPI_ROOT/bin"
       echo "To workaround, re-configure TRUST with ./configure -force_provided_mpich or ./configure -force_provided_openmpi"
@@ -403,8 +403,8 @@ fi
 # Add other package if MPI is used:
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # SUPERLU_DIST
-   [ $minimal_mumps = 0 ] && add_package superlu_dist
+   # SUPERLU_DIST (supprime dans 1.8.1 car probleme avec OpenMPI natif)
+   # [ $minimal_mumps = 0 ] && add_package superlu_dist
 
    # New (Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
@@ -413,8 +413,12 @@ then
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
    #[ $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
-   # New (Pardiso). Uniquement si support d'OpenMP par TRUST:
-   [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
+   # PARDISO (Uniquement si support d'OpenMP par TRUST)
+   if [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f $MKLROOT/include/mkl_pardiso.h ]
+   then
+      with_packages=$with_packages" --with-mkl_cpardiso=1 --with-mkl_pardiso-dir=$MKLROOT" 	# Cluster Pardiso (MPI/OpenMP)
+      with_packages=$with_packages" --with-mkl_pardiso=1" 					# Pardiso (OpenMP)
+   fi
 
    # MUMPS et SUPERLU necessitent desormais parmetis
    [ "$TRUST_INT64" = "1" ] && add_package metis # Only in build 64 since MUMPS has been disabled ?
@@ -511,7 +515,16 @@ then
    exit -1
 fi
 
-with_64bit_indices="" && [ "$TRUST_INT64" = "1" ] && with_64bit_indices="--with-64-bit-indices"
+#############
+# TRUST_INT64
+#############
+with_64bit_indices=""
+if [ "$TRUST_INT64" = "1" ]
+then
+   with_64bit_indices="--with-64-bit-indices" 
+   # with_64bit_indices="--with-64-bit-indices --with-64-bit-blas-indices" # Si on veut aussi activer int64 dans MKL Blas ou OpenBlas, pas d'interet pour le moment. Voir:
+   # https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBLASInt.html
+fi
 
 ###############
 # Loop on build
@@ -534,7 +547,7 @@ do
 
    if [ "$TRUST_INT64" = "1" ]
    then
-      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env |sed "s/-fdefault-integer-8//g" `
+      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" `
    else
       FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
    fi
@@ -550,7 +563,7 @@ do
    --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
-   --with-fortran=yes \
+   --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
    --with-clean=1 \
    --with-ssl=0 \
    $with_packages \

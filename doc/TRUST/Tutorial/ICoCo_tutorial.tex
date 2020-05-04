@@ -94,7 +94,7 @@
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST ICoCo Tutorial V1.7.6]{TRUST ICoCo Tutorial V1.7.6}
+\title[TRUST ICoCo Tutorial V1.8.1beta]{TRUST ICoCo Tutorial V1.8.1beta}
 % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
@@ -135,9 +135,9 @@ CEA Saclay \\ % Your institution for the title page
 
 \section{{\bf{Introduction to code coupling and ICoCo}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\tableofcontents[currentsection, currentsubsection]
-\end{frame}
+%\begin{frame}
+%\tableofcontents[currentsection, currentsubsection]
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -160,7 +160,7 @@ CEA Saclay \\ % Your institution for the title page
 \item Solution? Code coupling!
     \begin{itemize}
     \item [$\circ$] Have different codes communicating one with another...
-    \item [$\circ$] And having each of them dealing with its own area of expertise
+    \item [$\circ$] while each code deals with its own area of expertise
     \end{itemize}
 \end{itemize}
 
@@ -185,13 +185,15 @@ CEA Saclay \\ % Your institution for the title page
     \begin{itemize}
     \item [$\circ$] Initializes code A and code B
     \item [$\circ$] Loop through code A and code B
-    \item [$\circ$] Centralize the exchanges and conversions between A and B
-    \item [$\circ$] Supervisor is often usually written from scratch as a C++ file, or a Python script
-    \end{itemize}
-\item In a dummy approach : supervisor needs to know \textit{both} A and B API
+    \item [$\circ$] Centralize exchanges and conversions between A and B
+\end{itemize}
+Supervisor is usually written from scratch as a C++ program, Python script, $\cdots$
+
+\item In a dummy approach : supervisor needs to know \textit{both} A and B API. \\
+It becomes cumbersome if :
     \begin{itemize}
-    \item [$\circ$] Becomes cumbersome if more than 2 codes to couple ...
-    \item [$\circ$] Or if one supervisor is meant to run with different pairs of codes (code C, D, E ...)
+    \item [$\circ$] more than 2 codes to couple ...
+    \item [$\circ$] single supervisor is meant to run with different pairs of codes (code C, D, E ...)
     \end{itemize}
 \end{itemize}
 
@@ -237,23 +239,22 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Code coupling}
-\begin{block}{Better: common interface}
+\begin{block}{Better: common interface!}
 
-\begin{itemize}
-\item \underline{\textbf{Idea}}: define a unique \textit{interface} to which each code must comply
+
+\underline{\textbf{Idea}}: define a unique \textit{interface} to which each code must comply
     \begin{itemize}
     \item [$\circ$] Only an \textit{interface}, i.e. a contract (=an API) that each code fulfills
-    \item [$\circ$] \textit{Implementation} (=plugging the wires) of this interface is tightly linked to the details of the code...
+    \item [$\circ$] \textit{Implementation} (=plugging wires) of this interface is tightly linked to the details of the code...
     \end{itemize}
-\item Advantages:
+Advantages:
     \begin{itemize}
     \item [$\circ$] All codes implementing the (unique) interface can be passed to the supervisor (almost) without modifying it! \textbf{\textcolor{LightSkyBlue}{Versatility}}
     \end{itemize}
-\item Cons:
+Constraints:
     \begin{itemize}
     \item [$\circ$] Need to implement the interface for each code to be coupled
     \end{itemize}
-\end{itemize}
 
 \begin{figure}[h!]
 \begin{center}
@@ -304,24 +305,24 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{ICoCo}
-\begin{block}{Interface for COde COupling}
+\frametitle{ICoCo, \textbf{I}nterface for \textbf{Co}de \textbf{Co}upling}
+\begin{block}{}
 
+ICoCo is such a coupling interface:
 \begin{itemize}
-\item ICoCo is such a coupling interface
-\item Stands for Interface for Code Coupling
+\item Stands for \textbf{I}nterface for \textbf{Co}de \textbf{Co}upling
 \item Written in C++
 \vspace{0.2cm}
-\item Initially designed for simulation codes exhibiting an \textbf{\textcolor{LightSkyBlue}{iterative time loop}} 
+\item Initially designed for simulation codes exhibiting \textbf{\textcolor{LightSkyBlue}{iterative time loops}} 
 \vspace{0.2cm}
-\item Presents a set of standard methods whose signature is fixed, with no implementation by default:
+\item Presents a set of standard methods whose signature is fixed, with no default implementation:
     \begin{itemize}
     \item [$\circ$] initializeTimeStep()
     \item [$\circ$] validateTimeStep()
     \item [$\circ$] abortTimeStep()
     \item [$\circ$] ...
     \end{itemize}
-\item Uses the notion of field for the exchange of data between codes
+\item Uses the notion of field for data exchange between codes
     \begin{itemize}
     \item [$\circ$] A field is a set of values supported by a mesh
     \item [$\circ$] A possible implementation: \textbf{MEDCouplingFieldDouble}, from SALOME's MEDCoupling library
@@ -337,14 +338,12 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{Meaningful documentation}
 
 \begin{itemize}
-\item ICOCO presentation in TRUST documentation:
-    \begin{itemize}
-    \item [$\circ$] "An Interface for Code Coupling ICoCo v1.2":\\
-    \texttt{\$ source /home/triou/env\_TRUST\_X.Y.Z.sh} \\
-    \texttt{\$ evince \$TRUST\_ROOT/doc/Kernel/ICoCo\_V1.2.pdf \&}
+\item ICOCO presentation in TRUST documentation: \\ \textbf{"An Interface for Code Coupling ICoCo v1.2"} \\
+    \hspace{0.5cm}\texttt{load TRUST environnement} \\
+    \hspace{0.5cm}\texttt{\$ evince \$TRUST\_ROOT/doc/Kernel/ICoCo\_V1.2.pdf \&}
     \vspace{0.2cm}
-    \item [$\circ$] Ask the "APIProblem.pdf" note to trust@cea.fr
-    \end{itemize}
+
+    \item Ask the "APIProblem.pdf" note to trust@cea.fr
 \end{itemize}
 
 \end{block}
@@ -353,38 +352,71 @@ CEA Saclay \\ % Your institution for the title page
 
 
 
-\section{{\bf{TRUST initialization}}}
+\section{{\bf{TRUST and ICoCo initialization}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \tableofcontents[currentsection, currentsubsection]
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Initialisation of TRUST \& ICoCo environment}
+\subsection{Initialization of TRUST environment}
+
+\frametitle{Initialization of TRUST environment}
 \begin{block}{}
 
 \begin{itemize}
-\item Source the TRUST environment:\\
-\texttt{\$ source /home/triou/env\_TRUST\_X.Y.Z.sh}
+\item Before starting this Tutorial, \\
+ it is highly recommended to know some TRUST commands and hints.\vspace{0.2cm}
+ \item Source the TRUST environment:\\
+\begin{itemize}
+\item On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.8.0):\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}
 \vspace{0.2cm}
+\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then write on the terminal:\\
+%\vspace{0.2cm}
+\textbf{source  \$MyPathToTRUSTversion/env\_TRUST.sh}
+\vspace{0.2cm}
+\end{itemize}
 
-\item To know if the configuration is ok and where are the sources:\\
+\item To check if the configuration is well and to locate sources:\\
 \texttt{\$ echo \$TRUST\_ROOT}
-\vspace{0.2cm}
+%\vspace{0.2cm}
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\subsection{Initialization of ICoCo environment}
+\frametitle{Initialization of ICoCo environment}
+\begin{block}{}
+
+\begin{itemize}
 
 \item Source the ICoCo environment:\\
-\texttt{\$ source \$TRUST\_ROOT/Outils/ICoCo/ICoCo\_src/env\_MEDICoCo.sh}
-\vspace{0.2cm}
+\hspace{-0.5cm}\texttt{\$ source \$TRUST\_ROOT/Outils/ICoCo/ICoCo\_src/full\_env\_MEDICoCo.sh}
 
-\item Test if ICoCo is compiled:\\
-\texttt{\$ ls \$exec}\\
+\item check if ICoCo is compiled:\\
+\texttt{\$ ls \$exec} 
 
 \item If you obtain "ls: cannot access **/Outils/ICoCo/ICoCo\_src/ICoCo\_opt: No such file or directory", then compile ICoCo\_src:\\
 \texttt{\$ cd \$TRUST\_ROOT/Outils/ICoCo/ICoCo\_src}\\
 \texttt{\$ baltik\_build\_configure -execute}\\
 \texttt{\$ make optim debug }\\
 \texttt{\$ source full\_env\_MEDICoCo.sh}
+
+\item If you do not have rights to compile ICoCo (Typically if TRUST install is made by someone else): \\
+\texttt{\$ mkdir -p ICoCo}\\
+\texttt{\$ cp -r \$TRUST\_ROOT/Outils/ICoCo/ICoCo\_src ICoCo/ICoCo\_src}\\
+\texttt{\$ cd ICoCo/ICoCo\_src}\\
+\texttt{\$ baltik\_build\_configure -execute ; make optim debug }\\
+\texttt{\$ source full\_env\_MEDICoCo.sh}
+
 \end{itemize}
 
 \end{block}
@@ -394,7 +426,45 @@ CEA Saclay \\ % Your institution for the title page
 
 
 \section{{\bf{Basic test case}}}
-\subsection{{\bf{ICoCo: without exchange}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\tableofcontents[currentsection, currentsubsection]
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Goal of this first exercise}
+\begin{block}{}
+The idea here is to:
+
+\begin{enumerate}
+\item  Create a reference test case 
+\begin{itemize}
+\item To be launched with TRUST executable.
+\end{itemize}\vspace{0.1cm}
+\item Update the test case in order to:
+\begin{itemize}
+\item Launch it sequentially with ICoCo without information exchange.
+\item  Ensure that obtained results are identical to those obtained in step 1.
+\end{itemize}\vspace{0.1cm}
+\item Realize your first information exchange between the supervisor and datafile
+\begin{itemize}
+\item Impose a boundary condition from the supervisor and launch the calculation sequentially with ICoCo
+\item Compare the results with those obtained with TRUST executable.
+\end{itemize}\vspace{0.1cm}
+\item Make the test case running with ICoCo in parallel:
+\begin{itemize}
+\item Launch the computation with ICoCo on 2 processes \item Compare obtained results with those with TRUST executable.
+\end{itemize}
+\end{enumerate}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{{\bf{TRUST: test case creation}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \tableofcontents[currentsection, currentsubsection]
@@ -402,54 +472,48 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{First with TRUST:}
-\begin{block}{Launch calculation with TRUST}
+\frametitle{TRUST: test case creation}
+\begin{block}{}
+We will copy a reference test case from TRUST tests database that we launch with TRUST. 
 
 \begin{itemize}
-\item We create a first reference test case, launched with TRUST.
-\item Then we want to launch it with ICoCo and compare the results.
-\item Copy the following test case in your repository:\\
+\item Copy Vahl\_Davis\_hexa test case in your repository:\\
 \texttt{\$ mkdir ICoCo\_exercises}\\
 \texttt{\$ cd ICoCo\_exercises}\\
 \texttt{\$ trust -copy Vahl\_Davis\_hexa}
-\item Rename the folder to sort your tests:\\
+\item Rename the folder to distinguish your tests:\\
 \texttt{\$ mv Vahl\_Davis\_hexa Vahl\_Davis\_hexa\_trust}\\
 \texttt{\$ cd Vahl\_Davis\_hexa\_trust}
-\item Rename the data file to be consistent with the name of the repository:\\
+\item Rename the datafile to be consistent with the folder's name:\\
 \texttt{\$ mv Vahl\_Davis\_hexa.data Vahl\_Davis\_hexa\_trust.data}\\
 \item Launch calculation:\\
 \texttt{\$ trust Vahl\_Davis\_hexa\_trust}\\
-\item You obtained a Vahl\_Davis\_hexa\_trust.lml file. We will use it in the following part.
-%\item Let do it in parallel also:\\
-%\texttt{\$ trust -partition Vahl\_Davis\_hexa}\\
-%\texttt{\$ trust PAR\_Vahl\_Davis\_hexa 2}\\
-%\item Compare the two results:\\
-%\texttt{\$ compare\_lata Vahl\_Davis\_hexa.lml PAR\_Vahl\_Davis\_hexa.lml}\\
-%\item The differences are below the threshold: $10^{-5}$!
+\item You obtained a Vahl\_Davis\_hexa\_trust.lml file. We will need it in the following part.
 \end{itemize}
 
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\bf{ICoCo: without exchange}}}
 \begin{frame}
-\frametitle{With ICoCo}
+\frametitle{ICoCo: without exchange}
 
-\begin{block}{Adjusting the data file}
+\begin{block}{Adjusting the datafile}
 \begin{itemize}
-\item Now lets do the same with ICoCo:\\
+\item Now let's do the same thing with ICoCo:\\
 \texttt{\$ cd ..}\\
-\item You are now in your folder "ICoCo\_exercises", create a new directory in order to launch your test case with ICoCo:\\
+\item You are now in the folder "ICoCo\_exercises", create a new directory in order to launch your test case with ICoCo:\\
 \texttt{\$ trust -copy Vahl\_Davis\_hexa}\\
 \texttt{\$ mv Vahl\_Davis\_hexa Vahl\_Davis\_hexa\_ICoCo}\\
-\item Rename the data file to be consistent with the name of the repository:\\
+\item Rename the datafile to be consistent with the folder's name:\\
 \texttt{\$ cd Vahl\_Davis\_hexa\_ICoCo}\\
 \texttt{\$ mv Vahl\_Davis\_hexa.data Vahl\_Davis\_hexa\_ICoCo.data}\\
-\item Edit the data file and modify it to add ICoCo instructions:
+\item Edit the datafile and add to it ICoCo instructions:
     \begin{itemize}
-    \item [$\circ$] Add the following line after the definition of the dimension:\\
-    \textit{Nom ICoCoProblemName Lire ICoCoProblemName pb}
-    \item [$\circ$] Comment the "solve pb" line at the end of the data file.
+    \item [$\circ$] \textit{Add} the following line after "\textit{dimension}" definition:\\
+    \texttt{Nom ICoCoProblemName Lire ICoCoProblemName pb}
+    \item [$\circ$] \textit{Comment} the "\textit{solve pb}" instruction at the end of the datafile.
     \end{itemize}
 \end{itemize}
 \end{block}
@@ -458,29 +522,30 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{With ICoCo}
+\frametitle{ICoCo: without exchange}
 
 \begin{block}{Creation of the main.cpp file}
 \begin{itemize}
-%\item Create a parallel data file:\\
+%\item Create a parallel datafile:\\
 %\texttt{\$ trust -partition Vahl\_Davis\_hexa}\\
 \item Create the main.cpp which will launch the calculation:\\
-\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main1.cpp main.cpp}\\
-\item You can edit it and see the main method which creates the objects needed to do the information exchanges.
-\item You can use ICoCo with 1 or more processors.
-\item Here we use only one processor to solve the problem.
-%\item You can also see where the data file and in/output files are set.
+\texttt{\$ file="main\_Vahl\_Davis\_hexa\_ICoCo.cpp"} \\
+\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/\$file main.cpp}\\
+\item Open main.cpp file and see the main method which creates the objects and launches computation.
+\item You can use ICoCo with 1 or more processors, but in this part we use only one processor to solve the problem.
+%\item You can also see where the datafile and in/output files are set.
 %\item Here we only run the calculation with the "while" loop.
 \end{itemize}
 \end{block}
 
 \begin{block}{Creation of the makefile}
 \begin{itemize}
-\item Create a makefile for your calculation on 1 proc:\\
-\texttt{\$ sh \$project\_directory/share/bin/create\_Makefile 1}
+\item Create a makefile for your calculation:\\
+\texttt{\$ cp \$project\_directory/share/bin/create\_Makefile .} \\
+\texttt{\$ sh create\_Makefile}
 \item Compile it:\\
 \texttt{\$ make}
-\item It creates an executable "couplage" and a data file "couplage.data".
+\item This creates an executable "couplage" and a datafile "couplage.data".
 \end{itemize}
 
 \end{block}
@@ -488,18 +553,16 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{With ICoCo}
+\frametitle{ICoCo: without exchange}
 
 \begin{block}{Launch calculation}
 \begin{itemize}
 \item Execute it:\\
 \texttt{\$./couplage}
 %\texttt{\$ mpirun -np 2 ./couplage}
-\item You may obtain the same results as with TRUST executable.
-\item Compare it:\\
+\item You should obtain the same results as with TRUST executable. Compare TRUST and ICoCo results with:\\
 \texttt{\$ compare\_lata Vahl\_Davis\_hexa\_ICoCo.lml ../Vahl\_Davis\_hexa\_trust/Vahl\_Davis\_hexa\_trust.lml}
-%\texttt{\$ compare\_lata PAR\_Vahl\_Davis\_hexa.lml ../Vahl\_Davis\_hexa\_trust/PAR\_Vahl\_Davis\_hexa.lml}
-\item The files are the sames!
+\item Both lml files are identical!
 \end{itemize}
 
 \end{block}
@@ -517,15 +580,15 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{First input with ICoCo}
+\frametitle{ICoCo: first input}
 \begin{block}{Adjusting the main.cpp file}
 
 \begin{itemize}
 \item Copy the following test case in your repository:\\
-\texttt{\$ cd ICoCo\_exercises}\\
+\texttt{\$ cd ..}\\
 \texttt{\$ cp -r Vahl\_Davis\_hexa\_ICoCo Vahl\_Davis\_hexa\_ICoCo\_exchange}\\
 \texttt{\$ cd Vahl\_Davis\_hexa\_ICoCo\_exchange}\\
-\item Clean the repository and rename the data file:\\
+\item Clean the repository and rename the datafile:\\
 \texttt{\$ trust -clean}\\
 \texttt{\$ mv Vahl\_Davis\_hexa\_ICoCo.data Vahl\_Davis\_hexa\_ICoCo\_exchange.data }\\
 %\item We want to create an input of temperature with the first domain. So you have to create a new domain:\\
@@ -533,9 +596,10 @@ CEA Saclay \\ % Your institution for the title page
 %\item And create objects which will made the input, add the following lines after the "synchronize\_bool(stop,sync\_or);" line:\\
 %\textit{  TrioDEC dec\_temperature(dom2\_ids, dom1\_ids);}\\
 %\textit{  TrioField Temperature\_field;}
-\item We have to add a block in the main.cpp file to made exchanges.
+\item We will add a block in the main.cpp file to exchange values.
 \item Copy the following file in your folder:\\
-\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main2.cpp main.cpp}
+\texttt{\$ file="main\_Vahl\_Davis\_hexa\_ICoCo\_exchange.cpp"}\\ 
+\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/\$file main.cpp}
 \end{itemize}
 
 \end{block}
@@ -543,18 +607,18 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{First input with ICoCo}
-\begin{block}{Adjusting the data file}
+\frametitle{ICoCo: first input}
+\begin{block}{Adjusting the datafile}
 
 \begin{itemize}
-\item Then modify the data file Vahl\_Davis\_hexa\_ICoCo\_exchange.data to made the input:
+\item Then modify the datafile Vahl\_Davis\_hexa\_ICoCo\_exchange.data to make the input:
     \begin{itemize}
     \item [$\circ$] Change the line:\\
     "Gauche Paroi\_temperature\_imposee Champ\_Front\_Uniforme 1 10."\\
      to \\
     "Gauche Paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom TEMPERATURE\_IN\_DOM probleme pb \}"
-    \item [$\circ$] You can see that the name "TEMPERATURE\_IN\_DOM" is the one employed in the main.cpp file.
-%    \item [$\circ$] don't forget to update the parallel data file:\\
+    \item [$\circ$] You can see that the field "TEMPERATURE\_IN\_DOM" is the one employed in the main.cpp file.
+%    \item [$\circ$] don't forget to update the parallel datafile:\\
 %    \texttt{\$ trust -partition Vahl\_Davis\_hexa}
     \end{itemize}
 \end{itemize}
@@ -564,7 +628,7 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{First input with ICoCo}
+\frametitle{ICoCo: first input}
 \begin{block}{Launch calculation}
 
 \begin{itemize}
@@ -574,7 +638,7 @@ CEA Saclay \\ % Your institution for the title page
 \item You may obtain the same results as with TRUST executable.
 \item Compare it:\\
 \texttt{\$ compare\_lata Vahl\_Davis\_hexa\_ICoCo\_exchange.lml ../Vahl\_Davis\_hexa\_trust/Vahl\_Davis\_hexa\_trust.lml}
-\item The files are the sames! (but not for the first time!!!!!)
+\item The files are the same! \textbf{(but not for the first time step!!!!!)}
 \end{itemize}
 
 \end{block}
@@ -584,7 +648,7 @@ CEA Saclay \\ % Your institution for the title page
 
 
 
-\subsection{{\bf{ICoCo: on 2 processors}}}
+\subsection{{\bf{ICoCo: on 2 processes}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \tableofcontents[currentsection, currentsubsection]
@@ -592,22 +656,24 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{First input with ICoCo}
+\frametitle{ICoCo: on 2 processes}
 \begin{block}{Adjusting the main.cpp file}
 
 \begin{itemize}
 \item Copy the following test case in your repository:\\
-\texttt{\$ cd ICoCo\_exercises}\\
+\texttt{\$ cd ..}\\
 \texttt{\$ cp -r Vahl\_Davis\_hexa\_ICoCo\_exchange Vahl\_Davis\_hexa\_ICoCo\_para}\\
 \texttt{\$ cd Vahl\_Davis\_hexa\_ICoCo\_para}\\
-\item Clean the repository and rename the data file:\\
-\texttt{\$ trust -clean}\\
-\texttt{\$ rm main.cpp}\\
-\texttt{\$ mv Vahl\_Davis\_hexa\_ICoCo\_exchange.data Vahl\_Davis\_hexa\_ICoCo\_para.data }\\
+\item Clean the repository and rename the datafile:\\
+\texttt{\$ make clean}\\
+\texttt{\$ rm main.cpp Vahl\_Davis\_hexa\_ICoCo\_exchange.lml}\\
+\texttt{\$ mv Vahl\_Davis\_hexa\_ICoCo\_exchange.data Vahl\_Davis\_hexa\_ICoCo\_para.data }
+\item Partition the domaine and create a parallel datafile: \\
 \texttt{\$ trust -partition Vahl\_Davis\_hexa\_ICoCo\_para}\\
 
 \item Copy the following file in your folder:\\
-\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main3.cpp main.cpp}\\
+\texttt{\$ file="main\_Vahl\_Davis\_hexa\_ICoCo\_para.cpp"}\\
+\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/\$file main.cpp}\\
 \end{itemize}
 
 \end{block}
@@ -615,7 +681,7 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{First input with ICoCo}
+\frametitle{ICoCo: on 2 processes}
 \begin{block}{Adjusting the main.cpp file}
 
 \begin{itemize}
@@ -623,16 +689,18 @@ CEA Saclay \\ % Your institution for the title page
 \item Open this file and look where:
     \begin{itemize}
     \item [$\circ$] the processors are added: search for "dom\_ids"
-    \item [$\circ$] the names of the data files: search for "data\_file"
+    \item [$\circ$] the names of the datafiles: search for "data\_file"
     \end{itemize}
 
-\item Compile your new file:\\
+\item Create the makefile and coompile your new file:\\
+\texttt{\$ sh create\_Makefile}\\
 \texttt{\$ make}\\
 \item To run parallel, you have to use the following mpirun command:\\
 \texttt{\$ mpirun -np 2 ./couplage}\\
 
 \item Compare your results with the sequential ones:\\
-\texttt{\$ compare\_lata PAR\_Vahl\_Davis\_hexa\_ICoCo\_para.lml ../Vahl\_Davis\_hexa\_trust/Vahl\_Davis\_hexa\_trust.lml}\\
+\texttt{\$ compare\_lata PAR\_Vahl\_Davis\_hexa\_ICoCo\_para.lml ../Vahl\_Davis\_hexa\_exchange/Vahl\_Davis\_hexa\_exchage.lml}\\
+\item Sequential and parallel computation yield the same results!!
 \end{itemize}
 
 \end{block}
@@ -642,7 +710,41 @@ CEA Saclay \\ % Your institution for the title page
 
 
 \section{{\bf{Coupled problem with ICoCo}}}
-\subsection{{\bf{ICoCo: without exchange}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Goal of this second exercise}
+\begin{block}{}
+The idea here is to:
+
+\begin{enumerate}
+\item  Create a reference test case treating a coupled problem 
+\begin{itemize}
+\item To be launched with TRUST executable in sequential and parallel.
+\end{itemize}\vspace{0.1cm}
+\item Create two datafiles, each one for a problem:
+\begin{itemize} 
+\item Launch it with TRUST first to ensure that datafiles do not contain errors
+\item Launch it with ICoCo without any information exchange after updating datafiles.
+\end{itemize}\vspace{0.1cm}
+\item Realize a one way coupling with ICoCo:
+\begin{itemize}
+\item One way coupling means that one problem runs alone while some inputs of the second problem are provided by the first one 
+\item Launch the calculation sequentially with ICoCo
+\item Compare the results with those obtained with TRUST executable.
+\end{itemize}\vspace{0.1cm}
+\item Realize a two-way coupling with ICoCo:
+\begin{itemize}
+\item Two-way means that each problem will have inputs provided by the other one.
+\item Launch the computation with ICoCo.
+\end{itemize}
+\end{enumerate}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{{\bf{TRUST: test case creation}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \tableofcontents[currentsection, currentsubsection]
@@ -652,71 +754,72 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \frametitle{First with TRUST}
 
-\begin{block}{Launch calculation with TRUST}
+\begin{block}{Copy a coupled problem test case and launch it with TRUST}
 \begin{itemize}
-\item Copy a TRUST test case:\\
+\item Copy the coupled problem docond\_VEF\_3D from TRUST tests database:\\
 \texttt{\$ cd ICoCo\_exercises}\\
 \texttt{\$ trust -copy docond\_VEF\_3D}\\
 \texttt{\$ mv docond\_VEF\_3D docond\_VEF\_3D\_trust}
 \item Launch calculation:\\
 \texttt{\$ cd docond\_VEF\_3D\_trust}\\
 \texttt{\$ trust docond\_VEF\_3D}
-\item Let do it in parallel also:\\
+\item Now, run the calculation in parallel also:\\
 \texttt{\$ trust -partition docond\_VEF\_3D}\\
 \texttt{\$ trust PAR\_docond\_VEF\_3D 2}\\
-\item Compare the two results:\\
+\item Compare the sequential \& parallel results:\\
 \texttt{\$ compare\_lata docond\_VEF\_3D.lml PAR\_docond\_VEF\_3D.lml}\\
-\item The results are the same. Differences are below the threshold: $10^{-5}$!
+The results are the same. Differences are below the threshold: $10^{-5}$!
 \end{itemize}
 \end{block}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\bf{ICoCo: without exchange}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Separate a coupled problem into two new problems}
-\begin{block}{Separate the meshes}
+\tableofcontents[currentsection, currentsubsection]
+\end{frame}
+
+\begin{frame}
+\frametitle{ICoCo: without exchange}
+\begin{block}{Separate the meshes of the coupled problem}
 \begin{itemize}
 \item Create your ICoCo test case:\\
 \texttt{\$ cd ICoCo\_exercises}\\
 \texttt{\$ trust -copy docond\_VEF\_3D}\\
 \texttt{\$ mv docond\_VEF\_3D docond\_VEF\_3D\_ICoCo}\\
 \texttt{\$ cd docond\_VEF\_3D\_ICoCo}\\
-\item Separate mesh and calculation datas in two data files:\\
+\item Create separate mesh and calculation datafiles from docond\_VEF\_3D:\\
 \texttt{\$ cp docond\_VEF\_3D.data docond\_VEF\_3D\_mesh1.data}\\
-\item Edit the file docond\_VEF\_3D\_mesh1.data and remove:
+\item Edit the file docond\_VEF\_3D\_mesh1.data, and:
     \begin{itemize}
-    \item [$\circ$] the time scheme
-    \item [$\circ$] the problem definitions
-    \item [$\circ$] the 'scatter' block
-    \item [$\circ$] the discretization, medium, gravity definition blocks
-    \item [$\circ$] the associations
-    \item [$\circ$] the definition and "Read pb1"/"Read pb2" block
-    \item [$\circ$] the "fichier pb1"/"fichier pb2" lines
-    \item [$\circ$] the "solve" keyword
+    \item [$\circ$] Add a line containing "End" instruction after the partitionning block.
+    \item [$\circ$] Remove all the lines below the added "End"
+    \item [$\circ$] Remove the time scheme and the problems definition
+    \item [$\circ$] Uncomment the partition block
     \end{itemize}
+    Now, docond\_VEF\_3D\_mesh1.data datafile defines geometry, mesh and paritionning for both domains (solide and fluid).
 \end{itemize}
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Separate a coupled problem into two new problems}
-\begin{block}{Separate the meshes}
+\frametitle{ICoCo: without exchange}
+\begin{block}{Separate the meshes of the coupled problem}
 
 \begin{itemize}
-\item Keep only the domain definitions, meshes and cutting steps.
-\item Then create a data file for each domain:\\
+\item Create a datafile for each domain:\\
 \texttt{\$ cp docond\_VEF\_3D\_mesh1.data docond\_VEF\_3D\_mesh2.data }
-\item In the file docond\_VEF\_3D\_mesh1.data, keep only the informations of the solide domain.
-\item In the file docond\_VEF\_3D\_mesh2.data, keep only the informations of the fluide domain.
-\item Uncomment the 'partition' step for each domain.
-\item Run these data files:\\
+\item In the file docond\_VEF\_3D\_mesh1.data, keep only the information of the solid domain.
+\item In the file docond\_VEF\_3D\_mesh2.data, keep only the information of the fluid domain.
+\item Run these datafiles to partition domains:\\
 \texttt{\$ trust docond\_VEF\_3D\_mesh1 }\\
-\texttt{\$ trust docond\_VEF\_3D\_mesh2 }
-\item You must have now the four files:\\
-DOM1\_0000.Zones DOM2\_0001.Zones \\
-DOM1\_0001.Zones DOM2\_0000.Zones
+\texttt{\$ trust docond\_VEF\_3D\_mesh2 } \\
+You must these four .Zones files:\\
+\hspace{0.5cm} DOM1\_0000.Zones DOM2\_0001.Zones \\
+\hspace{0.5cm} DOM1\_0001.Zones DOM2\_0000.Zones
 \end{itemize}
 
 \end{block}
@@ -724,26 +827,26 @@ DOM1\_0001.Zones DOM2\_0000.Zones
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Separate a coupled problem into two new problems}
+\frametitle{ICoCo: without exchange}
 
 \begin{block}{Run with separated meshes}
 \begin{itemize}
-\item In docond\_VEF\_3D.data file:
+\item In docond\_VEF\_3D.data datafile:
     \begin{itemize}
-    \item [$\circ$] remove the mesh and cutting command (which are already in the mesh data file)
-    \item [$\circ$] keep the 'scatter' command and uncomment it
+    \item [$\circ$] delete the mesh and partitionning blocks (which are now in the mesh datafiles)
+    \item [$\circ$] Uncomment the 'scatter' block
     \end{itemize}
-\item Launch the calculation:\\
+\item Launch the calculation in parallel:\\
 \texttt{\$ trust docond\_VEF\_3D 2}
-\item Compare results with previous parallel results:\\
-\texttt{\$ compare\_lata docond\_VEF\_3D.lml ../docond\_VEF\_3D\_trust/PAR\_docond\_VEF\_3D.lml }
-\item The results are the sames.
+\item Compare these results with previous parallel results:\\
+\texttt{\$ compare\_lata docond\_VEF\_3D.lml ../docond\_VEF\_3D\_trust/PAR\_docond\_VEF\_3D.lml } \\
+The results are identical!
 \item Separate results in two lml files:
     \begin{itemize}
-    \item [$\circ$] add "fichier pb1.lml" in the "Post\_processing" block of the solid domain,
-    \item [$\circ$] add "fichier pb2.lml" in the "Post\_processing" block of the fluid domain,
+    \item [$\circ$] add "fichier pb1" in the "Post\_processing" block of the solid's problem,
+    \item [$\circ$] add "fichier pb2" in the "Post\_processing" block of the fluid's problem,
     \end{itemize}
-\item Run calculation to create this two files:\\
+\item Run calculation to create these two files:\\
 \texttt{\$ trust docond\_VEF\_3D 2}
 \end{itemize}
 \end{block}
@@ -752,17 +855,18 @@ DOM1\_0001.Zones DOM2\_0000.Zones
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Separate a coupled problem into two new problems}
-\begin{block}{Separate data files}
+\frametitle{ICoCo: without exchange}
+\begin{block}{Separate the coupled problem into two new problems}
 
 \begin{itemize}
-\item Create a data file for the solid domain:\\
+\item Create a datafile for the solid domain's problem:\\
 \texttt{\$ cp docond\_VEF\_3D.data  docond\_VEF\_3D\_dom1.data }
-\item In docond\_VEF\_3D\_dom1.datafile, remove the lines:
+\item In docond\_VEF\_3D\_dom1.data datafile, remove the lines:
     \begin{itemize}
     \item [$\circ$] Probleme\_Couple pbc
     \item [$\circ$] Associate pbc pb1
     \item [$\circ$] Associate pbc pb2
+    \item [$\circ$] "fichier pb1" and "fichier pb2"
     \end{itemize}
 \item Change the following lines:
     \begin{itemize}
@@ -770,10 +874,9 @@ DOM1\_0001.Zones DOM2\_0000.Zones
     \item [$\circ$] Discretize pbc dis $\rightarrow$ Discretize pb dis
     \item [$\circ$] Solve pbc $\rightarrow$ Solve pb
     \end{itemize}
-\item Create a data file for the fluide domain:\\
+\item Create a datafile for the fluid domain's problem:\\
 \texttt{\$ cp docond\_VEF\_3D\_dom1.data docond\_VEF\_3D\_dom2.data}
-\item In docond\_VEF\_3D\_dom1.data, keep only the informations about the solid domain (pb1, dom\_solide).
-\item Subtitute pb1 $\rightarrow$ pb
+\item In docond\_VEF\_3D\_dom1.data, keep only the information about the solid domain (pb1, dom\_solide) and subtitute pb1 $\rightarrow$ pb in the whole datafile
 \end{itemize}
 
 \end{block}
@@ -781,18 +884,17 @@ DOM1\_0001.Zones DOM2\_0000.Zones
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Separate a coupled problem into two new problems}
-\begin{block}{Separate data files}
+\frametitle{Separate the coupled problem into two new problems}
+\begin{block}{Separate datafiles}
 
 \begin{itemize}
-\item In docond\_VEF\_3D\_dom2.data, keep only the informations about the fluide domain (pb2, dom\_fluide).
-\item Subtitute pb2 $\rightarrow$ pb
-\item You can see that the heat exchange is made on the "Paroi\_echange1" boundary for solid domain and "Paroi\_echange2" boundary for the fluid domain.
-\item Modify docond\_VEF\_3D\_dom1.data file to have:\\
+\item In docond\_VEF\_3D\_dom2.data, keep only the information about the fluid domain (pb2, dom\_fluide) and subtitute pb2 $\rightarrow$ pb in the whole datafile.
+\item Note that the coupling between solid and fluid problems is concretized by heat exchange between both domains. This coupling concerns the "Paroi\_echange1" boundary of solid domain and "Paroi\_echange2" boundary for of fluid domain.
+\item Modify docond\_VEF\_3D\_dom1.data datafile to have:\\
 \textit{Paroi\_echange1 paroi\_contact pb Paroi\_echange2} \\
 $\rightarrow$ \\
 \textit{Paroi\_echange1 paroi\_temperature\_imposee Champ\_Front\_Uniforme 1 50.}
-\item Modify docond\_VEF\_3D\_dom2.data file to have:\\
+\item Modify docond\_VEF\_3D\_dom2.data datafile to have:\\
 \textit{Paroi\_echange2 paroi\_contact pb Paroi\_echange1} \\
 $\rightarrow$ \\
 \textit{Paroi\_echange2 paroi\_temperature\_imposee Champ\_Front\_Uniforme 1 50.}
@@ -803,22 +905,22 @@ $\rightarrow$ \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Separate a coupled problem into two new problems}
+\frametitle{Separate the coupled problem into two new problems}
 
-\begin{block}{Separate data files}
+\begin{block}{Running separately datafiles using trust}
 \begin{itemize}
 \item Run docond\_VEF\_3D\_dom1.data and docond\_VEF\_3D\_dom2.data in parallel:\\
 \texttt{\$ trust docond\_VEF\_3D\_dom1 2 }\\
-\texttt{\$ trust docond\_VEF\_3D\_dom2 2 }
-\item The two problems must run.
+\texttt{\$ trust docond\_VEF\_3D\_dom2 2 }\\
+ The two problems must run.
 \item Notice that there is no coupling at all for the moment.
 \end{itemize}
 \end{block}
 
-\begin{block}{Adjusting data files}
+\begin{block}{Adjusting datafiles for ICoCo}
 \begin{itemize}
 \item To create the ICoCo problem, just after 'dimension 3', add in docond\_VEF\_3D\_dom1.data and docond\_VEF\_3D\_dom2.data:\\
-'Nom ICoCoProblemName Lire ICoCoProblemName pb'
+\texttt{Nom ICoCoProblemName Lire ICoCoProblemName pb}
 \item Remove 'Solve pb' because the solving step will be made by ICoCo.
 \end{itemize}
 \end{block}
@@ -826,6 +928,7 @@ $\rightarrow$ \\
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}
 \frametitle{Run with ICoCo}
 
@@ -833,13 +936,14 @@ $\rightarrow$ \\
 
 \begin{block}{Creation of the main.cpp file}
 \begin{itemize}
-\item We have to create a new executable which will use our data files.
+\item We have to create a new executable which will use our datafiles.
 \item Copy the following main.cpp file in your repository:\\
-\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main3.cpp main.cpp }
+\texttt{\$ file="main\_docond\_VEF\_3D\_ICoCo.cpp"}\\
+\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/\$file main.cpp }
 \item Open this file and look where:
     \begin{itemize}
-    \item [$\circ$] the processors are added: search for "dom1\_ids"
-    \item [$\circ$] the names of the data files: search for "data\_file"
+    \item [$\circ$] the processors are added: search for "dom\_ids"
+    \item [$\circ$] the names of the datafiles: search for "data\_file"
     \item [$\circ$] the loop to iterate on time steps: search for "while"
     \end{itemize}
 \end{itemize}
@@ -862,7 +966,7 @@ $\rightarrow$ \\
 \item Compare the results to the results of the coupled problem:\\
 \texttt{\$ compare\_lata pb1.lml docond\_VEF\_3D\_dom1.lml}\\
 \texttt{\$ compare\_lata pb2.lml docond\_VEF\_3D\_dom2.lml}
-\item As expected, there are differences between the results because there is no coupling here, we impose the temperature in the data files.
+\item As expected, there are differences between the results because there is no coupling here, we impose the temperature in the datafiles!
 \end{itemize}
 \end{block}
 
@@ -881,22 +985,22 @@ $\rightarrow$ \\
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafiles}
 \begin{itemize}
-\item Now we want to send the temperature from the Paroi\_echange2 boundary of the domain dom2 to the Paroi\_echange1 boundary of the domain dom1.
+\item Now, we want to send the temperature from the "Paroi\_echange2" boundary of the fluid domain to the Paroi\_echange1 boundary of the solid domain.
 \item Create a new directory:\\
 \texttt{\$ cd ICoCo\_exercises}\\
 \texttt{\$ cp -r docond\_VEF\_3D\_ICoCo docond\_VEF\_3D\_ICoCo\_coupling1}\\
 \texttt{\$ cd docond\_VEF\_3D\_ICoCo\_coupling1}\\
 
 
-\item In the docond\_VEF\_3D\_dom2.data data file, add in the "Definition\_champs" block of the post-processings:\\
+\item In the docond\_VEF\_3D\_dom2.data datafile, add in the "Definition\_champs" block of the post-processings:\\
 \texttt{ \hspace{0.2cm} TEMPERATURE\_OUT\_DOM2 Interpolation \{             } \\
 \texttt{ \hspace{0.5cm}    localisation elem                                } \\
 \texttt{ \hspace{0.5cm}    domaine dom\_fluide\_boundaries\_Paroi\_echange2 } \\
 \texttt{ \hspace{0.5cm}    source refChamp \{ Pb\_Champ pb temperature \}   } \\
 \texttt{ \hspace{0.2cm} \}                                                  } \\
-where "dom\_fluide\_boundaries\_Paroi\_echange2" is a predefined name for the boundary Paroi\_echange2 of the domain dom2.
+where "dom\_fluide\_boundaries\_Paroi\_echange2" is a predefined name for the boundary Paroi\_echange2 of the fluid's domain.
 \end{itemize}
 \end{block}
 
@@ -906,15 +1010,16 @@ where "dom\_fluide\_boundaries\_Paroi\_echange2" is a predefined name for the bo
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafile}
 \begin{itemize}
-\item In the docond\_VEF\_3D\_dom1.data data file, change the boundary condition on the 'Paroi\_echange1' boundary to:\\
-Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom TEMPERATURE\_IN\_DOM1 probleme pb \}
+\item In the docond\_VEF\_3D\_dom1.data datafile, change the boundary condition on the 'Paroi\_echange1' boundary to:\\
+Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ \\ nb\_comp 1 nom TEMPERATURE\_IN\_DOM1 probleme pb \}
 \item Copy the main.cpp file for this exchange:\\
-\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main4.cpp main.cpp }
-\item Compare the new main.cpp file to the previous one:\\
+\texttt{\$ file="main\_docond\_VEF\_3D\_ICoCo\_coupling1.cpp"} \\
+\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/\$file main.cpp }
+\item Compare this main.cpp file with the previous one (use tkdiff, meld or diff):\\
 \texttt{\$ tkdiff main.cpp ../docond\_VEF\_3D\_ICoCo/main.cpp }
-\item You can see where the new fields TEMPERATURE\_IN\_DOM1 and TEMPERATURE\_OUT\_DOM2 added to the data files, are used in a new part which makes exchanges.
+\item You can find where the added fields in datafiles TEMPERATURE\_IN\_DOM1 and TEMPERATURE\_OUT\_DOM2 are used in a new part for exchanges.
 \item Notice that we use two new objects: one TrioDEC object and one TrioField object.
 \item Some comments are written to help you.
 \end{itemize}
@@ -926,7 +1031,7 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafile}
 \begin{itemize}
 \item Compile the main.cpp file:\\
 \texttt{\$ make}
@@ -935,8 +1040,8 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 \item Compare results with those without coupling:\\
 \texttt{\$ compare\_lata docond\_VEF\_3D\_dom1.lml ../docond\_VEF\_3D\_ICoCo/docond\_VEF\_3D\_dom1.lml }\\
 \texttt{\$ compare\_lata docond\_VEF\_3D\_dom2.lml ../docond\_VEF\_3D\_ICoCo/docond\_VEF\_3D\_dom2.lml }\\
-\item The results on the domain dom2 are the same as this calculation made only one more post-traitment.
-\item But we can see that the coupling works well because the results on the domain dom1 changes.
+- The results on the domain dom2 are the same as this calculation made only one more postprocessing (TEMPERATURE\_OUT\_DOM2). \\
+- But, we can see that the coupling works well because the results on the domain dom1 changes.
 \end{itemize}
 \end{block}
 
@@ -955,15 +1060,15 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafile}
 \begin{itemize}
-\item Two way coupling for thermal problems should use Dirichlet and Neumann boundary conditions (using only Dirichlet boundary conditions for coupling both sides would not work).
-\item So we want to send the heat flux from the Paroi\_echange1 boundary of the domain dom1 to the Paroi\_echange2 boundary of the domain dom2.
-\item Create a new directory:\\
+\item Two way coupling for thermal problems should use Dirichlet and Neumann's boundary conditions (using only Dirichlet boundary conditions for coupling both sides would not work).
+\item So we want to send the heat flux from the Paroi\_echange1 boundary of the solid domain's problem to the Paroi\_echange2 boundary of the fluid domain's problem.
+\item Create a new directory for this part:\\
 \texttt{\$ cd ICoCo\_exercises}\\
 \texttt{\$ cp -r docond\_VEF\_3D\_ICoCo\_coupling1 docond\_VEF\_3D\_ICoCo\_coupling2}\\
 \texttt{\$ cd docond\_VEF\_3D\_ICoCo\_coupling2}\\
-\item Inspire you of the previous part to make a Neumann boundary condition (heat flux imposed):
+\item Inspire you from the previous part to make a Neumann boundary condition (heat flux imposed).
 
 \end{itemize}
 \end{block}
@@ -974,9 +1079,9 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafile}
 \begin{itemize}
-\item In the docond\_VEF\_3D\_dom1.data data file, add in the "Definition\_champs" block of the post-processings:\\
+\item In the docond\_VEF\_3D\_dom1.data datafile, add a "Definition\_champs" block in the post-processings:\\
 \texttt{ \hspace{0.2cm} FLUX\_SURFACIQUE\_OUT\_DOM1 Interpolation \{             } \\
 \texttt{ \hspace{0.5cm}    localisation elem                                     } \\
 \texttt{ \hspace{0.5cm}    domaine dom\_fluide\_boundaries\_Paroi\_echange1      } \\
@@ -985,10 +1090,10 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ nb\_comp 1 nom T
 \texttt{ \hspace{0.7cm}        source refChamp \{ Pb\_Champ pb temperature \} } \\
 \texttt{ \hspace{0.5cm}    \}                                                  } \\
 \texttt{ \hspace{0.2cm} \}                                                     } \\
-where "dom\_solide\_boundaries\_Paroi\_echange1" is a predefined name for the boundary Paroi\_echange1 of the domain dom1.
+where "dom\_solide\_boundaries\_Paroi\_echange1" is a predefined name for the boundary Paroi\_echange1 of the solid domain.
 
-\item In the docond\_VEF\_3D\_dom2.data data file, change the boundary condition on the 'Paroi\_echange2' boundary to:\\
-Paroi\_echange2 paroi\_flux\_impose ch\_front\_input \{ nb\_comp 1 nom FLUX\_SURFACIQUE\_IN\_DOM2 probleme pb \}
+\item In the docond\_VEF\_3D\_dom2.data datafile, switch the boundary condition on the 'Paroi\_echange2' boundary to:\\
+Paroi\_echange2 paroi\_flux\_impose ch\_front\_input \{ \\ nb\_comp 1 nom FLUX\_SURFACIQUE\_IN\_DOM2 probleme pb \}
 \end{itemize}
 \end{block}
 
@@ -998,22 +1103,22 @@ Paroi\_echange2 paroi\_flux\_impose ch\_front\_input \{ nb\_comp 1 nom FLUX\_SUR
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafile}
 \begin{itemize}
 \item Modify the main.cpp file to add a new exchange:\\
     \begin{itemize}
-    \item [$\circ$] Create a new TrioDEC object to made exchange from domain dom2 to domain dom1: \\
-    \textit{TrioDEC dec\_flux\_surfacique2(dom2\_ids, dom1\_ids);}
+    \item [$\circ$] Create a new TrioDEC object to do information exchange from domain dom2 to domain dom1: \\
+    \textit{TrioDEC dec\_flux(dom2\_ids, dom1\_ids);}
     \item [$\circ$] Create a new TrioField object: \\
-    \textit{TrioField field\_flux\_surfacique2;}
-    \item [$\circ$] Add code lines into the while loop to made this exchange of informations.
+    \textit{TrioField field\_flux;}
+    \item [$\circ$] Add code lines into the while loop to do information exchange.
     \end{itemize}
-\item You can have a look at the main5.cpp file for this exchange:\\
-\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/main5.cpp main5.cpp }
+\item You can have a look at the main\_docond\_VEF\_3D\_ICoCo\_coupling2.cpp file for this exchange:\\
+\texttt{\$ file="main\_docond\_VEF\_3D\_ICoCo\_coupling2.cpp"} \\
+\texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/ICoCo/\$file . }
 
-\item Compare it to the previous one:\\
-\texttt{\$ tkdiff main5.cpp ../docond\_VEF\_3D\_ICoCo\_coupling1/main.cpp }
-\item You can see the use of the new fields FLUX\_SURFACIQUE\_IN\_DOM2 and FLUX\_SURFACIQUE\_OUT\_DOM1 added to the data files.
+\item Compare it to the previous one using tkdiff (you can use meld, tkdiff or diff depending on which software is installed on your computer):\\
+\texttt{\$ tkdiff main\_docond\_VEF\_3D\_ICoCo\_coupling2.cpp ../docond\_VEF\_3D\_ICoCo\_coupling1/main.cpp }
 
 \end{itemize}
 \end{block}
@@ -1024,8 +1129,10 @@ Paroi\_echange2 paroi\_flux\_impose ch\_front\_input \{ nb\_comp 1 nom FLUX\_SUR
 \begin{frame}
 \frametitle{Run with ICoCo}
 
-\begin{block}{Adjusting data file}
+\begin{block}{Adjusting datafile}
 \begin{itemize}
+\item You can find the usage and synchronization of the new fields FLUX\_SURFACIQUE\_IN\_DOM2 and FLUX\_SURFACIQUE\_OUT\_DOM1.
+
 \item Compile your main.cpp file:\\
 \texttt{\$ make}
 \item Launch calculation:\\
@@ -1033,14 +1140,31 @@ Paroi\_echange2 paroi\_flux\_impose ch\_front\_input \{ nb\_comp 1 nom FLUX\_SUR
 \item Compare results with the first ones:\\
 \texttt{\$ compare\_lata docond\_VEF\_3D\_dom1.lml ../docond\_VEF\_3D\_ICoCo/pb1.lml }\\
 \texttt{\$ compare\_lata docond\_VEF\_3D\_dom2.lml ../docond\_VEF\_3D\_ICoCo/docond\_VEF\_3D\_dom2.lml }\\
-
 \end{itemize}
 \end{block}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Run with ICoCo}
 
+\begin{block}{Adjusting datafile}
+\begin{itemize}
+\item As you can see, the results are not the same because ICoCo coupling is different from coupled problem in TRUST. If this problem reaches convergence, results would be the same at least at the final time.\\
+\item For further learning, you can read the pdf report of "CouplageFluideSolide" validation form.\\
+You can visualize this report by:\\
+\texttt{\$ cd \$project\_directory/share/Validation} \\
+\texttt{\$ cd Rapports\_automatiques/CouplageFluideSolide } \\
+\texttt{\$ Run\_fiche -xpdf }
+
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

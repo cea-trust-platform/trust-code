@@ -601,9 +601,12 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
     {
       const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
-      yplus_faces.resize( la_zone_VDF->nb_faces_tot( ) );
-      yplus_faces.ref( loipar.tab_d_plus( ) );
-      yplus_already_computed = 1;
+      if( loipar.use_shear( ) )
+        {
+          yplus_faces.resize( la_zone_VDF->nb_faces_tot( ) );
+          yplus_faces.ref( loipar.tab_d_plus( ) );
+          yplus_already_computed = 1;
+        }
     }
 
   for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)

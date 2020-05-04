@@ -61,8 +61,10 @@ $DIR/src/generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
    $local/xml2cmake  lata.xml
    dlocal=`dirname $local`
    echo $dlocal
-   sed "s?$HOME/.visit/2.?$dlocal/2.?;s?$HOME/.visit?$dlocal/current?" CMakeLists.txt > p
-   # tkdiff  CMakeLists.txt p
+   # Puree VisIt pas capable de proposer de fixer VISIT_PLUGIN_DIR...
+   sed "s?$HOME/.visit?$dlocal?" CMakeLists.txt > p
+   #sed "s?$HOME/.visit/2.?$dlocal/2.?;s?$HOME/.visit?$dlocal/current?" CMakeLists.txt > p
+   #tkdiff  CMakeLists.txt p
    mv p CMakeLists.txt
   # rm -f CMakeCache*
    $TRUST_ROOT/exec/python/bin/cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_STANDARD=11
