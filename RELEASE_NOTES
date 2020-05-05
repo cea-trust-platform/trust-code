@@ -1,3 +1,4 @@
+XX/XX/20 (TRUST)  Tools       : ICoCo tutorial updated ($TRUST_ROOT/doc/TRUST/ICoCo_tutorial.pdf)
 XX/XX/20 (TRUST)  Keyword     : Simplify Source_generique keyword syntax when giving an analytical expression without field (source refChamp useless) 
 XX/XX/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model was not computed correctly
 -------------------------------------------------------------------------------------------------------
