@@ -108,7 +108,7 @@ else
     if [ "$petscmachineinfo" != "" ] && [ "`grep mkl_ $petscmachineinfo`" != "" ]
     then
         # Since Pastix has been added (threaded), with GNU compilers and MKL library, -lgomp should be added if found:
-        LAPACK=" `awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"mkl") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
+        LAPACK=" `awk '/mkl/ { for (i=1;i<=NF;i++) if ( index($i,"-lmkl") || index($i,"/mkl/lib/") || ($i=="-lgomp") ) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
     fi
 fi
 

@@ -18,7 +18,7 @@ PROJECT_ROOT=`dirname $CMakeLists`
 if [ "`echo $env | grep TRUST`" = "" ]
 then
    baltik=1
-   BUILD_ROOT=$PROJECT_ROOT/exec      
+   BUILD_ROOT=$PROJECT_ROOT/exec
 else
    baltik=0
    BUILD_ROOT=$TRUST_ROOT/MonoDir_mpi/src
