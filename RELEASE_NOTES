@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+05/05/20 (TRUST)  Keyword     : Simplify Source_generique keyword syntax when giving an analytical expression without field (source refChamp useless) 
 04/05/20 (TRUST)  Portability : Centos 6.4, Fedora 20 and GNU version compiler older than 4.8.5 are not supported anymore
 01/05/20 (TRUST)  Tools       : Update PETSc to 3.12.2 version + fix build with OpenMPI 4.x + add ML the multilevel preconditionning package from Trilinos
 01/05/20 (TRUST)  New keyword : New keyword Polyedriser to convert a VDF mesh (Quadrangle/Hexaedre) to a PolyMAC mesh (Polyedre)

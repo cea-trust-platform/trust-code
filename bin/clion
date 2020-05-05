@@ -18,7 +18,7 @@ PROJECT_ROOT=`dirname $CMakeLists`
 if [ "`echo $env | grep TRUST`" = "" ]
 then
    baltik=1
-   BUILD_ROOT=$PROJECT_ROOT/exec      
+   BUILD_ROOT=$PROJECT_ROOT/exec
 else
    baltik=0
    BUILD_ROOT=$TRUST_ROOT/MonoDir_mpi/src
@@ -35,5 +35,5 @@ echo "Raccourcis:"
 echo "ctrl+F12          : liste des methodes de la classe"
 echo "alt+haut|bas      : naviguer d'une methode a l'autre"
 echo "ctrl+E            : derniers fichiers ouverts"
-$clion $CMakeLists
+$clion $CMakeLists 1>/dev/null 2>&1
 
