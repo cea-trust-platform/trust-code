@@ -78,13 +78,17 @@ fi
 # By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB) and MED.
 plugins="-DDEFAULT=OFF -DENABLE_MED=ON -DENABLE_FLTK=ON -DENABLE_MESH=ON -DENABLE_POST=ON -DENABLE_PLUGINS=ON -DENABLE_ONELAB=ON -DENABLE_PARSER=ON"
 
+# seen on Ub19/20: Adding LIBLAPACK to LD_LIBARY_PATH, otherwise TRUST_lapack not found during install
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRUST_ROOT/lib/src/LIBLAPACK
+
 # Important: pour utiliser le cmake Python sans l'environnement Python:
 # Specifier CMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib
 $TRUST_ROOT/exec/python/bin/cmake $options $plugins  \
 -DCMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib \
 -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
--DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$TRUST_ROOT/lib/src/LIBLAPACK $options;$FLTK_ROOT" \
+-DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$FLTK_ROOT" \
+-DCMAKE_BUILD_TYPE=Release \
 -DHDF5_ROOT="$TRUST_MED_ROOT" ../$GMSH_SRC 2>&1 || exit -1
 
 # Check that FLTK has been found correctly:
