@@ -13,10 +13,6 @@ minimal_mumps=0
 scotch=1
 # [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 [ $minimal_mumps = 1 ] && scotch=0
-TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
-# Scotch needs bison and m4 which cannot be installed on recent OS (debian 10,...) with glibc >= 2.28
-# Install bison using sudo apt-get install or yum install fixes this problem
-[ "`eval bison --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ "$TEST_LDD_VERSION" != 1 ] && scotch=0
 if [ "$1" = "" ]
 then
    echo "Usage: `basename $0` package.tar.gz"
@@ -441,12 +437,15 @@ then
 	    if [ "`m4 --version 2>/dev/null | head -1 | awk '/[mM]4 / {print $NF}' | grep -v 1.4.[0-5]$ | grep -v 1.4.1[1-5]`" = "" ]
 	    then
                echo "bison build needs a correct m4 installed. So installing it..."
-		  #m4=m4-1.4.17
-		  m4=`(cd ..; ls m4-*.tar.gz | sed "s/.tar.gz//")`
+               m4=`(cd ..; ls m4-*.tar.gz | sed "s/.tar.gz//")`
                if [ ! -d $ROOT/m4/bin ]
                then
 		  gunzip -f -c ../$m4.tar.gz | tar -xf -
 		  cd $m4
+		  # Patch m4-1.4.18 pour glibc >= 2.28
+		  TEST_LDD_VERSION=`ldd --version | awk '/ldd/ {split($5,a,".");v=a[1]*100+a[2];print (v<228?1:0)}'`
+		  # patch from https://github.com/buildroot/buildroot/commit/c48f8a64626c60bd1b46804b7cf1a699ff53cdf3
+		  [ "$TEST_LDD_VERSION" != 1 ] && echo "patching m4" && cp $TRUST_ROOT/ThirdPart/src/LIBPETSC/patch_m4/* lib/
 		  # Seen on herens: CC=g++ so m4 build fails... Cause C compiler is needed for m4
 		  unset CC
         	  ./configure --prefix=$ROOT/m4 || exit -1
