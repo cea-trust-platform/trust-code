@@ -51,6 +51,9 @@ public:
   DoubleTab& calculer(DoubleTab& ) const ;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
   void remplir_num_faces(Entree& );
+  void mettre_a_jour(double temps);
 
+protected:
+  IntVect sgn;
 };
 #endif

@@ -22,9 +22,10 @@
 
 #include <Solv_Petsc.h>
 #include <tuple>
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
 #include <petscis.h>
 #include <petscdmshell.h>
+#include <petscsection.h>
 #endif
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
@@ -89,7 +90,7 @@ void check_not_defined(option o)
 // Lecture et creation du solveur
 void Solv_Petsc::create_solver(Entree& entree)
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   lecture(entree);
   EChaine is(get_chaine_lue());
 
@@ -1014,7 +1015,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
 int Solv_Petsc::instance=-1;
 int Solv_Petsc::numero_solveur=0;
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
 PetscLogStage Solv_Petsc::KSPSolve_Stage_=0;
 
 // Sortie Maple d'une matrice morse
@@ -1307,7 +1308,7 @@ PetscErrorCode MyKSPMonitor(KSP SolveurPetsc, PetscInt it, PetscReal residu, voi
 // Solve system
 int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVect& secmem, DoubleVect& solution)
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   // Si on utilise un solver petsc on le signale pour les stats finales
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
@@ -1520,7 +1521,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 #endif
 }
 
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
 inline int ligne_inutile(const Matrice_Morse& mat, const DoubleVect& secmem, int& i)
 {
   if (secmem(i)==0.                         // Le second membre est nul

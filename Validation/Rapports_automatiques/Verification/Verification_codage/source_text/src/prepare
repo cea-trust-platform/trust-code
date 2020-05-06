@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for dis in "VEFPreP1B" "PolyMAC"; do
+    mkdir $dis
+    sed "s/__dis__/$dis/" base.data > $dis/jdd.data
+done

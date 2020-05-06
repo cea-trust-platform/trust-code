@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,18 @@
 #include <Zone_VF.h>
 #include <Sous_Zone.h>
 #include <Octree.h>
+#include <Source_base.h>
+#include <DoubleVect.h>
+#include <DoubleTrav.h>
+#include <Param.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+#include <Probleme_base.h>
+#include <Schema_Temps_base.h>
+#include <Discretisation_base.h>
+#include <EChaine.h>
+
+extern void convert_to(const char *s, double& ob);
 
 // Description:
 //    Lit les specifications d'une perte de charge singuliere
@@ -40,16 +52,17 @@
 // Retour: Entree&
 //    Signification: le flot d'entree modifie
 //    Contraintes:
-// Exception: mot cle inattendu, on attendait "KX","KY" ou "KZ"
+// Exception: mot cle inattendu, on attendait "KX","KY", "KZ" ou "K"
 // Effets de bord:
 // Postcondition:
 Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
 {
   Motcle motlu;
-  Motcles les_motcles(3);
+  Motcles les_motcles(4);
   les_motcles[0] = "KX";
   les_motcles[1] = "KY";
   les_motcles[2] = "KZ";
+  les_motcles[3] = "K";
   is >> motlu;
   int rang = les_motcles.search(motlu);
   if (rang == -1)
@@ -59,23 +72,42 @@ Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
       Cerr << "a la place de " << motlu << finl;
       Process::exit();
     }
-  else
+  direction_perte_charge_ = rang == 3 ? -1 : rang;
+
+  regul_ = 0;
+  is >> motlu;
+  if (motlu == "regul")
     {
-      direction_perte_charge_ = rang;
-      is >> K_;
-      Cerr << " direction_perte_charge_ " << direction_perte_charge_ << finl;
-      Cerr << " perte de charge K_ " << K_ << finl;
+      regul_ = 1;
+      Nom eps_str, deb_str;
+      Param param("regul");
+      param.ajouter("K0", &K_, Param::REQUIRED);       //XD_ADD_P double valeur initiale de K
+      param.ajouter("deb", &deb_str, Param::REQUIRED); //XD_ADD_P chaine debit cible
+      param.ajouter("eps", &eps_str, Param::REQUIRED); //XD_ADD_P chaine intervalle de variation (multiplicatif)
+      param.lire_avec_accolades(is);
+      deb_cible_.setNbVar(1), eps_.setNbVar(1);
+      deb_cible_.setString(deb_str), eps_.setString(eps_str);
+      deb_cible_.addVar("t"), eps_.addVar("t");
+      deb_cible_.parseString(), eps_.parseString();
     }
+  else convert_to(motlu.getChar(), K_);
+
+  Cerr << " direction_perte_charge_ " << direction_perte_charge_ << finl;
+  Cerr << " perte de charge K_ " << K_ << finl;
+
   return is;
 }
 
 void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domaine,
-                                            const Zone_dis_base& zone_dis, IntVect& les_faces)
+                                            const Zone_dis_base& zone_dis, IntVect& les_faces, IntVect& sgn)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
   const IntTab& elem_faces = zvf.elem_faces();
   const DoubleTab& xv = zvf.xv();
   int nfe = zvf.zone().nb_faces_elem();
+  IntTab face_tab; //1 for faces in the surface
+  zvf.creer_tableau_faces(face_tab);
+  Champ_Don orientation;
 
   int algo=-1;
   Motcle method;
@@ -127,6 +159,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       is >> egal >> position;
       is >> nom_ss_zone;
       Cerr << " position " << direction << " " << position << finl;
+      identifiant_ = nom_ss_zone + "_" + direction + "=" + Nom(position);
     }
 
   else if (method=="Surface")
@@ -151,6 +184,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
         }
       is >> nom_surface;
       Cerr << " surface " << nom_surface << finl;
+      identifiant_ = nom_surface;
     }
 
   else
@@ -160,6 +194,8 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       Process::exit();
     }
   is >> motlu;
+  if (motlu == "orientation") is >> orientation, is >> motlu; //on lit un champ pour orienter la surface
+
   if (motlu != acc_fermee)
     {
       Cerr << "On attendait le mot cle" << acc_fermee << " a la place de " << motlu << finl;
@@ -189,7 +225,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                         trouve=1;
                         break;
                       }
-                  if (trouve==0) les_faces[compteur++] = numfa;
+                  if (trouve==0) les_faces[compteur++] = numfa, face_tab(numfa) = 1;
                 }
             }
         }
@@ -275,14 +311,14 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                             trouve=1;
                             break;
                           }
-                      if (trouve==0) les_faces[compteur++] = numfa;
+                      if (trouve==0) les_faces[compteur++] = numfa, face_tab(numfa) = 1;
                     }
                 }
             }
         }
     }
 
-  int faces_found=(int)Process::mp_max(compteur);
+  int faces_found=mp_somme_vect(face_tab);
   if (faces_found==0)
     {
       Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
@@ -293,4 +329,49 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
     Cerr << " " << faces_found << " faces have been found for the section." << finl;
 
   les_faces.resize(compteur);
+  if (orientation.non_nul())
+    {
+      sgn.resize(compteur);
+      DoubleTrav xvf(compteur, Objet_U::dimension), ori(compteur, Objet_U::dimension);
+      for (int i = 0; i < compteur; i++) for (int j = 0; j < Objet_U::dimension; j++) xvf(i, j) = xv(les_faces(i), j);
+      orientation.valeur().valeur_aux(xvf, ori);
+      for (int i = 0; i < compteur; i++)
+        {
+          double scal = 0;
+          for (int j = 0; j < Objet_U::dimension; j++) scal += ori(i, j) * zvf.face_normales(les_faces(i), j);
+          sgn(i) = (scal > 0 ? 1 : -1);
+        }
+    }
 }
+
+double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const
+{
+  const DoubleTab& vit = eqn.inconnue().futur();
+  const Zone_VF& zvf = ref_cast(Zone_VF, eqn.zone_dis().valeur());
+  const DoubleTab& rho = eqn.milieu().masse_volumique().valeurs();
+
+  DoubleTrav deb_vect;
+  zvf.creer_tableau_faces(deb_vect); //pour bien sommer les debits en parallele
+  for (int i = 0; i < num_faces.size(); i++)
+    {
+      int f = num_faces(i), sgn_loc = sgn.size() ? sgn(i) : 1;
+      if (vit.nb_dim() == 2) for (int j = 0; j < vit.dimension(1); j++) deb_vect(f) += sgn_loc * zvf.face_normales(f, j) * vit(f, j);
+      else deb_vect(f) = zvf.face_surfaces(f) * sgn_loc * vit(f);
+      //on passe du produit "vitesse normale * surface" au debit a travers la face (signe si l'orientation est definie, non signe sinon)
+      deb_vect(f) = zvf.porosite_face(f) * (sgn.size() ? deb_vect(f) : dabs(deb_vect(f))) * rho.addr()[rho.dimension(0) > 1 ? zvf.face_voisins(f, deb_vect(f) > 0) : 0];
+    }
+  return mp_somme_vect(deb_vect);
+}
+
+void Perte_Charge_Singuliere::update_K(const Equation_base& eqn, double deb, DoubleVect& bilan)
+{
+  if (!regul_) return;
+  double t = eqn.probleme().schema_temps().temps_courant(), dt = eqn.probleme().schema_temps().pas_de_temps();
+  deb_cible_.setVar(0, t), eps_.setVar(0, t);
+  double deb_cible = deb_cible_.eval(), eps = eps_.eval(), f_min = std::pow(1 - eps, dt), f_max = std::pow(1 + eps, dt); //bande de variation de K
+  K_ *= min(max(std::pow(dabs(deb) / deb_cible, 2), f_min), f_max);
+
+  //pour le fichier de suivi : seulement sur le maitre, car Source_base::imprimer() fait une somme sur les procs
+  if (!Process::me()) bilan(0) = K_, bilan(1) = deb, bilan(2) = deb_cible;
+}
+

@@ -259,7 +259,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
           Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
           Cerr << "No sources were specified. So you need to specify at least the location."<<finl;
           Cerr << "Aborting..."<<finl;
-	  Cerr << "ToDo for developer: guess location by taking the pb.equation(0).inconnue() localization." << finl;
+          Cerr << "ToDo for developer: guess location by taking the pb.equation(0).inconnue() localization." << finl;
           Process::abort( );
         }
       else

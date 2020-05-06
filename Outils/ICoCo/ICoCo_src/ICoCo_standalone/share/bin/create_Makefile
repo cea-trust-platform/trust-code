@@ -69,7 +69,7 @@ exe:
 valgrind: couplage
 	  env exec=./couplage VALGRIND=1 trust couplage \$(nproc)
 clean:
-	rm -f couplage *dump *lata* *out *err *TU *log  *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop make.include.atelier makefile ld_env.sh 
+	rm -f couplage couplage.data *dump *lata* *out *err *.progress *TU *log *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop make.include.atelier makefile ld_env.sh 
 	if [ -f Clean.sh ] ; then bash Clean.sh ; fi">> makefile
 
 

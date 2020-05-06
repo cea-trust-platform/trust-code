@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,9 @@ public:
   DoubleTab& calculer(DoubleTab& ) const ;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
   void remplir_num_faces(Entree& );
+  void mettre_a_jour(double temps);
 
+protected:
+  IntVect sgn;
 };
 #endif

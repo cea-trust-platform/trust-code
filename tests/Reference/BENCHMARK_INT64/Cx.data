@@ -1,0 +1,107 @@
+# Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #
+# PARALLEL OK 9 #
+
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom cylindre.geom
+VerifierCoin dom { }
+Dilate dom 1000
+RegroupeBord dom Box { Surfanz Bas Haut Surfa }
+OrienteFacesBord dom
+Raffiner_isotrope dom
+Raffiner_isotrope dom
+Raffiner_isotrope dom
+# END MESH #
+
+# On fait sur 9 procs pour verifier la non regression de la FA408 #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool metis { Nb_parts 9 }
+	Larg_joint 2
+	zones_name Zones/DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Raffiner_isotrope_parallele { name_of_initial_zones Zones/DOM 		name_of_new_zones Zones_refined/DOM }
+Raffiner_isotrope_parallele { name_of_initial_zones Zones_refined/DOM 	name_of_new_zones Zones_refined_refined/DOM }
+Scatter Zones_refined_refined/DOM.Zones dom
+END SCATTER #
+
+# Je choisis une discretisation #
+VEFPreP1B ma_discretisation
+
+Scheme_euler_explicit mon_schema
+Read mon_schema
+{
+	nb_pas_dt_max 3
+	tinit 0
+	tmax 5.0
+	dt_min 1.e-6
+	dt_max 1.e-6
+	dt_impr 1.e-6
+	dt_sauv 0
+	seuil_statio 1.e-8
+}
+
+# A fluid is defined #
+Fluide_Incompressible milieu
+Read milieu
+{
+	mu  Champ_Uniforme 1 0.01
+	rho Champ_Uniforme 1 2.
+        lambda Champ_Uniforme 1 2
+        Cp Champ_Uniforme 1 100.
+        beta_th Champ_Uniforme 1 0.	
+}
+
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		# -pc_hypre_boomeramg_coarsen_type HMIS converge moins vite #
+		# solveur_pression Petsc CLI { -ksp_type cg -pc_type hypre -pc_hypre_type boomeramg -pc_hypre_boomeramg_strong_threshold 0.7 -ksp_atol 1.e-8 } # # -pc_hypre_boomeramg_print_statistics #
+		# Regarder les autres options Moose: -pc_hypre_boomeramg_agg_nl 4 -pc_hypre_boomeramg_agg_num_paths 5 -pc_hypre_boomeramg_P_max 2 -pc_hypre_boomeramg_truncfactor 0.3 #
+  		# Dans https://mooseframework.inl.gov/application_development/hypre.html #
+		# Mais la plus importante est celle sur le seuil a 0.9 puis le pc_hypre_boomeramg_relax_type_all mis a Jacobi #
+		solveur_pression Petsc GCP { precond boomeramg { } cli { -pc_hypre_boomeramg_strong_threshold 0.9 -pc_hypre_boomeramg_interp_type ext+i } seuil 1.e-8 impr } 
+		# solveur_pression       GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr } #
+	 	# solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr } #
+		# solveur_pression Petsc GCP { precond block_jacobi_icc { level 1 } seuil 1.e-8 impr } #
+		convection { muscl }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+		}
+		boundary_conditions {
+			Cylindre 	paroi_fixe
+			Box  		symetrie
+			Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+		}
+	}
+        Convection_Diffusion_Temperature
+        {
+                diffusion { }
+                convection { muscl }
+                boundary_conditions
+                {
+			Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+			Box 		symetrie
+			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+                }
+                initial_conditions { Temperature Champ_Uniforme 1 20. }
+        }
+}
+Solve pb	

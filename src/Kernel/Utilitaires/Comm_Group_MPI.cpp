@@ -593,7 +593,7 @@ void Comm_Group_MPI::set_trio_u_world(MPI_Comm world)
            << " set_trio_u_world call is forbidden" << finl;
       exit();
     }
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   PETSC_COMM_WORLD= world;
 #endif
   trio_u_world_ = world;

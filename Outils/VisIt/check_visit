@@ -2,8 +2,9 @@
 # check_visit est appele plusieurs fois par visit, on quitte apres le premier appel:
 if [ "`echo $* | grep key`" = "" ]
 then
+   # Verification du DISPLAY si pas -nowin et pas -help
    xdpyinfo=`\ls /usr/bin/xdpyinfo /usr/bin/X11/xdpyinfo 2>/dev/null | head -1`
-   if [ "$xdpyinfo" != "" ]
+   if [ "`echo $* | grep nowin`" = "" ] && [ "`echo $* | grep help`" = "" ] && [ "$xdpyinfo" != "" ]
    then
       result=`$xdpyinfo 2>/dev/null`
       # La commande existe
@@ -41,22 +42,6 @@ then
       echo "If you get the message: can't open master pty: /dev/ttyTfcan't open slave pty: -1"
       echo "Then relaunch visit with the -nopty option."
       echo "########################################################################################"
-   fi
-   # Chargement de l'environnement osmesa pour visit -win a distance:
-   # On se base sur le test de glxinfo: 
-   glxinfo 1>/dev/null 2>&1
-   # Eventuellement test de l'acceleration Graphique
-   #[ "`glxinfo 2>&1 | awk '/direct rendering:/ {print $NF}'`" = No ] && echo "Rendering non active." && exit
-   # Test de performances avec glxgears 300->2000 FPS
-   if [ $? != 0 ]
-   then
-      echo "Activating osmesa for VisIt off-screen..."
-      if [ -f $TRUST_ROOT/exec/VisIt/osmesa/env_OSMesa.sh ]
-      then
-         source $TRUST_ROOT/exec/VisIt/osmesa/env_OSMesa.sh
-      else
-         echo "You may need to activate Osmesa for off-screen"
-      fi
    fi
    # Ajout des librairies Qt5 de conda apres VisIt 2.12.1:
    [ ! -d $TRUST_ROOT/exec/VisIt/2.12.1 ] && export LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH

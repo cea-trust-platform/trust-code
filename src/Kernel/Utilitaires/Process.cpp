@@ -353,7 +353,7 @@ Sortie& Process::Journal(int message_level)
 // Renvoie la ram occupee par un processeur
 double Process::ram_processeur()
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   PetscLogDouble memoire;
   PetscMemoryGetCurrentUsage(&memoire);
   return memoire;

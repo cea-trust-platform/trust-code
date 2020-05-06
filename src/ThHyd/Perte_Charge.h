@@ -37,8 +37,9 @@
 //    On utilise la notion de perte de charge pour des obstacles sur lesquels
 //    on ne calcule pas le frottement (obstacles internes aux mailles, ou
 //    grilles par exemple)
-//    On considere qu'un objet de type Perte_Charge s'applique sur
-//    une seule direction d'espace.
+//    Un objet de type Perte_Charge s'applique sur
+//    une seule direction d'espace (direction_perte_charge() >= 0 )
+//    ou sur toutes (direction_perte_charge() == -1)
 // .SECTION voir aussi
 //    Ne derive pas d'Objet_U
 //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +58,7 @@ protected :
 
 // Description:
 //    Renvoie la direction de perte de charge.
-//    (X,Y ou Z)
+//    (X,Y ou Z), ou -1 si toutes les directions
 // Precondition:
 // Parametre:
 //    Signification:
@@ -66,7 +67,7 @@ protected :
 //    Acces:
 // Retour: int
 //    Signification: la direction de perte de charge
-//    Contraintes: 0 <= valeur <= 2
+//    Contraintes: -1 <= valeur <= dimension
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
