@@ -1,9 +1,11 @@
-XX/XX/20 (TRUST)  Tools       : ICoCo tutorial updated ($TRUST_ROOT/doc/TRUST/ICoCo_tutorial.pdf)
-XX/XX/20 (TRUST)  Keyword     : Simplify Source_generique keyword syntax when giving an analytical expression without field (source refChamp useless) 
 XX/XX/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model was not computed correctly
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+05/05/20 (TRUST)  Tools       : ICoCo tutorial updated ($TRUST_ROOT/doc/TRUST/ICoCo_tutorial.pdf)
+05/05/20 (TRUST)  Keyword     : Simplify Source_generique keyword syntax when giving an analytical expression without field (source refChamp useless) 
+04/05/20 (TRUST)  Portability : Centos 6.4, Fedora 20 and GNU version compiler older than 4.8.5 are not supported anymore
+01/05/20 (TRUST)  Tools       : Update PETSc to 3.12.2 version + fix build with OpenMPI 4.x + add ML the multilevel preconditionning package from Trilinos
 01/05/20 (TRUST)  New keyword : New keyword Polyedriser to convert a VDF mesh (Quadrangle/Hexaedre) to a PolyMAC mesh (Polyedre)
 01/05/20 (TRUST)  Bug fixed   : Regression when post processing y+ with null value on boundaries in VDF
 01/04/20 (TRUST)  Tools       : VisIt updated to 3.1.1 version for recent Linux (Fedora 27-30, Ubuntu 18, Debian 9-10)
@@ -22,7 +24,7 @@ Release notes version 1.8.1_beta : Enhancements, modifications and corrected bug
 21/02/20 (TRUST)  Bug fixed   : Rewrite Champ_Fonc_MED class for a faster Champ_Fonc_MED_tabule keyword (read of several time steps in a MED file for field time-tabulation)
 29/01/20 (TRUST)  New feature : New option thermique_monolithique (VDF only) for Scheme_Euler_Implicit keyword to enable full thermal impliciting for coupled problems (single matrix solved)
 23/01/20 (Tools)  New feature : Add merge_meds.py python script to merge MED files in parallel into single one
-21/01/20 (TRUST)  Output      : Change of .son file format (header, column alignment, precision_impr by default 8 and not 3 as before) + add gnuplot_header option to have a gnuplot5 compatible header
+21/01/20 (TRUST)  Output      : Change of .out file format (header, column alignment, precision_impr by default 8 and not 3 as before) + add gnuplot_header option to have a gnuplot5 compatible header
 07/01/20 (TRUST)  Tools       : Trust Wizard tool becomes obsolete
 07/01/20 (TRUST)  Tools       : MED-file 4.0.0 insures direct compatibility with Salome 9.2
 07/01/20 (TRUST)  Tools       : Update versions for MEDCoupling (9.4.0), MED-file (4.0.0), HDF (1.10.3), Gmsh (4.4.1)
