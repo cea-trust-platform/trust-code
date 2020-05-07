@@ -965,8 +965,9 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 //stabilisation des matrices m1 et m2 de PolyMAC
 inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const
 {
-  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, infoo = 0;
+  int i, j, k, i1, i2, j1, j2, n_f = M.dimension(0), lwork = -1, liwork = -1, infoo = 0;
   DoubleTab A, S, b(n_f, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
+  IntTab iwork(1);
 
   /* spectre de M */
   kersol(M, b, 1e-12, NULL, x, S);
@@ -996,9 +997,9 @@ inline void Zone_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) cons
   //decomposition de Schur U = Vt.S.V
   char jobz = 'V', uplo = 'U';
   V = U, S.resize(n_k);
-  F77NAME(dsyev)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &infoo);//"workspace query"
-  work.resize(lwork = work(0));
-  F77NAME(dsyev)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &infoo);
+  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);//"workspace query"
+  work.resize(lwork = work(0)), iwork.resize(liwork = iwork(0));
+  F77NAME(dsyevd)(&jobz, &uplo, &n_k, &V(0, 0), &n_k, &S(0), &work(0), &lwork, &iwork(0), &liwork, &infoo);
   assert(infoo == 0);
   //pour garantir des vp plus grandes que eps : S(k) -> max(S(k), eps)
   for (i = 0, U = 0; i < n_k; i++) for (j = 0; j < n_k; j++) for (k = 0; k < n_k; k++) U(i, j) += V(k, i) * min(max(S(k), l_min), l_max) * V(k, j);
