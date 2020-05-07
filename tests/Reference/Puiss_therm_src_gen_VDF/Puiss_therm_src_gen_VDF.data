@@ -52,7 +52,7 @@ Read sch
     dt_impr 0.1
     dt_sauv 1.e+6
     seuil_statio 1.e-12
-    precision_impr 3
+    precision_impr 2
     diffusion_implicite 1
 }
 
