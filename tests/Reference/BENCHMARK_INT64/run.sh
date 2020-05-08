@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 # Run a 1,600,000,000 cells benchmark on 25600 cores on rome partition (needs a int64 binary):
 [ "$TRUST_ROOT" = "" ] && echo "Initialize Trust environment." && exit -1
 

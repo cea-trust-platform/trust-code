@@ -22,15 +22,16 @@ Partition dom
 {
 	Partition_tool metis { Nb_parts 9 }
 	Larg_joint 2
-	zones_name Zones/DOM
+	zones_name DOM
+	single_hdf
 }
 End
 END PARTITION #
 
 # BEGIN SCATTER
-Raffiner_isotrope_parallele { name_of_initial_zones Zones/DOM 		name_of_new_zones Zones_refined/DOM }
-Raffiner_isotrope_parallele { name_of_initial_zones Zones_refined/DOM 	name_of_new_zones Zones_refined_refined/DOM }
-Scatter Zones_refined_refined/DOM.Zones dom
+Raffiner_isotrope_parallele { single_hdf name_of_initial_zones DOM 		name_of_new_zones DOM_refined }
+Raffiner_isotrope_parallele { single_hdf name_of_initial_zones DOM_refined 	name_of_new_zones DOM_refined_refined }
+Scatter DOM_refined_refined.Zones dom
 END SCATTER #
 
 # Je choisis une discretisation #
@@ -74,9 +75,9 @@ Read pb
 		# Regarder les autres options Moose: -pc_hypre_boomeramg_agg_nl 4 -pc_hypre_boomeramg_agg_num_paths 5 -pc_hypre_boomeramg_P_max 2 -pc_hypre_boomeramg_truncfactor 0.3 #
   		# Dans https://mooseframework.inl.gov/application_development/hypre.html #
 		# Mais la plus importante est celle sur le seuil a 0.9 puis le pc_hypre_boomeramg_relax_type_all mis a Jacobi #
-		solveur_pression Petsc GCP { precond boomeramg { } cli { -pc_hypre_boomeramg_strong_threshold 0.9 -pc_hypre_boomeramg_interp_type ext+i } seuil 1.e-8 impr } 
+		# solveur_pression Petsc GCP { precond boomeramg { } cli { -pc_hypre_boomeramg_strong_threshold 0.9 -pc_hypre_boomeramg_interp_type ext+i } seuil 1.e-8 impr } #
 		# solveur_pression       GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr } #
-	 	# solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr } #
+	 	solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr aij }
 		# solveur_pression Petsc GCP { precond block_jacobi_icc { level 1 } seuil 1.e-8 impr } #
 		convection { muscl }
 		diffusion { }
