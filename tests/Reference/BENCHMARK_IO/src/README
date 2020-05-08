@@ -1,0 +1,8 @@
+Test de l'implementation IO parallele
+-------------------------------------
+Pour lancer:
+./run.sh
+
+ToDo:
+Suppression si nproc()=1 des commentaires //
+Verifier le total ecrit (ne correspond pas a la taille du fichier)
