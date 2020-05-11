@@ -70,15 +70,8 @@ Read pb
 {
 	Navier_Stokes_standard
 	{
-		# -pc_hypre_boomeramg_coarsen_type HMIS converge moins vite #
-		# solveur_pression Petsc CLI { -ksp_type cg -pc_type hypre -pc_hypre_type boomeramg -pc_hypre_boomeramg_strong_threshold 0.7 -ksp_atol 1.e-8 } # # -pc_hypre_boomeramg_print_statistics #
-		# Regarder les autres options Moose: -pc_hypre_boomeramg_agg_nl 4 -pc_hypre_boomeramg_agg_num_paths 5 -pc_hypre_boomeramg_P_max 2 -pc_hypre_boomeramg_truncfactor 0.3 #
-  		# Dans https://mooseframework.inl.gov/application_development/hypre.html #
-		# Mais la plus importante est celle sur le seuil a 0.9 puis le pc_hypre_boomeramg_relax_type_all mis a Jacobi #
-		# solveur_pression Petsc GCP { precond boomeramg { } cli { -pc_hypre_boomeramg_strong_threshold 0.9 -pc_hypre_boomeramg_interp_type ext+i } seuil 1.e-8 impr } #
-		# solveur_pression       GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr } #
-	 	solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-8 impr aij }
-		# solveur_pression Petsc GCP { precond block_jacobi_icc { level 1 } seuil 1.e-8 impr } #
+	 	# solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-4 impr aij } aij car bug PETSc en cours de correction ? #
+	 	solveur_pression       GCP { precond ssor { omega 1.6 } seuil 1.e-4 impr     }
 		convection { muscl }
 		diffusion { }
 		initial_conditions {
@@ -105,4 +98,5 @@ Read pb
                 initial_conditions { Temperature Champ_Uniforme 1 20. }
         }
 }
+EcritureLectureSpecial 0
 Solve pb	
