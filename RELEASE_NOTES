@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+xx/05/20 (TRUST)  Bug fixed   : Allow different beginning/ending times for statistics and fix bug in case of resumption whith statistics
 01/04/20 (TRUST)  Tools       : VisIt updated to 3.1.1 version for recent Linux (Fedora 27-30, Ubuntu 18, Debian 9-10)
 01/04/20 (TRUST)  Tools       : Update PETSc to 3.12.2 version + fix build with OpenMPI 4.x + add ML the multilevel preconditionning package from Trilinos
 09/03/20 (TRUST)  Keyword     : Conduction_milieu_variable becomes obsolete and Conduction keyword can be used for conduction equation with non-uniform Rho*Cp 

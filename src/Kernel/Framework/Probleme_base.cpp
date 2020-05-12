@@ -1608,7 +1608,7 @@ int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
           //Cerr << "Error in " << un_nom << finl;
           //Cerr << "Your beginning time of statistics t_deb=" << post.tstat_deb() << " must be equal" << finl;
           //Cerr << "to the previous beginning time already read t_deb=" << tstat_deb_ << finl;
-          Cerr << "Les t_deb pour la prise de moyenne sont differents mais le calcul continue" << finl;
+          Cerr << "Beginning times of statistics t_deb are differents but the calculation continues" << finl;
           //exit();
         }
       if (tstat_fin_==-1)
@@ -1619,7 +1619,7 @@ int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
           //Cerr << "Error in " << un_nom << finl;
           //Cerr << "Your ending time of statistics t_fin=" << post.tstat_fin() << " must be equal" << finl;
           //Cerr << "to the previous ending time already read t_fin=" << tstat_fin_ << finl;
-          Cerr << "Les t_fin pour la prise de moyenne sont differents mais le calcul continue" << finl;
+          Cerr << "Ending times of statistics t_fin are differents but the calculation continues" << finl;
           //exit();
         }
       ++curseur_post;
