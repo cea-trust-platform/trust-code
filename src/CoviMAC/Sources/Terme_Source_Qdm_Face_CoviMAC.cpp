@@ -27,14 +27,8 @@
 #include <Zone_Cl_dis.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
-
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <Periodique.h>
-#include <Neumann.h>
-#include <Neumann_homogene.h>
-#include <Neumann_sortie_libre.h>
+#include <Champ_Face_CoviMAC.h>
+#include <Equation_base.h>
 
 Implemente_instanciable(Terme_Source_Qdm_Face_CoviMAC,"Source_Qdm_face_CoviMAC",Source_base);
 
@@ -79,32 +73,17 @@ void Terme_Source_Qdm_Face_CoviMAC::associer_zones(const Zone_dis& zone_dis,
 
 DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
 {
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const Zone_Cl_CoviMAC& zone_Cl_CoviMAC = la_zone_Cl_CoviMAC.valeur();
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleTab& tf = zone.face_tangentes(), &vfd = zone.volumes_entrelaces_dir(), vals = la_source->valeurs();
+  const DoubleVect& pf = zone.porosite_face();
+  int i, e, f, r, unif = sub_type(Champ_Uniforme, la_source.valeur());
+  ch.init_cl();
 
-  /* 1. faces de bord -> on ne contribue qu'aux faces de Neumann */
-  for (int n_bord=0; n_bord<zone_CoviMAC.nb_front_Cl(); n_bord++)
-    {
-      const Cond_lim& la_cl = zone_Cl_CoviMAC.les_conditions_limites(n_bord);
-      if (!sub_type(Neumann,la_cl.valeur()) && !sub_type(Neumann_homogene,la_cl.valeur())) continue;
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      for (int f = le_bord.num_premiere_face(); f < le_bord.num_premiere_face() + le_bord.nb_faces(); f++)
-        {
-          int e = zone_CoviMAC.face_voisins(f, 0);
-          double fac = zone_CoviMAC.porosite_face(f) * zone_CoviMAC.face_surfaces(f);
-          for (int r = 0; r < dimension; r++)
-            resu(f) += fac * la_source->valeurs()(sub_type(Champ_Uniforme,la_source.valeur()) ? 0 : e, r)
-                       * (zone_CoviMAC.xv(f, r) - zone_CoviMAC.xp(e, r));
-        }
-    }
-  /* 2. faces internes -> contributions amont/aval */
-  for (int f = zone_CoviMAC.premiere_face_int(); f < zone_CoviMAC.nb_faces(); f++)
-    {
-      double fac = zone_CoviMAC.porosite_face(f) * zone_CoviMAC.face_surfaces(f);
-      for (int i = 0; i < 2; i++) for (int r = 0, e = zone_CoviMAC.face_voisins(f, i); r < dimension; r++)
-          resu(f) += fac * la_source->valeurs()(sub_type(Champ_Uniforme,la_source.valeur()) ? 0 : e, r)
-                     * (zone_CoviMAC.xv(f, r) - zone_CoviMAC.xp(e, r)) * (i ? -1 : 1);
-    }
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (r = 0; r < dimension; r++) resu(f) += vfd(f, i) * pf(f) * tf(f, r) * vals(unif ? 0 : e, r);
+
   return resu;
 }
 

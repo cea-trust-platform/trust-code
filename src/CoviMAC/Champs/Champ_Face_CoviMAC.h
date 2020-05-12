@@ -33,8 +33,9 @@
 // .NAME        : Champ_Face_CoviMAC
 // .DESCRIPTION : class Champ_Face_CoviMAC
 //
-// Champ correspondant a une inconnue decrite par ses flux aux faces (type vitesse)
-// Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
+// Champ correspondant a une inconnue decrite par ses tangentes aux faces duales (ligne amont-aval, type vitesse)
+// Les flux aux faces sont accessibles par les methodes valeurs_normales(), avec synchro automatique
+// Degres de libertes : composantes tangentielles aux faces duales
 /////////////////////////////////////////////////////////////////////////////
 
 class Champ_Face_CoviMAC : public Champ_Inc_base
@@ -53,6 +54,41 @@ public :
   {
     return ref_zone_vf_.valeur();
   } ;
+
+  /* methodes de Champ_Inc_Base reimplementees pour tenir compte de valeurs_normales */
+  virtual int fixer_nb_valeurs_temporelles(int i);
+  virtual int fixer_nb_valeurs_nodales(int n);
+  virtual void creer_tableau_distribue(const MD_Vector& md, Array_base::Resize_Options opt = Array_base::COPY_INIT);
+  virtual DoubleTab& valeurs();
+  virtual const DoubleTab& valeurs() const
+  {
+    return Champ_Inc_base::valeurs();
+  } ;
+  virtual DoubleTab& valeurs(double tps);
+  virtual const DoubleTab&   valeurs(double temps) const
+  {
+    return Champ_Inc_base::valeurs(temps);
+  } ;
+  virtual DoubleTab& futur(int i);
+  virtual const DoubleTab& futur(int i=1) const
+  {
+    return Champ_Inc_base::futur(i);
+  } ;
+  virtual DoubleTab& passe(int i);
+  virtual const DoubleTab& passe(int i=1) const
+  {
+    return Champ_Inc_base::passe(i);
+  } ;
+  virtual Champ_Inc_base& avancer(int i);
+  virtual Champ_Inc_base& reculer(int i);
+  virtual double changer_temps_futur(const double& t, int i);
+  virtual double changer_temps_passe(const double& t, int i);
+  virtual operator DoubleTab& ();
+  virtual double changer_temps(const double& t);
+
+  /* valeurs normales */
+  const DoubleTab& valeurs_normales() const;
+  const DoubleTab& valeurs_normales(double tps);
 
   virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
   virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
@@ -74,7 +110,6 @@ public :
     return ref_zone_vf_.valeur();
   };
 
-  virtual int fixer_nb_valeurs_nodales(int n);
 
   //tableaux de correspondance lies aux CLs
   //types de CL : 0 -> pas de CL
@@ -99,8 +134,11 @@ public :
   void interp_ve (const DoubleTab& inco, DoubleTab& val) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
+  /* interpolation faces duales -> faces */
+  void interp_vfn(const DoubleTab& src, DoubleTab& dst) const;
 
 protected:
+  mutable Roue_ptr valeurs_normales_, valeurs_normales_a_jour_;
   REF(Zone_VF) ref_zone_vf_;
 };
 

@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Assembleur_P_CoviMAC.cpp
-// Directory:   $TRUST_ROOT/src/CoviMAC/Zones
+// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
 // Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -42,9 +42,6 @@
 #include <Navier_Stokes_std.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>
-#include <Statistiques.h>
-
-extern Stat_Counter_Id assemblage_sys_counter_;
 
 Implemente_instanciable(Assembleur_P_CoviMAC,"Assembleur_P_CoviMAC",Assembleur_base);
 
@@ -91,21 +88,15 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 {
   set_resoudre_increment_pression(incr_pression);
   set_resoudre_en_u(resoudre_en_u);
-  Cerr << "Assemblage de la matrice de pression ... " ;
-  statistiques().begin_count(assemblage_sys_counter_);
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, la_zone_CoviMAC.valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, mon_equation->inconnue().valeur());
-  int i, j, k, e, f, fb, n_f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot(),
-                              na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), infoo;
-  zone.init_m2(), ch.init_cl();
-
-  DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
-  W.set_smart_resize(1), W0.set_smart_resize(1);
+  int i, j, k, e, eb, f, fb, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  zone.init_w1(), ch.init_cl();
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
@@ -113,32 +104,17 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
     if (sub_type(Neumann_sortie_libre, la_zone_Cl_CoviMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
 
-  /* 1. stencils de la matrice en pression et de rec : seulement au premier passage */
+  /* 1. stencil de la matrice en pression : seulement au premier passage */
   if (!stencil_done)
     {
-      IntTrav stencil_M(0, 2), stencil_R(0, 2);
-      stencil_M.set_smart_resize(1), stencil_R.set_smart_resize(1);
-      for (e = 0; e < ne_tot; e++)
-        {
-          for (i = 0, j = zone.m2d(e), n_f = zone.m2d(e + 1) - zone.m2d(e); i < n_f; i++, j++)
-            {
-              for (k = zone.w2i(j), f = e_f(e, i); f < nf && k < zone.w2i(j + 1); k++)
-                {
-                  fb = e_f(e, zone.w2j(k));
-                  stencil_M.append_line(ne_tot + f, ne_tot + fb);
-                  if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
-                }
-              if (ch.icl(f, 0) != 1 && e < ne) stencil_M.append_line(e, ne_tot + f);
-              if (ch.icl(f, 0) != 1 && f < nf) stencil_M.append_line(ne_tot + f, e);
-              if (e == f_e(f, 0)    && f < nf) stencil_R.append_line(f, e);
-            }
-          if (e < ne) stencil_M.append_line(e, e);
-          if (!has_P_ref && !Process::me() && e < ne) stencil_M.append_line(0, e);
-        }
+      IntTrav stencil(0, 2);
+      stencil.set_smart_resize(1);
+      for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++)
+          for (j = 0, fb = zone.w1j(i); j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < ne)
+              for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++) stencil.append_line(e, eb);
 
-      tableau_trier_retirer_doublons(stencil_M), tableau_trier_retirer_doublons(stencil_R);
-      Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil_M, mat);
-      Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, ne_tot + nf_tot, stencil_R, rec);
+      tableau_trier_retirer_doublons(stencil);
+      Matrix_tools::allocate_morse_matrix(ne_tot, ne_tot, stencil, mat);
       tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
       stencil_done = 1;
     }
@@ -147,56 +123,19 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
       mat.get_set_tab1().ref_array(tab1);
       mat.get_set_tab2().ref_array(tab2);
       mat.get_set_coeff().resize(tab2.size());
-      mat.set_nb_columns(ne_tot + nf_tot);
-      rec.get_set_coeff() = 0;
+      mat.set_nb_columns(ne_tot);
     }
 
-  /* 2. remplissage des coefficients */
-  for (e = 0; e < ne_tot; e++)
-    {
-      n_f = zone.m2d(e + 1) - zone.m2d(e), W0.resize(n_f, n_f), W.resize(n_f, n_f);
-      for (i = 0, j = zone.m2d(e), W0 = 0; i < n_f; i++, j++) for (k = zone.w2i(j); k < zone.w2i(j + 1); k++) W0(i, zone.w2j(k)) = zone.w2c(k);
-      if (!diag.size()) W = W0; //pas de correction diagonale -> on prend W telle quelle
-      else //correction diagonale -> on re-inverse m2 + diag
+  /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
+  for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) if (ch.icl(fb = zone.w1j(i), 0) < 2)
         {
-          //matrice m2 + correction diagonale
-          for (i = 0, j = zone.m2d(e), W = 0; i < n_f; i++, j++) for (k = zone.m2i(j); k < zone.m2i(j + 1); k++) W(i, zone.m2j(k)) = zone.m2c(k);
-          for (i = 0; i < n_f; i++) f = e_f(e, i), W(i, i) += diag(f) * zone.volumes_entrelaces_dir()(f, e != f_e(f, 0)) / zone.volumes_entrelaces(f) / ve(e);
-          //inversion par Cholesky (Lapack) + annulation des petits coeffs + remplissage a la main de la partir triangulaire inf
-          char uplo = 'U';
-          F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-          F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-          for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
-          for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (W0(i, j) == 0) W(i, j) = 0;
+          double coeff = fs(f) * zone.w1c(i) * pf(fb) * pf(fb) * fs(fb) / (diag.size() ? diag(fb) : pf(fb) * vf(fb));
+          for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < ne) for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++)
+                mat(e, eb) += (j ? -1 : 1) * (k ? -1 : 1) * coeff;
         }
 
-      //remplissage de la matrice en (dPe, dPf)
-      //sur les CLs de Neumann, on remplace l'equation sur dPf par dPf = 0 et on retire dPf des autres equations (pour symetrie)
-      double mee, mef, mff, rfe, rff; //a ajouter a m[e][e], m[e][f] / m[f][e], m[f][f'], r[f][e], r[f][f']
-      for (i = 0, mee = 0; i < n_f; mee += mef, i++)
-        {
-          for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; f < nf && j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
-            {
-              fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
-              if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1) mat(ne_tot + f, ne_tot + fb) += mff;
-              else if (ch.icl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
-              if (rff) rec(f, ne_tot + fb) += rff;
-            }
-          if (ch.icl(f, 0) != 1 && e < ne) mat(e, ne_tot + f) -= mef;
-          if (ch.icl(f, 0) != 1 && f < nf) mat(ne_tot + f, e) -= mef;
-          if (e == f_e(f, 0) && f < nf) rec(f, e) -= rfe;
-        }
-      if (e < ne) mat(e, e) += mee;
-    }
+  if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 
-  if (!has_P_ref && !Process::me())
-    {
-      double coeff = mat(0, 0) / ne;
-      for (e = 0; e < ne; e++) mat(0, e) += coeff;
-    }
-
-  statistiques().end_count(assemblage_sys_counter_);
-  Cerr << statistiques().last_time(assemblage_sys_counter_) << " s" << finl;
   return 1;
 }
 

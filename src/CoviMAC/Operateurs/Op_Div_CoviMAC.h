@@ -49,7 +49,6 @@
 // CLASS: Op_Div_CoviMAC
 //
 //////////////////////////////////////////////////////////////////////////////
-class MAtrice_Morse;
 class Op_Div_CoviMAC : public Operateur_Div_base
 {
 
@@ -70,8 +69,6 @@ protected:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;
   REF(Zone_Cl_CoviMAC) la_zcl_CoviMAC;
-
-  DoubleVect porosite_face;
 };
 
 #endif

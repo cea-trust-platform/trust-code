@@ -59,7 +59,7 @@ void Op_Diff_CoviMAC_Face::completer()
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_CoviMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
-  ch.init_ra(), zone.init_rf(), zone.init_m1(), zone.init_m2();
+  ch.init_cl(), zone.init_w1();
 
   if (que_suis_je() == "Op_Diff_CoviMAC_Face") return;
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
@@ -72,27 +72,26 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces();
-  int i, j, k, a, e, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), idx;
-
-  zone.init_m2();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const DoubleTab& tf = zone.face_tangentes(), &xp = zone.xp(), &xvm = zone.xvm();
+  int i, j, k, l, r, e, eb, f, fb, fc, nf_tot = zone.nb_faces_tot();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  //partie vitesses : m2 Rf
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
-      for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
-        for (fb = e_f(e, zone.m2j(j)), k = zone.rfdeb(fb); k < zone.rfdeb(fb + 1); k++) stencil.append_line(f, nf_tot + zone.rfji(k));
 
-  //partie vorticites : Ra m2 - m1 / nu
-  for (a = 0; a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-    {
-      for (i = ch.radeb(a, 0); i < ch.radeb(a + 1, 0); i++) stencil.append_line(nf_tot + a, ch.raji(i));
-      for (i = zone.m1deb(a); i < zone.m1deb(a + 1); i++) stencil.append_line(nf_tot + a, nf_tot + zone.m1ji(i, 0));
-    }
+  /* qdm a la face f -> element amont/aval e -> face fb de e -> flux a la face fc -> elements amont/aval eb */
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        {
+          std::array<double, 6> t_x = {{ 0, }}; //direction / position relative a l'element e
+          for (r = 0; r < dimension; r++) t_x[r] = tf(f, r), t_x[3 + r] = xvm(f, r) - xp(e, r);
+          /* decomposition du gradient a la face fb a l'aide de w1 */
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) for (k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
+              for (l = 0, fc = zone.w1j(k); l < 2 && (eb = f_e(fc, l)) >= 0; l++)
+                for (auto &&f_v : zone.interp_dir(eb, t_x, 1)) if (ch.icl(f_v.first, 0) < 2) stencil.append_line(f, f_v.first);
+        }
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, nf_tot + na_tot, stencil, mat);
+  Matrix_tools::allocate_morse_matrix(nf_tot, nf_tot, stencil, mat);
 }
 
 // ajoute la contribution de la convection au second membre resu
@@ -103,30 +102,31 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
-  int i, j, k, e, f, fb, a, nf_tot = zone.nb_faces_tot(), idx;
+  const DoubleVect& ve = zone.volumes(), &fs = zone.face_surfaces(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
+  const DoubleTab& tf = zone.face_tangentes(), &xp = zone.xp(), &xvm = zone.xvm(), &vfd = zone.volumes_entrelaces_dir();
+  int i, j, k, l, r, e, eb, f, fb, fc;
 
   update_nu();
-  //partie vitesses : m2 Rf
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
-      for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
-        for (fb = e_f(e, zone.m2j(j)), k = zone.rfdeb(fb); k < zone.rfdeb(fb + 1); k++)
-          resu(f) -= zone.m2c(j) * ve(e) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * pe(e) * zone.rfci(k) * inco(nf_tot + zone.rfji(k));
 
-  //partie vorticites : Ra m2 - m1 / nu
-  if (resu.dimension_tot(0) == nf_tot) return resu; //resu ne contient que la partie "faces"
-  for (a = 0; a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-    {
-      //rotationnel : vitesses internes
-      for (i = ch.radeb(a, 0); i < ch.radeb(a + 1, 0); i++)
-        resu(nf_tot + a) -= ch.raci(i) * inco(ch.raji(i));
-      //rotationnel : vitesses aux bords
-      for (i = ch.radeb(a, 1); i < ch.radeb(a + 1, 1); i++) for (k = 0; k < dimension; k++)
-          resu(nf_tot + a) -= ch.racf(i, k) * ref_cast(Dirichlet, cls[ch.icl(ch.rajf(i), 1)].valeur()).val_imp(ch.icl(ch.rajf(i), 2), k);
-      // -m1 / nu
-      for (i = zone.m1deb(a); i < zone.m1deb(a + 1); i++)
-        resu(nf_tot + a) += zone.m1ci(i) / (pe(zone.m1ji(i, 1)) * nu_(zone.m1ji(i, 1))) * inco(nf_tot + zone.m1ji(i, 0));
-    }
+  /* qdm a la face f -> element amont/aval e -> face fb de e -> flux a la face fc -> elements amont/aval eb */
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        {
+          std::array<double, 6> t_x = {{ 0, }}; //direction / position relative a l'element e
+          for (r = 0; r < dimension; r++) t_x[r] = tf(f, r), t_x[3 + r] = xvm(f, r) - xp(e, r);
+          /* decomposition du gradient a la face fb a l'aide de w1 */
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) for (k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
+              {
+                fc = zone.w1j(k);
+                double fac = vfd(f, i) / ve(e) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) * zone.w1c(k) * nu_faces_(fc, 0) * pf(fc) * fs(fc) / vf(fc);
+                for (l = 0; l < 2; l++)
+                  {
+                    eb = f_e(fc, l) >= 0 ? f_e(fc, l) : (ch.icl(fc, 0) < 3 ? f_e(fc, 0) : -1); //ne vaut -1 que pour Dirichlet
+                    if (eb >= 0) for (auto &&f_v : zone.interp_dir(eb, t_x)) resu(f) -= fac * (l ? -1 : 1) * f_v.second * inco(f_v.first);
+                    else if (ch.icl(fc, 0) == 3) for (r = 0; r < dimension; r++) //diffusion avec la CL
+                        resu(f) -= fac * (l ? -1 : 1) * t_x[r] * ref_cast(Dirichlet, cls[ch.icl(fc, 1)].valeur()).val_imp(ch.icl(fc, 2), r);
+                  }
+              }
+        }
   return resu;
 }
 
@@ -138,26 +138,29 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
-  int i, j, k, e, f, fb, a, nf_tot = zone.nb_faces_tot(), idx;
+  const DoubleVect& ve = zone.volumes(), &fs = zone.face_surfaces(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
+  const DoubleTab& tf = zone.face_tangentes(), &xp = zone.xp(), &xvm = zone.xvm(), &vfd = zone.volumes_entrelaces_dir();
+  int i, j, k, l, r, e, eb, f, fb, fc;
 
   update_nu();
-  //partie vitesses : m2 Rf
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = zone.m2d(e), idx = 0; i < zone.m2d(e + 1); i++, idx++)
-      for (f = e_f(e, idx), j = zone.m2i(i); f < zone.nb_faces() && ch.icl(f, 0) < 2 && j < zone.m2i(i + 1); j++)
-        for (fb = e_f(e, zone.m2j(j)), k = zone.rfdeb(fb); k < zone.rfdeb(fb + 1); k++)
-          matrice(f, nf_tot + zone.rfji(k)) += zone.m2c(j) * ve(e) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * pe(e) * zone.rfci(k);
 
-  //partie vorticites : Ra m2 - m1 / nu
-  for (a = 0; a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-    {
-      //rotationnel : vitesses internes
-      for (i = ch.radeb(a, 0); i < ch.radeb(a + 1, 0); i++) if (ch.icl(f = ch.raji(i), 0) < 2)
-          matrice(nf_tot + a, f) += ch.raci(i);
-      // -m1 / nu
-      for (i = zone.m1deb(a); i < zone.m1deb(a + 1); i++)
-        matrice(nf_tot + a, nf_tot + zone.m1ji(i, 0)) -= zone.m1ci(i) / (pe(zone.m1ji(i, 1)) * nu_(zone.m1ji(i, 1)));
-    }
+  /* qdm a la face f -> element amont/aval e -> face fb de e -> flux a la face fc -> elements amont/aval eb */
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        {
+          std::array<double, 6> t_x = {{ 0, }}; //direction / position relative a l'element e
+          for (r = 0; r < dimension; r++) t_x[r] = tf(f, r), t_x[3 + r] = xvm(f, r) - xp(e, r);
+          /* decomposition du gradient a la face fb a l'aide de w1 */
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) for (k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
+              {
+                fc = zone.w1j(k);
+                double fac = vfd(f, i) / ve(e) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) * zone.w1c(k) * nu_faces_(fc, 0) * pf(fc) * fs(fc) / vf(fc);
+                for (l = 0; l < 2; l++)
+                  {
+                    eb = f_e(fc, l) >= 0 ? f_e(fc, l) : (ch.icl(fc, 0) < 3 ? f_e(fc, 0) : -1); //ne vaut -1 que pour Dirichlet
+                    if (eb >= 0) for (auto &&f_v : zone.interp_dir(eb, t_x)) if (ch.icl(f_v.first, 0) < 2) matrice(f, f_v.first) += fac * (l ? -1 : 1) * f_v.second;
+                  }
+              }
+        }
 }
 
 //Description:

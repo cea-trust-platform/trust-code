@@ -66,117 +66,56 @@ void Op_Div_CoviMAC::associer(const Zone_dis& zone_dis,
   la_zcl_CoviMAC = zclCoviMAC;
 }
 
+void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
+{
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const IntTab& f_e = zone.face_voisins();
+  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+
+  IntTab stencil(0,2);
+  stencil.set_smart_resize(1);
+  for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (j = 0, fb = zone.w1j(f); j < 2 && (e = f_e(f, j)) >= 0; j++)
+        if (e < ne_tot) for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * fb + n);
+
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_morse_matrix(N * zone.nb_elem_tot(), N * zone.nb_faces_tot(), stencil, matrice);
+}
+
 DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
-  Debog::verifier("div in",div);
-
-
-  Debog::verifier("vit in div",vit);
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const DoubleVect& surface=zone_CoviMAC.face_surfaces();
-  const IntTab& face_voisins = zone_CoviMAC.face_voisins();
-  const DoubleVect& porosite_surf = zone_CoviMAC.porosite_face();
-
-
-  Debog::verifier("poro",porosite_surf);
-  Debog::verifier("surf",surface);
-
-  // L'espace virtuel du tableau div n'est pas mis a jour par l'operateur,
-  //  assert(invalide_espace_virtuel(div));
-  declare_espace_virtuel_invalide(div);
-  // calcul de flux bord
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const IntTab& f_e = zone.face_voisins();
+  int i, e, f, fb, n, N = vit.line_size(), ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+  assert(div.line_size() == N);
+  DoubleTrav pvfn(N);
 
   DoubleTab& tab_flux_bords = ref_cast(DoubleTab,flux_bords_);
-  tab_flux_bords.resize(zone_CoviMAC.nb_faces_bord(),1);
+  tab_flux_bords.resize(zone.nb_faces_bord(),1);
   tab_flux_bords=0;
 
-
-  int premiere_face_int=zone_CoviMAC.premiere_face_int();
-  int nb_faces=zone_CoviMAC.nb_faces();
-  for (int face=0; face<premiere_face_int; face++)
+  for (f = 0; f < nf_tot; f++)
     {
+      /* 1. interpolation faces duales -> faces du champ porosite * vitesse */
+      for (i = zone.w1d(f), pvfn = 0; i < zone.w1d(f + 1); i++) for (n = 0, fb = zone.w1j(i); n < N; n++) pvfn(n) += zone.w1c(i) * pf(fb) * vit.addr()[N * fb + n];
+      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pvfn(n);
 
-      double flux=porosite_surf[face]*vit[face]*surface[face];
-      tab_flux_bords(face,0)+=flux;
-      int elem1=face_voisins(face,0);
-      if (elem1!=-1)
-        div(elem1)+=flux;
-      int elem2=face_voisins(face,1);
-      if (elem2!=-1)
-        div(elem2)-=flux;
-
-    }
-
-  for (int face=premiere_face_int; face<nb_faces; face++)
-    {
-      double flux=porosite_surf[face]*vit[face]*surface[face];
-      int elem1=face_voisins(face,0);
-      assert(zone_CoviMAC.oriente_normale(face,elem1)==1);
-
-      div(elem1)+=flux;
-      int elem2=face_voisins(face,1);
-
-      div(elem2)-=flux;
+      /* 2. contribution amont - aval */
+      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0 && e < ne) for (n = 0; n < N; n++) div.addr()[N * e + n] -= (i ? 1 : -1) * fs(f) * pvfn(n);
     }
   div.echange_espace_virtuel();
 
-  Debog::verifier("div out",div);
   return div;
 }
-void Op_Div_CoviMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const
+void Op_Div_CoviMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) const
 {
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const DoubleVect& surface=zone_CoviMAC.face_surfaces();
-  const IntTab& face_voisins = zone_CoviMAC.face_voisins();
-  const DoubleVect& porosite_surf = zone_CoviMAC.porosite_face();
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const IntTab& f_e = zone.face_voisins();
+  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
-
-  int nb_faces=zone_CoviMAC.nb_faces();
-
-  for (int face=0; face<nb_faces; face++)
-    {
-      // flux * -1 car contribuer_a_avec renvoie  -d/dI
-      double flux=-porosite_surf[face]*surface[face];
-
-      int elem1=face_voisins(face,0);
-      if (elem1!=-1)
-        matrice(elem1,face)+=flux;
-      int elem2=face_voisins(face,1);
-      if (elem2!=-1)
-        matrice(elem2,face)-=flux;
-
-    }
-}
-
-void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
-{
-
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  int nb_faces=zone_CoviMAC.nb_faces();
-  int nb_faces_tot=zone_CoviMAC.nb_faces_tot();
-  int nb_elem_tot=zone_CoviMAC.nb_elem_tot();
-  IntTab stencyl(0,2);
-  stencyl.set_smart_resize(1);
-  const IntTab& face_voisins = zone_CoviMAC.face_voisins();
-
-  int nb_coef=0;
-  for (int face=0; face<nb_faces; face++)
-    {
-      for (int dir=0; dir<2; dir++)
-        {
-          int elem=face_voisins(face,dir);
-          if (elem!=-1)
-            {
-              stencyl.resize(nb_coef+1,2);
-              stencyl(nb_coef,0)=elem;
-              stencyl(nb_coef,1)=face;
-              nb_coef++;
-            }
-        }
-    }
-  tableau_trier_retirer_doublons(stencyl);
-  Matrix_tools::allocate_morse_matrix(nb_elem_tot,nb_faces_tot,stencyl,matrice);
-
+  for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (j = 0, fb = zone.w1j(f); j < 2 && (e = f_e(f, j)) >= 0; j++)
+        if (e < ne) for (n = 0; n < N; n++) mat(N * e + n, N * fb + n) += (i ? 1 : -1) * fs(f) * zone.w1c(i) * pf(fb);
 }
 
 DoubleTab& Op_Div_CoviMAC::calculer(const DoubleTab& vit, DoubleTab& div) const

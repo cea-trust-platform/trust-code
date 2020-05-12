@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,36 +14,32 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Conv_CoviMAC.cpp
-// Directory:   $TRUST_ROOT/src/CoviMAC/Operateurs/Conv_iterateur
-// Version:     /main/4
+// File:        Option_CoviMAC.h
+// Directory:   $TRUST_ROOT/src/CoviMAC
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Conv_CoviMAC.h>
-#include <Champ_Face_CoviMAC.h>
+#ifndef Option_CoviMAC_included
+#define Option_CoviMAC_included
 
-const Champ_Inc_base& Eval_Conv_CoviMAC::vitesse() const
-{
-  return vitesse_.valeur();
-}
+#include <Interprete.h>
 
-Champ_Inc_base& Eval_Conv_CoviMAC::vitesse()
-{
-  return vitesse_.valeur();
-}
+class Motcle;
 
-// Description:
-// associe le champ de vitesse transportante
-void Eval_Conv_CoviMAC::associer(const Champ_Face_CoviMAC& vit)
+class Option_CoviMAC : public Interprete
 {
-  vitesse_=vit;
-  dt_vitesse.ref(vit.valeurs_normales());
-}
+  Declare_instanciable(Option_CoviMAC);
 
-// Description:
-// mise a jour du DoubleTab vitesse
-void Eval_Conv_CoviMAC::mettre_a_jour( )
-{
-  dt_vitesse.ref(vitesse_->valeurs_normales());
-}
+public :
+
+  Entree& interpreter(Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&);
+  int test_mot(const Motcle& mot) const;
+  static int mpfa_stencil;
+  static double precision_weight;
+  static double stability_weight;
+};
+
+
+#endif

@@ -27,6 +27,7 @@
 #include <Operateur_Conv.h>
 #include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
+#include <Ref_Champ_Face_CoviMAC.h>
 //
 // .DESCRIPTION class Op_Conv_CoviMAC_base
 //
@@ -68,7 +69,7 @@ public:
 protected:
   REF(Zone_CoviMAC) la_zone_poly_;
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
-  REF(Champ_base) vitesse_;
+  REF(Champ_Face_CoviMAC) vitesse_;
 
 };
 

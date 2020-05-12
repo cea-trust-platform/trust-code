@@ -114,6 +114,16 @@ public :
     return h_carre_(i);
   };
   inline double face_normales(int,int ) const;
+  inline double face_tangentes(int,int ) const;
+  inline const DoubleTab& xvp() const
+  {
+    return xvp_;
+  } ;
+  inline const DoubleTab& xvm() const
+  {
+    return xvm_;
+  } ;
+
   inline const DoubleVect& longueur_aretes() const
   {
     return longueur_aretes_;
@@ -128,11 +138,12 @@ public :
   };
   inline DoubleTab& face_normales();
   inline const DoubleTab& face_normales() const;
+  inline DoubleTab& face_tangentes();
+  inline const DoubleTab& face_tangentes() const;
   inline IntVect& rang_elem_non_std();
   inline const IntVect& rang_elem_non_std() const;
   inline int oriente_normale(int face_opp, int elem2)const;
   inline const ArrOfInt& ind_faces_virt_non_std() const;
-  void calculer_volumes_entrelaces();
 
   void calculer_h_carre();
 
@@ -161,8 +172,8 @@ public :
   mutable std::map<std::string, int> is_init;
   //interpolations d'ordre 1 du vecteur vitesse aux elements
   void init_ve() const;
-  mutable IntTab vedeb, veji; //reconstruction de ve par (veji, veci)[vedeb(e), vedeb(e + 1)[ (faces)
-  mutable DoubleTab veci;
+  mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
+  mutable DoubleTab vec;
 
   //rotationnel aux faces d'un champ tangent aux aretes
   void init_rf() const;
@@ -180,6 +191,9 @@ public :
   void init_w1_som() const;  //en interpolant aux sommets
   mutable IntTab w1d, w1j; //stockage de la ligne f dans [wd(f), wd(f + 1)[ : indices de colonne dans wj, coeffs dans wc
   mutable DoubleTab w1c;
+
+  //interpolation de la direction tf a la position xf (stockee dans le vecteur t_x) a partir des faces de l'element e
+  const std::vector<std::pair<int, double>>& interp_dir(int e, const std::array<double, 6>& t_x, int change = 0) const;
 
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
@@ -215,6 +229,7 @@ private:
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_CoviMAC type_elem_;                  // type de l'element de discretisation
   DoubleTab face_normales_;             // normales aux faces
+  DoubleTab face_tangentes_;            // tangentes aux faces duales (les lignes amont-avales), normees a 1
   DoubleVect longueur_aretes_; //longueur des aretes
   int nb_faces_std_;                    // nombre de faces standard
   int nb_elem_std_;                     // nombre d'elements standard
@@ -229,6 +244,9 @@ private:
 
   mutable IntTab arete_faces_; //connectivite face -> aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
+  DoubleTab xvp_, xvm_;        //intersection de la ligne "amont-aval" avec chaque face, milieu de cette ligne
+  //interp_cache[e][{tf, xf}] : liste { f, c } de faces/coefficients pour reconstruire la direction tf a la position xf dans l'element e
+  mutable std::vector<std::map<std::array<double, 6>, std::vector<std::pair<int, double>>>> interp_cache;
 };
 
 // Fonctions inline
@@ -259,6 +277,25 @@ inline DoubleTab& Zone_CoviMAC::face_normales()
 inline const DoubleTab& Zone_CoviMAC::face_normales() const
 {
   return face_normales_;
+}
+
+inline double Zone_CoviMAC::face_tangentes(int face,int comp) const
+{
+  return face_tangentes_(face,comp);
+}
+
+// Decription:
+// renvoie le tableau des surfaces normales.
+inline DoubleTab& Zone_CoviMAC::face_tangentes()
+{
+  return face_tangentes_;
+}
+
+// Decription:
+// renvoie le tableau des surfaces normales.
+inline const DoubleTab& Zone_CoviMAC::face_tangentes() const
+{
+  return face_tangentes_;
 }
 
 // Decription:

@@ -83,8 +83,8 @@ DoubleTab& Perte_Charge_CoviMAC::ajouter(DoubleTab& resu) const
       /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
       double nu_e = C_nu ? nu(0, 0) : nu->valeur_a_compo(pos, 0),
              dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
-      for (j = zone.vedeb(e), ve = 0; j < zone.vedeb(e + 1); j++) for (r = 0; r < dimension; r++)
-          fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
+      for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
+          fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
       double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
 
@@ -124,8 +124,8 @@ void Perte_Charge_CoviMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
       /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
       double nu_e = C_nu ? nu(0, 0) : nu->valeur_a_compo(pos, 0),
              dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
-      for (j = zone.vedeb(e), ve = 0; j < zone.vedeb(e + 1); j++) for (r = 0; r < dimension; r++)
-          fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
+      for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
+          fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
       double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
 
@@ -140,8 +140,8 @@ void Perte_Charge_CoviMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
               {
                 for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
                     matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
-                for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++) if (ch.icl(fb = zone.veji(k), 0) < 2)
-                    matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.veci(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+                for (k = zone.ved(e); k < zone.ved(e + 1); k++) if (ch.icl(fb = zone.vej(k), 0) < 2)
+                    matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.vec(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
               }
             else
               {

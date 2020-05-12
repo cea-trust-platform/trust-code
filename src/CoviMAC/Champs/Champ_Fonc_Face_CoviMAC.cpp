@@ -55,7 +55,6 @@ void Champ_Fonc_Face_CoviMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
   ref_zone_vf_=ref_cast(Zone_VF, z_dis);
 }
 
-
 int Champ_Fonc_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
 {
 
@@ -81,54 +80,17 @@ int Champ_Fonc_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
   return n;
 
 }
+
 Champ_base& Champ_Fonc_Face_CoviMAC::affecter_(const Champ_base& ch)
 {
-  const DoubleTab& v = ch.valeurs();
-  DoubleTab& val = valeurs();
-  const Zone_CoviMAC& zone_CoviMAC = ref_cast( Zone_CoviMAC,ref_zone_vf_.valeur());
-  int nb_faces = zone_CoviMAC.nb_faces();
-  const DoubleVect& surface = zone_CoviMAC.face_surfaces();
-  const DoubleTab& normales = zone_CoviMAC.face_normales();
+  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,ref_zone_vf_.valeur());
+  const DoubleTab& tf = zone.face_tangentes(), &xv = zone.xv();
+  DoubleTab& val = valeurs(), eval;
+  if (sub_type(Champ_Uniforme, ch)) eval = ch.valeurs();
+  else eval.resize(val.dimension_tot(0), dimension), ch.valeur_aux(xv,eval);
 
-
-  if (sub_type(Champ_Uniforme,ch))
-    {
-      for (int num_face=0; num_face<nb_faces; num_face++)
-        {
-          double vn=0;
-          for (int dir=0; dir<dimension; dir++)
-            vn+=v(0,dir)*normales(num_face,dir);
-
-          vn/=surface(num_face);
-          val(num_face) = vn;
-        }
-    }
-  else if (nb_compo_ == dimension)
-    {
-      //      int ndeb_int = zone_CoviMAC.premiere_face_int();
-      //      const IntTab& face_voisins = zone_CoviMAC.face_voisins();
-      const DoubleTab& xv=zone_CoviMAC.xv();
-      DoubleTab eval(val.dimension_tot(0),dimension);
-      ch.valeur_aux(xv,eval);
-      for (int num_face=0; num_face<nb_faces; num_face++)
-        {
-          double vn=0;
-          for (int dir=0; dir<dimension; dir++)
-            vn+=eval(num_face,dir)*normales(num_face,dir);
-
-
-          vn/=surface(num_face);
-          val(num_face) = vn;
-        }
-    }
-  else if (nb_compo_ == 1)
-    {
-      //      int ndeb_int = zone_CoviMAC.premiere_face_int();
-      //      const IntTab& face_voisins = zone_CoviMAC.face_voisins();
-      const DoubleTab& xv=zone_CoviMAC.xv();
-      ch.valeur_aux(xv,val);
-    }
-  else abort();
+  for (int f = 0, unif = sub_type(Champ_Uniforme, ch); f < zone.nb_faces_tot(); f++)
+    for (int r = 0; r < dimension; r++) val(f) += eval(unif ? 0 : f, r) * tf(f, r);
   return *this;
 }
 

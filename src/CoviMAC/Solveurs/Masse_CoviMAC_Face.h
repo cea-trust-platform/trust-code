@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Masse_CoviMAC_Face.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Zones
+// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
 // Version:     /main/2
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -44,17 +44,14 @@ public:
   void associer_zone_dis_base(const Zone_dis_base& );
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
 
-  virtual void dimensionner(Matrice_Morse& matrix) const;
+  DoubleTab& appliquer_impl(DoubleTab& ) const;
+
+  /* idem que Solveur_Masse_base, mais ajoute des lignes triviales pour les CL a vitesse imposee */
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const;
-  void appliquer_coef(DoubleVect& ) const;
-  void completer();
-
 private:
 
-  bool no_diff_;
   REF(Zone_CoviMAC) la_zone_CoviMAC;
   REF(Zone_Cl_CoviMAC) la_zone_Cl_CoviMAC;
 };

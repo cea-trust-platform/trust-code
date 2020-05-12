@@ -28,6 +28,7 @@
 #include <Modifier_pour_QC.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
+#include <Champ_Face_CoviMAC.h>
 
 
 Implemente_base(Op_Conv_CoviMAC_base,"Op_Conv_CoviMAC_base",Operateur_Conv_base);
@@ -247,5 +248,5 @@ int Op_Conv_CoviMAC_base::impr(Sortie& os) const
 
 void Op_Conv_CoviMAC_base::associer_vitesse(const Champ_base& ch )
 {
-  vitesse_=ch;
+  vitesse_= ref_cast(Champ_Face_CoviMAC, ch);
 }

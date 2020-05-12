@@ -15,27 +15,20 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Masse_CoviMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/CoviMAC/Zones
+// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Masse_CoviMAC_Face.h>
+#include <Equation_base.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>
+#include <Champ_Face_CoviMAC.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
 #include <Debog.h>
-#include <Equation_base.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Champ_Face_CoviMAC.h>
-#include <Operateur.h>
-#include <Op_Diff_negligeable.h>
-#include <Probleme_base.h>
-#include <Schema_Temps_base.h>
-#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Masse_CoviMAC_Face,"Masse_CoviMAC_Face",Solveur_Masse_base);
 
@@ -66,28 +59,156 @@ Entree& Masse_CoviMAC_Face::readOn(Entree& s)
 
 DoubleTab& Masse_CoviMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
-  //hors faces de bord, on ne fait rien et on passe secmem a corriger_derivee_* (car CoviMAC a une matrice de masse)
   assert(la_zone_CoviMAC.non_nul());
   assert(la_zone_Cl_CoviMAC.non_nul());
   const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  ch.init_cl();
+  const DoubleVect& porosite_face = zone_CoviMAC.porosite_face();
+  const DoubleVect& volumes_entrelaces = zone_CoviMAC.volumes_entrelaces();
 
-  assert(sm.nb_dim() <= 2); // sinon on ne fait pas ce qu'il faut
-  int nb_faces_tot = zone_CoviMAC.nb_faces_tot();
-  int nb_aretes_tot = (dimension < 3 ? zone_CoviMAC.nb_som_tot() : zone_CoviMAC.zone().nb_aretes_tot()), nc = sm.nb_dim() == 2 ? sm.dimension(1) : 1;
+  int nb_faces = zone_CoviMAC.nb_faces();
+  int num_face,ndeb,nfin;
 
-  if (sm.dimension_tot(0) != nb_faces_tot && sm.dimension_tot(0) != nb_faces_tot + nb_aretes_tot)
+  if (sm.dimension(0) != nb_faces)
     {
       Cerr << "Masse_CoviMAC_Face::appliquer :  erreur dans la taille de sm" << finl;
       exit();
     }
 
-  //mise a zero de la partie vitesse de sm sur les faces a vitesse imposee
-  for (int f = 0; f < zone_CoviMAC.nb_faces(); f++) if (ch.icl(f, 0) > 1)
-      for (int k = 0; k < nc; k++) sm.addr()[nc * f + k]= 0;
+  if (sm.nb_dim() == 1)
+    {
+      // Boucle sur les faces joint
 
+      // Boucle sur les bords
+      // Sur les faces qui portent des conditions aux limites de Dirichlet ou de Symetrie
+      // la vitesse normale reste egale a sa valeur initiale.
+      // Donc sur ces faces vpoint doit rester a 0.
+
+      for (int n_bord=0; n_bord<zone_CoviMAC.nb_front_Cl(); n_bord++)
+        {
+
+          // pour chaque Condition Limite on regarde son type
+
+          const Cond_lim& la_cl = la_zone_Cl_CoviMAC->les_conditions_limites(n_bord);
+          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          ndeb = la_front_dis.num_premiere_face();
+          nfin = ndeb + la_front_dis.nb_faces();
+
+          if ( (sub_type(Dirichlet,la_cl.valeur()))
+               ||
+               (sub_type(Dirichlet_homogene,la_cl.valeur()))
+             )
+            // Pour les faces de Dirichlet on met sm a 0
+            for (num_face=ndeb; num_face<nfin; num_face++)
+              sm[num_face] = 0;
+          else if (sub_type(Symetrie,la_cl.valeur()))
+            // Pour les faces de Symetrie on met vpoint a 0
+            for (num_face=ndeb; num_face<nfin; num_face++)
+              sm[num_face] = 0;
+          else
+            for (num_face=ndeb; num_face<nfin; num_face++)
+              sm[num_face] /= (volumes_entrelaces(num_face)*porosite_face(num_face));
+
+        }
+
+      // Boucle sur les faces internes
+
+      ndeb = zone_CoviMAC.premiere_face_int();
+      for (num_face=ndeb; num_face<nb_faces; num_face++)
+        {
+          sm[num_face] /= (volumes_entrelaces(num_face)*porosite_face(num_face));
+        }
+    }
+  else
+    {
+      assert(sm.nb_dim()==2); // sinon on ne fait pas ce qu'il faut
+      int nb_comp = sm.dimension(1);
+      int ncomp;
+
+      // Boucle sur les faces joint
+
+      // Boucle sur les bords
+      // Sur les faces qui portent des conditions aux limites de Dirichlet ou de Symetrie
+      // la vitesse normale reste egale a sa valeur initiale.
+      // Donc sur ces faces vpoint doit rester a 0.
+
+      for (int n_bord=0; n_bord<zone_CoviMAC.nb_front_Cl(); n_bord++)
+        {
+
+          // pour chaque Condition Limite on regarde son type
+
+          const Cond_lim& la_cl = la_zone_Cl_CoviMAC->les_conditions_limites(n_bord);
+          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          ndeb = la_front_dis.num_premiere_face();
+          nfin = ndeb + la_front_dis.nb_faces();
+
+          if ( (sub_type(Dirichlet,la_cl.valeur()))
+               ||
+               (sub_type(Dirichlet_homogene,la_cl.valeur()))
+             )
+            // Pour les faces de Dirichlet on met sm a 0
+            for (num_face=ndeb; num_face<nfin; num_face++)
+              for (ncomp=0; ncomp<nb_comp; ncomp++)
+                sm(num_face,ncomp) = 0;
+          else if (sub_type(Symetrie,la_cl.valeur()))
+            // Pour les faces de Symetrie on met vpoint a 0
+            for (num_face=ndeb; num_face<nfin; num_face++)
+              for (ncomp=0; ncomp<nb_comp; ncomp++)
+                sm(num_face,ncomp) = 0;
+          else
+            for (num_face=ndeb; num_face<nfin; num_face++)
+              for (ncomp=0; ncomp<nb_comp; ncomp++)
+                sm(num_face,ncomp)
+                /= (volumes_entrelaces(num_face)*porosite_face(num_face));
+
+        }
+
+      // Boucle sur les faces internes
+
+      ndeb = zone_CoviMAC.premiere_face_int();
+      for (num_face=ndeb; num_face<nb_faces; num_face++)
+        for (ncomp=0; ncomp<nb_comp; ncomp++)
+          sm(num_face,ncomp) /= (volumes_entrelaces(num_face)*porosite_face(num_face));
+    }
+  //sm.echange_espace_virtuel();
+  //Debog::verifier("Masse_CoviMAC_Face::appliquer sm",sm);
   return sm;
+}
+
+DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
+{
+  Solveur_Masse_base::ajouter_masse(dt, secmem, inco, penalisation);
+
+  /* pour les CL a vitesse imposee */
+
+  const Zone_CoviMAC& zone = la_zone_CoviMAC;
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
+  const DoubleTab& tf = zone.face_tangentes();
+  int f, r;
+
+  ch.init_cl();
+
+  for (f = 0; f < zone.premiere_face_int(); f++) if (ch.icl(f, 0) == 3) /* Dirichlet seulement */
+      for (r = 0, secmem(f) = 0; r < dimension; r++) secmem(f) += tf(f, r) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), r);
+
+  return secmem;
+}
+
+Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
+{
+  Solveur_Masse_base::ajouter_masse(dt, matrice, penalisation);
+
+  /* pour les CL a vitesse imposee */
+
+  const Zone_CoviMAC& zone = la_zone_CoviMAC;
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+
+  ch.init_cl();
+
+  Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
+  for (int f = 0; f < zone.premiere_face_int(); f++) if (ch.icl(f, 0) > 1) mat(f, f) = 1; /* tout sauf interne et Neumann */
+
+  return matrice;
 }
 
 //
@@ -101,129 +222,3 @@ void Masse_CoviMAC_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zo
   la_zone_Cl_CoviMAC = ref_cast(Zone_Cl_CoviMAC, la_zone_Cl_dis_base);
 }
 
-void Masse_CoviMAC_Face::completer()
-{
-  no_diff_ = true;
-  for(int i = 0; i < equation().nombre_d_operateurs(); i++)
-    if (sub_type(Operateur_Diff_base, equation().operateur(i).l_op_base()))
-      if (!sub_type(Op_Diff_negligeable, equation().operateur(i).l_op_base())) no_diff_ = false;
-}
-
-void Masse_CoviMAC_Face::dimensionner(Matrice_Morse& matrix) const
-{
-  const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const IntTab& e_f = zone.elem_faces();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  int i, j, k, e, a, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot();
-  const bool only_m2 = (matrix.nb_lignes() == nf_tot);
-
-  zone.init_m1(), zone.init_m2(), ch.init_ra();
-  IntTab indice(0,2);
-  indice.set_smart_resize(1);
-  //partie vitesses : matrice de masse des vitesses si la face n'est pas a vitesse imposee, diagonale sinon
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.m2d(e); j < zone.m2d(e + 1); i++, j++)
-      if (ch.icl(f = e_f(e, i), 0) > 1 && f < zone.nb_faces()) indice.append_line(f, f);
-      else for (k = zone.m2i(j); f < zone.nb_faces() && k < zone.m2i(j + 1); k++)
-          if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2) indice.append_line(f, fb);
-
-  //partie vorticites : diagonale si pas de diffusion
-  if (!only_m2) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-      indice.append_line(nf_tot + a, nf_tot + a);
-
-  tableau_trier_retirer_doublons(indice);
-  Matrix_tools::allocate_morse_matrix(nf_tot + !only_m2 * na_tot, nf_tot + !only_m2 * na_tot, indice, matrix);
-}
-
-DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
-{
-  const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &ve = zone.volumes();
-  DoubleVect coef(zone.porosite_face());
-  coef = 1.;
-  int i, j, k, l, e, f, fb;
-
-  if (has_coefficient_temporel_) appliquer_coef(coef);
-  zone.init_m1(), zone.init_m2(), ch.init_ra();
-
-  //partie vitesses : vitesses imposees par CLs
-  for (f = 0; f < zone.premiere_face_int(); f++)
-    if (ch.icl(f, 0) == 3) for (k = 0, secmem(f) = 0; k < dimension; k++)//valeur imposee par une CL de type Dirichlet
-        secmem(f) += nf(f, k) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), k) / fs(f);
-    else if (ch.icl(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
-
-  //partie vitesses : m2 / dt
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.m2d(e); j < zone.m2d(e + 1); i++, j++)
-      for (f = e_f(e, i), k = zone.m2i(j); ch.icl(f, 0) < 2 && f < zone.nb_faces() && k < zone.m2i(j + 1); k++)
-        if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2) //vfb calcule
-          secmem(f) += ve(e) * pe(e) * zone.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f) * inco(fb) / dt;
-        else if (ch.icl(fb, 0) == 3) for (l = 0; l < dimension; l++) //vfb impose par Dirichlet
-            secmem(f) += ve(e) * pe(e) * zone.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f)
-                         * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), l) * nf(fb, l) / (fs(fb) * dt);
-
-  return secmem;
-}
-
-Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
-{
-  const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
-  DoubleVect coef(zone.porosite_face());
-  coef = 1.;
-  int i, j, k, e, a, f, fb, nf_tot = zone.nb_faces_tot();
-  Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
-
-  if (has_coefficient_temporel_) appliquer_coef(coef);
-  zone.init_m1(), zone.init_m2(), ch.init_ra();
-
-  //partie vitesses : vitesses imposees par CLs
-  for (f = 0; f < zone.premiere_face_int(); f++) if (ch.icl(f, 0) > 1) mat(f, f) = 1;
-
-  //partie vitesses : m2 / dt
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.m2d(e); j < zone.m2d(e + 1); i++, j++)
-      for (f = e_f(e, i), k = zone.m2i(j); ch.icl(f, 0) < 2 && f < zone.nb_faces() && k < zone.m2i(j + 1); k++)
-        if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2) //vfb calcule
-          mat(f, fb) += ve(e) * pe(e) * zone.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f) / dt;
-
-  //partie vorticites : diagonale si Op_Diff_negligeable
-  if (mat.nb_lignes() > nf_tot) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
-      mat(nf_tot + a, nf_tot + a) = 1;
-
-  return matrice;
-}
-
-void Masse_CoviMAC_Face::appliquer_coef(DoubleVect& coef) const
-{
-  if (has_coefficient_temporel_)
-    {
-      REF(Champ_base) ref_coeff;
-      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
-
-      DoubleTab values;
-      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
-        {
-          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
-          ConstDoubleTab_parts val_parts(coeff.valeurs());
-          values.ref(val_parts[0]);
-
-        }
-      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
-        {
-          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
-          values.ref(coeff.valeurs());
-
-        }
-      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
-        {
-          DoubleTab nodes;
-          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
-          ref_coeff.valeur().valeur_aux(nodes,values);
-        }
-      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
-    }
-}
