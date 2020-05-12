@@ -106,6 +106,7 @@ case $Mpirun in
 		      fi		
                       echo gdb -q $exec -x $gdb_options > $gdb
                       chmod +x $gdb
+                      [ "x$Xterm" = "x" ] && echo "Warning: gdb will not work in parallel unless you install xterm and export Xterm=xterm"
 		      # Attention xterm -e sur Mandriva 2008 n'accepte plus qu'une seule commande derriere -e
 		      if [ $MPI = "OPENMPI" ]
 		      then
