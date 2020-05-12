@@ -1304,6 +1304,8 @@ else
 	       [ "$Mpirun" = "" ] && mpi_detecte=0 && echo "mpiexec/mpirun not found for MPI_ROOT=$MPI_ROOT..."
 	       # Pb decouvert sur machine is202803 et ioulia : il ne faut pas inclure mpi++.h dans le mpi.h sinon warning qui font des erreurs avec -Wall -Werror:
 	       [ -f `dirname $mpiCC`/mpicxx ] && COMFLAGS=$COMFLAGS" -DMPICH_SKIP_MPICXX"
+	       # De meme desactivition du C++ bindings pour gcc recent (>=8.x) sinon erreur avec OpenMPI natif... (See https://github.com/open-mpi/ompi/issues/5157)
+	       [ -f `dirname $mpiCC`/mpicxx ] && COMFLAGS=$COMFLAGS" -DOMPI_SKIP_MPICXX"
                # Test du MPI_Abort en parallel (KO avec openmpi 1.10.3 1.10.4 1.10.5)
                # desactive car pb en soumission de job hors frontale
                #echo $ECHO_OPTS "# Check `basename $mpiCC` (mpiAbort.log file): "
