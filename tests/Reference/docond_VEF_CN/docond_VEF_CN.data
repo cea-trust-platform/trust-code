@@ -68,6 +68,10 @@ Mailler dom_fluide
                 }
 }
 
+Modif_bord_to_raccord dom_solide Droit1
+Modif_bord_to_raccord dom_solide Haut2
+Modif_bord_to_raccord dom_fluide Droit1
+Modif_bord_to_raccord dom_fluide Haut2
 Trianguler_H dom_solide
 Trianguler_H dom_fluide
 # END MESH #
