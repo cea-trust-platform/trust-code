@@ -994,12 +994,13 @@ void Zone_CoviMAC::init_w1_elem() const
 {
   if (is_init["w1"]) return;
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
-  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
+  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces(), &ve = volumes();
   const DoubleTab& nf = face_normales(), &vfd = volumes_entrelaces_dir(), &tf = face_tangentes();
   int i, j, e, e0, e1, f, fb, s, n_f, ctr[2] = {0, }, ne_tot = Process::mp_sum(nb_elem()), r;
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
   w1d.set_smart_resize(1), w1j.set_smart_resize(1), w1c.set_smart_resize(1);
+  ved.set_smart_resize(1), vej.set_smart_resize(1), vec.resize(0, dimension), vec.set_smart_resize(1);
   Cerr << zone().domaine().le_nom() << " : initialisation de w1... ";
 
   DoubleTab W, N, R, Xn, Xr, S, poids;
@@ -1033,19 +1034,26 @@ void Zone_CoviMAC::init_w1_elem() const
       W_stabiliser(W, R, N, Xr, Xn, poids, e < nb_elem() ? ctr : NULL, e < nb_elem() ? spectre : NULL);
 
       //contribution a w1elem et a w1map
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) w1elem(e, i, j) = S(i) * W(i, j);
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(w1elem(e, i, j)) > 1e-6) w1map[i_f[i]][i_f[j]] += w1elem(e, i, j);
+      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(W(i, j)) > 1e-6)  w1elem(e, i, j) = W(i, j);
     }
 
   // echange_espace_virtuel() sur w1elem, puis contribution des elems virtuels a w1map
   w1elem.echange_espace_virtuel();
-  for (e = nb_elem(); e < nb_elem_tot(); e++, i_f.clear(), xv_f.clear())
+  for (e = 0, ved.append_line(0); e < nb_elem_tot(); e++, i_f.clear(), xv_f.clear(), ved.append_line(vej.size()))
     {
       /* numerotation canonique des faces */
       for (n_f = 0, i = 0; n_f < e_f.dimension(1) && (f = e_f(e, n_f)) >= 0; n_f++) xv_f[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
       for (auto &&c_f : xv_f) i_f.push_back(c_f.second);
-      //remplissage
-      for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (dabs(w1elem(e, i, j)) > 1e-6) w1map[i_f[i]][i_f[j]] += w1elem(e, i, j);
+      //remplissage de w1
+      for (i = 0; i < n_f; i++) for (j = 0, f = i_f[i]; j < n_f; j++) if (w1elem(e, i, j)) w1map[f][i_f[j]] += vfd(f, e != f_e(f, 0)) / vf(f) * w1elem(e, i, j);
+      //en prime : remplissage de ve
+      std::array<double, 3> val = {{ 0, }};
+      for (i = 0; i < n_f; i++, val = {{0, }})
+      {
+        for (j = 0, f = i_f[i]; j < n_f; j++) for (r = 0, fb = i_f[j]; r < dimension; r++)
+            val[r] += fs(fb) / ve(e) * w1elem(e, j, i) * (xv_(fb, r) - xp_(e, r)) * (e == f_e(fb, 0) ? 1 : -1);
+        vej.append_line(f), dimension < 3 ? vec.append_line(val[0], val[1]) : vec.append_line(val[0], val[1], val[2]);
+      }
     }
 
   //w1map -> w1d / w1j / w1c
@@ -1055,6 +1063,7 @@ void Zone_CoviMAC::init_w1_elem() const
   for (f = 0, w1d.append_line(0); f < nb_faces_tot(); f++, w1d.append_line(w1j.dimension(0))) for (auto fb_c : w1map[f])
       if (dabs(fb_c.second) > 1e-16) w1j.append_line(fb_c.first), w1c.append_line(fb_c.second), nnz(f)++;
   CRIMP(w1d), CRIMP(w1j), CRIMP(w1c);
+  CRIMP(ved), CRIMP(vej), CRIMP(vec);
   Cerr << 100. * Process::mp_sum(ctr[0]) / ne_tot << "/" << 100. * Process::mp_sum(ctr[1]) / ne_tot << "% D/S width: "
        << mp_somme_vect(nnz) * 1. / nf_tot << " lambda: " << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1])
        << " -> " << Process::mp_max(spectre[2]) << " / " << Process::mp_max(spectre[3]) << finl;
@@ -1163,32 +1172,27 @@ void Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, Double
 const std::vector<std::pair<int, double>>& Zone_CoviMAC::interp_dir(int e, const std::array<double, 6>& t_x, int change) const
 {
   if (interp_cache[e].count(t_x)) return interp_cache[e].at(t_x); //deja fait!
-  else if (!change) abort(); //pas le droit d'ajouter une direction
+  // else if (!change) abort(); //pas le droit d'ajouter une direction
 
-  const DoubleTab& tf = face_tangentes();
-  const IntTab& e_f = elem_faces();
-  int i, j, k, l, f, n_f;
+  init_ve();
 
-  for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; )  n_f++;
-
-  /* consistence : d equations a satisfaire M0.x0 = b0 -> solutions : x0 + K.x1 */
-  DoubleTrav M0(dimension, n_f), b0(dimension, 1), K, x0, S;
-  for (i = 0; i < dimension; i++) for (j = 0, b0(i, 0) = t_x[i]; j < n_f; j++) M0(i, j) = tf(e_f(e, j), i);
-  kersol(M0, b0, 1e-8, &K, x0, S);
-
-  /* precision : d^2 equations a minimiser M1.x1 ~ b1 -> solution x1 */
-  int nk = K.dimension(1), il;
-  DoubleTrav M1(dimension * dimension, nk), b1(dimension * dimension, 1), x1;
-  for (i = 0, il = 0; i < dimension; i++) for (j = 0; j < dimension; j++, il++)
-      for (k = 0, b1(il, 0) = t_x[i] * t_x[3 + j]; k < n_f; k++)
-        for (l = 0, f = e_f(e, k), b1(il, 0) -= x0(k, 0) * tf(f, i) * (xvm_(f, j) - xp_(e, j)); l < nk; l++)
-          M1(il, l) += tf(f, i) * (xvm_(f, j) - xp_(e, j)) * K(k, l);
-  kersol(M1, b1, 1e-8, NULL, x1, S);
-
-  /* solution : x0 + K.x1 */
-  for (i = 0; i < n_f; i++) for (j = 0; j < nk; j++) x0(i, 0) += K(i, j) * x1(j, 0);
   std::vector<std::pair<int, double>>& interp = interp_cache[e][t_x];
-  for (i = 0; i < n_f; i++) if(dabs(x0(i, 0)) > 1e-6) interp.push_back({ e_f(e, i), x0(i, 0) });
+
+  const IntTab& e_f = elem_faces();
+  for (int i = 0, f, r, ok; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+    {
+      for (r = 0, ok = 1; r < dimension; r++) ok &= dabs(xvm_(f, r) - xp_(e, r)  - t_x[3 + r]) < 1e-6;
+      if (!ok) continue;
+      interp.push_back({ f, dot(&t_x[0], &face_tangentes_(f, 0)) > 0 ? 1 : -1 });
+      return interp;
+    }
+
+  for (int i = ved(e); i < ved(e + 1); i++)
+    {
+      double scal = dot(&t_x[0], &vec(i, 0));
+      if (dabs(scal) > 1e-6) interp.push_back({ vej(i), scal });
+    }
+
   return interp;
 }
 
@@ -1352,36 +1356,6 @@ void Zone_CoviMAC::M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, 
   for (i = 0; i < n_f; i++) for (j = 0; j < dimension; j++) consist &= dabs(MNt(i, j) - R(i, j)) < 1e-6;
   for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) pmax &= W(i, j) < 1e-6;
   ctr[0] += consist, ctr[1] += pmax, ctr[2] += cv;
-}
-
-
-//interpolation tangentes aux faces duales -> elements d'ordre 1
-void Zone_CoviMAC::init_ve() const
-{
-  const IntTab& e_f = elem_faces();
-  const DoubleTab& tf = face_tangentes();
-  int i, j, k, e, f;
-
-  if (is_init["ve"]) return;
-  Cerr << zone().domaine().le_nom() << " : initialisation de ve... ";
-  ved.resize(1), ved.set_smart_resize(1), vej.set_smart_resize(1), vec.resize(0, dimension), vec.set_smart_resize(1);
-
-  /* Pi = (Rt.R)^-1 R^t telle que Pi.R = I */
-  for (e = 0; e < nb_elem_tot(); ved.append_line(vej.size()), e++)
-    {
-      Matrice33 RtR(0, 0, 0, 0, dimension < 2, 0, 0, 0, dimension < 3), iRtR;
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
-            RtR(j, k) += tf(f, j) * tf(f, k);
-      Matrice33::inverse(RtR, iRtR);
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        {
-          double coef[3] = { 0, 0, 0 };
-          for (j = 0; j < dimension; j++) for (k = 0; k < dimension; k++) coef[j] += iRtR(j, k) * tf(f, k);
-          vej.append_line(f), dimension < 3 ? vec.append_line(coef[0], coef[1]) : vec.append_line(coef[0], coef[1], coef[2]);
-        }
-    }
-  CRIMP(ved), CRIMP(vej), CRIMP(vec);
-  is_init["ve"] = 1, Cerr << "OK" << finl;
 }
 
 //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees, multipliee par la surface de la face)

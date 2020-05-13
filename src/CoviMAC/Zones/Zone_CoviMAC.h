@@ -171,7 +171,10 @@ public :
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
   //interpolations d'ordre 1 du vecteur vitesse aux elements
-  void init_ve() const;
+  void init_ve() const
+  {
+    init_w1();
+  };
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
