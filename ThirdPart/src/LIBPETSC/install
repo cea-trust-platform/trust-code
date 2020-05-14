@@ -295,7 +295,13 @@ add_package()
 # Construction de la liste des packages a utiliser pour le build de petsc #
 ###########################################################################
 with_packages=""
-add_package ml
+
+#################################################
+# Trilinos Multi Level Preconditionning package #
+#################################################
+# Il se peut que PetscInitialize plante sur machine CCRT en sequentiel sans mpirun a cause de ml:
+#[ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_INT64" = 0 ] && add_package ml
+
 #################################################
 # Choix de Scalapack & Blacs (natives ou de base)
 #################################################
