@@ -22,7 +22,7 @@
 #ifndef FichierHDFPar_included
 #define FichierHDFPar_included
 #include <FichierHDF.h>
-#include <mpi.h>
+#include <comm_incl.h>
 #include <SChaine.h>
 
 //////////////////////////////////////////////////////////////////////////////

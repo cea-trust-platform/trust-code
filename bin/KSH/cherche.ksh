@@ -18,7 +18,9 @@ do
        # avec \\*, "cherche.ksh VEF*" renvoie rien
        # avec \*, ca renvoie bien la liste souhaitee mais avec message "gawk: cmd. line:1: warning: escape sequence `\*' treated as plain `*'"
        # avec * seul, ca renvoie la liste sans warning
-       echo $mot | $TRUST_Awk '{gsub("@"," ",$0);gsub("*","[a-z0-9_]*",$0);print $0}' > $TMP_REP/mot$i
+       # echo $mot | $TRUST_Awk '{gsub("@"," ",$0);gsub("*","[a-z0-9_]*",$0);print $0}' > $TMP_REP/mot$i
+       # 2020/05/05 : le precedent test ne marche pas sur Ub18,19,20, utilisation de sed
+       echo $mot | sed "s/*/[a-z0-9_]*/g;s/@/ /g" > $TMP_REP/mot$i
     else
        echo $mot | $TRUST_Awk '{gsub("@"," ",$0);print $0}' > $TMP_REP/mot$i
     fi

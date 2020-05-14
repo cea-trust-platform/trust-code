@@ -60,6 +60,6 @@ clean_$(FILE3):  clean_build
 	@echo "Removing $(FILE3).pdf"
 	@rm -f ../$(FILE3).pdf
 
-clean:  clean_$(FILE1) clean_$(FILE2) clean_$(FILE3)
+clean:  clean_build #clean_$(FILE1) clean_$(FILE2) clean_$(FILE3)
 
 .PHONY: clean clean_build

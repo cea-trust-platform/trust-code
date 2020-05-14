@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+12/05/20 (TRUST)  Portability : Ubuntu version 19-20 OS are now supported
 05/05/20 (TRUST)  Tools       : ICoCo tutorial updated ($TRUST_ROOT/doc/TRUST/ICoCo_tutorial.pdf)
 05/05/20 (TRUST)  Keyword     : Simplify Source_generique keyword syntax when giving an analytical expression without field (source refChamp useless) 
 04/05/20 (TRUST)  Portability : Centos 6.4, Fedora 20 and GNU version compiler older than 4.8.5 are not supported anymore
