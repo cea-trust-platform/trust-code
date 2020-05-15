@@ -5,7 +5,7 @@ DIR=`dirname $0`
 DIR=`cd $DIR; pwd`
 mkdir provdir
 BALTIK=$TRUST_ROOT/bin/baltik
-$BALTIK/share/baltik/bin/baltik_make_distrib -compute_dependencies -directory_for_tar `pwd`/provdir
+$BALTIK/share/baltik/bin/baltik_make_distrib -compute_dependencies -directory_for_tar `pwd`/provdir -git
 
 org=`pwd`
 Arc=`basename $org` 
