@@ -163,7 +163,9 @@ DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions,
         }
       else if (values.nb_dim() == 2)
         {
-          assert(values.dimension(1) == 1);
+          // SV : je commente ce assert qui ne vaut que pour les champs scalaires
+          // or un champ P0 peut egalement etre un champ vectoriel ( !! )
+          //assert(values.dimension(1) == 1);
           if (result.nb_dim() == 1)
             {
               for (int i=0; i<nb_polys; i++)
@@ -177,7 +179,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions,
             }
           else if (result.nb_dim() == 2)
             {
-              assert(result.dimension(1) == 1);
+              assert(result.dimension(1) == values.dimension(1));
               for (int i=0; i<nb_polys; i++)
                 {
                   int cell = polys(i);
@@ -481,7 +483,8 @@ DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& r
   int      nb_nodes_per_cell = zone.nb_som_elem();
 
   ArrOfInt count(nb_nodes);
-
+  // dvq ajout result=0;
+  result=0;
   assert(ncomp>=0);
   assert(ncomp<nb_components);
   assert(result.size() == nb_nodes);
