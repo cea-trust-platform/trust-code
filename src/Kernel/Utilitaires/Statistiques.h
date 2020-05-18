@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,10 +24,16 @@
 #define Statistiques_included
 
 #include <assert.h>
-
 class Stat_Counter_Id;
 class Stat_Results;
 class Stat_Internals;
+class Time;
+
+//si 1, permet de faire demarrer les compteurs seulement apres les 3 premiers pas de temps
+static const int JUMP_3_FIRST_STEPS = 0;
+//si 1, permet de traquer les communications dans les fonctions souhaitees
+static const int GET_COMM_DETAILS = 1;
+
 class Statistiques
 {
 public:
@@ -50,13 +56,15 @@ public:
   // family : eventuellement zero, nom d'une famille de compteurs pour grouper les stats.
   Stat_Counter_Id new_counter(int level,
                               const char * const description,
-                              const char * const familly = 0);
+                              const char * const familly = 0,
+                              int comm = 0);
 
   // L'appel a begin_count est en deux etages pour mettre le test de debug_level
   // en inline et pas les details d'implementation.
   // Les deux fonctions suivantes peuvent etre appelees sur un seul processeur
-  inline void begin_count(const Stat_Counter_Id& counter_id);
-  inline void end_count(const Stat_Counter_Id& counter_id, int quantity = 0, int count = 1);
+  // track_comm permet d'indiquer si l'on souhaite egalement traquer les communications
+  inline void begin_count(const Stat_Counter_Id& counter_id, bool track_comm = false);
+  inline void end_count(const Stat_Counter_Id& counter_id, int quantity = 0, int count = 1, bool track_comm = false);
 
 
   // Renvoie le dernier intervalle de temps mesure par un compteur, en secondes
@@ -70,6 +78,9 @@ public:
   void dump(const char * message_info, int mode_append);
   // Remise a zero de tous les compteurs
   void reset_counters();
+  // Remise a zero du compteur counter_id
+  void reset_counter(int counter_id, bool all = true);
+
 
   // Exploitation des resultats
   // !!! Les 4 fonctions suivantes doivent etre appelees simultanement
@@ -78,11 +89,58 @@ public:
   void restart_counters();
   void get_stats(const Stat_Counter_Id& counter_id, Stat_Results& result);
   void get_stats_familly(const char * familly, Stat_Results& result);
+  void cumulate_stats(int counter_id, Stat_Results& result);
+
   inline double get_total_time()
   {
     return total_time_;
   };
   static double get_time_now();
+
+  //calcule les moyennes, minimum, maximum et variance des temps passes dans chaque compteur lors d'une iteration
+  void compute_avg_min_max_var_per_step(int tstep);
+
+
+  //le tableau communication_tracking_times ne peut etre alloue qu'apres la declaration de tous les compteurs
+  int allocate_communication_tracking_times();
+  int delete_communication_tracking_times();
+
+  /* Debut de la zone de code dont on veut traquer les communications :
+   * on sauvegarde toutes les donnees des compteurs de communication dans le tableau communication_tracking_times,
+   * puis on les remet a zero
+   * Donnee d'entree:
+   * 	- cid : identifiant de la zone qu'on souhaite initialiser
+   */
+  void begin_communication_tracking(int cid);
+
+  /* Fin de la zone de code dont on veut traquer les communications :
+   * on recupere toutes les donnees des compteurs de communication qui ont ete produites
+   * depuis la derniere remise a zero des compteurs
+   * Donnee d'entree:
+   * 	- cid : identifiant de la zone
+   */
+  void end_communication_tracking(int cid);
+
+  /* Affichage des statistiques de communication collectees:
+   *  - pour chaque zone de communication declaree,
+   *  on affiche le temps qu'on y a passe en moyenne sur chaque proc dans chaque type de communication
+   *  - pour chaque type de communication,
+   *   on affiche le temps passe en moyenne sur chaque proc dans chaque zone delcaree
+   */
+  void print_communciation_tracking_details();
+
+  const char* get_counter_family(int id);
+  int get_counter_id_from_index_in_comm_tracking_info(int index) const;
+  int get_index_in_comm_tracking_info_from_counter_id(int id) const;
+  int get_nb_comm_counters() const;
+  Stat_Results get_communication_tracking_info(int i, int j) const;
+
+  inline void set_three_first_steps_elapsed(bool b)
+  {
+    three_first_steps_elapsed_ = b;
+  }
+
+  int get_counter_id_from_description(const char* desc) const;
 
 protected:
   // Les deux fonctions suivantes peuvent etre appelees sur un seul processeur
@@ -92,6 +150,8 @@ protected:
   int debug_level_;
   Stat_Internals * stat_internals;
   double total_time_;
+  bool three_first_steps_elapsed_;  //si true, indique que les 3 premiers pas de temps sont passes
+
 };
 
 
@@ -106,8 +166,12 @@ public:
   {
     return id_ >= 0;
   };
+  inline int id() const
+  {
+    return id_;
+  };
 protected:
-  Stat_Counter_Id(int id, int level) : id_(id), level_(level) {};
+  Stat_Counter_Id(int i, int level) : id_(i), level_(level) {};
   friend class Statistiques;
   int id_;
   int level_;
@@ -135,19 +199,31 @@ class Stat_Internals;
 class Stat_Results
 {
 public:
+  Stat_Results() : time(0.0), min_time(0.0), max_time(0.0), avg_time(0.0),
+    count(0.0), min_count(0.0), max_count(0.0), avg_count(0.0),
+    quantity(0.0), min_quantity(0.0), max_quantity(0.0), avg_quantity(0.0) {};
+
   // Cumul de temps, min max et moyenne sur les differents processeurs
   double time, min_time, max_time, avg_time;
   // Nombre de comptages
   double count, min_count, max_count, avg_count;
   // Cumul des quantites comptees
   double quantity, min_quantity, max_quantity, avg_quantity;
-};
 
-inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id)
+  void compute_min_max_avg();  //calcule le min, le max et la moyenne des temps sur les procs
+
+};
+inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id, bool track_comm)
 {
   assert(counter_id.initialized());
   if (counter_id.level_ <= debug_level_)
-    begin_count_(counter_id.id_);
+    {
+      begin_count_(counter_id.id_);
+      if(track_comm) begin_communication_tracking(counter_id.id_);
+    }
+
+
+
 }
 
 // Description: Arret du compteur counter_id. On ajoute quantity a la somme des
@@ -157,10 +233,17 @@ inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id)
 //  et count sert a compter combien de fois on a appele ce compteur)
 inline void Statistiques::end_count(const Stat_Counter_Id& counter_id,
                                     int quantity,
-                                    int count)
+                                    int count,
+                                    bool track_comm)
 {
   assert(counter_id.initialized());
   if (counter_id.level_ <= debug_level_)
-    end_count_(counter_id.id_, quantity, count);
+    {
+      end_count_(counter_id.id_, quantity, count);
+      if(track_comm) end_communication_tracking(counter_id.id_);
+    }
+
+
+
 }
 #endif
