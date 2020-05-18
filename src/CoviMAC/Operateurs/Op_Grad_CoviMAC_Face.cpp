@@ -23,6 +23,7 @@
 #include <Op_Grad_CoviMAC_Face.h>
 #include <Champ_P0_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
+#include <Champ_Face_CoviMAC.h>
 #include <Neumann_sortie_libre.h>
 #include <Periodique.h>
 #include <Symetrie.h>
@@ -61,88 +62,79 @@ Entree& Op_Grad_CoviMAC_Face::readOn(Entree& s)
 
 
 // Description:
-void Op_Grad_CoviMAC_Face::associer(const Zone_dis& zone_dis,
-                                    const Zone_Cl_dis& zone_Cl_dis,
-                                    const Champ_Inc& )
+void Op_Grad_CoviMAC_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch)
 {
-  const Zone_CoviMAC& zpolymac = ref_cast(Zone_CoviMAC, zone_dis.valeur());
-  const Zone_Cl_CoviMAC& zclpolymac = ref_cast(Zone_Cl_CoviMAC, zone_Cl_dis.valeur());
-  la_zone_polymac = zpolymac;
-  la_zcl_polymac = zclpolymac;
-
-  porosite_surf.ref(zpolymac.porosite_face());
-  volume_entrelaces.ref(zpolymac.volumes_entrelaces());
-  face_voisins.ref(zpolymac.face_voisins());
-  xp.ref(zpolymac.xp());
+  ref_zone = ref_cast(Zone_CoviMAC, zone_dis.valeur());
+  ref_zcl = ref_cast(Zone_Cl_CoviMAC, zone_cl_dis.valeur());
 }
 
 void Op_Grad_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
-  const Zone_CoviMAC& zpolymac = la_zone_polymac.valeur();
+  const Zone_CoviMAC& zone = ref_zone.valeur();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleTab& nf = zone.face_normales();
+  const DoubleVect& fs = zone.face_surfaces();
+  int i, j, k, l, r, e, f, fb, fc, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
+
+  /* dimensionner / contribuer a besoin de 2, mais ajouter n'a besoin que de 1 */
+  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
+    Cerr << "Op_Grad_CoviMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
+
+  zone.init_ve(), zone.init_w1();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (int f = 0; f < zpolymac.nb_faces(); f++) for (int i = 0, e; i < 2 && (e = zpolymac.face_voisins(f, i)) >= 0; i++)
-      stencil.append_line(f, e);
+
+  /* aux faces : on depend du gradient aux faces des elements voisins de f */
+  for (f = 0; f < zone.nb_faces(); f++)
+    {
+      /* gradient a la face */
+      for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (fb = zone.w1j(i), j = 0; j < 2; j++)
+          stencil.append_line(f, f_e(fb, j));
+      /* retrait de la projection du gradient aux elements */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++)
+        for (j = zone.ved(e); j < zone.ved(e + 1); j++)
+          if (dabs(zone.dot(&nf(f, 0), &zone.vec(j, 0))) > 1e-6 * fs(f))
+            for (fb = zone.vej(j), k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
+              for (fc = zone.w1j(k), l = 0; l < 2; l++) stencil.append_line(f, f_e(fc, l));
+    }
+
+  /* aux elements : gradient aux elems */
+  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++)
+        if (dabs(zone.vec(i, r)) > 1e-6) for (f = zone.vej(i), j = zone.w1d(f); j < zone.w1d(f + 1); j++)
+            for (fb = zone.w1j(j), k = 0; k < 2; k++) stencil.append_line(nf_tot + r * ne_tot + e, f_e(fb, k));
+
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(zpolymac.nb_faces_tot(), zpolymac.nb_elem_tot(), stencil, mat);
+  Matrix_tools::allocate_morse_matrix(nf_tot + dimension * ne_tot, zone.nb_elems_faces_bord_tot(), stencil, mat);
 }
 
 DoubleTab& Op_Grad_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
-  assert_espace_virtuel_vect(inco);
-  const Zone_CoviMAC& zpolymac = la_zone_polymac.valeur();
-  const Zone_Cl_CoviMAC& zclpolymac = la_zcl_polymac.valeur();
-  const DoubleVect& face_surfaces = zpolymac.face_surfaces();
+  const Zone_CoviMAC& zone = ref_zone.valeur();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  int i, r, e, f, fb, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
+  zone.init_ve(), zone.init_w1();
 
-  double coef;
-  int n0, n1;
+  /* 1. gradient aux faces */
+  DoubleTrav gradf(zone.nb_faces());
+  for (f = 0; f < zone.nb_faces(); f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++)
+      fb = zone.w1j(i), gradf(f) += zone.w1c(i) * fs(fb) / vf(fb) * (inco(f_e(fb, 1)) - inco(f_e(fb, 0)));
 
-  // Boucle sur les bords pour traiter les conditions aux limites
-  int ndeb, nfin, num_face;
-  for (int n_bord=0; n_bord<zpolymac.nb_front_Cl(); n_bord++)
-    {
+  /* 2. gradient aux elements : avec espace virtuel */
+  DoubleTrav grade(0, dimension);
+  zone.zone().creer_tableau_elements(grade);
+  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (r = 0; r < dimension; r++)
+        grade(e, r) += zone.vec(i, r) * gradf(zone.vej(i));
+  grade.echange_espace_virtuel();
 
-      // pour chaque Condition Limite on regarde son type
-      // Si face de Dirichlet ou de Symetrie on ne fait rien
-      // Si face de Neumann on calcule la contribution au terme source
+  /* 3. contributions */
+  //faces : gradient a la face - projections des gradients aux elements amont/aval
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0, resu(f) += pf(f) * vf(f) * gradf(f); i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++)
+      resu(f) -= pf(f) * vfd(f, i) * zone.dot(&grade(e, 0), &nf(f, 0)) / fs(f);
+  //elements : gradient
+  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++) resu(nf_tot + r * ne_tot + e) += pe(e) * ve(e) * grade(e, r);
 
-      const Cond_lim& la_cl = zclpolymac.les_conditions_limites(n_bord);
-      if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
-        {
-          const Neumann_sortie_libre& la_cl_typee =
-            ref_cast(Neumann_sortie_libre, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = le_bord.num_premiere_face();
-          nfin = ndeb + le_bord.nb_faces();
-
-          for (num_face=ndeb; num_face<nfin; num_face++)
-            {
-              double P_imp = la_cl_typee.flux_impose(num_face-ndeb);
-              n0 = face_voisins(num_face,0);
-              if (n0 != -1)
-                {
-                  coef = face_surfaces(num_face)*porosite_surf(num_face);
-                  resu(num_face) += (coef*(P_imp - inco(n0)));
-                }
-              else
-                {
-                  n1 = face_voisins(num_face,1);
-                  coef = face_surfaces(num_face)*porosite_surf(num_face);
-                  resu(num_face) += (coef*(inco(n1) - P_imp));
-                }
-            }
-        }
-      // Fin de la boucle for
-    }
-
-  // Boucle sur les faces internes
-  for (num_face=zpolymac.premiere_face_int(); num_face<zpolymac.nb_faces(); num_face++)
-    {
-      n0 = face_voisins(num_face,0);
-      n1 = face_voisins(num_face,1);
-      coef = face_surfaces(num_face)*porosite_surf(num_face);
-      resu(num_face) += coef*(inco(n1)-inco(n0));
-    }
   resu.echange_espace_virtuel();
   return resu;
 }
@@ -153,207 +145,60 @@ DoubleTab& Op_Grad_CoviMAC_Face::calculer(const DoubleTab& inco, DoubleTab& resu
   return ajouter(inco,resu);
 }
 
-void Op_Grad_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& la_matrice) const
+/* n'agit que sur les vitesses aux faces */
+DoubleVect& Op_Grad_CoviMAC_Face::multvect(const DoubleTab& inco, DoubleTab& resu) const
 {
-  assert_espace_virtuel_vect(inco);
-  const Zone_CoviMAC& zpolymac = la_zone_polymac.valeur();
-  const Zone_Cl_CoviMAC& zclpolymac = la_zcl_polymac.valeur();
-  const DoubleVect& face_surfaces = zpolymac.face_surfaces();
+  const Zone_CoviMAC& zone = ref_zone.valeur();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem();
+  int i, r, e, f, fb, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
+  zone.init_w1();
 
-  double coef;
-  int n0, n1;
-
-  // Boucle sur les bords pour traiter les conditions aux limites
-  int ndeb, nfin, num_face;
-  for (int n_bord=0; n_bord<zpolymac.nb_front_Cl(); n_bord++)
+  DoubleTrav gradf(zone.nb_faces());
+  for (f = 0; f < zone.nb_faces(); f++)
     {
-
-      // pour chaque Condition Limite on regarde son type
-      // Si face de Dirichlet ou de Symetrie on ne fait rien
-      // Si face de Neumann on calcule la contribution au terme source
-
-      const Cond_lim& la_cl = zclpolymac.les_conditions_limites(n_bord);
-      if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = le_bord.num_premiere_face();
-          nfin = ndeb + le_bord.nb_faces();
-
-          for (num_face=ndeb; num_face<nfin; num_face++)
-            {
-              n0 = face_voisins(num_face,0);
-              if (n0 != -1)
-                {
-                  coef = face_surfaces(num_face)*porosite_surf(num_face);
-                  la_matrice(num_face, n0) += coef;
-                }
-              else
-                {
-                  n1 = face_voisins(num_face,1);
-                  coef = face_surfaces(num_face)*porosite_surf(num_face);
-                  la_matrice(num_face, n1) -= coef;
-                }
-            }
-        }
-      // Fin de la boucle for
+      for (i = zone.w1d(f); i < zone.w1d(f + 1); i++)
+        fb = zone.w1j(i), gradf(f) += zone.w1c(i) * fs(fb) / vf(fb) * (inco(f_e(fb, 1)) - inco(f_e(fb, 0)));
+      resu(f) = pf(f) * vf(f) * gradf(f);
     }
 
-  // Boucle sur les faces internes
-  for (num_face=zpolymac.premiere_face_int(); num_face<zpolymac.nb_faces(); num_face++)
+  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (r = 0; r < dimension; r++)
+        resu(nf_tot + ne_tot * r + e) += pe(e) * ve(e) * zone.vec(i, r) * gradf(zone.vej(i));
+
+  resu.echange_espace_virtuel();
+  return resu;
+}
+
+void Op_Grad_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  const Zone_CoviMAC& zone = ref_zone.valeur();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  int i, j, k, l, r, e, f, fb, fc, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
+  zone.init_ve(), zone.init_w1();
+
+  /* aux faces : on depend du gradient aux faces des elements voisins de f */
+  for (f = 0; f < zone.nb_faces(); f++)
     {
-      n0 = face_voisins(num_face,0);
-      n1 = face_voisins(num_face,1);
-      coef = face_surfaces(num_face)*porosite_surf(num_face);
-      la_matrice(num_face, n0) += coef;
-      la_matrice(num_face, n1) -= coef;
+      /* gradient a la face */
+      for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (fb = zone.w1j(i), j = 0; j < 2; j++)
+          matrice(f, f_e(fb, j)) += pf(f) * vf(f) * zone.w1c(i) * (j ? -1 : 1) * fs(fb) / vf(fb);
+
+      /* retrait de la projection du gradient aux elements */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++) for (j = zone.ved(e); j < zone.ved(e + 1); j++)
+          if (dabs(zone.dot(&nf(f, 0), &zone.vec(j, 0))) > 1e-6 * fs(f))
+            for (fb = zone.vej(j), k = zone.w1d(fb); k < zone.w1d(fb + 1); k++) for (fc = zone.w1j(k), l = 0; l < 2; l++)
+                matrice(f, f_e(fc, l)) += pf(f) * vfd(f, i) * zone.dot(&nf(f, 0), &zone.vec(j, 0)) / fs(f) * zone.w1c(k) * (l ? 1 : -1) * fs(fc) / vf(fc);
     }
+
+  /* aux elements : gradient aux elems */
+  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++)
+        if (dabs(zone.vec(i, r)) > 1e-6) for (f = zone.vej(i), j = zone.w1d(f); j < zone.w1d(f + 1); j++) for (fb = zone.w1j(j), k = 0; k < 2; k++)
+              matrice(nf_tot + r * ne_tot + e, f_e(fb, k)) += pe(e) * ve(e) * zone.vec(i, r) * zone.w1c(j) * (k ? -1 : 1) * fs(fb) / vf(fb);
 }
 
 int Op_Grad_CoviMAC_Face::impr(Sortie& os) const
 {
   return 0;
-  const int& impr_mom=la_zone_polymac->zone().Moments_a_imprimer();
-  const int impr_sum=(la_zone_polymac->zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_polymac->zone().Bords_a_imprimer().est_vide() ? 0:1);
-  const Schema_Temps_base& sch = equation().probleme().schema_temps();
-  const Zone_CoviMAC& zpolymac = la_zone_polymac.valeur();
-  const Zone_Cl_CoviMAC& zclpolymac = la_zcl_polymac.valeur();
-  const DoubleVect& face_surfaces = zpolymac.face_surfaces();
-  const Equation_base& eqn = equation();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Champ_P0_CoviMAC& la_pression_P0 = ref_cast(Champ_P0_CoviMAC,eqn_hydr.pression_pa().valeur());
-  const DoubleTab& pression_P0 = la_pression_P0.valeurs();
-  int elem0;
-  int face;
-  double n0;//, n1, n2 ;
-  const int nb_faces =  zpolymac.nb_faces_tot();
-  DoubleTab xgr(nb_faces,dimension);
-  xgr=0.;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = zpolymac.xv();
-      const ArrOfDouble& c_grav=zpolymac.zone().cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
-    }
-
-  flux_bords_.resize(zpolymac.nb_faces_bord(),dimension);
-  flux_bords_ = 0.;
-  // flux_bords contains the sum of flux on each boundary:
-  DoubleTrav tab_flux_bords(3,zpolymac.nb_front_Cl(),3);
-  tab_flux_bords=0.;
-  /*  flux_bord(k)          ->   flux_bords2(0,num_cl,k)
-      flux_bord_perio1(k)   ->   flux_bords2(1,num_cl,k)
-      flux_bord_perio2(k)   ->   flux_bords2(2,num_cl,k)
-      moment(k)             ->   flux_bords2(3,num_cl,k) */
-  int nb_bord =  zpolymac.nb_front_Cl();
-  for (int n_bord=0; n_bord<nb_bord; n_bord++)
-    {
-      const Cond_lim& la_cl = zclpolymac.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int impr_boundary = (zpolymac.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
-
-      for (face=ndeb; face<nfin; face++)
-        {
-          elem0 = face_voisins(face,0);
-          n0 = face_surfaces(face)*porosite_surf(face);
-          for (int r = 0; r < dimension; r++)
-            {
-              flux_bords_(face,r) = dabs(zpolymac.face_normales(face, r) / face_surfaces(face)) * (pression_P0(elem0))*n0;
-              tab_flux_bords(0, n_bord, r) += flux_bords_(face,r);
-            }
-
-          if (dimension == 2)
-            {
-              if (impr_mom)
-                tab_flux_bords(2, n_bord, 2) +=flux_bords_(face,1)*xgr(face,0)-flux_bords_(face,0)*xgr(face,1);
-              if (impr_boundary)
-                {
-                  tab_flux_bords(1, n_bord, 0) += flux_bords_(face,0) ;
-                  tab_flux_bords(1, n_bord, 1) += flux_bords_(face,1) ;
-                }
-            }
-          else if (dimension == 3)
-            {
-              if (impr_mom)
-                {
-                  tab_flux_bords(2, n_bord, 0) +=flux_bords_(face,2)*xgr(face,1)-flux_bords_(face,1)*xgr(face,2);
-                  tab_flux_bords(2, n_bord, 1) +=flux_bords_(face,0)*xgr(face,2)-flux_bords_(face,2)*xgr(face,0);
-                  tab_flux_bords(2, n_bord, 2) +=flux_bords_(face,1)*xgr(face,0)-flux_bords_(face,0)*xgr(face,1);
-                }
-              if (impr_boundary)
-                {
-                  tab_flux_bords(1, n_bord, 0) += flux_bords_(face,0) ;
-                  tab_flux_bords(1, n_bord, 1) += flux_bords_(face,1) ;
-                  tab_flux_bords(1, n_bord, 2) += flux_bords_(face,2) ;
-                }
-            }
-        } // fin for face
-    } // fin for n_bord
-
-  // Sum on all process:
-  mp_sum_for_each_item(tab_flux_bords);
-
-  // Write the boundary fluxes:
-  if (je_suis_maitre())
-    {
-      SFichier Flux_grad;
-      ouvrir_fichier(Flux_grad,"",1);
-      SFichier Flux_grad_moment;
-      ouvrir_fichier(Flux_grad_moment,"moment",impr_mom);
-      SFichier Flux_grad_sum;
-      ouvrir_fichier(Flux_grad_sum,"sum",impr_sum);
-      Flux_grad.add_col(sch.temps_courant());
-      if (impr_mom) Flux_grad_moment.add_col(sch.temps_courant());
-      if (impr_sum) Flux_grad_sum.add_col(sch.temps_courant());
-      for (int n_bord=0; n_bord<nb_bord; n_bord++)
-        {
-          for (int r = 0; r < dimension; r++)
-            {
-              Flux_grad.add_col(tab_flux_bords(0, n_bord, r));
-              if (impr_sum) Flux_grad_sum.add_col(tab_flux_bords(1, n_bord, r));
-            }
-          if (impr_mom) for (int r = (dimension < 3 ? 2 : 0); r < max(dimension, 3); r++)
-              Flux_grad_moment.add_col(tab_flux_bords(2, n_bord, r));
-        }
-      Flux_grad << finl;
-      if (impr_sum) Flux_grad_sum << finl;
-      if (impr_mom) Flux_grad_moment << finl;
-    }
-
-  const LIST(Nom)& Liste_Bords_a_imprimer = zpolymac.zone().Bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide())
-    {
-      EcrFicPartage Flux_grad_face;
-      ouvrir_fichier_partage(Flux_grad_face,"",impr_bord);
-      for (int n_bord=0; n_bord<nb_bord; n_bord++)
-        {
-          const Cond_lim& la_cl = zclpolymac.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          if (zpolymac.zone().Bords_a_imprimer().contient(le_bord.le_nom()))
-            {
-              if (je_suis_maitre())
-                {
-                  Flux_grad_face << "# Force par face sur " << le_bord.le_nom() << " au temps ";
-                  sch.imprimer_temps_courant(Flux_grad_face);
-                  Flux_grad_face << " : " << finl;
-                }
-              for (face=ndeb; face<nfin; face++)
-                {
-                  Flux_grad_face << "# Face a x= " << zpolymac.xv(face,0) << " y= " << zpolymac.xv(face,1);
-                  if (dimension==3) Flux_grad_face << " z= " << zpolymac.xv(face,2);
-                  Flux_grad_face << " : Fx= " << flux_bords_(face, 0) << " Fy= " << flux_bords_(face, 1);
-                  if (dimension==3) Flux_grad_face << " Fz= " << flux_bords_(face, 2);
-                  Flux_grad_face << finl;
-                }
-              Flux_grad_face.syncfile();
-            }
-        }
-    }
-  return 1;
 }

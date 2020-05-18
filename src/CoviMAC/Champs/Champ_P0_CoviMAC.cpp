@@ -135,8 +135,9 @@ int Champ_P0_CoviMAC::imprime(Sortie& os, int ncomp) const
 
 int Champ_P0_CoviMAC::fixer_nb_valeurs_nodales(int n)
 {
-  assert(n == zone_dis_base().zone().nb_elem());
-  creer_tableau_distribue(zone_dis_base().zone().md_vector_elements());
+  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, zone_dis_base());
+  assert(n == zone.nb_elem() + zone.premiere_face_int());
+  creer_tableau_distribue(zone.mdv_elems_faces_bord);
   return n;
 }
 

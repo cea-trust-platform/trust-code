@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Solveur_U_P.cpp
-// Directory:   $TRUST_ROOT/src/CoviMAC/Solveur_U_P
+// File:        Solveur_UP.cpp
+// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
 // Version:     /main/48
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Solveur_U_P.h>
+#include <Solveur_UP.h>
 #include <Navier_Stokes_std.h>
 #include <EChaine.h>
 #include <Debog.h>
@@ -43,14 +43,14 @@
 #include <Neumann_sortie_libre.h>
 
 
-Implemente_instanciable(Solveur_U_P,"Solveur_U_P",Simple);
+Implemente_instanciable(Solveur_UP,"Solveur_UP",Simple);
 
-Sortie& Solveur_U_P::printOn(Sortie& os ) const
+Sortie& Solveur_UP::printOn(Sortie& os ) const
 {
   return Simple::printOn(os);
 }
 
-Entree& Solveur_U_P::readOn(Entree& is )
+Entree& Solveur_UP::readOn(Entree& is )
 {
   return Simple::readOn(is);
 }
@@ -69,11 +69,11 @@ void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_base& la_
 //Sortie Uk ; Pk
 //k designe une iteration
 
-void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice_inut,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
+void Solveur_UP::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice_inut,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
 {
   if (eqn.probleme().is_QC())
     {
-      Cerr<<" Solveur_U_P cannot be used with a quasi-compressible fluid."<<finl;
+      Cerr<<" Solveur_UP cannot be used with a quasi-compressible fluid."<<finl;
       Cerr<<__FILE__<<(int)__LINE__<<" non code" <<finl;
       exit();
     }
@@ -83,39 +83,23 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
 
-  DoubleTab_parts ppart(pression); //pression contient (p, v) -> on doit ignorer la 2e partie...
   MD_Vector md_UP;
   {
     MD_Vector_composite mds;
     mds.add_part(current.get_md_vector());
-    mds.add_part(ppart[0].get_md_vector());
+    mds.add_part(pression.get_md_vector());
     md_UP.copy(mds);
   }
-  /*
-    MD_Vector md_PU;
-    {
-      MD_Vector_composite mds;
-      mds.add_part(pression.get_md_vector());
-      mds.add_part(current.get_md_vector());
-      md_PU.copy(mds);
-    }
-  */
+
   DoubleTab Inconnues,residu;
   MD_Vector_tools::creer_tableau_distribue(md_UP, Inconnues);
-
-
   MD_Vector_tools::creer_tableau_distribue(md_UP, residu);
 
   DoubleTab_parts residu_parts(residu);
   DoubleTab_parts Inconnues_parts(Inconnues);
 
   Inconnues_parts[0]=current;
-  Inconnues_parts[1]=ppart[0];
-
-  //DoubleTrav gradP(current);
-  //DoubleTrav correction_en_pression(pression);
-  //DoubleTrav correction_en_vitesse(current);
-  //DoubleTrav resu(current);
+  Inconnues_parts[1]=pression;
 
   Operateur_Grad& gradient = eqnNS.operateur_gradient();
   Operateur_Div& divergence = eqnNS.operateur_divergence();
@@ -128,7 +112,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
   Matrice_global.get_bloc(0,1).typer("Matrice_Morse");
   Matrice_Morse& mat_grad=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,1).valeur());
-  gradient.valeur().dimensionner( mat_grad);
+  gradient.valeur().dimensionner(mat_grad);
   gradient.valeur().contribuer_a_avec(pression, mat_grad);
   mat_grad.get_set_coeff()*=-1;
 
@@ -141,17 +125,10 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
     if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
   if (!has_P_ref && !Process::me()) mat_diag.coeff(0, 0) = 1; //revient a imposer P(0) = 0
 
-
   Matrice_global.get_bloc(0,0).typer("Matrice_Morse");
   Matrice_Morse& matrice=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,0).valeur());
   eqnNS.dimensionner_matrice(matrice);
   eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
-
-  //on doit ajouter des lignes vides a grad et des colonnes vides a div
-  int n = matrice.get_tab1().size(), i;
-  for (i = mat_grad.get_tab1().size(), mat_grad.get_set_tab1().resize(n); i < n; i++)
-    mat_grad.get_set_tab1()(i) = mat_grad.get_tab1()(i - 1);
-  mat_div.set_nb_columns(n - 1);
 
   residu_parts[0]*=-1;
   matrice.ajouter_multvect(current, residu_parts[0]);
@@ -169,10 +146,11 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
 
   //Calcul de Uk = U*_k + U'k
-  ppart[0] += Inconnues_parts[1];
   current  += Inconnues_parts[0];
+  pression += Inconnues_parts[1];
+  eqn.solv_masse().corriger_solution(current, current); //mise en coherence de ve avec vf
   //current.echange_espace_virtuel();
-  Debog::verifier("Solveur_U_P::iterer_NS current",current);
+  Debog::verifier("Solveur_UP::iterer_NS current",current);
 
   if (1)
     {

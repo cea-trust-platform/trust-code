@@ -22,6 +22,7 @@
 
 #include <Op_Div_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
+#include <Champ_Face_CoviMAC.h>
 //#include <Les_Cl.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
@@ -69,40 +70,53 @@ void Op_Div_CoviMAC::associer(const Zone_dis& zone_dis,
 void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int i, f, n, N = equation().inconnue().valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  ch.init_cl();
 
   IntTab stencil(0,2);
   stencil.set_smart_resize(1);
-  for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (j = 0, fb = zone.w1j(f); j < 2 && (e = f_e(f, j)) >= 0; j++)
-        if (e < ne_tot) for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * fb + n);
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++)
+      for (n = 0; n < N; n++) stencil.append_line(N * f_e(f, i) + n, N * f + n);
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(N * zone.nb_elem_tot(), N * zone.nb_faces_tot(), stencil, matrice);
+  Matrix_tools::allocate_morse_matrix(N * zone.nb_elems_faces_bord_tot(), N * (nf_tot + dimension * ne_tot), stencil, matrice);
 }
 
 DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  const Conds_lim& cls = la_zcl_CoviMAC.valeur().les_conditions_limites();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleTab& nf = zone.face_normales();
   const IntTab& f_e = zone.face_voisins();
-  int i, e, f, fb, n, N = vit.line_size(), ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+  int i, e, f, r, n, N = vit.line_size(), ne_tot = zone.nb_elem_tot();
   assert(div.line_size() == N);
-  DoubleTrav pvfn(N);
+  ch.init_cl();
 
   DoubleTab& tab_flux_bords = ref_cast(DoubleTab,flux_bords_);
   tab_flux_bords.resize(zone.nb_faces_bord(),1);
   tab_flux_bords=0;
 
-  for (f = 0; f < nf_tot; f++)
+  for (f = 0; f < zone.nb_faces(); f++)
     {
-      /* 1. interpolation faces duales -> faces du champ porosite * vitesse */
-      for (i = zone.w1d(f), pvfn = 0; i < zone.w1d(f + 1); i++) for (n = 0, fb = zone.w1j(i); n < N; n++) pvfn(n) += zone.w1c(i) * pf(fb) * vit.addr()[N * fb + n];
-      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pvfn(n);
-
-      /* 2. contribution amont - aval */
-      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0 && e < ne) for (n = 0; n < N; n++) div.addr()[N * e + n] -= (i ? 1 : -1) * fs(f) * pvfn(n);
+      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne_tot || ch.icl(e - ne_tot, 0) > 1) /* on ne contribue pas si ligne de bord de Neumann */
+          for (n = 0; n < N; n++) div.addr()[N * e + n] += (i ? -1 : 1) * fs(f) * pf(f) * vit.addr()[N * f + n];
+      if (f < zone.premiere_face_int())
+        {
+          /* contribution a tab_flux_bords */
+          for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit.addr()[N * f + n];
+          /* faces de Dirichlet : ajout de la vitesse imposee */
+          if (ch.icl(f, 0) == 3) for (r = 0, e = ne_tot + f; r < dimension; r++)
+              for (n = 0; n < N; n++) div.addr()[N * e + n] += nf(f, r) * pf(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), dimension * n + r);
+          else if (ch.icl(f, 0) == 1) /* faces de Nuemann : - P_imp (pour que Delta.P == -Div donne P = P_imp) */
+            for (n = 0; n < N; n++) div.addr()[N * e + n] = - ref_cast(Neumann, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
+        }
     }
+
+
   div.echange_espace_virtuel();
 
   return div;
@@ -110,12 +124,14 @@ DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 void Op_Div_CoviMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+  int i, e, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
+  ch.init_cl();
 
-  for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (j = 0, fb = zone.w1j(f); j < 2 && (e = f_e(f, j)) >= 0; j++)
-        if (e < ne) for (n = 0; n < N; n++) mat(N * e + n, N * fb + n) += (i ? 1 : -1) * fs(f) * zone.w1c(i) * pf(fb);
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne_tot || ch.icl(e - ne_tot, 0) > 1) /* pour ne pas toucher aux Neumann */
+        for (n = 0; n < N; n++) mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);
 }
 
 DoubleTab& Op_Div_CoviMAC::calculer(const DoubleTab& vit, DoubleTab& div) const

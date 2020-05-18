@@ -509,7 +509,6 @@ void Zone_CoviMAC::discretiser()
         volumes_entrelaces_(f) += (volumes_entrelaces_dir_(f, i) = face_surfaces(f) * sqrt(dot(&xp_(e01[i], 0), &xp_(e01[i], 0), &xvp_(f, 0), &xvp_(f, 0))));
     }
   xvp_.echange_espace_virtuel(), xvm_.echange_espace_virtuel(), face_tangentes_.echange_espace_virtuel();
-  interp_cache.resize(nb_elem_tot());
 
   // orthocentrer();
 
@@ -552,15 +551,48 @@ void Zone_CoviMAC::discretiser()
   arete_faces_.resize(a_f_vect.size(), a_f_max), arete_faces_ = -1;
   for (int i = 0, j; i < arete_faces_.dimension(0); i++) for (j = 0; j < (int) a_f_vect[i].size(); j++) arete_faces_(i, j) = a_f_vect[i][j];
 
-  //MD_vector pour Champ_P0_CoviMAC (elems + faces)
-  MD_Vector_composite mdc_ef;
-  mdc_ef.add_part(zone().md_vector_elements()), mdc_ef.add_part(md_vector_faces());
-  mdv_elems_faces.copy(mdc_ef);
+  //MD_Vector pour Champ_P0_CoviMAC (elems + faces de bord)
+  MD_Vector_composite mdc_efb;
+  mdc_efb.add_part(zone().md_vector_elements());
+  IntVect renum;
+  creer_tableau_faces(renum, ArrOfInt::NOCOPY_NOINIT);
+  renum = -1;
+  for (int i = 0; i < premiere_face_int(); i++) renum[i] = 0;
+  renum.echange_espace_virtuel();
+  MD_Vector md_fb;
+  MD_Vector_tools::creer_md_vect_renum_auto(renum, md_fb);
+  mdc_efb.add_part(md_fb);
+  mdv_elems_faces_bord.copy(mdc_efb);
+
+  /* ajout de ces nouveaux items dans faces_voisins */
+  IntTab proc_face(0, 2), proc_face_bord(0, 2);
+  creer_tableau_faces(proc_face), MD_Vector_tools::creer_tableau_distribue(mdv_elems_faces_bord, proc_face_bord, Array_base::NOCOPY_NOINIT);
+  for (int f = 0; f < premiere_face_int(); f++) for (int i = 0; i < 2; i++)
+      proc_face(f, i) = proc_face_bord(nb_elem_tot() + f, i) = i ? f : Process::me();
+  proc_face.echange_espace_virtuel(), proc_face_bord.echange_espace_virtuel();
+  std::map<std::array<int, 2>, int> pf_idx;
+  for (int idx = nb_elem_tot(); idx < proc_face_bord.dimension_tot(0); idx++)
+    pf_idx[ {{ proc_face_bord(idx, 0), proc_face_bord(idx, 1) }}] = idx;
+  for (int f = 0; f < nb_faces_tot(); f++) if (face_voisins_(f, 1) < 0 && pf_idx.count({{ proc_face(f, 0), proc_face(f, 1) }}))
+  face_voisins_(f, 1) = pf_idx.at({{ proc_face(f, 0), proc_face(f, 1) }});
+  nb_elems_faces_bord_tot_ = proc_face_bord.dimension_tot(0);
 
   //MD_vector pour Champ_Face_CoviMAC (faces + aretes)
-  MD_Vector_composite mdc_fa;
-  mdc_fa.add_part(md_vector_faces()), mdc_fa.add_part(dimension < 3 ? zone().domaine().md_vector_sommets() : md_vector_aretes());
-  mdv_faces_aretes.copy(mdc_fa);
+  MD_Vector_composite mdc_fe;
+  mdc_fe.add_part(md_vector_faces());
+  for (int r = 0; r < dimension; r++) mdc_fe.add_part(zone().md_vector_elements());
+  mdv_faces_elems.copy(mdc_fe);
+
+
+  //MD_vector pour Champ_P0_CoviMAC (elems + faces)
+  // MD_Vector_composite mdc_ef;
+  // mdc_ef.add_part(zone().md_vector_elements()), mdc_ef.add_part(md_vector_faces());
+  // mdv_elems_faces.copy(mdc_ef);
+
+  //MD_vector pour Champ_Face_CoviMAC (faces + aretes)
+  // MD_Vector_composite mdc_fa;
+  // mdc_fa.add_part(md_vector_faces()), mdc_fa.add_part(dimension < 3 ? zone().domaine().md_vector_sommets() : md_vector_aretes());
+  // mdv_faces_aretes.copy(mdc_fa);
 }
 
 void Zone_CoviMAC::orthocentrer()
@@ -919,6 +951,28 @@ DoubleVect& Zone_CoviMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
   return dist;
 }
 
+//interpolation normales aux faces -> elements d'ordre 1
+void Zone_CoviMAC::init_ve() const
+{
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleVect& ve = volumes_, &fs = face_surfaces();
+  int i, k, e, f;
+
+  if (is_init["ve"]) return;
+  Cerr << zone().domaine().le_nom() << " : initialisation de ve... ";
+  ved.resize(1), ved.set_smart_resize(1), vej.set_smart_resize(1), vec.resize(0, dimension), vec.set_smart_resize(1);
+  //formule (1) de Basumatary et al. (2014) https://doi.org/10.1016/j.jcp.2014.04.033 d'apres Perot
+  for (e = 0; e < nb_elem_tot(); ved.append_line(vej.dimension(0)), e++)
+    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+      {
+        double x[3] = { 0, };
+        for (k = 0; k < dimension; k++) x[k] = fs(f) * (xv(f, k) - xp(e, k)) * (e == f_e(f, 0) ? 1 : -1) / ve(e);
+        vej.append_line(f), dimension < 3 ? vec.append_line(x[0], x[1]) : vec.append_line(x[0], x[1], x[2]);
+      }
+  CRIMP(ved), CRIMP(vej), CRIMP(vec);
+  is_init["ve"] = 1, Cerr << "OK" << finl;
+}
+
 void Zone_CoviMAC::init_w1() const
 {
   if (is_init["w1"]) return;
@@ -994,13 +1048,12 @@ void Zone_CoviMAC::init_w1_elem() const
 {
   if (is_init["w1"]) return;
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
-  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces(), &ve = volumes();
+  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
   const DoubleTab& nf = face_normales(), &vfd = volumes_entrelaces_dir(), &tf = face_tangentes();
   int i, j, e, e0, e1, f, fb, s, n_f, ctr[2] = {0, }, ne_tot = Process::mp_sum(nb_elem()), r;
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
   w1d.set_smart_resize(1), w1j.set_smart_resize(1), w1c.set_smart_resize(1);
-  ved.set_smart_resize(1), vej.set_smart_resize(1), vec.resize(0, dimension), vec.set_smart_resize(1);
   Cerr << zone().domaine().le_nom() << " : initialisation de w1... ";
 
   DoubleTab W, N, R, Xn, Xr, S, poids;
@@ -1046,14 +1099,6 @@ void Zone_CoviMAC::init_w1_elem() const
       for (auto &&c_f : xv_f) i_f.push_back(c_f.second);
       //remplissage de w1
       for (i = 0; i < n_f; i++) for (j = 0, f = i_f[i]; j < n_f; j++) if (w1elem(e, i, j)) w1map[f][i_f[j]] += vfd(f, e != f_e(f, 0)) / vf(f) * w1elem(e, i, j);
-      //en prime : remplissage de ve
-      std::array<double, 3> val = {{ 0, }};
-      for (i = 0; i < n_f; i++, val = {{0, }})
-      {
-        for (j = 0, f = i_f[i]; j < n_f; j++) for (r = 0, fb = i_f[j]; r < dimension; r++)
-            val[r] += fs(fb) / ve(e) * w1elem(e, j, i) * (xv_(fb, r) - xp_(e, r)) * (e == f_e(fb, 0) ? 1 : -1);
-        vej.append_line(f), dimension < 3 ? vec.append_line(val[0], val[1]) : vec.append_line(val[0], val[1], val[2]);
-      }
     }
 
   //w1map -> w1d / w1j / w1c
@@ -1063,7 +1108,6 @@ void Zone_CoviMAC::init_w1_elem() const
   for (f = 0, w1d.append_line(0); f < nb_faces_tot(); f++, w1d.append_line(w1j.dimension(0))) for (auto fb_c : w1map[f])
       if (dabs(fb_c.second) > 1e-16) w1j.append_line(fb_c.first), w1c.append_line(fb_c.second), nnz(f)++;
   CRIMP(w1d), CRIMP(w1j), CRIMP(w1c);
-  CRIMP(ved), CRIMP(vej), CRIMP(vec);
   Cerr << 100. * Process::mp_sum(ctr[0]) / ne_tot << "/" << 100. * Process::mp_sum(ctr[1]) / ne_tot << "% D/S width: "
        << mp_somme_vect(nnz) * 1. / nf_tot << " lambda: " << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1])
        << " -> " << Process::mp_max(spectre[2]) << " / " << Process::mp_max(spectre[3]) << finl;
@@ -1168,33 +1212,6 @@ void Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, Double
   ctr[0] += diag, ctr[1] += sym && !diag;
 }
 
-
-const std::vector<std::pair<int, double>>& Zone_CoviMAC::interp_dir(int e, const std::array<double, 6>& t_x, int change) const
-{
-  if (interp_cache[e].count(t_x)) return interp_cache[e].at(t_x); //deja fait!
-  // else if (!change) abort(); //pas le droit d'ajouter une direction
-
-  init_ve();
-
-  std::vector<std::pair<int, double>>& interp = interp_cache[e][t_x];
-
-  const IntTab& e_f = elem_faces();
-  for (int i = 0, f, r, ok; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-    {
-      for (r = 0, ok = 1; r < dimension; r++) ok &= dabs(xvm_(f, r) - xp_(e, r)  - t_x[3 + r]) < 1e-6;
-      if (!ok) continue;
-      interp.push_back({ f, dot(&t_x[0], &face_tangentes_(f, 0)) > 0 ? 1 : -1 });
-      return interp;
-    }
-
-  for (int i = ved(e); i < ved(e + 1); i++)
-    {
-      double scal = dot(&t_x[0], &vec(i, 0));
-      if (dabs(scal) > 1e-6) interp.push_back({ vej(i), scal });
-    }
-
-  return interp;
-}
 
 //stabilisation des matrices m1 et m2 de CoviMAC
 inline void Zone_CoviMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const

@@ -95,7 +95,7 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, mon_equation->inconnue().valeur());
-  int i, j, k, e, eb, f, fb, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int i, j, k, e, f, fb, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nfb = zone.premiere_face_int();
   zone.init_w1(), ch.init_cl();
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
@@ -109,12 +109,15 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
-      for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++)
-          for (j = 0, fb = zone.w1j(i); j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < ne)
-              for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++) stencil.append_line(e, eb);
+      for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++)
+          if ((e = f_e(f, i)) < ne || (e >= ne_tot && e < ne_tot + nfb && ch.icl(e - ne_tot, 0) > 1)) //elem reel ou CL de Dirichlet
+            for (j = zone.w1d(f); j < zone.w1d(f + 1); j++) for (fb = zone.w1j(j), k = 0; k < 2; k++)
+                stencil.append_line(e, f_e(fb, k));
+          else if (e >= ne_tot && e < ne_tot + nfb && ch.icl(e - ne_tot, 0) == 1) //CL de Neumann -> ligne P = P_imp
+            stencil.append_line(e, e);
 
       tableau_trier_retirer_doublons(stencil);
-      Matrix_tools::allocate_morse_matrix(ne_tot, ne_tot, stencil, mat);
+      Matrix_tools::allocate_morse_matrix(zone.nb_elems_faces_bord_tot(), zone.nb_elems_faces_bord_tot(), stencil, mat);
       tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
       stencil_done = 1;
     }
@@ -127,12 +130,15 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
     }
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
-  for (f = 0; f < nf_tot; f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) if (ch.icl(fb = zone.w1j(i), 0) < 2)
-        {
-          double coeff = fs(f) * zone.w1c(i) * pf(fb) * pf(fb) * fs(fb) / (diag.size() ? diag(fb) : pf(fb) * vf(fb));
-          for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < ne) for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++)
-                mat(e, eb) += (j ? -1 : 1) * (k ? -1 : 1) * coeff;
-        }
+  double coeff, coeff_b;
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (coeff = pf(f) * fs(f) * (diag.size() ? pf(f) * vf(f) / diag(f) : 1), i = 0; i < 2; i++)
+      if ((e = f_e(f, i)) < ne || (e >= ne_tot && e < ne_tot + nfb && ch.icl(e - ne_tot, 0) > 1)) //elem reel ou CL de Dirichlet
+        for (j = zone.w1d(f); j < zone.w1d(f + 1); j++)
+          for (fb = zone.w1j(j), coeff_b = coeff * zone.w1c(j) * fs(fb) / vf(fb), k = 0; k < 2; k++)
+            mat(e, f_e(fb, k)) += (i ? -1 : 1) * (k ? -1 : 1) * coeff_b;
+      else if (e >= ne_tot && e < ne_tot + nfb && ch.icl(e - ne_tot, 0) == 1) //CL de Neumann
+        mat(e, e) = 1;
 
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 

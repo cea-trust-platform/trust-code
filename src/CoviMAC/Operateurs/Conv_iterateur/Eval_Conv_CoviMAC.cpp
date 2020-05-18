@@ -38,12 +38,12 @@ Champ_Inc_base& Eval_Conv_CoviMAC::vitesse()
 void Eval_Conv_CoviMAC::associer(const Champ_Face_CoviMAC& vit)
 {
   vitesse_=vit;
-  dt_vitesse.ref(vit.valeurs_normales());
+  dt_vitesse.ref(vit.valeurs());
 }
 
 // Description:
 // mise a jour du DoubleTab vitesse
 void Eval_Conv_CoviMAC::mettre_a_jour( )
 {
-  dt_vitesse.ref(vitesse_->valeurs_normales());
+  dt_vitesse.ref(vitesse_->valeurs());
 }

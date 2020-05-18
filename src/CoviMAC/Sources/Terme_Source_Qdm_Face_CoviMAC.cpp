@@ -75,14 +75,14 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleTab& tf = zone.face_tangentes(), &vfd = zone.volumes_entrelaces_dir(), vals = la_source->valeurs();
-  const DoubleVect& pf = zone.porosite_face();
-  int i, e, f, r, unif = sub_type(Champ_Uniforme, la_source.valeur());
+  const DoubleTab& vals = la_source->valeurs();
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
+  int e, r, unif = sub_type(Champ_Uniforme, la_source.valeur()), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
   ch.init_cl();
 
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (r = 0; r < dimension; r++) resu(f) += vfd(f, i) * pf(f) * tf(f, r) * vals(unif ? 0 : e, r);
+  /* juste aux elements */
+  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++)
+      resu(nf_tot + r * ne_tot + e) += pe(e) * ve(e) * vals(unif ? 0 : e, r);
 
   return resu;
 }

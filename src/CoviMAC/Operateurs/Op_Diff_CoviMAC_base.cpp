@@ -322,25 +322,21 @@ void Op_Diff_CoviMAC_base::update_nu() const
   nu_fac_.echange_espace_virtuel();
 
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
-  const DoubleTab& xp = zone.xp(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
-  int e, e0, e1, k, n, N = nu_faces_.dimension(1), N_nu = nu_.line_size();
-  double vec[3] = {0, }, nu_e = 0;
+  const DoubleVect& vf = zone.volumes_entrelaces();
+  const DoubleTab& tf = zone.face_tangentes(), &vfd = zone.volumes_entrelaces_dir();
+  int e, k, n, N = nu_faces_.dimension(1), N_nu = nu_.line_size(), ne_tot = zone.nb_elem_tot();
+  double nu_e;
   DoubleTrav v_sur_nu(N);
 
+  /* moyenne harmonique de la diffusivite (directionelle) de chaque cote */
   for (f = 0; f < zone.nb_faces(); f++)
     {
-      /* vecteur unitaire de la face duale a f */
-      if ((e1 = f_e(f, 1)) < 0) for (n = 0; n < dimension; n++) vec[n] = nf(f, n) / fs(f);
-      else for (n = 0, e0 = f_e(f, 0), e1 = f_e(f, 1); n < dimension; n++) vec[n] = (xp(e1, n) - xp(e0, n)) * fs(f) / vf(f);
-
-      /* moyenne harmonique de la diffusivite (directionelle) de chaque cote */
-      for (i = 0, v_sur_nu = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
+      for (i = 0, v_sur_nu = 0; i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++) for (n = 0; n < N; n++)
           {
             if (N_nu == N) nu_e = nu_.addr()[N * e + n]; //isotrope
-            else if (N_nu == N * dimension) for (j = 0, nu_e = 0; j < dimension; j++) nu_e += nu_.addr()[dimension * (N * e + n) + j] * vec[j] * vec[j]; //anisotrope diagonal
+            else if (N_nu == N * dimension) for (j = 0, nu_e = 0; j < dimension; j++) nu_e += nu_.addr()[dimension * (N * e + n) + j] * tf(f, j) * tf(f, j); //anisotrope diagonal
             else if (N_nu == N * dimension * dimension) for (j = 0, nu_e = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
-                  nu_e += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * vec[j] * vec[k];
+                  nu_e += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * tf(f, j) * tf(f, k);
             v_sur_nu(n) = nu_e > 0 && v_sur_nu(n) != DBL_MAX ? v_sur_nu(n) + vfd(f, i) / nu_e : DBL_MAX;
           }
       /* diffusivite finale*/

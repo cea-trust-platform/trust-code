@@ -108,6 +108,7 @@ public :
   inline int nb_faces_joint() const;
   inline int nb_faces_std() const;
   inline int nb_elem_std() const;
+  inline int nb_elems_faces_bord_tot() const;
   inline double carre_pas_du_maillage() const;
   inline double carre_pas_maille(int i) const
   {
@@ -171,10 +172,7 @@ public :
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
   //interpolations d'ordre 1 du vecteur vitesse aux elements
-  void init_ve() const
-  {
-    init_w1();
-  };
+  void init_ve() const;
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
@@ -194,10 +192,6 @@ public :
   void init_w1_som() const;  //en interpolant aux sommets
   mutable IntTab w1d, w1j; //stockage de la ligne f dans [wd(f), wd(f + 1)[ : indices de colonne dans wj, coeffs dans wc
   mutable DoubleTab w1c;
-
-  //interpolation de la direction tf a la position xf (stockee dans le vecteur t_x) a partir des faces de l'element e
-  const std::vector<std::pair<int, double>>& interp_dir(int e, const std::array<double, 6>& t_x, int change = 0) const;
-
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
   mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
@@ -221,6 +215,7 @@ public :
   mutable DoubleTab m1ci;
 
   //MD_Vectors pour Champ_P0_CoviMAC (elems + faces) et pour Champ_Face_CoviMAC (faces + aretes)
+  MD_Vector mdv_faces_elems, mdv_elems_faces_bord;
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
   //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem_faces
@@ -236,6 +231,7 @@ private:
   DoubleVect longueur_aretes_; //longueur des aretes
   int nb_faces_std_;                    // nombre de faces standard
   int nb_elem_std_;                     // nombre d'elements standard
+  int nb_elems_faces_bord_tot_;         //nombre d'items total de mdv_elems_faces_bord
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
@@ -248,8 +244,6 @@ private:
   mutable IntTab arete_faces_; //connectivite face -> aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
   DoubleTab xvp_, xvm_;        //intersection de la ligne "amont-aval" avec chaque face, milieu de cette ligne
-  //interp_cache[e][{tf, xf}] : liste { f, c } de faces/coefficients pour reconstruire la direction tf a la position xf dans l'element e
-  mutable std::vector<std::map<std::array<double, 6>, std::vector<std::pair<int, double>>>> interp_cache;
 };
 
 // Fonctions inline
@@ -346,6 +340,12 @@ inline int Zone_CoviMAC::nb_faces_std() const
 inline int  Zone_CoviMAC::nb_elem_std() const
 {
   return nb_elem_std_;
+}
+
+// Decription:
+inline int  Zone_CoviMAC::nb_elems_faces_bord_tot() const
+{
+  return nb_elems_faces_bord_tot_;
 }
 
 // Decription:

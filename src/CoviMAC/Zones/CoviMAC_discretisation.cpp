@@ -124,8 +124,8 @@ void CoviMAC_discretisation::discretiser_champ(
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
-  if (type.debute_par(type_elem)) nb_ddl = z.nb_elem();
-  else if (type.debute_par(type_champ_vitesse)) nb_ddl = zone_CoviMAC.nb_faces();
+  if (type.debute_par(type_elem)) nb_ddl = z.nb_elem() + zone_CoviMAC.premiere_face_int();
+  else if (type.debute_par(type_champ_vitesse)) nb_ddl = zone_CoviMAC.nb_faces() + dimension * zone_CoviMAC.nb_elem();
   else if (type.debute_par("Champ_P1_CoviMAC")) nb_ddl = zone_CoviMAC.nb_som();
   else assert(0);
 

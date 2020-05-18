@@ -47,8 +47,10 @@ public:
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
   /* idem que Solveur_Masse_base, mais ajoute des lignes triviales pour les CL a vitesse imposee */
+  virtual void dimensionner(Matrice_Morse& matrix) const;
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
+  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
 
 private:
 

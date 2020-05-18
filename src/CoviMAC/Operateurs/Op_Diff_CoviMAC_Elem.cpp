@@ -157,7 +157,7 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
         nu_grad(f, n) = nu_faces(f, n) * (inco.addr()[N * f_e(f, 0) + n] - ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n)) * fs(f) / vf(f);
 
   /* interpolation et divergence */
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < zone.nb_faces(); f++)
     {
       for (j = zone.w1d(f), phi = 0; j < zone.w1d(f + 1); j++) for (n = 0; n < N; n++) phi(n) += zone.w1c(j) * nu_grad(zone.w1j(j), n);
       for (i = 0, phi *= fs(f); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
@@ -192,10 +192,9 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
     else if (ch.icl(f, 0) < 6) for (n = 0; n < N; n++) dnu_grad(f, n) = 0;//Neumann
 
   /* interpolation et divergence */
-  for (f = 0; f < zone.nb_faces_tot(); f++) for (j = zone.w1d(f); j < zone.w1d(f + 1); j++)
+  for (f = 0; f < zone.nb_faces(); f++) for (j = zone.w1d(f); j < zone.w1d(f + 1); j++)
       for (i = 0, fb = zone.w1j(j); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++)
             for (n = 0; n < N; n++) matrice(N * e + n, N * eb + n) += (i ? 1 : -1) * (k ? 1 : -1) * fs(f) * zone.w1c(j) * dnu_grad(fb, n);
-  i++;
 }
 
 void Op_Diff_CoviMAC_Elem::modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const

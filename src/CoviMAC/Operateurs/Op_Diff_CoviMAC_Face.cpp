@@ -71,27 +71,20 @@ void Op_Diff_CoviMAC_Face::completer()
 void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleTab& tf = zone.face_tangentes(), &xp = zone.xp(), &xvm = zone.xvm();
-  int i, j, k, l, r, e, eb, f, fb, fc, nf_tot = zone.nb_faces_tot();
+  const IntTab& f_e = zone.face_voisins();
+  int i, j, k, r, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
-  /* qdm a la face f -> element amont/aval e -> face fb de e -> flux a la face fc -> elements amont/aval eb */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        {
-          std::array<double, 6> t_x = {{ 0, }}; //direction / position relative a l'element e
-          for (r = 0; r < dimension; r++) t_x[r] = tf(f, r), t_x[3 + r] = xvm(f, r) - xp(e, r);
-          /* decomposition du gradient a la face fb a l'aide de w1 */
-          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) for (k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
-              for (l = 0, fc = zone.w1j(k); l < 2 && (eb = f_e(fc, l)) >= 0; l++)
-                for (auto &&f_v : zone.interp_dir(eb, t_x, 1)) if (ch.icl(f_v.first, 0) < 2) stencil.append_line(f, f_v.first);
-        }
+  /* operateur aux elements dans chaque direction */
+  for (f = 0; f < zone.nb_faces(); f++) for (i = zone.w1d(f); i < zone.w1d(f + 1); i++)
+      for (j = 0, fb = zone.w1j(i); j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < zone.nb_elem())
+          for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++) if (eb < ne_tot) for (r = 0; r < dimension; r++)
+                stencil.append_line(nf_tot + ne_tot * r + e, nf_tot + ne_tot * r + eb);
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(nf_tot, nf_tot, stencil, mat);
+  Matrix_tools::allocate_morse_matrix(nf_tot + dimension * ne_tot, nf_tot + dimension * ne_tot, stencil, mat);
 }
 
 // ajoute la contribution de la convection au second membre resu
@@ -99,34 +92,34 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const IntTab& f_e = zone.face_voisins();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const DoubleVect& ve = zone.volumes(), &fs = zone.face_surfaces(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
-  const DoubleTab& tf = zone.face_tangentes(), &xp = zone.xp(), &xvm = zone.xvm(), &vfd = zone.volumes_entrelaces_dir();
-  int i, j, k, l, r, e, eb, f, fb, fc;
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
+  int i, r, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
 
   update_nu();
+  DoubleTrav nu_grad(nf_tot, dimension), phi(dimension); //champ -nu grad v aux faces duales
 
-  /* qdm a la face f -> element amont/aval e -> face fb de e -> flux a la face fc -> elements amont/aval eb */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        {
-          std::array<double, 6> t_x = {{ 0, }}; //direction / position relative a l'element e
-          for (r = 0; r < dimension; r++) t_x[r] = tf(f, r), t_x[3 + r] = xvm(f, r) - xp(e, r);
-          /* decomposition du gradient a la face fb a l'aide de w1 */
-          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) for (k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
-              {
-                fc = zone.w1j(k);
-                double fac = vfd(f, i) / ve(e) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) * zone.w1c(k) * nu_faces_(fc, 0) * pf(fc) * fs(fc) / vf(fc);
-                for (l = 0; l < 2; l++)
-                  {
-                    eb = f_e(fc, l) >= 0 ? f_e(fc, l) : (ch.icl(fc, 0) < 3 ? f_e(fc, 0) : -1); //ne vaut -1 que pour Dirichlet
-                    if (eb >= 0) for (auto &&f_v : zone.interp_dir(eb, t_x)) resu(f) -= fac * (l ? -1 : 1) * f_v.second * inco(f_v.first);
-                    else if (ch.icl(fc, 0) == 3) for (r = 0; r < dimension; r++) //diffusion avec la CL
-                        resu(f) -= fac * (l ? -1 : 1) * t_x[r] * ref_cast(Dirichlet, cls[ch.icl(fc, 1)].valeur()).val_imp(ch.icl(fc, 2), r);
-                  }
-              }
-        }
+  /* operateur aux elements dans chaque direction */
+  // - nu grad v_i aux faces duales
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (!ch.icl(f, 0) || ch.icl(f, 0) > 2) //pas de flux si Neumann ou Symetrie
+      {
+        for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0 && e < ne_tot) for (r = 0; r < dimension; r++) //contribution de l'element
+              nu_grad(f, r) += (i ? -1 : 1) * inco(nf_tot + ne_tot * r + e);
+          else if (ch.icl(f, 0) == 3) for (r = 0; r < dimension; r++) //diffusion avec la CL
+              nu_grad(f, r) += (i ? -1 : 1) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), r);
+        for (r = 0; r < dimension; r++) nu_grad(f, r) *= nu_faces_(f, 0) * fs(f) / vf(f);
+      }
+
+  //interpolation et divergence
+  for (f = 0; f < zone.nb_faces(); f++)
+    {
+      for (i = zone.w1d(f), phi = 0; i < zone.w1d(f + 1); i++) for (r = 0; r < dimension; r++) phi(r) += zone.w1c(i) * nu_grad(zone.w1j(i), r);
+      for (i = 0, phi *= fs(f); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
+          for (r = 0; r < dimension; r++) resu(nf_tot + ne_tot * r + e) -= (i ? -1 : 1) * phi(r);
+    }
+
   return resu;
 }
 
@@ -136,31 +129,24 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
 inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const IntTab& f_e = zone.face_voisins();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleVect& ve = zone.volumes(), &fs = zone.face_surfaces(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
-  const DoubleTab& tf = zone.face_tangentes(), &xp = zone.xp(), &xvm = zone.xvm(), &vfd = zone.volumes_entrelaces_dir();
-  int i, j, k, l, r, e, eb, f, fb, fc;
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
+  int i, j, k, r, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
 
   update_nu();
+  DoubleTrav dnu_grad(nf_tot, dimension); //derivee du champ -nu grad v aux faces duales
 
-  /* qdm a la face f -> element amont/aval e -> face fb de e -> flux a la face fc -> elements amont/aval eb */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.icl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        {
-          std::array<double, 6> t_x = {{ 0, }}; //direction / position relative a l'element e
-          for (r = 0; r < dimension; r++) t_x[r] = tf(f, r), t_x[3 + r] = xvm(f, r) - xp(e, r);
-          /* decomposition du gradient a la face fb a l'aide de w1 */
-          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) for (k = zone.w1d(fb); k < zone.w1d(fb + 1); k++)
-              {
-                fc = zone.w1j(k);
-                double fac = vfd(f, i) / ve(e) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) * zone.w1c(k) * nu_faces_(fc, 0) * pf(fc) * fs(fc) / vf(fc);
-                for (l = 0; l < 2; l++)
-                  {
-                    eb = f_e(fc, l) >= 0 ? f_e(fc, l) : (ch.icl(fc, 0) < 3 ? f_e(fc, 0) : -1); //ne vaut -1 que pour Dirichlet
-                    if (eb >= 0) for (auto &&f_v : zone.interp_dir(eb, t_x)) if (ch.icl(f_v.first, 0) < 2) matrice(f, f_v.first) += fac * (l ? -1 : 1) * f_v.second;
-                  }
-              }
-        }
+  /* operateur aux elements dans chaque direction */
+  // - nu grad v_i aux faces duales :
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.icl(f, 0) == 0 || ch.icl(f, 0) > 2)
+      for (r = 0; r < dimension; r++) dnu_grad(f, r) = nu_faces_(f, 0) * fs(f) / vf(f);
+
+  //interpolation et divergence
+  for (f = 0; f < zone.nb_faces(); f++) for (j = zone.w1d(f); j < zone.w1d(f + 1); j++)
+      for (i = 0, fb = zone.w1j(j); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
+          for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++) if (eb < ne_tot) for (r = 0; r < dimension; r++)
+                matrice(nf_tot + ne_tot * r + e, nf_tot + r * ne_tot + eb) += (i ? 1 : -1) * (k ? 1 : -1) * fs(f) * zone.w1c(j) * dnu_grad(fb, r);
 }
 
 //Description:

@@ -28,6 +28,7 @@
 #include <Ref_Zone_CoviMAC.h>
 #include <Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
+#include <Ref_Champ_Face_CoviMAC.h>
 
 //
 // .DESCRIPTION class Op_Grad_CoviMAC_Face
@@ -55,100 +56,14 @@ public:
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const;
   int impr(Sortie& os) const;
-
-  inline Zone_CoviMAC& zone_CoviMAC();
-  inline const Zone_CoviMAC& zone_CoviMAC() const;
-  inline Zone_Cl_CoviMAC& zone_Cl_CoviMAC();
-  inline const Zone_Cl_CoviMAC& zone_Cl_CoviMAC() const;
-  inline int& face_voisins_(int i, int j);
-  inline const int& face_voisins_(int i, int j) const ;
-  inline double volume_entrelaces_(int i) ;
-  inline const double& volume_entrelaces_(int i) const ;
-  inline double porosite_surf_(int i) ;
-  inline const double& porosite_surf_(int i) const ;
-  inline double xp_(int elem, int ori);
-  inline const double& xp_(int elem, int ori) const;
+  /* variation de gradP du fait d'une correction en pression -> action differente de ajouter() !!! */
+  virtual DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
 
 private:
 
-  REF(Zone_CoviMAC) la_zone_polymac;
-  REF(Zone_Cl_CoviMAC) la_zcl_polymac;
-
-  DoubleTab xp;
-  DoubleVect volume_entrelaces;
-  IntTab face_voisins;
-
-  inline double dist_norm_bord(int ) const;
-
+  REF(Zone_CoviMAC) ref_zone;
+  REF(Zone_Cl_CoviMAC) ref_zcl;
 protected:
-
-  DoubleVect porosite_surf;
 };
-
-inline double Op_Grad_CoviMAC_Face::xp_(int elem, int ori)
-{
-  return xp(elem,ori);
-}
-
-inline const double& Op_Grad_CoviMAC_Face::xp_(int elem, int ori) const
-{
-  return xp(elem,ori);
-}
-
-inline double Op_Grad_CoviMAC_Face::porosite_surf_(int i)
-{
-  return porosite_surf(i);
-}
-
-inline const double& Op_Grad_CoviMAC_Face::porosite_surf_(int i) const
-{
-  return porosite_surf(i);
-}
-
-inline double Op_Grad_CoviMAC_Face::volume_entrelaces_(int i)
-{
-  return volume_entrelaces(i);
-}
-
-inline const double& Op_Grad_CoviMAC_Face::volume_entrelaces_(int i) const
-{
-  return volume_entrelaces(i);
-}
-
-
-inline int& Op_Grad_CoviMAC_Face::face_voisins_(int i, int j)
-{
-  return face_voisins(i,j);
-}
-
-inline const int& Op_Grad_CoviMAC_Face::face_voisins_(int i, int j) const
-{
-  return face_voisins(i,j);
-}
-
-inline Zone_CoviMAC& Op_Grad_CoviMAC_Face::zone_CoviMAC()
-{
-  return la_zone_polymac.valeur();
-}
-
-inline const Zone_CoviMAC& Op_Grad_CoviMAC_Face::zone_CoviMAC() const
-{
-  return la_zone_polymac.valeur();
-}
-
-inline Zone_Cl_CoviMAC& Op_Grad_CoviMAC_Face::zone_Cl_CoviMAC()
-{
-  return la_zcl_polymac.valeur();
-}
-
-inline const Zone_Cl_CoviMAC& Op_Grad_CoviMAC_Face::zone_Cl_CoviMAC() const
-{
-  return la_zcl_polymac.valeur();
-}
-
-inline double Op_Grad_CoviMAC_Face::dist_norm_bord(int num_face) const
-{
-  return la_zone_polymac->dist_norm_bord(num_face);
-}
 
 #endif

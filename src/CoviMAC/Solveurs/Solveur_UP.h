@@ -14,24 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Solveur_U_P.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Solveur_U_P
+// File:        Solveur_UP.h
+// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
 // Version:     /main/24
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Solveur_U_P_included
-#define Solveur_U_P_included
+#ifndef Solveur_UP_included
+#define Solveur_UP_included
 #include <Simple.h>
 
 //Description
 
 
-class Solveur_U_P : public Simple
+class Solveur_UP : public Simple
 {
 
-  Declare_instanciable(Solveur_U_P);
+  Declare_instanciable(Solveur_UP);
 
 public :
   virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge);

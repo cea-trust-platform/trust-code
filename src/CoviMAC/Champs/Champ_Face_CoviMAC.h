@@ -55,40 +55,7 @@ public :
     return ref_zone_vf_.valeur();
   } ;
 
-  /* methodes de Champ_Inc_Base reimplementees pour tenir compte de valeurs_normales */
-  virtual int fixer_nb_valeurs_temporelles(int i);
   virtual int fixer_nb_valeurs_nodales(int n);
-  virtual void creer_tableau_distribue(const MD_Vector& md, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  virtual DoubleTab& valeurs();
-  virtual const DoubleTab& valeurs() const
-  {
-    return Champ_Inc_base::valeurs();
-  } ;
-  virtual DoubleTab& valeurs(double tps);
-  virtual const DoubleTab&   valeurs(double temps) const
-  {
-    return Champ_Inc_base::valeurs(temps);
-  } ;
-  virtual DoubleTab& futur(int i);
-  virtual const DoubleTab& futur(int i=1) const
-  {
-    return Champ_Inc_base::futur(i);
-  } ;
-  virtual DoubleTab& passe(int i);
-  virtual const DoubleTab& passe(int i=1) const
-  {
-    return Champ_Inc_base::passe(i);
-  } ;
-  virtual Champ_Inc_base& avancer(int i);
-  virtual Champ_Inc_base& reculer(int i);
-  virtual double changer_temps_futur(const double& t, int i);
-  virtual double changer_temps_passe(const double& t, int i);
-  virtual operator DoubleTab& ();
-  virtual double changer_temps(const double& t);
-
-  /* valeurs normales */
-  const DoubleTab& valeurs_normales() const;
-  const DoubleTab& valeurs_normales(double tps);
 
   virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
   virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
@@ -120,25 +87,11 @@ public :
   void init_cl() const;
   mutable IntTab icl; // icl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
 
-  //integrale de la vitesse sur le bord des aretes duales -> pour calculer la vorticite
-  void init_ra() const;
-  mutable IntTab radeb, raji, rajf; //reconstruction du rotationnel par (raji, raci)[radeb(a, 0), radeb(a + 1, 0)[ (vitesses aux faces)
-  mutable DoubleTab raci, racf;     //                                + (rajf, racf)[radeb(a, 1), radeb(a + 1, 1)[ (val_imp aux faces de bord)
-
-  //interpolation aux aretes de la vitesse (dans le plan normal a chaque arete)
-  void init_va() const;
-  mutable IntTab vadeb, vaji, vajf;   //reconstruction de la vitesse par (vaji, vaci)[vadeb(a, 0), vadeb(a + 1, 0)[ (vitesses aux faces)
-  mutable DoubleTab vaci, vacf;       // + (vajf, vacf)[vadeb(a, 1), vadeb(a + 1, 1)[ (val_imp aux faces de bord) + (vaja, vaca)[vadeb(., 2)] (val_imp aux aretes)
-
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void interp_ve (const DoubleTab& inco, DoubleTab& val) const;
+  void update_ve (DoubleTab& val) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
-  /* interpolation faces duales -> faces */
-  void interp_vfn(const DoubleTab& src, DoubleTab& dst) const;
-
 protected:
-  mutable Roue_ptr valeurs_normales_, valeurs_normales_a_jour_;
   REF(Zone_VF) ref_zone_vf_;
 };
 
