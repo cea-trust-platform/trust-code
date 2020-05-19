@@ -1115,10 +1115,6 @@ void Statistiques::print_communciation_tracking_details()
   for (int i = 0; i < si.nb_counters; i++)
     {
 
-      double tot_time_in_zone_i = si.counter_time[i].second();
-      double tot_avg_time_in_zone_i = Process::mp_sum(tot_time_in_zone_i) / Process:: nproc();
-      if(!tot_avg_time_in_zone_i) continue;
-
       double tot_communication_in_zone_i = 0;
       for(int j = 0; j < si.nb_comm_counters; j++)
         {
@@ -1131,7 +1127,8 @@ void Statistiques::print_communciation_tracking_details()
       double tot_avg_communication_in_zone_i = Process::mp_sum(tot_communication_in_zone_i);
       tot_avg_communication_in_zone_i /= Process::nproc();
 
-      int comm_pourcent = tot_communication_in_zone_i / tot_time_in_zone_i * 100;
+      double tot_time_in_zone_i = si.counter_time[i].second();
+      int comm_pourcent = tot_time_in_zone_i != 0.0 ? tot_communication_in_zone_i / tot_time_in_zone_i * 100 : 0.0;
       int avg_comm_pourcent = Process::mp_sum(comm_pourcent) / Process::nproc();
 
       if (tot_avg_communication_in_zone_i)
