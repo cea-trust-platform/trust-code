@@ -2,7 +2,7 @@
 # OpenMPI install script
 old_version=1.2.9
 default_version=2.0.4
-latest_version=2.1.3
+latest_version=4.0.3
 version=$default_version
 # Cas ou l'on force la version la plus recente:
 [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ] && version=$latest_version
@@ -16,8 +16,9 @@ options=""
 if [ $version != $old_version ]
 then
    # --with-memory-manager=none evite les adress not mapped avec TRUST en share libs: important donc
-   options="--with-memory-manager=none --with-hwloc=internal --disable-libompitrace --disable-vt"
+   options="--with-memory-manager=none --with-hwloc=internal --disable-libompitrace"
    [ -f $TRUST_ROOT/exec/valgrind ] && options=$options" --with-valgrind=$TRUST_ROOT/exec/valgrind"
+   [ $version = $latest_version ] && options=$options" --enable-mpi1-compatibility" # HDF5 qui utilise des MPI deprecated...
 fi
 # On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a
 options="--enable-static --disable-shared --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
