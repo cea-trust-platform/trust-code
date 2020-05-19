@@ -1,0 +1,146 @@
+# Thermalhydraulic 2D : Boussinesq approximation #
+# PARALLEL OK 6 #
+dimension 2
+# Define a thermalhydraulic problem #
+Pb_Thermohydraulique pb
+
+# Define the domain (a square cavity 0.01m*0.01m with 10*10 cells): #
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Cavite
+        {
+                Origine 0. 0.
+                Nombre_de_Noeuds 3 3
+                Longueurs 0.01 0.01
+        }
+        {
+                Bord Gauche X = 0.  0. <= Y <= 0.01
+                Bord Haut Y = 0.01  0. <= X <= 0.01
+                Bord Bas Y = 0.     0. <= X <= 0.01
+                Bord Droit X = 0.01 0. <= Y <= 0.01
+        }
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+        Partition_tool Metis { Nb_parts 2 }
+        Larg_joint 2
+        zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+# VDF discretizaton #
+VDF dis
+
+# Time scheme #
+Scheme_euler_explicit sch
+Read sch
+{
+        tinit 0.2
+        tmax 0.3
+        dt_min 0.013
+        dt_max 0.013
+        dt_impr 0.013
+        dt_sauv 0.1
+        seuil_statio 1.e-8
+        precision_impr 8
+}
+
+# Incompressible fluid #
+Fluide_Incompressible fluide
+Read fluide
+{
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+# Define the dilatability coefficient expressed in K^-1 #
+        beta_th Champ_Uniforme 1 3.41e-3
+}
+
+# Gravity is mandatory here: #
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+# Link all the objects #
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+
+domaine front
+extraire_surface
+{
+        domaine front
+        probleme pb
+        avec_certains_bords 1 Gauche
+}
+
+Read pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression petsc cholesky { }
+                convection { quick }
+                diffusion { }
+# Boussinesq source term is mandatory if buoyancy is not neglected: #
+                sources { boussinesq_temperature { T0 5. } }
+# No initial flow: #
+                initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+                boundary_conditions {
+                        Haut paroi_fixe
+                        Bas paroi_fixe
+                        Gauche paroi_fixe
+                        Droit paroi_fixe
+                }
+        }
+        Convection_Diffusion_Temperature
+        {
+                diffusion { }
+                convection { quick }
+# The wall are hot (10C) at the left and cooled (0C) at the right: #
+                boundary_conditions
+                {
+                        Haut paroi_adiabatique
+                        Bas paroi_adiabatique
+                        Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+                        Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+                }
+# Initial temperature in the cavity 5C #
+                initial_conditions { Temperature Champ_Uniforme 1 5. }
+        }
+
+        Post_processing
+        {
+# Advanced fields definition: #
+         Definition_champs
+         {
+         	Moyenne_vitesse_temperature Moyenne { t_deb 0.05 t_fin 0.15 source refChamp { Pb_champ pb temperature } }
+         }
+         Probes
+         {
+                sonde_moyenne_Moyenne_vitesse_temperature Moyenne_vitesse_temperature periode 0.01 numero_elem_sur_maitre 0
+         }
+         format lml
+         fields nb_pas_dt_post 10
+         {
+                pression elem
+                vitesse elem
+                temperature elem
+         }
+         }
+# Save the unknowns #
+        sauvegarde binaire run3.sauv
+        resume_last_time binaire run2.sauv
+}
+Solve pb
+# Solve the problem #

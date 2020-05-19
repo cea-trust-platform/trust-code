@@ -1,0 +1,42 @@
+#!/bin/bash
+
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error when checking:\n $msg" && err=1 && exit $err
+}
+
+jdd=`pwd`
+jdd=`basename $jdd`
+
+# Recuperer la valeur de la moyenne convergee a partir du run1
+max="`cat run1_SONDE_MOYENNE_MOYENNE_VITESSE_TEMPERATURE.son | wc -l`"
+let i=max 
+moyenne_conv=`awk -v l=$i 'NR==l{ print }' $"run1_SONDE_MOYENNE_MOYENNE_VITESSE_TEMPERATURE.son" | $TRUST_Awk '{print $2}'`
+
+# On verifie que dans le run2 la valeur de la moyenne n'a pas changee
+msg="Verification du run2"
+max="`cat run2_SONDE_MOYENNE_MOYENNE_VITESSE_TEMPERATURE.son | wc -l`"
+let i=4
+while [ $i -lt $max ]
+do
+let i=$i+1
+moyenne=`awk -v l=$i 'NR==l{ print }' $"run2_SONDE_MOYENNE_MOYENNE_VITESSE_TEMPERATURE.son" | $TRUST_Awk '{print $2}'`
+# On verifie que la valeur de la moynne est la meme
+err=`echo $moyenne_conv $moyenne | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+message $err 0
+done
+
+# On verifie que dans le run3 la valeur de la moyenne n'a pas changee
+max="`cat $jdd"_SONDE_MOYENNE_MOYENNE_VITESSE_TEMPERATURE.son" | wc -l`"
+let i=4
+while [ $i -lt $max ]
+do
+let i=$i+1
+moyenne=`awk -v l=$i 'NR==l{ print }' $jdd"_SONDE_MOYENNE_MOYENNE_VITESSE_TEMPERATURE.son" | $TRUST_Awk '{print $2}'`
+# On verifie que la valeur de la moynne est la meme
+err=`echo $moyenne_conv $moyenne | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+message $err 0
+done
+
+# Si tout va bien
+exit 0
