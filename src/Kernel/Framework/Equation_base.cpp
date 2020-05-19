@@ -155,6 +155,38 @@ void Equation_base::completer()
 
   inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
 
+  if (mon_probleme.valeur().get_coupled())
+    {
+      bool err = false;
+      int nb_cl = la_zone_Cl_dis->nb_cond_lim();
+      for (int i=0; i<nb_cl; i++)
+        {
+          const Cond_lim_base& la_cl = la_zone_Cl_dis.valeur().les_conditions_limites(i);
+          const Frontiere& la_frontiere = la_cl.frontiere_dis().frontiere();
+
+          bool raccord_found = false;
+
+          // VDF and polymac
+          if (la_cl.que_suis_je().debute_par("Paroi_Echange_contact") || la_cl.que_suis_je().debute_par("Echange_contact_Rayo"))
+            raccord_found = true;
+
+          // VEF
+          if (la_cl.que_suis_je().debute_par("Scalaire_impose_paroi") || la_cl.que_suis_je().debute_par("paroi_temperature_imposee_rayo") || la_cl.que_suis_je().debute_par("temperature_imposee_paroi"))
+            raccord_found = true;
+
+          if ( raccord_found && !sub_type(Raccord_base,la_frontiere))
+            {
+              Cerr << "====================================================================" << finl;
+              Cerr << "Boundary " << la_frontiere.le_nom() << " should be a raccord" << finl;
+              Cerr << "Add in your data file between the definition and the partition of the domain " << mon_probleme.valeur().domaine().le_nom() << " : " << finl;
+              Cerr << "Modif_bord_to_raccord " << mon_probleme.valeur().domaine().le_nom() << " " << la_frontiere.le_nom() << finl;
+              err = true;
+            }
+        }
+      if(err)
+        exit();
+    }
+
   // pour les eqns n'appelant pas preparer_calcul
   initialise_residu();
   int nb_op=nombre_d_operateurs();

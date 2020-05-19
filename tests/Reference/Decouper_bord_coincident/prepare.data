@@ -20,6 +20,7 @@ Mailler dom_solide
 		}
 }
 Trianguler_H dom_solide
+Modif_bord_to_raccord dom_solide Haut
 Ecrire_fichier dom_solide dom_solide.geom
 
 Mailler dom_fluide
@@ -38,6 +39,7 @@ Mailler dom_fluide
 		}
 }
 Trianguler_H dom_fluide
+Modif_bord_to_raccord dom_fluide Bas
 Ecrire_fichier dom_fluide dom_fluide.geom
 # END MESH #
 
