@@ -1,5 +1,5 @@
 diff -r bin/BUILD64/patch/Outils/lata2dx/Makefile ./Outils/lata2dx/Makefile
-9c9
+10c10
 < 	#(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
 ---
 > 	(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
