@@ -51,7 +51,7 @@ then
    options=$options" --osmesa --llvm"			# OsMesa3D en // pour faster rendering (LLVM prerequis de OsMesa3D)
    options=$options" --no-icet"				# Car icet (optimisation du rendering en //) ne compile pas
 fi
-if [ "`hostnamectl status | grep Virtualization`" != "" ]
+if [ "`hostnamectl status 1>/dev/null 2>&1 | grep Virtualization`" != "" ]
 then
    # https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/gui_manual/Building/Advanced_Usage.html#building-with-mesa-as-the-opengl-implementation
    options=$options" --mesagl --llvm" 			# Si machine virtuelle (pas teste) ou OpenGL trop vieux (ex: is213120)
