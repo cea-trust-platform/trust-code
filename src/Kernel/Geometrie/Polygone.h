@@ -87,6 +87,10 @@ public :
   {
     return PolygonIndex_;
   };
+  inline const ArrOfInt& getElemIndex() const
+  {
+    return PolygonIndex_;
+  };
   void rebuild_index();
   void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const;
   void compute_virtual_index();
