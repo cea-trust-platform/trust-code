@@ -42,7 +42,8 @@ do
       # To reproduce TRUST implicit scheme use (gmres/diag nb_it_max 5):
       #options="-ksp_type gmres -pc_type jacobi -da_grid_x $mesh_size -da_grid_y $mesh_size -ksp_atol 1e50 -ksp_check_norm_iteration 4"
       options="-ksp_type gmres -pc_type jacobi -da_grid_x $mesh_size -da_grid_y $mesh_size -ksp_rtol 1.e-2"
-      gpu_options="-dm_mat_type aijcusp -dm_vec_type cusp"
+      gpu_options="-dm_mat_type aijcusparse -dm_vec_type cuda"
+      # Voir page 23 de https://www.mcs.anl.gov/petsc/meetings/2019/slides/mills-petsc-2019.pdf
    fi
    ############
    # Test GCP #
@@ -51,9 +52,31 @@ do
    then
       # Linear solver
       mesh_size=1000 # No gain with mesh_size=100... Why? Matrix too small, the bigger, the better.
-      options="-ksp_type cg -pc_type jacobi -m $mesh_size -n $mesh_size"
-      gpu_options="-mat_type aijcusp -vec_type cusp"
-	 # Obtenu le 06/08/2014 sur curie avec mesh_size=1000:
+      # pc="-pc_type jacobi" 					# Seul dispo sur GPU en 2014, en 2020 *3.7 sur Quadro P600
+      # See https://www.mcs.anl.gov/petsc/meetings/2019/slides/mills-petsc-2019.pdf
+      #pc="-pc_type ilu -pc_factor_mat_solver_type cusparse" 	# ILU GPU mais attention aucun gain (confirme dans doc PETSc)
+      pc="-pc_type bjacobi -sub_pc_type ilu -sub_pc_factor_levels 1" 			# Dispo en 2020 (ILU non GPU), *1.4 
+      options="-ksp_type cg $pc -m $mesh_size -n $mesh_size"
+      gpu_options="-mat_type aijcusparse -vec_type cuda" 
+      gpu_options="-mat_type aijviennacl -vec_type viennacl" # Semble mieux marcher !
+	# Obtenu le 20/05/2020 sur PC is234639: 
+# Running "ex2 -ksp_type cg -pc_type jacobi -m 1000 -n 1000" (GPU options: -mat_type aijviennacl -vec_type viennacl -cuda_synchronize -cuda_view) on Device 0: "Quadro P600":
+# With 1 MPI task on 1 CPU         (cpu_per_task="    " so 1 cores reserved): 3.8413e+01 s ex2_1CPU_0GPU_on_1cores.cpu created.
+# With 1 MPI task on 1 CPU + 1 GPU (cpu_per_task="    " so 1 cores reserved): 7.5926e+00 s ex2_1CPU_1GPU_on_1cores.gpu created.
+# Acceleration PETSc between 1 MPI task on 1 CPU + 1 GPU (1000000 cells/MPI task) vs 1 MPI task on 1 CPU (1000000 cells/MPI task) : *5.05927
+
+# Running "ex2 -ksp_type cg -pc_type bjacobi -sub_pc_type ilu -sub_pc_factor_levels 1 -m 1000 -n 1000" (GPU options: -mat_type aijcusparse -vec_type cuda -cuda_synchronize -cuda_view) on Device 0: "Quadro P600":
+# With 1 MPI task on 1 CPU         (cpu_per_task="    " so 1 cores reserved): 1.6652e+01 s ex2_1CPU_0GPU_on_1cores.cpu created.
+# With 1 MPI task on 1 CPU + 1 GPU (cpu_per_task="    " so 1 cores reserved): 1.2119e+01 s ex2_1CPU_1GPU_on_1cores.gpu created.
+# Acceleration PETSc between 1 MPI task on 1 CPU + 1 GPU (1000000 cells/MPI task) vs 1 MPI task on 1 CPU (1000000 cells/MPI task) : *1.37404
+
+# Running "ex2 -ksp_type cg -pc_type jacobi -m 1000 -n 1000" (GPU options: -mat_type aijcusparse -vec_type cuda -cuda_synchronize -cuda_view) on Device 0: "Quadro P600":
+# With 1 MPI task on 1 CPU         (cpu_per_task="    " so 1 cores reserved): 3.9117e+01 s ex2_1CPU_0GPU_on_1cores.cpu created.
+# With 1 MPI task on 1 CPU + 1 GPU (cpu_per_task="    " so 1 cores reserved): 1.0357e+01 s ex2_1CPU_1GPU_on_1cores.gpu created.
+# Acceleration PETSc between 1 MPI task on 1 CPU + 1 GPU (1000000 cells/MPI task) vs 1 MPI task on 1 CPU (1000000 cells/MPI task) : *3.77687
+
+
+	 # Obtenu le 06/08/2014 sur curie avec mesh_size=1000: (-ksp_type cg -pc_type jacobi)
 	 #       	KSPSolve	MatMult	MFLOPs	Cells/MPI
 	 # 64CPUS:	1.40s		0.38s	39864	15625
 	 # 16GPUS:	1.19s		0.48s	32023	62500
@@ -69,7 +92,7 @@ do
 	 # 32CPUS:	9.09s
 	 #  4GPUS:	2.37s
 	 # 16CPUS:     10.32s
-	 #  2GPUS:	2.88s
+	 #  2GPUS :	2.88s
 	 #  8CPUS:     10.85s
 	 #  1GPUS:	4.71s
 	 # A noter que l'option 2CPUS+1GPU tourne plus vite que 1CPU+1GPU, je ne sais pas pourquoi.
@@ -108,8 +131,8 @@ do
       fi
    fi     
    # Add CPU logging:
-   log_options=" -log_summary -ksp_monitor"
-   gpu_options=$gpu_options" -cusp_synchronize" # NB: -cusp_synchronize ne sert qu'a bien mesurer les performances, inutile en production
+   log_options=" -log_view -ksp_monitor -options_left -help -ksp_view"
+   gpu_options=$gpu_options" -cuda_synchronize -cuda_view" # NB: -cuda_synchronize ne sert qu'a bien mesurer les performances, inutile en production
 
    # Number of GPU tested:
    # CPU per GPU:
@@ -131,7 +154,7 @@ do
       cpu_per_gpu=1
    fi
    
-   echo $ECHO_OPTS "Running \"$test $options\" (GPU options: $gpu_options):"
+   echo $ECHO_OPTS "Running \"$test $options\" (GPU options: $gpu_options) on `grep ^Device $TRUST_ROOT/env/card.log`:"
    # Run on several gpus:
    for gpu in $gpus
    do

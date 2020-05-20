@@ -137,7 +137,7 @@ help()
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
    echo "-queue queue                  : Create a submission file with the specified queue and submit the job."
    echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
-#   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
+[ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
@@ -320,7 +320,7 @@ do
       prod=1 && node=1
    elif [ "$1" = "-gpu" ]
    then
-      gpu=1
+      gpu=1 && soumission=1
    elif [ "$1" = "-bigmem" ]
    then
       bigmem=1
@@ -671,7 +671,7 @@ then
                             / petsc_gpu / {use_petsc_gpu=1;exit}
 	                    END {print use_petsc_gpu}'`
 fi
-if [ $PETSC_HAVE_CUDA = 1 ] && [ $USE_PETSC = 1 ]
+if [ $TRUST_USE_CUDA = 1 ]
 then
    gpu=1
 fi

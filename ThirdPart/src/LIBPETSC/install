@@ -158,35 +158,14 @@ then
 # si le build de TRUST avec TRUST_DISABLE_MPI ne fonctionne pas.
 #   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi
-
 ################
 # GPU support? #
 ################
 if [ $PETSC_HAVE_CUDA = 1 ]
 then
-   REVISION_NUMBER=`$TRUST_Awk '/Revision number:/ {gsub("\\\.","",$NF);print $NF}' $TRUST_ENV/card.log | head -1`
    echo "****************************************"
    echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
-   echo "REVISION_NUMBER=$REVISION_NUMBER"
-   [ "$REVISION_NUMBER" = "" ] && exit -1
-   ###################################################
-   # Installation de CUPS (algebre lineaire pour CUDA)
-   # CUSP has been renamed CUSPLIBRARY
-   # https://github.com/cusplibrary/cusplibrary
-   ###################################################
-   CUSP=cusplibrary-0.5.1
-   rm -r -f $ROOT/$CUSP
-   #unzip pas toujours installe sur les PCs
-   #On transforme le .zip en .tgz
-   (cd $ROOT;gunzip -f -c $CUSP.tgz | tar -xf -)
-   echo "CUSP is installed."
-   # Add ViennaCL promising: See http://viennacl.sourceforge.net/viennacl-about.html (needs OpenCL)
-   # --download-viennacl=../ViennaCL-1.5.1.tar.gz --with-opencl-dir=$OPENCL_INTEL_ROOT
-   with_gpu="--with-cuda=1 --with-cuda-dir=$CUDA_ROOT
---with-cusp=1 --with-cusp-dir=$ROOT/$CUSP
---with-thrust=1 --with-cuda-arch=sm_$REVISION_NUMBER
---with-ssl=0
-" # SSL nouveau par defaut
+   with_gpu="--with-cuda --with-cuda-dir=$CUDA_ROOT --download-viennacl"
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
 else
@@ -411,7 +390,7 @@ then
    # [ $minimal_mumps = 0 ] && add_package superlu_dist
 
    # New (Cholmod):
-   [ $minimal_mumps = 0 ] && add_package SuiteSparse
+   [ $minimal_mumps = 0 ] && add_package SuiteSparse # && with_packages=$with_packages" --CUDAOPTFLAGS=-O3 --download-suitesparse-gpu=1 --with-cuda=1" && TRUST_INT64=1
 
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
@@ -459,6 +438,7 @@ then
    #######
    [ $minimal_mumps = 0 ]  && add_package hypre
 fi
+[ "$TRUST_INT64" = 0 ] && add_package ml
 
 ##########
 # Valgrind
@@ -601,7 +581,7 @@ cd $ROOT
 ###########
 if [ "$PETSC_HAVE_CUDA" = 1 ]
 then
-   $DIR/test_gpu || exit -1
+   $DIR/test_gpu #|| exit -1
 fi
 
 ##############

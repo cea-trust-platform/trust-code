@@ -298,7 +298,7 @@ date
 export TRUST_BUILD_IN_TMP=1
 option_configure=" -disable-ccache"
 # PETSc with CUDA for GPU (needs GNU compiler for PETSc, confirmed in petsc-dev december 2013) 
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_cuda" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_petsc_have_cuda -c++=g++ -cc=gcc -fc=gfortran"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -cuda -c++=g++ -cc=gcc -fc=gfortran"
 # PETSc with OpenMP 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -force_petsc_have_openmp"
 # without PETSc 
@@ -868,7 +868,7 @@ do
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" ]
 	 then
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=cpu_3D
-	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_cuda" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda" | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_CUDA
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST_BUILD"\."`" ]

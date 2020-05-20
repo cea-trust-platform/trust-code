@@ -2060,13 +2060,13 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
       // On utilise AIJ car je n'arrive pas a faire marcher avec BAIJ
 #ifdef PETSC_HAVE_CUDA
       if (cuda_==1)
-        MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJCUSP:MATMPIAIJCUSP));
+        MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJCUSPARSE:MATMPIAIJCUSPARSE));
       else
 #endif
         MatSetType(MatricePetsc, (Process::nproc() == 1 ? MATSEQAIJ : MATMPIAIJ));
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
-  // Example: now possible to change aijcusp to aijcusparse via CLI
+  // Example: now possible to change aijcusparse to aijviennacl via CLI
   MatSetOptionsPrefix(MatricePetsc, option_prefix_);
   MatSetFromOptions(MatricePetsc);
 

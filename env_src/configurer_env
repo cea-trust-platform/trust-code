@@ -5,7 +5,7 @@
 # Une liste de variable par defaut :
 # On verifie qu'une d'entre elle existe par whence
 # Puis eventuellement, on fait un find.... Dans le cas ou le compte
-# est mal configure
+# est mal configure
 
 Display_Missing_packages()
 {
@@ -355,16 +355,23 @@ check_nvidia_cuda()
       echo "No NVIDIA drivers detected on $HOSTNAME."
    else
       echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
+<<<<<<< HEAD
       BITS=32 && [ "`uname -m | grep 64`" != "" ] && BITS=64
+=======
+      BITS=32 && [ "`uname -m`" = x86_64 ] && BITS=64
+      nvcc="`ls $CUDA_ROOT/bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
+>>>>>>> Better detect nvcc
       #########################################################################
       # CUDA detecte? On ne doit pas prendre CUDA d'une autre version TRUST...
       #########################################################################
-      if [ "`nvcc --version 2>/dev/null`" != "" ] && [ "`which nvcc | grep -v TRUST`" != "" ]
+      if [ "`$nvcc --version 2>/dev/null`" != "" ] && [ "`which $nvcc | grep -v TRUST`" != "" ]
       then
-	 CUDA_ROOT=`which nvcc`
+	 CUDA_ROOT=`which $nvcc`
 	 CUDA_ROOT=`dirname $CUDA_ROOT`
 	 CUDA_ROOT=`dirname $CUDA_ROOT`
       else
+         echo "Obsolete part. Contact pierre.ledac@cea.fr"
+	 exit 1
 	 ########################################
 	 # Sinon, installation du toolkit de CUDA
 	 ########################################
@@ -441,26 +448,22 @@ check_nvidia_cuda()
 	 else
 	    CUDA_LIB=/usr/lib`[ $BITS = 64 ] && echo 64`
 	 fi
-	 #########################################
-	 # Test CUDA encore plus leger qu'avec SDK
-	 # Voir: http://code.google.com/p/gpulammps/source/browse/trunk/lib/gpu/?r=313
-	 #########################################
-	 # NB: Le test ne fonctionne pas sur les machines du CCRT...
+	 #######################
+	 # Test CUDA deviceQuery
+	 #######################
 	 echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
-	 rm -r -f nvc_get_devices
-	 tar xfz $TRUST_ROOT/externalpacakges/nvc_get_devices.tgz
-	 cd nvc_get_devices
-	 $CUDA_ROOT/bin/nvcc -o nvc_get_devices *.cu
-	 cd ..
+         CUDA_SAMPLES=`ls $CUDA_ROOT/bin/cuda-install-samples*.sh 2>/dev/null`
+	 [ "`ls | grep NVIDIA_CUDA`" = "" ] && $CUDA_SAMPLES .
+         (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && make)
 	 (
 	    # On utilise le script trust en specifiant -gpu
 	    source ../env_TRUST.sh 1>/dev/null 2>&1
 	    LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
-	    export exec=`pwd`/nvc_get_devices/nvc_get_devices
+	    export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
 	    trust -gpu dummy_file 1>$TRUST_ENV/card.log &
             $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)
 	 )
-	 COMPUTE_CAPABILITY="`awk '/Revision number/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+	 COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
 	 # On ne supporte que les cartes double precision car les simple precision oblige a compiler
 	 # PETSc sans Hypre, MUMPS, etc et il faudrait modifier pas mal SolvPetsc.cpp
 	 PETSC_HAVE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
@@ -473,7 +476,7 @@ check_nvidia_cuda()
 	    if [ ${TRUST_CC_BASE%g++} = $TRUST_CC_BASE ]
 	    then
 	       echo "But it will not be used cause you should use GNU compilers to build PETSc with CUDA."
-	       echo "So try to run: ./configure -force_petsc_have_cuda -c++=g++ -cc=gcc -fc=gfortran"
+	       echo "So try to run: ./configure -cuda -c++=g++ -cc=gcc -fc=gfortran"
 	       echo "To force using GNU compilers."
 	       PETSC_HAVE_CUDA=0
 	    fi
@@ -2088,7 +2091,7 @@ m="# PATH to PETSc";e="PETSC_DIR=\"\$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_AR
 PETSC_HAVE_CUDA=0
 # Si la machine est utilisee pour construire un binaire semi-statique (get_binary), on ne met pas le support
 # car les shared libraries Cuda font que le binaire ne sera pas portable...
-if [ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 0 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines get_binary | grep $HOST`" = "" ]
+if [ "$TRUST_HAVE_CUDA" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 0 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines get_binary | grep $HOST`" = "" ]
 then
    check_nvidia_cuda
    # Defines prend en compte eventuellement:
