@@ -25,7 +25,7 @@
 #include <vector>
 
 #ifdef MPI_
-#include <mpi.h>
+#include <comm_incl.h>
 #include <Comm_Group_MPI.h>
 #endif
 

@@ -1,0 +1,36 @@
+jdd=`pwd`
+jdd=`basename $jdd`
+# Creation du premier calcul de t=0 a t=0.15 pour une reprise de t=0.15 a t=0.2
+cp -f $jdd.data run1.data
+echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.?g\nw" | ed run1.data
+echo $ECHO_OPTS "1,$ s?tmax 0.3?tmax 0.15?g\nw" | ed run1.data
+echo $ECHO_OPTS "1,$ s?resume_last_time binaire run2.sauv?# resume_last_time binaire run2.sauv #?g\nw" | ed run1.data
+echo $ECHO_OPTS "1,$ s?sauvegarde binaire run3.sauv?sauvegarde binaire run1.sauv?g\nw" | ed run1.data
+
+# Creation du deuxieme calcul de t=0.15 a t=0.2 pour une reprise de t=0.2 a t=0.3
+cp -f $jdd.data run2.data
+echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.15?g\nw" | ed run2.data
+echo $ECHO_OPTS "1,$ s?tmax 0.3?tmax 0.2?g\nw" | ed run2.data
+echo $ECHO_OPTS "1,$ s?resume_last_time binaire run2.sauv?resume_last_time binaire run1.sauv ?g\nw" | ed run2.data
+echo $ECHO_OPTS "1,$ s?sauvegarde binaire run3.sauv?sauvegarde binaire run2.sauv?g\nw" | ed run2.data
+
+rm -f *out *son
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   trust run1 || exit -1
+   trust run2 || exit -1
+   make_PAR.data run1
+   make_PAR.data run2
+   trust PAR_run1 2 || exit -1
+   trust PAR_run2 2 || exit -1
+else
+   trust run1 || exit -1
+   trust run2 || exit -1
+fi
+
+
+
+
+
+

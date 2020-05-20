@@ -35,6 +35,7 @@
 #include <Vect_ArrOfInt.h>
 
 #include <FichierHDFPar.h>
+#include <LecFicDiffuse.h>
 
 Implemente_instanciable( Raffiner_isotrope_parallele, "Raffiner_isotrope_parallele", Raffiner_Simplexes ) ;
 
@@ -217,7 +218,9 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
 
   Nom copy(org);
   copy = copy.nom_me(Process::nproc(), "p", 1);
-  bool is_hdf = FichierHDF::is_hdf5(copy);
+  //bool is_hdf = FichierHDF::is_hdf5(copy);
+  LecFicDiffuse test;
+  bool is_hdf = test.ouvrir(copy) && FichierHDF::is_hdf5(copy);
 
   if (!is_hdf)
     {

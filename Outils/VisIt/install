@@ -45,16 +45,14 @@ fi
 version=$1
 what=$2
 parallel=""
+new=1
 # PL: Migration progressive avec les nouvelles machines vers une procedure plus propre a partir de VisIt 3.1.1
 # Ajouter les OS uniquement si l'ancienne procedure avec VisIt 2.12.1 ne marche pas:
-[ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]             && new=1
-[ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]             && new=1
-[ "`grep 'Ubuntu 18' /etc/issue 2>/dev/null`" != "" ] 	                        && new=1
-[ "`grep 'Ubuntu 19' /etc/issue 2>/dev/null`" != "" ]                        	&& new=1
-[ "`grep 'Fedora release 27' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
-[ "`grep 'Fedora release 28' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
-[ "`grep 'Fedora release 29' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
-[ "`grep 'Fedora release 30' /etc/fedora-release 2>/dev/null`" != "" ]          && new=1
+[ "`grep 'Debian GNU/Linux [7-8]'  /etc/issue.net 2>/dev/null`" != "" ]         && new=0
+[ "`grep 'Ubuntu 1[4-7]' /etc/issue 2>/dev/null`" != "" ]                       && new=0
+[ "`grep 'Fedora release 2[0-6]' /etc/fedora-release 2>/dev/null`" != "" ]      && new=0
+[ "`grep 'CentOS Linux release [6-7]' /etc/centos-release 2>/dev/null`" != "" ] && new=0
+
 if [ "$new" = 1 ]
 then
    # Nouvelle procedure
@@ -192,6 +190,7 @@ then
             fi
 	 elif [ $version = 3_1_1 ]
 	 then
+            # See https://wci.llnl.gov/simulation/computer-codes/visit/executables
             [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu16
             [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu18
             [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu19
