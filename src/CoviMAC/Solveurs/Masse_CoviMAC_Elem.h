@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,13 @@ public:
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
+
+  /* pour les CLs */
+  virtual void dimensionner(Matrice_Morse& matrix) const;
+  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
+  virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
+
+  void appliquer_coef(DoubleVect& coef) const;
 
 private:
 

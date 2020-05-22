@@ -137,7 +137,7 @@ int Champ_P0_CoviMAC::fixer_nb_valeurs_nodales(int n)
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, zone_dis_base());
   assert(n == zone.nb_elem() + zone.premiere_face_int());
-  creer_tableau_distribue(zone.mdv_elems_faces_bord);
+  creer_tableau_distribue(zone.mdv_ch_p0);
   return n;
 }
 

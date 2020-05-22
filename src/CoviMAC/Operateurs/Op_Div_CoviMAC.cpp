@@ -72,7 +72,7 @@ void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
-  int i, f, n, N = equation().inconnue().valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int i, f, n, N = equation().inconnue().valeurs().line_size();
   ch.init_cl();
 
   IntTab stencil(0,2);
@@ -81,7 +81,7 @@ void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
       for (n = 0; n < N; n++) stencil.append_line(N * f_e(f, i) + n, N * f + n);
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(N * zone.nb_elems_faces_bord_tot(), N * (nf_tot + dimension * ne_tot), stencil, matrice);
+  Matrix_tools::allocate_morse_matrix(N * zone.nb_ch_p0_tot(), N * zone.nb_ch_face_tot(), stencil, matrice);
 }
 
 DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
@@ -111,7 +111,7 @@ DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
           /* faces de Dirichlet : ajout de la vitesse imposee */
           if (ch.icl(f, 0) == 3) for (r = 0, e = ne_tot + f; r < dimension; r++)
               for (n = 0; n < N; n++) div.addr()[N * e + n] += nf(f, r) * pf(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), dimension * n + r);
-          else if (ch.icl(f, 0) == 1) /* faces de Nuemann : - P_imp (pour que Delta.P == -Div donne P = P_imp) */
+          else if (ch.icl(f, 0) == 1) /* faces de Neumann : - P_imp (pour que Delta.P == -Div donne P = P_imp) */
             for (n = 0; n < N; n++) div.addr()[N * e + n] = - ref_cast(Neumann, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
         }
     }

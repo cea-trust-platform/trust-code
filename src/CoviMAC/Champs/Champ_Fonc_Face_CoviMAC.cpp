@@ -84,13 +84,14 @@ int Champ_Fonc_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
 Champ_base& Champ_Fonc_Face_CoviMAC::affecter_(const Champ_base& ch)
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,ref_zone_vf_.valeur());
-  const DoubleTab& tf = zone.face_tangentes(), &xv = zone.xv();
+  const DoubleTab& nf = zone.face_normales(), &xv = zone.xv();
+  const DoubleVect& fs = zone.face_surfaces();
   DoubleTab& val = valeurs(), eval;
   if (sub_type(Champ_Uniforme, ch)) eval = ch.valeurs();
   else eval.resize(val.dimension_tot(0), dimension), ch.valeur_aux(xv,eval);
 
   for (int f = 0, unif = sub_type(Champ_Uniforme, ch); f < zone.nb_faces_tot(); f++)
-    for (int r = 0; r < dimension; r++) val(f) += eval(unif ? 0 : f, r) * tf(f, r);
+    for (int r = 0; r < dimension; r++) val(f) += eval(unif ? 0 : f, r) * nf(f, r) / fs(f);
   return *this;
 }
 

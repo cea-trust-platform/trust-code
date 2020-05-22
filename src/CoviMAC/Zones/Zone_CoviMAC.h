@@ -101,46 +101,24 @@ public :
   void typer_elem(Zone& zone_geom);
   void discretiser();
   virtual void reordonner(Faces&);
-  void modifier_pour_Cl(const Conds_lim& );
+  void modifier_pour_Cl(const Conds_lim& ) { };
 
   inline const Elem_CoviMAC& type_elem() const;
   inline int nb_elem_Cl() const;
   inline int nb_faces_joint() const;
   inline int nb_faces_std() const;
   inline int nb_elem_std() const;
-  inline int nb_elems_faces_bord_tot() const;
+  inline int nb_ch_p0_tot() const;
+  inline int nb_ch_face_tot() const;
   inline double carre_pas_du_maillage() const;
   inline double carre_pas_maille(int i) const
   {
     return h_carre_(i);
   };
   inline double face_normales(int,int ) const;
-  inline double face_tangentes(int,int ) const;
-  inline const DoubleTab& xvp() const
-  {
-    return xvp_;
-  } ;
-  inline const DoubleTab& xvm() const
-  {
-    return xvm_;
-  } ;
 
-  inline const DoubleVect& longueur_aretes() const
-  {
-    return longueur_aretes_;
-  };
-  inline const DoubleTab& ta() const
-  {
-    return ta_;
-  };
-  inline const IntTab& arete_faces() const
-  {
-    return arete_faces_;
-  };
   inline DoubleTab& face_normales();
   inline const DoubleTab& face_normales() const;
-  inline DoubleTab& face_tangentes();
-  inline const DoubleTab& face_tangentes() const;
   inline IntVect& rang_elem_non_std();
   inline const IntVect& rang_elem_non_std() const;
   inline int oriente_normale(int face_opp, int elem2)const;
@@ -161,13 +139,7 @@ public :
   inline double dist_face_elem0_period(int num_face,int n0,double l) const;
   inline double dist_face_elem1_period(int num_face,int n1,double l) const;
 
-  IntVect cyclic; // cyclic(i) = 1 i le poly i est cyclique
-
-  void orthocentrer();
   void detecter_faces_non_planes() const;
-
-  //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
-  std::vector<std::map<int, int> > som_arete;
 
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
@@ -176,74 +148,38 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
-  //rotationnel aux faces d'un champ tangent aux aretes
-  void init_rf() const;
-  mutable IntTab rfdeb, rfji; //reconstruction du rotationnel par (rfji, rfci)[rfdeb(f), rfdeb(f + 1)[ (champ aux aretes)
-  mutable DoubleTab rfci;
+  /* stabilisation d'une matrice de masse "gradient -> normales" : W_2 */
+  inline void W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const;
+  void init_w2() const;
+  mutable IntTab w2d, w2i, w2j; //stockage: lignes de W_2^e dans w2i([w2d(e), w2d(e + 1)[), indices/coeffs de ces lignes dans (w2j/w2c)[w2i(i), w2i(i+1)[
+  mutable DoubleTab w2c;        //          avec le coeff diagonal en premier (facilite Echange_contact_CoviMAC)
 
-  //stabilisation d'une matrice de masse mimetique en un element : dans CoviMAC -> m1 ou m2
-  inline void ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const;
-  inline void M_stabiliser(DoubleTab& M, DoubleTab& W, const DoubleTab& N, const DoubleTab& F, int *ctr, double *spectre) const;
-  inline void W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, DoubleTab& Xr, DoubleTab& Xn, DoubleTab& poids, int *ctr, double *spectre) const;
+  //interpolation scalaire aux faces a partir des elements voisins (partageant un sommet avec la face et une face avec ses elems amont/aval)
+  //il peut y avoir plusieurs possibilites
+  typedef std::pair<std::array<int, 4>, std::array<double, 4>> interp_t; //interpolation : d + 1 elements, d + 1 coefficients
+  void init_finterp() const;
+  mutable IntTab fid, fie; //les elements pouvant servir a interpoler une valeur en f sont les fie([fid(f), fid(f + 1)[)
+  interp_t finterp(int f, int nu_size, double *inu_am, double *inu_av) const; //interpolation a la face f en fonction des diffusivites inverses inu_am et inu_av (taille nu_size)
 
-  //matrice mimetique W1 : faces duales -> faces
-  void init_w1() const;
-  void init_w1_elem() const; //en interpolant dans chaque element
-  void init_w1_som() const;  //en interpolant aux sommets
-  mutable IntTab w1d, w1j; //stockage de la ligne f dans [wd(f), wd(f + 1)[ : indices de colonne dans wj, coeffs dans wc
-  mutable DoubleTab w1c;
-  //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
-  void init_m2() const;
-  mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
-  mutable DoubleTab m2c, w2c;             //          avec le coeff diagonal en premier (facilite Echange_contact_CoviMAC)
-  void init_m2solv() const; //pour resoudre m2.v = s
-  mutable Matrice_Morse_Sym m2mat;
-  mutable SolveurSys m2solv;
-
-  //interpolation aux elements d'ordre 1 d'un champ defini par ses composantes tangentes aux aretes (ex. : la vorticite)
-  inline void init_we() const;
-  void init_we_2d() const;
-  void init_we_3d() const;
-  mutable IntTab wedeb, weji; //reconstruction de we par (weji, weci)[wedeb(e), wedeb(e + 1)[ (sommets en 2D, aretes en 3D)
-  mutable DoubleTab weci;
-
-  //matrice mimetique d'un champ aux aretes : (valeur tangente aux aretes) -> (flux a travers l'union des facettes touchant l'arete)
-  void init_m1() const;
-  void init_m1_2d() const;
-  void init_m1_3d() const;
-  mutable IntTab m1deb, m1ji; //reconstruction de m1 par (m1ji(.,0), m1ci)[m1deb(a), m1deb(a + 1)[ (sommets en 2D, aretes en 3D); m1ji(.,1) contient le numero d'element
-  mutable DoubleTab m1ci;
-
-  //MD_Vectors pour Champ_P0_CoviMAC (elems + faces) et pour Champ_Face_CoviMAC (faces + aretes)
-  MD_Vector mdv_faces_elems, mdv_elems_faces_bord;
-  mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
-
-  //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem_faces
-  void init_virt_ef_map() const;
-  mutable std::map<std::array<int, 2>, int> virt_ef_map;
+  //MD_Vectors pour Champ_P0_CoviMAC (elems + faces de bord) et pour Champ_Face_CoviMAC (faces + d x Champ_P0_CoviMAC)
+  MD_Vector mdv_ch_p0, mdv_ch_face;
 
 private:
   double h_carre;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_CoviMAC type_elem_;                  // type de l'element de discretisation
   DoubleTab face_normales_;             // normales aux faces
-  DoubleTab face_tangentes_;            // tangentes aux faces duales (les lignes amont-avales), normees a 1
-  DoubleVect longueur_aretes_; //longueur des aretes
   int nb_faces_std_;                    // nombre de faces standard
   int nb_elem_std_;                     // nombre d'elements standard
-  int nb_elems_faces_bord_tot_;         //nombre d'items total de mdv_elems_faces_bord
+  int nb_ch_p0_tot_, nb_ch_face_tot_;  //nombre d'items total de mdv_ch_p0 et de mdv_ch_face
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces();
+  void remplir_elem_faces() {};
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
-
-  mutable IntTab arete_faces_; //connectivite face -> aretes
-  mutable DoubleTab ta_;       //vecteurs tangents aux aretes
-  DoubleTab xvp_, xvm_;        //intersection de la ligne "amont-aval" avec chaque face, milieu de cette ligne
 };
 
 // Fonctions inline
@@ -274,25 +210,6 @@ inline DoubleTab& Zone_CoviMAC::face_normales()
 inline const DoubleTab& Zone_CoviMAC::face_normales() const
 {
   return face_normales_;
-}
-
-inline double Zone_CoviMAC::face_tangentes(int face,int comp) const
-{
-  return face_tangentes_(face,comp);
-}
-
-// Decription:
-// renvoie le tableau des surfaces normales.
-inline DoubleTab& Zone_CoviMAC::face_tangentes()
-{
-  return face_tangentes_;
-}
-
-// Decription:
-// renvoie le tableau des surfaces normales.
-inline const DoubleTab& Zone_CoviMAC::face_tangentes() const
-{
-  return face_tangentes_;
 }
 
 // Decription:
@@ -343,9 +260,15 @@ inline int  Zone_CoviMAC::nb_elem_std() const
 }
 
 // Decription:
-inline int  Zone_CoviMAC::nb_elems_faces_bord_tot() const
+inline int  Zone_CoviMAC::nb_ch_p0_tot() const
 {
-  return nb_elems_faces_bord_tot_;
+  return nb_ch_p0_tot_;
+}
+
+// Decription:
+inline int  Zone_CoviMAC::nb_ch_face_tot() const
+{
+  return nb_ch_face_tot_;
 }
 
 // Decription:

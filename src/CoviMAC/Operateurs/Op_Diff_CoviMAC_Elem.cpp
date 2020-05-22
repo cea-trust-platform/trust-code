@@ -38,6 +38,7 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Synonyme_info.h>
 #include <communications.h>
+#include <MD_Vector_base.h>
 #include <cmath>
 
 Implemente_instanciable( Op_Diff_CoviMAC_Elem          , "Op_Diff_CoviMAC_Elem|Op_Diff_CoviMAC_var_Elem"                                , Op_Diff_CoviMAC_base ) ;
@@ -90,9 +91,9 @@ void Op_Diff_CoviMAC_Elem::completer()
   Op_Diff_CoviMAC_base::completer();
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Diff_CoviMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
-  ch.init_cl();
+  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
+    Cerr << "Op_Diff_CoviMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
+  ch.init_cl(), zone.init_w2(), zone.init_finterp();
   int nb_comp = (equation().que_suis_je() == "Transport_K_Eps") ? 2 : 1;
   flux_bords_.resize(zone.premiere_face_int(), nb_comp);
 
@@ -107,20 +108,36 @@ void Op_Diff_CoviMAC_Elem::dimensionner(Matrice_Morse& mat) const
 {
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
-  int i, j, k, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = ch.valeurs().line_size();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  int i, j, k, l, m, e, eb, f, fb, n, N = ch.valeurs().line_size();
 
-  zone.init_w1();
+  Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
 
-  /* pour chaque W1_{ff'}, l'amont/aval de f dependent de l'amont/aval de f' */
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (f = 0; f < nf_tot; f++) for (j = zone.w1d(f); j < zone.w1d(f + 1); j++)
-      for (i = 0, fb = zone.w1j(j); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++)
-            for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * eb + n);
+
+  if (nu_constant_) update_nu(); //on peut faire le stencil avec les interpolations finales
+
+  /*  element e -> contribution au flux a la face f vers l'element eb -> depend de la valeur a la face fb -> hybride ou interpolee */
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.w2d(e); j < zone.w2d(e + 1); i++, j++) if ((f = e_f(e, i)) < zone.nb_faces())
+        for (k = zone.w2i(j); k < zone.w2i(j + 1); k++) for (fb = e_f(e, zone.w2j(k)), l = 0; l < 1 + (ch.icl(f, 0) < 6); l++)
+            if ((eb = f_e(f, l)) < zone.nb_elem() || ch.icl(f, 0))
+              {
+                if (nu_constant_) //nu constant -> on prend les vraies interpolations
+                  {
+                    for (n = 0; n < N; n++) for (m = 0; m <= dimension; m++) if (tfi(fb, n, m) >= 0)
+                          stencil.append_line(N * eb + n, N * tfi(fb, n, m) + n);
+                  }
+                else for (m = zone.fid(fb); m < zone.fid(fb + 1); m++) //nu variable -> on autorise tous les interpolants possibles
+                    for (n = 0; n < N; n++) stencil.append_line(N * eb + n, N * zone.fie(m) + n);
+              }
+
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem() || ch.icl(f, 0) < 6)
+        for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * f_e(f, !i) + n);
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(N * ne_tot, N * ne_tot, stencil, mat);
+  Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * zone.mdv_ch_p0.valeur().nb_items_seq_tot()) << finl;
+  Matrix_tools::allocate_morse_matrix(N * zone.nb_ch_p0_tot(), N * zone.nb_ch_p0_tot(), stencil, mat);
 }
 
 void Op_Diff_CoviMAC_Elem::calculer_flux_bord(const DoubleTab& inco) const
@@ -135,35 +152,30 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
 {
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
-  int i, j, e, f, n, N = inco.line_size();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleTab& vfd = zone.volumes_entrelaces_dir();
+  int i, j, k, e, eb, f, fb, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
 
-  //prerequis : nu aux faces
+  //prerequis : interpolations aux faces
   update_nu();
-  const DoubleTab& nu_faces = get_nu_faces();
-  DoubleTrav nu_grad(zone.nb_faces_tot(), N), phi(N); //champ -nu grad(T) -> a interpoler avec W1, flux
 
-  for (f = 0; f < zone.nb_faces_tot(); f++)
-    if (ch.icl(f, 0) == 0) for (n = 0; n < N; n++) nu_grad(f, n) = nu_faces(f, n) * (inco.addr()[N * f_e(f, 0) + n] - inco.addr()[N * f_e(f, 1) + n]) * fs(f) / vf(f);
-    else if (ch.icl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
-        nu_grad(f, n) = (inco.addr()[N * f_e(f, 0) + n] - ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n))
-                        / (1. / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) + (ch.icl(f, 0) < 2 ? vf(f) / (nu_faces(f, n) * fs(f)) : 0));
-    else if (ch.icl(f, 0) == 3) abort(); //monolithique
-    else if (ch.icl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
-        nu_grad(f, n) = ref_cast(Neumann, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
-    else for (n = 0; n < N; n++) //Dirichlet
-        nu_grad(f, n) = nu_faces(f, n) * (inco.addr()[N * f_e(f, 0) + n] - ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n)) * fs(f) / vf(f);
+  /* 1. valeurs aux faces, par interpolation ou directement (faces de bord) */
+  DoubleTrav val_f(nf_tot, N);
+  for (f = 0; f < nf_tot; f++) for (n = 0; n < N; n++) for (i = 0; i <= dimension; i++) if (tfi(f, n, i) >= 0)
+          val_f(f, n) += tfc(f, n, i) * inco.addr()[N * tfi(f, n, i) + n];
 
-  /* interpolation et divergence */
-  for (f = 0; f < zone.nb_faces(); f++)
-    {
-      for (j = zone.w1d(f), phi = 0; j < zone.w1d(f + 1); j++) for (n = 0; n < N; n++) phi(n) += zone.w1c(j) * nu_grad(zone.w1j(j), n);
-      for (i = 0, phi *= fs(f); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
-          for (n = 0; n < N; n++) resu.addr()[N * e + n] -= (i ? -1 : 1) * phi(n);
-      for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) = phi(n);
-    }
+  /* 2. contributions des elements */
+  DoubleTrav nu_ef(e_f.dimension(1), N), phi(N);
+  for (e = 0; e < ne_tot; e++) for (remplir_nu_ef(e, nu_ef), i = 0, j = zone.w2d(e); j < zone.w2d(e + 1); i++, j++) if ((f = e_f(e, i)) < zone.nb_faces())
+        {
+          for (k = zone.w2i(j), phi = 0; k < zone.w2i(j + 1); k++) for (fb = e_f(e, zone.w2j(k)), n = 0; n < N; n++)
+              phi(n) += fs(fb) * zone.w2c(k) * nu_ef(zone.w2j(k), n) * (inco.addr()[N * e + n] - val_f(fb, n));
+          phi *= fs(f) / ve(e) * vfd(f, e != f_e(f, 0)) / vf(f) * (e == f_e(f, 0) ? 1 : -1);
+          for (k = 0; k < 1 + (ch.icl(f, 0) < 6); k++) for (eb = f_e(f, k), n = 0; n < N; n++)
+              resu.addr()[N * eb + n] += (k ? 1 : -1) * phi(n);
+          if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) flux_bords_(f, n) += phi(n);
+        }
 
   return resu;
 }
@@ -174,27 +186,31 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
 {
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
-  int i, j, k, e, eb, f, fb, n, N = inco.line_size();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleTab& vfd = zone.volumes_entrelaces_dir();
+  int i, j, k, l, m, e, eb, f, fb, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot();
 
-  //prerequis : nu aux faces
+
+  //prerequis : interpolations aux faces
   update_nu();
-  const DoubleTab& nu_faces = get_nu_faces();
-  DoubleTrav dnu_grad(zone.nb_faces_tot(), N); //derivee du champ -nu grad(T) -> a interpoler avec W1, flux
 
-  for (f = 0; f < zone.nb_faces_tot(); f++)
-    if (ch.icl(f, 0) == 0 || ch.icl(f, 0) > 5) for (n = 0; n < N; n++) dnu_grad(f, n) = nu_faces(f, n) * fs(f) / vf(f); //interne ou Dirichlet
-    else if (ch.icl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
-        dnu_grad(f, n) = 1. / (1. / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n) + (ch.icl(f, 0) < 2 ? vf(f) / (nu_faces(f, n) * fs(f)) : 0));
-    else if (ch.icl(f, 0) == 3) abort(); //monolithique
-    else if (ch.icl(f, 0) < 6) for (n = 0; n < N; n++) dnu_grad(f, n) = 0;//Neumann
-
-  /* interpolation et divergence */
-  for (f = 0; f < zone.nb_faces(); f++) for (j = zone.w1d(f); j < zone.w1d(f + 1); j++)
-      for (i = 0, fb = zone.w1j(j); i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++)
-            for (n = 0; n < N; n++) matrice(N * e + n, N * eb + n) += (i ? 1 : -1) * (k ? 1 : -1) * fs(f) * zone.w1c(j) * dnu_grad(fb, n);
+  DoubleTrav nu_ef(e_f.dimension(1), N);
+  for (e = 0; e < ne_tot; e++) for (remplir_nu_ef(e, nu_ef), i = 0, j = zone.w2d(e); j < zone.w2d(e + 1); i++, j++) if ((f = e_f(e, i)) < zone.nb_faces())
+        {
+          double fac_f = vfd(f, e != f_e(f, 0)) / vf(f) * fs(f) / ve(e) * (e == f_e(f, 0) ? 1 : -1), fac_fb;
+          for (k = zone.w2i(j); k < zone.w2i(j + 1); k++)
+            {
+              fb = e_f(e, zone.w2j(k)), fac_fb = fac_f * fs(fb) * zone.w2c(k);
+              for (n = 0; n < N; n++) for (l = 0; l <= dimension; l++) if (tfi(fb, n, l) >= 0) for (m = 0; m < 1 + (ch.icl(f, 0) < 6); m++)
+                      if ((eb = f_e(f, m)) < zone.nb_elem() || ch.icl(f, 0))
+                        {
+                          double coeff = (m ? -1 : 1) * fac_fb * nu_ef(zone.w2j(k), n) * tfc(fb, n, l);
+                          if (ch.icl(fb, 0) < 6) matrice(N * eb + n, N * tfi(fb, n, l) + n) -= coeff;//si CL de Dirichlet, pas de derivee
+                          matrice(N * eb + n, N * e + n) += coeff;
+                        }
+            }
+        }
 }
 
 void Op_Diff_CoviMAC_Elem::modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const

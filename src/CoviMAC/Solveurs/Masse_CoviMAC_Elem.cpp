@@ -24,6 +24,16 @@
 #include <Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>
 #include <Debog.h>
+#include <Champ_P0_CoviMAC.h>
+#include <Equation_base.h>
+#include <Conds_lim.h>
+#include <Neumann_paroi.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
+#include <Operateur.h>
+#include <Op_Diff_negligeable.h>
+#include <Echange_impose_base.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Masse_CoviMAC_Elem,"Masse_CoviMAC_Elem",Solveur_Masse_base);
 
@@ -100,4 +110,110 @@ void Masse_CoviMAC_Elem::associer_zone_dis_base(const Zone_dis_base& la_zone_dis
 void Masse_CoviMAC_Elem::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
 {
   la_zone_Cl_CoviMAC = ref_cast(Zone_Cl_CoviMAC, la_zone_Cl_dis_base);
+}
+
+void Masse_CoviMAC_Elem::dimensionner(Matrice_Morse& mat) const
+{
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+
+  /* diagonale sur les elems reels */
+  int i, N = equation().inconnue().valeurs().line_size(), ntot = equation().inconnue().valeurs().size_totale();
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+  for (i = 0; i < N * zone.nb_elem(); i++) stencil.append_line(i, i);
+  for (i = N * zone.nb_elem_tot(); i < N * (zone.nb_elem_tot() + zone.premiere_face_int()); i++) stencil.append_line(i, i);
+  Matrix_tools::allocate_morse_matrix(ntot, ntot, stencil, mat);
+}
+
+DoubleTab& Masse_CoviMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
+{
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
+  const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  int e, f, n, N = inco.line_size();
+  DoubleTrav coef(zone.porosite_elem());
+  coef = 1.;
+  if (has_coefficient_temporel_) appliquer_coef(coef);
+
+  ch.init_cl();
+  //elements : "vraie" masse
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
+      secmem.addr()[N * e + n] += coef(e) * pe(e) * ve(e) * inco.addr()[N * e + n] / dt;
+
+  //CLs : ligne val = val_imp pour Dirichlet, flux pour Neumann et Echange_externe_impose
+  for (f = 0; f < zone.premiere_face_int(); f++)
+    if (ch.icl(f, 0) < 3) for (e = f_e(f, ch.icl(f, 0) < 2), n = 0; n < N; n++) //Echange_impose_base
+        secmem(N * e + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n)
+                             * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n);
+    else if (ch.icl(f, 0) == 3) continue; //monolithique
+    else if (ch.icl(f, 0) < 6) for (e = f_e(f, 1), n = 0; n < N; n++) //Neumann
+        secmem(N * e + n) += fs(f) * ref_cast(Neumann, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
+    else if (ch.icl(f, 0) < 7) for (e = f_e(f, 1), n = 0; n < N; n++) //Dirichlet non homogene
+        secmem(N * e + n) = ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
+
+  return secmem;
+}
+
+Matrice_Base& Masse_CoviMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
+{
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
+  const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
+  int e, f, n, N = ch.valeurs().line_size();
+  DoubleTrav coef(zone.porosite_elem());
+  coef = 1.;
+  if (has_coefficient_temporel_) appliquer_coef(coef);
+
+  ch.init_cl();
+  //elements : "vraie" masse
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
+      mat(N * e + n, N * e + n) += coef(e) * pe(e) * ve(e) / dt;
+
+  //CLs : ligne val = val_imp pour Dirichlet, flux pour Neumann et Echange_externe_impose
+  for (f = 0; f < zone.premiere_face_int(); f++)
+    {
+      /* contribution de Echange_impose_base */
+      if (ch.icl(f, 0) < 3) for (e = f_e(f, ch.icl(f, 0) < 2), n = 0; n < N; n++) //Echange_impose_base
+          mat(N * e + n, N * e + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
+      /* si Dirichlet ou Echange_global_impose : ligne val= . */
+      if (ch.icl(f, 0) == 2 || ch.icl(f, 0) > 5) for (e = f_e(f, 1), n = 0; n < N; n++) mat(N * e + n, N * e + n) = 1;
+    }
+
+  return matrice;
+}
+
+void Masse_CoviMAC_Elem::appliquer_coef(DoubleVect& coef) const
+{
+  if (has_coefficient_temporel_)
+    {
+      REF(Champ_base) ref_coeff;
+      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
+
+      DoubleTab values;
+      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
+        {
+          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
+          ConstDoubleTab_parts val_parts(coeff.valeurs());
+          values.ref(val_parts[0]);
+
+        }
+      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
+        {
+          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
+          values.ref(coeff.valeurs());
+
+        }
+      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
+        {
+          DoubleTab nodes;
+          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
+          ref_coeff.valeur().valeur_aux(nodes,values);
+        }
+      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
+    }
 }

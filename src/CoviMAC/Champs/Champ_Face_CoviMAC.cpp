@@ -92,7 +92,7 @@ int Champ_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
   nb_compo_ /= dimension;
 
   /* variables : valeurs normales aux faces, puis valeurs aux elements par blocs -> pour que line_size() marche */
-  creer_tableau_distribue(zone.mdv_faces_elems);
+  creer_tableau_distribue(zone.mdv_ch_face);
   nb_compo_ = old_nb_compo;
   return n;
 }

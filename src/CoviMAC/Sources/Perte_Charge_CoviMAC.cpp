@@ -63,93 +63,93 @@ Entree& Perte_Charge_CoviMAC::readOn(Entree& s )
 
 DoubleTab& Perte_Charge_CoviMAC::ajouter(DoubleTab& resu) const
 {
-  const Zone_CoviMAC& zone = la_Zone_CoviMAC.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = la_vitesse->valeurs();
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
-  const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
-  double t = equation().schema_temps().temps_courant();
-  DoubleVect pos(dimension), ve(dimension), ved(dimension), vep(dimension) , dir(dimension);
-
-  /* contribution de chaque element ou on applique la perte de charge */
-  for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
-    {
-      int e = pssz ? (*pssz)[i] : i;
-      for (r = 0; r < dimension; r++) pos(r) = xp(e, r);
-
-      /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
-      double nu_e = C_nu ? nu(0, 0) : nu->valeur_a_compo(pos, 0),
-             dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
-      for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
-          fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
-      double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
-      coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
-
-      /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
-          {
-            double m2vf = 0, contrib;
-            for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
-              fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
-            contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
-            if (contrib <= min(C_dir, C_iso) * m2vf) contrib = min(C_dir, C_iso) * m2vf; //pour garantir un frottement minimal
-            resu(f) -= contrib;
-          }
-    }
+  // const Zone_CoviMAC& zone = la_Zone_CoviMAC.valeur();
+  // const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  // const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
+  // const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = la_vitesse->valeurs();
+  // const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
+  // const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
+  // const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  // int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
+  // double t = equation().schema_temps().temps_courant();
+  // DoubleVect pos(dimension), ve(dimension), ved(dimension), vep(dimension) , dir(dimension);
+  //
+  // /* contribution de chaque element ou on applique la perte de charge */
+  // for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
+  //   {
+  //     int e = pssz ? (*pssz)[i] : i;
+  //     for (r = 0; r < dimension; r++) pos(r) = xp(e, r);
+  //
+  //     /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
+  //     double nu_e = C_nu ? nu(0, 0) : nu->valeur_a_compo(pos, 0),
+  //            dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
+  //     for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
+  //         fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
+  //     double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
+  //     coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
+  //
+  //     /* contributions aux faces de e */
+  //     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
+  //         {
+  //           double m2vf = 0, contrib;
+  //           for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
+  //             fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
+  //           contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+  //           if (contrib <= min(C_dir, C_iso) * m2vf) contrib = min(C_dir, C_iso) * m2vf; //pour garantir un frottement minimal
+  //           resu(f) -= contrib;
+  //         }
+  //   }
   return resu;
 }
 
 // Description: copie de ajouter sauf la derniere ligne
 void Perte_Charge_CoviMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Zone_CoviMAC& zone = la_Zone_CoviMAC.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = inco;
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
-  const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
-  double t = equation().schema_temps().temps_courant();
-  DoubleVect pos(dimension), ve(dimension), vf(dimension), dir(dimension);
-
-  for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
-    {
-      int e = pssz ? (*pssz)[i] : i;
-      for (r = 0; r < dimension; r++) pos(r) = xp(e, r);
-
-      /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
-      double nu_e = C_nu ? nu(0, 0) : nu->valeur_a_compo(pos, 0),
-             dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
-      for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
-          fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
-      double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
-      coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
-
-      /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
-          {
-            double m2vf = 0, contrib;
-            for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
-              fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
-            contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
-            if (contrib >= min(C_dir, C_iso) * m2vf)
-              {
-                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
-                    matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
-                for (k = zone.ved(e); k < zone.ved(e + 1); k++) if (ch.icl(fb = zone.vej(k), 0) < 2)
-                    matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.vec(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
-              }
-            else
-              {
-                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
-                    matrice(f, fb) += min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
-              }
-          }
-    }
+  // const Zone_CoviMAC& zone = la_Zone_CoviMAC.valeur();
+  // const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  // const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
+  // const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = inco;
+  // const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
+  // const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
+  // const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  // int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
+  // double t = equation().schema_temps().temps_courant();
+  // DoubleVect pos(dimension), ve(dimension), vf(dimension), dir(dimension);
+  //
+  // for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
+  //   {
+  //     int e = pssz ? (*pssz)[i] : i;
+  //     for (r = 0; r < dimension; r++) pos(r) = xp(e, r);
+  //
+  //     /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
+  //     double nu_e = C_nu ? nu(0, 0) : nu->valeur_a_compo(pos, 0),
+  //            dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
+  //     for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
+  //         fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
+  //     double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
+  //     coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
+  //
+  //     /* contributions aux faces de e */
+  //     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
+  //         {
+  //           double m2vf = 0, contrib;
+  //           for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
+  //             fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
+  //           contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+  //           if (contrib >= min(C_dir, C_iso) * m2vf)
+  //             {
+  //               for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+  //                   matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
+  //               for (k = zone.ved(e); k < zone.ved(e + 1); k++) if (ch.icl(fb = zone.vej(k), 0) < 2)
+  //                   matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.vec(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+  //             }
+  //           else
+  //             {
+  //               for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+  //                   matrice(f, fb) += min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
+  //             }
+  //         }
+  //   }
 }
 
 DoubleTab& Perte_Charge_CoviMAC::calculer(DoubleTab& resu) const

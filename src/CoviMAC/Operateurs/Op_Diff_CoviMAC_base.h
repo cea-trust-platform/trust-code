@@ -62,21 +62,12 @@ public:
   void associer_diffusivite(const Champ_base& );
   void completer();
   const Champ_base& diffusivite() const;
-  void mettre_a_jour(double t)
-  {
-    Operateur_base::mettre_a_jour(t);
-    nu_a_jour_ = 0;
-  }
+  void mettre_a_jour(double t);
 
   void update_nu() const; //met a jour nu et nu_fac
   const DoubleTab& get_nu() const
   {
     return nu_;
-  }
-
-  const DoubleTab& get_nu_faces() const
-  {
-    return nu_faces_;
   }
 
   const DoubleTab& get_nu_fac() const
@@ -95,7 +86,12 @@ protected:
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_, nu_fac_, nu_faces_; //conductivite aux elements, facteur multiplicatif a appliquer par face
+  /* interpolation des temperatures aux faces internes */
+  mutable IntTab tfi; /* d + 1 indices par face interne */
+  mutable DoubleTab tfc; /* d + 1 coefficients */
+
   mutable int nu_a_jour_; //si on doit mettre a jour nu
+  int nu_constant_;       //1 si nu est constant dans le temps
 };
 
 //
@@ -110,9 +106,8 @@ inline void Op_Diff_CoviMAC_base::remplir_nu_ef(int e, DoubleTab& nu_ef) const
   int i, j, k, f, n, N = nu_ef.dimension(1), N_nu = nu_.line_size();
   double fac;
 
-  for (i = 0; i < zone.m2d(e + 1) - zone.m2d(e); i++)
+  for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
     {
-      f = e_f(e, i);
       /* diffusivite de chaque composante dans la direction (xf - xe) */
       if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
       else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
