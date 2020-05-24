@@ -681,9 +681,9 @@ void Zone_CoviMAC::init_ve() const
 
 /* recherche d'une matrice W verifiant W.R = N avec sum_{i!=j} w_{ij}^2 minimal et un spectre acceptable */
 /* en entree,W contient le stencil admissible  */
-void Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const
+int Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const
 {
-  int i, j, k, l, n_f = R.dimension(0), nv = 0, d = R.dimension(1), infoo = 0, lwork = -1, sym, diag, it, cv;
+  int i, j, k, l, n_f = R.dimension(0), nv = 0, d = R.dimension(1), infoo = 0, lwork = -1, sym, diag, ret, it, cv;
 
   /* idx : numero de l'inconnue W(i, j) dans le probleme d'optimisation */
   //si NtR est symetrique, alors on cherche a avoir W symetrique
@@ -746,8 +746,9 @@ void Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *c
       OSQPWorkspace *osqp = osqp_setup(&data, &settings);
       if (it) osqp_warm_start_x(osqp, sol.data()); //repart de l'iteration precedente
       osqp_solve(osqp);
-      if (osqp->info->status_val == OSQP_PRIMAL_INFEASIBLE || osqp->info->status_val == OSQP_PRIMAL_INFEASIBLE_INACCURATE) abort();
-      sol.assign(osqp->solution->x, osqp->solution->x + nv);
+      ret = osqp->info->status_val, sol.assign(osqp->solution->x, osqp->solution->x + nv);
+      osqp_cleanup(osqp), free(data.A);
+      if (ret == OSQP_PRIMAL_INFEASIBLE || ret == OSQP_PRIMAL_INFEASIBLE_INACCURATE) break;
       for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) W(i, j) = (idx(i, j) >= 0 ? sol[idx(i, j)] : 0);
 
       /* calcul du spectre : Ws recupere les vecteurs propres */
@@ -761,20 +762,18 @@ void Zone_CoviMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *c
             lb.push_back(l_min * (S(i) < l_min ? 1.1 : 1)), ub.push_back(l_max / (S(i) > l_max ? 1.1 : 1));
             cv = 0, il++; //on repart avec une ligne en plus
           }
-      osqp_cleanup(osqp), free(data.A);
     }
   std::fesetenv(&fenv);     //remet les exceptions FP
 
-  if (!cv) abort(); //ca passe ou ca casse
+  if (!cv) return 0; //ca passe ou ca casse
   if (spectre) for (i = 0; i < n_f; i++) spectre[1] = min(spectre[1], S(i)), spectre[3] = max(spectre[3], S(i));
 
   //statistiques
-  if (!ctr) return;
   //ctr[0] : diagonale, ctr[1] : symetrique
   for (i = 0, diag = 1; i < n_f; i++) for (j = 0; j < n_f; j++) diag &= (i == j || dabs(W(i, j)) < 1e-6);
-  ctr[0] += diag, ctr[1] += sym && !diag;
+  ctr[0] += diag, ctr[1] += sym;
+  return 1;
 }
-
 
 //matrice mimetique W_2 : valeurs tangentes aux lignes element-faces -> valeurs normales aux faces
 void Zone_CoviMAC::init_w2() const
@@ -782,7 +781,7 @@ void Zone_CoviMAC::init_w2() const
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
   const DoubleTab& nf = face_normales();
-  int i, j, e, f, s, n_f, ctr[2] = {0, 0 }, n_tot = Process::mp_sum(nb_elem());
+  int i, j, e, f, s, n_f, ctr[3] = {0, 0, 0 }, n_tot = Process::mp_sum(nb_elem());
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
   if (is_init["w2"]) return;
@@ -816,7 +815,8 @@ void Zone_CoviMAC::init_w2() const
       for (auto &s_fs : som_face) for (auto i1 : s_fs.second) for (auto i2 : s_fs.second) W(i1, i2) = 1;
 
       /* matrice stabilisee et stockage */
-      W_stabiliser(W, R, N, ctr, spectre);
+      if (W_stabiliser(W, R, N, ctr, spectre)) ctr[2]++; /* le stencil reduit marche */
+      else W = 1, W_stabiliser(W, R, N, ctr, spectre); /* il faut une matrice complete */
       for (i = 0; i < n_f; i++) for (j = 0, nef(e)++; j < n_f; j++) w2e(e, i, j) = W(i, j), nnz(e) += (dabs(W(i, j)) > 1e-6);
     }
 
@@ -830,34 +830,74 @@ void Zone_CoviMAC::init_w2() const
     }
 
   CRIMP(w2d), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
-  Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "/" << 100. * Process::mp_sum(ctr[1]) / n_tot << "% diag/sym lambda : "
-       << Process::mp_min(spectre[0]) << " / " << Process::mp_min(spectre[1]) << " -> " << Process::mp_max(spectre[2])
+  Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum(ctr[1]) / n_tot << "% sym "
+       << 100. * Process::mp_sum(ctr[2]) / n_tot << "% sparse lambda : " << Process::mp_min(spectre[0]) << " / "
+       << Process::mp_min(spectre[1]) << " -> " << Process::mp_max(spectre[2])
        << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect(nnz) * 1. / mp_somme_vect(nef) << finl;
   is_init["w2"] = 1;
 }
 
 
 /* interpolation elements/face de bord -> faces d'ordre 2. On stocke plusieurs candidats -> pour le cas heterogene */
+void Zone_CoviMAC::init_finterp() const
+{
+  if (is_init["finterp"]) return; //deja initialisa
+  const IntTab& f_e = face_voisins(), &f_s = face_sommets(), &e_s = zone().les_elems();
+  int i, e, f, s, ne_tot = nb_elem_tot(), nf_tot = nb_faces_tot();
+
+  std::vector<std::set<int>> som_elem(zone().nb_som_tot()); //connectivite sommets-elements avec les faces de bord en plus
+  for (e = 0; e < ne_tot; e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++) som_elem[s].insert(e);
+  for (f = 0; f < nf_tot; f++) if ((e = f_e(f, 1)) >= ne_tot)
+      for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) som_elem[s].insert(e);
+
+  fid.set_smart_resize(1), fie.resize(0, 2), fie.set_smart_resize(1);
+  std::map<std::array<double, 3>, std::pair<int, std::set<int>>> xp_e; //pour traiter les elements dans un ordre canonique
+  std::set<int> som_bord; //pour ne pas mettre deux fois le meme sommet
+  for (f = 0, fid.append_line(0); f < nb_faces_tot(); fid.append_line(fie.dimension(0)), f++, som_bord.clear())
+    {
+      if ((e = f_e(f, 1)) >= ne_tot) fie.append_line(e, -1); //face de bord, geree directement
+      if (e < 0 || e >= ne_tot) continue; //cas ci-dessus ou face de bord trop loin -> plus rien a faire
+      for (i = 0, xp_e.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+        for (auto &&el : som_elem[s])
+          {
+            auto& el_s = xp_e[ {{ xp_(el, 0), xp_(el, 1), dimension < 3 ? 0 : xp_(el, 2) }}];
+            el_s.first = el, el_s.second.insert(s);
+          }
+
+      //on met en premier l'amont/aval de la face
+      for (auto &&c_e_s : xp_e) if (c_e_s.second.first == f_e(f, 0) || c_e_s.second.first == f_e(f, 1)) fie.append_line(c_e_s.second.first, -1);
+      //si c'est une face de bord, on met les sommets par lesquels elle touche f
+      for (auto &&c_e_s : xp_e) if (c_e_s.second.first != f_e(f, 0) && c_e_s.second.first != f_e(f, 1))
+          {
+            fie.append_line(c_e_s.second.first, -1);
+            if (c_e_s.second.first >= ne_tot) for (auto &som : c_e_s.second.second) if (!som_bord.count(som)) fie.append_line(c_e_s.second.first, som), som_bord.insert(som);
+          }
+    }
+
+  CRIMP(fid), CRIMP(fie);
+  is_init["finterp"] = 1;
+}
+
 // void Zone_CoviMAC::init_finterp() const
 // {
 //   if (is_init["finterp"]) return; //deja initialisa
-//   const IntTab& f_e = face_voisins(), &f_s = face_sommets(), &e_s = zone().les_elems();
-//   int i, e, f, s, ne_tot = nb_elem_tot(), nf_tot = nb_faces_tot();
-//
-//   std::vector<std::set<int>> som_elem(zone().nb_som_tot()); //connectivite sommets-elements avec les faces de bord en plus
-//   for (e = 0; e < ne_tot; e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++) som_elem[s].insert(e);
-//   for (f = 0; f < nf_tot; f++) if ((e = f_e(f, 1)) >= ne_tot)
-//       for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) som_elem[s].insert(e);
+//   const IntTab& e_f = elem_faces(), &f_e = face_voisins(), &f_s = face_sommets();
+//   int i, j, k, e, eb, f, fb, s, ne_tot = nb_elem_tot(), ok;
 //
 //   fid.set_smart_resize(1), fie.set_smart_resize(1);
 //   std::map<std::array<double, 3>, int> xp_e; //pour traiter les elements dans un ordre canonique
+//   std::set<int> soms; //liste de sommets d'une face
 //   for (f = 0, fid.append_line(0); f < nb_faces_tot(); fid.append_line(fie.size()), f++)
 //     {
 //       if ((e = f_e(f, 1)) >= ne_tot) fie.append_line(e); //face de bord, geree directement
 //       if (e < 0 || e >= ne_tot) continue; //cas ci-dessus ou face de bord trop loin -> plus rien a faire
-//       for (i = 0, xp_e.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-//         for (auto &&el : som_elem[s]) xp_e[ {{ xp_(el, 0), xp_(el, 1), dimension < 3 ? 0 : xp_(el, 2) }}] = el;
-//
+//       for (i = 0, soms.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) soms.insert(s);
+//       for (i = 0, xp_e.clear(); i < 2; i++) for (e = f_e(f, i), j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+//           {
+//             for (k = 0, ok = 0; !ok && k < f_s.dimension(1) && (s = f_s(fb, k)) >= 0; k++) ok += soms.count(s);
+//             if (ok && (eb = f_e(fb, e == f_e(fb, 0))) >= 0)
+//               xp_e[ {{ xp_(eb, 0), xp_(eb, 1), dimension < 3 ? 0 : xp_(eb, 2) }}] = eb;
+//           }
 //       //on met en premier l'amont/aval de la face, puis le reste
 //       for (auto &&c_e : xp_e) if (c_e.second == f_e(f, 0) || c_e.second == f_e(f, 1)) fie.append_line(c_e.second);
 //       for (auto &&c_e : xp_e) if (c_e.second != f_e(f, 0) && c_e.second != f_e(f, 1)) fie.append_line(c_e.second);
@@ -867,44 +907,15 @@ void Zone_CoviMAC::init_w2() const
 //   is_init["finterp"] = 1;
 // }
 
-void Zone_CoviMAC::init_finterp() const
-{
-  if (is_init["finterp"]) return; //deja initialisa
-  const IntTab& e_f = elem_faces(), &f_e = face_voisins(), &f_s = face_sommets();
-  int i, j, k, e, eb, f, fb, s, ne_tot = nb_elem_tot(), ok;
-
-  fid.set_smart_resize(1), fie.set_smart_resize(1);
-  std::map<std::array<double, 3>, int> xp_e; //pour traiter les elements dans un ordre canonique
-  std::set<int> soms; //liste de sommets d'une face
-  for (f = 0, fid.append_line(0); f < nb_faces_tot(); fid.append_line(fie.size()), f++)
-    {
-      if ((e = f_e(f, 1)) >= ne_tot) fie.append_line(e); //face de bord, geree directement
-      if (e < 0 || e >= ne_tot) continue; //cas ci-dessus ou face de bord trop loin -> plus rien a faire
-      for (i = 0, soms.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) soms.insert(s);
-      for (i = 0, xp_e.clear(); i < 2; i++) for (e = f_e(f, i), j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          {
-            for (k = 0, ok = 0; !ok && k < f_s.dimension(1) && (s = f_s(fb, k)) >= 0; k++) ok += soms.count(s);
-            if (ok && (eb = f_e(fb, e == f_e(fb, 0))) >= 0)
-              xp_e[ {{ xp_(eb, 0), xp_(eb, 1), dimension < 3 ? 0 : xp_(eb, 2) }}] = eb;
-          }
-      //on met en premier l'amont/aval de la face, puis le reste
-      for (auto &&c_e : xp_e) if (c_e.second == f_e(f, 0) || c_e.second == f_e(f, 1)) fie.append_line(c_e.second);
-      for (auto &&c_e : xp_e) if (c_e.second != f_e(f, 0) && c_e.second != f_e(f, 1)) fie.append_line(c_e.second);
-    }
-
-  CRIMP(fid), CRIMP(fie);
-  is_init["finterp"] = 1;
-}
-
 /* utilise les points identifies ci-dessus pour interpoler "harmoniquement" aux faces */
 Zone_CoviMAC::interp_t Zone_CoviMAC::finterp(int f, int dnu, double *inu_am, double *inu_av) const
 {
   assert(fid(f) < fid(f + 1)); //si on tombe ici, alors joint pas assez large...
   if (fid(f + 1) == fid(f) + 1) //variable geree directement -> trivial
-    return { {{ fie(fid(f)), -1, -1, -1 }}, {{ 1, 0 , 0, 0 }}};
+    return { {{ fie(fid(f), 0), -1, -1, -1 }}, {{ 1, 0 , 0, 0 }}};
 
-  const DoubleTab& nf = face_normales();
-  int i4[4], i, j, k, l, dp1 = dimension + 1, lwork = dp1 * dp1, infoo = 0;
+  const DoubleTab& nf = face_normales(), &xs = zone().domaine().coord_sommets();
+  int i4[4], i, j, k, l, dp1 = dimension + 1, lwork = dp1 * dp1, infoo = 0, ok = 0;
 
   /* cas heterogene : interpolation harmonique */
   IntTrav piv(dp1);
@@ -915,16 +926,20 @@ Zone_CoviMAC::interp_t Zone_CoviMAC::finterp(int f, int dnu, double *inu_am, dou
         iNam(i, j) = inu_am[dimension * i + j], iNav(i, j) = inu_av[dimension * i + j];
 
   interp_t resu;
-  double a_min, a_min_max = -DBL_MAX;
+  double d_sum, d_sum_min = DBL_MAX;
+  const double *coords[4] = { NULL, NULL, NULL, NULL };
   /* on cherche a maximiser a_min : sans compter a_min = 0 (degenerescence) */
   // for (i4[0] = fid(f); i4[0] < fid(f + 1); i4[0]++) for (i4[1] = i4[0] + 1; i4[1] < fid(f + 1); i4[1]++)
-  for (i4[0] = fid(f), i4[1] = i4[0] + 1,i4[2] = i4[1] + 1; i4[2] < fid(f + 1); i4[2]++) for (i4[3] = i4[2] + 1; i4[3] < (dimension < 3 ? i4[2] + 2 : fid(f + 1)); i4[3]++)
+  for (i4[0] = fid(f), i4[1] = i4[0] + 1, i4[2] = i4[1] + 1; i4[2] < fid(f + 1); i4[2]++) for (i4[3] = i4[2] + 1; i4[3] < (dimension < 3 ? i4[2] + 2 : fid(f + 1)); i4[3]++)
       {
+        for (j = 0; j < dp1; j++) coords[j] = fie(i4[j], 1) < 0 ? &xp_(fie(i4[j], 0), 0) : &xs(fie(i4[j], 1), 0);
+        for (j = 0, d_sum = 0; j < dp1; j++) if (i4[j] > fid(f) + 1) d_sum += dot(coords[j], coords[j], &xv_(f, 0), &xv_(f, 0));
+        if (d_sum > d_sum_min - 1e-6) continue;
         /* remplissage de la matrice */
         for (j = 0, M = 0; j < dp1; M(j, dimension) = 1, j++)
           {
-            DoubleTrav& iN = dot(&xp_(fie(i4[j]), 0), &nf(f, 0), &xv_(f, 0)) > 0 ? iNav : iNam; //matrice du bon cote
-            for (k = 0; k < dimension; k++) for (l = 0; l < dimension; l++) M(j, k) += iN(k, l) * (xp_(fie(i4[j]), l) - xv_(f, l));
+            DoubleTrav& iN = dot(coords[j], &nf(f, 0), &xv_(f, 0)) > 0 ? iNav : iNam; //matrice du bon cote
+            for (k = 0; k < dimension; k++) for (l = 0; l < dimension; l++) M(j, k) += iN(k, l) * (coords[j][l] - xv_(f, l));
           }
 
         /* inversion */
@@ -932,12 +947,12 @@ Zone_CoviMAC::interp_t Zone_CoviMAC::finterp(int f, int dnu, double *inu_am, dou
         if (infoo > 0) continue; //matrice singuliere -> pas la peine
         F77NAME(dgetri)(&dp1, &M(0, 0), &dp1, &piv(0), &work(0), &lwork, &infoo); //inverse
 
-        for (i = 0, a_min = DBL_MAX; i < dp1; i++) if (dabs(M(dp1 - 1, i)) > 1e-6) a_min = min(a_min, M(dp1 - 1, i));
-        if (a_min < a_min_max + 1e-8) continue; //on n'a pas trouve mieux
-        for (i = 0, j = 0; i < dp1; i++) if (dabs(M(dp1 - 1, i)) > 1e-6) resu.first[j] = fie(i4[i]), resu.second[j] = M(dp1 - 1, i), j++;
+        for (i = 0, ok = 1; i < dp1; i++) ok &= (M(dp1 - 1, i) > -1e-5);
+        if (!ok) continue;
+        for (i = 0, j = 0; i < dp1; i++) if (dabs(M(dp1 - 1, i)) > 1e-5) resu.first[j] = fie(i4[i], 0), resu.second[j] = M(dp1 - 1, i), j++;
         while (j < 4) resu.first[j] = -1, resu.second[j] = 0, j++;
-        a_min_max = a_min;
+        d_sum_min = d_sum;
       }
-
+  if (d_sum_min == DBL_MAX) abort();
   return resu;
 }

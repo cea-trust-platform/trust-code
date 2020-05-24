@@ -149,7 +149,7 @@ public :
   mutable DoubleTab vec;
 
   /* stabilisation d'une matrice de masse "gradient -> normales" : W_2 */
-  inline void W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const;
+  inline int W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const;
   void init_w2() const;
   mutable IntTab w2d, w2i, w2j; //stockage: lignes de W_2^e dans w2i([w2d(e), w2d(e + 1)[), indices/coeffs de ces lignes dans (w2j/w2c)[w2i(i), w2i(i+1)[
   mutable DoubleTab w2c;        //          avec le coeff diagonal en premier (facilite Echange_contact_CoviMAC)

@@ -111,12 +111,13 @@ void Op_Diff_CoviMAC_Elem::dimensionner(Matrice_Morse& mat) const
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   int i, j, k, l, m, e, eb, f, fb, n, N = ch.valeurs().line_size();
 
-  Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
   if (nu_constant_) update_nu(); //on peut faire le stencil avec les interpolations finales
+
+  Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
 
   /*  element e -> contribution au flux a la face f vers l'element eb -> depend de la valeur a la face fb -> hybride ou interpolee */
   for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.w2d(e); j < zone.w2d(e + 1); i++, j++) if ((f = e_f(e, i)) < zone.nb_faces())

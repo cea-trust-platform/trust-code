@@ -248,6 +248,7 @@ void Op_Diff_CoviMAC_base::update_nu() const
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, f;
 
+  Cerr << "Op_Diff_CoviMAC_base::update_nu() : ";
   /* 1. nu_ */
   //dimensionnement
   const DoubleTab& diffu=diffusivite().valeurs();
@@ -353,11 +354,13 @@ void Op_Diff_CoviMAC_base::update_nu() const
   //interpolation pour chaque composante
   const IntTab& f_e = zone.face_voisins();
   if (tfi.nb_dim() < 2) tfi.resize(zone.nb_faces_tot(), N, dimension + 1), tfc.resize(zone.nb_faces_tot(), N, dimension + 1), tfi = -1;
+  double a_min = DBL_MAX;
   for (f = 0; f < zone.nb_faces_tot(); f++) if (zone.fid(f) < zone.fid(f + 1)) for (n = 0; n < N; n++)
         {
           Zone_CoviMAC::interp_t resu = zone.finterp(f, inv_nu.dimension(2), &inv_nu(f_e(f, 0), n, 0), f_e(f, 1) < zone.nb_elem_tot() ? &inv_nu(f_e(f, 1), n, 0) : NULL);
-          for (i = 0; i <= dimension; i++) tfi(f, n, i) = resu.first[i], tfc(f, n, i) = resu.second[i];
+          for (i = 0; i <= dimension; i++) tfi(f, n, i) = resu.first[i], tfc(f, n, i) = resu.second[i], a_min = min(a_min, tfi(f, n, i) < 0 ? DBL_MAX : tfc(f, n, i));
         }
 
+  Cerr << "a_min = " << Process::mp_min(a_min) << finl;
   nu_a_jour_ = 1;
 }
