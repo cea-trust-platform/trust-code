@@ -16,7 +16,7 @@
 //
 // File:        Champ_P0_CoviMAC.cpp
 // Directory:   $TRUST_ROOT/src/CoviMAC/Champs
-// Version:     1
+// Version:     /main/1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -131,22 +131,6 @@ int Champ_P0_CoviMAC::imprime(Sortie& os, int ncomp) const
   os << finl;
   Cout << "Champ_P0_CoviMAC::imprime FIN >>>>>>>>>> " << finl;
   return 1;
-}
-
-int Champ_P0_CoviMAC::fixer_nb_valeurs_nodales(int n)
-{
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, zone_dis_base());
-  assert(n == zone.nb_elem() + zone.premiere_face_int());
-  creer_tableau_distribue(zone.mdv_ch_p0);
-  return n;
-}
-
-Champ_base& Champ_P0_CoviMAC::affecter_(const Champ_base& ch)
-{
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,la_zone_VF.valeur());
-  ch.valeur_aux(zone.xp(), valeurs());
-  valeurs().echange_espace_virtuel();
-  return *this;
 }
 
 //utilitaires pour CL

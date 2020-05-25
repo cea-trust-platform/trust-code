@@ -47,10 +47,7 @@ public :
   const Zone_CoviMAC&        zone_CoviMAC() const;
   void                         associer_zone_dis_base(const Zone_dis_base&);
   virtual const Zone_dis_base& zone_dis_base() const;
-  Champ_base& affecter_(const Champ_base& ch);
   int                       imprime(Sortie& , int ) const;
-
-  virtual int fixer_nb_valeurs_nodales(int n);
 
   //tableaux utilitaires sur les CLs
   //types de CL : 0 -> pas de CL

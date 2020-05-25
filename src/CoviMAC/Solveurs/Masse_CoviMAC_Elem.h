@@ -46,13 +46,6 @@ public:
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
-  /* pour les CLs */
-  virtual void dimensionner(Matrice_Morse& matrix) const;
-  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
-  virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
-
-  void appliquer_coef(DoubleVect& coef) const;
-
 private:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;

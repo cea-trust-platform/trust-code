@@ -148,21 +148,33 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
-  /* stabilisation d'une matrice de masse "gradient -> normales" : W_2 */
-  inline int W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const;
-  void init_w2() const;
-  mutable IntTab w2d, w2i, w2j; //stockage: lignes de W_2^e dans w2i([w2d(e), w2d(e + 1)[), indices/coeffs de ces lignes dans (w2j/w2c)[w2i(i), w2i(i+1)[
-  mutable DoubleTab w2c;        //          avec le coeff diagonal en premier (facilite Echange_contact_CoviMAC)
+  /* outils pour l'interpolation aux sommets */
+  //independant des CLs : pour chaque face, contribution de chaque sommet au flux a la face
+  //vecteurs dans phifs_v([phifs_d(f), phifs_d(f + 1)[, amont/aval, .); indices dans face_sommets_
+  void init_phifs() const;
+  mutable IntTab phifs_d;
+  mutable DoubleTab phifs_v, phife;
 
-  //interpolation scalaire aux faces a partir des elements voisins (partageant un sommet avec la face et une face avec ses elems amont/aval)
-  //il peut y avoir plusieurs possibilites
-  typedef std::pair<std::array<int, 4>, std::array<double, 4>> interp_t; //interpolation : d + 1 elements, d + 1 coefficients
-  void init_finterp() const;
-  mutable IntTab fid, fie; //les elements pouvant servir a interpoler une valeur en f sont les fie([fid(f), fid(f + 1)[)
-  interp_t finterp(int f, int nu_size, double *inu_am, double *inu_av) const; //interpolation a la face f en fonction des diffusivites inverses inu_am et inu_av (taille nu_size)
+  //independant des CL : elements et faces de bord connectes a chaque sommet
+  //elements sef_e([sef_d(s, 0), sef_d(s + 1, 0)[), faces de bord sef_f([sef_d(s, 0), sef_d(s + 1, 0)[)
+  void init_sef() const;
+  mutable IntTab sef_d, sef_e, sef_f;
 
-  //MD_Vectors pour Champ_P0_CoviMAC (elems + faces de bord) et pour Champ_Face_CoviMAC (faces + d x Champ_P0_CoviMAC)
-  MD_Vector mdv_ch_p0, mdv_ch_face;
+  //dependant des CLs : base du flux en chaque sommet libres / fixes par des CLs (si non triviale)
+  //vl([deb(s, 0), deb(s + 1, 0)[, .) : vecteurs libres
+  //vn([deb(s, 1), deb(s + 1, 1)[, .) : vecteurs imposes par un flux a une face de bord (indice fn)
+  //fd([deb(s, 2), deb(s + 1, 2)[) : faces de Dirichlet en contact avec s
+  void base_flux_som(IntTab& deb, DoubleTab& vl, IntTab& fn, DoubleTab& vn, IntTab& fd, const IntTab& icl, const std::vector<int> is_neu) const;
+
+  //dependant de la diffusivite : interpolations (sauf si faces de Dirichlet)
+  //e_c([deb(s, 0), deb(s + 1, 0)[) : elements (indices dans sef_e)
+  //f_c([deb(s, 1), deb(s + 1, 1)[) : faces de Neumann (indices dans sef_f)
+  //en entree : la base de flux donnee par base_flux_som
+  void interp_som(IntTab& deb, DoubleTab& e_c, DoubleTab& f_c, const DoubleTab& inv_nu,
+                  const IntTab& f_deb, const DoubleTab& f_vl, const IntTab& f_fn, const DoubleTab& f_vn, const IntTab& f_fd) const;
+
+  //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
+  MD_Vector mdv_ch_face;
 
 private:
   double h_carre;			 // carre du pas du maillage
@@ -397,7 +409,7 @@ inline double Zone_CoviMAC::dist_face_elem1_period(int num_face,int n1,double l)
 }
 
 /* compaction d'un tableau qui avait set_smart_resize = 1 */
-#define CRIMP(a) a.nb_dim() > 1 ? a.resize(a.dimension(0) + 1, a.dimension(1)) : a.resize(a.dimension(0) + 1), \
+#define CRIMP(a) a.nb_dim() > 2 ? a.resize(a.dimension(0) + 1, a.dimension(1), a.dimension(2)) : a.nb_dim() > 1 ? a.resize(a.dimension(0) + 1, a.dimension(1)) : a.resize(a.dimension(0) + 1), \
         a.set_smart_resize(0), \
-        a.nb_dim() > 1 ? a.resize(a.dimension(0) - 1, a.dimension(1)) : a.resize(a.dimension(0) - 1)
+        a.nb_dim() > 2 ? a.resize(a.dimension(0) - 1, a.dimension(1), a.dimension(2)) : a.nb_dim() > 1 ? a.resize(a.dimension(0) - 1, a.dimension(1)) : a.resize(a.dimension(0) - 1)
 #endif

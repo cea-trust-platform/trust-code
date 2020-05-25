@@ -375,7 +375,7 @@ static inline DoubleTab transp(DoubleTab a)
 /* minimise ||M.x - b||_2, met le noyau de M dans P et retourne le residu */
 static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x, DoubleTab& S)
 {
-  int i, nk, m = M.dimension(0), n = M.dimension(1), k = min(m, n), l = max(m, n), w = 5 * l, info, iP, jP;
+  int i, j, nk, m = M.dimension(0), n = M.dimension(1), k = min(m, n), l = max(m, n), w = 5 * l, info, iP, jP;
   double res2 = 0;
   char a = 'A';
   //lapack en mode Fortran -> on decompose en fait Mt!!
@@ -388,7 +388,7 @@ static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, Double
     else if (P) for (iP = 0, jP++; iP < n; iP++) (*P)(iP, jP) = Vt(i, iP); //colonne de V -> colonne de P
   x = prod(transp(Vt), prod(iS, prod(transp(U), b)));
   DoubleTab res = prod(M, x);
-  for (i = 0; i < m; i++) res2 += std::pow(res(i, 0) - b(i, 0), 2);
+  for (i = 0; i < m; i++) for (j = 0; j < b.dimension(1); j++) res2 += std::pow(res(i, j) - b(i, j), 2);
   return sqrt(res2);
 }
 

@@ -40,6 +40,8 @@
 #include <EcrFicPartage.h>
 #include <Modele_turbulence_scal_base.h>
 #include <cfloat>
+#include <Champ_P0_CoviMAC.h>
+#include <Champ_Face_CoviMAC.h>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);
 
@@ -74,8 +76,7 @@ void Op_Diff_CoviMAC_base::completer()
   if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
   la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
   la_zone_poly_.valeur().creer_tableau_faces(nu_fac_);
-  nu_faces_.resize(0, equation().inconnue().valeurs().line_size());
-  la_zone_poly_.valeur().creer_tableau_faces(nu_faces_);
+  la_zone_poly_.valeur().init_phifs(), la_zone_poly_.valeur().init_sef();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) && !has_diffusivite_turbulente();
   nu_a_jour_ = 0;
 }
@@ -245,10 +246,10 @@ void Op_Diff_CoviMAC_base::update_nu() const
 {
   if (nu_a_jour_) return; //on a deja fait le travail
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const Champ_base& ch = equation().inconnue().valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, f;
 
-  Cerr << "Op_Diff_CoviMAC_base::update_nu() : ";
   /* 1. nu_ */
   //dimensionnement
   const DoubleTab& diffu=diffusivite().valeurs();
@@ -335,32 +336,37 @@ void Op_Diff_CoviMAC_base::update_nu() const
     }
   nu_fac_.echange_espace_virtuel();
 
-  /* tfi / tfc : interpolation des valeurs aux faces adaptees a la diffusivite */
+
+  /* interpolation elements/faces de bord -> sommets */
+  //une seule fois : base de flux
+  if (bfs_d.nb_dim() < 2)
+    {
+      if (sub_type(Champ_P0_CoviMAC, ch))
+        zone.base_flux_som(bfs_d, bfs_vl, bfs_fn, bfs_vn, bfs_fd, ref_cast(Champ_P0_CoviMAC, ch).icl, { 0, 1, 1, 0, 1, 1, 0, 0});
+      else zone.base_flux_som(bfs_d, bfs_vl, bfs_fn, bfs_vn, bfs_fd, ref_cast(Champ_Face_CoviMAC, ch).icl, { 0, 1, 1, 0, 0});
+    }
+
+  //a chaque fois : coefficients
   //inv_nu : inverse de nu pour chaque composante
   Matrice33 M(0, 0, 0, 0, 0, 0, 0, 0, dimension < 3), iM; //pour inverser la diffusivite
   int e,n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size();
-  DoubleTrav inv_nu(zone.nb_elem_tot(), N, max(N_nu / N, 1));
-  if (N_nu <= N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++)
-        inv_nu(e, n, 0) = 1. / nu_.addr()[N_nu < N ? e : N * e + n]; //isotrope
-  else if (N_nu == N * dimension) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++)
-        for (i = 0; i < dimension; i++) inv_nu(e, n, i) = 1. / nu_.addr()[dimension * (N * e + n) + i]; //anisotrope diagonal
-  else if (N_nu == N * dimension * dimension) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //anisotrope complet
+  DoubleTrav inv_nu;
+  if (N_nu == 1) //isotrope, identique pour toutes les composantes
+    for (inv_nu.resize(zone.nb_elem_tot(), 1), e = 0; e < zone.nb_elem_tot(); e++) inv_nu(e, 0) = 1. / nu_.addr()[e];
+  else if (N_nu == N) //isotrope, composante par composante
+    for (inv_nu.resize(zone.nb_elem_tot(), N), e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) inv_nu(e, n) = 1. / nu_.addr()[N * e + n];
+  else if (N_nu == N * dimension) //anisotrope diagonal, composante par composante
+    for (inv_nu.resize(zone.nb_elem_tot(), N, dimension), e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (i = 0; i < dimension; i++)
+          inv_nu(e, n, i) = 1. / nu_.addr()[dimension * (N * e + n) + i];
+  else if (N_nu == N * std::pow(dimension, 2))  //anisotrope complet
+    for (inv_nu.resize(zone.nb_elem_tot(), N, dimension, dimension), e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++)
         {
           for (i = 0; i < dimension; i++) for (j = 0; j < dimension; j++) M(i, j) = nu_.addr()[dimension * (dimension * (N * e + n) + i) + j];
           Matrice33::inverse(M, iM);
-          for (i = 0; i < dimension; i++) for (j = 0; j < dimension; j++) inv_nu(e, n, dimension * i + j) = iM(i, j);
+          for (i = 0; i < dimension; i++) for (j = 0; j < dimension; j++) inv_nu(e, n, i, j) = iM(i, j);
         }
+  //interpolation
+  zone.interp_som(ts_d, ts_e, ts_f, inv_nu, bfs_d, bfs_vl, bfs_fn, bfs_vn, bfs_fd);
 
-  //interpolation pour chaque composante
-  const IntTab& f_e = zone.face_voisins();
-  if (tfi.nb_dim() < 2) tfi.resize(zone.nb_faces_tot(), N, dimension + 1), tfc.resize(zone.nb_faces_tot(), N, dimension + 1), tfi = -1;
-  double a_min = DBL_MAX;
-  for (f = 0; f < zone.nb_faces_tot(); f++) if (zone.fid(f) < zone.fid(f + 1)) for (n = 0; n < N; n++)
-        {
-          Zone_CoviMAC::interp_t resu = zone.finterp(f, inv_nu.dimension(2), &inv_nu(f_e(f, 0), n, 0), f_e(f, 1) < zone.nb_elem_tot() ? &inv_nu(f_e(f, 1), n, 0) : NULL);
-          for (i = 0; i <= dimension; i++) tfi(f, n, i) = resu.first[i], tfc(f, n, i) = resu.second[i], a_min = min(a_min, tfi(f, n, i) < 0 ? DBL_MAX : tfc(f, n, i));
-        }
-
-  Cerr << "a_min = " << Process::mp_min(a_min) << finl;
   nu_a_jour_ = 1;
 }

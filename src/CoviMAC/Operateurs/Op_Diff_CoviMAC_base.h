@@ -75,7 +75,8 @@ public:
     return nu_fac_;
   }
 
-  inline void remplir_nu_ef(int e, DoubleTab& nu_ef) const;
+  /* renvoie le produit v1.nu_.v2 quelle que soit la forme de nu_ */
+  inline double nu_prod(const int e, const int n, const int N, const double *v1, const double *v2) const;
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
@@ -85,10 +86,15 @@ protected:
   REF(Zone_CoviMAC) la_zone_poly_;
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_, nu_fac_, nu_faces_; //conductivite aux elements, facteur multiplicatif a appliquer par face
-  /* interpolation des temperatures aux faces internes */
-  mutable IntTab tfi; /* d + 1 indices par face interne */
-  mutable DoubleTab tfc; /* d + 1 coefficients */
+  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
+
+  /* interpolation du flux diffusif */
+  //constant : base des flux aux sommets fournie par Zone_CoviMAC::base_flux_som
+  mutable IntTab bfs_d, bfs_fn, bfs_fd;
+  mutable DoubleTab bfs_vl, bfs_vn;
+  //variables avec nu : coeffs de l'interpolation aux sommets par Zone_CoviMAC::interp_som
+  mutable IntTab ts_d;
+  mutable DoubleTab ts_e, ts_f;
 
   mutable int nu_a_jour_; //si on doit mettre a jour nu
   int nu_constant_;       //1 si nu est constant dans le temps
@@ -97,25 +103,18 @@ protected:
 //
 // Fonctions inline de la classe Op_Diff_CoviMAC_base
 //
-/* diffusivite a l'interieur d'un element e : nu_ef(i, n) : diffusivite de la composante n entre le centre de l'element et celui de la face i */
-inline void Op_Diff_CoviMAC_base::remplir_nu_ef(int e, DoubleTab& nu_ef) const
+inline double Op_Diff_CoviMAC_base::nu_prod(const int e, const int n, const int N, const double *v1, const double *v2) const
 {
-  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& e_f = zone.elem_faces();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  int i, j, k, f, n, N = nu_ef.dimension(1), N_nu = nu_.line_size();
-  double fac;
-
-  for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-    {
-      /* diffusivite de chaque composante dans la direction (xf - xe) */
-      if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
-      else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
-            nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
-      else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)
-              nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
-      else abort();
-      for (n = 0, fac = nu_fac_.addr()[f] * (N_nu > N ? 1. / zone.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
-    }
+  double resu = 0;
+  int i, j, N_nu = nu_.line_size();
+  assert(N_nu == 1 || N_nu == N || N_nu == N * dimension || N_nu == N * dimension * dimension);
+  if (N_nu <= N) for (i = 0; i < dimension; i++) //isotrope
+      resu += nu_.addr()[N_nu < N ? e : N * e + n] * v1[i] * v2[i];
+  else if (N_nu == N * dimension) for (i = 0; i < dimension; i++) //anisotrope diagonal
+      resu += nu_.addr()[dimension * (N * e + n) + i] * v1[i] * v2[i];
+  else if (N_nu == N * dimension * dimension) for (i = 0; i < dimension; i++) for (j = 0; j < dimension; j++) //anisotrope diagonal
+        resu += nu_.addr()[dimension * (dimension * (N * e + n) + i) + j] * v1[i] * v2[j];
+  return resu;
 }
+
 #endif
