@@ -157,7 +157,7 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
       secmem.addr()[N * e + n] += coef(e) * pe(e) * ve(e) * inco.addr()[N * e + n] / dt;
 
   //partie inferieure : valeur imposee pour les CLs de Neumann / Dirichlet / Echange_Impose
-  for (f = 0; secmem.get_md_vector( ) == zone.mdv_elems_faces && f < zone.nb_faces(); f++)
+  for (f = 0; secmem.dimension_tot(0) > ne_tot && f < zone.nb_faces(); f++)
     if (ch.icl(f, 0) == 4) for (n = 0; n < N; n++) //Neumann_paroi
         secmem(N * (ne_tot + f) + n) -= fs(f) * ref_cast(Neumann_paroi, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
     else if (ch.icl(f, 0) == 6) for (n = 0; n < N; n++) //Dirichlet
