@@ -139,7 +139,7 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
   // on prend que la dimension la plus grande et on verifie que l'on a qu'un type elt 
   if (res.size()>1)
     {
-      cerr<<"error multi dimension in "<<meshname<<endl;
+      cerr<<"warning multi dimension in "<<meshname<<endl;
       //throw;
     }
   if (res[0].size()>1)
