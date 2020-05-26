@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -305,6 +305,23 @@ Entree& Scatter::interpreter(Entree& is)
   barrier();
   Cerr << "End Distribue_zones" << finl;
 
+  Cerr << "\nQuality of partitioning --------------------------------------------" << finl;
+  Cerr << "\nTotal number of elements = " << Process::mp_sum(dom.zone(0).nb_elem()) << finl;
+
+  IntVect Tab_max_elem_by_proc(Process::nproc());
+  for(int i=0 ; i < Process::nproc() ; i++)
+    {
+      Tab_max_elem_by_proc(0) = dom.zone(0).nb_elem();
+      envoyer_all_to_all(Tab_max_elem_by_proc,Tab_max_elem_by_proc);
+    }
+  Cerr << "Number of Zones : " << Tab_max_elem_by_proc.size_array() << finl;
+  Cerr << "Max number of elements by Zones = " << local_max_vect(Tab_max_elem_by_proc) << finl;
+
+  double load_imbalance = double (local_max_vect(Tab_max_elem_by_proc));
+  load_imbalance *= Process::nproc();
+  load_imbalance /= Process::mp_sum(dom.zone(0).nb_elem());
+
+  Cerr << "Load imbalance = " << load_imbalance << "\n" << finl;
 
   Elem_geom_base& elem=dom.zone(0).type_elem().valeur();
   if (sub_type(Poly_geom_base,elem))

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -237,6 +237,22 @@ Entree& Decouper::interpreter(Entree& is)
     ecrire_sous_zones(nom_zones_decoup, format_binaire,
                       domaine, elem_part, nb_parties, epaisseur_joint, reorder,
                       liste_bords_periodiques);
+
+  Cout << "\nQuality of partitioning --------------------------------------------" << finl;
+  Cout << "\nTotal number of elements = " << elem_part.size_array() << finl;
+
+  DoubleVect A(nb_parties);
+  for (int i = 0; i < elem_part.size_array(); i++)
+    A(elem_part[i]) = A(elem_part[i]) + 1;
+
+  Cout << "Number of Zones : " << A.size_array() << finl;
+  Cout << "Max number of elements by Zones = " << local_max_vect(A) << finl;
+
+  double load_imbalance = double(local_max_vect(A));
+  load_imbalance *= nb_parties;
+  load_imbalance /= elem_part.size_array();
+
+  Cout << "Load imbalance = " << load_imbalance << "\n" << finl;
 
   Cerr << "End of the interpreter Decouper" << finl;
   return is;
