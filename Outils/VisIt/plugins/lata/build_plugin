@@ -10,7 +10,7 @@ plugin=lata
 
 # Le plugin depuis le Kernel que si la version de VisIt a ete compilee
 #[ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" = "" ] && echo "Sorry, can't update a plugin of a none built VisIt version." && exit 0 
-[ "$TRUST_DOWNLOAD_VISIT" = 1 ] && echo "Sorry, can't update a plugin of a none built VisIt version." && exit 0
+#[ "$TRUST_DOWNLOAD_VISIT" = 1 ] && echo "Sorry, can't update a plugin of a none built VisIt version." && exit 0
 
 plugin_visit=`ls -rt $TRUST_ROOT/exec/VisIt/current/*/plugins/databases/*$plugin"Data"*.so 2>/dev/null | head -1`
 plugin_kernel=`ls -rt build/CMakeFiles/*/*.o $TRUST_ROOT/$LATASRC/Dcommun_triou/*  $TRUST_ROOT/$LATASRC/Dtriou_compat/*  2>/dev/null | tail -1`

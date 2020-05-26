@@ -13,10 +13,8 @@ then
    gunzip -f -c $TRUST_ROOT/Outils/VisIt/test/test.tar.gz | tar -xf -
    lata=`ls -rt *.lata`
    echo $ECHO_OPTS "quit()" > quit.py
-   echo "OpenDatabase(\"$lata\", 0)
-   quit()" > LATA.py
-   echo "OpenDatabase(\"mesh.med\", 0)
-   quit()" > MED.py
+   echo -e "OpenDatabase(\"$lata\", 0)\nquit()" > LATA.py
+   echo -e "OpenDatabase(\"mesh.med\", 0)\nquit()" > MED.py
    visit=$TRUST_ROOT/exec/VisIt/bin/visit
 
    # Pour eviter un blocage avec Alliances
@@ -85,7 +83,7 @@ then
 	 uname -a
 	 echo "Compiler used for the $FORMAT plugin: "`$TRUST_cc -v 2>&1 | grep version`
 	 echo "Compiler used to build VisIt: "
-	 find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
+	 #find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
 	 echo "See $tmp_visit/$FORMAT.log"
 	 echo "and VisIt debug files *.vlog under $tmp_visit." 
 	 cat $tmp_visit/visit.log
