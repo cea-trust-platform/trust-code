@@ -655,8 +655,7 @@ void Zone_CoviMAC::init_phifs() const
 {
   if (is_init["phifs"]) return;
   const IntTab& f_e = face_voisins(), &f_s = face_sommets();
-  const DoubleTab& xs = zone().domaine().coord_sommets();
-  const DoubleVect& vf = volumes_entrelaces();
+  const DoubleTab& xs = zone().domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
   int i, j, k, e, f, n_s;
 
   phifs_d.set_smart_resize(1), phifs_v.resize(0, 2, dimension), phifs_v.set_smart_resize(1);
@@ -668,14 +667,20 @@ void Zone_CoviMAC::init_phifs() const
       phifs_v.resize(phifs_d(f) + n_s, 2, dimension);
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < n_s; j++)
           {
+            /* vecteurs normes sea (au triangle elem-arete), sfa (triangle CG face-arete) tournes vers l'exterieur du diamant */
             int s0 = f_s(f, j), jb = j + 1 < n_s ? j + 1 : 0, s1 = f_s(f, jb);
-            std::array<double, 3> vec3, vecz = {{ 0, 0, 1 }}; //produit normale * surface entre le CG de l'element et le sommet (2D) / arete (3D)
-            if (dimension < 3) vec3 = cross(2, 3, &xs(s0, 0), &vecz[0], &xp_(e, 0));
-            else vec3 = cross(3, 3, &xs(s0, 0), &xs(s1, 0), &xp_(e, 0), &xp_(e, 0));
-            int sgn = dot(&xp_(e, 0), &vec3[0], &xv_(f, 0)) > 0 ? 1 : -1; //pour tourner vec3 vers l'exterieur
-            for (k = 0; k < dimension; k++) vec3[k] *= sgn * (dimension < 3 ? 1. : 0.5) / vf(f);
-            if (dimension < 3) for (k = 0; k < 2; k++) phifs_v(phifs_d(f) + j, i, k) = vec3[k], phife(f, i, k) += vec3[k];
-            else for (k = 0; k < 3; k++) phifs_v(phifs_d(f) + j, i, k) += vec3[k], phifs_v(phifs_d(f) + jb, i, k) += vec3[k], phife(f, i, k) += vec3[k];
+            std::array<double, 3> sea, sfa, vecz = {{ 0, 0, 1 }}; //produit normale * surface entre le CG de l'element et le sommet (2D) / arete (3D)
+            if (dimension < 3) sea = cross(2, 3, &xs(s0, 0), &vecz[0], &xp_(e, 0)), sfa = cross(2, 3, &xs(s0, 0), &vecz[0], &xv_(f, 0));
+            else sea = cross(3, 3, &xs(s0, 0), &xs(s1, 0), &xp_(e, 0), &xp_(e, 0)), sfa = cross(3, 3, &xs(s0, 0), &xs(s1, 0), &xv_(f, 0), &xv_(f, 0));
+
+            //orientation, division par 2 (en 3D) et normalisation
+            int sgn_ea = dot(&xp_(e, 0), &sea[0], &xv_(f, 0)) > 0 ? 1 : -1, sgn_fa = dot(&xv_(f, 0), &sfa[0], &xp_(e, 0)) > 0 ? 1 : -1;
+            for (k = 0; k < dimension; k++) sea[k] *= sgn_ea * (dimension < 3 ? 1. : 0.5) / vfd(f, i), sfa[k] *= sgn_fa * (dimension < 3 ? 1. : 0.5) / vfd(f, i);
+
+            //contribution
+            if (dimension < 3) for (k = 0; k < 2; phife(f, i, k) += sea[k], k++) phifs_v(phifs_d(f) + j, i, k) = sea[k] + 2 * sfa[k];
+            else for (k = 0; k < 3; phife(f, i, k) += sea[k], k++)
+                phifs_v(phifs_d(f) + j, i, k) += sea[k] + 1.5 * sfa[k], phifs_v(phifs_d(f) + jb, i, k) += sea[k] + 1.5 * sfa[k];
           }
     }
   CRIMP(phifs_d), CRIMP(phifs_v);

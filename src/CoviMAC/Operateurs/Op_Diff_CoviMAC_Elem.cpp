@@ -160,7 +160,7 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &f_s = zone.face_sommets();
   const DoubleVect& fs = zone.face_surfaces();
-  const DoubleTab& nf = zone.face_normales();
+  const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
   int i, ib, j, jb, e, f, s, n, N = inco.line_size(), nu_unif = ts_e.dimension(1) < N;
 
   /* 1. interpolation des valeurs aux sommets */
@@ -192,18 +192,27 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
     }
 
   /* 2. flux aux faces (x surface) */
-  DoubleTrav phi(N);
+  DoubleTrav phi(N), mu(N, 2);
   for (f = 0, phi = 0; f < zone.nb_faces(); f++, phi = 0)
     {
       if (!ch.icl(f, 0) || ch.icl(f, 0) > 5) //interne ou Dirichlet
         {
+          //mu : ponderation amont/aval du flux
+          if (f_e(f, 1) < 0) for (n = 0; n < N; n++) for (i = 0; i < 2; i++) mu(n, i) = (i == 0); //bord -> tout sur l'amont
+          else for (n = 0; n < N; n++) //interne -> moyenne harmonique des nu / L
+              {
+                for (i = 0; i < 2; i++) mu(n, i) = nu_prod(f_e(f, !i), n, N, &nf(f, 0), &nf(f, 0)) / vfd(f, !i);
+                double sum = mu(n, 0) + mu(n, 1);
+                mu(n, 0) /= sum, mu(n, 1) /= sum;
+              }
+
           for (i = 0, phi = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
             {
               //contribution de l'element
-              for (n = 0; n < N; n++)  phi(n) += nu_prod(e, n, N, &nf(f, 0), &zone.phife(f, i, 0)) * inco.addr()[N * e + n];
+              for (n = 0; n < N; n++)  phi(n) += mu(n, i) * nu_prod(e, n, N, &nf(f, 0), &zone.phife(f, i, 0)) * inco.addr()[N * e + n];
               //contribution des sommets
               for (j = 0, jb = zone.phifs_d(f); jb < zone.phifs_d(f + 1); j++, jb++) for (n = 0, s = f_s(f, j); n < N; n++)
-                  phi(n) += nu_prod(e, n, N, &nf(f, 0), &zone.phifs_v(jb, i, 0)) * val_s(s, n);
+                  phi(n) += mu(n, i) * nu_prod(e, n, N, &nf(f, 0), &zone.phifs_v(jb, i, 0)) * val_s(s, n);
             }
           phi *= nu_fac_(f); //prise en compte de nu_fac
         }
@@ -234,22 +243,31 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &f_s = zone.face_sommets();
   const DoubleVect& fs = zone.face_surfaces();
-  const DoubleTab& nf = zone.face_normales();
+  const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
   int i, ib, j, jb, k, e, eb, f, fb, s, n, N = inco.line_size(), nu_unif = ts_e.dimension(1) < N;
 
 
-  DoubleTrav nu_f_s(N), den(N);
+  DoubleTrav nu_f_s(N), den(N), mu(N, 2);
   for (f = 0; f < zone.nb_faces(); f++)
     if (!ch.icl(f, 0) || ch.icl(f, 0) > 5) //interne ou Dirichlet
       {
+        //mu : ponderation amont/aval du flux
+        if (f_e(f, 1) < 0) for (n = 0; n < N; n++) for (i = 0; i < 2; i++) mu(n, i) = (i == 0); //bord -> tout sur l'amont
+        else for (n = 0; n < N; n++) //interne -> moyenne harmonique des nu / L
+            {
+              for (i = 0; i < 2; i++) mu(n, i) = nu_prod(f_e(f, !i), n, N, &nf(f, 0), &nf(f, 0)) / vfd(f, !i);
+              double sum = mu(n, 0) + mu(n, 1);
+              mu(n, 0) /= sum, mu(n, 1) /= sum;
+            }
+
         //partie "elements"
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-              for (n = 0; n < N; n++) matrice(N * e + n, N * eb + n) += (i ? 1 : -1) * nu_prod(eb, n, N, &nf(f, 0), &zone.phife(f, j, 0));
+              for (n = 0; n < N; n++) matrice(N * e + n, N * eb + n) += mu(n, j) * (i ? 1 : -1) * nu_prod(eb, n, N, &nf(f, 0), &zone.phife(f, j, 0));
         //partie "sommets"
         for (i = 0, ib = zone.phifs_d(f); ib < zone.phifs_d(f + 1); i++, ib++) if (bfs_d(f_s(f, i), 2) == bfs_d(f_s(f, i) + 1, 2)) //sauf ceux de Dirichlet
             {
               for (j = 0, s = f_s(f, i), nu_f_s = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++)
-                  nu_f_s(n) += nu_prod(e, n, N, &nf(f, 0), &zone.phifs_v(ib, j, 0));
+                  nu_f_s(n) += mu(n, j) * nu_prod(e, n, N, &nf(f, 0), &zone.phifs_v(ib, j, 0));
 
               //implicitation de Echange_externe_impose
               for (j = ts_d(s, 1), jb = zone.sef_d(s, 1), den = 1; j < ts_d(s + 1, 1); j++, jb++) if (ch.icl(fb = zone.sef_f(jb), 0) == 1)
