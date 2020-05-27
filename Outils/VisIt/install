@@ -209,7 +209,7 @@ then
 	    then
 	       echo "Try to download $HTTP/$version_visit/$package..."
 	       # Regarde dans le cache:
-	       [ ! -f $TRUST_TMP/$package ] && cd $TRUST_TMP && wget_ $HTTP/$version_visit/$package 1>/dev/null 2>&1
+	       [ ! -f $TRUST_TMP/$package ] && wget_ $HTTP/$version_visit/$package $TRUST_TMP 1>/dev/null 2>&1
 	       [ -f $TRUST_TMP/$package ] && DOWNLOADED=1 && ln -s -f $TRUST_TMP/$package .
 	    fi
 	 done

@@ -6,6 +6,7 @@ then
    # Teste que le format Visit+Lata fonctionne
    # Initialisation environnement TRUST pour mise a jour de PYTHON_PATH sinon probleme avec ALLIANCES
    source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
+   new=1 && [ -d $TRUST_ROOT/exec/VisIt/2.12.1 ] && new=0
 
    tmp_visit=`mktemp_ -d`
    cd $tmp_visit
@@ -69,7 +70,7 @@ then
    options=-nowin && $TRUST_ROOT/Outils/VisIt/check_visit 1>/dev/null 2>&1 && options=$options" -win"
    for option in $options
    do
-      for FORMAT in LATA MED
+      for FORMAT in LATA `[ "$new" = 1 ] && echo MED`
       do
       rm -f err
       ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s $FORMAT.py 1>$FORMAT.log 2>&1;echo ${PIPESTATUS[0]} > err) &
