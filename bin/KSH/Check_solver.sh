@@ -291,7 +291,7 @@ do
 	 print $output
 	 # Menage
 	 mkdir tmp
-	 mv -f $output $jdd.data $jdd.TU $jdd.dt_ev tmp/. 2>/dev/null && [ -f $jdd.cpu ] && mv $jdd.cpu tmp/.
+	 mv -f $output $jdd.data $jdd*.TU $jdd.dt_ev tmp/. 2>/dev/null && [ -f $jdd.cpu ] && mv $jdd.cpu tmp/.
 	 rm -f $jdd.* $jdd"_"*
 	 mv tmp/* .
 	 rmdir tmp	 
