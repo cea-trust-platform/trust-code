@@ -235,13 +235,8 @@ then
          OK $err
          if [ $err != 0 ]
 	 then
-	    if [ -f $exec ]
-	    then
-	       echo $ECHO_OPTS "-> $exec is deleted."
-	       rm -f $exec
-	    fi 
 	    echo "A library failed to build. Contact TRUST support by sending $COMPILE and $TRUST_ENV/machine.env files."
-	    echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+	    echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
 	 fi
          \cd ..
       fi
@@ -287,7 +282,7 @@ then
          if [ $LIB = ${LIB#lib} ]
          then
             echo "Library name in makefile of $dir is not correct."
-	    echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+	    echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
          fi
       fi
    #
@@ -299,7 +294,7 @@ then
    #
       if [ "$CLEAN" = "" ]
       then
-         $TRUST_ROOT/bin/KSH/check_sources.sh || (echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1)
+         $TRUST_ROOT/bin/KSH/check_sources.sh || (echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1)
       fi     
    #
    # Compilation selon les machines
@@ -375,12 +370,7 @@ then
       if [ $error != 0 ]
       then
          echo $ECHO_OPTS `pwd`':\nCompiling error -> See file '$COMPILE
-	 if [ -f $exec ]
-	 then
-	    echo $ECHO_OPTS "-> $exec is deleted."
-	    rm -f $exec
-	 fi 
-	 echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+	 echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
       fi
       #
       # Verifie le bon etat des .o crees (.o vides ou autre)
@@ -390,7 +380,7 @@ then
          i=${file%.cpp};i=${i%.f};i=${i%.c};o=$i.o
          [ -f $o ] && [ ! -s $o ] && echo "$dir/$file badly compiled then the .o file is deleted..." && rm -f $o && err=1
       done
-      [ $err = 1 ] && echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+      [ $err = 1 ] && echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
       \cd $TRUST_ROOT
    done
 elif [ "$CLEAN" == "" ]
@@ -491,7 +481,7 @@ then
 	 then
             echo $dir 
 	    # Verifie les sources
-	    $TRUST_ROOT/bin/KSH/check_sources.sh || (echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1)
+	    $TRUST_ROOT/bin/KSH/check_sources.sh || (echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1)
             # Met a jour le fichier instancie (mk_Instancie a reporter dans check.sh? au lieu de make depend ?)
             mk_Instancie
             # Recherche des fichiers de $dir
@@ -620,7 +610,7 @@ then
 
          cmake $TRUST_ROOT/src -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT -DCMAKE_BUILD_TYPE=$build_type -Ukernel $MODE_SPECIAL -DCOMPIL_DYN=${COMPIL_DYN}
 
-         [ $? != 0 ] && echo 'Problem of configuring.' && echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+         [ $? != 0 ] && echo 'Problem of configuring.' && echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
 	 # GF pour eviter message 
 	 export MAKELEVEL=0
 
@@ -635,7 +625,7 @@ then
 	     status=${PIPESTATUS[0]}
 	     if [ $status != 0 ] 
 		 then
-		 echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+		 echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
 		 break
 	     fi
          fi

@@ -41,19 +41,13 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   echo "Configuring ..."
   # All of those options are already set with the following values by default, but just to be sure force them again ...:
   # -DHDF5_BUILD_CPP_LIB=OFF because parallel and c++ are mutually exclusive
-  options="-DCMAKE_C_COMPILER=$TRUST_cc_BASE -DHDF5_BUILD_CPP_LIB=OFF -DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
-  options="$options -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_HL_LIB=ON"   
-  options="$options -DHDF5_BUILD_TOOLS=ON -DHDF5_ENABLE_USING_MEMCHECKER=ON -DHDF5_ENABLE_DIRECT_VFD=OFF"
+  options="-DCMAKE_C_COMPILER=$TRUST_cc -DHDF5_BUILD_CPP_LIB=OFF -DCMAKE_CXX_COMPILER=$TRUST_CC"
+  options="$options -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_HL_LIB=ON"
+  # Disable build tools car probleme avec OpenMPI 4.0.3...   
+  options="$options -DHDF5_BUILD_TOOLS=OFF -DHDF5_ENABLE_USING_MEMCHECKER=ON -DHDF5_ENABLE_DIRECT_VFD=OFF"
   options="$options -DHDF5_ENABLE_Z_LIB_SUPPORT=OFF -DHDF5_ENABLE_SZIP_SUPPORT=OFF -DHDF5_ENABLE_SZIP_ENCODING=OFF"
-  if [ "$TRUST_DISABLE_MPI" = 0 ]
-  then
-  options="$options -DHDF5_ENABLE_PARALLEL=ON"
-  CC=$MPI_ROOT/bin/mpicc
-  CXX=$MPI_ROOT/bin/mpicxx
-  FC=$MPI_ROOT/bin/mpif90
-  F77=$MPI_ROOT/bin/mpif77
-  fi
-  cmake $options -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
+  [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON"
+  cmake $options -DCMAKE_INSTALL_PREFIX=$actual_install_dir -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
   
   $TRUST_MAKE  || exit -1
   make install || exit -1

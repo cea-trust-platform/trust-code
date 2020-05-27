@@ -13,8 +13,8 @@ then
    gunzip -f -c $TRUST_ROOT/Outils/VisIt/test/test.tar.gz | tar -xf -
    lata=`ls -rt *.lata`
    echo $ECHO_OPTS "quit()" > quit.py
-   echo "OpenDatabase(\"$lata\", 0)
-   quit()" > lata.py
+   echo -e "OpenDatabase(\"$lata\", 0)\nquit()" > LATA.py
+   echo -e "OpenDatabase(\"mesh.med\", 0)\nquit()" > MED.py
    visit=$TRUST_ROOT/exec/VisIt/bin/visit
 
    # Pour eviter un blocage avec Alliances
@@ -60,35 +60,38 @@ then
       fi
    done
 
-   #####################################
-   # Test of VisIt reading a LATA file #
-   #####################################
+   #########################################
+   # Test of VisIt reading a LATA/MED file #
+   #########################################
    # check_visit is important to know if DISPLAY is available !
    # If it fails, -win CAN'T be used and the test of VisIt fails
    options=-nowin && $TRUST_ROOT/Outils/VisIt/check_visit 1>/dev/null 2>&1 && options=$options" -win"
    for option in $options
    do
+      for FORMAT in LATA MED
+      do
       rm -f err
-      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s lata.py 1>lata.log 2>&1;echo ${PIPESTATUS[0]} > err) &
+      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s $FORMAT.py 1>$FORMAT.log 2>&1;echo ${PIPESTATUS[0]} > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
-	 echo "VisIt has blocked on the LATA test with $option option and has been killed after $timeout seconds. See `pwd`/lata.log" 
+	 echo "VisIt has blocked on the $FORMAT test with $option option and has been killed after $timeout seconds. See `pwd`/$FORMAT.log" 
 	 exit -1
-      elif [ "`cat err 2>/dev/null`" != 0 ] || [ "`grep 'invalid file' lata.log 2>/dev/null`" != "" ] || [ "`grep abnormally lata.log 2>/dev/null`" != "" ] || [ "`grep -i error visit.log 2>/dev/null`" != "" ]
+      elif [ "`cat err 2>/dev/null`" != 0 ] || [ "`grep 'invalid file' $FORMAT.log 2>/dev/null`" != "" ] || [ "`grep abnormally $FORMAT.log 2>/dev/null`" != "" ] || [ "`grep -i error visit.log 2>/dev/null`" != "" ]
       then
-	 echo "VisIt does not read a lata file with $option option for the plateform:"
+	 echo "VisIt does not read a $FORMAT file with $option option for the plateform:"
 	 uname -a
-	 echo "Compiler used for the LATA plugin: "`$TRUST_cc -v 2>&1 | grep version`
+	 echo "Compiler used for the $FORMAT plugin: "`$TRUST_cc -v 2>&1 | grep version`
 	 echo "Compiler used to build VisIt: "
-	 find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
-	 echo "See $tmp_visit/lata.log"
+	 #find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
+	 echo "See $tmp_visit/$FORMAT.log"
 	 echo "and VisIt debug files *.vlog under $tmp_visit." 
 	 cat $tmp_visit/visit.log
 	 exit -1
       else
-	 echo "VisIt + LATA plugin are OK with $option option."
+	 echo "VisIt + $FORMAT plugin are OK with $option option."
       fi
+      done
    done
    rm -r -f $tmp_visit
 fi

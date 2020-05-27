@@ -11,9 +11,12 @@ new_version=3_1_1
 install=$(TRUST_ROOT)/exec/VisIt
 cible=$(install)/bin/$(name)
 #cible=bin/$(name)
-check=$(TRUST_ROOT)/build/Outils/VisIt/test/ok   
+check=$(TRUST_ROOT)/build/Outils/VisIt/test/ok
+sonde=$(TRUST_ROOT)/exec/VisIt/current/linux-x86_64/plugins/databases/libEsondeDatabase_ser.so
 
-all: $(cible)
+all: $(cible) $(sonde)
+
+$(sonde): ./plugins/Sondes/build_plugin ./plugins/lata/build_plugin plugins/triofield/build_plugin
 	./install $(version) plugins $(new_version)
 	make $(check)
 

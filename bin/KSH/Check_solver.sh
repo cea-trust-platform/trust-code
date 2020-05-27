@@ -47,16 +47,18 @@ print()
        # Nombre d'iterations moyen passes dans le solveur
        its=` grep -E 'Convergence [ei]n' $out | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$3} END {printf("%3d",s/n)}'`
         # Calcul du residu relatif final
-       res=` grep -E 'Residu final:|Final residue:' $out  | $TRUST_Awk -v nr=$nr '(NR>=nr) {s=$5} END {printf("%2.0e",s)}'`      
+       res=` grep -E 'Residu final:|Final residue:' $out | $TRUST_Awk -v nr=$nr '(NR>=nr) {s=$5} END {printf("%2.0e",s)}'`      
        # Calcul de la RAM
-       ram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%5d",r)}' $1`
+       ram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%5d",r)}' $out`
+       # Calcul des Flops du MatMult
+       matmult="nc  " && [ -f ${out%.out_err}_petsc.TU ] && matmult=`$TRUST_Awk '/^MatMult / || /^MatMultAdd / {print $NF;exit}' ${out%.out_err}_petsc.TU 2>/dev/null`
        OK="OK"
     fi
-    echo $ECHO_OPTS "$cpu\t$cpu0\t$its\t$res\t$ram\t$OK\t[$i]\t$solver\t" | tee -a rank
+    echo $ECHO_OPTS "$cpu\t$cpu0\t$its\t$res\t$ram\t$matmult\t\t$OK\t[$i]\t$solver\t" | tee -a rank
 }
 print_init()
 {
-    echo $ECHO_OPTS "cpu\tcpu0\tits\tres\tram[Mo]\tEtat\tSolveur" | tee -a rank
+    echo $ECHO_OPTS "cpu\tcpu0\tits\tres\tram[Mo]\tMatMult[MFlops]\tEtat\tSolveur" | tee -a rank
 }
 
 # On regarde si le solveur est operationnel en retournant run=0 ou 1
@@ -291,7 +293,7 @@ do
 	 print $output
 	 # Menage
 	 mkdir tmp
-	 mv -f $output $jdd.data $jdd.TU $jdd.dt_ev tmp/. 2>/dev/null && [ -f $jdd.cpu ] && mv $jdd.cpu tmp/.
+	 mv -f $output $jdd.data $jdd*.TU $jdd.dt_ev tmp/. 2>/dev/null && [ -f $jdd.cpu ] && mv $jdd.cpu tmp/.
 	 rm -f $jdd.* $jdd"_"*
 	 mv tmp/* .
 	 rmdir tmp	 
@@ -308,7 +310,7 @@ echo "********"
 echo $ECHO_OPTS "1,$ s?$HOST?$HOST $size?g\nw" | ed rank 1>/dev/null 2>&1
 head -2 rank | tee ranking.$$
 # tail +3 pas portable
-awk '(NR>2) && ($6=="OK")' rank | sort -n | tee -a ranking.$$
+awk '(NR>2) && ($7=="OK")' rank | sort -n | tee -a ranking.$$
 echo "Saved in ranking.$$ file"
 # [ "$mail" = 1 ] && cat ranking.$$ | mail_ -s\"[Check_solver.sh] NP sur $HOST\" $TRUST_MAIL
 #echo "NP sur $HOST:"

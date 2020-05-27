@@ -1,0 +1,99 @@
+Dimension 3
+Pb_hydraulique pb
+
+Domaine dom
+Lire_med family_names_from_group_names dom mesh_hexa_3 cube.med
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 0.4
+	precision_impr 8
+	seuil_statio -1
+}
+
+Fluide_incompressible fluide
+Lire fluide
+{
+	mu champ_uniforme 1 1
+ 	rho champ_uniforme 1 1
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb fluide
+
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		Solveur_pression	PETSC Cholesky { }
+		Convection		{ negligeable }
+		Diffusion		{ }
+		Conditions_initiales	{ vitesse champ_uniforme 3 0 0 0 }
+		Conditions_limites	{
+					Gauche		paroi_fixe
+					Droite		paroi_fixe
+					Bas		paroi_fixe
+					Haut		paroi_fixe
+					Derriere	paroi_fixe
+					Devant		paroi_fixe
+					}
+	}
+	Liste_postraitements
+	{
+		postraitement A
+			{
+			Definition_champs	{
+						A moyenne { t_deb 1.015625e-01 t_fin 0.3 sources { transformation { methode formule localisation elem expression 1 1 source refChamp { Pb_champ pb pression } } } }
+						}
+			Sondes			{
+						moyenne_A A periode 1 numero_elem_sur_maitre 0
+						}
+			Fichier A
+			Format lata
+			Champs binaire dt_post 0.3
+						{
+						A elem
+						}
+			}
+		postraitement B
+			{
+			Definition_champs	{
+						B moyenne { t_deb 3.020833e-01 t_fin 0.5 sources { transformation { methode formule localisation elem expression 1 2 source refChamp { Pb_champ pb pression } } } }
+						}
+			Sondes			{
+						moyenne_B B periode 1 numero_elem_sur_maitre 0
+						}
+			Fichier B
+			Format lata
+			Champs binaire dt_post 0.5
+						{
+						B elem
+						}
+			}
+		postraitement C
+			{
+			Definition_champs	{
+						C moyenne { t_deb 2.005208e-01 t_fin 0.4 sources { transformation { methode formule localisation elem expression 1 3 source refChamp { Pb_champ pb pression } } } }
+						}
+			Sondes			{
+						moyenne_C C periode 1 numero_elem_sur_maitre 0
+						}
+			Fichier stats_t_deb_different
+			Format lml
+			Champs binaire dt_post 0.4
+						{
+						C elem
+						}
+			}
+	}
+}
+
+Resoudre pb
+Fin

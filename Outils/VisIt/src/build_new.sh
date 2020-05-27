@@ -2,20 +2,8 @@
 # PL: Reecrit depuis VisIt 3.1.1
 clean()
 {
-   # On ne nettoie plus ?
-   echo $ECHO_OPTS "Not cleaning for the moment...\c"
+   # Clean plus necessaire
    return
-   # Nettoyage des paquets
-   echo $ECHO_OPTS "Cleaning...\c"
-   for suffix in tar.gz tgz zip tar.bz2 tar.xz
-   do
-      [ -d ${paquet%.$suffix} ] 	&& rm -r -f ${paquet%.$suffix}
-      rm -f $paquet.$suffix
-   done
-   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  
-   rm -f build_visit2_5_2* build_visit*help
-   rm -f build_visit*"_log" *.cmake *.conf tmp* *.py releases
-   echo "OK"
 }
 
 #########
@@ -73,7 +61,7 @@ fi
 # Hacks:
 ########
 unset OPT 												# Sinon numpy plante a la compilation car $OPT utilise...
-#pkg=xorg-libsm && [ "`conda list $pkg | grep -v '\#'`" = "" ] && conda install -c conda-forge $pkg -y	# Sinon /usr/bin/ld: /usr/lib64/libSM.so: undefined reference to `uuid_generate@UUID_1.0'
+pkg=xorg-libsm && [ "`conda list $pkg | grep 1.2.3`" = "" ] && conda install -c conda-forge $pkg -y	# Sinon /usr/bin/ld: /usr/lib64/libSM.so: undefined reference to `uuid_generate@UUID_1.0'
 VISIT_QT_DIR="VISIT_OPTION_DEFAULT(VISIT_QT_DIR \${QT_BIN_DIR}/..)"					# VISIT_QT_DIR non fixe lors du build de VisIt
 if [ "`grep "$VISIT_QT_DIR" $build`" = "" ]
 then
@@ -87,7 +75,6 @@ mkdir -p $TRUST_ROOT/exec/VisIt  									# Important sinon current pas cree au 
 echo "Creating `pwd`/$build.help ..."
 ./$build --help 1>./$build.help 2>&1 
 log=build_visit$vt"_log"
-rm -r -f $log
 echo -e "yes\n" | ./$build $options
 if [ $? != 0 ]
 then
@@ -95,7 +82,7 @@ then
    exit -1
 else
    echo "$build_visit succeeds."
-   rm -r -f visit$vt 		# Sources inutiles une fois le build construit
+   rm -r -f visit$vp 		# Sources inutiles une fois le build construit
    rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
-   #rm -f $log
+   exit 0
 fi

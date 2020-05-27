@@ -36,9 +36,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
 
-// Desactivation du C++ bindings pour gcc recent (>=8.x) sinon erreur avec OpenMPI natif... (See https://github.com/open-mpi/ompi/issues/5157)
-#define OMPI_SKIP_MPICXX 1
-
 #include <mpi.h>
 
 #pragma GCC diagnostic pop

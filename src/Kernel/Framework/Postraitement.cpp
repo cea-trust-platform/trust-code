@@ -104,6 +104,12 @@ void Postraitement::mettre_a_jour(double temps)
 
   if ( inf_ou_egal(tstat_deb_,temps) &&  inf_ou_egal(temps,tstat_fin_) )
     tstat_dernier_calcul_ =  temps;// Il y a eu mise a jour effective des integrales
+  if ( sup_ou_egal(temps, tstat_fin_))  // si reprise du calcul apres la fin des stats
+    {
+      double dt=probleme().schema_temps().pas_de_temps(); // si dt cst !!!
+      if (sup_strict(dt,0)) // pour eviter une division par 0
+        tstat_dernier_calcul_ =  floor(tstat_fin_/dt)*dt;
+    }
 }
 
 Motcles Postraitement::formats_supportes=Motcles(0);

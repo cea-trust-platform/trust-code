@@ -106,9 +106,11 @@ if [ "$1" = "-git" ]
 then
     Gestion_conf=1
     option="-git"
+    repo=`git config --get remote.origin.url`
     shift
 fi
 
+rm -r -f $project_directory/archives_dependencies
 has_subproject=0
 for l_sub_project in $*
 do
@@ -116,21 +118,26 @@ do
   # echo ${BALTIK_ROOT}
   sub_project=`echo $l_sub_project | awk -F: '{print $2}'`
   p_sub_project=`echo $l_sub_project | awk -F: '{print $1}'`
-  if [ $sub_project != ${project_directory} ] && [ "$Gestion_conf" = 0 ]
+  if [ $sub_project != ${project_directory} ]
   then
-      has_subproject=1
-      mkdir -p $project_directory/archives_dependencies
-      echo creation of archive $sub_project
       cd $sub_project
-      out=`$0 -directory_for_tar $project_directory $option`
-      #echo $ECHO_OPTS $out
-      archive=`echo $out| awk '{print $NF}'`
-      cmd="cp $archive $project_directory/archives_dependencies/${p_sub_project}.tar.gz"
-      link=`ls -l $archive | awk '{print $NF}'`
-      eval $cmd
-      rm $archive $link
-      # echo $cmd
-      #
+      #echo $sub_project
+      # On fait une archive si depot git different ou si project.cfg non git tracked
+      if [ $Gestion_conf = 0 ] || [ "`git config --get remote.origin.url 2>/dev/null`" != "$repo" ] || [ "`git ls-files --error-unmatch $sub_project/project.cfg 1>/dev/null 2>&1;echo $?`" != 0 ] 
+      then
+         has_subproject=1
+         mkdir -p $project_directory/archives_dependencies
+         echo creation of archive $sub_project
+         out=`$0 -directory_for_tar $project_directory #$option`
+         #echo $ECHO_OPTS $out
+         archive=`echo $out| awk '{print $NF}'`
+         cmd="cp $archive $project_directory/archives_dependencies/${p_sub_project}.tar.gz"
+         link=`ls -l $archive | awk '{print $NF}'`
+         eval $cmd
+         rm $archive $link
+         # echo $cmd
+         #
+      fi
       cd $project_directory
   fi
 done
@@ -177,6 +184,7 @@ list_save_subp=""
 
 export list_save; # echo "iiiiiiii" $list_save 
 #;xterm ; exit
+
 if [ $Gestion_conf -eq 1 ]
 then 
     # echo "git"
@@ -184,7 +192,7 @@ then
     cd ${project_directory}
     echo "Creating ${project_tar_name} ..."
     git archive --prefix=`basename $project_directory_name`/ --format=tar HEAD > ${project_tar_name}
-    [ "$list_save_subp" != "" ] && echo "Adding ${list_save_subp} ..." && tar rfh ${project_tar_name} ${list_save_subp}
+    [ "$list_save_subp" != "" ] && echo "Adding ${list_save_subp} ..." && cd .. && tar rfh ${project_tar_name} ${list_save_subp}
     echo "gziping ${project_tar_name} ..."
     gzip -f ${project_tar_name}
     rm -f ${project_tar_name}

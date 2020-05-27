@@ -33,7 +33,13 @@ Domaine dom_IA
 
 Read_file dom assemblage.geom 
 Read_file dom_TH TH.geom 
-Read_file dom_IA inter.geom 
+Read_file dom_IA inter.geom
+
+Modif_bord_to_raccord dom paroi
+Modif_bord_to_raccord dom_TH paroi_int
+Modif_bord_to_raccord dom_TH paroi_ext
+Modif_bord_to_raccord dom_IA paroi
+
 VerifierCoin dom { }
 VerifierCoin dom_TH { }
 VerifierCoin dom_IA { }
