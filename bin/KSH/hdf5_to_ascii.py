@@ -80,7 +80,7 @@ if __name__ == "__main__":
     for p in range(nb_proc):
         datasets_name += "-d /log_%d " % p
 
-    cmd = "h5dump %s -o %s -y -w 0 %s" % (datasets_name, tmp_file, file_name)
+    cmd = "$TRUST_MED_ROOT/bin/h5dump %s -o %s -y -w 0 %s" % (datasets_name, tmp_file, file_name)
     os.system(cmd)
 
     basename = file_name.split(".")[0]

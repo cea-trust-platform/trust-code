@@ -846,6 +846,7 @@ then
 	   [ "`grep -i boomeramg $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i Check_solver.sh $REP/* 2>/dev/null`" != "" ]	&& i=""
 	   [ "`grep -i 'Testeur_MEDCoupling' $REP/* 2>/dev/null`" != "" ] && i=""
+	   [ "`grep -i 'single_hdf' $REP/* 2>/dev/null`" != "" ] && i=""
 	   [ "`grep -i 'solveur petsc cholesky { }' $REP/* 2>/dev/null`" != "" ] && i=""  # if petsc cholesky used with implicit time scheme in Flica5
            [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)" && liste_skipped=$liste_skipped" $iisa"
 
