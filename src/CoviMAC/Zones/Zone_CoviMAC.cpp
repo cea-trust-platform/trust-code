@@ -769,45 +769,51 @@ void Zone_CoviMAC::interp_som(IntTab& deb, DoubleTab& e_c, DoubleTab& f_c, const
                               const IntTab& f_deb, const DoubleTab& f_vl, const IntTab& f_fn, const DoubleTab& f_vn, const IntTab& fd) const
 {
   const DoubleTab& xs = zone().domaine().coord_sommets();
-  int i, ib, j, jb, k, l, e, s, ns_tot = zone().domaine().nb_som_tot(), n, N = inv_nu.dimension(1), nocrimp = (deb.nb_dim() == 2);
+  int i, ib, j, jb, k, l, e, s, ns_tot = zone().domaine().nb_som_tot(), n, N = inv_nu.dimension(1), nocrimp = (deb.nb_dim() == 2), lwork, infoo = 0;
+  char trans = 'N';
 
   deb.set_smart_resize(1), deb.resize(0, 2), e_c.set_smart_resize(1), e_c.resize(0, N), f_c.set_smart_resize(1), f_c.resize(0, N);
 
-  DoubleTrav M, b, x, S, W;
-  M.set_smart_resize(1), b.set_smart_resize(1), x.set_smart_resize(1), S.set_smart_resize(1);
+  DoubleTrav M, B, S, work(1);
+  M.set_smart_resize(1), B.set_smart_resize(1), S.set_smart_resize(1), work.set_smart_resize(1);
   for (s = 0, deb.append_line(0, 0); s < ns_tot; s++, deb.append_line(e_c.dimension(0), f_c.dimension(0)))
     if (sef_d(s, 0) < sef_d(s + 1, 0) && f_deb(s, 2) == f_deb(s + 1, 2)) /* saute les sommets sur le joint ou sur les faces de Dirichlet */
       {
         //elements, faces de Neumann, vecteurs libres
-        int n_e = sef_d(s + 1, 0) - sef_d(s, 0), n_f = sef_d(s + 1, 1) - sef_d(s, 1), n_v = f_deb(s + 1, 0) - f_deb(s, 0), n_c = n_v ? n_v : dimension;
+        int n_e = sef_d(s + 1, 0) - sef_d(s, 0), n_f = sef_d(s + 1, 1) - sef_d(s, 1), n_v = f_deb(s + 1, 0) - f_deb(s, 0), n_c = (n_v ? n_v : dimension) + 1, n_rhs = n_e + n_f;
         e_c.resize(deb(s, 0) + n_e, N), f_c.resize(deb(s, 1) + n_f, N);
-        M.resize(n_e, n_c + 1), b.resize(n_e, n_e + n_f), S.resize(n_e);
+        M.resize(n_c, n_e), B.resize(n_rhs, n_e), S.resize(n_e);
         //poids relatifs des elements
         for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) e = sef_e(ib), S(i) = 1. / sqrt(dot(&xp_(e, 0), &xp_(e, 0), &xs(s, 0), &xs(s, 0)));
 
         for (n = 0; n < N; n++) //un systeme lineaire par composante
           {
-            /* M : systeme a resoudre par moindres carres */
-            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0, jb = sef_d(s, 1), e = sef_e(ib), M(i, n_c) = S(i); j < n_c; j++, jb++)
-                if (inv_nu.nb_dim() == 2) M(i, j) = S(i) * inv_nu(e, n) * (n_v ? dot(&xp_(e, 0), &f_vl(jb, 0), &xs(s, 0)) : xp_(e, j) - xs(s, j)); //isotrope
-                else if (inv_nu.nb_dim() == 3) for (k = 0, M(i, j) = 0; k < dimension; k++) //anisotrope diagonal
-                    M(i, j) += S(i) * inv_nu(e, n, k) * (xp_(e, k) - xs(s, k)) * (n_v ? f_vl(jb, k) : (k == j));
-                else for (k = 0, M(i, j) = 0; k < dimension; k++) for (l = 0; l < dimension; l++) //anisotrope complet
-                      M(i, j) += S(i) * inv_nu(e, n, k, l) * (xp_(e, k) - xs(s, k)) * (n_v ? f_vl(jb, l) : (l == j));
+            /* M : systeme a resoudre par moindres carres !! stockage Fortran pour DGELS */
+            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0, jb = sef_d(s, 1), e = sef_e(ib), M(n_c - 1, i) = S(i); j < n_c - 1; j++, jb++)
+                if (inv_nu.nb_dim() == 2) M(j, i) = S(i) * inv_nu(e, n) * (n_v ? dot(&xp_(e, 0), &f_vl(jb, 0), &xs(s, 0)) : xp_(e, j) - xs(s, j)); //isotrope
+                else if (inv_nu.nb_dim() == 3) for (k = 0, M(j, i) = 0; k < dimension; k++) //anisotrope diagonal
+                    M(j, i) += S(i) * inv_nu(e, n, k) * (xp_(e, k) - xs(s, k)) * (n_v ? f_vl(jb, k) : (k == j));
+                else for (k = 0, M(j, i) = 0; k < dimension; k++) for (l = 0; l < dimension; l++) //anisotrope complet
+                      M(j, i) += S(i) * inv_nu(e, n, k, l) * (xp_(e, k) - xs(s, k)) * (n_v ? f_vl(jb, l) : (l == j));
 
-            /* b : seconds membres -> un par element et par face de Neumann*/
-            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0; j < n_e; j++) b(i, j) = S(i) * (i == j);
+            /* b : seconds membres -> un par element et par face de Neumann !! stockage Fortran pour DGELS */
+            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0; j < n_e; j++) B(j, i) = S(i) * (i == j);
             for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0, jb = f_deb(s, 1), e = sef_e(ib); j < n_f; j++, jb++)
-                if (inv_nu.nb_dim() == 2) b(i, n_e + j) = S(i) * inv_nu(e, n) * dot(&xs(s, 0), &f_vn(jb, 0), &xp_(e, 0)); //isotrope
-                else if (inv_nu.nb_dim() == 3) for (k = 0, b(i, n_e + j) = 0; k < dimension; k++) //anisotrope diagonal
-                    b(i, n_e + j) += S(i) * inv_nu(e, n, k) * (xs(s, k) - xp_(e, k)) * f_vn(jb, k);
-                else for (k = 0, b(i, n_e + j) = 0; k < dimension; k++) for (l = 0; l < dimension; l++) //anisotrope complet
-                      b(i, n_e + j) += S(i) * inv_nu(e, n, k, l) * (xs(s, k) - xp_(e, k)) * f_vn(jb, l);
+                if (inv_nu.nb_dim() == 2) B(n_e + j, i) = S(i) * inv_nu(e, n) * dot(&xs(s, 0), &f_vn(jb, 0), &xp_(e, 0)); //isotrope
+                else if (inv_nu.nb_dim() == 3) for (k = 0, B(n_e + j, i) = 0; k < dimension; k++) //anisotrope diagonal
+                    B(n_e + j, i) += S(i) * inv_nu(e, n, k) * (xs(s, k) - xp_(e, k)) * f_vn(jb, k);
+                else for (k = 0, B(n_e + j, i) = 0; k < dimension; k++) for (l = 0; l < dimension; l++) //anisotrope complet
+                      B(n_e + j, i) += S(i) * inv_nu(e, n, k, l) * (xs(s, k) - xp_(e, k)) * f_vn(jb, l);
 
             /* resolution et stockage des coefficients */
-            kersol(M, b, 1e-12, NULL, x, S);
-            for (i = 0; i < n_e; i++) e_c(deb(s, 0) + i, n) = x(n_c, i); //elements
-            for (i = 0; i < n_f; i++) f_c(deb(s, 1) + i, n) = x(n_c, n_e + i); //flux de Neumann
+            lwork = -1;
+            F77NAME(dgels)(&trans, &n_e, &n_c, &n_rhs, &M(0, 0), &n_e, &B(0, 0), &n_rhs, &work(0), &lwork, &infoo); //"workspace query"
+            work.resize(lwork = work(0));
+            F77NAME(dgels)(&trans, &n_e, &n_c, &n_rhs, &M(0, 0), &n_e, &B(0, 0), &n_rhs, &work(0), &lwork, &infoo); //"workspace query"
+
+
+            for (i = 0; i < n_e; i++) e_c(deb(s, 0) + i, n) = B(i      , n_c - 1); //elements
+            for (i = 0; i < n_f; i++) f_c(deb(s, 1) + i, n) = B(n_e + i, n_c - 1); //flux de Neumann
           }
       }
   if (nocrimp) return;
