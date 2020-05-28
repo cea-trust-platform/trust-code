@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,7 @@ public :
   Entree& interpreter(Entree&);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   int test_mot(const Motcle& mot) const;
-  static int mpfa_stencil;
-  static double precision_weight;
-  static double stability_weight;
+  static int vertex_stencil;
 };
 
 

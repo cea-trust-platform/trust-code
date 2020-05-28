@@ -653,8 +653,8 @@ void Zone_CoviMAC::init_ve() const
 void Zone_CoviMAC::init_fef() const
 {
   if (is_init["fef"]) return;
-  const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_f = elem_faces();
-  int i, j, k, e, eb, f, fb, s, ok;
+  const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_f = elem_faces(), &e_s = zone().les_elems();
+  int i, j, k, e, eb, f, fb, s, ns_tot = zone().domaine().nb_som_tot(), ok;
   fef_d.resize(0, 2), fef_d.set_smart_resize(1), fef_e.set_smart_resize(1), fef_f.set_smart_resize(1);
 
   //pour identifer les faces de bord virtuelles avant d'avoir des CLs
@@ -663,30 +663,44 @@ void Zone_CoviMAC::init_fef() const
   for (f = 0; f < premiere_face_int(); f++) is_fb(f) = 1;
   is_fb.echange_espace_virtuel();
 
+  /* connectivite sommets -> elems / faces de bord */
+  std::vector<std::set<int>> som_e(ns_tot), som_f(ns_tot);
+  if (Option_CoviMAC::vertex_stencil)
+    {
+      for (e = 0; e < nb_elem_tot(); e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++) som_e[s].insert(e);
+      for (f = 0; f < nb_faces_tot(); f++) if (is_fb(f)) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) som_f[s].insert(f);
+    }
+
   /* pour avoir le meme ordre sur tous les procs */
   std::map<std::array<double, 3>, int> xp_e, xv_f;
-  std::set<int> som_f;
-  for (f = 0, fef_d.append_line(0, 0); f < nb_faces_tot(); fef_d.append_line(fef_e.size(), fef_f.size()), f++)
-    {
-      for (i = 0, som_f.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) som_f.insert(s);
-      for (i = 0, xp_e.clear(), xv_f.clear(); i < 2 && (e = f_e(f, i)) >= 0; i++)
-        {
-          xp_e[ {{ xp_(e, 0), xp_(e, 1), dimension < 3 ? 0 : xp_(e, 2) }}] = e;
-          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-            {
-              for (k = 0, ok = 0; !ok && k < f_s.dimension(1) && (s = f_s(fb, k)) >= 0; k++) ok |= som_f.count(s);
-              if (!ok) continue; //pas de sommet en commun avec f
-              if (is_fb(fb)) xv_f[ {{ xv_(fb, 0), xv_(fb, 1), dimension < 3 ? 0 : xv_(fb, 2) }}] = fb; //on gagne un element
-              else if ((eb = f_e(fb, e == f_e(fb, 0))) >= 0) xp_e[ {{ xp_(eb, 0), xp_(eb, 1), dimension < 3 ? 0 : xp_(eb, 2) }}] = eb; //on gagne une face de bord
-            }
-        }
+  std::set<int> soms; //sommets de la face f
+  for (f = 0, fef_d.append_line(0, 0); f < nb_faces_tot(); fef_d.append_line(fef_e.size(), fef_f.size()), f++) if (is_fb(f) || f_e(f, 1) >= 0)
+      {
+        for (i = 0, xp_e.clear(), xv_f.clear(), soms.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) soms.insert(s);
 
-      /* remplissage, en commencant par l'amont/aval (pour fef_e) et par la face elle-meme si elle est de bord (pour fef_f) */
-      for (auto && c_e : xp_e) if (c_e.second == f_e(f, 0) || c_e.second == f_e(f, 1)) fef_e.append_line(c_e.second);
-      for (auto && c_e : xp_e) if (c_e.second != f_e(f, 0) && c_e.second != f_e(f, 1)) fef_e.append_line(c_e.second);
-      for (auto && c_f : xv_f) if (c_f.second == f) fef_f.append_line(c_f.second);
-      for (auto && c_f : xv_f) if (c_f.second != f) fef_f.append_line(c_f.second);
-    }
+        if (Option_CoviMAC::vertex_stencil) for (auto &som : soms) //tout ce qui touche un sommet de f
+            {
+              for (auto &el : som_e[som]) xp_e[ {{ xp_(el, 0), xp_(el, 1), dimension < 3 ? 0 : xp_(el, 2) }}] = el;
+              for (auto &fa : som_f[som]) xv_f[ {{ xv_(fa, 0), xv_(fa, 1), dimension < 3 ? 0 : xv_(fa, 2) }}] = fa;
+            }
+        else for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //tout ce qui touche un sommet de f et est voisin de l'amont/aval
+            {
+              xp_e[ {{ xp_(e, 0), xp_(e, 1), dimension < 3 ? 0 : xp_(e, 2) }}] = e;
+              for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+                {
+                  for (k = 0, ok = 0; !ok && k < f_s.dimension(1) && (s = f_s(fb, k)) >= 0; k++) ok |= soms.count(s);
+                  if (!ok) continue; //pas de sommet en commun avec f
+                  if (is_fb(fb)) xv_f[ {{ xv_(fb, 0), xv_(fb, 1), dimension < 3 ? 0 : xv_(fb, 2) }}] = fb; //on gagne une face de bord
+                  else if ((eb = f_e(fb, e == f_e(fb, 0))) >= 0) xp_e[ {{ xp_(eb, 0), xp_(eb, 1), dimension < 3 ? 0 : xp_(eb, 2) }}] = eb; //on gagne un element
+                }
+            }
+
+        /* remplissage, en commencant par l'amont/aval (pour fef_e) et par la face elle-meme si elle est de bord (pour fef_f) */
+        for (auto && c_e : xp_e) if (c_e.second == f_e(f, 0) || c_e.second == f_e(f, 1)) fef_e.append_line(c_e.second);
+        for (auto && c_e : xp_e) if (c_e.second != f_e(f, 0) && c_e.second != f_e(f, 1)) fef_e.append_line(c_e.second);
+        for (auto && c_f : xv_f) if (c_f.second == f) fef_f.append_line(c_f.second);
+        for (auto && c_f : xv_f) if (c_f.second != f) fef_f.append_line(c_f.second);
+      }
 
   CRIMP(fef_d), CRIMP(fef_e), CRIMP(fef_f);
   is_init["fef"] = 1;

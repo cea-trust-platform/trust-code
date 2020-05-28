@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,7 @@
 Implemente_instanciable(Option_CoviMAC,"Option_CoviMAC",Interprete);
 // XD option_vdf interprete option_vdf 1 Class of CoviMAC options.
 
-int Option_CoviMAC::mpfa_stencil = 0;
-double Option_CoviMAC::precision_weight = 1;
-double Option_CoviMAC::stability_weight = 1e-3;
+int Option_CoviMAC::vertex_stencil = 0;
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
@@ -88,24 +86,14 @@ Entree& Option_CoviMAC::readOn(Entree& is)
 Entree& Option_CoviMAC::interpreter(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter_non_std("mpfa_stencil",(this)); // XD_ADD_P void Use MPFA-like stencil for flux interpolation
-  param.ajouter_non_std("precision_weight",(this)); // XD_ADD_P double Weight of the interpolation error minimization [1].
-  param.ajouter_non_std("stability_weight",(this)); // XD_ADD_P double Weight of the off-diagonal L2 norm [1e-3].
+  param.ajouter_non_std("vertex_stencil",(this)); // XD_ADD_P void Use MPFA-like stencil for flux interpolation
   param.lire_avec_accolades_depuis(is);
   return is;
 }
 
 int Option_CoviMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Motcle motlu;
-  if (mot=="mpfa_stencil") mpfa_stencil = 1;
-  else if (mot=="precision_weight") is >> precision_weight;
-  else if (mot=="stability_weight") is >> stability_weight;
-  else
-    {
-      Cerr << mot << "is not a keyword understood by " << que_suis_je() << "in methode lire_motcle_non_standard"<< finl;
-      return -1;
-
-    }
+  if (mot=="vertex_stencil") vertex_stencil = 1;
+  else return -1;
   return 1;
 }
