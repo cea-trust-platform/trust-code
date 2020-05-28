@@ -648,52 +648,14 @@ void Zone_CoviMAC::init_ve() const
   is_init["ve"] = 1, Cerr << "OK" << finl;
 }
 
-/* outils pour l'interpolation aux sommets */
-//independant des CLs :pour chaque face, contribution de chaque sommet au flux a la face
-//vecteurs dans phifs_v([phifs_d(f), phifs_d(f + 1)[, amont/aval, .); indices dans face_sommets_
-void Zone_CoviMAC::init_phifs() const
+//elements et faces de bord connectes a chaque face
+//elements fef_e([fef_d(f, 0), fef_d(s + 1, 0)[) avec l'amont/aval d'abord, faces de bord fef_f([fef_d(s, 1), fef_d(s + 1, 1)[)
+void Zone_CoviMAC::init_fef() const
 {
-  if (is_init["phifs"]) return;
-  const IntTab& f_e = face_voisins(), &f_s = face_sommets();
-  const DoubleTab& xs = zone().domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
-  int i, j, k, e, f, n_s;
-
-  phifs_d.set_smart_resize(1), phifs_v.resize(0, 2, dimension), phifs_v.set_smart_resize(1);
-  phife.resize(nb_faces_tot(), 2, dimension);
-
-  for (f = 0, phifs_d.append_line(0); f < nb_faces_tot(); f++, phifs_d.append_line(phifs_v.dimension(0)))
-    {
-      for (n_s = 0; n_s < f_s.dimension(1) && f_s(f, n_s) >= 0; ) n_s++;
-      phifs_v.resize(phifs_d(f) + n_s, 2, dimension);
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < n_s; j++)
-          {
-            /* vecteurs normes sea (au triangle elem-arete), sfa (triangle CG face-arete) tournes vers l'exterieur du diamant */
-            int s0 = f_s(f, j), jb = j + 1 < n_s ? j + 1 : 0, s1 = f_s(f, jb);
-            std::array<double, 3> sea, sfa, vecz = {{ 0, 0, 1 }}; //produit normale * surface entre le CG de l'element et le sommet (2D) / arete (3D)
-            if (dimension < 3) sea = cross(2, 3, &xs(s0, 0), &vecz[0], &xp_(e, 0)), sfa = cross(2, 3, &xs(s0, 0), &vecz[0], &xv_(f, 0));
-            else sea = cross(3, 3, &xs(s0, 0), &xs(s1, 0), &xp_(e, 0), &xp_(e, 0)), sfa = cross(3, 3, &xs(s0, 0), &xs(s1, 0), &xv_(f, 0), &xv_(f, 0));
-
-            //orientation, division par 2 (en 3D) et normalisation
-            int sgn_ea = dot(&xp_(e, 0), &sea[0], &xv_(f, 0)) > 0 ? 1 : -1, sgn_fa = dot(&xv_(f, 0), &sfa[0], &xp_(e, 0)) > 0 ? 1 : -1;
-            for (k = 0; k < dimension; k++) sea[k] *= sgn_ea * (dimension < 3 ? 1. : 0.5) / vfd(f, i), sfa[k] *= sgn_fa * (dimension < 3 ? 1. : 0.5) / vfd(f, i);
-
-            //contribution
-            if (dimension < 3) for (k = 0; k < 2; phife(f, i, k) += sea[k], k++) phifs_v(phifs_d(f) + j, i, k) = sea[k] + 2 * sfa[k];
-            else for (k = 0; k < 3; phife(f, i, k) += sea[k], k++)
-                phifs_v(phifs_d(f) + j, i, k) += sea[k] + 1.5 * sfa[k], phifs_v(phifs_d(f) + jb, i, k) += sea[k] + 1.5 * sfa[k];
-          }
-    }
-  CRIMP(phifs_d), CRIMP(phifs_v);
-  is_init["phifs"] = 1;
-}
-
-//independant des CL : elements et faces de bord connectes a chaque sommet
-void Zone_CoviMAC::init_sef() const
-{
-  if (is_init["sef"]) return;
-  const IntTab& e_s = zone().les_elems(), &f_s = face_sommets(), &f_e = face_voisins();
-  int i, e, f, s, ns_tot = zone().domaine().nb_som_tot(), ok;
-  sef_d.resize(0, 2), sef_d.set_smart_resize(1), sef_e.set_smart_resize(1), sef_f.set_smart_resize(1);
+  if (is_init["fef"]) return;
+  const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_f = elem_faces();
+  int i, j, k, e, eb, f, fb, s, ok;
+  fef_d.resize(0, 2), fef_d.set_smart_resize(1), fef_e.set_smart_resize(1), fef_f.set_smart_resize(1);
 
   //pour identifer les faces de bord virtuelles avant d'avoir des CLs
   IntTrav is_fb;
@@ -701,121 +663,112 @@ void Zone_CoviMAC::init_sef() const
   for (f = 0; f < premiere_face_int(); f++) is_fb(f) = 1;
   is_fb.echange_espace_virtuel();
 
-  //enumeration des elements et faces de bord autour de s dans le meme ordre sur tous les procs
-  std::vector<std::map<std::array<double, 3>, int>> som_e(ns_tot), som_f(ns_tot);
-  for (e = 0; e < nb_elem_tot(); e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-      som_e[s][ {{xp_(e, 0), xp_(e, 1), dimension < 3 ? 0 : xp_(e, 2)}}] = e;
-  for (f = 0; f < nb_faces_tot(); f++) if (f_e(f, 1) < 0) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-        som_f[s][ {{xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2)}}] = f;
-
-  /* remplissage */
-  for (s = 0, sef_d.append_line(0, 0), ok = 1; s < ns_tot; s++, sef_d.append_line(sef_e.size(), sef_f.size()), ok = 1)
+  /* pour avoir le meme ordre sur tous les procs */
+  std::map<std::array<double, 3>, int> xp_e, xv_f;
+  std::set<int> som_f;
+  for (f = 0, fef_d.append_line(0, 0); f < nb_faces_tot(); fef_d.append_line(fef_e.size(), fef_f.size()), f++)
     {
-      //connecte a une face a un seul voisin, mais pas de bord -> sur le joint : on ne fait rien
-      for (auto &&c_fa : som_f[s]) ok &= is_fb(c_fa.second);
-      if (!ok) continue;
-      for (auto &&c_el : som_e[s]) sef_e.append_line(c_el.second);
-      for (auto &&c_fa : som_f[s]) sef_f.append_line(c_fa.second);
+      for (i = 0, som_f.clear(); i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) som_f.insert(s);
+      for (i = 0, xp_e.clear(), xv_f.clear(); i < 2 && (e = f_e(f, i)) >= 0; i++)
+        {
+          xp_e[ {{ xp_(e, 0), xp_(e, 1), dimension < 3 ? 0 : xp_(e, 2) }}] = e;
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            {
+              for (k = 0, ok = 0; !ok && k < f_s.dimension(1) && (s = f_s(fb, k)) >= 0; k++) ok |= som_f.count(s);
+              if (!ok) continue; //pas de sommet en commun avec f
+              if (is_fb(fb)) xv_f[ {{ xv_(fb, 0), xv_(fb, 1), dimension < 3 ? 0 : xv_(fb, 2) }}] = fb; //on gagne un element
+              else if ((eb = f_e(fb, e == f_e(fb, 0))) >= 0) xp_e[ {{ xp_(eb, 0), xp_(eb, 1), dimension < 3 ? 0 : xp_(eb, 2) }}] = eb; //on gagne une face de bord
+            }
+        }
+
+      /* remplissage, en commencant par l'amont/aval (pour fef_e) et par la face elle-meme si elle est de bord (pour fef_f) */
+      for (auto && c_e : xp_e) if (c_e.second == f_e(f, 0) || c_e.second == f_e(f, 1)) fef_e.append_line(c_e.second);
+      for (auto && c_e : xp_e) if (c_e.second != f_e(f, 0) && c_e.second != f_e(f, 1)) fef_e.append_line(c_e.second);
+      for (auto && c_f : xv_f) if (c_f.second == f) fef_f.append_line(c_f.second);
+      for (auto && c_f : xv_f) if (c_f.second != f) fef_f.append_line(c_f.second);
     }
 
-  CRIMP(sef_d), CRIMP(sef_e), CRIMP(sef_f);
-  is_init["sef"] = 1;
+  CRIMP(fef_d), CRIMP(fef_e), CRIMP(fef_f);
+  is_init["fef"] = 1;
 }
 
-//dependant des CLs : base du flux en chaque sommet libres / fixes par des CLs (si necessaire)
-//vl([deb(s, 0), deb(s + 1, 0)[, .) : vecteurs libres
-//vn([deb(s, 1), deb(s + 1, 1)[, .) : vecteurs imposes par un flux a une face de bord (indice fn)
-//fd([deb(s, 2), deb(s + 1, 2)[) : faces de Dirichlet en contact avec s
-void Zone_CoviMAC::base_flux_som(IntTab& deb, DoubleTab& vl, IntTab& fn, DoubleTab& vn, IntTab& fd, const IntTab& icl, const std::vector<int> is_neu) const
+//pour un champ T aux elements, interpole nu.grad T a la face f; indices donnes par fef_e, fef_f
+void Zone_CoviMAC::interp_flux(int f_max, const DoubleTab& nu, int N, const IntTab& icl, const std::vector<int>& is_flux, DoubleTab& fef_ce, DoubleTab& fef_cf, IntTab *tpfa) const
 {
-  const DoubleVect& fs = face_surfaces();
+  const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
-  int i, j, k, f, s, ns_tot = zone().domaine().nb_som_tot(), n_dir, n_neu;
-
-  deb.resize(0, 3), deb.set_smart_resize(1), vl.resize(0, dimension), vl.set_smart_resize(1);
-  vn.resize(0, dimension), vn.set_smart_resize(1), fn.set_smart_resize(1), fd.set_smart_resize(1);
-
-  DoubleTrav M, b, K, x, S;
-  M.set_smart_resize(1), b.set_smart_resize(1), K.set_smart_resize(1), x.set_smart_resize(1), S.set_smart_resize(1);
-  for (s = 0, deb.append_line(0, 0, 0); s < ns_tot; s++, deb.append_line(vl.dimension(0), fn.size(), fd.size()))
-    if (sef_d(s, 0) < sef_d(s + 1, 0)) //saute les sommets sur le joint
-      {
-        /* faces de Dirichlet? */
-        for (i = sef_d(s, 1), n_dir = n_neu = 0; i < sef_d(s + 1, 1); i++)
-          if (is_neu[icl(f = sef_f(i), 0)]) n_neu++;
-          else n_dir++, fd.append_line(f);
-        if (n_dir || !n_neu) continue; //interpolation a partir de CL de Dirichlet ou sans faces de Neumann -> pas de base a mettre
-
-        /* on resout le systeme n_f.Phi = Phi_imp pour chaque face imposee */
-        M.resize(n_neu, dimension), b.resize(n_neu, n_neu);
-        for (M = 0, b = 0, i = sef_d(s, 1), j = 0; i < sef_d(s + 1, 1); i++, j++)
-          for (k = 0, b(j, j) = 1; k < dimension; k++) M(j, k) = nf(sef_f(i), k) / fs(f);
-        kersol(M, b, 0.2, &K, x, S); //eps = 0.2 -> angle minimal de 15 deg pour considerer qu'on est dans un coin
-
-        //K : vecteurs libres
-        for (i = 0; i < K.dimension(1); i++) dimension < 3 ? vl.append_line(K(0, i), K(1, i)) : vl.append_line(K(0, i), K(1, i), K(2, i));
-        //x : dependence en chaque flux
-        for (i = sef_d(s, 1), j = 0; i < sef_d(s + 1, 1); i++, j++)
-          fn.append_line(sef_f(i)), dimension < 3 ? vn.append_line(x(0, j), x(1, j)) : vn.append_line(x(0, j), x(1, j), x(2, j));
-      }
-
-  CRIMP(deb), CRIMP(vl), CRIMP(vn), CRIMP(fn), CRIMP(fd);
-}
-
-//dependant de la diffusivite : interpolations
-//e_c([deb(s, 0), deb(s + 1, 0)[) : elements (indices dans sef_e)
-//fnc([deb(s, 1), deb(s + 1, 1)[) : faces de Neumann (indices dans sef_f)
-void Zone_CoviMAC::interp_som(IntTab& deb, DoubleTab& e_c, DoubleTab& f_c, const DoubleTab& inv_nu,
-                              const IntTab& f_deb, const DoubleTab& f_vl, const IntTab& f_fn, const DoubleTab& f_vn, const IntTab& fd) const
-{
-  const DoubleTab& xs = zone().domaine().coord_sommets();
-  int i, ib, j, jb, k, l, e, s, ns_tot = zone().domaine().nb_som_tot(), n, N = inv_nu.dimension(1), nocrimp = (deb.nb_dim() == 2), lwork, infoo = 0;
+  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
+  int i, ib, j, n, e, f, fb, lwork, infoo = 0;
   char trans = 'N';
 
-  deb.set_smart_resize(1), deb.resize(0, 2), e_c.set_smart_resize(1), e_c.resize(0, N), f_c.set_smart_resize(1), f_c.resize(0, N);
+  DoubleTrav nu_nf[2], nu_nf2(N, 2), coeff(N), scal(N, 2), corr(N, dimension), M, B, W, nu_nfb(N, dimension), work(1);
+  M.set_smart_resize(1), B.set_smart_resize(1), W.set_smart_resize(1), work.set_smart_resize(1);
+  nu_nf[0].resize(N, dimension), nu_nf[1].resize(N, dimension);
 
-  DoubleTrav M, B, S, work(1);
-  M.set_smart_resize(1), B.set_smart_resize(1), S.set_smart_resize(1), work.set_smart_resize(1);
-  for (s = 0, deb.append_line(0, 0); s < ns_tot; s++, deb.append_line(e_c.dimension(0), f_c.dimension(0)))
-    if (sef_d(s, 0) < sef_d(s + 1, 0) && f_deb(s, 2) == f_deb(s + 1, 2)) /* saute les sommets sur le joint ou sur les faces de Dirichlet */
-      {
-        //elements, faces de Neumann, vecteurs libres
-        int n_e = sef_d(s + 1, 0) - sef_d(s, 0), n_f = sef_d(s + 1, 1) - sef_d(s, 1), n_v = f_deb(s + 1, 0) - f_deb(s, 0), n_c = (n_v ? n_v : dimension) + 1, n_rhs = n_e + n_f;
-        e_c.resize(deb(s, 0) + n_e, N), f_c.resize(deb(s, 1) + n_f, N);
-        M.resize(n_c, n_e), B.resize(n_rhs, n_e), S.resize(n_e);
-        //poids relatifs des elements
-        for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) e = sef_e(ib), S(i) = 1. / sqrt(dot(&xp_(e, 0), &xp_(e, 0), &xs(s, 0), &xs(s, 0)));
+  for (f = 0; f < f_max; f++)
+    {
+      int e0 = f_e(f, 0), e1 = f_e(f, 1), el[2] = { e0, e1 };
+      if (icl(f, 0))
+        {
+          if (!is_flux[icl(f, 0)]) //Dirichlet -> flux a deux points
+            {
+              nu_prod(e0, nu, &nf(f, 0), nu_nf[0]), nu_nf[0] /= fs(f);
+              for (n = 0; n < N; n++) coeff(n) = dot(&nu_nf[0](n, 0), &nu_nf[0](n, 0)) / dabs(dot(&xv_(f, 0), &nu_nf[0](n, 0), &xp_(e0, 0)));
+              for (n = 0; n < N; n++) fef_ce(fef_d(f, 0), n) = -coeff(n), fef_cf(fef_d(f, 1), n) = coeff(n);
+            }
+          else for (n = 0; n < N; n++) fef_cf(fef_d(f, 1), n) = -1; //face de bord de Neumann -> flux impose (avec un -)
+          if (tpfa) (*tpfa)(f) = 1; //dans les deux cas, flux a deux points
+          continue;
+        }
+      else if (e1 < 0) continue; //face sur le joint
 
-        for (n = 0; n < N; n++) //un systeme lineaire par composante
-          {
-            /* M : systeme a resoudre par moindres carres !! stockage Fortran pour DGELS */
-            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0, jb = sef_d(s, 1), e = sef_e(ib), M(n_c - 1, i) = S(i); j < n_c - 1; j++, jb++)
-                if (inv_nu.nb_dim() == 2) M(j, i) = S(i) * inv_nu(e, n) * (n_v ? dot(&xp_(e, 0), &f_vl(jb, 0), &xs(s, 0)) : xp_(e, j) - xs(s, j)); //isotrope
-                else if (inv_nu.nb_dim() == 3) for (k = 0, M(j, i) = 0; k < dimension; k++) //anisotrope diagonal
-                    M(j, i) += S(i) * inv_nu(e, n, k) * (xp_(e, k) - xs(s, k)) * (n_v ? f_vl(jb, k) : (k == j));
-                else for (k = 0, M(j, i) = 0; k < dimension; k++) for (l = 0; l < dimension; l++) //anisotrope complet
-                      M(j, i) += S(i) * inv_nu(e, n, k, l) * (xp_(e, k) - xs(s, k)) * (n_v ? f_vl(jb, l) : (l == j));
+      /* coefficients et partie amont/aval */
+      for (i = 0; i < 2; i++) nu_prod(el[i], nu, &nf(f, 0), nu_nf[i]), nu_nf[i] /= fs(f);
+      for (n = 0; n < N; n++) for (i = 0; i < 2; i++)
+          nu_nf2(n, i) = dot(&nu_nf[i](n, 0), &nu_nf[i](n, 0)), scal(n, i) = dot(&xv_(f, 0), &nu_nf[i](n, 0), &xp_(el[i], 0));
+      for (n = 0; n < N; n++) coeff(n) = 1. / (dabs(scal(n, 0)) / nu_nf2(n, 0) + dabs(scal(n, 1)) / nu_nf2(n, 1));
 
-            /* b : seconds membres -> un par element et par face de Neumann !! stockage Fortran pour DGELS */
-            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0; j < n_e; j++) B(j, i) = S(i) * (i == j);
-            for (i = 0, ib = sef_d(s, 0); i < n_e; i++, ib++) for (j = 0, jb = f_deb(s, 1), e = sef_e(ib); j < n_f; j++, jb++)
-                if (inv_nu.nb_dim() == 2) B(n_e + j, i) = S(i) * inv_nu(e, n) * dot(&xs(s, 0), &f_vn(jb, 0), &xp_(e, 0)); //isotrope
-                else if (inv_nu.nb_dim() == 3) for (k = 0, B(n_e + j, i) = 0; k < dimension; k++) //anisotrope diagonal
-                    B(n_e + j, i) += S(i) * inv_nu(e, n, k) * (xs(s, k) - xp_(e, k)) * f_vn(jb, k);
-                else for (k = 0, B(n_e + j, i) = 0; k < dimension; k++) for (l = 0; l < dimension; l++) //anisotrope complet
-                      B(n_e + j, i) += S(i) * inv_nu(e, n, k, l) * (xs(s, k) - xp_(e, k)) * f_vn(jb, l);
+      for (i = fef_d(f, 0); i < fef_d(f + 1, 0); i++) for (n = 0, e = fef_e(i); n < N; n++) fef_ce(i, n) = (e == e1 ? 1 : (e == e0 ? -1 : 0)) * coeff(n);
 
-            /* resolution et stockage des coefficients */
-            lwork = -1;
-            F77NAME(dgels)(&trans, &n_e, &n_c, &n_rhs, &M(0, 0), &n_e, &B(0, 0), &n_rhs, &work(0), &lwork, &infoo); //"workspace query"
-            work.resize(lwork = work(0));
-            F77NAME(dgels)(&trans, &n_e, &n_c, &n_rhs, &M(0, 0), &n_e, &B(0, 0), &n_rhs, &work(0), &lwork, &infoo); //"workspace query"
+      /* correction : coeff * vec.grad T, avec vec = x_fam - x_fav le vecteur entre les projections sur la face de l'amont/aval */
+      for (n = 0; n < N; n++) for (i = 0; i < dimension; i++)
+          corr(n, i) = xp_(e0, i) - xp_(e1, i) + scal(n, 0) * nu_nf[0](n, i) / nu_nf2(n, 0) - scal(n, 1) * nu_nf[1](n, i) / nu_nf2(n, 1);
+      if (max_abs_array(corr) < 1e-6 * vf(f) / fs(f)) //correction negligeable -> on peut sortir!
+        {
+          if (tpfa) (*tpfa)(f) = 1; //TPFA possible
+          for (i = fef_d(f, 1); i < fef_d(f + 1, 1); i++) for (n = 0; n < N; n++) fef_cf(i, n) = 0; //mise a 0 de la partie "bords"
+          continue;
+        }
 
+      /* reconstruction par moindres carres a partir des voisins */
+      int n_e = fef_d(f + 1, 0) - fef_d(f, 0), n_f = fef_d(f + 1, 1) - fef_d(f, 1), n_l = n_e + n_f, n_c = dimension + 1, has_neu = 0;
+      //convention Fortran pour dgels. On remplit un systeme par composante, mais ce sont tous les memes si il n'y a pas de CL de Neumann
+      M.resize(N, n_c, n_l), B.resize(N, n_l, n_l), W.resize(n_l);
+      //W : poids des lignes
+      for (i = 0, ib = fef_d(f, 0); i < n_e; i++, ib++) e = fef_e(ib), W(i) = 1. / sqrt(dot(&xp_(e, 0), &xp_(e, 0), &xv_(f, 0), &xv_(f, 0)));
+      for (i = n_e, ib = fef_d(f, 1); i < n_l; i++, ib++) if (is_flux[icl(fb = fef_f(ib), 0)]) W(i) = 1; //flux -> va savoir
+        else W(i) = 1. / sqrt(dot(&xv_(fb, 0), &xv_(fb, 0), &xv_(f, 0), &xv_(f, 0))); //Dirichlet
 
-            for (i = 0; i < n_e; i++) e_c(deb(s, 0) + i, n) = B(i      , n_c - 1); //elements
-            for (i = 0; i < n_f; i++) f_c(deb(s, 1) + i, n) = B(n_e + i, n_c - 1); //flux de Neumann
-          }
-      }
-  if (nocrimp) return;
-  CRIMP(deb), CRIMP(e_c), CRIMP(f_c);
+      //elements : facile
+      for (n = 0; n < N; n++) for (i = 0, B = 0, ib = fef_d(f, 0); i < n_e; i++, ib++)
+          for (j = 0, e = fef_e(ib), B(n, i, i) = W(i); j < n_c; j++) M(n, j, i) = W(i) * (j < n_c - 1 ? xp_(e, j) - xv_(f, j) : 1);
+      //faces de bord : comme un element si Dirichlet, nu.grad T = - flux_imp si Neumann
+      for (i = n_e, ib = fef_d(f, 1); i < n_l; i++, ib++) if (is_flux[icl(fb = fef_f(ib), 0)])
+          for (n = 0, nu_prod(f_e(fb, 0), nu, &nf(fb, 0), nu_nfb), nu_nfb /= fs(f), has_neu = 1; n < N; n++)
+            for (j = 0, B(n, i, i) = -W(i); j < n_c; j++) M(n, j, i) = W(i) * (j < n_c - 1 ? nu_nfb(n, j) : 0);
+        else for (n = 0; n < N; n++) for (j = 0, B(n, i, i) = W(i); j < n_c; j++) M(n, j, i) = W(i) * (j < n_c - 1 ? xv_(fb, j) - xv_(f, j) : 1);
+
+      lwork = -1;
+      F77NAME(dgels)(&trans, &n_l, &n_c, &n_l, &M(0, 0, 0), &n_l, &B(0, 0, 0), &n_l, &work(0), &lwork, &infoo); //"workspace query"
+      work.resize(lwork = work(0));
+
+      for (n = 0; n < (has_neu ? N : 1); n++) //une seule resolution sauf si CL de Neumann
+        F77NAME(dgels)(&trans, &n_l, &n_c, &n_l, &M(n, 0, 0), &n_l, &B(n, 0, 0), &n_l, &work(0), &lwork, &infoo);
+
+      /* stockage des coefficients : coeff * corr * coefficients de B */
+      for (i = 0, ib = fef_d(f, 0); i < n_e; i++, ib++) for (n = 0; n < N; n++) for (j = 0; j < dimension; j++)
+            fef_ce(ib, n) += coeff(n) * corr(n, j) * B(has_neu ? n : 0, i, j);
+      for (i = n_e, ib = fef_d(f, 1); i < n_l; i++, ib++) for (n = 0; n < N; n++) for (j = 0, fef_cf(ib, n) = 0; j < dimension; j++)
+            fef_cf(ib, n) += coeff(n) * corr(n, j) * B(has_neu ? n : 0, i, j);
+    }
 }

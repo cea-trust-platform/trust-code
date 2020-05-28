@@ -64,7 +64,7 @@ public:
   const Champ_base& diffusivite() const;
   void mettre_a_jour(double t);
 
-  void update_nu() const; //met a jour nu et nu_fac
+  virtual void update_nu(IntTab *tpfa = NULL) const; //met a jour nu et nu_fac; les specialisations font les interpolations
   const DoubleTab& get_nu() const
   {
     return nu_;
@@ -74,9 +74,6 @@ public:
   {
     return nu_fac_;
   }
-
-  /* renvoie le produit v1.nu_.v2 quelle que soit la forme de nu_ */
-  inline double nu_prod(const int e, const int n, const int N, const double *v1, const double *v2) const;
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
@@ -88,33 +85,11 @@ protected:
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
 
-  /* interpolation du flux diffusif */
-  //constant : base des flux aux sommets fournie par Zone_CoviMAC::base_flux_som
-  mutable IntTab bfs_d, bfs_fn, bfs_fd;
-  mutable DoubleTab bfs_vl, bfs_vn;
-  //variables avec nu : coeffs de l'interpolation aux sommets par Zone_CoviMAC::interp_som
-  mutable IntTab ts_d;
-  mutable DoubleTab ts_e, ts_f;
+  /* interpolations de nu.grad T aux faces */
+  mutable DoubleTab fef_ce, fef_cf; //tableaux indices par les fef_e/f([fef_d(f, 0/1), fef_d(f + 1, 0/1)[) de la zone
 
   mutable int nu_a_jour_; //si on doit mettre a jour nu
   int nu_constant_;       //1 si nu est constant dans le temps
 };
-
-//
-// Fonctions inline de la classe Op_Diff_CoviMAC_base
-//
-inline double Op_Diff_CoviMAC_base::nu_prod(const int e, const int n, const int N, const double *v1, const double *v2) const
-{
-  double resu = 0;
-  int i, j, N_nu = nu_.line_size();
-  assert(N_nu == 1 || N_nu == N || N_nu == N * dimension || N_nu == N * dimension * dimension);
-  if (N_nu <= N) for (i = 0; i < dimension; i++) //isotrope
-      resu += nu_.addr()[N_nu < N ? e : N * e + n] * v1[i] * v2[i];
-  else if (N_nu == N * dimension) for (i = 0; i < dimension; i++) //anisotrope diagonal
-      resu += nu_.addr()[dimension * (N * e + n) + i] * v1[i] * v2[i];
-  else if (N_nu == N * dimension * dimension) for (i = 0; i < dimension; i++) for (j = 0; j < dimension; j++) //anisotrope diagonal
-        resu += nu_.addr()[dimension * (dimension * (N * e + n) + i) + j] * v1[i] * v2[j];
-  return resu;
-}
 
 #endif

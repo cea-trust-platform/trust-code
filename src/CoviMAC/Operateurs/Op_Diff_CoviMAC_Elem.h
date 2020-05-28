@@ -48,6 +48,8 @@ public :
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const;
   void completer();
   void dimensionner(Matrice_Morse& mat) const;
+
+  virtual void update_nu(IntTab *tpfa = NULL) const; //appelle update_nu() de Op_Diff_CoviMAC_base et met a jour les interpolations
 };
 
 /* comme des synonymes, mais avec l'info de ce qu'on est dans que_suis_je() */
