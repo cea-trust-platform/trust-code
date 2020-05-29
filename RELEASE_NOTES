@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+29/05/20 (TRUST)  Keyword     : Option thermique_monolithique (see below) available for PolyMAC discretization also
+29/05/20 (TRUST)  Change      : PolyMAC numerical improvements
 19/05/20 (TRUST)  Portability : Latest OpenMPI version downloaded by "./configure -force_latest_openmpi" bumped from 2.13 to 4.0.3
 19/05/20 (TRUST)  Bug fixed   : Allow different beginning/ending times for statistics and fix bug in case of resumption whith statistics
 12/05/20 (TRUST)  Portability : Ubuntu version 19-20 OS are now supported
