@@ -1,44 +1,41 @@
-FILE1=TRUST_tutorial
-FILE2=Baltik_tutorial
-FILE3=ICoCo_tutorial
+FILE1=../TRUST_tutorial.pdf
+FILE2=../Baltik_tutorial.pdf
+FILE3=../ICoCo_tutorial.pdf
 
 default:  all
 
-$(FILE1): ../$(FILE1).pdf
-../$(FILE1).pdf: $(FILE1).tex Makefile 
+$(FILE1): TRUST_tutorial.tex Makefile
 ifeq (, $(shell which pdflatex))
 	@echo "No pdflatex command, consider installing texlive package"
 else
-	$(MAKE) clean_$(FILE1)
-	pdflatex -interaction=nonstopmode $(FILE1).tex > LOG
-	makeindex $(FILE1).idx >> LOG
-	pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG
-	pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG
-	mv $(FILE1).pdf ..
+	$(MAKE) clean_TRUST_tutorial
+	pdflatex -interaction=nonstopmode TRUST_tutorial.tex > LOG
+	makeindex TRUST_tutorial.idx >> LOG
+	pdflatex -interaction=nonstopmode TRUST_tutorial.tex >> LOG
+	pdflatex -interaction=nonstopmode TRUST_tutorial.tex >> LOG
+	mv TRUST_tutorial.pdf ..
 	$(MAKE) clean_build
 endif
 
-$(FILE2): ../$(FILE2).pdf
-../$(FILE2).pdf: $(FILE2).tex Makefile 
+$(FILE2): Baltik_tutorial.tex Makefile
 ifeq (, $(shell which pdflatex))
 	@echo "No pdflatex command, consider installing texlive package"
 else
-	$(MAKE) clean_$(FILE2)
-	pdflatex -interaction=nonstopmode $(FILE2).tex > LOG
-	pdflatex -interaction=nonstopmode $(FILE2).tex >> LOG
-	mv $(FILE2).pdf ..
+	$(MAKE) clean_Baltik_tutorial
+	pdflatex -interaction=nonstopmode Baltik_tutorial.tex > LOG
+	pdflatex -interaction=nonstopmode Baltik_tutorial.tex >> LOG
+	mv Baltik_tutorial.pdf ..
 	$(MAKE) clean_build
 endif
 
-$(FILE3): ../$(FILE3).pdf
-../$(FILE3).pdf: $(FILE3).tex Makefile 
+$(FILE3): ICoCo_tutorial.tex Makefile
 ifeq (, $(shell which pdflatex))
 	@echo "No pdflatex command, consider installing texlive package"
 else
-	$(MAKE) clean_$(FILE3)
-	pdflatex -interaction=nonstopmode $(FILE3).tex > LOG
-	pdflatex -interaction=nonstopmode $(FILE3).tex >> LOG
-	mv $(FILE3).pdf ..
+	$(MAKE) clean_ICoCo_tutorial
+	pdflatex -interaction=nonstopmode ICoCo_tutorial.tex > LOG
+	pdflatex -interaction=nonstopmode ICoCo_tutorial.tex >> LOG
+	mv ICoCo_tutorial.pdf ..
 	$(MAKE) clean_build
 endif
 
@@ -48,18 +45,18 @@ clean_build:
 	@echo "Removing compilation files"
 	@rm -f *.log *.aux *.dvi *.toc *.lot *.lof *.out *.pdf *.idx *.ilg *.ind *.nav *.snm LOG
 
-clean_$(FILE1):  clean_build
-	@echo "Removing $(FILE1).pdf"
-	@rm -f ../$(FILE1).pdf
+clean_TRUST_tutorial:  clean_build
+	@echo "Removing TRUST_tutorial.pdf"
+	@rm -f ../TRUST_tutorial.pdf
 
-clean_$(FILE2):  clean_build
-	@echo "Removing $(FILE2).pdf"
-	@rm -f ../$(FILE2).pdf
+clean_Baltik_tutorial:  clean_build
+	@echo "Removing Baltik_tutorial.pdf"
+	@rm -f ../Baltik_tutorial.pdf
 
-clean_$(FILE3):  clean_build
-	@echo "Removing $(FILE3).pdf"
-	@rm -f ../$(FILE3).pdf
+clean_ICoCo_tutorial:  clean_build
+	@echo "Removing ICoCo_tutorial.pdf"
+	@rm -f ../ICoCo_tutorial.pdf
 
-clean:  clean_build #clean_$(FILE1) clean_$(FILE2) clean_$(FILE3)
+clean:  clean_build
 
 .PHONY: clean clean_build
