@@ -104,42 +104,41 @@ void Op_Diff_CoviMAC_Elem::completer()
   associer_diffusivite_turbulente(lambda_t);
 }
 
-//appelle update_nu() de Op_Diff_CoviMAC_base et met a jour les interpolations
-void Op_Diff_CoviMAC_Elem::update_nu(IntTab *tpfa) const
-{
-  if (nu_a_jour_) return; //travail deja fait
-  Op_Diff_CoviMAC_base::update_nu(tpfa);
-  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
-  zone.interp_flux(zone.nb_faces(), nu_, ch.valeurs().line_size(), ch.icl, { 0, 1, 1, 1, 1, 1, 0, 0 }, fef_ce, fef_cf, tpfa);
-  nu_a_jour_ = 1;
-}
-
 void Op_Diff_CoviMAC_Elem::dimensionner(Matrice_Morse& mat) const
 {
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, f, n, N = ch.valeurs().line_size(), N_nu = nu_.line_size();
+  int i, j, k, e, eb, f, n, N = ch.valeurs().line_size(), N_nu = nu_.line_size(), ne_tot = zone.nb_elem_tot();
 
-  IntTrav stencil(0, 2), tpfa;
-  stencil.set_smart_resize(1), zone.creer_tableau_faces(tpfa);
+  IntTrav stencil(0, 2), tpfa(0, N);
+  stencil.set_smart_resize(1), zone.creer_tableau_faces(tpfa), tpfa = 1;
 
-  update_nu(&tpfa); //
+  update_nu();
 
   Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
 
-  /* dependance du (nu.grad T) aux faces (hors Neumann) en les variables aux elements */
-  /* si nu est constant ou si nu est isotrope avec tpfa, alors on peut reduire le stencil */
-  for (f = 0; f < zone.nb_faces(); f++) if (!ch.icl(f, 0) || ch.icl(f, 0) > 5)
-      for (i = zone.fef_d(f, 0); i < zone.fef_d(f + 1, 0); i++) for (n = 0; n < N; n++)
-          if ((nu_constant_ || (N_nu <= N && tpfa(f))) ? (dabs(fef_ce(i, n)) > 1e-12) : 1)
-            for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++)
-              stencil.append_line(N * e + n, N * zone.fef_e(i) + n);
+  /* flux a deux points aux faces de bord (sauf Neumann )*/
+  for (f = 0; f < zone.premiere_face_int(); f++) if (ch.fcl(f, 0) != 4 && ch.fcl(f, 0) != 5)
+      for (n = 0, e = f_e(f, 0); n < N; n++) stencil.append_line(N * e + n, N * e + n);
+
+  /* nu grad T aux faces internes */
+  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++)
+    {
+      /* amont/aval : obligatoire */
+      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++)
+              stencil.append_line(N * e + n, N * eb + n);
+
+      /* autres points : facultatif, sauf si nu variable et anisotrope */
+      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
+            for (eb = (zone.feb_j(j) < ne_tot ? zone.feb_j(j) : f_e(zone.feb_j(j) - ne_tot, 0)), k = 0; k < 2; k++) for (n = 0; n < N; n++)
+                if (nu_constant_ || N_nu <= N ? dabs(phif_cb(j, k, n)) > 1e-8 : 1)
+                  stencil.append_line(N * e + n, N * eb + n), tpfa(f, n) = 0;
+    }
 
   tableau_trier_retirer_doublons(stencil);
   Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * zone.zone().md_vector_elements().valeur().nb_items_seq_tot())
-       << " " << mp_somme_vect(tpfa) * 100. / zone.md_vector_faces().valeur().nb_items_seq_tot() << "% TPFA " << finl;
+       << " " << mp_somme_vect(tpfa) * 100. / (N * zone.md_vector_faces().valeur().nb_items_seq_tot()) << "% TPFA " << finl;
   Matrix_tools::allocate_morse_matrix(N * zone.nb_elem_tot(), N * zone.nb_elem_tot(), stencil, mat);
 }
 
@@ -160,45 +159,63 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales();
-  int i, e, f, fb, n, N = inco.line_size();
+  int i, j, e, f, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot();
 
-  /* tableau contenant les valeurs aux faces de bord (valeurs imposees ou flux) */
-  DoubleTrav val_fb(zone.nb_faces_tot(), N), nu_nf(N, dimension);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
-    if (!ch.icl(f, 0)) continue; //face interne
-    else if (ch.icl(f, 0) < 3) for (n = 0, zone.nu_prod(e = f_e(f, 0), nu_, &nf(f, 0), nu_nf); n < N; n++) //Echange_impose_base -> flux a deux points
-        {
-          double invh = 1. / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-          if (ch.icl(f, 0) == 1) invh += zone.dist_norm_bord(f) * fs(f) * fs(f) / zone.dot(&nf(f, 0), &nu_nf(n, 0));
-          val_fb(f, n) = (inco.addr()[N * e + n] - ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n)) / invh;
-        }
-    else if (ch.icl(f, 0) == 3) abort(); //monolithique
-    else if (ch.icl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
-        val_fb(f, n) = ref_cast(Neumann, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
-    else if (ch.icl(f, 0) == 6) for (n = 0; n < N; n++) //Dirichlet
-        val_fb(f, n) = ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
+  /* faces de bord : flux a deux points + valeurs aux bord */
+  DoubleTrav Tb(zone.nb_faces_tot(), N), h_int(N), phi(N);
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0)) //faces de bord seulement
+      {
+        /* h_int : coefficent d'echange element-face */
+        for (e = f_e(f, 0), n = 0; n < N; n++)
+          h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
-  /* contribution face par face */
-  DoubleTrav phi(N);
-  for (f = 0; f < zone.nb_faces(); f++)
+        /* phi / Tb : selon CLs */
+        if (ch.fcl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
+            {
+              double invh = 1. / ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).h_imp(ch.fcl(f, 2), n);
+              if (ch.fcl(f, 0) == 1) invh += 1. / h_int(n);
+              phi(n) = (inco.addr()[N * e + n] - ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).T_ext(ch.fcl(f, 2), n)) / invh;
+              Tb(f, n) = inco.addr()[N * e + n] - phi(n) / h_int(n);
+            }
+        else if (ch.fcl(f, 0) == 3) abort(); //monolithique
+        else if (ch.fcl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
+            {
+              phi(n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+              Tb(f, n) = inco.addr()[N * e + n] - phi(n) / h_int(n);
+            }
+        else for (n = 0; n < N; n++) //Dirichlet
+            {
+              double Tf = Tb(f, n) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), n);
+              phi(n) = h_int(n) * (inco.addr()[N * e + n] - Tf);
+            }
+
+        /* contributions */
+        for (n = 0; n < N; n++) resu.addr()[N * e + n] -= fs(f) * phi(n);
+        if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) flux_bords_(f, n) = - fs(f) * phi(n);
+      }
+
+  /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
+  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++)
     {
-      if (!ch.icl(f, 0) || ch.icl(f, 0) > 5) //interne ou Dirichlet -> interpolations
+      /* phi : combinaison convexe amont/aval */
+      for (phi = 0, n = 0; n < N; n++)
         {
-          /* partie "elements" : avec inco */
-          for (i = zone.fef_d(f, 0), phi = 0; i < zone.fef_d(f + 1, 0); i++) for (n = 0, e = zone.fef_e(i); n < N; n++)
-              phi(n) += fef_ce(i, n) * inco.addr()[N * e + n];
-          /* partie "faces de bord" : avec val_fb */
-          for (i = zone.fef_d(f, 1); i < zone.fef_d(f + 1, 1); i++) for (n = 0, fb = zone.fef_f(i); n < N; n++)
-              phi(n) += fef_cf(i, n) * val_fb(fb, n);
-          phi *= nu_fac_(f); //prise en compte de nu_fac_
+          /* ponderation non lineaire */
+          double a =1e8, phi2[2] = {0, };
+          for (i = 0; i < 2; i++) for (j = 0; j < 2; j++) a = min(a, dabs(phif_c(f, i, n, j)));
+          double phi_2pt = a * (inco.addr()[N * f_e(f, 1) + n] - inco.addr()[N * f_e(f, 0) + n]); //partie a deux points du flux
+          for (i = 0; i < 2; i++) //cotes
+            {
+              //amont/aval
+              phi2[i] += phif_c(f, i, n, 0) * inco.addr()[N * f_e(f, i) + n] + phif_c(f, i, n, 1) * inco.addr()[N * f_e(f, !i) + n];
+              for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++) //points complementaires
+                e = zone.feb_j(j), phi2[i] += phif_cb(j, i, n) * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n));
+            }
+          double g1 = dabs(phi2[0] - phi_2pt), g2 = dabs(phi2[1] - phi_2pt),  mu1 = g1 + g2 > 0 ? g2 / (g1 + g2) : 0.5, mu[2] = { mu1, - (1 - mu1) };
+          phi(n) = mu[0] * phi2[0] + mu[1] * phi2[1];
         }
-      else for (n = 0; n < N; n++) phi(n) = val_fb(f, n); //Echange_impose_base ou Neumann -> val_fb
-
-      phi *= -fs(f); //phi = - nu grad T
-      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) flux_bords_(f, n) = phi(n);
-      //contributions
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
-          resu.addr()[N * e + n] -= (i ? -1 : 1) * phi(n);
+      /* contributions */
+      for (i = 0; i < 2; i++) for (n = 0; n < N; n++) resu.addr()[N * f_e(f, i) + n] -= (i ? 1 : -1) * phi(n);
     }
 
   return resu;
@@ -215,37 +232,74 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales();
-  int i, e, f, fb, n, N = inco.line_size(), do_nu_fac;
+  int i, j, e, f, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot();
 
-  /* tableau contenant les derivees des valeurs aux faces par rapport a leur element voisin (Echange_impose_base seulement) */
-  DoubleTrav dval_fb(zone.nb_faces_tot(), N), nu_nf(N, dimension);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
-    if (ch.icl(f, 0) && ch.icl(f, 0) < 3) for (n = 0, zone.nu_prod(e = f_e(f, 0), nu_, &nf(f, 0), nu_nf); n < N; n++)
-        {
-          double invh = 1. / ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-          if (ch.icl(f, 0) == 1) invh += zone.dist_norm_bord(f) * fs(f) * fs(f) / zone.dot(&nf(f, 0), &nu_nf(n, 0));
-          dval_fb(f, n) = 1. / invh;
-        }
+  /* faces de bord : flux a deux points + valeurs aux bord */
+  std::vector<std::map<int, double>> dphi(N); //dphi[n][idx] : derivee de la composante n du flus par rapport a idx
+  DoubleTrav Tb(zone.nb_faces_tot(), N), dTb(zone.nb_faces_tot(), N), h_int(N), phi(N);
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0)) //faces de bord seulement
+      {
+        /* h_int : coefficent d'echange element-face */
+        for (e = f_e(f, 0), n = 0; n < N; n++)
+          h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
-  /* contribution face par face */
-  std::vector<std::map<int, double>> dphi(N); //dphi[n][e] : derivee du flux a la face de la composante n par rapport a l'element e
-  for (f = 0; f < zone.nb_faces(); f++)
+        /* phi / Tb : selon CLs */
+        if (ch.fcl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
+            {
+              double invh = 1. / ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).h_imp(ch.fcl(f, 2), n);
+              if (ch.fcl(f, 0) == 1) invh += 1. / h_int(n);
+              phi(n) = (inco.addr()[N * e + n] - ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).T_ext(ch.fcl(f, 2), n)) / invh;
+              dphi[n][N * e + n] += 1. / invh;
+              Tb(f, n) = inco.addr()[N * e + n] - phi(n) / h_int(n), dTb(f, n) = 1 - 1 / (invh * h_int(n));
+            }
+        else if (ch.fcl(f, 0) == 3) abort(); //monolithique
+        else if (ch.fcl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
+            {
+              phi(n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+              Tb(f, n) = inco.addr()[N * e + n] - phi(n) / h_int(n), dTb(f, n) = 1;
+            }
+        else for (n = 0; n < N; n++) //Dirichlet
+            {
+              double Tf = Tb(f, n) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), n);
+              phi(n) = h_int(n) * (inco.addr()[N * e + n] - Tf), dphi[n][N * e + n] = h_int(n), dTb(f, n) = 0;
+            }
+
+        //contributions a la matrice
+        if (e < zone.nb_elem()) for (n = 0; n < N; dphi[n].clear(), n++) for (auto &i_c : dphi[n])
+              matrice(N * e + n, i_c.first) += fs(f) * i_c.second;
+      }
+
+  /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
+  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++)
     {
-      for (n = 0, do_nu_fac = 0; n < N; n++) dphi[n].clear();
-      if (!ch.icl(f, 0) || ch.icl(f, 0) > 5) //interne ou Dirichlet -> interpolations
+      /* dphi : combinaison convexe amont/aval */
+      for (n = 0; n < N; n++)
         {
-          /* partie "elements" : avec inco */
-          for (i = zone.fef_d(f, 0), do_nu_fac = 1; i < zone.fef_d(f + 1, 0); i++) for (n = 0, e = zone.fef_e(i); n < N; n++)
-              if (dabs(fef_ce(i, n)) > 1e-12) dphi[n][e] += fef_ce(i, n);
-          /* partie "faces de bord" : avec val_fb */
-          for (i = zone.fef_d(f, 1); i < zone.fef_d(f + 1, 1); i++) for (n = 0, fb = zone.fef_f(i); n < N; n++)
-              if (dabs(fef_cf(i, n) * dval_fb(fb, n)) > 1e-12) dphi[n][f_e(fb, 0)] += fef_cf(i, n) * dval_fb(fb, n);
-        }
-      else for (n = 0; n < N; n++) if (dval_fb(f, n)) dphi[n][f_e(f, 0)] += dval_fb(f, n); //Echange_impose_base ou Neumann -> val_fb
+          /* ponderation non lineaire */
+          double a =1e8, phi2[2] = {0, };
+          for (i = 0; i < 2; i++) for (j = 0; j < 2; j++) a = min(a, dabs(phif_c(f, i, n, j)));
+          double phi_2pt = a * (inco.addr()[N * f_e(f, 1) + n] - inco.addr()[N * f_e(f, 0) + n]); //partie a deux points du flux
+          for (i = 0; i < 2; i++) //cotes
+            {
+              //amont/aval
+              phi2[i] += phif_c(f, i, n, 0) * inco.addr()[N * f_e(f, i) + n] + phif_c(f, i, n, 1) * inco.addr()[N * f_e(f, !i) + n];
+              for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++) //points complementaires
+                e = zone.feb_j(j), phi2[i] += phif_cb(j, i, n) * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n));
+            }
+          double g1 = dabs(phi2[0] - phi_2pt), g2 = dabs(phi2[1] - phi_2pt), mu1 = g1 + g2 > 0 ? g2 / (g1 + g2) : 0.5, mu[2] = { mu1, - (1 - mu1) };
 
-      //contributions
-      for (n = 0; n < N; n++) for (auto &&e_c : dphi[n]) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            matrice(N * e + n, N * e_c.first + n) += (i ? 1 : -1) * fs(f) * (do_nu_fac ? nu_fac_(f) : 1) * e_c.second;
+          for (i = 0; i < 2; i++) //cotes
+            {
+              //amont/aval : obligatoire
+              dphi[n][N * f_e(f, i) + n] += mu[i] * phif_c(f, i, n, 0), dphi[n][N * f_e(f, !i) + n] += mu[i] * phif_c(f, i, n, 1);
+              //points complementaires : facultatif
+              for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++) if (dabs(phif_cb(j, i, n)) > 1e-8)
+                  e = zone.feb_j(j), dphi[n][N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] += mu[i] * phif_cb(j, i, n) * (e < ne_tot ? 1 : dTb(e - ne_tot, n));
+            }
+        }
+      /* contributions */
+      for (n = 0; n < N; dphi[n].clear(), n++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (auto &i_c : dphi[n])
+              matrice(N * e + n, i_c.first) += (i ? 1 : -1) * i_c.second;
     }
 }
 

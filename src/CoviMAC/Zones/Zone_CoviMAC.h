@@ -150,12 +150,12 @@ public :
 
   //elements et faces de bord connectes a chaque face
   //elements fef_e([fef_d(f, 0), fef_d(s + 1, 0)[) avec l'amont/aval d'abord, faces de bord fef_f([fef_d(s, 1), fef_d(s + 1, 1)[)
-  void init_fef() const;
-  mutable IntTab fef_d, fef_e, fef_f;
+  void init_feb() const;
+  mutable IntTab feb_d, feb_j;
 
   //pour un champ T aux elements, interpole nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
-  inline void nu_prod(int e, const DoubleTab& nu, const double *v, DoubleTab& resu) const;
-  void interp_flux(int f_max, const DoubleTab& nu, int N, const IntTab& icl, const std::vector<int>& is_flux, DoubleTab& fef_ce, DoubleTab& fef_cf, IntTab *tpfa) const;
+  inline double nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  void flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, DoubleTab& phif_cb) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;
@@ -393,15 +393,16 @@ inline double Zone_CoviMAC::dist_face_elem1_period(int num_face,int n1,double l)
 }
 
 //remplit dans le DoubleTab(N, dimension) resu les produits nu.v quelle que soit la forme de nu
-inline void Zone_CoviMAC::nu_prod(int e, const DoubleTab& nu, const double *v, DoubleTab& resu) const
+inline double Zone_CoviMAC::nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma, const double *mb) const
 {
-  int i, j, n, N = resu.dimension(0), N_nu = nu.line_size();
-  if (N_nu <= N) for (n = 0; n < N; n++) for (i = 0; i < dimension; i++) //isotrope
-        resu(n, i) = nu.addr()[N_nu < N ? e : N * e + n] * v[i];
-  else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (i = 0; i < dimension; i++) //anisotrope diagonal
-        resu(n, i) = nu.addr()[dimension * (N * e + n) + i] * v[i];
-  else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (i = 0; i < dimension; i++) for (j = 0, resu(n, i) = 0; j < dimension; j++) //anisotrope complet
-          resu(n, i) += nu.addr()[dimension * (dimension * (N * e + n) + i) + j] * v[j];
+  int i, j, N_nu = nu.line_size();
+  double resu = 0;
+  if (N_nu <= N) resu = nu.addr()[N_nu < N ? e : N * e + n] * dot(a, b, ma, mb); //isotrope
+  else if (N_nu == N * dimension) for (i = 0; i < dimension; i++) //anisotrope diagonal
+      resu += nu.addr()[dimension * (N * e + n) + i] * (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
+  else if (N_nu == N * dimension * dimension) for (i = 0; i < dimension; i++) //anisotrope complet
+      for (j = 0; j < dimension; j++) resu += nu.addr()[dimension * (dimension * (N * e + n) + i) + j] * (a[i] - (ma ? ma[i] : 0)) * (b[j] - (mb ? mb[j] : 0));
+  return resu;
 }
 
 /* compaction d'un tableau qui avait set_smart_resize = 1 */

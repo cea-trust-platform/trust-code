@@ -64,7 +64,7 @@ public:
   const Champ_base& diffusivite() const;
   void mettre_a_jour(double t);
 
-  virtual void update_nu(IntTab *tpfa = NULL) const; //met a jour nu et nu_fac; les specialisations font les interpolations
+  void update_nu() const; //met a jour nu et nu_fac; les specialisations font les interpolations
   const DoubleTab& get_nu() const
   {
     return nu_;
@@ -85,8 +85,8 @@ protected:
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
 
-  /* interpolations de nu.grad T aux faces */
-  mutable DoubleTab fef_ce, fef_cf; //tableaux indices par les fef_e/f([fef_d(f, 0/1), fef_d(f + 1, 0/1)[) de la zone
+  /* interpolations de nu.grad T de chaque cote de chaque face */
+  mutable DoubleTab phif_c, phif_cb; //phif_c(f, c, n, [ 0, D + 1 [) : coefficients du flux sortant
 
   mutable int nu_a_jour_; //si on doit mettre a jour nu
   int nu_constant_;       //1 si nu est constant dans le temps

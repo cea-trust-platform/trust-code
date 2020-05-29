@@ -59,7 +59,7 @@ public :
   //              6 -> Dirichlet
   //              7 -> Dirichlet_homogene
   void init_cl() const;
-  mutable IntTab icl; //icl(f, .) = (type de la CL, no de la CL, indice dans la CL)
+  mutable IntTab fcl; //fcl(f, .) = (no de la face, type de la CL, no de la CL, indice dans la CL)
 
 protected :
 
