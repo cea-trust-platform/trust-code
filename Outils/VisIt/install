@@ -48,10 +48,12 @@ parallel=""
 new=1
 # PL: Migration progressive avec les nouvelles machines vers une procedure plus propre a partir de VisIt 3.1.1
 # Ajouter les OS uniquement si l'ancienne procedure avec VisIt 2.12.1 ne marche pas:
-[ "`grep 'Debian GNU/Linux [7-8]'  /etc/issue.net 2>/dev/null`" != "" ]         && new=0
-[ "`grep 'Ubuntu 1[4-7]' /etc/issue 2>/dev/null`" != "" ]                       && new=0
-[ "`grep 'Fedora release 2[0-6]' /etc/fedora-release 2>/dev/null`" != "" ]      && new=0
-[ "`grep 'CentOS Linux release [6-7]' /etc/centos-release 2>/dev/null`" != "" ] && new=0
+[ "`grep 'Debian GNU/Linux [7-8]'  				/etc/issue.net 2>/dev/null`" != "" ]		&& new=0
+[ "`grep 'Ubuntu 1[4-7]' 					/etc/issue 2>/dev/null`" != "" ]		&& new=0
+[ "`grep 'Fedora release 2[0-6]' 				/etc/fedora-release 2>/dev/null`" != "" ]	&& new=0
+[ "`grep 'CentOS Linux release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
+[ "`grep 'CentOS release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
+[ "`grep 'Red Hat Enterprise Linux Server release [6-7]' 	/etc/redhat-release 2>/dev/null`" != "" ]	&& new=0
 
 if [ "$new" = 1 ]
 then
@@ -132,22 +134,12 @@ then
       cd src
       ./$build $package $parallel 
       status=$?
-      if [ $status -ne 0 ]
+      if [ $status -ne 0 ] && [ "$parallel" != "" ]
       then
-         echo  patch Mesa for clang
-  	 sed -i "s/float 0f+1.0/float 1.0/" Mesa-7.10.2/src/mesa/x86-64/xform4.S  
-	 LDADD=$(find $PWD/visit/python/ -name python | grep bin | sed "s?/bin/python?/lib?")
-         export LD_LIBRARY_PATH=$LDADD:$LD_LIBRARY_PATH
-
-         ./$build $package $parallel
-         status=$?
-         if [ $status -ne 0 ] && [ "$parallel" != "" ]
-         then
-            echo "Try sequentiel compilation"
-	    ./$build clean
-            ./$build $package
-	    status=$?
-         fi
+          echo "Try sequentiel compilation"
+         ./$build clean
+         ./$build $package
+	 status=$?
       fi 
       cd $org_dir
    fi
@@ -217,7 +209,7 @@ then
 	    then
 	       echo "Try to download $HTTP/$version_visit/$package..."
 	       # Regarde dans le cache:
-	       [ ! -f $TRUST_TMP/$package ] && cd $TRUST_TMP && wget_ $HTTP/$version_visit/$package 1>/dev/null 2>&1
+	       [ ! -f $TRUST_TMP/$package ] && wget_ $HTTP/$version_visit/$package 1>/dev/null 2>&1 && mv -f $package $TRUST_TMP
 	       [ -f $TRUST_TMP/$package ] && DOWNLOADED=1 && ln -s -f $TRUST_TMP/$package .
 	    fi
 	 done
@@ -234,7 +226,8 @@ then
    ###############################################
    # Build plugins if the VisIt version is built #
    ###############################################
-   if [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
+   # Essai de construire les plugins sur une version telechargee recente de VisIt
+   if [ "$TRUST_DOWNLOAD_VISIT" != 1 ] || [ $new = 1 ]
    then
       for plugin in `ls plugins/*/build_plugin 2>/dev/null`
       do
