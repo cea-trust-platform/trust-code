@@ -19,20 +19,6 @@ Mailler dom
         Bord Droit  X = 4. 0. <= Y <= 1.
     }
 }
-Sous_zone sz1
-Associate sz1 dom
-Read sz1 { 
- rectangle
-      Origine 0.0 0.0 
-      Cotes 2.0 1.0
- }
-Sous_zone sz2
-Associate sz2 dom
-Read sz2 {  
-   Rectangle
-      Origine 2. 0.0
-      Cotes 2.0 1.0
-} 
 
 Postraiter_domaine
 {
@@ -40,7 +26,6 @@ Postraiter_domaine
    format lml
    domaine dom
 }
-
 
 # END MESH #
 # BEGIN PARTITION  
@@ -56,6 +41,22 @@ End
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 END SCATTER #
+
+Sous_zone sz1
+Associate sz1 dom
+Read sz1 { 
+ rectangle
+      Origine 0.0 0.0 
+      Cotes 2.0 1.0
+ }
+Sous_zone sz2
+Associate sz2 dom
+Read sz2 {  
+   Rectangle
+      Origine 2. 0.0
+      Cotes 2.0 1.0
+} 
+
 
 VDF dis
 
