@@ -164,6 +164,16 @@ BEGIN {
 		if (dim==3) {circle[ns]=circle[ns]","1.*$6}
 		circle[ns]=circle[ns]","1.*$(NF-2)")";
 	     }
+
+	     # On lit des infos supplementaires pour le radius 
+	     if (type[ns]=="radius")
+	     {
+		rayon_depart[ns]=1.*$(NF-1);
+		rayon_arrivee[ns]=1.*$(NF);
+        	radius[ns]="(x,y,z,theta)=";
+        	radius[ns]=radius[ns]"("1.*$4","1.*$5","1.*$6;
+		radius[ns]=radius[ns]","1.*$(NF-2)")";
+	     }
 	  }	  
        }
    #
@@ -274,6 +284,42 @@ BEGIN {
 	    # le sprintf permet d'avoir un affichage plus joli
             title[ks]=sprintf("Profile circle %s between teta=%g° and teta=%g° File %s",circle[ns],angle_depart[ns],angle_arrivee[ns],fichier[ks])           
             setxra[ks]="set xra["angle_depart[ns]":"angle_arrivee[ns]"]"
+            menu[ks]=champ[ns]comp[i]"\t"title[ks]
+
+   # Ecrit dans le fichier .nom.gnu certaines caracteristiques :
+            fic_gnu[ks]="gnuplot/"NOM".courbe"ks".gnu"
+	    en_tete="."fichier[ks]
+	    sub("\\.coupe","",en_tete)
+	    en_tete=en_tete""comp[i]".gnu"
+	    # Modif pour fichier .gnu
+	    #print en_tete > fic_gnu[ks]
+	    print fic_gnu[ks] > fic_gnu[ks]
+            print "segment "np[ns] >> fic_gnu[ks]
+	    print title[ks] >> fic_gnu[ks]
+            for (ip=0;ip<np[ns];ip++) 
+               print abs[ip] >> fic_gnu[ks]	    
+            print setxra[ks]"\\nset xlabel '"xlabel[ks]"'\\nset ylabel ' "ylabel[ks]"'\\nplot '"fichier[ks]"' using "using[ks]" t'"t"' with linesp\\n" >> fic_gnu[ks]
+	 }
+      }
+   ################
+   # Sonde radius :
+   ################
+      if (type[ns]=="radius") {
+	 for (ip=0;ip<np[ns];ip++)
+	    abs[ip]=rayon_depart[ns]+(rayon_arrivee[ns]-rayon_depart[ns])*ip/(np[ns]-1);
+	 abscisse="rayon"  
+	 fic=fichier_son[ns];
+	 gsub("\\.son",".coupe",fic);
+	 for (i=0;i<compo;i++) {
+            ks++
+            fichier[ks]=fic
+            xlabel[ks]=abscisse" [°]"
+            ylabel[ks]=champ[ns]comp[i]" "unite
+            colonne=2+i
+            using[ks]="1:"colonne
+	    # le sprintf permet d'avoir un affichage plus joli
+            title[ks]=sprintf("Profile radius %s between r=%g° and r=%g° File %s",radius[ns],rayon_depart[ns],rayon_arrivee[ns],fichier[ks])           
+            setxra[ks]="set xra["rayon_depart[ns]":"rayon_arrivee[ns]"]"
             menu[ks]=champ[ns]comp[i]"\t"title[ks]
 
    # Ecrit dans le fichier .nom.gnu certaines caracteristiques :

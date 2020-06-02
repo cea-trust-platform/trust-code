@@ -6,7 +6,7 @@ mon_ana()
    file=$1
    file=${file%.gcov}
    filec=$file.gcov
-   nl=`grep -v "\-:" $filec | grep -v "blocks executed " | wc -l`
+   nl=`grep ":" $filec | grep -v "\-:" | grep -v "blocks executed " | wc -l`
    nnt=`grep "####:"  $filec | wc -l`
    #nntm=`grep "####:" $filec | grep -v "Cerr"| grep -v "exit(-1)" | grep -v assert | wc -l`
    nntm=`grep "####:" $filec | grep -v "Cerr"| grep -v "exit" | grep -v "assert" | grep -v "Implemente_"| wc -l`
@@ -43,7 +43,7 @@ ORG=`dirname $0`
 ORG=`(cd $ORG;pwd)`
 trace=`basename  $GCOV_PREFIX`"/"
 
-for cas in baltik TRUST  # baltik
+for cas in baltik
   do
   cd `dirname $GCOV_PREFIX`
   
@@ -67,22 +67,28 @@ for cas in baltik TRUST  # baltik
 
   echo "Analysis by gcov..."
   rm -f gcov_out gcov_err
-  gcov *.gcno 2>&1 | grep -v "has arcs" 1>gcov_out_err # Sinon plein de warnings avec GCC 8.x
-  mkdir -p cpp.gcov
+  gcov *.gcno 1>gcov_out 2>gcov_err
+  mkdir cpp.gcov
   mv *.cpp.gcov cpp.gcov
-  cd cpp.gcov
-  echo "Analysis of the coverage of $cas part "
-  tout 1>monana_out 2>&1
-  echo "`pwd`/monana_out file created" 
+  cd  cpp.gcov
+  #echo "Analysis of the coverage of $cas part "
+  #tout 1>monana_out 2>&1
+  #echo "`pwd`/monana_out file created" 
   export HTML_ROOT=$GCOV_PREFIX/../ana
   $TRUST_ROOT/bin/KSH/tggcov_   | sed "s/TRUST/$cas/"        | tee monana_glob
-  echo more details in monana_sort
+  echo more details in `pwd`/monana_sort
   $TRUST_ROOT/bin/KSH/tggcov_ -file all  | sed "s/TRUST/$cas/"  > monana_sort
+  #cat monana_sort
+
+  # On quitte en erreur en dessous d'un certain niveau
+  taux=`awk '/baltik code/ {taux=$1;min=69.50;ok=(taux>=min?"OK bigger than":"! KO lesser than");print "Line coverage of "taux"% "ok" limit " min"%"}' monana_glob`
+  echo $taux
+  [ "`echo $taux | grep KO`" != "" ] && exit -1
   if [ "$cas" = "TRUST" ]
       then
        $TRUST_ROOT/bin/KSH/tggcov_ -html  | sed "s/TRUST/$cas/"
       (cd ..;tar zcf $DEST.tgz *.html cpp.gcov)
-      ( cd ../..; echo "To update coverage :" ;echo "cp $PWD/TRUST_cpp.gcov.tgz \$TRUST_ROOT/doc/Coverage/cpp.gcov.tar.gz")
+      (cd ../..; echo "To update coverage :" ;echo "cp $PWD/TRUST_cpp.gcov.tgz \$TRUST_ROOT/doc/Coverage/cpp.gcov.tar.gz")
   fi
   
  
@@ -93,3 +99,23 @@ for cas in baltik TRUST  # baltik
   rm -rf ana
   
 done
+# Lancement de gcovr 
+cd $project_directory
+gcovr --version 2>&1 1>/dev/null
+if [ $? != 0 ]
+then
+   echo "Install gcovr with: cd $TRUST_ROOT/exec/python/bin;pip install gcovr"
+else
+   xml=$project_directory/doc/Coverage/gcovr.xml
+   html=$project_directory/doc/Coverage/html/index.html
+   mkdir -p `dirname $html`
+   filter="-e Trust_Fixes/ -e src/Ref/" # On ne mesure pas la couverture des Trust_fixes
+   threshold="--fail-under-line 66" # Erreur si moins de 66%
+   echo "XML coverage report for Jenkins: $xml"
+   echo "HTML coverage report: $html"
+   gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $threshold $filter
+   if [ $? != 0 ]
+   then
+      echo "Line coverage not enough!" && exit -1
+   fi
+fi

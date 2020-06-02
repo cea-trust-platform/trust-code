@@ -13,7 +13,8 @@ DIR=`dirname $NOM`
 NOM=`basename $NOM`
 cd $DIR
 mkdir -p gnuplot
-echo | $TRUST_Awk -v NOM=$NOM -f $TRUST_AWK/Run_sonde_awk
+Run_sonde_awk=$project_directory/Trust_Fixes/bin/AWK/Run_sonde_awk && [ ! -f $Run_sonde_awk ] && Run_sonde_awk=$TRUST_AWK/Run_sonde_awk
+echo | $TRUST_Awk -v NOM=$NOM -f $Run_sonde_awk
 sonde=$NOM"_"$2.coupe
 
 courbe=`grep -l $sonde gnuplot/$NOM.courbe* | $TRUST_Awk -F: '{print $1}'| tail -1 `
