@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,9 @@ Stat_Counter_Id sauvegarde_counter_;
 Stat_Counter_Id temporary_counter_;
 
 Stat_Counter_Id assemblage_sys_counter_;
+Stat_Counter_Id update_vars_counter_;
+Stat_Counter_Id update_fields_counter_;
+Stat_Counter_Id mettre_a_jour_counter_;
 Stat_Counter_Id timestep_counter_;
 Stat_Counter_Id interprete_scatter_counter_;
 Stat_Counter_Id temps_total_execution_counter_;
@@ -69,6 +72,9 @@ Stat_Counter_Id initialisation_calcul_counter_;
 Stat_Counter_Id m1;
 Stat_Counter_Id m2;
 Stat_Counter_Id m3;
+
+Stat_Counter_Id probleme_fluide_;
+Stat_Counter_Id probleme_combustible_;
 // Initialisation des differents compteurs.
 // L'ordre d'impression des compteurs est le meme que l'ordre de creation.
 
@@ -124,6 +130,9 @@ void declare_stat_counters()
 
   // Assemblage de la matrice
   assemblage_sys_counter_ = statistiques().new_counter(1, "Assembleur::assembler", 0);
+  update_vars_counter_ = statistiques().new_counter(1, "Schema_Implicite_4eqs::update_vars", 0);
+  update_fields_counter_ = statistiques().new_counter(1, "Probleme_Diphasique_base::updateGivenFields", 0);
+  mettre_a_jour_counter_  = statistiques().new_counter(1, "Schema_Temps_base::mettre_a_jour", 0);
 
   // Divers
   divers_counter_ = statistiques().new_counter(1, "Divers", 0);
@@ -132,6 +141,10 @@ void declare_stat_counters()
   m1 = statistiques().new_counter(1, "m1", 0);
   m2 = statistiques().new_counter(1, "m2", 0);
   m3 = statistiques().new_counter(1, "m3", 0);
+
+  // Problemes
+  probleme_fluide_ = statistiques().new_counter(3 /* Level */, "pb_fluide", 0 /* Group */);
+  probleme_combustible_ = statistiques().new_counter(3 /* Level */, "pb_combustible", 0 /* Group */);
 
   // Appels a DoubleVect::echange_espace_virtuel()
   echange_vect_counter_ = statistiques().new_counter(2, "DoubleVect/IntVect::echange_espace_virtuel", 0);
@@ -184,10 +197,26 @@ inline void write_stat_file(const Nom& msg, const Stat_Results& stat, const Stat
   if (stat.max_time!=0)
     {
       stat_file << "Dont " << msg << " ";
-      stat_file << stat.max_time/pas_de_temps.max_count;
+      if (pas_de_temps.max_count>0)
+        stat_file << stat.max_time/pas_de_temps.max_count;
+      else
+        stat_file << stat.max_time;
       stat_file << " " << (int)(stat.max_time/pas_de_temps.max_time*100) << "%";
-      double n = stat.max_count/pas_de_temps.max_count;
-      if (stat.max_count>0) stat_file << " (" << n << " " << (n==1?"appel":"appels") << "/pas de temps)";
+      if (pas_de_temps.max_count>0)
+        {
+          double n = stat.max_count/pas_de_temps.max_count;
+          stat_file << " (" << n << " " << (n==1?"appel":"appels") << "/pas de temps)";
+        }
+      stat_file << "\n";
+    }
+}
+
+inline void write_stat_file(const Nom& msg, const Stat_Results& stat, SFichier& stat_file)
+{
+  if (stat.max_time!=0)
+    {
+      stat_file << "Dont " << msg << " ";
+      stat_file << stat.max_time;
       stat_file << "\n";
     }
 }
@@ -214,6 +243,9 @@ void print_statistics_analyse(const char * message, int mode_append)
   Stat_Results temporary;
   Stat_Results divers;
   Stat_Results assemblage;
+  Stat_Results update_vars;
+  Stat_Results update_fields;
+  Stat_Results mettre_a_jour;
   Stat_Results echange_espace_virtuel;
   Stat_Results comm_sendrecv;
   Stat_Results comm_allreduce;
@@ -221,6 +253,8 @@ void print_statistics_analyse(const char * message, int mode_append)
   Stat_Results marqueur1;
   Stat_Results marqueur2;
   Stat_Results marqueur3;
+  Stat_Results pb_fluide;
+  Stat_Results pb_combustible;
 
   // Stop the counters
   statistiques().stop_counters();
@@ -260,6 +294,9 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(sauvegarde_counter_, sauvegarde);
       statistiques().get_stats(temporary_counter_, temporary);
       statistiques().get_stats(assemblage_sys_counter_, assemblage);
+      statistiques().get_stats(update_vars_counter_, update_vars);
+      statistiques().get_stats(update_fields_counter_, update_fields);
+      statistiques().get_stats(mettre_a_jour_counter_, mettre_a_jour);
       statistiques().get_stats(echange_vect_counter_, echange_espace_virtuel);
       statistiques().get_stats_familly("MPI_sendrecv", comm_sendrecv);
       statistiques().get_stats_familly("MPI_allreduce", comm_allreduce);
@@ -267,6 +304,8 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(m2, marqueur2);
       statistiques().get_stats(m3, marqueur3);
       statistiques().get_stats(divers_counter_, divers);
+      statistiques().get_stats(probleme_fluide_, pb_fluide);
+      statistiques().get_stats(probleme_combustible_, pb_combustible);
 
       double allreduce_peak_perf = 0.;
       //if (temps_total.max_time > 10.)
@@ -307,12 +346,17 @@ void print_statistics_analyse(const char * message, int mode_append)
       if (Process::je_suis_maitre())
         {
           SFichier stat_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
-
+          write_stat_file("probleme thermohydraulique  ", pb_fluide             , temps_total, stat_file);
+          write_stat_file("probleme combustible        ", pb_combustible        , temps_total, stat_file);
+          stat_file << "\n";
           stat_file << "Timesteps                         " << pas_de_temps.max_count << "\n";
           stat_file << "Secondes / pas de temps           " << pas_de_temps.max_time / pas_de_temps.max_count << "\n";
           write_stat_file("solveurs Ax=B               ", solveur               , pas_de_temps, stat_file);
           write_stat_file("solveur diffusion_implicite ", diffusion_implicite   , pas_de_temps, stat_file);
           write_stat_file("assemblage matrice_implicite", assemblage            , pas_de_temps, stat_file);
+          write_stat_file("mettre_a_jour               ", mettre_a_jour         , pas_de_temps, stat_file);
+          write_stat_file("update_vars                 ", update_vars           , pas_de_temps, stat_file);
+          write_stat_file("update_fields               ", update_fields         , pas_de_temps, stat_file);
           write_stat_file("operateurs convection       ", convection            , pas_de_temps, stat_file);
           write_stat_file("operateurs diffusion        ", diffusion             , pas_de_temps, stat_file);
           write_stat_file("operateurs decroissance     ", decay                 , pas_de_temps, stat_file);

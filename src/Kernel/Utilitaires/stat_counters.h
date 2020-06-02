@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,10 @@ extern Stat_Counter_Id postraitement_counter_;
 extern Stat_Counter_Id divers_counter_;
 extern Stat_Counter_Id sauvegarde_counter_;
 extern Stat_Counter_Id temporary_counter_;
-
+extern Stat_Counter_Id assemblage_sys_counter_;
+extern Stat_Counter_Id update_vars_counter_;
+extern Stat_Counter_Id update_fields_counter_;
+extern Stat_Counter_Id mettre_a_jour_counter_;
 extern Stat_Counter_Id timestep_counter_;
 extern Stat_Counter_Id interprete_scatter_counter_;
 extern Stat_Counter_Id temps_total_execution_counter_;
@@ -63,3 +66,6 @@ extern Stat_Counter_Id initialisation_calcul_counter_;
 extern Stat_Counter_Id m1;
 extern Stat_Counter_Id m2;
 extern Stat_Counter_Id m3;
+
+extern Stat_Counter_Id probleme_fluide_;
+extern Stat_Counter_Id probleme_combustible_;
