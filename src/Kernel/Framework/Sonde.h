@@ -159,8 +159,11 @@ inline double Sonde::temps() const
 // Postcondition:
 inline void Sonde::fermer_fichier()
 {
-  if (dim==2 || dim==3) fichier() << "FIN" << finl;
-  le_fichier_.close();
+  if (fichier().is_open())
+    {
+      if (dim == 2 || dim == 3) fichier() << "FIN" << finl;
+      le_fichier_.close();
+    }
 }
 
 
