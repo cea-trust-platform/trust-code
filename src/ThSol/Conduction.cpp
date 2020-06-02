@@ -195,14 +195,6 @@ void Conduction::associer_milieu_base(const Milieu_base& le_milieu)
 // Postcondition: l'equation a un milieu physique associe
 void Conduction::associer_solide(const Solide& un_solide)
 {
-  const Champ_Don& rho = un_solide.masse_volumique();
-  const Champ_Don& Cp = un_solide.capacite_calorifique();
-
-  if  ( (rho(0,0) <= 0) || (Cp(0,0) <= 0) )
-    {
-      Cerr << "ERROR: Conduction equation: one of the physical properties rho ou Cp is not striclty positive." << finl;
-    }
-
   le_solide = un_solide;
 }
 

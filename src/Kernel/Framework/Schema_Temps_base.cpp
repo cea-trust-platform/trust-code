@@ -33,6 +33,7 @@
 #include <SFichier.h>
 #include <DoubleTab.h>
 #include <Matrice_Morse.h> // necessaire pour visual
+#include <stat_counters.h>
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
@@ -193,6 +194,7 @@ int Schema_Temps_base::limpr() const
 
 void Schema_Temps_base::validateTimeStep()
 {
+  statistiques().begin_count(mettre_a_jour_counter_);
   // Update the problem:
   Probleme_base& problem=pb_base();
   problem.mettre_a_jour(temps_courant_+dt_);
@@ -270,6 +272,7 @@ void Schema_Temps_base::validateTimeStep()
     }
   // Update time scheme:
   mettre_a_jour();
+  statistiques().end_count(mettre_a_jour_counter_);
 }
 void Schema_Temps_base::terminate()
 {
@@ -672,6 +675,7 @@ extern "C" {
 // Postcondition:
 int Schema_Temps_base::mettre_a_jour()
 {
+
   temps_precedent_ = temps_courant_;
   temps_courant_ += dt_;
   nb_pas_dt_++;

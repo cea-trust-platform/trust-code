@@ -47,9 +47,10 @@ class Front_dis_base;
 class Champ_front_calc : public Ch_front_var_instationnaire_dep
 {
 
-  Declare_instanciable(Champ_front_calc);
+  Declare_instanciable_sans_constructeur(Champ_front_calc);
 
 public:
+  Champ_front_calc();
   virtual void completer();
   int initialiser(double, const Champ_Inc_base&);
   void associer_ch_inc_base(const Champ_Inc_base&);
@@ -66,7 +67,7 @@ public:
   const Zone_dis_base& zone_dis() const;
   const Zone_Cl_dis_base& zone_Cl_dis() const;
   const Frontiere_dis_base& front_dis() const;
-  inline void  set_distant(int d)
+  inline void set_distant(int d)
   {
     distant_=d ;
   };
