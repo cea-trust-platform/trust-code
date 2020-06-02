@@ -303,7 +303,7 @@ Entree& Sonde::readOn(Entree& is)
   // Lecture des caracteristiques de la sonde
   IntVect fait(2);
 
-  Motcles les_motcles(15);
+  Motcles les_motcles(16);
   {
     les_motcles[0] = "periode";
     les_motcles[1] = "point";
@@ -320,6 +320,7 @@ Entree& Sonde::readOn(Entree& is)
     les_motcles[12] = "segmentfacesx";
     les_motcles[13] = "segmentfacesy";
     les_motcles[14] = "segmentfacesz";
+    les_motcles[15] = "radius";
   }
 
   while ((fait(0) != 1) || (fait(1) != 1))
@@ -574,6 +575,44 @@ Entree& Sonde::readOn(Entree& is)
                         les_positions_(i,2)=origine(2);
                       }
                   }
+              }
+            break;
+          }
+        case 15:
+          {
+            assert(dimension==3);
+            type_ = les_motcles[rang];
+            // radius nbre_points x0 y0 z0 theta radius1 radius2
+            rang = 1;
+            dim = 1;
+            gravcl = false;
+            double theta, radius1, radius2;
+            DoubleVect origine(dimension);
+            is >> nbre_points;
+            les_positions_.resize(nbre_points,dimension);
+            for (int i=0; i<dimension; i++)
+              is >> origine(i);
+            is >> theta >> radius1 >> radius2;
+            // Ajout des informations
+            for (int i=0; i<dimension; i++)
+              {
+                type_+=" ";
+                type_+=(Nom)origine(i);
+              }
+            type_+=" ";
+            type_+=(Nom)theta;
+            type_+=" ";
+            type_+=(Nom)radius1;
+            type_+=" ";
+            type_+=(Nom)radius2;
+            // We calculate the positions
+            theta*=M_PI/180;
+            for (int i=0; i<nbre_points; i++)
+              {
+                double radius = radius1+(radius2-radius1)*i/(nbre_points-1);
+                les_positions_(i,0)=origine(0)+radius*cos(theta);
+                les_positions_(i,1)=origine(1)+radius*sin(theta);
+                les_positions_(i,2)=origine(2);
               }
             break;
           }
@@ -1027,25 +1066,24 @@ void Sonde::ouvrir_fichier()
 {
   if(je_suis_maitre())
     {
-      if(le_fichier_.is_open())
-        le_fichier_.close();
-      //char *sonde_file;
-      struct stat f;
-      const char* sonde_file=nom_fichier_;
-      if (stat(sonde_file,&f))
-        reprise = 0;
-      else if (reprise==0)
-        reprise = mon_post->probleme().reprise_effectuee();
+      if (!le_fichier_.is_open())
+        {
+          struct stat f;
+          const char *sonde_file = nom_fichier_;
+          if (stat(sonde_file, &f))
+            reprise = 0;
+          else if (reprise == 0)
+            reprise = mon_post->probleme().reprise_effectuee();
 
-      if (reprise==0)
-        le_fichier_.ouvrir(nom_fichier_);
-      else
-        le_fichier_.ouvrir(nom_fichier_,ios::app);
+          if (reprise == 0)
+            le_fichier_.ouvrir(nom_fichier_);
+          else
+            le_fichier_.ouvrir(nom_fichier_, ios::app);
 
+          le_fichier_.setf(ios::scientific);
+          le_fichier_.precision(8);
+        }
       SFichier& s = le_fichier_;
-      s.setf(ios::scientific);
-      s.precision(8);
-
       // Ecriture de l'en tete des fichiers sondes :
       if ((dim==0 || dim==1) && reprise==0)
         {
@@ -1185,7 +1223,6 @@ void Sonde::ouvrir_fichier()
               s << "0" << finl;
             }
         }
-      s.close();
     }
 }
 
@@ -1299,9 +1336,6 @@ void Sonde::postraiter()
   if(je_suis_maitre())
     {
       ouvrir_fichier();
-      fichier().ouvrir(nom_fichier_,ios::app);
-      fichier().setf(ios::scientific);
-      fichier().precision(8);
       int p;
       int nbproc = Process::nproc();
       DoubleTab valeurs_pe;
@@ -1441,7 +1475,6 @@ void Sonde::postraiter()
             }
         }
       fichier().flush();
-      fichier().close();
     }
   else
     {
