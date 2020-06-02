@@ -154,6 +154,15 @@ public :
   };
 #endif
   void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
+  bool Axi1d() const
+  {
+    return axi1d;
+  }
+  bool Axi1d()
+  {
+    return axi1d;
+  }
+
 protected :
 
   LIST(REF(Domaine)) domaines_frontieres_;
@@ -171,6 +180,7 @@ protected :
   ///! MEDCoupling version of the faces domain:
   mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
 #endif
+  int axi1d;
 };
 Declare_liste(Domaine);
 

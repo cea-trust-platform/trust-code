@@ -72,7 +72,7 @@ class Zone_EF : public Zone_VF
 
 public :
   void typer_elem(Zone& zone_geom);
-  void discretiser();
+  virtual void discretiser();
   void swap(int, int, int);
   virtual void reordonner(Faces&);
   void modifier_pour_Cl(const Conds_lim& );
@@ -96,7 +96,9 @@ public :
   inline const ArrOfInt& ind_faces_virt_non_std() const;
   void calculer_volumes_entrelaces();
   void calculer_volumes_sommets();
-  void calculer_Bij(DoubleTab& bij_) ;
+  virtual void calculer_IPhi();
+  virtual void calculer_Bij(DoubleTab& bij_) ;
+  virtual void calculer_Bij_gen(DoubleTab& bij);
 
   //  inline const DoubleVect& volumes_sommets() const { return volumes_sommets_; }
   inline const DoubleVect& volumes_thilde() const
@@ -135,12 +137,15 @@ public :
     return IPhi_thilde_ ;
   };
 
+  virtual void verifie_compatibilite_domaine();
 
+protected:
+  DoubleTab IPhi_,IPhi_thilde_;
 private:
   DoubleVect porosite_sommets_ ,volumes_sommets_thilde_,volumes_thilde_;
   //  Champ_Don champ_porosite_sommets_,champ_porosite_lu_;
   DoubleTab Bij_,Bij_thilde_;                         // stockage des matrice Bije
-  DoubleTab IPhi_,IPhi_thilde_;
+
   double h_carre;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_EF type_elem_;                  // type de l'element de discretisation

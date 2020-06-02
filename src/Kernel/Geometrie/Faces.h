@@ -59,6 +59,7 @@ public:
   {
     vide_0D,
     point_1D,
+    point_1D_axi,
     segment_2D,
     segment_2D_axi,
     triangle_3D,

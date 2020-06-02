@@ -1175,7 +1175,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 
 #ifdef MEDCOUPLING_
 // renvoie le type trio a partir du type medocoupling : http://docs.salome-platform.org/6/gui/MED/MEDLoader_8cxx.html
-Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, const int& axis_type, const bool& cell_from_boundary)
+Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, const int& axis_type, const bool& cell_from_boundary, const int& axi1d)
 {
   Nom type_elem;
   // [ABN] : first make sure the axis type is properly set, this will influence choice of the element
@@ -1240,10 +1240,19 @@ Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, co
       Cerr<<"Cell type " << type_cell<< " is not supported for 'axi' mode." <<finl;
       Process::exit();
     }
+  if (axi1d && !(type_cell == INTERP_KERNEL::NORM_SEG2 || type_cell == INTERP_KERNEL::NORM_POINT1))
+    {
+      Cerr<<"Cell type " << type_cell<< " is not supported for 'axi1d' mode." <<finl;
+      Process::exit();
+    }
   if (Objet_U::bidim_axi && type_cell == INTERP_KERNEL::NORM_QUAD4)
     type_elem = "Rectangle_2D_axi";
   if (Objet_U::axi)
     type_elem += "_axi";
+
+  if (axi1d)
+    type_elem += "_axi";
+
   return type_elem;
 }
 #endif
@@ -1263,6 +1272,10 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   VECT(IntTab) all_faces_bord;
   IntTab les_elems2;
   int dim = dimension;
+  int axi1d=0;
+
+  if (dom.que_suis_je()=="DomaineAxi1d")
+    axi1d = 1;
   // pour verif
   if (dimension==0)
     {
@@ -1340,8 +1353,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       connIndex.ref_data(mesh->getNodalConnectivityIndex()->getPointer(), mesh->getNodalConnectivityIndex()->getNbOfElems());
 
       int mesh_type_cell = conn[connIndex[0]];
-      type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary);
-      Cerr << "Detecting " << ncells << " cells (" << type_elem << ")." << finl;
+      type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary,axi1d);
       type_ele.typer(type_elem);
       // Detect a mesh with different cells (not supported):
       for (int i = 0; i < ncells; i++)
@@ -1352,7 +1364,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
               Cerr << "TRUST does not support different element types for the mesh." << finl;
               Cerr << "The new elements of kind "
-                   << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary)
+                   << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary,axi1d)
                    << " are not read." << finl;
               Process::exit();
             }
@@ -1498,7 +1510,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
                 {
                   type_cell = conn[connIndex[i]];
-                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary);
+                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary,axi1d);
                   if (tp>=type_face.size())
                     {
                       Cerr << "Error, it does not support another face type: " << type_face_lu << finl;
