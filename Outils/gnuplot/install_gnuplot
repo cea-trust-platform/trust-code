@@ -82,7 +82,10 @@ do
    $TRUST_MAKE || exit -1
    make install || echo error on installation, but we hope that is ok
    # Test gnuplot
-   echo "set terminal png" | gnuplot || exit -1
+   if [ $i = 2 ] 
+   then
+      echo "set terminal png" | gnuplot || exit -1
+   fi
    cd ..
    rm -r -f ${package%.tar.gz}
 done
