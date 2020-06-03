@@ -500,8 +500,10 @@ Entree& Probleme_base::readOn(Entree& is)
           is >> nomfic;
           // Open the file:
           DERIV(Entree_Fichier_base) fic;
+#ifdef MPI_
           Entree_Brute input_data;
           FichierHDFPar fic_hdf; //FichierHDF fic_hdf;
+#endif
 
           if (format_rep == "formatte")
             fic.typer("LecFicDistribue");
@@ -515,8 +517,10 @@ Entree& Probleme_base::readOn(Entree& is)
 
           if( format_rep == "single_hdf")
             {
+#ifdef MPI_
               fic_hdf.open(nomfic, true);
               fic_hdf.read_dataset("/sauv", Process::me(),input_data);
+#endif
             }
           else
             {
@@ -540,7 +544,11 @@ Entree& Probleme_base::readOn(Entree& is)
               // Look for the last time and set it to tinit if tinit not set
               double last_time;
               if(format_rep == "single_hdf")
-                last_time = get_last_time(input_data);
+                {
+#ifdef MPI_
+                  last_time = get_last_time(input_data);
+#endif
+                }
               else
                 last_time = get_last_time(fic);
               // Set the time to restart the calculation
@@ -560,7 +568,11 @@ Entree& Probleme_base::readOn(Entree& is)
                   fic->ouvrir(nomfic);
                 }
               else
-                fic_hdf.read_dataset("/sauv", Process::me(), input_data);
+                {
+#ifdef MPI_
+                  fic_hdf.read_dataset("/sauv", Process::me(), input_data);
+#endif
+                }
             }
           // Lecture de la version du format de sauvegarde si c'est une reprise classique
           // Depuis la 1.5.1, on marque le format de sauvegarde en tete des fichiers de sauvegarde
@@ -573,7 +585,11 @@ Entree& Probleme_base::readOn(Entree& is)
           if(format_rep != "single_hdf")
             fic.valeur() >> motlu;
           else
-            input_data >> motlu;
+            {
+#ifdef MPI_
+              input_data >> motlu;
+#endif
+            }
 
           if (motlu!="FORMAT_SAUVEGARDE:")
             {
@@ -604,7 +620,11 @@ Entree& Probleme_base::readOn(Entree& is)
               if(format_rep != "single_hdf")
                 fic.valeur() >> reprise_version_;
               else
-                input_data >> reprise_version_;
+                {
+#ifdef MPI_
+                  input_data >> reprise_version_;
+#endif
+                }
               if (mp_min(reprise_version_)!=mp_max(reprise_version_))
                 {
                   Cerr << "The version of the format backup/resumption is not the same in the resumption files " << nomfic << finl;
@@ -623,8 +643,10 @@ Entree& Probleme_base::readOn(Entree& is)
             reprendre(fic.valeur());
           else
             {
+#ifdef MPI_
               reprendre(input_data);
               fic_hdf.close();
+#endif
             }
           reprise_effectuee_=1;
         }
