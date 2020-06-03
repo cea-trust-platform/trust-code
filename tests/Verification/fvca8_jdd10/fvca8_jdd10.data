@@ -1,4 +1,5 @@
 # PARALLEL OK #
+# lance_test 8 ecarts #
 system "rm -rf lata; mkdir -p lata"
 dimension 3
 Pb_hydraulique pb
