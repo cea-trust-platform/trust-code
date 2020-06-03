@@ -119,7 +119,6 @@ void Champ_front_calc::creer(const Nom& nom_pb,
                              const Nom& nom_bord,
                              const Motcle& nom_inco)
 {
-  distant_ = 1;
   nom_autre_pb_ = nom_pb;
   nom_autre_bord_ = nom_bord;
   REF(Probleme_base) autre_pb;

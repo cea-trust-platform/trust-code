@@ -33,8 +33,7 @@
 Implemente_instanciable_sans_constructeur(Champ_front_calc_interne,"Champ_front_calc_interne",Champ_front_calc);
 
 
-Champ_front_calc_interne::Champ_front_calc_interne() :
-  Champ_front_calc()
+Champ_front_calc_interne::Champ_front_calc_interne()
 {
   set_distant(0);
 }
