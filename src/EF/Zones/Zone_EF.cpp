@@ -105,12 +105,8 @@ Entree& Zone_EF::readOn(Entree& is)
   return is;
 }
 
-
-void  Zone_EF::calculer_volumes_sommets()
+void Zone_EF::calculer_IPhi()
 {
-  //  volumes_sommets_thilde_.resize(nb_som());
-  //Scatter::creer_tableau_distribue(zone().domaine(), Joint::SOMMET, volumes_sommets_thilde_);
-//  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
   int nbelem=zone().nb_elem();
   int nb_som_elem=zone().nb_som_elem();
   IPhi_.resize(nbelem,nb_som_elem);
@@ -131,6 +127,16 @@ void  Zone_EF::calculer_volumes_sommets()
     }
   IPhi_.echange_espace_virtuel();
   IPhi_thilde_.echange_espace_virtuel();
+}
+
+void Zone_EF::calculer_volumes_sommets()
+{
+  //  volumes_sommets_thilde_.resize(nb_som());
+  //Scatter::creer_tableau_distribue(zone().domaine(), Joint::SOMMET, volumes_sommets_thilde_);
+//  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
+
+  calculer_IPhi();
+
   // calcul de volumes_sommets_thilde
   const IntTab& les_elems=zone().les_elems() ;
 
@@ -407,8 +413,23 @@ void Zone_EF::typer_elem(Zone& zone_geom)
   type_elem_.typer(elem_geom.que_suis_je());
 }
 
+void Zone_EF::verifie_compatibilite_domaine()
+{
+  if (zone().domaine().Axi1d())
+    {
+      Cerr << "*****************************************************************************" << finl;
+      Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();
+      Cerr << " is not compatible" << finl;
+      Cerr << " with the discretisation EF. " << finl;
+      Cerr << " Please use the discretization EF_axi or define a domain of type Domaine." << finl;
+      Cerr << "*****************************************************************************" << finl;
+      Process::exit();
+    }
+}
+
 void Zone_EF::discretiser()
 {
+  verifie_compatibilite_domaine();
 
   Zone& zone_geom=zone();
   typer_elem(zone_geom);
@@ -526,34 +547,45 @@ void Zone_EF::discretiser()
   zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
 }
 
-void Zone_EF::calculer_Bij(DoubleTab& bij)
+void Zone_EF::calculer_Bij_gen(DoubleTab& bij)
 {
+  const IntTab& les_elems=zone().les_elems() ;
   int nbsom_face=nb_som_face();
   int nbelem=nb_elem_tot();
   int nbsom_elem=zone().nb_som_elem();
   const IntTab& elemfaces=elem_faces_;
   int nbface_elem=zone().nb_faces_elem();
+
+  for (int elem=0; elem<nbelem; elem++)
+    for (int i=0; i<nbsom_elem; i++)
+      {
+        // on cherche les faces contribuantes ,ce n'est pas optimal
+        for (int f=0; f<nbface_elem; f++)
+          {
+            int face=elemfaces(elem,f);
+            for (int s=0; s<nbsom_face; s++)
+              if (face_sommets_(face,s)==les_elems(elem,i))
+
+                // on cherche les faces contribuantes ,ce n'est pas optimal
+                for (int j=0; j<dimension; j++)
+                  {
+                    bij(elem,i,j)+=face_normales(face,j)*oriente_normale(face,elem);
+                  }
+          }
+      }
+}
+
+void Zone_EF::calculer_Bij(DoubleTab& bij)
+{
+  int nbsom_face=nb_som_face();
+  int nbelem=nb_elem_tot();
+  int nbsom_elem=zone().nb_som_elem();
   bij.resize(nbelem,nbsom_elem,dimension);
   const IntTab& les_elems=zone().les_elems() ;
   if (nbsom_elem!=8)
     {
-      for (int elem=0; elem<nbelem; elem++)
-        for (int i=0; i<nbsom_elem; i++)
-          {
-            // on cherche les faces contribuantes ,ce n'est pas optimal
-            for (int f=0; f<nbface_elem; f++)
-              {
-                int face=elemfaces(elem,f);
-                for (int s=0; s<nbsom_face; s++)
-                  if (face_sommets_(face,s)==les_elems(elem,i))
+      calculer_Bij_gen(bij);
 
-                    // on cherche les faces contribuantes ,ce n'est pas optimal
-                    for (int j=0; j<dimension; j++)
-                      {
-                        bij(elem,i,j)+=face_normales(face,j)*oriente_normale(face,elem);
-                      }
-              }
-          }
       bij/=nbsom_face;
       Bij_thilde_=bij;
       {
@@ -705,6 +737,7 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
             err++;
             Cerr<<" pb elem "<< elem<<" direction "<<j<<" : "<<tot<<finl;
           }
+        //Cerr<<"vol elem "<<volumes_(elem)<< " "<<volumes_thilde_(elem)<<finl;
       }
   if (err) exit();
 

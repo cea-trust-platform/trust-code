@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Sondes.h>
+#include <LecFicDiffuse_JDD.h>
 
 Implemente_liste(Sonde);
 Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
@@ -63,24 +64,69 @@ Entree& Sondes::readOn(Entree& s )
     }
   s >> motlu;
 
-  if (motlu == accolade_fermee)
+  bool depuisFichier = false;
+  Nom nom_fichier;
+
+  if (motlu == "FICHIER")
+    {
+      depuisFichier = true;
+      s >> nom_fichier;
+    }
+  else if (motlu == accolade_fermee)
     {
       Cerr << "Error while reading the probes in the postprocessing" << finl;
       Cerr << "You have not defined any probe" << finl;
       exit();
     }
-  while (motlu != accolade_fermee)
+
+  if (depuisFichier)
     {
-      Sonde une_sonde(motlu);
-      une_sonde.associer_post(mon_post.valeur());
-      s >> une_sonde;
-      add(une_sonde);
+      lire_fichier(nom_fichier);
       s >> motlu;
+      if (motlu != accolade_fermee)
+        {
+          Cerr << "Error while reading the probes in the postprocessing" << finl;
+          Cerr << "We expected } to end to read the probes" << finl;
+          exit();
+        }
+    }
+  else
+    {
+      while (motlu != accolade_fermee)
+        {
+          Sonde une_sonde(motlu);
+          une_sonde.associer_post(mon_post.valeur());
+          s >> une_sonde;
+          add(une_sonde);
+          s >> motlu;
+        }
     }
   Cerr << "End of reading probes " << finl;
   return s;
 }
 
+void Sondes::lire_fichier(const Nom& nom_fichier)
+{
+  LecFicDiffuse_JDD f(nom_fichier);
+  Motcle motlu;
+
+  if (!f.good())
+    {
+      Cerr << "Cannot open the file " << nom_fichier << finl;
+      Process::exit();
+    }
+
+  f >> motlu;
+  while (!f.eof())
+    {
+      Sonde une_sonde(motlu);
+      une_sonde.associer_post(mon_post.valeur());
+      f >> une_sonde;
+      add(une_sonde);
+      f >> motlu;
+    }
+  f.close();
+}
 
 // Description:
 //    NE FAIT RIEN

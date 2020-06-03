@@ -31,7 +31,12 @@
 #include <Debog.h>
 #include <Zone_VF.h>
 
-Implemente_instanciable(Champ_front_calc,"Champ_front_calc",Ch_front_var_instationnaire_dep);
+Implemente_instanciable_sans_constructeur(Champ_front_calc,"Champ_front_calc",Ch_front_var_instationnaire_dep);
+
+Champ_front_calc::Champ_front_calc()
+{
+  set_distant(1);
+}
 
 
 // Description:
@@ -114,7 +119,6 @@ void Champ_front_calc::creer(const Nom& nom_pb,
                              const Nom& nom_bord,
                              const Motcle& nom_inco)
 {
-  distant_=1;
   nom_autre_pb_ = nom_pb;
   nom_autre_bord_ = nom_bord;
   REF(Probleme_base) autre_pb;

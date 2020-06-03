@@ -150,6 +150,7 @@ Domaine::Domaine() : epsilon_(Objet_U::precision_geom),deformable_(0)
 #ifdef MEDCOUPLING_
   mesh_ = NULL;
 #endif
+  axi1d = 0;
 }
 
 // Description:

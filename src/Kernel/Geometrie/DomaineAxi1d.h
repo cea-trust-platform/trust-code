@@ -14,76 +14,57 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Elem_EF.cpp
-// Directory:   $TRUST_ROOT/src/EF/Zones
+// File:        DomaineAxi1d.h
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Elem_EF.h>
-#include <Tri_EF.h>
-#include <Tetra_EF.h>
-#include <Quadri_EF.h>
-#include <Hexa_EF.h>
+#ifndef DomaineAxi1d_included
+#define DomaineAxi1d_included
 
-Implemente_deriv(Elem_EF_base);
-Implemente_instanciable(Elem_EF,"Elem_EF",DERIV(Elem_EF_base));
+#include <Domaine.h>
+#include <Champ.h>
+#include <Ref_DoubleTab.h>
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class DomaineAxi1d
+//
+// <Description of class DomaineAxi1d>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-
-// printOn et readOn
-
-Sortie& Elem_EF::printOn(Sortie& s ) const
+class DomaineAxi1d : public Domaine
 {
-  return s << valeur() ;
+
+  Declare_instanciable( DomaineAxi1d ) ;
+
+public :
+
+  const Champ& champ_origine() const;
+  const Champ& champ_origine();
+  const DoubleTab& origine_repere();
+  const DoubleTab& origine_repere() const;
+  void associer_origine_repere(const DoubleTab& orig);
+  inline double origine_repere(int i,int j);
+  inline double origine_repere(int i,int j) const;
+
+
+protected :
+
+  Champ champ_orig;
+  Ref_DoubleTab ref_origine_;
+};
+
+inline double DomaineAxi1d::origine_repere(int i,int j)
+{
+  return ref_origine_.valeur()(i,j);
 }
 
-Entree& Elem_EF::readOn(Entree& s )
+inline double DomaineAxi1d::origine_repere(int i,int j) const
 {
-  Nom type;
-  s >> type;
-  if(type == "Tri_EF")
-    *this =  Tri_EF();
-  else if(type == "Tetra_EF")
-    *this =  Tetra_EF();
-  else if(type == "Quadri_EF")
-    *this =  Quadri_EF();
-  else if(type == "Hexa_EF")
-    *this =  Hexa_EF();
-  else
-    {
-      Cerr << type << " n'est pas un Elem_EF" << finl;
-      exit();
-    }
-  return s ;
+  return ref_origine_.valeur()(i,j);
 }
 
-// Description:
-// determination du type
-void Elem_EF::typer(Nom type_elem_geom)
-{
-//  Cerr << "Elem_EF::typer()" << finl ;
-  Nom type;
-  if(type_elem_geom=="Triangle")
-    type="Tri_EF";
-  else if(type_elem_geom=="Tetraedre")
-    type="Tetra_EF";
-  else if(type_elem_geom=="Quadrangle")
-    type="Quadri_EF";
-  else if(type_elem_geom=="Hexaedre_VEF")
-    type="Hexa_EF";
-  else if(type_elem_geom=="Segment")
-    type="Segment_EF";
-  else if(type_elem_geom=="Segment_axi")
-    type="Segment_EF_axi";
-  else if(type_elem_geom=="Point")
-    type="Point_EF";
-  else
-    {
-      Cerr << "probleme de typage dans Elem_EF::typer" << finl;
-      Cerr << "type geometrique : " << type_elem_geom << finl;
-      exit();
-    }
-  DERIV(Elem_EF_base)::typer(type);
-// Cerr << "type retenu : " << valeur().que_suis_je() << finl ;
-}
+#endif /* DomaineAxi1d_included */

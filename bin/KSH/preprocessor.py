@@ -17,6 +17,13 @@ debug_level=0
 ite=0
 def interprete_file(file,fileout,traitement_special):
     ''' lit le fichier file et le preprocess, la sortie est dans le ficher fileout'''
+    try:
+    # or codecs.open on Python <= 2.5
+    # or io.open on Python > 2.5 and <= 2.7
+       filedata = open(file, encoding='UTF-8').read() 
+    except:
+       print("Error! Convert",file,"to UTF-8 format.")
+       exit(1)
     # on recupere la sortie standard pour le mettre en stderr
     import sys,io
     s = io.StringIO()
@@ -27,7 +34,9 @@ def interprete_file(file,fileout,traitement_special):
     list_macro={}
     list_vars={}
     str_in=interprete_string(in0,list_macro,list_vars)
-    if (str_in.find('#P')>=0): print("en sortie il reste des #P !!!!")
+    if (str_in.find('#P')>=0):
+        print("en sortie il reste des #P !!!!")
+        exit(1)
     #print 'ecriture de',fileout
     if traitement_special:
         # str_in=str_in.replace('\n\n','\n')
@@ -64,7 +73,7 @@ def interprete_string(str_in,list_macro,list_vars):
     global ite,debug_level
 
     list_pattern={}
-    for pat in "macro","usemacro","set","unset","if","include","foreach","error","comment":
+    for pat in "macro","usemacro","set","unset","if","include","foreach","error","comment","add":
         # Change of behavior of exec() in Python3:
         #exec("patt=pattern_"+pat+"()", context)
         # Better to use this:
@@ -312,6 +321,55 @@ class pattern_set(pattern_base):
 
         return ""
     pass
+class pattern_add(pattern_base):
+    ''' usage: #Padd( var_in var_out val)
+          permet d incrementer une variable de type entier
+          var_out = var_in + value 
+          '''
+    pattern='#Padd('
+    end_pattern=')'
+    nb_bloc=1
+    def analyse(self,in2,list_macro,list_vars):
+        index=in2.find(' ')
+        params = in2.split('(')[1].split(')')
+        params = list(filter(lambda x: x!="",params))
+        params = params[0].strip().split() 
+
+        if len(params)!=3:
+          raise Exception("Padd : On attendait 3 parametres. On a lu les parametres : "+params)
+
+        name_var_in  = params[0]
+        name_var_out = params[1]
+        name_op      = params[2]
+
+        if (name_var_in not in list_vars.keys()): 
+          raise Exception("Padd : La variable a incrementer "+name_var_in+" n'est pas definie.")
+          
+        value_op = interprete_string(name_op,list_macro,list_vars)
+
+        value_in = list_vars[name_var_in][0].get_value()
+        if len(value_in.split())!=1:
+          raise Exception("Padd : on attendait qu'une seule valeur a incrementer. On a lu les valeurs "+value_in)
+        else:
+          value_in = value_in.split()[0]
+
+        # On verifie que l'on a le droit de faire un cast
+        n1 = 0
+        n2 = 0
+        try:
+          n1 = int(value_in)
+        except ValueError:
+         raise Exception("Padd : le parametre a incrementer doit etre compatible avec un entier. On a lu "+value_to_incr)
+        try:
+          n2 = int(value_op)
+        except ValueError:
+          raise Exception("Padd : l'operande doit etre compatible avec un entier. On a lu "+operand)
+
+        list_vars[name_var_out]=[]
+        value_out = str(n1+n2)
+        list_vars[name_var_out].append(pattern_value(name_var_out,value_out))
+        return ""
+    pass
 class pattern_unset(pattern_base):
     ''' usage: #Punset(var)
     permet d effacer la derniere valeur de  var dans la liste des variables connues
@@ -531,6 +589,8 @@ class  pattern_value(pattern_base):
     def analyse(self,in2,list_macro,list_vars):
         if (in2!=self.name):
             raise Exception("PB"+in2+" "+self.name)
+        return self.str
+    def get_value(self):
         return self.str
     pass
 

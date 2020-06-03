@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,6 +93,8 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
   if (type_discr == "VEF")
     return 1;
   else if (type_discr == "EF")
+    return 1;
+  else if (type_discr == "EF_axi")
     return 1;
   else if (type_discr == "VEF_P1_P1")
     return 1;

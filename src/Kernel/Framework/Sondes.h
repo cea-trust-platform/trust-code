@@ -54,6 +54,7 @@ public:
   void associer_post(const Postraitement&);
   void postraiter();
   void mettre_a_jour(double temps, double tinit);
+  void lire_fichier(const Nom& nom_fichier);
 
 private:
 

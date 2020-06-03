@@ -14,76 +14,90 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Elem_EF.cpp
-// Directory:   $TRUST_ROOT/src/EF/Zones
+// File:        DomaineAxi1d.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Elem_EF.h>
-#include <Tri_EF.h>
-#include <Tetra_EF.h>
-#include <Quadri_EF.h>
-#include <Hexa_EF.h>
+#include <DomaineAxi1d.h>
+//#include <Champ_base.h>
+//#include <Champ.h>
 
-Implemente_deriv(Elem_EF_base);
-Implemente_instanciable(Elem_EF,"Elem_EF",DERIV(Elem_EF_base));
+Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Domaine ) ;
 
-
-
-// printOn et readOn
-
-Sortie& Elem_EF::printOn(Sortie& s ) const
+DomaineAxi1d::DomaineAxi1d()
 {
-  return s << valeur() ;
+  axi1d = 1;
 }
 
-Entree& Elem_EF::readOn(Entree& s )
+Sortie& DomaineAxi1d::printOn( Sortie& os ) const
 {
-  Nom type;
-  s >> type;
-  if(type == "Tri_EF")
-    *this =  Tri_EF();
-  else if(type == "Tetra_EF")
-    *this =  Tetra_EF();
-  else if(type == "Quadri_EF")
-    *this =  Quadri_EF();
-  else if(type == "Hexa_EF")
-    *this =  Hexa_EF();
-  else
-    {
-      Cerr << type << " n'est pas un Elem_EF" << finl;
-      exit();
-    }
-  return s ;
+  Domaine::printOn( os );
+  return os;
 }
 
-// Description:
-// determination du type
-void Elem_EF::typer(Nom type_elem_geom)
+Entree& DomaineAxi1d::readOn( Entree& is )
 {
-//  Cerr << "Elem_EF::typer()" << finl ;
-  Nom type;
-  if(type_elem_geom=="Triangle")
-    type="Tri_EF";
-  else if(type_elem_geom=="Tetraedre")
-    type="Tetra_EF";
-  else if(type_elem_geom=="Quadrangle")
-    type="Quadri_EF";
-  else if(type_elem_geom=="Hexaedre_VEF")
-    type="Hexa_EF";
-  else if(type_elem_geom=="Segment")
-    type="Segment_EF";
-  else if(type_elem_geom=="Segment_axi")
-    type="Segment_EF_axi";
-  else if(type_elem_geom=="Point")
-    type="Point_EF";
-  else
+  const Motcle accolade_ouverte("{");
+  const Motcle accolade_fermee("}");
+
+  Motcle motlu;
+
+  is >> motlu;
+
+  if (motlu != accolade_ouverte)
     {
-      Cerr << "probleme de typage dans Elem_EF::typer" << finl;
-      Cerr << "type geometrique : " << type_elem_geom << finl;
-      exit();
+      Cerr << "Error while reading 1D axi domain " <<  finl;
+      Cerr << "We expected a " << accolade_ouverte << " instead of \n"
+           << motlu << finl;
+      Process::exit();
     }
-  DERIV(Elem_EF_base)::typer(type);
-// Cerr << "type retenu : " << valeur().que_suis_je() << finl ;
+
+  while (1)
+    {
+      is >> motlu;
+
+      if (motlu == accolade_fermee)
+        break;
+
+      if (motlu=="ORIGINE")
+        {
+          is >> champ_orig;
+        }
+      else
+        {
+          Cerr << "Error while reading 1D axi domain " <<  finl;
+          Cerr << "We expected a \"origine\" instead of \n"
+               << motlu << finl;
+          Process::exit();
+        }
+    }
+
+  return is;
+}
+
+const Champ& DomaineAxi1d::champ_origine()
+{
+  return champ_orig;
+}
+
+const Champ& DomaineAxi1d::champ_origine() const
+{
+  return champ_orig;
+}
+
+const DoubleTab& DomaineAxi1d::origine_repere()
+{
+  return ref_origine_.valeur();
+}
+
+const DoubleTab& DomaineAxi1d::origine_repere() const
+{
+  return ref_origine_.valeur();
+}
+
+void DomaineAxi1d::associer_origine_repere(const DoubleTab& orig)
+{
+  ref_origine_ = orig;
 }

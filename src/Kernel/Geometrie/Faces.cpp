@@ -22,7 +22,7 @@
 
 #include <Faces.h>
 #include <Faces2.h>
-#include <Domaine.h>
+#include <DomaineAxi1d.h>
 #include <communications.h>
 #include <Linear_algebra_tools_impl.h>
 
@@ -186,6 +186,7 @@ Entree& Faces::lit(Entree& s)
 //    Les noms de types reconnus sont:
 //             "vide_0D"
 //      "point_1D"
+//      "point_1D_axi"
 //      "segment_2D"
 //      "triangle_3D"
 //      "quadrangle_3D"
@@ -200,6 +201,7 @@ Entree& Faces::lit(Entree& s)
 //                 les valeurs de type reconnus sont:
 //                   "vide_0D"
 //                   "point_1D"
+//                   "point_1D_axi"
 //                   "segment_2D"
 //                   "triangle_3D"
 //                   "quadrangle_3D"
@@ -215,17 +217,18 @@ Entree& Faces::lit(Entree& s)
 // Postcondition: la methode ne modifie pas l'objet
 Type_Face Faces::type(const Motcle& mot) const
 {
-  Motcles les_mots(9);
+  Motcles les_mots(10);
   {
     les_mots[0]="vide_0D";
     les_mots[1]="point_1D";
-    les_mots[2]="segment_2D";
-    les_mots[3]="triangle_3D";
-    les_mots[4]="quadrangle_3D";
-    les_mots[5]="segment_2D_axi";
-    les_mots[6]="quadrangle_3D_axi";
-    les_mots[7]="quadrilatere_2D_axi";
-    les_mots[8]="polygone_3d";
+    les_mots[2]="point_1D_axi";
+    les_mots[3]="segment_2D";
+    les_mots[4]="triangle_3D";
+    les_mots[5]="quadrangle_3D";
+    les_mots[6]="segment_2D_axi";
+    les_mots[7]="quadrangle_3D_axi";
+    les_mots[8]="quadrilatere_2D_axi";
+    les_mots[9]="polygone_3d";
   }
   int rang=les_mots.search(mot);
   switch(rang)
@@ -235,18 +238,20 @@ Type_Face Faces::type(const Motcle& mot) const
     case  1 :
       return Faces::point_1D;
     case  2 :
-      return Faces::segment_2D;
+      return Faces::point_1D_axi;
     case  3 :
-      return Faces::triangle_3D;
+      return Faces::segment_2D;
     case  4 :
-      return Faces::quadrangle_3D;
+      return Faces::triangle_3D;
     case  5 :
-      return Faces::segment_2D_axi;
+      return Faces::quadrangle_3D;
     case  6 :
-      return Faces::quadrangle_3D_axi;
+      return Faces::segment_2D_axi;
     case  7 :
+      return Faces::quadrangle_3D_axi;
+    case  8 :
       return Faces::quadrilatere_2D_axi;
-    case 8 :
+    case 9 :
       return Faces::polygone_3D;
     default :
       {
@@ -278,6 +283,7 @@ Type_Face Faces::type(const Motcle& mot) const
 //                 les types reconnus sont:
 //                   Faces::vide_0D
 //                   Faces::point_1D
+//                   Faces::point_1D_axi
 //                   Faces::segment_2D
 //                   segment2D_axi
 //                   Faces::triangle_3D
@@ -301,6 +307,9 @@ Motcle& Faces::type(const Type_Face& typ) const
       break;
     case  Faces::point_1D :
       mot="point_1D";
+      break;
+    case  Faces::point_1D_axi :
+      mot="point_1D_axi";
       break;
     case  Faces::segment_2D :
       mot="segment_2D";
@@ -478,6 +487,7 @@ void Faces::typer(const Type_Face& typ)
       nb_som_face=0;
       break;
     case  Faces::point_1D :
+    case  Faces::point_1D_axi :
       nb_som_face=1;
       break;
     case  Faces::segment_2D :
@@ -785,6 +795,27 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
       {
         for(int face=0; face <nb_faces_tot(); face++)
           surfaces(face) = 1.0;
+
+        break;
+      }
+    case Faces::point_1D_axi:
+      {
+        assert(dimension==3);
+
+        const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,dom);
+
+        for(int face=0; face <nb_faces_tot(); face++)
+          {
+            int elem = voisin(face,0)==-1 ? voisin(face,1) : voisin(face,0);
+
+            double x0 = domax.origine_repere(elem,0);
+            double y0 = domax.origine_repere(elem,1);
+            double x = dom.coord(sommet(face ,0), 0);
+            double y = dom.coord(sommet(face ,0), 1);
+
+            double r = sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0));
+            surfaces(face) = 2.*M_PI*r;
+          }
         break;
       }
     case Faces::polygone_3D:
@@ -960,6 +991,7 @@ void Faces::reordonner()
   switch(type_face_)
     {
     case  Faces::point_1D :
+    case  Faces::point_1D_axi :
       {
         break;
       }

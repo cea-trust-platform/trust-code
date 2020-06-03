@@ -1,6 +1,11 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1_beta : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
+03/06/20 (TRUST)  Keyword     : Champ_Fonc_MED_Table_Temps to read a field into a MED file and time tabulate it
+03/06/20 (TRUST)  Feature     : Add 1D axisymmetric support for EF discretization
+03/06/20 (TRUST)  Keyword     : New option radius to create segment probes on a radial direction
+03/06/20 (TRUST)  Keyword     : New option fichier for probe to define it into a file
+03/06/20 (TRUST)  Output      : Add more profiled methods in the performance .TU file
 19/05/20 (TRUST)  Portability : Latest OpenMPI version downloaded by "./configure -force_latest_openmpi" bumped from 2.13 to 4.0.3
 19/05/20 (TRUST)  Bug fixed   : Allow different beginning/ending times for statistics and fix bug in case of resumption whith statistics
 12/05/20 (TRUST)  Portability : Ubuntu version 19-20 OS are now supported

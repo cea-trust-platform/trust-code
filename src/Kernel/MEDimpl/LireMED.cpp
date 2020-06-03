@@ -1353,8 +1353,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       connIndex.ref_data(mesh->getNodalConnectivityIndex()->getPointer(), mesh->getNodalConnectivityIndex()->getNbOfElems());
 
       int mesh_type_cell = conn[connIndex[0]];
-      type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary);
-      Cerr << "Detecting " << ncells << " cells (" << type_elem << ")." << finl;
+      type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary,axi1d);
       type_ele.typer(type_elem);
       // Detect a mesh with different cells (not supported):
       for (int i = 0; i < ncells; i++)
@@ -1511,7 +1510,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
                 {
                   type_cell = conn[connIndex[i]];
-                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary);
+                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary,axi1d);
                   if (tp>=type_face.size())
                     {
                       Cerr << "Error, it does not support another face type: " << type_face_lu << finl;
