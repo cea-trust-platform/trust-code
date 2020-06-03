@@ -173,6 +173,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   current  += Inconnues_parts[0];
   //current.echange_espace_virtuel();
   Debog::verifier("Solveur_U_P::iterer_NS current",current);
+  eqnNS.assembleur_pression().modifier_solution(pression);
 
   if (1)
     {

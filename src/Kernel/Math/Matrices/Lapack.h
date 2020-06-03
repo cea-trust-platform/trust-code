@@ -111,6 +111,17 @@ extern "C"
                          );
   // FIN MODIF ELI LAUCOIN (19/03/2008)
 
+  void F77DECLARE(DSYEV)(const char*   const, // JOBZ
+                         const char*   const, // UPLO
+                         const int*    const, // N
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // W
+                         const double* const, // WORK
+                         const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
+
   void F77DECLARE(DSYEVD)(const char*   const, // JOBZ
                           const char*   const, // UPLO
                           const int*    const, // N
@@ -134,6 +145,29 @@ extern "C"
                          const int*    const, // LDB
                          const double* const, // WORK
                          const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
+
+  void F77DECLARE(DPOTRF)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
+  void F77DECLARE(DPOTRI)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
+  void F77DECLARE(DPPSV)(const char*   const, // UPLO
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // AP
+                         const double* const, // B
+                         const int*    const, // LDB
                          const int*    const  // INFO
                         );
 
@@ -218,6 +252,18 @@ extern "C"
                          );
   // FIN MODIF ELI LAUCOIN (19/03/2008)
 
+  void F77DECLARE(dsyev)(const char*   const, // JOBZ
+                         const char*   const, // UPLO
+                         const int*    const, // N
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // W
+                         const double* const, // WORK
+                         const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
+
+
   void F77DECLARE(dsyevd)(const char*   const, // JOBZ
                           const char*   const, // UPLO
                           const int*    const, // N
@@ -241,6 +287,29 @@ extern "C"
                          const int*    const, // LDB
                          const double* const, // WORK
                          const int*    const, // LWORK
+                         const int*    const  // INFO
+                        );
+
+  void F77DECLARE(dpotrf)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
+  void F77DECLARE(dpotri)(const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const  // INFO
+                         );
+
+  void F77DECLARE(dppsv)(const char*   const, // UPLO
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // AP
+                         const double* const, // B
+                         const int*    const, // LDB
                          const int*    const  // INFO
                         );
 
@@ -371,6 +440,20 @@ inline void F77NAME(DGETRI)(const int*    const N,
 }
 // FIN MODIF ELI LAUCOIN (19/03/2008)
 
+inline void F77NAME(DSYEV)(const char*   const JOBZ,
+                           const char*   const UPLO,
+                           const int*    const N,
+                           const double* const A,
+                           const int*    const LDA,
+                           const double* const W,
+                           const double* const WORK,
+                           const int*    const LWORK,
+                           const int*    const INFO
+                          )
+{
+  F77NAME(dsyev)(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO);
+}
+
 inline void F77NAME(DSYEVD)(const char*   const JOBZ,
                             const char*   const UPLO,
                             const int*    const N,
@@ -403,6 +486,37 @@ inline void F77NAME(DGELS)(const char*   const TRANS,
   F77NAME(dgels)(TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK, INFO);
 }
 
+inline  void F77DECLARE(DPOTRF)(const char*   const UPLO,
+                                const int*    const N,
+                                const double* const A,
+                                const int*    const LDA,
+                                const int*    const INFO
+                               )
+{
+  F77NAME(dpotrf)(UPLO, N, A, LDA, INFO);
+}
+
+inline  void F77DECLARE(DPOTRI)(const char*   const UPLO,
+                                const int*    const N,
+                                const double* const A,
+                                const int*    const LDA,
+                                const int*    const INFO
+                               )
+{
+  F77NAME(dpotri)(UPLO, N, A, LDA, INFO);
+}
+
+inline void F77DECLARE(DPPSV)(const char*   const UPLO,
+                              const int*    const N,
+                              const int*    const NRHS,
+                              const double* const AP,
+                              const double* const B,
+                              const int*    const LDB,
+                              const int*    const INFO
+                             )
+{
+  F77NAME(dppsv)(UPLO, N, NRHS, AP, B, LDB, INFO);
+}
 #endif
 
 #endif

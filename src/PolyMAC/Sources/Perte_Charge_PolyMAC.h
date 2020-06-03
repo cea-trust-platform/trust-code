@@ -47,7 +47,6 @@ class Perte_Charge_PolyMAC : public Source_base, public Terme_Source_Qdm
   Declare_base(Perte_Charge_PolyMAC);
 
 public:
-  void dimensionner(Matrice_Morse&) const;                         //stencil
   DoubleTab& ajouter(DoubleTab& ) const; //!< Appelle perte_charge pour chaque face ou cela est necessaire
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
   DoubleTab& calculer(DoubleTab& ) const ;

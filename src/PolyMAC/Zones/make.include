@@ -1,4 +1,4 @@
-Includes = -I. -I$(TRUST_ROOT)/include/backward\
+Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBOSQP/include -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
 	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\

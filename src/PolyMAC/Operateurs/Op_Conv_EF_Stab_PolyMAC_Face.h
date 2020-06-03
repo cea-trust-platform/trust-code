@@ -46,10 +46,12 @@ public :
   void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
   void dimensionner(Matrice_Morse& mat) const;
+  virtual void set_incompressible(const int flag);
 
 protected :
   double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_surf;
+  DoubleVect porosite_f;
+  DoubleVect porosite_e;
 private :
   IntTab equiv; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
 };

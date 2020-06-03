@@ -112,18 +112,19 @@ void Masse_PolyMAC_Face::completer()
 void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
+  const IntTab& e_f = zone.elem_faces();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  int i, a, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot();
+  int i, j, k, e, a, f, fb, nf_tot = zone.nb_faces_tot(), na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot();
   const bool only_m2 = (matrix.nb_lignes() == nf_tot);
 
   zone.init_m1(), zone.init_m2(), ch.init_ra();
   IntTab indice(0,2);
   indice.set_smart_resize(1);
   //partie vitesses : matrice de masse des vitesses si la face n'est pas a vitesse imposee, diagonale sinon
-  for (f = 0; f < zone.nb_faces(); f++)
-    if (ch.icl(f, 0) > 1) indice.append_line(f, f);
-    else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) indice.append_line(f, fb);
-
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.m2d(e); j < zone.m2d(e + 1); i++, j++)
+      if (ch.icl(f = e_f(e, i), 0) > 1 && f < zone.nb_faces()) indice.append_line(f, f);
+      else for (k = zone.m2i(j); f < zone.nb_faces() && k < zone.m2i(j + 1); k++)
+          if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2) indice.append_line(f, fb);
 
   //partie vorticites : diagonale si pas de diffusion
   if (!only_m2) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)
@@ -138,25 +139,30 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &ve = zone.volumes();
   DoubleVect coef(zone.porosite_face());
   coef = 1.;
-  int i, k, f, fb;
+  int i, j, k, l, e, f, fb;
 
   if (has_coefficient_temporel_) appliquer_coef(coef);
   zone.init_m1(), zone.init_m2(), ch.init_ra();
 
-  //partie vitesses : contribution de m2 / dt
-  for (f = 0; f < zone.nb_faces(); f++)
+  //partie vitesses : vitesses imposees par CLs
+  for (f = 0; f < zone.premiere_face_int(); f++)
     if (ch.icl(f, 0) == 3) for (k = 0, secmem(f) = 0; k < dimension; k++)//valeur imposee par une CL de type Dirichlet
         secmem(f) += nf(f, k) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), k) / fs(f);
     else if (ch.icl(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
-    else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++)
-        if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //vf calculee
-          secmem(f) += zone.m2ci(i) * pe(zone.m2ji(i, 1)) * coef(f) * inco(fb) / dt;
-        else if (ch.icl(fb, 0) == 3) for (k = 0; k < dimension; k++) //Dirichlet
-            secmem(f) += zone.m2ci(i) * pe(zone.m2ji(i, 1)) * coef(f) * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), k) * nf(fb, k) / (fs(fb) * dt);
+
+  //partie vitesses : m2 / dt
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.m2d(e); j < zone.m2d(e + 1); i++, j++)
+      for (f = e_f(e, i), k = zone.m2i(j); ch.icl(f, 0) < 2 && f < zone.nb_faces() && k < zone.m2i(j + 1); k++)
+        if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2) //vfb calcule
+          secmem(f) += ve(e) * pe(e) * zone.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f) * inco(fb) / dt;
+        else if (ch.icl(fb, 0) == 3) for (l = 0; l < dimension; l++) //vfb impose par Dirichlet
+            secmem(f) += ve(e) * pe(e) * zone.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f)
+                         * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), l) * nf(fb, l) / (fs(fb) * dt);
 
   return secmem;
 }
@@ -165,20 +171,24 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const DoubleVect& pe = zone.porosite_elem();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
   DoubleVect coef(zone.porosite_face());
   coef = 1.;
-  int i, a, f, fb, nf_tot = zone.nb_faces_tot();
+  int i, j, k, e, a, f, fb, nf_tot = zone.nb_faces_tot();
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
 
   if (has_coefficient_temporel_) appliquer_coef(coef);
   zone.init_m1(), zone.init_m2(), ch.init_ra();
 
-  //partie vitesses : contribution de m2 / dt
-  for (f = 0; f < zone.nb_faces(); f++) //vf imposee par CL
-    if (ch.icl(f, 0) > 1) mat(f, f) = 1;
-    else for (i = zone.m2deb(f); i < zone.m2deb(f + 1); i++) if (ch.icl(fb = zone.m2ji(i, 0), 0) < 2) //v(fb) calculee
-          mat(f, fb) += zone.m2ci(i) * coef(f) * pe(zone.m2ji(i, 1)) / dt;
+  //partie vitesses : vitesses imposees par CLs
+  for (f = 0; f < zone.premiere_face_int(); f++) if (ch.icl(f, 0) > 1) mat(f, f) = 1;
+
+  //partie vitesses : m2 / dt
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (i = 0, j = zone.m2d(e); j < zone.m2d(e + 1); i++, j++)
+      for (f = e_f(e, i), k = zone.m2i(j); ch.icl(f, 0) < 2 && f < zone.nb_faces() && k < zone.m2i(j + 1); k++)
+        if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2) //vfb calcule
+          mat(f, fb) += ve(e) * pe(e) * zone.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f) / dt;
 
   //partie vorticites : diagonale si Op_Diff_negligeable
   if (mat.nb_lignes() > nf_tot) for (a = 0; no_diff_ && a < (dimension < 3 ? zone.nb_som() : zone.zone().nb_aretes()); a++)

@@ -89,7 +89,6 @@ public :
   void init_ra() const;
   mutable IntTab radeb, raji, rajf; //reconstruction du rotationnel par (raji, raci)[radeb(a, 0), radeb(a + 1, 0)[ (vitesses aux faces)
   mutable DoubleTab raci, racf;     //                                + (rajf, racf)[radeb(a, 1), radeb(a + 1, 1)[ (val_imp aux faces de bord)
-  void update_w(DoubleTab& vals) const; //mise a jour de la partie w d'un DoubleTab (v, w)
 
   //interpolation aux aretes de la vitesse (dans le plan normal a chaque arete)
   void init_va() const;
@@ -97,7 +96,7 @@ public :
   mutable DoubleTab vaci, vacf;       // + (vajf, vacf)[vadeb(a, 1), vadeb(a + 1, 1)[ (val_imp aux faces de bord) + (vaja, vaca)[vadeb(., 2)] (val_imp aux aretes)
 
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void interp_ve (const DoubleTab& inco, DoubleTab& val) const;
+  void interp_ve (const DoubleTab& inco, DoubleTab& val, bool is_vit=true) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
 

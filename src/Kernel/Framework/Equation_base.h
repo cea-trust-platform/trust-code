@@ -236,9 +236,6 @@ public :
     residuals_ = r;
   };
 
-
-  mutable std::vector<std::map<int, int> > matrice_map;
-
 protected :
 
   Nom nom_;

@@ -8,8 +8,6 @@
 #include <Op_Conv_EF_Stab_PolyMAC_Face.h>
 #include <Op_Diff_PolyMAC_Elem.h>
 #include <Op_Diff_PolyMAC_Face.h>
-#include <Op_Diff_PolyMAC_var_Elem.h>
-#include <Op_Diff_PolyMAC_var_Face.h>
 #include <Op_Div_PolyMAC.h>
 #include <Op_Grad_PolyMAC_Face.h>
 void instancie_src_PolyMAC_Operateurs() {
@@ -18,9 +16,10 @@ Op_Conv_Amont_PolyMAC_Face inst1;verifie_pere(inst1);
 Op_Conv_Centre_PolyMAC_Face inst2;verifie_pere(inst2);
 Op_Conv_EF_Stab_PolyMAC_Face inst3;verifie_pere(inst3);
 Op_Diff_PolyMAC_Elem inst4;verifie_pere(inst4);
-Op_Diff_PolyMAC_Face inst5;verifie_pere(inst5);
-Op_Diff_PolyMAC_var_Elem inst6;verifie_pere(inst6);
-Op_Diff_PolyMAC_var_Face inst7;verifie_pere(inst7);
-Op_Div_PolyMAC inst8;verifie_pere(inst8);
-Op_Grad_PolyMAC_Face inst9;verifie_pere(inst9);
+Op_Diff_Nonlinear_PolyMAC_Elem inst5;verifie_pere(inst5);
+Op_Dift_PolyMAC_Elem inst6;verifie_pere(inst6);
+Op_Dift_Nonlinear_PolyMAC_Elem inst7;verifie_pere(inst7);
+Op_Diff_PolyMAC_Face inst8;verifie_pere(inst8);
+Op_Div_PolyMAC inst9;verifie_pere(inst9);
+Op_Grad_PolyMAC_Face inst10;verifie_pere(inst10);
 }

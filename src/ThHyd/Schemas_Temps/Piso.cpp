@@ -393,10 +393,8 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab
   le_solveur_.valeur().reinit();
   le_solveur_.resoudre_systeme(matrice, secmem_NS, v_new);
   v_new.echange_espace_virtuel();
-  /* on stocke le residu de cette resolution dans secmem_NS (x dt pour etre coherent avec la normalisation de matrice_pression) */
-  secmem_NS *= -1, matrice.ajouter_multvect(v_new, secmem_NS), secmem_NS *= -dt;
 
-  Matrice_Morse& mat_press_orig = ref_cast(Matrice_Morse, eqn.matrice_pression().valeur()), mat_press;
+  Matrice& mat_press_orig = eqn.matrice_pression(), mat_press;
 
   /* etapes de correction : current <- v(i) verifiant div = 0 mais approche pour NS, pression <- p(i) correspondant a v(i) */
   for (int i = 0; i < 1; i++)
@@ -413,20 +411,25 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab
       //matrice (sauf si avancement_crank_ == 1) : prise en compte des contributions des sources (et pas des operateurs!)
       if (avancement_crank_ == 0)
         {
-          mat_press = mat_press_orig, matrice.get_set_coeff() = 0;
-          eqn.sources().contribuer_a_avec(current, matrice);
-          for (int j = 0, off = p_sec[0].dimension_tot(0); j < p_sec[1].dimension(0); j++)
-            mat_press(off + j, off + j) += dt * matrice(j, j);
+          matrice.get_set_coeff() = 0, eqn.sources().contribuer_a_avec(current, matrice);
+          DoubleTrav diag(p_sec[1]);
+          for (int j = 0; j < p_sec[1].dimension(0); j++) diag(j) = dt * matrice(j, j);
+          diag.echange_espace_virtuel();
+          eqn.assembleur_pression().valeur().assembler_mat(mat_press, diag, 1, 1);
           eqn.solveur_pression().valeur().reinit();
         }
 
       //resolution
-      Cerr << "PISO : |sec dp| < " << mp_max_vect(p_sec[0]) << " |sec dv| < " << mp_max_vect(p_sec[1]) << finl;
-      eqn.solveur_pression().resoudre_systeme(avancement_crank_ == 1 ? mat_press_orig : mat_press, secmem_M, sol_M);
+      Cerr << "PISO : |sec dp| < " << mp_max_abs_vect(p_sec[0]) << " |sec dv| < " << mp_max_abs_vect(p_sec[1]) << finl;
+      eqn.solveur_pression().resoudre_systeme(avancement_crank_ == 1 ? mat_press_orig.valeur() : mat_press.valeur(), secmem_M, sol_M);
       //mises a jour : v^(i) = v^(i-1)+dv^(i), p^(i) = p^(i-1) + dp^(i)
-      Cerr << "PISO : |dp| < " << mp_max_vect(p_sol[0]) / dt << " |dv| < " << mp_max_vect(p_sol[1]) << finl;
-      p_v[0] += p_sol[1], sol_M /= dt, pression += sol_M;
-      v_new.echange_espace_virtuel(), pression.echange_espace_virtuel();
+      eqn.assembleur_pression().valeur().corriger_vitesses(sol_M, dv);
+      Cerr << "PISO : |dp| < " << mp_max_abs_vect(p_sol[0]) / dt << " |dv| < " << mp_max_abs_vect(dv);
+      v_new += dv, sol_M /= dt, pression -= sol_M;
+      //
+      p_sec[0] = 0, op_div.ajouter(v_new, p_sec[0]);
+      Cerr << " |div v| < " << mp_max_abs_vect(p_sec[0]) << finl;
+      pression.echange_espace_virtuel();
     }
   current = v_new;
 }
