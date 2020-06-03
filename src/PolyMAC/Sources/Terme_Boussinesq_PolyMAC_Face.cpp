@@ -27,6 +27,7 @@
 #include <Dirichlet.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
+#include <Champ_Face_PolyMAC.h>
 #include <Convection_Diffusion_Concentration.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Navier_Stokes_std.h>
@@ -58,6 +59,7 @@ void Terme_Boussinesq_PolyMAC_Face::associer_zones(const Zone_dis& zone_dis,
 DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& grav = gravite().valeurs();
@@ -74,7 +76,7 @@ DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
   // Verifie la validite de T0:
   check();
   int e, i, f, n;
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; ch.icl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));

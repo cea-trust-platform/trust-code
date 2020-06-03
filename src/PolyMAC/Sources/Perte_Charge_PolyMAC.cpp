@@ -61,44 +61,18 @@ Entree& Perte_Charge_PolyMAC::readOn(Entree& s )
 //                                                            //
 ////////////////////////////////////////////////////////////////
 
-void Perte_Charge_PolyMAC::dimensionner(Matrice_Morse& matrice) const
-{
-  const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
-  const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces();
-  const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
-  const IntTab& e_f = zone.elem_faces();
-  int i, j, k, e, f, r, n_tot = zone.nb_faces_tot() + (dimension < 3 ? zone.zone().domaine().nb_som_tot() : zone.zone().nb_aretes_tot());
-  DoubleVect pos(dimension), ve(dimension), dir(dimension);
-  IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
-
-  /* contribution de chaque element ou on applique la perte de charge */
-  for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
-    for (j = 0, e = pssz ? (*pssz)[i] : i; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces())
-        for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++)
-          {
-            double scal = zone.dot(&zone.veci(k, 0), &nf(f, 0)) / fs(f), proj[3];//projection orthogonale a nf de chaque coefficient
-            for (r = 0; r < dimension; r++) proj[r] = zone.veci(k, r) - scal * nf(f, r) / fs(f);
-            if (zone.dot(proj, proj) < 1e-16) continue;
-            stencil.append_line(f, zone.veji(k));
-          }
-
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(n_tot, n_tot, stencil, matrice);
-}
-
 DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
 {
   const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales(), &vit = la_vitesse->valeurs();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = la_vitesse->valeurs();
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int i, j, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
+  int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
   double t = equation().schema_temps().temps_courant();
-  DoubleVect pos(dimension), ve(dimension), dir(dimension);
+  DoubleVect pos(dimension), ve(dimension), ved(dimension), vep(dimension) , dir(dimension);
 
   /* contribution de chaque element ou on applique la perte de charge */
   for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
@@ -112,22 +86,18 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
       for (j = zone.vedeb(e), ve = 0; j < zone.vedeb(e + 1); j++) for (r = 0; r < dimension; r++)
           fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
       double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
-
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
-      double n2_dir = zone.dot(dir.addr(), dir.addr()); //si la fonction renvoie un vecteur non norme...
 
       /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces())
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
           {
-            /* vecteur vitesse a la face : vf selon nf, ve selon les autres composantes */
-            double scal = zone.dot(ve.addr(), &nf(f, 0)) / fs(f), vf[3],
-                   fac = pe(e) * fs(f) * (e == f_e(f, 0) ? 1 : - 1);
-            for (r = 0; r < dimension; r++) vf[r] = ve(r) + (vit(f) - scal) * nf(f, r) / fs(f);
-            /* contribution */
-            resu(f) -= fac * (C_iso * zone.dot(&xv(f, 0), vf, &xp(e, 0))
-                              + (n2_dir > 1e-8 ? (C_dir - C_iso) * zone.dot(vf, dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir : 0));
+            double m2vf = 0, contrib;
+            for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
+              fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
+            contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+            if (contrib <= min(C_dir, C_iso) * m2vf) contrib = min(C_dir, C_iso) * m2vf; //pour garantir un frottement minimal
+            resu(f) -= contrib;
           }
-
     }
   return resu;
 }
@@ -136,16 +106,16 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
 void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales(), &vit = inco;
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = inco;
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
   double t = equation().schema_temps().temps_courant();
-  DoubleVect pos(dimension), ve(dimension), dir(dimension);
+  DoubleVect pos(dimension), ve(dimension), vf(dimension), dir(dimension);
 
-  /* contribution de chaque element ou on applique la perte de charge */
   for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++)
     {
       int e = pssz ? (*pssz)[i] : i;
@@ -157,27 +127,26 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
       for (j = zone.vedeb(e), ve = 0; j < zone.vedeb(e + 1); j++) for (r = 0; r < dimension; r++)
           fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
       double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
-
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
-      double n2_dir = zone.dot(dir.addr(), dir.addr()); //si la fonction renvoie un vecteur non norme...
 
       /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces())
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
           {
-            /* vecteur vitesse a la face : vf selon nf, ve selon les autres composantes */
-            double fac = pe(e) * fs(f) * (e == f_e(f, 0) ? 1 : - 1);
-            /* partie "normale a la face" de vf */
-            matrice(f, f) += fac * (C_iso * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0))
-                                    + (n2_dir > 1e-8 ? (C_dir - C_iso) * zone.dot(&nf(f, 0), dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir : 0)) / fs(f);
-            /* partie ve -> pfft */
-            for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++)
+            double m2vf = 0, contrib;
+            for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
+              fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
+            contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+            if (contrib >= min(C_dir, C_iso) * m2vf)
               {
-                double scal = zone.dot(&zone.veci(k, 0), &nf(f, 0)) / fs(f), proj[3];//projection orthogonale a nf de chaque coefficient
-                for (r = 0; r < dimension; r++) proj[r] = zone.veci(k, r) - scal * nf(f, r) / fs(f);
-                if (zone.dot(proj, proj) < 1e-16) continue;
-                fb = zone.veji(k);
-                matrice(f, fb) += fac * pf(fb) / pe(e) * (C_iso * zone.dot(&xv(f, 0), proj, &xp(e, 0))
-                                                          + (n2_dir > 1e-8 ? (C_dir - C_iso) * zone.dot(proj, dir.addr()) * zone.dot(&xv(f, 0), dir.addr(), &xp(e, 0)) / n2_dir : 0));
+                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+                    matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
+                for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++) if (ch.icl(fb = zone.veji(k), 0) < 2)
+                    matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.veci(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
+              }
+            else
+              {
+                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+                    matrice(f, fb) += min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
               }
           }
     }

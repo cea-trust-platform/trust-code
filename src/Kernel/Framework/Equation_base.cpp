@@ -2138,8 +2138,10 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
   // rely on this.
   if (matrice_init) // memoization
     {
-      matrice = matrice_stockee;
-      matrice.get_set_coeff().resize(matrice.get_tab2().size());
+      matrice.get_set_tab1().ref_array(matrice_stockee.get_set_tab1());
+      matrice.get_set_tab2().ref_array(matrice_stockee.get_set_tab2());
+      matrice.get_set_coeff().ref_array(matrice_stockee.get_set_coeff());
+      matrice.set_nb_columns(matrice_stockee.nb_colonnes());
       return;
     }
 
@@ -2176,14 +2178,11 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 
   if (probleme().discretisation().que_suis_je().debute_par("PolyMAC"))
     {
-      matrice_stockee = matrice; //memoization
-      matrice_stockee.get_set_coeff().resize(0);
+      matrice_stockee.get_set_tab1().ref_array(matrice.get_set_tab1());
+      matrice_stockee.get_set_tab2().ref_array(matrice.get_set_tab2());
+      matrice_stockee.get_set_coeff().ref_array(matrice.get_set_coeff());
+      matrice_stockee.set_nb_columns(matrice.nb_colonnes());
       matrice_init = 1;
-      int m = matrice.nb_lignes();
-      matrice_map.resize(m);
-      for (int i = 0; i < m; i++)
-        for (int j = matrice.get_tab1()(i) - 1; j < matrice.get_tab1()(i + 1) - 1; j++)
-          matrice_map[i][matrice.get_tab2()(j) - 1] = j + 1;
     }
 }
 

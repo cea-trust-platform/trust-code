@@ -59,7 +59,7 @@ Entree& Solv_Gen::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(8);
+  Motcles les_parametres(9);
   {
     les_parametres[0] = "seuil";
     les_parametres[1] = "impr";
@@ -69,6 +69,7 @@ Entree& Solv_Gen::readOn(Entree& is )
     les_parametres[5] = "quiet";
     les_parametres[6] = "nb_it_max";
     les_parametres[7] = "force";
+    les_parametres[8] = "return";
   }
   int rang;
 
@@ -81,7 +82,7 @@ Entree& Solv_Gen::readOn(Entree& is )
       exit();
     }
   is >> motlu;
-  save_matrice_=0;
+  save_matrice_=0, return_ = 0;
   while (motlu != accolade_fermee)
     {
       rang = les_parametres.search(motlu);
@@ -126,6 +127,11 @@ Entree& Solv_Gen::readOn(Entree& is )
         case 7:
           {
             force_ = 1;
+            break;
+          }
+        case 8:
+          {
+            return_ = 1;
             break;
           }
         default :
@@ -381,7 +387,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
               Cerr<<"return due to some non-numerical reasons, "<<finl;
               Cerr<<"e.g. invalid floating-point numbers etc."<<finl;
             }
-          exit();
+          if (!return_) exit();
           return(-1);
         }
       ret = ipar[0];

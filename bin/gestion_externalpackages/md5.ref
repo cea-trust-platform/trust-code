@@ -101,6 +101,7 @@ c735eab2d659a96e5a594c9e8541ad63  gnuplot/zlib-1.2.5.tar.gz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 0475638eb40a3920d0d3f14482c924a4  makedepend-1.0.5.tar.bz2
 015526f7328f746407f10a0a211f0c0a  nvc_get_devices.tgz
+39c4b9f1b270ae7bd31524f2a64de35b  osqp.tar.gz
 03865c8a7ad78a70ac2fe46918276124  petsc/MUMPS_5.2.0-p1.tar.gz
 b2e6f2373d480aa6f0ea5ca3d5d531c3  petsc/SuiteSparse-4.4.3.tar.gz
 488e231775fe827aea9d13e019b01ee1  petsc/ViennaCL-1.5.1.tar.gz

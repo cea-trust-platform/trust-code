@@ -26,6 +26,7 @@
 #include <Zone_VF.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
+#include <cmath>
 
 void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 {
@@ -182,7 +183,22 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
           }
       for (int f = 0; f < zone_vf.nb_faces(); f++)
         tabHf(f) /= vol_tot(f);
+    }
+  else if (nb_dim==2 && tabHe.dimension(1) == 1) //one more case
+    {
+      for (int ele=0; ele<nb_elem_tot; ele++)
+        {
+          for (int s=0; s<nb_face_elem; s++)
+            {
 
+              tabHf(elem_faces(ele,s))+=tabHe(ele, 0)*volumes(ele);
+              //	      Cerr<<elem_faces(ele,s)<<" "<<tabHe(ele)*volumes(ele)<<" "<<tabHf(elem_faces(ele,s))<<finl;
+            }
+        }
+      for (int f=0; f<zone_vf.premiere_face_int(); f++)
+        tabHf(f)/=volumes_entrelaces(f)*coeffb;
+      for (int f=zone_vf.premiere_face_int(); f<zone_vf.nb_faces(); f++)
+        tabHf(f)/=volumes_entrelaces(f)*coeffi;
     }
   else
     {

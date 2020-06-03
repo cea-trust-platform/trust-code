@@ -245,12 +245,11 @@ static void construire_graph_elem_elem(const Domaine& dom,
       nnn= poly.get_somme_nb_faces_elem() - nb_faces_bord + nb_connexions_perio;
     }
 
-  const int nb_edges = nnn;
+  const int nb_edges = nnn + nb_faces_bord;
 
   graph.nvtxs = nb_elem;
-  graph.nedges = nb_edges;
   graph.xadj = imalloc(nb_elem+1, "readgraph: xadj");
-  graph.adjncy = imalloc(nb_edges, "readgraph: adjncy");
+  graph.adjncy = imalloc(nb_edges + nb_faces_bord, "readgraph: adjncy");
   graph.vwgts = NULL;
   if (! use_weights)
     {
@@ -260,7 +259,7 @@ static void construire_graph_elem_elem(const Domaine& dom,
   else
     {
       graph.weightflag = 1;
-      graph.ewgts = imalloc(nb_edges, "readgraph: ewgts");
+      graph.ewgts = imalloc(nb_edges + nb_faces_bord, "readgraph: ewgts");
     }
 
   Cerr << " Construction of the elem_elem connectivity" << finl;
@@ -403,16 +402,9 @@ static void construire_graph_elem_elem(const Domaine& dom,
         break;
     }
   graph.xadj[nb_elem] = edge_count;
+  graph.nedges = edge_count;
 
-  if (edge_count != nb_edges)
-    {
-      Cerr << "Error in Partitionneur_Metis::construire_graph_elem_elem\n"
-           << " The number of element-element connections is smaller than expected\n"
-           << " The number of boundary faces is wrong\n"
-           << " You must discretize the domain to check." << finl;
-      Process::exit();
-    }
-  else if (error == 1)
+  if (error == 1)
     {
       Cerr << "Error in Partitionneur_Metis::construire_graph_elem_elem\n"
            << " The number of element-element connections is greater than expected\n"

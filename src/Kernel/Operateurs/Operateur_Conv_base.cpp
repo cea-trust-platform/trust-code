@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,4 +83,14 @@ void Operateur_Conv_base::associer_norme_vitesse(const Champ_base& norme_vitesse
 void Operateur_Conv_base::associer_vitesse_pour_pas_de_temps(const Champ_base& vitesse)
 {
   vitesse_pour_pas_de_temps_=vitesse;
+}
+
+void Operateur_Conv_base::set_incompressible(const int flag)
+{
+  if (flag == 0)
+    {
+      Cerr << "Compressible form of operator \"" << que_suis_je() << "\" not implemented!" << finl;
+      Process::exit();
+    }
+  incompressible_ = flag;
 }
