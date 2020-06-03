@@ -1,5 +1,5 @@
 # Thermohydraulique 3D et Boussinesq #
-# PARALLEL OK #
+# PARALLEL RUNS #
 dimension 3
 Pb_Thermohydraulique pb
 Domaine dom
@@ -94,8 +94,8 @@ Read pb
 	{
 
 		solveur_pression petsc cholesky { }
-		convection { negligeable }
-		diffusion { negligeable }
+		convection { amont }
+		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
 		initial_conditions {
 			vitesse champ_fonc_xyz dom 3 y -x 0
@@ -111,8 +111,8 @@ Read pb
 	}
 	Convection_Diffusion_Temperature
 	{
-		diffusion { negligeable }
-		convection { negligeable }
+		diffusion { }
+		convection { amont }
 		boundary_conditions 
 		{
 			up paroi_adiabatique
