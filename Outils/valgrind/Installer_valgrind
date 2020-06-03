@@ -22,6 +22,14 @@ bzip2 -cd $valgrind | tar xf -
 
 
 cd `ls | grep valgrind- | grep -v tar`
+# 03/06/2020 : valgrind cannot be installed on Ubuntu 19 and 20, we patch it for these two OS. see :
+# https://stackoverflow.com/questions/60243778/how-to-fix-the-fatal-error-at-startup-in-valgrind-connected-with-libc6-dbg-and
+# https://sourceware.org/git/?p=valgrind.git;a=commitdiff;h=db07db4c8706d17124a621a254bee1b6f08d2e1d;hp=3a2711c659ac839934f13e0529e14d6c15325383
+if [ "`grep 'Ubuntu 20' /etc/issue 2>/dev/null`" != "" ] || [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ]
+then
+  echo "patching readelf.c"
+  cp $TRUST_ROOT/Outils/valgrind/readelf.c $TRUST_ROOT/Outils/valgrind/valgrind-3.15.0/coregrind/m_debuginfo/readelf.c
+fi
 echo "patching configure"
 [ -f ../configure_valgrind_$version"_patched" ] && cat ../configure_valgrind_$version"_patched" > configure
 echo patching mpiwrap
