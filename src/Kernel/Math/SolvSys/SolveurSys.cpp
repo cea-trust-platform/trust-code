@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,14 +69,14 @@ int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
   //  {
   statistiques().end_count(solv_sys_counter_, nb_iter);
   // Si limpr vaut -1, on n'imprime pas
-  if (valeur().limpr()>=0)
-    {
-      Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
-    }
-  if (valeur().limpr()==1)
-    {
-      Cout << "clock Ax=B: " << statistiques().last_time(solv_sys_counter_) << " s for " << le_nom() << finl;
-    }
+  //if (valeur().limpr()>=0)
+  {
+    Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
+  }
+  //if (valeur().limpr()==1)
+  {
+    Cout << "clock Ax=B: " << statistiques().last_time(solv_sys_counter_) << " s for " << le_nom() << finl;
+  }
 
 //  }
   return nb_iter;

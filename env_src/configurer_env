@@ -2086,6 +2086,7 @@ fi
 ################################################
 # Test si le support GPU est possible avec PETSc
 ################################################
+m="# PATH to PETSc";e="PETSC_DIR=\"\$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"\" && export PETSC_DIR";ecrit $m"|"$e"|"$env
 PETSC_HAVE_CUDA=0
 # Si la machine est utilisee pour construire un binaire semi-statique (get_binary), on ne met pas le support
 # car les shared libraries Cuda font que le binaire ne sera pas portable...
