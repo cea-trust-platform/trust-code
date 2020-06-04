@@ -47,9 +47,9 @@ Read sch
 {
 	tinit 0.
 	tmax 1.2
-	dt_min 0.01 # 0.00001 #
+	dt_min 0.01
 	nb_pas_dt_max 3
-	dt_max 0.01 # 10. #    
+	dt_max 0.01  
 	dt_impr 0.00001
 	dt_sauv 100
 	seuil_statio 1.e-8
@@ -130,7 +130,7 @@ Read pb
 	Post_processing
 	{
 		format lml
-		fields dt_post 1.2
+		fields dt_post 0.1
 		{
 			temperature elem 
 		}
