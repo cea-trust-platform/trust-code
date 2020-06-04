@@ -85,9 +85,10 @@ Read sch
     tinit 0.
 	nb_pas_dt_max 3
     tmax 300.
-    dt_min 0.001
+    dt_min 1.
     dt_max 1.
     dt_impr 1e-30
+    facsec 1e8
     seuil_statio 1.e-20
     thermique_monolithique 0
     solveur implicite { solveur petsc cholesky { } seuil_convergence_implicite 1e30 }
