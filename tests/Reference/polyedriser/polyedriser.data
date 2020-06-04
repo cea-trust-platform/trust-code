@@ -11,16 +11,16 @@ Mailler dom
 	Pave Cavite 
 		{
 		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 5 5 5
-		Longueurs 0.01 0.01 0.003
+     		Nombre_de_Noeuds 4 4 4
+		Longueurs 1. 1. 1. 
 		}
 		{
-		Bord left X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.003
-		Bord up   Y = 0.01  0. <= X <= 0.01 0. <= Z <= 0.003
-		Bord down    Y = 0.    0. <= X <= 0.01 0. <= Z <= 0.003
-		Bord right  X = 0.01  0. <= Y <= 0.01 0. <= Z <= 0.003
-		Bord front    Z = 0.    0. <= X <= 0.01 0. <= Y <= 0.01
-		Bord back   Z = 0.003 0. <= X <= 0.01 0. <= Y <= 0.01
+		Bord left X = 0.    0. <= Y <= 1. 0. <= Z <= 1.
+		Bord up   Y = 1.  0. <= X <= 1. 0. <= Z <= 1.
+		Bord down    Y = 0.    0. <= X <= 1. 0. <= Z <= 1.
+		Bord right  X = 1.  0. <= Y <= 1. 0. <= Z <= 1.
+		Bord front    Z = 0.    0. <= X <= 1. 0. <= Y <= 1.
+		Bord back   Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
 		}
 }
 Polyedriser dom      
@@ -46,9 +46,9 @@ Read sch
 {
 	tinit 0.
 	tmax 1.2
-	dt_min 0.00001
+	dt_min 0.01
 	nb_pas_dt_max 3
-	dt_max 10.    
+	dt_max 0.01    
 	dt_impr 0.00001
 	dt_sauv 100
 	seuil_statio 1.e-8
