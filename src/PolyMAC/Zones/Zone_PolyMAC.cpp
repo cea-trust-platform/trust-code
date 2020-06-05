@@ -72,10 +72,10 @@
 #include <numeric>
 
 #include <cfenv>
-#pragma GCC diagnostic push
+//#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include <osqp/osqp.h>
-#pragma GCC diagnostic pop
+//#pragma GCC diagnostic pop
 
 Implemente_instanciable(Zone_PolyMAC,"Zone_PolyMAC",Zone_VF);
 
