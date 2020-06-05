@@ -60,8 +60,7 @@ Entree& Op_Diff_PolyMAC_base::readOn(Entree& s )
 
 double Op_Diff_PolyMAC_base::calculer_dt_stab() const
 {
-  remplir_nu(nu_);
-
+  update_nu();
   const Zone& ma_zone=la_zone_poly_->zone();
   double dt_stab = DMAXFLOAT;
 
