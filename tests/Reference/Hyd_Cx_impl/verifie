@@ -9,7 +9,7 @@ then
       ./check_ranking `ls -rt ranking.* | tail -1` 157 3.e-8 524 20
       err=$?
    else
-      ./check_ranking `ls -rt ranking.* | tail -1` 189 3.e-8 575 13
+      ./check_ranking `ls -rt ranking.* | tail -1` 189 3.e-8 606 13
       err=$?
    fi
 fi
