@@ -290,9 +290,9 @@ class SonFile(TrustFile):
                     if hdr[1][5] == "z=": dim += 1
             self._dim = dim
             # Store point coords:
-            if (len(hdr[1])-1) % 2 or ((len(hdr[1])-1)/2) % dim:
+            if (len(hdr[1])-1) % 2 or ((len(hdr[1])-1)//2) % dim:
                 return None
-            npoints = (len(hdr[1])-1)/2/dim
+            npoints = (len(hdr[1])-1)//2//dim
             pts = []
             for i in range(npoints):
                 pt = [float(a) for a in hdr[1][2+i*2*dim:2+(i+1)*2*dim:2]]
@@ -300,7 +300,7 @@ class SonFile(TrustFile):
             # And finally number of components:
             if (len(hdr[4]) - 1) % npoints:
                 return None
-            self._ncompo = (len(hdr[4]) - 1) / npoints
+            self._ncompo = (len(hdr[4]) - 1) // npoints
             self._points = np.array(pts)
             self._ncols = len(hdr[4])
             return hdr
