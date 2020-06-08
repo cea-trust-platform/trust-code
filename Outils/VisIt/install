@@ -186,6 +186,7 @@ then
             [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu16
             [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu18
             [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu19
+            [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu20 && version=3_1_2 && version_visit=v3.1.2
             [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
             [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
             [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
