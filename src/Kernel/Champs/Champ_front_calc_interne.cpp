@@ -28,7 +28,9 @@
 #include <Domaine.h>
 #include <Zone_VF.h>
 #include <DoubleTrav.h>
+#ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
+#endif
 
 Implemente_instanciable_sans_constructeur(Champ_front_calc_interne,"Champ_front_calc_interne",Champ_front_calc);
 
@@ -77,12 +79,17 @@ Sortie& Champ_front_calc_interne::printOn(Sortie& os) const
 // Postcondition:
 Entree& Champ_front_calc_interne::readOn(Entree& is)
 {
+#ifndef MEDCOUPLING_
+  Cerr << "Champ_front_calc_interne needs MEDCoupling" << finl;
+#endif
+
   Champ_front_calc::readOn(is);
   return is;
 }
 
 void Champ_front_calc_interne::completer()
 {
+#ifdef MEDCOUPLING_
   using namespace MEDCoupling;
 
   Champ_front_calc::completer();
@@ -193,6 +200,7 @@ void Champ_front_calc_interne::completer()
             }
         }
     }
+#endif
 }
 
 void Champ_front_calc_interne::mettre_a_jour(double temps)

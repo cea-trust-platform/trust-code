@@ -1272,10 +1272,12 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   VECT(IntTab) all_faces_bord;
   IntTab les_elems2;
   int dim = dimension;
-  int axi1d=0;
 
+#ifdef MEDCOUPLING_
+  int axi1d=0;
   if (dom.que_suis_je()=="DomaineAxi1d")
     axi1d = 1;
+#endif
   // pour verif
   if (dimension==0)
     {

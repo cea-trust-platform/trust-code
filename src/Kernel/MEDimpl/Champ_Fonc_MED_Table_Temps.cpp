@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Champ_Fonc_MED_Table_Temps.cpp
-// Directory : $FLICA5_ROOT/src/Champs
+// File:        Champ_Fonc_MED_Table_Temps.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Fonc_MED_Table_Temps.h>
 #include <Lecture_Table.h>
@@ -63,7 +64,7 @@ Entree& Champ_Fonc_MED_Table_Temps::readOn( Entree& is )
 void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
                                                     ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ)
 {
-
+#ifdef MEDCOUPLING_
   MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName,fieldName));
   std::vector<double> tps;
   std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);
@@ -114,7 +115,7 @@ void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName,
          (le_champ0().valeurs().nb_dim() == 1 ? 1 : le_champ0().valeurs().dimension(1)));
   memcpy(le_champ0().valeurs().addr(), field_values,
          le_champ0().valeurs().size_array() * sizeof(double));
-
+#endif
 }
 
 void Champ_Fonc_MED_Table_Temps::lire(double t, int given_it)

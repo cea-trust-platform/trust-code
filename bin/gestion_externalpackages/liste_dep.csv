@@ -21,6 +21,7 @@ MED,hdf5-1.10.3.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,https://support.
 SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,
 SALOME,configuration-9.4.0.tar.gz,lib,abn,,
 SALOME,xdata-9.2.1.tar.gz,lib,abn,LGPL,
+General,osqp.tar.gz,,AG,"Apache License V2.0",https://osqp.org/docs/,,
 VisIt,zlib-1.2.7.tar.gz,,SV,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.7/zlib-1.2.7.tar.gz/download,"pour la licence voir : http://opensource.org/licenses/Zlib pour plus d'infos ou http://www.zlib.net/zlib_license.html"
 VisIt,VTK-6.1.0.tar.gz,,SV,BSD,http://www.vtk.org/,http://www.vtk.org/files/release/6.1/VTK-6.1.0.tar.gz,
 VisIt,VTK-8.1.0.tar.gz,,PL,BSD,http://www.vtk.org/,https://github.com/Kitware/VTK/archive/v8.1.0.tar.gz,
