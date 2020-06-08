@@ -284,16 +284,17 @@ void Matrix_tools::allocate_for_scaled_addition( const Matrice& A,
   IntTab stencil;
   stencil.set_smart_resize( 1 );
   stencil.resize( size, 2 );
-  stencil.resize( 0, 2 );
 
   for ( int i=0; i<A_size; ++i )
     {
-      stencil.append_line( A_stencil( i, 0 ), A_stencil( i, 1 ) );
+      stencil( i , 0 ) = A_stencil( i, 0 );
+      stencil( i , 1 ) = A_stencil( i, 1 ) ;
     }
 
   for ( int i=0; i<B_size; ++i )
     {
-      stencil.append_line( B_stencil( i, 0 ), B_stencil( i, 1 ) );
+      stencil( i+A_size , 0 ) = B_stencil( i, 0 );
+      stencil( i+A_size , 1 ) = B_stencil( i, 1 ) ;
     }
 
   tableau_trier_retirer_doublons( stencil );
@@ -327,16 +328,17 @@ void Matrix_tools::allocate_for_symmetric_scaled_addition( const Matrice& A,
   IntTab stencil;
   stencil.set_smart_resize( 1 );
   stencil.resize( size, 2 );
-  stencil.resize( 0, 2 );
 
   for ( int i=0; i<A_size; ++i )
     {
-      stencil.append_line( A_stencil( i, 0 ), A_stencil( i, 1 ) );
+      stencil( i , 0 ) = A_stencil( i, 0 );
+      stencil( i , 1 ) = A_stencil( i, 1 ) ;
     }
 
   for ( int i=0; i<B_size; ++i )
     {
-      stencil.append_line( B_stencil( i, 0 ), B_stencil( i, 1 ) );
+      stencil( i+A_size , 0 ) = B_stencil( i, 0 );
+      stencil( i+A_size , 1 ) = B_stencil( i, 1 ) ;
     }
 
   tableau_trier_retirer_doublons( stencil );
@@ -552,9 +554,15 @@ void Matrix_tools::extend_matrix_stencil( const IntTab& stencil,
       matrix.valeur( ).get_stencil( full_stencil );
       full_stencil.set_smart_resize( 1 );
       const int size = stencil.dimension( 0 );
+
+      const int old_size = full_stencil.size( ) / 2 ;
+
+      full_stencil.resize( old_size + size, 2);
+
       for ( int i=0; i<size; ++i )
         {
-          full_stencil.append_line( stencil( i, 0 ), stencil( i, 1 ) ) ;
+          full_stencil( old_size + i , 0 ) = stencil( i, 0 );
+          full_stencil( old_size + i , 1 ) = stencil( i, 1 );
         }
 
       tableau_trier_retirer_doublons( full_stencil );
