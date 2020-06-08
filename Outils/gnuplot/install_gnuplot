@@ -84,7 +84,9 @@ do
    # Test gnuplot
    if [ $i = 2 ] 
    then
-      echo "set terminal png" | gnuplot || exit -1
+      echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
+      [ $? -ne 0 ] && rm -r $TRUST_ROOT/exec/gnuplot
+      exit -1
    fi
    cd ..
    rm -r -f ${package%.tar.gz}
