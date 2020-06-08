@@ -1907,10 +1907,13 @@ void Matrice_Morse::get_stencil( IntTab& stencil ) const
 
 
   stencil.resize( 0, 2 );
+  stencil.resize(tab2_.size_array(), 2);
   stencil.set_smart_resize( 1 );
 
   ArrOfInt tmp;
   tmp.set_smart_resize( 1 );
+
+  int compteur = 0;
 
   const int nb_lines = nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
@@ -1931,13 +1934,13 @@ void Matrice_Morse::get_stencil( IntTab& stencil ) const
 
       for ( int k=0; k<size; ++k )
         {
-          stencil.append_line( i, tmp[ k ] );
+          stencil( k+compteur , 0 ) = i;
+          stencil( k+compteur , 1 ) =  tmp[ k ];
         }
+      compteur += size;
     }
 
-  const int new_size = stencil.dimension( 0 );
   stencil.set_smart_resize( 0 );
-  stencil.resize( new_size, 2 );
 }
 
 void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
@@ -1960,10 +1963,12 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
     }
 
   stencil.resize( 0, 2 );
+  stencil.resize(tab2_.size_array(), 2);
   stencil.set_smart_resize( 1 );
 
   coefficients.resize( 0 );
   coefficients.set_smart_resize( 1 );
+  coefficients.resize(tab2_.size_array());
 
   IntTab tmp1(0);
   tmp1.set_smart_resize( 1 );
@@ -1973,6 +1978,8 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
 
   ArrOfInt index;
   index.set_smart_resize( 1 );
+
+  int compteur = 0;
 
   const int nb_lines = nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
@@ -2000,19 +2007,18 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
       for ( int k=0; k<size; ++k )
         {
           int l = index[ k ];
-          stencil.append_line( i, tmp1[ l ] );
-          coefficients.append_array( tmp2[ l ] );
+          stencil( compteur + k , 0 ) = i;
+          stencil( compteur + k , 1 ) = tmp1[ l ];
+          coefficients[ compteur + k ] = tmp2[ l ];
         }
+      compteur += size;
     }
 
-  const int new_size = stencil.dimension( 0 );
-  assert( coefficients.size_array( ) == new_size );
+  assert( coefficients.size_array( ) == stencil.dimension( 0 ));
 
   stencil.set_smart_resize( 0 );
-  stencil.resize( new_size, 2 );
 
   coefficients.set_smart_resize( 0 );
-  coefficients.resize_array( new_size );
 }
 
 // Description:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -157,6 +157,10 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
   append_blocs(pe_list, src.pe_voisins_);
   array_trier_retirer_doublons(pe_list);
   const int np = pe_list.size_array();
+
+  new_blocs_items_count.resize_array(np);
+  new_nb_items_to_items.resize_array(np);
+
   for (int i = 0; i < np; i++)
     {
       // Number of items to recv, send and blocs to recv for this processor:
@@ -178,8 +182,9 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
           nx += count_items_single;
           // take only single items to send
           tmp.resize_array(0);
+          tmp.resize_array(count_items_single);
           for (int k = 0; k < count_items_single; k++)
-            tmp.append_array(dest.items_to_send_(j, k));
+            tmp[k] = dest.items_to_send_(j, k);
           append_blocs(x_data, tmp);
 
           ny += dest.items_to_recv_.get_list_size(j);
@@ -195,8 +200,9 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
           nx += count_items_single * multiplier;
           // take only single items to send
           tmp.resize_array(0);
+          tmp.resize_array(count_items_single);
           for (int k = 0; k < count_items_single; k++)
-            tmp.append_array(src.items_to_send_(j, k));
+            tmp[k] = src.items_to_send_(j, k);
           append_items(x_data, tmp, offset, multiplier);
 
           ny += src.items_to_recv_.get_list_size(j) * multiplier;
@@ -212,8 +218,9 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
           const int count_items_single = dest.nb_items_to_items_[j];
           nx += count_items_tot - count_items_single;
           tmp.resize_array(0);
+          tmp.resize_array(count_items_tot - count_items_single);
           for (int k = count_items_single; k < count_items_tot; k++)
-            tmp.append_array(dest.items_to_send_(j, k));
+            tmp[k - count_items_single] = dest.items_to_send_(j, k);
           append_blocs(x_data, tmp);
 
           nz += dest.blocs_to_recv_.get_list_size(j);
@@ -230,8 +237,9 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
           const int count_items_single = src.nb_items_to_items_[j];
           nx += (count_items_tot - count_items_single) * multiplier;
           tmp.resize_array(0);
+          tmp.resize_array(count_items_tot - count_items_single);
           for (int k = count_items_single; k < count_items_tot; k++)
-            tmp.append_array(src.items_to_send_(j, k));
+            tmp[k - count_items_single] = src.items_to_send_(j, k);
           append_items(x_data, tmp, offset, multiplier);
 
           nz += src.blocs_to_recv_.get_list_size(j);
@@ -244,8 +252,8 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
       x_sz.append_array(nx);
       y_sz.append_array(ny);
       z_sz.append_array(nz);
-      new_blocs_items_count.append_array(blocs_count);
-      new_nb_items_to_items.append_array(single_items_count);
+      new_blocs_items_count[i] = blocs_count;
+      new_nb_items_to_items[i] = single_items_count;
     }
 
   dest.items_to_send_.set_list_sizes(x_sz);
