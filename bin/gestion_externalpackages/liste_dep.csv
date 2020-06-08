@@ -16,7 +16,7 @@ tcl_tk,tk8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk
 tcl_tk,tcl8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tcl8.5.13-src.tar.gz/download,
 Gmsh,gmsh-4.4.1-source.tgz,outil,abn,GPL,http://geuz.org/gmsh,http://gmsh.info/src/gmsh-4.4.1-source.tgz,
 Gmsh,fltk-1.3.5-source.tar.gz,,abn,LGPL,http://www.fltk.org/index.php,https://www.fltk.org/pub/fltk/1.3.5/fltk-1.3.5-source.tar.gz,
-MED,med-4.0.0.tar.gz,lib,SV,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.0.0.tar.gz, 
+MED,med-4.0.0.tar.gz,lib,SV,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.0.0.tar.gz,
 MED,hdf5-1.10.3.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.gz,
 SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,
 SALOME,configuration-9.4.0.tar.gz,lib,abn,,
@@ -71,7 +71,7 @@ General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://dow
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
 utils,gawk-4.1.4.tar.gz,outil,GF,GPL,http://www.gnu.org/software/gawk,http://ftp.gnu.org/gnu/gawk/gawk-4.1.4.tar.gz,
 utils,ed-1.13.tar.lz,outil,GF,GPL,http://www.gnu.org/software/ed,http://ftp.gnu.org/gnu/ed/ed-1.13.tar.lz,
-utils,unzip-60.tar.gz,outil,GF,GPL,http://www.info-zip.org,ftp://ftp.info-zip.org/pub/infozip/src/unzip60.tgz, 
+utils,unzip-60.tar.gz,outil,GF,GPL,http://www.info-zip.org,ftp://ftp.info-zip.org/pub/infozip/src/unzip60.tgz,
 utils,sed-4.3.tar.xz,outil,GF,GPL,http://www.gnu.org/software/sed,http://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz,
 utils,lzip-1.19.tar.gz,outil,MR,GPL,http://ftp.nchc.org.tw/Unix/NonGNU/lzip/,http://download.savannah.gnu.org/releases/lzip/lzip-1.19.tar.gz,
 Miniconda,Miniconda3-4.6.14-Linux-x86_64.sh,outil,ND,BSD,,https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh,
@@ -127,3 +127,4 @@ MinicondaLocChannLinux,sympy-1.5.1-py37_0.tar.bz2,outil,ND,BSD-3-Clause,,https:/
 MinicondaLocChannLinux,tornado-6.0.3-py37h7b6447c_0.tar.bz2,,ND,Apache,,https://repo.anaconda.com/pkgs/main/linux-64/tornado-6.0.3-py37h7b6447c_0.tar.bz2
 MinicondaLocChannLinux,xorg-libice-1.0.10-h516909a_0.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libice-1.0.10-h516909a_0.tar.bz2
 MinicondaLocChannLinux,xorg-libsm-1.2.2-h470a237_5.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libsm-1.2.2-h470a237_5.tar.bz2
+OSQP,osqp-0.6.0.tar.gz,librairie,AG,"Apache License V2.0",https://osqp.org/,https://github.com/oxfordcontrol/osqp/archive/v0.6.0.tar.gz
