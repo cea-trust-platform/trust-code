@@ -4,6 +4,26 @@
 #     - the name of the test case involved
 #     - the OS of the machine involved (and the hostname if you want)
 
+
+###
+###  MKL library
+###
+# Triggered by all test case using PETSc
+{
+   <MKL_Load_Lib>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:MKL_Load_Lib
+   ...
+}
+
 ###
 ###  HYPRE
 ###

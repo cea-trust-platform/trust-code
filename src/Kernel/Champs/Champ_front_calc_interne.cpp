@@ -127,8 +127,7 @@ void Champ_front_calc_interne::completer()
       if (nb_faces_dup == nbfaces)
         {
           // Faces dupliquees -> singularite au niveau du gap
-          MCAuto<DataArrayInt> c(cP), cI(cIP);
-          MCAuto<DataArrayInt> dsi(cI->deltaShiftIndex());
+          MCAuto<DataArrayInt> dsi(cIP->deltaShiftIndex());
 
           if (!dsi->isUniform(2))
             {
@@ -136,7 +135,7 @@ void Champ_front_calc_interne::completer()
               Process::exit(1);
             }
 
-          const int *p(c->begin());
+          const int *p(cP->begin());
           for (int i = 0; i < nbfaces / 2; i++, p += 2)
             {
               face_map_(*p) = *(p + 1);
@@ -199,6 +198,8 @@ void Champ_front_calc_interne::completer()
               face_map_(j2) = j1;
             }
         }
+      cIP->decrRef();
+      cP->decrRef();
     }
 #endif
 }

@@ -29,13 +29,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="editXDATAButton">
-      <property name="text">
-       <string>Edit with xdata</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QPushButton" name="editOutButton">
       <property name="text">
        <string>Edit .out</string>
@@ -73,22 +66,6 @@
    <signal>clicked()</signal>
    <receiver>MenuTRUSTWidget</receiver>
    <slot>onTerminalButton()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>666</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>389</x>
-     <y>534</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>editXDATAButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MenuTRUSTWidget</receiver>
-   <slot>onEditXDATAButton()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>94</x>
@@ -167,7 +144,6 @@
  </connections>
  <slots>
   <slot>onTerminalButton()</slot>
-  <slot>onEditXDATAButton()</slot>
   <slot>onEditButton()</slot>
   <slot>onVisuButton()</slot>
   <slot>onEditOutButton()</slot>

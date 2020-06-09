@@ -63,16 +63,6 @@ class MenuTRUSTWidget(QDockWidget):
         """ Start the run
         """
         self.EditFile(".data")
-    @Slot()
-    def onEditXDATAButton(self):
-        """ Start the run
-        """
-        case= self._getLongCaseName()
-        if case == "":
-            return
-        case+=".data"
-        cmd="EditData -batch "+case
-        self.execute(cmd)
 
     @Slot()
     def onVisuButton(self):

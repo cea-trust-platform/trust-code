@@ -1098,11 +1098,11 @@ int Zone_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ct
       data.l = lb.data(), data.u = ub.data(), data.m = lb.size();
 
       /* resolution  */
-      OSQPWorkspace *osqp = osqp_setup(&data, &settings);
+      OSQPWorkspace *osqp = NULL;
+      if (osqp_setup(&osqp, &data, &settings)) Cerr << "Zone_PolyMAC::W_stabiliser : osqp_setup error" << finl, Process::exit();
       if (it) osqp_warm_start_x(osqp, sol.data()); //repart de l'iteration precedente
       osqp_solve(osqp);
       ret = osqp->info->status_val, sol.assign(osqp->solution->x, osqp->solution->x + nv);
-      osqp_cleanup(osqp), free(data.A);
       if (ret == OSQP_PRIMAL_INFEASIBLE || ret == OSQP_PRIMAL_INFEASIBLE_INACCURATE) break;
       for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) W(i, j) = (idx(i, j) >= 0 ? sol[idx(i, j)] : 0);
 
@@ -1117,7 +1117,9 @@ int Zone_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ct
             lb.push_back(l_min * (S(i) < l_min ? 1.1 : 1)), ub.push_back(l_max / (S(i) > l_max ? 1.1 : 1));
             cv = 0, il++; //on repart avec une ligne en plus
           }
+      osqp_cleanup(osqp), free(data.A);
     }
+  free(data.P);
   std::fesetenv(&fenv);     //remet les exceptions FP
 
   if (!cv) return 0; //ca passe ou ca casse
