@@ -37,13 +37,9 @@ change_droits()
 {
   echo "change_droits"
   # On donne les droits d'ecriture a user
-  # On donne les droits de lecture a toute le monde sauf hors intra CEA
-  if [ "`grep intra.cea.fr /etc/* 2>/dev/null`" != "" ]
-  then
-     chmod -R u+w,gou+r . 1>/dev/null 2>&1
-  else
-     chmod -R u+w,gu+r,o-rwx . 1>/dev/null 2>&1
-  fi
+  # On donne les droits de lecture a toute le monde sur TRUST
+  chmod -R u+w,gou+r . 1>/dev/null 2>&1
+  find . -type d | xargs chmod +x  1>/dev/null 2>&1
 }
 
 #########
@@ -406,7 +402,7 @@ do
    #############
    [ "$HOST" = irene-ccrt ] && export project="dendm2s"
    # Changement option en -g -O3 afin d'utiliser cachegrind
-   [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
+   [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    make && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp && make opt_avx
    err_exe_compile=$?
    cat compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" >> compile.tmp && mv compile.tmp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
@@ -513,7 +509,7 @@ do
           *) echo $TYPE not coded in $0;  exit -1 ;;
 	  esac;
 
-         if [ "`liste_machines "\-$MODE" | grep ^$HOST_BUILD"\."`" != "" ]
+         if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-$MODE" | grep ^$HOST_BUILD"\."`" != "" ]
 	 then
             echo "--------------------------------------------------------"
 	    echo "Compilation -$MODE (OPT=$OPT) at `date` ..."
@@ -694,11 +690,11 @@ do
 	 #############################
 	 # On lance un test Valgrind #
 	 #############################
-	 if [ "`liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ]
+	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ]
 	 then
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
-            if [ "`liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ]
+            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ]
             then
 	      OK="NOT"
             else
@@ -774,7 +770,7 @@ do
 	 ######################################
 	 if [ $NUIT = 1 ]
 	 then
-	    if [ "`liste_machines "\-xdata" | grep ^$HOST_BUILD"\."`" != "" ]
+	    if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-xdata" | grep ^$HOST_BUILD"\."`" != "" ]
 	    then
                echo "--------------------------------------------------------" 
 	       echo "Test the no-regression of XData at "`date '+%H:%M:%S'`
@@ -786,7 +782,7 @@ do
 	 ###############################################
 	 if [ $NUIT = 1 ]
 	 then
-	    if [ "`liste_machines "\-Check_decoupage" | grep ^$HOST_BUILD"\."`" != "" ]
+	    if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-Check_decoupage" | grep ^$HOST_BUILD"\."`" != "" ]
 	    then
                echo "--------------------------------------------------------" 
 	       echo "Verify the no-regression of parallelism at "`date '+%H:%M:%S'`
@@ -800,14 +796,14 @@ do
 	 ############################################
 	 if [ $NUIT = 1 ]
 	 then
-	    if [ "`liste_machines "\-check-valgrind" | grep ^$HOST_BUILD"\."`" != "" ]
+	    if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-check-valgrind" | grep ^$HOST_BUILD"\."`" != "" ]
 	    then
                echo "--------------------------------------------------------" 
 	       echo "Search memories errors with Valgrind at "`date '+%H:%M:%S'`
                rm -f ANA.log
 	       cd $TRUST_ROOT/Validation/Valgrind
 	       rm -f *.val *.err *.out *.log cas*
-	       ./testall `liste_machines "\-check-valgrind" | $TRUST_Awk -v HOST=$HOST_BUILD -F"." '// {t++} ($1==HOST) {p=NR} END {print p" "t}'` 2>&1
+	       ./testall `$TRUST_ROOT/bin/admin/liste_machines "\-check-valgrind" | $TRUST_Awk -v HOST=$HOST_BUILD -F"." '// {t++} ($1==HOST) {p=NR} END {print p" "t}'` 2>&1
 	       ./ANA 2>&1 | tee ANA.log
 	       cp ANA.log $TRUST_TMP/.
 	       cp casmem $TRUST_TMP/.
@@ -841,37 +837,37 @@ do
          echo MED_major_jdd1 >> liste_cherche
 	 # Ensuite selon les options, on affine:
 	 teste=0
-	 if [ "`liste_machines "\-without_run" | grep ^$HOST_BUILD"\."`" ]
+	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without_run" | grep ^$HOST_BUILD"\."`" ]
 	 then
             NUM=cpu_3D
-	 elif [ "`liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
 	 then
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche && cherche.ksh PARALLEL@NOT      
-	 elif [ "`liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] && NUM=0
-	 elif [ "`liste_machines "\-all" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-all" | grep ^$HOST_BUILD"\."`" ]
 	 then
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=0
-         elif [ "`liste_machines "\-limited_seq" | grep ^$HOST_BUILD"\."`" ]
+         elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited_seq" | grep ^$HOST_BUILD"\."`" ]
          then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=Th_Axi
-	 elif [ "`liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" ]
 	 then
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=cpu_3D
-	 elif [ "`liste_machines "\-force_petsc_have_cuda" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_cuda" | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_CUDA
-	 elif [ "`liste_machines "\-force_petsc_have_openmp" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_OPENMP
 	 fi
 	 # Choix de l'executable pour lance_test
 	 lance_test_exec=$exec_opt
-	 [ $NUIT = 1 ] && [ "`liste_machines "\-prof" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_pg
-	 [ $NUIT = 1 ] && [ "`liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_gcov	
-	 [ $NUIT = 1 ] && [ "`liste_machines "\-avx"  | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_avx	
-	 [ $NUIT = 1 ] && [ "`liste_machines "\-g "   | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_debug	
+	 [ $NUIT = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-prof" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_pg
+	 [ $NUIT = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_gcov	
+	 [ $NUIT = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-avx"  | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_avx	
+	 [ $NUIT = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-g "   | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_debug	
 	 # On efface le CR
 	 CR_TESTS=$TRUST_TMP/tests/.tests_`basename $lance_test_exec`
 	 rm -f $CR_TESTS
@@ -884,7 +880,7 @@ do
 	 ################################
 	 # Generation couverture de tests
 	 ################################
-	 if [ "`liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ]
+	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ]
 	 then	 
 	 #   # Lancement de lcov qui produit un rapport sous $TRUST_ROOT/doc/Coverage/lcov/html
          #   echo "--------------------------------------------------------" 
@@ -903,7 +899,7 @@ do
          #################################################
 	 # Mesure les performances en // avec le BENCHMARK
 	 #################################################
-	 if [ "`liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ]
+	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ]
 	 then
 	    if [ $NUIT = 1 ] && [ -f $exec ]
 	    then
@@ -935,7 +931,7 @@ do
 	 ##########################################################
 	 # On verifie reprise_auto sur les machines de production #
 	 ##########################################################
-	 if [ "`liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ] && [ "`grep $HOST $TRUST_ROOT/bin/reprise_auto | grep Supported`" != "" ]
+	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ] && [ "`grep $HOST $TRUST_ROOT/bin/reprise_auto | grep Supported`" != "" ]
 	 then
             echo "--------------------------------------------------------" 
             echo "Test of reprise_auto at `date '+%H:%M:%S'`"
@@ -997,7 +993,7 @@ do
 	    modules=`cd $TRUST_ROOT/Validation/Modules;ls */cree_liste_cas | $TRUST_Awk -F/ '{print $1}'`
 	    for module in $modules
 	    do
-	       if [ "`liste_machines "\-verification_module_$module" | grep ^$HOST_BUILD"\."`" != "" ]
+	       if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-verification_module_$module" | grep ^$HOST_BUILD"\."`" != "" ]
 	       then
 	          cd $TRUST_ROOT/Validation/Modules
 		  (
