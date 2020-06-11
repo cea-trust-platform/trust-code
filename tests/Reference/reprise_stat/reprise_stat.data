@@ -1,5 +1,5 @@
 # Thermalhydraulic 2D : Boussinesq approximation #
-# PARALLEL OK 6 #
+# PARALLEL OK 2 #
 dimension 2
 # Define a thermalhydraulic problem #
 Pb_Thermohydraulique pb
