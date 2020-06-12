@@ -27,6 +27,15 @@ export PATH=${PATH}:$DIR/scripts
 SJOB_DIR=$TRUST_ROOT/bin/Sjob
 
 prm=$1
+# On verifie que la fiche prm a un format correct pour Python3, sinon on convertit
+if [ "`file $prm | grep ISO-8859`" != "" ]
+then
+    echo "Bad format detected for $prm:"
+    file $prm
+    echo "Converting to UTF-8..."
+    iconv -f ISO-8859-15 -t UTF-8//TRANSLIT -o $TRUST_TMP/tmp_file $prm || exit -1
+    mv -f $TRUST_TMP/tmp_file $prm
+fi
 
 [ "$1" = "-help" ] && usage
 shift
