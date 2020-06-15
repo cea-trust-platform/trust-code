@@ -44,7 +44,7 @@ linux	rsync_ssh	tache	is230500-build64.intra.cea.fr			-TrioCFD							-build_64_b
 linux	rsync_ssh	non	is231771.intra.cea.fr				-TrioCFD  -GENEPI3 						-platform -force_latest_openmpi	-without-pdflatex				# CentOS 7.6	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	non	callisto-intel_bloque.intra.cea.fr	-limited	-IJK-FT -MATHYS 						-disable-mpiio -without-visit							# CentOS 6.4	CEA Saclay	NB: bench desactive
 linux	rsync_ssh	non	is213122.intra.cea.fr				-TRUST 								-force_provided_mpich 								# Ubuntu 18	Bat 451 LMSF	bureau Michel Filippi
-linux   rsync_ssh	tache	is223288.intra.cea.fr 		-limited	-TrioCFD  					-g 		-force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
+linux   rsync_ssh	tache	is223288.intra.cea.fr 		-limited	-TrioCFD  					-g -semi_opt	-force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
 linux   rsync_ssh	tache	is212912.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 18	Bat 451	LGLS	Bureau Michel (machine pilote) 
 linux   rsync_ssh	tache	is229956.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 16	Bat 451	LGLS	Machine de Michel pce 54 
 linux   rsync_ssh	tache	is226427.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 16	Bat 451	LGLS	Machine de stagiaire pce 35 
