@@ -27,6 +27,8 @@
 #include <vector>
 
 Implemente_instanciable(Polyedriser,"Polyedriser",Interprete_geometrique_base);
+// XD polyedriser interprete polyedriser -1 cast hexahedra into polyhedra so that the indexing of the mesh vertices is compatible with PolyMAC discretization. Must be used in PolyMAC discretization if a hexahedral mesh has been produced with TRUST's internal mesh generator.
+// XD attr domain_name ref_domaine domain_name 0 Name of domain.
 
 Sortie& Polyedriser::printOn(Sortie& os) const
 {
