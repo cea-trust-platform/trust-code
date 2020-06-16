@@ -148,13 +148,14 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
-  //elements et faces de bord connectes a chaque face
-  //elements fef_e([fef_d(f, 0), fef_d(s + 1, 0)[) avec l'amont/aval d'abord, faces de bord fef_f([fef_d(s, 1), fef_d(s + 1, 1)[)
+  //elements et faces de bord connectes a chaque face en dehors de l'amont/aval :
+  //fef_j([fef_d(f), fef_d(f + 1)[) (offset de nb_elem_tot() pour les faces de bord)
   void init_feb() const;
   mutable IntTab feb_d, feb_j;
+  //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
+  inline double nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
   //pour un champ T aux elements, interpole nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
-  inline double nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
   void flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, DoubleTab& phif_cb) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)

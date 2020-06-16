@@ -81,8 +81,8 @@ void Op_Diff_CoviMAC_base::completer()
   /* interpolations de nu.grad T */
   zone.init_feb();
   int N = equation().inconnue().valeurs().line_size();
-  phif_c.resize(zone.nb_faces(), 2, N, 2);
-  phif_cb.resize(zone.feb_d(zone.nb_faces()), 2, N);
+  phif_c.resize(zone.nb_faces(), 2, N);
+  phif_cb.resize(zone.feb_d(zone.nb_faces()), N);
 
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) && !has_diffusivite_turbulente();
   nu_a_jour_ = 0;
