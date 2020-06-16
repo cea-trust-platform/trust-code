@@ -84,6 +84,7 @@ do
    # Test gnuplot
    if [ $i = 2 ] 
    then
+      source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 # LD_LIBRARY_PATH
       echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
       [ $? -ne 0 ] && rm -r -f $TRUST_ROOT/exec/gnuplot && exit -1
    fi
