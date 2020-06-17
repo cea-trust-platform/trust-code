@@ -707,16 +707,18 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, Doubl
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
-  int i, j, jb, k, e, eb, f, n, N = phif_c.dimension(2), ne_tot = nb_elem_tot(), nw, infoo; //nombre de composantes
+  int i, j, jb, k, e, f, n, N = phif_c.dimension(2), ne_tot = nb_elem_tot(), nw, infoo, D = dimension; //nombre de composantes
+  char trans = 'N';
 
   /* localisation des points aux faces de bord : projection selon nu nf de l'element amont sur la face */
-  DoubleTrav xfb(nb_faces_tot(), N, dimension), xfe(2, dimension), A, B, c, d, x, phi, W(1);
-  A.set_smart_resize(1), B.set_smart_resize(1), c.set_smart_resize(1), d.set_smart_resize(1), x.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1);
-  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, h[2];
+  DoubleTrav xfb(nb_faces_tot(), N, D), xfe(2, D), xfep(D), A, B, phi, W(1), P;
+  A.set_smart_resize(1), B.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1), P.set_smart_resize(1);
+  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, h[2], scal;
+  const double *xe;
   for (f = 0; f < nb_faces_tot(); f++) if (f_e(f, 1) < 0) for (e = f_e(f, 0), n = 0; n < N; n++)
         {
-          double scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
-          for (i = 0; i < dimension; i++) xfb(f, n, i) = xp_(e, i) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[i]);
+          scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
+          for (i = 0; i < D; i++) xfb(f, n, i) = xp_(e, i) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[i]);
         }
 
   for (f = 0; f < f_max; f++) if (f_e(f, 1) >= 0) for (n = 0; n < N; n++) //faces internes seulement, composante par composante
@@ -724,32 +726,31 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, Doubl
           /* points a interpoler en amont/aval de la face */
           for (i = 0; i < 2; i++)
             {
-              double scal = dot(&xp_(f_e(f, i), 0), &nf(f, 0), &xv_(f, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
-              for (j = 0, h[i] = 1. / dabs(scal); j < dimension; j++) xfe(i, j) = xv_(f, j) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[j]);
+              e = f_e(f, i), scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
+              for (j = 0, h[i] = 1. / dabs(scal); j < D; j++) xfe(i, j) = xp_(e, j) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[j]);
             }
 
           /* interpolation et contribution au flux */
-          int nb = feb_d(f + 1) - feb_d(f), ni = 2 + nb, nc = dimension + 1; //nombre de coeffs a minimiser, nombre total de coeffs, nombre de contraintes
-          /* systeme a resoudre : min ||A.x - c||_2 tq B.x = d (contraintes) */
-          A.resize(ni, nb), B.resize(ni, nc), c.resize(nb), d.resize(nc), x.resize(ni), phi.resize(ni); //format LAPACK pour DGGLSE
-          for (phi = 0, i = 0; i < 2; i++)
-            {
-              c = 0, d = 0, d(dimension) = 1; //c = 0, d = (0, 0, 0, 1)
-              for (j = 0; j < ni; j++) for (k = 0; k < nb; k++) A(j, k) = (j == k + 2); //A : diagonale decalee (on minimise les coeffs hors amont/aval)
-              for (j = 0; j < 2; j++) for (k = 0; k < nc; k++) B(j, k) = k < dimension ? xp_(f_e(f, j), k) - xfe(i, k) : 1; //amont/aval
-              for (jb = feb_d(f); jb < feb_d(f + 1); j++, jb++) for (eb = feb_j(jb), k = 0; k < nc; k++) //points auxiliaires
-                  B(j, k) = k < dimension ? (eb < ne_tot ? xp_(eb, k) : xfb(eb - ne_tot, n, k)) - xfe(i, k) : 1;
+          int nl = D + 1, nc = 2 + feb_d(f + 1) - feb_d(f), un = 1;
+          A.resize(nc, nl), B.resize(nc), phi.resize(nc), P.resize(nc); //format LAPACK pour DGELS
+          phi = 0, phi(1) = 1. / (1. / h[0] + 1. / h[1]), phi(0) = - phi(1); //amont/aval
+          if (dot(&xfe(1, 0), &xfe(1, 0), &xfe(0, 0), &xfe(0, 0)) > 1e-12) for (i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
+              {
+                B = 0, B(D) = 1;
+                for (j = 0; j < 2; j++) for (e = f_e(f, j), xe = &xp_(e, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++) //amont/aval
+                    A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j);
+                for (jb = feb_d(f); jb < feb_d(f + 1); j++, jb++)
+                  for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++) //le reste
+                    A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j);
 
-              /* resolution (is there anything LAPACK won't do?) */
-              nw = -1,             F77NAME(dgglse)(&nb, &ni, &nc, &A(0, 0), &nb, &B(0, 0), &nc, &c(0), &d(0), &x(0), &W(0), &nw, &infoo);
-              W.resize(nw = W(0)), F77NAME(dgglse)(&nb, &ni, &nc, &A(0, 0), &nb, &B(0, 0), &nc, &c(0), &d(0), &x(0), &W(0), &nw, &infoo);
+                /* moindres carres par DGELS */
+                nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
+                W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
+                for (j = 0; j < nc; j++) phi(j) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
+              }
 
-              /* contribution au flux dans phi : moyenne harmonique */
-              for (j = 0; j < ni; j++) phi(j) += (i ? 1 : -1) * x(j) / (1. / h[0] + 1. / h[1]);
-            }
-
-          /* stockage : passage de l'interpolation de T_xf a celle de nu.grad T */
+          /* stockage */
           for (j = 0; j < 2; j++) phif_c(f, j, n) = phi(j); //amont/aval
-          for (k = feb_d(f); k < feb_d(f + 1); k++, j++) phif_cb(k, n) = phi(j); //auxiliaires
+          for (jb = feb_d(f); jb < feb_d(f + 1); jb++, j++) phif_cb(jb, n) = phi(j); //auxiliaires
         }
 }
