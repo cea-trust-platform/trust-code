@@ -76,7 +76,6 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
       const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
       const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
       double alpha_max = local_max_vect(valeurs_diffusivite);
-      alpha_max = Process::mp_max(alpha_max);
 
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
       double h_imp_max = -1, h_imp_temp=-2;
@@ -100,25 +99,19 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
                 }
             }
         } // End loop on boundaries
-
       h_imp_max = Process::mp_max(h_imp_max);
-     
-      double max_conductivity = 0.;
-      if(h_imp_max>0.0) //a heat flux is imposed on a boundary condition
-        {
-          // get the thermal conductivity
-          const Equation_base& mon_eqn = la_zone_cl_poly.equation();
-          const Milieu_base& mon_milieu = mon_eqn.milieu();
-          const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
-          max_conductivity = local_max_vect(tab_lambda);
-          max_conductivity = Process::mp_max(max_conductivity);
-        }
 
       if(alpha_max != 0.0 && nb_elem != 0)
         {
           double min_delta_h_carre = la_zone_poly_->carre_pas_du_maillage();
-          if(h_imp_max>0.0)
+          if(h_imp_max>0.0)  //a heat flux is imposed on a boundary condition
             {
+              // get the thermal conductivity
+              const Equation_base& mon_eqn = la_zone_cl_poly.equation();
+              const Milieu_base& mon_milieu = mon_eqn.milieu();
+              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
+              double max_conductivity = local_max_vect(tab_lambda);
+
               // compute Biot number given by Bi = L*h/lambda.
               double Bi = h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
               // if Bi>1, replace conductivity by h_imp*h in diffusivity. We are very conservative since h_imp_max is not necessarily located where max_conductivity is.
