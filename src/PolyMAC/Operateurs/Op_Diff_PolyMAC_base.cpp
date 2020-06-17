@@ -20,6 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Debog.h>
 #include <Op_Diff_PolyMAC_base.h>
 #include <Motcle.h>
 #include <Champ_Don.h>
@@ -75,13 +76,12 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
       const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
       const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
       double alpha_max = local_max_vect(valeurs_diffusivite);
+      alpha_max = Process::mp_max(alpha_max);
 
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
-      bool is_h_imp = false;
-      double h_imp_max = -1, h_imp_temp=-2, max_conductivity = 0;
-      const Zone_Cl_PolyMAC& la_zone_cl_poly = la_zcl_poly_.valeur();
-      const Equation_base& mon_eqn = la_zone_cl_poly.equation();
+      double h_imp_max = -1, h_imp_temp=-2;
 
+      const Zone_Cl_PolyMAC& la_zone_cl_poly = la_zcl_poly_.valeur();
       for(int i=0; i<la_zone_cl_poly.nb_cond_lim(); i++)
         {
           // loop on boundaries
@@ -92,24 +92,33 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
               const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
               const Champ_front_base& le_ch_front = ref_cast( Champ_front_base, la_cl_int.h_imp().valeur());
               const DoubleVect& tab = le_ch_front.valeurs();
-              h_imp_temp = local_max_vect(tab); // get h_imp from datafile
-              h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
-              h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
-              is_h_imp = (h_imp_max>0.0); // bool to tell us if we have a BC with Paroi_echange_externe_impose
+              if(tab.size() != 0)
+                {
+                  h_imp_temp = local_max_vect(tab); // get h_imp from datafile
+                  h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
+                  h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
+                }
             }
         } // End loop on boundaries
 
-      if ((alpha_max == 0.)||(nb_elem==0))
-        dt_stab = DMAXFLOAT;
-      else
+      h_imp_max = Process::mp_max(h_imp_max);
+     
+      double max_conductivity = 0.;
+      if(h_imp_max>0.0) //a heat flux is imposed on a boundary condition
         {
-          const double min_delta_h_carre = la_zone_poly_->carre_pas_du_maillage();
-          if (is_h_imp)
+          // get the thermal conductivity
+          const Equation_base& mon_eqn = la_zone_cl_poly.equation();
+          const Milieu_base& mon_milieu = mon_eqn.milieu();
+          const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
+          max_conductivity = local_max_vect(tab_lambda);
+          max_conductivity = Process::mp_max(max_conductivity);
+        }
+
+      if(alpha_max != 0.0 && nb_elem != 0)
+        {
+          double min_delta_h_carre = la_zone_poly_->carre_pas_du_maillage();
+          if(h_imp_max>0.0)
             {
-              // get the thermal conductivity
-              const Milieu_base& mon_milieu = mon_eqn.milieu();
-              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
-              max_conductivity = local_max_vect(tab_lambda);
               // compute Biot number given by Bi = L*h/lambda.
               double Bi = h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
               // if Bi>1, replace conductivity by h_imp*h in diffusivity. We are very conservative since h_imp_max is not necessarily located where max_conductivity is.
@@ -118,10 +127,10 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
             }
           dt_stab = min_delta_h_carre / (2. * dimension * alpha_max);
         }
+
     }
   else
     {
-
       const double           deux_dim      = 2. * Objet_U::dimension;
       const Champ_base& champ_diffu   = diffusivite();
       const DoubleTab&       valeurs_diffu = champ_diffu.valeurs();
@@ -143,6 +152,7 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
             dt_stab = dt;
         }
     }
+
   dt_stab = Process::mp_min(dt_stab);
   return dt_stab;
 }
