@@ -39,7 +39,21 @@
 // Postcondition:
 Entree& DP_Impose::lire_donnees(Entree& is)
 {
+  Motcle acc_ouverte("{");
+  Motcle motlu;
+  is >> motlu;
+  if (motlu != acc_ouverte)
+    {
+      Cerr << "On attendait le mot cle" << acc_ouverte << " a la place de " << motlu << finl;
+      Process::exit();
+    }
   //juste le champ de DP!
+  is >> motlu;
+  if (motlu != "dp")
+    {
+      Cerr << "On attendait le mot cle dp a la place de " << motlu << finl;
+      Process::exit();
+    }
   is >> DP_;
   regul_ = 0;
   return is;
