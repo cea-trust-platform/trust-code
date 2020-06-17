@@ -89,7 +89,7 @@ Read pb
 		}
 		convection { amont }
 		sources {
-		Perte_Charge_Singuliere KX 5e4 { X = 0.5 interface }
+		Perte_Charge_Singuliere { dir KX coeff 5e4 surface { X = 0.5 interface } }
 		}
 		diffusion { }
 		initial_conditions {

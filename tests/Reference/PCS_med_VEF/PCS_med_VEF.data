@@ -79,7 +79,7 @@ Read pb
 		sources
         {
         	Boussinesq_temperature { T0 470. verif_boussinesq 0 }
-		  , Perte_Charge_Singuliere KZ 0.5 { Surface interf }
+		  , Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Surface interf } }
         }
 		boundary_conditions
 		{
