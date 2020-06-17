@@ -12,12 +12,12 @@ define_modules_config()
    # Initialisation de l environnement module $MODULE_PATH 
    echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
-   module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Utilise par PE ?
-   module="slurm compilers/intel/2019_update5 mpi/openmpi/intel/2019_update5/4.0.1" # Recommande par AG
+   module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de façon bizarre sur cette machine...
+   module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3"
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env   
    echo "module load $module 1>/dev/null" >> $env
-   #echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
+   echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
@@ -54,7 +54,7 @@ define_soumission_batch()
    else
       qos=test	 && cpu=60   && node=0 
    fi
-   binding="-m block:block --cpu-bind=rank" # Ameliore fortement les performances sur AMD
+   binding="-m block:block --cpu-bind=rank" # Ameliore un peu les performances sur INTEL
    mpirun="srun $binding -n \$SLURM_NTASKS"
    sub=SLURM
 }
