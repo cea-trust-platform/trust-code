@@ -40,6 +40,7 @@ define_soumission_batch()
    # gpuq         up   infinite      1   idle gpu01   
    
    # On se base sur la frontale pour selectionner la queue par defaut:  
+   queue=intelq_6226 # Plus rapide en sequentiel (frequence+, cache+) mais scale moins bien (bizarre)
    queue=intelq_5118
 
    # sacctmgr list qos

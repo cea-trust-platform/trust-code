@@ -571,12 +571,11 @@ then
    if [ -f /proc/cpuinfo ]
    then
       TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-      if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] || [ $HOST = orcus-intel ] || [ $HOST = orcus-amd ]
+      # Limitations sur la frontale des clusters:
+      if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] || [ ${HOST#orcus-} != $HOST ]
       then
-         #TRUST_NB_PROCS=16
 	 TRUST_NB_PROCS=8
-	 #TRUST_NB_PROCS=4
-      fi      
+      fi
    fi
    echo $TRUST_NB_PROCS
    exit 0
@@ -1218,7 +1217,7 @@ else
             echo "wi4mpi not supported yet."
             exit -1
          else
-	    echo "MPI indicated by $mpiCC by not supported yet." 
+	    echo "MPI indicated by $mpiCC by not supported yet."
 	    exit -1
 	 fi
 	 # Test du MPI trouve avec mpiCC
@@ -1226,7 +1225,7 @@ else
 	 echo $mpiCC -o ./test_mpi_CC $rep_test_mpi/test_mpi.cpp
 	 $mpiCC -o ./test_mpi_CC $rep_test_mpi/test_mpi.cpp 1>mpiCC.log 2>&1
 	 err=$?
-	 [ $err = 0 ] && run_test_mpi test_mpi_CC 1>>mpiCC.log 2>&1 
+	 [ $err = 0 ] && run_test_mpi test_mpi_CC 1>>mpiCC.log 2>&1
 	 OK $err
 	 if [ $err = 0 ]
 	 then
@@ -1423,7 +1422,7 @@ if [ "$TRUST_INT64" = "1" ]
 then
    echo '#include <iostream>
 using namespace std;
-int main() {    
+int main() {
    cout<<"Size of int is "<<sizeof(int)<<" bytes"<<endl;
    cout<<"Size of long is "<<sizeof(long)<<" bytes"<<endl;
    return sizeof(long);
@@ -1822,9 +1821,10 @@ case $TRUST_ARCH_CC in
 	;;
 linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
         [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -mcpu=native" # To add optimized machine-specific library
+        [ "`$TRUST_CC_BASE -version 2>&1 | grep aocc`" != "" ] && AoccFlags="-march=znver1 -mfma -fvectorize -mfma -mavx2 -m3dnow -floop-unswitch-aggressive -fuse-ld=lld"
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -fPIC $ArmFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
@@ -1844,12 +1844,12 @@ linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
 	   fi
 	   rm -f test.cpp
 	   SYSLIBS=$SYSLIBS"-lgfortran"
-       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
+	   TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`	       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`	       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`	       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`	       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`	       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 	fi	
 	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
-	F77Flags="-O3 -fPIC $ArmFlags"
-    [ `echo $TRUST_GNU_VERSION | awk -F. '{print $1>=10}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
-	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags"
+	F77Flags="-O3 -fPIC $ArmFlags $AoccFlags"
+	[ `echo $TRUST_GNU_VERSION | awk -F. '{print $1>=10}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
 	;;
@@ -2313,7 +2313,7 @@ then
    if [ "$TRUST_VERSION_GNU" = "" ]
    then
       sed -i "1,$ s? -O3 ? -O3 -xHOST ?" make.$TRUST_ARCH_CC"_opt"
-   else	
+   else
       # -ffast-math -mtune=native fait des exceptions arithmetiques: ToDo a voir...
       sed -i "1,$ s? -O3 ? -O3 -g -march=native ?" make.$TRUST_ARCH_CC"_opt"
    fi
@@ -2430,7 +2430,7 @@ fi
 rm -f $TRUST_ENV/.rep $TRUST_ENV/.path
 
 # Edit sources for 64 bit integers build :
-if [ "$TRUST_INT64" = "1" ] 
+if [ "$TRUST_INT64" = "1" ]
 then
     echo "We will edit sources to build 64 bits version, please wait..."
     (cd $TRUST_ROOT && ./bin/BUILD64/GO)
