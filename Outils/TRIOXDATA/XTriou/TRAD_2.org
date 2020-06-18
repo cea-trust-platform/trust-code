@@ -955,13 +955,13 @@ source_qdm source_base source_qdm 0 Momentum source term in the Navier-Stokes eq
 perte_charge_singuliere source_base perte_charge_singuliere 1 Source term that is used to model a pressure loss over a surface area (transition through a grid, sudden enlargement) defined by the faces of elements located on the intersection of a subzone named subzone_name and a X,Y, or Z plane located at X,Y or Z = location.
   attr dir chaine(into=["kx","ky","kz","K"]) dir 0 KX, KY or KZ designate directional pressure loss coefficients for respectively X, Y or Z direction. Or in the case where you chose a target flow rate with regul. Use K for isotropic pressure loss coefficient
   attr coeff chaine coeff 1 Value (float) of friction coefficient (KX, KY, KZ).
-  attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
-  attr regul bloc_lecture regul 1 option to have adjustable K with flowrate target  NL2 { K0 valeur_initiale_de_k deb debit_cible eps intervalle_variation_mutiplicatif}.
-DP_Impose source_base DP_Impose 1 Source term to impose a pressure difference according to the formula : DP = A + B * (Q - Q0)
-  attr dp field_base dp 0 the parameters of the previous formula champ_uniforme 3 A B Q0 where Q0 is a volume flow (m3/s).
-  attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
+  attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
+DP_Impose source_base DP_Impose 0 Source term to impose a pressure difference according to the formula : DP = A + B * (Q - Q0)
+  attr formula field_base formula 0 the parameters of the previous formula champ_uniforme 3 A B Q0 where Q0 is a volume flow (m3/s).
+  attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
 terme_puissance_thermique_echange_impose source_base terme_puissance_thermique_echange_impose 1 Source term to impose thermal power according to formula : P = himp * (T - Text). Where T is the Trust temperature, Text is the outside temperature with which energy is exchanged via an exchange coefficient himp
   attr himp field_base himp 0 the exchange coefficient
+  attr Text field_base Text 0 the outside temperature
   attr Text field_base Text 0 the outside temperature
 perte_charge_directionnelle source_base perte_charge_directionnelle 1 Directional pressure loss.
   attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).
@@ -1098,7 +1098,7 @@ bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
   attr formatte rien formatte 1 Optional keyword to have formatted format for .Zones files. By default, it is binary format.
   attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
   attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
-  attr single_hdf rien single_hdf 1 Optional keyword to have (prendre la description d'anida)
+  attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned zones in a single file in hdf5 format.
 partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
   attr domaine ref_domaine domaine 0 Name of the domain to be cut.
   attr bloc_decouper bloc_decouper bloc_decouper 0 Description how to cut a domain.

@@ -17,7 +17,7 @@ define_modules_config()
    echo "# Module $module detected and loaded on $HOST."   
    echo "module purge 1>/dev/null" >> $env 
    echo "module load $module 1>/dev/null" >> $env
-   # echo ". mpivars.sh release -ofi_internal" >> $env # Necessaire car par defaut IntelMPI multithreade: message ERROR: multithreading violation  
+   echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
