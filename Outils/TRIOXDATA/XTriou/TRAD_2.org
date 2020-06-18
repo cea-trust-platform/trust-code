@@ -952,7 +952,7 @@ champ_fonc_reprise champ_don_base champ_fonc_reprise 0 This field is used to rea
   attr temps chaine time 0 Time of the saved field in the save file or last_time. If you give the keyword last_time instead, the last time saved in the save file will be used.
 source_qdm source_base source_qdm 0 Momentum source term in the Navier-Stokes equations.
   attr ch field_base champ 0 Field type.
-perte_charge_singuliere source_base perte_charge_singuliere 0 Source term that is used to model a pressure loss over a surface area (transition through a grid, sudden enlargement) defined by the faces of elements located on the intersection of a subzone named subzone_name and a X,Y, or Z plane located at X,Y or Z = location.
+perte_charge_singuliere source_base perte_charge_singuliere 1 Source term that is used to model a pressure loss over a surface area (transition through a grid, sudden enlargement) defined by the faces of elements located on the intersection of a subzone named subzone_name and a X,Y, or Z plane located at X,Y or Z = location.
   attr dir chaine(into=["kx","ky","kz","K"]) dir 0 KX, KY or KZ designate directional pressure loss coefficients for respectively X, Y or Z direction. Or in the case where you chose a target flow rate with regul. Use K for isotropic pressure loss coefficient
   attr coeff chaine coeff 1 Value (float) of friction coefficient (KX, KY, KZ).
   attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
@@ -961,6 +961,7 @@ DP_Impose source_base DP_Impose 0 Source term to impose a pressure difference ac
   attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
 terme_puissance_thermique_echange_impose source_base terme_puissance_thermique_echange_impose 1 Source term to impose thermal power according to formula : P = himp * (T - Text). Where T is the Trust temperature, Text is the outside temperature with which energy is exchanged via an exchange coefficient himp
   attr himp field_base himp 0 the exchange coefficient
+  attr Text field_base Text 0 the outside temperature
   attr Text field_base Text 0 the outside temperature
 perte_charge_directionnelle source_base perte_charge_directionnelle 1 Directional pressure loss.
   attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).

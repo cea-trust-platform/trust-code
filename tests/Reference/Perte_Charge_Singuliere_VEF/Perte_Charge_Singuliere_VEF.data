@@ -95,7 +95,7 @@ Read pb
                 convection { negligeable }
                 diffusion { negligeable }
                 sources {
-                        Perte_Charge_Singuliere KX 0.5 { X = 1 z_interface }
+                        Perte_Charge_Singuliere { dir KX coeff 0.5 surface { X = 1 z_interface } }
                         }
                 initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.

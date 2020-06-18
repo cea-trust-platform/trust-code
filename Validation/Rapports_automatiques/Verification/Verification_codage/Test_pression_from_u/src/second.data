@@ -76,8 +76,8 @@ Read pb
                                         }
 	sources 
 	{
-		 Perte_Charge_Singuliere KY 1e0 { Surface DOM_DOM_boundaries_out1 } ,
-	Perte_Charge_Singuliere KY 2e0 { Surface DOM_DOM_boundaries_out2 }
+		 Perte_Charge_Singuliere { dir KY coeff 1e0 surface { Surface DOM_DOM_boundaries_out1 } } ,
+		 Perte_Charge_Singuliere { dir KY coeff 2e0 surface { Surface DOM_DOM_boundaries_out2 } }
 }	
                 boundary_conditions {
                         in frontiere_ouverte_vitesse_imposee

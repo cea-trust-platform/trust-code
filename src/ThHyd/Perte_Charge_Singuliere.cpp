@@ -58,39 +58,64 @@ extern void convert_to(const char *s, double& ob);
 Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
 {
   Motcle motlu;
+  Motcle acc_ouverte("{");
   Motcles les_motcles(4);
   les_motcles[0] = "KX";
   les_motcles[1] = "KY";
   les_motcles[2] = "KZ";
   les_motcles[3] = "K";
+  regul_ = 0;
   is >> motlu;
-  int rang = les_motcles.search(motlu);
-  if (rang == -1)
+  if (motlu != acc_ouverte)
     {
-      Cerr << "Erreur a la lecture des donnees de Perte_Charge_Singuliere" << finl;
-      Cerr << "On attendait l'un des mots cles" << les_motcles << finl;
-      Cerr << "a la place de " << motlu << finl;
+      Cerr << "On attendait le mot cle" << acc_ouverte << " a la place de " << motlu << finl;
       Process::exit();
     }
-  direction_perte_charge_ = rang == 3 ? -1 : rang;
+  is >> motlu;
+  if (motlu != "dir")
+    {
+      Cerr << "On attendait le mot cle dir a la place de " << motlu << finl;
+      Process::exit();
+    }
+  else
+    {
+      is >> motlu;
+      int rang = les_motcles.search(motlu);
+      if (rang == -1)
+        {
+          Cerr << "Erreur a la lecture des donnees de Perte_Charge_Singuliere" << finl;
+          Cerr << "On attendait l'un des mots cles " << les_motcles << finl;
+          Cerr << "a la place de " << motlu << finl;
+          Process::exit();
+        }
+      direction_perte_charge_ = rang == 3 ? -1 : rang;
 
-  regul_ = 0;
+    }
   is >> motlu;
   if (motlu == "regul")
     {
       regul_ = 1;
       Nom eps_str, deb_str;
       Param param("regul");
-      param.ajouter("K0", &K_, Param::REQUIRED);       //XD_ADD_P double valeur initiale de K
-      param.ajouter("deb", &deb_str, Param::REQUIRED); //XD_ADD_P chaine debit cible
-      param.ajouter("eps", &eps_str, Param::REQUIRED); //XD_ADD_P chaine intervalle de variation (multiplicatif)
+      param.ajouter("K0", &K_, Param::REQUIRED);
+      param.ajouter("deb", &deb_str, Param::REQUIRED);
+      param.ajouter("eps", &eps_str, Param::REQUIRED);
       param.lire_avec_accolades(is);
       deb_cible_.setNbVar(1), eps_.setNbVar(1);
       deb_cible_.setString(deb_str), eps_.setString(eps_str);
       deb_cible_.addVar("t"), eps_.addVar("t");
       deb_cible_.parseString(), eps_.parseString();
     }
-  else convert_to(motlu.getChar(), K_);
+  else if (motlu == "coeff")
+    {
+      is >> motlu;
+      convert_to(motlu.getChar(), K_);
+    }
+  else
+    {
+      Cerr << "On attendait le mot cle coeff ou regul a la place de " << motlu << finl;
+      Process::exit();
+    }
 
   Cerr << " direction_perte_charge_ " << direction_perte_charge_ << finl;
   Cerr << " perte de charge K_ " << K_ << finl;
@@ -120,6 +145,12 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
   double position;
 
   /* Read plan */
+  is >> motlu;
+  if (motlu != "surface")
+    {
+      Cerr << "On attendait le mot cle surface a la place de " << motlu << finl;
+      Process::exit();
+    }
   is >> motlu;
   if (motlu != acc_ouverte)
     {
@@ -201,8 +232,12 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       Cerr << "On attendait le mot cle" << acc_fermee << " a la place de " << motlu << finl;
       Process::exit();
     }
-
-
+  is >> motlu;
+  if (motlu != acc_fermee)
+    {
+      Cerr << "On attendait le mot cle" << acc_fermee << " a la place de " << motlu << finl;
+      Process::exit();
+    }
   /* Found faces */
   int compteur=0;
 
