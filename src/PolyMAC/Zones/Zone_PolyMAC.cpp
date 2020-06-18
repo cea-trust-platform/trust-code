@@ -1103,7 +1103,11 @@ int Zone_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ct
       if (it) osqp_warm_start_x(osqp, sol.data()); //repart de l'iteration precedente
       osqp_solve(osqp);
       ret = osqp->info->status_val, sol.assign(osqp->solution->x, osqp->solution->x + nv);
-      if (ret == OSQP_PRIMAL_INFEASIBLE || ret == OSQP_PRIMAL_INFEASIBLE_INACCURATE) break;
+      if (ret == OSQP_PRIMAL_INFEASIBLE || ret == OSQP_PRIMAL_INFEASIBLE_INACCURATE)
+        {
+          osqp_cleanup(osqp), free(data.A);
+          break;
+        }
       for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) W(i, j) = (idx(i, j) >= 0 ? sol[idx(i, j)] : 0);
 
       /* calcul du spectre : Ws recupere les vecteurs propres */
