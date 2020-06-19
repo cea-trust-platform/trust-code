@@ -1,6 +1,5 @@
 Parameters {
 	Title "Ecoulement dans un coude avec frottement en volume"
-	Description "\latex_( \input{\orig/presentation} \latex_)"
 	Author "D. Jamet"
 	TestCase "." "eclt_coude_frottement.data"
 	TestCase "." "eclt_coude_frottement2.data"
@@ -10,9 +9,6 @@ Parameters {
 
 Chapter {
 	Title "Coefficient de frottement constant"
-	Description "\latex_( \input{\orig/presentation1} \latex_)"
-
-
 	visu {
                 Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
@@ -20,8 +16,6 @@ Chapter {
                 pseudocolor ./eclt_coude_frottement.lata dom PRESSION_PA ELEM
 		vector  ./eclt_coude_frottement.lata dom VITESSE SOM
         }
-
-
 	visu {
                 Title "Erreur sur le champ de vitesse"
                 mesh ./eclt_coude_frottement.lata dom 
@@ -29,7 +23,6 @@ Chapter {
 		instruction_visit DefineVectorExpression("ERREUR_VITESSE_SOM_dom","VITESSE_SOM_dom-V_ANALYTIQUE_SOM_dom")
 		vector  ./eclt_coude_frottement.lata dom ERREUR_VITESSE SOM
         }
-
 
 	Table {
 		Title "Comparaison théorie/numérique"
@@ -69,9 +62,6 @@ Chapter {
 
 Chapter {
 	Title "Coefficient de frottement inversement proportionnel au rayon"
-	Description "\latex_( \input{\orig/presentation2} \latex_)"
-
-
 	visu {
                 Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
@@ -127,9 +117,6 @@ Chapter {
 
 Chapter {
 	Title "Coefficient de frottement inversement proportionnel au cube du rayon"
-	Description "\latex_( \input{\orig/presentation3} \latex_)"
-
-
 	visu {
                 Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."

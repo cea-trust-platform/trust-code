@@ -1,6 +1,5 @@
 Parameters {
 	Title "Ecoulement avec force de frottement en volume"
-	Description "\latex_( \input{\orig/presentation} \latex_)"
 	Author "D. Jamet"
 	TestCase "." "frottement_incline.data"
 	IncludeData 1
@@ -8,9 +7,6 @@ Parameters {
 
 Chapter {
 	Title "Champs de vitesse et de pression"
-	Description "\latex_( \input{\orig/presentation1} \latex_)"
-
-
 	visu {
                 Title "Erreurs des champs de pression et de vitesse calculés"
                 description "L'erreur des champs de pression et de vitesse calculés par GENEPI par rapport à la solution analytique est tracée."
