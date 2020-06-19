@@ -895,6 +895,11 @@ champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as 
   attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
 champ_fonc_fonction champ_fonc_tabule champ_fonc_fonction 0 Field that is a function of another field.
 champ_fonc_fonction_txyz champ_fonc_fonction champ_fonc_fonction_txyz -1 this refers to a field that is a function of another field and time and/or space coordinates
+champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-zone. It makes possible the definition of a field that depends on the time and the space.
+  attr problem_name ref_Pb_base problem_name 0 Name of the problem.
+  attr nb_comp entier nb_comp 0 Number of field components.
+  attr inco chaine inco 0 Name of the field (for example: temperature).
+  attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_fonction_txyz_morceaux type object.
 frontiere_ouverte_gradient_pression_impose_vefprep1b frontiere_ouverte_gradient_pression_impose frontiere_ouverte_gradient_pression_impose_vefprep1b -1 Keyword for an outlet boundary condition in VEF P1B/P1NC on the gradient of the pressure.
 bloc_lec_champ_init_canal_sinal objet_lecture nul 1 Parameters for the class champ_init_canal_sinal. NL2 in 2D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand+ampli_sin*sin(omega*x) NL2 rand: unpredictable value between -1 and 1. NL2 in 3D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand1+ampli_sin*sin(omega*x) NL2 W=ampli_bruit*rand2 NL2 rand1 and rand2: unpredictables values between -1 and 1.
   attr ucent floattant ucent 0 Velocity value at the center of the channel.
@@ -954,14 +959,14 @@ source_qdm source_base source_qdm 0 Momentum source term in the Navier-Stokes eq
   attr ch field_base champ 0 Field type.
 perte_charge_singuliere source_base perte_charge_singuliere 1 Source term that is used to model a pressure loss over a surface area (transition through a grid, sudden enlargement) defined by the faces of elements located on the intersection of a subzone named subzone_name and a X,Y, or Z plane located at X,Y or Z = location.
   attr dir chaine(into=["kx","ky","kz","K"]) dir 0 KX, KY or KZ designate directional pressure loss coefficients for respectively X, Y or Z direction. Or in the case where you chose a target flow rate with regul. Use K for isotropic pressure loss coefficient
-  attr coeff chaine coeff 1 Value (float) of friction coefficient (KX, KY, KZ).
-  attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
-DP_Impose source_base DP_Impose 0 Source term to impose a pressure difference according to the formula : DP = A + B * (Q - Q0)
-  attr formula field_base formula 0 the parameters of the previous formula champ_uniforme 3 A B Q0 where Q0 is a volume flow (m3/s).
-  attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
+  attr coeff floattant coeff 1 Value (float) of friction coefficient (KX, KY, KZ).
+  attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
+  attr regul bloc_lecture regul 1 option to have adjustable K with flowrate target  NL2 { K0 valeur_initiale_de_k deb debit_cible eps intervalle_variation_mutiplicatif}.
+DP_Impose source_base DP_Impose 1 Source term to impose a pressure difference according to the formula : DP = A + B * (Q - Q0)
+  attr dp field_base dp 0 the parameters of the previous formula champ_uniforme 3 A B Q0 where Q0 is a volume flow (m3/s).
+  attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
 terme_puissance_thermique_echange_impose source_base terme_puissance_thermique_echange_impose 1 Source term to impose thermal power according to formula : P = himp * (T - Text). Where T is the Trust temperature, Text is the outside temperature with which energy is exchanged via an exchange coefficient himp
   attr himp field_base himp 0 the exchange coefficient
-  attr Text field_base Text 0 the outside temperature
   attr Text field_base Text 0 the outside temperature
 perte_charge_directionnelle source_base perte_charge_directionnelle 1 Directional pressure loss.
   attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).
