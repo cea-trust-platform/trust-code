@@ -1,7 +1,10 @@
 jdd=Champ_front_debit
-A_inlet=`grep "Area of entree" $jdd".err" | awk '{print $NF}'`
-Q_inlet=`grep "champ_front_debit" $jdd".data" | awk '{print $NF}'`
-dim=`grep "dimension" $jdd".data" | awk '{print $NF}'`
-Vit_CLentree=`echo $Q_inlet $A_inlet | awk '{print ($1/$2)}'`
-sed -e "s/entree frontiere_ouverte_vitesse_imposee champ_front_debit Champ_Front_Uniforme 1  5/entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme $dim $Vit_CLentree 0. /" $jdd.data > testCL.data      
-trust testCL 1>testCL.out 2>testCL.err
+if [ -f $jdd".err" ]
+then
+   A_inlet=`grep "Area of entree" $jdd".err" | awk '{print $NF}'`
+   Q_inlet=`grep "champ_front_debit" $jdd".data" | awk '{print $NF}'`
+   dim=`grep "dimension" $jdd".data" | awk '{print $NF}'`
+   Vit_CLentree=`echo $Q_inlet $A_inlet | awk '{print ($1/$2)}'`
+   sed -e "s/entree frontiere_ouverte_vitesse_imposee champ_front_debit Champ_Front_Uniforme 1  5/entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme $dim $Vit_CLentree 0. /" $jdd.data > testCL.data      
+   trust testCL 1>testCL.out 2>testCL.err
+fi

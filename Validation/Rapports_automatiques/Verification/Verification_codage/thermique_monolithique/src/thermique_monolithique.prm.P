@@ -2,6 +2,7 @@ Parameters {
     Title "Resolution thermique monolithique"
     Author "A. Gerschenfeld, Y. Gorsse"
     description "Comparaison des resultats obtenus en VDF  et PolyMAC sur un couplage ThHyd/ThSol selon differents algos de couplage :  couplage sequentiel (avec et sans iteration), resolution monolithique (avec et sans iteration). On s'attend a avoir des resultats identique entre sequentiel avec iteration, et monolithique avec ou sans iteration."
+    Prerequis ./Curve.sh
 #Pforeach _dis_ ( VDF PolyMAC )
 #Pforeach _reso_ ( mono seq )
 #Pforeach _wwo_ ( avec sans )
@@ -28,7 +29,7 @@ Chapter
 #Pforeach _wwo_ ( avec sans )
         Curve
         {
-            file <paste _dis_/_reso___wwo__iteration_pb1_Diffusion_chaleur.out _dis_/_reso___wwo__iteration_pb2_Diffusion_chaleur.out
+            file _dis_/_reso___wwo__iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend _dis_ - _reso_ - _wwo_ iteration
             style linespoints
@@ -51,7 +52,7 @@ Chapter
 #Pforeach _wwo_ ( avec sans )
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' _dis_/_reso___wwo__iteration.out | awk '{print $8}'
+            file _dis_/_reso___wwo__iteration.txt
             legend _dis_ - _reso_ - _wwo_ iteration
             style linespoints
         }

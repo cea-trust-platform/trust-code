@@ -191,8 +191,8 @@ public :
   inline int wcol() const
   {
     // largeur minimale des colonnes des fichiers .out
-    // precision_impr_ + 8 car : -1.000e+01 on ajoute la longueur de "-1." et de "e+01" plus un espace
-    return precision_impr_ + 8;
+    // precision_impr_ + 9 car : -1.000e+150 on ajoute la longueur de "-1." et de "e+150" plus un espace
+    return precision_impr_ + 9;
   };
   inline int gnuplot_header() const
   {

@@ -6,6 +6,7 @@ Parameters
     #TestCase cartesian "jdd.data"
     #TestCase tetra     "jdd.data"
     TestCase poly      "jdd.data"
+    Prerequis "paste poly/jdd_P1.son poly/jdd_P2.son > poly/jdd_P1P2.son"
 }
 
 Chapter
@@ -66,7 +67,7 @@ Chapter
         Curve
         {
             legend "DP mesure"
-            file <paste poly/jdd_P1.son poly/jdd_P2.son
+            file poly/jdd_P1P2.son
             colonnes ($1) ($2-$4)
             Style lines
         }
