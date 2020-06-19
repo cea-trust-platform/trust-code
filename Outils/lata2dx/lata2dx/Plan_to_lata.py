@@ -175,6 +175,9 @@ if __name__=="__main__":
     # Get the different parameters of the plane :
     DataFile,Probe,lines,Nx,Ny,Nelem,Ncells,Field,comp,nature,dimension = get_parameters(PlanFile)
     NumberOfLines = sum(1 for line in lines )
+    # Parfois FIN dans un fichier .plan:
+    if (lines[len(lines)-1].startswith("FIN")):
+       NumberOfLines = NumberOfLines - 1
 
     # Grid
     GridCoordinates = write_coordinates(Nelem,LataFile,Probe,dimension)
