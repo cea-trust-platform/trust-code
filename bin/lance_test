@@ -1176,7 +1176,7 @@ then
 			    SPU="....."
 		            # Nouveau: compare les fichiers colonnes
 			    analyse_fichier_colonne
-				[ $ecarts_plots -ne 0 ] && PB=254
+                            [ $ecarts_plots -ne 0 ] && PB=254
 			    if [ $PB -eq '0' ]
 			    then
 				if [ "$type" = "seq" ]
@@ -1219,6 +1219,8 @@ then
 				echo $ECHO_OPTS $mes >> $SORTIE
 				(echo $ECHO_OPTS $htm" <a href=$path$rep_tests/$REP/.erreur.lml.nom>Fichier erreur.lml</a>" >> $fichier) 2>/dev/null
 				echo $ECHO_OPTS $rep_tests/$REP/erreur.lml > $rep_tests/$REP/.erreur.lml.nom
+                                # Mise a jour des references (hidden feature)
+                                [ "$UPDATE_REFERENCE" != "" ] && gzip -c $NOM2.lml > `find $project_directory $TRUST_ROOT -name $NOM2.lml.gz | grep /tests/ | grep -v /build/`
 			    fi
 			fi
 		    fi
