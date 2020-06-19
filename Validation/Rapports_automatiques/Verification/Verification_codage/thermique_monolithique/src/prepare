@@ -2,8 +2,7 @@
 
 for dis in "VDF" "PolyMAC"
 do
-
-    mkdir $dis
+    mkdir -p $dis
     sed "s~FIN$dis~/* FIN$dis~;s~DEBUT$dis~DEBUT$dis */~;s~__dis__~${dis}~;s~__tm__~0~;s~__cv__~1e30~" base.data > ${dis}/seq_sans_iteration.data
     sed "s~FIN$dis~/* FIN$dis~;s~DEBUT$dis~DEBUT$dis */~;s~__dis__~${dis}~;s~__tm__~0~;s~__cv__~1e-8~" base.data > ${dis}/seq_avec_iteration.data
     sed "s~FIN$dis~/* FIN$dis~;s~DEBUT$dis~DEBUT$dis */~;s~__dis__~${dis}~;s~__tm__~1~;s~__cv__~1e30~" base.data > ${dis}/mono_sans_iteration.data
