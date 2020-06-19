@@ -2,6 +2,7 @@ Parameters {
     Title "Resolution thermique monolithique"
     Author "A. Gerschenfeld, Y. Gorsse"
     description "Comparaison des resultats obtenus en VDF  et PolyMAC sur un couplage ThHyd/ThSol selon differents algos de couplage :  couplage sequentiel (avec et sans iteration), resolution monolithique (avec et sans iteration). On s'attend a avoir des resultats identique entre sequentiel avec iteration, et monolithique avec ou sans iteration."
+    Prerequis ./Curve.sh
     TestCase VDF mono_avec_iteration
     TestCase VDF mono_sans_iteration
     TestCase VDF seq_avec_iteration
@@ -26,56 +27,56 @@ Chapter
         legend bottom
         Curve
         {
-            file <paste VDF/mono_avec_iteration_pb1_Diffusion_chaleur.out VDF/mono_avec_iteration_pb2_Diffusion_chaleur.out
+            file VDF/mono_avec_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend VDF - mono - avec iteration
             style linespoints
         }
         Curve
         {
-            file <paste VDF/mono_sans_iteration_pb1_Diffusion_chaleur.out VDF/mono_sans_iteration_pb2_Diffusion_chaleur.out
+            file VDF/mono_sans_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend VDF - mono - sans iteration
             style linespoints
         }
         Curve
         {
-            file <paste VDF/seq_avec_iteration_pb1_Diffusion_chaleur.out VDF/seq_avec_iteration_pb2_Diffusion_chaleur.out
+            file VDF/seq_avec_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend VDF - seq - avec iteration
             style linespoints
         }
         Curve
         {
-            file <paste VDF/seq_sans_iteration_pb1_Diffusion_chaleur.out VDF/seq_sans_iteration_pb2_Diffusion_chaleur.out
+            file VDF/seq_sans_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend VDF - seq - sans iteration
             style linespoints
         }
         Curve
         {
-            file <paste PolyMAC/mono_avec_iteration_pb1_Diffusion_chaleur.out PolyMAC/mono_avec_iteration_pb2_Diffusion_chaleur.out
+            file PolyMAC/mono_avec_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend PolyMAC - mono - avec iteration
             style linespoints
         }
         Curve
         {
-            file <paste PolyMAC/mono_sans_iteration_pb1_Diffusion_chaleur.out PolyMAC/mono_sans_iteration_pb2_Diffusion_chaleur.out
+            file PolyMAC/mono_sans_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend PolyMAC - mono - sans iteration
             style linespoints
         }
         Curve
         {
-            file <paste PolyMAC/seq_avec_iteration_pb1_Diffusion_chaleur.out PolyMAC/seq_avec_iteration_pb2_Diffusion_chaleur.out
+            file PolyMAC/seq_avec_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend PolyMAC - seq - avec iteration
             style linespoints
         }
         Curve
         {
-            file <paste PolyMAC/seq_sans_iteration_pb1_Diffusion_chaleur.out PolyMAC/seq_sans_iteration_pb2_Diffusion_chaleur.out
+            file PolyMAC/seq_sans_iteration_pb1pb2_Diffusion_chaleur.out
             columns 1 ($7+$15)
             legend PolyMAC - seq - sans iteration
             style linespoints
@@ -92,49 +93,49 @@ Chapter
         legend bottom
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' VDF/mono_avec_iteration.out | awk '{print $8}'
+            file VDF/mono_avec_iteration.txt
             legend VDF - mono - avec iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' VDF/mono_sans_iteration.out | awk '{print $8}'
+            file VDF/mono_sans_iteration.txt
             legend VDF - mono - sans iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' VDF/seq_avec_iteration.out | awk '{print $8}'
+            file VDF/seq_avec_iteration.txt
             legend VDF - seq - avec iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' VDF/seq_sans_iteration.out | awk '{print $8}'
+            file VDF/seq_sans_iteration.txt
             legend VDF - seq - sans iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' PolyMAC/mono_avec_iteration.out | awk '{print $8}'
+            file PolyMAC/mono_avec_iteration.txt
             legend PolyMAC - mono - avec iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' PolyMAC/mono_sans_iteration.out | awk '{print $8}'
+            file PolyMAC/mono_sans_iteration.txt
             legend PolyMAC - mono - sans iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' PolyMAC/seq_avec_iteration.out | awk '{print $8}'
+            file PolyMAC/seq_avec_iteration.txt
             legend PolyMAC - seq - avec iteration
             style linespoints
         }
         Curve
         {
-            file <grep 'The Probleme_Couple problem pbc has converged after' PolyMAC/seq_sans_iteration.out | awk '{print $8}'
+            file PolyMAC/seq_sans_iteration.txt
             legend PolyMAC - seq - sans iteration
             style linespoints
         }
