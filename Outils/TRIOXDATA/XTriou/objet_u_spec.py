@@ -100,7 +100,7 @@ def print_lu_discretize(self,list_class=[]):
 def read_val_pb_ft(self,chaine2,niveau,listdata,mottest):
     # print "coucou"
     list_ref= self.get_list_ref();
-    lmottest=lower(mottest)
+    lmottest=mottest.lower()
     for ref in list_ref:
         val=getattr(self,ref.name)
         if val!=None:
@@ -111,7 +111,7 @@ def read_val_pb_ft(self,chaine2,niveau,listdata,mottest):
                 clref=trouve_class_list(val,listdata)
                 pass
 
-            if lmottest == lower(clref.name_u):
+            if lmottest == clref.name_u.lower():
                 # print clref
                 clref.read_data(chaine2,niveau,listdata)
                 listdata.remove(clref)
