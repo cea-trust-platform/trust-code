@@ -78,6 +78,9 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   int i, j, k, l, e, f, N = ch.nb_comp(), o_n_f = o_e_f.dimension(1);
   Nom nom_racc1=frontiere_dis().frontiere().le_nom();
 
+  //tableaux lies a la stabilisation de Le Potier / Mahamane (cf. Op_Diff_PolyMAC_Elem)
+  stab_ = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base()).stab_;
+
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(N);
   h_imp_.valeurs().resize(0, N);
@@ -137,8 +140,6 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   coeff.resize(0, 1 + item.dimension(1), N), delta_int.resize(0, N, 2),
                fvf.frontiere().creer_tableau_faces(coeff);
 
-  //tableaux lies a la stabilisation de Le Potier / Mahamane (cf. Op_Diff_PolyMAC_Elem)
-  stab_ = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base()).stab_;
   if (stab_)
     {
       delta.resize(0, item.dimension(1), N);
