@@ -1069,7 +1069,7 @@ int Zone_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ct
   OSQPData data;
   OSQPSettings settings;
   osqp_set_default_settings(&settings);
-  settings.scaled_termination = 1, settings.polish = 1, settings.eps_abs = settings.eps_rel = 1e-8, settings.max_iter = 1e5;
+  settings.scaled_termination = 1, settings.polish = 1, settings.eps_abs = settings.eps_rel = 1e-8, settings.max_iter = 1e3;
 
   /* contrainte : W.R = N */
   std::vector<std::map<int, double>> C(nv); //stockage CSC : C[j][i] = M_{ij}
