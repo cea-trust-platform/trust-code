@@ -138,6 +138,10 @@ do
       [ "$compare" = ../build ] && echo "Specify another directory than $compare !" && exit -1
       options=$options" --compare=$compare"
       shift
+   elif [ "$1" = -archive ]
+   then
+      options=$options" -archive"
+      shift
    elif [ "$1" = -save ]
    then
       save=1
