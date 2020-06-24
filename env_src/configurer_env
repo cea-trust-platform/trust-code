@@ -956,12 +956,12 @@ rm -r $TRUST_ROOT/exec/python/pkgs
 mkdir $TRUST_ROOT/exec/python/pkgs
 
 # Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.26 sur Fedora30 pour libstdc++.so.25), on vire:
-stdcpp_conda=`ls $TRUST_ROOT/exec/python/lib/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
+stdcpp_conda=`ls $TRUST_ROOT/exec/python/lib/libstdc++.so.6.0.* 2>/dev/null`
 if [ "$stdcpp_conda" != "" ]
 then
-    stdcpp_sys=`ls /usr/lib64/libstdc++.so.6.0.* 2>/dev/null`
-    [ "$stdcpp_sys" = "" ] && stdcpp_sys=`ls /usr/lib*/x86_64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null`
-    remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_conda | cut -d'.' -f3-6 | awk '{ print (stdcpp_sys>=stdcpp_conda?1:0) }'`
+    stdcpp_sys=`ls /usr/lib64/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
+    [ "$stdcpp_sys" = "" ] && stdcpp_sys=`ls /usr/lib*/x86_64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
+    remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys | awk '{ print ($1>="6.0.25"?1:0) }'`
     [ $remove_stdcpp_conda -eq 1 ] && echo "we remove libstdc++.so* from conda" && rm -f $TRUST_ROOT/exec/python/lib/libstdc++.so*
 fi
 # export PATH
