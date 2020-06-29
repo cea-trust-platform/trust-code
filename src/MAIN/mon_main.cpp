@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   Nom pwd(::pwd());
   // On initialise Petsc
 #ifdef MPI_INIT_NEEDS_MPIRUN
-  int flag;
+  True_int flag;
   MPI_Initialized(&flag);
   // si MPI initialise ou si argc>2
   if ((argc>2)||(flag))
@@ -281,7 +281,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   Cout<<"-------------------------------------------------------------------" << finl;
   Cout<<" " << finl;
   Cout<<"                          TRUST" << finl;
-  Cout<<"                      version : 1.8.1_beta "  << finl;
+  Cout<<"                      version : 1.8.1 "  << finl;
   Cout<<"                          CEA - DEN" << finl;
   Cout<<" " << finl;
   info_atelier(Cout);
