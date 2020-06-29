@@ -40,6 +40,7 @@
 <TR><TD><SMALL><A HREF="#Adams_Bashforth">Adams_Bashforth</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Adams_Bashforth_DiffImpl">Adams_Bashforth_DiffImpl</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Adams_Bashforth_docond_DiffImpl">Adams_Bashforth_docond_DiffImpl</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
+<TR><TD><SMALL><A HREF="#BENCHMARK_SOLVER">BENCHMARK_SOLVER</A></TD><TD><SMALL># Run several solvers specified on the Check_solver.list #</TD></TR>
 <TR><TD><SMALL><A HREF="#Blocage_Post">Blocage_Post</A></TD><TD><SMALL># TEST pression sortie fonction de u moyen #</TD></TR>
 <TR><TD><SMALL><A HREF="#Boussinesq">Boussinesq</A></TD><TD><SMALL># Thermohydraulique 2D avec transport 1 constituant et terme source #</TD></TR>
 <TR><TD><SMALL><A HREF="#Boussinesq_Concentration">Boussinesq_Concentration</A></TD><TD><SMALL># Thermohydraulique 2D avec transport 1 constituant et terme source #</TD></TR>
@@ -436,17 +437,20 @@
 <TR><TD><SMALL><A HREF="#periodique_P1B">periodique_P1B</A></TD><TD><SMALL># Hydraulique 2D VEF P1NC/P1bulle avec periodicite #</TD></TR>
 <TR><TD><SMALL><A HREF="#periodique_non_parallele_axe">periodique_non_parallele_axe</A></TD><TD><SMALL># Periodicite avec direction non parallele a un axe #</TD></TR>
 <TR><TD><SMALL><A HREF="#poise_VEF">poise_VEF</A></TD><TD><SMALL># Hydraulique 2D VEF : Bas Reynolds #</TD></TR>
+<TR><TD><SMALL><A HREF="#polyedriser">polyedriser</A></TD><TD><SMALL># Thermohydraulique 3D et Boussinesq #</TD></TR>
 <TR><TD><SMALL><A HREF="#puissance">puissance</A></TD><TD><SMALL># Conduction 2D : Sources volumiques de puissance #</TD></TR>
 <TR><TD><SMALL><A HREF="#puissance_tot_VDF">puissance_tot_VDF</A></TD><TD><SMALL># Conduction 2D : Sources de puissance totale #</TD></TR>
 <TR><TD><SMALL><A HREF="#puissance_tot_VEF">puissance_tot_VEF</A></TD><TD><SMALL># Conduction 2D : Sources de puissance totale #</TD></TR>
 <TR><TD><SMALL><A HREF="#quick_VEF">quick_VEF</A></TD><TD><SMALL># Thermohydraulique 2D VEF schema kquick #</TD></TR>
 <TR><TD><SMALL><A HREF="#reprise_QC">reprise_QC</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D avec modele QC #</TD></TR>
+<TR><TD><SMALL><A HREF="#reprise_stat">reprise_stat</A></TD><TD><SMALL># Thermalhydraulic 2D : Boussinesq approximation #</TD></TR>
 <TR><TD><SMALL><A HREF="#resume_last_time">resume_last_time</A></TD><TD><SMALL># Thermohydraulique 2D : reprise calcul #</TD></TR>
 <TR><TD><SMALL><A HREF="#resume_last_time_xyz">resume_last_time_xyz</A></TD><TD><SMALL># Thermohydraulique 2D : reprise calcul #</TD></TR>
 <TR><TD><SMALL><A HREF="#sans">sans</A></TD><TD><SMALL># Hydraulique 2D laminaire : schema upwind #</TD></TR>
 <TR><TD><SMALL><A HREF="#sans_impl">sans_impl</A></TD><TD><SMALL># Hydraulique 2D laminaire : schema upwind #</TD></TR>
 <TR><TD><SMALL><A HREF="#sdocond">sdocond</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#sreprise">sreprise</A></TD><TD><SMALL># Thermohydraulique 2D : reprise calcul #</TD></TR>
+<TR><TD><SMALL><A HREF="#stats_t_deb_different">stats_t_deb_different</A></TD><TD><SMALL>Dimension 3</TD></TR>
 <TR><TD><SMALL><A HREF="#test_extraction1d">test_extraction1d</A></TD><TD><SMALL># PARALLEL OK 2 #</TD></TR>
 <TR><TD><SMALL><A HREF="#upwind">upwind</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 </TABLE><HR><PRE>
@@ -576,6 +580,10 @@
 <CENTER># Thermohydraulique 2D couplee a conduction 2D #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Adams_Bashforth_docond_DiffImpl/Adams_Bashforth_docond_DiffImpl.data>Edit</a> Adams_Bashforth_docond_DiffImpl.data </CENTER>
+<HR><CENTER><B><A NAME=BENCHMARK_SOLVER>BENCHMARK_SOLVER</A></B></CENTER>
+<CENTER># Run several solvers specified on the Check_solver.list #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/BENCHMARK_SOLVER/BENCHMARK_SOLVER.data>Edit</a> BENCHMARK_SOLVER.data </CENTER>
 <HR><CENTER><B><A NAME=Blocage_Post>Blocage_Post</A></B></CENTER>
 <CENTER># TEST pression sortie fonction de u moyen #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2267,6 +2275,10 @@
 <CENTER># Hydraulique 2D VEF : Bas Reynolds #</CENTER>
 <CENTER><a href=../tests/Reference/poise_VEF/poise_VEF.coupe.gif><img src=../tests/Reference/poise_VEF/poise_VEF.coupe.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/poise_VEF/poise_VEF.data>Edit</a> poise_VEF.data </CENTER>
+<HR><CENTER><B><A NAME=polyedriser>polyedriser</A></B></CENTER>
+<CENTER># Thermohydraulique 3D et Boussinesq #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/polyedriser/polyedriser.data>Edit</a> polyedriser.data </CENTER>
 <HR><CENTER><B><A NAME=puissance>puissance</A></B></CENTER>
 <CENTER># Conduction 2D : Sources volumiques de puissance #</CENTER>
 <CENTER><a href=../tests/Reference/puissance/puissance.coupe.gif><img src=../tests/Reference/puissance/puissance.coupe.gif.fin></a></CENTER>
@@ -2289,6 +2301,10 @@
 <CENTER># Thermohydraulique 2D couplee a conduction 2D avec modele QC #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/reprise_QC/reprise_QC.data>Edit</a> reprise_QC.data </CENTER>
+<HR><CENTER><B><A NAME=reprise_stat>reprise_stat</A></B></CENTER>
+<CENTER># Thermalhydraulic 2D : Boussinesq approximation #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/reprise_stat/reprise_stat.data>Edit</a> reprise_stat.data </CENTER>
 <HR><CENTER><B><A NAME=resume_last_time>resume_last_time</A></B></CENTER>
 <CENTER># Thermohydraulique 2D : reprise calcul #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2315,6 +2331,10 @@
 <CENTER># Thermohydraulique 2D : reprise calcul #</CENTER>
 <CENTER><a href=../tests/Reference/sreprise/sreprise.lml.gif><img src=../tests/Reference/sreprise/sreprise.lml.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/sreprise/sreprise.data>Edit</a> sreprise.data </CENTER>
+<HR><CENTER><B><A NAME=stats_t_deb_different>stats_t_deb_different</A></B></CENTER>
+<CENTER>Dimension 3</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/stats_t_deb_different/stats_t_deb_different.data>Edit</a> stats_t_deb_different.data </CENTER>
 <HR><CENTER><B><A NAME=test_extraction1d>test_extraction1d</A></B></CENTER>
 <CENTER># PARALLEL OK 2 #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
