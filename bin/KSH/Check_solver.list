@@ -114,7 +114,4 @@ let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type a
 let i=$i+1;solver[$i]="Petsc_GPU GCP  { seuil $seuil precond DIAG { } impr }"					;gpu[$i]=1	;sym[$i]=1
 #let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type bjacobi -sub_pc_type ilu -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1 	;par[$i]=0 # Bug submitted to PETSc ?
 #let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type asm -sub_pc_type ilu -ksp_atol $seuil }"		;gpu[$i]=1	;sym[$i]=1 	;par[$i]=0 # Bug submitted to PETSc ?
-let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type sacusp -ksp_atol $seuil }"			;gpu[$i]=1	;sym[$i]=1	;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type ainvcusp -ksp_atol $seuil }"			;gpu[$i]=1	;sym[$i]=1	;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type sacusppoly -ksp_atol $seuil }"			;gpu[$i]=1	;sym[$i]=1	;par[$i]=0
 let i=$i+1;solver[$i]="Petsc_GPU BICGSTAB { seuil $seuil precond DIAG { } impr }"				;gpu[$i]=1	;sym[$i]=1

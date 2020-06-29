@@ -1,0 +1,13 @@
+Machines possibles:
+orcus (2 noeuds GPU)
+cobalt (3 noeuds GPU mais souvent pleins) Attention 7.3.0 plante sur AMGX !
+irene ?
+orcus	 Cuda ?			V100 14.0 GFlops (SXM2 16Gb) bench indique *15
+is234639 Cuda 10.0 		P600  1.1 GFlops Reference
+is240831 Cuda 10.1 7.5.0	P2000 3.0 GFLops (bench indique *2)
+is225303 Cuda 8 		P600
+
+Il faudrait trouver Cuda11. Sur mon PC ?
+Cuda 10: gcc 7, intel 18, clang 6
+Cuda 11: gcc 9, intel 19, clang 9
+
