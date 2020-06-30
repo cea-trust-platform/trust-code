@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.8.1_beta : Changes since version 1.8.0 :
+Developer notes version 1.8.1 : Changes since version 1.8.0 :
 -------------------------------------------------------------
 08/06/20 (TRUST)  Rewrite some Matrix/Array classes to avoid append_line|append_array methods when possible (Parex+ performance issues)
 30/04/20 (TRUST)  Add sympy module in Conda environment
