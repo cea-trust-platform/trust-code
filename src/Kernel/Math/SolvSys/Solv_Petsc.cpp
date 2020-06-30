@@ -353,7 +353,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // On verifie que le solveur est supporte si l'utilisateur souhaite utiliser le calcul par GPU:
   if (cuda_)
     {
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
       Cerr << "GPU capabilities of PETSc will be used." << finl;
 #else
       Cerr << "You can not use petsc_gpu keyword cause GPU" << finl;
@@ -1542,7 +1542,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
       // de la matrice en pression lors de l'introduction de l'option volume etendu
       int check_matrice_symetrique_ = matrice_symetrique_;
       // Check cancelled for:
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
       check_matrice_symetrique_=0; // Bug with CUDA ?
 #endif
 #ifdef NDEBUG
@@ -2058,7 +2058,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   else
     {
       // On utilise AIJ car je n'arrive pas a faire marcher avec BAIJ
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
       if (cuda_==1)
         MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJCUSPARSE:MATMPIAIJCUSPARSE));
       else

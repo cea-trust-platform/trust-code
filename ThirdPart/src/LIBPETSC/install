@@ -161,11 +161,12 @@ fi
 ################
 # GPU support? #
 ################
-if [ $PETSC_HAVE_CUDA = 1 ]
+if [ $TRUST_USE_CUDA = 1 ]
 then
    echo "****************************************"
-   echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
-   with_gpu="--with-cuda --with-cuda-dir=$CUDA_ROOT --download-viennacl"
+   echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
+   with_gpu="--with-cuda --with-cuda-dir=$CUDA_ROOT"
+   add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
 else
@@ -534,9 +535,9 @@ do
       # Cas tests
       ###########
       err=0
-      if [ "$PETSC_HAVE_CUDA" != 1 ]
+      if [ "$TRUST_USE_CUDA" != 1 ]
       then
-         # Tests with PETSC_HAVE_CUDA=1 are done below
+         # Tests with TRUST_USE_CUDA=1 are done below
         #  bloque de temps en temps make test
         echo No running make test
 	 err=$?
@@ -579,7 +580,7 @@ cd $ROOT
 ###########
 # Tests GPU
 ###########
-if [ "$PETSC_HAVE_CUDA" = 1 ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
    $DIR/test_gpu #|| exit -1
 fi

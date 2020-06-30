@@ -3,7 +3,7 @@
 rep=`pwd`
 rep=`basename $rep`
 NPROCS=1 && jdd=$rep && [ -f PAR_$rep.TU ] && jdd=PAR_$jdd && NPROCS=`ls *.Zones | wc -l`
-if [ "$PETSC_HAVE_CUDA" = 1 ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
    # Compare CPU and GPU performances
    ./compare_petsc_cuda.sh $jdd $NPROCS

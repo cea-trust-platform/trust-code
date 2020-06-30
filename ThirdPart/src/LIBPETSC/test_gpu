@@ -1,6 +1,6 @@
 #!/bin/bash
 option=$1
-[ "$PETSC_HAVE_CUDA" != 1 ] && echo "PETSc not built with CUDA." && exit -1
+[ "$TRUST_USE_CUDA" != 1 ] && echo "PETSc not built with CUDA." && exit -1
 export PETSC_DIR=$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"
 if [ ! -d $PETSC_DIR ]
 then
