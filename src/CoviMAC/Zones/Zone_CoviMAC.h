@@ -156,7 +156,7 @@ public :
   inline double nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
   //pour un champ T aux elements, interpole nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
-  void flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, DoubleTab& phif_cb) const;
+  void flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;

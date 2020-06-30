@@ -89,7 +89,7 @@ DoubleTab& Perte_Charge_CoviMAC::ajouter(DoubleTab& resu) const
   //     coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
   //
   //     /* contributions aux faces de e */
-  //     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
+  //     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.fcl(f, 0) < 2)
   //         {
   //           double m2vf = 0, contrib;
   //           for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
@@ -130,7 +130,7 @@ void Perte_Charge_CoviMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   //     coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
   //
   //     /* contributions aux faces de e */
-  //     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
+  //     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.fcl(f, 0) < 2)
   //         {
   //           double m2vf = 0, contrib;
   //           for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
@@ -138,14 +138,14 @@ void Perte_Charge_CoviMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   //           contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
   //           if (contrib >= min(C_dir, C_iso) * m2vf)
   //             {
-  //               for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+  //               for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.fcl(fb = e_f(e, zone.m2j(k)), 0) < 2)
   //                   matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
-  //               for (k = zone.ved(e); k < zone.ved(e + 1); k++) if (ch.icl(fb = zone.vej(k), 0) < 2)
+  //               for (k = zone.ved(e); k < zone.ved(e + 1); k++) if (ch.fcl(fb = zone.vej(k), 0) < 2)
   //                   matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.vec(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
   //             }
   //           else
   //             {
-  //               for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+  //               for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.fcl(fb = e_f(e, zone.m2j(k)), 0) < 2)
   //                   matrice(f, fb) += min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
   //             }
   //         }

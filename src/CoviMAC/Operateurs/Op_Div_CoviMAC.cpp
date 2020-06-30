@@ -72,13 +72,13 @@ void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
-  int i, f, n, N = equation().inconnue().valeurs().line_size();
+  int i, e, f, n, N = equation().inconnue().valeurs().line_size();
   ch.init_cl();
 
   IntTab stencil(0,2);
   stencil.set_smart_resize(1);
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++)
-      for (n = 0; n < N; n++) stencil.append_line(N * f_e(f, i) + n, N * f + n);
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+      for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * f + n);
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(N * zone.nb_ch_p0_tot(), N * zone.nb_ch_face_tot(), stencil, matrice);
@@ -88,11 +88,9 @@ DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const Conds_lim& cls = la_zcl_CoviMAC.valeur().les_conditions_limites();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
-  const DoubleTab& nf = zone.face_normales();
   const IntTab& f_e = zone.face_voisins();
-  int i, e, f, r, n, N = vit.line_size(), ne_tot = zone.nb_elem_tot();
+  int i, e, f, n, N = vit.line_size();
   assert(div.line_size() == N);
   ch.init_cl();
 
@@ -102,20 +100,10 @@ DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 
   for (f = 0; f < zone.nb_faces(); f++)
     {
-      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne_tot || ch.icl(e - ne_tot, 0) > 1) /* on ne contribue pas si ligne de bord de Neumann */
-          for (n = 0; n < N; n++) div.addr()[N * e + n] += (i ? -1 : 1) * fs(f) * pf(f) * vit.addr()[N * f + n];
-      if (f < zone.premiere_face_int())
-        {
-          /* contribution a tab_flux_bords */
-          for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit.addr()[N * f + n];
-          /* faces de Dirichlet : ajout de la vitesse imposee */
-          if (ch.icl(f, 0) == 3) for (r = 0, e = ne_tot + f; r < dimension; r++)
-              for (n = 0; n < N; n++) div.addr()[N * e + n] += nf(f, r) * pf(f) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), dimension * n + r);
-          else if (ch.icl(f, 0) == 1) /* faces de Neumann : - P_imp (pour que Delta.P == -Div donne P = P_imp) */
-            for (n = 0; n < N; n++) div.addr()[N * e + n] = - ref_cast(Neumann, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
-        }
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
+          div.addr()[N * e + n] += (i ? -1 : 1) * fs(f) * pf(f) * vit.addr()[N * f + n];
+      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit.addr()[N * f + n];
     }
-
 
   div.echange_espace_virtuel();
 
@@ -127,11 +115,11 @@ void Op_Div_CoviMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) cons
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const IntTab& f_e = zone.face_voisins();
-  int i, e, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
+  int i, e, f, n, N = ch.valeurs().line_size();
   ch.init_cl();
 
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne_tot || ch.icl(e - ne_tot, 0) > 1) /* pour ne pas toucher aux Neumann */
-        for (n = 0; n < N; n++) mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+      for (n = 0; n < N; n++) mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);
 }
 
 DoubleTab& Op_Div_CoviMAC::calculer(const DoubleTab& vit, DoubleTab& div) const

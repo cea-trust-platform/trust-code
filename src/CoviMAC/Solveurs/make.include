@@ -13,6 +13,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/CoviMAC/Champs\
 	-I$(TRUST_ROOT)/src/CoviMAC/Zones\
+	-I$(TRUST_ROOT)/src/CoviMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/ThHyd\
 	-I$(TRUST_ROOT)/src/ThSol

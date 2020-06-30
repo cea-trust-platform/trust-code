@@ -73,15 +73,20 @@ void Op_Conv_EF_Stab_CoviMAC_Face::completer()
 void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
-  int i, f, r, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_face();
+  int i, j, k, e, eb, f, fb, r, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
   /* agit uniquement aux elements; diagonale omise */
-  for (r = 0; r < dimension; r++) for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++)
-        stencil.append_line(nf_tot + r * ne_tot + f_e(f, i), nf_tot + r * ne_tot + f_e(f, !i));
+  for (r = 0; r < dimension; r++) for (f = 0; f < zone.nb_faces(); f++)
+    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+      {
+        for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)  //elem->face
+          stencil.append_line(fb, nf_tot + r * ne_tot + eb);
+        stencil.append_line(nf_tot + r * ne_tot + e, nf_tot + r * ne_tot + eb); //elem->elem
+      }
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(nf_tot + dimension * ne_tot, nf_tot + dimension * ne_tot, stencil, mat);
@@ -94,25 +99,30 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleTab& vit = vitesse_->valeurs();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_face();
+  const DoubleTab& vit = vitesse_->valeurs(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
   const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem();
-  int i, e, f, r, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension;
 
   /* operateur aux elements dans chaque direction */
-  for (r = 0; r < dimension; r++) for (f = 0; f < zone.nb_faces(); f++)
+  DoubleTrav fac(D), pfac(D);
+  for (f = 0; f < zone.nb_faces(); f++)
       {
-        double fac = 0, pfac;
-        for (i = 0; i < 2; i++, fac += pfac)
+        for (fac = 0, pfac = 0, i = 0; i < 2; i++, fac += pfac, pfac = 0)
           {
-            e = f_e(f, i) >= 0 && f_e(f, i) < ne_tot ? f_e(f, i) : (ch.icl(f, 0) == 1 ? f_e(f, 0) : -1);
-            if (e >= 0) pfac = pe(e) * inco(nf_tot + r * ne_tot + e);
-            else if (ch.icl(f, 0) == 3) pfac = ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), r);
+            e = f_e(f, i) >= 0 ? f_e(f, i) : (ch.fcl(f, 0) == 1 ? f_e(f, 0) : -1);
+            if (e >= 0) for (d = 0; d < D; d++) pfac(d) = pe(e) * inco(nf_tot + ne_tot * d + e);
+            else if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++) pfac(d) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), d);
             else pfac = 0;
             pfac *= (1. + (vit(f) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
           }
         fac *= fs(f) * vit(f);
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++) resu(nf_tot + ne_tot * r + e) -= (i ? -1 : 1) * fac;
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          {
+            for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) //elem -> face
+              resu(fb) -= (i ? -1 : 1) * mu_f(fb, 0, e != f_e(fb, 0)) * zone.dot(fac, &nf(fb, 0)) / fs(f);
+            for (d = 0; d < D; d++) resu(nf_tot + ne_tot * d + e) -= (i ? -1 : 1) * fac(d); //elem->elem
+          }
       }
 
   return resu;
@@ -125,24 +135,29 @@ inline void Op_Conv_EF_Stab_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inc
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleTab& vit = vitesse_->valeurs();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_face();
+  const DoubleTab& vit = vitesse_->valeurs(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
   const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem();
-  int i, j, e, f, r, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension;
 
   /* operateur aux elements dans chaque direction */
-  DoubleTrav dfac(2), pdfac(2);
-  for (r = 0; r < dimension; r++) for (f = 0; f < zone.nb_faces(); f++)
+  DoubleTrav dfac(2, D), pdfac(2, D);
+  for (f = 0; f < zone.nb_faces(); f++)
       {
         for (i = 0, dfac = 0, pdfac = 0; i < 2; i++, dfac += pdfac, pdfac = 0)
           {
-            if ((e = f_e(f, i)) >= 0 && e < ne_tot) pdfac(i) = pe(e);
-            else if (ch.icl(f, 0) == 1) pdfac(0) = pe(f_e(f, 0));
+            if ((e = f_e(f, i)) >= 0) for (d = 0; d < D; d++) pdfac(i, d) = pe(e);
+            else if (ch.fcl(f, 0) == 1) for (d = 0; d < D; d++) pdfac(0, d) = pe(f_e(f, 0));
             pdfac *= (1. + (vit(f) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
           }
         dfac *= fs(f) * vit(f);
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++) if (e < zone.nb_elem()) for (j = 0; j < 2; j++) if (dfac(j))
-                matrice(nf_tot + ne_tot * r + e, nf_tot + ne_tot * r + f_e(f, j)) += (i ? -1 : 1) * dfac(j);
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          {
+            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces()) for (j = 0; j < 2; j++) for (d = 0; d < D; d++) //elem -> face
+              matrice(fb, nf_tot + ne_tot * d + f_e(f, j)) += (i ? 1 : -1) * mu_f(fb, 0, e != f_e(fb, 0)) * dfac(j, d) * nf(fb, d) / fs(f);
+            if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (d = 0; d < D; d++) //elem -> elem
+              matrice(nf_tot + ne_tot * d + e, nf_tot + ne_tot * d + f_e(f, j)) += (i ? -1 : 1) * dfac(j, d);
+          }
       }
 }
 //Description:

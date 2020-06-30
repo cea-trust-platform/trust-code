@@ -49,20 +49,28 @@ class Op_Grad_CoviMAC_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
+  void completer();
   void dimensionner(Matrice_Morse& ) const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  virtual DoubleTab& ajouter(const DoubleTab& ,  DoubleTab&) const;
+  virtual DoubleTab& ajouter_NS(const DoubleTab& ,  DoubleTab&, const Matrice_Morse*, const DoubleTab*, const DoubleTab* ) const;
+  virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  virtual DoubleTab& calculer_NS(const DoubleTab& ,  DoubleTab&, const Matrice_Morse*, const DoubleTab*, const DoubleTab* ) const;
   void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const;
   int impr(Sortie& os) const;
   /* variation de gradP du fait d'une correction en pression -> action differente de ajouter() !!! */
   virtual DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
 
+  /* interaction exterieure */
+  mutable DoubleTab gradp_c; // coefficients de |f| phi_f * [grad p]_f, calcules par Zone_CoviMAC::flux() a partir de Masse_CoviMAC_Face::W_e
+  mutable int gradp_a_jour;  // 0 si gradp_c doit etre recalcule (fait par Masse_CoviMAC_Face)
+  void update_gradp() const; // pour recalculer gradp_c
+
 private:
 
   REF(Zone_CoviMAC) ref_zone;
   REF(Zone_Cl_CoviMAC) ref_zcl;
+
 protected:
 };
 

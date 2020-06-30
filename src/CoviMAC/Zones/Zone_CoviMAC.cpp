@@ -692,6 +692,7 @@ void Zone_CoviMAC::init_feb() const
               }
 
         /* remplissage : elements, faces de bord (offset ne_tot) */
+        for (i = 0; i < 2; i++) feb_j.append_line(f_e(f, i)); //amont/aval d'abord
         for (auto && c_e : xp_e) if (c_e.second != f_e(f, 0) && c_e.second != f_e(f, 1)) feb_j.append_line(c_e.second);
         for (auto && c_f : xv_f) if (c_f.second != f) feb_j.append_line(ne_tot + c_f.second);
       }
@@ -703,11 +704,11 @@ void Zone_CoviMAC::init_feb() const
 
 /* pour un champ T aux elements, interpolation de nu.grad T du cote i de la face f */
 /* amont/aval dans phif_c(f, c, n, 0/1), autres items dans phif_cb([feb_d(f), feb_d(f + 1)[, c, n) (indices dans feb_j) */
-void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, DoubleTab& phif_cb) const
+void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c) const
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
-  int i, j, jb, k, e, f, n, N = phif_c.dimension(2), ne_tot = nb_elem_tot(), nw, infoo, D = dimension; //nombre de composantes
+  int i, j, jb, k, e, f, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, D = dimension; //nombre de composantes
   char trans = 'N';
 
   /* localisation des points aux faces de bord : projection selon nu nf de l'element amont sur la face */
@@ -731,26 +732,20 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c, Doubl
             }
 
           /* interpolation et contribution au flux */
-          int nl = D + 1, nc = 2 + feb_d(f + 1) - feb_d(f), un = 1;
+          int nl = D + 1, nc = feb_d(f + 1) - feb_d(f), un = 1;
           A.resize(nc, nl), B.resize(nc), phi.resize(nc), P.resize(nc); //format LAPACK pour DGELS
-          phi = 0, phi(1) = 1. / (1. / h[0] + 1. / h[1]), phi(0) = - phi(1); //amont/aval
+          for (j = 0, jb = feb_d(f); j < nc; j++, jb++) phif_c(jb, n) = ((j == 1) - (j == 0)) / (1. / h[0] + 1. / h[1]);
           if (dot(&xfe(1, 0), &xfe(1, 0), &xfe(0, 0), &xfe(0, 0)) > 1e-12) for (i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
               {
                 B = 0, B(D) = 1;
-                for (j = 0; j < 2; j++) for (e = f_e(f, j), xe = &xp_(e, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++) //amont/aval
-                    A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j);
-                for (jb = feb_d(f); jb < feb_d(f + 1); j++, jb++)
-                  for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++) //le reste
+                for (j = 0, jb = feb_d(f); j < nc; j++, jb++)
+                  for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++)
                     A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j);
 
                 /* moindres carres par DGELS */
                 nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-                for (j = 0; j < nc; j++) phi(j) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
+                for (j = 0, jb = feb_d(f); j < nc; j++, jb++) phif_c(jb, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
               }
-
-          /* stockage */
-          for (j = 0; j < 2; j++) phif_c(f, j, n) = phi(j); //amont/aval
-          for (jb = feb_d(f); jb < feb_d(f + 1); jb++, j++) phif_cb(jb, n) = phi(j); //auxiliaires
         }
 }

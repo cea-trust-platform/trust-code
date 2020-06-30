@@ -76,7 +76,7 @@ DoubleTab& Terme_Boussinesq_CoviMAC_Face::ajouter(DoubleTab& resu) const
   // Verifie la validite de T0:
   check();
   int e, i, f, n;
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; ch.icl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; ch.fcl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));

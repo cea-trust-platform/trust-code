@@ -132,8 +132,8 @@ void Champ_Face_CoviMAC::init_cl() const
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, f, n;
 
-  if (icl.dimension(0)) return;
-  icl.resize(zone.nb_faces_tot(), 3);
+  if (fcl.dimension(0)) return;
+  fcl.resize(zone.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
@@ -142,9 +142,9 @@ void Champ_Face_CoviMAC::init_cl() const
                 + 3 * sub_type(Dirichlet, cls[n].valeur()) + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (!idx) Cerr << "Champ_Face_CoviMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;
+        f = fvf.num_face(i), fcl(f, 0) = idx, fcl(f, 1) = n, fcl(f, 2) = i;
     }
-  CRIMP(icl);
+  CRIMP(fcl);
 }
 
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */

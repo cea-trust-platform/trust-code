@@ -85,7 +85,7 @@ public :
   //              3 -> Dirichlet
   //              4 -> Dirichlet_homogene
   void init_cl() const;
-  mutable IntTab icl; // icl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
+  mutable IntTab fcl; // fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
 
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
   void update_ve (DoubleTab& val) const;

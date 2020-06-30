@@ -27,6 +27,7 @@
 #include <Solveur_Masse.h>
 #include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
+#include <DoubleTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -46,11 +47,18 @@ public:
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
-  /* idem que Solveur_Masse_base, mais ajoute des lignes triviales pour les CL a vitesse imposee */
+  void completer();
   virtual void dimensionner(Matrice_Morse& matrix) const;
-  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
+  /* calcule les permeabilites dv_e = dt W_e (grap p)_e et les facteurs v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
+  /* les utilise pour remplir les lignes aux faces de la matrice */
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
+  /* doit etre appele apres le ajouter_masse matriciel */
+  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
+
+  /* sensibilites dv_e = - ds W_e d(grad p_e) et ponderations v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
+  mutable DoubleTab W_e; //W_e(e, n_comp, i, j)
+  mutable DoubleTab mu_f; //mu_f(f, n_comp)
 
 private:
 

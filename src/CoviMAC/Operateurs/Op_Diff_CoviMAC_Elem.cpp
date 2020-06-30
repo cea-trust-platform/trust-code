@@ -123,18 +123,10 @@ void Op_Diff_CoviMAC_Elem::dimensionner(Matrice_Morse& mat) const
       for (n = 0, e = f_e(f, 0); n < N; n++) stencil.append_line(N * e + n, N * e + n);
 
   /* nu grad T aux faces internes */
-  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++)
-    {
-      /* amont/aval : obligatoire */
-      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++)
-              stencil.append_line(N * e + n, N * eb + n);
-
-      /* autres points : facultatif, sauf si nu variable et anisotrope */
-      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
-            for (eb = (zone.feb_j(j) < ne_tot ? zone.feb_j(j) : f_e(zone.feb_j(j) - ne_tot, 0)), n = 0; n < N; n++)
-              if (nu_constant_ || N_nu <= N ? dabs(phif_cb(j, n)) > 1e-8 : 1)
-                stencil.append_line(N * e + n, N * eb + n), tpfa(f, n) = 0;
-    }
+  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem())
+        for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++) for (eb = zone.feb_j(j), n = 0; n < N; n++)
+            if (nu_constant_ || N_nu <= N ? dabs(phif_c(j, n)) > 1e-8 : 1)
+              stencil.append_line(N * e + n, N * (eb < ne_tot ? eb : f_e(eb, 0)) + n), tpfa(f, n) &= (j < zone.feb_d(f) + 2);
 
   tableau_trier_retirer_doublons(stencil);
   Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * zone.zone().md_vector_elements().valeur().nb_items_seq_tot())
@@ -198,9 +190,8 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
   for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++)
     {
       /* phi = |f|nu.grad T */
-      for (i = 0, phi = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) phi(n) += phif_c(f, i, n) * inco.addr()[N * e + n]; //amont/aval
-      for (i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(i), n = 0; n < N; n++) //auxiliaires
-          phi(n) += phif_cb(i, n) * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n));
+      for (phi = 0, i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(i), n = 0; n < N; n++) //auxiliaires
+          phi(n) += phif_c(i, n) * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n));
 
       /* contributions */
       for (i = 0; i < 2; i++) for (n = 0; n < N; n++) resu.addr()[N * f_e(f, i) + n] -= (i ? 1 : -1) * phi(n);
@@ -252,9 +243,8 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++)
     {
       /* phi = |f|nu.grad T */
-      for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) dphi[n][N * e + n] += phif_c(f, i, n); //amont/aval
-      for (i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(i), n = 0; n < N; n++) if (dabs(phif_cb(i, n)) > 1e-8) //auxiliaires
-            dphi[n][N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] += phif_cb(i, n) * (e < ne_tot ? 1 : dTb(e - ne_tot, n));
+      for (i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(i), n = 0; n < N; n++) if (dabs(phif_c(i, n)) > 1e-8) //auxiliaires
+            dphi[n][N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] += phif_c(i, n) * (e < ne_tot ? 1 : dTb(e - ne_tot, n));
 
       /* contributions */
       for (n = 0; n < N; dphi[n].clear(), n++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (auto &i_c : dphi[n])
