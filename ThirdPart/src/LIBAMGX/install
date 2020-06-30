@@ -1,0 +1,48 @@
+#!/bin/bash
+# AmgX + AmgXwrapper
+# AmgX: See https://github.com/NVIDIA/AMGX#building
+# AmgXwrapper: See https://github.com/barbagroup/AmgXWrapper/blob/master/doc/install.md
+AMGX_DIR=`dirname $1`
+LIB=`basename $1`
+ROOT=`pwd`
+srun=srun && [ $TRUST_WITHOUT_HOST = 1 ] && srun=mpirun
+log=$AMGX_DIR/perf_amgx.log && rm -f $log
+rm -r -f $LIB
+if [ $LIB = AmgX ]
+then
+   # Build
+   cd $ROOT
+   tar xfz $TRUST_ROOT/externalpackages/$LIB"_"*.tar.gz
+   cd $LIB && mkdir -p build && cd build
+   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && $TRUST_MAKE && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   [ $? != 0 ] && exit -1
+   # Test
+   cd $AMGX_DIR/$LIB/lib/examples
+   export LD_LIBRARY_PATH=$AMGX_DIR/$LIB/lib:$LD_LIBRARY_PATH
+   $srun -n 1 amgx_capi     -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
+   $srun -n 2 amgx_mpi_capi -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
+   # solve amgx_capi  	amgx_mpi_capi
+   # P600 	0.1120s		bizarre
+   # V100 	0.0011s		0.0153s
+   # web	0.0006s		0.0156s
+fi
+if [ $LIB = AmgXWrapper ]
+then
+   cd $ROOT
+   tar xfz $TRUST_ROOT/externalpackages/$LIB"_"*.tar.gz
+   cd $LIB && rm -r -f build && mkdir -p build && cd build
+   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE && make install
+   [ $? != 0 ] && exit -1
+   # Test
+   cd ../example
+   rm -r -f build && mkdir build && cd build
+   sed -i "1,$ s?# include <petsctime.h>??g" ../poisson/src/solve.cpp
+   cmake -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX ../poisson && $TRUST_MAKE
+   $srun -n 4 bin/poisson -caseName PETSc_GAMG_100x100x100 -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
+   $srun -n 4 bin/poisson -caseName   AmgX_AGG_100x100x100 -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
+   # solve 	GAMG	A:gX_AGG
+   # P600 	1.83s	crash
+   # V100 	?	?
+fi
+# On efface les sources:
+cd $ROOT;rm -r -f $LIB
