@@ -13,24 +13,24 @@ mkdir preserve
 DIR=`dirname $0`
 DIR=`(cd $DIR; pwd)`
 $DIR/Run  $1 -not_run  -o test.pdf 1>err 2>&1
-[ ! -f build/test.pdf ] && echo impossible de generer le rapport on arrete tout && exit 1
+[ ! -f build/test.pdf ] && echo "Impossible de generer le rapport on arrete tout. Lancer Run_fiche avant de lancer Run_fiche -archive." && exit 1
 
 
 ajoute_file_meshtv()
 {
     # ajoute les fichiers meshtv aux fichiers visits
     for file in $@
-      do
+    do
      # file=`echo $file | sed "s?^/??g"`
       echo $file
-      if [ "$file"  != "${file%.visit}" ]
-    then
-    rexpr="${file%.visit}[[:print:]]*\.meshtv"
-    files=`tar tf ../all.tar`
-    for f in  $files
-      do 
-      echo $f
-    done | grep  -e $rexpr
+      if [ "$file" != "${file%.visit}" ]
+      then
+         rexpr="${file%.visit}[[:print:]]*\.meshtv"
+         files=`tar tf ../all.tar`
+         for f in $files
+         do 
+            echo $f
+         done | grep -e $rexpr
       fi
     done
 }
@@ -81,7 +81,7 @@ while [ $ok -ne 1 ]; do
   files=` egrep "No such file or directory:|can't read data file" ../err | awk '{print $NF}'| grep preserve | sed "s?../preserve/./??" |  sed "s?../preserve/??"`
   files=` egrep "No such file or directory:|File not found|Skipping unreadable file|can't read data file|Error opening file|Cannot find or open file" ../err | awk '{print $NF}' | sed "s?\.\./preserve/\./??" | sed "s?$orig??g" |  sed "s?\.\./preserve/??g"| sort -u| sed "s?\"\./?\"?" | sed "s?/\./??g"| sed "s?\./??g"` 
 #   files=` egrep "No such file or directory:|File not found|Skipping unreadable file|can't read data file|Error opening file" ../err | awk '{print $NF}' | sed "s?\.\./preserve/\./??g" | sed "s?$orig??g" |  sed "s?\.\./preserve/??g"| sort -u| sed "s?\"\./?\"?g" | sed "s?/\./??g"| sed "s?\./??g"`
-  [ "$files" = "$files_old" ] && [ "$files" != "" ] &&  echo $files pas dans l archive && exit -1
+  [ "$files" = "$files_old" ] && [ "$files" != "" ] &&  echo "Error: $files pas dans l archive" && exit -1
   echo "@@@@@@ Files:" $files
   files_old=$files
   echo "@@@ LOG 3"
@@ -108,7 +108,7 @@ while [ $ok -ne 1 ]; do
 done  # end while
 echo "@@@ done while"
 
-[ ! -f build/test.pdf ] && echo creation archive rate && exit -1
+[ ! -f build/test.pdf ] && echo "creation archive rate:"`cat err` && exit -1
 
 archive=preserve
 [ "$2" != "" ] && archive=$2
@@ -133,6 +133,6 @@ modif_prm $prm
 python $DIR/src/genererCourbes.py -p $prm -o ../old_rapport.pdf 1> ../err 2>&1
 [ $? -ne 0 ] && echo generation finale echoue &&  mv ../$archive.tgz ../${archive}_pb.tgz && exit 2
 cd ..
-gzip -f  old_rapport.pdf
+gzip -f old_rapport.pdf
 rm -rf preserve err
 
