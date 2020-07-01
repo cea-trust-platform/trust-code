@@ -11,12 +11,22 @@ if [ $LIB = AmgX ]
 then
    # Build
    cd $ROOT
-   if [ "$TRUST_WITHOUT_HOST" = 1 ]
+   if [ "`nvcc --version | grep 10.[12]`" != "" ]
    then
-      # On clone directement (risque) mais la version dans externalpackage ne marche que pour Cuda 10.0
+      # Cuda 10.1 ou 10.2
+      # Commit d0019e5 (more recent commit)
+      tar xfz $TRUST_ROOT/externalpackages/$LIB"_"d0019e5.tar.gz
+   elif [ "`nvcc --version | grep 10.0`" != "" ]
+   then
+      # Cuda 10.0
+      # Commit ba9132119f (supporte par AmgXWrapper)
+      tar xfz $TRUST_ROOT/externalpackages/$LIB"_"ba9132119f.tar.gz
+   elif [ "$TRUST_WITHOUT_HOST" = 1 ]
+   then
+      # Latest:
       git clone https://github.com/NVIDIA/AMGX.git $LIB
    else
-      tar xfz $TRUST_ROOT/externalpackages/$LIB"_"*.tar.gz
+      echo "Update $0 for your needs." && exit -1
    fi
    cd $LIB && mkdir -p build && cd build
    cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && $TRUST_MAKE && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
@@ -54,7 +64,7 @@ then
    # P600 	1.83s	crash	is234639
    # P2000	1.72s   0.30s	is240831 (PETSc build avec GPU)
    # V100 	1.32s	0.07s	orcus    (PETSc build avec GPU)
-   # V100	?	?	cobalt
+   # V100	1.35s	0.08s	cobalt
 fi
 # On efface les sources:
 cd $ROOT;rm -r -f $LIB
