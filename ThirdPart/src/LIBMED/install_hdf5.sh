@@ -33,7 +33,12 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
     echo "HDF5 installation: archive '$archive' could not be found or could not be extracted!!!"
     exit -1
   fi
-  
+  # Hack: deprecated sur hdf5-1.10.3 avec OpenMPI recent (MPI-3):
+  sed -i "1,$ s?MPI_Type_extent (old_type, &old_extent)?MPI_Aint lb;MPI_Type_get_extent (old_type, \&lb, \&old_extent)?" hdf5-1.10.3/src/H5Smpio.c || exit -1
+  sed -i "1,$ s?MPI_Type_extent (inner_type, &inner_extent)?MPI_Type_get_extent (inner_type, \&lb, \&inner_extent)?"     hdf5-1.10.3/src/H5Smpio.c || exit -1
+  sed -i "1,$ s?MPI_Address?MPI_Get_address?"            hdf5-1.10.3/testpar/t_cache.c || exit -1
+  sed -i "1,$ s?MPI_Type_struct?MPI_Type_create_struct?" hdf5-1.10.3/testpar/t_cache.c || exit -1
+
   archive_short=$(basename $archive)
   src_dir=${archive_short%.tar.gz}
   cd $build_dir
