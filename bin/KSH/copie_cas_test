@@ -157,7 +157,7 @@ then
    done
    # Renomme le .data et le modifie pour qqs pas de temps
    old=`basename $jeu`
-   [ ! -f $old ] && echo "Erreur $old inexistant! Probleme dans la fiche de validation..." && exit -1
+   [ ! -f $old ] && echo "Erreur `pwd`/$old inexistant! Probleme dans la fiche de validation..." && exit -1
    # Change le nombre de pas de temps a 3 au plus et eventuellement GCP -> CHOLESKY (si le solveur_pression est defini sur une seule ligne et si pas FT)
    # Gauthier veut que l'on touche au minimum le jeu de donnees donc pas de changement GCP -> CHOLESKY
    FT=0 && [ "`grep -i Probleme_FT_Disc_gen $old`" != "" ] && FT=1
