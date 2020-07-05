@@ -1,8 +1,9 @@
-XX/07/20 (TRUST) Bug fixed:   : Total pressure in VEF Quasi-Compressible model is now computed on same nodes than pressure
+XX/XX/20 (TRUST)  Portability : First partial support on Armv8 achitecture with GNU compilers (eg: Miniconda3 has no local channel so direct access to Internet is needed)
+XX/07/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model is now computed on same nodes than pressure
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1 : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
-17/06/20 (TRUST)  keyword     : Perte_Charge_Singuliere syntax has changed. The new syntax is: Perte_Charge_Singuliere { dir dir_val coeff/regul coeff_val/regul_bloc surface surface_bloc } (the old syntax was: Perte_Charge_Singuliere dir_val coeff_val surface_bloc )
+17/06/20 (TRUST)  Keyword     : Perte_Charge_Singuliere syntax has changed. The new syntax is: Perte_Charge_Singuliere { dir dir_val coeff/regul coeff_val/regul_bloc surface surface_bloc } (the old syntax was: Perte_Charge_Singuliere dir_val coeff_val surface_bloc )
 03/06/20 (TRUST)  Keyword     : Option thermique_monolithique (see below) available for PolyMAC discretization also
 03/06/20 (TRUST)  Change      : PolyMAC numerical improvements
 03/06/20 (TRUST)  Keyword     : Champ_Fonc_MED_Table_Temps to read a field into a MED file and time tabulate it
