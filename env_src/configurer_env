@@ -1386,7 +1386,7 @@ else
 	 # Pour OpenMPI on prend desormais mpiCC pour compiler en changeant le compilateur
 	 m="# Compiler for mpiCC" && e="OMPI_CXX=\"\$TRUST_CC_BASE\" && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpicc" && e="OMPI_CC=\"\$TRUST_cc_BASE\" && export OMPI_CC" && ecrit $m"|"$e"|"$env;eval $e
-	 m="# Compiler for mpif77" && e="OMPI_F77=\"\$TRUST_F77_BASE\" && export OMPI_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpifort" && e="OMPI_FC=\"\$TRUST_F77_BASE\" && export OMPI_FC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpiCC\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C" && e="TRUST_cc=\"$MPI_ROOT/bin/mpicc\" && export TRUST_cc" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
@@ -1840,18 +1840,14 @@ case $TRUST_ARCH_CC in
 	cherche_include_systeme
 	;;
 linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
+        [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -mcpu=native" # To add optimized machine-specific library
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && CppFlags=$CppFlags" -armpl -mcpu=native" # To add optimized machine-specific library
-        # 06/02/14, Added -Wshadow
-	CppFlags=$CppFlags" -Wshadow"
-	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
+	CppFlags="-O3 -fPIC $ArmFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
-	CppFlags=$CppFlags" -Wno-tautological-compare"
-
-	CppFlags=$CppFlags" -Werror"
+	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
 	if [ "`basename $TRUST_F77_BASE`" = g77 ]
         then
 	   SYSLIBS=$SYSLIBS"-lg2c"
@@ -1870,8 +1866,8 @@ linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
 	fi
 	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArgParser"
 	# Support d'Absoft mais n'accepte que -O comme flag
-	F77Flags="-O3 -fPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-	ccFLAGS="-Qunused-arguments -O3 -fPIC"
+	F77Flags="-O3 -fPIC $ArmFlags" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
+	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
 	;;
