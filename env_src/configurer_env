@@ -776,9 +776,9 @@ case $arch in
 	   TRUST_F77_BASE="ifort ifc efc $fortran_gnu"
 	   TRUST_cc_BASE="icc ecc gcc"
 	else
-	   TRUST_CC_BASE="g++ icpc icc ecc"
-	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
-	   TRUST_cc_BASE="gcc icc ecc"
+	   TRUST_CC_BASE="armclang++ g++ icpc icc ecc"
+	   TRUST_F77_BASE="armflang $fortran_gnu ifort ifc efc"
+	   TRUST_cc_BASE="armclang gcc icc ecc"
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -912,15 +912,17 @@ local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
    # check of python version
-   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373?1:0)}'`
+   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373||v==376?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda
-   for pkg in $pkgs; do
+   $TRUST_ROOT/exec/python/bin/conda list > conda_list
+   for pkg in $pkgs
+   do
      pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
-     [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && INSTALL_OK=0
+     [ "`grep $pkg conda_list`" = "" ] && INSTALL_OK=0
    done
-
+   rm -f conda_list
    if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
    then
       INSTALL_CONDA=1
@@ -1837,11 +1839,12 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
-linux_clang++) TRUST_SUPPORTED=1
+linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
 	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	# 06/02/14, Added -Wshadow
+	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && CppFlags=$CppFlags" -armpl -mcpu=native" # To add optimized machine-specific library
+        # 06/02/14, Added -Wshadow
 	CppFlags=$CppFlags" -Wshadow"
 	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
@@ -1865,6 +1868,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	   rm -f test.cpp
 	   SYSLIBS=$SYSLIBS"-lgfortran"
 	fi
+	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArgParser"
 	# Support d'Absoft mais n'accepte que -O comme flag
 	F77Flags="-O3 -fPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC"
