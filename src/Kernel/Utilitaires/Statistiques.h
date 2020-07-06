@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,8 +63,8 @@ public:
   // en inline et pas les details d'implementation.
   // Les deux fonctions suivantes peuvent etre appelees sur un seul processeur
   // track_comm permet d'indiquer si l'on souhaite egalement traquer les communications
-  inline void begin_count(const Stat_Counter_Id& counter_id, bool track_comm = false);
-  inline void end_count(const Stat_Counter_Id& counter_id, int quantity = 0, int count = 1, bool track_comm = false);
+  inline void begin_count(const Stat_Counter_Id& counter_id, bool track_comm = true);
+  inline void end_count(const Stat_Counter_Id& counter_id, int quantity = 0, int count = 1, bool track_comm = true);
 
 
   // Renvoie le dernier intervalle de temps mesure par un compteur, en secondes
@@ -79,7 +79,8 @@ public:
   // Remise a zero de tous les compteurs
   void reset_counters();
   // Remise a zero du compteur counter_id
-  void reset_counter(int counter_id, bool all = true);
+  //(certaines donnees sont conservees, comme counters_avg_min_max_var_per_step et communication_tracking_info)
+  void reset_counter(int counter_id);
 
 
   // Exploitation des resultats
@@ -212,6 +213,8 @@ public:
 
   void compute_min_max_avg();  //calcule le min, le max et la moyenne des temps sur les procs
 
+  inline void reset();
+
 };
 inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id, bool track_comm)
 {
@@ -246,4 +249,14 @@ inline void Statistiques::end_count(const Stat_Counter_Id& counter_id,
 
 
 }
+
+
+inline void Stat_Results::reset()
+{
+
+  time=0.0, min_time=0.0, max_time=0.0, avg_time=0.0;
+  count=0.0, min_count=0.0, max_count=0.0, avg_count=0.0;
+  quantity=0.0, min_quantity=0.0, max_quantity=0.0, avg_quantity=0.0;
+}
+
 #endif

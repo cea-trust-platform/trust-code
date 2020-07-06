@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,7 +87,7 @@ Statistiques * les_statistiques_trio_U_nom_long_pour_decourager_l_utilisation_di
 
 #define BUFLEN 100
 
-#define INITIAL_MIN 1000.0
+static const double INITIAL_MIN = 1000.0;
 
 // =================================================================
 // =================================================================
@@ -464,8 +464,9 @@ void Statistiques::begin_count_(const int id)
 
 
   // demarrage des compteurs seulement apres les 3 premieres iterations car elles peuvent fausser les statistiques
-  // (l'identifiant du compteur qui mesure le temps total est 0, on le demarre sans attendre que les 3 premiers pas de temps soient ecoules)
-  if ( (JUMP_3_FIRST_STEPS && (id == 0 || three_first_steps_elapsed_ ) )
+  // (on demarre le compteur du temps total sans attendre que les 3 premiers pas de temps soient ecoules)
+  bool is_temps_total = strcmp(si.description[id], "Temps total") == 0;
+  if ( (JUMP_3_FIRST_STEPS && (is_temps_total || three_first_steps_elapsed_ ) )
        || !JUMP_3_FIRST_STEPS)
     {
       si.time_begin[id].get_time();
@@ -489,9 +490,8 @@ void Statistiques::end_count_(const int id, int quantity, int count)
   assert(id < si.nb_counters);
 
   // arret des compteurs seulement apres les 3 premieres iterations (car on les demarre seulement apres 3 iterations)
-  // (l'identifiant du compteur qui mesure le nombre de pas de temps est 2)
-  // (l'identifiant du compteur qui mesure le temps total est 0)
-  if ( (JUMP_3_FIRST_STEPS && (id == 0 || three_first_steps_elapsed_ ) )
+  bool is_temps_total = strcmp(si.description[id], "Temps total") == 0;
+  if ( (JUMP_3_FIRST_STEPS && (is_temps_total || three_first_steps_elapsed_ ) )
        || !JUMP_3_FIRST_STEPS)
     {
       if (si.counter_running[id])
@@ -878,9 +878,14 @@ void Statistiques::reset_counters()
           si.counters_avg_min_max_var_per_step[i][j] = j==2 ? INITIAL_MIN : 0.0;   //l'indice 2 correspond au min courant
         }
     }
+
+  for (int i = 0; i < si.nb_comm_counters; i++)
+    for (int j = 0; j < MAXCOUNTERS; j++)
+      si.communication_tracking_info[i][j].reset();
+
 }
 
-void Statistiques::reset_counter(int counter_id, bool all)
+void Statistiques::reset_counter(int counter_id)
 {
   Stat_Internals& si = *stat_internals;
   Time time_zero;
@@ -891,14 +896,6 @@ void Statistiques::reset_counter(int counter_id, bool all)
 
   si.counter_nb[counter_id] = 0;
   si.counter_quantity[counter_id] = 0;
-
-  if(all)
-    {
-      for(int j = 0; j < 5; j++)
-        {
-          si.counters_avg_min_max_var_per_step[counter_id][j] = j==2 ? INITIAL_MIN : 0.0;   //l'indice 2 correspond au min courant
-        }
-    }
 
 }
 
@@ -1055,7 +1052,7 @@ void Statistiques::begin_communication_tracking(int cid)
 
             }
         }
-      reset_counter(counter_id, false);
+      reset_counter(counter_id);
 
     }
 
@@ -1110,6 +1107,16 @@ void Statistiques::print_communciation_tracking_details()
 
   SChaine comm;
   char desc[BUFLEN+100];
+
+  comm << "*************************************************************************************************" << finl;
+  comm << "File divided into 2 parts:" << finl;
+  comm << "Part 1: for each function, gives the percentage consumed by communications" << finl;
+  comm << "Part 2: for each type of communication, gives the percentage of time spent in each function" << finl;
+  comm << "        Note that some counters are nested within each other, " << finl;
+  comm << "        that's why the sum of the percentages does not necessarily add up to 100% in this part." << finl;
+  comm << "*************************************************************************************************" << finl;
+
+  comm << finl;
 
   //parcours des zones de communication
   for (int i = 0; i < si.nb_counters; i++)
@@ -1196,7 +1203,8 @@ void Statistiques::print_communciation_tracking_details()
             send_recv_family[0] += total_time_of_communication_i;
         }
 
-      for (int j = 0; j < si.nb_counters; j++)
+      // first counter is "Temps total", we can skip it
+      for (int j = 1; j < si.nb_counters; j++)
         {
           double communication_in_zone_j = si.communication_tracking_info[i][j+1].time;
           double avg_communication_in_zone_j = Process::mp_sum(communication_in_zone_j);
