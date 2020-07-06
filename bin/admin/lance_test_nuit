@@ -365,19 +365,19 @@ check_components()
                            WORKBETA=""
                            if  [ "${machine:0:14}" = "callisto-intel" ]
                            then
-		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.8.0/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.8.1/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
                            then
-		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.0.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.1.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.8.0.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.8.1.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
                            then
-		              [ $TRUST_VERSION = 1.8.0 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.0.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.1.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -805,6 +805,18 @@ fi
    version=`$TRUST_Awk '/ Tutorial V/ {print $5}' $tuto`
    echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
    version=`$TRUST_Awk '/ Tutorial V/ {print $9}' $tuto.new`
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
+   if [ "`diff $tuto $tuto.new`" != "" ]
+   then
+      echo "Mark new version in "$tuto
+      CHECKOUT $tuto
+      cat $tuto.new > $tuto
+   fi
+   rm -f $tuto.new
+   tuto=doc/TRUST/Tutorial/ICoCo_tutorial.tex
+   version=`$TRUST_Awk '/ Tutorial V/ {print $4}' $tuto`
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   version=`$TRUST_Awk '/ Tutorial V/ {print $7}' $tuto.new`
    echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
    if [ "`diff $tuto $tuto.new`" != "" ]
    then
@@ -3132,7 +3144,7 @@ else
 fi
 force_performances=~/force_performances && [ -f $force_performances ] && performances=1 && rm -f $force_performances
 # je force le critere performances
-performances=1
+# performances=1
 [ "$nb_machines" -eq 0 ] && nb_machines=-1
 if [ "$nb_machines" -eq -1 ]
 then
@@ -3222,7 +3234,7 @@ then
 fi
 force_validation_etudes=~/force_validation_etudes && [ -f $force_validation_etudes ] && validation_etudes=1 && rm -f $force_validation_etudes
 # je force le critere etude
-validation_etudes=1
+# validation_etudes=1
 if [ "$NB" -eq -1 ]
 then
   echo "$validation_etudes  Studies $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
@@ -4093,11 +4105,8 @@ OPTIONS=\"-disable-optionals\"
 # for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TRUST_$new.sh
 
-# for CEA Saclay cluster (callisto):
-source /home/triou/env_TRUST_$new.sh
-
-# for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/env_TRUST-$new.sh
+# for CEA Saclay cluster (orcus):
+source /home/trust_trio/env_TRUST-$new.sh
 
 # for CEA Marcoule cluster (ceres2):
 source /softs/trio_u/env_TRUST-$new.sh
@@ -4193,11 +4202,8 @@ make optim debug
 # for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TrioCFD_$new.sh
 
-# for CEA Saclay cluster (callisto):
-source /home/triou/env_TrioCFD_$new.sh
-
-# for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/env_TrioCFD-$new.sh
+# for CEA Saclay cluster (orcus):
+source /home/trust_trio/env_TrioCFD-$new.sh
 
 # for CEA Marcoule cluster (ceres2):
 source /softs/trio_u/env_TrioCFD-$new.sh

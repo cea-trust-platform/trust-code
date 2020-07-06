@@ -1,4 +1,7 @@
 -------------------------------------------------------------------------------------------------------
+Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1 : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
 17/06/20 (TRUST)  keyword     : Perte_Charge_Singuliere syntax has changed. The new syntax is: Perte_Charge_Singuliere { dir dir_val coeff/regul coeff_val/regul_bloc surface surface_bloc } (the old syntax was: Perte_Charge_Singuliere dir_val coeff_val surface_bloc )
