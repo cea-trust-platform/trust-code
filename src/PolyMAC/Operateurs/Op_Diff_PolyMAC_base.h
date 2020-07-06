@@ -59,8 +59,6 @@ class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulen
 public:
   void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
 
-  double calculer_dt_stab() const;
-
   void associer_diffusivite(const Champ_base& );
   void completer();
   const Champ_base& diffusivite() const;

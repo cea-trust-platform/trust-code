@@ -548,7 +548,6 @@ void Zone_PolyMAC::discretiser()
   Zone_VF::calculer_porosites();
   Zone_VF::calculer_diametres_hydrauliques();
   calculer_volumes_entrelaces();
-  calculer_h_carre();
 
   /* ordre canonique dans elem_faces_ */
   std::map<std::array<double, 3>, int> xv_fsa;
