@@ -73,7 +73,7 @@ def interprete_string(str_in,list_macro,list_vars):
     global ite,debug_level
 
     list_pattern={}
-    for pat in "macro","usemacro","set","unset","if","include","foreach","error","comment","add":
+    for pat in "macro","usemacro","set","unset","if","include","foreach","error","comment","add","get":
         # Change of behavior of exec() in Python3:
         #exec("patt=pattern_"+pat+"()", context)
         # Better to use this:
@@ -359,14 +359,62 @@ class pattern_add(pattern_base):
         try:
           n1 = int(value_in)
         except ValueError:
-         raise Exception("Padd : le parametre a incrementer doit etre compatible avec un entier. On a lu "+value_to_incr)
+         raise Exception("Padd : le parametre a incrementer doit etre compatible avec un entier. On a lu "+value_in)
         try:
           n2 = int(value_op)
         except ValueError:
-          raise Exception("Padd : l'operande doit etre compatible avec un entier. On a lu "+operand)
+          raise Exception("Padd : l'operande doit etre compatible avec un entier. On a lu "+value_op)
 
         list_vars[name_var_out]=[]
         value_out = str(n1+n2)
+        list_vars[name_var_out].append(pattern_value(name_var_out,value_out))
+        return ""
+    pass
+class pattern_get(pattern_base):
+    ''' usage: #Pget( var_in var_out indice)
+          permet de recuperer un element d'une liste
+          var_out = var_in[indice] 
+          '''
+    pattern='#Pget('
+    end_pattern=')'
+    nb_bloc=1
+    def analyse(self,in2,list_macro,list_vars):
+        index=in2.find(' ')
+        params = in2.split('(')[1].split(')')
+        params = list(filter(lambda x: x!="",params))
+        params = params[0].strip().split() 
+
+        if len(params)!=3:
+          raise Exception("Pget : On attendait 3 parametres. On a lu les parametres : "+params)
+
+        name_var_in  = params[0]
+        name_var_out = params[1]
+        name_op      = params[2]
+
+        if (name_var_in == name_var_out): 
+          raise Exception("Pget : La variable d'entree est identique a la variable de sortie.")
+       
+        if (name_var_in not in list_vars.keys()): 
+          raise Exception("Pget : La variable "+name_var_in+" n'est pas definie.")
+          
+        value_op = interprete_string(name_op,list_macro,list_vars)
+        value_in = list_vars[name_var_in][0].get_value()
+
+        # On verifie que l'on a le droit de faire un cast
+        n1 = 0
+        try:
+          n1 = int(value_op)
+        except ValueError:
+          raise Exception("Pget : l'indice doit etre compatible avec un entier. On a lu "+value_op)
+
+        list_in = value_in.split()
+        if len(list_in)<=n1:
+          raise Exception("Pget : la taille de la liste est inferieure a l'indice demande")
+
+        
+        list_vars[name_var_out]=[]
+
+        value_out = str(list_in[n1])
         list_vars[name_var_out].append(pattern_value(name_var_out,value_out))
         return ""
     pass
@@ -625,3 +673,4 @@ if  __name__ == '__main__':
             pass
         pass
     pass
+

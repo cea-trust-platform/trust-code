@@ -26,7 +26,7 @@ Read sch
     dt_sauv 20.
     dt_start dt_calc
     seuil_statio 1.e-8
-    facsec 1.
+    facsec 400.
     facsec_max 400
     Solveur Implicite
     {
