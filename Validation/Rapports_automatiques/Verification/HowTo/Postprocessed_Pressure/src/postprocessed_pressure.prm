@@ -160,7 +160,7 @@ Chapter {
         Description "\latex_( We impose in inlet: $$u(r)=\frac{K}{4 \mu} \left(r^2-R^2\right)=-\frac{u_{max}}{R^2} \left(r^2-R^2\right)$$ with $u_{max}=u(0)=0.01$, $R=0.1$ and $r=y^2+z^2$ \latex_)"
         Width       12cm
         cycles 0
-        pseudocolor  PAR_VEF_P0P1_g_muscl/PAR_VEF_P0P1_g_muscl.lata              dom_dual_magnitude    VITESSE FACES
+        pseudocolor  PAR_VEF_P0P1_g_muscl/PAR_VEF_P0P1_g_muscl.lata              dom_dual    norme_VITESSE FACES
         up3d        0 1 -0.08
         normal3D    -0.65 0.1 0.75
         zoom3D      0.15 0.15 0.8
@@ -265,7 +265,7 @@ Chapter {
 #    visu {
 #        Title       "Velocity slice belong Y axis"
 #        Width       12cm
-#        pseudocolor PAR_VEF_P0P1_g_muscl/PAR_VEF_P0P1_g_muscl.lata   dom_dual_magnitude   VITESSE   FACES
+#        pseudocolor PAR_VEF_P0P1_g_muscl/PAR_VEF_P0P1_g_muscl.lata   dom_dual   norme_VITESSE   FACES
 #        Operator    slice2D       0 0 0 0 1 0
 #    }
 
@@ -626,7 +626,7 @@ Chapter {
         Description "\latex_( We impose in inlet: $$u(r)=-\frac{u_{max}}{R^2} \left(r^2-R^2\right)$$ with $u_{max}=u(0)=0.01$, $R=0.1$ and $r=y^2+z^2$ \latex_)"
         Width       12cm
         cycles 0
-        pseudocolor  PAR_VEF_P0P1_gx_muscl/PAR_VEF_P0P1_gx_muscl.lata              dom_dual_magnitude    VITESSE FACES
+        pseudocolor  PAR_VEF_P0P1_gx_muscl/PAR_VEF_P0P1_gx_muscl.lata              dom_dual    norme_VITESSE FACES
         up3d        0 1 -0.08
         normal3D    -0.65 0.1 0.75
         zoom3D      0.15 0.15 0.8
@@ -732,7 +732,7 @@ Chapter {
 #    visu {
 #        Title       "Velocity slice belong Y axis"
 #        Width       12cm
-#        pseudocolor PAR_VEF_P0P1_gx_muscl/PAR_VEF_P0P1_gx_muscl.lata   dom_dual_magnitude   VITESSE   FACES
+#        pseudocolor PAR_VEF_P0P1_gx_muscl/PAR_VEF_P0P1_gx_muscl.lata   dom_dual   norme_VITESSE   FACES
 #        Operator    slice2D       0 0 0 0 1 0
 #    }
 
