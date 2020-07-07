@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -139,17 +139,17 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
               const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
               const Champ_front_base& le_ch_front = ref_cast( Champ_front_base, la_cl_int.h_imp().valeur());
               const DoubleVect& tab = le_ch_front.valeurs();
-	      if(tab.size() > 0)
-		{
-		  h_imp_temp = local_max_vect(tab); // get h_imp from datafile
-		  h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
-		  h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
-		}
+              if(tab.size() > 0)
+                {
+                  h_imp_temp = local_max_vect(tab); // get h_imp from datafile
+                  h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
+                  h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
+                }
             }
         } // End loop on boundaries
 
       h_imp_max = Process::mp_max(h_imp_max);
-      
+
       if ((alpha_max == 0.)||(zone_VEF.nb_elem()==0))
         dt_stab = DMAXFLOAT;
       else
