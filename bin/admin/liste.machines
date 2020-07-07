@@ -48,5 +48,5 @@ linux   rsync_ssh	tache	is223288.intra.cea.fr 		-limited	-TrioCFD  					-g -semi
 linux   rsync_ssh	tache	is212912.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 18	Bat 451	LGLS	Bureau Michel (machine pilote) 
 linux   rsync_ssh	non	is229956-gui.intra.cea.fr			-MPCube -TrioCFD -FLICA5 -GENEPI3 -IJK-FT	-gui		-remote_install_TRUST_with_source -force_provided_openmpi				# Ubuntu 16	Bat 451	LGLS	Machine de Michel pce 54 
 linux   rsync_ssh	tache	is226427.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 16	Bat 451	LGLS	Machine de stagiaire pce 35 
-linux   rsync_ssh	tache	is240283.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 16	Bat 451	LGLS	Machine de stagiaire pce 35 
+linux   rsync_ssh	tache	is240283.intra.cea.fr 		-all		-TrioCFD -PEMFC					-g 		-force_provided_mpich 								# Ubuntu 16	Bat 451	LGLS	Machine de stagiaire pce 35 
 linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-pdflatex -force_provided_mpich								# CentOS 7.7 salle de formation
