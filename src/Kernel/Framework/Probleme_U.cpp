@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -372,6 +372,7 @@ bool Probleme_U::run()
   // Compute the first time step
   double dt=computeTimeStep(stop);
 
+  statistiques().end_count(initialisation_calcul_counter_);
   // Print the initialization CPU statistics
   if (!disable_TU)
     {
@@ -388,6 +389,7 @@ bool Probleme_U::run()
   VT_USER_START("Resolution");
 #endif
   // Time step loop
+  int tstep = 0;
   while(!stop)
     {
       // Begin the CPU measure of the time step
@@ -440,6 +442,21 @@ bool Probleme_U::run()
           double temps = statistiques().last_time(timestep_counter_);
           Cout << finl << "clock: Total time step: " << temps << " s" << finl << finl;
         }
+
+      if(JUMP_3_FIRST_STEPS && tstep < 3)
+        {
+          //demarrage des compteurs CPU
+          if(tstep == 2)
+            {
+              statistiques().set_three_first_steps_elapsed(true);
+            }
+        }
+      else
+        {
+          statistiques().compute_avg_min_max_var_per_step(tstep);
+        }
+
+      tstep++;
 #ifdef VTRACE
       // Flush the buffer regulary to avoid setting VT_MAX_FLUSHES=0 variable...
       VT_BUFFER_FLUSH();
@@ -453,6 +470,9 @@ bool Probleme_U::run()
   // Print the resolution CPU statistics
   if (!disable_TU)
     {
+      if(GET_COMM_DETAILS)
+        statistiques().print_communciation_tracking_details();               // Into _comm.TU file
+
       statistiques().dump("Statistiques de resolution du probleme", 1);      // Into _detail.TU file
       print_statistics_analyse("Statistiques de resolution du probleme", 1); // Into        .TU file
     }
