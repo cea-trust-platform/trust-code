@@ -132,6 +132,25 @@ if [ "`uname -m`" = i686 ] && [ "$lz" != "" ] && [ -f /usr/lib/libz.a ]
 then
    lz="/usr/lib/libz.a "
 fi
+
+# Ajout des flags -lsvml et -lintlc necessaires avec certains compilateurs intel... vu sur jean-zay et plafrim
+if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ] ; then
+   svmlpath=""
+   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so`" != "" ] ; then
+      lz=$lz"-lsvml "
+      svmlso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so | cut -d' ' -f 3`
+      svmlpath=`dirname $svmlso`
+      lz=" -L$svmlpath "$lz
+   fi
+
+   intlcpath=""
+   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so`" != "" ] ; then
+      lz=$lz"-lintlc "
+      intlcso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so | cut -d' ' -f 3`
+      intlcpath=`dirname $intlcso`
+      [ "$svmlpath" != "$intlcpath" ] && lz=" -L$intlcpath "$lz
+   fi
+fi
 MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a $lz-lm -ldl"
 
 #################################################

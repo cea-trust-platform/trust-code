@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.8.2_beta : Changes since version 1.8.1 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.8.1 : Changes since version 1.8.0 :
 -------------------------------------------------------------
 08/06/20 (TRUST)  Rewrite some Matrix/Array classes to avoid append_line|append_array methods when possible (Parex+ performance issues)

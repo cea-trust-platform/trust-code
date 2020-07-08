@@ -1906,7 +1906,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib
 	do
-	   [ -d $LIB_INTEL/../../$lib ] && LIB_INTEL=`echo $LIB_INTEL | sed -e 's;/bin;/'$lib';g'`
+	   [ -d $LIB_INTEL/../../$lib ] && LIB_INTEL2=`echo $LIB_INTEL | sed -e 's;/bin;/'$lib';g'` && [ -d $LIB_INTEL2 ] && LIB_INTEL=$LIB_INTEL2
         done
 	SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -lstdc++"
 	if [ "`ls $LIB_INTEL/libguide.* 2>/dev/null`" != "" ]

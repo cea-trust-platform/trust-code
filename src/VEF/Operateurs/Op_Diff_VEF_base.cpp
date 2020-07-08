@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,6 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       double alpha_max = local_max_vect(valeurs_diffusivite);
 
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
-      bool is_h_imp = false;
       double h_imp_max = -1, h_imp_temp=-2, max_conductivity = 0;
       const Zone_Cl_VEF& la_zone_cl_vef = la_zcl_vef.valeur();
       const Equation_base& mon_eqn = la_zone_cl_vef.equation();
@@ -140,19 +139,23 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
               const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
               const Champ_front_base& le_ch_front = ref_cast( Champ_front_base, la_cl_int.h_imp().valeur());
               const DoubleVect& tab = le_ch_front.valeurs();
-              h_imp_temp = local_max_vect(tab); // get h_imp from datafile
-              h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
-              h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
-              is_h_imp = (h_imp_max>0.0); // bool to tell us if we have a BC with Paroi_echange_externe_impose
+              if(tab.size() > 0)
+                {
+                  h_imp_temp = local_max_vect(tab); // get h_imp from datafile
+                  h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
+                  h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
+                }
             }
         } // End loop on boundaries
+
+      h_imp_max = Process::mp_max(h_imp_max);
 
       if ((alpha_max == 0.)||(zone_VEF.nb_elem()==0))
         dt_stab = DMAXFLOAT;
       else
         {
           const double min_delta_h_carre = zone_VEF.carre_pas_du_maillage();
-          if (is_h_imp)
+          if (h_imp_max>0.0) //we have a BC with Paroi_echange_externe_impose
             {
               // get the thermal conductivity
               const Milieu_base& mon_milieu = mon_eqn.milieu();

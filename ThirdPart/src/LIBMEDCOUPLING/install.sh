@@ -104,7 +104,7 @@ MC_ENV_FILE_tmp=$install_dir/env_tmp.sh
 MC_ENV_FILE=$install_dir/env.sh
 version=`python  -c "import sys; print (sys.version[:3])"`
 echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
-echo "export LD_LIBRARY_PATH=$install_dir/lib/:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_PATH}:$TRUST_ROOT/exec/python/lib/" >> $MC_ENV_FILE_tmp
+echo "export LD_LIBRARY_PATH=$install_dir/lib/:$TRUST_MED_ROOT/lib:$TRUST_ROOT/exec/python/lib/:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE_tmp
 echo "export PYTHONPATH=$install_dir/bin/:$install_dir/lib/python$version/site-packages/:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
 
 echo "@@@@@@@@@@@@ Testing install ..."
