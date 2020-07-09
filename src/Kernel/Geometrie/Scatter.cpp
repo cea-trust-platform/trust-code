@@ -359,6 +359,8 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       fichier_binaire.close();
     }
 
+  statistiques().end_count(stats);
+
   barrier();
 }
 

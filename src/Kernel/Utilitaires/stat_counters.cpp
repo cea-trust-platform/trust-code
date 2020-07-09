@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,10 @@
 #include <EcrFicCollecte.h>
 #include <Nom.h>
 #include <Double.h>
+#include <SChaine.h>
+
+#define BUFLEN 100
+
 // Declaration des identifiants de compteurs
 
 Stat_Counter_Id mpi_sendrecv_counter_;
@@ -75,12 +79,15 @@ Stat_Counter_Id m3;
 
 Stat_Counter_Id probleme_fluide_;
 Stat_Counter_Id probleme_combustible_;
+
 // Initialisation des differents compteurs.
 // L'ordre d'impression des compteurs est le meme que l'ordre de creation.
 
 // SVP : mettez une courte description de ce que mesure exactement
 //       le compteur (quelles operations) et quelle est la signification
 //       de la quantite sommee (quand elle n'est pas nulle).
+//
+
 void declare_stat_counters()
 {
   // Creation de l'objet statistiques
@@ -106,7 +113,6 @@ void declare_stat_counters()
 
   // Boucle de calcul du pas de temps dans Resoudre::interpreter
   timestep_counter_ = statistiques().new_counter(1, "Resoudre (timestep loop)", 0);
-
   // Appels a SolveurSys::resoudre_systeme
   // quantity = nombre total d'iterations des solveurs
   solv_sys_counter_ = statistiques().new_counter(1, "SolveurSys::resoudre_systeme", 0);
@@ -147,36 +153,45 @@ void declare_stat_counters()
   probleme_combustible_ = statistiques().new_counter(3 /* Level */, "pb_combustible", 0 /* Group */);
 
   // Appels a DoubleVect::echange_espace_virtuel()
-  echange_vect_counter_ = statistiques().new_counter(2, "DoubleVect/IntVect::echange_espace_virtuel", 0);
+  echange_vect_counter_ = statistiques().new_counter(2, "DoubleVect/IntVect::echange_espace_virtuel", 0, 1);
 
-  mpi_sendrecv_counter_  = statistiques().new_counter(2, "MPI_send_recv", "MPI_sendrecv");
-  mpi_send_counter_      = statistiques().new_counter(2, "MPI_send",      "MPI_sendrecv");
-  mpi_recv_counter_      = statistiques().new_counter(2, "MPI_recv",      "MPI_sendrecv");
-  mpi_bcast_counter_     = statistiques().new_counter(2, "MPI_broadcast", "MPI_sendrecv");
-  mpi_alltoall_counter_  = statistiques().new_counter(2, "MPI_alltoall",  "MPI_sendrecv");
-  mpi_partialsum_counter_= statistiques().new_counter(2, "MPI_partialsum","MPI_allreduce");
-  mpi_sumdouble_counter_ = statistiques().new_counter(2, "MPI_sumdouble", "MPI_allreduce");
-  mpi_mindouble_counter_ = statistiques().new_counter(2, "MPI_mindouble", "MPI_allreduce");
-  mpi_maxdouble_counter_ = statistiques().new_counter(2, "MPI_maxdouble", "MPI_allreduce");
-  mpi_sumint_counter_    = statistiques().new_counter(2, "MPI_sumint",    "MPI_allreduce");
-  mpi_minint_counter_    = statistiques().new_counter(2, "MPI_minint",    "MPI_allreduce");
-  mpi_maxint_counter_    = statistiques().new_counter(2, "MPI_maxint",    "MPI_allreduce");
-  mpi_barrier_counter_   = statistiques().new_counter(2, "MPI_barrier",   "MPI_allreduce");
+  mpi_sendrecv_counter_  = statistiques().new_counter(2, "MPI_send_recv", "MPI_sendrecv", 1);
+  mpi_send_counter_      = statistiques().new_counter(2, "MPI_send",      "MPI_sendrecv", 1);
+  mpi_recv_counter_      = statistiques().new_counter(2, "MPI_recv",      "MPI_sendrecv", 1);
+  mpi_bcast_counter_     = statistiques().new_counter(2, "MPI_broadcast", "MPI_sendrecv", 1);
+  mpi_alltoall_counter_  = statistiques().new_counter(2, "MPI_alltoall",  "MPI_sendrecv", 1);
+  mpi_partialsum_counter_= statistiques().new_counter(2, "MPI_partialsum","MPI_allreduce", 1);
+  mpi_sumdouble_counter_ = statistiques().new_counter(2, "MPI_sumdouble", "MPI_allreduce", 1);
+  mpi_mindouble_counter_ = statistiques().new_counter(2, "MPI_mindouble", "MPI_allreduce", 1);
+  mpi_maxdouble_counter_ = statistiques().new_counter(2, "MPI_maxdouble", "MPI_allreduce", 1);
+  mpi_sumint_counter_    = statistiques().new_counter(2, "MPI_sumint",    "MPI_allreduce", 1);
+  mpi_minint_counter_    = statistiques().new_counter(2, "MPI_minint",    "MPI_allreduce", 1);
+  mpi_maxint_counter_    = statistiques().new_counter(2, "MPI_maxint",    "MPI_allreduce", 1);
+  mpi_barrier_counter_   = statistiques().new_counter(2, "MPI_barrier",   "MPI_allreduce", 1);
 
   // Compte le temps de communication dans *_Fic_Par*
   // nombre = approx le nombre de synchro fichiers
   // quantity = nombre d'octets recus + nombre d'octets envoyes
-  mpi_sendrecv_io_counter_ = statistiques().new_counter(2, "MPI_send_recv_io", "io");
+  mpi_sendrecv_io_counter_ = statistiques().new_counter(2, "MPI_send_recv_io", "io", 1);
 
   // Execution de Scatter::interpreter
   interprete_scatter_counter_ = statistiques().new_counter(2, "Scatter", 0);
+
+  if(GET_COMM_DETAILS)
+    statistiques().allocate_communication_tracking_times();
+
 }
 
 void end_stat_counters()
 {
+  if(GET_COMM_DETAILS)
+    statistiques().delete_communication_tracking_times();
+
   delete  les_statistiques_trio_U_nom_long_pour_decourager_l_utilisation_directe;
   les_statistiques_trio_U_nom_long_pour_decourager_l_utilisation_directe=0;
+
 }
+
 // Estimation du temps de latence MPI_allreduce
 static double estimate_allreduce(double max_bench_time)
 {
@@ -261,7 +276,7 @@ void print_statistics_analyse(const char * message, int mode_append)
 
   // Build the filename to print info:
   Nom TU(Objet_U::nom_du_cas());
-  TU+=".TU";
+  TU += ".TU";
 
   // Print minimal infos:
   statistiques().get_stats(temps_total_execution_counter_, temps_total);
@@ -269,10 +284,12 @@ void print_statistics_analyse(const char * message, int mode_append)
   if (Process::je_suis_maitre())
     {
       // Ouverture du fichier principal (pour tous les processeurs)
-      SFichier stat_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
+      SFichier stat_file(TU,
+                         mode_append ? (ios::out | ios::app) : (ios::out));
 
       stat_file << message << "\n\n";
-      stat_file << "Temps total                       " << temps_total.max_time << "\n";
+      stat_file << "Temps total                       "
+                << temps_total.max_time << "\n";
       stat_file << finl;
     }
 
@@ -281,7 +298,8 @@ void print_statistics_analyse(const char * message, int mode_append)
     {
       statistiques().get_stats(solv_sys_counter_, solveur);
       statistiques().get_stats(solv_sys_petsc_counter_, solveur_petsc);
-      statistiques().get_stats(diffusion_implicite_counter_, diffusion_implicite);
+      statistiques().get_stats(diffusion_implicite_counter_,
+                               diffusion_implicite);
       statistiques().get_stats(dt_counter_, dt);
       statistiques().get_stats(nut_counter_, nut);
       statistiques().get_stats(convection_counter_, convection);
@@ -307,41 +325,111 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(probleme_fluide_, pb_fluide);
       statistiques().get_stats(probleme_combustible_, pb_combustible);
 
+      if (GET_COMM_DETAILS)
+        {
+          int nb_comm_counters = statistiques().get_nb_comm_counters();
+
+          for(int j = 0; j < nb_comm_counters; j++)
+            {
+              int counter_id = statistiques().get_counter_id_from_index_in_comm_tracking_info(j);
+              const char * familly = statistiques().get_counter_family(counter_id);
+              if (familly != 0)
+                {
+                  Stat_Results com_j=statistiques().get_communication_tracking_info(j, 0);
+                  if (strcmp("MPI_allreduce", familly) == 0)
+                    {
+                      comm_allreduce.time +=  com_j.time;
+                      comm_allreduce.count += com_j.count;
+                      comm_allreduce.quantity += com_j.quantity;
+                    }
+                  else if (strcmp("MPI_sendrecv", familly) == 0)
+                    {
+                      comm_sendrecv.time +=  com_j.time;
+                      comm_sendrecv.count += com_j.count;
+                      comm_sendrecv.quantity += com_j.quantity;
+                    }
+                }
+            }
+
+          comm_allreduce.compute_min_max_avg();
+          comm_sendrecv.compute_min_max_avg();
+
+          int echange_espace_virtuel_id = statistiques().get_counter_id_from_description("DoubleVect/IntVect::echange_espace_virtuel");
+          int sendrecv_id = statistiques().get_counter_id_from_description("MPI_send_recv");
+          int echange_espace_virtuel_comm_id = statistiques().get_index_in_comm_tracking_info_from_counter_id(echange_espace_virtuel_id);
+          int sendrecv_comm_id = statistiques().get_index_in_comm_tracking_info_from_counter_id(sendrecv_id);
+          echange_espace_virtuel = statistiques().get_communication_tracking_info(echange_espace_virtuel_comm_id,0);
+          sendrecv = statistiques().get_communication_tracking_info(sendrecv_comm_id,0);
+          echange_espace_virtuel.compute_min_max_avg();
+          sendrecv.compute_min_max_avg();
+
+        }
+      else
+        {
+          statistiques().get_stats(echange_vect_counter_,
+                                   echange_espace_virtuel);
+          statistiques().get_stats(mpi_sendrecv_counter_, sendrecv);
+
+          statistiques().get_stats_familly("MPI_sendrecv", comm_sendrecv);
+          statistiques().get_stats_familly("MPI_allreduce", comm_allreduce);
+        }
+
       double allreduce_peak_perf = 0.;
       //if (temps_total.max_time > 10.)
       allreduce_peak_perf = estimate_allreduce(0.1 /* benchmark time */);
 
       // Estimation de la bande passante reseau (basee uniquement sur les operations
       //  send_recv_start / send_recv_finish)
-      statistiques().get_stats(mpi_sendrecv_counter_, sendrecv);
+
       double bandwidth = 1.1e30;
       if (sendrecv.time > 0)
-        bandwidth = sendrecv.quantity / (sendrecv.time+DMINFLOAT);
+        bandwidth = sendrecv.quantity / (sendrecv.time + DMINFLOAT);
+
       double max_bandwidth = Process::mp_max(bandwidth);
 
       // Calcul du temps d'attente du aux synchronisations
       // On prend le temps total de communication et on retranche le temps
       // theorique calcule a partir de allreduce_peak_perf et de la bande passante maxi
-      double theoric_comm_time = comm_allreduce.count * allreduce_peak_perf + comm_sendrecv.quantity / (max_bandwidth+1e-30);
+      double theoric_comm_time = comm_allreduce.count * allreduce_peak_perf
+                                 + comm_sendrecv.quantity / (max_bandwidth + 1e-30);
       // Je suppose que le temps minimum pour realiser les communications sur un proc
       //  depend du processeur qui a le plus de donnees a envoyer:
       theoric_comm_time = Process::mp_max(theoric_comm_time);
-      double wait_time = (comm_sendrecv.time + comm_allreduce.time) - theoric_comm_time;
+
+
+      double total_time_avg, total_time_max;
+      if(JUMP_3_FIRST_STEPS)
+        {
+          total_time_avg = pas_de_temps.time;
+          total_time_max = pas_de_temps.max_time;
+        }
+      else
+        {
+          total_time_avg = temps_total.time;
+          total_time_max = temps_total.max_time;
+        }
+
+      double wait_time = (comm_sendrecv.time + comm_allreduce.time)
+                         - theoric_comm_time;
       double wait_fraction;
-      if (temps_total.time == 0)
+      if (total_time_avg == 0)
         wait_fraction = 0.;
       else
-        wait_fraction = wait_time / (temps_total.time+DMINFLOAT);
+        wait_fraction = wait_time / (total_time_avg + DMINFLOAT);
       wait_fraction = 0.1 * floor(wait_fraction * 1000);
-      if (wait_fraction < 0.) wait_fraction = 0.;
-      if (wait_fraction > 100.) wait_fraction = 100.;
+      if (wait_fraction < 0.)
+        wait_fraction = 0.;
+      if (wait_fraction > 100.)
+        wait_fraction = 100.;
 
       double max_wait_fraction = Process::mp_max(wait_fraction);
       double min_wait_fraction = Process::mp_min(wait_fraction);
-      double avg_wait_fraction = Process::mp_sum(wait_fraction) / Process::nproc();
+      double avg_wait_fraction = Process::mp_sum(wait_fraction)
+                                 / Process::nproc();
 
       double total_quantity = Process::mp_sum(sauvegarde.max_quantity);
       // Print into .TU file
+
 
       if (Process::je_suis_maitre())
         {
@@ -371,6 +459,7 @@ void print_statistics_analyse(const char * message, int mode_append)
           write_stat_file("marqueur2                   ", marqueur2             , pas_de_temps, stat_file);
           write_stat_file("marqueur3                   ", marqueur3             , pas_de_temps, stat_file);
           write_stat_file("calcul divers               ", divers                , pas_de_temps, stat_file);
+
           if (echange_espace_virtuel.max_count > 0)
             {
               stat_file << "Nb echange_espace_virtuel / pas de temps " << echange_espace_virtuel.max_count / pas_de_temps.max_count << "\n";
@@ -388,78 +477,112 @@ void print_statistics_analyse(const char * message, int mode_append)
             }
           if (solveur.max_count > 0)
             {
-              stat_file << "Nb solveur / pas de temps         " << solveur.max_count / pas_de_temps.max_count << "\n";
+              stat_file << "Nb solveur / pas de temps         "
+                        << solveur.max_count / pas_de_temps.max_count << "\n";
               double avg_time = solveur.max_time / solveur.max_count;
-              stat_file << "Secondes / solveur                " << avg_time << "\n";
-              stat_file << "Iterations / solveur              " << solveur.max_quantity / solveur.max_count << "\n";
+              stat_file << "Secondes / solveur                " << avg_time
+                        << "\n";
+              stat_file << "Iterations / solveur              "
+                        << solveur.max_quantity / solveur.max_count << "\n";
             }
           if (sauvegarde.max_count > 0)
             {
               stat_file << "I/O:" << finl;
               char s[20] = "";
-              stat_file << "Nb sauvegardes         : " << sauvegarde.max_count << "\n";
-              stat_file << "Secondes / sauvegarde  : " << sauvegarde.max_time/sauvegarde.max_count << "\n";
-              sprintf(s,"%2.2f",total_quantity/(1024*1024));
+              stat_file << "Nb sauvegardes         : " << sauvegarde.max_count
+                        << "\n";
+              stat_file << "Secondes / sauvegarde  : "
+                        << sauvegarde.max_time / sauvegarde.max_count << "\n";
+              sprintf(s, "%2.2f", total_quantity / (1024 * 1024));
               stat_file << "Donnees ecrites [Mo]   : " << s << "\n";
-              stat_file << "Debit           [Mo/s] : " << (int)(total_quantity/(1024*1024)/sauvegarde.max_time) << "\n";
+              stat_file << "Debit           [Mo/s] : "
+                        << (int) (total_quantity / (1024 * 1024)
+                                  / sauvegarde.max_time) << "\n";
             }
+
           if (comm_sendrecv.max_count > 0)
             {
-              if (solveur_petsc.max_count>0)
+              if (solveur_petsc.max_count > 0)
                 {
-                  stat_file << "---------------------------------------------------------------------------------------------------------" << finl;
-                  stat_file << "Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated." << finl;
-                  stat_file << "To print also the additional time spent in PETSc solvers, run the calculation with -log_summary option."   << finl;
-                  stat_file << "---------------------------------------------------------------------------------------------------------" << finl;
+                  stat_file
+                      << "---------------------------------------------------------------------------------------------------------"
+                      << finl;
+                  stat_file
+                      << "Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated."
+                      << finl;
+                  stat_file
+                      << "To print also the additional time spent in PETSc solvers, run the calculation with -log_summary option."
+                      << finl;
+                  stat_file
+                      << "---------------------------------------------------------------------------------------------------------"
+                      << finl;
                 }
               double fraction;
-              fraction = (comm_sendrecv.avg_time+comm_allreduce.avg_time) / (temps_total.max_time+0.001);
+              fraction = (comm_sendrecv.avg_time + comm_allreduce.avg_time)
+                         / (total_time_max + 0.001);
               fraction = 0.1 * floor(fraction * 1000);
-              if (fraction > 100.) fraction = 100.;
-              stat_file << "Communications avg        " << fraction << " % of total time\n";
-              fraction = (comm_sendrecv.max_time+comm_allreduce.max_time) / (temps_total.max_time+0.001);
+              if (fraction > 100.)
+                fraction = 100.;
+              stat_file << "Communications avg        " << fraction
+                        << " % of total time\n";
+              fraction = (comm_sendrecv.max_time + comm_allreduce.max_time)
+                         / (total_time_max + 0.001);
               fraction = 0.1 * floor(fraction * 1000);
-              if (fraction > 100.) fraction = 100.;
-              stat_file << "Communications max        " << fraction << " % of total time\n";
-              fraction = (comm_sendrecv.min_time+comm_allreduce.min_time) / (temps_total.max_time+0.001);
+              if (fraction > 100.)
+                fraction = 100.;
+              stat_file << "Communications max        " << fraction
+                        << " % of total time\n";
+              fraction = (comm_sendrecv.min_time + comm_allreduce.min_time)
+                         / (total_time_max + 0.001);
               fraction = 0.1 * floor(fraction * 1000);
-              stat_file << "Communications min        " << fraction << " % of total time\n";
+              stat_file << "Communications min        " << fraction
+                        << " % of total time\n";
 
               stat_file << "Network latency benchmark ";
               if (allreduce_peak_perf == 0.)
-                stat_file << "not measured (total running time too short <10s)\n";
+                stat_file
+                    << "not measured (total running time too short <10s)\n";
               else
                 stat_file << allreduce_peak_perf << " s\n";
 
-              stat_file << "Network bandwidth max     " << max_bandwidth * 1.e-6
-                        << " MB/s\n";
+              stat_file << "Network bandwidth max     "
+                        << max_bandwidth * 1.e-6 << " MB/s\n";
               stat_file << "Total network traffic     "
                         << comm_sendrecv.avg_quantity * Process::nproc()
                         / pas_de_temps.max_count * 1e-6
                         << " MB / timestep\n";
               stat_file << "Average message size      "
-                        << comm_sendrecv.avg_quantity / comm_sendrecv.avg_count * 1e-3
-                        << " kB\n";
-              stat_file << "Min waiting time          "
-                        << min_wait_fraction << " % of total time\n";
-              stat_file << "Max waiting time          "
-                        << max_wait_fraction << " % of total time\n";
-              stat_file << "Avg waiting time          "
-                        << avg_wait_fraction << " % of total time\n";
+                        << comm_sendrecv.avg_quantity / comm_sendrecv.avg_count
+                        * 1e-3 << " kB\n";
+              stat_file << "Min waiting time          " << min_wait_fraction
+                        << " % of total time\n";
+              stat_file << "Max waiting time          " << max_wait_fraction
+                        << " % of total time\n";
+              stat_file << "Avg waiting time          " << avg_wait_fraction
+                        << " % of total time\n";
             }
           stat_file << "\n";
-          stat_file << "Timesteps = nombre de pas de temps\n";
-          stat_file << "Nb solveur = nombre de resolutions de systeme lineaire\n";
-          stat_file << "Nb assemblage implicite = nombre d'assemblage de matrice pour le schema implicite\n";
-          stat_file << "Iterations = nombre moyen d'iterations du solveur\n";
-          stat_file << "Communications = fraction du temps passe dans les\n";
-          stat_file << "                 communications entre processeurs (hors io fichiers)\n";
-          stat_file << "Network latency = temps d'un mpsum mesure par un bench interne sur 0.1s\n";
-          stat_file << "Network bandwidth = maximum sur l'ensemble des processeurs\n";
-          stat_file << "                    de la bande passante moyenne des operations send_recv\n";
-          stat_file << "Waiting time = estimation du temps d'attente des differents processeurs\n\n";
-          stat_file << "Max_waiting_time grand  => probablement mauvais decoupage\n";
-          stat_file << "Communications > 30%    => trop de processeurs ou reseau trop lent\n";
+          stat_file << "Timesteps = number of time steps\n";
+          stat_file
+              << "Nb solveur = number of linear system resolutions\n";
+          stat_file
+              << "Nb assemblage implicite = number of matrix assemblies for the implicit scheme\n";
+          stat_file << "Iterations = average number of iterations of the solver\n";
+          stat_file << "Communications = fraction of the time spent\n";
+          stat_file
+              << "                 in communications between processors (excluding io files)\n";
+          stat_file
+              << "Network latency = time of one mpsum measured by an internal bench over 0.1s\n";
+          stat_file
+              << "Network bandwidth = maximum on all processors\n";
+          stat_file
+              << "                    of the average bandwidth of send_recv operations\n";
+          stat_file
+              << "Waiting time = estimation of the waiting time of the different processors\n\n";
+          stat_file
+              << "Max_waiting_time big    => probably due to a bad partitioning\n";
+          stat_file
+              << "Communications > 30%    => too many processors or network too slow\n";
           stat_file << finl;
         }
     }
