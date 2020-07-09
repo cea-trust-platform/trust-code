@@ -20,7 +20,7 @@ Chapter {
 	description include_text_file("nts_case2_last")
 	Visu {
 		Title "Magnitude of velocity field around the obstacle at the final time"
-		pseudocolor Obstacle2_LastTS.case dom_magnitude VITESSE SOM
+		pseudocolor Obstacle2_LastTS.case dom norme_VITESSE SOM
 		cycles 0
 		width 8cm
 	}
