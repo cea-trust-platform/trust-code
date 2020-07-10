@@ -48,7 +48,6 @@ public:
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
   void completer();
-  virtual void dimensionner(Matrice_Morse& matrix) const;
   /* calcule les permeabilites dv_e = dt W_e (grap p)_e et les facteurs v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
   /* les utilise pour remplir les lignes aux faces de la matrice */
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;

@@ -85,26 +85,6 @@ void Masse_CoviMAC_Face::completer()
       }
 }
 
-void Masse_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
-{
-  const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const IntTab& f_e = zone.face_voisins();
-  int i, e, f, r, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
-
-  IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
-
-  /* vitesses aux faces : diagonale - projection des ve */
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0, stencil.append_line(f, f); i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++)
-      for (r = 0; r < dimension; r++) stencil.append_line(f, nf_tot + ne_tot * r + e);
-
-  /* vitesses aux elements : diagonale */
-  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++)
-      stencil.append_line(nf_tot + ne_tot * r + e, nf_tot + ne_tot * r + e);
-
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(nf_tot + dimension * ne_tot, nf_tot + dimension * ne_tot, stencil, mat);
-}
 
 DoubleTab& Masse_CoviMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
@@ -127,9 +107,8 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
   const Matrice_Morse& mat_const = ref_cast(Matrice_Morse, matrice); //pour appeler la version const de M_{ij}...
   const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   const DoubleTab& nf = zone.face_normales(), &xv = zone.xv(), &xp = zone.xp();
   int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), D = dimension,
                   piso = sub_type(Piso, equation().schema_temps()) && !sub_type(Implicite, equation().schema_temps());
@@ -158,9 +137,8 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
             e = f_e(f, i), fac[i] = (i ? -1 : 1) * zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
         for (i = 0; i < 2; i++) mu_f(f, n, i) = f_e(f, 1) >= 0 ? fac[!i] / (fac[0] + fac[1]) : (i == 0);
 
-        /* contribution a mat : partie aux elements seulement si vf calcule */
-        for (i = 0, mat(N * f + n, N * f + n) += pf(f) * vf(f) / dt; i < 2 && (e = f_e(f, i)) >= 0; i++) if (ch.fcl(f, 0) < 2)
-            for (j = 0; j < D; j++) mat(f, N * (nf_tot + ne_tot * j + e) + n) -= mu_f(f, n, i) * pf(f) * vf(f) / dt * nf(f, j) / fs(f);
+        /* contribution a mat */
+        mat(N * f + n, N * f + n) += pf(f) * vf(f) / dt;
       }
 
   return matrice;
@@ -171,17 +149,15 @@ DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const Zone_CoviMAC& zone = la_zone_CoviMAC;
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = zone.porosite_elem();
   const DoubleTab& nf = zone.face_normales();
-  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
+  int e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
 
   zone.init_ve();
 
-  /* vitesses aux faces : diagonale - projection des ve */
+  /* vitesses aux faces : diagonale */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) //vf calcule
-        for (i = 0, secmem.addr()[N * f + n] += pf(f) * vf(f) / dt * inco.addr()[N * f + n]; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          for (d = 0; d < D; d++) secmem.addr()[N * f + n] -= mu_f(f, n, i) * pf(f) * vf(f) / dt * nf(f, d) / fs(f) * inco.addr()[N * (nf_tot + ne_tot * d + e) + n];
+        secmem.addr()[N * f + n] += pf(f) * vf(f) / dt * inco.addr()[N * f + n];
     else if (ch.fcl(f, 0) == 3) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //Dirichlet
           secmem.addr()[N * f + n] += mu_f(f, n, 0) * pf(f) * vf(f) / dt * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
 
