@@ -65,10 +65,30 @@ void Op_Conv_EF_Stab_CoviMAC_Face::completer()
   Op_Conv_CoviMAC_base::completer();
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Conv_EF_Stab_CoviMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
+  const DoubleVect& fs = zone.face_surfaces();
+  int i, j, k, e1, e2, f, f1, f2, ok;
+
+  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
+    Cerr << "Op_Conv_EF_Stab_CoviMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   ch.init_cl();
+
+  IntTrav ntot, nequiv;
+  zone.creer_tableau_faces(ntot), zone.creer_tableau_faces(nequiv);
+  equiv.resize(zone.nb_faces_tot(), 2, e_f.dimension(1));
+  Cerr << zone.zone().domaine().le_nom() << " : initialisation de la convection aux faces... ";
+  for (f = 0, equiv = -1; f < zone.nb_faces_tot(); f++) if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
+      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
+        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
+          {
+            ok= dabs(dabs(zone.dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) < 1e-6; //normales colineaires?
+            for (k = 0; ok && k < dimension; k++) ok &= dabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6; //vecteurs (xf - xe) identiques?
+            if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
+          }
+  if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
+
 }
 
 void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
@@ -78,7 +98,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
-  int i, j, k, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
+  int i, j, k, e, eb, f, fb, fc, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
@@ -86,8 +106,13 @@ void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
   /* agit uniquement aux elements; diagonale omise */
   for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
         {
-          for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) for (d = 0; d < D; d++)
-                if(dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * (nf_tot + ne_tot * d + eb) + n); //elem -> face
+          for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2)
+              {
+                if ((fc = equiv(f, i, k)) >= 0) //equivalence : face -> face
+                  for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * fc + n);
+                else for (d = 0; d < D; d++) //pas d'equivalence : elem -> face
+                    if(dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * (nf_tot + ne_tot * d + eb) + n); //elem -> face
+              }
           if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem
                 stencil.append_line(N * (nf_tot + ne_tot * d + e) + n, N * (nf_tot + ne_tot * d + eb) + n);
         }
@@ -105,28 +130,37 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& vit = vitesse_->valeurs(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
-  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
-  int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
+  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  int i, j, k, e, eb, f, fb, fc, fd, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
+  double mult;
 
-  /* operateur aux elements dans chaque direction */
-  DoubleTrav fac(N, D), pfac(N, D);
+  DoubleTrav dfac(2, N), pdfac(2, N);
   for (f = 0; f < zone.nb_faces_tot(); f++)
     {
-      for (fac = 0, pfac = 0, i = 0; i < 2; i++, fac += pfac, pfac = 0)
+      for (i = 0, dfac = 0, pdfac = 0; i < 2; i++, dfac += pdfac, pdfac = 0)
         {
-          e = f_e(f, i) >= 0 ? f_e(f, i) : (ch.fcl(f, 0) == 1 ? f_e(f, 0) : -1);
-          if (e >= 0) for (n = 0; n < N; n++) for (d = 0; d < D; d++) pfac(n, d) = pe(e) * inco.addr()[N * (nf_tot + ne_tot * d + e) + n];
-          else if (ch.fcl(f, 0) == 3) for (n = 0; n < N; n++) for (d = 0; d < D; d++)
-                pfac(n, d) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d);
-          for (n = 0; n < N; n++) for (d = 0; d < D; d++) pfac(n, d) *= (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
+          if ((e = f_e(f, i)) >= 0 || ch.fcl(f, 0) == 3) for (n = 0; n < N; n++) pdfac(i, n) = pe(e >= 0 ? e : f_e(f, 0));
+          else if (ch.fcl(f, 0) == 1) for (n = 0; n < N; n++) pdfac(0, n) = pe(f_e(f, 0));
+          for (j = 0; j < 2; j++) for (n = 0; n < N; n++) pdfac(j, n) *= (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
         }
-      for (n = 0; n < N; n++) for (d = 0; d < D; d++) fac(n, d) *= fs(f) * vit.addr()[N * f + n];
+      for (j = 0; j < 2; j++) for (n = 0; n < N; n++) dfac(j, n) *= fs(f) * vit.addr()[N * f + n];
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         {
-          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) for (n = 0; n < N; n++) //elem -> face
-                resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * zone.dot(&fac(n, 0), &nf(fb, 0)) / fs(fb) * vf(fb) / ve(e);
-          if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem
-                resu.addr()[N * (nf_tot + ne_tot * d + e) + n] -= (i ? -1 : 1) * fac(n, d);
+          for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) //partie "faces"
+              {
+                if ((fc = equiv(f, i, k)) >= 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
+                    {
+                      for (eb = f_e(f, j), fd = (j == i ? fb : fc), mult = pf(fd) / pe(eb >= 0 ? eb : f_e(f, 0)) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
+                        if (dfac(j, n)) resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult * inco.addr()[N * fd + n];
+                    }
+                else for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) if (dfac(j, n)) for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) //pas d'equivalence : elem eb -> face fb
+                            resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb)
+                                                       * (eb >= 0 ? inco.addr()[N * (nf_tot + ne_tot * d + eb) + n] : ref_cast(Dirichlet, cls[ch.fcl(f, 0)].valeur()).val_imp(ch.fcl(f, 1), d));
+              }
+
+          if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) if (dfac(j, n)) for (d = 0; d < D; d++) //partie "elem"
+                    resu.addr()[N * (nf_tot + ne_tot * d + e) + n] -= (i ? -1 : 1) * dfac(j, n)
+                                                                      * (eb >= 0 ? inco.addr()[N * (nf_tot + ne_tot * d + eb) + n] : ref_cast(Dirichlet, cls[ch.fcl(f, 0)].valeur()).val_imp(ch.fcl(f, 1), d));
         }
     }
 
@@ -142,29 +176,37 @@ inline void Op_Conv_EF_Stab_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inc
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& vit = vitesse_->valeurs(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
-  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
-  int i, j, k, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
+  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  int i, j, k, e, eb, f, fb, fc, fd, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
+  double mult;
 
-  /* operateur aux elements dans chaque direction */
-  DoubleTrav dfac(2, N, D), pdfac(2, N, D);
+  DoubleTrav dfac(2, N), pdfac(2, N);
   for (f = 0; f < zone.nb_faces_tot(); f++)
     {
       for (i = 0, dfac = 0, pdfac = 0; i < 2; i++, dfac += pdfac, pdfac = 0)
         {
-          if ((e = f_e(f, i)) >= 0) for (n = 0; n < N; n++) for (d = 0; d < D; d++) pdfac(i, n, d) = pe(e);
-          else if (ch.fcl(f, 0) == 1) for (n = 0; n < N; n++) for (d = 0; d < D; d++) pdfac(0, n, d) = pe(f_e(f, 0));
-          for (j = 0; j < 2; j++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) pdfac(j, n, d) *= (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
+          if ((e = f_e(f, i)) >= 0) for (n = 0; n < N; n++) pdfac(i, n) = pe(e);
+          else if (ch.fcl(f, 0) == 1) for (n = 0; n < N; n++) pdfac(0, n) = pe(f_e(f, 0));
+          for (j = 0; j < 2; j++) for (n = 0; n < N; n++) pdfac(j, n) *= (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
         }
-      for (j = 0; j < 2; j++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) dfac(j, n, d) *= fs(f) * vit.addr()[N * f + n];
+      for (j = 0; j < 2; j++) for (n = 0; n < N; n++) dfac(j, n) *= fs(f) * vit.addr()[N * f + n];
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         {
-          for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb))
-                  for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) if (dfac(j, n, d)) //elem -> face
-                        matrice(N * fb + n, N * (nf_tot + ne_tot * d + eb) + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * dfac(j, n, d) * nf(fb, d) / fs(fb) * vf(fb) / ve(e);
-          if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) for (d = 0; d < D; d++) if (dfac(j, n, d)) //elem -> elem
-                    matrice(N * (nf_tot + ne_tot * d + e) + n, N * (nf_tot + ne_tot * d + eb) + n) += (i ? -1 : 1) * dfac(j, n, d);
+          for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) //partie "faces"
+              {
+                if ((fc = equiv(f, i, k)) >= 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
+                    {
+                      for (eb = f_e(f, j), fd = (i == j ? fb : fc), mult = pf(fd) / pe(eb >= 0 ? eb : f_e(f, 0)) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
+                        if (dfac(j, n)) matrice(N * fb + n, N * fd + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult;
+                    }
+                else for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) if (dfac(j, n)) for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) //pas d'equivalence : elem eb -> face fb
+                            matrice(N * fb + n, N * (nf_tot + ne_tot * d + eb) + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb);
+              }
+          if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) if (dfac(j, n)) for (d = 0; d < D; d++) //partie "elem"
+                    matrice(N * (nf_tot + ne_tot * d + e) + n, N * (nf_tot + ne_tot * d + eb) + n) += (i ? -1 : 1) * dfac(j, n);
         }
     }
+
 }
 //Description:
 //on ajoute la contribution du second membre.
