@@ -56,7 +56,7 @@ Chapter {
 		description "\latex_( \hspace{5mm} \latex_) python Plan_to_lata.py Obstacle_V_PROBE.plan toto_obstacle.lata -l"
 		description "Below, we draw the grid of V_PROBE plane and the velocity magnitude on the probe V_PROBE."
 		mesh sim2D/toto_obstacle.lata V_PROBE
-		pseudocolor sim2D/toto_obstacle.lata V_PROBE_magnitude VITESSE SOM
+		pseudocolor sim2D/toto_obstacle.lata V_PROBE norme_VITESSE SOM
 		cycles  -1
 	}
 }
@@ -135,7 +135,7 @@ Chapter {
 		description "or"
 		description "\latex_( \hspace{5mm} \latex_) python Plan_to_lata.py Canal_SONDE_VXY0.plan Canal_SONDE_VXY0.lata -l"
 		mesh sim3D/Canal.lata dom
-		pseudocolor sim3D/Canal_SONDE_VXY0.lata SONDE_VXY0_magnitude VITESSE SOM
+		pseudocolor sim3D/Canal_SONDE_VXY0.lata SONDE_VXY0 norme_VITESSE SOM
 		normal3d -0.4543768 0.477396 -0.733606
 		cycles  -1
 		Width 12cm
@@ -173,7 +173,7 @@ Chapter {
 		description "or"
 		description "\latex_( \hspace{5mm} \latex_) python Plan_to_lata.py Canal_SONDE_PXYZ.plan Canal_SONDE_V4YZ.lata -l"
 		mesh sim3D/Canal.lata dom
-		#pseudocolor sim3D/toto.lata SONDE_VXY1_magnitude VITESSE SOM
+		#pseudocolor sim3D/toto.lata SONDE_VXY1 norme_VITESSE SOM
 		vector      sim3D/Canal_SONDE_V4YZ.lata SONDE_V4YZ VITESSE SOM
 		normal3d -0.4543768 0.477396 -0.733606 #normal3d -0.4543768 0.477396 -0.733606
 		up3d 0.107612 0.185749 0.202993

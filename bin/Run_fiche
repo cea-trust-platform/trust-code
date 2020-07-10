@@ -204,6 +204,9 @@ then
       echo "There should be ONE .prm file in the src directory."
       exit -1
    fi
+   # Verifie la syntaxe des visu
+   KO=`grep _magnitude $prm | grep -i pseudocolor`
+   [ "$KO" != "" ] && echo "Mauvaise syntaxe dans la prm: $KO" && echo "Ne pas mettre _magnitude au domaine mais norme_ devant le champ vectoriel! Regardez la doc." && exit -1
    $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee -a Run.log
    error=${PIPESTATUS[0]}
    if [ "$error" != 0 ]

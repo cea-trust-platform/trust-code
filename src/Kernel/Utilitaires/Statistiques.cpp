@@ -549,7 +549,7 @@ static void print_stat(Sortie& perfs,
                        double max_time_per_step = 0,
                        double var_time_per_step = 0)
 {
-  char tampon[BUFLEN+100];
+  char tampon[BUFLEN+200];
   if (Process::nproc() > 1)
     {
       double percent_time = (temps_total_max==0 ? 0 : time / temps_total_max * 100.);
