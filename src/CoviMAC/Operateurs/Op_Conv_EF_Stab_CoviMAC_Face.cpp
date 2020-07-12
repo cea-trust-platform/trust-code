@@ -65,30 +65,11 @@ void Op_Conv_EF_Stab_CoviMAC_Face::completer()
   Op_Conv_CoviMAC_base::completer();
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces();
-  int i, j, k, e1, e2, f, f1, f2, ok;
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  ch.init_cl(), zone.init_equiv();
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_CoviMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  ch.init_cl();
-
-  IntTrav ntot, nequiv;
-  zone.creer_tableau_faces(ntot), zone.creer_tableau_faces(nequiv);
-  equiv.resize(zone.nb_faces_tot(), 2, e_f.dimension(1));
-  Cerr << zone.zone().domaine().le_nom() << " : initialisation de la convection aux faces... ";
-  for (f = 0, equiv = -1; f < zone.nb_faces_tot(); f++) if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
-      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
-        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
-          {
-            ok= dabs(dabs(zone.dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) < 1e-6; //normales colineaires?
-            for (k = 0; ok && k < dimension; k++) ok &= dabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6; //vecteurs (xf - xe) identiques?
-            if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
-          }
-  if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
-
 }
 
 void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
@@ -108,8 +89,8 @@ void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
         {
           for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2)
               {
-                if ((fc = equiv(f, i, k)) >= 0) //equivalence : face -> face
-                  for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * fc + n);
+                if ((fc = zone.equiv(f, i, k)) >= 0) //equivalence : face -> face
+                  for (n = 0; ch.fcl(fc, 0) < 2 && n < N; n++) stencil.append_line(N * fb + n, N * fc + n);
                 else for (d = 0; d < D; d++) //pas d'equivalence : elem -> face
                     if(dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * (nf_tot + ne_tot * d + eb) + n); //elem -> face
               }
@@ -148,7 +129,7 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
         {
           for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) //partie "faces"
               {
-                if ((fc = equiv(f, i, k)) >= 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
+                if ((fc = zone.equiv(f, i, k)) >= 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                     {
                       for (eb = f_e(f, j), fd = (j == i ? fb : fc), mult = pf(fd) / pe(eb >= 0 ? eb : f_e(f, 0)) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
                         if (dfac(j, n)) resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult * inco.addr()[N * fd + n];
@@ -194,10 +175,10 @@ inline void Op_Conv_EF_Stab_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inc
         {
           for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) //partie "faces"
               {
-                if ((fc = equiv(f, i, k)) >= 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
+                if ((fc = zone.equiv(f, i, k)) >= 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                     {
                       for (eb = f_e(f, j), fd = (i == j ? fb : fc), mult = pf(fd) / pe(eb >= 0 ? eb : f_e(f, 0)) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
-                        if (dfac(j, n)) matrice(N * fb + n, N * fd + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult;
+                        if (dfac(j, n) && ch.fcl(fd, 0) < 2) matrice(N * fb + n, N * fd + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult;
                     }
                 else for (j = 0; j < 2; j++) for (eb = f_e(f, j), n = 0; n < N; n++) if (dfac(j, n)) for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) //pas d'equivalence : elem eb -> face fb
                             matrice(N * fb + n, N * (nf_tot + ne_tot * d + eb) + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb);

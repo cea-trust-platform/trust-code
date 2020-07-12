@@ -626,6 +626,31 @@ DoubleVect& Zone_CoviMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
   return dist;
 }
 
+
+void Zone_CoviMAC::init_equiv() const
+{
+  if (is_init["equiv"]) return;
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleTab& xp = xp_, &xv = xv_, &nf = face_normales();
+  const DoubleVect& fs = face_surfaces();
+  int i, j, k, e1, e2, f, f1, f2, ok;
+
+  IntTrav ntot, nequiv;
+  creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
+  equiv.resize(nb_faces_tot(), 2, e_f.dimension(1));
+  Cerr << zone().domaine().le_nom() << " : initialisation de equiv... ";
+  for (f = 0, equiv = -1; f < nb_faces_tot(); f++) if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
+      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
+        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
+          {
+            ok= dabs(dabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) < 1e-6; //normales colineaires?
+            for (k = 0; ok && k < dimension; k++) ok &= dabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6; //vecteurs (xf - xe) identiques?
+            if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
+          }
+  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de faces equivalentes!" << finl;
+  is_init["equiv"] = 1;
+}
+
 //interpolation normales aux faces -> elements d'ordre 1
 void Zone_CoviMAC::init_ve() const
 {
