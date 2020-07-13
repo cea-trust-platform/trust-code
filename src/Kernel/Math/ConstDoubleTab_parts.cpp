@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,22 +71,20 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
       const MD_Vector_composite& mdata = ref_cast(MD_Vector_composite, md.valeur());
       const int n = mdata.data_.size();
       parts.dimensionner(n);
-      for (int i = 0; i < n; i++)
+      for (int i = 0, j; i < n; i++)
         {
-          if (mdata.shapes_[i] != 0)
-            {
-              Cerr << "Internal error : ConstDoubleTab_parts not yet coded for MD_Vector_composite shape>0" << finl;
-              Process::exit();
-            }
+          ArrOfInt shape_i;
+          if (mdata.shapes_[i] == 0) shape_i = shape; //si mdata.shapes_[i] > 0, alors la sous-partie a une dimension mineure en plus
+          else for (shape_i.resize(shape.size_array() + 1), shape_i(1) = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i(j + 1) = shape(j);
           const int offset = mdata.parts_offsets_[i];
           const MD_Vector& md_part = mdata.data_[i];
-          shape[0] = md_part.valeur().get_nb_items_tot();
+          shape_i[0] = md_part.valeur().get_nb_items_tot();
           DoubleTab& part = parts[i];
           // Fait pointer la zone de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
-          part.ref_array(vect, offset * line_size, shape[0] * line_size);
+          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * max(mdata.shapes_[i], 1));
           // Change le "shape" du tableau pour mettre le nombre de lignes et de colonnes
           // (nombre total d'items inchange, donc resize autorise)
-          part.resize(shape);
+          part.resize(shape_i);
           // Associe le md_vector
           part.set_md_vector(md_part);
         }
@@ -138,22 +136,20 @@ static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_p
       const MD_Vector_composite& mdata = ref_cast(MD_Vector_composite, md.valeur());
       const int n = mdata.data_.size();
       parts.dimensionner(n);
-      for (int i = 0; i < n; i++)
+      for (int i = 0, j; i < n; i++)
         {
-          if (mdata.shapes_[i] != 0)
-            {
-              Cerr << "Internal error : ConstDoubleTab_parts not yet coded for MD_Vector_composite shape>0" << finl;
-              Process::exit();
-            }
+          ArrOfInt shape_i;
+          if (mdata.shapes_[i] == 0) shape_i = shape; //si mdata.shapes_[i] > 0, alors la sous-partie a une dimension mineure en plus
+          else for (shape_i.resize(shape.size_array() + 1), shape_i(1) = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i(j + 1) = shape(j);
           const int offset = mdata.parts_offsets_[i];
           const MD_Vector& md_part = mdata.data_[i];
-          shape[0] = md_part.valeur().get_nb_items_tot();
+          shape_i[0] = md_part.valeur().get_nb_items_tot();
           IntTab& part = parts[i];
           // Fait pointer la zone de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
-          part.ref_array(vect, offset * line_size, shape[0] * line_size);
+          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * max(mdata.shapes_[i], 1));
           // Change le "shape" du tableau pour mettre le nombre de lignes et de colonnes
           // (nombre total d'items inchange, donc resize autorise)
-          part.resize(shape);
+          part.resize(shape_i);
           // Associe le md_vector
           part.set_md_vector(md_part);
         }
