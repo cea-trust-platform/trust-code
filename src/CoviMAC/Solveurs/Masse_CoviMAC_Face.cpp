@@ -110,21 +110,23 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   const DoubleTab& nf = zone.face_normales(), &xv = zone.xv(), &xp = zone.xp();
-  int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), D = dimension,
+  int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension,
                   piso = sub_type(Piso, equation().schema_temps()) && !sub_type(Implicite, equation().schema_temps());
 
   /* aux elements : calcul de W_e, contribution a la diagonale */
   Matrice33 M(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iM; //pour inversions
-  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
-      {
-        /* calcul et stockage de W_e */
-        for (i = 0; i < D; i++) for (j = 0; j < D; j++)
-            M(i, j) = (i == j) + (piso ? mat_const(N * (nf_tot + ne_tot * i + e) + n, N * (nf_tot + ne_tot * j + e) + n) * dt / (pe(e) * ve(e)) : 0);
-        Matrice33::inverse(M, iM, 0);
-        for (i = 0; i < D; i++) for (j = 0; j < D; j++) W_e(e, n, i, j) = pe(e) * iM(i, j);
-        /*terme de masse */
-        for (i = 0; i < D; i++) mat(N * (nf_tot + ne_tot * i + e) + n, N * (nf_tot + ne_tot * i + e) + n) += pe(e) * ve(e) / dt;
-      }
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      for (n = 0; n < N; n++)
+        {
+          /* calcul et stockage de W_e */
+          for (i = 0; i < D; i++) for (j = 0; j < D; j++)
+              M(i, j) = (i == j) + (piso ? mat_const(N * (nf_tot + ne_tot * i + e) + n, N * (nf_tot + ne_tot * j + e) + n) * dt / (pe(e) * ve(e)) : 0);
+          Matrice33::inverse(M, iM, 0);
+          for (i = 0; i < D; i++) for (j = 0; j < D; j++) W_e(e, n, i, j) = pe(e) * iM(i, j);
+        }
+      for (d = 0; d < D; d++) for (n = 0; n < N; n++) mat(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += pe(e) * ve(e) / dt;
+    }
   W_e.echange_espace_virtuel();
   if (piso) ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient()).gradp_a_jour = 0; //si PISO, on devra recalculer les coeffs du gradient
 
@@ -151,7 +153,7 @@ DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
   const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = zone.porosite_elem();
   const DoubleTab& nf = zone.face_normales();
-  int e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
+  int e, f, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
 
   zone.init_ve();
 
@@ -162,8 +164,8 @@ DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
           secmem.addr()[N * f + n] += mu_f(f, n, 0) * pf(f) * vf(f) / dt * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
 
   /* vitesses aux elements : on part de la vitesse aux elements interpolee depuis la vitesse aux faces */
-  for (d = 0; d < D; d++) for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
-        secmem.addr()[N * (nf_tot + ne_tot * d + e) + n] += pe(e) * ve(e) / dt * inco.addr()[N * (nf_tot + d * ne_tot + e) + n];
+  for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+        secmem.addr()[N * (nf_tot + D * e + d) + n] += pe(e) * ve(e) / dt * inco.addr()[N * (nf_tot + D * e + d) + n];
 
   return secmem;
 }

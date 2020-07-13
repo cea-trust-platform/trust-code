@@ -77,6 +77,10 @@ void Op_Grad_CoviMAC_Face::completer()
   zone.init_feb();
   gradp_c.resize(zone.feb_d(zone.nb_faces_tot()), equation().inconnue().valeurs().line_size());
   gradp_a_jour = 0;
+
+  /* besoin d'un joint de 1 */
+  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
+    Cerr << "Op_Grad_CoviMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
 }
 
 
@@ -93,11 +97,7 @@ void Op_Grad_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
   const Zone_CoviMAC& zone = ref_zone.valeur();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, r, e, eb, f, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot(), n, N = equation().inconnue().valeurs().line_size();
-
-  /* dimensionner / contribuer a besoin de 2, mais ajouter n'a besoin que de 1 */
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
-    Cerr << "Op_Grad_CoviMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
+  int i, j, e, eb, f, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
 
   zone.init_ve(), zone.init_feb();
   IntTab stencil(0, 2);
@@ -108,13 +108,12 @@ void Op_Grad_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
         stencil.append_line(N * f + n, N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n);
 
   /* aux elements : gradient aux elems */
-  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++)
-        if (dabs(zone.vec(i, r)) > 1e-6) for (f = zone.vej(i), j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
-            for (eb = zone.feb_j(j), n = 0; n < N; n++)
-              stencil.append_line(N * (nf_tot + r * ne_tot + e) + n, N * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + n);
+  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
+        for (eb = zone.feb_j(j), d = 0; d < D; d++)  if (dabs(zone.vec(i, d)) > 1e-6) for (n = 0; n < N; n++)
+              stencil.append_line(N * (nf_tot + D * e + d) + n, N * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + n);
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(nf_tot + dimension * ne_tot, ne_tot, stencil, mat);
+  Matrix_tools::allocate_morse_matrix(N * (nf_tot + ne_tot * D), N * ne_tot, stencil, mat);
 }
 
 DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& resu, const Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
@@ -126,7 +125,7 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
   const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
                    &W_e = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e;
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces();
-  int i, j, r, e, f, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
+  int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = inco.line_size();
   zone.init_ve(), update_gradp();
 
   /* pression aux faces de bord, |f| phi grad p aux faces */
@@ -140,8 +139,8 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
     else if (ch.fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0; n < N; n++) //CL Dirichlet/Symetrie : pfb en regardant N-S, gpf par formule a 2 points
         {
           double residu[3] = { 0, }; //3 composantes du residu (secmem_NS - mat_NS.inco_NS) en e
-          if (mat_NS) for (r = 0; r < dimension; r++) for (i = N * (nf_tot + r * ne_tot + e) + n, residu[r] = (*secmem_NS)(i), j = mat_NS->get_tab1()(i) - 1; j < mat_NS->get_tab1()(i + 1) - 1; j++)
-                residu[r] -= mat_NS->get_coeff()(j) * (*inco_NS)(mat_NS->get_tab2()(j) - 1);
+          if (mat_NS) for (d = 0; d < D; d++) for (i = N * (nf_tot + D * e + d) + n, residu[d] = (*secmem_NS)(i), j = mat_NS->get_tab1()(i) - 1; j < mat_NS->get_tab1()(i + 1) - 1; j++)
+                residu[d] -= mat_NS->get_coeff()(j) * (*inco_NS)(mat_NS->get_tab2()(j) - 1);
           fgpf(f, n) = zone.dot(residu, &nf(f, 0)) / ve(e);
           pfb(f, n) = inco.addr()[N * e + n] + fgpf(f, n) * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0));
         }
@@ -154,8 +153,8 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) resu.addr()[N * f + n] += fgpf(f, n) * vf(f) / fs(f);
 
   //elements : interp aux elems du gradient
-  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), n = 0; n < N; n++)
-          resu.addr()[N * (nf_tot + ne_tot * r + e) + n] += ve(e) * zone.vec(i, r) * fgpf(f, n) / fs(f);
+  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), d = 0; d < D; d++) for (n = 0; n < N; n++)
+          resu.addr()[N * (nf_tot + D * e + d) + n] += ve(e) * zone.vec(i, d) * fgpf(f, n) / fs(f);
 
   resu.echange_espace_virtuel();
   return resu;
@@ -199,7 +198,7 @@ DoubleVect& Op_Grad_CoviMAC_Face::multvect(const DoubleTab& inco, DoubleTab& res
 
   /* contributions */
   resu = 0;
-  //faces : gradient a la face - projections des gradients aux elements amont/aval
+  //faces : gradient a la face
   for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
       resu.addr()[N * f + n] = fgpf(f, n) * vf(f) / fs(f);
 

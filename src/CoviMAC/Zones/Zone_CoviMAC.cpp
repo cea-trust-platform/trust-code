@@ -496,7 +496,7 @@ void Zone_CoviMAC::discretiser()
   //MD_vector pour Champ_Face_CoviMAC (faces + dimension * champ_p0)
   MD_Vector_composite mdc_ch_face;
   mdc_ch_face.add_part(md_vector_faces());
-  for (int r = 0; r < dimension; r++) mdc_ch_face.add_part(zone().md_vector_elements());
+  mdc_ch_face.add_part(zone().md_vector_elements(), dimension);
   mdv_ch_face.copy(mdc_ch_face);
   nb_ch_face_tot_ = nb_faces_tot() + dimension * nb_elem_tot();
 

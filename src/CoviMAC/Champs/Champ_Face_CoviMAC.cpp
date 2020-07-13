@@ -152,12 +152,15 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
-  int e, f, j, r, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
 
   zone.init_ve();
-  for (r = 0; r < dimension; r++) for (e = 0; e < ne_tot; e++)
-      for (n = 0; n < N; n++) for (j = zone.ved(e), val.addr()[N * (nf_tot + r * ne_tot + e) + n] = 0; j < zone.ved(e + 1); j++)
-          f = zone.vej(j), val.addr()[N * (nf_tot + r * ne_tot + e) + n] += zone.vec(j, r) * val.addr()[N * f + n] * pf(f) / pe(e);
+  for (e = 0; e < ne_tot; e++)
+    {
+      for (d = 0; d < D; d++) for (n = 0; n < N; n++) val.addr()[N * (nf_tot + D * e + d) + n] = 0;
+      for (j = zone.ved(e); j < zone.ved(e + 1); j++) for (f = zone.vej(j), d = 0; d < D; d++) for (n = 0; n < N; n++)
+            val.addr()[N * (nf_tot + D * e + d) + n] += zone.vec(j, d) * val.addr()[N * f + n] * pf(f) / pe(e);
+    }
 }
 
 /* gradient d_j v_i aux elements : interp_ve -> grad -> interp_ve */
@@ -170,7 +173,7 @@ DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, cons
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Champ_base& cha=le_champ();
-  int nb_compo=cha.nb_comp(), nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
+  int nb_compo=cha.nb_comp(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = valeurs().line_size();
   if (val.nb_dim() == 1)
     {
       assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
@@ -195,17 +198,18 @@ DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, cons
       Process::exit();
     }
 
-  for (int p = 0; p < les_polys.size(); p++) for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < dimension; r++) val(p, r) = valeurs()(nf_tot + ne_tot * r + e);
+  for (int p = 0, e; p < les_polys.size(); p++) for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++) for (n = 0; n < N; n++)
+        val(p, N * d + n) = valeurs()(N * (nf_tot + D * e + d) + n);
   return val;
 }
 
 DoubleVect& Champ_Face_CoviMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
-  int nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
+  int nf_tot = zone.nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size() == polys.size());
 
-  for (int p = 0; p < polys.size(); p++) val(p) = (polys(p) == -1) ? 0. : valeurs()(nf_tot + ncomp * ne_tot + polys(p));
+  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : valeurs().addr()[N * (nf_tot + D * e) + ncomp];
 
   return val;
 }
