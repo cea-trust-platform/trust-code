@@ -729,12 +729,14 @@ void Zone_CoviMAC::init_feb() const
 
 /* pour un champ T aux elements, interpolation de nu.grad T du cote i de la face f */
 /* amont/aval dans phif_c(f, c, n, 0/1), autres items dans phif_cb([feb_d(f), feb_d(f + 1)[, c, n) (indices dans feb_j) */
-void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c) const
+void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c) const
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
-  int i, j, jb, k, e, f, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, D = dimension; //nombre de composantes
+  int i, j, jb, k, e, f, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, D = dimension, nl = D + 1, nc, un = 1, skip; //nombre de composantes
   char trans = 'N';
+  /* stencils adaptatifs : permet d'omettre les points dont aucune composante n'a besoin */
+  phif_d.set_smart_resize(1), phif_d.resize(1), phif_j.set_smart_resize(1), phif_j.resize(0), phif_c.set_smart_resize(1), phif_c.resize(0, N);
 
   /* localisation des points aux faces de bord : projection selon nu nf de l'element amont sur la face */
   DoubleTrav xfb(nb_faces_tot(), N, D), xfe(2, D), xfep(D), A, B, phi, W(1), P;
@@ -747,30 +749,41 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, DoubleTab& phif_c) const
           for (i = 0; i < D; i++) xfb(f, n, i) = xp_(e, i) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[i]);
         }
 
-  for (f = 0; f < f_max; f++) if (f_e(f, 1) >= 0) for (n = 0; n < N; n++) //faces internes seulement, composante par composante
-        {
-          /* points a interpoler en amont/aval de la face */
-          for (i = 0; i < 2; i++)
-            {
-              e = f_e(f, i), scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
-              for (j = 0, h[i] = 1. / dabs(scal); j < D; j++) xfe(i, j) = xp_(e, j) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[j]);
-            }
-
-          /* interpolation et contribution au flux */
-          int nl = D + 1, nc = feb_d(f + 1) - feb_d(f), un = 1;
-          A.resize(nc, nl), B.resize(nc), phi.resize(nc), P.resize(nc); //format LAPACK pour DGELS
-          for (j = 0, jb = feb_d(f); j < nc; j++, jb++) phif_c(jb, n) = ((j == 1) - (j == 0)) / (1. / h[0] + 1. / h[1]);
-          if (dot(&xfe(1, 0), &xfe(1, 0), &xfe(0, 0), &xfe(0, 0)) > 1e-12) for (i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
+  for (f = 0; f < f_max; f++, phif_d.append_line(phif_j.size())) if (f_e(f, 1) >= 0)
+      {
+        /* calcul du flux */
+        for (phi.resize(nc = feb_d(f + 1) - feb_d(f), N), phi = 0, n = 0; n < N; n++) //faces internes seulement, composante par composante
+          {
+            /* points a interpoler en amont/aval de la face */
+            for (i = 0; i < 2; i++)
               {
-                B = 0, B(D) = 1;
-                for (j = 0, jb = feb_d(f); j < nc; j++, jb++)
+                e = f_e(f, i), scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
+                for (j = 0, h[i] = 1. / dabs(scal); j < D; j++) xfe(i, j) = xp_(e, j) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[j]);
+              }
+
+            /* interpolation et contribution au flux */
+            for (j = 0; j < 2; j++) phi(j, n) = (j ? 1 : -1) / (1. / h[0] + 1. / h[1]);
+            if (dot(&xfe(1, 0), &xfe(1, 0), &xfe(0, 0), &xfe(0, 0)) < 1e-12) continue; //projections coincidantes -> flux a 2 points
+            for (A.resize(nc, nl), B.resize(nc), P.resize(nc), i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
+              {
+                for (B = 0, B(D) = 1, j = 0, jb = feb_d(f); j < nc; j++, jb++)
                   for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++)
                     A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j);
 
                 /* moindres carres par DGELS */
                 nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-                for (j = 0, jb = feb_d(f); j < nc; j++, jb++) phif_c(jb, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
+                for (j = 0; j < nc; j++) phi(j, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
               }
-        }
+          }
+
+        /* remplissage */
+        for (j = 0, jb = feb_d(f); j < nc; j++, jb++)
+          {
+            for (skip = 1, n = 0; n < N; n++) skip &= (dabs(phi(j, n)) < 1e-8);
+            if (skip) continue;
+            for (phif_c.resize(phif_j.size() + 1, N), n = 0; n < N; n++) phif_c(phif_j.size(), n) = phi(j, n);
+            phif_j.append_line(feb_j(jb));
+          }
+      }
 }

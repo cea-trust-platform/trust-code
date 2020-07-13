@@ -75,6 +75,7 @@ void Op_Grad_CoviMAC_Face::completer()
   /* dimensionnement de gradp_c (gradient aux faces internes) */
   const Zone_CoviMAC& zone = ref_zone.valeur();
   zone.init_feb();
+  gradp_d.resize(zone.nb_faces_tot() + 1), gradp_j.resize(zone.feb_d(zone.nb_faces_tot()));
   gradp_c.resize(zone.feb_d(zone.nb_faces_tot()), equation().inconnue().valeurs().line_size());
   gradp_a_jour = 0;
 
@@ -89,7 +90,7 @@ void Op_Grad_CoviMAC_Face::update_gradp() const
 {
   if (gradp_a_jour) return;
   const Zone_CoviMAC& zone = ref_zone.valeur();
-  zone.flux(zone.nb_faces_tot(), ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e, gradp_c);
+  zone.flux(zone.nb_faces_tot(), ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e, gradp_d, gradp_j, gradp_c);
   gradp_a_jour = 1;
 }
 
@@ -103,13 +104,16 @@ void Op_Grad_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
+  /* stencil : toujours la version reduite (solveur_UP fait dimensionner() a chaque pas de temps) */
+  update_gradp();
+
   /* aux faces : gradient aux faces */
-  for (f = 0; f < zone.nb_faces(); f++) for (i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(f), n = 0; n < N; n++)
+  for (f = 0; f < zone.nb_faces(); f++) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(f), n = 0; n < N; n++)
         stencil.append_line(N * f + n, N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n);
 
   /* aux elements : gradient aux elems */
-  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
-        for (eb = zone.feb_j(j), d = 0; d < D; d++)  if (dabs(zone.vec(i, d)) > 1e-6) for (n = 0; n < N; n++)
+  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), j = gradp_d(f); j < gradp_d(f + 1); j++)
+        for (eb = gradp_j(j), d = 0; d < D; d++)  if (dabs(zone.vec(i, d)) > 1e-6) for (n = 0; n < N; n++)
               stencil.append_line(N * (nf_tot + D * e + d) + n, N * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + n);
 
   tableau_trier_retirer_doublons(stencil);
@@ -145,7 +149,7 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
           pfb(f, n) = inco.addr()[N * e + n] + fgpf(f, n) * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0));
         }
   /* une fois qu'on a pfb : grad p aux autres faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (!ch.fcl(f, 0)) for (i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(i), n = 0; n < N; n++)
+  for (f = 0; f < zone.nb_faces(); f++) if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(i), n = 0; n < N; n++)
           fgpf(f, n) += gradp_c(i, n) * (e < ne_tot ? inco.addr()[N * e + n] : pfb(e - ne_tot, n));
 
   /* contributions */
@@ -191,7 +195,7 @@ DoubleVect& Op_Grad_CoviMAC_Face::multvect(const DoubleTab& inco, DoubleTab& res
 
   /* |f| phi grad p aux faces */
   DoubleTrav fgpf(zone.nb_faces(), N);
-  for (f = 0; f < zone.nb_faces(); f++)  if (!ch.fcl(f, 0)) for (i = zone.feb_d(f); i < zone.feb_d(f + 1); i++) for (e = zone.feb_j(i), n = 0; n < N; n++)
+  for (f = 0; f < zone.nb_faces(); f++)  if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(i), n = 0; n < N; n++)
           fgpf(f, n) += gradp_c(i, n) * (e < ne_tot || ch.fcl(e - ne_tot, 0) > 1 ? inco.addr()[N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] : 0);
     else if (ch.fcl(f, 0) == 1) for (e = f_e(f, 0), n = 0; n < N; n++) //bords de Neumann -> partie interne du flux a 2 poiints
         fgpf(f, n) = - zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * inco.addr()[N * e + n];

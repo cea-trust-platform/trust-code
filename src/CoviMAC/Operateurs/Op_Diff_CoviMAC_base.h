@@ -86,7 +86,8 @@ protected:
   mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
 
   /* interpolations de nu.grad T de chaque cote de chaque face */
-  mutable DoubleTab phif_c; //phif_c(f, c, n, [ 0, D + 1 [) : coefficients du flux sortant
+  mutable IntTab phif_d, phif_j; //indices : phif_j([phif_d(f), phif_d(f + 1)[)
+  mutable DoubleTab phif_c;      //coeffs :  phif_c([phif_d(f), phif_d(f + 1)[, n) pour la composante n
 
   mutable int nu_a_jour_; //si on doit mettre a jour nu
   int nu_constant_;       //1 si nu est constant dans le temps

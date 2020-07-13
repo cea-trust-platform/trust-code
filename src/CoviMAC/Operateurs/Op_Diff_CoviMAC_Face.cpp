@@ -84,7 +84,8 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
   stencil.set_smart_resize(1), zone.creer_tableau_faces(tpfa), tpfa = 1;
 
   update_nu();
-
+  /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) de la zone sinon */
+  const IntTab& feb_d = nu_constant_ || N_nu <= N ? phif_d : zone.feb_d, &feb_j = nu_constant_ || N_nu <= N ? phif_j : zone.feb_j;
   Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
 
   for (f = 0; f < nf_tot; f++) if (ch.fcl(f, 0) > 2 && (e = f_e(f, 0)) < zone.nb_elem()) //face de bord (hors Neumann / Symetrie) : flux a deux points
@@ -94,21 +95,21 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
         for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + ne_tot * d + e) + n, N * (nf_tot + ne_tot * d + e) + n); //elem -> elem
       }
     else if (!ch.fcl(f, 0)) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) //faces internes -> flux multipoints
-          for (j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
+          for (j = feb_d(f); j < feb_d(f + 1); j++)
             {
-              for (eb = zone.feb_j(j), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (ch.fcl(fb, 0) < 2)
+              for (eb = feb_j(j), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (ch.fcl(fb, 0) < 2)
                   {
-                    if (j < zone.feb_d(f) + 2 && (fc = zone.equiv(f, i, k)) >= 0)
+                    if (feb_d(f + 1) == feb_d(f) + 2 && (fc = zone.equiv(f, i, k)) >= 0)
                       {
-                        if (ch.fcl(fc, 0) < 2) for (n = 0; n < N; n++) if (nu_constant_ || N_nu <= N ? dabs(phif_c(j, n)) > 1e-8 : 1) //equivalence : face-face
-                              stencil.append_line(N * fb + n, N * (j == i + zone.feb_d(f) ? fb : fc) + n);
+                        if (ch.fcl(fc, 0) < 2) for (n = 0; n < N; n++) //equivalence : face-face
+                            stencil.append_line(N * fb + n, N * (j == i + feb_d(f) ? fb : fc) + n);
                       }
-                    else for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) if (nu_constant_ || N_nu <= N ? dabs(phif_c(j, n)) > 1e-8 : 1) //sinon : elem-face
-                              stencil.append_line(N * fb + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
+                    else for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) //sinon : elem-face
+                            stencil.append_line(N * fb + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
                   }
-              for (d = 0; d < D; d++) for (n = 0; n < N; n++) if (nu_constant_ || N_nu <= N ? dabs(phif_c(j, n)) > 1e-8 : 1) //elem -> elem
-                    stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
-              for (n = 0; n < N; n++) if (nu_constant_ || N_nu <= N ? dabs(phif_c(j, n)) > 1e-8 : 1) tpfa(f, n) &= (j < zone.feb_d(f) + 2);
+              for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem -> elem
+                  stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
+              for (n = 0; n < N; n++) tpfa(f, n) &= (j < feb_d(f) + 2);
             }
 
   tableau_trier_retirer_doublons(stencil);
@@ -155,13 +156,13 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
           vb(f, d, n) = inco.addr()[N * (nf_tot + D * e + d) + n];
 
   /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
-  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) for (e = f_e(f, i), j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
+  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) for (e = f_e(f, i), j = phif_d(f); j < phif_d(f + 1); j++)
         {
           //elem -> face
-          for (eb = zone.feb_j(j), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (ch.fcl(fb, 0) < 2)
+          for (eb = phif_j(j), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (ch.fcl(fb, 0) < 2)
               {
-                if (j < zone.feb_d(f) + 2 && (fc = zone.equiv(f, i, k)) >= 0) //equivalence : face-face
-                  for (fd = (j == i + zone.feb_d(f) ? fb : fc), mult = pf(fd) / pe(f_e(f, j - zone.feb_d(f))) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
+                if (phif_d(f + 1) == phif_d(f) + 2 && (fc = zone.equiv(f, i, k)) >= 0) //equivalence : face-face
+                  for (fd = (j == i + phif_d(f) ? fb : fc), mult = pf(fd) / pe(f_e(f, j - phif_d(f))) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
                     resu.addr()[N * fb + n] -= (i ? 1 : -1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * mult * phif_c(j, n) * inco.addr()[N * fd + n];
                 else for (d = 0; d < D; d++) for (n = 0; n < N; n++) //pas d'equivalence: elem -> face
                       resu.addr()[N * fb + n] -= (i ? 1 : -1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * nf(fb, d) / fs(fb) * phif_c(j, n)
@@ -209,14 +210,14 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
     else if (ch.fcl(f, 0)) for (d = 0; d < D; d++) for (n = 0; n < N; n++) dvb(f, d, n) = 1; //Neumann / Symetrie : flux nul, mais on doit remplir dvb
 
   /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
-  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) for (e = f_e(f, i), j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
+  for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) for (e = f_e(f, i), j = phif_d(f); j < phif_d(f + 1); j++)
         {
           //elem -> face
-          for (eb = zone.feb_j(j), ebi = eb < ne_tot ? eb : f_e(eb - ne_tot, 0), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (ch.fcl(fb, 0) < 2)
+          for (eb = phif_j(j), ebi = eb < ne_tot ? eb : f_e(eb - ne_tot, 0), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (ch.fcl(fb, 0) < 2)
               {
-                if (j < zone.feb_d(f) + 2 && (fc = zone.equiv(f, i, k)) >= 0) //equivalence : face-face
+                if (phif_d(f + 1) == phif_d(f) + 2 && (fc = zone.equiv(f, i, k)) >= 0) //equivalence : face-face
                   {
-                    if (ch.fcl(fd = (j == i + zone.feb_d(f) ? fb : fc), 0) < 2) for (mult = pf(fd) / pe(f_e(f, j - zone.feb_d(f))) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
+                    if (ch.fcl(fd = (j == i + phif_d(f) ? fb : fc), 0) < 2) for (mult = pf(fd) / pe(f_e(f, j - phif_d(f))) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
                         if (dabs(phif_c(j, n)) > 1e-8) matrice(N * fb + n, N * fd + n) += (i ? 1 : -1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * mult * phif_c(j, n);
                   }
                 else for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) if (dabs(phif_c(j, n)) > 1e-8) //pas d'equivalence: elem -> face

@@ -78,8 +78,9 @@ void Op_Diff_CoviMAC_base::completer()
   zone.zone().creer_tableau_elements(nu_);
   zone.creer_tableau_faces(nu_fac_);
 
-  /* interpolations de nu.grad T */
+  /* interpolations de nu.grad T : on prend les tailles maximales possibles */
   zone.init_feb();
+  phif_d.resize(zone.nb_faces() + 1), phif_j.resize(zone.feb_d(zone.nb_faces()));
   phif_c.resize(zone.feb_d(zone.nb_faces()), equation().inconnue().valeurs().line_size());
 
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) && !has_diffusivite_turbulente();
@@ -340,6 +341,6 @@ void Op_Diff_CoviMAC_base::update_nu() const
     }
   nu_fac_.echange_espace_virtuel();
   /* heavy lifting */
-  zone.flux(zone.nb_faces(), nu_, phif_c);
+  zone.flux(zone.nb_faces(), nu_, phif_d, phif_j, phif_c);
   nu_a_jour_ = 1;
 }
