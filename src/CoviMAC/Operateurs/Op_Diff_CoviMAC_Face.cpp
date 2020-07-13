@@ -89,8 +89,8 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 
   for (f = 0; f < nf_tot; f++) if (ch.fcl(f, 0) > 2 && (e = f_e(f, 0)) < zone.nb_elem()) //face de bord (hors Neumann / Symetrie) : flux a deux points
       {
-        for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb))
-                for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * (nf_tot + ne_tot * d+ e) + n); //elem -> face
+        for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (n = 0; n < N; n++)
+              stencil.append_line(N * fb + n, N * fb + n); //face -> face
         for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + ne_tot * d + e) + n, N * (nf_tot + ne_tot * d + e) + n); //elem -> elem
       }
     else if (!ch.fcl(f, 0)) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) //faces internes -> flux multipoints
@@ -132,28 +132,27 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
   double mult;
 
   /* faces de bord : flux a deux points + valeurs aux bord */
-  DoubleTrav vb(zone.nb_faces_tot(), D, N), h_int(N), phi(D, N);
-  for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0)) //faces de bord seulement
+  DoubleTrav vb(zone.nb_faces_tot(), D, N), h_int(N);
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0) > 2) //Dirichlet : remplissage de vb et contrib a la matrice
       {
         /* h_int : coefficent d'echange element-face */
         for (e = f_e(f, 0), n = 0; n < N; n++)
           h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
-        /* phi / vb : selon CLs */
-        if (ch.fcl(f, 0) < 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //Neumann ou Symetrie
-              phi(d, n) = 0, vb(f, d, n) = inco.addr()[N * (nf_tot + D * e + d) + n];
-        else for (d = 0; d < D; d++) for (n = 0; n < N; n++) //Dirichlet ou Dirichlet_homogene
-              {
-                vb(f, d, n) = ch.fcl(f, 0) == 3 ? ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) : 0;
-                phi(d, n) = h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
-              }
+        /* vb : seulement si Dirichlet non homogene */
+        if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+              vb(f, d, n) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d);
 
         /* contributions */
-        for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->face
-                resu.addr()[N * fb + n] -= mu_f(fb, n, e != f_e(fb, 0)) * nf(fb, d) * phi(d, n) * vf(fb) / ve(e);
-        for (d = 0; d < D; d++) for (n = 0; n < N; n++) resu.addr()[N * (nf_tot + D * e + d) + n] -= fs(f) * phi(d, n); //elem->elem
-        if (f < zone.premiere_face_int()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) flux_bords_(f, N * d + n) = - fs(f) * phi(d, n);
+        for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //face->face
+                resu.addr()[N * fb + n] -= mu_f(fb, n, e != f_e(fb, 0)) * nf(fb, d) * h_int(n) * (nf(fb, d) / fs(fb) * inco.addr()[N * fb + n] - vb(f, d, n)) * vf(fb) / ve(e);
+        for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem (+ flux_bords si face reelle)
+            resu.addr()[N * (nf_tot + D * e + d) + n] -= fs(f) * h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
+        if (f < zone.premiere_face_int()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+              flux_bords_(f, N * d + n) = - fs(f) * h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
       }
+    else if (ch.fcl(f, 0)) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //Neumann/Symetrie : vb seulement
+          vb(f, d, n) = inco.addr()[N * (nf_tot + D * e + d) + n];
 
   /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
   for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) for (e = f_e(f, i), j = zone.feb_d(f); j < zone.feb_d(f + 1); j++)
@@ -199,10 +198,9 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
         for (e = f_e(f, 0), n = 0; n < N; n++)
           h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
-        //elem -> face
+        //face -> face
         for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2)
-            for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++)
-                  matrice(N * fb + n, N * (nf_tot + D * e + d) + n) += mu_f(fb, n, e != f_e(fb, 0)) * nf(fb, d) * h_int(n) * vf(fb) / ve(e);
+            for (n = 0; n < N; n++) matrice(N * fb + n, N * fb + n) += mu_f(fb, n, e != f_e(fb, 0)) * fs(fb) * h_int(n) * vf(fb) / ve(e);
 
         //elem -> elem
         if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
