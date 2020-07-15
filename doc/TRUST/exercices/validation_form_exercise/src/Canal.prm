@@ -137,7 +137,7 @@ Chapter {
 
     Visu {
         Title "Vizualization of velocity field at last time, test case std"
-        Pseudocolor std.lata dom_dual_magnitude VITESSE FACES
+        Pseudocolor std.lata dom_dual norme_VITESSE FACES
         Cycles -1
         Width 7.5cm
     }

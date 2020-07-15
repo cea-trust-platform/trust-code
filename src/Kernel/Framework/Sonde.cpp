@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1249,15 +1249,7 @@ void Sonde::ouvrir_fichier()
 // Postcondition:
 void Sonde::mettre_a_jour(double un_temps, double tinit)
 {
-  // La mise a jour du champ est a supprimer car elle doit deja etre faite dans Post::mettre_a_jour()
   double temps_courant = mon_champ->get_time();
-
-  if ( temps_courant != un_temps )
-    {
-      Champ espace_stockage;
-      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
-      ma_source_mod.mettre_a_jour(un_temps);
-    }
   double dt=mon_post->probleme().schema_temps().pas_de_temps();
   double nb;
   // Le *(1+Objet_U::precision_geom) est pour eviter des erreurs d'arrondi selon les machines
@@ -1269,6 +1261,12 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   // On doit ecrire les sondes
   if (nb>nb_bip)
     {
+      if ( temps_courant != un_temps )
+        {
+          Champ espace_stockage;
+          Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
+          ma_source_mod.mettre_a_jour(un_temps);
+        }
       // Si le maillage est deformable il faut reconstruire les sondes
       if (mon_post->probleme().domaine().deformable())
         {

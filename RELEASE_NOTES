@@ -2,10 +2,9 @@
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
 09/07/20 (TRUST)  New feature : Coding of the metric "Load imbalance" in the cutter and the scatter.
-09/07/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model is now computed on same nodes than pressure
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.8.1 : Enhancements, modifications and corrected bugs since version 1.8.0 :
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 17/06/20 (TRUST)  keyword     : Perte_Charge_Singuliere syntax has changed. The new syntax is: Perte_Charge_Singuliere { dir dir_val coeff/regul coeff_val/regul_bloc surface surface_bloc } (the old syntax was: Perte_Charge_Singuliere dir_val coeff_val surface_bloc )
 03/06/20 (TRUST)  Keyword     : Option thermique_monolithique (see below) available for PolyMAC discretization also
 03/06/20 (TRUST)  Change      : PolyMAC numerical improvements
@@ -134,7 +133,7 @@ Release notes version 1.7.6 : Enhancements, modifications and corrected bugs sin
 21/08/17 (TRUST)  Validation  : Blocking turbulent quasi-compressible calculation with mass fraction in VEF
 29/06/17 (TRUST)  Bug fixed   : Taking into account the name of the thermal power defined by Champ_Input_P0
 --------------------------------------------------------------------------------------------------
-Release notes version 1.7.5 : Enhancements, modifications and c29/06/16 (TRUST)  Portability : Linux distribution Fedora 24 and gcc 6.1.1 supportedorrected bugs since version 1.7.4 :
+Release notes version 1.7.5 : Enhancements, modifications and corrected bugs since version 1.7.4 :
 --------------------------------------------------------------------------------------------------
 29/05/17 (TRUST)  New feature : Extraction method possible on 1D mesh
 16/05/17 (TRUST)  Minor change: Option -config completed with gedit editor
