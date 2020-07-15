@@ -97,10 +97,11 @@ void Op_Grad_CoviMAC_Face::update_gradp() const
 void Op_Grad_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
   const Zone_CoviMAC& zone = ref_zone.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
   int i, j, e, eb, f, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
 
-  zone.init_ve(), zone.init_feb();
+  zone.init_ve(), zone.init_feb(), ch.init_cl();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
@@ -108,8 +109,9 @@ void Op_Grad_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
   update_gradp();
 
   /* aux faces : gradient aux faces */
-  for (f = 0; f < zone.nb_faces(); f++) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(f), n = 0; n < N; n++)
-        stencil.append_line(N * f + n, N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n);
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) == 1) for (e = f_e(f, 0), n = 0; n < N; n++) stencil.append_line(N * f + n, N * e + n);
+    else if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(i), n = 0; n < N; n++)
+          stencil.append_line(N * f + n, N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n);
 
   /* aux elements : gradient aux elems */
   for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), j = gradp_d(f); j < gradp_d(f + 1); j++)
@@ -130,35 +132,36 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
                    &W_e = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e;
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces();
   int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = inco.line_size();
-  zone.init_ve(), update_gradp();
+  update_gradp();
 
-  /* pression aux faces de bord, |f| phi grad p aux faces */
-  DoubleTrav pfb(zone.nb_faces_tot(), N), fgpf(zone.nb_faces_tot(), N);
+  /* pression aux faces de bord (reelles et virtuelles) */
+  DoubleTrav pfb(nf_tot, N), fgpf(N); // |f| (grad p)_f
   for (f = 0; f < zone.nb_faces_tot(); f++)
-    if (ch.fcl(f, 0) == 1) for (e = f_e(f, 0), n = 0; n < N; n++) //CL Neumann : pfb direct, gpf par flux a 2 points
-        {
-          pfb(f, n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
-          fgpf(f, n) = zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * (pfb(f, n) - inco.addr()[N * e + n]);
-        }
-    else if (ch.fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0; n < N; n++) //CL Dirichlet/Symetrie : pfb en regardant N-S, gpf par formule a 2 points
+    if (ch.fcl(f, 0) == 1) for (n = 0; n < N; n++) //Neumann : valeur imposee
+        pfb(f, n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+    else if (ch.fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0; n < N; n++) //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
         {
           double residu[3] = { 0, }; //3 composantes du residu (secmem_NS - mat_NS.inco_NS) en e
           if (mat_NS) for (d = 0; d < D; d++) for (i = N * (nf_tot + D * e + d) + n, residu[d] = (*secmem_NS)(i), j = mat_NS->get_tab1()(i) - 1; j < mat_NS->get_tab1()(i + 1) - 1; j++)
                 residu[d] -= mat_NS->get_coeff()(j) * (*inco_NS)(mat_NS->get_tab2()(j) - 1);
-          fgpf(f, n) = zone.dot(residu, &nf(f, 0)) / ve(e);
-          pfb(f, n) = inco.addr()[N * e + n] + fgpf(f, n) * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0));
+          pfb(f, n) = inco.addr()[N * e + n] + zone.dot(residu, &nf(f, 0)) / ve(e) * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0));
         }
-  /* une fois qu'on a pfb : grad p aux autres faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(i), n = 0; n < N; n++)
-          fgpf(f, n) += gradp_c(i, n) * (e < ne_tot ? inco.addr()[N * e + n] : pfb(e - ne_tot, n));
 
-  /* contributions */
-  //faces : gradient
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) resu.addr()[N * f + n] += fgpf(f, n) * vf(f) / fs(f);
+  /* aux faces : deux points si bord, multipoints si interne */
+  for (f = 0; f < zone.nb_faces(); f++)
+    {
+      /* |f| grad p */
+      if (!ch.fcl(f, 0)) for (fgpf = 0, i = gradp_d(f); i < gradp_d(f + 1); i++) //face interne -> flux multipoints
+          for (e = gradp_j(i), n = 0; n < N; n++) fgpf(n) += gradp_c(i, n) * (e < ne_tot ? inco.addr()[N * e + n] : pfb(e - ne_tot, n));
+      else for (e = f_e(f, 0), n = 0; n < N; n++) //face de bord -> flux a deux points
+          fgpf(n) = zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * (pfb(f, n) - inco.addr()[N * e + n]);
 
-  //elements : interp aux elems du gradient
-  for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), d = 0; d < D; d++) for (n = 0; n < N; n++)
-          resu.addr()[N * (nf_tot + D * e + d) + n] += ve(e) * zone.vec(i, d) * fgpf(f, n) / fs(f);
+      /* face -> vf(f) * phi grad p */
+      if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) resu.addr()[N * f + n] += fgpf(n) * vf(f) / fs(f);
+      /* elems amont/aval -> ve(e) * phi grad p */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+              resu.addr()[N * (nf_tot + D * e + d) + n] += (i ? -1 : 1) * (xv(f, d) - xp(e, d)) * fgpf(n);
+    }
 
   resu.echange_espace_virtuel();
   return resu;
@@ -191,20 +194,22 @@ DoubleVect& Op_Grad_CoviMAC_Face::multvect(const DoubleTab& inco, DoubleTab& res
                    &W_e = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e;
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, ne_tot = zone.nb_elem_tot(), n, N = inco.line_size();
-  zone.init_ve(), update_gradp();
+  update_gradp();
 
-  /* |f| phi grad p aux faces */
-  DoubleTrav fgpf(zone.nb_faces(), N);
-  for (f = 0; f < zone.nb_faces(); f++)  if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) for (e = gradp_j(i), n = 0; n < N; n++)
-          fgpf(f, n) += gradp_c(i, n) * (e < ne_tot || ch.fcl(e - ne_tot, 0) > 1 ? inco.addr()[N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] : 0);
-    else if (ch.fcl(f, 0) == 1) for (e = f_e(f, 0), n = 0; n < N; n++) //bords de Neumann -> partie interne du flux a 2 poiints
-        fgpf(f, n) = - zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * inco.addr()[N * e + n];
+  /* aux faces : deux points si bord, multipoints si interne */
+  DoubleTrav fgpf(N); // |f| (grad p)_f
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) //vf calcule seulement
+      {
+        /* |f| grad p */
+        if (!ch.fcl(f, 0)) for (fgpf = 0, i = gradp_d(f); i < gradp_d(f + 1); i++) //face interne -> flux multipoints
+            for (e = gradp_j(i), n = 0; n < N; n++) //au bord : les pressions aux CL de Neumann ne varient pas, celles aux CL de Dirichlet varient comme le voisin
+              fgpf(n) += gradp_c(i, n) * (e < ne_tot || ch.fcl(e - ne_tot, 0) > 1 ? inco.addr()[N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] : 0);
+        else for (e = f_e(f, 0), n = 0; n < N; n++) //bord de Neumann -> partie interne du flux a deux points
+            fgpf(n) = - zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * inco.addr()[N * e + n];
 
-  /* contributions */
-  resu = 0;
-  //faces : gradient a la face
-  for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
-      resu.addr()[N * f + n] = fgpf(f, n) * vf(f) / fs(f);
+        /* face -> vf(f) * phi grad p */
+        for (n = 0; n < N; n++) resu.addr()[N * f + n] = fgpf(n) * vf(f) / fs(f);
+      }
 
   resu.echange_espace_virtuel();
   return resu;
@@ -212,31 +217,33 @@ DoubleVect& Op_Grad_CoviMAC_Face::multvect(const DoubleTab& inco, DoubleTab& res
 
 void Op_Grad_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  // const Zone_CoviMAC& zone = ref_zone.valeur();
-  // const IntTab& f_e = zone.face_voisins();
-  // const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
-  // const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
-  // int i, j, k, l, r, e, f, fb, fc, nf_tot = zone.nb_faces_tot(), ne_tot = zone.nb_elem_tot();
-  // zone.init_ve(), zone.init_w1();
-  //
-  // /* aux faces : on depend du gradient aux faces des elements voisins de f */
-  // for (f = 0; f < zone.nb_faces(); f++)
-  //   {
-  //     /* gradient a la face */
-  //     for (i = zone.w1d(f); i < zone.w1d(f + 1); i++) for (fb = zone.w1j(i), j = 0; j < 2; j++)
-  //         matrice(f, f_e(fb, j)) += pf(f) * vf(f) * zone.w1c(i) * (j ? -1 : 1) * fs(fb) / vf(fb);
-  //
-  //     /* retrait de la projection du gradient aux elements */
-  //     for (i = 0; i < 2 && (e = f_e(f, i)) >= 0 && e < ne_tot; i++) for (j = zone.ved(e); j < zone.ved(e + 1); j++)
-  //         if (dabs(zone.dot(&nf(f, 0), &zone.vec(j, 0))) > 1e-6 * fs(f))
-  //           for (fb = zone.vej(j), k = zone.w1d(fb); k < zone.w1d(fb + 1); k++) for (fc = zone.w1j(k), l = 0; l < 2; l++)
-  //               matrice(f, f_e(fc, l)) += pf(f) * vfd(f, i) * zone.dot(&nf(f, 0), &zone.vec(j, 0)) / fs(f) * zone.w1c(k) * (l ? 1 : -1) * fs(fc) / vf(fc);
-  //   }
-  //
-  // /* aux elements : gradient aux elems */
-  // for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++)
-  //       if (dabs(zone.vec(i, r)) > 1e-6) for (f = zone.vej(i), j = zone.w1d(f); j < zone.w1d(f + 1); j++) for (fb = zone.w1j(j), k = 0; k < 2; k++)
-  //             matrice(nf_tot + r * ne_tot + e, f_e(fb, k)) += pe(e) * ve(e) * zone.vec(i, r) * zone.w1c(j) * (k ? -1 : 1) * fs(fb) / vf(fb);
+  const Zone_CoviMAC& zone = ref_zone.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  const IntTab& f_e = zone.face_voisins();
+  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
+                   &W_e = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e;
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = inco.line_size();
+  update_gradp();
+
+  /* aux faces : deux points si bord, multipoints si interne */
+  std::vector<std::map<int, double>> dfgpf(N); // |f| (grad p)_f, dfgpf[compo][indice] = coeff
+  for (f = 0; f < zone.nb_faces(); f++)
+    {
+      /* coefficients de |f| grad p */
+      if (ch.fcl(f, 0) == 1) for (e = f_e(f, 0), n = 0; n < N; n++) //bords de Neumann -> partie interne du flux a 2 points
+          dfgpf[n][N * e + n] = - zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
+      else if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) if ((e = gradp_j(i)) < ne_tot || ch.fcl(e - ne_tot, 0) > 1) //bord interne -> flux multipoints
+            for (n = 0; n < N; n++) dfgpf[n][N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] += gradp_c(i, n);
+
+      /* face -> vf(f) * phi grad p */
+      if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) for (auto &i_c : dfgpf[n]) matrice(N * f + n, i_c.first) -= i_c.second * vf(f) / fs(f);
+      /* elems amont/aval -> ve(e) * phi grad p */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++) if (fs(f) * dabs(xv(f, d) - xp(e, d)) > 1e-6 *  ve(e))
+              for (n = 0; n < N; n++) for (auto &i_c : dfgpf[n])
+                  matrice(N * (nf_tot + D * e + d) + n, i_c.first) -= (i ? -1 : 1) * (xv(f, d) - xp(e, d)) * i_c.second;
+      for (n = 0; n < N; n++) dfgpf[n].clear();
+    }
 }
 
 int Op_Grad_CoviMAC_Face::impr(Sortie& os) const

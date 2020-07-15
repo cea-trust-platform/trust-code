@@ -28,6 +28,7 @@
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
+#include <Masse_CoviMAC_Face.h>
 #include <Equation_base.h>
 
 Implemente_instanciable(Terme_Source_Qdm_Face_CoviMAC,"Source_Qdm_face_CoviMAC",Source_base);
@@ -75,14 +76,17 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleTab& vals = la_source->valeurs();
-  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
-  int e, r, unif = sub_type(Champ_Uniforme, la_source.valeur()), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  const DoubleTab& vals = la_source->valeurs(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f, &nf = zone.face_normales();
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
+  const IntTab& f_e = zone.face_voisins();
+  int e, f, i, unif = sub_type(Champ_Uniforme, la_source.valeur()), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
   ch.init_cl();
 
-  /* juste aux elements */
-  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++)
-      resu(nf_tot + r * ne_tot + e) += pe(e) * ve(e) * vals(unif ? 0 : e, r);
+  /* contributions aux faces (par chaque voisin), aux elems */
+  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+            resu.addr()[N * f + n] += vf(f) * mu_f(f, n, i) * nf(f, d) / fs(f) * pe(e) * vals(unif ? 0 : e, N * d + n);
+  for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+        resu.addr()[N * (nf_tot + D * e + d) + n] += pe(e) * ve(e) * vals(unif ? 0 : e, N * d + n);
 
   return resu;
 }

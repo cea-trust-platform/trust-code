@@ -72,7 +72,7 @@ void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
-  int i, e, f, n, N = equation().inconnue().valeurs().line_size();
+  int i, e, f, n, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), N = equation().inconnue().valeurs().line_size(), D = dimension;
   ch.init_cl();
 
   IntTab stencil(0,2);
@@ -81,7 +81,7 @@ void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
       for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * f + n);
 
   tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(N * zone.nb_ch_p0_tot(), N * zone.nb_ch_face_tot(), stencil, matrice);
+  Matrix_tools::allocate_morse_matrix(N * ne_tot, N * (nf_tot + D * ne_tot), stencil, matrice);
 }
 
 DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const

@@ -1004,6 +1004,7 @@ void Navier_Stokes_std::projeter()
 
           tab_vitesse.ajoute(-dt,gradP);
           tab_vitesse.echange_espace_virtuel();
+          solveur_masse.corriger_solution(tab_vitesse, tab_vitesse);
         }
 
       Debog::verifier("Navier_Stokes_std::projeter, vitesse", tab_vitesse);

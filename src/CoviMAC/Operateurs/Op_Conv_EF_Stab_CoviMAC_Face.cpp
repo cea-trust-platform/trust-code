@@ -135,7 +135,7 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
                         if (dfac(j, n) && fd >= 0) resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult * inco.addr()[N * fd + n];
                         else if (dfac(j, n) && ch.fcl(f, 0) == 3) for (d = 0; d < D; d++) //convection avec une CL de Dirichlet
                             resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * mult
-                                                       * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[ch.fcl(f, 0)].valeur()).val_imp(ch.fcl(f, 1), d);
+                                                       * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), d);
                     }
                 else for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) if (dfac(j, n)) //pas d'equivalence : elem eb -> face fb
                             resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb) * inco.addr()[N * (nf_tot + D * eb + d) + n];
@@ -143,7 +143,7 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
 
           if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) if (dfac(j, n)) //partie "elem"
                     resu.addr()[N * (nf_tot + D * e + d) + n] -= (i ? -1 : 1) * dfac(j, n)
-                                                                 * (eb >= 0 ? inco.addr()[N * (nf_tot + D * eb + d) + n] : ref_cast(Dirichlet, cls[ch.fcl(f, 0)].valeur()).val_imp(ch.fcl(f, 1), N * d + n));
+                                                                 * (eb >= 0 ? inco.addr()[N * (nf_tot + D * eb + d) + n] : ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n));
         }
     }
 

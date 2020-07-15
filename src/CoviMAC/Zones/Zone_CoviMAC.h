@@ -108,8 +108,6 @@ public :
   inline int nb_faces_joint() const;
   inline int nb_faces_std() const;
   inline int nb_elem_std() const;
-  inline int nb_ch_p0_tot() const;
-  inline int nb_ch_face_tot() const;
   inline double carre_pas_du_maillage() const;
   inline double carre_pas_maille(int i) const
   {
@@ -172,7 +170,6 @@ private:
   DoubleTab face_normales_;             // normales aux faces
   int nb_faces_std_;                    // nombre de faces standard
   int nb_elem_std_;                     // nombre d'elements standard
-  int nb_ch_p0_tot_, nb_ch_face_tot_;  //nombre d'items total de mdv_ch_p0 et de mdv_ch_face
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
@@ -258,18 +255,6 @@ inline int Zone_CoviMAC::nb_faces_std() const
 inline int  Zone_CoviMAC::nb_elem_std() const
 {
   return nb_elem_std_;
-}
-
-// Decription:
-inline int  Zone_CoviMAC::nb_ch_p0_tot() const
-{
-  return nb_ch_p0_tot_;
-}
-
-// Decription:
-inline int  Zone_CoviMAC::nb_ch_face_tot() const
-{
-  return nb_ch_face_tot_;
 }
 
 // Decription:

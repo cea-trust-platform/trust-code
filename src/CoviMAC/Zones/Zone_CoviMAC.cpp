@@ -498,7 +498,6 @@ void Zone_CoviMAC::discretiser()
   mdc_ch_face.add_part(md_vector_faces());
   mdc_ch_face.add_part(zone().md_vector_elements(), dimension);
   mdv_ch_face.copy(mdc_ch_face);
-  nb_ch_face_tot_ = nb_faces_tot() + dimension * nb_elem_tot();
 
   //volumes_entrelaces_ et volumes_entrelaces_dir : par projection de l'amont/aval sur la normale a la face
   creer_tableau_faces(volumes_entrelaces_);
@@ -751,7 +750,7 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& 
           for (i = 0; i < D; i++) xfb(f, n, i) = xp_(e, i) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[i]);
         }
 
-  for (f = 0; f < f_max; f++, phif_d.append_line(phif_j.size())) if (f_e(f, 1) >= 0)
+  for (f = 0; f < f_max; f++, phif_d.append_line(phif_j.size())) if (f_e(f, 0) >= 0 && f_e(f, 1) >= 0)
       {
         /* calcul du flux */
         for (phi.resize(nc = feb_d(f + 1) - feb_d(f), N), phi = 0, n = 0; n < N; n++) //faces internes seulement, composante par composante
@@ -775,14 +774,15 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& 
                 /* moindres carres par DGELS */
                 nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-                for (j = 0; j < nc; j++) phi(j, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
+                for (j = 0; j < nc; j++) if (dabs(B(j) * P(j)) > 1e-6) //ecretage sur les coeffs de l'interpolation
+                    phi(j, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
               }
           }
 
         /* remplissage */
         for (j = 0, jb = feb_d(f); j < nc; j++, jb++)
           {
-            for (skip = 1, n = 0; n < N; n++) skip &= (dabs(phi(j, n)) < 1e-8);
+            for (skip = 1, n = 0; n < N; n++) skip &= (phi(j, n) == 0); //ecretage fait au-dessus
             if (skip) continue;
             for (phif_c.resize(phif_j.size() + 1, N), n = 0; n < N; n++) phif_c(phif_j.size(), n) = phi(j, n);
             phif_j.append_line(feb_j(jb));

@@ -130,14 +130,17 @@ void Solveur_UP::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pres
   eqnNS.dimensionner_matrice(matrice);
   eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
 
-  residu_parts[0]*=-1;
-  matrice.ajouter_multvect(current, residu_parts[0]);
-  gradient.valeur().ajouter(pression,residu_parts[0]);
-  residu_parts[0]*=-1;
+  DoubleTrav secmem_grad(residu_parts[0]);
+  /* pour que ajouter_NS voie le bon second membre */
+  gradient.valeur().ajouter_NS(pression, secmem_grad, &matrice, &current, &residu_parts[0]);
+  // gradient.valeur().ajouter(pression, secmem_grad);
+  residu_parts[0] -= secmem_grad;
   divergence.calculer(current, residu_parts[1]);
-  modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(eqnNS.zone_dis().valeur(),
-                                                     eqnNS.zone_Cl_dis(),
-                                                     matrice, current, residu_parts[0]) ;
+  /*
+      modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(eqnNS.zone_dis().valeur(),
+                                                       eqnNS.zone_Cl_dis(),
+                                                       matrice, current, residu_parts[0]) ;
+  */
   /* int nb_f=current.dimension(0);
   int nnz=matrice.tab1_[nb_f]-1;
   matrice.dimensionner(nb_f,matrice.nb_colonnes(),nnz);
@@ -146,7 +149,7 @@ void Solveur_UP::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pres
   le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
 
   //Calcul de Uk = U*_k + U'k
-  current  += Inconnues_parts[0];
+  current   = Inconnues_parts[0];
   pression += Inconnues_parts[1];
   eqn.solv_masse().corriger_solution(current, current); //mise en coherence de ve avec vf
   //current.echange_espace_virtuel();
