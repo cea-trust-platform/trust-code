@@ -96,6 +96,7 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();
   virtual int impr(Sortie& os) const;
+  virtual void dimensionner_matrice_internal(Matrice_Morse& mat_morse);
 
   int sauvegarder(Sortie&) const;
   int reprendre(Entree&);

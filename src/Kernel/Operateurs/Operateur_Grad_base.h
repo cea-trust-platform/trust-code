@@ -41,12 +41,16 @@ class Operateur_Grad_base  : public Operateur_base
 {
   Declare_base(Operateur_Grad_base);
 public :
-  /* parametres supplementaires : (matrice, inco, secmem) pour l'equation de Navier-Stokes, utilises par Op_Grad_CoviMAC_Face::ajouter */
-  virtual DoubleTab& ajouter_NS(const DoubleTab& inco, DoubleTab& resu, const Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
+  /* parametres supplementaires : (matrice, inco, secmem) pour l'equation de Navier-Stokes, utilises par Op_Grad_CoviMAC_Face pour mieux gerer la pression aux bords de Dirichlet */
+  virtual void dimensionner_NS(Matrice_Morse& mat) const
+  {
+    return;
+  }
+  virtual DoubleTab& ajouter_NS(const DoubleTab& inco, DoubleTab& resu, Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
   {
     return ajouter(inco, resu); //par defaut, on les ignore
   }
-  virtual DoubleTab& calculer_NS(const DoubleTab& inco, DoubleTab& resu, const Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
+  virtual DoubleTab& calculer_NS(const DoubleTab& inco, DoubleTab& resu, Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
   {
     return calculer(inco, resu);
   }

@@ -167,7 +167,8 @@ public :
   virtual Nom expression_residu();
 
   // methodes pour l'implicite
-  virtual void dimensionner_matrice(Matrice_Morse& mat_morse);
+  virtual void dimensionner_matrice(Matrice_Morse& mat_morse); //avec memoization (matrice_stockee)
+  virtual void dimensionner_matrice_internal(Matrice_Morse& mat_morse); //methode sous-jacente
   // ajoute les contributions des operateurs et des sources
   virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
   // modifie la matrice et le second mmebre en fonction des CL

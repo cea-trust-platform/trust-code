@@ -1812,6 +1812,14 @@ static void construire_matrice_implicite(Operateur_base& op,
     }
 }
 
+/* pour que le gradient puisse elargir le stencil de l'equation de N-S */
+void Navier_Stokes_std::dimensionner_matrice_internal(Matrice_Morse& matrice)
+{
+  Equation_base::dimensionner_matrice_internal(matrice);
+  gradient.valeur().dimensionner_NS(matrice);
+  return;
+}
+
 DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)
 {
   // Calcul de la derivee en temps:
