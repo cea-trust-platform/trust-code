@@ -26,6 +26,29 @@
 #include <Polyedre.h>
 #include <vector>
 
+
+
+// Convention de numerotation
+//    sommets         faces         4(face z=1)
+//      6------7            *------*
+//     /|     /|           /| 3   /|
+//    2------3 |          *------* |
+//    | |    | |          |0|    |1|
+//    | 4----|-5          | *----|-*
+//    |/     |/           |/  2  |/
+//    0------1            *------*
+//                       5(face z=0)
+
+static int faces_sommets_poly[6][4] =
+{
+		  { 0, 4, 6, 2 },
+		  { 1, 5, 7, 3 },
+		  { 0, 2, 3, 1 },
+		  { 4, 6, 7, 5 },
+		  { 2, 6, 7, 3 },
+		  { 0, 4, 5, 1 }
+};
+
 Implemente_instanciable(Polyedriser,"Polyedriser",Interprete_geometrique_base);
 // XD polyedriser interprete polyedriser -1 cast hexahedra into polyhedra so that the indexing of the mesh vertices is compatible with PolyMAC discretization. Must be used in PolyMAC discretization if a hexahedral mesh has been produced with TRUST's internal mesh generator.
 // XD attr domain_name ref_domaine domain_name 0 Name of domain.
@@ -41,7 +64,7 @@ Entree& Polyedriser::readOn(Entree& is)
 }
 
 
-//normale : normale au plan auquel u et v appartiennent
+// compute the angle between the vectors u and v (which are coplanar)
 static double computeAngleBetweenCoplanarVectors(std::vector<double> u, std::vector<double> v,
                                                  std::vector<double> normale)
 {
@@ -70,22 +93,23 @@ static double computeAngleBetweenCoplanarVectors(std::vector<double> u, std::vec
   return angle;
 }
 
+// reordering vertices inside the faces in trigonometric order
+// (or anti-trigonometric, depending on the orientation of the normal)
 static void reorder_vertices(Faces& faces, DoubleTab coords)
 {
-  // on reordonne les sommets a l'interieur des faces
-  // ordre trigonometrique (ou anti-trigonometrique...)
   int nb_sommets = faces.les_sommets().dimension(1);
   int nb_faces = faces.nb_faces();
   for(int face = 0; face < nb_faces; face++)
     {
+	  // computing the center of gravity of the face
       std::vector<double> center(3,0.0);
       for(int s=0; s < nb_sommets; s++)
         for(int dir=0; dir<3; dir++)
           center[dir] += coords(faces.sommet(face,s),dir);
-
       for(int dir=0; dir<3; dir++)
         center[dir] /= nb_sommets;
 
+      // computing the normal to the face
       int s0 = faces.sommet(face, 0);
       int s1 = faces.sommet(face, 1);
       int s2 = faces.sommet(face, 2);
@@ -95,7 +119,6 @@ static void reorder_vertices(Faces& faces, DoubleTab coords)
         coords(s1,1) - coords(s0,1),
         coords(s1,2) - coords(s0,2),
       };
-
       std::vector<double> v =
       {
         coords(s2,0) - coords(s0,0),
@@ -111,11 +134,14 @@ static void reorder_vertices(Faces& faces, DoubleTab coords)
       double normale_norm = sqrt( normale[0]*normale[0] + normale[1]*normale[1] + normale[2]*normale[2] );
       for(int dir=0; dir<3; dir++)  normale[dir] /= normale_norm;
 
-      //vecteur de reference pour calculer les angles
+      //reference vector used to compute angles
       std::vector<double> vec_ref = { coords(faces.sommet(face,0),0) - center[0],
                                       coords(faces.sommet(face,0),1) - center[1],
                                       coords(faces.sommet(face,0),2) - center[2]
                                     };
+
+      //sorting the vertices in the face according to their angle formed with the reference vector
+      //in ascending order
       for (int i = 0; i < nb_sommets-1; i++)
         {
           for (int j = 0; j < nb_sommets-i-1; j++)
@@ -157,15 +183,6 @@ void Polyedriser::polyedriser(Zone& zone) const
       Fi.resize_array(nb_elems*6+1);
       N.resize_array(nb_elems*24);
 
-      int faces_sommets[6][4] =
-      {
-        { 0, 4, 6, 2 },
-        { 1, 5, 7, 3 },
-        { 0, 2, 3, 1 },
-        { 4, 6, 7, 5 },
-        { 2, 6, 7, 3 },
-        { 0, 4, 5, 1 }
-      };
       int face = 0;
       int node = 0;
       for (int e = 0; e < nb_elems; e++)
@@ -177,7 +194,7 @@ void Polyedriser::polyedriser(Zone& zone) const
               Fi(face) = face*4; // Index des faces:
               for(int s=0; s<4; s++)
                 {
-                  int som_loc = faces_sommets[f][s];
+                  int som_loc = faces_sommets_poly[f][s];
                   N(node) = elements(e, som_loc);
                   node++;
                 }
