@@ -5,26 +5,27 @@ dimension 3
 Pb_Thermohydraulique pb
 Domaine dom
 
-# BEGIN MESH #
+# BEGIN MESH 
 Mailler dom
 {
 	Pave Cavite 
 		{
 		Origine 0. 0. 0.
      		Nombre_de_Noeuds 4 4 4
-		Longueurs 1. 1. 1. 
+		Longueurs 0.01 0.01 0.01
 		}
 		{
-		Bord left X = 0.    0. <= Y <= 1. 0. <= Z <= 1.
-		Bord up   Y = 1.  0. <= X <= 1. 0. <= Z <= 1.
-		Bord down    Y = 0.    0. <= X <= 1. 0. <= Z <= 1.
-		Bord right  X = 1.  0. <= Y <= 1. 0. <= Z <= 1.
-		Bord front    Z = 0.    0. <= X <= 1. 0. <= Y <= 1.
-		Bord back   Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
+		Bord left X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.01
+		Bord up   Y = 0.01  0. <= X <= 0.01 0. <= Z <= 0.01
+		Bord down    Y = 0.    0. <= X <= 0.01 0. <= Z <= 0.01
+		Bord right  X = 0.01  0. <= Y <= 0.01 0. <= Z <= 0.01
+		Bord front    Z = 0.    0. <= X <= 0.01 0. <= Y <= 0.01
+		Bord back   Z = 0.01 0. <= X <= 0.01 0. <= Y <= 0.01
 		}
 }
-Polyedriser dom      
-# END MESH #
+ END MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+
 # BEGIN PARTITION 
 Partition dom
 {
@@ -48,7 +49,7 @@ Read sch
 	tmax 1.2
 	dt_min 0.01
 	nb_pas_dt_max 3
-	dt_max 0.01    
+	dt_max 0.01  
 	dt_impr 0.00001
 	dt_sauv 100
 	seuil_statio 1.e-8
@@ -131,7 +132,7 @@ Read pb
 		format lml
 		fields dt_post 0.1
 		{
-			temperature elem
+			temperature elem 
 		}
 	}
 }
