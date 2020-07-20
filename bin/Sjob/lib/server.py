@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys
 try:
     sys.dont_write_bytecode = True

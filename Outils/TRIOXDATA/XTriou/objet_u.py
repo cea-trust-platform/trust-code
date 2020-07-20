@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
 
@@ -28,7 +27,7 @@ def mySave(self,fileName):
         pass
     st+=']\n'
     #print str
-    stream = file(fileName, "aw")
+    stream = open(fileName, "aw")
     stream.write(st)
     stream.close()
     pass
