@@ -1,4 +1,4 @@
-Includes = -I. -I$(TRUST_ROOT)/include/backward\
+Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBAMGX/AmgXWrapper/include -I$(TRUST_ROOT)/lib/src/LIBAMGX/AmgX/include -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
 	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\

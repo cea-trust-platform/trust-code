@@ -1,11 +1,10 @@
 #!/bin/bash
-# AmgX + AmgXwrapper
-# AmgX: See https://github.com/NVIDIA/AMGX#building
-# AmgXwrapper: See https://github.com/barbagroup/AmgXWrapper/blob/master/doc/install.md
+# AmgX		: See https://github.com/NVIDIA/AMGX#building
+# AmgXwrapper	: See https://github.com/barbagroup/AmgXWrapper/blob/master/doc/install.md
 AMGX_DIR=`dirname $1`
 LIB=`basename $1`
 ROOT=`pwd`
-log=$ROOT/perf_amgx.log && rm -f $log
+log=$ROOT/perf_$LIB.log && rm -f $log
 rm -r -f $LIB
 if [ $LIB = AmgX ]
 then
@@ -54,17 +53,26 @@ then
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
    # Test
-   cd ../example
-   rm -r -f build && mkdir build && cd build
-   sed -i "1,$ s?# include <petsctime.h>??g" ../poisson/src/solve.cpp
-   cmake -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX ../poisson && $TRUST_MAKE || exit -1
+   cd $AMGX_DIR/$LIB
+   rm -r -f example && mkdir -p example && cd example
+   tests="poisson solveFromFiles"
+   for test in $tests
+   do
+      sed -i "1,$ s?# include <petsctime.h>??g" $ROOT/AmgXWrapper/example/$test/src/solve.cpp || exit -1
+      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
+   done
+   cd $AMGX_DIR/$LIB/example/poisson
    exec=bin/poisson trust -gpu dummy 4 -caseName PETSc_GAMG_100x100x100 -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
    exec=bin/poisson trust -gpu dummy 4 -caseName   AmgX_AGG_100x100x100 -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
-   # solve 	GAMG	AmgX_AGG
-   # P600 	1.83s	crash	is234639
-   # P2000	1.72s   0.30s	is240831 (PETSc build avec GPU)
-   # V100 	1.32s	0.07s	orcus    (PETSc build avec GPU)
-   # V100	1.35s	0.08s	cobalt
+   # ---------------------------------------------------------------------------	  
+   # Machine	NVidia		GFlops	Cuda	Driver	GNU	MPI	solve	GAMG	AmgX_AGG	 
+   # is234639	P600 		 1.1	10.0	10.2	7.4.0	OpenMPI 4.0.3	1.83s	crash Raison ? Compile avec PETSc CUDA, cela plante aussi sur GAMG CUBLAS error 1
+   # is225303 	K4000 		 1.2   	 8.0 	 9.0	5.4.0	MPICH 3.2	2.08s	crash Cuda failure: 'invalid device function' dense_lu_solver.cu:698
+   # is240831	P2000		 3.0	10.1	10.1	7.5.0	MPICH 3.2	1.72s   0.30s
+   # irene	P100-PCIE-12Gb	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4	1.16s	0.11s
+   # cobalt	P100-PCIE-16Gb	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4	1.35s	0.08s
+   # cobalt     V100 ?		14.0	10.2	10.2	7.3.0	OpenMPI 2.0.4	?	?
+   # orcus	V100-PCIE-16Gb 	14.0	 9.2 	10.1	6.5.0			1.32s	0.07s	    
 fi
 # On efface les sources:
 cd $ROOT;rm -r -f $LIB

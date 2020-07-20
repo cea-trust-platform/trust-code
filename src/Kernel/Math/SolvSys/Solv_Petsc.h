@@ -35,6 +35,11 @@
 #include <petscdm.h>
 #endif
 
+#ifdef PETSC_HAVE_CUDA
+#include <AmgXSolver.hpp>
+#include <amgx_c.h>
+#endif
+
 class IntVect;
 class DoubleTab;
 class Matrice_Morse_Sym;
@@ -75,9 +80,9 @@ public :
   {
     return chaine_lue_ ;
   };
-  inline int cuda() const
+  inline bool gpu() const
   {
-    return cuda_;
+    return gpu_;
   };
   void lecture(Entree&);
   // Timers:
@@ -130,7 +135,7 @@ protected :
   int mataij_;			// Force the use of a Mataij matrix
   Nom type_pc_;			// Preconditioner type
   Nom type_ksp_;		// KSP type
-  Nom option_prefix_;   // Prefix des options CLI (permet de faire plusieurs solveurs en CLI)
+  Nom option_prefix_;		// Prefix des options CLI (permet de faire plusieurs solveurs en CLI)
 
   int petsc_nb_cpus_;		// Number of CPUs used to solve the PETSc matrix
   int petsc_cpus_selection_;	// Selection of CPUs used to solve the PETSc matrix
@@ -141,8 +146,13 @@ protected :
 #endif
   int solveur_direct_;          // Pour savoir si l'on manipule un solveur direct et non iteratif
   Nom chaine_lue_; 		// Chaine des mots cles lus
-  int cuda_;                    // Utilisation des GPU avec CUDA
   int read_matrix_;		// Read constant matrix in a file
+  bool gpu_;                    // Utilisation des solveurs GPU de PETSc
+  bool amgx_;			// Utilisation des solveurs GPU de AMGX
+#ifdef PETSC_HAVE_CUDA
+  AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
+#endif
+
 };
 
 class Solv_Petsc_GPU : public Solv_Petsc
@@ -151,7 +161,17 @@ class Solv_Petsc_GPU : public Solv_Petsc
 public :
   inline Solv_Petsc_GPU()
   {
-    cuda_=1;
+    gpu_=true;
+  };
+};
+
+class Solv_Petsc_AMGX : public Solv_Petsc
+{
+  Declare_instanciable_sans_constructeur(Solv_Petsc_AMGX);
+public :
+  inline Solv_Petsc_AMGX()
+  {
+    amgx_=true;
   };
 };
 
@@ -180,6 +200,12 @@ inline void Solv_Petsc::reset()
     {
       assert(solveur_cree_==1);
       KSPDestroy(&SolveurPetsc_);
+      if (amgx_)
+        {
+#ifdef PETSC_HAVE_CUDA
+          SolveurAmgX_.finalize();
+#endif
+        }
     }
   if (nb_matrices_creees_)
     {
@@ -222,7 +248,8 @@ inline void Solv_Petsc::initialize()
   factored_matrix_="";
   solveur_direct_=0;
   controle_residu_=0;
-  cuda_=0;
+  gpu_=false;
+  amgx_=false;
   block_size_=1;
   option_prefix_="??";
   dm_=NULL;
@@ -255,7 +282,7 @@ inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):SolveurSys_base::SolveurSys
   instance++;
   // Journal()<<"copie solv_petsc "<<instance<<finl;
   read_matrix_=org.read_matrix();
-  cuda_=org.cuda();
+  gpu_=org.gpu();
   option_prefix_=org.option_prefix_;
   // on relance la lecture ....
   EChaine recup(org.get_chaine_lue());

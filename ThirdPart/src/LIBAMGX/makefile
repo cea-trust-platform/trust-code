@@ -10,7 +10,7 @@ all:$(AMGX_LIB) $(AMGXWRAPPER_LIB)
 $(AMGX_LIB): $(mpi)
 	./install $(AMGX_DIR)
 
-$(AMGXWRAPPER_LIB): $(mpi)
+$(AMGXWRAPPER_LIB): install makefile $(mpi)
 	./install $(AMGXWRAPPER_DIR)
 	
 clean:

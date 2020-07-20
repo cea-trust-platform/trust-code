@@ -47,6 +47,8 @@
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 Implemente_instanciable_sans_constructeur(Solv_Petsc_GPU,"Solv_Petsc_GPU",Solv_Petsc);
+Implemente_instanciable_sans_constructeur(Solv_Petsc_AMGX,"Solv_Petsc_AMGX",Solv_Petsc);
+
 
 // printOn
 Sortie& Solv_Petsc::printOn(Sortie& s ) const
@@ -71,6 +73,20 @@ Sortie& Solv_Petsc_GPU::printOn(Sortie& s ) const
 
 // readOn
 Entree& Solv_Petsc_GPU::readOn(Entree& is)
+{
+  create_solver(is);
+  return is;
+}
+
+// printOn
+Sortie& Solv_Petsc_AMGX::printOn(Sortie& s ) const
+{
+  s << chaine_lue_;
+  return s;
+}
+
+// readOn
+Entree& Solv_Petsc_AMGX::readOn(Entree& is)
 {
   create_solver(is);
   return is;
@@ -185,6 +201,8 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[16] = "CHOLESKY_MUMPS_BLR";
   }
   int solver_supported_on_gpu_by_petsc=0;
+  int solver_supported_on_gpu_by_amgx=0;
+  Nom amgx_option="";
   int rang=les_solveurs.search(ksp);
   nommer(les_solveurs[rang]);
   switch(rang)
@@ -194,23 +212,33 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 15:
       {
         solver_supported_on_gpu_by_petsc=1; // Not really, reserved to expert...
-        Cerr << "Reading of the Petsc commands:" << finl;
+        solver_supported_on_gpu_by_amgx=1;  // Not really, reserved to expert...
+        Cerr << "Reading of the " << (amgx_ ? "AmgX" : "Petsc") << " commands:" << finl;
         Nom valeur;
         is >> motlu;
         while (motlu!=accolade_fermee)
           {
             is >> valeur;
-            // "-option val" ou "-option" ?
-            if (valeur.debute_par("-") || valeur==accolade_fermee)
+            if (amgx_)
               {
-                add_option(motlu.suffix("-"), "", 1);
-                motlu = valeur;
+                is >> motlu;
+                amgx_option+=motlu;
+                amgx_option+="\n";
               }
             else
               {
-                if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
-                add_option(motlu.suffix("-"), valeur, 1);
-                is >> motlu;
+                // "-option val" ou "-option" ?
+                if (valeur.debute_par("-") || valeur==accolade_fermee)
+                  {
+                    add_option(motlu.suffix("-"), "", 1);
+                    motlu = valeur;
+                  }
+                else
+                  {
+                    if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
+                    add_option(motlu.suffix("-"), valeur, 1);
+                    is >> motlu;
+                  }
               }
           }
         if (rang == 15)
@@ -224,6 +252,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             add_option("options_view", "");
             add_option("options_left", "");
           }
+
         break;
       }
     case 1:
@@ -299,6 +328,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         KSPSetType(SolveurPetsc_, KSPBCGS);
         solver_supported_on_gpu_by_petsc=1;
+        //solver_supported_on_gpu_by_amgx=1;
         break;
       }
     case 6:
@@ -350,10 +380,10 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     }
 
-  // On verifie que le solveur est supporte si l'utilisateur souhaite utiliser le calcul par GPU:
-  if (cuda_)
+  // On verifie que le solveur est supporte sur GPU:
+  if (gpu_)
     {
-#ifdef TRUST_USE_CUDA
+#ifdef PETSC_HAVE_CUDA
       Cerr << "GPU capabilities of PETSc will be used." << finl;
 #else
       Cerr << "You can not use petsc_gpu keyword cause GPU" << finl;
@@ -365,6 +395,23 @@ void Solv_Petsc::create_solver(Entree& entree)
       if (solver_supported_on_gpu_by_petsc==0)
         {
           Cerr << les_solveurs[rang] << " is not supported yet by PETSc on GPU." << finl;
+          Process::exit();
+        }
+    }
+  if (amgx_)
+    {
+#ifdef PETSC_HAVE_CUDA
+      Cerr << "GPU capabilities of AmgX will be used." << finl;
+#else
+      Cerr << "You can not use petsc_amgx keyword cause GPU" << finl;
+      Cerr << "capabilities will not work on your workstation with AmgX." << finl;
+      Cerr << "Check if you have a NVidia video card and its driver up to date." << finl;
+      Cerr << "Check petsc.log file under $TRUST_ROOT/lib/src/LIBPETSC for more details." << finl;
+      Process::exit();
+#endif
+      if (solver_supported_on_gpu_by_amgx==0)
+        {
+          Cerr << les_solveurs[rang] << " is not supported yet by AmgX on GPU." << finl;
           Process::exit();
         }
     }
@@ -742,6 +789,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         }
 
       int pc_supported_on_gpu_by_petsc=0;
+      int pc_supported_on_gpu_by_amgx=0;
       Motcles les_precond(10);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
@@ -866,6 +914,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCJACOBI);
                 pc_supported_on_gpu_by_petsc=1;
+                //pc_supported_on_gpu_by_amgx=1;
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -928,10 +977,15 @@ void Solv_Petsc::create_solver(Entree& entree)
               Process::exit();
             }
         }
-      // On verifie que le preconditionneur est supporte si l'utilisateur souhaite utiliser le calcul par GPU:
-      if (cuda_ && pc_supported_on_gpu_by_petsc==0)
+      // On verifie que les preconditionneurs sont supportes sur GPU:
+      if (gpu_ && pc_supported_on_gpu_by_petsc==0)
         {
           Cerr << les_precond[rang] << " is not supported yet by PETSc on GPU." << finl;
+          Process::exit();
+        }
+      if (amgx_ && pc_supported_on_gpu_by_amgx==0)
+        {
+          Cerr << les_precond[rang] << " is not supported yet by AmgX on GPU." << finl;
           Process::exit();
         }
     }
@@ -984,6 +1038,18 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
 
+  // Creation du solver AmgX si demande (NB: les objets PETSc sont crees mais ne seront pas utilises)
+  if (amgx_)
+    {
+#ifdef PETSC_HAVE_CUDA
+      Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
+      Nom filename(Objet_U::nom_du_cas());
+      filename+".amgx";
+      SFichier s(filename);
+      s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option << finl;
+      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
+#endif
+    }
 
 #else
   Cerr << "Error, the code is not built with PETSc support." << finl;
@@ -1369,7 +1435,14 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Solve the linear system
   //////////////////////////
   PetscLogStagePush(KSPSolve_Stage_);
-  KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
+  if (amgx_)
+    {
+#ifdef PETSC_HAVE_CUDA
+      SolveurAmgX_.solve(SolutionPetsc_, SecondMembrePetsc_);
+#endif
+    }
+  else
+    KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
   PetscLogStagePop();
 
   if (different_partition_)
@@ -1431,26 +1504,43 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
   // Recuperation du nombre d'iterations
   int nbiter;
-  KSPGetIterationNumber(SolveurPetsc_, &nbiter);
+  if (amgx_)
+    {
+#ifdef PETSC_HAVE_CUDA
+      SolveurAmgX_.getIters(nbiter);
+#endif
+    }
+  else
+    KSPGetIterationNumber(SolveurPetsc_, &nbiter);
 
   if (limpr()>-1)
     {
-      // MyKSPMonitor ne marche pas pour certains solveurs (residu(0) n'est pas calcule):
-      if (solveur_direct_ || type_ksp_==KSPIBCGS)
+      if (amgx_)
         {
-          // Calcul de residu(0)=||B||
-          VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));
-          // On l'affiche pour les solveurs directs (pour les autres TRUST s'en occupe):
-          if (solveur_direct_) MyKSPMonitor(SolveurPetsc_, 0, residu(0), 0);
+#ifdef PETSC_HAVE_CUDA
+          SolveurAmgX_.getResidual(0, residu(0));
+          SolveurAmgX_.getResidual(nbiter, residu(nbiter));
+#endif
         }
-      // Idem: l'historique du residu est mal evalue pour certains solveurs:
-      // donc on le calcul a la derniere iteration:
-      if (residu(0)>0 && (solveur_direct_ || type_ksp_==KSPIBCGS))
+      else
         {
-          // Calcul de residu(nbiter)=||Ax-B||
-          VecScale(SecondMembrePetsc_, -1);
-          MatMultAdd(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_, SecondMembrePetsc_);
-          VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
+          // MyKSPMonitor ne marche pas pour certains solveurs (residu(0) n'est pas calcule):
+          if (solveur_direct_ || type_ksp_==KSPIBCGS)
+            {
+              // Calcul de residu(0)=||B||
+              VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));
+              // On l'affiche pour les solveurs directs (pour les autres TRUST s'en occupe):
+              if (solveur_direct_) MyKSPMonitor(SolveurPetsc_, 0, residu(0), 0);
+            }
+          // Idem: l'historique du residu est mal evalue pour certains solveurs:
+          // donc on le calcul a la derniere iteration:
+          if (residu(0)>0 && (solveur_direct_ || type_ksp_==KSPIBCGS))
+            {
+              // Calcul de residu(nbiter)=||Ax-B||
+              VecScale(SecondMembrePetsc_, -1);
+              MatMultAdd(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_, SecondMembrePetsc_);
+              VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
+            }
         }
       // Affichage residu final absolu et (relatif)
       double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
@@ -1519,8 +1609,8 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
   // IDEM pour UMFPACK qui ne supporte que le format AIJ:
   if (solveur_direct_==4) mataij_=1;
 
-  // Dans le cas de CUDA, seul le format AIJ est supporte pour le moment:
-  if (cuda_==1) mataij_=1;
+  // Dans le cas GPU, seul le format AIJ est supporte pour le moment:
+  if (gpu_ || amgx_) mataij_=1;
 
 #ifdef PETSC_HAVE_OPENMP
   // Dans le cas d'OpenMP, seul le format aij est multithreade:
@@ -1542,7 +1632,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
       // de la matrice en pression lors de l'introduction de l'option volume etendu
       int check_matrice_symetrique_ = matrice_symetrique_;
       // Check cancelled for:
-#ifdef TRUST_USE_CUDA
+#ifdef PETSC_HAVE_CUDA
       check_matrice_symetrique_=0; // Bug with CUDA ?
 #endif
 #ifdef NDEBUG
@@ -1700,16 +1790,24 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   /****************************************/
   /* Association de la matrice au solveur */
   /****************************************/
-  if (preconditionnement_non_symetrique_)
+  if (amgx_)
     {
-      KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePrecondionnementPetsc);
-      MatDestroy(&MatricePrecondionnementPetsc);
+#ifdef PETSC_HAVE_CUDA
+      SolveurAmgX_.setA(MatricePetsc_);
+#endif
     }
   else
     {
-      KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePetsc_);
+      if (preconditionnement_non_symetrique_)
+        {
+          KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePrecondionnementPetsc);
+          MatDestroy(&MatricePrecondionnementPetsc);
+        }
+      else
+        {
+          KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePetsc_);
+        }
     }
-
   /************************************/
   /* Factored matrix if direct solver */
   /************************************/
@@ -1917,15 +2015,15 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
 
       // Set type:
       if (Process::nproc()>1)
-        VecSetType(SecondMembrePetsc_, cuda_==1 ? VECMPICUDA : VECMPI);
+        VecSetType(SecondMembrePetsc_, gpu_ ? VECMPICUDA : VECMPI);
       else
-        VecSetType(SecondMembrePetsc_, cuda_==1 ? VECSEQCUDA : VECSEQ);
+        VecSetType(SecondMembrePetsc_, gpu_ ? VECSEQCUDA : VECSEQ);
       VecSetOptionsPrefix(SecondMembrePetsc_, option_prefix_);
       VecSetFromOptions(SecondMembrePetsc_);
       // Build b
       VecDuplicate(SecondMembrePetsc_,&SolutionPetsc_);
       // Initialize x to avoid a crash on GPU later with VecSetValues... (bug PETSc?)
-      if (cuda_==1) VecSet(SolutionPetsc_,0.0);
+      if (gpu_) VecSet(SolutionPetsc_,0.0);
 
       // Only in the case where TRUST and PETSc partitions are not the same
       // VecGetValues can only get values on the same processor, so need to gather values from
@@ -2058,8 +2156,8 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   else
     {
       // On utilise AIJ car je n'arrive pas a faire marcher avec BAIJ
-#ifdef TRUST_USE_CUDA
-      if (cuda_==1)
+#ifdef PETSC_HAVE_CUDA
+      if (gpu_)
         MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJCUSPARSE:MATMPIAIJCUSPARSE));
       else
 #endif
