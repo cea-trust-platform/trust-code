@@ -45,6 +45,8 @@ public :
   void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
   void dimensionner(Matrice_Morse& mat) const;
+private:
+  double eps = 0.1; //suppression des modes en echiquier
 };
 
 #endif /* Op_Diff_CoviMAC_Face_included */
