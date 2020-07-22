@@ -194,6 +194,7 @@ then
             [ "`grep 'Fedora release 28' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
             [ "`grep 'Fedora release 29' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
             [ "`grep 'Fedora release 30' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
+            [ "`grep 'Fedora release 32' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
             [ "`grep 'Red' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7
             [ "$os" = "" ] && echo "OS not detected." && exit -1
 	    ARCH=linux-x86_64-$os
