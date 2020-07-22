@@ -72,8 +72,8 @@ then
   export CXXFLAGS="-fPIC"
   export CFLAGS="-fPIC"
   # Ajout pour fortran aussi car sinon problemes avec VisIt
-  export FFLAGS="-fPIC"
-  export FCFLAGS="-fPIC"
+  export FFLAGS="-fPIC -fallow-argument-mismatch"
+  export FCFLAGS=$FFLAGS
 fi
 # La variable MV est definie a sta sur certaines machines et pose probleme:
 unset MV

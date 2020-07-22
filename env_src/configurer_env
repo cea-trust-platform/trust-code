@@ -1790,7 +1790,7 @@ case $TRUST_ARCH_CC in
    # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
    # 19/07/19 : passage a 9.0.1 pour Fedora 30
    # 01/04/20 : passage a 9.2.0 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<="9.3.0" && $1>="4.8.5") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="10.0.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
@@ -1862,8 +1862,8 @@ linux_clang++) TRUST_SUPPORTED=1
 	   rm -f test.cpp
 	   SYSLIBS=$SYSLIBS"-lgfortran"
 	fi
-	# Support d'Absoft mais n'accepte que -O comme flag
-	F77Flags="-O3 -fPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
+	# -fallow-argument-mismatch pour gfortran 10.0
+	F77Flags="-O3 -fPIC -fallow-argument-mismatch"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
