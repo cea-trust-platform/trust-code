@@ -48,7 +48,9 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   options="$options -DHDF5_ENABLE_Z_LIB_SUPPORT=OFF -DHDF5_ENABLE_SZIP_SUPPORT=OFF -DHDF5_ENABLE_SZIP_ENCODING=OFF"
   [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON"
   cmake $options -DCMAKE_INSTALL_PREFIX=$actual_install_dir -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
-  
+  # Hack cause get_time multiple defined with OpenMPI sometimes:
+  sed -i "1,$ s?get_time(?get_time_not_sed(?" ../$src_dir/tools/lib/io_timer.c || exit -1
+  # Build: 
   $TRUST_MAKE  || exit -1
   make install || exit -1
 
