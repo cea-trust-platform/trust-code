@@ -22,16 +22,16 @@ cd $build_dir
 medcoupling_hxx=$install_dir/include/medcoupling++.h
 
 # MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
-if [ "$TRUST_INT64" = "1" ]
-then
-    echo "@@@@@@@@@@@@ INT64 specific stuff ..."
-    mkdir -p $install_dir/include
-    rm -rf $install_dir/lib
-    echo "MEDCOUPLING DISABLE for 64 bits"
-    echo "#define NO_MEDFIELD " > $install_dir/include/ICoCoMEDField.hxx
-    echo "#undef MEDCOUPLING_"  > $medcoupling_hxx
-    exit 0
-fi
+# if [ "$TRUST_INT64" = "1" ]
+# then
+#     echo "@@@@@@@@@@@@ INT64 specific stuff ..."
+#     mkdir -p $install_dir/include
+#     rm -rf $install_dir/lib
+#     echo "MEDCOUPLING DISABLE for 64 bits"
+#     echo "#define NO_MEDFIELD " > $install_dir/include/ICoCoMEDField.hxx
+#     echo "#undef MEDCOUPLING_"  > $medcoupling_hxx
+#     exit 0
+# fi
 
 rm -f ICoCoMEDField.hxx
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]; then
@@ -69,6 +69,7 @@ USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
 # We use now python and SWIG from conda so:
+OPTIONS="-DMEDCOUPLING_USE_64BIT_IDS=ON"
 OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc "
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
