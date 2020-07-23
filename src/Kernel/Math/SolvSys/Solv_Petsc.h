@@ -84,6 +84,10 @@ public :
   {
     return gpu_;
   };
+  inline bool amgx() const
+  {
+    return amgx_;
+  };
   void lecture(Entree&);
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
@@ -283,6 +287,7 @@ inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):SolveurSys_base::SolveurSys
   // Journal()<<"copie solv_petsc "<<instance<<finl;
   read_matrix_=org.read_matrix();
   gpu_=org.gpu();
+  amgx_=org.amgx();
   option_prefix_=org.option_prefix_;
   // on relance la lecture ....
   EChaine recup(org.get_chaine_lue());

@@ -216,35 +216,38 @@ void Solv_Petsc::create_solver(Entree& entree)
         Cerr << "Reading of the " << (amgx_ ? "AmgX" : "Petsc") << " commands:" << finl;
         Nom valeur;
         is >> motlu;
-        while (motlu!=accolade_fermee)
+        if (amgx_)
           {
-            is >> valeur;
-            if (amgx_)
+            while (motlu!=accolade_fermee)
               {
-                is >> motlu;
                 amgx_option+=motlu;
                 amgx_option+="\n";
-              }
-            else
-              {
-                // "-option val" ou "-option" ?
-                if (valeur.debute_par("-") || valeur==accolade_fermee)
-                  {
-                    add_option(motlu.suffix("-"), "", 1);
-                    motlu = valeur;
-                  }
-                else
-                  {
-                    if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
-                    add_option(motlu.suffix("-"), valeur, 1);
-                    is >> motlu;
-                  }
+                is >> motlu;
               }
           }
+        else
+          while (motlu!=accolade_fermee)
+            {
+              is >> valeur;
+              // "-option val" ou "-option" ?
+              if (valeur.debute_par("-") || valeur==accolade_fermee)
+                {
+                  add_option(motlu.suffix("-"), "", 1);
+                  motlu = valeur;
+                }
+              else
+                {
+                  if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
+                  add_option(motlu.suffix("-"), valeur, 1);
+                  is >> motlu;
+                }
+            }
         if (rang == 15)
           break; // Quiet
         if (limpr()>-1)
-          fixer_limpr(1); // On imprime le residu
+          {
+            fixer_limpr(1); // On imprime le residu
+          }
         // Pour faciliter le debugage:
         if (rang == 14) // Verbose
           {
@@ -1043,10 +1046,17 @@ void Solv_Petsc::create_solver(Entree& entree)
     {
 #ifdef PETSC_HAVE_CUDA
       Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
+      /* Possible de jouer avec simple precision peut etre:
+      1. (lowercase) letter: whether the code will run on the host (h) or device (d).
+      2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
+      3. (uppercase) letter: whether the vector precision is float (F) or double (D).
+      4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
+      typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
       Nom filename(Objet_U::nom_du_cas());
-      filename+".amgx";
+      filename+=".amgx";
       SFichier s(filename);
       s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option << finl;
+      Cerr << "Writing and reading the AmgX config file: " << filename << finl;
       SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
 #endif
     }
@@ -1519,7 +1529,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         {
 #ifdef PETSC_HAVE_CUDA
           SolveurAmgX_.getResidual(0, residu(0));
-          SolveurAmgX_.getResidual(nbiter, residu(nbiter));
+          SolveurAmgX_.getResidual(nbiter-1, residu(nbiter));
 #endif
         }
       else
@@ -1955,41 +1965,44 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur())) PCSetDM(PreconditionneurPetsc_, dm_);
 
 
-  /*************************************/
-  /* Mise en place du preconditionneur */
-  /*************************************/
-  KSPSetUp(SolveurPetsc_);
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if (matrice_symetrique_)
+  if (!amgx_)
     {
-      if (type_ksp_==KSPCG || type_ksp_==KSPPIPECG || type_ksp_==KSPGROPPCG || type_ksp_==KSPRICHARDSON)
+      /*************************************/
+      /* Mise en place du preconditionneur */
+      /*************************************/
+      KSPSetUp(SolveurPetsc_);
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      if (matrice_symetrique_)
         {
-          // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
-          KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-        }
-      else if (type_ksp_==KSPPGMRES)
-        {
-          // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
-          // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
-          // -> on ne peut comparer la convergence avec le GMRES...
-          KSPSetPCSide(SolveurPetsc_, PC_LEFT);
-          // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
-        }
-      else
-        {
-          // Le preconditionnement a droite permet que le residu utilise pour la convergence
-          // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
-          // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
-          // les performances des solveurs (TRUST ou PETSC) entre eux
-          KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
-          // Pour un certain nombre de solveurs, il faut preciser la facon dont la norme ||Ax-b||
-          // sera calculee:
-          if (type_ksp_==KSPBCGS || type_ksp_==KSPIBCGS || type_ksp_==KSPGMRES)
+          if (type_ksp_==KSPCG || type_ksp_==KSPPIPECG || type_ksp_==KSPGROPPCG || type_ksp_==KSPRICHARDSON)
             {
+              // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
               KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+            }
+          else if (type_ksp_==KSPPGMRES)
+            {
+              // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
+              // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
+              // -> on ne peut comparer la convergence avec le GMRES...
+              KSPSetPCSide(SolveurPetsc_, PC_LEFT);
+              // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
+            }
+          else
+            {
+              // Le preconditionnement a droite permet que le residu utilise pour la convergence
+              // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
+              // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
+              // les performances des solveurs (TRUST ou PETSC) entre eux
+              KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+              // Pour un certain nombre de solveurs, il faut preciser la facon dont la norme ||Ax-b||
+              // sera calculee:
+              if (type_ksp_==KSPBCGS || type_ksp_==KSPIBCGS || type_ksp_==KSPGMRES)
+                {
+                  KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+                }
             }
         }
     }

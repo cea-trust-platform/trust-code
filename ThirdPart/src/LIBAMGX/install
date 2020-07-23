@@ -40,6 +40,7 @@ then
    # P2000      0.0010s		0.0256s
    # V100 	0.0011s		0.0153s
    # Site AmgX	0.0006s		0.0156s
+   cd $ROOT && rm -r -f $LIB # On efface les sources ?	 
 fi
 if [ $LIB = AmgXWrapper ]
 then
@@ -49,9 +50,13 @@ then
    sed -i "1,$ s?endif (\${\${runs}})??" AmgXWrapper/cmake-modules/FindPETSc.cmake
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
    cd $LIB && rm -r -f build && mkdir -p build && cd build
-   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
+   BUILD=RELEASE
+   #BUILD=DEBUG
+   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
+   # Creation d'une librairie statique en plus de la dynamique libAmgXWrapper.so
+   ar cru $AMGX_DIR/$LIB/lib64/libAmgXWrapper_static.a CMakeFiles/AmgXWrapper.dir/src/*.o
    # Test
    cd $AMGX_DIR/$LIB
    rm -r -f example && mkdir -p example && cd example
@@ -72,7 +77,7 @@ then
    # irene	P100-PCIE-12Gb	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4	1.16s	0.11s
    # cobalt	P100-PCIE-16Gb	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4	1.35s	0.08s
    # cobalt     V100 ?		14.0	10.2	10.2	7.3.0	OpenMPI 2.0.4	?	?
-   # orcus	V100-PCIE-16Gb 	14.0	 9.2 	10.1	6.5.0			1.32s	0.07s	    
+   # orcus	V100-PCIE-16Gb 	14.0	 9.2 	10.1	6.5.0			1.32s	0.07s
+   #cd $ROOT && rm -r -f $LIB # On efface les sources ?	    
 fi
-# On efface les sources:
-cd $ROOT;rm -r -f $LIB
+exit 0
