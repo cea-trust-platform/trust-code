@@ -49,7 +49,11 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON"
   cmake $options -DCMAKE_INSTALL_PREFIX=$actual_install_dir -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
   # Hack cause get_time multiple defined with OpenMPI sometimes:
-  sed -i "1,$ s?get_time(?get_time_not_sed(?" ../$src_dir/tools/lib/io_timer.c || exit -1
+  files="./src/H5private.h ./src/H5system.c ./tools/lib/io_timer.c ./tools/lib/io_timer.h ./tools/test/perform/sio_perf.c ./tools/test/perform/pio_perf.c"
+  for file in $files
+  do
+     sed -i "1,$ s?get_time(?get_time_hdf5(?" ../$src_dir/$file || exit -1
+  done
   # Build: 
   $TRUST_MAKE  || exit -1
   make install || exit -1
