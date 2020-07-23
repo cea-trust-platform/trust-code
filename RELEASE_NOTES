@@ -2,7 +2,6 @@
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
 09/07/20 (TRUST)  New feature : Coding of the metric "Load imbalance" in the cutter and the scatter.
-09/07/20 (TRUST)  Bug fixed   : Total pressure in VEF Quasi-Compressible model is now computed on same nodes than pressure
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1 : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
