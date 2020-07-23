@@ -214,7 +214,7 @@ MEDField build_medfield(TrioField& triofield)
   //creating a connectivity table that complies to MED (1 indexing) <- en fait non
   //and passing it to _mesh
   MEDCoupling::MCAuto<MEDCoupling::MEDCouplingFieldDouble> field;
-  True_int *conn(new True_int[triofield._nodes_per_elem]);
+  int *conn(new int[triofield._nodes_per_elem]);
   for (int i=0; i<triofield._nb_elems; i++)
     {
 
@@ -225,14 +225,14 @@ MEDField build_medfield(TrioField& triofield)
       if (elemtype==INTERP_KERNEL::NORM_QUAD4)
         {
           // dans trio pas la meme numerotation
-          True_int tmp=conn[3];
+          int tmp=conn[3];
           conn[3]=conn[2];
           conn[2]=tmp;
         }
       if (elemtype==INTERP_KERNEL::NORM_HEXA8)
         {
           // dans trio pas la meme numerotation
-          True_int tmp=conn[3];
+          int tmp=conn[3];
           conn[3]=conn[2];
           conn[2]=tmp;
           tmp=conn[7];

@@ -49,7 +49,12 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   export CFLAGS CPPFLAGS
 
   # Options: no Python, static libraries and path to HDF5 
-  options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT --with-med_int=long"  # TRUST_MED_ROOT is also HDF5 root ...
+  options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
+  #INT64
+  if [ "$TRUST_INT64" = "1" ]
+  then
+      options="$options  --with-med_int=long"
+  fi
   env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
   
   $TRUST_MAKE  || exit -1

@@ -69,7 +69,6 @@ USE_MPI=ON
 [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 
 # We use now python and SWIG from conda so:
-OPTIONS="-DMEDCOUPLING_USE_64BIT_IDS=ON"
 OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc "
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
@@ -77,6 +76,12 @@ OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=
 OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON" 
 # NO_CXX1 pour cygwin
 OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
+#INT64
+if [ "$TRUST_INT64" = "1" ]
+then
+    OPTIONS="$OPTIONS -DMEDCOUPLING_USE_64BIT_IDS=ON"
+fi
+
 
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
@@ -137,7 +142,8 @@ echo "@@@@@@@@@@@@ Updating TRUST include files ..."
 touch $install_dir/include/*
 
 [ ! -f $icocomedfield_hxx ] && echo "#define NO_MEDFIELD " > $icocomedfield_hxx
-[ ! -f $medcoupling_hxx ]  && echo "#define MEDCOUPLING_" > $medcoupling_hxx
+[ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_\n#define MEDCOUPLING_USE_64BIT_IDS" > $medcoupling_hxx
+#[ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_" > $medcoupling_hxx
 
 # Update env file:
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE

@@ -29,6 +29,13 @@
 
 #include <ICoCoTrioField.h>
 #include <arch.h>
+
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingMemArray.hxx>
+#endif
+
+
 class Champ_Generique_base;
 class Domaine;
 class DoubleTab;
