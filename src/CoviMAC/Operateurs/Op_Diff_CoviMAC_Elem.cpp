@@ -151,7 +151,8 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales();
-  int i, e, f, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot();
+  int i, e, f, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot(), D = dimension;
+  double t = equation().schema_temps().temps_courant();
 
   /* faces de bord : flux a deux points + valeurs aux bord */
   DoubleTrav Tb(zone.nb_faces_tot(), N), h_int(N), phi(N);
@@ -177,7 +178,10 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
             }
         else for (n = 0; n < N; n++) //Dirichlet
             {
-              double Tf = Tb(f, n) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), n);
+              const Champ_front_base& cfb = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).champ_front().valeur();
+              const Champ_front_var_instationnaire *cfv = sub_type(Champ_front_var_instationnaire, cfb) ? &ref_cast(Champ_front_var_instationnaire, cfb) : NULL;
+              double Tf = Tb(f, n) = !cfv || !cfv->valeur_au_temps_et_au_point_disponible() ? ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), n) :
+                                     cfv->valeur_au_temps_et_au_point(t, -1, phif_xb(f, n, 0), phif_xb(f, n, 1), D < 3 ? 0 : phif_xb(f, n, 2), n);
               phi(n) = h_int(n) * (inco.addr()[N * e + n] - Tf);
             }
 

@@ -730,7 +730,7 @@ void Zone_CoviMAC::init_feb() const
 
 /* pour un champ T aux elements, interpolation de nu.grad T du cote i de la face f */
 /* amont/aval dans phif_c(f, c, n, 0/1), autres items dans phif_cb([feb_d(f), feb_d(f + 1)[, c, n) (indices dans feb_j) */
-void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c) const
+void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *pxfb) const
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
@@ -740,7 +740,9 @@ void Zone_CoviMAC::flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& 
   phif_d.set_smart_resize(1), phif_d.resize(1), phif_j.set_smart_resize(1), phif_j.resize(0), phif_c.set_smart_resize(1), phif_c.resize(0, N);
 
   /* localisation des points aux faces de bord : projection selon nu nf de l'element amont sur la face */
-  DoubleTrav xfb(nb_faces_tot(), N, D), xfe(2, D), xfep(D), A, B, phi, W(1), P;
+  DoubleTrav vxfb, xfe(2, D), xfep(D), A, B, phi, W(1), P;
+  DoubleTab& xfb = pxfb ? *pxfb : vxfb;
+  if (!pxfb) xfb.resize(nb_faces_tot(), N, D);
   A.set_smart_resize(1), B.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1), P.set_smart_resize(1);
   double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, h[2], scal;
   const double *xe;

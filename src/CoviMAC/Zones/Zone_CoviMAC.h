@@ -158,7 +158,8 @@ public :
   inline double nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
   //pour un champ T aux elements, interpole nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
-  void flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c) const;
+  //optionellement, remplit les coordonnes des points aux bords correspondant au flux a deux points
+  void flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *pxfb = NULL) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;

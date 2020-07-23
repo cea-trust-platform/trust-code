@@ -130,7 +130,7 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
   const DoubleTab& nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
   int i, j, k, e, eb, f, fb, fc, fd, n, N = inco.line_size(), d, D = dimension, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
   DoubleTrav f_eps(N), f_eps_num(N), f_eps_den(N);
-  double mult;
+  double mult, t = equation().schema_temps().temps_courant();
 
   /* faces de bord : flux a deux points + valeurs aux bord */
   DoubleTrav vb(zone.nb_faces_tot(), D, N), h_int(N);
@@ -141,12 +141,18 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
           h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         /* vb : seulement si Dirichlet non homogene */
-        if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-              vb(f, d, n) = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d);
+        if (ch.fcl(f, 0) == 3)
+          {
+            const Champ_front_base& cfb = ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).champ_front().valeur();
+            const Champ_front_var_instationnaire *cfv = sub_type(Champ_front_var_instationnaire, cfb) ? &ref_cast(Champ_front_var_instationnaire, cfb) : NULL;
+            for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                vb(f, d, n) = !cfv || !cfv->valeur_au_temps_et_au_point_disponible() ? ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n)
+                              : cfv->valeur_au_temps_et_au_point(t, -1, phif_xb(f, n, 0), phif_xb(f, n, 1), D < 3 ? 0 : phif_xb(f, n, 2), N * d + n);
+          }
 
         /* contributions */
         for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //face->face
-                resu.addr()[N * fb + n] -= mu_f(fb, n, e != f_e(fb, 0)) * nf(fb, d) * h_int(n) * (nf(fb, d) / fs(fb) * inco.addr()[N * fb + n] - vb(f, d, n)) * vf(fb) / ve(e);
+                resu.addr()[N * fb + n] -= mu_f(fb, n, e != f_e(fb, 0)) * fs(f) * h_int(n) * ((d == 0) * inco.addr()[N * fb + n] - nf(fb, d) / fs(fb) * vb(f, d, n)) * vf(fb) / ve(e);
         for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem (+ flux_bords si face reelle)
             resu.addr()[N * (nf_tot + D * e + d) + n] -= fs(f) * h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
         if (f < zone.premiere_face_int()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
@@ -213,7 +219,7 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
 
         //face -> face
         for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2)
-            for (n = 0; n < N; n++) matrice(N * fb + n, N * fb + n) += mu_f(fb, n, e != f_e(fb, 0)) * fs(fb) * h_int(n) * vf(fb) / ve(e);
+            for (n = 0; n < N; n++) matrice(N * fb + n, N * fb + n) += mu_f(fb, n, e != f_e(fb, 0)) * fs(f) * h_int(n) * vf(fb) / ve(e);
 
         //elem -> elem
         if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)

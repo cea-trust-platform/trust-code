@@ -87,7 +87,7 @@ protected:
 
   /* interpolations de nu.grad T de chaque cote de chaque face */
   mutable IntTab phif_d, phif_j; //indices : phif_j([phif_d(f), phif_d(f + 1)[)
-  mutable DoubleTab phif_c;      //coeffs :  phif_c([phif_d(f), phif_d(f + 1)[, n) pour la composante n
+  mutable DoubleTab phif_c, phif_xb; //coeffs :  phif_c([phif_d(f), phif_d(f + 1)[, n) pour la composante n
 
   mutable int nu_a_jour_; //si on doit mettre a jour nu
   int nu_constant_;       //1 si nu est constant dans le temps
