@@ -3,7 +3,7 @@
 # Par defaut on teste le solveur en pression
 # Mais si on peut tester le solveur implicite, on le fait prioritairement
 # echo "Usage: `basename $0` [-all] [-gpu_only] [-not_lml] [-test_solveur] [-solver n1:n2:n3] [-mail] [datafile]"
-echo "Usage: `basename $0` [-all] [-gpu_only] [-not_lml] [-test_solveur] [-solver n1:n2:n3] [datafile]"
+echo "Usage: `basename $0` [-all] [-gpu_only] [-amgx_only] [-not_lml] [-test_solveur] [-solver n1:n2:n3] [datafile]"
 OK()
 {
    if [ $1 != 0 ]
@@ -73,8 +73,9 @@ evalue_solveur()
    [ "$all" = 0 ] && [ "`echo ${solver[$i]} | grep CLI`" != "" ] && run=0			# Par defaut, on ne passe pas les solveurs definis par CLI
    [ "$all" = 0 ] && [ "$resolution" = solveur_pression ] && [ "${sym[$i]}" = "" ] && run=0	# Par defaut, on ne passe pas les solveurs symetriques sur solveur_pression 
    [ "$all" = 0 ] && [ "${rank[$i]}" = "" ] && run=0						# Par defaut, on ne passe que les solveurs ayant un ranking
-   [ "$PETSC_HAVE_CUDA" = 0 ] && [ "${gpu[$i]}" = 1 ] && run=0					# Discards solvers tested on GPU if PETSC_HAVE_CUDA=0
+   [ "$TRUST_HAVE_CUDA" = 0 ] && [ "${gpu[$i]}" = 1 ] && run=0					# Discards solvers tested on GPU if TURST_HAVE_CUDA=0
    [ "$gpu_only" = 1 ] && [ "${gpu[$i]}" != 1 ] && run=0					# Run solvers tested on GPU only
+   [ "$amgx_only" = 1 ] && [ "${amgx[$i]}" != 1 ] && run=0					# Run solvers tested with AMGX only
 }
 
 #####################
@@ -82,6 +83,7 @@ evalue_solveur()
 ##################### 
 all=0 && [ "$1" = -all ] && all=1 && shift
 gpu_only=0 && [ "$1" = -gpu_only ] && gpu_only=1 && shift
+amgx_only=0 && [ "$1" = -amgx_only ] && amgx_only=1 && shift
 lml=1 && [ "$1" = -not_lml ] && lml=0 && shift
 test_solveur=0 && [ "$1" = -test_solveur ] && test_solveur=1 && lml=0 && shift
 mail=0 && [ "$1" = -mail ] && mail=1 && shift
