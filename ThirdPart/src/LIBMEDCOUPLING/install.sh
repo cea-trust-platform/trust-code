@@ -82,7 +82,6 @@ then
     OPTIONS="$OPTIONS -DMEDCOUPLING_USE_64BIT_IDS=ON"
 fi
 
-
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
 cmake ../$src_dir $OPTIONS -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release
@@ -142,8 +141,12 @@ echo "@@@@@@@@@@@@ Updating TRUST include files ..."
 touch $install_dir/include/*
 
 [ ! -f $icocomedfield_hxx ] && echo "#define NO_MEDFIELD " > $icocomedfield_hxx
-[ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_\n#define MEDCOUPLING_USE_64BIT_IDS" > $medcoupling_hxx
-#[ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_" > $medcoupling_hxx
+if [ "$TRUST_INT64" = "1" ]
+then
+    [ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_\n#define MEDCOUPLING_USE_64BIT_IDS" > $medcoupling_hxx
+else
+    [ ! -f $medcoupling_hxx ]  && echo "#define MEDCOUPLING_" > $medcoupling_hxx
+fi
 
 # Update env file:
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
