@@ -45,6 +45,7 @@ template <class C_Tab> void LataDB::read_data2_med_(
 }
 #else
 
+#include <medcoupling++.h>
 #include <MEDLoader.hxx>
 #include <MEDCouplingMemArray.hxx>
 #include <MEDCouplingUMesh.hxx>
