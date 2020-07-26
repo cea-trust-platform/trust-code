@@ -88,9 +88,9 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
   const IntTab& feb_d = nu_constant_ || N_nu <= N ? phif_d : zone.feb_d, &feb_j = nu_constant_ || N_nu <= N ? phif_j : zone.feb_j;
   Cerr << "Op_Diff_CoviMAC_Face::dimensionner() : ";
 
-  for (f = 0; f < nf_tot; f++) if (ch.fcl(f, 0) > 2 && (e = f_e(f, 0)) < zone.nb_elem()) //face de bord (hors Neumann / Symetrie) : flux a deux points
+  for (f = 0; f < nf_tot; f++) if (ch.fcl(f, 0) > 2) //face de bord (hors Neumann / Symetrie) : flux a deux points
       {
-        for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (n = 0; n < N; n++)
+        for (e = f_e(f, 0), i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (ch.fcl(fb, 0) < 2) for (n = 0; n < N; n++)
               stencil.append_line(N * fb + n, N * fb + n); //face -> face
         for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + ne_tot * d + e) + n, N * (nf_tot + ne_tot * d + e) + n); //elem -> elem
       }
