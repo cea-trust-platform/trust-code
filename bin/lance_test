@@ -1361,7 +1361,7 @@ fi
 echo
 echo "-------------------------------------------"
 # On recherche les cas qui ont pose probleme:
-$TRUST_Awk -F'|' '(/ ecarts \|/) || / UNINIT / || / BLOCK / || / FALSE / || / STOP / || / CORE /{gsub("PAR_","",$0);print $NF}' $SORTIE | sort -u > $rep_tests/liste
+$TRUST_Awk -F'|' '(/ ecarts \|/) || / UNINIT / || / BLOCK / || / FALSE \|/ || / STOP / || / CORE /{gsub("PAR_","",$0);print $NF}' $SORTIE | sort -u > $rep_tests/liste
 rm -f $message 1>/dev/null 2>&1
 message=`mktemp_`
 if [ -s $rep_tests/liste ]
@@ -1370,7 +1370,7 @@ then
    echo $ECHO_OPTS executable: $exec > $message
    echo $ECHO_OPTS directory : $rep_tests >> $message
    echo $ECHO_OPTS outputfile: $SORTIE >> $message
-   $TRUST_Awk '(/ ecarts \|/) || / UNINIT / || / BLOCK / || / FALSE / || / STOP / || / CORE / {print $0}' $SORTIE >> $message
+   $TRUST_Awk '(/ ecarts \|/) || / UNINIT / || / BLOCK / || / FALSE \|/ || / STOP / || / CORE / {print $0}' $SORTIE >> $message
    grep succes $SORTIE >> $message   
    # On mail les resultats des tests si problemes rencontres
    if [ "`cat $message | grep -v executable | grep -v directory | grep -v outputfile | grep -v succes`" != "" ]
