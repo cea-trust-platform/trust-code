@@ -8,8 +8,6 @@ import matplotlib
 print((matplotlib.__file__))
 import numpy
 print((numpy.__file__))
-import PyQt5
-print((PyQt5.__file__))
 import scipy
 print((scipy.__file__))
 print("Python is OK")

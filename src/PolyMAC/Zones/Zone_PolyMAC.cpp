@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,7 @@
 #include <Linear_algebra_tools_impl.h>
 #include <IntLists.h>
 #include <DoubleLists.h>
+#include <Poly_geom_base.h>
 
 #include <unistd.h>
 
@@ -548,6 +549,7 @@ void Zone_PolyMAC::discretiser()
   Zone_VF::calculer_porosites();
   Zone_VF::calculer_diametres_hydrauliques();
   calculer_volumes_entrelaces();
+  calculer_h_carre();
 
   /* ordre canonique dans elem_faces_ */
   std::map<std::array<double, 3>, int> xv_fsa;
@@ -710,12 +712,17 @@ void Zone_PolyMAC::calculer_h_carre()
   h_carre = 1.e30;
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
+  Elem_geom_base& elem_geom = zone().type_elem().valeur();
+  int is_polyedre = sub_type(Poly_geom_base, elem_geom) ? 1 : 0;
+  const ArrOfInt PolyIndex = is_polyedre ? ref_cast(Poly_geom_base, zone().type_elem().valeur()).getElemIndex() : ArrOfInt(0);
+
   const DoubleVect& surfaces=face_surfaces();
-  const int& nb_faces_elem=zone().nb_faces_elem();
   const int& nbe=nb_elem();
+
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {
       double surf_max = 0;
+      const int nb_faces_elem = is_polyedre ? PolyIndex(num_elem+1) - PolyIndex(num_elem) : zone().nb_faces_elem();
       for (int i=0; i<nb_faces_elem; i++)
         {
           double surf = surfaces(elem_faces(num_elem,i));

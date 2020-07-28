@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,7 @@ public :
   virtual int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const=0;
   virtual int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const=0;
   virtual const ArrOfInt& getFacesIndex() const =0;
+  virtual const ArrOfInt& getElemIndex() const =0;
   virtual int get_somme_nb_faces_elem() const =0;
   virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const =0;
   virtual void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const = 0;

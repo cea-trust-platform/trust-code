@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,6 +85,10 @@ public :
     return FacesIndex_;
   };
   inline const ArrOfInt& getPolyhedronIndex() const
+  {
+    return PolyhedronIndex_;
+  };
+  inline const ArrOfInt& getElemIndex() const
   {
     return PolyhedronIndex_;
   };
