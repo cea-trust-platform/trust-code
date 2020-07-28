@@ -514,6 +514,7 @@ do
    --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
    --with-clean=1 \
    --with-ssl=0 \
+   --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install \
    $with_packages \
    $with_blas \
    $with_gpu \
