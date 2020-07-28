@@ -225,12 +225,13 @@ export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 #   fi
 #done
 
-if [ "$1" != "-disable-optionals" ] && [ "$1" != "-for_appli_salome" ]
+if [ "$1" != "-disable-optionals" ] && [ "$1" != "-for_appli_salome" ] && [ "$1" != "-disable-tools" ]
 then
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
 echo "[-help]                           Print help of the different configure options."
 echo "[-disable-optionals]              Disable all optionals librairies and tools."
+echo "[-disable-tools]                  Disable all tools to build only a binary."
 echo "[-add_search=<dir>]               Add a directory to the defaults path to search a tool."
 echo "[-c++=<prog>]                     Force the use of a specified C++ compiler."
 echo "[-cc=<prog>]                      Force the use of a specified C compiler."
@@ -244,7 +245,7 @@ echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk '/default_
 echo "[-force_old_openmpi]              Download and use the OpenMPI `awk '/old_version=/ {gsub("old_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version (valgrind free)."
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk '/latest_version=/ {gsub("latest_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-cuda]			        Activate the CUDA support into several libraries for GPU computing (experimental)"
+echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental)"
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
@@ -297,6 +298,13 @@ then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
   $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
+  exit $?
+fi
+if [ "$1" = "-disable-tools" ]
+then
+  shift
+  export TRUST_ROOT=$TRUST_ROOT_SA
+  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -without-pdflatex -disable-checks -disable-check_sources $*
   exit $?
 fi
 
