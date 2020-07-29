@@ -4,6 +4,7 @@ linux	scp_ssh		tache	is241479.intra.cea.fr																			-without-pdflatex	#
 linux   rsync_ssh	tache	is234639.intra.cea.fr              		-FT -SIDES -SCORPIO -PEMFC                  			-force_provided_mpich                               				# Fedora 29	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	tache	is234639-clang.intra.cea.fr			-TrioCFD 					-clang 		-force_provided_openmpi								# Fedora 29	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	tache	is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 		-force_latest_openmpi -force_even_unsupported					# CentOS 6.4	Bat 451 LMEC	bureau TMA GENEPI2
+linux	rsync_ssh	tache	is210376.intra.cea.fr		-limited 	-MPCube -TrioCFD -FLICA5 -IJK-FT -GENEPI3 -SIDES -SCORPIO -PEMFC  -force_provided_mpich 							# Fedora 32	Bat 454
 linux	rsync_ssh	cible	is212957.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC	-gcov		-force_provided_mpich								# Ubuntu 16	Bat 451 LMEC	bureau TMA TRUST
 linux	rsync_ssh	tache	irene-ccrt_heures_consommees.ccc.cea.fr		-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD							-build_64_bit -without-doc						# RedHat 7.6	CEA CCRT

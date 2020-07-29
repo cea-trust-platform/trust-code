@@ -67,9 +67,10 @@ export CC=$TRUST_cc_BASE
 export CXX=$TRUST_CC_BASE
 export CXXFLAGS="-fPIC"
 export CFLAGS="-fPIC"
-# Ajout pour fortran aussi car sinon problemes avec VisIt
 export FFLAGS="-fPIC"
-export FCFLAGS="-fPIC"
+# MPICH meme recent 3.3.1 ne compile pas encore avec gfortran 10 sans allow-argument-mismatch:
+[ "`grep fallow-argument-mismatch $TRUST_ROOT/env/make.*opt 2>/dev/null`" != "" ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"
+export FCFLAGS=$FFLAGS
 # La variable MV est definie a sta sur certaines machines et pose probleme:
 unset MV
 ./configure --help 2>&1 1>../configure.help
