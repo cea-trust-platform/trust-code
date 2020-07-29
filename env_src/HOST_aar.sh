@@ -32,7 +32,8 @@ export PATH LS_COLORS PBS_SERVER
 ##############################
 define_soumission_batch()
 {
-   soumission=1
+   # autoriser trust -check all sur un noeud avec 8 procs sans sub_file pour BM
+   soumission=9
    cpu=48:00:00 # 2 days
    qos=""
    queue="default"
