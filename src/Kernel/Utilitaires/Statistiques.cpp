@@ -109,8 +109,7 @@ public:
     time_.tv_sec = 0;
     time_.tv_usec = 0;
   }
-  Time(const Time& t) : time_(t.time_)
-  { }
+  Time(const Time& t) = default;
   static const char * const description;
   void get_time()
   {
