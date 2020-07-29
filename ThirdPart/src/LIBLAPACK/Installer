@@ -121,7 +121,7 @@ version_lapack=3.4.1 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 # donc on utilise l'ancien LAPACK non optimise
 # PL: 28/01/2013 a revoir, car OpenBlas sur 32 bits booste quand meme pas mal
 # et c'est dommage de s'en priver...
-TRY_OPENBLAS=1 && [ "`uname -m`" != x86_64 ] && TRY_OPENBLAS=0
+TRY_OPENBLAS=1 && [ "`uname -m | grep 64`" = "" ] && TRY_OPENBLAS=0
 # Non activated cause it seems it boost A=LU but x=A-1B is slower...
 # Cx test with 1.6.9_beta: BLAS (level)
 # 	DGEMM (3) DGEMV DTRSV (2)

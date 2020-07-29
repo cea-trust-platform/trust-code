@@ -355,7 +355,7 @@ check_nvidia_cuda()
       echo "No NVIDIA drivers detected on $HOSTNAME."
    else
       echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
-      BITS=32 && [ "`uname -m`" = x86_64 ] && BITS=64
+      BITS=32 && [ "`uname -m | grep 64`" != "" ] && BITS=64
       #########################################################################
       # CUDA detecte? On ne doit pas prendre CUDA d'une autre version TRUST...
       #########################################################################
@@ -767,7 +767,7 @@ case $arch in
 	#fortran_gnu="g77 gfortran" && [ "`/usr/bin/gcc --version 2>/dev/null | head -1 | awk '/ 4\./ {print 1}'`" = 1 ] && fortran_gnu="gfortran g77"
 	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum
         fortran_gnu="gfortran g77"
-	# On met icpc en 1er/GNU car sur titane (x86_64, icpc 10% plus rapide que gcc sur le cas cpu_3D...)
+	# On met icpc en 1er/GNU car sur titane (icpc 10% plus rapide que gcc sur le cas cpu_3D...)
 	# si une version recente (>=v10) d'icpc existe car sur ecrins la 8.x ne marche pas bien...
 	# 1.6.9: On interdit strictement Intel 12.x qui fait crasher/bloquer MUMPS (voir MC1520)
 	if [ "`icpc -v 2>&1 | awk 'BEGIN {ok=0} /Version/ && ($2>10) {ok=1} /version/ && (($3>10 && $3<12) || $3>=13) {ok=1} END {print ok}'`" = 1 ]
@@ -776,9 +776,9 @@ case $arch in
 	   TRUST_F77_BASE="ifort ifc efc $fortran_gnu"
 	   TRUST_cc_BASE="icc ecc gcc"
 	else
-	   TRUST_CC_BASE="g++ icpc icc ecc"
-	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
-	   TRUST_cc_BASE="gcc icc ecc"
+	   TRUST_CC_BASE="armclang++ g++ icpc icc ecc"
+	   TRUST_F77_BASE="armflang $fortran_gnu ifort ifc efc"
+	   TRUST_cc_BASE="armclang gcc icc ecc"
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -903,19 +903,26 @@ rm -f $TRUST_ROOT/exec/ccache/g??
 unset PYTHONPATH # We get a warning from Miniconda if we do not unset this variable
 
 # check the previous install of conda and conda packages if it exists
+model=`uname -m`
+system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
+pkgs="pyqt=5.6 nomkl numpy matplotlib swig=3.0.12 cmake=3.14 scipy xorg-libsm sympy"
+local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig=4.0.2 cmake=3.14 scipy xorg-libsm sympy"
+
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
    # check of python version
-   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373?1:0)}'`
+   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373||v==376?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
-
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda
-   pkgs="pyqt nomkl numpy matplotlib swig cmake scipy xorg-libsm sympy"
-   for pkg in $pkgs ; do
-     [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && INSTALL_OK=0
+   $TRUST_ROOT/exec/python/bin/conda list > conda_list
+   for pkg in $pkgs
+   do
+     pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
+     [ "`grep $pkg conda_list`" = "" ] && INSTALL_OK=0
    done
-
+   rm -f conda_list
    if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
    then
       INSTALL_CONDA=1
@@ -932,19 +939,17 @@ then
     [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
 
     # Then we install miniconda and the different packages
-    conda_installer=Miniconda3-4.6.14-Linux-x86_64.sh
+    conda_installer=`cd $TRUST_ROOT/externalpackages/Miniconda;ls Mini*3*-$system"-"$model.sh`
     echo "Trying to install $conda_installer"
     $TRUST_ROOT/externalpackages/Miniconda/./$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
-    [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+    [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED && exit -1
 
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
-
-    pkgs="pyqt=5.6 nomkl numpy matplotlib swig=3.0.12 cmake=3.14 scipy xorg-libsm sympy"
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
-      ./conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels $pkg -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
+      ./conda install $local_channel $pkg -y 1>>$TRUST_ROOT/exec/conda_python.log 2>&1
       [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda3 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
     cd -
@@ -956,12 +961,12 @@ rm -r $TRUST_ROOT/exec/python/pkgs
 mkdir $TRUST_ROOT/exec/python/pkgs
 
 # Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.26 sur Fedora30 pour libstdc++.so.25), on vire:
-stdcpp_conda=`ls $TRUST_ROOT/exec/python/lib/libstdc++.so.6.0.* 2>/dev/null`
+stdcpp_conda=`ls $TRUST_ROOT/exec/python/lib/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
 if [ "$stdcpp_conda" != "" ]
 then
     stdcpp_sys=`ls /usr/lib64/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
-    [ "$stdcpp_sys" = "" ] && stdcpp_sys=`ls /usr/lib*/x86_64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
-    remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys | awk '{ print ($1>="6.0.25"?1:0) }'`
+    [ "$stdcpp_sys" = "" ] && stdcpp_sys=`ls /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
+    remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
     [ $remove_stdcpp_conda -eq 1 ] && echo "we remove libstdc++.so* from conda" && rm -f $TRUST_ROOT/exec/python/lib/libstdc++.so*
 fi
 # export PATH
@@ -1381,7 +1386,7 @@ else
 	 # Pour OpenMPI on prend desormais mpiCC pour compiler en changeant le compilateur
 	 m="# Compiler for mpiCC" && e="OMPI_CXX=\"\$TRUST_CC_BASE\" && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpicc" && e="OMPI_CC=\"\$TRUST_cc_BASE\" && export OMPI_CC" && ecrit $m"|"$e"|"$env;eval $e
-	 m="# Compiler for mpif77" && e="OMPI_F77=\"\$TRUST_F77_BASE\" && export OMPI_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpifort" && e="OMPI_FC=\"\$TRUST_F77_BASE\" && export OMPI_FC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpiCC\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C" && e="TRUST_cc=\"$MPI_ROOT/bin/mpicc\" && export TRUST_cc" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
@@ -1834,18 +1839,15 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
-linux_clang++) TRUST_SUPPORTED=1
+linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
+        [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -mcpu=native" # To add optimized machine-specific library
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -std=c++11 -fPIC -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	# 06/02/14, Added -Wshadow
-	CppFlags=$CppFlags" -Wshadow"
-	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
+	CppFlags="-O3 -fPIC $ArmFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
-	CppFlags=$CppFlags" -Wno-tautological-compare"
-
-	CppFlags=$CppFlags" -Werror"
+	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
 	if [ "`basename $TRUST_F77_BASE`" = g77 ]
         then
 	   SYSLIBS=$SYSLIBS"-lg2c"
@@ -1861,10 +1863,10 @@ linux_clang++) TRUST_SUPPORTED=1
 	   fi
 	   rm -f test.cpp
 	   SYSLIBS=$SYSLIBS"-lgfortran"
-	fi
-	# -fallow-argument-mismatch pour gfortran 10.0
-	F77Flags="-O3 -fPIC -fallow-argument-mismatch"
-	ccFLAGS="-Qunused-arguments -O3 -fPIC"
+	fi	
+	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
+	F77Flags="-O3 -fPIC $ArmFlags"
+	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
 	;;
@@ -2260,7 +2262,7 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    # On vire -fno-inline car on peut compiler fichier par fichier
    #echo $ECHO_OPTS "1,$ s?$O?-g -pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline"` $O?g\nw" | ed make.$suffixe2 1>/dev/null 2>&1
    option_profile="-pg" && [ "`uname -m`" = ia64 ] && option_profile="-p" # -qp devient obsolete Intel 10
-   if [ "`uname -m`" = i686 ] || [ "`uname -m`" = x86_64 ]
+   if [ "`uname -m`" = i686 ] || [ "`uname -m | grep 64`" != "" ]
    then
       # le -gstab1 booste litteralement l'analyse par gprof avec GNU (>*10)
       # http://www.arcknowledge.com/gmane.comp.gnu.binutils.bugs/2006-04/msg00030.html
