@@ -109,7 +109,7 @@ public:
     time_.tv_sec = 0;
     time_.tv_usec = 0;
   }
-  Time(const Time& t) = default;
+  Time& operator=(const Time& t) = default; // gcc 9
   static const char * const description;
   void get_time()
   {
