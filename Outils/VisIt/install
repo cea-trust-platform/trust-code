@@ -54,7 +54,7 @@ new=1
 [ "`grep 'CentOS Linux release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'CentOS release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'Red Hat Enterprise Linux Server release [6-7]' 	/etc/redhat-release 2>/dev/null`" != "" ]	&& new=0
-[ "`grep 'Scientific Linux release 6'  /etc/issue.net 2>/dev/null`" != "" ] && new=0 # gutta aar
+[ "`grep 'Scientific Linux release 6'				/etc/issue.net 2>/dev/null`" != "" ]		&& new=0 # gutta aar
 
 if [ "$new" = 1 ]
 then
@@ -385,6 +385,7 @@ then
       ###########################################
 #      if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
 #      then
+	 rm -rf $TRUST_TMP/build/visit # install is done in TRUST_TMP on CCRT, shoud clean this folder
 	 cd $TRUST_ROOT/Outils/VisIt/src 
 	 ./$build clean
 #      fi      
