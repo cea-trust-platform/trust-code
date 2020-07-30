@@ -62,6 +62,9 @@ FindSalomeHDF5=$(find $src_dir/.. -name FindSalomeHDF5.cmake )
 sed -i "1,$ s?GET_PROPERTY(?#GET_PROPERTY(?" 			$FindSalomeHDF5 || exit -1 
 sed -i "1,$ s?MESSAGE(FATAL_ERROR?#MESSAGE(FATAL_ERROR ?" 	$FindSalomeHDF5 || exit -1 
 
+echo "Patching gatherArraysT() and allGathersArraysT() method"
+patch -p1 $(find $src_dir -name CommInterface.cxx ) < $tool_dir/CommInterface.patch
+
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
 
