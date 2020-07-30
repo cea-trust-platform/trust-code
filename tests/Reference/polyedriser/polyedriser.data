@@ -1,6 +1,6 @@
-# Thermohydraulique 3D et Boussinesq #
 # Transforme les hexaedres du maillage TRUST en polyedres pour les rendre compatible avec Polymac #
-# PARALLEL OK #
+# PARALLEL RUNS #
+
 dimension 3
 Pb_Thermohydraulique pb
 Domaine dom
@@ -11,8 +11,8 @@ Mailler dom
 	Pave Cavite 
 		{
 		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 4 4 4
-		Longueurs 1. 1. 1. 
+		Nombre_de_Noeuds 4 4 4
+		Longueurs 1. 1. 1.
 		}
 		{
 		Bord left X = 0.    0. <= Y <= 1. 0. <= Z <= 1.
@@ -48,7 +48,7 @@ Read sch
 	tmax 1.2
 	dt_min 0.01
 	nb_pas_dt_max 3
-	dt_max 0.01    
+	dt_max 0.01
 	dt_impr 0.00001
 	dt_sauv 100
 	seuil_statio 1.e-8
