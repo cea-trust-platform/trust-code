@@ -37,10 +37,12 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   archive_short=$(basename $archive)
   src_dir=${archive_short%.tar.gz}
   cd $src_dir
-  
   echo "Patching (to avoid doc ...)"
   modified_file=Makefile.in
   sed -i "s?tests tools doc?tools?g" $modified_file
+
+  echo "Patching header file to avoid compilation error"
+  sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)
 
   echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
   # fPIC is not there by default in MED autotools ...
@@ -87,8 +89,6 @@ for ze_dir in bin lib include; do
   done  
 done
 
-echo "@@@@@@@@@@@@ Updating TRUST include files ..."
-sed -i "s/extern MEDC_EXPORT const char \* const/extern MEDC_EXPORT const char */g"  $install_dir/include/med.h
 echo "All done !"
 
 
