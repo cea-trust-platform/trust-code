@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -108,7 +108,7 @@ public :
 
   static DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Zone_Cl_VEF&);
   static DoubleTab& calcul_gradient(const DoubleTab&, DoubleTab&, const Zone_Cl_VEF&);
-  static DoubleTab& calcul_duidxj_paroi(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab& , const int, const int, const Zone_Cl_VEF&);
+  static DoubleTab& calcul_duidxj_paroi(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab& , const Zone_Cl_VEF&);
 
   /////////////////////////////////////////////////
   // Fonctions rajoutees.

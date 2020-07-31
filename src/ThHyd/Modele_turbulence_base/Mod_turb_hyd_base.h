@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,9 +74,19 @@ public:
   {
     return loipar;
   };
-  inline       Turbulence_paroi& loi_paroi()
+  inline Turbulence_paroi& loi_paroi()
   {
     return loipar;
+  };
+  bool utiliser_loi_paroi() const
+  {
+    return loi_paroi().non_nul() ? loipar->use_shear() : false;
+  };
+  virtual bool calcul_tenseur_Re(const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& Re) const
+  {
+    Cerr << "Not coded." << finl;
+    exit();
+    return false;
   };
   virtual void set_param(Param& param);
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
@@ -86,7 +96,7 @@ public:
   virtual void discretiser();
   void discretiser_visc_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
   void discretiser_corr_visc_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
-  void discretiser_K(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
+  void discretiser_K(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
   virtual void completer();
   void associer_eqn(const Equation_base& );
   virtual void associer(const Zone_dis& , const Zone_Cl_dis& );
