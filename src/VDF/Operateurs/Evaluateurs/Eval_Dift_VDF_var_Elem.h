@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Dift_VDF_var_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,6 @@
 
 #include <Eval_Dift_VDF_var.h>
 #include <Eval_VDF_Elem.h>
-#include <RefParoiVDF.h>
 #include <Ref_Modele_turbulence_scal_base.h>
 #include <Ref_Turbulence_paroi_scal.h>
 #include <DoubleVects.h>

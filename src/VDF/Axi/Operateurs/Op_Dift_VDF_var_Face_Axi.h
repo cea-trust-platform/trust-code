@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Dift_VDF_var_Face_Axi.h
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@
 //
 
 #include <Ref_Champ_Face.h>
-#include <Ref_Mod_turb_hyd_base.h>
+#include <Mod_turb_hyd_base.h>
 #include <Op_Dift_VDF_Face_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,6 @@ protected:
   REF(Champ_base) diffusivite_;
 
   DoubleTab tau_tan;
-  DoubleTab k;
   DoubleVect surface;
   DoubleVect volumes_entrelaces;
   IntVect orientation;

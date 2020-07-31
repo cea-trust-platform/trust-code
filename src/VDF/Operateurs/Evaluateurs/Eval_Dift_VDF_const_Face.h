@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Dift_VDF_const_Face.h
-// Directory:   $TRUST_ROOT/src/VDF/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
 // Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -27,8 +27,7 @@
 #include <Eval_Dift_VDF_const.h>
 #include <Eval_VDF_Face.h>
 #include <Ref_Turbulence_paroi_base.h>
-#include <Ref_Mod_turb_hyd_base.h>
-
+#include <Mod_turb_hyd_base.h>
 //
 // .DESCRIPTION class Eval_Dift_VDF_const_Face
 //
@@ -170,10 +169,7 @@ public:
 private:
 
   REF(Mod_turb_hyd_base) le_modele_turbulence;
-  REF(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
-  DoubleTab k_;
-  int indic_bas_Re, indic_lp_neg, indice_keps_realisable_;
 };
 
 //
@@ -295,16 +291,6 @@ inline double Eval_Dift_VDF_const_Face::flux_fa7_sortie_libre(const DoubleTab&, 
                                                               const Neumann_sortie_libre&, int ) const
 {
   double flux = 0.;
-  /*
-    double k_elem;
-    int element = elem(face,0);
-    if (elem(face,0) == -1) element = elem(face,1);
-    if (k.nb_dim() == 1)
-    k_elem = k(element);
-    else if (k.nb_dim() == 2)
-    k_elem = k(element,0);
-    flux = - 2./3.*k_elem*surface(face);
-  */
   return flux;
 }
 
@@ -536,7 +522,7 @@ inline double Eval_Dift_VDF_const_Face::flux_arete_paroi(const DoubleTab& inco, 
   double vit = inco(fac3);
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
-  if ( (indic_bas_Re==1)||(indic_lp_neg==1)||(indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       double dist = dist_norm_bord(fac1);
       double tau  = signe*(vit_imp - inco[fac3])/dist;
@@ -588,7 +574,7 @@ inline double Eval_Dift_VDF_const_Face::secmem_arete_paroi(int fac1, int fac2, i
   double vit = inco(fac3);
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
-  if ( (indic_bas_Re==1)||(indic_lp_neg==1)||(indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       double dist = dist_norm_bord(fac1);
       double tau  = signe*(vit_imp - inco[fac3])/dist;
@@ -821,19 +807,11 @@ inline double Eval_Dift_VDF_const_Face::secmem_arete_symetrie(int, int, int, int
 inline double Eval_Dift_VDF_const_Face::flux_fa7_elem(const DoubleTab& inco, int elem,
                                                       int fac1, int fac2) const
 {
-  //  double k_elem;
   double flux;
   int ori=orientation(fac1);
   double tau = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
   double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-
-
-  /*   if (k.nb_dim() == 1)  */
-  /*     k_elem = k(elem); */
-  /*   else if (k.nb_dim() == 2)  */
-  /*     k_elem = k(elem,0); */
   double reyn =  - 2.*dv_diffusivite_turbulente(elem)*tau ;// On considere que l energie est dans la pression
-  //  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
   // On verifie que les termes diagonaux du tenseur de reynolds sont bien positifs
   // Sinon on annulle :
   //  if (reyn < 0) reyn=0. ;
@@ -846,14 +824,9 @@ inline double Eval_Dift_VDF_const_Face::flux_fa7_elem(const DoubleTab& inco, int
 
 inline void Eval_Dift_VDF_const_Face::coeffs_fa7_elem(int elem ,int fac1, int fac2, double& aii, double& ajj) const
 {
-  //  double k_elem;
   int ori=orientation(fac1);
   double tau = 1/dist_face(fac1,fac2,ori);
   double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  /*   if (k.nb_dim() == 1)  */
-  /*     k_elem = k(elem); */
-  /*   else if (k.nb_dim() == 2)  */
-  /*     k_elem = k(elem,0); */
   double reyn =  - 2.*dv_diffusivite_turbulente(elem)*tau ;  // On considere que l energie est dans la pression
   //  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
   // On verifie que les termes diagonaux du tenseur de reynolds sont bien positifs
@@ -972,7 +945,7 @@ inline double Eval_Dift_VDF_const_Face::flux_arete_symetrie_paroi(const DoubleTa
   //  double vit = inco(fac3);
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl));
-  if ( (indic_bas_Re==1)||(indic_lp_neg==1)||(indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       double dist = dist_norm_bord(fac1);
       double tau  = signe*(vit_imp - inco[fac3])/dist;
@@ -1017,7 +990,7 @@ inline double Eval_Dift_VDF_const_Face::secmem_arete_symetrie_paroi(int fac1, in
   int ori = orientation(fac3);
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
-  if ( (indic_bas_Re==1)||(indic_lp_neg==1)||(indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       const DoubleTab& inco = inconnue->valeurs();
       double dist = dist_norm_bord(fac1);

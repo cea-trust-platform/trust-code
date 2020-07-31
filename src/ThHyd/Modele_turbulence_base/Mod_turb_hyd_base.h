@@ -84,8 +84,7 @@ public:
   };
   virtual bool calcul_tenseur_Re(const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& Re) const
   {
-    Cerr << "Not coded." << finl;
-    exit();
+    // Not coded
     return false;
   };
   virtual void set_param(Param& param);

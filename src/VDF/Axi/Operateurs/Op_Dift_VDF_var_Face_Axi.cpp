@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Dift_VDF_var_Face_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
 // Version:     /main/29
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -23,9 +23,6 @@
 #include <Op_Dift_VDF_var_Face_Axi.h>
 #include <Schema_Temps.h>
 #include <Champ_base.h>
-#include <Modele_turbulence_hyd_K_Eps.h>
-#include <Turbulence_hyd_sous_maille_VDF.h>
-#include <Paroi_std_hyd_VDF.h>
 #include <SFichier.h>
 
 Implemente_instanciable(Op_Dift_VDF_var_Face_Axi,"Op_Dift_VDF_var_Face_Axi",Op_Dift_VDF_Face_base);
@@ -109,27 +106,7 @@ void Op_Dift_VDF_var_Face_Axi::associer_loipar(const Turbulence_paroi& loi_paroi
 
 void Op_Dift_VDF_var_Face_Axi::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
 {
-  Cerr << "Op_Dift_VDF_var_Face_Axi::associer_modele_turbulence" << finl;
-  le_modele_turbulence = mod;
-  associer_diffusivite_turbulente(le_modele_turbulence->viscosite_turbulente());
-
-  if (sub_type(Modele_turbulence_hyd_K_Eps,le_modele_turbulence.valeur()))
-    {
-      const Modele_turbulence_hyd_K_Eps& mod_K_eps =
-        ref_cast(Modele_turbulence_hyd_K_Eps,le_modele_turbulence.valeur());
-      k.ref(mod_K_eps.K_Eps().valeurs());
-
-    }
-  else if (sub_type(Turbulence_hyd_sous_maille_VDF,le_modele_turbulence.valeur()))
-    {
-      const Turbulence_hyd_sous_maille_VDF& mod_ss_maille =
-        ref_cast(Turbulence_hyd_sous_maille_VDF,le_modele_turbulence.valeur());
-      k.ref(mod_ss_maille.energie_cinetique_turbulente().valeurs());
-    }
-
-  associer_loipar(le_modele_turbulence->loi_paroi());
-
-  Cerr << "Op_Dift_VDF_var_Face_Axi::associer_modele_turbulence ok" << finl;
+  le_modele_turbulence    = mod;
 }
 
 //// mettre_a_jour
@@ -137,15 +114,10 @@ void Op_Dift_VDF_var_Face_Axi::associer_modele_turbulence(const Mod_turb_hyd_bas
 
 void Op_Dift_VDF_var_Face_Axi::mettre_a_jour(double )
 {
-  if (sub_type(Modele_turbulence_hyd_K_Eps,le_modele_turbulence.valeur()))
+  if (le_modele_turbulence->loi_paroi().non_nul())
     {
-      const Modele_turbulence_hyd_K_Eps& mod_K_eps =
-        ref_cast(Modele_turbulence_hyd_K_Eps,le_modele_turbulence.valeur());
-      k.ref(mod_K_eps.K_Eps().valeurs());
+      tau_tan.ref(le_modele_turbulence->loi_paroi()->Cisaillement_paroi());
     }
-  //const Paroi_std_hyd_VDF& loiparVDF =ref_cast(Paroi_std_hyd_VDF,loipar->valeur());
-  //tau_tan.ref(loiparVDF.Cisaillement_paroi());
-  tau_tan.ref(le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi());
 }
 
 
@@ -181,7 +153,7 @@ DoubleTab& Op_Dift_VDF_var_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& r
 
   int fx0,fx1,fy0,fy1;
   double flux_X,flux_Y;
-  double coef_laplacien_axi,k_elem, visc_elem;
+  double coef_laplacien_axi, visc_elem;
 
   for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
     {
@@ -189,15 +161,11 @@ DoubleTab& Op_Dift_VDF_var_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& r
       fx1 = elem_faces(num_elem,dimension);
       fy0 = elem_faces(num_elem,1);
       fy1 = elem_faces(num_elem,1+dimension);
-      if (k.nb_dim()==1)
-        k_elem = k[num_elem];
-      else
-        k_elem = k(num_elem,0);
       visc_elem = visco_lam(num_elem) + 2*visco_turb(num_elem);
 
-      flux_X = (visc_elem*tau_diag(num_elem,0)- 2./3.*k_elem)*0.5*(surface(fx0)+surface(fx1));
+      flux_X = (visc_elem*tau_diag(num_elem,0))*0.5*(surface(fx0)+surface(fx1));
 
-      flux_Y = (visc_elem*tau_diag(num_elem,1)- 2./3.*k_elem)*0.5*(surface(fy0)+surface(fy1));
+      flux_Y = (visc_elem*tau_diag(num_elem,1))*0.5*(surface(fy0)+surface(fy1));
 
       resu(fx0) += flux_X;
       resu(fx1) += flux_X;
@@ -208,7 +176,7 @@ DoubleTab& Op_Dift_VDF_var_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& r
       // Termes supplementaires dans le laplacien en axi
       // Ils sont integres comme des termes sources
 
-      coef_laplacien_axi = -0.5*(tau_diag(num_elem,1)*visc_elem - 2./3.*k_elem);
+      coef_laplacien_axi = -0.5*(tau_diag(num_elem,1)*visc_elem);
 
       resu[fx0] += coef_laplacien_axi*volumes_entrelaces(fx0)*porosite(fx0)/xv(fx0,0);
       resu[fx1] += coef_laplacien_axi*volumes_entrelaces(fx1)*porosite(fx1)/xv(fx1,0);
@@ -224,12 +192,8 @@ DoubleTab& Op_Dift_VDF_var_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& r
         {
           fz0 = elem_faces(num_elem,2);
           fz1 = elem_faces(num_elem,2+dimension);
-          if (k.nb_dim()==1)
-            k_elem = k[num_elem];
-          else
-            k_elem = k(num_elem,0);
           visc_elem = visco_lam(num_elem) + 2*visco_turb(num_elem);
-          flux_Z = (visc_elem*tau_diag(num_elem,2)- 2./3.*k_elem)*0.5*(surface(fz0)+surface(fz1));
+          flux_Z = (visc_elem*tau_diag(num_elem,2))*0.5*(surface(fz0)+surface(fz1));
 
           resu[fz0] += flux_Z;
           resu[fz1] -= flux_Z;
@@ -240,47 +204,6 @@ DoubleTab& Op_Dift_VDF_var_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& r
   // Boucle sur les bord pour traiter les faces de type sortie_libre
 
   int ndeb, nfin;
-
-
-  //     // On supprime le terme en (2/3)k sur les faces de type sortie_libre
-  //     // pour etre conforme a Trio_VF
-
-  //     int num_cl;
-  //     int face,n0,n1;
-  //     for (num_cl=0; num_cl<zvdf.nb_front_Cl(); num_cl++)
-  //     {
-
-  //     // pour chaque Condition Limite on regarde son type
-
-  //     const Cond_lim& la_cl = zclvdf.les_conditions_limites(num_cl);
-  //     const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-  //     ndeb = frontiere_dis.num_premiere_face();
-  //     nfin = ndeb + frontiere_dis.nb_faces();
-
-  //     if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
-
-  //     for (face=ndeb; face<nfin; face++)
-  //     {
-  //     n0 = face_voisins(face,0);
-  //     if (n0 != -1)
-  //     {
-  //     if (k.nb_dim()==1)
-  //        k_elem = k[n0];
-  //     else
-  //        k_elem = k(n0,0);
-  //     resu[face]+= - 2./3.*k_elem*surface(face);
-  //     }
-  //     else
-  //     {
-  //     n1 = face_voisins(face,1);
-  //     if (k.nb_dim()==1)
-  //        k_elem = k[n1];
-  //     else
-  //        k_elem = k(n1,0);
-  //     resu[face]+= 2./3.*k_elem*surface(face);
-  //     }
-  //     }
-  //     }
 
 
   // Boucle sur les aretes bord
@@ -754,7 +677,7 @@ void Op_Dift_VDF_var_Face_Axi::ajouter_contribution(const DoubleTab& inco,      
 
   int fx0,fx1,fy0,fy1;
   double flux_X,flux_Y;
-  double coef_laplacien_axi,k_elem, visc_elem;
+  double coef_laplacien_axi, visc_elem;
 
   for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
     {
@@ -762,15 +685,11 @@ void Op_Dift_VDF_var_Face_Axi::ajouter_contribution(const DoubleTab& inco,      
       fx1 = elem_faces(num_elem,dimension);
       fy0 = elem_faces(num_elem,1);
       fy1 = elem_faces(num_elem,1+dimension);
-      if (k.nb_dim()==1)
-        k_elem = k[num_elem];
-      else
-        k_elem = k(num_elem,0);
       visc_elem = visco_lam(num_elem) + 2*visco_turb(num_elem);
 
-      flux_X = (visc_elem*tau_diag(num_elem,0)- 2./3.*k_elem)*0.5*(surface(fx0)+surface(fx1));
+      flux_X = (visc_elem*tau_diag(num_elem,0))*0.5*(surface(fx0)+surface(fx1));
 
-      flux_Y = (visc_elem*tau_diag(num_elem,1)- 2./3.*k_elem)*0.5*(surface(fy0)+surface(fy1));
+      flux_Y = (visc_elem*tau_diag(num_elem,1))*0.5*(surface(fy0)+surface(fy1));
       for (l=tab1[fx0]-1; l<tab1[fx0+1]-1; l++)
         {
           if (tab2[l]-1==fx0)
@@ -803,7 +722,7 @@ void Op_Dift_VDF_var_Face_Axi::ajouter_contribution(const DoubleTab& inco,      
       // Termes supplementaires dans le laplacien en axi
       // Ils sont integres comme des termes sources
 
-      coef_laplacien_axi = -0.5*(tau_diag(num_elem,1)*visc_elem - 2./3.*k_elem);
+      coef_laplacien_axi = -0.5*(tau_diag(num_elem,1)*visc_elem);
 
       for (l=tab1[fx0]-1; l<tab1[fx0+1]-1; l++)
         {
@@ -827,12 +746,8 @@ void Op_Dift_VDF_var_Face_Axi::ajouter_contribution(const DoubleTab& inco,      
         {
           fz0 = elem_faces(num_elem,2);
           fz1 = elem_faces(num_elem,2+dimension);
-          if (k.nb_dim()==1)
-            k_elem = k[num_elem];
-          else
-            k_elem = k(num_elem,0);
           visc_elem = visco_lam(num_elem) + 2*visco_turb(num_elem);
-          flux_Z = (visc_elem*tau_diag(num_elem,2)- 2./3.*k_elem)*0.5*(surface(fz0)+surface(fz1));
+          flux_Z = (visc_elem*tau_diag(num_elem,2))*0.5*(surface(fz0)+surface(fz1));
 
           for (l=tab1[fz0]-1; l<tab1[fz0+1]-1; l++)
             {

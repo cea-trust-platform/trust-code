@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Dift_VDF_Multi_inco_var_Elem_Axi.h
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs/Evaluateurs
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -26,9 +26,8 @@
 
 #include <Eval_Dift_VDF_Multi_inco_var.h>
 #include <Eval_VDF_Elem.h>
-#include <RefParoiVDF.h>
 #include <DoubleVects.h>
-class Turbulence_paroi_scal;
+#include <Ref_Turbulence_paroi_scal.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -174,7 +173,7 @@ public:
 
 private:
 
-  REF(Paroi_std_scal_hyd_VDF) loipar;
+  REF(Turbulence_paroi_scal) loipar;
   VECT(DoubleVect) equivalent_distance;
 
 };

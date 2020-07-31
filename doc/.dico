@@ -457,6 +457,7 @@
  Milieu_base Milieu_base Milieu_base.h
  Modele_Permeabilite Modele_Permeabilite Modele_Permeabilite.h
  Modele_Permeabilite_base Modele_Permeabilite_base Modele_Permeabilite_base.h
+ Modele_turbulence_hyd_nul Modele_turbulence_hyd_nul Modele_turbulence_hyd_nul.h
  Modele_turbulence_scal Modele_turbulence_scal Modele_turbulence_scal.h
  Modele_turbulence_scal_base Modele_turbulence_scal_base Modele_turbulence_scal_base.h
  modifier_pour_QC Champ_Generique_modifier_pour_QC Champ_Generique_modifier_pour_QC.h
@@ -596,6 +597,7 @@
  Op_Dift_VDF_var_P0_VDF_Axi Op_Dift_VDF_var_Elem_Axi Op_Dift_VDF_Elem_Axi.h
  Op_Dift_VEF_base Op_Dift_VEF_base Op_Dift_VEF_base.h
  Op_Dift_VEF_P1NC Op_Dift_VEF_Face Op_Dift_VEF_Face.h
+ Op_Dift_VEF_P1NCP1B_const_P1NC Op_Dift_VEF_P1NCP1B_Face Op_Dift_VEF_P1NCP1B_Face.h
  Op_Dift_VEF_Q1NC Op_Dift_VEF_Face_Q1 Op_Dift_VEF_Face_Q1.h
  Op_Dift_VEF_var_P1NC Op_Dift_VEF_Face_Var Op_Dift_VEF_Face_Var.h
  Op_Div_EF Op_Div_EF Op_Div_EF.h

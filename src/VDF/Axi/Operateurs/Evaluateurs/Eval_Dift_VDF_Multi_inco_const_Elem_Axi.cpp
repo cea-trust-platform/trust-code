@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,23 +15,22 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Dift_VDF_Multi_inco_const_Elem_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs/Evaluateurs
 // Version:     /main/5
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Eval_Dift_VDF_Multi_inco_const_Elem_Axi.h>
-#include <Paroi_std_scal_hyd_VDF.h>
 #include <Turbulence_paroi_scal.h>
 
 void Eval_Dift_VDF_Multi_inco_const_Elem_Axi::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 {
-  loipar = ref_cast(Paroi_std_scal_hyd_VDF,loi_paroi.valeur());
+  loipar = loi_paroi;
 }
 
 void Eval_Dift_VDF_Multi_inco_const_Elem_Axi::mettre_a_jour( )
 {
-  int s=loipar->tab_equivalent_distance_size();
+  int s=loipar.valeur().tab_equivalent_distance_size();
   equivalent_distance.dimensionner(s);
   for(int i=0; i<s; i++)
     {

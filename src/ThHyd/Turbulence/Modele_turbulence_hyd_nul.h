@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,28 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_var_Elem_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs/Evaluateurs
-// Version:     /main/4
+// File:        Modele_turbulence_hyd_nul.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Turbulence
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_var_Elem_Axi.h>
-#include <Turbulence_paroi_scal.h>
+#ifndef Modele_turbulence_hyd_nul_included
+#define Modele_turbulence_hyd_nul_included
 
-void Eval_Dift_VDF_var_Elem_Axi::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+#include <Mod_turb_hyd.h>
+
+class Modele_turbulence_hyd_nul : public Mod_turb_hyd_base
 {
-  loipar = loi_paroi;
-}
+  Declare_instanciable(Modele_turbulence_hyd_nul);
+public:
+  void mettre_a_jour(double);
+  int sauvegarder(Sortie&) const;
+protected:
+};
 
-
-void Eval_Dift_VDF_var_Elem_Axi::mettre_a_jour( )
-{
-  int s=loipar->tab_equivalent_distance_size();
-  equivalent_distance.dimensionner(s);
-  for(int i=0; i<s; i++)
-    {
-      equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-    }
-
-}
+#endif

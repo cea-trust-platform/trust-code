@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Dift_VDF_var_Face.h
-// Directory:   $TRUST_ROOT/src/VDF/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@
 #include <Eval_Dift_VDF_var.h>
 #include <Eval_VDF_Face.h>
 #include <Ref_Turbulence_paroi_base.h>
-#include <Ref_Mod_turb_hyd_base.h>
+#include <Mod_turb_hyd_base.h>
 
 //
 // .DESCRIPTION class Eval_Dift_VDF_var_Face
@@ -93,23 +93,22 @@ public:
   inline void flux_arete_paroi(const DoubleTab&, int, int, int,
                                int, DoubleVect& flux) const ;
   inline void flux_arete_fluide(const DoubleTab&, int, int, int,
-                                int, DoubleVect& , DoubleVect&) const ;
+                                int, DoubleVect&, DoubleVect&) const ;
   inline void flux_arete_paroi_fluide(const DoubleTab&, int, int,
                                       int, int, DoubleVect& , DoubleVect&) const;
+  inline void flux_arete_periodicite(const DoubleTab&, int, int,
+                                     int, int, DoubleVect&, DoubleVect& ) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int,
                                          int, int, DoubleVect&, DoubleVect&) const;
   inline void flux_arete_symetrie_paroi(const DoubleTab&, int, int, int,
                                         int, DoubleVect& flux) const ;
 
   inline double tau_tan(int face,int k) const;
-  inline void flux_arete_periodicite(const DoubleTab&, int, int,
-                                     int, int, DoubleVect&, DoubleVect& ) const ;
-
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
 
   inline void coeffs_fa7_elem(int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&, double& aii, double& ajj ) const;
+  inline void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&, double& aii, double& ajj) const;
   inline void coeffs_arete_interne(int, int, int, int, double& aii, double& ajj) const;
   inline void coeffs_arete_mixte(int, int, int, int, double& aii, double& ajj) const;
   inline void coeffs_arete_symetrie(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
@@ -117,7 +116,8 @@ public:
   inline void coeffs_arete_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_paroi_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_periodicite(int, int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_arete_symetrie_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
+  inline void coeffs_arete_symetrie_fluide(int, int, int, int,
+                                           double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_symetrie_paroi(int, int, int, int, double& aii1_2,
                                           double& aii3_4, double& ajj1_2) const;
 
@@ -139,7 +139,7 @@ public:
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // vectorielles.
 
-  inline  void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
+  inline void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
   inline void coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj) const;
   inline void coeffs_arete_interne(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
   inline void coeffs_arete_mixte(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
@@ -150,7 +150,7 @@ public:
   inline void coeffs_arete_periodicite(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
   inline void coeffs_arete_symetrie_fluide(int, int, int, int,
                                            DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
-  inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4,     DoubleVect& ajj1_2) const;
+  inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas vectoriel.
@@ -172,8 +172,6 @@ private:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
-  DoubleTab k_;
-  int indic_bas_Re, indic_lp_neg, indice_keps_realisable_;
 };
 
 //
@@ -294,16 +292,6 @@ inline double Eval_Dift_VDF_var_Face::flux_fa7_sortie_libre(const DoubleTab&, in
                                                             const Neumann_sortie_libre&, int ) const
 {
   double flux=0;
-  /*
-    double k_elem;
-    int element = elem(face,0);
-    if (elem(face,0) == -1) element = elem(face,1);
-    if (k.nb_dim() == 1)
-    k_elem = k(element);
-    else if (k.nb_dim() == 2)
-    k_elem = k(element,0);
-    flux = - 2./3.*k_elem*surface(face);
-  */
   return flux;
 }
 
@@ -349,7 +337,7 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_interne(const DoubleTab& inco, 
   double tau_tr = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori3);
   double reyn = (tau + tau_tr)*visc_turb;
 
-  flux = 0.25*(reyn + visc_lam*tau)*(surface(fac1)+surface(fac2))
+  flux = 0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac1)+surface(fac2))
          *(porosite(fac1)+porosite(fac2));
   return flux;
 }
@@ -377,7 +365,7 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_interne(int fac1, int fac2, int
   double tau_tr = 1/dist_face(fac1,fac2,ori3);
   double reyn = (tau + tau_tr)*visc_turb;
 
-  aii = ajj = 0.25*(reyn + visc_lam*tau)*(surface(fac1)+surface(fac2))
+  aii = ajj = 0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac1)+surface(fac2))
               *(porosite(fac1)+porosite(fac2));
 }
 
@@ -402,6 +390,10 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_mixte(const DoubleTab& inco, in
   double flux=0;
   if (inco[fac4]*inco[fac3] != 0)
     {
+      Cerr << "Erreur dans Eval_Dift_VDF_var_Face::flux_arete_mixte"<<finl;
+      Cerr << "A recoder! Pour prendre en compte le gradient transpose dans la partie lam." << finl;
+      Process::exit();
+
       double visc_lam=0;
       int element;
 
@@ -433,6 +425,10 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_mixte(int fac1, int fac2, int f
 
   if (inconnue->valeurs()[fac4]*inconnue->valeurs()[fac3] != 0)
     {
+      Cerr << "Errur dans Eval_Dift_VDF_var_Face::coeffs_arete_mixte "<<finl;
+      Cerr << "A recoder! Pour prendre en compte le gradient transpose dans la partie lam." << finl;
+      Process::exit();
+
       double visc_lam=0;
       int element;
 
@@ -490,9 +486,9 @@ inline void Eval_Dift_VDF_var_Face::flux_arete_fluide(const DoubleTab& inco, int
   double surf = 0.5*(surface(fac1)+surface(fac2));
   double poros = 0.5*(porosite(fac1)+porosite(fac2));
   double reyn = (tau + tau_tr)*visc_turb;
-  double coef = (tau*visc_lam + reyn);
+  double coef = ((tau+tau_tr)*visc_lam + reyn);
   flux3 = coef*surf*poros;
-  flux1_2 = (tau_tr*visc_lam + reyn)*surface(fac3)*porosite(fac3);
+  flux1_2 = ((tau+tau_tr)*visc_lam + reyn)*surface(fac3)*porosite(fac3);
 
 }
 
@@ -516,13 +512,13 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_fluide(int fac1, int fac2, int 
   double surf = 0.5*(surface(fac1)+surface(fac2));
   double poros = 0.5*(porosite(fac1)+porosite(fac2));
   double reyn = (tau + tau_tr)*visc_turb;
-  double coef = (tau*visc_lam + reyn);
+  double coef = ((tau+tau_tr)*visc_lam + reyn);
 
   // Calcul de aii3_4
   aii3_4 = coef*surf*poros;
 
   // Calcul de aii1_2 et ajj1_2
-  aii1_2 = ajj1_2  = (tau_tr*visc_lam + reyn)*surface(fac3)*porosite(fac3);
+  aii1_2 = ajj1_2  = ((tau+tau_tr)*visc_lam + reyn)*surface(fac3)*porosite(fac3);
 }
 
 //// secmem_arete_fluide
@@ -568,7 +564,7 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_paroi(const DoubleTab& inco, in
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
 
-  if ( (indic_bas_Re==1) || (indic_lp_neg==1) || (indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       int elem1 = elem_(fac3,0);
       int elem2 = elem_(fac3,1);
@@ -611,7 +607,7 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_paroi(const DoubleTab& inco, in
 
 inline void Eval_Dift_VDF_var_Face::coeffs_arete_paroi(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
 {
-  if ( (indic_bas_Re==1) || (indic_lp_neg==1) || (indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       int elem1 = elem_(fac3,0);
       int elem2 = elem_(fac3,1);
@@ -658,7 +654,7 @@ inline double Eval_Dift_VDF_var_Face::secmem_arete_paroi(int fac1, int fac2, int
   double visc_turb = 0.5*(dv_diffusivite_turbulente(elem1)
                           + dv_diffusivite_turbulente(elem2));
 
-  if ( (indic_bas_Re==1) || (indic_lp_neg==1) || (indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       double dist = dist_norm_bord(fac1);
       double tau  = signe*(vit_imp - inco[fac3])/dist;
@@ -714,9 +710,9 @@ inline void Eval_Dift_VDF_var_Face::flux_arete_paroi_fluide(const DoubleTab& inc
   double surf = 0.5*(surface(fac1)+surface(fac2));
   double poros = 0.5*(porosite(fac1)+porosite(fac2));
   double reyn = (tau + tau_tr)*visc_turb;
-  double coef = (tau*visc_lam + reyn);
+  double coef = ((tau+tau_tr)*visc_lam + reyn);
   flux3 = coef*surf*poros;
-  flux1_2 = (tau_tr*visc_lam + reyn)*surface(fac3)*porosite(fac3);
+  flux1_2 = ((tau+tau_tr)*visc_lam + reyn)*surface(fac3)*porosite(fac3);
 
 }
 
@@ -744,10 +740,10 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_paroi_fluide(int fac1, int fac2
   double surf = 0.5*(surface(fac1)+surface(fac2));
   double poros = 0.5*(porosite(fac1)+porosite(fac2));
   double reyn = (tau + tau_tr)*visc_turb;
-  double coef = (tau*visc_lam + reyn);
+  double coef = ((tau+tau_tr)*visc_lam + reyn);
 
   aii3_4 = coef*surf*poros;
-  aii1_2 = ajj1_2 =(tau_tr*visc_lam + reyn)*surface(fac3)*porosite(fac3);
+  aii1_2 = ajj1_2 =((tau+tau_tr)*visc_lam + reyn)*surface(fac3)*porosite(fac3);
 }
 
 
@@ -811,12 +807,12 @@ inline void Eval_Dift_VDF_var_Face::flux_arete_periodicite(const DoubleTab& inco
   double tau_tr = (inco[fac2]-inco[fac1])/dist1_2;
   double reyn = (tau + tau_tr)*visc_turb;
 
-  flux = 0.25*(reyn + visc_lam*tau)*(surface(fac1)+surface(fac2))
+  flux = 0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac1)+surface(fac2))
          *(porosite(fac1)+porosite(fac2));
 
   flux3_4 = flux;
 
-  flux = 0.25*(reyn + visc_lam*tau_tr)*(surface(fac3)+surface(fac4))
+  flux = 0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac3)+surface(fac4))
          *(porosite(fac3)+porosite(fac4));
 
   flux1_2 = flux;
@@ -846,7 +842,7 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_periodicite(int fac1, int fac2,
   double tau_tr = 1/dist1_2;
   double reyn = (tau + tau_tr)*visc_turb;
 
-  aii = ajj =0.25*(reyn + visc_lam*tau)*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
+  aii = ajj =0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
 }
 
 
@@ -891,25 +887,12 @@ inline double Eval_Dift_VDF_var_Face::secmem_arete_symetrie(int, int, int, int) 
 inline double Eval_Dift_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int elem,
                                                     int fac1, int fac2) const
 {
-  double flux,k_elem;
+  double flux;
   int ori=orientation(fac1);
   double tau = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
   double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  if (k_.nb_dim() == 1)
-    k_elem = k_(elem);
-  else if (k_.nb_dim() == 2)
-    k_elem = k_(elem,0);
-  else
-    {
-      assert(0);
-      Process::exit();
-      k_elem=-1;
-    }
-  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
-  // On verifie que les termes diagonaux du tenseur de reynolds sont bien positifs
-  // Sinon on annulle :
-  if (reyn < 0) reyn=0. ;
-  flux = (-reyn + dv_diffusivite(elem)*tau) * surf ;
+  double reyn = - 2.*dv_diffusivite_turbulente(elem)*tau ;
+  flux = (-reyn + 2.*dv_diffusivite(elem)*tau) * surf ;
   return flux;
 }
 
@@ -919,26 +902,11 @@ inline double Eval_Dift_VDF_var_Face::flux_fa7_elem(const DoubleTab& inco, int e
 
 inline void Eval_Dift_VDF_var_Face::coeffs_fa7_elem(int elem ,int fac1, int fac2, double& aii, double& ajj) const
 {
-  double k_elem;
   int ori=orientation(fac1);
   double tau = 1/dist_face(fac1,fac2,ori);
   double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  if (k_.nb_dim() == 1)
-    k_elem = k_(elem);
-  else if (k_.nb_dim() == 2)
-    k_elem = k_(elem,0);
-  else
-    {
-      assert(0);
-      Process::exit();
-      k_elem=-1;
-    }
-  double reyn = 2./3.*k_elem - 2.*dv_diffusivite_turbulente(elem)*tau ;
-  // On verifie que les termes diagonaux du tenseur de reynolds sont bien positifs
-  // Sinon on annulle :
-  if (reyn < 0) reyn=0. ;
-
-  aii = ajj =(-reyn +dv_diffusivite(elem)*tau) * surf;
+  double reyn = - 2.*dv_diffusivite_turbulente(elem)*tau ;
+  aii = ajj =(-reyn +2.*dv_diffusivite(elem)*tau) * surf;
 }
 
 
@@ -974,9 +942,9 @@ inline void Eval_Dift_VDF_var_Face::flux_arete_symetrie_fluide(const DoubleTab& 
   double surf = 0.5*(surface(fac1)+surface(fac2));
   double poros = 0.5*(porosite(fac1)+porosite(fac2));
   double reyn = (tau + tau_tr)*visc_turb;
-  double coef = (tau*visc_lam + reyn);
+  double coef = ((tau+tau_tr)*visc_lam + reyn);
   flux3 = coef*surf*poros;
-  flux1_2 = (tau_tr*visc_lam + reyn)*surface(fac3)*porosite(fac3);
+  flux1_2 = ((tau+tau_tr)*visc_lam + reyn)*surface(fac3)*porosite(fac3);
 }
 
 //// coeffs_arete_symetrie_fluide
@@ -999,13 +967,13 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_symetrie_fluide(int fac1, int f
   double surf = 0.5*(surface(fac1)+surface(fac2));
   double poros = 0.5*(porosite(fac1)+porosite(fac2));
   double reyn = (tau + tau_tr)*visc_turb;
-  double coef = (tau*visc_lam + reyn);
+  double coef = ((tau+tau_tr)*visc_lam + reyn);
 
   // Calcul de aii3_4
   aii3_4 = coef*surf*poros;
 
   // Calcul de aii1_2 et ajj1_2
-  aii1_2 = ajj1_2  = (tau_tr*visc_lam + reyn)*surface(fac3)*porosite(fac3);
+  aii1_2 = ajj1_2  = ((tau+tau_tr)*visc_lam + reyn)*surface(fac3)*porosite(fac3);
 }
 
 //// secmem_arete_symetrie_fluide
@@ -1055,7 +1023,7 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_symetrie_paroi(const DoubleTab&
   //  double vit = inco(fac3);
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl));
-  if ((indic_bas_Re==1) || (indic_lp_neg==1) || (indice_keps_realisable_==1))
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       double dist = dist_norm_bord(fac1);
       double tau  = signe*(vit_imp - inco[fac3])/dist;
@@ -1082,7 +1050,7 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_symetrie_paroi(int fac1, int fa
                                                                 int fac3, int signe,
                                                                 double& aii1_2, double& aii3_4, double& ajj1_2) const
 {
-  if ( (indic_bas_Re==1) || (indic_lp_neg==1) || (indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       int elem1 = elem_(fac3,0);
       int elem2 = elem_(fac3,1);
@@ -1121,7 +1089,7 @@ inline double Eval_Dift_VDF_var_Face::secmem_arete_symetrie_paroi(int fac1, int 
                           + dv_diffusivite_turbulente(elem2));
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
-  if ( (indic_bas_Re==1) || (indic_lp_neg==1) || (indice_keps_realisable_==1) )
+  if ( !le_modele_turbulence.valeur().utiliser_loi_paroi() )
     {
       const DoubleTab& inco = inconnue->valeurs();
       double dist = dist_norm_bord(fac1);

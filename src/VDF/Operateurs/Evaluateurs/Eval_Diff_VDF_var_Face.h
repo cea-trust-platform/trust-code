@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,9 @@
 //
 // File:        Eval_Diff_VDF_var_Face.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/13
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 
 #ifndef Eval_Diff_VDF_var_Face_included
@@ -42,7 +41,6 @@
 //
 //
 // .SECTION voir aussi Eval_Diff_VDF_var
-
 
 class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_var, public Eval_VDF_Face
 {
@@ -67,15 +65,15 @@ public:
   inline double flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
   inline double flux_fa7_elem(const DoubleTab&, int, int, int) const ;
   inline double flux_arete_interne(const DoubleTab&, int, int, int, int) const ;
-  inline double flux_arete_symetrie(const DoubleTab&, int, int, int, int) const ;
   inline double flux_arete_mixte(const DoubleTab&, int, int, int, int) const ;
+  inline double flux_arete_symetrie(const DoubleTab&, int, int, int, int) const ;
   inline double flux_arete_paroi(const DoubleTab&, int, int, int, int) const ;
-  inline void flux_arete_fluide(const DoubleTab&, int, int, int, int,
-                                double& , double&) const ;
-  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int,
-                                      double& , double&) const ;
-  inline void flux_arete_periodicite(const DoubleTab&, int, int, int,
-                                     int, double&, double&) const ;
+  inline void flux_arete_fluide(const DoubleTab&, int, int,
+                                int, int, double& , double& ) const ;
+  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int,
+                                      int, int, double& , double& ) const ;
+  inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int,
+                                     double&, double&) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int,
                                          double&, double&) const ;
   inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const ;
@@ -154,7 +152,7 @@ public:
   inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
-  // au second membre pour l'implicite.
+  // au second membre pour l'implicite dans le cas vectoriel.
 
   inline void secmem_fa7_elem(int, int, int, DoubleVect& flux) const;
   inline void secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&, int, DoubleVect& flux) const;
@@ -201,7 +199,6 @@ inline int Eval_Diff_VDF_var_Face::calculer_arete_paroi_fluide() const
 {
   return 1;
 }
-
 
 //// calculer_arete_symetrie
 //

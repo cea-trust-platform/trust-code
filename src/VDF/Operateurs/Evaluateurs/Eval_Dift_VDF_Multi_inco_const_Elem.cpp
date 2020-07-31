@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,14 +15,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Dift_VDF_Multi_inco_const_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Turbulence
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Eval_Dift_VDF_Multi_inco_const_Elem.h>
 #include <Turbulence_paroi_scal.h>
-#include <Paroi_std_scal_hyd_VDF.h>
 
 void Eval_Dift_VDF_Multi_inco_const_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 {
