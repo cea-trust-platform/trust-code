@@ -13,9 +13,9 @@ set (loadercpp off)
 OPTION(loaderpython "build swig of lataloer" ON)
 set (TRUST_INT64 $ENV{TRUST_INT64})
 
-if ("${TRUST_INT64}"  STREQUAL "1" )
-   set (loaderpython off)
-endif ()
+# if ("${TRUST_INT64}"  STREQUAL "1" )
+# set (loaderpython off)
+# endif ()
 
 if ("${MED_COUPLING_ROOT}"  STREQUAL "" )
    set (MED_COUPLING_ROOT_ENV $ENV{MED_COUPLING_ROOT})
