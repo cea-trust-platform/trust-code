@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import os
 ENV=os.getenv("TRUST_ROOT")
 
@@ -58,7 +57,7 @@ def create_dico(dirs):
     dico[".cpp"]=dico_cpp
     for fi,fifull in srcs:
         # print fifull
-        f=file(fifull)
+        f=open(fifull,"r")
 
         lines=f.readlines()
         lines=list(filter(expr.match,lines))
