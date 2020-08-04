@@ -6,6 +6,7 @@ if [ ! -f  champ_tabule_temps.lata ]
 then
 trust champ_tabule_temps
 fi
+cp champ_tabule_temps.lata extrait.lata
 trust extrait
 mv Puissance_0000.med Puissance.med
 fi
