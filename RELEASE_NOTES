@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+29/07/20 (TRUST)  Portability : Fedora32 OS and GNU 10.x supported
 22/07/20 (TRUST)  Portability : First partial support on Armv8 achitecture with GNU or ARM compilers (Miniconda3 has no local channel so direct access to Internet is needed)
 09/07/20 (TRUST)  New feature : Coding of the metric "Load imbalance" in the cutter and the scatter.
 --------------------------------------------------------------------------------------------------

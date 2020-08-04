@@ -110,8 +110,6 @@ public:
     time_.tv_usec = 0;
   }
   Time& operator=(const Time& t) = default; // gcc 9
-  Time(const Time& t) : time_(t.time_)
-  { }
   static const char * const description;
   void get_time()
   {

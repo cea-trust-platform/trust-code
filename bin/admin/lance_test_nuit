@@ -882,7 +882,7 @@ fi
       else
          git remote update
          git checkout .
-         git checkout portage_181
+         git checkout portage
          git pull
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
