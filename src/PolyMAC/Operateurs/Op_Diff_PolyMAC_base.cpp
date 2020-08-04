@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Debog.h>
 #include <Op_Diff_PolyMAC_base.h>
 #include <Motcle.h>
 #include <Champ_Don.h>
@@ -35,6 +36,8 @@
 #include <communications.h>
 #include <EcrFicPartage.h>
 #include <Modele_turbulence_scal_base.h>
+#include <Champ_Fonc_P0_base.h>
+#include <Echange_externe_impose.h>
 
 Implemente_base(Op_Diff_PolyMAC_base,"Op_Diff_PolyMAC_base",Operateur_Diff_base);
 
@@ -53,6 +56,98 @@ Sortie& Op_Diff_PolyMAC_base::printOn(Sortie& s ) const
 Entree& Op_Diff_PolyMAC_base::readOn(Entree& s )
 {
   return s ;
+}
+
+
+double Op_Diff_PolyMAC_base::calculer_dt_stab() const
+{
+  update_nu();
+  const Zone& ma_zone=la_zone_poly_->zone();
+  double dt_stab = DMAXFLOAT;
+
+  const int nb_elem =  ma_zone.nb_elem();
+
+  if (! has_champ_masse_volumique())
+    {
+      // Methode "standard" de calcul du pas de temps
+      // Ce calcul est tres conservatif: si le max de la diffusivite
+      // n'est pas atteint a l'endroit ou le min de delta_h_carre est atteint,
+      // le pas de temps est sous-estime.
+      const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
+      const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
+      double alpha_max = local_max_vect(valeurs_diffusivite);
+
+      // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
+      double h_imp_max = -1, h_imp_temp=-2;
+
+      const Zone_Cl_PolyMAC& la_zone_cl_poly = la_zcl_poly_.valeur();
+      for(int i=0; i<la_zone_cl_poly.nb_cond_lim(); i++)
+        {
+          // loop on boundaries
+          const Cond_lim_base& la_cl = la_zone_cl_poly.les_conditions_limites(i).valeur();
+
+          if (sub_type(Echange_externe_impose,la_cl))
+            {
+              const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
+              const Champ_front_base& le_ch_front = ref_cast( Champ_front_base, la_cl_int.h_imp().valeur());
+              const DoubleVect& tab = le_ch_front.valeurs();
+              if(tab.size() != 0)
+                {
+                  h_imp_temp = local_max_vect(tab); // get h_imp from datafile
+                  h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
+                  h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
+                }
+            }
+        } // End loop on boundaries
+      h_imp_max = Process::mp_max(h_imp_max);
+
+      if(alpha_max != 0.0 && nb_elem != 0)
+        {
+          double min_delta_h_carre = la_zone_poly_->carre_pas_du_maillage();
+          if(h_imp_max>0.0)  //a heat flux is imposed on a boundary condition
+            {
+              // get the thermal conductivity
+              const Equation_base& mon_eqn = la_zone_cl_poly.equation();
+              const Milieu_base& mon_milieu = mon_eqn.milieu();
+              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
+              double max_conductivity = local_max_vect(tab_lambda);
+
+              // compute Biot number given by Bi = L*h/lambda.
+              double Bi = h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
+              // if Bi>1, replace conductivity by h_imp*h in diffusivity. We are very conservative since h_imp_max is not necessarily located where max_conductivity is.
+              if (Bi>1.0)
+                alpha_max *= h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
+            }
+          dt_stab = min_delta_h_carre / (2. * dimension * alpha_max);
+        }
+
+    }
+  else
+    {
+      const double           deux_dim      = 2. * Objet_U::dimension;
+      const Champ_base& champ_diffu   = diffusivite();
+      const DoubleTab&       valeurs_diffu = champ_diffu.valeurs();
+      const Champ_base&      champ_rho     = get_champ_masse_volumique();
+      const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
+
+      assert(sub_type(Champ_Fonc_P0_base, champ_rho));
+      assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
+      assert(valeurs_rho.size_array()== ma_zone.les_elems().dimension_tot(0));
+
+      // Champ de masse volumique variable.
+      for (int elem = 0; elem < nb_elem; elem++)
+        {
+          const double h_carre = la_zone_poly_->carre_pas_maille(elem);
+          const double diffu   = valeurs_diffu(elem);
+          const double rho     = valeurs_rho(elem);
+          const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
+          if (dt_stab > dt)
+            dt_stab = dt;
+        }
+    }
+
+  dt_stab = Process::mp_min(dt_stab);
+  return dt_stab;
 }
 
 void Op_Diff_PolyMAC_base::completer()

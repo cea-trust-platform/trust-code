@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 from xdata import *
 
 import xdata as xd

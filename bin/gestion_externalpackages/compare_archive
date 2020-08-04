@@ -1,9 +1,9 @@
 
-mkdir new
+mkdir -p new
 cd new
 tar zxf ../$1
 cd ../
-mkdir old
+mkdir -p old
 cd old
 tar zxf $TRUST_ROOT/externalpackages/$1
 cd ..

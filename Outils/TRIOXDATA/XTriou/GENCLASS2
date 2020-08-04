@@ -90,8 +90,7 @@ fi
 
 
 cat /dev/null > gencl.py
-echo "#!/usr/bin/python
-# -*- coding: UTF-8 -*-" > gencl.py
+echo "# -*- coding: UTF-8 -*-" > gencl.py
 
 traite_TYPE1
 

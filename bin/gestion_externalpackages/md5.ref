@@ -8,6 +8,7 @@ e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 718259965f234088d785cad1fbd7de03  Miniconda/Miniconda3-4.6.14-Linux-x86_64.sh
 ffa5f0eead5576fb26b7e6902f5eed09  Miniconda/Miniconda3-4.6.14-MacOSX-x86_64.sh
+7e88440c1848299f3bc443fc01e7a2eb  Miniconda/Miniforge3-Linux-aarch64.sh
 aeab635f2cfd266ff89877d8daa56435  Miniconda/local_channel/linux-64/_libgcc_mutex-0.1-main.tar.bz2
 671f6e045d03a842f379145e7fc43c0d  Miniconda/local_channel/linux-64/blas-1.0-openblas.tar.bz2
 f52e60deb7f4c82821be9a868e889348  Miniconda/local_channel/linux-64/bzip2-1.0.8-h7b6447c_0.tar.bz2
