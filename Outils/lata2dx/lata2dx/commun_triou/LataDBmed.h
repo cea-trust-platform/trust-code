@@ -208,7 +208,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 {
   
   
-  Journal() << "MED PLUGIN !" << endl;
+  Journal() << "MED " << MED_NUM_MAJEUR << "." << MED_MINOR_NUM << "." << MED_RELEASE_NUM << " PLUGIN ! " << endl;
 
   // Defaults for lataV1
   default_type_int_.msb_ = LataDBDataType::ASCII;
