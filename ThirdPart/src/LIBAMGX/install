@@ -33,6 +33,8 @@ then
    # Test
    cd $AMGX_DIR/$LIB/lib/examples
    export LD_LIBRARY_PATH=$AMGX_DIR/$LIB/lib:$LD_LIBRARY_PATH
+   # Test valgrind:
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && valgrind ./amgx_capi -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
    exec=./amgx_capi     trust -gpu dummy   -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
    exec=./amgx_mpi_capi trust -gpu dummy 2 -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
    # solve: 	amgx_capi  	amgx_mpi_capi
@@ -67,8 +69,11 @@ then
       mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
    done
    cd $AMGX_DIR/$LIB/example/poisson
+   # Test valgrind:
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2 2>&1 | tee -a
    exec=bin/poisson trust -gpu dummy 4 -caseName PETSc_GAMG_100x100x100 -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
    exec=bin/poisson trust -gpu dummy 4 -caseName   AmgX_AGG_100x100x100 -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
+$log
    # ---------------------------------------------------------------------------	  
    # Machine	NVidia		GFlops	Cuda	Driver	GNU	MPI	solve	GAMG	AmgX_AGG	 
    # is234639	P600 		 1.1	10.0	10.2	7.4.0	OpenMPI 4.0.3	1.83s	crash Raison ? Compile avec PETSc CUDA, cela plante aussi sur GAMG CUBLAS error 1
