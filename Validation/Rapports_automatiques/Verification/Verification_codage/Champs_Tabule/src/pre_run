@@ -6,7 +6,18 @@ if [ ! -f  champ_tabule_temps.lata ]
 then
 trust champ_tabule_temps
 fi
+
 cp champ_tabule_temps.lata extrait.lata
+#selecting only a few times in extrait.lata
+lines_of_times_to_delete=`grep -n "TEMPS [0;3;5-9].[0-9]\|TEMPS [0-9].[5]" extrait.lata | cut -d : -f 1`
+lines_to_delete=""
+for line in $lines_of_times_to_delete
+do
+next_line=$((line+1))
+lines_to_delete="$lines_to_delete${line}d;${next_line}d;"
+done
+sed -e "${lines_to_delete}" -i extrait.lata
+
 trust extrait
 mv Puissance_0000.med Puissance.med
 fi
