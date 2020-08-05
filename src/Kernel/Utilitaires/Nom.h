@@ -80,7 +80,11 @@ public:
   friend int operator ==(const char* const, const Nom&) ;
   friend int operator !=(const char* const, const Nom&) ;
   virtual int finit_par(const char* const) const;
-
+  inline bool contient(const Nom& nom)
+  {
+    std::size_t found = getString().find(nom.getString());
+    return found!=std::string::npos;
+  }
   inline const char* getChar() const
   {
     return nom_.c_str();
