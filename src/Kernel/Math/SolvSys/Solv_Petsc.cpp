@@ -96,7 +96,7 @@ void check_not_defined(option o)
 {
   if (o.defined)
     {
-      Cerr << "Error! Option " << o.name << " should not be defined with the preconditionner of this solver." << finl;
+      Cerr << "Error! Option " << o.name << " should not be defined with the preconditioner of this solver." << finl;
       Cerr << "Change your data file." << finl;
       Process::exit();
     }
@@ -270,6 +270,8 @@ void Solv_Petsc::create_solver(Entree& entree)
           }
         // But It requires two extra work vectors than the conventional implementation in PETSc.
         solver_supported_on_gpu_by_petsc=1;
+        solver_supported_on_gpu_by_amgx=1;
+        if (amgx_) amgx_option+="solver=PCG\n";
         break;
       }
     case 10:
@@ -281,6 +283,8 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         KSPSetType(SolveurPetsc_, KSPGMRES);
         solver_supported_on_gpu_by_petsc=1;
+        solver_supported_on_gpu_by_amgx=1;
+        if (amgx_) amgx_option+="solver=FGMRES\n";
         break;
       }
     case 8:
@@ -331,7 +335,8 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         KSPSetType(SolveurPetsc_, KSPBCGS);
         solver_supported_on_gpu_by_petsc=1;
-        //solver_supported_on_gpu_by_amgx=1;
+        solver_supported_on_gpu_by_amgx=1;
+        if (amgx_) amgx_option+="solver=BICGSTAB\n";
         break;
       }
     case 6:
@@ -497,6 +502,11 @@ void Solv_Petsc::create_solver(Entree& entree)
                   }
                 is >> seuil_;
                 convergence_with_seuil=1;
+                if (amgx_)
+                  {
+                    amgx_option+="convergence=ABSOLUTE\ntolerance=";
+                    amgx_option+=Nom(seuil_,"%e")+"\n";
+                  }
                 break;
               }
             case 2:
@@ -536,6 +546,15 @@ void Solv_Petsc::create_solver(Entree& entree)
                           is >> tmp_int   ;
                           level.value()=(int)tmp_int;
                           level.defined=1;
+                          if (amgx_)
+                            {
+                              Nom ilu_sparsity_level="ilu_sparsity_level=";
+                              ilu_sparsity_level+=(Nom)level.value();
+                              amgx_option+=ilu_sparsity_level+"\n";
+                              Nom coloring_level="coloring_level="; // 1 par defaut
+                              coloring_level+=Nom(level.value()+1);    // Doit valoir ilu_sparsity_level+1 pour MULTICOLOT_INU (voir AmgX reference guide)
+                              amgx_option+=coloring_level+"\n";
+                            }
                           break;
                         }
                       case 2:
@@ -572,6 +591,11 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 is >> nb_it_max_;
                 convergence_with_nb_it_max_=1;
+                if (amgx_)
+                  {
+                    amgx_option+="max_iters=";
+                    amgx_option+=Nom(nb_it_max_)+"\n";
+                  }
                 break;
               }
             case 15:
@@ -773,6 +797,11 @@ void Solv_Petsc::create_solver(Entree& entree)
                   }
                 is >> seuil_relatif_;
                 convergence_with_seuil=1;
+                if (amgx_)
+                  {
+                    amgx_option+="convergence=RELATIVE_INI_CORE\ntolerance=";
+                    amgx_option+=Nom(seuil_relatif_,"%e")+"\n";
+                  }
                 break;
               }
             default:
@@ -825,6 +854,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCNONE);
                 pc_supported_on_gpu_by_petsc=1;
+                solver_supported_on_gpu_by_amgx=1;
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -833,7 +863,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 1:
               {
-                //Cout << "See http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html" << finl;
+//Cout << "See http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html" << finl;
                 //Cout << "to have some advices on the incomplete LU factorisation level: ILU(level)" << finl;
                 // On n'attaque pas le ILU de Petsc qui n'est pas parallele
                 // On prend celui de Hypre (Euclid=PILU(k)) en passant par les commandes en ligne
@@ -846,10 +876,19 @@ void Solv_Petsc::create_solver(Entree& entree)
                 //check_not_defined(ordering);
                 //
                 // CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot
-                Cerr << "Error: CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot." << finl;
-                Cerr << "So the ILU { level k } preconditionner no longer available. " << finl;
-                Cerr << "Change your data file." << finl;
-                Process::exit();
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_)
+                  {
+                    amgx_option+="preconditioner=MULTICOLOR_DILU\n";
+                  }
+                else
+                  {
+                    Cerr << "Error: CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot."
+                         << finl;
+                    Cerr << "So the ILU { level k } preconditioner no longer available. " << finl;
+                    Cerr << "Change your data file." << finl;
+                    Process::exit();
+                  }
                 break;
               }
             case 2:
@@ -863,6 +902,15 @@ void Solv_Petsc::create_solver(Entree& entree)
                   {
                     Cerr << "omega value for SSOR should be between 1 and 2" << finl;
                     exit();
+                  }
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_)
+                  {
+                    amgx_option+="preconditioner=MULTICOLOR_GS\n"; // Dans AMGX, c'est un Gauss Seidel...
+                    Nom relaxation_factor="relaxation_factor="; // Defaut 0.9
+                    relaxation_factor+=Nom(omega.value()-1); // Astuce moyenne... ToDo faire un GS ?
+                    amgx_option+=relaxation_factor+"\n";
+                    if (matrice_symetrique_) amgx_option+="symmetric_GS=1\n";
                   }
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -908,7 +956,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 //
                 // ERROR VALGRIND
                 //Cerr << "Error VALGRIND with PETSc Dual Threashold Incomplete LU factorization." << finl;
-                //Cerr << "So the PILUT { level k epsilon thresh } preconditionner no longer available. " << finl;
+                //Cerr << "So the PILUT { level k epsilon thresh } preconditioner no longer available. " << finl;
                 //Cerr << "Change your data file." << finl;
                 //Process::exit();
                 break;
@@ -917,7 +965,8 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCJACOBI);
                 pc_supported_on_gpu_by_petsc=1;
-                //pc_supported_on_gpu_by_amgx=1;
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_) amgx_option+="preconditioner=BLOCK_JACOBI\n";
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -956,6 +1005,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                     preconditionnement_non_symetrique_=1;
                   }
                 add_option("sub_pc_factor_levels",(Nom)level.value());
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_) amgx_option+="preconditioner=MULTICOLOR_DILU\n";
                 check_not_defined(omega);
                 check_not_defined(epsilon);
                 break;
@@ -974,13 +1025,13 @@ void Solv_Petsc::create_solver(Entree& entree)
         {
           if (!solveur_direct_)
             {
-              Cerr << "You forgot to define a preconditionner with the keyword precond." << finl;
-              Cerr << "If you don't want a preconditionner, add for the solver definition:" << finl;
+              Cerr << "You forgot to define a preconditioner with the keyword precond." << finl;
+              Cerr << "If you don't want a preconditioner, add for the solver definition:" << finl;
               Cerr << "precond null" << finl;
               Process::exit();
             }
         }
-      // On verifie que les preconditionneurs sont supportes sur GPU:
+// On verifie que les preconditionneurs sont supportes sur GPU:
       if (gpu_ && pc_supported_on_gpu_by_petsc==0)
         {
           Cerr << les_precond[rang] << " is not supported yet by PETSc on GPU." << finl;
@@ -993,9 +1044,9 @@ void Solv_Petsc::create_solver(Entree& entree)
         }
     }
 
-  // On fixe des parametres du solveur et du preconditionneur selon que l'on ait un solveur direct ou iteratif
-  // KSPSetInitialGuessNonzero : Resout Ax=B en supposant x nul ou non
-  // KSPSetTolerances : Pour fixer les criteres de convergence du solveur iteratif
+// On fixe des parametres du solveur et du preconditionneur selon que l'on ait un solveur direct ou iteratif
+// KSPSetInitialGuessNonzero : Resout Ax=B en supposant x nul ou non
+// KSPSetTolerances : Pour fixer les criteres de convergence du solveur iteratif
   if (solveur_direct_)
     {
       KSPSetInitialGuessNonzero(SolveurPetsc_, PETSC_FALSE);
@@ -1020,19 +1071,19 @@ void Solv_Petsc::create_solver(Entree& entree)
       // Convergence si residu(it) < MAX (seuil_relatif_ * residu(0), seuil_);
       KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
     }
-  // Change le calcul du test de convergence relative (||Ax-b||/||Ax(0)-b|| au lieu de ||Ax-b||/||b||)
-  // Peu utilisee dans TRUST car on utilise la convergence sur la norme absolue
-  // Mais cela corrige une erreur KSP_DIVERGED_DTOL quand ||Ax-b||/||b||>10000=div_tol par defaut dans PETSc (rencontree sur Etude REV_4)
-  //add_option(sys, "ksp_converged_use_initial_residual_norm",1); // Before PETSc 3.5
+// Change le calcul du test de convergence relative (||Ax-b||/||Ax(0)-b|| au lieu de ||Ax-b||/||b||)
+// Peu utilisee dans TRUST car on utilise la convergence sur la norme absolue
+// Mais cela corrige une erreur KSP_DIVERGED_DTOL quand ||Ax-b||/||b||>10000=div_tol par defaut dans PETSc (rencontree sur Etude REV_4)
+//add_option(sys, "ksp_converged_use_initial_residual_norm",1); // Before PETSc 3.5
   KSPConvergedDefaultSetUIRNorm(SolveurPetsc_); // After PETSc 3.5, a function is available
 
-  // Surcharge eventuelle par la ligne de commande
+// Surcharge eventuelle par la ligne de commande
   KSPSetOptionsPrefix(SolveurPetsc_, option_prefix_);
   KSPSetFromOptions(SolveurPetsc_);
   PCSetOptionsPrefix(PreconditionneurPetsc_, option_prefix_);
   PCSetFromOptions(PreconditionneurPetsc_);
 
-  // Setting the names:
+// Setting the names:
   KSPType type_ksp;
   KSPGetType(SolveurPetsc_, &type_ksp);
   type_ksp_=(Nom)type_ksp;
@@ -1041,10 +1092,9 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
 
-  // Creation du solver AmgX si demande (NB: les objets PETSc sont crees mais ne seront pas utilises)
+// Creation du solver AmgX si demande (NB: les objets PETSc sont crees mais ne seront pas utilises)
   if (amgx_)
     {
-#ifdef PETSC_HAVE_CUDA
       Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
       /* Possible de jouer avec simple precision peut etre:
       1. (lowercase) letter: whether the code will run on the host (h) or device (d).
@@ -1055,12 +1105,19 @@ void Solv_Petsc::create_solver(Entree& entree)
       Nom filename(Objet_U::nom_du_cas());
       filename+=".amgx";
       SFichier s(filename);
-      s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option << finl;
+      // Syntax: See https://github.com/NVIDIA/AMGX/raw/master/doc/AMGX_Reference.pdf
+      s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option;
+      if (!amgx_option.contient("store_res_history")) s << "store_res_history=1" << finl;
+      if (!amgx_option.contient("monitor_residual"))  s << "monitor_residual=1" << finl;
+      if (!amgx_option.contient("print_solve_stats")) s << "print_solve_stats=1" << finl;
+      if (!amgx_option.contient("obtain_timings"))    s << "obtain_timings=1" << finl;
+      s << "# print_grid_stats=1" << finl;
+      s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
       Cerr << "Writing and reading the AmgX config file: " << filename << finl;
+#ifdef PETSC_HAVE_CUDA
       SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
 #endif
     }
-
 #else
   Cerr << "Error, the code is not built with PETSc support." << finl;
   Cerr << "Contact TRUST support." << finl;
@@ -1281,7 +1338,7 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
 // Pour que le code puisse compiler/tourner si on prend PETSc sans aucun autre package externe:
 int PCHYPRESetType(PC,const char[])
 {
-  Cerr << "HYPRE preconditionners are not available in this TRUST version." << finl;
+  Cerr << "HYPRE preconditioners are not available in this TRUST version." << finl;
   Cerr << "May be, HYPRE library has been deactivated during the PETSc build process." << finl;
   Process::exit();
   return 0;

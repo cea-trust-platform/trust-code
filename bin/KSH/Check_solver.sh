@@ -73,9 +73,12 @@ evalue_solveur()
    [ "$all" = 0 ] && [ "`echo ${solver[$i]} | grep CLI`" != "" ] && run=0			# Par defaut, on ne passe pas les solveurs definis par CLI
    [ "$all" = 0 ] && [ "$resolution" = solveur_pression ] && [ "${sym[$i]}" = "" ] && run=0	# Par defaut, on ne passe pas les solveurs symetriques sur solveur_pression 
    [ "$all" = 0 ] && [ "${rank[$i]}" = "" ] && run=0						# Par defaut, on ne passe que les solveurs ayant un ranking
-   [ "$TRUST_HAVE_CUDA" = 0 ] && [ "${gpu[$i]}" = 1 ] && run=0					# Discards solvers tested on GPU if TURST_HAVE_CUDA=0
-   [ "$gpu_only" = 1 ] && [ "${gpu[$i]}" != 1 ] && run=0					# Run solvers tested on GPU only
-   [ "$amgx_only" = 1 ] && [ "${amgx[$i]}" != 1 ] && run=0					# Run solvers tested with AMGX only
+   [ "$TRUST_HAVE_CUDA" = 0 ] && [ "${gpu[$i]}" = 1 ]  && run=0					# Discards solvers tested on GPU if TRUST_HAVE_CUDA=0
+   [ "$TRUST_HAVE_CUDA" = 0 ] && [ "${amgx[$i]}" = 1 ] && run=0					# Discards solvers tested on GPU if TRUST_HAVE_CUDA=0
+   [ "$gpu_only" = 1 ]  && [ "${gpu[$i]}"  != 1 ] && run=0					# Run solvers tested on GPU only
+   [ "$amgx_only" = 1 ] && [ "${amgx[$i]}" != 1 ] && run=0					# Run solvers tested with AMGX only  
+   [ "$gpu_only" = 0 ]  && [ "${gpu[$i]}"  = 1 ]  && run=0
+   [ "$amgx_only" = 0 ] && [ "${amgx[$i]}" = 1 ]  && run=0
 }
 
 #####################
@@ -157,7 +160,7 @@ fi
 [ "$seuil" = "" ] && seuil=1.e-6
 
 # Chargement d'une liste de solveurs de la version
-# Peut etre eventuellement surchargee si un fichier est en local
+# Peut etre eventuellement surchargee si un fichier est en localirene-ccrt.ccc.cea.fr
 let i=0
 liste=Check_solver.list
 if [ -f $liste ]
@@ -244,36 +247,33 @@ do
    then
       err=""
       solver=${solver[$i]}
-      jdd=$ref$i
-      if [ "$keyword" = solveur_pression ]
+      # On regarde si le solveur est operationnel
+      evalue_solveur
+      if [ $run = 1 ]
       then
-         # Changement du solveur de pression dans le jeu de donnees (Fonctionne s'il est defini sur plusieurs lignes)
-         $TRUST_Awk -v nb_solveur_pression=$nb_solveur_pression -v solver="$solver" 'BEGIN {IGNORECASE=1} \
+         # Creation du jeu de donnees
+         jdd=$ref$i
+         if [ "$keyword" = solveur_pression ]
+         then
+            # Changement du solveur de pression dans le jeu de donnees (Fonctionne s'il est defini sur plusieurs lignes)
+            $TRUST_Awk -v nb_solveur_pression=$nb_solveur_pression -v solver="$solver" 'BEGIN {IGNORECASE=1} \
 	 	/solveur_pression/ {nb++} \
            	/solveur_pression/ && (nb==nb_solveur_pression) {print "solveur_pression "solver; getline;while (($1=="{")+index($0,"precond")+index($0,"omega")+index($0,"impr")+index($0,"seuil")+($1=="}")) getline}
 	   	!/solveur_pression/ || (nb!=nb_solveur_pression) {print $0} 
          	' $ref.data > $jdd.data
-      else
-         # Changement du solveur implicite dans le jeu de donnees (Fonctionne que si c'est sur une seule ligne)
-         echo $ECHO_OPTS "1,$ s?$solveur_initial?$keyword $solver?g\nw $jdd.data" | ed $ref.data 1>/dev/null 2>&1
-      fi
-      # Changement de dt_impr pour imprimer a chaque pas de temps
-      dt_impr=`grep -i dt_impr $jdd.data`
-      echo $ECHO_OPTS "1,$ s?$dt_impr?dt_impr 1.e-10?g\nw" | ed $jdd.data 1>/dev/null 2>&1
-
-      # On regarde si le solveur est operationnel
-      evalue_solveur
-      
-      output=$jdd.out_err
-      if [ $run = 1 ]
-      then
+         else
+            # Changement du solveur implicite dans le jeu de donnees (Fonctionne que si c'est sur une seule ligne)
+            echo $ECHO_OPTS "1,$ s?$solveur_initial?$keyword $solver?g\nw $jdd.data" | ed $ref.data 1>/dev/null 2>&1
+         fi
+         # Changement de dt_impr pour imprimer a chaque pas de temps
+         dt_impr=`grep -i dt_impr $jdd.data`
+         sed -i "1,$ s?$dt_impr?dt_impr 1.e-10?g" $jdd.data
+         
+	 # Lancement du cas
          rm -f gmon.out
-	 # trust $jdd $NB_PROCS 1>$output 2>&1
-	 # Bug vu sur trust sur castor ou CCRT, il faut rediriger dans 2 fichiers distincts:
-	 trust $jdd $NB_PROCS -options_left 1>out 2>err
+	 output=$jdd.out_err
+	 trust $jdd $NB_PROCS -options_left 1>$output 2>&1
 	 run_err=$?
-	 cat out err > $output
-	 rm -f out err
          [ "`grep 'Option left:' $output`" != "" ] && run_err=1
 	 OK $run_err $output
 	 if [ $run_err = 0 ] && [ $lml = 1 ]
@@ -295,7 +295,7 @@ do
 	 print $output
 	 # Menage
 	 mkdir tmp
-	 mv -f $output $jdd.data $jdd*.TU $jdd.dt_ev tmp/. 2>/dev/null && [ -f $jdd.cpu ] && mv $jdd.cpu tmp/.
+	 mv -f $output $jdd.data $jdd.amgx $jdd*.TU $jdd.dt_ev tmp/. 2>/dev/null && [ -f $jdd.cpu ] && mv $jdd.cpu tmp/.
 	 rm -f $jdd.* $jdd"_"*
 	 mv tmp/* .
 	 rmdir tmp	 
@@ -312,7 +312,7 @@ echo "********"
 echo $ECHO_OPTS "1,$ s?$HOST?$HOST $size?g\nw" | ed rank 1>/dev/null 2>&1
 head -2 rank | tee ranking.$$
 # tail +3 pas portable
-awk '(NR>2) && ($7=="OK")' rank | sort -n | tee -a ranking.$$
+awk '(NR>2) && ($6=="OK" || $7=="OK")' rank | sort -n | tee -a ranking.$$
 echo "Saved in ranking.$$ file"
 # [ "$mail" = 1 ] && cat ranking.$$ | mail_ -s\"[Check_solver.sh] NP sur $HOST\" $TRUST_MAIL
 #echo "NP sur $HOST:"
