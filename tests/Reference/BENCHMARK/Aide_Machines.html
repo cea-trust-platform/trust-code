@@ -30,6 +30,7 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
+Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1
 Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
 Linux x86_64	2*64@2.5Ghz				AMD EPYC 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
 Linux x86_64 	 1*4@1.6-4.1Ghz		16Go:6Mo	Xeon i5-8365U	2.0s	is242568.intra.cea.fr   (g++ 7.0, OpenMPI)		1.16	cpu_3D   v1.8.1
