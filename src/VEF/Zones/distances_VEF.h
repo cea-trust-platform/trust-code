@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #define distances_VEF_inclus
 #include <Zone_VEF.h>
 //double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1);
+double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1, double& val2);
 double norm_2D_vit1_lp(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1,double& val2);
 double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Zone_VEF& zone,double& val1);
 double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,const Zone_VEF& zone,double& val1);

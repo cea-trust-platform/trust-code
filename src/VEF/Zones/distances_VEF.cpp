@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,6 +42,29 @@ double norm_2D_vit1(const DoubleTab& vit,int num1,int num2,int fac,const Zone_VE
     u = 1;
   return v;
 }
+
+double norm_2D_vit1(const DoubleTab& vit,int num1,int num2,int fac,const Zone_VEF& zone,double& val1, double& val2)
+{
+  const DoubleTab& face_normale = zone.face_normales();
+  const Zone& zone_geom = zone.zone();
+  int nfac = zone_geom.nb_faces_elem();
+
+  // fac numero de la face a paroi fixe
+  double r0,r1;
+  calcule_r0r1(face_normale,fac,r0,r1);
+
+  double v1=(vit(num1,0)+vit(num2,0))/nfac;
+  double v2=(vit(num1,1)+vit(num2,1))/nfac;
+  double v = vitesse_tangentielle(v1,v2,r0,r1);
+  double psc = r0*v1+r1*v2;
+
+  // val1 et val2 sont les vitesses tangentielles
+  val1=(v1-psc*r0)/(v+DMINFLOAT);
+  val2=(v2-psc*r1)/(v+DMINFLOAT);
+
+  return v;
+}
+
 
 double norm_2D_vit1_lp(const DoubleTab& vit,int fac,int num1,int num2,const Zone_VEF& zone,double& val1, double& val2)
 {
