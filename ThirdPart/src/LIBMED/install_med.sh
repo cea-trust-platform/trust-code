@@ -37,10 +37,13 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   archive_short=$(basename $archive)
   src_dir=${archive_short%.tar.gz}
   cd $src_dir
-  
   echo "Patching (to avoid doc ...)"
   modified_file=Makefile.in
   sed -i "s?tests tools doc?tools?g" $modified_file
+
+  echo "Patching header file to avoid compilation error"
+  sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)
+  sed -i "s/const char \* const  MEDget/const char * MEDget/g"  $(find . -name MEDiterators.c)
 
   echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
   # fPIC is not there by default in MED autotools ...
@@ -50,6 +53,11 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
 
   # Options: no Python, static libraries and path to HDF5 
   options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
+  #INT64
+  if [ "$TRUST_INT64" = "1" ]
+  then
+      options="$options  --with-med_int=long"
+  fi
   env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
   
   $TRUST_MAKE  || exit -1

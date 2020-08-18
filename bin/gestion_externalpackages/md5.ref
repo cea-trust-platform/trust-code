@@ -1,7 +1,7 @@
 e85017defd5a03ae82e634311db87bbf  Gmsh/fltk-1.3.5-source.tar.gz
 d45ed589f7aeb6898f9ef50f021857de  Gmsh/gmsh-4.4.1-source.tgz
 8fb659d9206dfd85fc1980f6db104087  MED/hdf5-1.10.3.tar.gz
-60bd85940d7640b017f6b2cef18596fa  MED/med-4.0.0.tar.gz
+399cdfaf2eb7faeecaa935aa3464f904  MED/med-4.1.0.tar.gz
 f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
 e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
@@ -61,8 +61,8 @@ b7339cc0a2e4df93a6043a3d8b4cc79f  Miniconda/local_channel/linux-64/tornado-6.0.3
 58a898b1a4a13e8c0cfd0d4b1a999ba9  Miniconda/local_channel/noarch/python-dateutil-2.8.1-py_0.tar.bz2
 d65fd5cd636e65a731b82e9678c6f40c  Miniconda/local_channel/noarch/pytz-2019.3-py_0.tar.bz2
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
-e5a2625b1e041f0e9c4adf5f9021afa5  SALOME/configuration-9.4.0.tar.gz
-fffe6924ce25ba0eefc6587d20d259a6  SALOME/medcoupling-9.4.0.tar.gz
+6a4a21d33fe8d7bf0f46d7debd65d339  SALOME/configuration-9.5.0.tar.gz
+eed4ec683dc1e8692055b7ff5ece0d17  SALOME/medcoupling-9.5.0.tar.gz
 a2bdb92e4a31ff4e5c89dab762d1c95c  SALOME/xdata-9.2.1.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
 642c81285e1bb833b14ab3f439964086  VisIt/Cython-0.25.2.tar.gz

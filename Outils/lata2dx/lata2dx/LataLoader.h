@@ -2,7 +2,7 @@
 #ifndef LataLoader_H
 #define LataLoader_H
 
-
+#include <medcoupling++.h>
 #include <vector>
 #include "LataFilter.h"
 namespace MEDCoupling {
