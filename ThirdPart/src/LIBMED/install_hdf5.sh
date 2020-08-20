@@ -43,7 +43,13 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   # -DHDF5_BUILD_CPP_LIB=OFF because parallel and c++ are mutually exclusive
   options="-DCMAKE_C_COMPILER=$TRUST_cc -DHDF5_BUILD_CPP_LIB=OFF -DCMAKE_CXX_COMPILER=$TRUST_CC"
   options="$options -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_HL_LIB=ON"
-  TOOLS=OFF && [ "`h5dump -help 1>/dev/null 2>&1;echo $?`" != 0 ] && TOOLS=ON # On installe les tools que si necessaire
+  TOOLS=OFF
+  if [ "`h5dump -help 1>/dev/null 2>&1;echo $?`" != 0 ]; then
+     TOOLS=ON # On installe les tools que si necessaire
+  else
+     h5versionOK=`h5dump --version 2>/dev/null | awk '/h5dump/ {split($3,a,".");v=a[1]*1000+a[2]*10+a[3];print (v<=1103?1:0)}'`
+     [ "$h5versionOK" != 1 ] && echo "export HDF5_DISABLE_VERSION_CHECK=2 # to ignore warnings about hdf5 version" >> $TRUST_ROOT/env/machine.env
+  fi
   options="$options -DHDF5_BUILD_TOOLS=$TOOLS -DHDF5_ENABLE_USING_MEMCHECKER=ON -DHDF5_ENABLE_DIRECT_VFD=OFF"
   options="$options -DHDF5_ENABLE_Z_LIB_SUPPORT=OFF -DHDF5_ENABLE_SZIP_SUPPORT=OFF -DHDF5_ENABLE_SZIP_ENCODING=OFF"
   [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON"
