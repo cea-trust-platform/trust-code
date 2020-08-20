@@ -68,6 +68,8 @@ patch -p1 $(find $src_dir -name CommInterface.hxx ) < $tool_dir/CommInterface.pa
 echo "Patching DataArrayInt allocation method (initialisation with numpy array only available if WITH_NUMPY is defined)"
 patch -p1 $(find $src_dir -name DataArrayInt.i ) < $tool_dir/DataArrayInt.patch
 
+echo "Patching explicit instantiation of ParaDataArrayTemplate"
+sed -i 's/template class /template class MEDCoupling::/' $(find $src_dir -name ParaDataArray.cxx )
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
