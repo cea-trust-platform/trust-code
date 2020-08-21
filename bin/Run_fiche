@@ -32,7 +32,7 @@ help()
    $TRUST_ROOT/Validation/Outils/Genere_courbe/Run -help
    echo
    echo "You could get more information by executing the following command:"
-   echo "$TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py --help"
+   echo "python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py --help"
    echo
 }
 # On verifie que pdflatex est installe sur la machine
