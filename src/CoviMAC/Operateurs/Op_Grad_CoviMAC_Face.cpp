@@ -316,7 +316,7 @@ void Op_Grad_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             for (n = 0; n < N; n++) dfgpf[n][N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] += gradp_c(i, n);
 
       /* face -> vf(f) * phi grad p */
-      if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) for (auto &i_c : dfgpf[n]) matrice(N * f + n, i_c.first) -= i_c.second * vf(f) / fs(f);
+      if (f < zone.nb_faces() && ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) for (auto &i_c : dfgpf[n]) matrice(N * f + n, i_c.first) -= i_c.second * vf(f) / fs(f);
       /* elems amont/aval -> ve(e) * phi grad p */
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++) if (fs(f) * dabs(xv(f, d) - xp(e, d)) > 1e-6 *  ve(e))
               for (n = 0; n < N; n++) for (auto &i_c : dfgpf[n])
