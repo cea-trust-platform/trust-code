@@ -5,7 +5,7 @@ touch .build64
 
 fold=$1
 [ ! -d $fold ] && echo "No folder named $fold ... we exit" && exit 1
-
-./Modifie $(find $fold)
-./Modifie $(find $fold)
+# We do not edit TrioDEC.hxx and .cxx from ICoCo
+./Modifie $(find $fold -not -name TrioDEC.?xx)
+./Modifie $(find $fold -not -name TrioDEC.?xx)
 
