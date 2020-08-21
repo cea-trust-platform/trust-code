@@ -71,6 +71,9 @@ patch -p1 $(find $src_dir -name DataArrayInt.i ) < $tool_dir/DataArrayInt.patch
 echo "Patching explicit instantiation of ParaDataArrayTemplate"
 sed -i 's/template class /template class MEDCoupling::/' $(find $src_dir -name ParaDataArray.cxx )
 
+echo "Patching MEDCouplingMemArray for gcc 10"
+sed -i "s/if((\*it)<0 || (\*it)>=oldNbOfCompo)/if((*it)>=oldNbOfCompo)/" $(find $src_dir -name MEDCouplingMemArray.txx )
+
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
 
