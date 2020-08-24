@@ -1,0 +1,4 @@
+260a261
+> #if defined(WITH_NUMPY)
+264a266
+> #endif
