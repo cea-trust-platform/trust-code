@@ -7,7 +7,7 @@ linux	rsync_ssh	tache	is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 		
 linux	rsync_ssh	tache	is210376.intra.cea.fr		-limited 	-MPCube -TrioCFD -FLICA5 -IJK-FT -GENEPI3 -SIDES -SCORPIO -PEMFC  -force_provided_mpich -without-pdflatex 							# Fedora 32	Bat 454
 linux	rsync_ssh	cible	is212957.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC	-gcov		-force_provided_mpich								# Ubuntu 16	Bat 451 LMEC	bureau TMA TRUST
 linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
-linux	rsync_ssh	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD							-build_64_bit -without-doc						# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD	-IJK-FT						-build_64_bit -without-doc						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	non	irene-amd-ccrt_scratch_plein.ccc.cea.fr	-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	ceres2.intra.cea.fr		-limited																			# CentOS 6.9	CEA Marcoule	NB: bench desactive
@@ -41,7 +41,7 @@ linux	rsync_ssh	non	is154713.intra.cea.fr		-all		-MPCube -MATHYS							-without-
 linux	rsync_ssh	non	is154726.intra.cea.fr				-TRUST -MPCube -GENEPI3 			-g 		-enable-petsc-debug -download-salome	-without-pdflatex			# CentOS 7.6	Bat 451	LGLS	salle de formation5
 linux	rsync_ssh	non	is241482.intra.cea.fr				-TRUST -MPCube -TrioCFD -TrioMC -FLICA5 	-avx	-without-pdflatex	-force_provided_mpich					# Ubuntu 18	Bat 451	LGLS	bureau Gilles Arnaud
 linux	rsync_ssh	tache	is241480.intra.cea.fr				-TrioCFD   						-platform -force_latest_openmpi	-without-pdflatex				# CentOS 7.8	Bat 451	LMSF	Salle de formation
-linux	rsync_ssh	tache	is230500-build64.intra.cea.fr			-TrioCFD							-build_64_bit -without-pdflatex							# CentOS 7.8	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	tache	is230500-build64.intra.cea.fr			-TrioCFD	-IJK-FT						-build_64_bit -without-pdflatex							# CentOS 7.8	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	cible	is231771.intra.cea.fr				-TRUST -TrioCFD 						-force_provided_mpich								# CentOS 7.6	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	non	is213122.intra.cea.fr				-TRUST 								-force_provided_mpich 								# Ubuntu 18	Bat 451 LMSF	bureau Michel Filippi
 linux   rsync_ssh	tache	is223288.intra.cea.fr 		-limited	-TrioCFD  					-g -semi_opt	-force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
