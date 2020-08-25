@@ -14,7 +14,7 @@ using namespace MEDCoupling;
 %template()  std::vector<std::string>;
 #endif
 
-
+%include "medcoupling++.h"
 %include "MEDCoupling.i"
 %include "LataLoader.h"
 

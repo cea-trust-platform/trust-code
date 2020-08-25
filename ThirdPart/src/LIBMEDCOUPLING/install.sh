@@ -22,16 +22,16 @@ cd $build_dir
 medcoupling_hxx=$install_dir/include/medcoupling++.h
 
 # MEDCoupling uses DataArrayInt32 not DataArrayInt64, so we disable MEDCoupling when building a 64 bits version of TRUST
-if [ "$TRUST_INT64" = "1" ]
-then
-    echo "@@@@@@@@@@@@ INT64 specific stuff ..."
-    mkdir -p $install_dir/include
-    rm -rf $install_dir/lib
-    echo "MEDCOUPLING DISABLE for 64 bits"
-    echo "#define NO_MEDFIELD " > $install_dir/include/ICoCoMEDField.hxx
-    echo "#undef MEDCOUPLING_"  > $medcoupling_hxx
-    exit 0
-fi
+# if [ "$TRUST_INT64" = "1" ]
+# then
+#     echo "@@@@@@@@@@@@ INT64 specific stuff ..."
+#     mkdir -p $install_dir/include
+#     rm -rf $install_dir/lib
+#     echo "MEDCOUPLING DISABLE for 64 bits"
+#     echo "#define NO_MEDFIELD " > $install_dir/include/ICoCoMEDField.hxx
+#     echo "#undef MEDCOUPLING_"  > $medcoupling_hxx
+#     exit 0
+# fi
 
 rm -f ICoCoMEDField.hxx
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]; then
@@ -62,6 +62,18 @@ FindSalomeHDF5=$(find $src_dir/.. -name FindSalomeHDF5.cmake )
 sed -i "1,$ s?GET_PROPERTY(?#GET_PROPERTY(?" 			$FindSalomeHDF5 || exit -1 
 sed -i "1,$ s?MESSAGE(FATAL_ERROR?#MESSAGE(FATAL_ERROR ?" 	$FindSalomeHDF5 || exit -1 
 
+echo "Patching gatherArraysT() and allGathersArraysT() method"
+patch -p1 $(find $src_dir -name CommInterface.hxx ) < $tool_dir/CommInterface.patch
+
+echo "Patching DataArrayInt allocation method (initialisation with numpy array only available if WITH_NUMPY is defined)"
+patch -p1 $(find $src_dir -name DataArrayInt.i ) < $tool_dir/DataArrayInt.patch
+
+echo "Patching explicit instantiation of ParaDataArrayTemplate"
+sed -i 's/template class /template class MEDCoupling::/' $(find $src_dir -name ParaDataArray.cxx )
+
+echo "Patching MEDCouplingMemArray for gcc 10"
+sed -i "s/if((\*it)<0 || (\*it)>=oldNbOfCompo)/if((*it)>=oldNbOfCompo)/" $(find $src_dir -name MEDCouplingMemArray.txx )
+
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
 
@@ -73,11 +85,16 @@ OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COM
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig "
-OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON" 
+OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON"
 # NO_CXX1 pour cygwin
 OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
 # Error->Warning pour ARM:
 OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-Wno-narrowing"
+#INT64
+if [ "$TRUST_INT64" = "1" ]
+then
+    OPTIONS="$OPTIONS -DMEDCOUPLING_USE_64BIT_IDS=ON"
+fi
 
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
@@ -138,7 +155,12 @@ echo "@@@@@@@@@@@@ Updating TRUST include files ..."
 touch $install_dir/include/*
 
 [ ! -f $icocomedfield_hxx ] && echo "#define NO_MEDFIELD " > $icocomedfield_hxx
-[ ! -f $medcoupling_hxx ]  && echo "#define MEDCOUPLING_" > $medcoupling_hxx
+if [ "$TRUST_INT64" = "1" ]
+then
+    [ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_\n#define MEDCOUPLING_USE_64BIT_IDS" > $medcoupling_hxx
+else
+    [ ! -f $medcoupling_hxx ]  && echo "#define MEDCOUPLING_" > $medcoupling_hxx
+fi
 
 # Update env file:
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE

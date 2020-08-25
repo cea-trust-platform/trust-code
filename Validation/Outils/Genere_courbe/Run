@@ -8,8 +8,9 @@
 
 usage()
 {
-  echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
-  echo the other options are passed to genererCourbes.py
+  echo "Usage:"
+  echo "  `dirname $0`/Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
+  echo "  the other options are passed to genererCourbes.py"
   exit 0
 }
 # Chargement de l'environnement Python si necessaire
@@ -28,7 +29,7 @@ SJOB_DIR=$TRUST_ROOT/bin/Sjob
 
 prm=$1
 # On verifie que la fiche prm a un format correct pour Python3, sinon on convertit
-if [ "`file $prm | grep ISO-8859`" != "" ]
+if [ "$prm" != "-help" ] && [ -f $prm ] && [ "`file $prm | grep ISO-8859`" != "" ]
 then
     echo "Bad format detected for $prm:"
     file $prm

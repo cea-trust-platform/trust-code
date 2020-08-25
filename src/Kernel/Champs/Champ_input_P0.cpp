@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,10 +36,10 @@ using ICoCo::WrongArgument;
 
 Entree& Champ_input_P0::readOn(Entree& is)
 {
-#ifdef INT_is_64_
-  Cerr << "Champ_input_P0 uses medcoupling and is not supported for 64bits integer indices" << finl;
-  Process::exit();
-#endif
+//#ifdef INT_is_64_
+//  Cerr << "Champ_input_P0 uses medcoupling and is not supported for 64bits integer indices" << finl;
+//  Process::exit();
+//#endif
 
   sous_zone_ok=true;
   read(is);

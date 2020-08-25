@@ -45,6 +45,7 @@ template <class C_Tab> void LataDB::read_data2_med_(
 }
 #else
 
+#include <medcoupling++.h>
 #include <MEDLoader.hxx>
 #include <MEDCouplingMemArray.hxx>
 #include <MEDCouplingUMesh.hxx>
@@ -130,8 +131,9 @@ extern med_geometry_type typmai3[MED_N_CELL_FIXED_GEO];
 
 void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,int& ncells,int& nnodes,int& spacedim, int &nbcomp,int& is_structured, std::vector<int>& NIJK)
 {
-    is_structured=0;
-  int meshDim, i;
+  is_structured=0;
+  int meshDim;
+  int i;
   try {
   std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);
   
@@ -206,7 +208,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 {
   
   
-  Journal() << "MED PLUGIN !" << endl;
+  Journal() << "MED " << MED_NUM_MAJEUR << "." << MED_MINOR_NUM << "." << MED_RELEASE_NUM << " PLUGIN ! " << endl;
 
   // Defaults for lataV1
   default_type_int_.msb_ = LataDBDataType::ASCII;
@@ -237,7 +239,8 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
       dom.timestep_ = timesteps_.size()-1;
       dom.name_=geoms[i];
       med_geometry_type type_geo;
-      int ncells,nnodes,spacedim, nbcomp;
+      int ncells,nnodes, nbcomp;
+      int spacedim;
       int is_structured;
       std::vector<int> NIJK;
       latadb_get_info_mesh_med(filename,geoms[i].c_str(),type_geo,ncells,nnodes,spacedim,nbcomp,is_structured,NIJK);

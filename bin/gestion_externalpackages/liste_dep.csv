@@ -16,10 +16,10 @@ tcl_tk,tk8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk
 tcl_tk,tcl8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tcl8.5.13-src.tar.gz/download,
 Gmsh,gmsh-4.4.1-source.tgz,outil,abn,GPL,http://geuz.org/gmsh,http://gmsh.info/src/gmsh-4.4.1-source.tgz,
 Gmsh,fltk-1.3.5-source.tar.gz,,abn,LGPL,http://www.fltk.org/index.php,https://www.fltk.org/pub/fltk/1.3.5/fltk-1.3.5-source.tar.gz,
-MED,med-4.0.0.tar.gz,lib,SV,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.0.0.tar.gz,
+MED,med-4.1.0.tar.gz,lib,AK,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.1.0.tar.gz,
 MED,hdf5-1.10.3.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.gz,
 SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,
-SALOME,configuration-9.4.0.tar.gz,lib,abn,,
+SALOME,configuration-9.5.0.tar.gz,lib,AK,,
 SALOME,xdata-9.2.1.tar.gz,lib,abn,LGPL,
 VisIt,zlib-1.2.7.tar.gz,,SV,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.7/zlib-1.2.7.tar.gz/download,"pour la licence voir : http://opensource.org/licenses/Zlib pour plus d'infos ou http://www.zlib.net/zlib_license.html"
 VisIt,VTK-6.1.0.tar.gz,,SV,BSD,http://www.vtk.org/,http://www.vtk.org/files/release/6.1/VTK-6.1.0.tar.gz,
@@ -66,7 +66,7 @@ gnuplot,zlib-1.2.5.tar.gz,,GF,"free zlib/libpng license",http://www.zlib.net/,ht
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
 gnuplot,gd-2.0.36RC1.tar.gz,,GF,BSD,http://www.libgd.org/,https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/lamefox-linux/gd-2.0.36RC1.tar.gz,"version non trouvable: changer de version"
 gnuplot,libpng-1.5.6.tar.gz,lib,AC,"free zlib/libpng license",http://www.libpng.org/pub/png/,http://sourceforge.net/projects/libpng/files/libpng15/older-releases/1.5.6/libpng-1.5.6.tar.gz/download,
-SALOME,medcoupling-9.4.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,https://downloads.sourceforge.net/project/trust-platform/1.8.0/extra/medcoupling-9.4.0.tar.gz,
+SALOME,medcoupling-9.5.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,https://downloads.sourceforge.net/project/trust-platform/1.8.1/extra/medcoupling-9.5.0.tar.gz,
 General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
 utils,gawk-4.1.4.tar.gz,outil,GF,GPL,http://www.gnu.org/software/gawk,http://ftp.gnu.org/gnu/gawk/gawk-4.1.4.tar.gz,

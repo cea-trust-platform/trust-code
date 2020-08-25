@@ -8,4 +8,12 @@ do
  cat $f.p > $f 2>/dev/null
  rm $f.p
  [ -f $f.P ] && chmod gu-w $f
+
+ [ "`grep DataArrayInt $f`" = "" ] && continue
+ [ -f $f.P ] && chmod gu+w $f
+ $TRUST_ROOT/exec/python/bin/python replace_int_entier_mc.py $f > $f.p
+ cat $f.p > $f
+ rm $f.p
+ [ -f $f.P ] && chmod gu-w $f
 done 
+ 
