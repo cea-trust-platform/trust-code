@@ -23,7 +23,11 @@ else
    baltik=0
    BUILD_ROOT=$TRUST_ROOT/MonoDir_mpi/src
 fi
-[ ! -d $BUILD_ROOT ] && echo "Build the project before in debug mode! make debug" && exit 1
+if [ ! -d $BUILD_ROOT ]
+then
+   echo "Build the project before in debug mode! make debug"
+   rep_dev=$BUILD_ROOT python $TRUST_ROOT/bin/KSH/Createcmakefile.py -atelier
+fi
 # Configuration for Clion:
 cd $PROJECT_ROOT
 # Create a link to build directory to avoid change CLion settings
