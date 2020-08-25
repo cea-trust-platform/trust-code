@@ -27,18 +27,19 @@ chmod go+r $DESTFILE
 chmod gu-w $DESTFILE
 if [ "`diff $TMP2 $TMP1`" ]
 then
-    if [ $check_only -eq 1 ]
-	then
-	echo "$DESTFILE must be updated."
-	echo $TMP_DESTFILE
-	exit 1
-    else
+# PL: Non! On doit mettre a jour:
+#    if [ $check_only -eq 1 ]
+#	then
+#	echo "$DESTFILE must be updated."
+#	echo $TMP_DESTFILE
+#	exit 1
+#    else
 	CHECKOUT $DESTFILE 1>/dev/null 2>&1
 	mv -f $TMP_DESTFILE $DESTFILE
         chmod go+r $DESTFILE
         chmod gu-w $DESTFILE
 	echo "$DESTFILE has been updated."
-    fi
+#    fi
 else
    rm -f $TMP_DESTFILE
 fi

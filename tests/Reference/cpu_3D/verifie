@@ -1,0 +1,3 @@
+#!/bin/bash
+[ -f PAR_cpu_3D.stop ] && lscpu
+exit 0

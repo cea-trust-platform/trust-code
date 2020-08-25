@@ -33,10 +33,10 @@ else
   # OK problem solved with --enable-yield=sched_yield which fixes the performance problem: https://svn.mcs.anl.gov/repos/mpi/mpich2/trunk/CHANGES
   # --enable-g=dbg,meminit http://wiki.mpich.org/mpich/index.php/Support_for_Debugging_Memory_Allocation
   # --enable-shared is added cause static MPICH library cause a crash during Cathare-TRUST couplings
-NOFC="--disable-fc"
+  NOFC="--disable-fc"
 
-# disable-fc  ne compile pas depuis 3.1.4 on ne peut pas desactiver le fortran pour petsc 
-NOFC=""
+  # disable-fc  ne compile pas depuis 3.1.4 on ne peut pas desactiver le fortran pour petsc 
+  NOFC=""
 
   option_configure="--enable-shared --enable-g=meminit $NOFC --enable-fast=all,O3 --enable-yield=sched_yield"
   # Try to build MPICH with valgrind include: Nothing is changed to avoid warnings with MPICH&Valgrind in //
@@ -69,7 +69,7 @@ export CXXFLAGS="-fPIC"
 export CFLAGS="-fPIC"
 export FFLAGS="-fPIC"
 # MPICH meme recent 3.3.1 ne compile pas encore avec gfortran 10 sans allow-argument-mismatch:
-[ "`grep fallow-argument-mismatch $TRUST_ROOT/env/make.*opt 2>/dev/null`" != "" ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"
+[ "`grep fallow-argument-mismatch $TRUST_ROOT/env/make.*opt`" != "" ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"
 export FCFLAGS=$FFLAGS
 # La variable MV est definie a sta sur certaines machines et pose probleme:
 unset MV
@@ -79,7 +79,6 @@ unset MV
 #############################
 # Lancement de la compilation
 #############################
-#$TRUST_MAKE || exit -1 # Semble ne pas marcher a verifier un jour...
 $TRUST_MAKE || exit -1 # Yes, parallel build supported since MPICH 1.5
 
 #######################

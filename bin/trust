@@ -129,7 +129,7 @@ help()
    echo "-suppressions_val             : Add a suppression file."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
    echo "-callgrind                    : Run callgrind tool (profiling) from valgrind."
-   echo "-massif		       : Run massif tool (heap profile) from valgrind."
+   echo "-massif                       : Run massif tool (heap profile) from valgrind."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
