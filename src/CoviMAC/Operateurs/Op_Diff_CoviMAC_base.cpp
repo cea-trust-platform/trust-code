@@ -342,6 +342,6 @@ void Op_Diff_CoviMAC_base::update_nu() const
     }
   nu_fac_.echange_espace_virtuel();
   /* heavy lifting */
-  zone.flux(zone.nb_faces_tot(), nu_, phif_d, phif_j, phif_c, &phif_xb);
+  zone.fgrad(zone.nb_faces_tot(), &nu_, phif_d, phif_j, phif_c, &phif_xb);
   nu_a_jour_ = 1;
 }

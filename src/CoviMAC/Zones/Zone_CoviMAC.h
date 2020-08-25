@@ -150,16 +150,26 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
+
   //elements et faces de bord connectes a chaque face en dehors de l'amont/aval :
   //fef_j([fef_d(f), fef_d(f + 1)[) (offset de nb_elem_tot() pour les faces de bord)
   void init_feb() const;
   mutable IntTab feb_d, feb_j;
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
-  inline double nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  inline double nu_dot(const DoubleTab* nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
-  //pour un champ T aux elements, interpole nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
+  //pour un champ T aux elements, interpole |f| nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
   //optionellement, remplit les coordonnes des points aux bords correspondant au flux a deux points
-  void flux(int f_max, const DoubleTab& nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *pxfb = NULL) const;
+  void fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *pxfb = NULL) const;
+
+  //pour un champ T aux elements, interpole |e| grad T aux elements (combine fgrad + ve)
+  //fcl / tcl renseignent les CLs : tcl[fcl(f, 0)] = 1 (Neumann) / 2 (Dirichlet)
+  //dependance en les Te / Tb / dTb dans egrad_(j/c)([egrad_d(e), egrad_d(e + 1)[)
+  void egrad(const IntTab& fcl, const std::vector<int>& is_flux, const DoubleTab *nu, const IntTab& fgrad_d, const IntTab& fgrad_j, const DoubleTab& fgrad_c, IntTab& egrad_d, IntTab& egrad_j, DoubleTab& egrad_c) const;
+
+  //interpolation aux elements d'ordre 2 en resolvant un systeme M.ve2 = ve1 + (bord, dans b_(j/c)[b_d(e), b_d(e + 1)[)
+  //optionellement, cree M composantes traitees de la meme maniere pour chaque composante originale
+  void init_ve2(const IntTab& egrad_d, const IntTab& egrad_j, const DoubleTab& egrad_c, Matrice_Morse& mat, IntTab& b_d, IntTab& b_j, DoubleTab& b_c, int M = 1) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;
@@ -384,15 +394,16 @@ inline double Zone_CoviMAC::dist_face_elem1_period(int num_face,int n1,double l)
 }
 
 //remplit dans le DoubleTab(N, dimension) resu les produits nu.v quelle que soit la forme de nu
-inline double Zone_CoviMAC::nu_dot(const DoubleTab& nu, int e, int n, int N, const double *a, const double *b, const double *ma, const double *mb) const
+inline double Zone_CoviMAC::nu_dot(const DoubleTab* nu, int e, int n, int N, const double *a, const double *b, const double *ma, const double *mb) const
 {
-  int i, j, N_nu = nu.line_size();
+  if (!nu) return dot(a, b, ma, mb);
+  int i, j, N_nu = nu->line_size();
   double resu = 0;
-  if (N_nu <= N) resu = nu.addr()[N_nu < N ? e : N * e + n] * dot(a, b, ma, mb); //isotrope
+  if (N_nu <= N) resu = nu->addr()[N_nu < N ? e : N * e + n] * dot(a, b, ma, mb); //isotrope
   else if (N_nu == N * dimension) for (i = 0; i < dimension; i++) //anisotrope diagonal
-      resu += nu.addr()[dimension * (N * e + n) + i] * (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
+      resu += nu->addr()[dimension * (N * e + n) + i] * (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
   else if (N_nu == N * dimension * dimension) for (i = 0; i < dimension; i++) //anisotrope complet
-      for (j = 0; j < dimension; j++) resu += nu.addr()[dimension * (dimension * (N * e + n) + i) + j] * (a[i] - (ma ? ma[i] : 0)) * (b[j] - (mb ? mb[j] : 0));
+      for (j = 0; j < dimension; j++) resu += nu->addr()[dimension * (dimension * (N * e + n) + i) + j] * (a[i] - (ma ? ma[i] : 0)) * (b[j] - (mb ? mb[j] : 0));
   return resu;
 }
 

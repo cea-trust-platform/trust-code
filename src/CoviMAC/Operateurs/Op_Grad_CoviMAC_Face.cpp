@@ -90,7 +90,7 @@ void Op_Grad_CoviMAC_Face::update_gradp() const
 {
   if (gradp_a_jour) return;
   const Zone_CoviMAC& zone = ref_zone.valeur();
-  zone.flux(zone.nb_faces_tot(), ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e, gradp_d, gradp_j, gradp_c);
+  zone.fgrad(zone.nb_faces_tot(), &ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e, gradp_d, gradp_j, gradp_c);
   gradp_a_jour = 1;
 }
 
@@ -194,7 +194,7 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
         {
           pfb(f, n) = inco.addr()[N * e + n];
           if (!mat_NS) continue; //si appel par ajouter_NS, on peut corriger pfb
-          double fac = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / ve(e);
+          double fac = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / zone.nu_dot(&W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / ve(e);
           auto& dve = dpf_ve[N * f + n]; //dve[indice dans mat_NS] = coeff
           for (d = 0, i = N * (nf_tot + D * e) + n; d < D; d++, i += N) if (dabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_NS
               {
@@ -217,7 +217,7 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
             }
       else for (e = f_e(f, 0), n = 0; n < N; n++) //face de bord -> flux a deux points
           {
-            double fac = zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
+            double fac = zone.nu_dot(&W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
             fgpf(n) = fac * (pfb(f, n) - inco.addr()[N * e + n]);
             if (dpf_ve.count(N * f + n)) dfgpf[n][f] += fac;
           }
@@ -284,7 +284,7 @@ DoubleVect& Op_Grad_CoviMAC_Face::multvect(const DoubleTab& inco, DoubleTab& res
             for (e = gradp_j(i), n = 0; n < N; n++) //au bord : les pressions aux CL de Neumann ne varient pas, celles aux CL de Dirichlet varient comme le voisin
               fgpf(n) += gradp_c(i, n) * (e < ne_tot || ch.fcl(e - ne_tot, 0) > 1 ? inco.addr()[N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] : 0);
         else for (e = f_e(f, 0), n = 0; n < N; n++) //bord de Neumann -> partie interne du flux a deux points
-            fgpf(n) = - zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * inco.addr()[N * e + n];
+            fgpf(n) = - zone.nu_dot(&W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) * inco.addr()[N * e + n];
 
         /* face -> vf(f) * phi grad p */
         for (n = 0; n < N; n++) resu.addr()[N * f + n] = fgpf(n) * vf(f) / fs(f);
@@ -311,7 +311,7 @@ void Op_Grad_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
     {
       /* coefficients de |f| grad p */
       if (ch.fcl(f, 0) == 1) for (e = f_e(f, 0), n = 0; n < N; n++) //bords de Neumann -> partie interne du flux a 2 points
-          dfgpf[n][N * e + n] = - zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
+          dfgpf[n][N * e + n] = - zone.nu_dot(&W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
       else if (!ch.fcl(f, 0)) for (i = gradp_d(f); i < gradp_d(f + 1); i++) if ((e = gradp_j(i)) < ne_tot || ch.fcl(e - ne_tot, 0) > 1) //bord interne -> flux multipoints
             for (n = 0; n < N; n++) dfgpf[n][N * (e < ne_tot ? e : f_e(e - ne_tot, 0)) + n] += gradp_c(i, n);
 

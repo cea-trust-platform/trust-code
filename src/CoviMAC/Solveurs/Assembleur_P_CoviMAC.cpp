@@ -113,7 +113,7 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) == 1) //bord de Neumann -> flux a deux points
-      e = f_e(f, 0), mat(e, e) += pe(e) * zone.nu_dot(W_e, e, 0, 1, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
+      e = f_e(f, 0), mat(e, e) += pe(e) * zone.nu_dot(&W_e, e, 0, 1, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
     else if (!ch.fcl(f, 0)) //face interne -> flux multipoints
       for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne) for (j = gradp_d(f); j < gradp_d(f + 1); j++)
             if ((eb = gradp_j(j)) < ne_tot || ch.fcl(eb - ne_tot, 0) > 1) /* les valeurs au bords de Dirichlet varient comme l'element voisin */

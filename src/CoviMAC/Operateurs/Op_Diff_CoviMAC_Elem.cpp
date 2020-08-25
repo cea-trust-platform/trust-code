@@ -160,7 +160,7 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
       {
         /* h_int : coefficent d'echange element-face */
         for (e = f_e(f, 0), n = 0; n < N; n++)
-          h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
+          h_int(n) = zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         /* phi / Tb : selon CLs */
         if (ch.fcl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
@@ -224,7 +224,7 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
       {
         /* h_int : coefficent d'echange element-face */
         for (e = f_e(f, 0), n = 0; n < N; n++)
-          h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
+          h_int(n) = zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         /* phi / Tb : selon CLs */
         if (ch.fcl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base

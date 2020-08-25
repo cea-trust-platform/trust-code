@@ -136,7 +136,7 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
         /* calcul de mu_f */
         double fac[2] = {0, }; //amont/aval
         if (f_e(f, 1) >= 0) for (i = 0; i < 2; i++)
-            e = f_e(f, i), fac[i] = (i ? -1 : 1) * zone.nu_dot(W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
+            e = f_e(f, i), fac[i] = (i ? -1 : 1) * zone.nu_dot(&W_e, e, n, N, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
         for (i = 0; i < 2; i++) mu_f(f, n, i) = f_e(f, 1) >= 0 ? fac[!i] / (fac[0] + fac[1]) : (i == 0);
 
         /* contribution a mat */

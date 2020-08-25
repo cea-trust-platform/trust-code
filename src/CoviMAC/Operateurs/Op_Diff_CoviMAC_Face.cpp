@@ -137,7 +137,7 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
       {
         /* h_int : coefficent d'echange element-face */
         for (e = f_e(f, 0), n = 0; n < N; n++)
-          h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
+          h_int(n) = zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         /* vb : seulement si Dirichlet non homogene */
         if (ch.fcl(f, 0) == 3)
@@ -205,7 +205,7 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
       {
         /* h_int : coefficent d'echange element-face */
         for (e = f_e(f, 0), n = 0; n < N; n++)
-          h_int(n) = zone.nu_dot(nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
+          h_int(n) = zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         //face -> face
         for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2)

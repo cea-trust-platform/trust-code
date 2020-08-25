@@ -87,7 +87,18 @@ public :
   void init_cl() const;
   mutable IntTab fcl; // fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
 
+  //interpolation du tenseur (grad v)
+  void init_gve() const;
+
+
+
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
+  void init_ve() const;
+  mutable Matrice_Morse ve_mat;
+  mutable SolveurSys ve_solv;
+  mutable IntTab ve_bd, ve_bj;
+  mutable DoubleTab ve_bc;
+
   void update_ve (DoubleTab& val) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
