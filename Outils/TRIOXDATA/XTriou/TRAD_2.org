@@ -1076,7 +1076,6 @@ nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not
 scatter interprete scatter 0 Class to read a partionned mesh in the files during a parallel calculation. The files are in binary format.
   attr file chaine file 0 Name of file.
   attr domaine ref_domaine domaine 0 Name of domain.
-scatterformatte scatter scatterformatte 0 Class to read a partionned mesh in the files during a parallel calculation. The files are formatted.
 scattermed scatter scattermed 0 This keyword will read the partition of the domain_name domain into a the MED format files file.med created by Medsplitter.
 listdeuxmots_sacc listobj nul 0 deuxmots 0 List of groups of two words (without curly brackets).
 partitionneur_deriv objet_u partitionneur_deriv -1 not_set
@@ -1100,7 +1099,6 @@ bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
   attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
   attr ecrire_lata chaine ecrire_lata 1 not_set
   attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Zone files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty zones from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
-  attr formatte rien formatte 1 Optional keyword to have formatted format for .Zones files. By default, it is binary format.
   attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
   attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
   attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned zones in a single file in hdf5 format.
