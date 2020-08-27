@@ -20,7 +20,6 @@ Partition dom
     Partition_tool tranche { tranches  2 1 1 }
     Larg_joint 1
     zones_name DOMF
-formatte
 }
 Partition dom
 {
