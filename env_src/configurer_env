@@ -348,73 +348,84 @@ check_nvidia_cuda()
    #########################
    # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
    # -Drivers NVidia installed
-   # -Cuda Compilateur found or installed
+   # -Cuda Compilateur nvcc found or installed
    # Plusieurs installations possibles:
-   # Toolkit :
-   # Runtime :
-      [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
-      BITS=32 && [ "`uname -m`" = x86_64 ] && BITS=64
-      nvcc="`ls $CUDA_ROOT/bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
->>>>>>> Better detect nvcc
-      #########################################################################
-      # CUDA detecte? On ne doit pas prendre CUDA d'une autre version TRUST...
-      #########################################################################
-      if [ "`$nvcc --version 2>/dev/null`" != "" ] && [ "`which $nvcc | grep -v TRUST`" != "" ]
-      then
-         echo "Cuda compiler nvcc: $nvcc"
-	 CUDA_ROOT=`which $nvcc`
-	 CUDA_ROOT=`dirname $CUDA_ROOT`
-	 CUDA_ROOT=`dirname $CUDA_ROOT`
-      else
-         echo "Error, no nvcc cuda compiler found." &&	exit -1
-      fi
-      echo "CUDA_ROOT=$CUDA_ROOT"
-	 # On prend le run time livre 3.2 que s'il n'y a pas de runtime installe
-	 # (ex sur gre027058, il faut cuda 3.2 mais on utilise le runtime 3.0 installe)
-	 if [ "`\ls /usr/lib*/libcudart.so.*.* 2>/dev/null`"  = "" ]
-	 then
-	    CUDA_LIB=$CUDA_ROOT/lib`[ $BITS = 64 ] && echo 64`
-	 else
-	    CUDA_LIB=/usr/lib`[ $BITS = 64 ] && echo 64`
-	 fi
-	 #######################
-	 # Test CUDA deviceQuery
-	 #######################
-	 echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
-         CUDA_SAMPLES=`ls $CUDA_ROOT/bin/cuda-install-samples*.sh 2>/dev/null`
-	 [ "`ls | grep NVIDIA_CUDA`" = "" ] && $CUDA_SAMPLES .
-         (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && CUDA_PATH=$CUDA_ROOT make)
-	 (
-	    # On utilise le script trust en specifiant -gpu
-	    source ../env_TRUST.sh 1>/dev/null 2>&1
-	    LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
-	    export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
-	    trust -gpu dummy_file 1>$TRUST_ENV/card.log &
-            $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
-	 )
-	 COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
-	 # On ne supporte que les cartes double precision car les simple precision oblige a compiler
-	 # PETSc sans Hypre, MUMPS, etc et il faudrait modifier pas mal SolvPetsc.cpp
-	 TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
-	 if [ "$TRUST_USE_CUDA" = 0 ]
-	 then
-	    echo "No. See error:"
-            cat $TRUST_ENV/card.log
-            exit -1
-	 else
-	    echo "Yes. The NVIDIA card is:"
-	    grep Device $TRUST_ENV/card.log
-	    # See https://docs.nvidia.com/cuda/archive/10.0/cuda-toolkit-release-notes/index.html
-            # Cuda 11 et icc 19.1 OK
-	    # Cuda 10 et icc 18 OK mais des problemes avec Intel sur AmgX -> on reste en GNU <= 7.3.0
-	    #if [ ${TRUST_CC_BASE%g++} = $TRUST_CC_BASE ]
-	    #then
-	    #   echo "But it will not be used cause you should use GNU compilers to build PETSc with CUDA."
-	    #   echo "So try to run: ./configure -cuda -c++=g++ -cc=gcc -fc=gfortran"
-	    #   echo "To force using GNU compilers."
-	    #   TRUST_USE_CUDA=0 && exit -1
-	    #fi
-	 fi
+   # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
+   # Runtime : CUDA_ROOT=/usr			$CUDA_ROOT/include/cuda/cuda.h !
+   [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
+   nvcc="`\ls $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
+   ################
+   # Detection nvcc
+   ################
+   if [ "`$nvcc --version 2>/dev/null`" != "" ]
+   then
+      echo "Cuda compiler nvcc: $nvcc"
+   else
+      echo "Error, no nvcc cuda compiler found."
+      echo "On Fedora, for instance you will install CUDA runtime with:" 
+      echo "dnf config-manager --add-repo=https://negativo17.org/repos/fedora-nvidia.repo"
+      echo "sudo dnf install nvidia-driver nvidia-driver-cuda cuda cuda-devel akmod-nvidia nvidia-settings cuda-gcc cuda-gcc-c++ cuda-gcc-gfortran cuda-samples"
+      echo "See more there: https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7"
+      exit -1
+   fi
+   ################
+   # Detection CUDA
+   ################
+   CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* 2>/dev/null | head -1`"
+   CUDA_LIB=`dirname $CUDA_LIB`
+   CUDA_ROOT=`dirname $CUDA_LIB`
+   #############################
+   # Installation NVIDIA Samples
+   #############################
+   echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
+   CUDA_SAMPLES=`ls $CUDA_ROOT/bin/cuda-install-samples*.sh 2>/dev/null`
+   CUDA_SAMPLES_PATH=/usr/share/cuda/samples
+   if [ "$CUDA_SAMPLES" != "" ]
+   then
+      [ "`ls NVIDIA_CUDA*Samples/1_Utilities/deviceQuery 2>/dev/null`" = "" ] && $CUDA_SAMPLES .
+      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && CUDA_PATH=$CUDA_ROOT make)
+   elif [ -d $CUDA_SAMPLES_PATH ]
+   then
+      mkdir -p NVIDIA_CUDA_Samples
+      cp -r $CUDA_SAMPLES_PATH/1_Utilities NVIDIA_CUDA_Samples
+      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && sed -i "1,$ s?../../common/inc?$CUDA_SAMPLES_PATH/common/inc?g" Makefile && CUDA_PATH="" make)
+   else
+      echo "NVIDIA_CUDA Samples not found."
+      exit -1
+   fi
+   ###################################
+   # Test de la carte avec deviceQuery
+   ###################################
+   (
+       # On utilise le script trust en specifiant -gpu
+       source ../env_TRUST.sh 1>/dev/null 2>&1
+       LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
+       export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
+       trust -gpu dummy_file 1>$TRUST_ENV/card.log &
+       $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
+   )
+   COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+   # On ne supporte que les cartes double precision
+   TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
+   if [ "$TRUST_USE_CUDA" = 0 ]
+   then
+      echo "No. See error:"
+      cat $TRUST_ENV/card.log
+      exit -1
+   else
+      echo "Yes. The NVIDIA card is:"
+      grep Device $TRUST_ENV/card.log
+      # See https://docs.nvidia.com/cuda/archive/10.0/cuda-toolkit-release-notes/index.html
+      # Cuda 11 et icc 19.1 OK
+      # Cuda 10 et icc 18 OK mais des problemes avec Intel sur AmgX -> on reste en GNU <= 7.3.0
+      #if [ ${TRUST_CC_BASE%g++} = $TRUST_CC_BASE ]
+      #then
+      #   echo "But it will not be used cause you should use GNU compilers to build PETSc with CUDA."
+      #   echo "So try to run: ./configure -cuda -c++=g++ -cc=gcc -fc=gfortran"
+      #   echo "To force using GNU compilers."
+      #   TRUST_USE_CUDA=0 && exit -1
+      #fi
+   fi
 }
 
 ########################################################
@@ -1910,8 +1921,8 @@ fi
 ###################################
 # Cas du compilateur gnu 2.x et 3.x
 ###################################
-[ ${TRUST_ARCH_CC%_g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
-[ ${TRUST_ARCH_CC%_g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
+[ ${TRUST_ARCH_CC%g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
+[ ${TRUST_ARCH_CC%g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
 ###############
 # Cas de IA64 #
 ###############

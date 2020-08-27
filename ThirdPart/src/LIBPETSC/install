@@ -165,7 +165,19 @@ if [ $TRUST_USE_CUDA = 1 ]
 then
    echo "****************************************"
    echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
-   with_gpu="--with-cuda --with-cuda-dir=$CUDA_ROOT"
+   with_gpu="--with-cuda"
+   if [ -f $CUDA_ROOT/include/cuda.h ]
+   then
+      # Cas toolkit (facile):
+      with_gpu=$with_gpu" --with-cuda-dir=$CUDA_ROOT"
+   else
+      # Cas runtime (difficile, tout doit etre specifie):
+      with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
+      with_gpu=$with_gpu" --with-cuda-include=$CUDA_ROOT/include/cuda"
+      #with_gpu=$with_gpu" --with-cuda-lib=[$CUDA_ROOT/lib64/libcudart.so,$CUDA_ROOT/lib64/libcublas.so,$CUDA_ROOT/lib64/libcufft.so]"
+      with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
+   fi
+   CUDAFLAGS="-ccbin $TRUST_cc_BASE"
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
@@ -517,7 +529,7 @@ do
    --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install \
    $with_packages \
    $with_blas \
-   $with_gpu \
+   $with_gpu --CUDAFLAGS="$CUDAFLAGS" \
    $with_openmp \
    $with_mpi \
    $with_64bit_indices \
