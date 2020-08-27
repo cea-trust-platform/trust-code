@@ -346,8 +346,12 @@ check_nvidia_cuda()
    #########################
    # To active CUDA support:
    #########################
+   # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
    # -Drivers NVidia installed
    # -Cuda Compilateur found or installed
+   # Plusieurs installations possibles:
+   # Toolkit :
+   # Runtime :
       [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
       BITS=32 && [ "`uname -m`" = x86_64 ] && BITS=64
       nvcc="`ls $CUDA_ROOT/bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
@@ -364,6 +368,7 @@ check_nvidia_cuda()
       else
          echo "Error, no nvcc cuda compiler found." &&	exit -1
       fi
+      echo "CUDA_ROOT=$CUDA_ROOT"
 	 # On prend le run time livre 3.2 que s'il n'y a pas de runtime installe
 	 # (ex sur gre027058, il faut cuda 3.2 mais on utilise le runtime 3.0 installe)
 	 if [ "`\ls /usr/lib*/libcudart.so.*.* 2>/dev/null`"  = "" ]
@@ -699,7 +704,7 @@ case $arch in
 	# 1.5.3: on place gfortran devant g77 si GCC>=4.x
 	#fortran_gnu="g77 gfortran" && [ "`/usr/bin/gcc --version 2>/dev/null | head -1 | awk '/ 4\./ {print 1}'`" = 1 ] && fortran_gnu="gfortran g77"
 	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum
-        fortran_gnu="gfortran g77"
+        fortran_gnu="cuda-gfortran gfortran g77"
 	# On met icpc en 1er/GNU car sur titane (icpc 10% plus rapide que gcc sur le cas cpu_3D...)
 	# si une version recente (>=v10) d'icpc existe car sur ecrins la 8.x ne marche pas bien...
 	# 1.6.9: On interdit strictement Intel 12.x qui fait crasher/bloquer MUMPS (voir MC1520)
@@ -709,9 +714,9 @@ case $arch in
 	   TRUST_F77_BASE="ifort ifc efc $fortran_gnu"
 	   TRUST_cc_BASE="icc ecc gcc"
 	else
-	   TRUST_CC_BASE="armclang++ g++ icpc icc ecc"
+	   TRUST_CC_BASE="armclang++ cuda-g++ g++ icpc icc ecc"
 	   TRUST_F77_BASE="armflang $fortran_gnu ifort ifc efc"
-	   TRUST_cc_BASE="armclang gcc icc ecc"
+	   TRUST_cc_BASE="armclang cuda-gcc gcc icc ecc"
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -910,7 +915,7 @@ TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
 ###########
 # Cas gcc 3
 ###########
-if [ "${TRUST_CC_BASE%/g++}" != "$TRUST_CC_BASE" ]
+if [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ]
 then
    # On trouve sur RedHat 5.3 une sortie de g++ -v: gcc driver version 4.1.2 20070626 (Red Hat 4.1.2-14) executing gcc version 3.4.6
    # NB: g++ --version n'est pas terrible non plus (peyrolle retournera gcc-4.0.1)
@@ -1699,7 +1704,7 @@ case $TRUST_ARCH_CC in
 	ccFLAGS="-O3"
 	ShLibFlag="\$(TRUST_CC) -shared"
    	;;
-   linux_g++*|cygw*g++*) TRUST_SUPPORTED=1
+   linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
         # Les quotes autour de X.Y sont importants car sinon dependant des variables telles que LC_NUMERIC,....
    # 08/06/15 : pour portabilite sur Fedora22, passage de v5.1.1 a v5.1.2 sur test GNU
    # 27/06/16 : pour portabilite sur Ubuntu16, passage de v5.1.2 a v5.3.2 sur test GNU
