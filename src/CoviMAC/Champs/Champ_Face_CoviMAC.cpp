@@ -182,7 +182,7 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
             b.addr()[N * (D * e + d) + n] += zone.vec(j, d) * part[0].addr()[N * f + n] * pf(f);
       /* partie "CLs" de grad v_e */
       for (j = N * D * e, d = 0; d < D; d++) for (n = 0; n < N; n++, j++) for (k = ve_bd(j); k < ve_bd(j + 1); k++) if (fcl(f = ve_bj(k, 0), 0) == 3)
-              b.addr()[j] += ve_bc(k) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), ve_bj(k, 1));
+              b.addr()[j] -= ve_bc(k) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), ve_bj(k, 1));
     }
 
   /* resolution -> phi * ve d'ordre 2 */

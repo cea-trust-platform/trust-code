@@ -793,16 +793,16 @@ void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab&
 }
 
 
-//pour un champ T aux elements, interpole |e| grad T aux elements (combine fgrad + ve)
+//pour un champ T aux elements, interpole grad T aux elements (combine fgrad + ve)
 //fcl / is_flux renseignent les CLs : is_flux[fcl(f, 0)] = 0 (Tb impose) / 1 ([nu grad T]_b impose)
 //dependance en les Te / Tb / dTb dans egrad_(j/c)([egrad_d(e), egrad_d(e + 1)[)
 void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, const DoubleTab *nu, const IntTab& fgrad_d, const IntTab& fgrad_j, const DoubleTab& fgrad_c, IntTab& egrad_d, IntTab& egrad_j, DoubleTab& egrad_c) const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleTab& nf = face_normales();
-  const DoubleVect& fs = face_surfaces();
+  const DoubleVect& fs = face_surfaces(), &ve = volumes();
   int i, j, e, eb, ec, f, fb, n, N = fgrad_c.dimension(1), ne_tot = nb_elem_tot(), d, D = dimension; //nombre de composantes
-  egrad_d.set_smart_resize(1), egrad_d.resize(1), egrad_j.set_smart_resize(1), egrad_j.resize(0), egrad_c.set_smart_resize(1), egrad_c.resize(0, D, N);
+  egrad_d.set_smart_resize(1), egrad_d.resize(1), egrad_j.set_smart_resize(1), egrad_j.resize(0), egrad_c.set_smart_resize(1), egrad_c.resize(0, N, D);
 
   std::map<int, std::map<std::array<int, 2>, double>> eg_map; //coeffs du gradient aux elements : eg_map[elem][compo] = coeff
   for (e = 0; e < nb_elem(); e++, eg_map.clear(), egrad_d.append_line(egrad_j.dimension(0)))
@@ -812,27 +812,27 @@ void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, con
         if (f >= premiere_face_int()) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++) //face interne -> flux a deux points
             {
               if ((eb = fgrad_j(j)) < ne_tot || !is_flux[fcl(eb - ne_tot, 0)]) //element interne ou bord de Dirichlet -> facile
-                for (d = 0; d < D; d++) for (n = 0; n < N; n++) eg_map[eb][ {{ d, n }}] += (e == f_e(f, 0) ? 1 : -1) * fgrad_c(j, n) * (xv_(f, d) - xp_(e, d));
+                for (n = 0; n < N; n++) for (d = 0; d < D; d++) eg_map[eb][ {{ n, d }}] += (e == f_e(f, 0) ? 1 : -1) * fgrad_c(j, n) * (xv_(f, d) - xp_(e, d));
               else for (fb = eb - ne_tot, ec = f_e(fb, 0), n = 0; n < N; n++) //bord de Neumann -> reconstruction de la valeur au bord avec nu.grad T
                   {
                     double h = nu_dot(nu, ec, n, N, &nf(fb, 0), &nf(fb, 0)) / (fs(fb) * dist_norm_bord(fb)); //produit surface * coeff d'echange
-                    for (d = 0; d < D; d++) eg_map[ec][ {{ d, n }}] += (e == f_e(f, 0) ? 1 : -1) * fgrad_c(j, n) * (xv_(f, d) - xp_(e, d)); //partie "element amont"
-                    for (d = 0; d < D; d++) eg_map[eb][ {{ d, n }}] += (e == f_e(f, 0) ? 1 : -1) * fgrad_c(j, n) * (xv_(f, d) - xp_(e, d)) / h; //partie "gradient au bord"
+                    for (d = 0; d < D; d++) eg_map[ec][ {{ n, d }}] += (e == f_e(f, 0) ? 1 : -1) * fgrad_c(j, n) * (xv_(f, d) - xp_(e, d)); //partie "element amont"
+                    for (d = 0; d < D; d++) eg_map[eb][ {{ n, d }}] += (e == f_e(f, 0) ? 1 : -1) * fgrad_c(j, n) * (xv_(f, d) - xp_(e, d)) / h; //partie "gradient au bord"
                   }
             }
         else if (is_flux[fcl(f, 0)]) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //bord de Neumann : [nu grad T]_b directement
-              eg_map[ne_tot + f][ {{ d, n }}] += fs(f) * (xv_(f, d) - xp_(e, d));
+              eg_map[ne_tot + f][ {{ n, d }}] += fs(f) * (xv_(f, d) - xp_(e, d));
       else for (n = 0; n < N; n++) //bord de Dirichlet : flux a deux points
           {
             double h = nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0)) / (fs(f) * dist_norm_bord(f)); //produit surface * coeff d'echange
-            for (j = 0; j < 2; j++) for (d = 0; d < D; d++) eg_map[j ? ne_tot + f : e][ {{ d, n }}] += (j ? 1 : -1) * h * (xv_(f, d) - xp_(e, d));
+            for (j = 0; j < 2; j++) for (d = 0; d < D; d++) eg_map[j ? ne_tot + f : e][ {{ n, d }}] += (j ? 1 : -1) * h * (xv_(f, d) - xp_(e, d));
           }
 
       //stockage
       for (auto && eb_c : eg_map)
         {
-          egrad_c.resize(egrad_c.dimension(0) + 1, D, N);
-          for (auto && dn_c : eb_c.second) egrad_c(egrad_j.dimension(0), dn_c.first[0], dn_c.first[1]) = dn_c.second;
+          egrad_c.resize(egrad_c.dimension(0) + 1, N, D);
+          for (auto && dn_c : eb_c.second) egrad_c(egrad_j.dimension(0), dn_c.first[0], dn_c.first[1]) = dn_c.second / ve(e);
           egrad_j.append_line(eb_c.first);
         }
     }
@@ -848,32 +848,32 @@ void Zone_CoviMAC::init_ve2(const IntTab& egrad_d, const IntTab& egrad_j, const 
   const DoubleVect& ve= volumes();
   IntTab stencil(0, 2);
   ArrOfDouble coeffs;
-  int i, e, eb, f, d, db, dc, D = dimension, n, N = egrad_c.dimension(2), m, ne_tot = nb_elem_tot();
+  int i, e, eb, f, d, db, dc, D = dimension, n, N = egrad_c.dimension(1), m, ne_tot = nb_elem_tot();
   b_d.resize(1), b_d.set_smart_resize(1), b_j.resize(0, 2), b_j.set_smart_resize(1), b_c.set_smart_resize(1), stencil.set_smart_resize(1), coeffs.set_smart_resize(1);
 
   std::map<int, double> m_map; //une ligne (e, d, n)
   std::map<std::array<int, 2>, double> b_map; //une ligne du second membre
-  DoubleTrav fac(D, D);
-  for (e = 0; e < nb_elem(); e++) for (d = 0; d < D; d++)
-      {
-        //prefacteur de la partie (grad v)_e ne dependant que de la geometrie de e
-        for (i = 0, fac = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-          for (db = 0; db < D; db++) for (dc = 0; dc < D; dc++) fac(db, dc) += (xv_(f, d) - xp_(e, d)) * (e == f_e(f, 0) ? 1 : -1) * nf(f, db) * (xv_(f, dc) - xp_(e, dc));
-        fac /= ve(e) * ve(e);
+  DoubleTrav fac(D, D, D);
+  for (e = 0; e < nb_elem(); e++)
+    {
+      //prefacteur de la partie (grad v)_e ne dependant que de la geometrie de e
+      for (i = 0, fac = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (d = 0; d < D; d++) for (db = 0; db < D; db++) for (dc = 0; dc < D; dc++)
+              fac(d, db, dc) += (xv_(f, d) - xp_(e, d)) * (e == f_e(f, 0) ? 1 : -1) * nf(f, db) * (xv_(f, dc) - xp_(e, dc));
+      fac /= ve(e);
 
-        for (n = 0; n < N; n++) for(m = 0; m < M; m++, m_map.clear(), b_map.clear(), b_d.append_line(b_j.dimension(0)))
+      for (d = 0; d < D; d++) for (n = 0; n < N; n++) for(m = 0; m < M; m++, m_map.clear(), b_map.clear(), b_d.append_line(b_j.dimension(0)))
             {
               for (m_map[M * (N * (D * e + d) + n) + m] = 1, i = egrad_d(e); i < egrad_d(e + 1); i++)
-                if ((eb = egrad_j(i)) < ne_tot) for (db = 0; db < D; db++) for (dc = 0; dc < D; dc++) //dependance en ve -> dans la matrice
-                      m_map[M * (N * (D * eb + db) + n) + m] += fac(db, dc) * egrad_c(i, dc, n);
-                else for (db = 0; db < D; db++) for (dc = 0; dc < D; dc++) //dependance en vb / dvb -> dans le second membre
-                      b_map[ {{ eb - ne_tot, M * (N * db + n) + m }}] -= fac(db, dc) * egrad_c(i, dc, n);
+                if ((eb = egrad_j(i)) < ne_tot) for (db = 0; db < D; db++) //dependance en ve -> dans la matrice
+                    m_map[M * (N * (D * eb + db) + n) + m] += dot(&fac(d, db, 0), &egrad_c(i, n, 0));
+                else for (db = 0; db < D; db++) //dependance en vb / dvb -> dans le second membre
+                    b_map[ {{ eb - ne_tot, M * (N * db + n) + m }}] += dot(&fac(d,db, 0),&egrad_c(i, n, 0));
 
               /* stockage */
               for (auto &&j_c : m_map) if (dabs(j_c.second) > 1e-10) stencil.append_line(M * (N * (D * e + d) + n) + m, j_c.first), coeffs.append_array(j_c.second);
               for (auto && fn_c : b_map) if (dabs(fn_c.second) > 1e-10) b_j.append_line(fn_c.first[0], fn_c.first[1]), b_c.append_line(fn_c.second);
             }
-      }
+    }
 
   CRIMP(b_d), CRIMP(b_j), CRIMP(b_c);
   Matrix_tools::build_morse_matrix(M * N * D * nb_elem(), M * N * D * nb_elem_tot(), stencil, coeffs, mat);
