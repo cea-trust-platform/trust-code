@@ -150,14 +150,12 @@ void Champ_Face_CoviMAC::init_ve() const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   zone.init_ve(), init_cl();
-  IntTrav fgrad_d, fgrad_j, egrad_d, egrad_j;
-  DoubleTrav fgrad_c(0, 1), egrad_c; /* meme interp pour les N*D composantes */
-  /* (nf.grad)v aux faces */
-  zone.fgrad(zone.nb_faces(), NULL, fgrad_d, fgrad_j, fgrad_c); //1 compo
+  IntTrav egrad_d, egrad_j;
+  DoubleTrav egrad_c;
   /* (grad v) aux elements */
-  zone.egrad(fcl, { 0, 1, 1, 0, 0}, NULL, fgrad_d, fgrad_j, fgrad_c, egrad_d, egrad_j, egrad_c); //1 compo
+  zone.egrad(fcl, { 0, 1, 1, 0, 0}, NULL, 1, egrad_d, egrad_j, egrad_c); //1 compo
   /* matrice et second membre de M.ve^(2) = ve^(1) + b */
-  zone.init_ve2(egrad_d, egrad_j, egrad_c, ve_mat, ve_bd, ve_bj, ve_bc, valeurs().line_size()); //N compo
+  zone.init_ve2(fcl, { 0, 1, 1, 0, 0}, egrad_d, egrad_j, egrad_c, ve_mat, ve_bd, ve_bj, ve_bc, valeurs().line_size()); //N compo
   /* solveur direct pour M */
   char lu[] = "Petsc Cholesky { quiet }";
   EChaine ch(lu);
@@ -180,7 +178,7 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
       /* interpolation d'ordre 1 de v * phi */
       for (j = zone.ved(e); j < zone.ved(e + 1); j++) for (f = zone.vej(j), d = 0; d < D; d++) for (n = 0; n < N; n++)
             b.addr()[N * (D * e + d) + n] += zone.vec(j, d) * part[0].addr()[N * f + n] * pf(f);
-      /* partie "CLs" de grad v_e */
+      /* partie "CLs de Dirichlet" de grad v_e */
       for (j = N * D * e, d = 0; d < D; d++) for (n = 0; n < N; n++, j++) for (k = ve_bd(j); k < ve_bd(j + 1); k++) if (fcl(f = ve_bj(k, 0), 0) == 3)
               b.addr()[j] -= ve_bc(k) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), ve_bj(k, 1));
     }
