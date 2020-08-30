@@ -63,8 +63,8 @@ public:
   virtual DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
 
   /* interaction exterieure */
-  mutable IntTab fgrad_d, fgrad_j, egrad_d, egrad_j;
-  mutable DoubleTab fgrad_c, egrad_c; // coefficients de |f| phi_f * [grad p]_f, calcules par Zone_CoviMAC::flux() a partir de Masse_CoviMAC_Face::W_e
+  mutable IntTab fgrad_d, fgrad_j;
+  mutable DoubleTab fgrad_c; // coefficients de |f| phi_f * [grad p]_f, calcules par Zone_CoviMAC::flux() a partir de Masse_CoviMAC_Face::W_e
   mutable int grad_a_jour;  // 0 si fgrad_c doit etre recalcule (fait par Masse_CoviMAC_Face)
   void update_grad() const; // pour recalculer fgrad_c
 
