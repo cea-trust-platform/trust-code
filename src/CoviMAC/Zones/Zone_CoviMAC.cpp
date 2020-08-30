@@ -652,28 +652,6 @@ void Zone_CoviMAC::init_equiv() const
   is_init["equiv"] = 1;
 }
 
-//interpolation normales aux faces -> elements d'ordre 1
-void Zone_CoviMAC::init_ve() const
-{
-  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleVect& ve = volumes_, &fs = face_surfaces();
-  int i, k, e, f;
-
-  if (is_init["ve"]) return;
-  Cerr << zone().domaine().le_nom() << " : initialisation de ve... ";
-  ved.resize(1), ved.set_smart_resize(1), vej.set_smart_resize(1), vec.resize(0, dimension), vec.set_smart_resize(1);
-  //formule (1) de Basumatary et al. (2014) https://doi.org/10.1016/j.jcp.2014.04.033 d'apres Perot
-  for (e = 0; e < nb_elem_tot(); ved.append_line(vej.dimension(0)), e++)
-    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-      {
-        double x[3] = { 0, };
-        for (k = 0; k < dimension; k++) x[k] = fs(f) * (xv(f, k) - xp(e, k)) * (e == f_e(f, 0) ? 1 : -1) / ve(e);
-        vej.append_line(f), dimension < 3 ? vec.append_line(x[0], x[1]) : vec.append_line(x[0], x[1], x[2]);
-      }
-  CRIMP(ved), CRIMP(vej), CRIMP(vec);
-  is_init["ve"] = 1, Cerr << "OK" << finl;
-}
-
 //elements et faces/sommets de bord connectes a chaque face, hors amont/aval : feb_j([feb_d(f), feb_d(f + 1)[)
 void Zone_CoviMAC::init_feb() const
 {
@@ -800,7 +778,7 @@ void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, con
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleTab& nf = face_normales(), &vfd = volumes_entrelaces_dir();
-  const DoubleVect& fs = face_surfaces(), &ve = volumes(), &vf = volumes_entrelaces();
+  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
   int i, j, jb, k, e, eb, f, n, ne_tot = nb_elem_tot(), d, D = dimension, nc, nl = D + 1, nw, infoo, un = 1; //nombre de composantes
   char trans = 'N';
 
@@ -847,16 +825,15 @@ void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, con
       //theoreme de la divergence sur les faces de e
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = feb_d(f); j < feb_d(f + 1); j++)
           for (eb = feb_j(j), n = 0; n < N; n++) for (d = 0; d < D; d++) if (dabs(nf(f, d) * fval_c(j, n)) > 1e-6* fs(f))
-                eg_map[eb][ {{n, d}}] += (e == f_e(f, 0) ? 1 : -1) * nf(f, d) * fval_c(j, n);
+                eg_map[eb][ {{n, d}}] += (e == f_e(f, 0) ? 1 : -1) * nu_dot(nu, e, n, N, &nf(f, 0), i3[d]) * fval_c(j, n);
 
       //stockage
       for (auto && eb_c : eg_map)
         {
           egrad_j.append_line(eb_c.first), egrad_c.resize(egrad_c.dimension(0) + 1, N, D);
-          for (auto && dn_c : eb_c.second) egrad_c(egrad_c.dimension(0) - 1, dn_c.first[0], dn_c.first[1]) = dn_c.second / ve(e);
+          for (auto && dn_c : eb_c.second) egrad_c(egrad_c.dimension(0) - 1, dn_c.first[0], dn_c.first[1]) = dn_c.second;
         }
     }
-  CRIMP(egrad_d), CRIMP(egrad_j), CRIMP(egrad_c);
 }
 
 
@@ -883,7 +860,7 @@ void Zone_CoviMAC::init_ve2(const IntTab& fcl, const std::vector<int>& is_flux, 
 
       for (d = 0; d < D; d++) for (n = 0; n < N; n++) for(m = 0; m < M; m++, m_map.clear(), b_map.clear(), b_d.append_line(b_j.dimension(0)))
             {
-              for (m_map[M * (N * (D * e + d) + n) + m] = 1, i = egrad_d(e); i < egrad_d(e + 1); i++)
+              for (m_map[M * (N * (D * e + d) + n) + m] = ve(e), i = egrad_d(e); i < egrad_d(e + 1); i++)
                 if ((eb = egrad_j(i)) < ne_tot || is_flux[fcl(eb - ne_tot, 0)]) for (db = 0; db < D; db++) //dependance en ve ou en une face de bord de Neumann -> partie lineaire
                     m_map[M * (N * (D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + db) + n) + m] += dot(&fac(d, db, 0), &egrad_c(i, n, 0));
                 else for (db = 0; db < D; db++) //dependance en une face de bord de Dirichlet -> partie constante

@@ -148,8 +148,9 @@ void Champ_Face_CoviMAC::init_cl() const
 
 void Champ_Face_CoviMAC::init_ve() const
 {
+  if (ve_solv.non_nul()) return;
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
-  zone.init_ve(), init_cl();
+  init_cl();
   IntTrav egrad_d, egrad_j;
   DoubleTrav egrad_c;
   /* (grad v) aux elements */
@@ -157,7 +158,7 @@ void Champ_Face_CoviMAC::init_ve() const
   /* matrice et second membre de M.ve^(2) = ve^(1) + b */
   zone.init_ve2(fcl, { 0, 1, 1, 0, 0}, egrad_d, egrad_j, egrad_c, ve_mat, ve_bd, ve_bj, ve_bc, valeurs().line_size()); //N compo
   /* solveur direct pour M */
-  char lu[] = "Petsc Cholesky { quiet }";
+  char lu[] = "Petsc Cholesky { }";
   EChaine ch(lu);
   ch >> ve_solv;
 }
@@ -167,8 +168,10 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
-  int e, f, j, k, d, D = dimension, n, N = val.line_size();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  int i, j, k, e, f, d, D = dimension, n, N = val.line_size();
   DoubleTab_parts part(val); //part[0] -> aux faces, part[1] -> aux elems
   DoubleTrav b(part[1]); //membre de droite du systeme ve_mat.part[1] = b
   init_ve();
@@ -176,8 +179,9 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
   for (e = 0; e < zone.nb_elem(); e++)
     {
       /* interpolation d'ordre 1 de v * phi */
-      for (j = zone.ved(e); j < zone.ved(e + 1); j++) for (f = zone.vej(j), d = 0; d < D; d++) for (n = 0; n < N; n++)
-            b.addr()[N * (D * e + d) + n] += zone.vec(j, d) * part[0].addr()[N * f + n] * pf(f);
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+            b.addr()[N * (D * e + d) + n] += pf(f) * fs(f) * (e == f_e(f, 0) ? 1 : -1) * (xv(f, d) - xp(e, d)) * part[0].addr()[N * f + n];
+
       /* partie "CLs de Dirichlet" de grad v_e */
       for (j = N * D * e, d = 0; d < D; d++) for (n = 0; n < N; n++, j++) for (k = ve_bd(j); k < ve_bd(j + 1); k++) if (fcl(f = ve_bj(k, 0), 0) == 3)
               b.addr()[j] -= ve_bc(k) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), ve_bj(k, 1));

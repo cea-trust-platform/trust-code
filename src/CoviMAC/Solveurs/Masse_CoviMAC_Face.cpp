@@ -90,14 +90,14 @@ DoubleTab& Masse_CoviMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
-  int e, f, r, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
 
   //vitesses aux faces
-  for (f = 0; f < zone.nb_faces(); f++) sm(f) /= pf(f) * vf(f); //vitesse calculee
+  for (f = 0; f < nf_tot; f++) for (n = 0; n < N; n++) sm.addr()[N * f + n] /= pf(f) * vf(f); //vitesse calculee
 
   //vitesses aux elements
-  for (r = 0; r < dimension; r++) for (e = 0; e < zone.nb_elem(); e++)
-      sm(nf_tot + ne_tot * r + e) /= pe(e) * ve(e);
+  for (e = 0; e < ne_tot; e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+        sm.addr()[N * (nf_tot + D * e + d) + n] /= pe(e) * ve(e);
 
   return sm;
 }
@@ -128,7 +128,7 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
       for (d = 0; d < D; d++) for (n = 0; n < N; n++) mat(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += pe(e) * ve(e) / dt;
     }
   W_e.echange_espace_virtuel();
-  if (piso) ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient()).gradp_a_jour = 0; //si PISO, on devra recalculer les coeffs du gradient
+  if (piso) ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient()).grad_a_jour = 0; //si PISO, on devra recalculer les coeffs du gradient
 
   /* aux faces : calcul de mu_f, ligne "diagonale - projection des ve" */
   for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++) //vf calcule
@@ -154,8 +154,6 @@ DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = zone.porosite_elem();
   const DoubleTab& nf = zone.face_normales();
   int e, f, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
-
-  zone.init_ve();
 
   /* vitesses aux faces : diagonale */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) //vf calcule

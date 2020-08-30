@@ -145,12 +145,6 @@ public :
   void init_equiv() const;
   mutable IntTab equiv;
 
-  //interpolations d'ordre 1 du vecteur vitesse aux elements
-  void init_ve() const;
-  mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
-  mutable DoubleTab vec;
-
-
   //elements et faces de bord connectes a chaque face en dehors de l'amont/aval :
   //fef_j([fef_d(f), fef_d(f + 1)[) (offset de nb_elem_tot() pour les faces de bord)
   void init_feb() const;
