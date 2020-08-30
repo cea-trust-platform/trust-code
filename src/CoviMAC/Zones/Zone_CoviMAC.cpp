@@ -652,6 +652,29 @@ void Zone_CoviMAC::init_equiv() const
   is_init["equiv"] = 1;
 }
 
+//interpolation normales aux faces -> elements d'ordre 1
+void Zone_CoviMAC::init_ve() const
+{
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleVect& ve = volumes_, &fs = face_surfaces();
+  int i, k, e, f;
+
+  if (is_init["ve"]) return;
+  Cerr << zone().domaine().le_nom() << " : initialisation de ve... ";
+  ved.resize(1), ved.set_smart_resize(1), vej.set_smart_resize(1), vec.resize(0, dimension), vec.set_smart_resize(1);
+  //formule (1) de Basumatary et al. (2014) https://doi.org/10.1016/j.jcp.2014.04.033 d'apres Perot
+  for (e = 0; e < nb_elem_tot(); ved.append_line(vej.dimension(0)), e++)
+    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+      {
+        double x[3] = { 0, };
+        for (k = 0; k < dimension; k++) x[k] = fs(f) * (xv(f, k) - xp(e, k)) * (e == f_e(f, 0) ? 1 : -1) / ve(e);
+        vej.append_line(f), dimension < 3 ? vec.append_line(x[0], x[1]) : vec.append_line(x[0], x[1], x[2]);
+      }
+  CRIMP(ved), CRIMP(vej), CRIMP(vec);
+  is_init["ve"] = 1, Cerr << "OK" << finl;
+}
+
+
 //elements et faces/sommets de bord connectes a chaque face, hors amont/aval : feb_j([feb_d(f), feb_d(f + 1)[)
 void Zone_CoviMAC::init_feb() const
 {
@@ -712,17 +735,18 @@ void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab&
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
-  int i, j, jb, k, e, f, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, D = dimension, nl = D + 1, nc, un = 1, skip; //nombre de composantes
-  char trans = 'N';
+  const DoubleVect& vf = volumes_entrelaces();
+  int i, j, jb, k, e, f, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, D = dimension, nl = D + 1, nc, un = 1, skip, planar = 0, rank; //nombre de composantes
   /* stencils adaptatifs : permet d'omettre les points dont aucune composante n'a besoin */
   phif_d.set_smart_resize(1), phif_d.resize(1), phif_j.set_smart_resize(1), phif_j.resize(0), phif_c.set_smart_resize(1), phif_c.resize(0, N);
 
   /* localisation des points aux faces de bord : projection selon nu nf de l'element amont sur la face */
   DoubleTrav vxfb, xfe(2, D), xfep(D), A, B, phi, W(1), P;
+  IntTrav U, pvt;
   DoubleTab& xfb = pxfb ? *pxfb : vxfb;
   if (!pxfb) xfb.resize(nb_faces_tot(), N, D);
-  A.set_smart_resize(1), B.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1), P.set_smart_resize(1);
-  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, h[2], scal;
+  A.set_smart_resize(1), B.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1), P.set_smart_resize(1), pvt.set_smart_resize(1), U.set_smart_resize(1);
+  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, h[2], scal, rcond = 1e-8;
   const double *xe;
   for (f = 0; f < nb_faces_tot(); f++) if (f_e(f, 1) < 0) for (e = f_e(f, 0), n = 0; n < N; n++)
         {
@@ -745,15 +769,23 @@ void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab&
             /* interpolation et contribution au flux */
             for (j = 0; j < 2; j++) phi(j, n) = (j ? 1 : -1) / (1. / h[0] + 1. / h[1]);
             if (dot(&xfe(1, 0), &xfe(1, 0), &xfe(0, 0), &xfe(0, 0)) < 1e-12) continue; //projections coincidantes -> flux a 2 points
-            for (A.resize(nc, nl), B.resize(nc), P.resize(nc), i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
+            for (A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc), U.resize(nc), i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
               {
-                for (B = 0, B(D) = 1, j = 0, jb = feb_d(f); j < nc; j++, jb++)
+                if (D > 2)
+                  {
+                    auto v3 = cross(D, D, &xfe(i, 0), &xp_(f_e(f, 1), 0), &xp_(f_e(f, 0), 0), &xp_(f_e(f, 0), 0));
+                    for (planar = 0, U = 0, U(0) = U(1) = 1, j = 2, jb = feb_d(f) + 2; j < nc; j++, jb++)
+                      if (dabs(dot((e = feb_j(jb)) < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), &v3[0], &xfe(i, 0))) < 1e-6 * vf(f)) U(j) = planar = 1;
+                  }
+                if (D < 3 || !planar) U = 1;
+
+                for (pvt = 0, B = 0, B(D) = 1, j = 0, jb = feb_d(f); j < nc; j++, jb++)
                   for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xfe(i, 0), &xfe(i, 0))), k = 0; k < nl; k++)
-                    A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j);
+                    A(j, k) = (k < D ? xe[k] - xfe(i, k) : 1) * P(j) * U(j);
 
                 /* moindres carres par DGELS */
-                nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-                W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
+                nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &rcond, &rank, &W(0), &nw, &infoo);
+                W.resize(nw = W(0)), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &rcond, &rank, &W(0), &nw, &infoo);
                 for (j = 0; j < nc; j++) if (dabs(B(j) * P(j)) > 1e-6) //ecretage sur les coeffs de l'interpolation
                     phi(j, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
               }
@@ -779,15 +811,15 @@ void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, con
   const IntTab& f_e = face_voisins(), &e_f = elem_faces();
   const DoubleTab& nf = face_normales(), &vfd = volumes_entrelaces_dir();
   const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
-  int i, j, jb, k, e, eb, f, n, ne_tot = nb_elem_tot(), d, D = dimension, nc, nl = D + 1, nw, infoo, un = 1; //nombre de composantes
-  char trans = 'N';
+  int i, j, jb, k, e, eb, f, n, ne_tot = nb_elem_tot(), d, D = dimension, nc, nl = D + 1, nw, infoo, un = 1, planar = 0, rank; //nombre de composantes
 
   /* 1. localisation des valeurs aux bords : CG des faces pour les CL de Dirichlet, projection de xp sur la face pour les CLs de Neumann */
   DoubleTrav vxfb, A, B, P, W(1), fval_c(feb_d(nb_faces()), N);
-  A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1);
+  IntTrav pvt, U;
+  A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1), U.set_smart_resize(1);
   DoubleTab& xfb = pxfb ? *pxfb : vxfb;
   if (!pxfb) xfb.resize(nb_faces_tot(), N, D);
-  double scal, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }};
+  double scal, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, rcond = 1e-8;
   for (f = 0; f < nb_faces_tot(); f++)
     if (!fcl(f, 0)) continue; //face interne
     else if (!is_flux[fcl(f, 0)]) for (n = 0; n < N; n++) for (d = 0; d < D; d++) xfb(f, n, d) = xv_(f, d); //Dirichlet -> CG de la face
@@ -800,19 +832,24 @@ void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, con
   /* 2. interpolation des valeurs du champ aux CG des faces reelles, avec les stencils feb_d / feb_j */
   for (f = 0; f < nb_faces(); f++) for (nc = feb_d(f + 1) - feb_d(f), n = 0; n < N; n++)
       {
-        const double *xam = &xp_(f_e(f, 0), 0), *xav = f_e(f, 1) >= 0 ? &xp_(f_e(f, 1), 0) : &xfb(f, n, 0), *xe; //points amont/aval
-        auto v3 = cross(dimension, dimension, xam, xav, &xv_(f, 0), &xv_(f, 0));
+        const double *xam = &xp_(f_e(f, 0), 0), *xav = f_e(f, 1) >= 0 ? &xp_(f_e(f, 1), 0) : &xfb(f, n, 0), *xe, *xf = fcl(f, 0) ? &xfb(f, n, 0) : &xv_(f, 0); //points amont/aval
+        auto v3 = cross(dimension, dimension, xam, xav, xf, xf);
         if ((D < 3 ? dabs(v3[2]) : dot(&v3[0], &v3[0])) < 1e-6 * fs(f) * fs(f)) //CG aligne avec les points amont/aval -> interp a deux points
           fval_c(feb_d(f), n) = vfd(f, 1) / vf(f), fval_c(feb_d(f) + 1, n) = vfd(f, 0) / vf(f);
         else //sinon -> interp  comme dans fgrad
           {
-            for (A.resize(nc, nl), B.resize(nc), P.resize(nc), B = 0, B(D) = 1, j = 0, jb = feb_d(f); j < nc; j++, jb++)
-              for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xv_(f, 0), &xv_(f, 0))), k = 0; k < nl; k++)
-                A(j, k) = (k < D ? xe[k] - xv_(f, k) : 1) * P(j);
+            A.resize(nc, nl), B.resize(nc), P.resize(nc), U.resize(nc), pvt.resize(nc);
+            if (D > 2) for (planar = 0, U = 0, U(0) = U(1) = 1, j = 2, jb = feb_d(f) + 2; j < nc; j++, jb++)
+                if (dabs(dot((e = feb_j(jb)) < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), &v3[0], xf)) < 1e-6 * vf(f)) U(j) = planar = 1;
+            if (D < 3 || !planar) U = 1;
+
+            for (B = 0, B(D) = 1, pvt = 0, j = 0, jb = feb_d(f); j < nc; j++, jb++)
+              for (e = feb_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, xf, xf)), k = 0; k < nl; k++)
+                A(j, k) = (k < D ? xe[k] - xf[k] : 1) * P(j) * U(j);
 
             /* moindres carres par DGELS */
-            nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-            W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
+            nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &rcond, &rank, &W(0), &nw, &infoo);
+            W.resize(nw = W(0)), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &rcond, &rank, &W(0), &nw, &infoo);
             for (j = 0, jb = feb_d(f); j < nc; j++, jb++) fval_c(jb, n) = B(j) * P(j);
           }
       }

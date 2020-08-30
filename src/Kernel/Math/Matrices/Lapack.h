@@ -148,6 +148,21 @@ extern "C"
                          const int*    const  // INFO
                         );
 
+  void F77DECLARE(DGELSY)(const int*    const, // M
+                          const int*    const, // N
+                          const int*    const, // NRHS
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const double* const, // B
+                          const int*    const, // LDB
+                          const int*    const, // JPVT
+                          const double* const, // RCOND
+                          const int*    const, // RANK
+                          const double* const, // WORK
+                          const int*    const, // LWORK
+                          const int*    const  // INFO
+                         );
+
   void F77DECLARE(DGGLSE)(const int*    const, // M
                           const int*    const, // N
                           const int*    const, // P
@@ -325,6 +340,21 @@ extern "C"
                          const int*    const, // LWORK
                          const int*    const  // INFO
                         );
+
+  void F77DECLARE(dgelsy)(const int*    const, // M
+                          const int*    const, // N
+                          const int*    const, // NRHS
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const double* const, // B
+                          const int*    const, // LDB
+                          const int*    const, // JPVT
+                          const double* const, // RCOND
+                          const int*    const, // RANK
+                          const double* const, // WORK
+                          const int*    const, // LWORK
+                          const int*    const  // INFO
+                         );
 
   void F77DECLARE(dgglse)(const int*    const, // M
                           const int*    const, // N
@@ -556,6 +586,24 @@ inline void F77NAME(DGELS)(const char*   const TRANS,
                           )
 {
   F77NAME(dgels)(TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK, INFO);
+}
+
+inline void F77NAME(DGELSY)(const int*    const M,
+                            const int*    const N,
+                            const int*    const NRHS,
+                            const double* const A,
+                            const int*    const LDA,
+                            const double* const B,
+                            const int*    const LDB,
+                            const int*    const JPVT,
+                            const double* const RCOND,
+                            const int*    const RANK,
+                            const double* const WORK,
+                            const int*    const LWORK,
+                            const int*    const INFO
+                           )
+{
+  F77NAME(dgelsy)(M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK, WORK, LWORK, INFO);
 }
 
 inline void F77DECLARE(DGGLSE)(const int*    const M,
