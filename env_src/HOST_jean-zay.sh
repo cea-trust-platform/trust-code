@@ -10,6 +10,8 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
+   # Initialisation de l environnement module $MODULE_PATH
+   echo "source /etc/profile" >> $env
    #
    # Load modules
    # avec intel/intelmpi 19.0.2, les calculs bloquent
@@ -62,6 +64,7 @@ define_soumission_batch()
    #qos_cpu-cp         50     10000                      
    #qos_gpu-cp         50     10000                      
    #qos_prepo+          0     10000                  
+   project="" && [ "`id | grep fej`" != "" ] && project="fej@cpu"
    cpus_per_task=40
    hintnomultithread=1
    cpu=30 && [ "$prod" = 1 ] && cpu=110 # 30 minutes or 1 day

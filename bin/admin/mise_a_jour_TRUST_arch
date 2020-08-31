@@ -480,13 +480,15 @@ do
          $Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPI=MPICH "$NF}'
       elif [ "$MPI_ROOT" != "" ]
       then
-	 MPI_VERSION=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$NF} /Version:/ {print "MPICH "$NF} /Intel\(R\) MPI/ {print "Intel MPI "$8}'`
+         MPI_VERSION=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$NF} /Version:/ {print "MPICH "$NF} /Intel\(R\) MPI/ {print "Intel MPI "$8}'`
+         # Sur jean-zay mpirun desactive sur openmpi
+         [ "$MPI_VERSION" = "" ] && MPI_VERSION=`$TRUST_CC --showme:version | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$4}'`
          if [ "$MPI_VERSION" != "" ]
          then
             echo "MPI=MPI natif: $MPI_VERSION"
-	 else
+         else
             echo "MPI=MPI natif: $MPI_ROOT"
-	 fi
+         fi
          MPI_NATIF=1
       else
          echo "MPI="
