@@ -94,8 +94,8 @@ void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
                 else if (f_e(f, 1) >= 0) for (d = 0; d < D; d++) //pas d'equivalence : elem -> face
                     if(dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) stencil.append_line(N * fb + n, N * (nf_tot + D * eb + d) + n); //elem -> face
               }
-          if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem
-                stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n);
+          for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem
+              stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n);
         }
 
   tableau_trier_retirer_doublons(stencil);
@@ -145,9 +145,9 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
                               resu.addr()[N * fb + n] -= (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb) * inco.addr()[N * (nf_tot + D * eb + d) + n];
                     }
               }
-          if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) if (dfac(j, n)) //partie "elem"
-                    resu.addr()[N * (nf_tot + D * e + d) + n] -= (i ? -1 : 1) * dfac(j, n)
-                                                                 * (eb >= 0 ? inco.addr()[N * (nf_tot + D * eb + d) + n] : ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n));
+          for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) if (dfac(j, n)) //partie "elem"
+                  resu.addr()[N * (nf_tot + D * e + d) + n] -= (i ? -1 : 1) * dfac(j, n)
+                                                               * (eb >= 0 ? inco.addr()[N * (nf_tot + D * eb + d) + n] : ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n));
         }
     }
 
@@ -194,8 +194,8 @@ inline void Op_Conv_EF_Stab_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inc
                               matrice(N * fb + n, N * (nf_tot + D * eb + d) + n) += (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb);
                     }
               }
-          if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) if (dfac(j, n)) //partie "elem"
-                    matrice(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n) += (i ? -1 : 1) * dfac(j, n);
+          for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) if (dfac(j, n)) //partie "elem"
+                  matrice(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n) += (i ? -1 : 1) * dfac(j, n);
         }
     }
 }

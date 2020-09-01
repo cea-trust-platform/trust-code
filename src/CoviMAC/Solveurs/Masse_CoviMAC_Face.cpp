@@ -115,20 +115,18 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
 
   /* aux elements : calcul de W_e, contribution a la diagonale */
   Matrice33 M(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iM; //pour inversions
-  for (e = 0; e < zone.nb_elem(); e++)
-    {
-      for (n = 0; n < N; n++)
-        {
-          /* calcul et stockage de W_e */
-          for (i = 0; i < D; i++) for (j = 0; j < D; j++)
-              M(i, j) = (i == j) + (piso ? mat_const(N * (nf_tot + ne_tot * i + e) + n, N * (nf_tot + ne_tot * j + e) + n) * dt / (pe(e) * ve(e)) : 0);
-          Matrice33::inverse(M, iM, 0);
-          for (i = 0; i < D; i++) for (j = 0; j < D; j++) W_e(e, n, i, j) = pe(e) * iM(i, j);
-        }
-      for (d = 0; d < D; d++) for (n = 0; n < N; n++) mat(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += pe(e) * ve(e) / dt;
-    }
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
+      {
+        /* calcul et stockage de W_e */
+        for (i = 0; i < D; i++) for (j = 0; j < D; j++)
+            M(i, j) = (i == j) + (piso ? mat_const(N * (nf_tot + ne_tot * i + e) + n, N * (nf_tot + ne_tot * j + e) + n) * dt / (pe(e) * ve(e)) : 0);
+        Matrice33::inverse(M, iM, 0);
+        for (i = 0; i < D; i++) for (j = 0; j < D; j++) W_e(e, n, i, j) = pe(e) * iM(i, j);
+      }
   W_e.echange_espace_virtuel();
   if (piso) ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient()).grad_a_jour = 0; //si PISO, on devra recalculer les coeffs du gradient
+  for (e = 0; e < zone.nb_elem_tot(); e++)for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+        mat(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += pe(e) * ve(e) / dt;
 
   /* aux faces : calcul de mu_f, ligne "diagonale - projection des ve" */
   for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++) //vf calcule
@@ -162,7 +160,7 @@ DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
           secmem.addr()[N * f + n] += mu_f(f, n, 0) * pf(f) * vf(f) / dt * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
 
   /* vitesses aux elements : on part de la vitesse aux elements interpolee depuis la vitesse aux faces */
-  for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
         secmem.addr()[N * (nf_tot + D * e + d) + n] += pe(e) * ve(e) / dt * inco.addr()[N * (nf_tot + D * e + d) + n];
 
   return secmem;

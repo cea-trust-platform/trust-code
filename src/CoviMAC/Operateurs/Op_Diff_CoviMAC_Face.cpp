@@ -106,8 +106,8 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
                   else for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) //sinon : elem-face
                           stencil.append_line(N * fb + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
                 }
-            if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem -> elem
-                  stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
+            for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem -> elem
+                stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
             for (n = 0; n < N; n++) tpfa(f, n) &= (j < feb_d(f) + 2);
           }
 
@@ -179,8 +179,8 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
                 }
 
             //elem -> elem
-            if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-                  resu.addr()[N * (nf_tot + D * e + d) + n] -= (i ? 1 : -1) * phif_c(j, n) * (eb < ne_tot ? inco.addr()[N * (nf_tot + D * eb + d) + n] : vb(eb - ne_tot, d, n));
+            for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                resu.addr()[N * (nf_tot + D * e + d) + n] -= (i ? 1 : -1) * phif_c(j, n) * (eb < ne_tot ? inco.addr()[N * (nf_tot + D * eb + d) + n] : vb(eb - ne_tot, d, n));
           }
   return resu;
 }
@@ -212,8 +212,8 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
             for (n = 0; n < N; n++) matrice(N * fb + n, N * fb + n) += mu_f(fb, n, e != f_e(fb, 0)) * fs(f) * h_int(n) * vf(fb) / ve(e);
 
         //elem -> elem
-        if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-              matrice(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += fs(f) * h_int(n);
+        for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+            matrice(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += fs(f) * h_int(n);
       }
     else if (ch.fcl(f, 0)) for (d = 0; d < D; d++) for (n = 0; n < N; n++) dvb(f, d, n) = 1; //Neumann / Symetrie : flux nul, mais on doit remplir dvb
 
@@ -238,8 +238,8 @@ inline void Op_Diff_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
                 }
 
             //elem -> elem
-            if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) if (dabs(phif_c(j, n)) > 1e-8)
-                    matrice(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * ebi + d) + n) += (i ? 1 : -1) * phif_c(j, n) * (eb < ne_tot ? 1 : dvb(eb - ne_tot, d, n));
+            for (d = 0; d < D; d++) for (n = 0; n < N; n++) if (dabs(phif_c(j, n)) > 1e-8)
+                  matrice(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * ebi + d) + n) += (i ? 1 : -1) * phif_c(j, n) * (eb < ne_tot ? 1 : dvb(eb - ne_tot, d, n));
           }
 }
 
