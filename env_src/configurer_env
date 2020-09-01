@@ -1860,9 +1860,11 @@ linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
 	   fi
 	   rm -f test.cpp
 	   SYSLIBS=$SYSLIBS"-lgfortran"
+       TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 	fi	
 	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
 	F77Flags="-O3 -fPIC $ArmFlags"
+    [ `echo $TRUST_GNU_VERSION | awk -F. '{print $1>=10}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
