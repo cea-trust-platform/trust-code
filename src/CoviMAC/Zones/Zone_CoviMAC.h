@@ -153,7 +153,7 @@ public :
   //elements et faces de bord connectes a chaque face en dehors de l'amont/aval :
   //fef_j([fef_d(f), fef_d(f + 1)[) (offset de nb_elem_tot() pour les faces de bord)
   void init_feb() const;
-  mutable IntTab feb_d, feb_j;
+  mutable IntTab febf_d, febf_j, febs_d, febs_j, feb_d, feb_j;
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
   inline double nu_dot(const DoubleTab* nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 

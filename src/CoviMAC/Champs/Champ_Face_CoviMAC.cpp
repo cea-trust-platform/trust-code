@@ -158,7 +158,7 @@ void Champ_Face_CoviMAC::init_ve() const
   /* matrice et second membre de M.ve^(2) = ve^(1) + b */
   zone.init_ve2(fcl, { 0, 1, 1, 0, 0}, egrad_d, egrad_j, egrad_c, ve_mat, ve_bd, ve_bj, ve_bc, valeurs().line_size()); //N compo
   /* solveur direct pour M */
-  char lu[] = "Petsc Cholesky { }";
+  char lu[] = "Petsc cholesky { }";
   EChaine ch(lu);
   ch >> ve_solv;
 }
