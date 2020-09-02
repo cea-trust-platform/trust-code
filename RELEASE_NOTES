@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+02/09/20 (TRUST)  Bug fixed   : Advanced postprocessing of source terms was wrong in VDF with: Definition_champs { FieldName Operateur_Eqn { numero_source 0 sources { ... } } } 
 18/08/20 (TRUST)  Portability : TRUST int64 version enables now MEDCoupling and MED import/export
 18/08/20 (TRUST)  Tools       : Salome 9.5.0 third party supported (MED 4.1.0, MEDCoupling 9.5.0)
 29/07/20 (TRUST)  Portability : Fedora32 OS and GNU 10.x supported

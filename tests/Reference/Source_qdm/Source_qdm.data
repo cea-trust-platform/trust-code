@@ -10,9 +10,9 @@ Read_file Obstacle.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -26,20 +26,20 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 2.5
-	dt_min 1.e-4
-	dt_max 5.e-3
-	dt_impr 5.e-1
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 2.5
+    dt_min 1.e-4
+    dt_max 5.e-3
+    dt_impr 5.e-1
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -50,52 +50,57 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-8
-		}
-		convection { amont }
-		diffusion {  }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Gauche paroi_fixe
-			Droit paroi_fixe
-			Bas2  paroi_fixe
-			Haut3  paroi_fixe
-			Haut1 symetrie
-			Bas1  symetrie
-			Haut2 symetrie
-			Bas3  symetrie
-		      	Bas4  symetrie
-			Haut4 symetrie
-			Sortie frontiere_ouverte_pression_imposee 
-			    Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_pression_imposee 
-			    Champ_front_Uniforme 1 0.
-		}
-		Sources { 
-			Source_Qdm champ_uniforme 2 2.47 0. ,
-			Source_Generique Transformation { localisation faces methode vecteur expression 2 2.47 0. }
-		} 
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+        }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Gauche paroi_fixe
+            Droit paroi_fixe
+            Bas2  paroi_fixe
+            Haut3  paroi_fixe
+            Haut1 symetrie
+            Bas1  symetrie
+            Haut2 symetrie
+            Bas3  symetrie
+            Bas4  symetrie
+            Haut4 symetrie
+            Sortie frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+        }
+        Sources {
+            Source_Qdm champ_uniforme 2 2.47 0. ,
+            Source_Generique Transformation { localisation faces methode vecteur expression 2 2.47 0. }
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-		sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-		sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
-		}
-		fields dt_post 1.3
-		{
-			pression elem
-			vitesse elem
-		}
-	}
+    Post_processing
+    {
+        Definition_champs {
+            source_qdm Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb vitesse } } }
+        }
+
+        Probes
+        {
+            sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+            sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+        }
+        fields dt_post 1.3
+        {
+            source_qdm elem
+            pression elem
+            vitesse elem
+        }
+    }
 }
 
 Solve pb
