@@ -146,7 +146,22 @@ void Champ_Face_CoviMAC::init_cl() const
   CRIMP(fcl);
 }
 
-void Champ_Face_CoviMAC::init_ve() const
+void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
+{
+  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+
+  zone.init_ve();
+  for (e = 0; e < ne_tot; e++)
+    {
+      for (d = 0; d < D; d++) for (n = 0; n < N; n++) val.addr()[N * (nf_tot + D * e + d) + n] = 0;
+      for (j = zone.ved(e); j < zone.ved(e + 1); j++) for (f = zone.vej(j), d = 0; d < D; d++) for (n = 0; n < N; n++)
+            val.addr()[N * (nf_tot + D * e + d) + n] += zone.vec(j, d) * val.addr()[N * f + n] * pf(f) / pe(e);
+    }
+}
+
+void Champ_Face_CoviMAC::init_ve2() const
 {
   if (ve_solv.non_nul()) return;
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
@@ -164,7 +179,7 @@ void Champ_Face_CoviMAC::init_ve() const
 }
 
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
-void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
+void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
@@ -174,7 +189,7 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
   int i, j, k, e, f, d, D = dimension, n, N = val.line_size();
   DoubleTab_parts part(val); //part[0] -> aux faces, part[1] -> aux elems
   DoubleTrav b(part[1]); //membre de droite du systeme ve_mat.part[1] = b
-  init_ve();
+  init_ve2();
 
   for (e = 0; e < zone.nb_elem(); e++)
     {

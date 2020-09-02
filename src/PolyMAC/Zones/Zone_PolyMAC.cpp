@@ -1089,8 +1089,7 @@ void Zone_PolyMAC::init_m2() const
       for (auto &s_fs : som_face) for (auto i1 : s_fs.second) for (auto i2 : s_fs.second) W(i1, i2) = 1;
 
       /* matrice W2 stabilisee */
-      if (W_stabiliser(W, R, N, ctr, spectre)) ctr[2]++; /* le stencil reduit marche */
-      else W = 1, W_stabiliser(W, R, N, ctr, spectre); /* il faut une matrice complete */
+      W = 1, W_stabiliser(W, R, N, ctr, spectre); /* il faut une matrice complete */
 
       /* matrice M2 : W2^-1 */
       M = W;

@@ -24,6 +24,7 @@
 #include <Equation_base.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>
+#include <Option_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
@@ -181,6 +182,6 @@ void Masse_CoviMAC_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zo
 DoubleTab& Masse_CoviMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& y) const
 {
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  ch.update_ve(x);
+  Option_CoviMAC::interp_ve1 ? ch.update_ve(x) : ch.update_ve2(x);
   return x;
 }
