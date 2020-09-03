@@ -376,6 +376,9 @@ bool Probleme_U::run()
   // Print the initialization CPU statistics
   if (!disable_TU)
     {
+      if(GET_COMM_DETAILS)
+        statistiques().print_communciation_tracking_details("Statistiques d'initialisation du calcul", 0);               // Into _comm.TU file
+
       statistiques().dump("Statistiques d'initialisation du calcul", 0);
       print_statistics_analyse("Statistiques d'initialisation du calcul", 0);
     }
@@ -471,7 +474,7 @@ bool Probleme_U::run()
   if (!disable_TU)
     {
       if(GET_COMM_DETAILS)
-        statistiques().print_communciation_tracking_details();               // Into _comm.TU file
+        statistiques().print_communciation_tracking_details("Statistiques de resolution du probleme", 1);               // Into _comm.TU file
 
       statistiques().dump("Statistiques de resolution du probleme", 1);      // Into _detail.TU file
       print_statistics_analyse("Statistiques de resolution du probleme", 1); // Into        .TU file
