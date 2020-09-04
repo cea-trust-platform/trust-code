@@ -1,0 +1,109 @@
+# Checking that the sequential refinement (raffiner_isotrope) is identical to the parallel refinement (raffiner_isotrope_parallele) with an hexahedral mesh #
+# PARALLEL OK 9 #
+
+dimension 3
+Domaine dom
+Pb_Hydraulique pb
+
+# BEGIN MESH #
+Domaine initial_dom
+Mailler initial_dom
+{
+        Pave Cavite 
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 7 7 7 
+                Longueurs 10. 10.  10.
+                }
+                {
+                Bord Gauche  X = 0.       0. <= Y <= 10. 0. <= Z <= 10.
+                Bord Haut    Y = 10.	  0. <= X <= 10. 0. <= Z <= 10. 
+                Bord Bas     Y = 0.       0. <= X <= 10. 0. <= Z <= 10. 
+                Bord Droite  X = 10.  	  0. <= Y <= 10. 0. <= Z <= 10. 
+                Bord cote1   Z = 0.       0. <= X <= 10. 0. <= Y <= 10. 
+                Bord cote2   Z = 10.  	  0. <= X <= 10. 0. <= Y <= 10. 
+                }
+}
+Ecrire_fichier initial_dom initial_dom.geom
+Read_file dom initial_dom.geom
+Raffiner_isotrope dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition initial_dom
+{
+    Partition_tool metis { Nb_parts 9 }
+    Larg_joint 2
+    zones_name INITIAL_DOM
+    single_hdf
+}
+End
+END PARTITION #
+# BEGIN SCATTER
+Raffiner_isotrope_parallele { single_hdf name_of_initial_zones INITIAL_DOM name_of_new_zones DOM }
+Scatter DOM.Zones dom
+END SCATTER # 
+
+VDF dis
+Runge_Kutta_ordre_3 sch
+Read sch
+{
+        tinit 0.
+        tmax 10. 
+        dt_min 5.e-7
+        dt_max 5.e-2
+        dt_impr 1.e-5 
+        dt_sauv 100
+        seuil_statio 1.e-6
+        diffusion_implicite 0
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+        mu Champ_Uniforme 1 1
+        rho Champ_Uniforme 1 1
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Read pb
+{
+        Navier_Stokes_standard
+        {
+               solveur_pression Gcp { precond ssor 
+					{ omega 1.5 }
+                                      seuil 1.e-8
+                                      impr
+                                    }   	   
+                convection { 
+                           negligeable
+                           }
+                diffusion { negligeable }
+		sources { Coriolis { omega 3 0. 0. 5. } }
+                initial_conditions { 
+                        vitesse champ_uniforme 3 10. 0. 0.
+                        }
+                boundary_conditions {
+			Bas Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+			Haut Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+			Gauche Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+			Droite Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+			cote1 Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+			cote2 Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+
+                }
+        }
+        Post_processing
+        {
+                fields dt_post 0.5
+                {
+                    vitesse elem
+                    vitesse som
+                    pression elem
+                    pression som
+               }
+        }
+}
+Solve pb
+End

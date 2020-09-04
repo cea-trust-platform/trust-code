@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+03/09/20 (TRUST)  Bug fixed   : Raffiner_isotrope_parallele produced an error on VDF meshes
 02/09/20 (TRUST)  Bug fixed   : Advanced postprocessing of source terms (cells located) was wrong in VDF/PolyMAC with: Definition_champs { FieldName Operateur_Eqn { numero_source 0 sources { ... } } } 
 18/08/20 (TRUST)  Portability : TRUST int64 version enables now MEDCoupling and MED import/export
 18/08/20 (TRUST)  Tools       : Salome 9.5.0 third party supported (MED 4.1.0, MEDCoupling 9.5.0)
