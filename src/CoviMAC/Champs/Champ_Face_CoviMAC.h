@@ -92,13 +92,12 @@ public :
 
 
 
-  //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void update_ve(DoubleTab& val) const;
-  void init_ve2() const;
-  mutable Matrice_Morse ve_mat;
-  mutable SolveurSys ve_solv;
-  mutable IntTab ve_bd, ve_bj;
-  mutable DoubleTab ve_bc;
+  //interpolations vitesse aux faces -> vitesse aux elems
+  void update_ve(DoubleTab& val) const; //ordre 1
+
+  void init_ve2() const; //ordre 2 -> avec une matrice
+  mutable IntTab ve2d, ve2j, ve2bj;
+  mutable DoubleTab ve2c, ve2bc;
   void update_ve2(DoubleTab& val) const;
 
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;

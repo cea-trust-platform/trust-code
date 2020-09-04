@@ -163,19 +163,86 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
 
 void Champ_Face_CoviMAC::init_ve2() const
 {
-  if (ve_solv.non_nul()) return;
+  if (ve2d.dimension(0)) return; //deja initialise
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
-  init_cl();
-  IntTrav egrad_d, egrad_j;
-  DoubleTrav egrad_c;
-  /* (grad v) aux elements */
-  zone.egrad(fcl, { 0, 1, 1, 0, 0}, NULL, 1, egrad_d, egrad_j, egrad_c); //1 compo
-  /* matrice et second membre de M.ve^(2) = ve^(1) + b */
-  zone.init_ve2(fcl, { 0, 1, 1, 0, 0}, egrad_d, egrad_j, egrad_c, ve_mat, ve_bd, ve_bj, ve_bc, valeurs().line_size()); //N compo
-  /* solveur direct pour M */
-  char lu[] = "Petsc cholesky { }";
-  EChaine ch(lu);
-  ch >> ve_solv;
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &e_s = zone.zone().les_elems(), &f_s = zone.face_sommets();
+  int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo, un = 1, rank;
+  double eps = 1e-8;
+  const double *xf;
+  zone.init_ve();
+
+  //position des points aux faces de bord : CG si interne ou Dirichlet, projection si Neumann
+  DoubleTrav xfb(zone.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
+  IntTrav pvt;
+  ve2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1), init_cl();
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) == 1 || fcl(f, 0) == 2) //Neumann / Symetrie
+      {
+        double scal = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e = f_e(f, 0), 0)) / (fs(f) * fs(f));
+        for (d = 0; d < D; d++) xfb(f, d) = xp(e, d) + scal * nf(f, d);
+      }
+    else if (fcl(f, 0)) for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
+
+  /* connectivites som-elem et elem-elem */
+  std::vector<std::set<int>> s_f(zone.zone().nb_som()), e_s_f(zone.nb_elem());
+  for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+      if (s < zone.zone().nb_som()) s_f[s].insert(f);
+  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+      for (auto &&fa : s_f[s]) e_s_f[e].insert(fa);
+
+  ve2d.resize(1, 2), ve2d.set_smart_resize(1), ve2j.set_smart_resize(1), ve2bj.resize(0, 2), ve2bj.set_smart_resize(1);
+  ve2c.set_smart_resize(1), ve2bc.set_smart_resize(1);
+  std::map<std::array<int, 2>, int> v_i; // v_i[{f, -1 (interne) ou composante }] = indice
+  std::vector<std::array<int, 2>> i_v; // v_i[i_v[f]] = f
+  for (e = 0; e < zone.nb_elem(); e++, v_i.clear(), i_v.clear())
+    {
+      /* stencil : faces de l'element et de ses voisins par som-elem + toutes composantes a ses faces de bord */
+      for (auto &&fa : e_s_f[e]) if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = i_v.size(), i_v.push_back({{fa, -1}});
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) if (fcl(f, 0)) for (d = 0; d < D; d++)
+            v_i[ {{f, d }}] = i_v.size(), i_v.push_back({{f, d}});
+
+      /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Zone_CoviMAC::{e,f}grad)  */
+      ve2.resize(nc = i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
+      for (ve2 = 0, i = zone.ved(e); i < zone.ved(e + 1); i++) for (j = v_i.at({{zone.vej(i), -1}}), d = 0; d < D; d++)
+      ve2(j, d) += zone.vec(i, d);
+      for (i = 0; i < nc; i++) f = i_v[i][0], xf = i_v[i][1] < 0 ? &xv(f, 0) : &xfb(f, 0), P(i) = 1. / sqrt(zone.dot(xf, xf, &xp(e, 0), &xp(e, 0)));
+
+      /* par composante : correction pour etre d'ordre 2 */
+      for (d = 0; d < D; d++)
+        {
+          /* systeme A.x = b */
+          for (B = 0, pvt = 0, i = 0; i < nc; i++) for (f = i_v[i][0], db = i_v[i][1], xf = db < 0 ? &xv(f, 0) : &xfb(f, 0), j = 0, jb = 0; j < D; j++) for (k = 0; k <= D; k++, jb++)
+                {
+                  double fac = (db < 0 ? nf(f, j) / fs(f) : (db == j)) * (k < D ? xf[k] - xp(e, k) : 1);
+                  A(i, jb) = fac * P(i);
+                  if (k < D) B(jb) -= fac * ve2(i, d); //erreur de l'interp d'ordre 1 a corriger
+                }
+
+          /* x de norme L2 minimale par dgels */
+          nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+          W.resize(nw = W(0)), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+          assert(infoo == 0);
+          /* ajout dans ve2 */
+          for (i = 0; i < nc; i++) ve2(i, d) += P(i) * B(i);
+        }
+
+      /* implicitation des CLs de Neumann / Symetrie */
+      Matrice33 M(1, 0, 0, 0, 1, 0, 0, 0, 1), iM;
+      for (i = 0; i < nc; i++) if (i_v[i][1] >= 0 && fcl(i_v[i][0], 0) < 2) for (j = 0; j < D; j++)
+            M(j, i_v[i][1]) -= ve2(i, j);
+      Matrice33::inverse(M, iM);
+      for (ve2i.resize(nc, D), i = 0; i < nc; i++) for (j = 0; j < D; j++) for (ve2i(i, j) = 0, k = 0; k < D; k++)
+            ve2i(i, j) += iM(j, k) * ve2(i, k);
+
+      /* stockage */
+      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size())) for (i = 0; i < nc; i++) if (dabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl(i_v[i][0], 0) == 3))
+            {
+              i_v[i][1] < 0 ? ve2j.append_line(i_v[i][0])  : ve2bj.append_line(i_v[i][0], i_v[i][1]);
+              (i_v[i][1] < 0 ? &ve2c : &ve2bc)->append_line(ve2i(i, d) * pf(i_v[i][0]) / pe(e));
+            }
+    }
+  CRIMP(ve2d), CRIMP(ve2j), CRIMP(ve2bj), CRIMP(ve2c), CRIMP(ve2bc);
 }
 
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
@@ -183,30 +250,21 @@ void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
-  int i, j, k, e, f, d, D = dimension, n, N = val.line_size();
-  DoubleTab_parts part(val); //part[0] -> aux faces, part[1] -> aux elems
-  DoubleTrav b(part[1]); //membre de droite du systeme ve_mat.part[1] = b
+  int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = zone.nb_faces_tot();
   init_ve2();
 
-  for (e = 0; e < zone.nb_elem(); e++)
-    {
-      /* interpolation d'ordre 1 de v * phi */
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-            b.addr()[N * (D * e + d) + n] += pf(f) * fs(f) * (e == f_e(f, 0) ? 1 : -1) * (xv(f, d) - xp(e, d)) * part[0].addr()[N * f + n];
+  for (e = 0, ed = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, ed++) for (n = 0; n < N; n++, i++)
+        {
+          /* partie "interne" */
+          for (val.addr()[i] = 0, j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
+            val.addr()[i] += ve2c(j) * val.addr()[N * ve2j(j) + n];
 
-      /* partie "CLs de Dirichlet" de grad v_e */
-      for (j = N * D * e, d = 0; d < D; d++) for (n = 0; n < N; n++, j++) for (k = ve_bd(j); k < ve_bd(j + 1); k++) if (fcl(f = ve_bj(k, 0), 0) == 3)
-              b.addr()[j] -= ve_bc(k) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), ve_bj(k, 1));
-    }
+          /* partie "faces de bord" (Dirichlet seulement) */
+          for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
+            val.addr()[i] += ve2bc(j) * ref_cast(Dirichlet, cls[fcl(ve2bj(j, 0), 1)].valeur()).val_imp(fcl(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
+        }
 
-  /* resolution -> phi * ve d'ordre 2 */
-  ve_solv.resoudre_systeme(ve_mat, b, part[1]);
-  /* retour a ve */
-  for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++) part[1].addr()[N * (D * e + d) + n] /= pe(e);
-  part[1].echange_espace_virtuel();
+  val.echange_espace_virtuel();
 }
 
 /* gradient d_j v_i aux elements : interp_ve -> grad -> interp_ve */

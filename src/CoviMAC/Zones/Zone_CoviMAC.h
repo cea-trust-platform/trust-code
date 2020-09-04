@@ -166,10 +166,6 @@ public :
   //dependance en les Te / Tb / dTb dans egrad_(j/c)([egrad_d(e), egrad_d(e + 1)[)
   void egrad(const IntTab& fcl, const std::vector<int>& is_flux, const DoubleTab *nu, int N, IntTab& egrad_d, IntTab& egrad_j, DoubleTab& egrad_c, DoubleTab *pxfb = NULL) const;
 
-  //interpolation aux elements d'ordre 2 en resolvant un systeme M.ve2 = ve1 + (bord, dans b_(j/c)[b_d(e), b_d(e + 1)[)
-  //optionellement, cree M composantes traitees de la meme maniere pour chaque composante originale
-  void init_ve2(const IntTab& fcl, const std::vector<int>& is_flux, const IntTab& egrad_d, const IntTab& egrad_j, const DoubleTab& egrad_c, Matrice_Morse& mat, IntTab& b_d, IntTab& b_j, DoubleTab& b_c, int M = 1) const;
-
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;
 
