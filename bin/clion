@@ -26,6 +26,7 @@ fi
 if [ ! -d $BUILD_ROOT ]
 then
    echo "Build the project before in debug mode! make debug"
+   mkdir -p $BUILD_ROOT
    rep_dev=$BUILD_ROOT python $TRUST_ROOT/bin/KSH/Createcmakefile.py -atelier
 fi
 # Configuration for Clion:
