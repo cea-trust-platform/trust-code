@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+01/09/20 (TRUST)  New feature : Add possibility to post-process ustar with negligeable wall law in VEF discretization
 18/08/20 (TRUST)  Portability : TRUST int64 version enables now MEDCoupling and MED import/export
 18/08/20 (TRUST)  Tools       : Salome 9.5.0 third party supported (MED 4.1.0, MEDCoupling 9.5.0)
 29/07/20 (TRUST)  Portability : Fedora32 OS and GNU 10.x supported
