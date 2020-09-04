@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@
 #include <Domaine.h>
 #include <Loi_Fermeture_base.h>
 #include <Probleme_Couple.h>
+#include <stat_counters.h>
 
 Implemente_base(Pb_QC_base,"Pb_QC_base",Pb_qdm_fluide);
 
@@ -169,10 +170,13 @@ bool Pb_QC_base::iterateTimeStep(bool& converged)
   for (int i=1; i<nombre_d_equations(); i++)
     {
       sch.faire_un_pas_de_temps_eqn_base(equation(i));
+      statistiques().begin_count(mettre_a_jour_counter_);
       equation(i).milieu().mettre_a_jour(temps_futur);
       equation(i).inconnue().mettre_a_jour(temps_futur);
+      statistiques().end_count(mettre_a_jour_counter_);
     }
 
+  statistiques().begin_count(mettre_a_jour_counter_);
   Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
   //2. Compute temperature-dependent coefficients
   le_fluide.calculer_coeff_T();
@@ -185,11 +189,14 @@ bool Pb_QC_base::iterateTimeStep(bool& converged)
 
   //5. Compute volumic mass
   le_fluide.calculer_masse_volumique();
+  statistiques().end_count(mettre_a_jour_counter_);
 
   //6. Solve Navier Stokes equation
   sch.faire_un_pas_de_temps_eqn_base(equation(0));
+  statistiques().begin_count(mettre_a_jour_counter_);
   equation(0).milieu().mettre_a_jour(temps_futur);
   equation(0).inconnue().mettre_a_jour(temps_futur);
+  statistiques().end_count(mettre_a_jour_counter_);
 
   for (int i=0; i<nombre_d_equations(); i++)
     {

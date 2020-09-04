@@ -128,7 +128,7 @@ public:
    *  - pour chaque type de communication,
    *   on affiche le temps passe en moyenne sur chaque proc dans chaque zone delcaree
    */
-  void print_communciation_tracking_details();
+  void print_communciation_tracking_details(const char * message, int mode_append);
 
   const char* get_counter_family(int id);
   int get_counter_id_from_index_in_comm_tracking_info(int index) const;
