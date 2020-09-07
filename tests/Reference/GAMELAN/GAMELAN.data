@@ -13,7 +13,7 @@ lire_fichier dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool Metis { Nb_parts 2 }
+    Partition_tool Metis { Nb_parts 8 }
     Larg_joint 2
     zones_name dom
 }
@@ -99,8 +99,8 @@ Lire pb1
             p paroi_fixe
             in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.  0.0264513805222214
             o_o_o_o    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
-            f    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z # (z-0.0025) #
-            g  Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z # (z+0.0025) #
+            f    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+            g  Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
         }
 
     }
@@ -111,7 +111,7 @@ Lire pb1
         diffusion { }
         conditions_initiales
         {
-            temperature Champ_uniforme  1  273
+            temperature Champ_Fonc_XYZ dom 1 273+10*(x+y+z)
         }
 
         conditions_limites
@@ -122,7 +122,6 @@ Lire pb1
             in frontiere_ouverte_temperature_imposee  Champ_front_Uniforme 1 273
             o_o_o_o  frontiere_ouverte T_ext Champ_front_Uniforme 1 273
             f  frontiere_ouverte T_ext Champ_front_Uniforme 1 272
-
             g   frontiere_ouverte T_ext Champ_front_Uniforme 1 272
         }
     }
