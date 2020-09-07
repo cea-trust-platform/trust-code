@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 #include <Champ_Face.h>
 #include <Loi_Etat_Melange_GP.h>
 #include <Check_espace_virtuel.h>
+#include <communications.h>
 
 Implemente_base(EDO_Pression_th_VDF,"EDO_Pression_th_VDF",EDO_Pression_th_base);
 
@@ -95,19 +96,19 @@ void EDO_Pression_th_VDF::completer()
 // Postcondition:
 double EDO_Pression_th_VDF::moyenne_vol(const DoubleTab& tab) const
 {
-  int elem, nb_elem=la_zone->nb_elem();
+  int nb_elem=la_zone->nb_elem();
   const DoubleVect& volumes = la_zone->volumes();
   assert(tab.dimension(0)==nb_elem);
-  double v, moy=0, V=0;
-  for (elem=0 ; elem<nb_elem ; elem++)
+  ArrOfDouble sum(2);
+  sum = 0;
+  for (int elem=0 ; elem<nb_elem ; elem++)
     {
-      v = volumes(elem);
-      V += v;
-      moy += v*tab(elem);
+      double v = volumes(elem);
+      sum[0] += v;
+      sum[1] += v*tab(elem);
     }
-  v=Process::mp_sum(V);
-  moy=Process::mp_sum(moy);
-  return moy/v;
+  mp_sum_for_each_item(sum);
+  return sum[1]/sum[0];
 }
 void EDO_Pression_th_VDF::calculer_rho_face_np1(const DoubleTab& tab_rhoP0)
 {
