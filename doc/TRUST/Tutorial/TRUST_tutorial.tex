@@ -172,7 +172,7 @@ CEA Saclay \\ % Your institution for the title page
 \begin{itemize}
 \item First, initialize the TRUST environment. 
 \begin{itemize}
-\item On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.6):\\
+\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.1):\\
 %\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 %\vspace{0.5cm}
@@ -691,25 +691,21 @@ You will run it like:\\
 \begin{block}{}
 NB: On CEA Clusters, TRUST is already installed and the procedure of launching calculation is described below. Out of CEA, your cluster administrator should install and configure TRUST. In addition, submission files and procedure depend on the cluster itself and could be different from those presented below.
 \begin{itemize}
-\item Log on to the CEA cluster callisto and initialize the TRUST environment: \\
+\item Log in to the CEA cluster orcus and initialize the TRUST environment: \\
 {\small{
-\textbf{ssh -X yourlogin@callisto-login1(.intra.cea.fr)} \\
-\textbf{source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh}\\
-or 
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}\\
+\textbf{ssh -X yourlogin@orcusloginint1(.intra.cea.fr)} or\\
+\textbf{ssh -X yourlogin@orcusloginamd1(.intra.cea.fr)} \\
+\textbf{source /home/trust\_trio-public/env\_TRUST-X.Y.Z.sh}\\
 }}
 
 \item Copy the study Obstacle:\\
-\textbf{cd /panfs/ixion/home/yourlogin}\\
+\textbf{cd \$SCRATCH}\\
 \textbf{mkdir  -p  Formation\_TRUST/yourname} \\
 \textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} Obstacle} \\
 \textbf{cd Obstacle} \\
 
-\item Open Obstacle.data and set the \textbf{format} to \textbf{lata}\index{format lata} in the post-traitement block.
-
-\item Create automatically a 2 partitioned mesh and a parallel data file with:\\
-\textbf{trust -partition\index{trust -partition} Obstacle}
+\item Open Obstacle.data and set the \textbf{format} to \textbf{lata}\index{format lata} in the post-processing block.
 
 \end{itemize}
 
@@ -722,6 +718,9 @@ or
 \begin{block}{}
 
 \begin{itemize}
+\item Partition mesh and create a parallel data file with:\\
+\textbf{trust -partition\index{trust -partition} Obstacle}
+
 \item For clusters, you have to create a submission file:\\
 \textbf{trust -create\_sub\_file\index{trust -create\_sub\_file} PAR\_Obstacle 2}
 
@@ -730,21 +729,22 @@ or
 \item Submit the job with: 
 \textbf{sbatch sub\_file}
 
-\item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u yourlogin"}
+\item Check job status with: \textbf{"squeue"} or \textbf{"squeue -u yourlogin"}
 
-\item You could run VisIt from the cluster but it is not recommended.
+\item To vizualize your results, use TurboVNC as described on Users training presentation.
+%\item You could run VisIt from the cluster but it is not recommended.
 
-\item So you can run VisIt on your PC and access/visualize the result file on callisto cluster.
-        \begin{itemize}
-        \item Open your .bashrc file (or create it if needed).
-        \item Add the following lines:\\
-        if [[ \${HOSTNAME:0:8} == "callisto" ]] \\
-        then\\
-           source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh \\
-        fi
-        \item Open VisIt on your computer, then access to your files on callisto with:\\
-        File $\rightarrow$ Open File and select callisto in the localhost menu.
-        \end{itemize}
+%\item So you can run VisIt on your PC and access/visualize the result file on callisto cluster.
+%        \begin{itemize}
+%        \item Open your .bashrc file (or create it if needed).
+%        \item Add the following lines:\\
+%        if [[ \${HOSTNAME:0:8} == "callisto" ]] \\
+%        then\\
+%           source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh \\
+%        fi
+%        \item Open VisIt on your computer, then access to your files on callisto with:\\
+%        File $\rightarrow$ Open File and select callisto in the localhost menu.
+%        \end{itemize}
 
 \end{itemize}
 
@@ -1172,7 +1172,7 @@ or \\
 
 \item You can create a uniformly refined mesh using, for instance, the keyword \textbf{Raffiner\_Anisotrope\index{Raffiner\_Anisotrope}}.
 
-\item Then improve the calculation speed on this mesh, you can use a coarse discretization \textbf{P1} (\textbf{Read dis \{ P1 \}} keywords) with less pressure unknowns. On this latter, it runs 3 times faster than on P1Bulle discretization but it is less accurate: 8452 unknowns compared to 49221 unknowns.
+\item Then improve the calculation speed on this mesh, you can use a coarse discretization \textbf{P1} (\textbf{Read dis \{ P1 \}}) with less pressure unknowns. On this latter, it runs 3 times faster than on P1Bulle discretization but it is less accurate: 8452 unknowns compared to 49221 unknowns.
 \end{itemize}
 
 \end{block}
@@ -1237,7 +1237,7 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 
 \begin{itemize}
 
-\item First initialize TrioCFD full environment to have acces to TrioCFD and TRUST studies :\\
+\item First initialize TrioCFD full environment to have access to TrioCFD and TRUST studies :\\
 {\small{
 \textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
