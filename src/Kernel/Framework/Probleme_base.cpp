@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1634,7 +1634,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 
   if (discretisation().que_suis_je()=="VDF")
     {
-      Cerr << "\nTemperature_physique is not available for VDF discretization" << finl;
+      Cerr << "\n" << un_nom << " is not available for VDF discretization" << finl;
       exit();
     }
 
