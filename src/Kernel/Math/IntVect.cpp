@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1571,7 +1571,11 @@ void operator_divide(IntVect& resu, const int x, Mp_vect_options opt)
       for (; count; count--)
         {
           int& p_resu = *(resu_ptr++);
-          assert(x!=0.);
+          if(x==0.)
+            {
+              Cerr << "Error: divide by 0 in operator_divide." << finl;
+              Process::exit();
+            };
           p_resu /= x;
         }
     }
