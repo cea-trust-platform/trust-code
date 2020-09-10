@@ -1,0 +1,4 @@
+if [ ! -f DOM_HDF_p2.Zones ]
+then
+	make_PAR.data hdf5_io.data
+fi
