@@ -330,6 +330,9 @@ void mon_main::dowork(const Nom& nom_du_cas)
   int mode_append=1;
   if (!Objet_U::disable_TU)
     {
+      if(GET_COMM_DETAILS)
+        statistiques().print_communciation_tracking_details("Statistiques de post resolution", 1);               // Into _comm.TU file
+
       statistiques().dump("Statistiques de post resolution", mode_append);
       print_statistics_analyse("Statistiques de post resolution", 1);
     }

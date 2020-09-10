@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,14 +23,16 @@
 #include <Modifier_pour_QC.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Zone_VF.h>
+#include <Debog.h>
 
 static void multiplier_ou_diviser(DoubleVect& x, const DoubleVect& y, int diviser)
 {
-  x.echange_espace_virtuel(); // Fixed bug by MR
   if (!diviser)
-    tab_multiply_any_shape(x, y); //,VECT_REAL_ITEMS);
+    tab_multiply_any_shape(x, y ,VECT_REAL_ITEMS);
   else
-    tab_divide_any_shape(x, y); //,VECT_REAL_ITEMS);
+    tab_divide_any_shape(x, y ,VECT_REAL_ITEMS);
+  x.echange_espace_virtuel();
+  //Debog::verifier("multiplier_ou_diviser x/y apres x:",x);
 }
 
 // Modif B.M: on ne remplit que la partie reelle du tableau.

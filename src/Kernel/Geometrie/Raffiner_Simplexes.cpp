@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -350,9 +350,11 @@ static void build_quadrangle_edges_pattern(IntTab& pattern)
 {
   static const int t[] = {  2,0, 1 ,
                             2,1, 3,
-                            2,3, 2,
-                            2,2, 0,
-                            4,0, 3,1,2,  -1
+                            2, 2, 3,
+                            2, 0, 2,
+                            4,0,3,1,2,
+                            -1
+
                          };
   fill_tab_2_new(t, 5, 4, pattern);
 }
@@ -403,13 +405,13 @@ static void build_hexa_edges_pattern(IntTab& pattern)
 
   static const int t[] = {  2, 0, 1 , // L'arete 0 est entre le sommet 0 et le sommet 1 de l'element
                             2, 1, 3 , // etc...
-                            2, 3, 2 ,
-                            2, 2, 0 ,
+                            2, 2, 3 ,
+                            2, 0, 2 ,
                             4, 0, 3 , 1,2,
                             2, 0,4, 4,0,5,1,4 ,2, 1,5 , // 5' 6' 7'
                             4,0,6,2,4, 8,0,7,1,6,3,4,2,5, 4,1,7,3,5,
                             2,2,6, 4,2,7,3,6, 2,3,7, //11' 12' 13'
-                            2,4,5, 2,5,7, 2,7,6, 2,6,4 , 4,4,7,5,6,
+                            2,4,5, 2,5,7, 2,6,7, 2,4,6 , 4,4,7,5,6,
                             -1
                          };
   fill_tab_2_new(t, 19, 8, pattern);
@@ -1013,15 +1015,20 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                             {
                               std::swap(local0,local1);
                             }
-                          int nb_edegs_pattern=edges_pattern.dimension(0);
+
+                          int nb_edges_pattern=edges_pattern.dimension(0);
+                          int nb_nodes_per_edge_max = edges_pattern.dimension(1);
                           int ok=-1;
-                          for (int e=0; e<nb_edegs_pattern; e++)
+                          for (int e=0; e<nb_edges_pattern; e++)
                             {
                               //                            const int node  = find_refined_node_index(nodes_of_cells_src,edges_of_cells_src,nb_nodes_src,elem,-e);
-                              if ((local0==edges_pattern(e,0))&&(local1==edges_pattern(e,1)))
+                              for (int c=0; c<nb_nodes_per_edge_max-1; c++)
                                 {
-                                  ok=e;
-                                  break;
+                                  if ((local0==edges_pattern(e,c))&&(local1==edges_pattern(e,c+1)))
+                                    {
+                                      ok=e;
+                                      break;
+                                    }
                                 }
                             }
                           if (ok==-1)

@@ -860,13 +860,13 @@ int local_imin_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
                                         void carre(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu *= p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
 void operator_divide(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
-#Pusemacro(patternVect)( , assert(x!=0.);p_resu /= x;, "with_resu", "no_any_shape", "with_vx", "without_vy", opt,)
+#Pusemacro(patternVect)( , if (x==0) { Cerr << "Divide by 0 in __Scalar__Vect::operator_divide()" << finl; Process::exit();};p_resu /= x;, "with_resu", "no_any_shape", "with_vx", "without_vy", opt,)
                                             void operator_inverse(__Scalar__Vect & resu, Mp_vect_options opt)
-#Pusemacro(patternVect)( , p_resu = 1. / p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
+#Pusemacro(patternVect)( , if (p_resu==0) { Cerr << "Divide by 0 in __Scalar__Vect::operateur_inverse()" << finl; Process::exit();}; p_resu = 1. / p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
                                               static void tab_multiply_any_shape_(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu *= x;, "with_resu", "any_shape", "with_vx", "without_vy", opt,)
                                                 static void tab_divide_any_shape_(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
-#Pusemacro(patternVect)( , p_resu *= (1. / x);, "with_resu", "any_shape", "with_vx", "without_vy", opt,)
+#Pusemacro(patternVect)( , if (x==0) { Cerr << "Divide by 0 in __Scalar__Vect::tab_divide_any_shape_()" << finl; Process::exit();}; p_resu *= (1. / x);, "with_resu", "any_shape", "with_vx", "without_vy", opt,)
                                                 // Cette methode permettent de multiplier un tableau a plusieurs dimensions par un tableau
                                                 //  de dimension inferieure (par exemple un tableau a trois composantes par un tableau a une composante).
                                                 //  Chaque valeur du tableau vx est utilisee pour plusieurs items consecutifs du tableau resu
@@ -893,6 +893,11 @@ void tab_divide_any_shape(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_v
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) {
     // Produit par une constante
+    if (vx[0]==0)
+    {
+       Cerr << "Divide by 0 in __Scalar__Vect::tab_divide_any_shape()" << finl;
+       Process::exit();
+    }
     __scalar__ x = 1. / vx[0];
     operator_multiply(resu, x, opt);
   } else if (vx.line_size() == resu.line_size()) {
@@ -905,7 +910,7 @@ void tab_divide_any_shape(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_v
 }
 #Pendif
 void operator_divide(__Scalar__Vect & resu, const __scalar__ x, Mp_vect_options opt)
-#Pusemacro(patternVect)( , assert(x!=0.);p_resu /= x;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
+#Pusemacro(patternVect)( , if(x==0.) { Cerr << "Error: divide by 0 in operator_divide." << finl;Process::exit();};p_resu /= x;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
 
   __scalar__ __Scalar__Vect::local_min_vect(Mp_vect_options opt) const
 {

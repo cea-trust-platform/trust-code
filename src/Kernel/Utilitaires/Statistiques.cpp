@@ -741,7 +741,6 @@ void Statistiques::dump(const char * message, int mode_append)
           quantity = si.counter_quantity[i];
         }
 
-
       int level = si.counter_level[i];
       double avg_time_per_step = si.counters_avg_min_max_var_per_step[i][1];
       double min_time_per_step = si.counters_avg_min_max_var_per_step[i][2];
@@ -1086,8 +1085,9 @@ void Statistiques::end_communication_tracking(int cid)
 }
 
 
-void Statistiques::print_communciation_tracking_details()
+void Statistiques::print_communciation_tracking_details(const char* message, int mode_append)
 {
+  assert(message); // message non nul !
 
   Stat_Internals& si = *stat_internals;
 
@@ -1108,7 +1108,8 @@ void Statistiques::print_communciation_tracking_details()
   char desc[BUFLEN+100];
 
   comm << "*************************************************************************************************" << finl;
-  comm << "File divided into 2 parts:" << finl;
+  comm << message << finl;
+  comm << "Block divided into 2 parts:" << finl;
   comm << "Part 1: for each function, gives the percentage consumed by communications" << finl;
   comm << "Part 2: for each type of communication, gives the percentage of time spent in each function" << finl;
   comm << "        Note that some counters are nested within each other, " << finl;
@@ -1118,7 +1119,8 @@ void Statistiques::print_communciation_tracking_details()
   comm << finl;
 
   //parcours des zones de communication
-  for (int i = 0; i < si.nb_counters; i++)
+  //on laisse tomber temps total
+  for (int i = 1; i < si.nb_counters; i++)
     {
 
       double tot_communication_in_zone_i = 0;
@@ -1177,6 +1179,11 @@ void Statistiques::print_communciation_tracking_details()
   for(int i = 0; i < si.nb_comm_counters; i++)
     {
       int counter_id = get_counter_id_from_index_in_comm_tracking_info(i);
+      double total_time_of_communication_i = si.communication_tracking_info[i][0].time;
+      double total_avg_time_of_communication_i = Process::mp_sum(total_time_of_communication_i);
+      total_avg_time_of_communication_i /= Process::nproc();
+
+      if(total_avg_time_of_communication_i == 0.0) continue;
 
       comm
           << "\n-----------------------------------------------------------------"
@@ -1187,11 +1194,6 @@ void Statistiques::print_communciation_tracking_details()
       comm
           << "-----------------------------------------------------------------"
           << "\n";
-
-
-      double total_time_of_communication_i = si.communication_tracking_info[i][0].time;
-      double total_avg_time_of_communication_i = Process::mp_sum(total_time_of_communication_i);
-      total_avg_time_of_communication_i /= Process::nproc();
       comm << "Temps total : " << total_avg_time_of_communication_i << "s\n";
 
       if( si.family[counter_id] != 0 )
@@ -1285,6 +1287,7 @@ void Statistiques::print_communciation_tracking_details()
         comm << "\tdont " << si.description[i-1] << " : " << avg_send_recv_in_zone_i << "s (" << avg_pourcentage << "%) \n";
 
     }
+  comm << "\n\n";
 
   free(send_recv_family);
   free(all_reduce_family);
@@ -1293,7 +1296,7 @@ void Statistiques::print_communciation_tracking_details()
     {
       Nom TU(Objet_U::nom_du_cas());
       TU += "_comm.TU";
-      SFichier comm_file(TU, ios::out);
+      SFichier comm_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
       comm_file << comm.get_str();
     }
 
