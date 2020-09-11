@@ -5,7 +5,7 @@ Parameters {
  	TestCase Sauvegarde_hdf5 hdf5_io.data
 	TestCase Sauvegarde_simple_hdf5 hdf5_io.data
 	TestCase Logs_hdf5 hdf5_io.data
-	TestCase Zones_hdf5 PAR_hdf5_io.data 2	
+	TestCase Zones_hdf5 hdf5_io.data 2	
 }
 
 Chapter {
@@ -136,7 +136,7 @@ Chapter {
 	Description "The domain should be divided into 2 equal parts: one at the bottom and one at the top."
 	Visu
 	{
-        	Instruction_visit OpenDatabase("Zones_hdf5/PAR_hdf5_io.lata", 0)
+        	Instruction_visit OpenDatabase("Zones_hdf5/hdf5_io.lata", 0)
 		Instruction_visit AddPlot("Subset", "blocks(dom)", 1, 1)
 		Instruction_visit s = SubsetAttributes()
 		Instruction_visit s.SetMultiColor(0, (255, 0, 0, 255))
