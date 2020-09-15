@@ -14,12 +14,18 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   # avec intel/intelmpi 19.0.2, les calculs bloquent
-   #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
-   # avec intel/intelmpi 19.0.5, impossible de compiler TrioCFD ou autre BALTIK (meme vide)
-   #module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
-   # avec intel 19.0.5 et openmpi 3.1.4, trust et TrioCFD compilent
-   module="intel-compilers/19.0.5 intel-mkl/19.0.5 openmpi/3.1.4"
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      cuda_version=10.2
+      module="gcc/8.3.1 openmpi/4.0.2-cuda cuda/$cuda_version"
+   else
+      # avec intel/intelmpi 19.0.2, les calculs bloquent
+      #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
+      # avec intel/intelmpi 19.0.5, impossible de compiler TrioCFD ou autre BALTIK (meme vide)
+      #module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
+      # avec intel 19.0.5 et openmpi 3.1.4, trust et TrioCFD compilent
+      module="intel-compilers/19.0.5 intel-mkl/19.0.5 openmpi/3.1.4"
+   fi
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -36,7 +42,9 @@ squeue" > $TRUST_ROOT/bin/qstat
 ##############################
 define_soumission_batch()
 {
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   soumission=2
+   [ "$prod" = 1 ] && soumission=1
+   [ "$gpu"  = 1 ] && soumission=1 && qos=qos_gpu-dev
    # sinfo :
    #PARTITION AVAIL  TIMELIMIT  NODES  STATE 
    #cpu_p1*      up   20:00:00    1528 mix
@@ -46,7 +54,7 @@ define_soumission_batch()
    #prepost      up   20:00:00      4    mix 
 
 
-   queue=cpu_p1
+   queue=cpu_p1 && [ "$gpu" = 1 ] && queue=gpu_p1 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpu_p3
    # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
    #   Name   Priority MaxSubmit     MaxWall MaxNodes 
    #---------- ---------- --------- ----------- -------- 
@@ -64,8 +72,14 @@ define_soumission_batch()
    #qos_cpu-cp         50     10000                      
    #qos_gpu-cp         50     10000                      
    #qos_prepo+          0     10000                  
-   project="" && [ "`id | grep fej`" != "" ] && project="fej@cpu"
-   cpus_per_task=40
+   project=""
+   if [ "$gpu" = 1 ]
+   then
+      [ "`id | grep ikp`" != "" ] && project="ikp@gpu" && gpus_per_node=1
+   else
+      [ "`id | grep fej`" != "" ] && project="fej@cpu"
+      cpus_per_task=40
+   fi
    hintnomultithread=1
    cpu=30 && [ "$prod" = 1 ] && cpu=110 # 30 minutes or 1 day
    ntasks=20 # number of cores ?

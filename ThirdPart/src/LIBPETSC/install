@@ -177,7 +177,7 @@ then
       #with_gpu=$with_gpu" --with-cuda-lib=[$CUDA_ROOT/lib64/libcudart.so,$CUDA_ROOT/lib64/libcublas.so,$CUDA_ROOT/lib64/libcufft.so]"
       with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
    fi
-   CUDAFLAGS="-ccbin $TRUST_cc_BASE"
+   CUDAFLAGS="-O3 -ccbin $TRUST_cc_BASE"
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"

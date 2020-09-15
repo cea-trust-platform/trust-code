@@ -15,16 +15,10 @@ if [ $LIB = AmgX ]
 then
    # Build
    cd $ROOT
-   if [ "`nvcc --version | grep 10.[12]`" != "" ]
+   if [ "$TRUST_WITHOUT_HOST" = 0 ]
    then
-      # Cuda 10.1 ou 10.2
-      # Commit d0019e5 (more recent commit)
-      tar xfz $TRUST_ROOT/externalpackages/$LIB"_"d0019e5.tar.gz
-   elif [ "`nvcc --version | grep 10.0`" != "" ]
-   then
-      # Cuda 10.0
-      # Commit ba9132119f (supporte par AmgXWrapper)
-      tar xfz $TRUST_ROOT/externalpackages/$LIB"_"ba9132119f.tar.gz
+      # Hors reseau:
+      tar xfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"47ae6962cd.tar.gz
    elif [ "$TRUST_WITHOUT_HOST" = 1 ]
    then
       # Latest:
@@ -52,7 +46,7 @@ fi
 if [ $LIB = AmgXWrapper ]
 then
    cd $ROOT
-   tar xfz $TRUST_ROOT/externalpackages/$LIB"_"*.tar.gz
+   tar xfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"*.tar.gz
    # Hack pour empecher le test des binaires qui ne marche pas cluster (un binaire PETSc compile avec CUDA plantera sur la frontale non gpu)
    sed -i "1,$ s?endif (\${\${runs}})??" AmgXWrapper/cmake-modules/FindPETSc.cmake
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
@@ -78,16 +72,17 @@ then
    [ "$TRUST_WITHOUT_HOST" = 1 ] && valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2 2>&1 | tee -a
    exec=bin/poisson trust -gpu dummy 4 -caseName PETSc_GAMG_100x100x100 -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
    exec=bin/poisson trust -gpu dummy 4 -caseName   AmgX_AGG_100x100x100 -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
-$log
    # ---------------------------------------------------------------------------	  
-   # Machine	NVidia		GFlops	Cuda	Driver	GNU	MPI	solve	GAMG	AmgX_AGG	 
-   # is234639	P600 		 1.1	10.0	10.2	7.4.0	OpenMPI 4.0.3	1.83s	0.67s
-   # is225303 	K4000 		 1.2   	 8.0 	 9.0	5.4.0	MPICH 3.2	2.08s	crash Cuda failure: 'invalid device function' dense_lu_solver.cu:698
-   # is240831	P2000		 3.0	10.1	10.1	7.5.0	MPICH 3.2	1.72s   0.30s
-   # irene	P100-PCIE-12Gb	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4	1.16s	0.11s
-   # cobalt	P100-PCIE-16Gb	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4	1.35s	0.08s
-   # cobalt     V100 ?		14.0	10.2	10.2	7.3.0	OpenMPI 2.0.4	?	?
-   # orcus	V100-PCIE-16Gb 	14.0	 9.2 	10.1	6.5.0			1.32s	0.07s
+   # Machine	NVidia		GFlops	Cuda	Driver	GNU	MPI		solve	GAMG	AmgX_AGG	 
+   # is242981	P400 (2Go)	   	10.2	11.0   10.0.1	OpenMPI 4.0.3   	0.90s   0.78s
+   # is234639	P600 		 1.1	10.0	10.2	7.4.0	OpenMPI 4.0.3		1.83s	0.67s
+   # is225303 	K4000 		 1.2   	 8.0 	 9.0	5.4.0	MPICH 3.2		2.08s	crash Cuda failure: 'invalid device function' dense_lu_solver.cu:698
+   # is240831	P2000		 3.0	10.1	10.1	7.5.0	MPICH 3.2		1.72s   0.30s
+   # irene	P100-PCIE-12Go	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.16s	0.11s
+   # cobalt	P100-PCIE-16Go	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.35s	0.08s
+   # cobalt     V100 ?		14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		?	?
+   # orcus	V100-PCIE-16Go 	14.1	 9.2 	10.1	6.5.0				1.32s	0.07s
+   # jeanzay	V100-SXM2-16Go	14.0	10.2	10.2	8.3.1	OpenMPI	4.0.2-cuda	1.15s	0.048s (7500Euros...)
    #cd $ROOT && rm -r -f $LIB # On efface les sources ?	    
 fi
 exit 0

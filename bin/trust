@@ -158,6 +158,7 @@ copy=""
 gdb=""
 taches=""
 cpus_per_task=""
+gpus_per_node=""
 hintnomultithread=""
 queue_choisie=""
 suppression_file=""
@@ -789,10 +790,12 @@ then
 		echo "#SBATCH -o myjob.%j.o"				>> $sub_file	# Output log
 		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
 		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
-		[ "$constraint" != "" ] && echo "#SBATCH --constraint=$constraint" >> $sub_file	# constraint ?
+		#[ "$project" != "" ] && echo "#SBATCH --constraint=$project" >> $sub_file	# Account (PL: non ne marche pas sur jean-zay/IDRIS)
+		[ "$constraint" != "" ] && echo "#SBATCH --constraint=$constraint"	>> $sub_file	# Constraint
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
-		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task	
+		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task
+		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"	>> $sub_file	# Number of GPUs per node (jean-zay/IDRIS)	
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"	>> $sub_file	# Option for jean-zay/IDRIS
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes

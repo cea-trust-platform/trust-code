@@ -119,18 +119,19 @@ let i=$i+1;solver[$i]="Petsc_GPU BICGSTAB { seuil $seuil precond DIAG { } impr }
 ###############################
 # AMGX solveurs tested on GPU #
 ###############################
+# ToDo: blocage en // + plantages non deterministes en sequentil
 let i=$i+1;solver[$i]="Petsc      GCP      { precond SSOR { omega 1.6 } seuil $seuil impr }"			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond SSOR { omega 1.6 } seuil $seuil }" 			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 0 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 1 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 0 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 1 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GMRES    { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver=PCG preconditioner=MULTICOLOR_GS tolerance=$seuil }" 	;amgx[$i]=1	;sym[$i]=1
-# Crash: let i=$i+1;solver[$i]="Petsc_AMGX BICGSTAB { precond SSOR { omega 1.6 } seuil $seuil }"			;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond SSOR { omega 1.6 } seuil $seuil }" 			;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 0 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 1 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 0 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 1 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GMRES    { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver=PCG preconditioner=MULTICOLOR_GS tolerance=$seuil }" 	;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
+# Crash: let i=$i+1;solver[$i]="Petsc_AMGX BICGSTAB { precond SSOR { omega 1.6 } seuil $seuil }"			;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
 # gamg:
-let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver(s)=PCG s:tolerance=$seuil s:preconditioner(p)=AMG s:use_scalar_norm=1 s:monitor_residual=1 s:store_res_history=1 p:error_scaling=0 p:print_grid_stats=1 p:max_iters=1 p:cycle=V p:min_coarse_rows=2 p:max_levels=100 p:smoother(smoother)=BLOCK_JACOBI p:presweeps=1 p:postsweeps=1 p:coarsest_sweeps=1 p:coarse_solver=DENSE_LU_SOLVER p:dense_lu_num_rows=2 p:algorithm=CLASSICAL p:selector=HMIS p:interpolator=D2 p:strength=AHAT smoother:relaxation_factor=0.8 }" 	;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver(s)=PCG s:tolerance=$seuil s:preconditioner(p)=AMG s:use_scalar_norm=1 s:monitor_residual=1 s:store_res_history=1 p:error_scaling=0 p:print_grid_stats=1 p:max_iters=1 p:cycle=V p:min_coarse_rows=2 p:max_levels=100 p:smoother(smoother)=BLOCK_JACOBI p:presweeps=1 p:postsweeps=1 p:coarsest_sweeps=1 p:coarse_solver=DENSE_LU_SOLVER p:dense_lu_num_rows=2 p:algorithm=CLASSICAL p:selector=HMIS p:interpolator=D2 p:strength=AHAT smoother:relaxation_factor=0.8 }" 	;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
 # amg:
-let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver(s)=PCG s:tolerance=$seuil s:preconditioner(p)=AMG s:use_scalar_norm=1 s:monitor_residual=1 s:store_res_history=1 p:error_scaling=0 p:print_grid_stats=1 p:max_iters=1 p:cycle=V p:min_coarse_rows=2 p:max_levels=100 p:smoother(smoother)=BLOCK_JACOBI p:presweeps=1 p:postsweeps=1 p:coarsest_sweeps=1 p:coarse_solver=DENSE_LU_SOLVER p:dense_lu_num_rows=2 p:algorithm=AGGREGATION p:selector=SIZE_2 p:max_matching_iterations=100000 p:max_unassigned_percentage=0.0 smoother:relaxation_factor=0.8 }" 	;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver(s)=PCG s:tolerance=$seuil s:preconditioner(p)=AMG s:use_scalar_norm=1 s:monitor_residual=1 s:store_res_history=1 p:error_scaling=0 p:print_grid_stats=1 p:max_iters=1 p:cycle=V p:min_coarse_rows=2 p:max_levels=100 p:smoother(smoother)=BLOCK_JACOBI p:presweeps=1 p:postsweeps=1 p:coarsest_sweeps=1 p:coarse_solver=DENSE_LU_SOLVER p:dense_lu_num_rows=2 p:algorithm=AGGREGATION p:selector=SIZE_2 p:max_matching_iterations=100000 p:max_unassigned_percentage=0.0 smoother:relaxation_factor=0.8 }" 	;amgx[$i]=1	;sym[$i]=1 ;par[$i]=0
 

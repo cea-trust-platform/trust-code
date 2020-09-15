@@ -353,7 +353,7 @@ check_nvidia_cuda()
    # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
    # Runtime : CUDA_ROOT=/usr			$CUDA_ROOT/include/cuda/cuda.h !
    [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
-   nvcc="`\ls $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
+   nvcc="`\ls $CUDA_PATH/bin/nvcc $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
    ################
    # Detection nvcc
    ################
@@ -371,7 +371,9 @@ check_nvidia_cuda()
    ################
    # Detection CUDA
    ################
-   CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* 2>/dev/null | head -1`"
+   [ "$CUDA_PATH" != "" ] && CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null` # JeanZay
+   [ "$CUDA_LIB" = "" ] && CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* 2>/dev/null | head -1`"
+   [ "$CUDA_LIB" = "" ] && echo "Cuda lib libcudart.so not found!" && exit -1
    CUDA_LIB=`dirname $CUDA_LIB`
    CUDA_ROOT=`dirname $CUDA_LIB`
    #############################
