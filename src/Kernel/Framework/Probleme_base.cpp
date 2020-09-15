@@ -1089,7 +1089,6 @@ void Probleme_base::sauver() const
           fic_hdf.close();
           delete osauv_hdf_;
           osauv_hdf_ = 0;
-          Cout << "HDF5 backup file written and closed" << finl;
         }
       else
         {
@@ -1145,7 +1144,6 @@ void Probleme_base::finir()
           fic_hdf.close();
           delete osauv_hdf_;
           osauv_hdf_ = 0;
-          Cout << "HDF5 backup file written and closed" << finl;
         }
       else
         {

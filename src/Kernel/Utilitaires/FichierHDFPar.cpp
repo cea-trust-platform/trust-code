@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -102,10 +102,13 @@ void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, const char* da
   // Creating the datasets from every processor
   // (metadata have to be written collectively)
   std::vector<hid_t> datasets_id(Process::nproc());
+  Nom my_dataset_name;
+
   for(int p = 0; p < Process::nproc(); p++)
     {
       Nom dname = dataset_basename;
       dname = dname.nom_me(p, 0, 1 /*without_padding*/);
+      if(p == Process::me()) my_dataset_name = dname;
       hsize_t dlen= datasets_len[p];
       hid_t dspace = H5Screate_simple(1, &dlen, NULL);
 
@@ -114,14 +117,20 @@ void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, const char* da
       H5Sclose(dspace);
     }
 
+  Cerr << "[HDF5] All datasets created !" << finl;
+
   hid_t dataspace_id = H5Screate_simple(1, &lenData, NULL);
 
+  Cout << "[HDF5] Writing into HDF dataset " << my_dataset_name << "...";
   // Writing my own dataset
   H5Dwrite(datasets_id[Process::me()], datatype, dataspace_id, H5S_ALL, dataset_transfer_plst_, data);
+  Cout << " Dataset written !" << finl;
 
   // Close dataset and dataspace
   for(int p = 0; p < Process::nproc(); p++)
     H5Dclose(datasets_id[p]);
+  Cerr << "[HDF5] All datasets closed !" << finl;
+
   H5Sclose(dataspace_id);
 }
 #endif

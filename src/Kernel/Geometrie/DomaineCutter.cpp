@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1456,6 +1456,5 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   if (format == Decouper::HDF5_SINGLE)
     {
       fic_hdf.close();
-      Cout << "HDF5 Zones file written and closed" << finl;
     }
 }
