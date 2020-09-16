@@ -1344,7 +1344,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   Sortie_Brute os_hdf;
                   writeData(sous_domaine, os_hdf);
 
-                  fic_hdf.create_and_fill_dataset("/zone", i_part, os_hdf);
+                  fic_hdf.create_and_fill_dataset_SW("/zone", i_part, os_hdf);
                 }
               else
                 {

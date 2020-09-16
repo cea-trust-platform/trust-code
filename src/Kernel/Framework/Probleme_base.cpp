@@ -1085,7 +1085,7 @@ void Probleme_base::sauver() const
           *osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
           fic_hdf.create(nom_fich);
-          fic_hdf.create_and_fill_dataset("/sauv", *osauv_hdf_);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
           fic_hdf.close();
           delete osauv_hdf_;
           osauv_hdf_ = 0;
@@ -1140,7 +1140,7 @@ void Probleme_base::finir()
           *osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
           fic_hdf.create(nom_fich);
-          fic_hdf.create_and_fill_dataset("/sauv", *osauv_hdf_);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
           fic_hdf.close();
           delete osauv_hdf_;
           osauv_hdf_ = 0;

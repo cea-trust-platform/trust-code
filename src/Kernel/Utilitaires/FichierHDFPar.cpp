@@ -20,9 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <FichierHDFPar.h>
-#include <communications.h>
-#include <ArrOfInt.h>
-#include <vector>
 
 #ifdef MPI_
 #include <comm_incl.h>

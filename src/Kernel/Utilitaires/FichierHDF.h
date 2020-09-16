@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,11 +63,16 @@ public:
   virtual void open(Nom filename, bool readOnly);
   virtual void close();
 
-  // Multiple Writer Multiple Readers methods:
+  // Multiple Writer methods:
   // every processor writes their own dataset into the file
-  // and each proc reads its own dataset in the given file
-  virtual void create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie);
-  virtual void create_and_fill_dataset(Nom dataset_basename, SChaine& sortie);
+  virtual void create_and_fill_dataset_MW(Nom dataset_basename, Sortie_Brute& sortie);
+  virtual void create_and_fill_dataset_MW(Nom dataset_basename, SChaine& sortie);
+
+  // Method to write the dataset owned by proc #proc_rank in the given file
+  // (to use when a single proc writes all the datasets for example)
+  virtual void create_and_fill_dataset_SW(Nom dataset_basename, int proc_rank, Sortie_Brute& sortie);
+
+  // Method to read the dataset owned by proc #proc_rank in the given file
   virtual void read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute& entree);
 
   // checks if a dataset named dataset_name exists in the file
@@ -80,7 +85,7 @@ protected:
   virtual void prepare_dataset_props();
 #ifdef MED_
 
-  void create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
+  void create_and_fill_dataset_MW(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
 
   hid_t file_id_;
   hid_t file_access_plst_;
