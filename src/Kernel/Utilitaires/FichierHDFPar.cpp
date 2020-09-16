@@ -50,6 +50,10 @@ void FichierHDFPar::prepare_file_props()
 
 #ifdef MED_
   H5Pset_fapl_mpio( file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos);
+
+  //on cluster, type lfs getstripe . to see the default striping of the current repository
+  hsize_t stripe_size = 1048576; //1572864;
+  H5Pset_alignment(file_access_plst_, 0, stripe_size);
 #endif
 
   MPI_Info_free(&infos);
@@ -73,64 +77,3 @@ void FichierHDFPar::prepare_dataset_props()
   // dataset_full_name.nom_me(rank);
 }
 
-void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie)
-{
-  hsize_t lenData = sortie.get_size();
-  const char * data = sortie.get_data();
-
-  create_and_fill_dataset(dataset_basename, data, lenData, H5T_NATIVE_OPAQUE);
-}
-
-
-void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, SChaine& sortie)
-{
-  hsize_t lenData = sortie.get_size();
-  const char * data = sortie.get_str();
-
-  create_and_fill_dataset(dataset_basename, data, lenData, H5T_C_S1);
-}
-
-
-#ifdef MED_
-void FichierHDFPar::create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype)
-{
-  //collecting the lengths of the datasets from every other processors
-  long long init_value = lenData;
-  std::vector<long long> datasets_len(Process::nproc(), init_value);
-  envoyer_all_to_all(datasets_len, datasets_len);
-
-  // Creating the datasets from every processor
-  // (metadata have to be written collectively)
-  std::vector<hid_t> datasets_id(Process::nproc());
-  Nom my_dataset_name;
-
-  for(int p = 0; p < Process::nproc(); p++)
-    {
-      Nom dname = dataset_basename;
-      dname = dname.nom_me(p, 0, 1 /*without_padding*/);
-      if(p == Process::me()) my_dataset_name = dname;
-      hsize_t dlen= datasets_len[p];
-      hid_t dspace = H5Screate_simple(1, &dlen, NULL);
-
-      datasets_id[p] = H5Dcreate2(file_id_, dname, datatype, dspace,
-                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
-      H5Sclose(dspace);
-    }
-
-  Cerr << "[HDF5] All datasets created !" << finl;
-
-  hid_t dataspace_id = H5Screate_simple(1, &lenData, NULL);
-
-  Cout << "[HDF5] Writing into HDF dataset " << my_dataset_name << "...";
-  // Writing my own dataset
-  H5Dwrite(datasets_id[Process::me()], datatype, dataspace_id, H5S_ALL, dataset_transfer_plst_, data);
-  Cout << " Dataset written !" << finl;
-
-  // Close dataset and dataspace
-  for(int p = 0; p < Process::nproc(); p++)
-    H5Dclose(datasets_id[p]);
-  Cerr << "[HDF5] All datasets closed !" << finl;
-
-  H5Sclose(dataspace_id);
-}
-#endif

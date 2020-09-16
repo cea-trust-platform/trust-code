@@ -34,8 +34,9 @@ void FichierHDF::create(Nom filename) {}
 void FichierHDF::open(Nom filename, bool readOnly) {}
 void FichierHDF::close() {}
 
-void FichierHDF::read_dataset(Nom dataset_name, Entree_Brute& entree) {}
-void FichierHDF::create_and_fill_dataset(Nom dataset_name, Sortie_Brute& data) {}
+void FichierHDF::create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie) {}
+void FichierHDF::create_and_fill_dataset(Nom dataset_basename, SChaine& sortie) {}
+void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute& entree) {}
 
 bool FichierHDF::exists(const char* dataset_name)
 {
@@ -78,9 +79,6 @@ void FichierHDF::open(Nom filename, bool readOnly)
 void FichierHDF::prepare_file_props()
 {
   file_access_plst_ = H5Pcreate(H5P_FILE_ACCESS);
-  //on cluster, type lfs getstripe . to see the default striping of the current repository
-  hsize_t stripe_size = 1048576; //1572864;
-  H5Pset_alignment(file_access_plst_, 0, stripe_size);
 
   //increasing size of the B-tree containing metadata info (to approximately match the size striping)
   //useful when we are writing a lot of chunks
@@ -133,30 +131,62 @@ void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute&
 
 }
 
-void FichierHDF::create_and_fill_dataset(Nom dataset_basename, int proc_rank, Sortie_Brute& sortie)
+void FichierHDF::create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie)
 {
-  prepare_dataset_props();
-
-  Nom dataset_name = dataset_basename;
-  dataset_name = dataset_name.nom_me(proc_rank, 0, 1 /*without_padding*/);
-
   hsize_t lenData = sortie.get_size();
   const char * data = sortie.get_data();
 
-  hsize_t dims[1] = {lenData};
-  hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+  create_and_fill_dataset(dataset_basename, data, lenData, H5T_NATIVE_OPAQUE);
+}
 
-  // Create the dataset
-  hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, dataspace_id,
-                                H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
-  // Writing into it:
-  Cout << "[HDF5] Writing into HDF dataset " << dataset_name << "...";
-  H5Dwrite(dataset_id, H5T_NATIVE_OPAQUE, H5S_ALL, H5S_ALL, dataset_transfer_plst_, data);
-  Cout << " Done !" << finl;
+void FichierHDF::create_and_fill_dataset(Nom dataset_basename, SChaine& sortie)
+{
+  hsize_t lenData = sortie.get_size();
+  const char * data = sortie.get_str();
+
+  create_and_fill_dataset(dataset_basename, data, lenData, H5T_C_S1);
+}
+
+void FichierHDF::create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype)
+{
+  //collecting the lengths of the datasets from every other processors
+  long long init_value = lenData;
+  std::vector<long long> datasets_len(Process::nproc(), init_value);
+  envoyer_all_to_all(datasets_len, datasets_len);
+
+  // Creating the datasets from every processor
+  // (metadata have to be written collectively)
+  std::vector<hid_t> datasets_id(Process::nproc());
+  Nom my_dataset_name;
+
+  for(int p = 0; p < Process::nproc(); p++)
+    {
+      Nom dname = dataset_basename;
+      dname = dname.nom_me(p, 0, 1 /*without_padding*/);
+      if(p == Process::me()) my_dataset_name = dname;
+      hsize_t dlen= datasets_len[p];
+      hid_t dspace = H5Screate_simple(1, &dlen, NULL);
+
+      datasets_id[p] = H5Dcreate2(file_id_, dname, datatype, dspace,
+                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+      H5Sclose(dspace);
+    }
+
+  Cerr << "[HDF5] All datasets created !" << finl;
+
+  hid_t dataspace_id = H5Screate_simple(1, &lenData, NULL);
+
+  Cout << "[HDF5] Writing into HDF dataset " << my_dataset_name << "...";
+  // Writing my own dataset
+  H5Dwrite(datasets_id[Process::me()], datatype, dataspace_id, H5S_ALL, dataset_transfer_plst_, data);
+  Cout << " Dataset written !" << finl;
 
   // Close dataset and dataspace
-  H5Dclose(dataset_id);
+  for(int p = 0; p < Process::nproc(); p++)
+    H5Dclose(datasets_id[p]);
+  Cerr << "[HDF5] All datasets closed !" << finl;
+
   H5Sclose(dataspace_id);
 }
 

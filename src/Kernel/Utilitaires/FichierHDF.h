@@ -26,6 +26,7 @@
 #include <Entree_Brute.h>
 #include <Sortie_Brute.h>
 #include <Nom.h>
+#include <SChaine.h>
 
 #include <med.h>
 #ifdef MED_H
@@ -62,10 +63,11 @@ public:
   virtual void open(Nom filename, bool readOnly);
   virtual void close();
 
-  // Single Writer Multiple Readers methods:
-  // a single proc writes all the datasets (one per proc)
+  // Multiple Writer Multiple Readers methods:
+  // every processor writes their own dataset into the file
   // and each proc reads its own dataset in the given file
-  void create_and_fill_dataset(Nom dataset_basename, int proc_rank, Sortie_Brute& data);
+  virtual void create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie);
+  virtual void create_and_fill_dataset(Nom dataset_basename, SChaine& sortie);
   virtual void read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute& entree);
 
   // checks if a dataset named dataset_name exists in the file
@@ -77,6 +79,9 @@ protected:
   virtual void prepare_file_props();
   virtual void prepare_dataset_props();
 #ifdef MED_
+
+  void create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
+
   hid_t file_id_;
   hid_t file_access_plst_;
   hid_t dataset_transfer_plst_;
