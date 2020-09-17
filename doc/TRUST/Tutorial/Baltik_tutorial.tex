@@ -171,7 +171,7 @@ CEA Saclay \\ % Your institution for the title page
 
 
 
-\section{{\bf{TRUST initialization}}}
+\section{{\bf{TRUST initialization }}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -184,58 +184,44 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Initialisation of TRUST environment}
+\frametitle{TRUST initialization}\label{initTrust}
 \begin{block}{TRUST commands}
 
 \begin{itemize}
-\item Source the TRUST environment:\\
+\item Load TRUST environment:\\
 \vspace{0.2cm}
+\begin{itemize}
+\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.1):\\
+%\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
-\vspace{0.2cm}
+%\vspace{0.5cm}
+\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then write on the terminal:\\
+%\vspace{0.2cm}
+\textbf{source  \$MyPathToTRUSTversion/env\_TRUST.sh}
+%\vspace{0.5cm}
+\end{itemize}
+%\vspace{0.2cm}
 
-\item To know if the configuration is ok and where are the sources:\\
+Ensure that the configuration is ok and locate the sources:\\
 \texttt{\$ echo \$TRUST\_ROOT}
 \vspace{0.2cm}
 
-\item Copy a TRUST test case:\\
+\item Now, copy a TRUST test case that we will need later:\\
 \texttt{\$ mkdir -p Formation\_TRUST/yourname}\\
 \texttt{\$ cd Formation\_TRUST/yourname}\\
 \texttt{\$ trust -copy upwind}\\
 \texttt{\$ cd upwind}\\
-\item Change "format lml" to "format lata" in the data file\\
+Replace "format lml" by "format lata" in the data file\\
 \end{itemize}
 
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Initialisation of TRUST environment}
-%\begin{exampleblock}{Eclipse}
-
-%\begin{itemize}
-%\item Create your TRUST project and launch a test case with \textbf{Eclipse}:\\
-%    \begin{itemize}
-%%    \item [$\circ$] Open TRUST index html page:\\
-%%    \texttt{\$ trust -index}\\
-%%    $\rightarrow$ "FTP site" \\
-%%    $\rightarrow$ "See here how to configure Eclipse with TRUST project." \\
-%    \item [$\circ$] open the Readme\_eclipse.pdf file: \\
-%%    \texttt{\$ vim|nedit|gedit|emacs \$TRUST\_ROOT/src/README\_ECLIPSE \&}\\
-%    \texttt{\$ evince \$TRUST\_ROOT/src/Readme\_eclipse.pdf \&}\\
-%    \item [$\circ$] Do the first two parts ("Download \& configure Eclipse" and "Create a platform TRUST project").\\
-%    \end{itemize}
-
-%\item Close Eclipse.\\
-%\end{itemize}
-
-%\end{exampleblock}
-%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 \section{{\bf{Eclipse initialization}}}
+\subsection{{\bf{Download\& configure eclipse}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -248,11 +234,11 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Download \& configure Eclipse (I)}
+\frametitle{Download Eclipse}
 
 \begin{exampleblock}{Download Eclipse}
 \begin{itemize}
-\item Go to the website of the Eclipse Foundation: \url{http://www.eclipse.org/downloads/eclipse-packages/}
+\item Visit the Eclipse Foundation website: \url{http://www.eclipse.org/downloads/eclipse-packages/}
 \item Click on \textbf{Eclipse Neon (4.6)} on the menu \textbf{More downloads}.
 \item Select \textbf{Eclipse IDE for C/C++ Developers} $\rightarrow$ \textbf{Linux 64-bits}
 \item Download the \textbf{eclipse-cpp-neon-3-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
@@ -260,7 +246,7 @@ CEA Saclay \\ % Your institution for the title page
 \end{itemize}
 \end{exampleblock}
 
-\begin{exampleblock}{Untar the downloaded Eclipse archive}
+\begin{exampleblock}{Untar the downloaded archive}
  \texttt{\$ cd Formation\_TRUST/yourname} \\
  \texttt{\$ tar xfz eclipse-*.tar.gz} \\
  \texttt{\$ cd eclipse}
@@ -269,7 +255,7 @@ CEA Saclay \\ % Your institution for the title page
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Download \& configure Eclipse (II)}
+\frametitle{Configure Eclipse}
 
 \begin{exampleblock}{For Ubuntu16.04, Fedora22, CentOs 7 and recents OS}
 Edit the \textit{eclipse.ini} file by deleting the last 2 lines (Xms and Xmx) and adding the following lines:\\
@@ -289,11 +275,23 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\bf{Create TRUST platform project under Eclipse}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Create a TRUST platform project (I)}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project under Eclipse (I)}
 
-\begin{block}{Initialize TRUST environnement}
-\texttt{\$ source /home/triou/env\_TRUST\_X.Y.Z.sh} \\
+\begin{block}{On a terminal}
+Load TRUST environment and copy "upwind" test case as described on p.\ref{initTrust}: \\
 \texttt{\$ echo \$TRUST\_ROOT/src} \\
 \texttt{\$ echo \$exec\_debug} \\
 \end{block}
@@ -313,19 +311,19 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Create a TRUST platform project (II)}
+\frametitle{Create a TRUST platform project under Eclipse (II)}
 
 \begin{exampleblock}{Create the project}
 \begin{itemize}
 \item File $\rightarrow$ New  $\rightarrow$  C++ Project \\
- $\Rightarrow$ Project name: TRUST-X.Y.Z \\
+ $\Rightarrow$ Project name: TRUST-X.Y.Z (e.g.: TRUST-1.8.1) \\
  $\Rightarrow$ Project type: "Executable"  $\rightarrow$  "Empty Project" \\
  $\Rightarrow$ Toolchains: "Linux GCC" \\
  $\Rightarrow$ Finish
 \end{itemize}
 \end{exampleblock}
 
-\begin{exampleblock}{Import source files into the already created project}
+\begin{exampleblock}{Import TRUST source files into the project}
 \begin{itemize}
 \item From the "Project Explorer" tab, right click on TRUST-X-Y-Z  $\rightarrow$  "Import..." \\
   $\Rightarrow$ General  $\rightarrow$ File System $\rightarrow$ Next \\
@@ -341,25 +339,30 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Create a TRUST platform project (III)}
+\frametitle{Create a TRUST platform project under Eclipse (III)}
 
 \begin{exampleblock}{Configure the project and launch a computation}
 \begin{itemize}
 \item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ Properties \\
   $\Rightarrow$ Builders: uncheck "CDT Builder" $\rightarrow$ OK $\rightarrow$ OK 
+  \vspace{0.1cm}
 \item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..."\\
+  \vspace{0.1cm}
   $\Rightarrow$ Right click on "C/C++ Application" $\rightarrow$ New 
+  \vspace{0.1cm}
   \begin{itemize}
-  \item In the "Main" tab: \\
+  \item In the "Main" tab (tell Eclipse which binary will be used): \\
   $\Rightarrow$ Project: TRUST-X.Y.Z \\
   $\Rightarrow$ "C/C++ Application": copy the string matching \$exec\_debug \\
   $\Rightarrow$ "Apply" \\
-  \item In the "Arguments" tab:\\
-  $\Rightarrow$ "Program arguments" $\rightarrow$ specify the name of your datafile \\
-  $\Rightarrow$ "Working directory" $\rightarrow$ uncheck "Use default" and select the directory with path containing the datafile \\
+  \vspace{0.1cm}
+  \item In the "Arguments" tab (tell Eclipse which datafile to run):\\
+  $\Rightarrow$ "Program arguments" $\rightarrow$ specify datafile's name (here upwind) \\
+  $\Rightarrow$ "Working directory" $\rightarrow$ uncheck "Use default" and type path to datafile \\
   $\Rightarrow$ "Apply"
   \end{itemize}
-  $\Rightarrow$ "Debug" 
+  \vspace{0.1cm}
+  $\Rightarrow$ "Debug" : your datafile will be run with the specified executable
 \end{itemize}
 \end{exampleblock}
 
@@ -367,7 +370,7 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{{\bf{Baltik initialization}}}
+\section{{\bf{Create a Baltik project}}}
 \subsection{{\bf{Creation of a Baltik project}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -382,30 +385,34 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a Baltik project}
-\begin{block}{Baltik commands}
+\begin{block}{Create an empty Baltik}
 
 \begin{itemize}
-\item Create your directory for your project:\\
+\item Create a directory for your project:\\
 \texttt{\$ cd Formation\_TRUST/yourname}
 
-\item Fill your project from a basic project template:\\
+\item Create your project from a basic project template using TRUST commands:\\
 %\texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic my\_project}\\
 \texttt{\$ trust -baltik my\_project}\\
 \texttt{\$ cd my\_project}\\
 
 \texttt{\$ ls -l}
 
-\item You can see that you have now:
+You can see that you have now:
     \begin{itemize}
     \item [$\circ$] three directories: share, src and tests, and
     \item [$\circ$] one "project.cfg" file.
+    \item [$\circ$] one "README.BALTIK" file.
+    \item [$\circ$] one "configure" script.
     \end{itemize}
+    \end{itemize}    
+\end{block}
 
+\begin{block}{Add sources to your Baltik}
+\begin{itemize}
 \item Copy the following TRUST .cpp file into your baltik project:\\
-\texttt{\$ cd src}\\
-\texttt{\$ mkdir TRUST\_modif} \\
-\texttt{\$ cp \$TRUST\_ROOT/src/MAIN/mon\_main.cpp TRUST\_modif}\\
-\texttt{\$ cd ..}
+\texttt{\$ mkdir -p src/TRUST\_modif} \\
+\texttt{\$ cp \$TRUST\_ROOT/src/MAIN/mon\_main.cpp src/TRUST\_modif/}
 \end{itemize}
 
 \end{block}
@@ -430,23 +437,27 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 \frametitle{Create your git repository}
 
 \begin{alertblock}{Git commands}
+You will now create a git repository to manage your developments.
 \begin{itemize}
-\item We want to create a git repository to store and manage your developpments.
+
 \item Initialize an empty git repository:\\
 \texttt{\$ git init}\\
 
-\item Watch your working tree status:\\
+\item Display your working tree status:\\
 \texttt{\$ git status}\\
 
-\item You can see your file and the three directories on the "untracked" files section.
-It means that they are not followed by the git repository for the moment.
+\item You can see 3 file and src directory on the "untracked" files section.
+It means that they are not yet followed by the git repository.
 
-\item To add all your directories and files to the git repository, you have to prepare a commit:\\
-\texttt{\$ git add -\,-all}\\
-\texttt{\$ git status}\\
+\item Add src and project.cfg to your git repository in order to prepare a commit:\\
+\texttt{\$ git add src project.cfg}%-\,-all}
 
-\item Now you can send your commit to add your files to your git repository:\\
+\item Now, you can commit your files to add it to your git repository:\\
 \texttt{\$ git commit -m "Initial commit"}\\
+Remark: If you are not able to commit files, you should first configure your username and email in git with :\\
+git config -\,-global user.name "Your Name" \\
+git config -\,-global user.email you@example.com
+
 \end{itemize}
 
 \end{alertblock}
@@ -458,9 +469,11 @@ It means that they are not followed by the git repository for the moment.
 
 \begin{alertblock}{Git commands}
 \begin{itemize}
-\item Watch your working tree status:\\
-\texttt{\$ git status}
-\item There is nothing more to add to your git repository.
+\item Display your working tree status:\\
+\texttt{\$ git status}\\
+Only README.BALTIK and configure script (automatically generated) are not added to your git repository.
+\item Display the list of commits:\\
+\texttt{\$ git log}
 \end{itemize}
 \end{alertblock}
 
@@ -469,7 +482,7 @@ It means that they are not followed by the git repository for the moment.
 \item Edit your project file "project.cfg" to specify name, author and executable.
 \item Then configure your project:\\
 \texttt{\$ baltik\_build\_configure -execute}\\
-\item The previous command launches the "baltik\_build\_configure" script and the "configure" script directly.
+this command launches both scripts: the "baltik\_build\_configure" and "configure".
 \end{itemize}
 \end{block}
 
@@ -484,16 +497,19 @@ It means that they are not followed by the git repository for the moment.
 \item Check the status of your git repository with the "-\,-ignored" option to see the status of all files:\\
 \texttt{\$ git status -\,-ignored}\\
 
-\item You can see that the file "project.cfg" has been modified. And that there are new untracked files.
-It means that they are not on the git repository.
+\item You can see that 
+\begin{itemize}
+\item "project.cfg" has been modified.
+\item there are new untracked files: these files are not on the git repository
+\end{itemize}
 
 \item To see only the changes on the git repository files:\\
 \texttt{\$ git status -uno}\\
 
 \item Track changes via gitk (GUI interface of Git):\\
-\texttt{\$ gitk \&}
+\texttt{\$ gitk \&} \\
 
-\item You can see information about your first commit and actual untracked changes.
+You can see information about your first commit and actual untracked changes.
 \end{itemize}
 
 \end{alertblock}
@@ -534,9 +550,9 @@ It means that they are not on the git repository.
     \end{itemize}
 
 \item Initialize your baltik project environment:\\
-\texttt{\$ source env\_basic.sh}\\
+\texttt{\$ source env\_my\_project.sh}\\
 
-\item Check the executables files:\\
+\item Check that executables are available:\\
 \texttt{\$ ls \$exec}\\
 \texttt{\$ ls \$exec\_opt}\\
 \texttt{\$ ls \$exec\_debug}\\
@@ -555,16 +571,18 @@ It means that they are not on the git repository.
 \item List other options available for the make command:\\
 \texttt{\$ make help}
 
-\item Build an optimized binary for profiling (option -pg -O3):\\
+\item Build an :
+\begin{itemize}
+\item optimized binary for profiling (option -pg -O3):\\
 \texttt{\$ make prof}\\
 \texttt{\$ ls \$exec\_pg}
 
-\item Build an optimized binary for test coverage (option -gcov -O3):\\
+\item optimized binary for test coverage (option -gcov -O3):\\
 \texttt{\$ make gcov}\\
-\texttt{\$ ls \$exec\_gcov}\\
+\texttt{\$ ls \$exec\_gcov}
+\end{itemize}
 
-\item Notice that TRUST optimized binary for profiling or a TRUST optimized binary for test coverage must exist 
-to compile your own optimized or debug or profiling or coverage executable. \\
+Notice that TRUST optimized binary for profiling or a TRUST optimized binary for test coverage must exist in order to be able to compile your baltik's profiling or test coverage executable. \\
 \end{itemize}
 
 \end{block}
@@ -609,7 +627,7 @@ to compile your own optimized or debug or profiling or coverage executable. \\
 \frametitle{Create a basic BALTIK project without dependency (I)}
 
 \begin{block}{Initialize baltik environnement}
- \texttt{\$ source env\_baltik.sh } \\
+ \texttt{\$ source env\_my\_project.sh } \\
  \texttt{\$ echo \$project\_directory/src }
 \end{block}
 
@@ -665,11 +683,11 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
   \begin{itemize}
   \item In the "Main" tab:\\
   $\Rightarrow$ Project: MY\_BALTIK \\
-  $\Rightarrow$ C/C++ Application: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../basic} or copy the string matching \texttt{\$project\_directory/basic} \\
+  $\Rightarrow$ C/C++ Application: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../my\_project} or copy the string matching \texttt{\$exec\_debug} \\
   $\Rightarrow$ "Apply" 
   \item In the "Arguments" tab:\\
-  $\Rightarrow$ Program arguments $\rightarrow$ specify the name of your datafile \\
-  $\Rightarrow$ Working directory $\rightarrow$ uncheck "Use default" and select the  directory containing the datafile \\
+  $\Rightarrow$ Program arguments $\rightarrow$ specify the name of your datafile (upwind) \\
+  $\Rightarrow$ Working directory $\rightarrow$ uncheck "Use default" and type path to datafile's directory \\
   $\Rightarrow$ "Apply"
   \end{itemize}
   $\Rightarrow$ Debug
@@ -719,11 +737,11 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Creation of a new cpp class}
+\frametitle{Create a new cpp class}
 
 \begin{block}{Baltik commands}
 \begin{itemize}
-\item Create a new repository for your own classes:\\
+\item Create a new folder for your own classes:\\
 \texttt{\$ mkdir -p \$project\_directory/src/my\_module}\\
 \texttt{\$ cd \$project\_directory/src/my\_module}\\
 \item Create your first class "my\_first\_class" with template:\\
@@ -733,7 +751,7 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
 
 \begin{alertblock}{Git commands}
 \begin{itemize}
-\item Check the status of your repository:\\
+\item Display the status of your repository:\\
 \texttt{\$ git status .}\\
 
 \item Add your new class to your git repository to follow your modifications:\\
@@ -746,7 +764,7 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Creation of a new cpp class}
+\frametitle{Create a new cpp class}
 
 \begin{block}{Baltik commands}
 \begin{itemize}
@@ -776,15 +794,16 @@ $\rightarrow$ Click on "$\blacktriangleright$" button of "my\_project" in the "P
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Creation of a new cpp class}
+\frametitle{Create a new cpp class}
 \begin{block}{Baltik commands}
 
 \begin{itemize}
 \item We want to change the inheritance of the class in order that it inherits from "Interprete\_geometrique\_base" class
 instead of "Objet\_U".
 
-\item "Interprete\_geometrique\_base" class is the base class of all the keywords doing tasks on domains (eg: Mailler, Lire\_fichier,...).
-\item You will:
+"Interprete\_geometrique\_base" class is the base class of all the keywords doing tasks on domains (eg: Mailler, Lire\_fichier,...).\\
+\vspace{0.1cm}
+So:
     \begin{itemize}
     \item [$\circ$] add an "\#include <Interprete\_geometrique\_base.h>" in my\_first\_class.h,
     \item [$\circ$] switch "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
@@ -792,7 +811,7 @@ instead of "Objet\_U".
     \item [$\circ$] An error will occur!
     \end{itemize}
 
-\item You will have an error indicating a pure virtual function ("interpreter\_") should be implemented.
+This error indicates that a pure virtual function ("interpreter\_") should be implemented.
 
 \item Look at the "Interprete\_geometrique\_base" class:
     \begin{itemize}
@@ -806,52 +825,51 @@ instead of "Objet\_U".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Creation of a new cpp class}
+\frametitle{Create a new cpp class}
 \begin{block}{Baltik commands}
 
 \begin{itemize}
-\item Notice the "interpreter()" method (which calls the "interpreter\_()" method).
-
-\item This method is called each time a keyword is read in the data file (eg: "Read\_file dom dom.geom", "Solve pb",...).
+\item Look at "interpreter()" method, which calls the "interpreter\_()" method. \\
+ This method is called each time a keyword is read in the data file (eg: "Read\_file dom dom.geom", "Solve pb",...).
 
 \item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
-(just print a message with "Cerr" like "- My first keyword!") into the cpp file. 
-
-\item "Entree" is a TRUST class to read an input stream (from a file for example):\\
+(just print a message with "Cerr" like "- My first keyword!") into the cpp file. \\
+"Entree" is a TRUST class to read an input stream (from a file for example):\\
 "virtual Entree\& interpreter\_(Entree\&);"
 
-\item Rebuild your project and fix your files until the binary of your project is built (named
-basic if you have not changed the name in the project.cfg file)\\
+\item Rebuild your project and fix your files until the binary of your project is built %(named
+%my\_project if you have not changed the name in the project.cfg file)\\
+\end{itemize}
+\end{block}
 
-\item Now we want to test our new class.
-
-\item Modify a test case into the build directory of your Baltik project:\\
+\begin{block}{Test your new class}
+\begin{itemize}
+\item Copy a test case to the build folder of your Baltik project:\\
 \texttt{\$ cd \$project\_directory/build/}\\
 \texttt{\$ trust -copy Cx}\\
 ERROR...
-\end{itemize}
 
+\end{itemize}
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Creation of a new cpp class}
-\begin{block}{Baltik commands}
+\frametitle{Create a new cpp class}
+\begin{block}{Test your new class}
 
 \begin{itemize}
-\item An error occurs because this test case is not in our baltik but in TRUST project so we have to launch the full environment (TRUST+our baltik).\\
-\texttt{\$ source ../full\_env\_basic.sh}\\
+\item The error occurs because this test case is not in your baltik but in TRUST project. To be able to copy it, you have to load the full environment (TRUST+our baltik).\\
+\texttt{\$ source ../full\_env\_my\_project.sh}\\
 \texttt{\$ trust -copy Cx}\\
 \texttt{\$ cd Cx}\\
 
-\item Open the data file "Cx.data":\\
-\texttt{\$ vim|nedit|gedit|emacs Cx.data}
+\item Edit the data file:\\
+\texttt{\$ nedit Cx.data \&} \\
+Add keywords "my\_first\_class" and "End" after the line where \underline{the problem is discretized}.\\
+NB: Instead of "End", you can reduce the number of time steps to only 1.\\
 
-\item Just after the line where \underline{the problem is discretized}, add the keywords "my\_first\_class" and "End".\\
-NB: Instead of "End", you can reduce the number of time step to only 1.\\
-
-\item Run your binary to check that this new keyword is recognized:\\
+\item Run this datafile with your baltik binary to check that this new keyword is recognized (see next slide).
 \end{itemize}
 
 \end{block}
@@ -859,7 +877,7 @@ NB: Instead of "End", you can reduce the number of time step to only 1.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Creation of a new cpp class}
+\frametitle{Create a new cpp class}
 
 \begin{exampleblock}{With Eclipse:}
 %    \begin{itemize}
@@ -867,25 +885,20 @@ NB: Instead of "End", you can reduce the number of time step to only 1.\\
     $\rightarrow$ In the project explorer, right click on "MY\_BALTIK" and select "Debug As/Debug configurations..." \\
     $\rightarrow$ In "Main" tab, check "Disable auto build" then click on "Apply"\\
     $\rightarrow$ In "Arguments" tab, fill "Program arguments:" with "Cx"\\
-    $\rightarrow$ "Working directory:" \${workspace\_loc:my\_project}/../Cx/ or "Formation\_TRUST/yourname/my\_project/build/Cx"\\
+    $\rightarrow$ "Working directory:" Copy the path to datafile matching \$project\_directory/build/Cx\\
     $\rightarrow$ "Apply" and "Debug"\\
     $\rightarrow$ Click on "Yes" to change the kind of view\\
     $\rightarrow$ Click on "Resume" button to run the calculation until the end\\
 \end{exampleblock}    
 
 \begin{block}{On a terminal:}
-%    \item [$\circ$] Or in a terminal:\\
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ exec=\$exec\_debug trust Cx}\\
-%    \end{itemize}
 \end{block}    
     
 \begin{block}{}
-%\begin{itemize}
-%\item 
 \textbf{Nota bene:} "Interprete\_geometrique\_base::interpreter\_()" method is called first,
-which calls then the "my\_first\_class::interpreter\_()" method.
-%\end{itemize}
+then it calls "my\_first\_class::interpreter\_()" method.
 \end{block}
 
 \end{frame}
@@ -904,12 +917,34 @@ which calls then the "my\_first\_class::interpreter\_()" method.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{}
+\frametitle{Modify your cpp class}
 \begin{block}{Part 1}
+
 \begin{itemize}
-\item The use of the class \textbf{Param} is recommended to read in the data file:
+\item To be able to read object parameters from the datafile using the following syntaxe for example:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+{\bf{A}} a\\
+{\bf{Read}} a \{ {\bf{dimension}} 3 {\bf{option}} fast \}
+\end{alltt}
+\end{minipage}}
+\end{center}
+it is recommended to use \textbf{Param} objects as shown on the next slide. \\
+Here, the reading of parameters is done by the readOn method.
+
+\item \textbf{Param} use is the recommended choice in this case (even though many current TRUST classes are still using the old fashion to read parameters), because it
+greatly simplifies the coding.
 \end{itemize}
-\vspace{-0.8cm}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{Part 1: Example of Param use}
+%\vspace{-0.8cm}
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.98\textwidth}
 \begin{alltt}
@@ -924,7 +959,7 @@ Entree\& A::readOn(Entree\& is)\\
 \textcolor{blue}{// Register parameters to be read:}\\
 \textcolor{orange}{param}.ajouter("option",\&opt);\\
 \textcolor{orange}{param}.ajouter("dimension",\&dim,Param::REQUIRED); \\
-\textcolor{blue}{// Mandatory parameter}\\
+%\textcolor{blue}{// Mandatory parameter}\\
 \textcolor{blue}{// Read now the parameters from the stream is and produces an error }\\
 \textcolor{blue}{// if unknown keyword is read or if braces are not found at the }\\
 \textcolor{blue}{// beginning and the end:}\\
@@ -946,15 +981,6 @@ return is;\\
 \begin{block}{Part 1}
 
 \begin{itemize}
-\item To call it in the data file, you have to use the following syntaxe as the read of the parameters is done by the readOn method:
-\begin{center}
-\fbox{ \begin{minipage}[c]{0.9\textwidth}
-\begin{alltt}
-{\bf{A}} a\\
-{\bf{Read}} a \{ {\bf{dimension}} 3 {\bf{option}} fast \}
-\end{alltt}
-\end{minipage}}
-\end{center}
 
 \item In our case, the read of the parameters will be done by the interpreter() method so the syntax in the data file will be the following:
 \begin{center}
@@ -967,9 +993,18 @@ return is;\\
 \end{center}
 
 \item Add into the "interpreter\_(Entree\&)" method the read of these parameters into braces using the \textbf{Param} object.
+\begin{itemize}
 
-\item \textbf{Param} use is the recommended choice in this case (even though many current TRUST classes are still using the old fashion to read parameters), because it
-greatly simplifies the coding.
+\item Do not forget to add "\#include <Param.h>" into the cpp file.
+\item If help needed, have a look at the "Interprete\_geometrique\_base" sub-class "Extruder". The data file syntax is :
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+{\bf{Extruder}} \{ {\bf{domaine}}\;DomainName\;{\bf{nb\_tranches}}\;N\;{\bf{direction}}\;X Y Z \}
+\end{alltt}
+\end{minipage}}
+\end{center}
+\end{itemize}
 \end{itemize}
 
 \end{block}
@@ -981,21 +1016,19 @@ greatly simplifies the coding.
 \begin{block}{Part 1}
 
 \begin{itemize}
-\item Add "\#include <Param.h>" into the cpp file.
 
-\item If help needed, have a look at the "Interprete\_geometrique\_base" sub-class "Extruder". The data file syntax is :
-\begin{center}
-\fbox{ \begin{minipage}[c]{0.9\textwidth}
-\begin{alltt}
-{\bf{Extruder}} \{ {\bf{domaine}}\;DomainName\;{\bf{nb\_tranches}}\;N\;{\bf{direction}}\;X Y Z \}
-\end{alltt}
-\end{minipage}}
-\end{center}
 
-\item Now we want to obtain the problem object using his name. You can have a look at the following method: \\
+
+
+\item Now we want to obtain the domain object using its name. 
+\begin{itemize}
+\item You can have a look at the following method: \\
 Interprete\_geometrique\_base::associer\_domaine ( Nom \& nom\_dom)
+\item Look the HTML documentation.\\
+ What is the task of this method? 
+\end{itemize}
 
-\item Look the HTML documentation. What is the task of this method?
+
 
 \item Once implementation is finished, add a check at the end of the method
 "interpreter\_(Entree\&)" and find how to print the domain name:
@@ -1014,28 +1047,32 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class: Part 1}
+\frametitle{Modify your cpp class}
 
-\begin{exampleblock}{With Eclipse:}
+\begin{block}{Part 1}
+\begin{itemize}
+\item With Eclipse:
+
     \begin{itemize}
-    \item Build/fix/re-build the test case:\\
+    \item Build/fix/re-build your project:\\
     $\rightarrow$ "Project" and "Build project"\\
     \item Run the test case:\\
     $\rightarrow$ "Run" and "Debug"\\
     \end{itemize}
-\end{exampleblock}
 
-\begin{block}{Or in a terminal:}
+
+\item Or in a terminal:
     \begin{itemize}
-    \item Build/fix/re-build the test case:\\
+    \item Build/fix/re-build your project:\\
     \texttt{\$ cd \$project\_directory}\\
     \texttt{\$ make debug}\\
     \item Run the test case:\\
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ export exec=\$exec\_debug}\\
-    \texttt{\$ trust Cx}
-    \item In this case, TRUST runs with exec\_debug.
+    \texttt{\$ trust Cx} \\
+    In this case, TRUST runs with exec\_debug.
     \end{itemize}
+\end{itemize}
 \end{block}
 
 \end{frame}
@@ -1043,14 +1080,13 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{Part 2}
+\begin{block}{Part 2: Display information about domain boundaries}
 
 \begin{itemize}
-\item We are going to try to print information of the domain boundaries in our current project.
 
 \item Edit the "my\_first\_class.cpp" file and add into the "interpreter\_()" method a loop on the boundaries.
 
-\item Look for help inside the "Domaine", "Zone", "Bord", "Frontiere" classes into the HTML documentation to access to the:
+Look for help inside the "Domaine", "Zone", "Bord", "Frontiere" classes in the HTML documentation to access to the:
     \begin{itemize}
     \item [$\circ$] Number of boundaries (\textbf{nb\_bords()} method)
     \item [$\circ$] Boundaries (\textbf{bord(int)} method)
@@ -1058,7 +1094,7 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
     \item [$\circ$] Number of faces of each boundary (\textbf{nb\_faces()} method)
     \end{itemize}
 
-\item You will print the infos with something like:
+Print these information with something like:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -1066,7 +1102,6 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
-\item Now, we are going to try to calculate the sum of the VEF control volumes on the domain in our project.
 \end{itemize}
 
 \end{block}
@@ -1075,12 +1110,12 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{Part 2}
+\begin{block}{Part 2: compute the sum of the domain's VEF control volumes}
 \begin{itemize}
-\item The information is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
-from the domain, only from the problem. 
+\item Information about control volumes is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
+from the domain, but only from the problem. 
 
-\item So we need to read another parameter in our data file:\\
+So, you need to read another parameter in your data file:\\
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -1089,9 +1124,9 @@ from the domain, only from the problem.
 \end{minipage}}
 \end{center}
 
-\item Add the read of a new parameter problem (see "Extraire\_plan::interpreter\_(Entree\&)" method for instance) into the "my\_first\_class.cpp" file.
+\item Add the read of a new parameter problem into "my\_first\_class.cpp" file (see "Extraire\_plan::interpreter\_(Entree\&)" method for instance).
 
-\item Then, remember the "equation" or "problem" UML diagram of the presentation's slides.
+\item Remember the "equation" or "problem" UML diagram of the presentation's slides.
 
 \item Look for help inside the "Zone\_VF", "Probleme\_base" and "Equation\_base" into the HTML documentation to access to the:
     \begin{itemize}
@@ -1112,7 +1147,7 @@ from the domain, only from the problem.
 \begin{itemize}
 \item You will need to cast the discretized zone returned by the \textbf{zone\_dis()} method into a "Zone\_VF" object.
 
-\item You will print the size of the control volumes array with something like:
+\item Print the size of the control volumes array with something like:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -1121,9 +1156,9 @@ from the domain, only from the problem.
 \end{minipage}}
 \end{center}
 
-\item Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF::volumes\_entrelaces()} method.
-\item If you look at the "Problem" UML diagram of the presentation's slides, you will notice a better path to access to the discretized zone.
-\item What is this path ?
+Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF::volumes\_entrelaces()} method.
+\item If you look at the "Problem" UML diagram of the presentation's slides, you will notice a better path to access to the discretized zone. \\
+ What is this path ?
 \item Now, compute and print the sum of the control volumes with a "for" loop.
 
 \end{itemize}
@@ -1146,7 +1181,7 @@ from the domain, only from the problem.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Add XData tags}
+\frametitle{Create automated documentation}
 \begin{block}{}
 
 \begin{itemize}
@@ -1158,7 +1193,7 @@ from the domain, only from the problem.
 \texttt{\$ evince \$project\_directory/build/xdata/XTriou/doc.pdf \&}
 \item Now we will add comments in our cpp files to add information in the documentation.
 \item For this open the help of the TRAD\_2 syntaxe:\\
-\texttt{\$ vim|nedit|gedit|emacs doc\_TRAD\_2 \&}
+\texttt{\$ gedit \$project\_directory/build/xdata/XTriou/doc\_TRAD\_2 \&}
 \end{itemize}
 
 \end{block}
@@ -1166,7 +1201,7 @@ from the domain, only from the problem.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Add XData tags}
+\frametitle{Create automated documentation}
 \begin{block}{}
 
 \begin{itemize}
@@ -1184,7 +1219,7 @@ from the domain, only from the problem.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Add XData tags}
+\frametitle{Create automated documentation}
 \begin{block}{}
 
 \begin{itemize}
@@ -1192,7 +1227,7 @@ from the domain, only from the problem.
 \begin{alltt}
 param.ajouter(...);  \textcolor{blue}{// XD\_ADD\_P type description}
 \end{alltt}
-\item "type" can be (cf 'doc\_TRAD\_2' file): 'int', 'floattant', 'chaine', 'rien'...
+where "type" can be (cf 'doc\_TRAD\_2' file): 'int', 'floattant', 'chaine', 'rien'...
 \item Compile the documentation:\\
 \texttt{\$ make gui}
 \item Check that the documentation of your new class is in the new doc:\\
@@ -1223,8 +1258,8 @@ param.ajouter(...);  \textcolor{blue}{// XD\_ADD\_P type description}
 
 \begin{block}{}
 \begin{itemize}
-\item Edit the "my\_project/src/TRUST\_modif/mon\_main.cpp" file in your baltik project of Eclipse.
-\item Add this lines after "Process::imprimer\_ram\_totale(1);" :\\
+\item Edit the "\$project\_directory/src/TRUST\_modif/mon\_main.cpp" file of your baltik project using text editor or Eclipse.
+\item Add these lines after "Process::imprimer\_ram\_totale(1);" :\\
 \textit{std::cout <\textcompwordmark{}< "Hello World to cout." <\textcompwordmark{}< std::endl;\\
 std::cerr <\textcompwordmark{}< "Hello World to cerr." <\textcompwordmark{}< std::endl;\\
 Cout <\textcompwordmark{}< "Hello World to Cout." <\textcompwordmark{}< finl;\\
@@ -1233,11 +1268,11 @@ Process::Journal() <\textcompwordmark{}< "Hello World to Journal." <\textcompwor
 \end{itemize}
 \end{block}
 
-\begin{exampleblock}{With Eclipse: Rebuild the code}
-$\rightarrow$ "Build project" from "my\_project" of "Project Explorer"\\
-\end{exampleblock}
+%\begin{exampleblock}{With Eclipse: Rebuild the code}
+%$\rightarrow$ "Build project" from "my\_project" of "Project Explorer"\\
+%\end{exampleblock}
 
-\begin{block}{Or in a terminal: Rebuild the code}
+\begin{block}{in a terminal: Rebuild the code}
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make debug optim}\\
 \end{block}
@@ -1255,12 +1290,18 @@ $\rightarrow$ "Build project" from "my\_project" of "Project Explorer"\\
 \texttt{\$ cd \$project\_directory/build/hello}\\
 \texttt{\$ touch hello.data}\\
 
-\item Run the code sequentially:\\
+\item Run the code 
+\begin{itemize}
+\item sequentially:\\
 \texttt{\$ trust hello}
-
-\item Run the code in parallel and see the differences:\\
+\item in parallel:\\
 \texttt{\$ trust hello 4}
+\end{itemize} 
+and see the differences.
 
+
+%\item Explanation:
+\begin{itemize}
 \item "Cout" is equivalent to "std::cout" on the master process only.
 Use this output for infos about the physics (convergence, fluxes,...).
 
@@ -1268,31 +1309,10 @@ Use this output for infos about the physics (convergence, fluxes,...).
 Use this output for warning/errors only.
 
 \item "finl" is equivalent to "std::endl" + "flush()" on the master process.
-\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{}
-
-\begin{itemize}
 \item "Journal()" prints to "datafile\_000n.log" files.
-Use this output during parallel development to print plumbing infos which would be hidden during later production runs.
-
-\item During run, this output can be unactivated with:\\
-\texttt{\$ ls *.log}\\
-\texttt{\$ trust -clean \&\& trust hello 4 -journal=0}\\
-\texttt{\$ ls *.log}\\
-
-\item Now, we will print the sum of the control volumes of the test case Cx into a file.\\
-\texttt{\$ cd \$project\_directory/build/Cx}\\
-
-\item We want to write in a file whose name is something like: DataFileName\_result.txt, where "DataFileName" is the name of the data file (eg: Cx).
-
-\item For that, you will create an object of the class \textbf{Nom} and fill it by collecting the name of the data file with \textbf{Objet\_U::nom\_du\_cas()} method.
+Use this output during parallel development to print plumbing infos which would be hidden during production runs.
+\end{itemize}
 \end{itemize}
 
 \end{block}
@@ -1300,31 +1320,56 @@ Use this output during parallel development to print plumbing infos which would 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-
+\frametitle{Adding prints}
 \begin{block}{}
+
 \begin{itemize}
-\item Then complete the name of the file with the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
-\item Then you will create the file with the \textbf{SFichier} class and print the sum into this file.
+
+
+\item During a parallel run, the "Journal()" output can be disabled. \\
+To verify this, first clean your folder:\\
+\texttt{\$ ls *.log}\\
+\texttt{\$ trust -clean}\\
+and run computation with -journal=0 option \\
+\texttt{\$ trust hello 4 -journal=0}\\
+\texttt{\$ ls *.log}
+
+\item Other options are available. To get it, run:\\
+\texttt{\$ trust hello.data -help\_trust}
+
 \end{itemize}
+
 \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Adding prints}
+\begin{block}{Printing into a file}
 
-\begin{exampleblock}{With Eclipse: Run the test case}
-$\rightarrow$ "Run" and "Debug"\\
-\end{exampleblock}
+\begin{itemize}
 
-\begin{block}{Or in a terminal: Run the test case}
+\item Now, we will print the control volumes sum into a file for test case Cx. 
+
+\item We want to write in a file with name similar to: \\
+DataFileName\_result.txt \\
+where "DataFileName" is the name of the data file (eg: Cx).
+
+\item For that, you will:
+\begin{itemize}
+\item  create an object of the class \textbf{Nom} and fill it by collecting the datafile's name using \textbf{Objet\_U::nom\_du\_cas()} method.
+\item complete the datafile's name with the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
+\item create the output file with the \textbf{SFichier} class and print the sum into it.
+\end{itemize}
+\item Compile your project and run Cx datafile: \\
 \texttt{\$ cd \$project\_directory/build/Cx/}\\
 \texttt{\$ exec=\$exec\_debug trust Cx}
-\end{block}
-
-\begin{block}{}
-\begin{itemize}
 \item Then open the "Cx\_result.txt" file.
 \end{itemize}
-\end{block}
 
+\end{block}
 \end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -1350,9 +1395,9 @@ $\rightarrow$ "Run" and "Debug"\\
 \texttt{\$ trust -partition Cx 2 \textcolor{blue}{\# Partition in 2 subdomains}}\\
 \texttt{\$ trust PAR\_Cx 2 \textcolor{blue}{\# 2 processes used}}
 
-\item Compare the files: Cx\_result.txt, PAR\_Cx\_result.txt.
+\item Compare the files: Cx\_result.txt, PAR\_Cx\_result.txt. \\
 
-\item Differences come from the fact that the 2 processors write into the file one after the other one.
+ Differences come from the fact that the 2 processors write into the file one after the other one.
 So the final content will be the value calculated on the last processor which will acces to the file.
 
 \item You can try to launch one more time the calculation, the result may differ.
@@ -1381,7 +1426,7 @@ So the final content will be the value calculated on the last processor which wi
 \end{itemize}
 \end{block}
 
-\begin{block}{Part 2 Optional}
+\begin{block}{Part 2 (Optional)}
 \begin{itemize}
 \item Create a "verifie" script to check the resulting value (sequential then parallel).
 
@@ -1448,7 +1493,7 @@ So the final content will be the value calculated on the last processor which wi
 \texttt{double var = 2.5;}\\
 \texttt{Debog::verifier("- Debog test message",var);}
 
-\item Don't forget to add the "\#include <Debog.h>"!
+\item Do not forget to add the "\#include <Debog.h>"!
 \end{itemize}
 
 \end{block}
@@ -1641,7 +1686,7 @@ ERROR...
 \item Add this non-regression test in configuration:\\
 \texttt{\$ git status -uno}\\
 \texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
-\item Push the modifications on your git repository:\\
+\item Commit the modifications on your git repository:\\
 \texttt{\$ git commit -m "New reference test"}\\
 \texttt{\$ git log}\\
 \end{itemize}
@@ -1736,12 +1781,12 @@ ERROR...
 \begin{block}{}
 
 \begin{itemize}
-\item Browse the TRUST ressources index file:\\
-\texttt{\$ trust -index}
+%\item Browse the TRUST ressources index file:\\
+%\texttt{\$ trust -index}
 
-\item Select the Test coverage link.
+%\item Click on "Test coverage".
 
-\item Which is the less covered matrix class ?
+%\item Which is the less covered matrix class ?
 
 \item We want to run test cases using rational Runge-Kutta scheme of ordre 2.
 
@@ -1866,7 +1911,7 @@ ERROR...
 %\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{{\bf{GDB exercise}}}
+\subsection{{\bf{Debug with GDB}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1879,7 +1924,7 @@ ERROR...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{GDB exercise}
+\frametitle{Debug with GDB}
 
 \begin{exampleblock}{With Eclipse:}
 Run a test case with GDB:\\
@@ -1905,7 +1950,7 @@ For more information about GDB commands, refer to the help menu.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{GDB exercise}
+\frametitle{Debug with GDB}
 \begin{block}{}
 
 \begin{itemize}
@@ -1935,7 +1980,7 @@ For more information about GDB commands, refer to the help menu.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{GDB exercise}
+\frametitle{Debug with GDB}
 \begin{block}{}
 
 \begin{itemize}
@@ -1961,7 +2006,7 @@ For more information about GDB commands, refer to the help menu.\\
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{{\bf{Use Valgrind to find memory bugs}}}
+\subsection{{\bf{Find memory bugs with valgrind}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1974,13 +2019,13 @@ For more information about GDB commands, refer to the help menu.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Use Valgrind to find memory bugs}
+\frametitle{Find memory bugs with valgrind}
 \begin{block}{}
 
 \begin{itemize}
 \item Run a test case with Valgrind:\\
 \texttt{\$ cd \$project\_directory}\\
-\texttt{\$ source env\_basic.sh}\\
+\texttt{\$ source env\_my\_project.sh}\\
 \texttt{\$ cd build/Cx/}\\
 \texttt{\$ VALGRIND=1 trust Cx}\\
 \item The Valgrind messages appear on the screen with the beginning of each line the same number. For example:\\
@@ -1997,7 +2042,7 @@ For more information about GDB commands, refer to the help menu.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Use Valgrind to find memory bugs}
+\frametitle{Find memory bugs with valgrind}
 \begin{block}{}
 
 \begin{itemize}
