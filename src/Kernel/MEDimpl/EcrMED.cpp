@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,6 +46,7 @@ using MEDCoupling::MEDFileUMesh;
 using MEDCoupling::MEDCouplingFieldDouble;
 using MEDCoupling::GetAllFieldNames;
 using MEDCoupling::GetAllFieldIterations;
+using MEDCoupling::MEDFileMesh;
 #endif
 
 #define POURSATURNE
@@ -224,7 +225,7 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
       type_cell = INTERP_KERNEL::NORM_HEXGP12;
       mesh_dimension = 3;
     }
-  else if(type_elem=="POINT_1D")
+  else if ((type_elem=="POINT") || (type_elem=="POINT_1D"))
     {
       type_cell = INTERP_KERNEL::NORM_POINT1;
       mesh_dimension = 0;
@@ -1378,8 +1379,28 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
           //const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
           //const MCAuto<MEDCouplingUMesh> umesh = file_mesh->getMeshAtLevel(0);
           std::string mesh_name = nom_dom.getString();
-          const MCAuto<MEDCouplingUMesh> umesh = MEDCoupling::ReadUMeshFromFile(file_name, mesh_name, 0);
-          field->setMesh(umesh);
+          if (nom_dom!="PARTICULES")
+            {
+              const MCAuto<MEDCouplingUMesh> umesh = MEDCoupling::ReadUMeshFromFile(file_name, mesh_name, 0);
+              field->setMesh(umesh);
+            }
+          else
+            {
+              MEDCoupling::CheckFileForRead(file_name);
+              MCAuto<MEDFileMesh> mm(MEDFileMesh::New(file_name,mesh_name));
+              MEDFileMesh *mmPtr(mm);
+              MEDFileUMesh *mmuPtr=dynamic_cast<MEDFileUMesh *>(mmPtr);
+              if(!mmuPtr)
+                {
+                  std::ostringstream oss;
+                  oss << "ReadUMeshFromFile : With fileName=\""<< file_name << "\", meshName=\""<< mesh_name << "\" exists but it is not an unstructured mesh !";
+                  throw INTERP_KERNEL::Exception(oss.str().c_str());
+                }
+
+              //const MCAuto<MEDCouplingUMesh> umesh_particles = file_mesh->getMeshAtLevel(1);
+              const MCAuto<MEDCouplingUMesh> umesh_particles = mmuPtr->getMeshAtLevel(1);
+              field->setMesh(umesh_particles);
+            }
         }
       // Fill array:
       int size = val.dimension(0);
