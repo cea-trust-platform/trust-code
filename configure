@@ -194,6 +194,15 @@ mkdir -p lib exec env
 ###################
 
 bin/Installer_TRUST -check_prerequis || exit -1
+# freetype-config not available on Ub20 and some other OS. Add this command if it does not exist
+com="freetype-config"
+if [ "`whence2_ $com`" = "$com:" ] && [ "`whence2_ $com`" != "" ]
+then
+   echo "command $com does not exist"
+   mkdir -p $TRUST_ROOT/exec/utils/bin
+   echo "pkg-config freetype2 \$*" > $TRUST_ROOT/exec/utils/bin/freetype-config
+   chmod +x $TRUST_ROOT/exec/utils/bin/freetype-config
+fi
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 #[ -d $TRUST_ROOT/exec/utils/bin ] && export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 #[ -d $TRUST_ROOT/bin/bin ] && export PATH=$PATH:$TRUST_ROOT/bin/bin
