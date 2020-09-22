@@ -959,7 +959,8 @@ fi
 # clean of the install folder
 rm -r $TRUST_ROOT/exec/python/pkgs
 mkdir $TRUST_ROOT/exec/python/pkgs
-
+# We touch all conda files, otherwise it will be deleted from SCRATCH of clusters (e.g. jean-zay)
+[ "${TRUST_ROOT#*scratch}" != "$TRUST_ROOT" ] && find $TRUST_ROOT/exec/python -exec touch {} +
 # export PATH
 PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
 echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
