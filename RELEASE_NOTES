@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+??/??/20 (TRUST)  Bug fixed   : Crash with lata_to_med applied to a LATA file including a Lagrangian mesh
 10/09/20 (TRUST)  Bug fixed   : Non-deterministic crash (segmentation fault) during parallel Quasi-Compressible simulation
 04/09/20 (TRUST)  Change      : Reorganize _comm.TU file and add missing time counters into Quasi-Compressible model
 03/09/20 (TRUST)  Bug fixed   : Raffiner_isotrope_parallele produced an error on VDF meshes
