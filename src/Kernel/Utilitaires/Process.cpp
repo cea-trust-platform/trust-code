@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -438,7 +438,7 @@ void end_journal(int verbose_level)
     {
       FichierHDFPar fic_hdf;
       fic_hdf.create(journal_file_name_);
-      fic_hdf.create_and_fill_dataset("/log", journal_shared_stream_);
+      fic_hdf.create_and_fill_dataset_MW("/log", journal_shared_stream_);
       fic_hdf.close();
     }
   else
