@@ -1030,6 +1030,8 @@ if [ "$CALLGRIND" = 1 ]
 then
    echo "Callgrind log $NOM.callgrind is created."
    echo "You could try now: kcachegrind $NOM.callgrind" && [ ! -f /usr/bin/kcachegrind ] && echo "But kcachegrind is not installed."
+   echo "To see source code, you need a binary built with -g -O0, eg: \$exec_gcov"
+   echo "You can build it with: make gcov"
 fi
 if [ "$MASSIF" = 1 ]
 then
