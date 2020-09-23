@@ -571,7 +571,7 @@ then
    if [ -f /proc/cpuinfo ]
    then
       TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-      if [ -d /ccc ] || [ $HOST = callisto ]
+      if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] || [ $HOST = orcus-intel ] || [ $HOST = orcus-amd ]
       then
          #TRUST_NB_PROCS=16
 	 TRUST_NB_PROCS=8
