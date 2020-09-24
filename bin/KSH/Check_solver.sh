@@ -51,7 +51,7 @@ print()
        # Calcul de la RAM
        ram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%5d",r)}' $out`
        # Calcul des Flops du MatMult
-       matmult="nc  " && [ -f ${out%.out_err}_petsc.TU ] && matmult=`$TRUST_Awk '/^MatMult / || /^MatMultAdd / {print $NF;exit}' ${out%.out_err}_petsc.TU 2>/dev/null`
+       matmult="nc  " && [ -f ${out%.out_err}_petsc.TU ] && matmult=`$TRUST_Awk '/^MatMult / || /^MatMultAdd / {print $21;exit}' ${out%.out_err}_petsc.TU 2>/dev/null`
        OK="OK"
     fi
     echo $ECHO_OPTS "$cpu\t$cpu0\t$its\t$res\t$ram\t$matmult\t\t$OK\t[$i]\t$solver\t" | tee -a rank
