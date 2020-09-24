@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@
 #define FichierHDFPar_included
 #include <FichierHDF.h>
 #include <comm_incl.h>
-#include <SChaine.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,18 +41,10 @@ public:
     collective_op_ = b;
   }
 
-  // Multiple Writers methods
-  // every processor writes their own dataset into the file
-  void create_and_fill_dataset(Nom dataset_basename, Sortie_Brute& sortie);
-  void create_and_fill_dataset(Nom dataset_basename, SChaine& sortie);
-
 protected:
   virtual void prepare_file_props();
   virtual void prepare_dataset_props();
 
-#ifdef MED_
-  void create_and_fill_dataset(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
-#endif
 private:
   // Forbid copy:
   FichierHDFPar& operator=(const FichierHDFPar&);

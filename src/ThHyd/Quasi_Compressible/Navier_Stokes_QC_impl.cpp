@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,7 +127,7 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
   if (!diffusion_implicite)
     eqn.operateur(0).ajouter(vpoint);
 
-  vpoint.echange_espace_virtuel();
+  //vpoint.echange_espace_virtuel();
 
   DoubleTab& rhovitesse = ref_cast_non_const(DoubleTab,eqn.rho_la_vitesse().valeurs());
   rho_vitesse_impl(tab_rho,vitesse,rhovitesse);
@@ -141,11 +141,12 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
       eqn.derivee_en_temps_conv(trav,rhovitesse);
       vpoint=trav;
     }
-  vpoint.echange_espace_virtuel();
+  //vpoint.echange_espace_virtuel();
 
   //ajout source
   eqn.sources().ajouter(vpoint);
-  vpoint.echange_espace_virtuel();
+  //vpoint.echange_espace_virtuel();
+
   // ajout de gradP
   eqn.corriger_derivee_expl(vpoint);
   assert(diffusion_implicite==eqn.schema_temps().diffusion_implicite());
@@ -267,13 +268,14 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
 
   secmem = tab_W;
   operator_negate(secmem);
-  secmem.echange_espace_virtuel();
+  //secmem.echange_espace_virtuel();
   eqn.operateur_divergence().ajouter(rhoU,secmem);
   secmem /= dt_; // (-tabW + Div(rhoU))/dt
 
   eqn.operateur_divergence().ajouter(vpoint, secmem);
   secmem *= -1;
   secmem.echange_espace_virtuel();
+  Debog::verifier("Navier_Stokes_QC::derivee_en_temps_inco, secmem : ", secmem);
 
   //On ne fait appel qu une seule fois a assembler dans preparer calcul (au lieu de assembler_QC)
   // Correction du second membre d'apres les conditions aux limites :
@@ -296,6 +298,7 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
   vpoint += gradP; // M-1 F
 
   pression.echange_espace_virtuel();
+
   eqn.operateur_gradient().calculer(pression, gradP);
   // On conserve Bt P pour la prochaine fois.
   DoubleTrav Mmoins1grad(gradP);
@@ -305,7 +308,8 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
   // Correction en pression
   vpoint -= Mmoins1grad;
 
-  vpoint.echange_espace_virtuel();
+  //vpoint.echange_espace_virtuel();
+
   // vpoint=(rhoU(n+1)-rhoU(n))/dt
   vpoint*=dt_;
   vpoint+=rhoU; // rhoU(n+1)
