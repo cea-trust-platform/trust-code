@@ -180,7 +180,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
   // Reprendre le formalisme de GCP { precond ssor { omega val } seuil val }
-  Motcles les_solveurs(17);
+  Motcles les_solveurs(18);
   {
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
@@ -199,6 +199,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[14] = "CLI_VERBOSE";
     les_solveurs[15] = "CLI_QUIET";
     les_solveurs[16] = "CHOLESKY_MUMPS_BLR";
+    les_solveurs[17] = "CHOLESKY_CHOLMOD";
   }
   int solver_supported_on_gpu_by_petsc=0;
   int solver_supported_on_gpu_by_amgx=0;
@@ -237,7 +238,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 }
               else
                 {
-                  if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=1; // Activate MUMPS solveur if using -ksp_preonly ...
+                  if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=666; // Activate direct solveur if using -ksp_preonly ...
                   add_option(motlu.suffix("-"), valeur, 1);
                   is >> motlu;
                 }
@@ -293,12 +294,11 @@ void Solv_Petsc::create_solver(Entree& entree)
         solver_supported_on_gpu_by_petsc=1;
         break;
       }
-    case 9:
     case 3:
     case 4:
+    case 9:
     case 16:
       {
-
         // Si MUMPS est present, on le prend par defaut (solveur_direct_=1) sinon SuperLU (solveur_direct_=2):
 #ifdef PETSC_HAVE_MUMPS
         solveur_direct_=1;
@@ -374,6 +374,19 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         solveur_direct_=5;
         // Pastix supports sbaij but seems slow...
+        KSPSetType(SolveurPetsc_, KSPPREONLY);
+        break;
+      }
+    case 17:
+      {
+        solveur_direct_=6;
+        // Cholmod Cholesky (pas LU) supporte multi-GPU
+        if (!matrice_symetrique_)
+          {
+            Cerr << ksp << " is only supported for symmetric linear system." << finl;
+            Process::exit();
+          }
+        solver_supported_on_gpu_by_petsc=1;
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         break;
       }
@@ -484,6 +497,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                   add_option("mat_umfpack_prl","2");
                 else if (solveur_direct_==5)
                   add_option("mat_pastix_verbose","2");
+                else if (solveur_direct_==6)
+                  add_option("mat_cholmod_print","3");
                 else if (solveur_direct_)
                   {
                     Cerr << "impr not coded yet for this direct solver." << finl;
@@ -1029,6 +1044,12 @@ void Solv_Petsc::create_solver(Entree& entree)
               Cerr << "If you don't want a preconditioner, add for the solver definition:" << finl;
               Cerr << "precond null" << finl;
               Process::exit();
+            }
+          else
+            {
+              // Pour un solveur direct le preconditionner EST le solveur:
+              pc_supported_on_gpu_by_petsc = solver_supported_on_gpu_by_petsc;
+              pc_supported_on_gpu_by_amgx = solver_supported_on_gpu_by_amgx;
             }
         }
 // On verifie que les preconditionneurs sont supportes sur GPU:
@@ -1782,8 +1803,8 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       MatSetOption(MatricePetsc_,MAT_SYMMETRIC,PETSC_TRUE); // Utile ?
       if (type_pc_==PCLU)
         {
-          // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU
-          if (mataij_==0 || solveur_direct_==2)
+          // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU, CHOLMOD
+          if (mataij_==0 || solveur_direct_==2 || solveur_direct_==6)
             PCSetType(PreconditionneurPetsc_, PCCHOLESKY); // Precond PCLU -> PCCHOLESKY
         }
       else if (type_pc_==PCSOR)
@@ -1840,6 +1861,14 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
           Cout << "Cholesky from Pastix may take several minutes, please wait..." ;
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPASTIX);
+    }
+  else if (solveur_direct_==6)
+    {
+      if( message_affi )
+        {
+          Cout << "Cholesky from Cholmod may take several minutes, please wait..." ;
+        }
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERCHOLMOD);
     }
   else if (solveur_direct_)
     {

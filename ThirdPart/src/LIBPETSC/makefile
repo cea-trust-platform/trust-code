@@ -1,6 +1,6 @@
 PETSC_ROOT=$(TRUST_ROOT)/lib/src/LIBPETSC/petsc
 petsc=$(PETSC_ROOT)/$(TRUST_ARCH)_opt/lib/libpetsc.a
-package_petsc=petsc-3.12.2
+package_petsc=petsc-3.13.5
 mpi=$(MPI_INCLUDE)/mpi.h
 path_include=$(PETSC_ROOT)/$(TRUST_ARCH)
 
