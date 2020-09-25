@@ -2,8 +2,9 @@
 jdd=`pwd`
 jdd=`basename $jdd`
 # On a choisi BICGSTAB/ILU pour l'implicite et CHOLESKY pour le solveur en pression
-# On doit bien avoir Cholesky avec -ksp_view 
-if [ "`trust $jdd -ksp_view 2>&1 | grep "type: cholesky"`" != "" ]
+# On doit bien avoir Cholesky avec -ksp_view (et lu en OpenMP car aij)
+solver=cholesky && [ "$PETSC_HAVE_OPENMP" = 1 ] && solver=lu
+if [ "`trust $jdd -ksp_view 2>&1 | grep "type: $solver"`" != "" ]
 then
    exit 0
 else
