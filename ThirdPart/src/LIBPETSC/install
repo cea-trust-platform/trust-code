@@ -404,9 +404,10 @@ then
    # SUPERLU_DIST: Attention avec OpenMPI natif...
    # SuperLU_dist sur GPU necessite OpenMP ! Argh...
    #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ $TRUST_USE_CUDA = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
+   [ $minimal_mumps = 0 ] && [ $TRUST_USE_CUDA = 1 ] && [ $PETSC_HAVE_OPENMP = 1 ] && add_package superlu_dist
 
    # New (SuiteSparse/Cholmod):
-   [ $minimal_mumps = 0 ] && add_package SuiteSparse # Version GPU sauf si --download-suitesparse-disablegpu=1
+   [ $minimal_mumps = 0 ] && add_package SuiteSparse # Version GPU (Cholesky pas LU)
 
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)

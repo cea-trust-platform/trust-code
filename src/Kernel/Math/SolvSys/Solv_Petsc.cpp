@@ -351,6 +351,10 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         solveur_direct_=2;
         // SuperLU_dist, parallel but not faster than MUMPS
+#ifdef PETSC_HAVE_OPENMP
+        // Version GPU disponible de SuperLU si OpenMP active (necessaire)
+        solver_supported_on_gpu_by_petsc=1;
+#endif
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         break;
       }

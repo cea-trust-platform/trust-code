@@ -52,8 +52,9 @@ then
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
    cd $LIB && rm -r -f build && mkdir -p build && cd build
    BUILD=RELEASE
+   CMAKE_CXX_FLAGS="" && [ "$PETSC_HAVE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
-   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
+   cmake $CMAKE_CXX_FLAGS -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
    # Creation d'une librairie statique en plus de la dynamique libAmgXWrapper.so
@@ -65,7 +66,7 @@ then
    for test in $tests
    do
       sed -i "1,$ s?# include <petsctime.h>??g" $ROOT/AmgXWrapper/example/$test/src/solve.cpp || exit -1
-      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
+      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake $CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
    done
    cd $AMGX_DIR/$LIB/example/poisson
    # Test valgrind:
