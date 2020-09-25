@@ -70,21 +70,23 @@ mkdir -p $TRUST_ROOT/exec/VisIt  									# Important sinon current pas cree au 
 echo "Creating `pwd`/$build.help ..."
 ./$build --help 1>./$build.help 2>&1 
 log=build_visit$vt"_log"
-echo -e "yes\n" | ./$build $options
+echo -e "yes\n" | ./$build $options 1>>$log 2>&1
 err=$?
 # Nouvel essai avec des options supplementaires:
 if [ "`grep 'mesagl to the command line' $log`" != "" ]
 then
    options=$options" --mesagl --llvm" 			# Si machine virtuelle (pas teste) ou OpenGL trop vieux (ex: is213120)
-   echo -e "yes\n" | ./$build $options
+   echo "Retry with $options"
+   echo -e "yes\n" | ./$build $options 1>>$log 2>&1
    err=$?
 fi
+echo "========================================"
 if [ $err != 0 ]
 then
-   echo "$build_visit failed in `basename $0`. See $log"
+   echo "$build failed in `basename $0`. See $log"
    exit -1
 else
-   echo "$build_visit succeeds."
+   echo "$build succeeds."
    rm -r -f visit$vp 		# Sources inutiles une fois le build construit
    rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
    exit 0
