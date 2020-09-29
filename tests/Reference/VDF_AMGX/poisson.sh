@@ -10,8 +10,10 @@ then
    N=100 && [ `hostname` = is242981.intra.cea.fr ] && N=85 # Sinon out of memory
    NP=4
    echo -e "$NP CPU:\c"
+   cp $configs/PETSc_SolverOptions_GAMG.info .
    trust dummy $NP -caseName PETSc_GAMG_$N"x"$N"x"$N -mode PETSc  -cfgFileName $configs/PETSc_SolverOptions_GAMG.info     -Nx $N -Ny $N -Nz $N 2>&1 | tee PETSc_GAMG.log | grep averaged
    echo -e "$NP CPU + 1 GPU:\c"
+   cp $configs/AmgX_SolverOptions_Classical.info .
    trust -gpu dummy $NP -caseName AmgX_AGG_$N"x"$N"x"$N -mode AmgX_GPU -cfgFileName $configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 2>&1 | tee AmgX_GPU.log | grep averaged
 else
    valgrind="" && [ "$VALGRIND" != "" ] && VALGRIND=1

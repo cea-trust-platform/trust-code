@@ -84,7 +84,7 @@ Lire pb1
     Navier_Stokes_QC
     {
 
-        solveur_pression petsc gcp { precond ssor { } seuil 1.e-7 impr }
+        solveur_pression petsc gcp { precond ssor { } seuil 1.e-8 impr }
         convection { centre }
         diffusion { }
 

@@ -841,7 +841,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
       int pc_supported_on_gpu_by_petsc=0;
       int pc_supported_on_gpu_by_amgx=0;
-      Motcles les_precond(10);
+      Motcles les_precond(12);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -853,6 +853,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[7] = "BOOMERAMG";          // Multigrid preconditioner
         les_precond[8] = "BLOCK_JACOBI_ICC";   // Block Jacobi ICC preconditioner (code dans PETSc, optimise)
         les_precond[9] = "BLOCK_JACOBI_ILU";   // Block Jacobi ILU preconditioner (code dans PETSc, optimise)
+        les_precond[10] = "C-AMG";    // Classical AMG
+        les_precond[11] = "SA-AMG";   // Aggregated AMG
       }
 
       if (pc!="")
@@ -995,7 +997,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 7:
               {
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
-                PCHYPRESetType(PreconditionneurPetsc_, "boomeramg");
+                PCHYPRESetType(PreconditionneurPetsc_, "boomeramg"); // Classical C-AMG
                 // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de
                 // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
                 // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
@@ -1008,26 +1010,107 @@ void Solv_Petsc::create_solver(Entree& entree)
                 check_not_defined(ordering);
                 break;
               }
-            case 8: // icc
             case 9: // ilu
+              preconditionnement_non_symetrique_ = 1;
+            case 8: // icc
               {
-                if (rang==9) preconditionnement_non_symetrique_ = 1; // ilu
-                PCSetType(PreconditionneurPetsc_, PCBJACOBI);
-                add_option("sub_pc_type",rang==8 ? "icc" : "ilu");
-                // On fixe le precondtionnement non symetrique pour appliquer eventuellement un ordering autre que celui par defaut (natural)
-                // Un ordering rcm peut ameliorer par exemple la convergence
-                // Voir le remplissage de la matrice avec -mat_view_draw -draw_pause -1
-                if (ordering.value()!="")
-                  {
-                    add_option("sub_pc_factor_mat_ordering_type",ordering.value());
-                    // Le preconditionnement natural (defaut) ne necessite pas une matrice de preconditionnement symetrique, les autres si:
-                    preconditionnement_non_symetrique_=1;
-                  }
-                add_option("sub_pc_factor_levels",(Nom)level.value());
                 pc_supported_on_gpu_by_amgx=1;
-                if (amgx_) amgx_option+="preconditioner=MULTICOLOR_DILU\n";
+                if (amgx_)
+                  amgx_option+="preconditioner=MULTICOLOR_DILU\n";
+                else
+                  {
+                    add_option("sub_pc_type",rang==8 ? "icc" : "ilu");
+                    add_option("sub_pc_factor_levels",(Nom)level.value());
+                    // On fixe le precondtionnement non symetrique pour appliquer eventuellement un ordering autre que celui par defaut (natural)
+                    // Un ordering rcm peut ameliorer par exemple la convergence
+                    // Voir le remplissage de la matrice avec -mat_view_draw -draw_pause -1
+                    if (ordering.value()!="")
+                      {
+                        add_option("sub_pc_factor_mat_ordering_type",ordering.value());
+                        // Le preconditionnement natural (defaut) ne necessite pas une matrice de preconditionnement symetrique, les autres si:
+                        preconditionnement_non_symetrique_=1;
+                      }
+
+                  }
+                PCSetType(PreconditionneurPetsc_, PCBJACOBI);
                 check_not_defined(omega);
                 check_not_defined(epsilon);
+                break;
+              }
+            case 10: // Classical AMG
+            case 11: // Aggregated AMG
+              {
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_)
+                  {
+                    amgx_option+="preconditioner(p)=AMG\n";
+                    amgx_option+="s:use_scalar_norm=1\n";
+                    amgx_option+="p:error_scaling=0\n";
+                    amgx_option+="p:print_grid_stats=1\n";
+                    amgx_option+="p:max_iters=1\n";
+                    amgx_option+="p:cycle=V\n";
+                    amgx_option+="p:min_coarse_rows=2\n";
+                    amgx_option+="p:max_levels=100\n";
+                    amgx_option+="p:smoother(smoother)=BLOCK_JACOBI\n";
+                    amgx_option+="p:presweeps=1\n";
+                    amgx_option+="p:postsweeps=1\n";
+                    amgx_option+="p:coarsest_sweeps=1\n";
+                    amgx_option+="p:coarse_solver=DENSE_LU_SOLVER\n";
+                    amgx_option+="p:dense_lu_num_rows=2\n";
+                    if (rang==10) // C-AMG
+                      {
+                        amgx_option+="p:algorithm=CLASSICAL\n";
+                        amgx_option+="p:selector=HMIS\n";
+                        amgx_option+="p:interpolator=D2\n";
+                        amgx_option+="p:strength=AHAT\n";
+                      }
+                    else // SA-AMG
+                      {
+                        amgx_option+="p:algorithm=AGGREGATION\n";
+                        amgx_option+="p:selector=SIZE_2\n";
+                        amgx_option+="p:max_matching_iterations=100000\n";
+                        amgx_option+="p:max_unassigned_percentage=0.0\n";
+                      }
+                    amgx_option+="smoother:relaxation_factor=0.8\n";
+                  }
+                else
+                  {
+                    // ToDo : trouver des parametres pour PETSc afin d'avoir une comparaison possible CPU vs GPU (meme its par exemple):
+                    add_option("pc_type","gamg");
+                    if (rang==10) // C-AMG
+                      {
+                        add_option("pc_gamg_type","classical");
+                        /* AmgWrapper:
+                        add_option("pc_type","hypre");
+                        add_option("pc_hypre_type","boomeramg");
+                        add_option("pc_hypre_boomeramg_cycle_type","V");
+                        add_option("pc_hypre_boomeramg_max_levels","100");
+                        add_option("pc_hypre_boomeramg_max_iter","1");
+                        add_option("pc_hypre_boomeramg_tol","0.0");
+                        add_option("pc_hypre_boomeramg_truncfactor","0.0");
+                        add_option("pc_hypre_boomeramg_P_max","0");
+                        add_option("pc_hypre_boomeramg_agg_nl","0");
+                        add_option("pc_hypre_boomeramg_agg_num_paths","1");
+                        add_option("pc_hypre_boomeramg_strong_threshold","0.25");
+                        add_option("pc_hypre_boomeramg_max_row_sum","1.0");
+                        add_option("pc_hypre_boomeramg_grid_sweeps_down","1");
+                        add_option("pc_hypre_boomeramg_grid_sweeps_up","1");
+                        add_option("pc_hypre_boomeramg_grid_sweeps_coarse","1");
+                        add_option("pc_hypre_boomeramg_relax_type_all","Jacobi");
+                        add_option("pc_hypre_boomeramg_relax_type_coarse","Gaussian-elimination");
+                        add_option("pc_hypre_boomeramg_relax_weight_all","1.0");
+                        add_option("pc_hypre_boomeramg_outer_relax_weight_all","1.0");
+                        add_option("pc_hypre_boomeramg_measure_type","local");
+                        add_option("pc_hypre_boomeramg_coarsen_type","HMIS");
+                        add_option("pc_hypre_boomeramg_interp_type","ext+i-cc"); */
+                      }
+                    else // SA-AMG
+                      {
+                        add_option("pc_gamg_type","agg");
+                        add_option("pc_gamg_agg_nsmooths","0");
+//                        add_option("pc_gamg_agg_nsmooths","1"); //Crash
+                      }
+                  }
                 break;
               }
             default:
