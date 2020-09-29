@@ -20,7 +20,7 @@ __version__ = '0.1'
 
 from lib import chaine2Tex,chaine2File
 
-from lib import GestionMessages
+from lib import GestionMessages,print_description
 
 import sys, os, time
 
@@ -45,6 +45,7 @@ class FileTex:
         self.write_text_sans_nl(titi)
         self.write_interne('\n')
         pass
+
     def write_description_sans_nl(self,description):
         if (len(description)==0): return
         self.write_text_sans_nl(description[0])
@@ -102,13 +103,13 @@ class Write_tex:
             fichier.write_Tex('\n')
             pass
         fichier.write_Tex('% Debut figure')
-        if figure.titre!='Undefined':
-            fichier.write_Tex('\subsection{%s}' % chaine2Tex(figure.titre))
-            pass
+#        if figure.titre!='Undefined':
+#            fichier.write_Tex('\subsection{%s}' % chaine2Tex(figure.titre))
+#            pass
 
         if minifigure:
             minipage_width=figure.width.split(",")[0]
-            fichier.write_Tex('\hspace*\fill')
+#            fichier.write_Tex('\hspace*\fill')
             fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
             pass
         fichier.write_description(figure.description)
@@ -120,7 +121,9 @@ class Write_tex:
         if (width!="0cm") and (width[0]!="-"):
             self.nb_visu+=1
             if figure.format=='ps' or  figure.format=='png' :
-                fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (figure.width,figure.fichierGraphique))
+                fichier.write_Tex('\begin{center} \includegraphics[width=%s]{\orig/.tmp/%s} \end{center}' % (figure.width,figure.fichierGraphique))
+                fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(figure.titre))
+                fichier.write_Tex('\bigskip')
             else:
                 # fichier.write('\input{%s}\n' % figure.fichierGraphiqueComplet)
                 fichier.write_Tex('\input{\orig/.tmp/%s}' % figure.fichierGraphique)
@@ -130,11 +133,13 @@ class Write_tex:
             print("The figure does not really include the picture ",figure.fichierGraphique," because the width <= 0:",figure.width)
             pass
         if (minifigure==1):
-            fichier.write_Tex('} \end{minipage}')
-            fichier.write_Tex('\hspace*\fill')
+            fichier.write_Tex('} \end{minipage} \n')
+            fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(figure.titre))
+            fichier.write_Tex('\bigskip')
+#            fichier.write_Tex('\hspace*\fill')
             pass
         if (self.nb_visu>=figure.nb_img_without_newline):
-            fichier.write_Tex('\n\n')
+            fichier.write_Tex('\n')
             self.nb_visu=0
             self.minifigure_avt=0
         else:
@@ -180,23 +185,23 @@ class Write_tex:
     def inclureVisuTex(self, visu,fichier):
         '''Inclusion de la visu dans le fichier latex du rapport de validation.'''
         fichier.write_Tex('% Debut visu')
-        if visu.titre!='Undefined':
-            fichier.write_Tex('\subsection{%s}' % chaine2Tex(visu.titre))
-            pass
+#        if visu.titre!='Undefined':
+#            fichier.write_Tex('\subsection{%s}' % chaine2Tex(visu.titre))
+#            pass
         minifigure=self.minifigure_avt
         if (visu.nb_img_without_newline>0):
             minifigure=1
             pass
         if minifigure:
             minipage_width=visu.width.split(",")[0]
-            fichier.write_Tex('\hspace*\fill')
+#            fichier.write_Tex('\hspace*\fill')
             fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
             pass
         fichier.write_description(visu.description)
         fichier.write_text('')
         for i in range(max(len(visu.cycles.split()),1)):
             if (minifigure) and (i>0):
-                fichier.write_Tex('\hspace*\fill')
+#                fichier.write_Tex('\hspace*\fill')
                 fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
                 pass
             if not self.novisit:
@@ -208,18 +213,22 @@ class Write_tex:
                 if (width!="0cm") and (width[0]!="-"):
                     self.nb_visu+=1
                     if visu.format=='ps' or visu.format=='png':
-                        fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (visu.width,fichiergraphique))
+                        fichier.write_Tex('\begin{center} \includegraphics[width=%s]{\orig/.tmp/%s} \end{center}' % (visu.width,fichiergraphique))
+                        fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(visu.titre))
+                        fichier.write_Tex('\bigskip')
                     else:
                         fichier.write_Tex('\input{%s}' % fichiercomplet)
                 else:
                     print("The visu does not really include the picture ",fichiergraphique," because the width <= 0 :",visu.width)
                     pass
             if (minifigure==1):
-                fichier.write_Tex('} \end{minipage}')
-                fichier.write_Tex('\hspace*\fill')
+                fichier.write_Tex('} \end{minipage} \n')
+                fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(visu.titre))
+                fichier.write_Tex('\bigskip')
+#                fichier.write_Tex('\hspace*\fill')
                 pass
             if (self.nb_visu>=visu.nb_img_without_newline):
-                fichier.write_Tex('\n\n')
+#                fichier.write_Tex('\n')
                 self.nb_visu=0
                 self.minifigure_avt=0
             else:
@@ -232,10 +241,7 @@ class Write_tex:
         Tableau_val=tableau.get_tableau()
         valeurT=tableau.label.split('|')
         label=[ x.strip() for x in valeurT ]
-        fichier.write_Tex('\n% Debut tableau')
-        if tableau.titre!='Undefined':
-            fichier.write_Tex('\subsection{%s}' % chaine2Tex(tableau.titre))
-            pass
+        fichier.write_Tex('% Debut tableau')
         fichier.write_description(tableau.description)
         if len(tableau.listeLignes)==0: return
         nbc=tableau.nb_colonnes
@@ -247,10 +253,9 @@ class Write_tex:
             for i in range(nbc):
                 line.append( chaine2Tex(label[i]) )
             data.append( line )
-            # print "llll",line
             pass
         li=0
-        # print "Tabbb" ,Tableau_val
+#
         for ligne in tableau.listeLignes:
             values=Tableau_val[li]
             li=li+1
@@ -283,8 +288,7 @@ class Write_tex:
 
         if tableau.textsize:
             fichier.write_Tex(tableau.textsize+'\n')
-
-        entete=('\n\begin{longtable}{|c|')
+        entete=('\begin{longtable*}{|c|')
 
         nbl=nbc
         if tableau.transposed_display:
@@ -294,10 +298,7 @@ class Write_tex:
         for i in range(nbl): entete+=('c|')
         entete+='}'
         fichier.write_Tex(entete)
-
         fichier.write_Tex_sans_nl('\hline \n ')
-
-
 
         for  line in data:
             assert( len(line) == nb_columns )
@@ -323,21 +324,24 @@ class Write_tex:
                     fichier.write(' \endhead  \hline \n')
                 else:
                     fichier.write(' \\\\  \hline \n')
-        fichier.write_Tex('\end{longtable}\n \n ')
+        
+        fichier.write_Tex('\end{longtable*}')
+        fichier.write_Tex('\captionof{table}{ %s }' %chaine2Tex(tableau.titre))
+        fichier.write_Tex('\bigskip')
         if tableau.textsize:
             fichier.write_Tex('\\normalsize\n')
-        fichier.write_Tex_sans_nl('\vspace{0.5cm}')
+        fichier.write_Tex_sans_nl('\vspace{0.1cm}')
         # print "ICICI gros travail a faire !!!!!!!"
         if len(tableau.listeLignes)>0 and tableau.inclureDescLignes==1:
             # description des lignes
 
             fichier.write_Tex('\n% Debut ligne')
-            fichier.write_text('Description des lignes du tableau %s:'%((tableau.titre)) )
+#            fichier.write_text('Description des lignes du tableau %s:'%((tableau.titre)) )
             fichier.write_Tex('\begin{itemize}')
             for ligne in tableau.listeLignes:
                 if (isinstance(ligne,Lignes)):continue
                 # inclusion de la ligne dans le fichier latex
-                fichier.write_Tex_sans_nl('\item %s : ' % (chaine2Tex(ligne.legende)))
+#                fichier.write_Tex_sans_nl('\item %s : ' % (chaine2Tex(ligne.legende)))
                 if len(ligne.description)!=0:
                     fichier.write_description_sans_nl(ligne.description)
                     fichier.write_Tex_sans_nl('\\\\')
@@ -376,6 +380,7 @@ class Write_tex:
             figure.gestMsg.ecrire(GestionMessages._ERR, 'Unexpected figure type %s'%(figure))
             pass
         pass
+#
     def inclureChapitreTex(self,chapitre):
         '''Inclusion du chapitre dans le fichier latex du rapport de validation.'''
         fichier=self.ficTex
@@ -390,6 +395,140 @@ class Write_tex:
             self.inclureObjet(figure,fichier)
             pass
         pass
+#
+    def inclureSSChapitreTex(self,sousChapitre):
+        '''Inclusion des sous-chapitres dans le fichier latex du rapport de validation.'''
+        from SousChapitre import SousChapitre
+        fichier=self.ficTex
+        fin = False
+        fichier.write_Tex('% Debut Sous-Chapitre')
+        if sousChapitre.titre!='Undefined':
+            fichier.write_Tex('\par\subsection{%s}' % chaine2Tex(sousChapitre.titre))
+#
+        for k,i in sousChapitre.dicosschap.items():
+            for k2, v2 in i.items():
+                if v2 == 'description': 
+                    fichier.write_text_sans_nl(i["valeur"])
+                    fichier.write_Tex('\n')
+                if v2 == 'figure':
+                    self.inclureObjet(i["valeur"],fichier)
+#
+    def inclurePurposeTex(self,maitre,purpose):
+        '''Inclusion du paragraphe Purpose dans le fichier latex du rapport de validation.'''
+        fichier=self.ficTex
+        fichier.write_Tex('% Debut Chapitre Purpose')
+        fichier.write_Tex('\section{Purpose}\n')
+        fichier.write_description(purpose.description)
+        iter = 0
+
+        #ajout des figures
+        for figure in purpose.listeFigures:
+            self.inclureObjet(figure,fichier)
+            pass
+#        fichier.write_Tex('\\\\')
+        fichier.write_Tex_sans_nl('\n \vspace{0.3cm}')
+        suite_entete=''' Validation made by : __AUTEUR__.\\\\Report generated  __DATE__.'''
+        suite_entete = suite_entete.replace('__AUTEUR__',maitre.auteur)
+        import time
+        date = time.strftime('%d/%m/%Y')
+        suite_entete = suite_entete.replace('__DATE__',date)
+        fichier.write_text(suite_entete)
+#
+    def inclurePbDescriptionTex(self,pbdescription):
+        '''Inclusion du paragraphe Problem Description dans le fichier latex du rapport de validation.'''
+        fichier=self.ficTex
+        fichier.write_Tex('% Debut Chapitre Problem Description')
+        fichier.write_Tex('\section{Problem Description}\n')
+        fichier.write_description(pbdescription.description)
+        iter = 0
+
+        #ajout des figures
+        for figure in pbdescription.listeFigures:
+            self.inclureObjet(figure,fichier)
+
+        #ajout des sous-chapitres
+        for sousChapitre in pbdescription.listeSSChap:
+            self.inclureSSChapitreTex(sousChapitre)
+#
+    def inclureCaseSetupTex(self,casesetup):
+        '''Inclusion du paragraphe Case Setup dans le fichier latex du rapport de validation.'''
+        fichier=self.ficTex
+        fichier.write_Tex('% Debut Chapitre Case Setup')
+        fichier.write_Tex('\section{Case Setup}\n')
+        fichier.write_description(casesetup.description)
+        iter = 0
+
+        #ajout des figures
+        for figure in casesetup.listeFigures:
+            self.inclureObjet(figure,fichier)
+
+        #ajout des sous-chapitres
+        for sousChapitre in casesetup.listeSSChap:
+            self.inclureSSChapitreTex(sousChapitre)
+#
+    def inclureResultsTex(self,maitre,results):
+        '''Inclusion du paragraphe Results dans le fichier latex du rapport de validation.'''
+        fichier=self.ficTex
+        fichier.write_Tex('% Debut Chapitre Conclusion')
+        fichier.write_Tex('\section{Results}\n')
+        fichier.write_Tex('\par\subsection{Validation Specific Informations}')
+        fichier.write_Tex('\begin{itemize}')
+        version=maitre.versionTrioU
+        fichier.write_Tex('\item Version %s : %s' % (maitre.code,chaine2Tex(version)))
+        try:
+            from os import popen
+            a=os.popen('egrep "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
+            chaine=a.read().split()
+            version=chaine[0]+" (built on TRUST v"+chaine[1]+")"
+#            fichier.write_Tex('\item Binary: %s' % chaine2Tex(version))
+        except:
+            pass
+#
+        for param in maitre.parametresTrioU:
+            fichier.write_Tex_sans_nl('\item ');fichier.write_text(param)
+            pass
+#
+        if maitre.casTest:
+            fichier.write_Tex('\item Generated Test cases : \n')
+            for cas in maitre.casTest:
+                from lib import get_detail_cas
+                nomcas,dir,nb_proc,comment=get_detail_cas(cas)
+                ficData=nomcas+'.data'
+                fichier.write_Tex('$\rightarrow$ %s : \textit{%s}\n' % (chaine2Tex(dir+"/"+ficData), chaine2Tex(comment)))
+
+        fichier.write_Tex('\item Performance Chart : ')
+        from Tableau import Tableau_performance_nvellevalid
+        Tableau_perf=Tableau_performance_nvellevalid(verbose=0, output='')
+        Tableau_perf.lireParametres(fichier,maitre.casTest)
+        Tableau_perf.titre='Performance Chart'
+        self.inclureTableauTex(Tableau_perf,fichier)
+        fichier.write_Tex('\end{itemize}')
+        pass
+        iter = 0
+        fichier.write_Tex('\par\subsection{Plot Data}')
+        for k,i in results.dicoresult.items():
+            for k2, v2 in i.items():
+                if v2 == 'description': 
+                    fichier.write_text(i["valeur"])
+                    fichier.write_Tex('\n')
+                if v2 == 'figure':
+                    self.inclureObjet(i["valeur"],fichier)
+#
+    def inclureConclusionTex(self,conclusion):
+        '''Inclusion du paragraphe Conclusion dans le fichier latex du rapport de validation.'''
+        fichier=self.ficTex
+        fichier.write_Tex('\n% Debut Chapitre Conclusion')
+##        if not conclusion.description:   - a faire : tester existance du paragrpahe
+        fichier.write_Tex('\section{Conclusion}\n')
+        fichier.write_description(conclusion.description)
+        iter = 0
+
+        #ajout des figures
+        for figure in conclusion.listeFigures:
+            self.inclureObjet(figure,fichier)
+            pass
+        pass
+#
     def ecrire_fichier_maitre(self,maitre,dico):
         nomFichierTexComplet = dico["nomFichierTexComplet"]
         entete = self.get_template().replace('__TITRECAS__', chaine2Tex(maitre.titre))
@@ -423,7 +562,10 @@ class Write_tex:
 
     def write_liste_ref(self,maitre,ficTex):
         if  maitre.reference:
-            ficTex.write_Tex('\par\subsection{References :}')
+            if maitre.nvellevalid==2:
+                ficTex.write_Tex('\par\subsection{References :}')
+            else:
+                ficTex.write_Tex('\section{References}')
             ficTex.write_Tex('\begin{itemize}')
             for ref in maitre.reference:
                 ficTex.write_Tex('\item %s' % (chaine2Tex(ref)))
@@ -446,7 +588,7 @@ class Write_tex:
 
                     if (first):
                         first=0
-                        ficTex.write_Tex('\clearpage')
+                        ficTex.write_Tex('\n')
                         ficTex.write_Tex('\n\n% Inclusion des fichiers.data')
                         ficTex.write_Tex('\section{Data Files}')
                         ficTex.write_Tex('\lstdefinelanguage{triou}{\nmorecomment=[s]{\#}{\#}, morekeywords={vefprep1b, vdf, lire, lire_fichier, domaine, dimension, postraitement, fluide_incompressible, schema_euler_explicite, pb_hydraulique_turbulent, pb_hydraulique}, sensitive=false\n}')
@@ -471,20 +613,35 @@ class Write_tex:
 
         ficTex = FileTex( destTMP + '/corps.tex', 'w')
         self.ficTex=ficTex
-        self.ecrire_introduction(maitre,ficTex)
-        self.write_liste_cas(maitre,ficTex)
-        self.write_liste_ref(maitre,ficTex)
-
-        for chapitre in maitre.listeChapitres:
-            self.inclureChapitreTex(chapitre)
-            pass
-
+        if maitre.nvellevalid==2:
+        # lecture des chapitres uniquement si on est a l ancien format des fiches de validation
+            self.ecrire_introduction(maitre,ficTex)
+            self.write_liste_cas(maitre,ficTex)
+            self.write_liste_ref(maitre,ficTex)
+            for chapitre in maitre.listeChapitres:
+                self.inclureChapitreTex(chapitre)
+                pass
+        else:
+            for purp in maitre.purpose:
+                self.inclurePurposeTex(maitre,purp)
+            for pbdes in maitre.pbdescription:
+                self.inclurePbDescriptionTex(pbdes)
+            for casesu in maitre.casesetup:
+                self.inclureCaseSetupTex(casesu)
+            for resu in maitre.results:
+                self.inclureResultsTex(maitre,resu)
+            for conc in maitre.conclusion:
+                self.inclureConclusionTex(conc)
+            self.write_liste_ref(maitre,ficTex)
+#
+#############################
         # inclusion des fichiers.data
         self.include_data(maitre,ficTex)
 
         ficTex.close()
 
         pass
+#
     def ecrire_introduction(self,maitre,ficTex):
 
         #suite_entete='''\\section{Introduction}\n\nValidation r\\'ealis\\'ee par : __AUTEUR__.\\\\Rapport g\\'en\\'er\\'e le __DATE__.\n'''
@@ -499,7 +656,6 @@ class Write_tex:
         import time
         date = time.strftime('%d/%m/%Y')
         suite_entete = suite_entete.replace('__DATE__',date)
-        # suite_entete = suite_entete.replace('\\','\\\\')
         ficTex.write_text(suite_entete)
         ficTex.write_Tex('\par\subsection{Description}')
         ficTex.write_description(maitre.description)
@@ -538,6 +694,7 @@ class Write_tex:
 \\usepackage{fancyhdr}
 % \\usepackage[pdfpagemode=FullScreen,bookmarksopen=true,bookmarks=true]{hyperref}
 \\usepackage[bookmarksopen=true,bookmarks=true]{hyperref}
+\\usepackage{caption}
 
 % \\usepackage{verbatim}
 %\\usepackage{moreverb}
@@ -548,26 +705,29 @@ class Write_tex:
 \setlength\oddsidemargin{0cm}
 \setlength\evensidemargin{0cm}
 \setlength\topmargin{0cm}
-\setlength\headheight{1cm}
-\setlength\headsep{0.2cm}
+\setlength\headheight{0.4cm}
+\setlength\headsep{0.6cm}
 \setlength\marginparsep{0cm}
 \setlength\marginparwidth{0cm}
-\setlength\footskip{2cm}
+\setlength\footskip{1.4cm}
+\setlength{\textheight}{670pt} 
 \setlength\textwidth{16cm}
 \setlength{\parindent}{0pt}
 
 % Style page
 \renewcommand{\sectionmark}[1]{\markboth{#1}{#1}}
 \pagestyle{fancy}
-\lhead{\leftmark\\\\\rightmark}
+\lhead{\textit{ __TITRECAS__}}
 \chead{}
 \rhead{}
 %\lfoot{\textit{Genere automatiquement avec genererCourbe.py, v'''+__version__+'''.}}
-\lfoot{\textit{ __TITRECAS__}}
+%\lfoot{\textit{ __TITRECAS__}}
+%\lfoot{\textit{TRUST/TRIOCFD Validation, v1.8.2}}
+\lfoot{}
 \cfoot{}
 \rfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.3pt}
 
 \title{__TITRECAS__}
 \author{__AUTEUR__}

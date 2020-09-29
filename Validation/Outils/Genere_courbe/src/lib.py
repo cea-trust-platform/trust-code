@@ -23,6 +23,7 @@ __version__ = '0.1'
 __date__    = '20061207'
 
 dico_en={
+'newvalidtrio' : 'nvellevalidtrio',
 'parameterstrio_u':'parametrestrio_u',
 'parameterstrust':'parametrestrio_u',
 'versiontrust':'versiontrio_u',
@@ -56,6 +57,18 @@ dico_en={
 'lines':'lignes',
 'file':'fichier',
 'values':'valeurs',
+'purpose':'objectif',
+'pb_description':'pb_description',
+'geometry':'geometrie',
+'icbc':'cicl',
+'fluidprop':'propfluide',
+'flowphy':'phyecou',
+'casesetup':'description_cas',
+'grid':'maillage',
+'model_options':'options_modele',
+'other_options':'autres_options',
+'results':'resultats',
+'conclusion':'conclusion',
 }
 
 
@@ -194,7 +207,7 @@ def get_nom_cas(case):
     pass
 
 def print_description(description,dec):
-    ''' affiche la description, en mettant EOF si nécessaire'''
+    ''' affiche la description, en mettant EOF si necessaire'''
     for des in description:
         if des.find('\n')!=-1:
             lignes=des.split('\n')

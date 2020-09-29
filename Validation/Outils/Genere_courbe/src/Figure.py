@@ -256,6 +256,7 @@ class Figure:
                 #ficPlot.write('set size 1.3,1.3\n')
                 ficPlot.write('set terminal png large\n')
                 self.fichierGraphique = 'fic%03d.png' % (indice)
+
             elif self.format=='epslatex':
                 #latex
                 ficPlot.write('set terminal epslatex color\n')

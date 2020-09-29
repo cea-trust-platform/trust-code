@@ -30,9 +30,12 @@ from lib import _accoladeF,verifie_accolade_suivante
 
 display_figure=True
 from Chapitre import Chapitre
-
-
-
+from Purpose import Purpose
+from PbDescription import PbDescription
+from CaseSetup import CaseSetup
+from Results import Results
+from SousChapitre import SousChapitre
+from Conclusion import Conclusion
 
 def Usage(gestMsg):
     '''Renvoie l usage du script.'''
@@ -180,18 +183,26 @@ TODO
         self.auteur = 'Undefined'
         self.code = 'TRUST'
         self.description = []
+        self.purpose = []
+        self.pbdescription = []
+        self.casesetup = []
+        self.results = []
+        self.conclusion = []
         self.reference = []
         self.casTest = []
+        self.souschapitre = []
         self.versionTrioU = ''  # os.getenv('TRUST_VERSION', '')
         self.parametresTrioU = []
         #import time
         # self.date = time.strftime('%d/%m/%Y')
         self.listeChapitres = []
+        self.listeSSChap = []
         self.inclureData = 2
         self.compile_latex=1
         self.sortie = out
         self.preRequis = []
         self.novisit = novisit
+        self.nvellevalid = 2
 
 
         pass
@@ -200,6 +211,7 @@ TODO
         print("parametres {")
         if self.titre != 'Undefined' : print(dec,"titre" ,self.titre)
         if self.auteur != 'Undefined': print(dec,"auteur" , self.auteur)
+        if self.nvellevalid != 'Undefined': print (dec,'nvellevalidTrio', self.nvellevalid)
         print_description(self.description,dec)
 
         for ref in self.reference :print(dec,"reference",ref)
@@ -211,9 +223,14 @@ TODO
         for pre in self.preRequis : print(dec,'preRequis', pre)
         print("}")
         indice=0
+        indicesschap=0
         for chap in self.listeChapitres:
             indice=chap.printFichierParametres(indice)
             pass
+#        for sschap in self.listeSSChap:
+#            self.gestMsg.ecrire(GestionMessages._INFO, 'listeChapitres %s' % self.listeSSChap)
+#            indicesschap=chap.printFichierParametres(indicesschap)
+#            pass
         pass
 
 
@@ -239,13 +256,46 @@ TODO
             ligne = ligne.strip()
             if len(ligne)>0 and ligne[0]!='#':
                 motcle,valeur,motcle_lu = extraireMotcleValeur(fichier,ligne, self.gestMsg)
-                if motcle=='chapitre':
-                    verifie_accolade_suivante(ligne,fichier,self.gestMsg)
-                    fig = self.lireParametresChapitre(fichier)
-                    if fig!=None:
-                        self.listeChapitres.append(fig)
+                if self.nvellevalid==1:
+                    if motcle=='objectif':
+                        verifie_accolade_suivante(ligne,fichier,self.gestMsg)
+                        fig = self.lireParametresPurpose(fichier)
+                        if fig!=None:
+                            self.purpose.append(fig)
+#
+                    elif motcle=='pb_description':
+                        verifie_accolade_suivante(ligne,fichier,self.gestMsg)
+                        fig = self.lireParametresPbDescription(fichier)
+                        if fig!=None:
+                            self.pbdescription.append(fig)
+#
+                    elif motcle=='description_cas':
+                        verifie_accolade_suivante(ligne,fichier,self.gestMsg)
+                        fig = self.lireParametresCaseSetup(fichier)
+                        if fig!=None:
+                            self.casesetup.append(fig)
+#
+                    elif motcle=='resultats':
+                        verifie_accolade_suivante(ligne,fichier,self.gestMsg)
+                        fig = self.lireParametresResults(fichier)
+                        if fig!=None:
+                            self.results.append(fig)
+#
+                    elif motcle=='conclusion':
+                        verifie_accolade_suivante(ligne,fichier,self.gestMsg)
+                        fig = self.lireParametresConclusion(fichier)
+                        if fig!=None:
+                            self.conclusion.append(fig)
+                    else:
+                        self.gestMsg.ecrire(GestionMessages._ERR, 'We were expecting a keyword like Objectif/Purpose, Pb_description, Description_cas or Conclusion, and not %s' % motcle_lu,fichier=fichier)
                 else:
-                    self.gestMsg.ecrire(GestionMessages._ERR, 'We were expecting a keyword like Chapitre or Chapter, and not %s' % ( motcle_lu),fichier=fichier)
+                    if motcle=='chapitre':
+                        verifie_accolade_suivante(ligne,fichier,self.gestMsg)
+                        fig = self.lireParametresChapitre(fichier)
+                        if fig!=None:
+                            self.listeChapitres.append(fig)
+                    else:
+                        self.gestMsg.ecrire(GestionMessages._ERR, 'We were expecting a keyword like Chapitre or Chapter, and not %s' % motcle_lu,fichier=fichier)
 
         fichier.close()
 
@@ -263,11 +313,12 @@ TODO
             pass
 
         motcle,valeur,motcle_lu = extraireMotcleValeur(fichier,ligne, self.gestMsg)
+        
         if motcle=='parametres':
             #Lecture des parametres generaux
             verifie_accolade_suivante(ligne,fichier,self.gestMsg)
             fin = False
-            dico=['titre','auteur','description','reference','castest','code','versiontrio_u','parametrestrio_u','incluredata','prerequis']
+            dico=['titre','auteur','description','reference','castest','code','versiontrio_u','parametrestrio_u','incluredata','prerequis','nvellevalidtrio']
             while not fin:
                 ligne = fichier.readline()
                 if not ligne:
@@ -299,6 +350,11 @@ TODO
                         self.inclureData = int(valeur)
                     elif motcle=='prerequis':
                         self.preRequis.append(valeur.replace('"',''))
+                    elif motcle=='nvellevalidtrio':
+                        #Nouvelle version de script pour harmonisation des fiches de Validation de Trio-cfd
+                        #Le nom des chapitres est impose, on ne balaye plus le mot cle chapitre
+                        self.nvellevalid = 1
+                        self.gestMsg.ecrire(GestionMessages._INFO, 'nouveau format fiche de validation Trio-cfd %s' % self.nvellevalid)
                     else:
                         self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Parameters', dico,motcle_lu,fichier=fichier)
                     if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
@@ -317,6 +373,56 @@ TODO
 
         return chapitre
 
+    #lecture des parametres du paragraphe purpose
+    def lireParametresPurpose(self, fichier):
+        '''Lecture des parametres du paragaphe purpose.'''
+        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
+        #creation du paragraphe Purpose
+        purpose = Purpose(verbose=self.verbose, output=self.gestMsg)
+        #puis lecture du paragraphe Purpose
+        purpose.lireParametres(fichier,self.casTest)
+        return purpose
+
+    #lecture des parametres du paragraphe problem description
+    def lireParametresPbDescription(self, fichier):
+        '''Lecture des parametres du paragaphe paragraphe description.'''
+        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
+        #creation du paragraphe Problem Description
+        pbdescription = PbDescription(verbose=self.verbose, output=self.gestMsg)
+        #puis lecture du paragraphe Problem Description
+        pbdescription.lireParametres(fichier,self.casTest)
+        return pbdescription
+
+    #lecture des parametres du paragraphe case setup
+    def lireParametresCaseSetup(self, fichier):
+        '''Lecture des parametres du paragaphe case setup.'''
+        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
+        #creation du paragraphe Case Setup
+        casesetup = CaseSetup(verbose=self.verbose, output=self.gestMsg)
+        #puis lecture du paragraphe Case Setup
+        casesetup.lireParametres(fichier,self.casTest)
+        return casesetup
+
+    #lecture des parametres du paragraphe results
+    def lireParametresResults(self, fichier):
+        '''Lecture des parametres du paragaphe results.'''
+        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
+        #creation du paragraphe Results
+        results = Results(verbose=self.verbose, output=self.gestMsg)
+        #puis lecture du paragraphe Results
+        results.lireParametres(fichier,self.casTest)
+        return results
+
+    #lecture des parametres du paragraphe conclusion
+    def lireParametresConclusion(self, fichier):
+        '''Lecture des parametres du paragaphe conclusion.'''
+        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
+        #creation du paragraphe Conclusion
+        conclusion = Conclusion(verbose=self.verbose, output=self.gestMsg)
+        #puis lecture du paragraphe Conclusion
+        conclusion.lireParametres(fichier,self.casTest)
+        return conclusion
+
     #---------------------------------------------
     # Methodes d'affichage des infos
     def afficherParametres(self):
@@ -330,6 +436,13 @@ TODO
         self.gestMsg.ecrire(GestionMessages._INFO, 'Ref=    %s' % self.reference)
         for chapitre in self.listeChapitres:
             chapitre.afficherParametres()
+        for souschapitre in self.listeSSChap:
+            souschapitre.afficherParametres()
+        purpose.afficherParametres()
+        pbdescription.afficherParametres()
+        casesetup.afficherParametres()
+        results.afficherParametres()
+        conclusion.afficherParametres()
 
 
     #---------------------------------------------
@@ -359,12 +472,32 @@ TODO
             pass
 
 
-        #balayage des chapitres, pour les ajouter au rapport
+        #balayage des chapitres, pour ajouter les figures au rapport
         indice = 0
+        indicesschap = 0
+        if self.nvellevalid != 'Undefined':
+            for purp in self.purpose:
+               indice = purp.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+            for pbdes in self.pbdescription:
+               indice = pbdes.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+               for sschapitre in pbdes.listeSSChap:
+                  indice = sschapitre.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+            for case in self.casesetup:
+               indice = case.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+               for sschapitre in case.listeSSChap:
+                  indice = sschapitre.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+            for res in self.results:
+               indice = res.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+               for sschapitre in res.listeSSChap:
+                  indice = sschapitre.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+            for conc in self.conclusion:
+               indice = conc.genererGraphes(destTMP, indice,debug_figure, self.novisit)
+            pass
         for chapitre in self.listeChapitres:
             indice = chapitre.genererGraphes(destTMP, indice,debug_figure, self.novisit)
             #indice += 1
             pass
+
         if (self.compile_latex==1):
             nomFichierTex = 'fic.tex'
             nomFichierTexComplet = destTMP + '/' + nomFichierTex
@@ -395,7 +528,8 @@ TODO
             os.chdir(destTMP)
             res = os.system('pdflatex -interaction=nonstopmode %s >pdflatex.log' % nomFichierTex)
             nomFicPdf_court = nomFichierTex[:-3] + 'pdf'
-            res = os.system('pdflatex -interaction=nonstopmode %s >pdflatex.log; [ $? != 0 ] && cat pdflatex.log&& echo &&  rm -f %s' %(nomFichierTex , nomFicPdf_court))
+            res = os.system('pdflatex -interaction=nonstopmode %s >pdflatex.log; [ $? != 0 ] && cat pdflatex.log && echo && rm -f %s' %(nomFichierTex , nomFicPdf_court))
+#           
             os.chdir(ici)
             nomFicPdf = nomFichierTexComplet[:-3] + 'pdf'
             if os.path.exists(nomFicPdf):
@@ -436,6 +570,16 @@ TODO
             pass
         pass
 
+#        for purp in app.listeChapitres:
+#            newfig=[]
+#            for figure in purp.listeFigures:
+#                new_figs=figure.modifie_pour_comparaison(old_path)
+#                newfig.append(figure)
+#                for fig in new_figs: newfig.append(fig)
+#                pass
+#            purp.listeFigures=newfig
+#            pass
+#        pass
 
 
 
