@@ -1,0 +1,150 @@
+Parameters {
+	Title "Input/Output with HDF5"
+	Author "A.KHIZAR"
+	description "In this note, we check the use of the keyword 'single_hdf' which allows to generate and read files in HDF5 format"
+ 	TestCase Sauvegarde_hdf5 hdf5_io.data
+	TestCase Sauvegarde_simple_hdf5 hdf5_io.data
+	TestCase Logs_hdf5 hdf5_io.data
+	TestCase Zones_hdf5 hdf5_io.data 2	
+}
+
+Chapter {
+	Title "Backup file in HDF5 format"
+	Description "We check that we can resume a calculation with an hdf5 backup file"
+	figure { 
+	        Title "Use of the keywords 'sauvegarde' and 'reprise'"
+		Description "Comparison of channel flow rate between a full calculation and a resumed calculation."
+		Description "The results of the resumed calculation must overlapped those of the full calculation."
+		labelX "Time"
+		labelY "Flow Rate"
+		Include_Description_Curves 0
+		curve {
+			file Sauvegarde_hdf5/hdf5_io_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			Linewidth 2
+			legend "Full calculation"
+		}
+		curve {
+			file Sauvegarde_hdf5/sauvegarde_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "First half of the calculation"
+		}
+		curve {
+			file Sauvegarde_hdf5/reprise_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "Second half of the calculation"
+		}
+	}
+
+	figure { 
+	        Title "Use of the keywords 'sauvegarde' and 'resume_last_time'"
+		Description "Comparison of channel flow rate between a full calculation and a resumed calculation."
+		Description "The results of the resumed calculation must overlapped those of the full calculation."
+		labelX "Time"
+		labelY "Flow Rate"
+		Include_Description_Curves 0
+		curve {
+			file Sauvegarde_hdf5/hdf5_io_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			Linewidth 2
+			legend "Full calculation"
+		}
+		curve {
+			file Sauvegarde_hdf5/sauvegarde_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "First half of the calculation"
+		}
+		curve {
+			file Sauvegarde_hdf5/resume_last_time_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "Second half of the calculation"
+		}
+	}
+
+	figure {
+	        Title "Use of the keywords 'sauvegarde_simple' and 'reprise'"
+		Description "Comparison of channel flow rate between a full calculation and a resumed calculation."
+		Description "The results of the resumed calculation must overlapped those of the full calculation."
+		labelX "Time"
+		labelY "Flow Rate"
+		Include_Description_Curves 0
+		curve {
+			file Sauvegarde_simple_hdf5/hdf5_io_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			Linewidth 2
+			legend "Full calculation"
+		}
+		curve {
+			file Sauvegarde_simple_hdf5/sauvegarde_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "First half of the calculation"
+		}
+		curve {
+			file Sauvegarde_simple_hdf5/reprise_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "Second half of the calculation"
+		}
+	}
+	
+	figure {
+	        Title "Use of the keywords 'sauvegarde_simple' and 'resume_last_time'"
+		Description "Comparison of channel flow rate between a full calculation and a resumed calculation."
+		Description "The results of the resumed calculation must overlapped those of the full calculation."
+		labelX "Time"
+		labelY "Flow Rate"
+		Include_Description_Curves 0
+		curve {
+			file Sauvegarde_simple_hdf5/hdf5_io_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			Linewidth 2
+			legend "Full calculation"
+		}
+		curve {
+			file Sauvegarde_simple_hdf5/sauvegarde_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "First half of the calculation"
+		}
+		curve {
+			file Sauvegarde_simple_hdf5/resume_last_time_Channel_Flow_Rate_pb_periox
+			columns ($1) ($2)
+			style linespoints
+			legend "Second half of the calculation"
+		}
+	}
+ 
+}
+
+Chapter {
+	Title "Shared log file in HDF5 format"
+	Description include_text_file("Logs_hdf5/result.txt")
+}
+
+
+Chapter {
+	Title "Partitionned zones in HDF5 format"
+	Description "The domain should be divided into 2 equal parts: one at the bottom and one at the top."
+	Visu
+	{
+        	Instruction_visit OpenDatabase("Zones_hdf5/hdf5_io.lata", 0)
+		Instruction_visit AddPlot("Subset", "blocks(dom)", 1, 1)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (255, 0, 0, 255))
+		Instruction_visit s.SetMultiColor(1, (0, 0, 255, 255))
+		Instruction_visit s.subsetNames = ("0", "1")
+		Instruction_visit SetPlotOptions(s)
+		Instruction_visit DrawPlots()
+
+	}
+
+}

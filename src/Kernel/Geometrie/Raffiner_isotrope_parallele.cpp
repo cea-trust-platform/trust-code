@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -339,7 +339,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
                 FichierHDFPar fic_hdf;
                 newd = newd.nom_me(Process::nproc(), "p", 1);
                 fic_hdf.create(newd);
-                fic_hdf.create_and_fill_dataset("/zone", os_hdf);
+                fic_hdf.create_and_fill_dataset_MW("/zone", os_hdf);
                 fic_hdf.close();
               }
           }
