@@ -130,6 +130,7 @@ help()
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
    echo "-callgrind                    : Run callgrind tool (profiling) from valgrind."
    echo "-massif                       : Run massif tool (heap profile) from valgrind."
+   echo "-perf                         : Run perf tool (profiling)."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
@@ -329,6 +330,11 @@ do
    elif [ "$1" = "-massif" ]
    then 
       MASSIF=1
+   elif [ "$1" = "-perf" ]
+   then 
+      PERF=1
+      rm -f perf.data
+      [ ! -f /usr/bin/perf ] && echo "/usr/bin/perf doesn't exist." && exit
    elif [ "$1" = "-gdb" ]
    then
       gdb=gdb.sh && mpirun_options="-gdb"
@@ -623,6 +629,10 @@ fi
 if [ "$MASSIF" = 1 ]
 then
    exec="$val --tool=massif --massif-out-file=$NOM.massif $binary"
+fi
+if [ "$PERF" = 1 ]
+then
+   exec="perf record $binary"
 fi
 ###############################################
 # Utilisation de Petsc dans le jeu de donnees ?
@@ -1038,5 +1048,6 @@ then
    echo "Massif log $NOM.massif is created."
    echo "You could try now: massif-visualizer $NOM.massif" && [ ! -f /usr/bin/massif-visualizer ] && echo "But massif-visualizer is not installed."
 fi
+[ "$PERF" = 1 ] && [ -f perf.data ] && perf report
 exit $err
 
