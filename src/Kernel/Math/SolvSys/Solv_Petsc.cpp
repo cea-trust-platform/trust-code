@@ -1041,6 +1041,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 11: // Aggregated AMG
               {
                 pc_supported_on_gpu_by_amgx=1;
+                pc_supported_on_gpu_by_petsc=1;
                 if (amgx_)
                   {
                     amgx_option+="preconditioner(p)=AMG\n";

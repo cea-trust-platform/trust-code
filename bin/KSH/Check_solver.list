@@ -104,6 +104,8 @@ let i=$i+1;solver[$i]="Petsc PIPECG   { seuil $seuil precond SSOR { omega 1.65 }
 ##########################
 let i=$i+1;solver[$i]="Petsc     GCP  { seuil $seuil precond SSOR { omega 1.6 } impr }"				;gpu[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc     GCP  { seuil $seuil precond DIAG { } impr }"					;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_GPU GCP  { seuil $seuil precond C-AMG { } impr }"					;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_GPU GCP  { seuil $seuil precond SA-AMG { } impr }"					;gpu[$i]=1	;sym[$i]=1
 # cusparse and hyb format seems the fastest (confirmed on curie) and according to: https://www.epcc.ed.ac.uk/sites/default/files/Dissertations/2010-2011/PramodKumbhar.pdf
 let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusparse -mat_cusparse_storage_format hyb -mat_cusparse_mult_storage_format hyb -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusparse -mat_cusparse_storage_format ell -mat_cusparse_mult_storage_format ell -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1
