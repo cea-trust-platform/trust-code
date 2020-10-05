@@ -21,6 +21,7 @@
 #include <Terme_Source_Canal_RANS_LES_VEF_Face.h>
 #include <Terme_Source_Canal_perio_VEF_P1NC.h>
 #include <Terme_Source_Constituant_VEF_Face.h>
+#include <Terme_Source_Decroissance_Radioactive_VEF_Face.h>
 #include <Terme_Source_Qdm_VEF_Face.h>
 #include <Terme_Source_Qdm_lambdaup_VEF_Face.h>
 #include <Terme_Source_Rappel_T_VEF_Face.h>
@@ -46,8 +47,9 @@ Terme_Source_Canal_RANS_LES_VEF_Face inst16;verifie_pere(inst16);
 Terme_Source_Canal_perio_VEF_P1NC inst17;verifie_pere(inst17);
 Terme_Source_Canal_perio_QC_VEF_P1NC inst18;verifie_pere(inst18);
 Terme_Source_Constituant_VEF_Face inst19;verifie_pere(inst19);
-Terme_Source_Qdm_VEF_Face inst20;verifie_pere(inst20);
-Terme_Source_Qdm_lambdaup_VEF_Face inst21;verifie_pere(inst21);
-Terme_Source_Rappel_T_VEF_Face inst22;verifie_pere(inst22);
-Terme_Source_Th_TdivU_VEF_Face inst23;verifie_pere(inst23);
+Terme_Source_Decroissance_Radioactive_VEF_Face inst20;verifie_pere(inst20);
+Terme_Source_Qdm_VEF_Face inst21;verifie_pere(inst21);
+Terme_Source_Qdm_lambdaup_VEF_Face inst22;verifie_pere(inst22);
+Terme_Source_Rappel_T_VEF_Face inst23;verifie_pere(inst23);
+Terme_Source_Th_TdivU_VEF_Face inst24;verifie_pere(inst24);
 }
