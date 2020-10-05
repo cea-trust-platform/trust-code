@@ -1,6 +1,8 @@
 #!/bin/bash
 # Configure gedit
 
+[ "`gedit -help 1>/dev/null 2>&1 ; echo $?`" != 0 ] && echo "Fatal error: 'gedit' not installed on your OS, we exit ..." && exit
+
 lang_file=TRUST.lang
 style_file=TRUST.xml
 
@@ -17,23 +19,47 @@ then
     sed -i "/hyperpage/d; /{/d; /*/d; /#/d" $keywords
 fi
 
-# test of existing libgtksourceview
-if [ "`ldconfig -p | grep gtksourceview-4`" != "" ]
-then
-    path=~/.local/share/gtksourceview-4.0
-elif [ "`ldconfig -p | grep gtksourceview-3`" != "" ]
-then
-    path=~/.local/share/gtksourceview-3.0
-elif [ "`ldconfig -p | grep gtksourceview-2`" != "" ]
-then
-    path=~/.local/share/gtksourceview-2.0
+
+# Command to check which version of libgtksourceview exists
+if [ "`ldconfig -p 1>/dev/null 2>&1 ; echo $?`" = 0 ] ; then
+  if [ "`eval ldconfig -p | grep libgtksourceview-4 2>/dev/null`" != "" ]
+  then
+     path=~/.local/share/gtksourceview-4
+  elif [ "`eval ldconfig -p | grep libgtksourceview-3 2>/dev/null`" != "" ]
+  then
+     path=~/.local/share/gtksourceview-3.0
+  elif [ "`eval ldconfig -p | grep libgtksourceview-2 2>/dev/null`" != "" ]
+  then
+     path=~/.local/share/gtksourceview-2.0
+  fi
 else
-    echo "No libgtksourceview found !!!"
-    echo "gtksourceview must be installed for configuring gedit highlighting !"
-    echo "STOP"
-    exit 1
+
+  OSfile=$TRUST_ROOT/env/machine.env
+  [ ! -f $OSfile ] && echo "You have not already installed TRUST, you should first install it" && exit
+
+  if [ "`grep 'Ubuntu ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Debian ' $OSfile 2>/dev/null`" != "" ]
+  then
+     comm="dpkg-query -W"
+  elif [ "`grep 'Fedora ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'CentOS ' $OSfile 2>/dev/null`" != "" ] || [ "`grep 'Red Hat' $OSfile 2>/dev/null`" != "" ]
+  then
+     comm="rpm -qa | grep -i"
+  else
+     echo "Cannont find which version of libgtksourceview is installed on your OS" && exit
+  fi
+
+  if [ "`eval $comm libgtksourceview-4* 2>/dev/null`" != "" ]
+  then
+     path=~/.local/share/gtksourceview-4
+  elif [ "`eval $comm libgtksourceview-3* 2>/dev/null`" != "" ]
+  then
+     path=~/.local/share/gtksourceview-3.0
+  elif [ "`eval $comm libgtksourceview-2* 2>/dev/null`" != "" ]
+  then
+     path=~/.local/share/gtksourceview-2.0
+  fi
 fi
 
+[ "$path" = "" ] && exit
 echo "Configuring gedit into $path"
 echo ""
 
