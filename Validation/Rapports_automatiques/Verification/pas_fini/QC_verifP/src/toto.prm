@@ -1,0 +1,193 @@
+Parameters {
+	Title "verification de l'evolution de la pression et de sutherland en QC"
+	Description "Calculs menes en VDF et VEF laminaire"
+	Author "G.F."
+	TestCase "VDF" "eps_0.1"
+TestCase "VDF" "eps_0.2"
+TestCase "VDF" "eps_0.3"
+TestCase "VDF" "eps_0.4"
+TestCase "VDF" "eps_0.5"
+TestCase "VDF" "eps_0.6"
+TestCase "VDF" "eps_0.7"
+TestCase "VDF" "eps_0.8"
+TestCase "VDF" "eps_0.9"
+TestCase "S_VDF" "eps_0.1"
+TestCase "S_VDF" "eps_0.2"
+TestCase "S_VDF" "eps_0.3"
+TestCase "S_VDF" "eps_0.4"
+TestCase "S_VDF" "eps_0.5"
+TestCase "S_VDF" "eps_0.6"
+TestCase "S_VDF" "eps_0.7"
+TestCase "S_VDF" "eps_0.8"
+TestCase "S_VDF" "eps_0.9"
+TestCase "VEF" "eps_0.1"
+TestCase "VEF" "eps_0.2"
+TestCase "VEF" "eps_0.3"
+TestCase "VEF" "eps_0.4"
+TestCase "VEF" "eps_0.5"
+TestCase "VEF" "eps_0.6"
+TestCase "VEF" "eps_0.7"
+TestCase "VEF" "eps_0.8"
+TestCase "VEF" "eps_0.9"
+TestCase "S_VEF" "eps_0.1"
+TestCase "S_VEF" "eps_0.2"
+TestCase "S_VEF" "eps_0.3"
+TestCase "S_VEF" "eps_0.4"
+TestCase "S_VEF" "eps_0.5"
+TestCase "S_VEF" "eps_0.6"
+TestCase "S_VEF" "eps_0.7"
+TestCase "S_VEF" "eps_0.8"
+TestCase "S_VEF" "eps_0.9"
+Prerequisite "./Genere_courbe_err VDF sol_Pc"
+Prerequisite "./Genere_courbe_err VEF sol_Pc"
+Prerequisite "./Genere_courbe_err S_VDF S_sol_Pc"
+Prerequisite "./Genere_courbe_err S_VEF S_sol_Pc"
+}
+
+Chapter {
+	Title "Evolution de la pression totale en VAHL DAVIS infiniment allonge"
+	Description "voir article"
+Figure {
+	Title "Cas mu et lambda constants"
+	Dimension 2
+	LabelX "epsilon"
+	LabelY "Pression_thermo"
+	include_description_curves 0
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		file ./VDF/erreur_pression
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		file ./VEF/erreur_pression
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique"
+		origin "Analytique"
+		file ./sol_Pc
+		
+	Style lines
+	}
+}
+Figure {
+	Title "Erreur Cas mu et lambda constants"
+	Dimension 2
+	LabelX "epsilon"
+	LabelY "erreur en %"
+	include_description_curves 0
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		file ./VDF/erreur_pression
+		columns 1 ($4*100)
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		file ./VEF/erreur_pression
+		columns 1 ($4*100)
+	Style linespoints
+	}
+}
+
+Figure {
+	Title "Cas mu et lambda constants, convergence"
+	Dimension 2
+	LabelX "epsilon"
+	LabelY "residu"
+	logy
+	include_description_curves 0
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		file ./VDF/convergence
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		file ./VEF/convergence
+	Style linespoints
+	}
+}
+
+
+# en variable
+Figure {
+	Title "Cas mu et lambda sutherland"
+	Dimension 2
+	LabelX "epsilon"
+	LabelY "Pression_thermo"
+	include_description_curves 0
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		file ./S_VDF/erreur_pression
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		file ./S_VEF/erreur_pression
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique"
+		origin "Analytique"
+		file ./S_sol_Pc
+		
+	Style lines
+	}
+}
+Figure {
+	Title "Erreur Cas mu et lambda sutherland"
+	Dimension 2
+	LabelX "epsilon"
+	LabelY "erreur en %"
+	include_description_curves 0
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		file ./S_VDF/erreur_pression
+		columns 1 ($4*100)
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		file ./S_VEF/erreur_pression
+		columns 1 ($4*100)
+	Style linespoints
+	}
+
+}
+
+Figure {
+	Title "Cas mu et lambda sutherland, convergence"
+	Dimension 2
+	LabelX "epsilon"
+	LabelY "residu"
+	logy
+	include_description_curves 0
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		file ./S_VDF/convergence
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		file ./S_VEF/convergence
+	Style linespoints
+	}
+}
+
+}
+
+
