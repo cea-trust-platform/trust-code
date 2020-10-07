@@ -37,11 +37,11 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # qstat inexistente sur les dernieres machines du CCRT/TGCC
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
-   modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
-   echo "# For $HOST cluster:
-module () {
-   eval \`tclsh $modulecmd sh \$*\`
-}" >> $env
+   # modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
+   # echo "# For $HOST cluster:
+   # module () {
+   #    eval \`tclsh $modulecmd sh \$*\`
+   # }" >> $env
    #
    # Load modules
    intel="intel/19.0.5.281"
