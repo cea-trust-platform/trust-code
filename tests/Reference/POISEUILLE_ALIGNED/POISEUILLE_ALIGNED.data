@@ -1,0 +1,142 @@
+# Hydraulique 2D laminaire POISEUILLE_ALIGNED
+  Re = (rho*U_max*L)/mu
+  rho = 1.0 kg/m^3
+  U_max = 1 m/s
+  L = 1 m                  
+  Re = 1
+  mu = (rho*U_max*L)/Re
+  A.N.
+  mu = 1.0 #
+
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+system "mkdir -p results"
+# MAILLAGE ------------------------------------------- #
+
+
+read_MED short_family_names dom domain_mesh res_domain_mesh_40_pl_mesh_1.med
+
+regroupebord dom Wall { TOP DOWN UP }
+regroupebord dom Postpro { BOTTOM }
+regroupebord dom Sortie { OUT }
+regroupebord dom Entree { IN }
+
+# DISCRETISATION EF ---------------------------------- #
+
+EF dis
+
+# SCHEMA EN TEMPS ------------------------------------ #
+
+Schema_Euler_implicite sch
+Read sch
+{
+    tinit 0
+    tmax 55.
+    dt_min 5.e-8
+    dt_impr 5.e-1
+    dt_sauv 100.
+    seuil_statio 1.e-4
+    solveur implicite
+    {
+        seuil_convergence_implicite 1.e-10
+        seuil_convergence_solveur  1e-10
+        solveur Petsc IBICGSTAB { precond diag { } seuil 1e-10 }
+    }
+    dt_start dt_calc
+    dt_max 0.1
+    nb_pas_dt_max 100
+    nb_pas_dt_max 10
+    facsec 2.5
+}
+
+
+Fluide_Incompressible fluid
+
+Read fluid
+{
+    mu  Champ_Uniforme 1 1.0
+    rho Champ_Uniforme 1 1.0
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb fluid
+
+Discretiser pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        correction_matrice_projection_initiale 0
+        correction_calcul_pression_initiale 0
+        correction_vitesse_projection_initiale 1
+        projection_initiale 1
+        correction_matrice_pression 1
+        correction_vitesse_modifie 1
+        gradient_pression_qdm_modifie 0
+        correction_pression_modifie 0
+        postraiter_gradient_pression_sans_masse
+        methode_calcul_pression_initiale avec_sources
+        solveur_pression petsc cholesky { }
+        convection { generic centre }
+        diffusion { option { grad_u_transpose_partout 1 } }
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom  3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+        }
+        sources
+        {
+            Source_PDF
+            {
+                aire Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh aire elem 0.
+                rotation Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh rotation elem 0.
+                modele
+                {
+                    eta 1.0e-12
+                    type_vitesse_imposee data
+                    vitesse_imposee champ_uniforme 3 0. 0. 0.
+                }
+                interpolation element_fluide
+                {
+                    points_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Fluid som 0.
+                    points_solides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Solid som 0.
+                    elements_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh fl_elem_number som 0.
+                    correspondance_elements Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh TRUST_SALOME_correspondance elem 0.
+                }
+            }
+        }
+        boundary_conditions
+        {
+            Wall Symetrie
+            Postpro Symetrie
+            Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1.0
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+        }
+    }
+
+    Post_processings
+    {
+	med {
+	        format med
+        	fichier results/postdom
+        	Champs binaire dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	} 
+	lml
+	{
+		format lml fichier POISEUILLE_ALIGNED
+        	Champs dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	}
+    }
+}
+resoudre pb
+fin

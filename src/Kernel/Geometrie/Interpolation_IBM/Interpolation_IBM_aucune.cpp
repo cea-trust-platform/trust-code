@@ -12,44 +12,25 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
-// Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// File      : Interpolation_IBM_aucune.cpp
+// Directory : $GENEPI3_ROOT/src/EF/Interpolation_IBM
 //
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#include <Interpolation_IBM_aucune.h>
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+Implemente_instanciable( Interpolation_IBM_aucune, "Interpolation_IBM_aucune", Interpolation_IBM_base ) ;
 
-class Zone_EF;
-
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+Sortie& Interpolation_IBM_aucune::printOn( Sortie& os ) const
 {
-  Declare_instanciable(Champ_Q1_EF);
+  Interpolation_IBM_base::printOn( os );
+  return os;
+}
 
-public :
-
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
-};
-
-#endif
-
-
-
-
+Entree& Interpolation_IBM_aucune::readOn( Entree& is )
+{
+  Interpolation_IBM_base::readOn( is );
+  return is;
+}

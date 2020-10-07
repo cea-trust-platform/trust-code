@@ -14,42 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
+// File:        Rotationnel_Champ_Q1_EF.cpp
 // Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#include <Rotationnel_Champ_Q1_EF.h>
+#include <Champ_Q1_EF.h>
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+Implemente_instanciable(Rotationnel_Champ_Q1_EF,"Rotationnel_Champ_Q1_EF",Champ_Fonc_P0_EF);
 
-class Zone_EF;
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+//     printOn()
+/////
+
+Sortie& Rotationnel_Champ_Q1_EF::printOn(Sortie& s) const
 {
-  Declare_instanciable(Champ_Q1_EF);
+  return s << que_suis_je() << " " << le_nom();
+}
 
-public :
+//// readOn
+//
 
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
+Entree& Rotationnel_Champ_Q1_EF::readOn(Entree& s)
+{
+  return s ;
+}
 
-protected :
+void Rotationnel_Champ_Q1_EF::associer_champ(const Champ_Q1_EF& un_champ)
+{
+  mon_champ_= un_champ;
+}
 
-  REF(Zone_VF) la_zone_VF;
-
-
-};
-
-#endif
-
-
-
-
+void Rotationnel_Champ_Q1_EF::me_calculer(double tps)
+{
+  //      mon_champ_->calculer_rotationnel_ordre2_centre_element(valeurs());
+  mon_champ_->cal_rot_ordre1(valeurs());
+}

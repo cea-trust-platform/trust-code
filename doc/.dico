@@ -379,6 +379,12 @@
  Integrale_tps_produit_champs Integrale_tps_produit_champs Integrale_tps_produit_champs.h
  Integrer_champ_med Integrer_champ_med Integrer_champ_med.h
  Interpolation Champ_Generique_Interpolation Champ_Generique_Interpolation.h
+ Interpolation_IBM Interpolation_IBM Interpolation_IBM.h
+ Interpolation_IBM_aucune Interpolation_IBM_aucune Interpolation_IBM_aucune.h
+ Interpolation_IBM_base Interpolation_IBM_base Interpolation_IBM_base.h
+ Interpolation_IBM_element_fluide Interpolation_IBM_elem_fluid Interpolation_IBM_elem_fluid.h
+ Interpolation_IBM_gradient_moyen Interpolation_IBM_mean_gradient Interpolation_IBM_mean_gradient.h
+ Interpolation_IBM_hybride Interpolation_IBM_hybrid Interpolation_IBM_hybrid.h
  Interprete Interprete Interprete.h
  Interprete_bloc Interprete_bloc Interprete_bloc.h
  Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
@@ -643,6 +649,7 @@
  Pb_Thermohydraulique Pb_Thermohydraulique Pb_Thermohydraulique.h
  Pb_Thermohydraulique_Concentration Pb_Thermohydraulique_Concentration Pb_Thermohydraulique_Concentration.h
  Pb_Thermohydraulique_QC Pb_Thermohydraulique_QC Pb_Thermohydraulique_QC.h
+ PDF_model PDF_model PDF_model.h
  Periodique Periodique Periodique.h
  Perte_Charge_Anisotrope_Face_PolyMAC Perte_Charge_Anisotrope_PolyMAC_Face Perte_Charge_Anisotrope_PolyMAC_Face.h
  Perte_Charge_Anisotrope_QC_VEF_P1NC Perte_Charge_Anisotrope_QC_VEF_P1NC Source_QC_VEF_P1NC.h
@@ -746,7 +753,9 @@
  Rotation Rotation Rotation.h
  Rotationnel_Champ_Face Rotationnel_Champ_Face Rotationnel_Champ_Face.h
  Rotationnel_Champ_P1NC Rotationnel_Champ_P1NC Rotationnel_Champ_P1NC.h
+ Rotationnel_Champ_P1_EF Rotationnel_Champ_P1_EF Rotationnel_Champ_P1_EF.h
  Rotationnel_Champ_Q1NC Rotationnel_Champ_Q1NC Rotationnel_Champ_Q1NC.h
+ Rotationnel_Champ_Q1_EF Rotationnel_Champ_Q1_EF Rotationnel_Champ_Q1_EF.h
  RTabInt RTabInt RTabInt.h
  Runge_Kutta_ordre_3 RK3 RK3.h
  Runge_Kutta_ordre_4_D3P RK4_D3P RK4_D3P.h
@@ -833,6 +842,8 @@
  Source_Gravite_Quasi_Compressible_VEF Source_Gravite_Quasi_Compressible_VEF Source_Gravite_Quasi_Compressible_VEF.h
  Source_Neutronique Source_Neutronique Source_Neutronique.h
  Source_Neutronique_VDF_P0_VDF Source_Neutronique_VDF Source_Neutronique_VDF.h
+ Source_PDF_base Source_PDF_base Source_PDF_base.h
+ Source_PDF_ef Source_PDF Source_PDF.h
  Source_QC_QDM_Gen_QC Source_QC_QDM_Gen Source_QC_QDM_Gen.h
  Source_Qdm_EF Source_Qdm_EF Source_Qdm_EF.h
  Source_Qdm_face_PolyMAC Terme_Source_Qdm_Face_PolyMAC Terme_Source_Qdm_Face_PolyMAC.h

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,42 +14,56 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
-// Directory:   $TRUST_ROOT/src/EF/Champs
+// File:        PDF_model.h
+// Directory:   $TRUST_ROOT/src/ThHyd
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#ifndef PDF_model_included
+#define PDF_model_included
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+#include <Champ_Don.h>
+#include <Motcle.h>
+#include <Zone_VF.h>
+#include <DoubleTab.h>
+#include <Parser.h>
 
-class Zone_EF;
+/////////////////////////////////////////////////////////////////////////////
+// .NAME        : PDF_model
+// .HEADER      : genepi3 genepi3/src/Equations/Plaques
+// .LIBRARY     : ?
+// .DESCRIPTION : class PDF_model
+//
+// <Description of class PDF_model>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+class PDF_model : public Objet_U
 {
-  Declare_instanciable(Champ_Q1_EF);
+
+  Declare_instanciable(PDF_model) ;
 
 public :
-
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
-
+  double get_vitesse_imposee(ArrOfDouble&,int);
+  void affecter_vitesse_imposee(Zone_VF&, const DoubleTab&);
+  double eta() const
+  {
+    return eta_;
+  }
 protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
+  int lire_motcle_non_standard(const Motcle&, Entree&);
+  Champ_Don vitesse_imposee_lu_;
+  Champ_Don vitesse_imposee_;
+  double eta_;
+  double coefku_;
+  double temps_relax_;
+  double echelle_relax_;
+  int type_vitesse_imposee_;
+  int local_;
+  Parser* parsers_;
+  friend class Source_PDF_base;
+  friend class Source_PDF;
 };
 
-#endif
-
-
-
-
+#endif /* PDF_model */

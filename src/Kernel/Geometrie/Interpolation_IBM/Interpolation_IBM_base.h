@@ -12,44 +12,37 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
-// Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// File      : Interpolation_IBM_base.h
+// Directory : $GENEPI3_ROOT/src/EF/Interpolation_IBM
 //
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#ifndef Interpolation_IBM_base_included
+#define Interpolation_IBM_base_included
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+#include <Objet_U.h>
+#include <Discretisation_base.h>
+#include <Zone_dis_base.h>
 
-class Zone_EF;
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Interpolation_IBM_base
+//
+// <Description of class Interpolation_IBM_base>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+class Interpolation_IBM_base : public Objet_U
 {
-  Declare_instanciable(Champ_Q1_EF);
+
+  Declare_base( Interpolation_IBM_base ) ;
 
 public :
-
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
-
+  virtual void discretise(const Discretisation_base&, Zone_dis_base&);
 protected :
-
-  REF(Zone_VF) la_zone_VF;
-
 
 };
 
-#endif
-
-
-
-
+#endif /* Interpolation_IBM_base_included */

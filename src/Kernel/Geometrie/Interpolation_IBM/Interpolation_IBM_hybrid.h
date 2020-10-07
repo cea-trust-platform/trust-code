@@ -12,44 +12,48 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
-// Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// File      : Interpolation_IBM_hybrid.h
+// Directory : $GENEPI3_ROOT/src/EF/Interpolation_IBM
 //
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#ifndef Interpolation_IBM_hybrid_included
+#define Interpolation_IBM_hybrid_included
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+#include <Interpolation_IBM_elem_fluid.h>
+#include <Interpolation_IBM_mean_gradient.h>
+#include <IntList.h>
 
-class Zone_EF;
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Interpolation_IBM_hybrid
+//
+// <Description of class Interpolation_IBM_hybrid>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid
 {
-  Declare_instanciable(Champ_Q1_EF);
+
+  Declare_instanciable( Interpolation_IBM_hybrid ) ;
 
 public :
-
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
-
+  void discretise(const Discretisation_base&, Zone_dis_base&);
+  inline IntList& getSommetsVoisinsOf(int i)
+  {
+    return sommets_voisins_[i];
+  };
 protected :
-
-  REF(Zone_VF) la_zone_VF;
-
+  void computeFluidElems(Zone_dis_base&);
+  void computeSommetsVoisins(Zone_dis_base&);
+  Champ_Don is_dirichlet_lu_;
+  Champ_Don solid_elems_lu_;
+  IntList* sommets_voisins_;
+  friend class Source_PDF;
+  Interpolation_IBM_mean_gradient* my_mean_gradient;
 
 };
 
-#endif
-
-
-
-
+#endif /* Interpolation_IBM_hybrid_included */

@@ -1,0 +1,158 @@
+# Hydraulique 2D laminaire POISEUILLE 
+  Re = (rho*U_max*L)/mu
+  rho = 1.0 kg/m^3
+  U_max = 1 m/s
+  L = 1 m
+  Re = 1
+  mu = (rho*U_max*L)/Re
+  A.N.
+  mu = 1.0 
+#
+# PARALLEL NOT #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+system "mkdir -p results"
+
+# MAILLAGE ------------------------------------------- #
+
+# DEBUT SEQ #
+
+read_MED short_family_names dom domain_mesh res_domain_mesh_40_cyl_mesh_250fact12.med
+
+regroupebord dom Wall { TOP }
+regroupebord dom Postpro { BOTTOM }
+regroupebord dom Sortie { IN OUT DOWN UP }
+
+# DISCRETISATION EF ---------------------------------- #
+
+EF dis
+
+# SCHEMA EN TEMPS ------------------------------------ #
+
+Schema_Euler_implicite sch
+Lire sch
+{
+    tinit 0
+    tmax 55.
+    dt_min 5.e-8
+    dt_impr 5.e-1
+    dt_sauv 100.
+    seuil_statio 1.e-4
+    solveur implicite
+    {
+        seuil_convergence_implicite 1.e-10
+        seuil_convergence_solveur  1e-10
+        solveur Petsc IBICGSTAB { precond diag { } seuil 1e-10 }
+    }
+    dt_start dt_calc
+    dt_max 0.1
+
+    nb_pas_dt_max 1000000
+    nb_pas_dt_max 10
+    facsec 2.5
+}
+
+Fluide_Incompressible fluid
+
+Read fluid
+{
+    mu  Champ_Uniforme 1 0.25
+    rho Champ_Uniforme 1 1.0
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb fluid
+
+Discretiser pb dis
+# Debog pb seq faces 1e-6 0 #
+# postraiter_domaine { domaine dom format lata fichier geom } #
+
+Domaine out_chaud
+extraire_surface
+{
+    domaine out_chaud
+    probleme pb
+    avec_certains_bords 1 Sortie
+}
+Domaine wall
+extraire_surface
+{
+    domaine wall
+    probleme pb
+    avec_certains_bords 1 Wall
+}
+Lire pb
+{
+    Navier_Stokes_standard
+    {
+        correction_matrice_projection_initiale 0
+        correction_calcul_pression_initiale 0
+        correction_vitesse_projection_initiale 1
+        projection_initiale 0
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        correction_matrice_pression 1
+        correction_vitesse_modifie 1
+        gradient_pression_qdm_modifie 0
+        correction_pression_modifie 0
+        convection { generic centre }
+        solveur_pression petsc cholesky { }
+        diffusion { option { grad_u_transpose_partout 1 } }
+        sources
+        {
+            Source_PDF
+            {
+                aire Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh aire elem 0.
+                rotation Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh rotation elem 0.
+                modele
+                {
+                    eta 1.E-12
+                    type_vitesse_imposee fonction
+                    local
+                    vitesse_imposee 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
+                }
+                interpolation element_fluide
+                {
+                    points_fluides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh projection_Fluid som 0.
+                    points_solides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh projection_Solid som 0.
+                    elements_fluides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh fl_elem_number som 0.
+                    correspondance_elements Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh TRUST_SALOME_correspondance elem 0.
+                }
+            }
+        }
+        conditions_initiales
+        {
+            vitesse champ_uniforme 3 0. 0. 0.
+        }
+        conditions_limites
+        {
+            Wall Symetrie
+            Postpro Symetrie
+            Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1
+        }
+    }
+    Post_processings
+    {
+	med {
+	        format med
+        	fichier results/postdom
+        	Champs binaire dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	} 
+	lml
+	{
+		format lml fichier TAYLOR_COUETTE
+        	Champs dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	}
+    }
+}
+resoudre pb
+fin

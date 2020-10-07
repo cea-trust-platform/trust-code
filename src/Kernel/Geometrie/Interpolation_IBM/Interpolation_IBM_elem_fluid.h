@@ -12,44 +12,46 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
-// Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// File      : Interpolation_IBM_elem_fluid.h
+// Directory : $GENEPI3_ROOT/src/EF/Interpolation_IBM
 //
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#ifndef Interpolation_IBM_elem_fluid_included
+#define Interpolation_IBM_elem_fluid_included
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+#include <Interpolation_IBM_base.h>
+#include <Champ_Don.h>
+#include <Zone.h>
 
-class Zone_EF;
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Interpolation_IBM_elem_fluid
+//
+// <Description of class Interpolation_IBM_elem_fluid>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+class Interpolation_IBM_elem_fluid : public Interpolation_IBM_base
 {
-  Declare_instanciable(Champ_Q1_EF);
+
+  Declare_instanciable( Interpolation_IBM_elem_fluid ) ;
 
 public :
-
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
-
+  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
 protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
+  void computeFluidElems(Zone_dis_base&);
+  Champ_Don solid_points_lu_;
+  Champ_Don fluid_points_lu_;
+  Champ_Don fluid_elems_lu_;
+  Champ_Don corresp_elems_lu_;
+  Champ_Don solid_points_;
+  Champ_Don fluid_points_;
+  Champ_Don fluid_elems_;
+  Champ_Don corresp_elems_;
+  friend class Source_PDF;
 };
 
-#endif
-
-
-
-
+#endif /* Interpolation_IBM_elem_fluid_included */

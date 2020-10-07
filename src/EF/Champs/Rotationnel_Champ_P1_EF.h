@@ -14,42 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
+// File:        Rotationnel_Champ_P1_EF.h
 // Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
+#ifndef Rotationnel_Champ_P1_EF_included
+#define Rotationnel_Champ_P1_EF_included
 
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
+//
+#include <Champ_Rotationnel.h>
+#include <Champ_Fonc_P0_EF.h>
+#include <Ref_Champ_P1_EF.h>
 
-class Zone_EF;
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+class Rotationnel_Champ_P1_EF : public Champ_Rotationnel,
+  public Champ_Fonc_P0_EF
 {
-  Declare_instanciable(Champ_Q1_EF);
+  Declare_instanciable(Rotationnel_Champ_P1_EF);
 
-public :
+public:
 
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
+  inline const Champ_P1_EF& mon_champ() const;
+  inline void mettre_a_jour(double );
+  void associer_champ(const Champ_P1_EF& );
+  void me_calculer(double );
 
-protected :
+protected:
 
-  REF(Zone_VF) la_zone_VF;
-
-
+  REF(Champ_P1_EF) mon_champ_;
 };
 
+inline const Champ_P1_EF& Rotationnel_Champ_P1_EF::mon_champ() const
+{
+  return mon_champ_.valeur();
+}
+
+inline void Rotationnel_Champ_P1_EF::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+}
+
+
+
 #endif
-
-
-
 

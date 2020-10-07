@@ -14,42 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Q1_EF.h
+// File:        Ref_Champ_Q1_EF.cpp
 // Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     1
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Q1_EF_included
-#define Champ_Q1_EF_included
-
-#include <Champ_Inc_Q1_base.h>
-#include <Ref_Zone_VF.h>
-
-class Zone_EF;
-
-class Champ_Q1_EF : public Champ_Inc_Q1_base
-{
-  Declare_instanciable(Champ_Q1_EF);
-
-public :
-
-  const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int  imprime(Sortie& , int ) const;
-  void gradient(DoubleTab&);
-  void cal_rot_ordre1(DoubleTab&);
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
-};
-
-#endif
-
-
-
-
+#include <Ref_Champ_Q1_EF.h>
+#include <Champ_Q1_EF.h>
+Implemente_ref(Champ_Q1_EF);
