@@ -82,7 +82,7 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::ajouter(DoubleTab& 
 
   for (int f = 0; f < nb_elem; f++)
     for (int l = 0; l < nb_groupes; l++)
-      resu.addr()[nb_groupes * f + l] -= lambda[l] * c[nb_groupes * f + l] * ve(f);
+      resu.addr()[nb_groupes * f + l] -= lambda[l] * c.addr()[nb_groupes * f + l] * ve(f);
 
   return resu;
 }
