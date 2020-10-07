@@ -217,6 +217,8 @@
  DecoupeBord_pour_rayonnement DecoupeBord DecoupeBord.h
  Decouper_Bord_coincident Decouper_Bord_coincident Decouper_Bord_coincident.h
  Decouper|Partition Decouper Decouper.h
+ Decroissance_Radioactive_P0_PolyMAC Terme_Source_Decroissance_Radioactive_P0_PolyMAC Terme_Source_Decroissance_Radioactive_P0_PolyMAC.h
+ Decroissance_Radioactive_VEF_P1NC Terme_Source_Decroissance_Radioactive_VEF_Face Terme_Source_Decroissance_Radioactive_VEF_Face.h
  Deriv DERIV DerOu_.h
  Deriv_ Deriv_ Deriv_.h
  Descripteur Descripteur Descripteur.h
