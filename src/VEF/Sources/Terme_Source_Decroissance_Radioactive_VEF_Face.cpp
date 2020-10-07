@@ -82,7 +82,7 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& re
 
   for (int f = 0; f < nb_faces; f++)
     for (int l = 0; l < nb_groupes; l++)
-      resu.addr()[nb_groupes * f + l] -= lambda[l] * c[nb_groupes * f + l] * vf(f);
+      resu.addr()[nb_groupes * f + l] -= lambda[l] * c.addr()[nb_groupes * f + l] * vf(f);
 
   return resu;
 }
