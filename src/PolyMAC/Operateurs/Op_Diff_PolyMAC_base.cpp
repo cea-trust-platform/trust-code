@@ -153,7 +153,7 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
 void Op_Diff_PolyMAC_base::completer()
 {
   Operateur_base::completer();
-  if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
+  nu_.resize(0, equation().que_suis_je() == "Transport_K_Eps" ? 2 : diffusivite().valeurs().line_size());
   la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
   la_zone_poly_.valeur().creer_tableau_faces(nu_fac_);
   nu_a_jour_ = 0;
@@ -332,12 +332,6 @@ void Op_Diff_PolyMAC_base::update_nu() const
   const DoubleTab& diffu=diffusivite().valeurs();
   if (equation().que_suis_je() != "Transport_K_Eps")
     {
-      if (!nu_.get_md_vector().non_nul())
-        {
-          if (diffu.nb_dim() > 1 && diffu.dimension(1) > 1)
-            nu_.resize(0, diffu.dimension(1));
-          zone.zone().creer_tableau_elements(nu_, Array_base::NOCOPY_NOINIT);
-        }
       if (!diffu.get_md_vector().non_nul())
         {
           // diffusvite uniforme
