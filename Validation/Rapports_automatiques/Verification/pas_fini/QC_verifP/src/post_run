@@ -1,0 +1,13 @@
+#!/bin/bash
+cas=$1
+
+eps=`echo $cas| sed "s/eps_//"`
+#Pc=`grep -A2 pression_thermo ${cas}_pb.sauv | tail -1 | sed "s/fin//"`
+
+PTOT=`tail -1 ${cas}_PRESSION_TOT.son | awk '{print $2}'`
+P=`tail -1 ${cas}_PRESSION.son | awk '{print $2}'`
+Pc=`echo 0 | awk -v P=$P -v PTOT=$PTOT 'END  {print P + PTOT }'`
+
+conv=`tail -1 $cas.dt_ev | awk '{print $4}'`
+echo $eps $Pc > pression_thermo.$cas
+echo $eps $conv > convergence.$cas
