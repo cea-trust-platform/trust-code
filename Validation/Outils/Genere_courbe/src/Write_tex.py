@@ -720,9 +720,8 @@ class Write_tex:
 \lhead{\textit{ __TITRECAS__}}
 \chead{}
 \rhead{}
-%\lfoot{\textit{Genere automatiquement avec genererCourbe.py, v'''+__version__+'''.}}
-%\lfoot{\textit{ __TITRECAS__}}
-%\lfoot{\textit{TRUST/TRIOCFD Validation, v1.8.2}}
+% bas de page ecrit puis surcharger a vide pour la generation du rapport de validation TrioCFD
+\lfoot{\textit{TRUST/TRIOCFD Validation, v1.8.2}}
 \lfoot{}
 \cfoot{}
 \rfoot{\thepage}
