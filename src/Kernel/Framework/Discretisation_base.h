@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,6 +141,7 @@ public :
   void volume_maille(const Schema_Temps_base& sch,
                      const  Zone_dis& z,
                      Champ_Fonc& ch) const   ;
+  virtual void residu(const Zone_dis& , const Champ_Inc&, Champ_Fonc& ) const;
 
   static void creer_champ(Champ_Inc& ch, const Zone_dis_base& z,
                           const Nom& type, const Nom& nom, const Nom& unite,

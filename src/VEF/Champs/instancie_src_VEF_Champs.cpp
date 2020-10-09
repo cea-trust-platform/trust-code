@@ -22,6 +22,7 @@
 #include <Champ_val_tot_sur_vol_VEF.h>
 #include <Correlation_Vec_Sca_VEF.h>
 #include <Critere_Q_Champ_P1NC.h>
+#include <Residu_P1NC.h>
 #include <Rotationnel_Champ_P1NC.h>
 #include <Rotationnel_Champ_Q1NC.h>
 #include <Taux_cisaillement_P0_VEF.h>
@@ -50,11 +51,12 @@ Champ_som_lu_VEF inst16;verifie_pere(inst16);
 Champ_val_tot_sur_vol_VEF inst17;verifie_pere(inst17);
 Correlation_Vec_Sca_VEF inst18;verifie_pere(inst18);
 Critere_Q_Champ_P1NC inst19;verifie_pere(inst19);
-Rotationnel_Champ_P1NC inst20;verifie_pere(inst20);
-Rotationnel_Champ_Q1NC inst21;verifie_pere(inst21);
-Taux_cisaillement_P0_VEF inst22;verifie_pere(inst22);
-Y_plus_Champ_P1NC inst23;verifie_pere(inst23);
-grad_T_Champ_P1NC inst24;verifie_pere(inst24);
-grad_U_Champ_P1NC inst25;verifie_pere(inst25);
-h_conv_Champ_P1NC inst26;verifie_pere(inst26);
+Residu_P1NC inst20;verifie_pere(inst20);
+Rotationnel_Champ_P1NC inst21;verifie_pere(inst21);
+Rotationnel_Champ_Q1NC inst22;verifie_pere(inst22);
+Taux_cisaillement_P0_VEF inst23;verifie_pere(inst23);
+Y_plus_Champ_P1NC inst24;verifie_pere(inst24);
+grad_T_Champ_P1NC inst25;verifie_pere(inst25);
+grad_U_Champ_P1NC inst26;verifie_pere(inst26);
+h_conv_Champ_P1NC inst27;verifie_pere(inst27);
 }

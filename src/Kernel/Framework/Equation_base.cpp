@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,7 @@ Equation_base::Equation_base()
   equation_non_resolue_.addVar("t");
   equation_non_resolue_.parseString();
   set_calculate_time_derivative(0);
+
 }
 
 int Equation_base::equation_non_resolue() const
@@ -1401,6 +1402,17 @@ void Equation_base::creer_champ(const Motcle& motlu)
         }
     }
 
+  Nom inco (inconnue()->le_nom());
+  inco += "_residu";
+  if (motlu == Motcle(inco))
+    {
+      if (!Field_residu_.non_nul())
+        {
+          discretisation().residu(zone_dis(),inconnue(),Field_residu_);
+          champs_compris_.ajoute_champ(Field_residu_);
+        }
+    }
+
   int nb_op = nombre_d_operateurs();
   for (int i=0; i<nb_op; i++)
     {
@@ -1423,11 +1435,22 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
 
   REF(Champ_base) ref_champ;
 
+  Nom inco (inconnue()->le_nom());
+  inco += "_residu";
   if (nom=="volume_maille")
     {
       Champ_Fonc_base& ch_vol_maille=ref_cast_non_const(Champ_Fonc_base,volume_maille.valeur());
       if (est_different(ch_vol_maille.temps(),inconnue()->temps()))
         ch_vol_maille.mettre_a_jour(inconnue()->temps());
+    }
+  else if(nom == Motcle(inco))
+    {
+      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Field_residu_.valeur());
+      double temps_init = schema_temps().temps_init();
+      if (((ch.temps()!=inconnue()->temps()) || (ch.temps()==temps_init)) && (inconnue()->mon_equation_non_nul()))
+        {
+          ch.mettre_a_jour(inconnue()->temps());
+        }
     }
   else
     {

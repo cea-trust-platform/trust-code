@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,7 @@
 #include <Champ_Fonc_Q1NC.h>
 #include <Schema_Temps.h>
 #include <Schema_Temps_base.h>
+#include <Residu_P1NC.h>
 
 Implemente_instanciable(VEF_discretisation,"VEF",Discret_Thyd);
 
@@ -705,5 +706,26 @@ void VEF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Ch
   le_champ_tabule_dis.fixer_nb_comp(le_champ_tabule.nb_comp());
   le_champ_tabule_dis.fixer_nb_valeurs_nodales(zone_dis.nb_elem());
   le_champ_tabule_dis.changer_temps(ch_inc.temps());
+}
+
+void VEF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
+{
+  Nom inco_name(ch_inco.le_nom());
+  inco_name += "_residu";
+  Cerr << "Discretisation de " << inco_name << finl;
+
+  const Zone_VEF& zone_vef = ref_cast( Zone_VEF, z.valeur( ) );
+  champ.typer( "Residu_P1NC" );
+  Residu_P1NC& ch = ref_cast( Residu_P1NC, champ.valeur( ) );
+  const Champ_P1NC& inco = ref_cast( Champ_P1NC, ch_inco.valeur( ) );
+  ch.associer_champ( inco );
+  ch.associer_zone_dis_base( zone_vef );
+  ch.nommer( inco_name );
+  const int& nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
+  ch.fixer_nb_comp(nb_comp);
+  ch.fixer_nb_valeurs_nodales( zone_vef.nb_faces( ) );
+  ch.fixer_unite( "units_not_defined" );
+  ch.changer_temps( ch_inco.temps( ) );
+
 }
 

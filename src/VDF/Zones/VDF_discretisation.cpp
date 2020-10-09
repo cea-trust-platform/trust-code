@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,7 @@
 // #include <Champ_T_Paroi_Face.h>
 #include <Zone_Cl_VDF.h>
 #include <Navier_Stokes_std.h>
+#include <Residu_P0_VDF.h>
 
 Implemente_instanciable(VDF_discretisation,"VDF",Discret_Thyd);
 
@@ -582,5 +583,33 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
     }
+}
+
+void VDF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
+{
+
+  Nom inco_name(ch_inco.le_nom());
+  inco_name += "_residu";
+
+  if( ch_inco.le_nom() == "vitesse" )
+    {
+      Cerr << "Discretisation of " << inco_name << " is not possible yet in VDF..." << finl;
+      Process::exit();
+    }
+
+  Cerr << "Discretisation de " << inco_name << finl;
+  const Zone_VDF& zone_vdf = ref_cast( Zone_VDF, z.valeur( ) );
+  champ.typer( "Residu_P0_VDF" );
+  Residu_P0_VDF& ch = ref_cast( Residu_P0_VDF, champ.valeur( ) );
+  const Champ_P0_VDF& inco = ref_cast( Champ_P0_VDF, ch_inco.valeur( ) );
+  ch.associer_champ( inco );
+  ch.associer_zone_dis_base( zone_vdf );
+  ch.nommer( inco_name );
+  const int& nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
+  ch.fixer_nb_comp(nb_comp);
+  ch.fixer_unite( "units_not_defined" );
+  ch.changer_temps( ch_inco.temps( ) );
+  ch.fixer_nb_valeurs_nodales( zone_vdf.nb_elem( ) );
+
 }
 

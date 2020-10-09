@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,6 +87,8 @@ public:
   void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const;
   void y_plus(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const;
 //  virtual void t_paroi(const Zone_dis& z,const Zone_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
+  void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
+
 
 private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Zone_dis_base& z,
