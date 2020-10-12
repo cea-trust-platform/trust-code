@@ -53,7 +53,7 @@ void usage()
   Cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
   Cerr << " -journal_master     => only master processor writes a journal (not compatible with journal_shared)\n";
   Cerr << " -journal_shared     => each processor writes in a single log file (not compatible with journal_master)\n";
-  Cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
+  Cerr << " -disable_ieee       => Disable the detection of NaNs. The detection can also be de-activated with env variable TRUST_DISABLE_FP_EXCEPT set to non zero.\n";
   Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
   Cerr << " -disable_stop       => Disable the writing of the .stop file.\n";
   Cerr << finl;
@@ -260,14 +260,18 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 
     if ( ieee == 1 )
       {
-        arguments_info += "feenableexcept enabled.\n";
+        char* theValue = getenv("TRUST_DISABLE_FP_EXCEPT");
+        if (theValue == NULL || atoi(theValue) == 0)
+          {
+            arguments_info += "feenableexcept enabled.\n";
 #ifdef linux
-        // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
-        // Test pre 1.7.0, on active en optimise:
+            // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
+            // Test pre 1.7.0, on active en optimise:
 #ifndef _COMPILE_AVEC_CLANG
-        feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+            feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 #endif
+          }
       }
 
     // ************** Initialisation de Petsc, du parallele (si Petsc) **********

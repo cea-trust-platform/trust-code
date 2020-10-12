@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -222,7 +222,7 @@ Entree& latatoother::interpreter(Entree& is)
       // On met dual_mesh a "false" si on lit un domaine de polyedres PolyMAC (pas encore supporte)
       // et on-reouvre la database:
       Noms geom_names = filter.get_exportable_geometry_names();
-      int elt_type = filter.get_geometry(Domain_Id(geom_names[0], 0, -1)).elt_type_;
+      int elt_type = filter.get_geometry(Domain_Id(geom_names[0], 1, -1)).elt_type_;
       Cerr << elt_type << finl;
       if (elt_type==Domain::polyedre || elt_type==Domain::polygone)
         {

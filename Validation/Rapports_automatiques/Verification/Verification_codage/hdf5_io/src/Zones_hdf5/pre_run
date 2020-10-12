@@ -1,0 +1,5 @@
+if [ ! -f lien_fiche_validation ]
+then
+	make_PAR.data hdf5_io.data
+	mv -T PAR_hdf5_io.data hdf5_io.data
+fi

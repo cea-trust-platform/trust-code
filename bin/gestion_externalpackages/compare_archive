@@ -1,7 +1,13 @@
 
 mkdir -p new
 cd new
-tar zxf ../$1
+if [ -s ../$1 ]
+then
+   tar zxf ../$1
+else
+   echo "downloaded $1 is empty!"
+   exit 1
+fi
 cd ../
 mkdir -p old
 cd old

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+decay="radioactive_decay 2 0.01 2.0"
+source_const="source_Constituant champ_fonc_fonction 2 concentration -0.01*val -2.0*val"
+
+declare -A action_maillage=(["VEFPreP1B"]="tetraedriser_homogene_compact dom_fluide"
+                           ["VDF"]=""
+                           ["PolyMAC"]="Polyedriser dom_fluide")
+
+for dt in "0.1" "1"
+do
+    for dis in "VEFPreP1B" "PolyMAC"
+    do
+        mkdir -p $dis/dt$dt
+        sed "s~__dt__~${dt}~;s~__dis__~${dis}~;s~__action_maillage__~${action_maillage[$dis]}~;s~__decay__~$decay~"          jdd.data > ${dis}/dt${dt}/decay.data
+        sed "s~__dt__~${dt}~;s~__dis__~${dis}~;s~__action_maillage__~${action_maillage[$dis]}~;s~__decay__~${source_const}~" jdd.data > ${dis}/dt${dt}/source_constituant.data
+    done
+done
+
+python $TRUST_ROOT/bin/KSH/preprocessor.py concentration.prm.P concentration.prm

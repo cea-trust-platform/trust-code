@@ -76,7 +76,7 @@ define_soumission_batch()
    cpu=00:30:00 && [ "$prod" = 1 ] && cpu=24:00:00 # 30 minutes or 1 day
    #ram=60GB # Memory nodes with 64Go (small) or 120Go (large) of RAM
    [ "$bigmem" = 1 ] && ram=120GB && soumission=1
-   project="BDW28" # project="HSW24"
+   constraint="BDW28" # constraint="HSW24"
    ntasks=28       # 28 cores per node for Broadwell (24 for Haswell)
    # Priorite superieure avec test si pas plus de 8 nodes (24 cores)
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt 192 ]
