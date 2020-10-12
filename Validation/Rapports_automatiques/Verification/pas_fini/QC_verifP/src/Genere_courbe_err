@@ -1,0 +1,18 @@
+#!/bin/bash
+
+dir=$1
+ref=$2
+
+cd $dir
+cat /dev/null > erreur_pression
+for file in `ls pression_thermo.*` 
+do
+eps=`cat $file | awk '{print $1}'`
+Pc=`cat $file | awk '{print $2}'`
+Pe=`grep ${eps}00 ../${ref} | awk '{print $2}'`
+err=`echo 1 | awk -v Pc=$Pc -v Pe=$Pe  '{print (( Pc - Pe )/ (Pc + Pe ) *2)}'  `
+echo $eps $Pc  $Pe $err >>  erreur_pression
+done
+
+cat convergence.* > convergence
+

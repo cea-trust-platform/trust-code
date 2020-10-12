@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -184,7 +184,7 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
 
   //partie inferieure : 1 pour les flux imposes par CLs aux faces (si diffusion) ou pour toutes les faces (sinon)
   for (f = 0; mat.nb_lignes() > N * ne_tot && f < zone.nb_faces(); f++)
-    if (ch.icl(f, 0) > 5) for (n = 0; n < N; n++) //Dirichlet ou Dirichlet_homogene
+    if (ch.icl(f, 0) > 5 || no_diff_) for (n = 0; n < N; n++) //Dirichlet ou Dirichlet_homogene
         mat(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += 1;
 
   return matrice;

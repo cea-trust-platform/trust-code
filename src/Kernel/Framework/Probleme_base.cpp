@@ -366,6 +366,7 @@ REF(Champ_Generique_base) Probleme_base::findOutputField(const Nom& name) const
 // B.Math. 21/09/2004: quelques initialisations, ca fait pas de mal...
 Probleme_base::Probleme_base() :
   //ficsauv(0),
+  osauv_hdf_(0),
   reprise_effectuee_(0),
   reprise_version_(155),
   restart_file(0),
@@ -411,7 +412,6 @@ inline int version_format_sauvegarde()
 {
   return 155;
 }
-
 
 // Description:
 //    Lecture d'un probleme dans un flot d'entree, et ouverture du
@@ -1021,7 +1021,7 @@ void Probleme_base::sauver() const
   statistiques().begin_count(sauvegarde_counter_);
 
   // Si le fichier de sauvegarde n'a pas ete ouvert alors on cree le fichier de sauvegarde:
-  if (!ficsauv_.non_nul())
+  if ( !ficsauv_.non_nul() && !osauv_hdf_ )
     {
       if (Motcle(format_sauv) == "formatte")
         {
@@ -1039,7 +1039,9 @@ void Probleme_base::sauver() const
           ficsauv_.typer(EcritureLectureSpecial::get_Output());
           ficsauv_->ouvrir(nom_fich);
         }
-      else if (Motcle(format_sauv) != "single_hdf")
+      else if (Motcle(format_sauv) == "single_hdf")
+        osauv_hdf_ = new Sortie_Brute;
+      else
         {
           Cerr << "Error in Probleme_base::sauver() " << finl;
           Cerr << "The format for the backup file must be either binary or formatted" << finl;
@@ -1053,7 +1055,7 @@ void Probleme_base::sauver() const
             ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
         }
       else if((Motcle(format_sauv) == "single_hdf"))
-        osauv_hdf_ << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
+        *osauv_hdf_ << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
       else
         ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
     }
@@ -1064,7 +1066,7 @@ void Probleme_base::sauver() const
   if(Motcle(format_sauv) != "single_hdf")
     bytes = sauvegarder(ficsauv_.valeur());
   else
-    bytes = sauvegarder(osauv_hdf_);
+    bytes = sauvegarder(*osauv_hdf_);
 
   EcritureLectureSpecial::mode_ecr=-1;
 
@@ -1080,12 +1082,13 @@ void Probleme_base::sauver() const
         }
       else if(Motcle(format_sauv)=="single_hdf")
         {
-          osauv_hdf_ << Nom("fin");
+          *osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
           fic_hdf.create(nom_fich);
-          fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
           fic_hdf.close();
-          Cout << "HDF5 backup file written and closed" << finl;
+          delete osauv_hdf_;
+          osauv_hdf_ = 0;
         }
       else
         {
@@ -1123,7 +1126,7 @@ void Probleme_base::finir()
 
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
-  if (restart_file!=1 && (ficsauv_.non_nul() || Motcle(format_sauv) == "single_hdf") )
+  if (restart_file!=1 && (ficsauv_.non_nul() || osauv_hdf_) )
     {
       if (Motcle(format_sauv)=="xyz")
         {
@@ -1134,12 +1137,13 @@ void Probleme_base::finir()
         }
       else if(Motcle(format_sauv) == "single_hdf")
         {
-          osauv_hdf_ << Nom("fin");
+          *osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
           fic_hdf.create(nom_fich);
-          fic_hdf.create_and_fill_dataset("/sauv", osauv_hdf_);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
           fic_hdf.close();
-          Cout << "HDF5 backup file written and closed" << finl;
+          delete osauv_hdf_;
+          osauv_hdf_ = 0;
         }
       else
         {

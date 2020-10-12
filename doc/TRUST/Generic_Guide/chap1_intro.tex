@@ -456,18 +456,17 @@ Here is a panel of available options:
 Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
 Where option may be:
 -help|-h                      : List options.
--baltik                       : Instanciate a empty Baltik project.
+-baltik [baltik_name]         : Instanciate a empty Baltik project.
 -index                        : Access to the TRUST ressource index.
 -doc                          : Access to the TRUST manual (Generic Guide).
 -config nedit|vim|emacs|gedit : Configure nedit or vim or emacs with TRUST keywords.
 -edit                         : Edit datafile.
--xedit                        : Edit datafile with xdata.
 -xcheck                       : Check the datafile's keywords with xdata.
 -partition                    : Partition the mesh to prepare a parallel calculation 
                                 (Creation of the .Zones files).
 -mesh                         : Visualize the mesh(es) contained in the data file.
 -probes                       : Monitor the TRUST calculation only.
--evol                         : Monitor the TRUST calculation (new IHM).
+-evol                         : Monitor the TRUST calculation (GUI).
 -prm                          : Write a prm file.
 -clean                        : Clean the current directory from all the generated 
                                 files by TRUST.

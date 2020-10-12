@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -634,7 +634,7 @@ void PolyMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_vdf
   //ch_tab_lambda_dis.nommer(nom_champ);
   ch_tab_lambda_dis.associer_zone_dis_base(zone_vdf);
   ch_tab_lambda_dis.associer_param(ch_temper,lambda_tab.table());
-  ch_tab_lambda_dis.fixer_nb_comp(1);
+  ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
   ch_tab_lambda_dis.fixer_nb_valeurs_nodales(zone_vdf.nb_elem());
 // ch_tab_lambda_dis.fixer_unite(unite);
   ch_tab_lambda_dis.changer_temps(ch_temper.temps());
