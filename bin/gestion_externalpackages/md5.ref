@@ -93,10 +93,7 @@ ba84eaa8564155babd4ba1458d4eaa11  astyle_2.03_linux.tar.gz
 d43a8fbe83767978098ba7f8ee25d3d1  ccache-3.1.4.tar.gz
 bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 2cf02a542c1933de95bdbe3f42188ffa  doxygen-1.7.4.linux.bin.tar.gz
-39ac48e6d5e0012a3bd2248a0102f209  gnuplot/gd-2.0.36RC1.tar.gz
 27c5022f697e2522c0dbab439b9573b9  gnuplot/gnuplot-5.2.7.tar.gz
-8b0c05ed12637ee1f060ddfbbf526ea3  gnuplot/libpng-1.5.6.tar.gz
-c735eab2d659a96e5a594c9e8541ad63  gnuplot/zlib-1.2.5.tar.gz
 1f9f9155682fe8946a97c08896109508  hwloc-1.9.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
