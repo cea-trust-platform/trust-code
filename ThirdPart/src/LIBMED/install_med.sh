@@ -60,7 +60,9 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   then
       options="$options  --with-med_int=long"
   fi
-  env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
+  # Ajout de python/lib car parfois zlib pas installe sur la machine (Ubuntu 20)
+  LDFLAGS="" && [ ! -f /usr/lib64/libz.so ] && LDFLAGS="LDFLAGS=-L$TRUST_ROOT/exec/python/lib"
+  env $LDFLAGS CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
   
   $TRUST_MAKE  || exit -1
   make install || exit -1
