@@ -390,28 +390,30 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_mixte(const DoubleTab& inco, in
   double flux=0;
   if (inco[fac4]*inco[fac3] != 0)
     {
-      Cerr << "Erreur dans Eval_Dift_VDF_var_Face::flux_arete_mixte"<<finl;
-      Cerr << "A recoder! Pour prendre en compte le gradient transpose dans la partie lam." << finl;
-      Process::exit();
+      int ori1 = orientation(fac1);
+      int ori3 = orientation(fac3);
+      int elem[4];
+      elem[0] = elem_(fac3,0);
+      elem[1] = elem_(fac3,1);
+      elem[2] = elem_(fac4,0);
+      elem[3] = elem_(fac4,1);
 
       double visc_lam=0;
-      int element;
-
-      if ((element=elem_(fac3,0)) != -1)
-        visc_lam += dv_diffusivite(element);
-      if ((element=elem_(fac3,1)) != -1)
-        visc_lam += dv_diffusivite(element);
-      if ((element=elem_(fac4,0)) != -1)
-        visc_lam += dv_diffusivite(element);
-      if ((element=elem_(fac4,1)) != -1)
-        visc_lam += dv_diffusivite(element);
-
+      double visc_turb=0;
+      for (int i=0; i<4; i++)
+        if (elem[i] != -1)
+          {
+            visc_lam += dv_diffusivite(elem[i]);
+            visc_turb += dv_diffusivite_turbulente(elem[i]);
+          }
       visc_lam/=3.0;
+      visc_turb/=3.0;
 
-      int ori=orientation(fac1);
-      double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
-      flux = 0.25*tau*(surface(fac1)+surface(fac2))*
-             visc_lam*(porosite(fac1)+porosite(fac2));
+      double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori1);
+      double tau_tr = (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori3);
+      double reyn = (tau + tau_tr)*visc_turb;
+      flux = 0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac1)+surface(fac2))
+             *(porosite(fac1)+porosite(fac2));
     }
   return flux;
 }
@@ -425,27 +427,31 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_mixte(int fac1, int fac2, int f
 
   if (inconnue->valeurs()[fac4]*inconnue->valeurs()[fac3] != 0)
     {
-      Cerr << "Errur dans Eval_Dift_VDF_var_Face::coeffs_arete_mixte "<<finl;
-      Cerr << "A recoder! Pour prendre en compte le gradient transpose dans la partie lam." << finl;
-      Process::exit();
+      int ori1 = orientation(fac1);
+      int ori3 = orientation(fac3);
+      int elem[4];
+      elem[0] = elem_(fac3,0);
+      elem[1] = elem_(fac3,1);
+      elem[2] = elem_(fac4,0);
+      elem[3] = elem_(fac4,1);
 
       double visc_lam=0;
-      int element;
-
-      if ((element=elem_(fac3,0)) != -1)
-        visc_lam += dv_diffusivite(element);
-      if ((element=elem_(fac3,1)) != -1)
-        visc_lam += dv_diffusivite(element);
-      if ((element=elem_(fac4,0)) != -1)
-        visc_lam += dv_diffusivite(element);
-      if ((element=elem_(fac4,1)) != -1)
-        visc_lam += dv_diffusivite(element);
-
+      double visc_turb=0;
+      for (int i=0; i<4; i++)
+        if (elem[i] != -1)
+          {
+            visc_lam += dv_diffusivite(elem[i]);
+            visc_turb += dv_diffusivite_turbulente(elem[i]);
+          }
       visc_lam/=3.0;
+      visc_turb/=3.0;
 
-      int ori=orientation(fac1);
-      aii = ajj= 0.25*(surface(fac1)+surface(fac2))*visc_lam*
-                 (porosite(fac1)+porosite(fac2))/dist_face(fac3,fac4,ori);
+      double tau = 1/dist_face(fac3,fac4,ori1);
+      double tau_tr = 1/dist_face(fac1,fac2,ori3);
+      double reyn = (tau + tau_tr)*visc_turb;
+
+      aii = ajj = 0.25*(reyn + visc_lam*(tau+tau_tr))*(surface(fac1)+surface(fac2))
+                  *(porosite(fac1)+porosite(fac2));
     }
   else
     {
