@@ -1,13 +1,12 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
-XX/XX/20 (TRUST)  Support     : Add PIPECG2 kewyord to enable a parallel optimized CG (single non-blocking allreduce per 2 iterations)
-XX/XX/20 (TRUST)  Support     : int64 is supported by MUMPS solvers (ToDo: check)
-XX/XX/20 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for PETSc CPU/GPU solvers and AmgX GPU solvers
-XX/XX/20 (TRUST)  Keyword     : Add LU/Cholesky factorization on GPU with SuperLU: "petsc_gpu cholesky_superlu { }"
-XX/XX/20 (TRUST)  Keyword     : Add Cholesky (not LU) factorization on GPU with Cholmod: "petsc_gpu cholesky_cholmod { }"
-XX/XX/20 (TRUST)  Performance : Use OpenBLAS library instead of Netlib Blas when possible
-XX/XX/20 (TRUST)  Library     : Update PETSc to 3.14.1
+XX/01/21 (TRUST)  Keyword     : Add PIPECG2 kewyord to enable a parallel optimized CG (single non-blocking allreduce per 2 iterations)
+XX/01/21 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for AmgX GPU solvers and PETSc CPU/GPU solvers 
+XX/01/21 (TRUST)  Keyword     : Add parallel LU/Cholesky factorization on GPU with SuperLU: petsc_gpu cholesky_superlu { }
+XX/01/21 (TRUST)  Keyword     : Add sequential Cholesky (not LU) factorization on GPU with Cholmod: petsc_gpu cholesky_cholmod { }
+XX/01/21 (TRUST)  Performance : Introduce GPU support (./configure -cuda) for solvers with keywords: petsc_amgx (using AmgX library) or petsc_gpu (using PETSc library)
+XX/01/21 (TRUST)  Library     : Update PETSc to 3.14.1
 13/01/21 (TRUST)  Bug fixed   : Regression introduced into 1.8.2 fixed : reading distributed mesh (scatter) could hang on during parallel calculation
 13/01/21 (TRUST)  New keyword : MultipleFiles keyword to change the upper number of MPI ranks (default 5120) where single files for I/O is enabled by default
 13/01/21 (TRUST)  Bug fixed   : Possible hang during massive parallel calculation with multiple open of .stop and .progress files
