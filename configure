@@ -717,6 +717,8 @@ then
    echo $ECHO_OPTS "ctest_debug:\n\t(source ./env_TRUST.sh && cd MonoDir$COMM/src && ctest -j$TRUST_NB_PROCS)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_optim:\n\t(source ./env_TRUST.sh && cd MonoDir$COMM"_opt"/src && ctest -j$TRUST_NB_PROCS)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_semi_opt:\n\t(source ./env_TRUST.sh && cd MonoDir$COMM"_semi_opt"/src && ctest -j$TRUST_NB_PROCS)" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "gui:\n\t(source ./env_TRUST.sh && cd Outils/TRIOXDATA && ./Install_all)" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check_gui:\n\t(source ./env_TRUST.sh && cd Outils/TRIOXDATA && ./check_jdd)" >> $TRUST_ROOT/Makefile
    [ "${#ECHO_OPTS}" = 0 ] && echo "Error: Check "$TRUST_ROOT"/Makefile !!! (ECHO_OPTS="$ECHO_OPTS")" && exit -1
    ##################################
    # Desormais on recree les makefile
