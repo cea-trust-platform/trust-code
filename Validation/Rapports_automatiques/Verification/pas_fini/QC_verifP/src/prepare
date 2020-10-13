@@ -1,0 +1,19 @@
+#!/bin/bash
+
+for base in VDF S_VDF VEF S_VEF
+do
+mkdir -p $base
+cp post_run $base
+list="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9"
+for eps in $list
+do
+
+unpe=`echo 1 + $eps| bc`
+unme=`echo 1 - $eps | bc`
+cas=eps_${eps}
+sed "s/unpe/$unpe/
+     s/unme/$unme/ " ${base}_base.data > $base/$cas.data
+echo Castest \"$base\" \"$cas\"
+done
+done
+#vi $cas.data

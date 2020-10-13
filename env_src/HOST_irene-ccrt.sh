@@ -37,11 +37,11 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # qstat inexistente sur les dernieres machines du CCRT/TGCC
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
-   modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
-   echo "# For $HOST cluster:
-module () {
-   eval \`tclsh $modulecmd sh \$*\`
-}" >> $env
+   # modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
+   # echo "# For $HOST cluster:
+   # module () {
+   #    eval \`tclsh $modulecmd sh \$*\`
+   # }" >> $env
    #
    # Load modules
    intel="intel/18.0.3.222" 
@@ -86,7 +86,7 @@ define_soumission_batch()
    #skylake      up        74256      1547    3750  48   2  24   1
    #knl          up        38284       563    1411  68   1  68   1
    #rome         up       269056      2102    1875  128  8  16   1
-   queue=skylake 
+   queue=skylake
    [ "$bigmem" = 1 ] && queue=knl && ntasks=68
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
