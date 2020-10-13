@@ -83,7 +83,7 @@ Read pb
 			Lower  symetrie
 			Inlet  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
 			Outlet  frontiere_ouverte_vitesse_imposee champ_front_xyz_debit { 
-				flow_rate champ_front_uniforme 1 4
+				flow_rate champ_front_uniforme 1 -4
 				velocity_profil champ_front_uniforme 3 2 1 1
 			}
 devant symetrie
