@@ -18,7 +18,6 @@
 #include <Correlation_Vec_Sca_VDF.h>
 #include <Courant_maille_Champ_Face.h>
 #include <Critere_Q_Champ_Face.h>
-#include <Residu_P0_VDF.h>
 #include <Reynolds_maille_Champ_Face.h>
 #include <Rotationnel_Champ_Face.h>
 #include <Taux_cisaillement_P0_VDF.h>
@@ -41,10 +40,9 @@ Champ_val_tot_sur_vol_VDF inst12;verifie_pere(inst12);
 Correlation_Vec_Sca_VDF inst13;verifie_pere(inst13);
 Courant_maille_Champ_Face inst14;verifie_pere(inst14);
 Critere_Q_Champ_Face inst15;verifie_pere(inst15);
-Residu_P0_VDF inst16;verifie_pere(inst16);
-Reynolds_maille_Champ_Face inst17;verifie_pere(inst17);
-Rotationnel_Champ_Face inst18;verifie_pere(inst18);
-Taux_cisaillement_P0_VDF inst19;verifie_pere(inst19);
-Y_plus_Champ_Face inst20;verifie_pere(inst20);
-grad_U_Champ_Face inst21;verifie_pere(inst21);
+Reynolds_maille_Champ_Face inst16;verifie_pere(inst16);
+Rotationnel_Champ_Face inst17;verifie_pere(inst17);
+Taux_cisaillement_P0_VDF inst18;verifie_pere(inst18);
+Y_plus_Champ_Face inst19;verifie_pere(inst19);
+grad_U_Champ_Face inst20;verifie_pere(inst20);
 }

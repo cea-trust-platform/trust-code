@@ -69,6 +69,7 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   champs_compris_.ajoute_nom_compris("pression_hydrostatique");
   champs_compris_.ajoute_nom_compris("gradient_vitesse");
   champs_compris_.ajoute_nom_compris("vitesse_residu");
+
 }
 
 // Description:
@@ -1555,16 +1556,6 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(grad_u);
         }
     }
-//  else if (motlu == "vitesse_residu")
-//    {
-//      if (!Vitesse_residu.non_nul())
-//        {
-//          const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-//          dis.Vitesse_residu(zone_dis(),la_vitesse,Vitesse_residu);
-//          champs_compris_.ajoute_champ(Vitesse_residu);
-//        }
-//    }
-
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->creer_champ(motlu);
@@ -1673,15 +1664,6 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
         }
       return champs_compris_.get_champ(nom);
     }
-//  if (nom=="Vitesse_residu")
-//    {
-//      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Vitesse_residu.valeur());
-//      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
-//        {
-//          ch.mettre_a_jour(la_vitesse->temps());
-//        }
-//      return champs_compris_.get_champ(nom);
-//    }
   try
     {
       return Equation_base::get_champ(nom);

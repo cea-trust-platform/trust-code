@@ -226,14 +226,11 @@ public :
     return calculate_time_derivative_;
   };
 
-  inline const DoubleTab& get_residuals() const
-  {
-    return residuals_;
-  };
 
   inline void set_residuals(DoubleTab r)
   {
-    residuals_ = r;
+    if(Field_residu_.non_nul())
+      Field_residu_.valeur().valeurs() = r;
   };
 
 protected :
@@ -285,7 +282,6 @@ private :
   DoubleVect residu_;
   DoubleVect residu_initial_;
   // retourne le CHAMP (et non la norme) des residus de chaque inconnu du probleme
-  DoubleTab residuals_;
   Champ_Fonc Field_residu_;
 
   mutable DoubleTab NULL_;

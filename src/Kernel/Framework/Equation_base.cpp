@@ -1432,18 +1432,17 @@ void Equation_base::creer_champ(const Motcle& motlu)
 
 const Champ_base& Equation_base::get_champ(const Motcle& nom) const
 {
-
   REF(Champ_base) ref_champ;
 
-  Nom inco (inconnue()->le_nom());
-  inco += "_residu";
+  Nom inco_residu (inconnue()->le_nom());
+  inco_residu += "_residu";
   if (nom=="volume_maille")
     {
       Champ_Fonc_base& ch_vol_maille=ref_cast_non_const(Champ_Fonc_base,volume_maille.valeur());
       if (est_different(ch_vol_maille.temps(),inconnue()->temps()))
         ch_vol_maille.mettre_a_jour(inconnue()->temps());
     }
-  else if(nom == Motcle(inco))
+  else if(nom == Motcle(inco_residu))
     {
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Field_residu_.valeur());
       double temps_init = schema_temps().temps_init();

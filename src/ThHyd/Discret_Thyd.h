@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,7 +100,7 @@ public :
     Cerr << "Taux_cisaillement keyword not available for this discretization." << finl;
     exit();
   };
-  virtual void K_Eps_residu(const Zone_dis& , const Champ_Inc&, Champ_Fonc& ) const;
+
 };
 
 #endif

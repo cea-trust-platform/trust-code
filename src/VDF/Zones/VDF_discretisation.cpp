@@ -40,7 +40,6 @@
 // #include <Champ_T_Paroi_Face.h>
 #include <Zone_Cl_VDF.h>
 #include <Navier_Stokes_std.h>
-#include <Residu_P0_VDF.h>
 
 Implemente_instanciable(VDF_discretisation,"VDF",Discret_Thyd);
 
@@ -588,28 +587,31 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 void VDF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
 {
 
-  Nom inco_name(ch_inco.le_nom());
-  inco_name += "_residu";
+  Nom ch_name(ch_inco.le_nom());
+  ch_name += "_residu";
+  Cerr << "Discretization of " << ch_name << finl;
 
-  if( ch_inco.le_nom() == "vitesse" )
+  const Zone_VDF& zone_vdf = ref_cast( Zone_VDF, z.valeur( ) );
+
+  Motcle loc;
+  int nb_comp;
+  Nom type_ch = ch_inco.valeur().que_suis_je();
+  if (type_ch.debute_par("Champ_Face"))
     {
-      Cerr << "Discretisation of " << inco_name << " is not possible yet in VDF..." << finl;
-      Process::exit();
+      loc= "champ_face";
+      nb_comp = dimension;
+    }
+  else
+    {
+      loc = "champ_elem";
+      nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
     }
 
-  Cerr << "Discretisation de " << inco_name << finl;
-  const Zone_VDF& zone_vdf = ref_cast( Zone_VDF, z.valeur( ) );
-  champ.typer( "Residu_P0_VDF" );
-  Residu_P0_VDF& ch = ref_cast( Residu_P0_VDF, champ.valeur( ) );
-  const Champ_P0_VDF& inco = ref_cast( Champ_P0_VDF, ch_inco.valeur( ) );
-  ch.associer_champ( inco );
-  ch.associer_zone_dis_base( zone_vdf );
-  ch.nommer( inco_name );
-  const int& nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
-  ch.fixer_nb_comp(nb_comp);
-  ch.fixer_unite( "units_not_defined" );
-  ch.changer_temps( ch_inco.temps( ) );
-  ch.fixer_nb_valeurs_nodales( zone_vdf.nb_elem( ) );
+  Discretisation_base::discretiser_champ(loc,zone_vdf, ch_name ,"units_not_defined",nb_comp,ch_inco.temps(),champ);
+  Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
+  DoubleTab& tab=ch_fonc.valeurs();
+  tab = -10000.0 ;
+  Cerr << "[Information] Discretisation_base::residu : the residue is set to -10000.0 at initial time" <<finl;
 
 }
 

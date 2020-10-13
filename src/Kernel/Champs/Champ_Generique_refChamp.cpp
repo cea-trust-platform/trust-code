@@ -496,8 +496,7 @@ const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
     {
       const Nom& type = ch.que_suis_je();
       if ((type.debute_par("Champ_Face")) || (type=="Champ_P1NC") || (type=="Champ_Q1NC") ||
-          (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC")
-          ||(type=="Residu_P1NC") )
+          (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC") )
         {
           directive = "champ_face";
           //      assert(localisation_=="FACES");
