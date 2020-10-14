@@ -431,6 +431,8 @@ do
    elif [ "${1#-without-doc}" != "$1" ]
    then
       export TRUST_WITHOUT_DOC=1
+      # if no pdflatex installed, disable pdf doc build
+      [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && export TRUST_WITHOUT_PDFLATEX=1
       THIRD_PARTY="DOC"
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
