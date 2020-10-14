@@ -1,7 +1,7 @@
 #lancement du calcul avec -journal_shared
 
 (
-if [ ! -f PAR_journal_shared.dt_ev ]
+if [ ! -f PAR_journal_shared.dt_ev ] && [ "$TRUST_DISABLE_MPI" != 1 ]
 then
 	sed "s?# BEGIN FIN #?# BEGIN FIN?g" hdf5_io.data > journal_shared.data
 	sed "s?# END FIN #? END FIN #?g" hdf5_io.data > journal_shared.data

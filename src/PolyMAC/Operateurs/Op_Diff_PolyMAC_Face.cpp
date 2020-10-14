@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
           resu(nf_tot + a) -= ch.racf(i, k) * ref_cast(Dirichlet, cls[ch.icl(ch.rajf(i), 1)].valeur()).val_imp(ch.icl(ch.rajf(i), 2), k);
       // -m1 / nu
       for (i = zone.m1deb(a); i < zone.m1deb(a + 1); i++)
-        resu(nf_tot + a) += zone.m1ci(i) / (pe(zone.m1ji(i, 1)) * nu_(zone.m1ji(i, 1))) * inco(nf_tot + zone.m1ji(i, 0));
+        resu(nf_tot + a) += zone.m1ci(i) / (pe(zone.m1ji(i, 1)) * nu_(zone.m1ji(i, 1), 0)) * inco(nf_tot + zone.m1ji(i, 0));
     }
   return resu;
 }
@@ -156,7 +156,7 @@ inline void Op_Diff_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
           matrice(nf_tot + a, f) += ch.raci(i);
       // -m1 / nu
       for (i = zone.m1deb(a); i < zone.m1deb(a + 1); i++)
-        matrice(nf_tot + a, nf_tot + zone.m1ji(i, 0)) -= zone.m1ci(i) / (pe(zone.m1ji(i, 1)) * nu_(zone.m1ji(i, 1)));
+        matrice(nf_tot + a, nf_tot + zone.m1ji(i, 0)) -= zone.m1ci(i) / (pe(zone.m1ji(i, 1)) * nu_(zone.m1ji(i, 1), 0));
     }
 }
 
