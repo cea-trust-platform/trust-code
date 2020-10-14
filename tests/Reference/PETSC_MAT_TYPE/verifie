@@ -3,7 +3,8 @@ cas=PETSC_MAT_TYPE
 if [ -f PAR_$cas.dt_ev ]
 then
    # NB: aijperm ne vaut rien
-   options="`[ $PETSC_HAVE_OPENMP = 0 ] && echo sbaij` aij aijsell "`echo $TRUST_BLAS_LAPACK | grep mkl 1>/dev/null && echo aijmkl` # BlasIntel doit etre installee pour aijmkl
+   sbaij=sbaij && [ ${exec%_opt} = $exec ] && sbaij="" # Crash bizarre en debug
+   options="`[ $PETSC_HAVE_OPENMP = 0 ] && echo $sbaij` aij aijsell "`echo $TRUST_BLAS_LAPACK | grep mkl 1>/dev/null && echo aijmkl` # BlasIntel doit etre installee pour aijmkl
    for option in $options
    do
       echo "Test solve PETSc with -mat_type $option"
