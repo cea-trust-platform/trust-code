@@ -1,0 +1,5 @@
+#!/bin/bash
+mesh="__meshprerun__"
+[ -f $mesh ] && ln -sf $mesh mesh.med && exit
+echo "Error in `pwd`/pre_run"
+exit -1

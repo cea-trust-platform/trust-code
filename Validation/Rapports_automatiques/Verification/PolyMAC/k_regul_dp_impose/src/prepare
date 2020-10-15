@@ -1,10 +1,11 @@
 #!/bin/bash
-for dir in "poly" #"cartesian" "tetra"
+for dir in "PolyMAC" "CoviMAC" #"cartesian" "tetra"
 do
     ( mkdir -p $dir; cp jdd.data $dir )
+    sed -i "s/__tetra__//;s/__dis__/$dir/" $dir/jdd.data
+    cp mesh_poly.med $dir/mesh.med
 done
-sed -i "s/__tetra__//;s/__dis__/PolyMAC/" poly/jdd.data
 #sed -i "s/__tetra__//;s/__dis__/VDF/" cartesian/jdd.data
 #sed -i "s/__tetra__/tetraedriser dom/;s/__dis__/VEFPreP1b" tetra/jdd.data
 #cp mesh_hexa.med cartesian/mesh.med
-cp mesh_poly.med poly/mesh.med
+python $TRUST_ROOT/bin/KSH/preprocessor.py dp_impose_k_regul.prm.P dp_impose_k_regul.prm

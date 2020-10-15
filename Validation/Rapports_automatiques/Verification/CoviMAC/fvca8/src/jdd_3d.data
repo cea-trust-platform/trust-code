@@ -1,0 +1,143 @@
+# PARALLEL OK #
+# lance_test 8 ecarts #
+system "rm -rf lata; mkdir -p lata"
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { Nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+CoviMAC  dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit   0
+    dt_max  10
+    seuil_statio 1e-8
+    # solveur implicite { solveur petsc cli { } } #
+    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
+}
+
+#
+Schema_euler_explicite sch
+Read sch
+{
+    tinit   0
+    tmax    1e5
+    dt_min  1e-6
+    dt_max  1e-6
+    dt_impr 1e-10
+    seuil_statio 1e-10
+}
+#
+
+Fluide_Incompressible eau
+Read eau
+{
+    mu  Champ_Uniforme 1 0.1
+    rho Champ_Uniforme 1 1
+}
+
+Associate  pb dom
+Associate  pb sch
+Associate  pb eau
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression petsc cholesky { }
+        convection { centre }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse champ_fonc_xyz dom 3 y-z z-x x-y
+        }
+        boundary_conditions
+        {
+            boundary frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 y-z z-x x-y
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            p_moins_pmoy transformation
+            {
+                methode formule expression 1 p-pmoy
+                sources
+                {
+                    refChamp { Pb_champ pb pression_pa nom_source p } ,
+                    reduction_0d { methode moyenne_ponderee source refChamp { Pb_champ pb pression_pa } nom_source pmoy }
+                }
+            }
+            erreur_P transformation
+            {
+                methode formule expression 1 abs(pmp-sol)
+                sources
+                {
+                    transformation
+                    {
+                        methode formule expression 1 p-pmoy
+                        sources
+                        {
+                            refChamp { Pb_champ pb pression_pa nom_source p } ,
+                            reduction_0d { methode moyenne_ponderee source refChamp { Pb_champ pb pression_pa } nom_source pmoy }
+                        }
+                        nom_source pmp
+                    } ,
+                    transformation { methode formule expression 1 x^2+y^2+z^2-x*y-x*z-y*z-1/4 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                }
+            }
+            erreur_P_max reduction_0D { methode l2_norm sources_reference { erreur_P } }
+
+            /* aux elems */
+            erreur_V transformation
+            {
+                methode formule expression 1 abs(v-sol)
+                sources
+                {
+                    Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,
+                    transformation { methode vecteur expression 3 y-z z-x x-y nom_source sol source refChamp { Pb_champ pb pression } }
+                }
+            }
+            erreur_V_max reduction_0D { methode l2_norm source transformation { methode norme sources_reference { erreur_V } } }
+        }
+        probes
+        {
+            errP erreur_P_max periode 1e-6 Numero_elem_sur_maitre 0
+            errV erreur_V_max periode 1e-6 Numero_elem_sur_maitre 0
+        }
+        Format Lata
+        fields dt_post 1e10
+        {
+            p_moins_pmoy elem
+            vitesse elem
+            erreur_V elem
+            erreur_P elem
+        }
+    }
+}
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End

@@ -1,0 +1,4 @@
+for M in `cat listmeshes`
+do
+cat $M/jdd_*/conv| awk '{print $2,$1}'| sort -n> $M/conv_glob
+done
