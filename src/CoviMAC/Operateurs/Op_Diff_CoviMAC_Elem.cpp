@@ -173,7 +173,7 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
         else if (ch.fcl(f, 0) == 3) abort(); //monolithique
         else if (ch.fcl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
             {
-              phi(n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+              phi(n) = ref_cast(Neumann_homogene, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
               Tb(f, n) = inco.addr()[N * e + n] - phi(n) / h_int(n);
             }
         else for (n = 0; n < N; n++) //Dirichlet

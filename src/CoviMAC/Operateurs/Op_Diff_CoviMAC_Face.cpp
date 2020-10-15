@@ -157,7 +157,7 @@ inline DoubleTab& Op_Diff_CoviMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
         if (f < zone.premiere_face_int()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
               flux_bords_(f, N * d + n) = - fs(f) * h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
       }
-    else if (ch.fcl(f, 0)) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //Neumann/Symetrie : vb seulement
+    else if (ch.fcl(f, 0)) for (d = 0; d < D; d++) for (e = f_e(f, 0), n = 0; n < N; n++) //Neumann/Symetrie : vb seulement
           vb(f, d, n) = inco.addr()[N * (nf_tot + D * e + d) + n];
 
   /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
