@@ -1785,8 +1785,8 @@ case $TRUST_ARCH_CC in
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
 	# 26/03/10, passage enfin a -03
 	# 01/07/19, passage a C++ 11
-        PTHREAD="-pthread" # Pour OpenBLAS ?
-        FPIC="-fPIC"
+	[ "$TRUST_OPENMP" = 1 ] && PTHREAD="-pthread" # Pour OpenBLAS ?
+	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
 	CppFlags="-O3 $FPIC $PTHREAD -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic"
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
