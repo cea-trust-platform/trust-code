@@ -158,6 +158,7 @@
 <TR><TD><SMALL><A HREF="#Fluides_miscibles">Fluides_miscibles</A></TD><TD><SMALL># Two miscible fluids #</TD></TR>
 <TR><TD><SMALL><A HREF="#Flux_Divergence_VEF">Flux_Divergence_VEF</A></TD><TD><SMALL># Cas test 3D VEF hydraulique qui teste toutes les conditions limites hydrauliques #</TD></TR>
 <TR><TD><SMALL><A HREF="#Flux_paroi_contact_inclinee">Flux_paroi_contact_inclinee</A></TD><TD><SMALL># Egalite des flux sur paroi_contact inclinee #</TD></TR>
+<TR><TD><SMALL><A HREF="#GAMELAN">GAMELAN</A></TD><TD><SMALL># Warning: Degraded data file of GAMELAN simulation. Do not use except for non regression testing ! #</TD></TR>
 <TR><TD><SMALL><A HREF="#Himp_var">Himp_var</A></TD><TD><SMALL># Thermohydraulique 2D : Conditions limites instationnaires #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi">Hyd_Axi</A></TD><TD><SMALL># Hydraulique 2D Axi #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi_RZ">Hyd_Axi_RZ</A></TD><TD><SMALL># Hydraulique 2D axisymetrique R,Z laminaire schema amont #</TD></TR>
@@ -253,6 +254,7 @@
 <TR><TD><SMALL><A HREF="#PETSC_GCP">PETSC_GCP</A></TD><TD><SMALL># Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP_ILU_P0P1">PETSC_GCP_ILU_P0P1</A></TD><TD><SMALL># Hydraulique 3D VEF P1NCP1P0Pa #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP_SPAI_P0P1Pa">PETSC_GCP_SPAI_P0P1Pa</A></TD><TD><SMALL># Hydraulique 3D VEF P1NCP1P0Pa #</TD></TR>
+<TR><TD><SMALL><A HREF="#PETSC_MAT_TYPE">PETSC_MAT_TYPE</A></TD><TD><SMALL># Test matrix type in PETSc. sbaij is the less memory expensive but slower than aij, and optimized aijmkl or aijsell (slice Ellpack), most memory expensive one #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_OPENMP">PETSC_OPENMP</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_ThHyd_2D_VEF_Ostwald">PETSC_ThHyd_2D_VEF_Ostwald</A></TD><TD><SMALL># Thermohydraulique 2D VEF avec modele non newtonien Ostwald #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_VDF">PETSC_VDF</A></TD><TD><SMALL># Tests des solveurs NP sur un cas 3D avec pression imposee #</TD></TR>
@@ -317,6 +319,7 @@
 <TR><TD><SMALL><A HREF="#RK3">RK3</A></TD><TD><SMALL># Conduction 2D : schema en temps Runge Kutta #</TD></TR>
 <TR><TD><SMALL><A HREF="#RK4">RK4</A></TD><TD><SMALL># Conduction 2D : schema en temps Runge Kutta #</TD></TR>
 <TR><TD><SMALL><A HREF="#Raffiner_isotrope_parallele">Raffiner_isotrope_parallele</A></TD><TD><SMALL># Verification que le raffinement en sequentiel (raffiner_isotrope) est identique au raffinement en parallele (raffiner_isotrope_parallele) #</TD></TR>
+<TR><TD><SMALL><A HREF="#Raffiner_isotrope_parallele_VDF">Raffiner_isotrope_parallele_VDF</A></TD><TD><SMALL># Checking that the sequential refinement (raffiner_isotrope) is identical to the parallel refinement (raffiner_isotrope_parallele) with an hexahedral mesh #</TD></TR>
 <TR><TD><SMALL><A HREF="#Read_matrix">Read_matrix</A></TD><TD><SMALL># Test Read_matrix option #</TD></TR>
 <TR><TD><SMALL><A HREF="#Repere_Rotation_Constante">Repere_Rotation_Constante</A></TD><TD><SMALL># Exemple de calcul avec un repere en rotation constante #</TD></TR>
 <TR><TD><SMALL><A HREF="#Repere_Rotation_Periodique">Repere_Rotation_Periodique</A></TD><TD><SMALL># Canal 3D periodique avec un terme source pour la rotation du domaine #</TD></TR>
@@ -430,14 +433,13 @@
 <TR><TD><SMALL><A HREF="#gradient_temperature">gradient_temperature</A></TD><TD><SMALL># Test temperature_gradient in VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#gradp">gradp</A></TD><TD><SMALL># Hydraulique 2D : Condition de sortie libre gradP=0 #</TD></TR>
 <TR><TD><SMALL><A HREF="#gradp_VEFPreP1B">gradp_VEFPreP1B</A></TD><TD><SMALL># Hydraulique 2D : Condition limite de gradient pression impose pour la version VEFPreP1B #</TD></TR>
-<TR><TD><SMALL><A HREF="#hdf5_io">hdf5_io</A></TD><TD><SMALL># Test hdf parallele: .Zone unique et .sauv unique + test reprise et .log unique dans verifie #</TD></TR>
 <TR><TD><SMALL><A HREF="#muscl">muscl</A></TD><TD><SMALL># Thermohydraulique 2D VEF schema muscl #</TD></TR>
 <TR><TD><SMALL><A HREF="#normalized_norm_l2">normalized_norm_l2</A></TD><TD><SMALL># normalized_norm_l2 on field #</TD></TR>
 <TR><TD><SMALL><A HREF="#periodique">periodique</A></TD><TD><SMALL># Periodicite et lecture d'une CI dans un fichier #</TD></TR>
 <TR><TD><SMALL><A HREF="#periodique_P1B">periodique_P1B</A></TD><TD><SMALL># Hydraulique 2D VEF P1NC/P1bulle avec periodicite #</TD></TR>
 <TR><TD><SMALL><A HREF="#periodique_non_parallele_axe">periodique_non_parallele_axe</A></TD><TD><SMALL># Periodicite avec direction non parallele a un axe #</TD></TR>
 <TR><TD><SMALL><A HREF="#poise_VEF">poise_VEF</A></TD><TD><SMALL># Hydraulique 2D VEF : Bas Reynolds #</TD></TR>
-<TR><TD><SMALL><A HREF="#polyedriser">polyedriser</A></TD><TD><SMALL># Thermohydraulique 3D et Boussinesq #</TD></TR>
+<TR><TD><SMALL><A HREF="#polyedriser">polyedriser</A></TD><TD><SMALL># Transforme les hexaedres du maillage TRUST en polyedres pour les rendre compatible avec Polymac #</TD></TR>
 <TR><TD><SMALL><A HREF="#puissance">puissance</A></TD><TD><SMALL># Conduction 2D : Sources volumiques de puissance #</TD></TR>
 <TR><TD><SMALL><A HREF="#puissance_tot_VDF">puissance_tot_VDF</A></TD><TD><SMALL># Conduction 2D : Sources de puissance totale #</TD></TR>
 <TR><TD><SMALL><A HREF="#puissance_tot_VEF">puissance_tot_VEF</A></TD><TD><SMALL># Conduction 2D : Sources de puissance totale #</TD></TR>
@@ -1084,6 +1086,11 @@
 <CENTER># Egalite des flux sur paroi_contact inclinee #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Flux_paroi_contact_inclinee/Flux_paroi_contact_inclinee.data>Edit</a> Flux_paroi_contact_inclinee.data </CENTER>
+<HR><CENTER><B><A NAME=GAMELAN>GAMELAN</A></B></CENTER>
+<CENTER># Warning: Degraded data file of GAMELAN simulation. Do not use except for non regression testing ! #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/GAMELAN/GAMELAN.data>Edit</a> GAMELAN.data </CENTER>
+<CENTER><a href=../tests/Reference/GAMELAN/dom.geom>Edit</a> dom.geom </CENTER>
 <HR><CENTER><B><A NAME=Himp_var>Himp_var</A></B></CENTER>
 <CENTER># Thermohydraulique 2D : Conditions limites instationnaires #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1502,6 +1509,11 @@
 <CENTER># Hydraulique 3D VEF P1NCP1P0Pa #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/PETSC_GCP_SPAI_P0P1Pa/PETSC_GCP_SPAI_P0P1Pa.data>Edit</a> PETSC_GCP_SPAI_P0P1Pa.data </CENTER>
+<HR><CENTER><B><A NAME=PETSC_MAT_TYPE>PETSC_MAT_TYPE</A></B></CENTER>
+<CENTER># Test matrix type in PETSc. sbaij is the less memory expensive but slower than aij, and optimized aijmkl or aijsell (slice Ellpack), most memory expensive one #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/PETSC_MAT_TYPE/PETSC_MAT_TYPE.data>Edit</a> PETSC_MAT_TYPE.data </CENTER>
+<CENTER><a href=../tests/Reference/PETSC_MAT_TYPE/cylindre.geom.gz>Edit</a> cylindre.geom.gz </CENTER>
 <HR><CENTER><B><A NAME=PETSC_OPENMP>PETSC_OPENMP</A></B></CENTER>
 <CENTER># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1771,6 +1783,10 @@
 <CENTER># Verification que le raffinement en sequentiel (raffiner_isotrope) est identique au raffinement en parallele (raffiner_isotrope_parallele) #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Raffiner_isotrope_parallele/Raffiner_isotrope_parallele.data>Edit</a> Raffiner_isotrope_parallele.data </CENTER>
+<HR><CENTER><B><A NAME=Raffiner_isotrope_parallele_VDF>Raffiner_isotrope_parallele_VDF</A></B></CENTER>
+<CENTER># Checking that the sequential refinement (raffiner_isotrope) is identical to the parallel refinement (raffiner_isotrope_parallele) with an hexahedral mesh #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Raffiner_isotrope_parallele_VDF/Raffiner_isotrope_parallele_VDF.data>Edit</a> Raffiner_isotrope_parallele_VDF.data </CENTER>
 <HR><CENTER><B><A NAME=Read_matrix>Read_matrix</A></B></CENTER>
 <CENTER># Test Read_matrix option #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2246,10 +2262,6 @@
 <CENTER># Hydraulique 2D : Condition limite de gradient pression impose pour la version VEFPreP1B #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/gradp_VEFPreP1B/gradp_VEFPreP1B.data>Edit</a> gradp_VEFPreP1B.data </CENTER>
-<HR><CENTER><B><A NAME=hdf5_io>hdf5_io</A></B></CENTER>
-<CENTER># Test hdf parallele: .Zone unique et .sauv unique + test reprise et .log unique dans verifie #</CENTER>
-<CENTER><img src=rien.gif></CENTER>
-<CENTER><a href=../tests/Reference/hdf5_io/hdf5_io.data>Edit</a> hdf5_io.data </CENTER>
 <HR><CENTER><B><A NAME=muscl>muscl</A></B></CENTER>
 <CENTER># Thermohydraulique 2D VEF schema muscl #</CENTER>
 <CENTER><a href=../tests/Reference/muscl/muscl.lml.gif><img src=../tests/Reference/muscl/muscl.lml.gif.fin></a></CENTER>
@@ -2276,7 +2288,7 @@
 <CENTER><a href=../tests/Reference/poise_VEF/poise_VEF.coupe.gif><img src=../tests/Reference/poise_VEF/poise_VEF.coupe.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/poise_VEF/poise_VEF.data>Edit</a> poise_VEF.data </CENTER>
 <HR><CENTER><B><A NAME=polyedriser>polyedriser</A></B></CENTER>
-<CENTER># Thermohydraulique 3D et Boussinesq #</CENTER>
+<CENTER># Transforme les hexaedres du maillage TRUST en polyedres pour les rendre compatible avec Polymac #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/polyedriser/polyedriser.data>Edit</a> polyedriser.data </CENTER>
 <HR><CENTER><B><A NAME=puissance>puissance</A></B></CENTER>
