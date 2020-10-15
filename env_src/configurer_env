@@ -1096,26 +1096,7 @@ then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
-elif [ "`ls /usr/lib64/libopenblas.so 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
-then
-   # Try threaded BLAS (in fact OpenBlas)
-   TRUST_BLAS_LAPACK=/usr/lib64
-elif [ "`ls $TRUST_ROOT/exec/python/lib/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ] && [ "$TRUST_OPENMP" = 1 ]
-then
-   # Try threaded BLAS (in fact OpenBlas) from Miniconda (attention marche pas sur Fedora30...)
-   TRUST_BLAS_LAPACK="\$TRUST_ROOT/exec/python/lib"
-elif [ "`ls /usr/lib64/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ]
-then
-   # Try Blas under /usr/lib64
-   if [ -d /usr/lib64/atlas ]
-   then
-      # Atlas Blas seems faster on Cx test case
-      TRUST_BLAS_LAPACK=/usr/lib64
-   else
-      TRUST_BLAS_LAPACK="" # Possible but not a good idea if not Atlas (eg: slower than Netlib on Cx test case for cezanne27)
-   fi
-   TRUST_BLAS_LAPACK="" # Not enough test to confirm it is faster or not...
-fi
+fi   
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
 
 #############
@@ -1804,9 +1785,10 @@ case $TRUST_ARCH_CC in
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
 	# 26/03/10, passage enfin a -03
 	# 01/07/19, passage a C++ 11
+        PTHREAD="-pthread" # Pour OpenBLAS ?
         FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-	CppFlags="-O3 $FPIC -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic"
+	CppFlags="-O3 $FPIC $PTHREAD -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic"
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
 	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
@@ -1834,7 +1816,7 @@ case $TRUST_ARCH_CC in
 	F77Flags="-O3 $FPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -fdefault-integer-8"
 	# -fallow-argument-mismatch pour gfortran>=10.0.0 (plusieurs librairies Fortran ne compilent pas sinon dont LIBSKIT la premiere):
         [ "`echo $TRUST_VERSION_GNU | awk -F. '{print $1>=10}'`" = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
-	ccFLAGS="-O3 $FPIC"
+	ccFLAGS="-O3 $FPIC $PTHREAD"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;

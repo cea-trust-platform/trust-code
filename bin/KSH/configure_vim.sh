@@ -11,29 +11,29 @@ file_syntax=$TRUST_ROOT/doc/TRUST/Keywords.Vim
 
 if [ "$1" = "build_syntax" ]
 then
+   # create folder ~/.vim/syntax if it does not exist
+   mkdir -p `dirname $file`
 
+   # Grab the TRUST keywords
+   KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' $TRUST_ROOT/doc/TRUST/Keywords.txt`
 
-# Grab the TRUST keywords
-KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' $TRUST_ROOT/doc/TRUST/Keywords.txt`
+   # Count the keywords
+   nbKeywordsTRUST=`echo $KeywordsTRUST | wc -w`
+   nbKeywords=`$TRUST_Awk '/syntax keyword/ {print NF-3}' $file_syntax 2>/dev/null`
 
-# Count the keywords
-nbKeywordsTRUST=`echo $KeywordsTRUST | wc -w`
-nbKeywords=`$TRUST_Awk '/syntax keyword/ {print NF-3}' $file_syntax 2>/dev/null`
-
-# If different, rebuild the configuration file for vim
-if [ "$nbKeywordsTRUST" != "$nbKeywords" ] || [ $0 -nt $file_syntax ]
-then
-   # Rebuild the file
-   echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" >> $file.tmp
-   if [ ! -f $file_syntax ] || [ "`diff $file $file.tmp`" != "" ]
+   # If different, rebuild the configuration file for vim
+   if [ "$nbKeywordsTRUST" != "$nbKeywords" ] || [ $0 -nt $file_syntax ]
    then
-      mv -f $file.tmp $file_syntax
-      echo "$file_syntax updated..."
+      # Rebuild the file
+      echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" >> $file.tmp
+      if [ ! -f $file_syntax ] || [ "`diff $file $file.tmp`" != "" ]
+      then
+         mv -f $file.tmp $file_syntax
+         echo "$file_syntax updated..."
+      fi
+      rm -f $file.tmp
    fi
-   rm -f $file.tmp
-   
-fi
-exit 
+   exit
 fi
 
 # Delete old configurations which caused issues:

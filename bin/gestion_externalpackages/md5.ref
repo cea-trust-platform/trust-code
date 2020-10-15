@@ -98,6 +98,7 @@ bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 8b0c05ed12637ee1f060ddfbbf526ea3  gnuplot/libpng-1.5.6.tar.gz
 c735eab2d659a96e5a594c9e8541ad63  gnuplot/zlib-1.2.5.tar.gz
 1f9f9155682fe8946a97c08896109508  hwloc-1.9.tar.gz
+4727a1333a380b67c8d7c7787a3d9c9a  lapack/OpenBLAS-0.3.10.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 0475638eb40a3920d0d3f14482c924a4  makedepend-1.0.5.tar.bz2

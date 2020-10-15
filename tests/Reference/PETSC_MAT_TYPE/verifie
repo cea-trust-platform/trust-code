@@ -1,0 +1,34 @@
+# Test several PETSc matrix
+cas=PETSC_MAT_TYPE
+if [ -f PAR_$cas.dt_ev ]
+then
+   # NB: aijperm ne vaut rien
+   sbaij=sbaij
+   [ $exec = $exec_debug ] || [ $exec = $exec_semi_opt ] && sbaij="" # Crash bizarre en debug et en semi_opt
+   options="`[ $PETSC_HAVE_OPENMP = 0 ] && echo $sbaij` aij aijsell "`echo $TRUST_BLAS_LAPACK | grep mkl 1>/dev/null && echo aijmkl` # BlasIntel doit etre installee pour aijmkl
+   for option in $options
+   do
+      echo "Test solve PETSc with -mat_type $option"
+      aij=aij && [ $option = sbaij ] && aij=""
+      echo $ECHO_OPTS "1,$ s?cli { }?$aij cli { -mat_type $option }?g\nw $option.data" | ed $cas.data 1>/dev/null 2>&1 || exit -1
+      trust $option -ksp_view 1>$option.out_err 2>&1 || exit -1
+      grep "seq$option$" $option.out_err 1>/dev/null || exit -1
+      compare_lata $option.lml $cas.lml 1>/dev/null 2>&1 || exit -1
+      # Parallele:
+      echo $ECHO_OPTS "1,$ s?cli { }?$aij cli { -mat_type $option }?g\nw PAR_$option.data" | ed PAR_$cas.data 1>/dev/null 2>&1 || exit -1
+      trust PAR_$option 2 -ksp_view 1>PAR_$option.out_err 2>&1 || exit -1
+   done
+   grep "Max Ratio" $option"_petsc".TU 
+   awk '/MatMult/ {print $0" "FILENAME}' *petsc.TU | grep -v PETSC | sort -nr --key=21
+fi
+exit 0
+echo "Compare with performance on skylake (PETSc built with -O3 and Intel MKL)
+MatMult             1100 1.0 2.4342e-01 1.0 6.75e+08 1.0 0.0e+00 0.0e+00 0.0e+00 10 40  0  0  0  24 40  0  0  0  2771 aijmkl_petsc.TU
+MatMult             1100 1.0 3.0855e-01 1.0 7.02e+08 1.0 0.0e+00 0.0e+00 0.0e+00 12 41  0  0  0  26 41  0  0  0  2274 aijsell_petsc.TU
+MatMult             1100 1.0 3.3809e-01 1.0 6.75e+08 1.0 0.0e+00 0.0e+00 0.0e+00 14 40  0  0  0  31 40  0  0  0  1995 aij_petsc.TU
+MatMult             1100 1.0 4.8008e-01 1.0 6.75e+08 1.0 0.0e+00 0.0e+00 0.0e+00 16 39  0  0  0  30 39  0  0  0  1405 sbaij_petsc.TU
+MatMult             1342 1.0 3.2793e-01 1.0 4.21e+08 1.0 1.3e+03 1.2e+04 0.0e+00 17 39 76 56  0  33 39100100  0  2510 PAR_sbaij_petsc.TU
+MatMult             1342 1.0 2.2887e-01 1.1 4.16e+08 1.0 1.3e+03 8.2e+03 0.0e+00 13 40 76 47  0  31 40100100  0  3596 PAR_aijmkl_petsc.TU
+MatMult             1342 1.0 2.1901e-01 1.0 4.16e+08 1.0 1.3e+03 8.2e+03 0.0e+00 13 40 76 47  0  31 40100100  0  3758 PAR_aij_petsc.TU
+MatMult             1342 1.0 2.0653e-01 1.0 4.33e+08 1.0 1.3e+03 8.2e+03 0.0e+00 12 41 76 47  0  26 41100100  0  4145 PAR_aijsell_petsc.TU
+"

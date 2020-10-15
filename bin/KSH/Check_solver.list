@@ -91,8 +91,7 @@ let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BLOCK_JACOBI_ICC { 
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"		;sym[$i]=1	
 
 # GMRES + BOOMERAMG
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BOOMERAMG { } CLI { -pc_hypre_boomeramg_strong_threshold 0.6 } impr }"	;sym[$i]=1;par[$i]=0 # Ne tourne plus en parallele depuis PETSc 3.9.3
-let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond BOOMERAMG { } CLI { -pc_hypre_boomeramg_strong_threshold 0.9 } impr }"	;sym[$i]=0	
+let i=$i+1;solver[$i]="Petsc GMRES      { seuil $seuil precond BOOMERAMG { } CLI { -pc_hypre_boomeramg_strong_threshold 0.9 } impr }"	;sym[$i]=1	
 
 # PIPECG + SSOR
 let i=$i+1;solver[$i]="Petsc PIPECG   { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1
