@@ -630,7 +630,7 @@ void Zone_CoviMAC::init_equiv() const
 {
   if (is_init["equiv"]) return;
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleTab& xp = xp_, &xv = xv_, &nf = face_normales();
+  const DoubleTab& nf = face_normales();
   const DoubleVect& fs = face_surfaces();
   int i, j, e1, e2, f, f1, f2;
 
@@ -643,8 +643,8 @@ void Zone_CoviMAC::init_equiv() const
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
             if (dabs(dabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales non colineaires
-            if (dot(&xv(f1, 0), &xv(f2, 0), &xp(e1, 0), &xp(e2, 0)) < 0) continue; //vecteurs (xp - xv) opposes
-            auto v = cross(dimension, dimension, &xv(f1, 0), &xv(f2, 0), &xp(e1, 0), &xp(e2, 0));
+            if (dot(&xv_(f1, 0), &xv_(f2, 0), &xp_(e1, 0), &xp_(e2, 0)) < 0) continue; //vecteurs (xp - xv) opposes
+            auto v = cross(dimension, dimension, &xv_(f1, 0), &xv_(f2, 0), &xp_(e1, 0), &xp_(e2, 0));
             if ((dimension < 3 ? v[2] * v[2] : dot(&v[0], &v[0])) > 1e-12 * fs(f) * fs(f)) continue; //vecteurs (xp - xv) non colineaires
             equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }

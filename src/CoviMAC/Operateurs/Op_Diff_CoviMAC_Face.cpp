@@ -108,7 +108,7 @@ void Op_Diff_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
                 }
             for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem -> elem
                 stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n);
-            for (n = 0; n < N; n++) tpfa(f, n) &= (j < feb_d(f) + 2);
+            for (n = 0; n < N; n++) if (j >= feb_d(f) + 2) tpfa(f, n) = 0;
           }
 
   tableau_trier_retirer_doublons(stencil);
