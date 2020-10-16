@@ -99,23 +99,19 @@ for cas in baltik
   rm -rf ana
   
 done
-# Lancement de gcovr 
+# Lancement de gcovr 4.2:
+[ ! -f $TRUST_ROOT/exec/python/bin/gcovr ] && cd $TRUST_ROOT/exec/python/bin && pip install gcovr
+
 cd $project_directory
-gcovr --version 2>&1 1>/dev/null
+xml=$project_directory/doc/Coverage/gcovr.xml
+html=$project_directory/doc/Coverage/html/index.html
+mkdir -p `dirname $html`
+filter="-e Trust_Fixes/ -e src/Ref/" # On ne mesure pas la couverture des Trust_fixes
+threshold="--fail-under-line 66" # Erreur si moins de 66%
+echo "XML coverage report for Jenkins: $xml"
+echo "HTML coverage report: $html"
+gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $threshold $filter
 if [ $? != 0 ]
 then
-   echo "Install gcovr with: cd $TRUST_ROOT/exec/python/bin;pip install gcovr"
-else
-   xml=$project_directory/doc/Coverage/gcovr.xml
-   html=$project_directory/doc/Coverage/html/index.html
-   mkdir -p `dirname $html`
-   filter="-e Trust_Fixes/ -e src/Ref/" # On ne mesure pas la couverture des Trust_fixes
-   threshold="--fail-under-line 66" # Erreur si moins de 66%
-   echo "XML coverage report for Jenkins: $xml"
-   echo "HTML coverage report: $html"
-   gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $threshold $filter
-   if [ $? != 0 ]
-   then
-      echo "Line coverage not enough!" && exit -1
-   fi
+   echo "Line coverage not enough!" && exit -1
 fi
