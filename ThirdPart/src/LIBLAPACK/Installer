@@ -48,6 +48,7 @@ install_NetLib()
    cd $package 
 
    option=`$TRUST_Awk '/F77Flags/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
+   [ "$TRUST_INT64" = "1" ] && option=`echo $option |sed "s/-fdefault-integer-8//g" `
    # Creation du make.inc
    echo "
    SHELL    = /bin/sh
@@ -96,7 +97,7 @@ done
 # Nom des versions a upgrader:
 version_openblas=0.3.10
 # On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
-version_lapack=3.4.1 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
+version_lapack=3.4.1 && [ "$TRUST_INT64" != "1" ] && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 
 TRY_OPENBLAS=1 # Installation d'OpenBlas (multithreade uniquement si support OpenMP active). Ecarts sur plusieurs cas fvca8 sinon
 # fvca8_jdd10 ATTENTION 8 ecarts possible sur ce cas...

@@ -13,15 +13,6 @@ diff -r bin/BUILD64/patch/Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp ./Outil
 <   case LataDBDataType::INT64: f.read((LataDBInt32*) 0, size); break;
 ---
 >   case LataDBDataType::INT32: f.read((LataDBInt32*) 0, size); break;
-diff -r bin/BUILD64/patch/ThirdPart/src/LIBLAPACK/Installer ./ThirdPart/src/LIBLAPACK/Installer
-69c69
-<    option=`$TRUST_Awk '/F77Flags/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt" |sed "s/-fdefault-integer-8//g" `
----
->    option=`$TRUST_Awk '/F77Flags/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
-118c118
-< version_lapack=3.4.1 #     && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
----
-> version_lapack=3.4.1 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBMETIS/Install ./ThirdPart/src/LIBMETIS/Install
 24c24
 < sed "s/#define IDXTYPEWIDTH 32/#define IDXTYPEWIDTH 64/g" -i include/metis.h
