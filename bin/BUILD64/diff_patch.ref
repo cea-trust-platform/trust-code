@@ -13,11 +13,6 @@ diff -r bin/BUILD64/patch/Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp ./Outil
 <   case LataDBDataType::INT64: f.read((LataDBInt32*) 0, size); break;
 ---
 >   case LataDBDataType::INT32: f.read((LataDBInt32*) 0, size); break;
-diff -r bin/BUILD64/patch/ThirdPart/src/LIBMETIS/Install ./ThirdPart/src/LIBMETIS/Install
-24c24
-< sed "s/#define IDXTYPEWIDTH 32/#define IDXTYPEWIDTH 64/g" -i include/metis.h
----
-> 
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT/mfftov.f ./ThirdPart/src/LIBMFFT/mfftov.f
 19c19
 <         stop 'uuuu' 
@@ -33,11 +28,6 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT_C/jmfft.h ./ThirdPart/src/LIBMFF
 < #define INTEGER long
 ---
 > #define INTEGER int
-diff -r bin/BUILD64/patch/ThirdPart/src/LIBSKIT/Installer ./ThirdPart/src/LIBSKIT/Installer
-25,27d24
-< cp  patch/color.f ./SPARSKIT2/ORDERINGS/color.f   && echo SPARSKIT2/color.f modifie
-< 
-< 
 Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT/patch: color.f
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 62,63c62,63
