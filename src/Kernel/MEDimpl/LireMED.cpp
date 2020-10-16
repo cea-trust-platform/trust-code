@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1587,11 +1587,10 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           int size = families.size();
           for (int i = 0; i < size; i++)
             {
-              // Look only for family with one group:
               MCAuto<DataArrayInt> ids(file->getFamilyArr(-1 /* faces */, families[i], false));
               int nb_faces = (int) ids->getNbOfElems();
               std::vector<std::string> groups = file->getGroupsOnFamily(families[i]);
-              if (nb_faces > 0 && groups.size()<=1)
+              if (nb_faces > 0)
                 {
                   int family_id = file->getFamilyId(families[i]);
                   Nom nom_bord="";
@@ -1605,13 +1604,17 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                       tmp+="_";
                       nom_bord = family_name.suffix(tmp);
                     }
-                  else // boundary name = group name
+                  else
                     {
-                      if (groups.size()!=0)
-                        {
-                          assert(groups.size() == 1);
-                          nom_bord = groups[0].c_str();
-                        }
+                      // Cherche le nom du groupe
+                      if (groups.size()==1)
+                        nom_bord = groups[0].c_str();
+                      else
+                        for (unsigned long k=0; k<groups.size(); k++)
+                          {
+                            int nb_families = file->getFamiliesIdsOnGroup(groups[k]).size();
+                            if (nb_families==1) nom_bord = groups[k].c_str();
+                          }
                     }
                   if (nom_bord!="")
                     {

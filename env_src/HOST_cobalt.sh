@@ -110,5 +110,5 @@ define_soumission_batch()
    #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
-   [ "$project" = "" ] && project=`PYTHONPATH=/usr/lib64/python2.7/site-packages ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   [ "$project" = "" ] && login=`whoami` && project=`PATH=/usr/bin:$PATH ccc_myproject | grep ^$login | $TRUST_Awk '{print $2;exit}'`
 }
