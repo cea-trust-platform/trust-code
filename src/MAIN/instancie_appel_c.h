@@ -7,7 +7,6 @@ instancie_src_CoviMAC();
 instancie_src_CoviMAC_Champs();
 instancie_src_CoviMAC_Cond_Lim();
 instancie_src_CoviMAC_Operateurs();
-instancie_src_CoviMAC_Operateurs_Conv_iterateur();
 instancie_src_CoviMAC_Solveurs();
 instancie_src_CoviMAC_Sources();
 instancie_src_CoviMAC_Zones();

@@ -11,7 +11,7 @@ Lire_med family_names_from_group_names dom mesh mesh.med
 Postraiter_domaine
 {
     fichier mesh.lata
-    format lata
+    format lml
     domaine dom
 }
 
@@ -34,13 +34,11 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     dt_max 1
     seuil_statio 1e-8
-    # solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } } #
-    solveur implicite
-    {
-        solveur petsc cli { }
-    }
+    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
+    # solveur implicite { solveur petsc cli { } } #
 }
 
 
@@ -98,7 +96,7 @@ Read pb
                     transformation { methode vecteur expression 2 1/2.5*100*y*(1-y)/2+y 0 nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
-            /* aux faces
+            /* aux
             erreur_V transformation
             {
                 methode formule expression 1 v-sol
@@ -122,7 +120,7 @@ Read pb
         {
             pression_pa elem
             vitesse elem
-            vitesse faces
+            vitesse
             erreur_V
             erreur_P
         }
