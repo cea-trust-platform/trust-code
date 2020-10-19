@@ -2,18 +2,24 @@
 cd `dirname $0`
 . ./XDATA.sh
 cd XTriou
-make test_ref_trace >/dev/null
+make test_ref_trace >/dev/null 2>&1
 trad=$?
 if [ $trad -ne 0 ] 
 then
    echo " cas rate a la traduction"
    #cat tests/cas_rate
-   for cas in `cat tests/cas_rate`
+   trad=0
+   for cas in `cat tests/cas_rate | grep -v "radioactive_decay"`   # Radioactive_decay cases uses champ_fonc_fonction with several compo ...
    do
+      trad=1
       echo "-------------------------------"
       echo $cas":"
       VerifData `find . -name $cas.data` 2>&1 | grep "Exception:"
    done
+   if [ $trad -eq 0 ]
+   then
+      echo "   aucun (a part les exceptions -> radioactive_decay?)"
+   fi
 fi
 
 cd ..
@@ -21,7 +27,9 @@ cd ..
 cd test_complet
 ./fait_lance_test
 export PAR_F=0
-echo 0  | ./lance_test_modif -nomail $exec `pwd` 1>lance_out 2>&1
+# Generate list of tests:
+find $TRUST_TESTS -name '*.lml.gz' -not -name "*radioactive_decay*" -follow -exec basename {} .lml.gz \; > liste_cas_xdata  # radioactive_decay is an exception!!
+echo liste_cas_xdata | ./lance_test_modif -nomail $exec `pwd` 1>lance_out 2>&1
 lanc=$?
 name=`basename $exec`
 #cat .tests_${name}
@@ -45,7 +53,7 @@ then
 	  echo "difference "
 	  diff tests_${name}/liste ref/tests_${name}/liste
 	  echo
-	  grep -v CHANNEL_LES_VEF_RE_TAU_1110_jdd tests_${name}/liste | grep -v Execute_parallel | grep -v  OBI_diffuser_VEF_k_eps_jdd1 >liste_mod
+	  grep -v CHANNEL_LES_VEF_RE_TAU_1110_jdd tests_${name}/liste | grep -v Execute_parallel | grep -v  OBI_diffuser_VEF_k_eps_jdd1  >liste_mod
 	  
 	  if [ "`diff liste_mod ref/tests_${name}/liste`" != "" ]
 	      then
