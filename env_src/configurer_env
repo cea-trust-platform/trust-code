@@ -2272,6 +2272,8 @@ LINK_MALIB = $LINK_MALIB" > $tmp
       echo $ECHO_OPTS "1,$ s?CppFlags =?CppFlags = $GCOV_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
       echo $ECHO_OPTS "1,$ s?F77Flags =?F77Flags = $GCOV_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
       echo $ECHO_OPTS "1,$ s?ccFLAGS =?ccFLAGS = $GCOV_FLAG?g\nw"   | ed $tmp 1>/dev/null 2>&1
+      # O3 -> O0 pour cachegrind:
+      sed -i "1,$ s?-O3?-g -O0?g" $tmp
       # Attention mpiCC --showme:link depend de MPI (-link_info sur castor): a ameliorer si necessaire
       echo $ECHO_OPTS "1,$ s?SYSLIBS =?SYSLIBS = `$TRUST_CC --showme:link 2>/dev/null` -ftest-coverage -fprofile-arcs ?g\nw" | ed $tmp 1>/dev/null 2>&1
       suffixe3=$TRUST_ARCH_CC${suffixe#$TRUST_ARCH_CC}"_gcov"

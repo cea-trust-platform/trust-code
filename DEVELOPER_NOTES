@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.2_beta : Changes since version 1.8.1 :
 -------------------------------------------------------------
+19/10/20 (TRUST)  Add gui and check_gui targets into the Trust Makefile to build and check XDATA
 -------------------------------------------------------------
 Developer notes version 1.8.1 : Changes since version 1.8.0 :
 -------------------------------------------------------------
