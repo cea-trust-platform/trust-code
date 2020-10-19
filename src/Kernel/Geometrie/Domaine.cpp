@@ -558,27 +558,27 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
   // Boucle sur les mailles
   const IntTab& elem_faces = ref_cast(Zone_VF, zone_dis_base).elem_faces();
   int nb_elem = elem_faces.dimension(0);
-  int nb_face_elem = elem_faces.dimension(1);
   assert(nb_elem == (int)descIndx->getNbOfElems()-1);
   // Centre des faces TRUST:
   const DoubleTab& xv = ref_cast(Zone_VF, zone_dis_base).xv();
   //int nb_faces = xv.dimension_tot(0);
-  int nb_comp = xv.dimension_tot(1);
-  // xv1, xv2 tableaux temporaires des centres des faces de l'element elem pour comparaison
-  MCAuto<DataArrayDouble> xv1(DataArrayDouble::New());
-  xv1->alloc(nb_face_elem, nb_comp);
-  MCAuto<DataArrayDouble> xv2(DataArrayDouble::New());
-  xv2->alloc(nb_face_elem, nb_comp);
+  int nb_comp = xv.dimension_tot(1), f;
 
   // Boucle sur les elements
   MCAuto<DataArrayInt> renum_local(DataArrayInt::New());
   for (int elem=0; elem<nb_elem; elem++)
     {
       //Cerr << "elem=" << elem << finl;
-      for (int i=0; i<nb_face_elem; i++)
+      int nb_face_elem = 0;
+      for (int i = 0; i < elem_faces.dimension(1) && elem_faces(elem, i) >= 0; i++)
+        nb_face_elem++;
+      // xv1, xv2 tableaux temporaires des centres des faces de l'element elem pour comparaison
+      MCAuto<DataArrayDouble> xv1(DataArrayDouble::New());
+      xv1->alloc(nb_face_elem, nb_comp);
+      MCAuto<DataArrayDouble> xv2(DataArrayDouble::New());
+      xv2->alloc(nb_face_elem, nb_comp);
+      for (int i = 0; i < elem_faces.dimension(1) && (f = elem_faces(elem, i)) >= 0; i++)
         {
-          // Face globale TRUST
-          int face = elem_faces(elem, i);
           /*
           Cerr << "\tface=" << face;
           for (int j=0; j<nb_comp; j++) Cerr << " " << xv(face, j);
@@ -593,7 +593,7 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
           // Centre des faces TRUST et MED
           for (int j=0; j<nb_comp; j++)
             {
-              xv1->setIJ(i, j, xv(face, j));
+              xv1->setIJ(i, j, xv(f, j));
               xv2->setIJ(i, j, xv_med->getIJ(face_med, j));
             }
         }
