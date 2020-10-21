@@ -9,11 +9,11 @@ ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 718259965f234088d785cad1fbd7de03  Miniconda/Miniconda3-4.6.14-Linux-x86_64.sh
 ffa5f0eead5576fb26b7e6902f5eed09  Miniconda/Miniconda3-4.6.14-MacOSX-x86_64.sh
 7e88440c1848299f3bc443fc01e7a2eb  Miniconda/Miniforge3-Linux-aarch64.sh
-aeab635f2cfd266ff89877d8daa56435  Miniconda/local_channel/linux-64/_libgcc_mutex-0.1-main.tar.bz2
+0bb48250a064a019c9dbe8564d865efd  Miniconda/local_channel/linux-64/_libgcc_mutex-0.1-main.tar.bz2
 671f6e045d03a842f379145e7fc43c0d  Miniconda/local_channel/linux-64/blas-1.0-openblas.tar.bz2
 f52e60deb7f4c82821be9a868e889348  Miniconda/local_channel/linux-64/bzip2-1.0.8-h7b6447c_0.tar.bz2
 92d2c78935c63b58e289791eea20773c  Miniconda/local_channel/linux-64/ca-certificates-2019.11.27-0.tar.bz2
-f745ae532410217479464b2b0725e183  Miniconda/local_channel/linux-64/certifi-2019.11.28-py37_0.tar.bz2
+87a7d5e6dd0eed71c423b8d84f822c40  Miniconda/local_channel/linux-64/certifi-2019.11.28-py37_1.tar.bz2
 f6cbb4c0faa3dbac007b286047f9a758  Miniconda/local_channel/linux-64/cmake-3.14.0-h52cb24c_0.tar.bz2
 0c9d4b221c5e6bd4cd851218a89fc909  Miniconda/local_channel/linux-64/cycler-0.10.0-py37_0.tar.bz2
 cb8832c2e3e60f657c99bde6b0d8ae60  Miniconda/local_channel/linux-64/dbus-1.13.12-h746ee38_0.tar.bz2
@@ -21,6 +21,7 @@ fa5e74d741afa1964bd703dd29a9cae9  Miniconda/local_channel/linux-64/expat-2.2.6-h
 66f5bcbb99f0a6fdd0ea5e9847c3f99c  Miniconda/local_channel/linux-64/fastcache-1.1.0-py37h7b6447c_0.tar.bz2
 3a0b2d9cec0fdb464b8d34946669250f  Miniconda/local_channel/linux-64/fontconfig-2.13.0-h9420a91_0.tar.bz2
 f14a8bdc57f97e2feec097ff3f0d06aa  Miniconda/local_channel/linux-64/freetype-2.9.1-h8a8886c_1.tar.bz2
+b568f550b44c200fa29e80ae243de83a  Miniconda/local_channel/linux-64/giflib-5.1.4-h14c3975_1.tar.bz2
 dad669f1119b1062e12933cebe0302ec  Miniconda/local_channel/linux-64/glib-2.63.1-h5a9c865_0.tar.bz2
 6344038378cefeb1e4010852183a497d  Miniconda/local_channel/linux-64/gmp-6.1.2-h6c8ec71_1.tar.bz2
 3fa4ca5bcfc72e5786653a36820ccaa9  Miniconda/local_channel/linux-64/gmpy2-2.0.8-py37h10f8cd9_2.tar.bz2
@@ -31,11 +32,14 @@ a29f6435b6dc57dadf81665d6957bcde  Miniconda/local_channel/linux-64/icu-58.2-h9c2
 b4692f437bd50cb18ec43fdbb5ad9bdb  Miniconda/local_channel/linux-64/kiwisolver-1.1.0-py37he6710b0_0.tar.bz2
 5118b37e6679a5c202e5f51ed72aa797  Miniconda/local_channel/linux-64/krb5-1.16.1-h173b8e3_7.tar.bz2
 7764f31a380330dd0709e91c3f8aef26  Miniconda/local_channel/linux-64/libcurl-7.67.0-h20c2e04_0.tar.bz2
+ca6c4700ae75cd60381eb45c7a613bd2  Miniconda/local_channel/linux-64/libgd-2.2.5-hceca4fd_3.tar.bz2
 6003e09e8cef9aca91b954abfdd0f39c  Miniconda/local_channel/linux-64/libgfortran-ng-7.3.0-hdf63c60_0.tar.bz2
 231d0a853af63add98f97dbd12856bfe  Miniconda/local_channel/linux-64/libopenblas-0.3.6-h5a2b251_2.tar.bz2
 9cb85601944ca7383b1769bff74b94e8  Miniconda/local_channel/linux-64/libpng-1.6.37-hbc83047_0.tar.bz2
 2fc57e5e131fe0a8dfd6aaa6e2f87bbe  Miniconda/local_channel/linux-64/libssh2-1.8.2-h1ba5d50_0.tar.bz2
+5a84a92c0a857aa12f28e157955245be  Miniconda/local_channel/linux-64/libtiff-4.0.9-he85c1e1_2.tar.bz2
 c139036e48b27c84ab08cdd18369851a  Miniconda/local_channel/linux-64/libuuid-1.0.3-h1bed415_2.tar.bz2
+6a685d2948a67d986897c1aace1a48a5  Miniconda/local_channel/linux-64/libwebp-1.0.1-h8e7db2f_0.tar.bz2
 a30332027922e249a80c25faea2f3b34  Miniconda/local_channel/linux-64/libxcb-1.13-h1bed415_1.tar.bz2
 1e0821f510ccb82ac1897e6412312167  Miniconda/local_channel/linux-64/libxml2-2.9.9-hea5a465_1.tar.bz2
 7208da413e8780a35e8423256f96dd00  Miniconda/local_channel/linux-64/matplotlib-2.2.2-py37hb69df0a_2.tar.bz2
@@ -45,7 +49,7 @@ c3e5119d578d2418331013ba024ba0bc  Miniconda/local_channel/linux-64/mpc-1.1.0-h10
 dd8bdca858ba54245790a3cab33cec32  Miniconda/local_channel/linux-64/nomkl-3.0-0.tar.bz2
 22429569b85ad1a9a02f003fff82c4d7  Miniconda/local_channel/linux-64/numpy-1.17.4-py37hd5be1e1_0.tar.bz2
 30150f1589bb3b8f75682db52ff4b7be  Miniconda/local_channel/linux-64/numpy-base-1.17.4-py37h2f8d375_0.tar.bz2
-43fcce0c54c9f401ea7eb814c4483e46  Miniconda/local_channel/linux-64/openssl-1.1.1d-h7b6447c_3.tar.bz2
+c9ba30858153e243b46bc8ade5a6e53a  Miniconda/local_channel/linux-64/openssl-1.1.1d-h7b6447c_4.tar.bz2
 9df225e404f4ea30bed1da3986e703ad  Miniconda/local_channel/linux-64/pcre-8.43-he6710b0_0.tar.bz2
 ef55421b85fea4872a4cf8c7bb495d87  Miniconda/local_channel/linux-64/pyqt-5.6.0-py37h22d08a2_6.tar.bz2
 51b5003908dbc8c7b697fbeccb457dcb  Miniconda/local_channel/linux-64/qt-5.6.3-h8bf5577_3.tar.bz2
