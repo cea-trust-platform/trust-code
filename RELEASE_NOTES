@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
-15/10/20 (TRUST)  Bug fixed   : MED mesh with more than one group per family (to define boundaries) were not read
+19/10/20 (TRUST)  Bug fixed   : MED mesh with more than one group per family (to define boundaries) were not read
 14/10/20 (TRUST)  Performance : Use OpenBLAS library instead of Netlib Blas when OpenMP support is enabled (./configure -openmp)
 07/10/20 (TRUST)  New keyword : Radioactive_decay for an implicit source term (-lambda*C(n+1)) in concentration equation available for VEF and PolyMAC discretizations
 28/09/20 (TRUST)  Portability : Centos 6.9 and Intel version compiler older than 17.0 are not supported anymore

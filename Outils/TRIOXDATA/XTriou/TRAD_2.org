@@ -638,6 +638,8 @@ constituant milieu_base constituant -1 Constituent.
   attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
 source_constituant source_base source_constituant 0 Keyword to specify source rates, in [[C]/s], for each one of the nb constituents. [C] is the concentration unit.
   attr ch field_base ch 0 Field type.
+radioactive_decay source_base radioactive_decay 0 Radioactive decay source term of the form $-\lambda_i c_i$, where $0 \leq i \leq N$, N is the number of component of the constituent, $c_i$ and $\lambda_i$ are the concentration and the decay constant of the i-th component of the constituant.
+  attr val list val 0 n is the number of decay constants to read (int), and val1, val2... are the decay constants (double)
 fluide_incompressible milieu_base fluide_incompressible -1 This is a uncompressible fluid.
   attr beta_th field_base beta_th 1 Thermal expansion (K-1).
   attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
