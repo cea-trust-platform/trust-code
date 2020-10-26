@@ -1,3 +1,8 @@
+
+-------------------------------------------------------------------------------------------------------
+Release notes version 1.8.2 : Enhancements, modifications and corrected bugs since version 1.8.1 :
+-------------------------------------------------------------------------------------------------------
+26/10/20 (TRUST)  Feature     : Adding beta_co parameter as a field that can be post-processed ("champ_compris") in Fluide_Incompressible
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.1 : Enhancements, modifications and corrected bugs since version 1.8.0 :
 -------------------------------------------------------------------------------------------------------
