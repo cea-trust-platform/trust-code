@@ -63,10 +63,7 @@ petsc,m4-1.4.18.tar.gz,,ND,"GNU GPL",https://www.gnu.org/software/m4/,http://ftp
 petsc,scalapack-2.0.2.tgz,,GF,"BSD modified",http://www.netlib.org/scalapack/,http://www.netlib.org/scalapack/scalapack-2.0.2.tgz,
 petsc,pastix_5.2.3.tar.bz2,,GF,"CeCILL-C license",http://ftp.mcs.anl.gov/pub/petsc/externalpackages/pastix_5.2.3.tar.bz2,
 petsc,metis-5.1.0-p5.tar.gz,,SV,Apache,http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,https://bitbucket.org/petsc/pkg-metis/get/v5.1.0-p5.tar.gz,
-gnuplot,zlib-1.2.5.tar.gz,,GF,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.5/zlib-1.2.5.tar.gz/download,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
-gnuplot,gd-2.0.36RC1.tar.gz,,GF,BSD,http://www.libgd.org/,https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/lamefox-linux/gd-2.0.36RC1.tar.gz,"version non trouvable: changer de version"
-gnuplot,libpng-1.5.6.tar.gz,lib,AC,"free zlib/libpng license",http://www.libpng.org/pub/png/,http://sourceforge.net/projects/libpng/files/libpng15/older-releases/1.5.6/libpng-1.5.6.tar.gz/download,
 SALOME,medcoupling-9.5.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,https://downloads.sourceforge.net/project/trust-platform/1.8.1/extra/medcoupling-9.5.0.tar.gz,
 General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
