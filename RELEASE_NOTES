@@ -1,7 +1,9 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
-XX/XX/20 (TRUST)  New keyword : Radioactive_decay for an implicit source term (-lambda*C(n+1)) in concentration equation available for VEF and PolyMAC discretizations
+26/10/20 (TRUST)  Keyword     : Typer_Lire (or Type_Read) to read and type an object, eg: Type_Read sch schea_euler_implicite { ... }
+26/10/20 (TRUST)  Fix         : Champ_front_xyz_debit uses now the correct convention: a positive value for flow inlet   
+26/10/20 (TRUST)  New keyword : Radioactive_decay for an implicit source term (-lambda*C(n+1)) in concentration equation available for VEF and PolyMAC discretizations
 28/09/20 (TRUST)  Portability : Centos 6.9 and Intel version compiler older than 17.0 are not supported anymore
 23/09/20 (TRUST)  Bug fixed   : Crash with lata_to_med applied to a LATA file including a Lagrangian mesh
 10/09/20 (TRUST)  Bug fixed   : Non-deterministic crash (segmentation fault) during parallel Quasi-Compressible simulation
