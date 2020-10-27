@@ -60,6 +60,10 @@ $TRUST_ROOT/exec/valgrind/bin/valgrind $tool ls
 err=$?
 if [ $err != 0 ]
 then
+   echo "========================================================"
+   echo "Possible issue on Ubuntu 20 may be solved by installing:"
+   echo "sudo apt install libc6-dbg"
+   echo "========================================================"
    make clean 
 else
    rm -r -f valgrind-$version configure.help

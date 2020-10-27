@@ -3,19 +3,14 @@ gnuplot=$1
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 
-OLDPATH_=$PATH
-NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
-export PATH=$NEWPATH_
 
 # recuperation des packages
-
 for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
 do
   ln -sf $file .
 done
-gd=`ls gd-*.tar.gz 2>/dev/null`
 let i=0
-for package in $gd $gnuplot
+for package in $gnuplot
 do
    echo "***************************************"
    echo "Trying to install ${package%.tar.gz}..."
@@ -25,69 +20,13 @@ do
    tar xf ${package%.gz}
    rm -f ${package%.gz}
    cd ${package%.tar.gz}
-   if [ $i = 1 ]
-   then
-      GD=$Build/gd
-      ./configure --prefix=$GD 2>&1 | tee gd.log
-      # Echec (PNG&ZLIB non ou mal installes sur la machine)
-      if [ "`grep 'libpng is required' gd.log`" != "" ]
-      then
-         rep_gd=`pwd`
-         cd ..
-         PNG=$Build/png
-         ZLIB=$Build/zlib
-         # Installation de zlib
-         package=`ls zlib-*.tar.gz 2>/dev/null`
-         echo "***************************************"
-         echo "Trying to install ${package%.tar.gz}..."
-         echo "***************************************"
-         gunzip -c $package > ${package%.gz};tar xf ${package%.gz};rm -f ${package%.gz};cd ${package%.tar.gz}
-         ./configure --prefix=$ZLIB || exit -1
-	 $TRUST_MAKE || exit -1
-	 make install || exit -1
-         cd .. && rm -r -f ${package%.tar.gz}
-        
-         # Installation de png
-         package=`ls libpng-*.tar.gz 2>/dev/null`
-         echo "***************************************"
-         echo "Trying to install ${package%.tar.gz}..."
-         echo "***************************************"
-         gunzip -c $package > ${package%.gz};tar xf ${package%.gz};rm -f ${package%.gz};cd ${package%.tar.gz}
-         export CFLAGS="-I$ZLIB/include"
-         export LDFLAGS="-L$ZLIB/lib"
-         ./configure --prefix=$PNG || exit -1
-	 $TRUST_MAKE || exit -1
-	 make install || exit -1
-         cd .. && rm -r -f ${package%.tar.gz}
-
-         # Reconfiguration de gd avec PNG&ZLIB installes
-         cd $rep_gd
-	 package=$gd
-         echo "***************************************"
-         echo "Trying to install ${package%.tar.gz}..."
-         echo "***************************************"
-         export CFLAGS="-I$PNG/include -I$ZLIB/include"
-         export LDFLAGS="-L$ZLIB/lib"
-         ./configure --prefix=$GD --with-png=$PNG || exit -1
-      fi
-   else
-      # Hack du configure de gnuplot pour accepter gd meme si jpeg pas present
-      sed -i "1,$ s?-ljpeg??" configure || exit -1
-      # Probleme sur kata en crontab, lib64 pas trouve
-      XLIB="" && [ -d /usr/X11R6/lib64 ] && XLIB="--x-lib=/usr/X11R6/lib64" 
-      # --without-tutorial car plantage sur is209003 pour un probleme Latex 
-      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --without-lua --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
-   fi
+   ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --without-lua --without-tutorial --with-readline=builtin --with-gd=$TRUST_ROOT/exec/python/lib 2>&1 || exit -1
    # 17-05-2019: if you update gnuplot to a new version using cmake, use cmake from conda as is the case for gmsh
    $TRUST_MAKE || exit -1
    make install || echo error on installation, but we hope that is ok
-   # Test gnuplot
-   if [ $i = 2 ] 
-   then
-      source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 # LD_LIBRARY_PATH
-      echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
-      [ $? -ne 0 ] && rm -r -f $TRUST_ROOT/exec/gnuplot && exit -1
-   fi
+   source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 # LD_LIBRARY_PATH
+   echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
+   [ $? -ne 0 ] && exit -1
    cd ..
    rm -r -f ${package%.tar.gz}
 done
@@ -101,5 +40,4 @@ done
 # Pour avoir la meme palette que gnuplot 4:
 echo "set colors classic # Meme palette que gnuplot 4" >> $TRUST_ROOT/exec/gnuplot/share/gnuplot/*/gnuplotrc
 
-export PATH=$OLDPATH_
 exit 0
