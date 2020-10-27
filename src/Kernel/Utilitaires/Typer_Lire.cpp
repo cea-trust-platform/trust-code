@@ -14,17 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Lire.cpp
+// File:        Typer_Lire.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Lire.h>
+#include <Typer_Lire.h>
 #include <Synonyme_info.h>
 #include <Interprete_bloc.h>
 
-Implemente_instanciable(Lire,"Lire|Read",Interprete);
+Implemente_instanciable(Typer_Lire,"Typer_Lire|Type_Read",Lire);
 
 // Description:
 //  appel a la methode printOn de la classe Interprete
@@ -40,9 +40,9 @@ Implemente_instanciable(Lire,"Lire|Read",Interprete);
 // Exception:
 // Effets de bord:
 // Postcondition:
-Sortie& Lire::printOn(Sortie& os) const
+Sortie& Typer_Lire::printOn(Sortie& os) const
 {
-  return Interprete::printOn(os);
+  return Lire::printOn(os);
 }
 
 // Description:
@@ -59,17 +59,17 @@ Sortie& Lire::printOn(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Lire::readOn(Entree& is)
+Entree& Typer_Lire::readOn(Entree& is)
 {
-  return Interprete::readOn(is);
+  return Lire::readOn(is);
 }
 
 // Description:
 // Read an object.
-Entree& Lire::interpreter(Entree& is)
+Entree& Typer_Lire::interpreter(Entree& is)
 {
   // Example in a data file:
-  // Lire name { ... }
+  // Typer_Lire name type { ... }
   Nom name;
   is >> name; // The object name is read from the input stream is
 
@@ -80,9 +80,15 @@ Entree& Lire::interpreter(Entree& is)
     }
   else //pas le nom d'un objet existant -> on lit le type, on cree l'objet, puis on le lit
     {
+      // Lire name type { ... }
       DerObjU ref;
       Nom type;
       is >> type;
+      if (type=="{")
+        {
+          Objet_U& object=objet(name); // Pour faire planter avec le message d'erreur habituel
+          return is >> object;
+        }
       ref.typer(type);
       //on ajoute l'objet a l'interprete courant...
       Objet_U& obj = Interprete_bloc::interprete_courant().ajouter(name, ref);

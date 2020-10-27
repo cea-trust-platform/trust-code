@@ -84,7 +84,7 @@ Read pb
 			Lower  paroi_fixe
 			Inlet  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
 			Outlet  frontiere_ouverte_vitesse_imposee champ_front_xyz_debit { 
-				flow_rate champ_front_uniforme 1 -2.5
+				flow_rate champ_front_uniforme 1 2.5
 				velocity_profil champ_front_fonc_xyz 2 0*(y<0.5)-0.25*(y_GE_0.5)*(y_LT_1)-0.75*(y_GE_1)*(y_LT_1.5)-0.5*(y_GE_1.5)*(y_LT_2) 2
 			}
 		}
