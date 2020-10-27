@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,7 +84,7 @@ int Champ_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
   const Champ_Inc_base& self = ref_cast(Champ_Inc_base, *this);
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,self.zone_dis_base());
 
-  assert(n == zone.nb_faces() + dimension * zone.nb_elem());
+  assert(n == zone.nb_faces() + nb_compo_ * zone.nb_elem());
 
   // Probleme: nb_comp vaut dimension mais on ne veut qu'une dimension !!!
   // HACK :

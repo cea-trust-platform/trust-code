@@ -40,7 +40,7 @@
 #include <Matrice_Morse.h>
 #include <Champ_Face_CoviMAC.h>
 #include <Debog.h>
-
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Zone_Cl_CoviMAC,"Zone_Cl_CoviMAC",Zone_Cl_dis_base);
 //// printOn
@@ -102,7 +102,8 @@ void Zone_Cl_CoviMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
 
   Champ_Inc_base& ch_base=ch.valeur();
-  DoubleTab& ch_tab = ch_base.valeurs(temps);
+  DoubleTab_parts ch_tab_parts(ch_base.valeurs(temps));
+  DoubleTab& ch_tab = ch_tab_parts[0];
   if (sub_type(Champ_Inc_P0_base,ch_base))
     ;
   else if(ch_base.nature_du_champ()==scalaire)
