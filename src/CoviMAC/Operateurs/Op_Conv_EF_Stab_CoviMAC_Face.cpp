@@ -65,11 +65,14 @@ void Op_Conv_EF_Stab_CoviMAC_Face::completer()
   Op_Conv_CoviMAC_base::completer();
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  const Equation_base& eq = equation();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, eq.inconnue().valeur());
   ch.init_cl(), zone.init_equiv();
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_CoviMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
+  porosite_f.ref(zone.porosite_face());
+  porosite_e.ref(zone.porosite_elem());
 }
 
 void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner(Matrice_Morse& mat) const
@@ -111,7 +114,7 @@ inline DoubleTab& Op_Conv_EF_Stab_CoviMAC_Face::ajouter(const DoubleTab& inco, D
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& vit = vitesse_->valeurs(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
-  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   int i, j, k, e, eb, f, fb, fc, fd, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
   double mult;
 
@@ -163,7 +166,7 @@ inline void Op_Conv_EF_Stab_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inc
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& vit = vitesse_->valeurs(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
-  const DoubleVect& fs = zone.face_surfaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   int i, j, k, e, eb, f, fb, fc, fd, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
   double mult;
 
@@ -206,4 +209,14 @@ void Op_Conv_EF_Stab_CoviMAC_Face::contribuer_au_second_membre(DoubleTab& resu) 
 {
   abort();
 
+}
+
+void Op_Conv_EF_Stab_CoviMAC_Face::set_incompressible(const int flag)
+{
+  if (flag == 0)
+    {
+      Cerr << "Compressible form of operator \"" << que_suis_je() << "\" :" << finl;
+      Cerr << "Discretization of \u2207(inco \u2297 v) - v \u2207.(inco)" << finl;
+    }
+  incompressible_ = flag;
 }

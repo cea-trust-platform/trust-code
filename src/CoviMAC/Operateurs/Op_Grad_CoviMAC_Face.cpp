@@ -74,9 +74,11 @@ void Op_Grad_CoviMAC_Face::completer()
   Operateur_Grad_base::completer();
   /* dimensionnement de fgrad_c (gradient aux faces internes) */
   const Zone_CoviMAC& zone = ref_zone.valeur();
+  const Equation_base& eq = equation();
+
   zone.init_feb();
   fgrad_d.resize(zone.nb_faces_tot() + 1), fgrad_j.resize(zone.feb_d(zone.nb_faces_tot()));
-  fgrad_c.resize(zone.feb_d(zone.nb_faces_tot()), equation().inconnue().valeurs().line_size());
+  fgrad_c.resize(zone.feb_d(zone.nb_faces_tot()), eq.inconnue().valeurs().line_size());
   grad_a_jour = 0;
 
   /* besoin d'un joint de 1 */

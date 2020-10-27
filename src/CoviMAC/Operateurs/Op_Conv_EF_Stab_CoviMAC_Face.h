@@ -46,9 +46,13 @@ public :
   void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
   void dimensionner(Matrice_Morse& mat) const;
+  virtual void set_incompressible(const int flag);
 
 protected :
   double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  DoubleVect porosite_f;
+  DoubleVect porosite_e;
+
 };
 
 #endif /* Op_Conv_EF_Stab_CoviMAC_Face_included */

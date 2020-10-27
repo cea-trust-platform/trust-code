@@ -72,8 +72,9 @@ void Masse_CoviMAC_Face::completer()
   const IntTab& f_e = zone.face_voisins();
   const DoubleTab& nf = zone.face_normales(), &xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& pe = zone.porosite_elem();
+  const Equation_base& eq = equation();
 
-  int i, e, f, n, N = equation().inconnue().valeurs().line_size(), ne_tot = zone.nb_elem_tot(), D = dimension;
+  int i, e, f, n, N = eq.inconnue().valeurs().line_size(), ne_tot = zone.nb_elem_tot(), D = dimension;
   W_e.resize(0, N, D, D), zone.zone().creer_tableau_elements(W_e);
   mu_f.resize(0, N, 2), zone.creer_tableau_faces(mu_f);
   /* initialisation : W_e = Id et mu_f correspondant */
