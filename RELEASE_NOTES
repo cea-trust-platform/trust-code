@@ -1,11 +1,7 @@
-
--------------------------------------------------------------------------------------------------------
-Release notes version 1.8.2 : Enhancements, modifications and corrected bugs since version 1.8.1 :
--------------------------------------------------------------------------------------------------------
-26/10/20 (TRUST)  Feature     : Adding beta_co parameter as a field that can be post-processed ("champ_compris") in Fluide_Incompressible
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+27/10/20 (TRUST)  Feature     : Adding beta_co parameter as a field that can be post-processed ("champ_compris") in Fluide_Incompressible
 19/10/20 (TRUST)  Bug fixed   : MED mesh with more than one group per family (to define boundaries) were not read
 14/10/20 (TRUST)  Performance : Use OpenBLAS library instead of Netlib Blas when OpenMP support is enabled (./configure -openmp)
 07/10/20 (TRUST)  New keyword : Radioactive_decay for an implicit source term (-lambda*C(n+1)) in concentration equation available for VEF and PolyMAC discretizations
