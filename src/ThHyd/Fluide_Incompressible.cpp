@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -157,6 +157,11 @@ void Fluide_Incompressible::discretiser(const Probleme_base& pb, const  Discreti
     {
       dis.nommer_completer_champ_physique(zone_dis,"viscosite_cinematique","m2/s",nu.valeur(),pb);
       champs_compris_.ajoute_champ(nu.valeur());
+    }
+  if (beta_co.non_nul())
+    {
+      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite_solutale",".",beta_co.valeur(),pb);
+      champs_compris_.ajoute_champ(beta_co.valeur());
     }
   Milieu_base::discretiser(pb,dis);
 
