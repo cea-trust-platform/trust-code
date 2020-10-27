@@ -88,6 +88,7 @@ public:
   virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const=0;
   virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
+  virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual Evaluateur_CoviMAC& evaluateur() =0;
   virtual const Evaluateur_CoviMAC& evaluateur() const=0;
   inline const Zone_CoviMAC& zone() const;
@@ -124,6 +125,7 @@ public:
   inline DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   inline void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  inline void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   inline Evaluateur_CoviMAC& evaluateur();
   inline const Evaluateur_CoviMAC& evaluateur() const;
   inline const Zone_CoviMAC& zone() const;
@@ -227,6 +229,12 @@ inline void Iterateur_CoviMAC::ajouter_contribution(const DoubleTab& inco, Matri
 {
   valeur().ajouter_contribution(inco, matrice);
 }
+
+inline void Iterateur_CoviMAC::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  valeur().ajouter_contribution_vitesse(inco, matrice);
+}
+
 
 inline void Iterateur_CoviMAC::associer(const Zone_CoviMAC& zone_vdf,
                                         const Zone_Cl_CoviMAC& zone_cl_vdf, const Operateur_base& op)

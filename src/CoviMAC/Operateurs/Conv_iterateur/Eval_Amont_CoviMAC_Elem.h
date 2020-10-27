@@ -129,6 +129,20 @@ public:
   inline void coeffs_face(int, int,const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
 
+  // contribution de la derivee en vitesse d'une equation scalaire
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Echange_global_impose&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_paroi&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Symetrie&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const NSCBC&, int ) const;
+  inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const;
+
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite pour les grandeurs scalaires.
 
@@ -363,6 +377,34 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int face, int, const Dirichlet_
     }
 }
 
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                                const Dirichlet_entree_fluide& la_cl,
+                                                                int num1) const
+{
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  double psc = surface[face]*porosite[face];
+  double flux;
+
+  double val_imp = la_cl.val_imp(face-num1);
+
+  if (n0 != -1)
+    {
+      if (dt_vitesse[face] > 0)
+        flux = psc*inco[n0];
+      else
+        flux = psc*val_imp;
+    }
+  else   // n1 != -1
+    {
+      if (dt_vitesse[face]>0)
+        flux = psc*val_imp;
+      else
+        flux = psc*inco[n1];
+    }
+  return flux;
+}
+
 
 //// secmem_face avec Dirichlet_entree_fluide
 //
@@ -409,6 +451,12 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int, int,const Dirichlet_paroi_
   ;
 }
 
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                                const Dirichlet_paroi_defilante&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Dirichlet_paroi_defilante
 //
 
@@ -433,6 +481,12 @@ inline double Eval_Amont_CoviMAC_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int ,int,const Dirichlet_paroi_fixe&, double&, double& ) const
 {
   ;
+}
+
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                                const Dirichlet_paroi_fixe&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Dirichlet_paroi_fixe
@@ -461,6 +515,12 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int, int, int, int, const Echan
   ;
 }
 
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int,
+                                                                const Echange_externe_impose&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Echange_externe_impose
 //
 
@@ -484,6 +544,12 @@ inline double Eval_Amont_CoviMAC_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int,int, const Echange_global_impose&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                                const Echange_global_impose&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Echange_global_impose
@@ -512,6 +578,12 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int , int,const Neumann_paroi&,
   ;
 }
 
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                                const Neumann_paroi&, int ) const
+{
+  return 0;
+}
+
 //// secmem_face avec Neumann_paroi
 //
 
@@ -535,6 +607,12 @@ inline double Eval_Amont_CoviMAC_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int, int,const Neumann_paroi_adiabatique&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                                const Neumann_paroi_adiabatique&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Neumann_paroi_adiabatique
@@ -613,6 +691,33 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int face, int,const Neumann_sor
     }
 }
 
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                                const Neumann_sortie_libre& la_cl, int num1) const
+{
+  double flux;
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  double psc = surface(face)*porosite(face);
+
+  double val_ext = la_cl.val_ext(face-num1);
+
+  if (n0 != -1)
+    {
+      if (dt_vitesse[face] > 0)
+        flux = psc*inco[n0];
+      else
+        flux = psc*val_ext;
+    }
+  else   // n1 != -1
+    {
+      if (dt_vitesse[face] > 0)
+        flux = psc*val_ext;
+      else
+        flux = psc*inco[n1];
+    }
+  return flux;
+}
+
 //// secmem_face avec Neumann_sortie_libre
 //
 
@@ -654,6 +759,12 @@ inline double Eval_Amont_CoviMAC_Elem::flux_face(const DoubleTab&, int ,
 inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int,int, const Symetrie&, double&, double&) const
 {
   ;
+}
+
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab&, int ,
+                                                                const Symetrie&, int ) const
+{
+  return 0;
 }
 
 //// secmem_face avec Symetrie
@@ -702,6 +813,17 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int face, int,const Periodique&
     }
 }
 
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                                const Periodique& la_cl, int  ) const
+{
+  double psc = surface(face)*porosite(face);
+  double flux;
+  if (dt_vitesse[face] > 0)
+    flux = psc*inco(elem_(face,0));
+  else
+    flux = psc*inco(elem_(face,1));
+  return flux;
+}
 
 //// secmem_face avec Periodique
 //
@@ -736,6 +858,16 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_face(int face, int,const NSCBC& la_c
   Cerr<<"Eval_Amont_CoviMAC_Elem::coeffs_face n'est pas encore codee"<<finl;
   Cerr<<"pour la condition NSCBC"<<finl;
   Process::exit();
+}
+
+inline double Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
+                                                                const NSCBC& la_cl, int num1) const
+{
+  double flux=0.;
+  Cerr<<"Eval_Amont_CoviMAC_Elem::coeffs_face_bloc_vitesse n'est pas encore codee"<<finl;
+  Cerr<<"pour la condition NSCBC"<<finl;
+  Process::exit();
+  return -flux;
 }
 
 //// secmem_face avec NSCBC
@@ -786,6 +918,17 @@ inline void Eval_Amont_CoviMAC_Elem::coeffs_faces_interne(int face,double& aii, 
       ajj = -psc;
       aii = 0;
     }
+}
+
+inline double Eval_Amont_CoviMAC_Elem::coeffs_faces_interne_bloc_vitesse(const DoubleTab& inco, int face) const
+{
+  double psc = surface(face)*porosite(face);
+  double flux;
+  if (dt_vitesse[face] > 0)
+    flux = psc*inco(elem_(face,0));
+  else
+    flux = psc*inco(elem_(face,1));
+  return flux;
 }
 
 //// secmem_faces_interne

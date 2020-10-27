@@ -27,6 +27,8 @@
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Champ_Inc.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
 void Op_CoviMAC_Elem::dimensionner(const Zone_CoviMAC& la_zone,
                                    const Zone_Cl_CoviMAC& la_zone_cl,
@@ -181,6 +183,25 @@ void Op_CoviMAC_Elem::dimensionner(const Zone_CoviMAC& la_zone,
         }
     }
   // Cerr << "tab2 = " << tab2 << finl;
+}
+
+void Op_CoviMAC_Elem::dimensionner_bloc_vitesse(const Zone_CoviMAC& la_zone,
+                                                const Zone_Cl_CoviMAC& la_zone_cl,
+                                                Matrice_Morse& matrice) const
+{
+
+  const int nb_faces_tot = la_zone.nb_faces_tot(), nb_elem_tot = la_zone.nb_elem_tot();
+  int e;
+  IntTab stencyl(0,2);
+  stencyl.set_smart_resize(1);
+  const IntTab& f_e = la_zone.face_voisins();
+
+  for (int f = 0; f < la_zone.nb_faces(); f++) for (int i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+      stencyl.append_line(e, f);
+
+  tableau_trier_retirer_doublons(stencyl);
+  Matrix_tools::allocate_morse_matrix(nb_elem_tot, nb_faces_tot + nb_elem_tot * Objet_U::dimension, stencyl, matrice);
+
 }
 
 void Op_CoviMAC_Elem:: modifier_pour_Cl(const Zone_CoviMAC& la_zone,

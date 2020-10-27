@@ -65,6 +65,7 @@ public:
   const Champ_base& vitesse() const;
   Champ_base& vitesse();
   inline void dimensionner(Matrice_Morse& ) const;
+  inline void dimensionner_bloc_vitesse(Matrice_Morse& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
 
 protected:
@@ -82,6 +83,11 @@ inline Op_Conv_Amont_CoviMAC_Elem::Op_Conv_Amont_CoviMAC_Elem(const Iterateur_Co
 inline  void Op_Conv_Amont_CoviMAC_Elem::dimensionner(Matrice_Morse& matrice) const
 {
   Op_CoviMAC_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
+}
+
+inline  void Op_Conv_Amont_CoviMAC_Elem::dimensionner_bloc_vitesse(Matrice_Morse& matrice) const
+{
+  Op_CoviMAC_Elem::dimensionner_bloc_vitesse(iter.zone(), iter.zone_Cl(), matrice);
 }
 
 inline void Op_Conv_Amont_CoviMAC_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
