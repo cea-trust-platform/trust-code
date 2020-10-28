@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,13 +88,13 @@ public :
 
 protected :
 #ifdef PETSCKSP_H
-  int Create_objects(Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc Matrice et SecondMembre
-  void Create_MatricePetsc(Mat&, int, Matrice_Morse&);
+  void construit_renum(const DoubleVect&);
+  void check_aij(const Matrice_Morse&);
+  int Create_objects(const Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc Matrice et SecondMembre
+  void Create_MatricePetsc(Mat&, int, const Matrice_Morse&);
   bool enable_ksp_view( void );
   int add_option(const Nom& option, const Nom& value, int cli = 0);
-  void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M); // Temporaire
-  void MorseSymHybToMorse(const Matrice_Morse_Sym& , Matrice_Morse& ,const DoubleVect&,DoubleVect&); // Temporaire
-  void MorseHybToMorse(const Matrice_Morse& , Matrice_Morse& ,const DoubleVect&,DoubleVect&);
+  void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
   void SaveObjectsToFile();
   void RestoreMatrixFromFile();
   int compute_nb_rows_petsc(int);

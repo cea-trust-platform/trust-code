@@ -30,17 +30,15 @@ do
       	echo "Creation des donnees pour $nb_proc processeurs"
       	cd $WHERE/DEC
 
-	# Patition with Metis only (-bigmem?)
+	# Partition with Metis only (-bigmem?)
 	cat ../TpltPar.data > TpltPar.data
 	trust -partition TpltPar.data $nb_proc 1>/dev/null 2>&1
-	mv -f DEC_TpltPar.data TpltDec.data 
-        trust dec$nb_proc 1>dec.out 2>dec.err
 
 	cd ..
 	mkdir -p PAR$nb_proc
 	# On deplace les donnees dans le repertoire de calcul
-	cat DEC/PAR_TpltPar.data > PAR$nb_proc/bench1-$nb_proc.data
-	mv DEC/*.Zones PAR$nb_proc/.
+	mv -f DEC/PAR_TpltPar.data PAR$nb_proc/bench1-$nb_proc.data
+	mv -f DEC/*.Zones          PAR$nb_proc/.
    fi
 done
 
