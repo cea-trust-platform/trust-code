@@ -36,6 +36,7 @@
 #include <SFichier.h>
 #include <SFichierBin.h>
 #include <System.h>
+#include <Typer_Lire.h>
 #include <liste.h>
 #include <ptrParam.h>
 #include <vect_impl.h>
@@ -75,7 +76,8 @@ Read_unsupported_ASCII_file_from_ICEM inst31;verifie_pere(inst31);
 SFichier inst32;verifie_pere(inst32);
 SFichierBin inst33;verifie_pere(inst33);
 System inst34;verifie_pere(inst34);
-liste inst35;verifie_pere(inst35);
-ptrParam inst36;verifie_pere(inst36);
-vect_impl inst37;verifie_pere(inst37);
+Typer_Lire inst35;verifie_pere(inst35);
+liste inst36;verifie_pere(inst36);
+ptrParam inst37;verifie_pere(inst37);
+vect_impl inst38;verifie_pere(inst38);
 }

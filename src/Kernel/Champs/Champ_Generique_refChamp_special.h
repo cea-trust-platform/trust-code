@@ -14,79 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Lire.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/10
+// File:        Champ_Generique_refChamp_special.h
+// Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Lire.h>
-#include <Synonyme_info.h>
-#include <Interprete_bloc.h>
+#ifndef Champ_Generique_refChamp_special_included
+#define Champ_Generique_refChamp_special_included
 
-Implemente_instanciable(Lire,"Lire|Read",Interprete);
+#include <Champ_Generique_refChamp.h>
 
-// Description:
-//  appel a la methode printOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Sortie& Lire::printOn(Sortie& os) const
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Champ_Generique_refChamp_special
+//
+// <Description of class Champ_Generique_refChamp_special>
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Champ_Generique_refChamp_special : public Champ_Generique_refChamp
 {
-  return Interprete::printOn(os);
-}
 
-// Description:
-//  appel a la methode readOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Lire::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+  Declare_instanciable( Champ_Generique_refChamp_special ) ;
 
-// Description:
-// Read an object.
-Entree& Lire::interpreter(Entree& is)
-{
-  // Example in a data file:
-  // Lire name { ... }
-  Nom name;
-  is >> name; // The object name is read from the input stream is
+public :
+  void set_param(Param& param);
+  const DoubleTab& get_ref_values() const;
 
-  if (objet_existant(name)) //nom d'un objet existant -> on le lit
-    {
-      Objet_U& object=objet(name);
-      return is >> object; // Then "{ ... }" is read by the object readOn
-    }
-  else //pas le nom d'un objet existant -> on lit le type, on cree l'objet, puis on le lit
-    {
-      DerObjU ref;
-      Nom type;
-      is >> type;
-      ref.typer(type);
-      //on ajoute l'objet a l'interprete courant...
-      Objet_U& obj = Interprete_bloc::interprete_courant().ajouter(name, ref);
-      return is >> obj;           //et on lit
-    }
-}
+  const Champ_base& get_champ(Champ& espace_stockage) const;
+protected :
+  int case_;
+};
 
+#endif /* Champ_Generique_refChamp_special_included */

@@ -1,15 +1,18 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+27/10/20 (TRUST)  New keyword : Typer_Lire (or Type_Read) to read and type an object, eg: Type_Read sch schea_euler_implicite { ... }
+27/10/20 (TRUST)  Bug Fixed   : Champ_front_xyz_debit uses now the correct convention: a positive value for flow inlet
+27/10/20 (TRUST)  Feature     : Adding beta_co parameter as a field that can be post-processed ("champ_compris") in Fluide_Incompressible
 19/10/20 (TRUST)  Bug fixed   : MED mesh with more than one group per family (to define boundaries) were not read
 14/10/20 (TRUST)  Performance : Use OpenBLAS library instead of Netlib Blas when OpenMP support is enabled (./configure -openmp)
-07/10/20 (TRUST)  New keyword : Radioactive_decay for an implicit source term (-lambda*C(n+1)) in concentration equation available for VEF and PolyMAC discretizations
+26/10/20 (TRUST)  New keyword : Radioactive_decay for an implicit source term (-lambda*C(n+1)) in concentration equation available for VEF and PolyMAC discretizations
 28/09/20 (TRUST)  Portability : Centos 6.9 and Intel version compiler older than 17.0 are not supported anymore
 23/09/20 (TRUST)  Bug fixed   : Crash with lata_to_med applied to a LATA file including a Lagrangian mesh
 10/09/20 (TRUST)  Bug fixed   : Non-deterministic crash (segmentation fault) during parallel Quasi-Compressible simulation
 04/09/20 (TRUST)  Change      : Reorganize _comm.TU file and add missing time counters into Quasi-Compressible model
 03/09/20 (TRUST)  Bug fixed   : Raffiner_isotrope_parallele produced an error on VDF meshes
-02/09/20 (TRUST)  Bug fixed   : Advanced postprocessing of source terms (cells located) was wrong in VDF/PolyMAC with: Definition_champs { FieldName Operateur_Eqn { numero_source 0 sources { ... } } } 
+02/09/20 (TRUST)  Bug fixed   : Advanced postprocessing of source terms (cells located) was wrong in VDF/PolyMAC with: Definition_champs { FieldName Operateur_Eqn { numero_source 0 sources { ... } } }
 18/08/20 (TRUST)  Portability : TRUST int64 version enables now MEDCoupling and MED import/export
 18/08/20 (TRUST)  Tools       : Salome 9.5.0 third party supported (MED 4.1.0, MEDCoupling 9.5.0)
 29/07/20 (TRUST)  Portability : Fedora32 OS and GNU 10.x supported

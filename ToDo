@@ -19,6 +19,7 @@ Version	Qui				Tache
 1.8.2   trust@cea.fr            LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
 1.8.2   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.8.2   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+1.8.2   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
 
 
 
@@ -41,3 +42,4 @@ Version	Qui				Tache
 1.8.x   trust@cea.fr            LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
 1.8.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.8.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+1.8.x   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
