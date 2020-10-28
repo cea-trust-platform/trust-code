@@ -40,6 +40,9 @@ change_droits()
   # On donne les droits de lecture a toute le monde sur TRUST
   chmod -R u+w,gou+r . 1>/dev/null 2>&1
   find . -type d | xargs chmod +x  1>/dev/null 2>&1
+  # changer les droits sur les dossiers car c'est la qu'il y a probleme
+  #find . -type d -exec chmod 755 {} \;
+  find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/ijk*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/scorpio*" -not -path "./*/sides*" -exec chmod 755 {} \;
 }
 
 #########
@@ -475,9 +478,12 @@ do
       # MPI est il compile ?
       ######################
       MPI_NATIF=0
+      LatestOpenMPI=0
       if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ]
       then
          $Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPI=MPICH "$NF}'
+         OpenMPIversion=`$Mpirun --version 2>&1 | awk '/Open MPI/ {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
+         [ `echo $OpenMPIversion | awk -F. '{print $1>=3}'` = 1 ] && LatestOpenMPI=1
       elif [ "$MPI_ROOT" != "" ]
       then
          MPI_VERSION=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$NF} /Version:/ {print "MPICH "$NF} /Intel\(R\) MPI/ {print "Intel MPI "$8}'`
@@ -697,7 +703,7 @@ do
 	 then
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
-            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ]
+            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ] || [ $LatestOpenMPI = 1 ]
             then
 	      OK="NOT"
             else
@@ -754,6 +760,9 @@ do
 	 echo $ECHO_OPTS "Test of the baltik environment at "`date '+%H:%M:%S'`
 	 echo $ECHO_OPTS "BALTIK=\c"
          if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST_BUILD"\."`" != "" ]
+         then
+	    echo "NOT"
+         elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST_BUILD"\."`" != "" ]
          then
 	    echo "NOT"
          else
@@ -828,13 +837,13 @@ do
 	 # Ajout de FTD_instab2D car ce cas a pose des blocages sur OpenMPI 1.3.3 sur is212958 => n'existe pas dans TRUST mais TrioCFD
 	 # Ajout de Canal_perio_VDF_3D_Keps pour discretisation VDF
 	 #echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
-	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
+	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche #&& echo Canal_perio_VDF_3D_Keps >> liste_cherche # dans TrioCFD
 	 # Autres ajouts
 	 echo cpu_3D >> liste_cherche #&& echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
 	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 
 	 # Test outils Gmsh et VisIt
 	 echo Kernel_Gmsh2Trio_U >> liste_cherche 
-	 [ "${HOST:0:6}" != cobalt ] && echo Extrait_plan >> liste_cherche # Test provisoire : en attente d une solution via SLURM
+	 [ "${HOST:0:6}" != cobalt ] && [ "${HOST:0:8}" != is233136 ] && echo Extrait_plan >> liste_cherche # Test provisoire : en attente d une solution via SLURM
 	 # Test MED_COUPLING_PYTHON
          echo Lata_conversion_scripts_jdd1 >> liste_cherche
          echo MED_major_jdd1 >> liste_cherche
@@ -954,6 +963,7 @@ do
 	 ###########################################
 	 test_run_fiche=1
          [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && test_run_fiche=0
+         [ "${HOST:0:8}" = is233136 ] && test_run_fiche=0
 	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
 	 then
             echo "--------------------------------------------------------"

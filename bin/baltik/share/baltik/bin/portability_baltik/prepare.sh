@@ -126,6 +126,14 @@ echo "./configure" >> configure.sh
 
 #echo "./configure && make $MODE" >> make.sh # ajout du configure, necessaire quand il a un pre_configure (ex -std=c++0x)
 echo "make $MODE" >> make.sh
+if [ "$project" = triocfd ]
+then
+  echo "cd ../../" >> make.sh
+  echo "chmod -R u+w,gou+r triocfd 1>/dev/null 2>&1" >> make.sh
+  echo "find triocfd -type d | xargs chmod +x  1>/dev/null 2>&1" >> make.sh
+  echo "find triocfd -type d -exec chmod 755 {} \;" >> make.sh
+  echo "cd triocfd/triocfd" >> make.sh
+fi
 if [ "$cases" != ""  ]
 then
     echo $cases | awk -F, '{for (i=1;i<=NF;i++) {print $i}}' > liste_pb.all
