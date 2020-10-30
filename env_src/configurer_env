@@ -1007,7 +1007,7 @@ if [ "$compiler_found" = 0 ] ; then
 fi
 
 # Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.6.0.26 sur Fedora30 pour libstdc++.so.6.0.25), on vire:
-stdcpp_conda=`ls $TRUST_ROOT/exec/python/lib/libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
+stdcpp_conda=`cd $TRUST_ROOT/exec/python/lib;ls libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
 if [ "$stdcpp_conda" != "" ]
 then
     root_gnu=`dirname $TRUST_F77_BASE` && root_gnu=`dirname $root_gnu`
