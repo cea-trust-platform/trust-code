@@ -97,9 +97,9 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
   s>>localisation;
   s>>un_temps;
   traite_nom_fichier_med(nom_fic2);
-#ifdef MED_
-  test_version(nom_fic2);
-#endif
+//#ifdef MED_
+//  test_version(nom_fic2);
+//#endif
   // MEDCoupling:
   if (use_medcoupling_)
     Cerr << "Using MEDCoupling API. To switch to the MEDFile API, use Champ_Fonc_MEDfile keyword." << finl;
