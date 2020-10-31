@@ -27,9 +27,13 @@
 #include <Op_Diff_VEF_Face_Stab_Var.h>
 #include <Op_Diff_VEF_Face_Var.h>
 #include <Op_Diff_VEF_Face_Var_Q1.h>
+#include <Op_Dift_Stab_VEF_Face.h>
+#include <Op_Dift_Stab_VEF_Face_Var.h>
 #include <Op_Dift_VEF_Face.h>
 #include <Op_Dift_VEF_Face_Q1.h>
 #include <Op_Dift_VEF_Face_Var.h>
+#include <Op_Dift_standard_VEF_Face.h>
+#include <Op_Dift_standard_VEF_Face_Var.h>
 #include <Op_Div_VEF_Elem.h>
 #include <Op_Grad_P1NC_to_P0.h>
 #include <Op_Grad_VEF_Face.h>
@@ -59,10 +63,14 @@ Op_Diff_VEF_Face_Stab inst21;verifie_pere(inst21);
 Op_Diff_VEF_Face_Stab_Var inst22;verifie_pere(inst22);
 Op_Diff_VEF_Face_Var inst23;verifie_pere(inst23);
 Op_Diff_VEF_Face_Var_Q1 inst24;verifie_pere(inst24);
-Op_Dift_VEF_Face inst25;verifie_pere(inst25);
-Op_Dift_VEF_Face_Q1 inst26;verifie_pere(inst26);
-Op_Dift_VEF_Face_Var inst27;verifie_pere(inst27);
-Op_Div_VEF_Elem inst28;verifie_pere(inst28);
-Op_Grad_P1NC_to_P0 inst29;verifie_pere(inst29);
-Op_Grad_VEF_Face inst30;verifie_pere(inst30);
+Op_Dift_Stab_VEF_Face inst25;verifie_pere(inst25);
+Op_Dift_Stab_VEF_Face_Var inst26;verifie_pere(inst26);
+Op_Dift_VEF_Face inst27;verifie_pere(inst27);
+Op_Dift_VEF_Face_Q1 inst28;verifie_pere(inst28);
+Op_Dift_VEF_Face_Var inst29;verifie_pere(inst29);
+Op_Dift_standard_VEF_Face inst30;verifie_pere(inst30);
+Op_Dift_standard_VEF_Face_Var inst31;verifie_pere(inst31);
+Op_Div_VEF_Elem inst32;verifie_pere(inst32);
+Op_Grad_P1NC_to_P0 inst33;verifie_pere(inst33);
+Op_Grad_VEF_Face inst34;verifie_pere(inst34);
 }
