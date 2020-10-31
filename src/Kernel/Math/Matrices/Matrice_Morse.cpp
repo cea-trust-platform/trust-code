@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1119,24 +1119,34 @@ Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
   int nrow=A.nb_lignes();
   int ncol=A.nb_colonnes();
   int job=1;
-  int ierr, nzmax=A.nb_coeff()+B.nb_coeff();
+  int ierr;
   IntVect iw(ncol);
-  Matrice_Morse C(nrow, ncol, nzmax);
-#ifndef CRAY
+  Matrice_Morse C;
+  // PL: avant de dimensionner a nzmax on verifie si A et B n'ont pas la meme structure par hasard...
+  // Cela evite un pic memoire provoque par l'addition de matrices dans Equation_base::dimensionner_matrice
+  // Sinon, APLB n'est pas optimal, voir une autre implementation genre MKL:
+  // https://software.intel.com/en-us/mkl-developer-reference-c-mkl-sparse-add
+  int nzmax = A.has_same_morse_matrix_structure(B) ? A.nb_coeff() : A.nb_coeff()+B.nb_coeff();
+  C.dimensionner(nrow, ncol, nzmax);
   F77NAME(APLB) (&nrow, &ncol, &job, A.get_coeff().addr(), A.get_tab2().addr(), A.get_tab1().addr(),
                  B.get_coeff().addr(), B.get_tab2().addr(), B.get_tab1().addr(), C.get_set_coeff().addr(),
                  C.get_set_tab2().addr(), C.get_set_tab1().addr(),
                  &nzmax,iw.addr(),&ierr);
-#else
-  Cerr << "operator+ : APLB call invalid for CRAY"<<finl;
-  exit();
-#endif
 
   const int nnz = C.tab1_[nrow] - 1;
   C.get_set_tab2().resize( nnz );
   C.get_set_coeff().resize( nnz );
   C.morse_matrix_structure_has_changed_=1;
   return(C);
+}
+
+bool Matrice_Morse::has_same_morse_matrix_structure(const Matrice_Morse& A) const
+{
+  int nrow=A.nb_lignes();
+  for (int i=0; i<nrow; i++)
+    if (tab1_(i)!=A.tab1_(i))
+      return false;
+  return true;
 }
 
 // Description:
@@ -1862,8 +1872,20 @@ Matrice_Morse Matrice_Morse::operator -() const
 // Postcondition:
 Matrice_Morse& Matrice_Morse::operator +=(const Matrice_Morse& A)
 {
-  *this=*this+A;
-  morse_matrix_structure_has_changed_=1;
+  // PL: Avant de verifier de faire des operations couteuses en RAM, on verifie
+  // si ce n'est pas la meme structure:
+  if (has_same_morse_matrix_structure(A))
+    {
+      int size = A.nb_coeff();
+      const DoubleVect& coeff = A.get_coeff();
+      for (int i=0; i<size; i++)
+        coeff_(i)+=coeff(i);
+    }
+  else
+    {
+      *this = *this + A;
+      morse_matrix_structure_has_changed_ = 1;
+    }
   return *this;
 }
 

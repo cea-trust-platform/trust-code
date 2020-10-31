@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -966,94 +966,7 @@ DoubleTab& Champ_P1NC::calcul_gradient(const DoubleTab& champ, DoubleTab& gij, c
 
 }
 
-///////////////////////////////////////////////////////////////////////////////////
-//Modification de duidxj pour tenir compte de laloi de paroi
-//Methode recuperee dans Op_Dift_standard_VEF_Face.cpp
-//(Contenu a verifier)
-//////////////////////////////////////////////////////////////////////////////////
-
-//DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const int //indic_lp_neg, const int indic_bas_Re, const Zone_Cl_VEF& zone_Cl_VEF)
-//{
-//
-//  const Zone_VEF& zone_VEF = zone_Cl_VEF.zone_VEF();
-//  const DoubleTab& face_normale = zone_VEF.face_normales();
-//  const IntTab& face_voisins = zone_VEF.face_voisins();
-//
-//  int i,j,fac,num1;
-//
-//  // On va modifier Sij pour les faces de Dirichlet (Paroi_fixe) si nous n utilisons pas Paroi_negligeable!!!!
-//  // On aura : (grad u)_f = (grad u) - (grad u . n) x n + (grad u . n)_lp x n
-//  //
-//
-//  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-//  int nb_cl=les_cl.size();
-////  if (!sub_type(Paroi_negligeable_VEF,loi_par))  Normalement il faudrait ca!!
-//  if ((indic_lp_neg!=1)&&(indic_bas_Re!=1))
-//      {
-//        // Cerr << "On fait une modif aux calculs des gradient a cause de la loi de paroi!!!!" << finl;
-//        DoubleTrav part1_int(Objet_U::dimension), part1(Objet_U::dimension,Objet_U::dimension), part2(Objet_U::dimension,Objet_U::dimension);
-//
-//        for ( int num_cl=0; num_cl<nb_cl; num_cl++)
-//          { //Boucle sur les bords
-//            const Cond_lim& la_cl = les_cl[num_cl];
-//            const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-//            int ndeb = la_front_dis.num_premiere_face();
-//            int nfin = ndeb + la_front_dis.nb_faces();
-//
-//            if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) ||
-//                sub_type(Dirichlet_paroi_defilante,la_cl.valeur()))
-//              {
-//                for (fac=ndeb; fac<nfin ; fac++)
-//                  {
-//                    // Boucle sur les faces
-//
-//                    num1 = face_voisins(fac,0);
-//
-//                    double Surf =0.;
-//                    for (j=0 ; j<Objet_U::dimension ; j++)
-//                      Surf += face_normale(fac,j)*face_normale(fac,j);
-//
-//                    part1_int = 0. ;
-//                    for (i=0 ; i<Objet_U::dimension ; i++)
-//                      for (j=0 ; j<Objet_U::dimension ; j++)
-//                        part1_int[i] += gij(num1,i,j)*face_normale(fac,j); // Signe?? hyp : 0 -> 1 donc exterieur!!!!
-//
-//                    for (i=0 ; i<Objet_U::dimension ; i++)
-//                      for (j=0 ; j<Objet_U::dimension ; j++)
-//                        part1(i,j) =   part1_int[i] * face_normale(fac,j); // Signe?? hyp : 0 -> 1 donc exterieur!!!!
-//
-//                    for (i=0 ; i<Objet_U::dimension ; i++)
-//                      for (j=0 ; j<Objet_U::dimension ; j++)
-//                        part2(i,j) =   tau_tan(fac,i)*face_normale(fac,j);
-//
-//                    // MODIFS POUR LE SIGNE
-//                    // LE SIGNE N EST PAS PRESENT DANS LA LOI DE PAROI : donne u_star^2
-//                    // On determine le signe ici puisque c est le meme que celui de Sij x n
-//                    double signe;
-//
-//
-//                    // On modifie maintenant Sij
-//                    for (i=0 ; i<Objet_U::dimension ; i++)
-//                      for (j=0 ; j<Objet_U::dimension ; j++)
-//                        {
-//                          signe = 1.;
-//
-//                          if (part1(i,j)<0.) signe=-1;
-//
-//                              gij(num1,i,j) -= part1(i,j)/Surf;
-//
-//                              // MODIF SB le 20/08/01 on divise par nu+nu_t
-//                              gij(num1,i,j) += signe*dabs(part2(i,j))/(sqrt(Surf)*(nu[num1]+nu_turb[num1])); // ATTENTION car la normale n est pas unitaire!!!
-//                        }
-//                  }
-//              }
-//          }
-//      }
-//
-//  return gij;
-//}
-
-DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const int indic_lp_neg, const int indic_bas_Re, const Zone_Cl_VEF& zone_Cl_VEF)
+DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const Zone_Cl_VEF& zone_Cl_VEF)
 {
 
   const Zone_VEF& zone_VEF = zone_Cl_VEF.zone_VEF();
@@ -1106,103 +1019,99 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
 
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   int nb_cl=les_cl.size();
-  //  if (!sub_type(Paroi_negligeable_VEF,loi_par))  Normalement il faudrait ca!!
-  if ((indic_lp_neg!=1)&&(indic_bas_Re!=1))
+  // Cerr << "On fait une modif aux calculs des gradient a cause de la loi de paroi!!!!" << finl;
+  //        DoubleTrav part1_int(Objet_U::dimension), part1(Objet_U::dimension,Objet_U::dimension), part2(Objet_U::dimension,Objet_U::dimension);
+  DoubleTab P(dimension,dimension);
+
+  for ( int num_cl=0; num_cl<nb_cl; num_cl++)
     {
-      // Cerr << "On fait une modif aux calculs des gradient a cause de la loi de paroi!!!!" << finl;
-      //        DoubleTrav part1_int(Objet_U::dimension), part1(Objet_U::dimension,Objet_U::dimension), part2(Objet_U::dimension,Objet_U::dimension);
-      DoubleTab P(dimension,dimension);
+      //Boucle sur les bords
+      const Cond_lim& la_cl = les_cl[num_cl];
+      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = la_front_dis.num_premiere_face();
+      int nfin = ndeb + la_front_dis.nb_faces();
 
-      for ( int num_cl=0; num_cl<nb_cl; num_cl++)
+      if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) ||
+          sub_type(Dirichlet_paroi_defilante,la_cl.valeur()))
         {
-          //Boucle sur les bords
-          const Cond_lim& la_cl = les_cl[num_cl];
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = la_front_dis.num_premiere_face();
-          int nfin = ndeb + la_front_dis.nb_faces();
 
-          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) ||
-              sub_type(Dirichlet_paroi_defilante,la_cl.valeur()))
+          for (fac=ndeb; fac<nfin ; fac++)
             {
+              // Boucle sur les faces
 
-              for (fac=ndeb; fac<nfin ; fac++)
+              num1 = face_voisins(fac,0);
+
+
+              /////////////////////////////////////////////////////////////////
+              // definition des vecteurs unitaires constituant le repere local
+              // stockes dans la matrice de passage P
+              /////////////////////////////////////////////////////////////////
+
+              // vecteur tangentiel (porte par la vitesse tangentielle)
+
+              double norme2_tau_tan = 0.;
+
+              for(i=0 ; i<Objet_U::dimension ; i++)
+                norme2_tau_tan += tau_tan(fac,i)*tau_tan(fac,i);
+
+              double norme_tau_tan =  sqrt(norme2_tau_tan);
+
+              for(i=0 ; i<Objet_U::dimension ; i++)
+                P(i,0) = tau_tan(fac,i)/(norme_tau_tan+DMINFLOAT);
+
+              // vecteur normal a la paroi
+
+              double norme2_n = 0.;
+              int signe = -zone_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
+
+              for (i=0 ; i<Objet_U::dimension ; i++)
+                norme2_n += face_normale(fac,i)*face_normale(fac,i);
+
+              double norme_n = sqrt(norme2_n);
+
+              for(i=0 ; i<Objet_U::dimension ; i++)
+                P(i,1) = signe*face_normale(fac,i)/norme_n;
+
+
+              // (3D) on complete la base par le deuxieme vecteur tangentiel
+
+              if(Objet_U::dimension==3)
                 {
-                  // Boucle sur les faces
-
-                  num1 = face_voisins(fac,0);
-
-
-                  /////////////////////////////////////////////////////////////////
-                  // definition des vecteurs unitaires constituant le repere local
-                  // stockes dans la matrice de passage P
-                  /////////////////////////////////////////////////////////////////
-
-                  // vecteur tangentiel (porte par la vitesse tangentielle)
-
-                  double norme2_tau_tan = 0.;
-
-                  for(i=0 ; i<Objet_U::dimension ; i++)
-                    norme2_tau_tan += tau_tan(fac,i)*tau_tan(fac,i);
-
-                  double norme_tau_tan =  sqrt(norme2_tau_tan);
-
-                  for(i=0 ; i<Objet_U::dimension ; i++)
-                    P(i,0) = tau_tan(fac,i)/(norme_tau_tan+DMINFLOAT);
-
-                  // vecteur normal a la paroi
-
-                  double norme2_n = 0.;
-                  int signe = -zone_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
-
-                  for (i=0 ; i<Objet_U::dimension ; i++)
-                    norme2_n += face_normale(fac,i)*face_normale(fac,i);
-
-                  double norme_n = sqrt(norme2_n);
-
-                  for(i=0 ; i<Objet_U::dimension ; i++)
-                    P(i,1) = signe*face_normale(fac,i)/norme_n;
-
-
-                  // (3D) on complete la base par le deuxieme vecteur tangentiel
-
-                  if(Objet_U::dimension==3)
-                    {
-                      P(0,2) = P(1,0)*P(2,1) - P(2,0)*P(1,1) ;
-                      P(1,2) = P(2,0)*P(0,1) - P(0,0)*P(2,1) ;
-                      P(2,2) = P(0,0)*P(1,1) - P(1,0)*P(0,1) ;
-                    }
-
-                  /////////////////////////////////////////////////////////////////
-                  //         determination du terme d(u_t)/dn a enlever
-                  //                                                       -1
-                  //         terme identifie a l'aide du produit : F =  P . G . P
-                  //
-                  /////////////////////////////////////////////////////////////////
-
-                  double dutdn_old = 0.;
-
-                  for (i=0 ; i<Objet_U::dimension ; i++)
-                    for (j=0 ; j<Objet_U::dimension ; j++)
-                      {
-                        dutdn_old += gij(num1,i,j) * P(j,1) * P(i,0) ;
-                      }
-
-                  /////////////////////////////////////////////////////////////////
-                  //         Correction finale apportee a la matrice G
-                  /////////////////////////////////////////////////////////////////
-
-                  double C = -dutdn_old + sqrt(norme2_tau_tan)/(nu[num1]+nu_turb[num1])*porosite_face(fac) ;
-
-                  // la division par (nu[num1]+nu_turb[num1]) s'impose du fait que l'operateur de diffusion
-                  // fait intervenir le produit : (nu[num1]+nu_turb[num1])*g(i,j)
-
-
-                  for (i=0 ; i<Objet_U::dimension ; i++)
-                    for (j=0 ; j<Objet_U::dimension ; j++)
-                      {
-                        gij(num1,i,j) += C * P(j,1) * P(i,0) ;
-                      }
+                  P(0,2) = P(1,0)*P(2,1) - P(2,0)*P(1,1) ;
+                  P(1,2) = P(2,0)*P(0,1) - P(0,0)*P(2,1) ;
+                  P(2,2) = P(0,0)*P(1,1) - P(1,0)*P(0,1) ;
                 }
+
+              /////////////////////////////////////////////////////////////////
+              //         determination du terme d(u_t)/dn a enlever
+              //                                                       -1
+              //         terme identifie a l'aide du produit : F =  P . G . P
+              //
+              /////////////////////////////////////////////////////////////////
+
+              double dutdn_old = 0.;
+
+              for (i=0 ; i<Objet_U::dimension ; i++)
+                for (j=0 ; j<Objet_U::dimension ; j++)
+                  {
+                    dutdn_old += gij(num1,i,j) * P(j,1) * P(i,0) ;
+                  }
+
+              /////////////////////////////////////////////////////////////////
+              //         Correction finale apportee a la matrice G
+              /////////////////////////////////////////////////////////////////
+
+              double C = -dutdn_old + sqrt(norme2_tau_tan)/(nu[num1]+nu_turb[num1])*porosite_face(fac) ;
+
+              // la division par (nu[num1]+nu_turb[num1]) s'impose du fait que l'operateur de diffusion
+              // fait intervenir le produit : (nu[num1]+nu_turb[num1])*g(i,j)
+
+
+              for (i=0 ; i<Objet_U::dimension ; i++)
+                for (j=0 ; j<Objet_U::dimension ; j++)
+                  {
+                    gij(num1,i,j) += C * P(j,1) * P(i,0) ;
+                  }
             }
         }
     }

@@ -62,7 +62,7 @@ check_components()
 	    then
 	       make_option="make check_all_optim check_trust_optim"
             fi
-            if [ "$Composant" = flica5 ]
+            if [ "$Composant" = flica5 ] || [ "$Composant" = ijk ]
             then
                make_option="make check_optim"
             fi
@@ -98,7 +98,7 @@ check_components()
                   if [ $? != 0 ]
                   then
                      cat tmp.log
-                     cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
+                     cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TRUST_MAIL
                      echo "  KO"
 	             MODIF_TRUST_OK=0
                   else
@@ -185,6 +185,8 @@ check_components()
 	       echo "  See `pwd`/Run.liste"
 	       # Machines en mode debug
 	       debug_machines=`liste_machines "\-g "` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       # Machines en mode semi_opt
+	       semi_opt_machines=`liste_machines "\-semi_opt "`
 	       # Machines en mode avx
 	       avx_machines=`liste_machines "\-avx"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
@@ -292,6 +294,9 @@ check_components()
 	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
 		        then
 		           mode_option="--with-mode=gui"
+	                elif [[ "$semi_opt_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines semi_opt
+		        then
+		           mode_option="--with-mode=semi_optim"
 	                elif [[ "$debug_machines" = *"$adr"* ]] # Test si machine est dans la liste des machines debug
 		        then
 		           mode_option="--with-mode=debug"
@@ -466,9 +471,9 @@ git_push()
       cat $repo_log | tail -n +3
       if [ "$git_branch" != "Livraison" ]
       then
-         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" $TRUST_MAIL $TMA_PROJECT_LEADER
+         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" $TRUST_MAIL 
       else
-         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER
+         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo TMA\" $TRUST_MAIL 
       fi
    done
 }
@@ -529,7 +534,9 @@ VOBS="TRUST Composants"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
 ComposantsOfficial="triocfd ijk mpcube genepi3 flica5"
-export ComposantsBeta="triomc mathys sides scorpio pemfc"
+# 14/10/2020 : je retire mathys et triomc sur decision RPL
+#export ComposantsBeta="triomc mathys sides scorpio pemfc"
+export ComposantsBeta="sides scorpio pemfc"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 
@@ -696,7 +703,7 @@ echo>>$liste_log
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
 # petsc-3.10.0 : superlu_dist.py correction TMA
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v MUMPS_5.2.0-p1.tar.gz | grep -v ml-e5040d11aa07.tar.gz | grep -v VTK-8.1.0 | grep -v scalapack-2.0.2 | grep -v med-4.0.0 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.12.2 | grep -v scotch_6.0.6-p1 | grep -v osqp-0.6.0.tar.gz | grep -v _libgcc_mutex-0.1-main.tar.bz2 | grep -v CurvePlot-9.4.0.tar.gz | grep -v configuration-9.4.0.tar.gz | grep -v medcoupling-9.4.0.tar.gz | grep -v xdata-9.2.1.tar.gz | grep -v hdf5-1.10.3.tar.gz | grep -v superlu_dist-6.1.1.tar.gz | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v MUMPS_5.2.0-p1.tar.gz | grep -v ml-e5040d11aa07.tar.gz | grep -v VTK-8.1.0 | grep -v scalapack-2.0.2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.12.2 | grep -v scotch_6.0.6-p1 | grep -v osqp-0.6.0.tar.gz | grep -v _libgcc_mutex-0.1-main.tar.bz2 | grep -v CurvePlot-9.4.0.tar.gz | grep -v configuration-9.5.0.tar.gz | grep -v medcoupling-9.5.0.tar.gz | grep -v xdata-9.2.1.tar.gz | grep -v hdf5-1.10.3.tar.gz | grep -v superlu_dist-6.1.1.tar.gz | grep -v hypre-2.14.0.tar.gz | grep -v Miniforge3-Linux-aarch64.sh | grep -v IceT-1-0-0.tar.gz | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -709,7 +716,7 @@ then
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    # petsc-3.10.0 : superlu_dist.py correction TMA
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v MUMPS_5.2.0-p1.tar.gz | grep -v ml-e5040d11aa07.tar.gz | grep -v VTK-8.1.0 | grep -v scalapack-2.0.2 | grep -v med-4.0.0 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.12.2 | grep -v scotch_6.0.6-p1 |  grep -v osqp-0.6.0.tar.gz | grep -v _libgcc_mutex-0.1-main.tar.bz2 | grep -v CurvePlot-9.4.0.tar.gz | grep -v configuration-9.4.0.tar.gz | grep -v medcoupling-9.4.0.tar.gz | grep -v xdata-9.2.1.tar.gz | grep -v hdf5-1.10.3.tar.gz | grep -v superlu_dist-6.1.1.tar.gz`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v MUMPS_5.2.0-p1.tar.gz | grep -v ml-e5040d11aa07.tar.gz | grep -v VTK-8.1.0 | grep -v scalapack-2.0.2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.12.2 | grep -v scotch_6.0.6-p1 |  grep -v osqp-0.6.0.tar.gz | grep -v _libgcc_mutex-0.1-main.tar.bz2 | grep -v CurvePlot-9.4.0.tar.gz | grep -v configuration-9.5.0.tar.gz | grep -v medcoupling-9.5.0.tar.gz | grep -v xdata-9.2.1.tar.gz | grep -v hdf5-1.10.3.tar.gz | grep -v superlu_dist-6.1.1.tar.gz | grep -v hypre-2.14.0.tar.gz | grep -v Miniforge3-Linux-aarch64.sh | grep -v IceT-1-0-0.tar.gz`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -738,7 +745,7 @@ if [ -s $build64_log  ]
 then
    echo>>$build64_log
    echo "=> tkdiff diff_patch bin/BUILD64/diff_patch.ref ">>$build64_log
-   cat $build64_log | mail_ -s\"[lance_test_nuit] BUILD64 Verifie_patch KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $build64_log | mail_ -s\"[lance_test_nuit] BUILD64 Verifie_patch KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL
    cat $build64_log
    echo "  KO"
 else
@@ -859,7 +866,7 @@ fi
    echo " git push origin TMA in `pwd`"
    git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
    cat tmp.log
-   [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push origin TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER
+   [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push origin TMA\" $TRUST_MAIL 
    rm tmp.log 1>/dev/null 2>&1
    cd - 1>/dev/null 2>&1
       
@@ -869,16 +876,22 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "flica5" && "$Composant" != "genepi3" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "genepi3" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "pemfc" ]]
       then
-         if [[ "$Composant" == "triocfd" ]]
-         then
-             git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
-         fi
+         #if [[ "$Composant" == "triocfd" ]]
+         #then
+         #    git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+         #fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
-         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
+      elif [[ "$Composant" == "triocfd" ]]
+      then
+         #git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+         git remote update
+         git checkout .
+         git pull
       else
          git remote update
          git checkout .
@@ -1317,6 +1330,7 @@ else
 fi
 # On lance toutes les etudes
 #etude_test=0
+
 disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=1 && rm -f $disable_etudes
 if [ $etude_activation = 1 ] 
 then
@@ -1535,7 +1549,7 @@ Running cpplint by filtering with --filter=$filter
 ====================================" >> $cpplint_log
    python $TRUST_ROOT/bin/KSH/cpplint.py $filter src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp include/*.h 2>&1 | grep -v "Done processing" >> $cpplint_log
    tail -n1 $cpplint_log
-   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL $TMA_PROJECT_LEADER
+   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL
 else
    echo "NOT executed"
 fi
@@ -1599,7 +1613,9 @@ echo $ECHO_OPTS "TRUST distribution site:   http://sourceforge.net/projects/trus
 echo $ECHO_OPTS "TrioCFD distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/triou/env_TRUST_$old.sh" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/trust_trio-public/env_TRUST-$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD environment at Saclay: source /home/triou/env_TrioCFD_$old.sh" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD environment at Saclay: source /home/trust_trio-public/env_TrioCFD-$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST TrioCFD     diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Developer TRUST        diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
@@ -2305,7 +2321,7 @@ do
          validation_xdata=1
       else
          [ "$validation_xdata" = "" ] && validation_xdata=0
-         [ -f $check_xdata_log ] && cat $check_xdata_log | mail_ -s\"[lance_test_nuit] Check XData on $machine KO\" $TMA_PROJECT_LEADER $TRUST_MAIL
+         [ -f $check_xdata_log ] && cat $check_xdata_log | mail_ -s\"[lance_test_nuit] Check XData on $machine KO\" $TRUST_MAIL
       fi
    fi
 done
@@ -2456,7 +2472,7 @@ do
       echo "  KO $machine machine not accessible via ssh."
       echo "  No $valgrind_log"
       valgrind=0
-      echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" $TMA_PROJECT_LEADER $TRUST_MAIL
+      echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" $TRUST_MAIL
    else
       echo "Verification of $valgrind_log"
       #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
@@ -2472,7 +2488,7 @@ do
       fi
       if [ $scp_error != 0 ]
       then
-         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" $TMA_PROJECT_LEADER $TRUST_MAIL
+         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" $TRUST_MAIL
       fi
       rm -f $scp_error
       sleep 1
@@ -2513,7 +2529,7 @@ do
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" $TRUST_PROJECT_LEADER $TMA_PROJECT_LEADER $TRUST_MAIL
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" $TRUST_MAIL
                rm -f $log_filtre
 	    fi
          fi
@@ -2560,7 +2576,7 @@ do
        else
           BALTIK_PROJECT_LEADER="TRUST_PROJECT_LEADER"
        fi
-       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
+       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" ${!BALTIK_PROJECT_LEADER} $TRUST_MAIL # $TMA_PROJECT_LEADER
     fi
     rm tmp.log 2>/dev/null
 done
@@ -2573,7 +2589,7 @@ if [ $KO != 0 ]
 then
    grep "KVALGRIND=KO" $REP_NUIT/CR_*
    (
-   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
+   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" $TRUST_MAIL
    )
    #valgrind=0 # Test provisoire : en attente decision project leader
 fi
@@ -2957,7 +2973,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=78.70 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=78.83 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -3323,7 +3339,7 @@ do
 	 nb=`grep "Validation XDATA=KO" $Gui_log | wc -l`
          KO=`echo $(($KO+$nb))`
          BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-	 [ $nb != 0 ] && cat $Gui_log | mail_ -s\"[lance_test_nuit] XDATA $Composant $TRUST_VERSION KO\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+	 [ $nb != 0 ] && cat $Gui_log | mail_ -s\"[lance_test_nuit] XDATA $Composant $TRUST_VERSION KO\" $TRUST_MAIL ${!BALTIK_PROJECT_LEADER}
       fi
       Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"$view".log"
       if [ -f $Composant_log ]
@@ -3390,7 +3406,7 @@ do
       then
          if [ $tot_cible != 0 ]
 	 then
-	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
+	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL
 	 else
 	    cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
 	 fi
@@ -4010,7 +4026,7 @@ then
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
-   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER
+   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$flica5_PROJECT_LEADER
 fi
 
 #####################################
@@ -4105,11 +4121,8 @@ OPTIONS=\"-disable-optionals\"
 # for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TRUST_$new.sh
 
-# for CEA Saclay cluster (orcus):
-source /home/trust_trio/env_TRUST-$new.sh
-
-# for CEA Marcoule cluster (ceres2):
-source /softs/trio_u/env_TRUST-$new.sh
+# for CEA Saclay (orcus/Titania):
+source /home/trust_trio-public/env_TRUST-$new.sh
 
 # for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
@@ -4202,11 +4215,8 @@ make optim debug
 # for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TrioCFD_$new.sh
 
-# for CEA Saclay cluster (orcus):
-source /home/trust_trio/env_TrioCFD-$new.sh
-
-# for CEA Marcoule cluster (ceres2):
-source /softs/trio_u/env_TrioCFD-$new.sh
+# for CEA Saclay (orcus/Titania):
+source /home/trust_trio-public/env_TrioCFD-$new.sh
 
 # for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh

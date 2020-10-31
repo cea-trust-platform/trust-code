@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -219,6 +219,7 @@ public :
   void formeC() ;
   void formeF() ;
 
+  bool has_same_morse_matrix_structure(const Matrice_Morse&) const;
   bool check_morse_matrix_structure( void ) const;
   bool check_sorted_morse_matrix_structure( void ) const;
   void assert_check_morse_matrix_structure( void ) const;

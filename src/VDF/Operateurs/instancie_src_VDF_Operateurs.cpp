@@ -17,6 +17,12 @@
 #include <Op_Diff_VDF_Multi_inco_var_Elem.h>
 #include <Op_Diff_VDF_var_Elem.h>
 #include <Op_Diff_VDF_var_Face.h>
+#include <Op_Dift_VDF_Elem.h>
+#include <Op_Dift_VDF_Face.h>
+#include <Op_Dift_VDF_Multi_inco_Elem.h>
+#include <Op_Dift_VDF_Multi_inco_var_Elem.h>
+#include <Op_Dift_VDF_var_Elem.h>
+#include <Op_Dift_VDF_var_Face.h>
 #include <Op_Div_VDF_Elem.h>
 #include <Op_Grad_P0_to_Face.h>
 #include <Op_Grad_VDF_Face.h>
@@ -36,7 +42,13 @@ Op_Diff_VDF_Multi_inco_Elem inst11;verifie_pere(inst11);
 Op_Diff_VDF_Multi_inco_var_Elem inst12;verifie_pere(inst12);
 Op_Diff_VDF_var_Elem inst13;verifie_pere(inst13);
 Op_Diff_VDF_var_Face inst14;verifie_pere(inst14);
-Op_Div_VDF_Elem inst15;verifie_pere(inst15);
-Op_Grad_P0_to_Face inst16;verifie_pere(inst16);
-Op_Grad_VDF_Face inst17;verifie_pere(inst17);
+Op_Dift_VDF_Elem inst15;verifie_pere(inst15);
+Op_Dift_VDF_Face inst16;verifie_pere(inst16);
+Op_Dift_VDF_Multi_inco_Elem inst17;verifie_pere(inst17);
+Op_Dift_VDF_Multi_inco_var_Elem inst18;verifie_pere(inst18);
+Op_Dift_VDF_var_Elem inst19;verifie_pere(inst19);
+Op_Dift_VDF_var_Face inst20;verifie_pere(inst20);
+Op_Div_VDF_Elem inst21;verifie_pere(inst21);
+Op_Grad_P0_to_Face inst22;verifie_pere(inst22);
+Op_Grad_VDF_Face inst23;verifie_pere(inst23);
 }
