@@ -599,8 +599,12 @@
  Op_Dift_VEF_base Op_Dift_VEF_base Op_Dift_VEF_base.h
  Op_Dift_VEF_P1NC Op_Dift_VEF_Face Op_Dift_VEF_Face.h
  Op_Dift_VEF_P1NCP1B_const_P1NC Op_Dift_VEF_P1NCP1B_Face Op_Dift_VEF_P1NCP1B_Face.h
+ Op_Dift_VEF_P1NC_stab Op_Dift_Stab_VEF_Face Op_Dift_Stab_VEF_Face.h
+ Op_Dift_VEF_P1NC_standard Op_Dift_standard_VEF_Face Op_Dift_standard_VEF_Face.h
  Op_Dift_VEF_Q1NC Op_Dift_VEF_Face_Q1 Op_Dift_VEF_Face_Q1.h
  Op_Dift_VEF_var_P1NC Op_Dift_VEF_Face_Var Op_Dift_VEF_Face_Var.h
+ Op_Dift_VEF_Var_P1NC_stab Op_Dift_Stab_VEF_Face_Var Op_Dift_Stab_VEF_Face_Var.h
+ Op_Dift_VEF_Var_P1NC_standard Op_Dift_standard_VEF_Face_Var Op_Dift_standard_VEF_Face_Var.h
  Op_Div_EF Op_Div_EF Op_Div_EF.h
  Op_Div_PolyMAC Op_Div_PolyMAC Op_Div_PolyMAC.h
  Op_Div_VDF_base Op_Div_VDF_base Op_Div_VDF_base.h
