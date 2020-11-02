@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# ================================
+# Nothing to prepare 
+# All organized in folders...
+# ================================
+
+# maybe, just compile the useful scripts file
+pdflatex useful_scripts.tex > useful_scripts.log 
+

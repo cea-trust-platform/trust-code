@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# use Medcoupling to generate the conductivity tensor
+source $TRUST_ROOT/exec/lata2dx_install/env.sh
+python Cond_Field_Anis.py 
