@@ -1,0 +1,116 @@
+# 2D heat conduction with a discontinuous anisotropic conductivity tensor #
+# PARALLEL OK 4 #
+
+dimension 2
+
+DOMaine DOM
+
+Pb_conduction pb
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names DOM Mesh_1 Mesh_1.med
+# END MESH #
+# BEGIN PARTITION
+Partition DOM 
+{
+        Partition_tool tranche { tranches 2 2 }
+        Larg_joint 1
+        zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones DOM
+END SCATTER #
+
+
+
+vefprep1b dis
+
+scheme_euler_implicit scheme
+
+Read scheme
+{
+    tinit 0.
+    tmax 10.
+    dt_min 1e-8
+    dt_max 1.
+    dt_impr 1.e-3
+    dt_sauv 1.e-3
+    seuil_statio 1.e-9
+    facsec 1000 
+    facsec_max 5000
+    max_iter_implicite 50
+    Solveur Implicite
+    {
+      Solveur petsc cholesky { quiet }
+    }
+}
+
+solide sol
+read sol
+{
+    rho champ_uniforme 1 1.0
+    lambda champ_fonc_xyz DOM 4 (1.0*(x[0.5)+10.0*(x>0.5)) (-1.0*(x[0.5)-3.0*(x>0.5)) (-1.0*(x[0.5)-3.0*(x>0.5)) (4.0*(x[0.5)+2.0*(x>0.5)) 
+    Cp champ_uniforme 1 1.0
+}
+
+associate pb DOM
+associate pb scheme
+associate pb sol
+
+discretize pb dis
+
+read pb
+{
+	conduction
+	{
+		diffusion { anisotrope }
+		initial_conditions {
+			temperature champ_uniforme 1 0.
+		}
+		boundary_conditions {
+			Left paroi_temperature_imposee champ_front_uniforme 1 0 
+			Right paroi_temperature_imposee champ_front_uniforme 1 1.
+			Down paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+			Up paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+		}
+	}
+
+	post_processing
+	{
+
+		Definition_champs
+		{
+
+		solution_elem Transformation {
+					methode formule expression 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+					localisation elem
+					}
+
+		error_elem transformation  { 
+					methode formule expression 1 solution_elem-temperature_physique 
+					sources_reference {  solution_elem , temperature_physique }
+					localisation elem 
+					   }
+
+		}
+
+		format lml 
+		fields dt_post .1
+		{
+			temperature elem
+			temperature som 
+			diffusivite_thermique elem
+			capacite_calorifique elem
+			solution_elem
+			error_elem
+			masse_volumique elem
+		}
+	}
+}
+
+solve pb
+
+end
