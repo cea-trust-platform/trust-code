@@ -5,8 +5,10 @@ Parameters
     Author "A.G. and Y.G."
     #TestCase cartesian "jdd.data"
     #TestCase tetra     "jdd.data"
-    TestCase PolyMAC      "jdd.data"
-    TestCase CoviMAC      "jdd.data"
+    TestCase PolyMAC "jdd.data"
+    Prerequis "paste PolyMAC/jdd_P1.son PolyMAC/jdd_P2.son > PolyMAC/jdd_P1P2.son"
+    TestCase CoviMAC "jdd.data"
+    Prerequis "paste CoviMAC/jdd_P1.son CoviMAC/jdd_P2.son > CoviMAC/jdd_P1P2.son"
 }
 
 Chapter
@@ -101,7 +103,7 @@ Chapter
         Curve
         {
             legend "DP mesure"
-            file <paste PolyMAC/jdd_P1.son PolyMAC/jdd_P2.son
+            file PolyMAC/jdd_P1P2.son
             colonnes ($1) ($2-$4)
             Style lines
         }
@@ -126,7 +128,7 @@ Chapter
         Curve
         {
             legend "DP mesure"
-            file <paste CoviMAC/jdd_P1.son CoviMAC/jdd_P2.son
+            file CoviMAC/jdd_P1P2.son
             colonnes ($1) ($2-$4)
             Style lines
         }
