@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -2124,7 +2124,7 @@ void Equation_base::reculer(int i)
 
 // methodes pour l'implicite
 
-/* peut utiliser une memoization (discretisations PolyMAC, DDFV )*/
+/* peut utiliser une memoization (discretisations PolyMAC)*/
 void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 {
   if (matrice_init)
@@ -2139,7 +2139,7 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 
   matrice.get_set_coeff() = 0.0;  // just to be sure ...
 
-  if (probleme().discretisation().que_suis_je().finit_par("MAC") || probleme().discretisation().que_suis_je() == "DDFV")
+  if (probleme().discretisation().que_suis_je().finit_par("MAC"))
     {
       matrice_stockee.get_set_tab1().ref_array(matrice.get_set_tab1());
       matrice_stockee.get_set_tab2().ref_array(matrice.get_set_tab2());

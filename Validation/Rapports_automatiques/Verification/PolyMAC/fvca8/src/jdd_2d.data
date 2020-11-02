@@ -30,30 +30,17 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 PolyMAC  dis
-option_vdf { P_imposee_aux_faces oui }
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit   0
     dt_max  0.5
+    facsec 1e30
     seuil_statio 1e-6
     solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
     # solveur implicite { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } } #
 }
-
-#
-Schema_euler_explicite sch
-Read sch
-{
-    tinit   0
-    tmax    1e5
-    dt_min  1e-6
-    dt_max  1e-6
-    dt_impr 1e-10
-    seuil_statio 1e-10
-}
-#
 
 Fluide_Incompressible eau
 Read eau

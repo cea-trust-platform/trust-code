@@ -36,6 +36,7 @@ Read sch
     tinit 0
 	nb_pas_dt_max 3
     dt_max  1
+    facsec 1e30
     seuil_statio 1e-8
     solveur implicite
     {

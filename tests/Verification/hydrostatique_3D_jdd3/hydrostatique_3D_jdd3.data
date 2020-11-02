@@ -25,9 +25,6 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 PolyMAC  dis
-# VDF  dis #
-option_vdf { P_imposee_aux_faces oui }
-
 
 Schema_euler_implicite sch
 Read sch
@@ -36,6 +33,7 @@ Read sch
 	nb_pas_dt_max 3
     tmax 5
     dt_max 0.1
+    facsec 1e30
     solveur implicite
     {
         solveur petsc cli
