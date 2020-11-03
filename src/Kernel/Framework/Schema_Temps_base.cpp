@@ -1081,13 +1081,13 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
     mp_max_abs_tab(tab_critere, residu_equation);
 
   DoubleTab tab_critere_abs(tab_critere);
-
+  const int& n = tab_critere_abs.dimension_tot(0);
   if(size == 1)
-    for(int i=0; i< tab_critere_abs.dimension(0); i++)
+    for(int i=0; i< n; i++)
       tab_critere_abs(i) = fabs(tab_critere_abs(i));
   else
     for(int j=0; j<size; j++)
-      for(int i=0; i< tab_critere_abs.dimension(0); i++)
+      for(int i=0; i< n; i++)
         tab_critere_abs(i,j) = fabs(tab_critere_abs(i,j));
 
   equation.set_residuals(tab_critere_abs);

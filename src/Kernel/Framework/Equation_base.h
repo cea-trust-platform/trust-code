@@ -229,8 +229,8 @@ public :
 
   inline void set_residuals(DoubleTab r)
   {
-    if(Field_residu_.non_nul())
-      Field_residu_.valeur().valeurs() = r;
+    if(field_residu_.non_nul())
+      field_residu_.valeur().valeurs() = r;
   };
 
 protected :
@@ -282,7 +282,7 @@ private :
   DoubleVect residu_;
   DoubleVect residu_initial_;
   // retourne le CHAMP (et non la norme) des residus de chaque inconnu du probleme
-  Champ_Fonc Field_residu_;
+  Champ_Fonc field_residu_;
 
   mutable DoubleTab NULL_;
   mutable Parser_U equation_non_resolue_;

@@ -1406,10 +1406,10 @@ void Equation_base::creer_champ(const Motcle& motlu)
   inco += "_residu";
   if (motlu == Motcle(inco))
     {
-      if (!Field_residu_.non_nul())
+      if (!field_residu_.non_nul())
         {
-          discretisation().residu(zone_dis(),inconnue(),Field_residu_);
-          champs_compris_.ajoute_champ(Field_residu_);
+          discretisation().residu(zone_dis(),inconnue(),field_residu_);
+          champs_compris_.ajoute_champ(field_residu_);
         }
     }
 
@@ -1444,7 +1444,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     }
   else if(nom == Motcle(inco_residu))
     {
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Field_residu_.valeur());
+      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,field_residu_.valeur());
       double temps_init = schema_temps().temps_init();
       if (((ch.temps()!=inconnue()->temps()) || (ch.temps()==temps_init)) && (inconnue()->mon_equation_non_nul()))
         {
