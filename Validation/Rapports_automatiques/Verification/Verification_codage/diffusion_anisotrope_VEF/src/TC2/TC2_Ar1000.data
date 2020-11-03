@@ -8,7 +8,7 @@ Pb_conduction pb
 Lire_med family_names_from_group_names DOM DOM Mesh_1.med
 # END MESH #
 
-
+# Scatter DOM.Zones DOM #
 vefprep1b dis
 scheme_euler_implicit scheme
 

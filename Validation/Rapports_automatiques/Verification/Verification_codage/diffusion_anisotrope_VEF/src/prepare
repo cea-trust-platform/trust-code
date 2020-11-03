@@ -22,7 +22,7 @@ for CAS in $LISTE_CAS; do
     mkdir -p $REP
     SRCDATA0=TC2.data
     SRCDATA1=TC2_Ar1.data
-    SRCDATA2=TC2_Ar1_iso.data
+    SRCDATA2=TC2_iso.data
     SRCDATA3=TC2_Ar10.data
     SRCDATA4=TC2_Ar100.data
     SRCDATA5=TC2_Ar1000.data
@@ -32,7 +32,7 @@ for CAS in $LISTE_CAS; do
     PRERUN=pre_run
     # Files that will change
     DEST_DATA1=$REP/$SRCDATA0
-    DEST_DATA2=$REP/$SRCDATA0
+    DEST_DATA2=$REP/$SRCDATA2
     DEST_DATA3=$REP/$SRCDATA0
     DEST_DATA4=$REP/$SRCDATA0
     DEST_DATA5=$REP/$SRCDATA0
