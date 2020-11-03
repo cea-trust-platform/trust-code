@@ -9,7 +9,7 @@ declare -A dico_meshes_2d=(["Cartesian"]="1 2" #3 4 5 6 7"
 declare -A dico_meshes_3d=(["Hexa"]="1" # 2 3 4 5"
                            ["Prism"]="1" # 2 3 4"
                            ["Voronoi"]="1" # 2 3 4 5"
-                           ["Kershaw"]="1" # 2 3 4"
+                           ["Kershaw"]="2" # 3 4" (1 ne converge pas)
                            ["LocRaf"]="1" # 2 3 4 5"
                            ["CheckerBoard"]="1" # 2 3 4 5"
                            ["PrismHexa"]="1" # 2 3 4"

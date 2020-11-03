@@ -101,7 +101,8 @@ Chapter
     visu
     {
         normal3D 0. 0. 1.
-        mesh _mesh_/jdd_1/cas.lata dom
+        #Pif ( "_mesh_" == "Kershaw" ) mesh _mesh_/jdd_2/cas.lata dom
+        #Pelse mesh _mesh_/jdd_1/cas.lata dom #Pendif
         Description "_mesh_"
         nb_img_without_newline 3
         width 5cm
