@@ -38,6 +38,7 @@
 #include <Matrice33.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Op_Grad_CoviMAC_Face.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable(Masse_CoviMAC_Face,"Masse_CoviMAC_Face",Solveur_Masse_base);
 
@@ -115,6 +116,14 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension,
                   piso = sub_type(Piso, equation().schema_temps()) && !sub_type(Implicite, equation().schema_temps());
 
+  DoubleTab coef(equation().inconnue().valeurs());
+  coef = 1.;
+  if (has_coefficient_temporel_)
+    {
+      DoubleTab co(equation().get_champ(name_of_coefficient_temporel_).valeurs());
+      coef = co;
+    }
+
   /* aux elements : calcul de W_e, contribution a la diagonale */
   Matrice33 M(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iM; //pour inversions
   for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
@@ -128,7 +137,7 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   W_e.echange_espace_virtuel();
   if (piso) ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient()).grad_a_jour = 0; //si PISO, on devra recalculer les coeffs du gradient
   for (e = 0; e < zone.nb_elem_tot(); e++)for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        mat(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += pe(e) * ve(e) / dt;
+        mat(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += coef.addr()[N * (nf_tot + D * e + d) + n] * pe(e) * ve(e) / dt;
 
   /* aux faces : calcul de mu_f, ligne "diagonale - projection des ve" */
   for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++) //vf calcule
@@ -140,7 +149,7 @@ Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
         for (i = 0; i < 2; i++) mu_f(f, n, i) = f_e(f, 1) >= 0 ? fac[!i] / (fac[0] + fac[1]) : (i == 0);
 
         /* contribution a mat */
-        mat(N * f + n, N * f + n) += pf(f) * vf(f) / dt;
+        mat(N * f + n, N * f + n) += coef(f) * pf(f) * vf(f) / dt;
       }
 
   return matrice;
@@ -155,15 +164,23 @@ DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   const DoubleTab& nf = zone.face_normales();
   int e, f, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
 
+  DoubleTab coef(secmem);
+  coef = 1.;
+  if (has_coefficient_temporel_)
+    {
+      DoubleTab co(equation().get_champ(name_of_coefficient_temporel_).valeurs());
+      coef = co;
+    }
+
   /* vitesses aux faces : diagonale */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) //vf calcule
         secmem.addr()[N * f + n] += pf(f) * vf(f) / dt * inco.addr()[N * f + n];
     else if (ch.fcl(f, 0) == 3) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //Dirichlet
-          secmem.addr()[N * f + n] += mu_f(f, n, 0) * pf(f) * vf(f) / dt * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
+          secmem.addr()[N * f + n] += coef(f) * mu_f(f, n, 0) * pf(f) * vf(f) / dt * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
 
   /* vitesses aux elements : on part de la vitesse aux elements interpolee depuis la vitesse aux faces */
   for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        secmem.addr()[N * (nf_tot + D * e + d) + n] += pe(e) * ve(e) / dt * inco.addr()[N * (nf_tot + D * e + d) + n];
+        secmem.addr()[N * (nf_tot + D * e + d) + n] += coef.addr()[N * (nf_tot + D * e + d) + n] * pe(e) * ve(e) / dt * inco.addr()[N * (nf_tot + D * e + d) + n];
 
   return secmem;
 }
