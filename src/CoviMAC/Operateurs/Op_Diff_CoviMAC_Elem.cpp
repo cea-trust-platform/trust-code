@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -126,7 +126,7 @@ void Op_Diff_CoviMAC_Elem::dimensionner(Matrice_Morse& mat) const
   /* nu grad T aux faces internes */
   for (f = zone.premiere_face_int(); f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem())
         for (j = feb_d(f); j < feb_d(f + 1); j++) for (eb = feb_j(j), n = 0; n < N; n++)
-            stencil.append_line(N * e + n, N * (eb < ne_tot ? eb : f_e(eb, 0)) + n), tpfa(f, n) &= (j < zone.feb_d(f) + 2);
+            stencil.append_line(N * e + n, N * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + n), tpfa(f, n) &= (j < zone.feb_d(f) + 2);
 
   tableau_trier_retirer_doublons(stencil);
   Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * zone.zone().md_vector_elements().valeur().nb_items_seq_tot())
@@ -239,8 +239,9 @@ void Op_Diff_CoviMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             dphi[n][N * e + n] = h_int(n), dTb(f, n) = 0;
 
         //contributions a la matrice
-        if (e < zone.nb_elem()) for (n = 0; n < N; dphi[n].clear(), n++) for (auto &i_c : dphi[n])
+        if (e < zone.nb_elem()) for (n = 0; n < N; n++) for (auto &i_c : dphi[n])
               matrice(N * e + n, i_c.first) += fs(f) * i_c.second;
+        for (n = 0; n < N; n++) dphi[n].clear();
       }
 
   /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
