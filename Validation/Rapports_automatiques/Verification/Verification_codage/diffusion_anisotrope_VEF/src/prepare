@@ -1,10 +1,188 @@
 #!/bin/bash
 
-# ================================
-# Nothing to prepare 
-# All organized in folders...
-# ================================
+# Elie Saikali, Nov 2020
+# Validation file preparation
+# We consider 2 test cases : TC1 and TC2
+# Files of TC1 do not need preparation, they are ready
+# Here, we prepare the files of TC2 !
 
-# maybe, just compile the useful scripts file
-pdflatex useful_scripts.tex > useful_scripts.log 
 
+# In TC2, 4 subcases are also considered by changing the anisotropy ratio
+# This leads to a differnt Puissance_thermique source for each subcase
+# To avoid confusion and errors with sed, we do the following :
+
+cd TC2
+LISTE_CAS="Ar1 Ar10 Ar100 Ar1000"
+LISTE_MESH="M1 M2 M3" # 3 mesh for sensetivity analysis :)
+
+for CAS in $LISTE_CAS; do
+  for MESH in $LISTE_MESH; do
+
+    REP=./$CAS/$MESH
+    mkdir -p $REP
+    SRCDATA0=TC2.data
+    SRCDATA1=TC2_Ar1.data
+    SRCDATA2=TC2_Ar1_iso.data
+    SRCDATA3=TC2_Ar10.data
+    SRCDATA4=TC2_Ar100.data
+    SRCDATA5=TC2_Ar1000.data
+    SRCDOMAINE=domaine.data
+    MEDC1=Cond_Field_Anis_NonUniform.py
+    MEDC2=Cond_Field_Iso_NonUniform.py
+    PRERUN=pre_run
+    # Files that will change
+    DEST_DATA1=$REP/$SRCDATA0
+    DEST_DATA2=$REP/$SRCDATA0
+    DEST_DATA3=$REP/$SRCDATA0
+    DEST_DATA4=$REP/$SRCDATA0
+    DEST_DATA5=$REP/$SRCDATA0
+    DEST_DOMAINE=$REP/$SRCDOMAINE
+
+    if test "$CAS" = "Ar1"; then
+
+      cp $MEDC1 $REP/$MEDC1
+      cp $MEDC2 $REP/$MEDC2
+      cp $PRERUN $REP/$PRERUN
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA1 $DEST_DATA1
+        cp $SRCDATA2 $DEST_DATA2
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA2 > $DEST_DATA2
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA2 > $DEST_DATA2
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      fi
+
+    elif test "$CAS" = "Ar10"; then
+
+      sed "s/eta=1.0/eta=1.e-1/" $MEDC1 > $REP/$MEDC1
+      sed "s/python Cond_Field_Iso_NonUniform.py/# python Cond_Field_Iso_NonUniform.py/" $PRERUN > $REP/$PRERUN
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA3 $DEST_DATA3
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA3 > $DEST_DATA3
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA3 > $DEST_DATA3
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      fi
+
+    elif test "$CAS" = "Ar100"; then
+
+      sed "s/eta=1.0/eta=1.e-2/" $MEDC1 > $REP/$MEDC1
+      sed "s/python Cond_Field_Iso_NonUniform.py/# python Cond_Field_Iso_NonUniform.py/" $PRERUN > $REP/$PRERUN
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA4 $DEST_DATA4
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA4 > $DEST_DATA4
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA4 > $DEST_DATA4
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+      fi
+
+    else # Ar1000
+
+      sed "s/eta=1.0/eta=1.e-3/" $MEDC1 > $REP/$MEDC1
+      sed "s/python Cond_Field_Iso_NonUniform.py/# python Cond_Field_Iso_NonUniform.py/" $PRERUN > $REP/$PRERUN
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA5 $DEST_DATA5
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA5 > $DEST_DATA5
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA5 > $DEST_DATA5
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+      fi
+
+    fi
+
+
+  done
+done
+
+# finally, just compile the useful scripts file
+cd .. && pdflatex useful_scripts.tex > useful_scripts.log

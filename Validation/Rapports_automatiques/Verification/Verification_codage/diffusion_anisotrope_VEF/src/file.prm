@@ -10,15 +10,15 @@ Parameters {
         TestCase TC2/Ar1/M1 TC2_iso.data
         TestCase TC2/Ar1/M2 TC2_iso.data 2
         TestCase TC2/Ar1/M3 TC2_iso.data 4
-	TestCase TC2/Ar10/M1 TC2.data
-	TestCase TC2/Ar10/M2 TC2.data 2
-	TestCase TC2/Ar10/M3 TC2.data 4
-	TestCase TC2/Ar100/M1 TC2.data
-	TestCase TC2/Ar100/M2 TC2.data 2
-	TestCase TC2/Ar100/M3 TC2.data 4
-	TestCase TC2/Ar1000/M1 TC2.data
-	TestCase TC2/Ar1000/M2 TC2.data 2
-	TestCase TC2/Ar1000/M3 TC2.data 4
+      	TestCase TC2/Ar10/M1 TC2.data
+      	TestCase TC2/Ar10/M2 TC2.data 2
+      	TestCase TC2/Ar10/M3 TC2.data 4
+      	TestCase TC2/Ar100/M1 TC2.data
+      	TestCase TC2/Ar100/M2 TC2.data 2
+      	TestCase TC2/Ar100/M3 TC2.data 4
+      	TestCase TC2/Ar1000/M1 TC2.data
+      	TestCase TC2/Ar1000/M2 TC2.data 2
+      	TestCase TC2/Ar1000/M3 TC2.data 4
 }
 
 
@@ -29,43 +29,43 @@ chapter
 
         title "Test case 1 : anisotropic and discontinuous \latex_( $\kappa$ \latex_)"
 
-        visu { 
+        visu {
                 title "The Mesh"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 operator_to_all no_legend
                 cycles -1
-                mesh TC1/TC1.lata DOM 
+                mesh TC1/TC1.lata DOM
         }
 
 
-        visu { 
+        visu {
                 title "Conductivity tensor : component 1"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM 
+                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
         }
 
 
-visu { 
+visu {
                 title "Conductivity tensor : component 2 (or 3)"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM 
+                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
         }
 
 
-visu { 
+visu {
                 title "Conductivity tensor : component 4"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM 
+                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
         }
 
 visu {
@@ -101,7 +101,7 @@ chapter
 
         visu {
                 title "The Mesh M1"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 operator_to_all no_legend
                 cycles -1
@@ -110,7 +110,7 @@ chapter
 
 	 visu {
                 title "The Mesh M2"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 operator_to_all no_legend
                 cycles -1
@@ -119,7 +119,7 @@ chapter
 
 	 visu {
                 title "The Mesh M3"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 operator_to_all no_legend
                 cycles -1
@@ -137,29 +137,29 @@ chapter
 
         visu {
                 title "Conductivity tensor : component 1"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM  
+                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 2 (or 3)"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM  
+                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 4"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM  
+                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
         }
 
 visu {
@@ -226,7 +226,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2_iso.lata DIFFUSIVITE_THERMIQUE_SOM_DOM  
+                pseudocolor TC2/Ar1/M1/TC2_iso.lata DIFFUSIVITE_THERMIQUE_SOM_DOM
         }
 
 visu {
@@ -297,29 +297,29 @@ chapter
 
         visu {
                 title "Conductivity tensor : component 1"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM  
+                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 2 (or 3)"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM  
+                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 4"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM  
+                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
         }
 
 visu {
@@ -389,29 +389,29 @@ chapter
 
         visu {
                 title "Conductivity tensor : component 1"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM  
+                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 2 (or 3)"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM  
+                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 4"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM  
+                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
         }
 
 visu {
@@ -482,29 +482,29 @@ chapter
 
         visu {
                 title "Conductivity tensor : component 1"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM  
+                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 2 (or 3)"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM  
+                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
         }
 
 visu {
                 title "Conductivity tensor : component 4"
-                Width 15cm 
+                Width 15cm
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM  
+                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
         }
 
 visu {
@@ -576,5 +576,3 @@ Chapter {
         tableau_performance {
         }
 }
-
-

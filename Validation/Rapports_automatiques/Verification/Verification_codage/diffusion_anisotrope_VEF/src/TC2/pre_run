@@ -1,3 +1,4 @@
+#!/bin/bash
 trust domaine.data 1>domaine.out 2>domaine.err
 mv Mesh_1_0000.med Mesh_1.med
 
@@ -5,8 +6,3 @@ source $TRUST_ROOT/exec/lata2dx_install/env.sh
 
 python Cond_Field_Anis_NonUniform.py
 python Cond_Field_Iso_NonUniform.py
-
-
-
-
- 

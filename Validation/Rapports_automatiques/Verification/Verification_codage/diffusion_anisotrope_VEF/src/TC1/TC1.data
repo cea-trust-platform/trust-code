@@ -1,20 +1,13 @@
-# dimension #
 dimension 2
-
-# DOMaine #
 DOMaine DOM
-
-# probleme de condution de la chaleur #
 Pb_conduction pb
 
 # BEGIN MESH #
 Lire_med family_names_from_group_names DOM Mesh_1 Mesh_1.med
 # END MESH #
 
-# discretisation VEF #
 vefprep1b dis
 
-# time scheme #
 scheme_euler_implicit scheme
 
 Read scheme
@@ -26,7 +19,7 @@ Read scheme
     dt_impr 1.e-3
     dt_sauv 1.e-3
     seuil_statio 1.e-9
-    facsec 1000 
+    facsec 1000
     facsec_max 5000
     max_iter_implicite 50
     Solveur Implicite
@@ -35,43 +28,40 @@ Read scheme
     }
 }
 
-# physics properties of medium  #
 solide sol
 read sol
 {
     rho champ_uniforme 1 1.0
-    # lambda champ_uniforme 1 1. #
-    lambda champ_fonc_med last_time conduc2d_aniso.med Mesh_1 CONDUCTIVITY_ELEM_dom elem 0 
+    /* You can use champ_fonc_xyz, but here its just an illustration of med coupling */
+    lambda champ_fonc_med last_time conduc2d_aniso.med Mesh_1 CONDUCTIVITY_ELEM_dom elem 0
     Cp champ_uniforme 1 1.0
 }
 
-# associate the problem with the geometry, the time scheme and the physic properties #
 associate pb DOM
 associate pb scheme
 associate pb sol
 
-# meshing the geometry with the given discretisation method #
 discretize pb dis
 
-# definition of the problem #
 read pb
 {
 	# Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
 	conduction
 	{
 		diffusion { anisotrope }
-		initial_conditions {
+		initial_conditions
+    {
 			temperature champ_uniforme 1 0.
 		}
-		boundary_conditions {
-			Left paroi_temperature_imposee champ_front_uniforme 1 0 
+		boundary_conditions
+    {
+			Left paroi_temperature_imposee champ_front_uniforme 1 0
 			Right paroi_temperature_imposee champ_front_uniforme 1 1.
 			Down paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
 			Up paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
 		}
 	}
 
-	# post traitement  #
 	post_processing
 	{
 
@@ -87,27 +77,27 @@ read pb
 					localisation elem
 					}
 
-		error transformation  { 
+		error transformation  {
 					methode formule expression 1 abs(solution-temperature_physique)/(solution+0.00001)
 					sources_reference { solution , temperature_physique }
-					localisation som 
+					localisation som
 					      }
 
-		error_elem transformation  { 
-					methode formule expression 1 abs(solution_elem-temperature_physique)/(solution_elem+0.0001) 
+		error_elem transformation  {
+					methode formule expression 1 abs(solution_elem-temperature_physique)/(solution_elem+0.0001)
 					sources_reference {  solution_elem , temperature_physique }
-					localisation elem 
+					localisation elem
 					   }
 
 		}
 
-		format lata 
+		format lata
 		fields dt_post .1
 		{
 			temperature elem
-			temperature som 
+			temperature som
 			diffusivite_thermique elem
-			diffusivite_thermique som 
+			diffusivite_thermique som
 			solution
 			solution_elem
 			error
@@ -116,7 +106,6 @@ read pb
 	}
 }
 
-# solve the problem #
 solve pb
 
 end
