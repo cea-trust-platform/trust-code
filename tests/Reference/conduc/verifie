@@ -1,0 +1,21 @@
+#!/bin/bash
+# Verifie que les flux aux bords donnes par les sondes sont identiques au .out:
+bords="GAUCHE HAUT BAS DROIT"
+cas=`pwd` 
+cas=`basename $cas`
+out=$cas"_pb_Diffusion_chaleur.out"
+[ -f PAR_conduc.dt_ev ] && exit 0
+let col=1
+for bord in $bords
+do 
+   let col=$col+1
+   #echo $bord
+   val_out=`tail -1 $out | awk -v col=$col '{print $col}'`
+   # Sonde:
+   son=$cas"_FLUX_"$bord".son"
+   val_son=`tail -1 $son | awk '{print $2}'`
+   ok=`echo $val_out $val_son | awk '{err=($1-$2)/($1+$2+1.e-10);if (err<0) err*=-1;print err<1.e-5 ? 1 : 0}'` 
+   [ $ok != 1 ] && echo "Ecarts flux ! $val_son et $val_out" && exit -1
+done
+exit 0
+

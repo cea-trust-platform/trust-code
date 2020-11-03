@@ -47,7 +47,7 @@ Read sch
 	tmax 300.
 	dt_min 0.00001
 	dt_max 0.1
-	dt_impr 0.1
+	dt_impr 5
 	dt_sauv 100
 	seuil_statio 1.e-8
 	facsec 0.9375
@@ -87,8 +87,59 @@ Read pb
 
 	Post_processing
 	{
+		Definition_champs
+		{
+			flux_Haut Reduction_0D { 
+				methode sum 
+				source Interpolation {
+					domaine dom_boundaries_Haut
+					localisation elem
+					source Morceau_Equation {
+						type operateur numero 0 option flux_bords
+						source refChamp { Pb_champ pb temperature }
+					}
+				}
+         		}
+			flux_Gauche Reduction_0D { 
+				methode sum 
+				source Interpolation {
+					domaine dom_boundaries_Gauche
+					localisation elem
+					source Morceau_Equation {
+						type operateur numero 0 option flux_bords
+						source refChamp { Pb_champ pb temperature }
+					}
+				}
+         		}
+			flux_Droit Reduction_0D { 
+				methode sum 
+				source Interpolation {
+					domaine dom_boundaries_Droit
+					localisation elem
+					source Morceau_Equation {
+						type operateur numero 0 option flux_bords
+						source refChamp { Pb_champ pb temperature }
+					}
+				}
+         		}
+			flux_Bas Reduction_0D { 
+				methode sum 
+				source Interpolation {
+					domaine dom_boundaries_Bas
+					localisation elem
+					source Morceau_Equation {
+						type operateur numero 0 option flux_bords
+						source refChamp { Pb_champ pb temperature }
+					}
+				}
+         		}
+		}
 		Probes
 		{
+			flux_Haut flux_Haut periode 5 numero_elem_sur_maitre 0
+			flux_Gauche flux_Gauche periode 5 numero_elem_sur_maitre 0
+			flux_Droit flux_Droit periode 5 numero_elem_sur_maitre 0
+			flux_Bas flux_Bas periode 5 numero_elem_sur_maitre 0
 			sonde_T temperature periode 5. points 1 0.45 0.45
 			sonde_T1 temperature periode 5. segment 21 0. 0.45 1. 0.45
 			sonde_T2 temperature periode 5. segment 21 0.45 0. 0.45 1.
