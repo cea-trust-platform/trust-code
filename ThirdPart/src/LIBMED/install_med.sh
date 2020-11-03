@@ -51,7 +51,8 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   # fPIC is not there by default in MED autotools ...
   CFLAGS="${CFLAGS} -fPIC"
   CPPFLAGS="${CPPFLAGS} -fPIC"
-  export CFLAGS CPPFLAGS
+  FFLAGS="${FFLAGS} -fPIC"
+  export CFLAGS CPPFLAGS FFLAGS
 
   # Options: no Python, static libraries and path to HDF5 
   options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
