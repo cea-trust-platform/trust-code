@@ -184,6 +184,9 @@ try:
     problem_read_generic.read_val=read_val_pb_ft
     problem_read_generic.print_lire=print_lire_pb_ft
     problem_read_generic.get_list_ref=get_list_ref_ft_disc_gen
+    probleme_ft_disc_gen.read_val=read_val_pb_ft
+    probleme_ft_disc_gen.print_lire=print_lire_pb_ft
+    probleme_ft_disc_gen.get_list_ref=get_list_ref_ft_disc_gen
 except NameError:
     print("problem_read_generic not defined  ... pass")
     pass
