@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,10 +37,10 @@
 class Op_Diff_CoviMAC_Elem : public Op_Diff_CoviMAC_base
 {
 
-  Declare_instanciable( Op_Diff_CoviMAC_Elem ) ;
+  Declare_instanciable_sans_constructeur( Op_Diff_CoviMAC_Elem ) ;
 
 public :
-
+  Op_Diff_CoviMAC_Elem();
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   virtual void calculer_flux_bord(const DoubleTab& inco) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;

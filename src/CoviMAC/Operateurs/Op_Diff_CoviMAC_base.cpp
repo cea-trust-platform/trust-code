@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,8 @@ void Op_Diff_CoviMAC_base::mettre_a_jour(double t)
 void Op_Diff_CoviMAC_base::completer()
 {
   Operateur_base::completer();
-  if (equation().que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
+  const Equation_base& eq = equation();
+  if (eq.que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
   zone.creer_tableau_faces(nu_fac_);
@@ -81,8 +82,8 @@ void Op_Diff_CoviMAC_base::completer()
   /* interpolations de nu.grad T : on prend les tailles maximales possibles */
   zone.init_feb();
   phif_d.resize(zone.nb_faces_tot() + 1), phif_j.resize(zone.feb_d(zone.nb_faces_tot()));
-  phif_c.resize(zone.feb_d(zone.nb_faces_tot()), equation().inconnue().valeurs().line_size());
-  phif_xb.resize(zone.nb_faces_tot(), equation().inconnue().valeurs().line_size(), dimension);
+  phif_c.resize(zone.feb_d(zone.nb_faces_tot()), eq.inconnue().valeurs().line_size());
+  phif_xb.resize(zone.nb_faces_tot(), eq.inconnue().valeurs().line_size(), dimension);
 
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) && !has_diffusivite_turbulente();
   nu_a_jour_ = 0;

@@ -41,10 +41,15 @@
 #include <MD_Vector_base.h>
 #include <cmath>
 
-Implemente_instanciable( Op_Diff_CoviMAC_Elem          , "Op_Diff_CoviMAC_Elem|Op_Diff_CoviMAC_var_Elem"                                , Op_Diff_CoviMAC_base ) ;
+Implemente_instanciable_sans_constructeur( Op_Diff_CoviMAC_Elem          , "Op_Diff_CoviMAC_Elem|Op_Diff_CoviMAC_var_Elem"                                , Op_Diff_CoviMAC_base ) ;
 Implemente_instanciable( Op_Dift_CoviMAC_Elem          , "Op_Dift_CoviMAC_P0_CoviMAC|Op_Dift_CoviMAC_var_P0_CoviMAC"                    , Op_Diff_CoviMAC_Elem ) ;
 Implemente_instanciable( Op_Diff_Nonlinear_CoviMAC_Elem, "Op_Diff_nonlinear_CoviMAC_Elem|Op_Diff_nonlinear_CoviMAC_var_Elem"            , Op_Diff_CoviMAC_Elem ) ;
 Implemente_instanciable( Op_Dift_Nonlinear_CoviMAC_Elem, "Op_Dift_CoviMAC_P0_CoviMAC_nonlinear|Op_Dift_CoviMAC_var_P0_CoviMAC_nonlinear", Op_Diff_CoviMAC_Elem ) ;
+
+Op_Diff_CoviMAC_Elem::Op_Diff_CoviMAC_Elem()
+{
+  declare_support_masse_volumique(1);
+}
 
 Sortie& Op_Diff_CoviMAC_Elem::printOn( Sortie& os ) const
 {
@@ -89,16 +94,17 @@ Entree& Op_Dift_Nonlinear_CoviMAC_Elem::readOn( Entree& is )
 void Op_Diff_CoviMAC_Elem::completer()
 {
   Op_Diff_CoviMAC_base::completer();
-  const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
+  const Equation_base& eq = equation();
+  const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, eq.inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_CoviMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
   ch.init_cl();
-  int nb_comp = (equation().que_suis_je() == "Transport_K_Eps") ? 2 : 1;
+  int nb_comp = (eq.que_suis_je() == "Transport_K_Eps") ? 2 : 1;
   flux_bords_.resize(zone.premiere_face_int(), nb_comp);
 
   if (!que_suis_je().debute_par("Op_Dift")) return;
-  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
+  const RefObjU& modele_turbulence = eq.get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
   const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
   associer_diffusivite_turbulente(lambda_t);
@@ -173,7 +179,9 @@ DoubleTab& Op_Diff_CoviMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
         else if (ch.fcl(f, 0) == 3) abort(); //monolithique
         else if (ch.fcl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
             {
-              phi(n) = ref_cast(Neumann_homogene, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+              if (sub_type(Neumann_homogene, cls[ch.fcl(f, 1)].valeur())) phi(n) = ref_cast(Neumann_homogene, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+              else if (sub_type(Neumann, cls[ch.fcl(f, 1)].valeur())) phi(n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+              else phi(n) = 0.;
               Tb(f, n) = inco.addr()[N * e + n] - phi(n) / h_int(n);
             }
         else for (n = 0; n < N; n++) //Dirichlet

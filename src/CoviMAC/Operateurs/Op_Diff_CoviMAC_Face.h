@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,9 @@ public :
   void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
   void dimensionner(Matrice_Morse& mat) const;
+protected :
+  DoubleVect porosite_e;
+  DoubleVect porosite_f;
 private:
   double eps = 0.1; //suppression des modes en echiquier
 };
