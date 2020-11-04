@@ -12,7 +12,7 @@ Parameters
  TestCase Hexa/jdd_1 cas.data
  TestCase Tetra/jdd_1 cas.data
  TestCase PrismHexa/jdd_1 cas.data
- TestCase Kershaw/jdd_1 cas.data
+ TestCase Kershaw/jdd_2 cas.data
  TestCase LocRaf/jdd_1 cas.data
  TestCase Random/jdd_1 cas.data
  TestCase CheckerBoard/jdd_1 cas.data
@@ -172,72 +172,64 @@ Chapter
         visu
     {
         normal3D 0. 0. 1.
-        mesh Voronoi/jdd_1/cas.lata dom
-        Description "Voronoi"
+         mesh Voronoi/jdd_1/cas.lata dom         Description "Voronoi"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh Prism/jdd_1/cas.lata dom
-        Description "Prism"
+         mesh Prism/jdd_1/cas.lata dom         Description "Prism"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh Hexa/jdd_1/cas.lata dom
-        Description "Hexa"
+         mesh Hexa/jdd_1/cas.lata dom         Description "Hexa"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh Tetra/jdd_1/cas.lata dom
-        Description "Tetra"
+         mesh Tetra/jdd_1/cas.lata dom         Description "Tetra"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh PrismHexa/jdd_1/cas.lata dom
-        Description "PrismHexa"
+         mesh PrismHexa/jdd_1/cas.lata dom         Description "PrismHexa"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh Kershaw/jdd_1/cas.lata dom
-        Description "Kershaw"
+         mesh Kershaw/jdd_2/cas.lata dom
+                Description "Kershaw"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh LocRaf/jdd_1/cas.lata dom
-        Description "LocRaf"
+         mesh LocRaf/jdd_1/cas.lata dom         Description "LocRaf"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh Random/jdd_1/cas.lata dom
-        Description "Random"
+         mesh Random/jdd_1/cas.lata dom         Description "Random"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-        mesh CheckerBoard/jdd_1/cas.lata dom
-        Description "CheckerBoard"
+         mesh CheckerBoard/jdd_1/cas.lata dom         Description "CheckerBoard"
         nb_img_without_newline 3
         width 5cm
     }
