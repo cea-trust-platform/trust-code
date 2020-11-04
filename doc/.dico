@@ -13,6 +13,7 @@
  ArrOfInt ArrOfInt ArrOfInt.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h
+ Assembleur_P_CoviMAC Assembleur_P_CoviMAC Assembleur_P_CoviMAC.h
  Assembleur_P_EF Assembleur_P_EF Assembleur_P_EF.h
  Assembleur_P_PolyMAC Assembleur_P_PolyMAC Assembleur_P_PolyMAC.h
  Assembleur_P_VDF Assembleur_P_VDF Assembleur_P_VDF.h
@@ -28,6 +29,7 @@
  Bord Bord Bord.h
  Bords Bords Bords.h
  Boundary_field_inward Boundary_field_inward Boundary_field_inward.h
+ Boussinesq_CoviMAC_Face Terme_Boussinesq_CoviMAC_Face Terme_Boussinesq_CoviMAC_Face.h
  Boussinesq_PolyMAC_Face Terme_Boussinesq_PolyMAC_Face Terme_Boussinesq_PolyMAC_Face.h
  Boussinesq_VDF_Face Terme_Boussinesq_VDF_Face Terme_Boussinesq_VDF_Face.h
  Boussinesq_VEFPreP1B_P1NC Terme_Boussinesq_VEFPreP1B_Face Terme_Boussinesq_VEFPreP1B_Face.h
@@ -51,10 +53,12 @@
  Champ_Don_Face_lu Champ_Don_Face_lu Champ_Don_Face_lu.h
  Champ_Don_lu Champ_Don_lu Champ_Don_lu.h
  Champ_Face Champ_Face Champ_Face.h
+ Champ_Face_CoviMAC Champ_Face_CoviMAC Champ_Face_CoviMAC.h
  Champ_Face_PolyMAC Champ_Face_PolyMAC Champ_Face_PolyMAC.h
  Champ_Fonc Champ_Fonc Champ_Fonc.h
  Champ_Fonc_base Champ_Fonc_base Champ_Fonc_base.h
  Champ_Fonc_Face Champ_Fonc_Face Champ_Fonc_Face.h
+ Champ_Fonc_Face_CoviMAC Champ_Fonc_Face_CoviMAC Champ_Fonc_Face_CoviMAC.h
  Champ_Fonc_Face_PolyMAC Champ_Fonc_Face_PolyMAC Champ_Fonc_Face_PolyMAC.h
  Champ_Fonc_Fonction Champ_Fonc_Fonction Champ_Fonc_Fonction.h
  Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz.h
@@ -65,6 +69,7 @@
  Champ_Fonc_MED_Tabule Champ_Fonc_MED_Tabule Champ_Fonc_MED_Tabule.h
  Champ_Fonc_Morceaux Champ_Fonc_Morceaux Champ_Fonc_Morceaux.h
  Champ_Fonc_P0_base Champ_Fonc_P0_base Champ_Fonc_P0_base.h
+ Champ_Fonc_P0_CoviMAC Champ_Fonc_P0_CoviMAC Champ_Fonc_P0_CoviMAC.h
  Champ_Fonc_P0_EF Champ_Fonc_P0_EF Champ_Fonc_P0_EF.h
  Champ_Fonc_P0_MED Champ_Fonc_P0_MED Champ_Fonc_P0_MED.h
  Champ_Fonc_P0_PolyMAC Champ_Fonc_P0_PolyMAC Champ_Fonc_P0_PolyMAC.h
@@ -72,6 +77,7 @@
  Champ_Fonc_P0_VEF Champ_Fonc_P0_VEF Champ_Fonc_P0_VEF.h
  Champ_Fonc_P1NC Champ_Fonc_P1NC Champ_Fonc_P1NC.h
  Champ_Fonc_P1_base Champ_Fonc_P1_base Champ_Fonc_P1_base.h
+ Champ_Fonc_P1_CoviMAC Champ_Fonc_P1_CoviMAC Champ_Fonc_P1_CoviMAC.h
  Champ_Fonc_P1_EF Champ_Fonc_P1_EF Champ_Fonc_P1_EF.h
  Champ_Fonc_P1_isoP1Bulle Champ_Fonc_P1_isoP1Bulle Champ_Fonc_P1_isoP1Bulle.h
  Champ_Fonc_P1_MED Champ_Fonc_P1_MED Champ_Fonc_P1_MED.h
@@ -80,6 +86,7 @@
  Champ_Fonc_P1_VEF Champ_Fonc_P1_VEF Champ_Fonc_P1_VEF.h
  Champ_Fonc_Q1NC Champ_Fonc_Q1NC Champ_Fonc_Q1NC.h
  Champ_Fonc_Q1_base Champ_Fonc_Q1_base Champ_Fonc_Q1_base.h
+ Champ_Fonc_Q1_CoviMAC Champ_Fonc_Q1_CoviMAC Champ_Fonc_Q1_CoviMAC.h
  Champ_Fonc_Q1_EF Champ_Fonc_Q1_EF Champ_Fonc_Q1_EF.h
  Champ_Fonc_Q1_MED Champ_Fonc_Q1_MED Champ_Fonc_Q1_MED.h
  Champ_Fonc_Q1_PolyMAC Champ_Fonc_Q1_PolyMAC Champ_Fonc_Q1_PolyMAC.h
@@ -88,6 +95,7 @@
  Champ_Fonc_reprise Champ_Fonc_reprise Champ_Fonc_reprise.h
  Champ_Fonc_t Champ_Fonc_t Champ_Fonc_t.h
  Champ_Fonc_Tabule Champ_Fonc_Tabule Champ_Fonc_Tabule.h
+ Champ_Fonc_Tabule_P0_CoviMAC Champ_Fonc_Tabule_P0_CoviMAC Champ_Fonc_Tabule_P0_CoviMAC.h
  Champ_Fonc_Tabule_P0_EF Champ_Fonc_Tabule_P0_EF Champ_Fonc_Tabule_P0_EF.h
  Champ_Fonc_Tabule_P0_PolyMAC Champ_Fonc_Tabule_P0_PolyMAC Champ_Fonc_Tabule_P0_PolyMAC.h
  Champ_Fonc_Tabule_P0_VDF Champ_Fonc_Tabule_P0_VDF Champ_Fonc_Tabule_P0_VDF.h
@@ -149,11 +157,13 @@
  Champ_Ostwald Champ_Ostwald Champ_Ostwald.h
  Champ_Ostwald_VDF Champ_Ostwald_VDF Champ_Ostwald_VDF.h
  Champ_Ostwald_VEF Champ_Ostwald_VEF Champ_Ostwald_VEF.h
+ Champ_P0_CoviMAC Champ_P0_CoviMAC Champ_P0_CoviMAC.h
  Champ_P0_EF Champ_P0_EF Champ_P0_EF.h
  Champ_P0_PolyMAC Champ_P0_PolyMAC Champ_P0_PolyMAC.h
  Champ_P0_VDF Champ_P0_VDF Champ_P0_VDF.h
  Champ_P0_VEF Champ_P0_VEF Champ_P0_VEF.h
  Champ_P1NC Champ_P1NC Champ_P1NC.h
+ Champ_P1_CoviMAC Champ_P1_CoviMAC Champ_P1_CoviMAC.h
  Champ_P1_EF Champ_P1_EF Champ_P1_EF.h
  Champ_P1_iso Champ_P1_iso Champ_P1_iso.h
  Champ_P1_isoP1Bulle Champ_P1_isoP1Bulle Champ_P1_isoP1Bulle.h
@@ -162,6 +172,7 @@
  Champ_Post_Statistiques_Ecart_Type|Ecart_Type Champ_Generique_Ecart_Type Champ_Generique_Ecart_Type.h
  Champ_Post_Statistiques_Moyenne|Moyenne Champ_Generique_Moyenne Champ_Generique_Moyenne.h
  Champ_Q1NC Champ_Q1NC Champ_Q1NC.h
+ Champ_Q1_CoviMAC Champ_Q1_CoviMAC Champ_Q1_CoviMAC.h
  Champ_Q1_EF Champ_Q1_EF Champ_Q1_EF.h
  Champ_Q1_PolyMAC Champ_Q1_PolyMAC Champ_Q1_PolyMAC.h
  Champ_som_lu Champ_som_lu Champ_som_lu.h
@@ -206,6 +217,7 @@
  Cosh Cosh StdFunction.h
  Couplage_U Couplage_U Couplage_U.h
  Courant_maille_Champ_Face Courant_maille_Champ_Face Courant_maille_Champ_Face.h
+ CoviMAC CoviMAC_discretisation CoviMAC_discretisation.h
  Create_domain_from_sous_zone Create_domain_from_sous_zone Create_domain_from_sous_zone.h
  Critere_Q_Champ_Face Critere_Q_Champ_Face Critere_Q_Champ_Face.h
  Critere_Q_Champ_P1NC Critere_Q_Champ_P1NC Critere_Q_Champ_P1NC.h
@@ -250,6 +262,7 @@
  DoubleTrav DoubleTrav DoubleTrav.h
  DoubleVect DoubleVect DoubleVect.h
  DoubleVects DoubleVects DoubleVects.h
+ DP_Impose_Face_CoviMAC DP_Impose_CoviMAC_Face DP_Impose_CoviMAC_Face.h
  DP_Impose_Face_PolyMAC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
  Echange_thermique_h_imp_VDF_P0_VDF Source_Echange_Th_VDF Source_Echange_Th_VDF.h
@@ -277,6 +290,8 @@
  EFichier EFichier EFichier.h
  EFichierBin EFichierBin EFichierBin.h
  EF_axi EF_axi_discretisation EF_axi_discretisation.h
+ Elem_CoviMAC Elem_CoviMAC Elem_CoviMAC.h
+ Elem_CoviMAC_base Elem_CoviMAC_base Elem_CoviMAC_base.h
  Elem_EF Elem_EF Elem_EF.h
  Elem_EF_base Elem_EF_base Elem_EF_base.h
  Elem_geom Elem_geom Elem_geom.h
@@ -360,12 +375,14 @@
  Gradient Champ_Generique_Gradient Champ_Generique_Gradient.h
  gradient_temperature_Champ_P1NC grad_T_Champ_P1NC grad_T_Champ_P1NC.h
  grad_U_Champ_Face grad_U_Champ_Face grad_U_Champ_Face.h
+ grad_U_Champ_Face_CoviMAC grad_U_Champ_Face_CoviMAC grad_U_Champ_Face_CoviMAC.h
  grad_U_Champ_Face_PolyMAC grad_U_Champ_Face_PolyMAC grad_U_Champ_Face_PolyMAC.h
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
  Hexaedre_VEF Hexaedre_VEF Hexaedre_VEF.h
+ Hexa_CoviMAC Hexa_CoviMAC Hexa_CoviMAC.h
  Hexa_EF Hexa_EF Hexa_EF.h
  Hexa_PolyMAC Hexa_PolyMAC Hexa_PolyMAC.h
  Hexa_VEF Hexa_VEF Hexa_VEF.h
@@ -389,8 +406,12 @@
  IntTrav IntTrav IntTrav.h
  IntVect IntVect IntVect.h
  IntVects IntVects IntVects.h
+ Iterateur_CoviMAC Iterateur_CoviMAC Iterateur_CoviMAC_base.h
+ Iterateur_CoviMAC_base Iterateur_CoviMAC_base Iterateur_CoviMAC_base.h
  Iterateur_PolyMAC Iterateur_PolyMAC Iterateur_PolyMAC_base.h
  Iterateur_PolyMAC_base Iterateur_PolyMAC_base Iterateur_PolyMAC_base.h
+ Iterateur_Source_CoviMAC Iterateur_Source_CoviMAC Iterateur_Source_CoviMAC.h
+ Iterateur_Source_CoviMAC_base Iterateur_Source_CoviMAC_base Iterateur_Source_CoviMAC_base.h
  Iterateur_Source_EF Iterateur_Source_EF Iterateur_Source_EF.h
  Iterateur_Source_EF_base Iterateur_Source_EF_base Iterateur_Source_EF_base.h
  Iterateur_Source_PolyMAC Iterateur_Source_PolyMAC Iterateur_Source_PolyMAC.h
@@ -435,6 +456,8 @@
  Mailler Mailler Mailler.h
  MaillerParallel MaillerParallel MaillerParallel.h
  Marqueur_Lagrange_base Marqueur_Lagrange_base Marqueur_Lagrange_base.h
+ Masse_CoviMAC_Elem Masse_CoviMAC_Elem Masse_CoviMAC_Elem.h
+ Masse_CoviMAC_Face Masse_CoviMAC_Face Masse_CoviMAC_Face.h
  Masse_EF Solveur_Masse_EF Solveur_Masse_EF.h
  Masse_PolyMAC_Elem Masse_PolyMAC_Elem Masse_PolyMAC_Elem.h
  Masse_PolyMAC_Face Masse_PolyMAC_Face Masse_PolyMAC_Face.h
@@ -498,8 +521,11 @@
  Operateur_Grad_base Operateur_Grad_base Operateur_Grad_base.h
  Operateur_Statistique_tps Operateur_Statistique_tps Operateur_Statistique_tps.h
  Operateur_Statistique_tps_base Operateur_Statistique_tps_base Operateur_Statistique_tps_base.h
+ Option_CoviMAC Option_CoviMAC Option_CoviMAC.h
  Option_VDF Option_VDF Option_VDF.h
  Op_Conv_AmontNew_VEF_P1NC Op_Conv_AmontNew_VEF_Face Op_Conv_AmontNew_VEF_Face.h
+ Op_Conv_Amont_CoviMAC_Elem_CoviMAC Op_Conv_Amont_CoviMAC_Elem Op_Conv_Amont_CoviMAC_Elem.h
+ Op_Conv_Amont_CoviMAC_Face_CoviMAC Op_Conv_Amont_CoviMAC_Face Op_Conv_Amont_CoviMAC_Face.h
  Op_Conv_Amont_old_VEF_P1NC Op_Conv_Amont_old_VEF_Face Op_Conv_Amont_old_VEF_Face.h
  Op_Conv_Amont_PolyMAC_Elem_PolyMAC Op_Conv_Amont_PolyMAC_Elem Op_Conv_Amont_PolyMAC_Elem.h
  Op_Conv_Amont_PolyMAC_Face_PolyMAC Op_Conv_Amont_PolyMAC_Face Op_Conv_Amont_PolyMAC_Face.h
@@ -510,6 +536,8 @@
  Op_Conv_centre4_VDF_Face Op_Conv_centre4_VDF_Face Op_Conv_centre4_VDF_Face.h
  Op_Conv_Centre4_VDF_P0_VDF Op_Conv_centre4_VDF_Elem Op_Conv_centre4_VDF_Elem.h
  Op_Conv_Centre4_VEF_P1NC OpVEF_Centre4 OpVEF_Centre4.h
+ Op_Conv_Centre_CoviMAC_Elem_CoviMAC Op_Conv_Centre_CoviMAC_Elem Op_Conv_Centre_CoviMAC_Elem.h
+ Op_Conv_Centre_CoviMAC_Face_CoviMAC Op_Conv_Centre_CoviMAC_Face Op_Conv_Centre_CoviMAC_Face.h
  Op_Conv_Centre_EF_VEF_P1NC Op_Conv_Centre_EF_VEF_Face Op_Conv_Centre_EF_VEF_Face.h
  Op_Conv_Centre_old_VEF_P1NC Op_Conv_Centre_old_VEF_Face Op_Conv_Centre_old_VEF_Face.h
  Op_Conv_Centre_PolyMAC_Elem_PolyMAC Op_Conv_Centre_PolyMAC_Elem Op_Conv_Centre_PolyMAC_Elem.h
@@ -518,8 +546,11 @@
  Op_Conv_Centre_VDF_P0_VDF Op_Conv_centre_VDF_Elem Op_Conv_centre_VDF_Elem.h
  Op_Conv_Centre_VEF_P1NC Op_Conv_Centre_VEF_Face Op_Conv_Centre_VEF_Face.h
  Op_Conv_Conserve_Ec_VEF_P1NC Op_Conv_Vort_VEF_Face Op_Conv_Vort_VEF_Face.h
+ Op_Conv_CoviMAC_base Op_Conv_CoviMAC_base Op_Conv_CoviMAC_base.h
+ Op_Conv_CoviMAC_iterateur_base Op_Conv_CoviMAC_iterateur_base Op_Conv_CoviMAC_iterateur_base.h
  Op_Conv_DI_L2_VEF_P1NC Op_Conv_DI_L2_VEF_Face Op_Conv_DI_L2_VEF_Face.h
  Op_Conv_EF_base Op_Conv_EF_base Op_Conv_EF_base.h
+ Op_Conv_EF_Stab_CoviMAC_Face_CoviMAC Op_Conv_EF_Stab_CoviMAC_Face Op_Conv_EF_Stab_CoviMAC_Face.h
  Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC Op_Conv_EF_Stab_PolyMAC_Face Op_Conv_EF_Stab_PolyMAC_Face.h
  Op_Conv_EF_Stab_VEF_P1NC Op_Conv_EF_VEF_P1NC_Stab Op_Conv_EF_VEF_P1NC_Stab.h
  Op_Conv_EF_VEF_P1NC Op_Conv_EF_VEF_P1NC Op_Conv_EF_VEF_P1NC.h
@@ -544,9 +575,13 @@
  Op_Conv_VEF_base Op_Conv_VEF_base Op_Conv_VEF_base.h
  Op_Correlation Op_Correlation Op_Correlation.h
  Op_Curl_VEFPreP1B_P1NC Op_Curl_VEFP1B Op_Curl_VEFP1B.h
+ Op_Diff_CoviMAC_base Op_Diff_CoviMAC_base Op_Diff_CoviMAC_base.h
+ Op_Diff_CoviMAC_Elem|Op_Diff_CoviMAC_var_Elem Op_Diff_CoviMAC_Elem Op_Diff_CoviMAC_Elem.h
+ Op_Diff_CoviMAC_Face|Op_Dift_CoviMAC_Face_CoviMAC Op_Diff_CoviMAC_Face Op_Diff_CoviMAC_Face.h
  Op_Diff_EF Op_Diff_EF Op_Diff_EF.h
  Op_Diff_EF_base Op_Diff_EF_base Op_Diff_EF_base.h
  Op_Diff_negligeable Op_Diff_negligeable Op_Diff_negligeable.h
+ Op_Diff_nonlinear_CoviMAC_Elem|Op_Diff_nonlinear_CoviMAC_var_Elem Op_Diff_Nonlinear_CoviMAC_Elem Op_Diff_CoviMAC_Elem.h
  Op_Diff_nonlinear_PolyMAC_Elem|Op_Diff_nonlinear_PolyMAC_var_Elem Op_Diff_Nonlinear_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
  Op_Diff_option_EF Op_Diff_option_EF Op_Diff_EF.h
  Op_Diff_PolyMAC_base Op_Diff_PolyMAC_base Op_Diff_PolyMAC_base.h
@@ -579,6 +614,8 @@
  Op_Diff_VEF_ROTROT_const_P1NC Op_Diff_RotRot Op_Diff_RotRot.h
  Op_Diff_VEF_var_P1NC Op_Diff_VEF_Face_Var Op_Diff_VEF_Face_Var.h
  Op_Diff_VEF_var_Q1NC Op_Diff_VEF_Face_Var_Q1 Op_Diff_VEF_Face_Var_Q1.h
+ Op_Dift_CoviMAC_P0_CoviMAC_nonlinear|Op_Dift_CoviMAC_var_P0_CoviMAC_nonlinear Op_Dift_Nonlinear_CoviMAC_Elem Op_Diff_CoviMAC_Elem.h
+ Op_Dift_CoviMAC_P0_CoviMAC|Op_Dift_CoviMAC_var_P0_CoviMAC Op_Dift_CoviMAC_Elem Op_Diff_CoviMAC_Elem.h
  Op_Dift_negligeable Op_Dift_negligeable Op_Diff_negligeable.h
  Op_Dift_PolyMAC_P0_PolyMAC_nonlinear|Op_Dift_PolyMAC_var_P0_PolyMAC_nonlinear Op_Dift_Nonlinear_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
  Op_Dift_PolyMAC_P0_PolyMAC|Op_Dift_PolyMAC_var_P0_PolyMAC Op_Dift_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
@@ -605,6 +642,7 @@
  Op_Dift_VEF_var_P1NC Op_Dift_VEF_Face_Var Op_Dift_VEF_Face_Var.h
  Op_Dift_VEF_Var_P1NC_stab Op_Dift_Stab_VEF_Face_Var Op_Dift_Stab_VEF_Face_Var.h
  Op_Dift_VEF_Var_P1NC_standard Op_Dift_standard_VEF_Face_Var Op_Dift_standard_VEF_Face_Var.h
+ Op_Div_CoviMAC Op_Div_CoviMAC Op_Div_CoviMAC.h
  Op_Div_EF Op_Div_EF Op_Div_EF.h
  Op_Div_PolyMAC Op_Div_PolyMAC Op_Div_PolyMAC.h
  Op_Div_VDF_base Op_Div_VDF_base Op_Div_VDF_base.h
@@ -612,6 +650,7 @@
  Op_Div_VEFPreP1B_P1NC Op_Div_VEFP1B_Elem Op_Div_VEFP1B_Elem.h
  Op_Div_VEF_P1NC Op_Div_VEF_Elem Op_Div_VEF_Elem.h
  Op_Ecart_type Op_Ecart_type Op_Ecart_type.h
+ Op_Grad_CoviMAC_Face Op_Grad_CoviMAC_Face Op_Grad_CoviMAC_Face.h
  Op_Grad_EF Op_Grad_EF Op_Grad_EF.h
  Op_Grad_P0_to_Face Op_Grad_P0_to_Face Op_Grad_P0_to_Face.h
  Op_Grad_P1NC_to_P0 Op_Grad_P1NC_to_P0 Op_Grad_P1NC_to_P0.h
@@ -637,6 +676,7 @@
  Paroi_Echange_contact_Colburn_VDF Echange_contact_Colburn_VDF Echange_contact_Colburn_VDF.h
  Paroi_Echange_contact_Correlation_VDF Echange_contact_Correlation_VDF Echange_contact_Correlation_VDF.h
  Paroi_Echange_contact_Correlation_VEF Echange_contact_Correlation_VEF Echange_contact_Correlation_VEF.h
+ Paroi_Echange_contact_CoviMAC Echange_contact_CoviMAC Echange_contact_CoviMAC.h
  Paroi_Echange_contact_Plaque_Parallele_Flux_Cte_VDF Echange_contact_VDF_Plaque_Flux_Cte Echange_contact_VDF_Plaque_Flux_Cte.h
  Paroi_Echange_contact_PolyMAC Echange_contact_PolyMAC Echange_contact_PolyMAC.h
  Paroi_Echange_contact_VDF Echange_contact_VDF Echange_contact_VDF.h
@@ -671,15 +711,21 @@
  Pb_Thermohydraulique_Concentration Pb_Thermohydraulique_Concentration Pb_Thermohydraulique_Concentration.h
  Pb_Thermohydraulique_QC Pb_Thermohydraulique_QC Pb_Thermohydraulique_QC.h
  Periodique Periodique Periodique.h
+ Perte_Charge_Anisotrope_Face_CoviMAC Perte_Charge_Anisotrope_CoviMAC_Face Perte_Charge_Anisotrope_CoviMAC_Face.h
  Perte_Charge_Anisotrope_Face_PolyMAC Perte_Charge_Anisotrope_PolyMAC_Face Perte_Charge_Anisotrope_PolyMAC_Face.h
  Perte_Charge_Anisotrope_QC_VEF_P1NC Perte_Charge_Anisotrope_QC_VEF_P1NC Source_QC_VEF_P1NC.h
  Perte_Charge_Anisotrope_VEF_P1NC Perte_Charge_Anisotrope_VEF_P1NC Perte_Charge_Anisotrope_VEF_P1NC.h
+ Perte_Charge_Circulaire_Face_CoviMAC Perte_Charge_Circulaire_CoviMAC_Face Perte_Charge_Circulaire_CoviMAC_Face.h
  Perte_Charge_Circulaire_Face_PolyMAC Perte_Charge_Circulaire_PolyMAC_Face Perte_Charge_Circulaire_PolyMAC_Face.h
  Perte_Charge_Circulaire_QC_VEF_P1NC Perte_Charge_Circulaire_QC_VEF_P1NC Source_QC_VEF_P1NC.h
  Perte_Charge_Circulaire_VEF_P1NC Perte_Charge_Circulaire_VEF_P1NC Perte_Charge_Circulaire_VEF_P1NC.h
+ Perte_Charge_CoviMAC Perte_Charge_CoviMAC Perte_Charge_CoviMAC.h
+ Perte_Charge_CoviMAC_Face Perte_Charge_CoviMAC_Face Perte_Charge_CoviMAC_Face.h
+ Perte_Charge_Directionnelle_Face_CoviMAC Perte_Charge_Directionnelle_CoviMAC_Face Perte_Charge_Directionnelle_CoviMAC_Face.h
  Perte_Charge_Directionnelle_Face_PolyMAC Perte_Charge_Directionnelle_PolyMAC_Face Perte_Charge_Directionnelle_PolyMAC_Face.h
  Perte_Charge_Directionnelle_QC_VEF_P1NC Perte_Charge_Directionnelle_QC_VEF_P1NC Source_QC_VEF_P1NC.h
  Perte_Charge_Directionnelle_VEF_P1NC Perte_Charge_Directionnelle_VEF_P1NC Perte_Charge_Directionnelle_VEF_P1NC.h
+ Perte_Charge_Isotrope_Face_CoviMAC Perte_Charge_Isotrope_CoviMAC_Face Perte_Charge_Isotrope_CoviMAC_Face.h
  Perte_Charge_Isotrope_Face_PolyMAC Perte_Charge_Isotrope_PolyMAC_Face Perte_Charge_Isotrope_PolyMAC_Face.h
  Perte_Charge_Isotrope_QC_VEF_P1NC Perte_Charge_Isotrope_QC_VEF_P1NC Source_QC_VEF_P1NC.h
  Perte_Charge_Isotrope_VEF_P1NC Perte_Charge_Isotrope_VEF_P1NC Perte_Charge_Isotrope_VEF_P1NC.h
@@ -689,6 +735,7 @@
  Perte_Charge_Reguliere_QC_VEF_P1NC Perte_Charge_Reguliere_QC_VEF_P1NC Source_QC_VEF_P1NC.h
  Perte_Charge_Reguliere_VDF_Face Perte_Charge_Reguliere_VDF_Face Perte_Charge_Reguliere_VDF_Face.h
  Perte_Charge_Reguliere_VEF_P1NC Perte_Charge_Reguliere_VEF_P1NC Perte_Charge_Reguliere_VEF_P1NC.h
+ Perte_Charge_Singuliere_Face_CoviMAC Perte_Charge_Singuliere_CoviMAC_Face Perte_Charge_Singuliere_CoviMAC_Face.h
  Perte_Charge_Singuliere_Face_PolyMAC Perte_Charge_Singuliere_PolyMAC_Face Perte_Charge_Singuliere_PolyMAC_Face.h
  Perte_Charge_Singuliere_QC_VDF_Face Perte_Charge_Singuliere_QC_VDF_Face Source_QC_VDF_Face.h
  Perte_Charge_Singuliere_QC_VEF_P1NC Perte_Charge_Singuliere_QC_VEF_P1NC Source_QC_VEF_P1NC.h
@@ -703,9 +750,11 @@
  Point Point Point.h
  Point_EF Point_EF Point_EF.h
  Polyedre Polyedre Polyedre.h
+ Polyedre_CoviMAC Polyedre_CoviMAC Polyedre_CoviMAC.h
  Polyedre_PolyMAC Polyedre_PolyMAC Polyedre_PolyMAC.h
  Polyedriser Polyedriser Polyedriser.h
  Polygone Polygone Polygone.h
+ Polygone_CoviMAC Polygone_CoviMAC Polygone_CoviMAC.h
  Polygone_PolyMAC Polygone_PolyMAC Polygone_PolyMAC.h
  PolyMAC PolyMAC_discretisation PolyMAC_discretisation.h
  Polynome Polynome Polynome.h
@@ -728,6 +777,7 @@
  Probleme_Couple Probleme_Couple Probleme_Couple.h
  Probleme_U Probleme_U Probleme_U.h
  Puissance_Thermique_EF Puissance_Thermique_EF Puissance_Thermique_EF.h
+ Puissance_Thermique_P0_CoviMAC Terme_Puissance_Thermique_CoviMAC_Elem Terme_Puissance_Thermique_CoviMAC_Elem.h
  Puissance_Thermique_P0_PolyMAC Terme_Puissance_Thermique_PolyMAC_Elem Terme_Puissance_Thermique_PolyMAC_Elem.h
  Puissance_Thermique_QC_EF Puissance_Thermique_QC_EF Puissance_Thermique_QC_EF.h
  Puissance_Thermique_QC_VDF_P0_VDF Terme_Puissance_Thermique_QC_VDF_Elem Terme_Puissance_Thermique_QC_VDF_Elem.h
@@ -735,6 +785,7 @@
  Puissance_Thermique_VDF_P0_VDF Terme_Puissance_Thermique_VDF_Elem Terme_Puissance_Thermique_VDF_Elem.h
  Puissance_Thermique_VEF_P1NC Terme_Puissance_Thermique_VEF_Face Terme_Puissance_Thermique_VEF_Face.h
  Quadrangle Quadrangle_VEF Quadrangle_VEF.h
+ Quadri_CoviMAC Quadri_CoviMAC Quadri_CoviMAC.h
  Quadri_EF Quadri_EF Quadri_EF.h
  Quadri_PolyMAC Quadri_PolyMAC Quadri_PolyMAC.h
  Quadri_VEF Quadri_VEF Quadri_VEF.h
@@ -802,6 +853,7 @@
  Sch_CN_iteratif Sch_CN_iteratif Sch_CN_iteratif.h
  Segment Segment Segment.h
  Segment_axi Segment_axi Segment_axi.h
+ Segment_CoviMAC Segment_CoviMAC Segment_CoviMAC.h
  Segment_EF Segment_EF Segment_EF.h
  Segment_EF_axi Segment_EF_axi Segment_EF_axi.h
  Segment_PolyMAC Segment_PolyMAC Segment_PolyMAC.h
@@ -826,6 +878,7 @@
  Solveur_Masse Solveur_Masse Solveur_Masse.h
  Solveur_Masse_base Solveur_Masse_base Solveur_Masse_base.h
  Solveur_non_lineaire Solveur_non_lineaire Solveur_non_lineaire.h
+ Solveur_UP Solveur_UP Solveur_UP.h
  Solveur_U_P Solveur_U_P Solveur_U_P.h
  Solv_Cholesky Solv_Cholesky Solv_Cholesky.h
  Solv_GCP Solv_GCP Solv_GCP.h
@@ -847,6 +900,7 @@
  Sources Sources Sources.h
  Source_base Source_base Source_base.h
  Source_Canal_RANS_LES_VEF_P1NC Terme_Source_Canal_RANS_LES_VEF_Face Terme_Source_Canal_RANS_LES_VEF_Face.h
+ Source_Constituant_P0_CoviMAC Terme_Source_Constituant_CoviMAC_Elem Terme_Source_Constituant_CoviMAC_Elem.h
  Source_Constituant_P0_PolyMAC Terme_Source_Constituant_PolyMAC_Elem Terme_Source_Constituant_PolyMAC_Elem.h
  Source_Constituant_VDF_P0_VDF Terme_Source_Constituant_VDF_Elem Terme_Source_Constituant_VDF_Elem.h
  source_Constituant_VEF_P1NC Terme_Source_Constituant_VEF_Face Terme_Source_Constituant_VEF_Face.h
@@ -862,6 +916,7 @@
  Source_Neutronique_VDF_P0_VDF Source_Neutronique_VDF Source_Neutronique_VDF.h
  Source_QC_QDM_Gen_QC Source_QC_QDM_Gen Source_QC_QDM_Gen.h
  Source_Qdm_EF Source_Qdm_EF Source_Qdm_EF.h
+ Source_Qdm_face_CoviMAC Terme_Source_Qdm_Face_CoviMAC Terme_Source_Qdm_Face_CoviMAC.h
  Source_Qdm_face_PolyMAC Terme_Source_Qdm_Face_PolyMAC Terme_Source_Qdm_Face_PolyMAC.h
  Source_Qdm_lambdaup_VEF_P1NC Terme_Source_Qdm_lambdaup_VEF_Face Terme_Source_Qdm_lambdaup_VEF_Face.h
  Source_qdm_QC_VDF_Face Source_qdm_QC_VDF_Face Source_QC_VDF_Face.h
@@ -898,6 +953,8 @@
  Tayl_Green Tayl_Green Tayl_Green.h
  Temperature_imposee_paroi Temperature_imposee_paroi Temperature_imposee_paroi.h
  Terme_Boussinesq_base Terme_Boussinesq_base Terme_Boussinesq_base.h
+ Terme_Puissance_Thermique_CoviMAC_base Terme_Puissance_Thermique_CoviMAC_base Terme_Puissance_Thermique_CoviMAC_base.h
+ Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC.h
  Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC.h
  Terme_Puissance_Thermique_Echange_Impose_VEF_P1NC Terme_Puissance_Thermique_Echange_Impose_VEF_Face Terme_Puissance_Thermique_Echange_Impose_VEF_Face.h
  Terme_Puissance_Thermique_PolyMAC_base Terme_Puissance_Thermique_PolyMAC_base Terme_Puissance_Thermique_PolyMAC_base.h
@@ -905,6 +962,7 @@
  Terme_Puissance_Thermique_VEF_base Terme_Puissance_Thermique_VEF_base Terme_Puissance_Thermique_VEF_base.h
  Terme_Source_Acceleration Terme_Source_Acceleration Terme_Source_Acceleration.h
  Terme_Source_Canal_perio Terme_Source_Canal_perio Terme_Source_Canal_perio.h
+ Terme_Source_CoviMAC_base Terme_Source_CoviMAC_base Terme_Source_CoviMAC_base.h
  Terme_Source_EF_base Terme_Source_EF_base Terme_Source_EF_base.h
  Terme_Source_PolyMAC_base Terme_Source_PolyMAC_base Terme_Source_PolyMAC_base.h
  Terme_Source_VDF_base Terme_Source_VDF_base Terme_Source_VDF_base.h
@@ -918,6 +976,7 @@
  Tetraedriser_homogene_compact Tetraedriser_homogene_compact Tetraedriser_homogene_compact.h
  Tetraedriser_homogene_fin Tetraedriser_homogene_fin Tetraedriser_homogene_fin.h
  Tetraedriser_par_prisme Tetraedriser_par_prisme Tetraedriser_par_prisme.h
+ Tetra_CoviMAC Tetra_CoviMAC Tetra_CoviMAC.h
  Tetra_EF Tetra_EF Tetra_EF.h
  Tetra_PolyMAC Tetra_PolyMAC Tetra_PolyMAC.h
  Tetra_VEF Tetra_VEF Tetra_VEF.h
@@ -956,6 +1015,7 @@
  Trianguler Trianguler Trianguler.h
  Trianguler_fin Trianguler_fin Trianguler_fin.h
  Trianguler_H Trianguler_H Trianguler_H.h
+ Tri_CoviMAC Tri_CoviMAC Tri_CoviMAC.h
  Tri_EF Tri_EF Tri_EF.h
  Tri_PolyMAC Tri_PolyMAC Tri_PolyMAC.h
  Tri_VEF Tri_VEF Tri_VEF.h
@@ -982,6 +1042,7 @@
  Zone Zone Zone.h
  Zones Zones Zones.h
  Zones_dis Zones_dis Zones_dis.h
+ Zone_Cl_CoviMAC Zone_Cl_CoviMAC Zone_Cl_CoviMAC.h
  Zone_Cl_dis Zone_Cl_dis Zone_Cl_dis.h
  Zone_Cl_dis_base Zone_Cl_dis_base Zone_Cl_dis_base.h
  Zone_Cl_EF Zone_Cl_EF Zone_Cl_EF.h
@@ -989,6 +1050,7 @@
  Zone_Cl_VDF Zone_Cl_VDF Zone_Cl_VDF.h
  Zone_Cl_VEF Zone_Cl_VEF Zone_Cl_VEF.h
  Zone_Cl_VEFP1B Zone_Cl_VEFP1B Zone_Cl_VEFP1B.h
+ Zone_CoviMAC Zone_CoviMAC Zone_CoviMAC.h
  Zone_dis Zone_dis Zone_dis.h
  Zone_dis_base Zone_dis_base Zone_dis_base.h
  Zone_EF Zone_EF Zone_EF.h
