@@ -42,16 +42,16 @@ Entree& PDF_model::readOn(Entree& is)
 {
   type_vitesse_imposee_ = 0; //DEFAULT VALUE
   Param param(que_suis_je());
-  param.ajouter("eta",&eta_, Param::REQUIRED); // XD_ADD_P double not_set
+  param.ajouter("eta",&eta_, Param::REQUIRED);
   temps_relax_=1.0e+12;
   param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL);
   echelle_relax_=5.0e-2;
   param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL);
-  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED);  // XD_ADD_P chaine description type de vitesse imposee
+  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED);
   param.dictionnaire("data",0);
   param.dictionnaire("fonction",1);
   param.ajouter_flag("local",&local_);
-  param.ajouter_non_std("vitesse_imposee",(this),Param::REQUIRED); // XD_ADD_P double not_set
+  param.ajouter_non_std("vitesse_imposee",(this),Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   coefku_ = 1./eta_;
   return is;
