@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,11 +62,30 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
 
   if (nb_compo_ == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
+      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+        {
+          le_poly=les_polys(rang_poly);
+          if (le_poly == -1)
+            val(rang_poly, 0) = 0;
+          else
+            for(int dir=0; dir<Objet_U::dimension; dir++)
+              {
+                int face1 = elem_faces(le_poly,dir);
+                int face2 = elem_faces(le_poly,Objet_U::dimension+dir);
+                val1 = ch(face1);
+                val2 = ch(face2);
+
+                som0 = face_sommets(face1,0);
+                som1 = face_sommets(face2,0);
+
+                psi = ( positions(rang_poly,dir) - dom.coord(som0,dir) )
+                      / ( dom.coord(som1,dir) - dom.coord(som0,dir) ) ;
+                if (est_egal(psi,0) || est_egal(psi,1))
+                  val(rang_poly,0) = interpolation(val1,val2,psi);
+              }
+        }
     }
-  else // (nb_compo_ != 1)
+  else // (nb_compo_ != 1) */
     {
       for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
         {
