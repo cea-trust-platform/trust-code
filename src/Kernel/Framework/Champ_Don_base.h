@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Champ_Don_base : public Champ_base
 {
   Declare_base(Champ_Don_base);
 public:
-
+  using Champ_Proto::valeurs;
   DoubleTab& valeurs();
   const DoubleTab& valeurs() const;
   inline operator DoubleTab& ();

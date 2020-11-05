@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -509,7 +509,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
           }// sub_type Dirichlet
 
 
-        else if (sub_type(Neumann,la_cl.valeur()) || sub_type(Neumann_homogene,la_cl.valeur()))
+        else if (sub_type(Neumann,la_cl.valeur()) || sub_type(Neumann_homogene,la_cl.valeur()) || sub_type(Neumann_val_ext,la_cl.valeur()))
           {
             //On ne fait rien
           }//fin du if sur Neumann
@@ -771,6 +771,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
         }//fin du if sur "Dirichlet"
 
       else if ( sub_type(Neumann,la_cl.valeur())
+                || sub_type(Neumann_val_ext,la_cl.valeur())
                 || sub_type(Neumann_homogene,la_cl.valeur())
                 || sub_type(Symetrie,la_cl.valeur())
                 || sub_type(Echange_impose_base,la_cl.valeur())

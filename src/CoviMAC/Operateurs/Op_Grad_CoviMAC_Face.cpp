@@ -191,7 +191,7 @@ DoubleTab& Op_Grad_CoviMAC_Face::ajouter_NS(const DoubleTab& inco, DoubleTab& re
   std::map<int, std::map<int, double>> dgp_pf, dpf_ve; //correction de mat_NS pour la pression aux bords de Dirichlet : dependance de l'equation en pf, de pf en ve
   for (f = 0; f < zone.nb_faces_tot(); f++)
     if (ch.fcl(f, 0) == 1) for (n = 0; n < N; n++) //Neumann : valeur imposee
-        pfb(f, n) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
+        pfb(f, n) = ref_cast(Neumann_val_ext, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
     else if (ch.fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0; n < N; n++) //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
         {
           pfb(f, n) = inco.addr()[N * e + n];

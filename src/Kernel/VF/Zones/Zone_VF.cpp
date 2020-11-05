@@ -699,3 +699,21 @@ void Zone_VF::remplir_face_numero_bord()
         }
     }
 }
+
+const DoubleTab& Zone_VF::xv_bord() const
+{
+  if (xv_bord_.get_md_vector() == md_vector_faces_bord()) return xv_bord_; //deja cree
+  xv_bord_.resize(0, dimension), creer_tableau_faces_bord(xv_bord_);
+  std::copy(xv_.addr(), xv_.addr() + dimension * premiere_face_int(), xv_bord_.addr()); //faces reelles : le debut de xv_
+  xv_bord_.echange_espace_virtuel();
+  return xv_bord_;
+}
+
+// Description:
+// renvoie le nombre total de faces sur lesquelles
+// sont appliquees les conditions limites :
+// bords, raccords, plaques.
+inline int Zone_VF::nb_faces_bord_tot() const
+{
+  return md_vector_faces_bord().valeur().get_nb_items_tot();
+}

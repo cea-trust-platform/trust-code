@@ -29,6 +29,7 @@
 #include <Dirichlet_entree_fluide.h>
 #include <Symetrie.h>
 #include <Neumann.h>
+#include <Neumann_val_ext.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Debog.h>
 #include <Probleme_base.h>
@@ -637,7 +638,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
       for (int n_bord=0; n_bord<nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = les_cl[n_bord];
-          if (sub_type(Neumann,la_cl.valeur()))
+          if (sub_type(Neumann,la_cl.valeur()) || sub_type(Neumann_val_ext,la_cl.valeur()))
             {
               const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
               const IntTab& faces_sommets = zone_VEF.face_sommets();

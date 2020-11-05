@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,58 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_CoviMAC.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Champs
-// Version:     1
+// File:        Neumann_val_ext.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_P0_CoviMAC_included
-#define Champ_P0_CoviMAC_included
+#include <Neumann_val_ext.h>
 
-#include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VF.h>
-#include <Zone_CoviMAC.h>
-#include <Operateur.h>
+Implemente_base(Neumann_val_ext,"Neumann_val_ext",Cond_lim_base);
 
-class Zone_CoviMAC;
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_CoviMAC
-// .DESCRIPTION : class Champ_P0_CoviMAC
-//
-// Champ correspondant a une inconnue scalaire (type temperature ou pression)
-// Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
-
-class Champ_P0_CoviMAC : public Champ_Inc_P0_base
+// Description:
+//    Ecrit le type de l'objet sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& s
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Neumann_val_ext::printOn(Sortie& s ) const
 {
-  Declare_instanciable(Champ_P0_CoviMAC);
+  return s << que_suis_je() << "\n";
+}
 
-public :
-
-  const Zone_CoviMAC&        zone_CoviMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int                       imprime(Sortie& , int ) const;
-
-  //tableaux utilitaires sur les CLs
-  //types de CL : 0 -> pas de CL
-  //              1 -> Echange_externe_impose
-  //              2 -> Echange_global_impose
-  //              3 -> Echange_contact_CoviMAC gere en monolithique
-  //              4 -> Neumann_paroi
-  //              5 -> Neumann_val_ext
-  //              6 -> Dirichlet
-  //              7 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab fcl; //fcl(f, .) = (no de la face, type de la CL, no de la CL, indice dans la CL)
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
-};
-
-#endif
+// Description:
+//    Simple appel a: Cond_lim_base::readOn(Entree& )
+// Precondition:
+// Parametre: Entree& s
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree& s
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& Neumann_val_ext::readOn(Entree& s )
+{
+  return Cond_lim_base::readOn(s);
+}

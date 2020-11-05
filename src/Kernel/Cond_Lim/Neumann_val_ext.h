@@ -14,66 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Neumann_sortie_libre.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/17
+// File:        Neumann_val_ext.h
+// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Neumann_sortie_libre_included
-#define Neumann_sortie_libre_included
+#ifndef Neumann_val_ext_included
+#define Neumann_val_ext_included
 
-#include <Neumann_val_ext.h>
+#include <Neumann.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe  Neumann_sortie_libre
-//    Cette classe represente une frontiere ouverte sans vitesse imposee
-//    Pour les equations de Navier_Stokes on impose necessairement
-//    la pression sur une telle frontiere
-//    Pour traiter l'hydraulique, on derive donc de la classe
-//    Neumann_sortie_libre la classe Sortie_libre_pression_imposee
-//    Les conditions aux limites de type Neumann_sortie_libre ou des
-//    types derives se traduisent par des flux diffusifs nuls.
-//    En revanche, le traitement des flux convectifs impose de connaitre
-//    le champ convecte a l'exterieur de la frontiere en cas de re-entree
-//    de fluide. C'est pourquoi la classe porte un Champ_front
-//    (membre le_champ_ext).
-//    Dans les operateurs de calcul, les conditions aux limites
-//    de type Neumann_sortie_libre et des types derives seront traites
-//    de maniere identique
+//    Classe Neumann_val_ext
+//    Cette classe est la classe de base de la hierarchie des conditions
+//    aux limites de type Neumann_val_ext.
+//    Une condition aux limites de type Neumann_val_ext impose la valeur de la derivee
+//    d'un champ inconnue sur une frontiere, ce qui correspond a:
+//      - flux impose pour l'equation de transport d'un scalaire
+//      - contrainte imposee pour l'equation de quantite de mouvement
 // .SECTION voir aussi
-//     Neumann Sortie_libre_pression_imposee
+//     Cond_lim_base Neumann_val_ext_homogene
 //////////////////////////////////////////////////////////////////////////////
-class Neumann_sortie_libre : public Neumann_val_ext
+class Neumann_val_ext : public Neumann
 {
 
-  Declare_instanciable(Neumann_sortie_libre);
+  Declare_base(Neumann_val_ext);
 
 public:
+  virtual const DoubleTab& tab_ext() const = 0;
+  virtual DoubleTab& tab_ext() = 0;
 
-  virtual const DoubleTab& tab_ext() const;
-  virtual DoubleTab& tab_ext();
-
-  virtual double val_ext(int i) const;
-  virtual double val_ext(int i,int j) const;
-  virtual int compatible_avec_eqn(const Equation_base&) const;
-  virtual int initialiser(double temps);
-  virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
-  void verifie_ch_init_nb_comp();
-
-  virtual void fixer_nb_valeurs_temporelles (int nb_cases);
-  virtual void mettre_a_jour(double temps);
-  virtual void set_temps_defaut(double temps);
-  virtual void changer_temps_futur(double temps, int i);
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
-
-protected:
-
-  Champ_front le_champ_ext;
+  virtual double val_ext(int i) const = 0;
+  virtual double val_ext(int i,int j) const = 0;
 
 };
 

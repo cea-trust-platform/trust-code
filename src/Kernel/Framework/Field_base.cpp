@@ -101,6 +101,8 @@ void Field_base::fixer_nb_comp(int i)
 
   if(i==dimension)
     fixer_nature_du_champ(vectoriel);
+  else if(i>dimension)
+    fixer_nature_du_champ(multi_scalaire);
 }
 
 // Description:

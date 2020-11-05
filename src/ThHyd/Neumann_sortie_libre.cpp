@@ -25,7 +25,7 @@
 #include <Equation_base.h>
 #include <Navier_Stokes_std.h>
 
-Implemente_instanciable(Neumann_sortie_libre,"Frontiere_ouverte",Neumann);
+Implemente_instanciable(Neumann_sortie_libre,"Frontiere_ouverte",Neumann_val_ext);
 
 
 // Description:

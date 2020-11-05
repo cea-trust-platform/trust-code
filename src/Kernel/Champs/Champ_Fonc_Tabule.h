@@ -50,6 +50,7 @@ public:
 
   inline void mettre_a_jour(double un_temps);
   inline int initialiser(const double& un_temps);
+  using Champ_Fonc_base::valeurs;
   inline DoubleTab& valeurs();
   inline const DoubleTab& valeurs() const;
   inline void associer_zone_dis_base(const Zone_dis_base&);

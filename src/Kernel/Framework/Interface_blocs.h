@@ -14,58 +14,29 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_CoviMAC.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Champs
-// Version:     1
+// File:        Interface_blocs.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     /main/49
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_P0_CoviMAC_included
-#define Champ_P0_CoviMAC_included
+#ifndef Interface_blocs_included
+#define Interface_blocs_included
 
-#include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VF.h>
-#include <Zone_CoviMAC.h>
-#include <Operateur.h>
+#include <map>
+#include <set>
+#include <DoubleTab.h>
 
-class Zone_CoviMAC;
+class Champ_Inc_base;
+class Matrice_Morse;
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_CoviMAC
-// .DESCRIPTION : class Champ_P0_CoviMAC
-//
-// Champ correspondant a une inconnue scalaire (type temperature ou pression)
-// Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
-
-class Champ_P0_CoviMAC : public Champ_Inc_P0_base
-{
-  Declare_instanciable(Champ_P0_CoviMAC);
-
-public :
-
-  const Zone_CoviMAC&        zone_CoviMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int                       imprime(Sortie& , int ) const;
-
-  //tableaux utilitaires sur les CLs
-  //types de CL : 0 -> pas de CL
-  //              1 -> Echange_externe_impose
-  //              2 -> Echange_global_impose
-  //              3 -> Echange_contact_CoviMAC gere en monolithique
-  //              4 -> Neumann_paroi
-  //              5 -> Neumann_val_ext
-  //              6 -> Dirichlet
-  //              7 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab fcl; //fcl(f, .) = (no de la face, type de la CL, no de la CL, indice dans la CL)
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
-};
+//types de l'interface {dimensionner,ajouter}_blocs
+//derivees d'un DoubleTab par rapport a plusieurs inconues : deriv[nom_inco] = tableau
+//dictionnaire de matrices
+typedef std::map<std::string, Matrice_Morse *> matrices_t;
+//dictionnaires de DoubleTabs
+typedef std::map<std::string, DoubleTab> tabs_t;
+//calcul d'un Champ_Inc a l'instant t, ainsi que de ses derivees et de ses valeurs aux bords
+typedef void (*fonc_calc_t)(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -918,6 +918,7 @@ calculer_divergence_som(DoubleVect& div) const
       num2 = le_bord.nb_faces();
 
       if (sub_type(Neumann,la_cl.valeur()) ||
+          sub_type(Neumann_val_ext,la_cl.valeur()) ||
           sub_type(Neumann_homogene,la_cl.valeur()) ||
           sub_type(Symetrie,la_cl.valeur())
          )

@@ -56,6 +56,7 @@ public :
   inline Champ_Fonc& operator=(const Champ_Fonc& ) ;
   inline void fixer_nb_valeurs_nodales(int ) ;
   inline int nb_valeurs_nodales() const ;
+  using Champ_Proto::valeurs;
   inline DoubleTab& valeurs() ;
   inline const DoubleTab& valeurs() const ;
   inline operator DoubleTab& () ;

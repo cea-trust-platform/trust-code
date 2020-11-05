@@ -86,6 +86,7 @@ public :
   inline int nb_faces_tot() const;
   inline int nb_som_face() const;
   inline int nb_faces_bord() const;
+  inline int nb_faces_bord_tot() const;
   inline int premiere_face_bord() const;
   inline int nb_faces_internes() const;
 
@@ -199,6 +200,8 @@ public :
     return md_vector_aretes_;
   }
 
+  virtual const DoubleTab& xv_bord() const;
+
 private:
   DoubleVect face_surfaces_;                // surface des faces
 
@@ -223,6 +226,7 @@ protected:
   IntTab face_voisins_fictifs_;           // connectivite face/elements fictifs
   DoubleTab xp_;                            // centres de gravite des elements
   DoubleTab xv_;                            // centres de gravite des faces
+  mutable DoubleTab xv_bord_;                       //xv_, mais faces de bord seulement (creation sur demande)
 
   IntTab elem_faces_;                           // connectivite element/faces
   IntTab face_sommets_;                           // sommets des faces
@@ -521,6 +525,7 @@ inline int Zone_VF::nb_faces_bord() const
 {
   return zone().nb_faces_frontiere();
 }
+
 
 // Description:
 // renvoie le numero de la premiere des faces sur lesquelles

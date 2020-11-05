@@ -54,7 +54,6 @@ class Champ_Fonc_MED: public Champ_Fonc_base
   Declare_instanciable(Champ_Fonc_MED);
 
 public :
-
   inline void associer_zone_dis_base(const Zone_dis_base&);
   const Zone_dis_base& zone_dis_base() const;
   virtual void mettre_a_jour(double );
@@ -81,6 +80,7 @@ public :
   {
     return nb_dt;
   }
+  using Champ_Fonc_base::valeurs;
   inline DoubleTab& valeurs();
   inline  virtual const DoubleTab& valeurs() const;
 

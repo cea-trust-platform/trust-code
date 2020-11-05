@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -529,10 +529,10 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
           const Periodique& la_cl_perio = ref_cast(Periodique,cl);
           const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
 
-          int nb_faces_bord_tot = le_bord.nb_faces_tot();
-          IntVect fait(nb_faces_bord_tot);
+          int nf_bord_tot = le_bord.nb_faces_tot();
+          IntVect fait(nf_bord_tot);
           fait = 0;
-          for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+          for(int ind_face=0; ind_face<nf_bord_tot; ind_face++)
             if(!fait(ind_face))
               {
                 int face=le_bord.num_face(ind_face);

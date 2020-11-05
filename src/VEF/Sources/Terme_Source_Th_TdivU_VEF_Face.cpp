@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -122,7 +122,7 @@ void Terme_Source_Th_TdivU_VEF_Face::modifier_zone_cl()
         {
           ;
         }
-      else if (sub_type(Neumann_homogene,la_cl)||sub_type(Neumann,la_cl)||sub_type(Echange_impose_base,la_cl))
+      else if (sub_type(Neumann_homogene,la_cl)||sub_type(Neumann,la_cl)||sub_type(Neumann_val_ext,la_cl)||sub_type(Echange_impose_base,la_cl))
         {
           modif=1;
           new_cl="Frontiere_ouverte T_ext Champ_front_uniforme 1 1";

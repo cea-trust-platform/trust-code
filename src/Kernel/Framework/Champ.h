@@ -87,6 +87,7 @@ public :
                                             DoubleVect& valeurs,
                                             int ncomp) const ;
 
+  using Champ_Proto::valeurs;
   inline DoubleTab& valeurs() ;
   inline const DoubleTab& valeurs() const ;
 

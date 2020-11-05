@@ -448,6 +448,15 @@ DoubleTab& Champ_base::valeur_aux_faces(DoubleTab& result) const
 }
 
 // Description:
+// renvoie la valeur du champ aux faces de bord
+DoubleTab Champ_base::valeur_aux_bords() const
+{
+  const DoubleTab& xv_bord = ref_cast(Zone_VF, zone_dis_base()).xv_bord();
+  DoubleTrav result(xv_bord.dimension_tot(0), valeurs().line_size());
+  return valeur_aux(xv_bord, result);
+}
+
+// Description:
 // mettre_a_jour de la classe de base Champ_base :ne fait rien !
 void Champ_base::mettre_a_jour(double)
 {

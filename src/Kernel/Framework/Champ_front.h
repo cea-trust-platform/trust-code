@@ -63,6 +63,7 @@ public:
   inline void mettre_a_jour(double temps);
   inline void calculer_coeffs_echange(double temps);
 
+  using Champ_Proto::valeurs;
   inline DoubleTab& valeurs() ;
   inline const DoubleTab& valeurs() const ;
 

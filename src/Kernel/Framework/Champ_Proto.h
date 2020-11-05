@@ -55,6 +55,33 @@ public:
   virtual ~Champ_Proto() {};
   virtual DoubleTab& valeurs()=0;
   virtual const DoubleTab& valeurs() const=0;
+
+  /* par defaut, ces methodes renvoient valeurs() */
+  virtual DoubleTab&       valeurs(double temps)
+  {
+    return valeurs();
+  }
+  virtual const DoubleTab&       valeurs(double temps) const
+  {
+    return valeurs();
+  }
+  virtual DoubleTab&       futur(int i=1)
+  {
+    return valeurs();
+  }
+  virtual const DoubleTab& futur(int i=1) const
+  {
+    return valeurs();
+  }
+  virtual DoubleTab&       passe(int i=1)
+  {
+    return valeurs();
+  }
+  virtual const DoubleTab& passe(int i=1) const
+  {
+    return valeurs();
+  }
+
   int lire_dimension(Entree& , const Nom& );
   int lire_dimension(int dim , const Nom& le_nom_);
 

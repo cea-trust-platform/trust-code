@@ -96,6 +96,7 @@ public:
   inline virtual void completer() {};
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
   virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
+  using Champ_Proto::valeurs;
   inline DoubleTab& valeurs();
   inline const DoubleTab& valeurs() const;
   virtual DoubleTab& valeurs_au_temps(double temps)=0;

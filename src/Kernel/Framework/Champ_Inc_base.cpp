@@ -27,8 +27,12 @@
 #include <EcritureLectureSpecial.h>
 #include <Schema_Temps_base.h>
 #include <MD_Vector_tools.h>
+#include <Zone_VF.h>
+#include <Dirichlet.h>
+#include <Neumann_val_ext.h>
+#include <DoubleTrav.h>
 
-Implemente_base(Champ_Inc_base,"Champ_Inc_base",Champ_base);
+Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
 // Description:
 //    Surcharge Champ_base::printOn(Sortie&) const
@@ -494,6 +498,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
 {
   // Champ a plusieurs valeurs temporelle :
   // On avance a la bonne valeur temporelle.
+  int courant = mon_equation_non_nul() && (un_temps == equation().schema_temps().temps_courant());
   if (les_valeurs->nb_cases()>1)
     {
       for(int i=0; i<les_valeurs->nb_cases(); i++)
@@ -504,6 +509,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
               temps_=un_temps;
               //Inutile:
               //valeurs().echange_espace_virtuel();
+              if (fonc_calc_) fonc_calc_(*this, un_temps, valeurs(), val_bord_, deriv_, !courant);
               return;
             }
         }
@@ -519,6 +525,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
   else
     {
       changer_temps(un_temps);
+      if (fonc_calc_) fonc_calc_(*this, un_temps, valeurs(), val_bord_, deriv_, !courant);
       //Inutile:
       //valeurs().echange_espace_virtuel();
     }
@@ -1130,4 +1137,42 @@ Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
     }
 
   return ma_zone_cl_dis.valeur();
+}
+
+void Champ_Inc_base::init_champ_calcule(fonc_calc_t fonc)
+{
+  fonc_calc_ = fonc;
+  val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
+  /* calcul de toutes les cases */
+  double t, tc = equation().schema_temps().temps_courant();
+  for(int i=0; i<les_valeurs->nb_cases(); i++)
+    t = les_valeurs[i].temps(), fonc_calc_(*this, t, les_valeurs[i].valeurs(), val_bord_, deriv_, t != tc);
+}
+
+
+DoubleTab Champ_Inc_base::valeur_aux_bords() const
+{
+  //si Champ_Inc calcule (fonc_calc_ existe), alors les valeurs aux bords sont stockees dans val_bord_
+  if (fonc_calc_)
+    {
+      DoubleTab result;
+      result.ref(val_bord_);
+      return result;
+    }
+  //sinon, calcul a partir des CLs
+  DoubleTrav result(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
+  const Conds_lim& cls = zone_Cl_dis().valeur().les_conditions_limites();
+  const ArrOfInt& i_bord = ref_cast(Zone_VF, zone_dis_base()).ind_faces_virt_bord(); //correspondance face -> face de bord
+  int i, j, k, f, n, N = result.line_size(), nf = ref_cast(Zone_VF, zone_dis_base()).nb_faces();
+  for (i = 0; i < cls.size(); i++)
+    {
+      const Front_VF& fr = ref_cast(Front_VF, cls[i].valeur().frontiere_dis());
+      if (sub_type(Dirichlet, cls[i].valeur())) //Dirichlet -> val_imp
+        for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), k = f < nf ? f : i_bord[f - nf], n = 0; n < N; n++)
+            result.addr()[N * k + n] = ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
+      else if (sub_type(Neumann_val_ext, cls[i].valeur()))
+        for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), k = f < nf ? f : i_bord[f - nf], n = 0; n < N; n++)
+            result.addr()[N * k + n] = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
+    }
+  return result;
 }

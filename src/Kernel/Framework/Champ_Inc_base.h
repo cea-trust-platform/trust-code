@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,8 @@
 #include <Roue.h>
 #include <MorEqn.h>
 #include <Ref_Zone_Cl_dis.h>
+#include <Interface_blocs.h>
+
 class DoubleTab;
 class Frontiere_dis_base;
 class MD_Vector;
@@ -45,6 +47,14 @@ class Domaine;
 //     de gerer le nombre de valeurs du temps pour lesquels le champ
 //     doit rester en memoire. C'est le schema en temps qui guide le
 //     nombre de valeurs a garder.
+//     Cette classe peut aussi servir a stocker des champs calcules a
+//     partir d'autres Champ_Inc. Dans ce cas, une fonction calculer_valeurs(...)
+//     est appellee lors de mettre_a_jour() et doit remplir :
+//      - les valeurs du champ a l'instant courant;
+//      - les derivees de ces valeurs par rapport aux inconnues;
+//      - ses valeurs aux bords (stockees dans un tableau, car le champ n'a pas
+//        de CL associee);
+//
 //     Champ_Inc est un morceaux d'equation car il herite de MorEqn.
 // .SECTION voir aussi
 //      MorEqn Champ_Inc Champ_base Ch_proto Equation_base
@@ -56,9 +66,10 @@ class Domaine;
 //////////////////////////////////////////////////////////////////////////////
 class Champ_Inc_base : public Champ_base, public MorEqn
 {
-  Declare_base(Champ_Inc_base);
+  Declare_base_sans_constructeur(Champ_Inc_base);
 
 public:
+  Champ_Inc_base() : fonc_calc_(NULL) { } //par defaut : pas de fonc_calc_
   //
   // Methode reimplementees
   //
@@ -94,16 +105,16 @@ public:
   double         changer_temps_passe(const double&, int i=1);
   double         recuperer_temps_futur(int i=1) const;
   double         recuperer_temps_passe(int i=1) const;
-  DoubleTab&              valeurs(double temps) ;
-  const DoubleTab&        valeurs(double temps) const ;
+  virtual DoubleTab&              valeurs(double temps) ;
+  virtual const DoubleTab&        valeurs(double temps) const ;
   // Operateurs de conversion implicite
   operator DoubleTab& ();
   operator const DoubleTab& () const ;
 
-  DoubleTab&       futur(int i=1) ;
-  const DoubleTab& futur(int i=1) const ;
-  DoubleTab&       passe(int i=1) ;
-  const DoubleTab& passe(int i=1) const ;
+  virtual DoubleTab&       futur(int i=1) ;
+  virtual const DoubleTab& futur(int i=1) const ;
+  virtual DoubleTab&       passe(int i=1) ;
+  virtual const DoubleTab& passe(int i=1) const ;
   Champ_Inc_base&  avancer(int i=1);
   Champ_Inc_base&  reculer(int i=1);
 
@@ -130,6 +141,20 @@ public:
   virtual double integrale_espace(int ncomp) const;
   const Domaine& domaine() const;
 
+  //derivees du champ en les inconnues :
+  //renvoie les derivees calcules par fonc_calc_ si champ_calcule, deriv[nom de l'inco] = 1 si vraie inconnue
+  const tabs_t& derivees() const
+  {
+    return deriv_;
+  }
+
+  //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
+  void init_champ_calcule(fonc_calc_t fonc);
+
+  //utilise les conditions aux limites (au lieu de valeur_aux() dans Champ_base)
+  //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)
+  DoubleTab valeur_aux_bords() const;
+
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { };
 protected:
@@ -139,6 +164,11 @@ protected:
 
   Roue_ptr les_valeurs ;
   REF(Zone_Cl_dis) ma_zone_cl_dis;
+
+  /* pour les champs dependant d'autres Champ_Inc */
+  fonc_calc_t fonc_calc_; //fonction de calcul
+  DoubleTab val_bord_;   //valeurs aux bords au temps courant
+  tabs_t deriv_;        //derivees au temps courant
 };
 
 #endif

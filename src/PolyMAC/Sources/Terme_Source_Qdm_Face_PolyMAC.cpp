@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,7 +86,7 @@ DoubleTab& Terme_Source_Qdm_Face_PolyMAC::ajouter(DoubleTab& resu) const
   for (int n_bord=0; n_bord<zone_PolyMAC.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zone_Cl_PolyMAC.les_conditions_limites(n_bord);
-      if (!sub_type(Neumann,la_cl.valeur()) && !sub_type(Neumann_homogene,la_cl.valeur())) continue;
+      if (!sub_type(Neumann,la_cl.valeur()) && !sub_type(Neumann_homogene,la_cl.valeur()) && !sub_type(Neumann_val_ext,la_cl.valeur())) continue;
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       for (int f = le_bord.num_premiere_face(); f < le_bord.num_premiere_face() + le_bord.nb_faces(); f++)
         {
