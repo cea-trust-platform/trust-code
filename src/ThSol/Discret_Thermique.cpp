@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,10 +73,10 @@ Entree& Discret_Thermique::readOn(Entree& s)
 
 void Discret_Thermique::temperature(const Schema_Temps_base& sch,
                                     Zone_dis& z,
-                                    Champ_Inc& ch) const
+                                    Champ_Inc& ch, int nb_comp) const
 {
   Cerr << "Discretisation de la temperature" << finl;
-  discretiser_champ("temperature",z.valeur(),"temperature","K",1,sch.nb_valeurs_temporelles(),sch.temps_courant(),ch);
+  discretiser_champ("temperature",z.valeur(),"temperature","K",nb_comp,sch.nb_valeurs_temporelles(),sch.temps_courant(),ch);
 
 }
 

@@ -910,7 +910,7 @@ int Champ_Generique_Transformation::preparer_macro()
           Champ source_espace_stockage;
           const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
           int nb_comp = source.nb_comp();
-          if (source.nature_du_champ()!=vectoriel)
+          if (source.nature_du_champ()!=vectoriel && source.nature_du_champ()!=multi_scalaire)
             {
               msg = "At least one of the source fields is not of vector nature.";
               erreur = 1;

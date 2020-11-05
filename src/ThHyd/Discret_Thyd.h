@@ -63,7 +63,7 @@ class Discret_Thyd : public Discret_Thermique
 
 public :
 
-  void vitesse(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
+  void vitesse(const Schema_Temps_base&, Zone_dis&, Champ_Inc&, int nb_comp = 1) const;
   void translation(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
   void entcor(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
   void pression(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;

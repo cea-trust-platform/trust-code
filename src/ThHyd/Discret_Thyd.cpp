@@ -70,10 +70,10 @@ Entree& Discret_Thyd::readOn(Entree& s)
 }
 void Discret_Thyd::vitesse(const Schema_Temps_base& sch,
                            Zone_dis& z,
-                           Champ_Inc& ch) const
+                           Champ_Inc& ch, int nb_comp) const
 {
   Cerr << "Velocity discretization" << finl;
-  discretiser_champ("vitesse",z.valeur(),"vitesse","m/s",dimension,sch.nb_valeurs_temporelles(),
+  discretiser_champ("vitesse",z.valeur(),"vitesse","m/s",dimension * nb_comp,sch.nb_valeurs_temporelles(),
                     sch.temps_courant(),ch);
 
 

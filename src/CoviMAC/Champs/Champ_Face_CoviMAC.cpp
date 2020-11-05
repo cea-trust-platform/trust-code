@@ -104,11 +104,13 @@ Champ_base& Champ_Face_CoviMAC::affecter_(const Champ_base& ch)
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales(), &xv = zone.xv();
   DoubleTab& val = valeurs(), eval;
-  if (sub_type(Champ_Uniforme, ch)) eval = ch.valeurs();
-  else eval.resize(val.dimension_tot(0), dimension), ch.valeur_aux(xv,eval);
+  int f, n, N = val.line_size(), d, D = dimension, unif = sub_type(Champ_Uniforme, ch);
 
-  for (int f = 0, unif = sub_type(Champ_Uniforme, ch); f < zone.nb_faces_tot(); f++) for (int r = 0; r < dimension; r++)
-      val(f) += eval(unif ? 0 : f, r) * nf(f, r) / fs(f);
+  if (unif) eval = ch.valeurs();
+  else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
+
+  for (f = 0; f < zone.nb_faces_tot(); f++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+        val.addr()[N * f + n] += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
   return *this;
 }
 
@@ -309,7 +311,7 @@ DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, cons
     }
 
   for (int p = 0, e; p < les_polys.size(); p++) for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++) for (n = 0; n < N; n++)
-        val(p, N * d + n) = valeurs()(N * (nf_tot + D * e + d) + n);
+        val(p, N * d + n) = valeurs().addr()[N * (nf_tot + D * e + d) + n];
   return val;
 }
 
