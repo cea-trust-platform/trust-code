@@ -133,6 +133,7 @@ then
   echo "find triocfd -type d | xargs chmod +x  1>/dev/null 2>&1" >> make.sh
   echo "find triocfd -type d -exec chmod 755 {} \;" >> make.sh
   echo "cd triocfd/triocfd" >> make.sh
+  echo "chmod ugo+x TrioCFD*" >> make.sh
 fi
 if [ "$cases" != ""  ]
 then
