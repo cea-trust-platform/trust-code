@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -250,9 +250,11 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
 
   dudt = current; // pour pouvoir tester la convergence.
   Matrice_Morse matrice;
-  eqn.dimensionner_matrice(matrice);
-  DoubleVect& coeff = matrice.get_set_coeff();
-  coeff=0;
+  if (!sub_type(Navier_Stokes_std,eqn) || (que_suis_je() != "SETS" && que_suis_je() != "ICE")) //SETS et ICE gerent eux-memes leurs matrices
+    {
+      eqn.dimensionner_matrice(matrice);
+      matrice.get_set_coeff() = 0;
+    }
   DoubleTrav resu(current);
 
   if( sub_type(Navier_Stokes_std,eqn))

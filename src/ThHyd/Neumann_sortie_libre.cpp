@@ -69,7 +69,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
 {
   //   le_champ_front.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(8);
+  Motcles les_motcles(9);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
@@ -79,44 +79,17 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
     les_motcles[5] = "Flux_Chaleur_Turb_ext";
     les_motcles[6] = "V2_ext";
     les_motcles[7] = "Y_ext";
-
+    les_motcles[8] = "A_ext";
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
-  switch(rang)
+  if (rang >= 0) s >> le_champ_ext;
+  else
     {
-      // Fall through ...
-    case 0:
-    case 1:
-    case 2:
-    case 7:
-    case 3:
-      {
-        s >> le_champ_ext;
-        break;
-      }
-    case 4:
-      {
-        s >> le_champ_ext;
-        break;
-      }
-    case 5:
-      {
-        s >> le_champ_ext;
-        break;
-      }
-    case 6:
-      {
-        s >> le_champ_ext;
-        break;
-      }
-    default:
-      {
-        Cerr << "Erreur a la lecture de la condition aux limites de type: " << finl;
-        Cerr << que_suis_je() << finl;
-        Cerr << "On attendait " << les_motcles << " a la place de " <<  motlu << finl;
-        exit();
-      }
+      Cerr << "Erreur a la lecture de la condition aux limites de type: " << finl;
+      Cerr << que_suis_je() << finl;
+      Cerr << "On attendait " << les_motcles << " a la place de " <<  motlu << finl;
+      exit();
     }
 
   le_champ_front = le_champ_ext;
@@ -245,21 +218,22 @@ int Neumann_sortie_libre::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
 
-  Motcle KEPS              ="Transport_Keps";
-  Motcle KEPS_V2           ="Transport_Keps_V2";
-  Motcle K_Eps_Bas_Re      ="Transport_Keps_Bas_Re";
-  Motcle K_Eps_Rea         ="Transport_Keps_Rea";
-  Motcle Thermique         ="Thermique";
-  Motcle Thermique_H       ="Thermique_H";
-  Motcle Concentration     ="Concentration";
-  Motcle Fraction_massique ="Fraction_massique";
-  Motcle V2                ="Transport_V2";
-  Motcle indetermine       ="indetermine";
+  Motcle KEPS               ="Transport_Keps";
+  Motcle KEPS_V2            ="Transport_Keps_V2";
+  Motcle K_Eps_Bas_Re       ="Transport_Keps_Bas_Re";
+  Motcle K_Eps_Rea          ="Transport_Keps_Rea";
+  Motcle Thermique          ="Thermique";
+  Motcle Thermique_H        ="Thermique_H";
+  Motcle Concentration      ="Concentration";
+  Motcle Fraction_massique  ="Fraction_massique";
+  Motcle Fraction_volumique ="Fraction_volumique";
+  Motcle V2                 ="Transport_V2";
+  Motcle indetermine        ="indetermine";
 
   if ( (dom_app==KEPS) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || (dom_app==indetermine) ||
        (dom_app==Thermique) || (dom_app==Concentration) ||
        (dom_app==Thermique_H) || (dom_app==V2) || (dom_app==KEPS_V2) ||
-       (dom_app==Fraction_massique) )
+       (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) )
     return 1;
   else
     {

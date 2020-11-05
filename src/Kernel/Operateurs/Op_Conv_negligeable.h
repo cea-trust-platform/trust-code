@@ -65,6 +65,8 @@ public :
   virtual void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const;
 
   void check_multiphase_compatibility() const { };
+  void set_incompressible(const int) { };
+
 protected :
 
   REF(Champ_base) la_vitesse;

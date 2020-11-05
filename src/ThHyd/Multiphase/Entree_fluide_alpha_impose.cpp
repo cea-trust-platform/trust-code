@@ -14,17 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Neumann_paroi_flux_nul.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/28
+// File:        Entree_fluide_alpha_impose.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Neumann_paroi_flux_nul.h>
+#include <Entree_fluide_alpha_impose.h>
 #include <Motcle.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Neumann_paroi_flux_nul,"Paroi",Neumann_paroi_adiabatique);
+Implemente_instanciable(Entree_fluide_alpha_impose,"Frontiere_ouverte_alpha_impose",Dirichlet_entree_fluide);
 
 
 // Description:
@@ -41,13 +41,13 @@ Implemente_instanciable(Neumann_paroi_flux_nul,"Paroi",Neumann_paroi_adiabatique
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s ) const
+Sortie& Entree_fluide_alpha_impose::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 // Description:
-//    Simple appel a: Neumann_homogene::readOn(Entree& )
+//    Simple appel a: Cond_lim_base::readOn(Entree& )
 // Precondition:
 // Parametre: Entree& s
 //    Signification: un flot d'entree
@@ -60,17 +60,16 @@ Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s ) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
+Entree& Entree_fluide_alpha_impose::readOn(Entree& s)
 {
-  return Neumann_homogene::readOn(s) ;
+  return Cond_lim_base::readOn(s);
 }
 
 // Description:
 //    Renvoie un booleen indiquant la compatibilite des conditions
 //    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Neumann_paroi_flux_nul sont compatibles
-//    avec une equation dont le domaine est la Concentration, la Fraction_massique
-//    le Transport_Keps, le Transport_Keps_V2, le Transport_V2, le Diphasique_moyenne
+//    Des CL de type Entree_fluide_alpha_impose sont compatibles
+//    avec une equation dont le domaine est une fraction volumique
 //    ou bien indetermine.
 // Precondition:
 // Parametre: Equation_base& eqn
@@ -86,21 +85,12 @@ Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
+int Entree_fluide_alpha_impose::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-
-  Motcle Concentration      ="Concentration";
-  Motcle Fraction_massique  ="Fraction_massique";
-  Motcle K_Eps              ="Transport_Keps";
-  Motcle K_Eps_V2           ="Transport_Keps_V2";
-  Motcle K_Eps_Rea          ="Transport_Keps_Rea";
-  Motcle V2                 ="Transport_V2";
-  Motcle Diphasique         ="Diphasique_moyenne";
-  Motcle Fraction_volumique ="Fraction_volumique";
-  Motcle indetermine        ="indetermine";
-
-  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_Rea) || (dom_app==K_Eps_V2) || (dom_app==V2) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique) || (dom_app==Fraction_volumique))
+  Motcle Concentration="Fraction_volumique";
+  Motcle indetermine="indetermine";
+  if ( (dom_app==Concentration) || (dom_app==indetermine) )
     return 1;
   else
     {

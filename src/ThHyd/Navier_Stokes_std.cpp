@@ -458,10 +458,9 @@ int Navier_Stokes_std::verif_Cl() const
 void Navier_Stokes_std::discretiser()
 {
   Cerr << "Hydraulic equation discretization (Navier_Stokes_std::discretiser)" << finl;
-
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
 
-  dis.vitesse(schema_temps(), zone_dis(), la_vitesse);
+  discretiser_vitesse();
   champs_compris_.ajoute_champ(la_vitesse);
   la_vitesse.valeur().add_synonymous(Nom("velocity"));
 
@@ -491,6 +490,12 @@ void Navier_Stokes_std::discretiser()
   discretiser_assembleur_pression();
 
   Equation_base::discretiser();
+}
+
+void Navier_Stokes_std::discretiser_vitesse()
+{
+  const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+  dis.vitesse(schema_temps(), zone_dis(), la_vitesse);
 }
 
 // Description:

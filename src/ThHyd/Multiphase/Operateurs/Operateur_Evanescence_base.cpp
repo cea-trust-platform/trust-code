@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,59 +14,53 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        MorEqn.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/12
+// File:        Operateur_Evanescence_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Operateurs
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <MorEqn.h>
-#include <Motcle.h>
-#include <Equation_base.h>
+#include <Operateur_Evanescence_base.h>
+
+Implemente_base(Operateur_Evanescence_base, "Operateur_Evanescence_base", Operateur_base);
 
 // Description:
-//    Associe une equation a l'objet.
-//    Affecte le membre MorEqn::mon_equation avec l'objet
-//    passe en parametre.
+//    NE FAIT RIEN
+//    A surcharger dans les classes derivees
 // Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle on veut s'associer
+// Parametre: Sortie& os
+//    Signification: un flot de sortie
 //    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
+//    Contraintes:
+//    Acces:
+// Retour: Sortie&
+//    Signification: le flot de sortie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Operateur_Evanescence_base::printOn(Sortie& os) const
+{
+  return os;
+}
+
+
+// Description:
+//    NE FAIT RIEN
+//    A surcharger dans les classes derivees
+// Precondition:
+// Parametre: Entree& is
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: Entree&
+//    Signification: le flot d'entree
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-void MorEqn::associer_eqn(const Equation_base& eqn)
+Entree& Operateur_Evanescence_base::readOn(Entree& is)
 {
-  mon_equation=eqn;
-}
-
-// Calcul des valeurs liees a un morceau d equation (Operateurs, ...) pour postraitement
-//
-void MorEqn::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
-{
-  Cerr<<"The method calculer_pour_post(...) is currently not coded"<<finl;
-  Cerr<<"for the piece of the regarded equation and option chosen"<<finl;
-  Cerr<<"Contact TRUST support for the coding of this method"<<finl;
-  Process::exit();
-}
-
-Motcle MorEqn::get_localisation_pour_post(const Nom& option) const
-{
-  Cerr<<"MorEqn : the method get_localisation_pour_post is not coded"<<finl;
-  Process::exit();
-  throw;
-  return MorEqn::get_localisation_pour_post(option);
-}
-
-void MorEqn::check_multiphase_compatibility() const
-{
-  const Objet_U *obj = dynamic_cast<const Objet_U *>(this);
-  if (!obj) abort(); //on n'est meme pas un Objet_U ?
-  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation.valeur().que_suis_je() <<"!" << finl;
-  Process::exit();
+  return is;
 }

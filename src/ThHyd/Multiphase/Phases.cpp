@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,59 +14,55 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        MorEqn.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/12
+// File:        Phases.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <MorEqn.h>
+#include <Phases.h>
 #include <Motcle.h>
-#include <Equation_base.h>
+#include <Param.h>
+#include <Pb_Multiphase.h>
+
+Implemente_instanciable(Phases,"Phases",Interprete);
+
+Sortie& Phases::printOn(Sortie& os) const
+{
+  return Interprete::printOn(os);
+}
+
+Entree& Phases::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
 
 // Description:
-//    Associe une equation a l'objet.
-//    Affecte le membre MorEqn::mon_equation avec l'objet
-//    passe en parametre.
+//    Fonction principale de l'interprete Phases
+//    Lit la dimension d'espace du probleme.
 // Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle on veut s'associer
+// Parametre: Entree& is
+//    Signification: un flot d'entree
 //    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-void MorEqn::associer_eqn(const Equation_base& eqn)
+Entree& Phases::interpreter(Entree& is)
 {
-  mon_equation=eqn;
+  Nom nom_pb, mot;
+  is >> nom_pb;
+  Pb_Multiphase& pb = ref_cast(Pb_Multiphase, objet(nom_pb));
+
+  Noms noms_phases;
+  is >> mot;
+  if (mot != "{") Cerr << "Phases : { expected instead of " << mot << finl, Process::exit();
+  for (is >> mot; mot != "}"; is >> mot) noms_phases.add(mot);
+  pb.set_noms_phases(noms_phases);
+  return is;
 }
 
-// Calcul des valeurs liees a un morceau d equation (Operateurs, ...) pour postraitement
-//
-void MorEqn::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
-{
-  Cerr<<"The method calculer_pour_post(...) is currently not coded"<<finl;
-  Cerr<<"for the piece of the regarded equation and option chosen"<<finl;
-  Cerr<<"Contact TRUST support for the coding of this method"<<finl;
-  Process::exit();
-}
-
-Motcle MorEqn::get_localisation_pour_post(const Nom& option) const
-{
-  Cerr<<"MorEqn : the method get_localisation_pour_post is not coded"<<finl;
-  Process::exit();
-  throw;
-  return MorEqn::get_localisation_pour_post(option);
-}
-
-void MorEqn::check_multiphase_compatibility() const
-{
-  const Objet_U *obj = dynamic_cast<const Objet_U *>(this);
-  if (!obj) abort(); //on n'est meme pas un Objet_U ?
-  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation.valeur().que_suis_je() <<"!" << finl;
-  Process::exit();
-}

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,59 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        MorEqn.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/12
+// File:        Frottement_interfacial_bulles.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <MorEqn.h>
-#include <Motcle.h>
-#include <Equation_base.h>
+#include <Frottement_interfacial_bulles.h>
 
-// Description:
-//    Associe une equation a l'objet.
-//    Affecte le membre MorEqn::mon_equation avec l'objet
-//    passe en parametre.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle on veut s'associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void MorEqn::associer_eqn(const Equation_base& eqn)
+Implemente_instanciable(Frottement_interfacial_bulles, "Frottement_interfacial_bulles", Frottement_interfacial_base);
+
+Sortie& Frottement_interfacial_bulles::printOn(Sortie& os) const
 {
-  mon_equation=eqn;
+  return os;
 }
 
-// Calcul des valeurs liees a un morceau d equation (Operateurs, ...) pour postraitement
-//
-void MorEqn::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
+Entree& Frottement_interfacial_bulles::readOn(Entree& is)
 {
-  Cerr<<"The method calculer_pour_post(...) is currently not coded"<<finl;
-  Cerr<<"for the piece of the regarded equation and option chosen"<<finl;
-  Cerr<<"Contact TRUST support for the coding of this method"<<finl;
-  Process::exit();
+  Param param(que_suis_je());
+  param.ajouter("rayon_bulle", &r_bulle_, Param::REQUIRED);
+  param.ajouter("coeff_derive", &C_d_, Param::REQUIRED);
+  param.lire_avec_accolades_depuis(is);
+  return is;
 }
 
-Motcle MorEqn::get_localisation_pour_post(const Nom& option) const
+void Frottement_interfacial_bulles::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                                                const DoubleTab& rho, const DoubleTab& mu,
+                                                const DoubleTab& ndv, DoubleTab& coeff) const
 {
-  Cerr<<"MorEqn : the method get_localisation_pour_post is not coded"<<finl;
-  Process::exit();
-  throw;
-  return MorEqn::get_localisation_pour_post(option);
-}
-
-void MorEqn::check_multiphase_compatibility() const
-{
-  const Objet_U *obj = dynamic_cast<const Objet_U *>(this);
-  if (!obj) abort(); //on n'est meme pas un Objet_U ?
-  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation.valeur().que_suis_je() <<"!" << finl;
-  Process::exit();
+  int k, l, N = ndv.dimension(0);
+  double rho_m = 0;
+  for (k = 0; k < N; k++) rho_m += alpha(k) * rho(k);
+  for (k = 0; k < N; k++) for (l = 0; l < N; l++)
+      coeff(k, l, 0) = (coeff(k, l, 1) = 1. / 8 * C_d_ * 3 * alpha(k) * alpha(l) / r_bulle_ * rho_m) * ndv(k, l);
 }

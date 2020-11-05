@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,7 @@ Entree& Sortie_libre_pression_imposee::readOn(Entree& s )
 void Sortie_libre_pression_imposee::completer()
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  if (sub_type(Fluide_Incompressible,mil))
+  if (sub_type(Fluide_Incompressible,mil) && ma_zone_cl_dis->equation().que_suis_je() != "QDM_Multiphase")
     {
       if (sub_type(Champ_Uniforme,mil.masse_volumique()))
         {

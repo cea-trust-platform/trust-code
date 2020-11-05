@@ -91,6 +91,7 @@ public :
   Champ_Inc& inconnue();
   SolveurSys& solveur_pression();
   virtual void discretiser();
+  virtual void discretiser_vitesse();
   virtual void completer();
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double temps);

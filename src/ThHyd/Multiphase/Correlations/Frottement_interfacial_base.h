@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,59 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        MorEqn.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/12
+// File:        Frottement_interfacial_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <MorEqn.h>
-#include <Motcle.h>
-#include <Equation_base.h>
+#ifndef Frottement_interfacial_base_included
+#define Frottement_interfacial_base_included
+#include <DoubleTab.h>
+#include <Param.h>
 
-// Description:
-//    Associe une equation a l'objet.
-//    Affecte le membre MorEqn::mon_equation avec l'objet
-//    passe en parametre.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle on veut s'associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void MorEqn::associer_eqn(const Equation_base& eqn)
-{
-  mon_equation=eqn;
-}
-
-// Calcul des valeurs liees a un morceau d equation (Operateurs, ...) pour postraitement
+//////////////////////////////////////////////////////////////////////////////
 //
-void MorEqn::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
-{
-  Cerr<<"The method calculer_pour_post(...) is currently not coded"<<finl;
-  Cerr<<"for the piece of the regarded equation and option chosen"<<finl;
-  Cerr<<"Contact TRUST support for the coding of this method"<<finl;
-  Process::exit();
-}
+// .DESCRIPTION
+//    classe Frottement_interfacial_base
+//      utilitaire pour les operateurs de frottement interfacial prenant la forme
+//      F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
+//      cette classe definit une fonction C_{kl} dependant de :
+//        alpha, p, T -> inconnues (une valeur par phase chacune)
+//        rho, mu, sigma -> proprietes physiques (idem)
+//        ndv(k, l) -> ||v_k - v_l||, a remplir pour k < l
+//    sortie :
+//        coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
+//////////////////////////////////////////////////////////////////////////////
 
-Motcle MorEqn::get_localisation_pour_post(const Nom& option) const
+class Frottement_interfacial_base : public Objet_U
 {
-  Cerr<<"MorEqn : the method get_localisation_pour_post is not coded"<<finl;
-  Process::exit();
-  throw;
-  return MorEqn::get_localisation_pour_post(option);
-}
+  Declare_base(Frottement_interfacial_base);
+public:
+  virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                           const DoubleTab& rho, const DoubleTab& mu,
+                           const DoubleTab& ndv, DoubleTab& coeff) const  = 0;
+  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
+};
 
-void MorEqn::check_multiphase_compatibility() const
-{
-  const Objet_U *obj = dynamic_cast<const Objet_U *>(this);
-  if (!obj) abort(); //on n'est meme pas un Objet_U ?
-  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation.valeur().que_suis_je() <<"!" << finl;
-  Process::exit();
-}
+#endif

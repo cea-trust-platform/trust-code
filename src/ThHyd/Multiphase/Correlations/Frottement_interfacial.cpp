@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,59 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        MorEqn.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/12
+// File:        Frottement_interfacial.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <MorEqn.h>
-#include <Motcle.h>
-#include <Equation_base.h>
+#include <Frottement_interfacial.h>
 
-// Description:
-//    Associe une equation a l'objet.
-//    Affecte le membre MorEqn::mon_equation avec l'objet
-//    passe en parametre.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle on veut s'associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void MorEqn::associer_eqn(const Equation_base& eqn)
+Implemente_deriv(Frottement_interfacial_base);
+Implemente_instanciable(Frottement_interfacial,"Frottement_interfacial",DERIV(Frottement_interfacial_base));
+
+Sortie& Frottement_interfacial::printOn(Sortie& os) const
 {
-  mon_equation=eqn;
+  return DERIV(Frottement_interfacial_base)::printOn(os);
 }
 
-// Calcul des valeurs liees a un morceau d equation (Operateurs, ...) pour postraitement
-//
-void MorEqn::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
+Entree& Frottement_interfacial::readOn(Entree& is)
 {
-  Cerr<<"The method calculer_pour_post(...) is currently not coded"<<finl;
-  Cerr<<"for the piece of the regarded equation and option chosen"<<finl;
-  Cerr<<"Contact TRUST support for the coding of this method"<<finl;
-  Process::exit();
+  /* le premier mot sert a typer la correlation*/
+  Nom nom;
+  is >> nom;
+  DERIV(Frottement_interfacial_base)::typer(Nom("Frottement_interfacial_") + nom);
+  /* le reste lui est passe en parametre */
+  return valeur().lire(is);
 }
 
-Motcle MorEqn::get_localisation_pour_post(const Nom& option) const
-{
-  Cerr<<"MorEqn : the method get_localisation_pour_post is not coded"<<finl;
-  Process::exit();
-  throw;
-  return MorEqn::get_localisation_pour_post(option);
-}
-
-void MorEqn::check_multiphase_compatibility() const
-{
-  const Objet_U *obj = dynamic_cast<const Objet_U *>(this);
-  if (!obj) abort(); //on n'est meme pas un Objet_U ?
-  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation.valeur().que_suis_je() <<"!" << finl;
-  Process::exit();
-}
+Declare_ref(Frottement_interfacial_base);
