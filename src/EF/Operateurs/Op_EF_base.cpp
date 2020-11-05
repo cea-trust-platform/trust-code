@@ -312,8 +312,8 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
   Nom nom_eqn=op.equation().que_suis_je();
   if (nom_eqn.debute_par("Navier_Stokes") && pb.milieu().que_suis_je()=="Fluide_Incompressible")
     {
-      const Champ_Don& rho = op.equation().milieu().masse_volumique();
-      if (sub_type(Champ_Uniforme,rho.valeur()))
+      const Champ_base& rho = op.equation().milieu().masse_volumique();
+      if (sub_type(Champ_Uniforme,rho))
         {
           double coef = rho(0,0);
           int nb_faces_bord=la_zone_EF.nb_faces_bord();

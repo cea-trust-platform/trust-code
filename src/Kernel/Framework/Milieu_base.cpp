@@ -191,24 +191,25 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if  (rho.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
+      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho,pb);
 
-      if (sub_type(Champ_Tabule_Morceaux,rho.valeur()))
+      if (sub_type(Champ_Tabule_Morceaux,rho))
         {
-          Champ_Tabule_Morceaux& rho_tabule = ref_cast(Champ_Tabule_Morceaux,rho.valeur());
+          Champ_Tabule_Morceaux& rho_tabule = ref_cast(Champ_Tabule_Morceaux,rho);
 
           for (int i=0 ; i<rho_tabule.nb_champs_tabules(); i++)
             dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","J/kg/K",rho_tabule.champ_tabule(i),pb);
         }
-      champs_compris_.ajoute_champ(rho.valeur());
+      champs_compris_.ajoute_champ(rho);
     }
   if (rho.non_nul() && Cp.non_nul())
     {
+      assert (rho.nb_comp() == Cp.nb_comp());
       if(!rho_cp_comme_T_.non_nul())
         {
           const double temps = pb.schema_temps().temps_courant();
-          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", 1, temps, rho_cp_comme_T_);
-          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", 1, temps,    rho_cp_elem_);
+          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", rho.nb_comp(), temps, rho_cp_comme_T_);
+          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", rho.nb_comp(), temps,    rho_cp_elem_);
         }
       champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
@@ -280,6 +281,7 @@ void Milieu_base::preparer_calcul()
   int err=0;
   Nom msg;
   verifier_coherence_champs(err,msg);
+  /* creation automatique de energie_interne = Cp * T si Cp est defini et si on resout la temperature */
 }
 
 void Milieu_base::creer_champs_non_lus()
@@ -375,7 +377,7 @@ void Milieu_base::calculer_alpha()
       tabalpha = lambda.valeurs();
 
       // [ABN]: allows variable rho, Cp at this level (will be used by Solide_Milieu_Variable for instance).
-      if (sub_type(Champ_Uniforme,rho.valeur()))
+      if (sub_type(Champ_Uniforme,rho))
         tabalpha /= rho.valeurs()(0,0);
       else
         tab_divide_any_shape(tabalpha,rho.valeurs());
@@ -412,6 +414,7 @@ void Milieu_base::mettre_a_jour(double temps)
   if (rho_cp_comme_T_.non_nul())
     update_rho_cp(temps);
 
+  if (e_int.non_nul()) e_int.mettre_a_jour(temps);
 }
 
 void Milieu_base::update_rho_cp(double temps)
@@ -450,6 +453,23 @@ void Milieu_base::update_rho_cp(double temps)
 
 void Milieu_base::abortTimeStep()
 {
+  if (rho.non_nul()) rho->abortTimeStep();
+  if (e_int.non_nul()) e_int->abortTimeStep();
+}
+
+bool Milieu_base::initTimeStep(double dt)
+{
+  if (!equation.size()) return true; //pas d'equation associee -> ???
+  const Schema_Temps_base& sch = equation.begin()->second->schema_temps(); //on recupere le schema en temps par la 1ere equation
+
+  /* champs dont on doit creer des cases */
+  std::vector<Champ_Inc_base *> vch;
+  if (rho.non_nul() && sub_type(Champ_Inc_base, rho.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, rho.valeur()));
+  if (e_int.non_nul()) vch.push_back(&e_int.valeur());
+
+  for (auto &pch : vch) for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
+      pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
+  return true;
 }
 
 void Milieu_base::creer_alpha()
@@ -521,7 +541,7 @@ Champ_Don_base& Milieu_base::gravite()
 int Milieu_base::initialiser(const double& temps)
 {
   Cerr << que_suis_je() << "Milieu_base:::initialiser" << finl;
-  rho.initialiser(temps);
+  if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
   if (g.non_nul())
     g.valeur().initialiser(temps);
   if (lambda.non_nul())
@@ -550,13 +570,13 @@ int Milieu_base::initialiser(const double& temps)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Champ_Don&
+// Retour: Champ_base&
 //    Signification: le champ donne representant la masse volumique
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Champ_Don& Milieu_base::masse_volumique() const
+const Champ_base& Milieu_base::masse_volumique() const
 {
   return rho;
 }
@@ -569,15 +589,56 @@ const Champ_Don& Milieu_base::masse_volumique() const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Champ_Don&
+// Retour: Champ_base&
 //    Signification: le champ donne representant la masse volumique
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-Champ_Don& Milieu_base::masse_volumique()
+Champ_base& Milieu_base::masse_volumique()
 {
   return rho;
+}
+
+// Description:
+//    Renvoie l'energie interne du milieu.
+//    (version const)
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: Champ_base&
+//    Signification: le champ donne representant l'energie interne
+//    Contraintes: reference constante
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+const Champ_base& Milieu_base::energie_interne() const
+{
+  if (!e_int.non_nul()) creer_energie_interne();
+  return e_int;
+}
+
+// Description:
+//    Renvoie l'energie interne du milieu
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: Champ_Don&
+//    Signification: le champ donne representant l'energie interne
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Champ_base& Milieu_base::energie_interne()
+{
+  if (!e_int.non_nul()) creer_energie_interne();
+  return e_int;
 }
 
 // Description:
@@ -807,4 +868,48 @@ int Milieu_base::est_deja_associe()
     return 0;
   deja_associe=1;
   return 1;
+}
+
+void Milieu_base::associer_equation(const Equation_base *eqn) const
+{
+  std::string nom_inco(eqn->inconnue().le_nom().getString());
+  if (equation.count(nom_inco))
+    Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl, Process::exit();
+  equation[nom_inco] = eqn;
+}
+
+void Milieu_base::creer_energie_interne() const
+{
+  const Equation_base& eqn = *equation.at("temperature");
+  eqn.discretisation().discretiser_champ("temperature", eqn.zone_dis(),"energie_interne", "J/m^3",
+                                         eqn.inconnue()->nb_comp(),
+                                         eqn.inconnue()->nb_valeurs_temporelles(),
+                                         eqn.schema_temps().temps_courant(), e_int);
+  e_int->associer_eqn(eqn);
+  e_int->init_champ_calcule(calculer_energie_interne);
+}
+
+void Milieu_base::calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
+{
+  const Equation_base& eqn = ch.equation();
+  const Champ_Don_base& ch_Cp = eqn.milieu().capacite_calorifique().valeur();
+  const DoubleTab& temp = eqn.inconnue()->valeurs(t), &Cp = ch_Cp.valeurs();
+
+  /* le cas ou Cp est un Champ_Uniforme est tres penible*/
+  int cCp = sub_type(Champ_Uniforme, ch_Cp), i, j, n, Nl = temp.dimension_tot(0), N = temp.line_size();
+  /* valeurs : Cp * T */
+  for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) val.addr()[j] = temp.addr()[j] * Cp.addr()[cCp ? n : j];
+  if (val_only) return;
+
+  /* valeurs aux bord : si Cp n'a pas de Zone_dis_base, appeller valeur_aux(xv_bord, ..) au lieu de valeur_aux_bords() */
+  bval = eqn.inconnue()->valeur_aux_bords();
+  DoubleTab bCp;
+  if (ch_Cp.a_une_zone_dis_base()) bCp = ch_Cp.valeur_aux_bords();
+  else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bCp);
+  tab_multiply_any_shape(bval, bCp);
+
+  /* derivees : Cp */
+  DoubleTab& der = deriv["temperature"];
+  if (cCp) for(der.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) der.addr()[j] = Cp.addr()[n];
+  else der = Cp;
 }

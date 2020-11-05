@@ -291,14 +291,14 @@ void Loi_Etat_Melange_Binaire::calculer_mu_sur_Sc()
 
   // XXX : VEF ? should we resize or is it the faces dimension ?
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
-  const Champ_Don& rho = le_fluide->masse_volumique();
+  const Champ_base& rho = le_fluide->masse_volumique();
   DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
   const DoubleTab& tab_rho = rho.valeurs();
 
   if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
     {
       int n=tab_mu_sur_Sc.size();
-      if (sub_type(Champ_Uniforme,rho.valeur()))
+      if (sub_type(Champ_Uniforme,rho))
         {
           Cerr << "We should not have a density field of type Champ_Uniforme !" << finl;
           Process::exit();
@@ -315,7 +315,7 @@ void Loi_Etat_Melange_Binaire::calculer_mu_sur_Sc()
       Process::exit();
     }
 
-  double temps_champ = rho->temps();
+  double temps_champ = rho.temps();
   mu_sur_Sc.valeur().changer_temps(temps_champ);
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
@@ -351,7 +351,7 @@ void Loi_Etat_Melange_Binaire::calculer_nu_sur_Sc()
   for (int i=0 ; i<n ; i++)
     tab_nu_sur_Sc[i] = diff_coeff_;
 
-  double temps_champ = le_fluide->masse_volumique()->temps();
+  double temps_champ = le_fluide->masse_volumique().temps();
   nu_sur_Sc.valeur().changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }

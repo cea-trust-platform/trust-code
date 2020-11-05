@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int dernie
   // Pointeur constant sur tableau constant.
   // Pointeur nul si ref_rho_ est une reference nulle.
   const DoubleTab * const rho_elem =
-    (ref_rho.non_nul()) ? &(ref_rho.valeur().valeurs()) : 0;
+    (ref_rho.non_nul()) ? &(ref_rho->valeurs()) : 0;
 
   for (num_face=premiere_face; num_face<derniere_face; num_face++)
     {

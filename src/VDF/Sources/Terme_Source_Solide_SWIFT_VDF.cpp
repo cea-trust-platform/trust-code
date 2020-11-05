@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -308,7 +308,7 @@ DoubleTab& Terme_Source_Solide_SWIFT_VDF::ajouter(DoubleTab& resu) const
   DoubleVect Tmoy_swift;        // Profils de temperature moyenne.
   DoubleVect Tmoy_corse;
 
-  /*  const Champ_Don& rho_don = pb_swift->milieu().masse_volumique();
+  /*  const Champ_base& rho_don = pb_swift->milieu().masse_volumique();
       const Champ_Don& Cp_don  = pb_swift->milieu().capacite_calorifique();
       double rho=1.,Cp=1.;
 

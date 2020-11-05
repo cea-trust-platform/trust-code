@@ -323,7 +323,7 @@ void Fluide_Incompressible::calculer_nu()
 {
   Champ rhobis;
   rhobis=mu.valeur();
-  rhobis->affecter(rho.valeur());
+  rhobis->affecter(rho);
 
   DoubleTab& tabnu=nu.valeurs();
   tabnu=mu.valeurs();

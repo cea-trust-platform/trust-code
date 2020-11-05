@@ -113,7 +113,7 @@ void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
           Process::exit();
         }
       const Champ_Don& le_Cp = pb.milieu().capacite_calorifique();
-      const Champ_Don& rho = pb.milieu().masse_volumique();
+      const Champ_base& rho = pb.milieu().masse_volumique();
       associer_champs(rho, le_Cp);
     }
 }

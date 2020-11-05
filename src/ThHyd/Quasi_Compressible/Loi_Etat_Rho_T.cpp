@@ -114,7 +114,7 @@ void Loi_Etat_Rho_T::initialiser_rho()
 
   // VDF/polyMAC or VEF ??
   int isVDF=0;
-  if (le_fluide->masse_volumique().valeur().que_suis_je()=="Champ_Fonc_P0_VDF")
+  if (le_fluide->masse_volumique().que_suis_je()=="Champ_Fonc_P0_VDF")
     isVDF=1;
 
   // We know that mu is always stored on elems
@@ -137,9 +137,9 @@ void Loi_Etat_Rho_T::initialiser_rho()
       int nb_faces =  le_fluide->masse_volumique().valeurs().size(); // rho on faces in VEF
       rho_.resize(nb_faces);
 
-      Champ_Don& ch_rho = le_fluide->masse_volumique();
+      Champ_base& ch_rho = le_fluide->masse_volumique();
       ch_rho.affecter_(rho_xyz_);
-      DoubleTab& fld = ch_rho.valeur().valeurs();
+      DoubleTab& fld = ch_rho.valeurs();
 
       for (int i = 0; i < nb_faces; i++)
         rho_(i)= fld[i];

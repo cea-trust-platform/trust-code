@@ -24,6 +24,7 @@
 #define Terme_Puissance_Thermique_included
 
 
+#include <Ref_Champ_base.h>
 #include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
 
@@ -51,7 +52,7 @@ class Terme_Puissance_Thermique
 public :
 
   void preparer_source(const Probleme_base& pb);
-  inline void associer_champs(const Champ_Don& , const Champ_Don&);
+  inline void associer_champs(const Champ_base& , const Champ_Don&);
   void lire_donnees(Entree&,const Equation_base& eqn);
   void mettre_a_jour(double temps);
   void modify_name_file(Nom& ) const;
@@ -63,7 +64,7 @@ public :
 
 protected:
 
-  REF(Champ_Don) rho_ref;
+  REF(Champ_base) rho_ref;
   REF(Champ_Don) Cp;
   Champ_Don la_puissance_lu, la_puissance;
 
@@ -91,7 +92,7 @@ protected:
 // Effets de bord:
 // Postcondition: le terme de puissance thermique a une masse volumique
 //                et une chaleur specifique associee
-inline void Terme_Puissance_Thermique::associer_champs(const Champ_Don& rho,
+inline void Terme_Puissance_Thermique::associer_champs(const Champ_base& rho,
                                                        const Champ_Don& cp)
 {
   rho_ref=rho;

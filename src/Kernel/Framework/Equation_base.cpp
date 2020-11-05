@@ -1087,6 +1087,11 @@ void Equation_base::discretiser()
       champs_compris_.ajoute_champ(derivee_en_temps());
     }
 }
+void Equation_base::associer_milieu_equation(int owner)
+{
+  milieu().associer_equation(this);
+  medium_owner_ = owner;
+}
 
 // Description:
 //    S'associe au schema_en_temps.
@@ -1231,6 +1236,7 @@ void Equation_base::abortTimeStep()
   for (int i=0; i<nombre_d_operateurs(); i++)
     operateur(i).l_op_base().abortTimeStep();
   inconnue()->abortTimeStep();
+  if (medium_owner_) milieu().abortTimeStep();
 }
 
 // Description :
@@ -1334,6 +1340,8 @@ bool Equation_base::initTimeStep(double dt)
   // Mise a jour du solveur masse au temps present
   if (solveur_masse.non_nul())
     solveur_masse.mettre_a_jour(temps_present);
+
+  if (medium_owner_) milieu().initTimeStep(dt); //pour les Champ_Inc du milieu
 
   return true;
 }

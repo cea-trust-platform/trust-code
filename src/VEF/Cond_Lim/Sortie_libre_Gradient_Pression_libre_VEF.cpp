@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -206,7 +206,7 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int  , int ) const
 double Sortie_libre_Gradient_Pression_libre_VEF::Grad_P_lib_VEF(int face) const
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  const Champ_Uniforme& rho=ref_cast(Champ_Uniforme,mil.masse_volumique().valeur());
+  const Champ_Uniforme& rho=ref_cast(Champ_Uniforme,mil.masse_volumique());
   double d_rho = rho(0,0);
   if (le_champ_front.valeurs().size()==1)
     return le_champ_front(0,0)/d_rho;

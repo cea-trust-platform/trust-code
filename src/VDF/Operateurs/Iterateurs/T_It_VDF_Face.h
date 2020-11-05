@@ -213,8 +213,8 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu
       &&nom_eqn!="Navier_Stokes_Melange"
       &&nom_eqn!="Navier_Stokes_FT_Disc")
     {
-      const Champ_Don& rho = la_zcl->equation().milieu().masse_volumique();
-      if (sub_type(Champ_Uniforme,rho.valeur()))
+      const Champ_base& rho = la_zcl->equation().milieu().masse_volumique();
+      if (sub_type(Champ_Uniforme,rho))
         {
           double coef = rho(0,0);
           int nb_faces_bord=la_zone->nb_faces_bord();

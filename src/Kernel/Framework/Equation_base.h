@@ -116,6 +116,7 @@ public :
   int limpr() const;
   virtual void imprimer(Sortie& os) const;
   virtual int impr(Sortie& os) const;
+  virtual void associer_milieu_equation(int owner);
 
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
   virtual DoubleTab& derivee_en_temps_inco_transport(DoubleTab& derivee)
@@ -277,6 +278,7 @@ private :
   IntVect nb_bords_post_xyz;
   int nombre_champ_xyz;
   int ecrit_champ_xyz_bin;
+  int medium_owner_; //1 si l'equation est "responsable" du milieu
 
   //!SC: passage en protected (surcharge de get_champ dans Equation_Diphasique_base)
 //  Champs_Fonc list_champ_combi;

@@ -927,6 +927,8 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
     {
       equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
       equation(i).discretiser();
+      //remontee de l'inconnue vers le milieu
+      equation(i).associer_milieu_equation(i == 0);//la premiere equation "possede" le milieu
     }
   // Discretisation du milieu:
   //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux

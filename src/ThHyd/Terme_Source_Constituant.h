@@ -23,7 +23,7 @@
 #ifndef Terme_Source_Constituant_included
 #define Terme_Source_Constituant_included
 
-#include <Ref_Champ_Don.h>
+#include <Ref_Champ_base.h>
 #include <Champ_Don.h>
 #include <SFichier.h>
 #include <Equation_base.h>
@@ -46,7 +46,7 @@ class Terme_Source_Constituant
 
 public :
 
-  inline void associer_champs(const Champ_Don&);
+  inline void associer_champs(const Champ_base&);
   void lire_donnees(Entree& );
   void ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int& flag) const;
   int completer(const Champ_Inc_base& inco);
@@ -63,7 +63,7 @@ public :
 
 protected:
   int colw_;
-  REF(Champ_Don) rho_ref;
+  REF(Champ_base) rho_ref;
   Champ_Don la_source_constituant;
 
 };
@@ -91,14 +91,14 @@ protected:
 // Postcondition: le terme de puissance thermique a une masse volumique
 //                et une chaleur specifique associee
 /*
-  inline void Terme_Source_Constituant::associer_champs(const Champ_Don& rho,
+  inline void Terme_Source_Constituant::associer_champs(const Champ_base& rho,
   const Champ_Don& cp)
   {
   rho_ref=rho;
   Cp=cp;
   }
 */
-inline void Terme_Source_Constituant::associer_champs(const Champ_Don& rho)
+inline void Terme_Source_Constituant::associer_champs(const Champ_base& rho)
 {
   rho_ref=rho;
 }

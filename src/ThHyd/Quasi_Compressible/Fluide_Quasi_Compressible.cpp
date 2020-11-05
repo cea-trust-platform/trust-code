@@ -193,7 +193,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       Pth_n = Pth_;
       rho.typer("Champ_Uniforme");
       DoubleTab& tab_rho=rho.valeurs();
-      rho->dimensionner(1,1);
+      tab_rho.resize(1,1);
       tab_rho(0,0) = 1.;
       return 1;
     }
@@ -436,7 +436,9 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   //
   Cerr<<"Fluide_Quasi_Compressible::discretiser"<<finl;
   // les champs seront nommes par le milieu_base
-  dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,rho);
+  Champ_Don ch_rho;
+  dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,ch_rho);
+  rho = ch_rho.valeur();
 
   // NOTE : ch_temperature() is the temperature field
   // unless for a Pb_Hydraulique_Melange_Binaire_QC & Pb_Hydraulique_Melange_Binaire_Turbulent_QC
@@ -657,7 +659,7 @@ void Fluide_Quasi_Compressible::update_rho_cp(double temps)
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_.valeur().changer_temps(temps);
   DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
-  if (sub_type(Champ_Uniforme,rho.valeur()))
+  if (sub_type(Champ_Uniforme,rho))
     rho_cp = rho.valeurs()(0, 0);
   else
     {
@@ -688,7 +690,7 @@ void Fluide_Quasi_Compressible::update_rho_cp(double temps)
 int Fluide_Quasi_Compressible::initialiser(const double& temps)
 {
   Cerr << "Fluide_Quasi_Compressible::initialiser()" << finl;
-  rho.initialiser(temps);
+  if (sub_type(Champ_Don_base, rho)) ref_cast(Champ_Don_base, rho).initialiser(temps);
   mu.initialiser(temps);
   lambda.initialiser(temps);
   Cp.initialiser(temps);

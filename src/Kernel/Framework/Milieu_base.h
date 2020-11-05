@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,11 +23,15 @@
 #ifndef Milieu_base_included
 #define Milieu_base_included
 
+#include <Champ.h>
 #include <Champ_Don.h>
 #include <Champ_Fonc.h>
+#include <Champ_Inc.h>
+#include <Champ_Inc_base.h>
 #include <Ref_Champ_Don_base.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <Interface_blocs.h>
 
 class Champ_Don;
 class Motcle;
@@ -72,11 +76,14 @@ public:
   virtual int is_rayo_semi_transp() const;
   virtual int is_rayo_transp() const;
   virtual void mettre_a_jour(double temps);
+  virtual bool initTimeStep(double dt);
   virtual void abortTimeStep();
   virtual int initialiser(const double& temps);
   virtual void associer_gravite(const Champ_Don_base& );
-  virtual const Champ_Don& masse_volumique() const;
-  virtual Champ_Don&       masse_volumique();
+  virtual const Champ_base& masse_volumique() const;
+  virtual Champ_base&       masse_volumique();
+  virtual const Champ_base& energie_interne() const;
+  virtual Champ_base&       energie_interne();
   virtual const Champ_Don& diffusivite() const;
   virtual Champ_Don&       diffusivite();
   virtual const Champ_Don& conductivite() const;
@@ -99,9 +106,13 @@ public:
   /////////////////////////////////////////////////////
   virtual void update_rho_cp(double temps);
 
+  // equations associees au milieu
+  virtual void associer_equation(const Equation_base* eqn) const;
+
 protected:
 
-  Champ_Don rho;
+  Champ rho; //peut etre un Champ_Don ou un Champ_Inc
+  mutable Champ_Inc e_int; //toujours un Champ_Inc : vaut par defaut Cp * T, cree sur demande
   Champ_Don alpha;
   Champ_Don lambda;
   Champ_Don Cp;
@@ -123,6 +134,11 @@ protected:
 
   Champs_compris champs_compris_;
 
+  mutable std::map<std::string, const Equation_base *> equation;
+
+  //methode de calcul par defaut de l'energie interne : produit Cp * T
+  void creer_energie_interne() const; //creation sur demande
+  static void calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
 };
 
 

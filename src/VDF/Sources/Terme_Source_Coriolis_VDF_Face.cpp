@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -248,7 +248,7 @@ void Terme_Source_Coriolis_VDF_Face::calculer_force_de_Coriolis() const
   if(pb.is_QC())
     {
       const Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,eq_hydraulique().milieu());
-      const DoubleTab& tab_rho_elem = le_fluide.masse_volumique();
+      const DoubleTab& tab_rho_elem = le_fluide.masse_volumique().valeurs();
       double rhoelem;
       for (num_elem=0; num_elem <nb_elems; num_elem++)
         {

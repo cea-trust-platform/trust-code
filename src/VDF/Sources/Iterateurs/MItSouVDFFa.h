@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -113,12 +113,12 @@
     if (equation_divisee_par_rho())                                        \
       {                                                                        \
         const Milieu_base& milieu = la_zcl->equation().milieu();        \
-        const Champ_Don& rho = milieu.masse_volumique();                \
-        if (sub_type(Champ_Uniforme,rho.valeur()))                        \
+        const Champ_base& rho = milieu.masse_volumique();                \
+        if (sub_type(Champ_Uniforme,rho))                        \
           coef = rho(0,0);                                                \
         else                                                                \
           {                                                                \
-            const DoubleTab& val_rho = rho.valeur().valeurs();                \
+            const DoubleTab& val_rho = rho.valeurs();                \
             const IntTab& face_vois = la_zone.valeur().face_voisins();        \
             const DoubleVect& volumes = la_zone.valeur().volumes();        \
             coef = 0.;                                                        \

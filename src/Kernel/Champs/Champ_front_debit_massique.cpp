@@ -44,6 +44,6 @@ Entree& Champ_front_debit_massique::readOn(Entree& is)
 
 void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco)
 {
-  const Champ_Don& masse_volumique = inco.equation().milieu().masse_volumique();
-  coeff_ = masse_volumique.valeur().valeurs().nb_dim() == 1 ? 1. / masse_volumique(0) : 1. / masse_volumique(0, 0);
+  const Champ_base& masse_volumique = inco.equation().milieu().masse_volumique();
+  coeff_ = masse_volumique.valeurs().nb_dim() == 1 ? 1. / masse_volumique(0) : 1. / masse_volumique(0, 0);
 }

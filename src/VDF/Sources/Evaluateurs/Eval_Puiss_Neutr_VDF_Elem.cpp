@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #include <Sous_Zone.h>
 #include <Champ_Uniforme.h>
 
-void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& rho,
+void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_base& rho,
                                                 const Champ_Don& capa,
                                                 const Champ_Don& Q)
 {

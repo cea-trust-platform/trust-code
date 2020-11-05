@@ -1337,7 +1337,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
       const DoubleVect& vol_maille = zone_vf.volumes();
       const Fluide_Incompressible& fluide_inc = ref_cast(Fluide_Incompressible, milieu());
-      const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeur().valeurs();
+      const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
       const double rho = tab_rho(0,0);
       const DoubleTab& tab_cp = fluide_inc.capacite_calorifique().valeur().valeurs();
       const double cp = tab_cp(0,0);

@@ -805,9 +805,9 @@ void Champ_P1NC::calcul_h_conv(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& h_conv
       // Selon les conditions limites
       if (sub_type(Echange_externe_impose,la_cl.valeur()))
         {
-          const Champ_Don& rho = equation().milieu().masse_volumique();
+          const Champ_base& rho = equation().milieu().masse_volumique();
           const Champ_Don& Cp = equation().milieu().capacite_calorifique();
-          int rho_uniforme=(sub_type(Champ_Uniforme,rho.valeur()) ? 1:0);
+          int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);
           int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {

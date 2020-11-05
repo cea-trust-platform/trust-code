@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -118,6 +118,7 @@ public :
   {
     return complet;
   };
+  virtual void associer_milieu_equation(int owner);
 protected :
   LIST(Equation) list_eq;
   REF(Milieu_base) mil;
