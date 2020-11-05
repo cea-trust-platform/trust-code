@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,6 +49,7 @@ Convection_Diffusion_Temperature::Convection_Diffusion_Temperature()
 //  champs_compris_.ajoute_nom_compris("temperature_paroi");
   champs_compris_.ajoute_nom_compris("gradient_temperature");
   champs_compris_.ajoute_nom_compris("h_echange_");
+  champs_compris_.ajoute_nom_compris("temperature_residu");
   eta = 1.0;
   is_penalized = 0;
   tag_indic_pena_global = -1;

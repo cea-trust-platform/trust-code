@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ Implemente_instanciable_sans_constructeur(Conduction,"Conduction",Equation_base)
 Conduction::Conduction()
 {
   // champs_compris_.ajoute_nom_compris("temperature_paroi");
+  champs_compris_.ajoute_nom_compris("temperature_residu");
 }
 // Description:
 //    Ecrit le type de l'equation sur un flot de

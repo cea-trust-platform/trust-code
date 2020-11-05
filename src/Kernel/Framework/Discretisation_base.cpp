@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -344,6 +344,12 @@ void Discretisation_base::volume_maille(const Schema_Temps_base& sch,
   tab = zone_VF.volumes();
 }
 
+void Discretisation_base::residu(const Zone_dis& , const Champ_Inc&, Champ_Fonc& ) const
+{
+  Cerr << "\nDiscret_Thyd::residu() does nothing" << finl;
+  Cerr <<  que_suis_je() << " needs to overload it !" << finl;
+  exit();
+}
 
 void Discretisation_base::modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const Champ_base& ch_inc) const
 {

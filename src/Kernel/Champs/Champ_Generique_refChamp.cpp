@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -480,7 +480,7 @@ const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
   const Champ_base& ch = get_ref_champ_base();
 
   // Champs discrets a une seule localisation :
-  if (sub_type(Champ_Inc_P0_base,ch) || sub_type(Champ_Fonc_P0_base,ch))
+  if (sub_type(Champ_Inc_P0_base,ch) || sub_type(Champ_Fonc_P0_base,ch) )
     {
       directive = "champ_elem";
       //    assert(localisation_=="ELEMENTS");
@@ -496,7 +496,7 @@ const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
     {
       const Nom& type = ch.que_suis_je();
       if ((type.debute_par("Champ_Face")) || (type=="Champ_P1NC") || (type=="Champ_Q1NC") ||
-          (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC"))
+          (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC") )
         {
           directive = "champ_face";
           //      assert(localisation_=="FACES");

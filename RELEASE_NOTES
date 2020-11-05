@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+05/11/20 (TRUST)  New feature : Equation residuals can now be post-processed
 04/11/20 (TRUST)  Bug fixed   : In VDF, advanced fields using flux_bords wasn't correct near corners of the domain
 03/11/20 (TRUST)  Portability : Support of AOCC compilers and HPC-X MPI for AMD processors on orcus cluster
 28/10/20 (TRUST)  Improvement : Reduce memory footprint when using implicit time schemes

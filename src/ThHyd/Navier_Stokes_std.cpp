@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,10 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   champs_compris_.ajoute_nom_compris("taux_cisaillement");
   champs_compris_.ajoute_nom_compris("pression_hydrostatique");
   champs_compris_.ajoute_nom_compris("gradient_vitesse");
+  champs_compris_.ajoute_nom_compris("vitesse_residu");
+
 }
+
 // Description:
 //    Simple appel a:  Equation_base::printOn(Sortie&)
 //    Ecrit l'equation sur un flot de sortie.
@@ -430,6 +433,8 @@ void Navier_Stokes_std::discretiser()
   divergence.l_op_base().associer_eqn(*this);
   gradient.typer();
   gradient.l_op_base().associer_eqn(*this);
+
+
 
   champs_compris_.ajoute_champ(gradient_P);
   champs_compris_.ajoute_champ(divergence_U);
@@ -1659,7 +1664,6 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
         }
       return champs_compris_.get_champ(nom);
     }
-
   try
     {
       return Equation_base::get_champ(nom);

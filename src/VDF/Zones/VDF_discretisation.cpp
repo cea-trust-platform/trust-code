@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -582,5 +582,36 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
     }
+}
+
+void VDF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
+{
+
+  Nom ch_name(ch_inco.le_nom());
+  ch_name += "_residu";
+  Cerr << "Discretization of " << ch_name << finl;
+
+  const Zone_VDF& zone_vdf = ref_cast( Zone_VDF, z.valeur( ) );
+
+  Motcle loc;
+  int nb_comp;
+  Nom type_ch = ch_inco.valeur().que_suis_je();
+  if (type_ch.debute_par("Champ_Face"))
+    {
+      loc= "champ_face";
+      nb_comp = dimension;
+    }
+  else
+    {
+      loc = "champ_elem";
+      nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
+    }
+
+  Discretisation_base::discretiser_champ(loc,zone_vdf, ch_name ,"units_not_defined",nb_comp,ch_inco.temps(),champ);
+  Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
+  DoubleTab& tab=ch_fonc.valeurs();
+  tab = -10000.0 ;
+  Cerr << "[Information] Discretisation_base::residu : the residue is set to -10000.0 at initial time" <<finl;
+
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -226,14 +226,11 @@ public :
     return calculate_time_derivative_;
   };
 
-  inline const DoubleTab get_residuals() const
-  {
-    return residuals_;
-  };
 
   inline void set_residuals(DoubleTab r)
   {
-    residuals_ = r;
+    if(field_residu_.non_nul())
+      field_residu_.valeur().valeurs() = r;
   };
 
 protected :
@@ -285,7 +282,7 @@ private :
   DoubleVect residu_;
   DoubleVect residu_initial_;
   // retourne le CHAMP (et non la norme) des residus de chaque inconnu du probleme
-  DoubleTab residuals_;
+  Champ_Fonc field_residu_;
 
   mutable DoubleTab NULL_;
   mutable Parser_U equation_non_resolue_;
