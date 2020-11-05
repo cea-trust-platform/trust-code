@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -115,7 +115,7 @@ void Source_PDF::associer_pb(const Probleme_base& pb)
           if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_gradient_moyen")
             {
               const Interpolation_IBM_mean_gradient& interp = ref_cast(Interpolation_IBM_mean_gradient,interpolation_lue_.valeur());
-              compute_vitesse_imposee_projete(interp.is_dirichlet_.valeur().valeurs(), interp.solid_points_.valeur().valeurs(), -1.0, 1e-6);
+              this->compute_vitesse_imposee_projete(interp.solid_elems_.valeur().valeurs(), interp.solid_points_.valeur().valeurs(), -2, 1e-6);
             }
           else
             {
@@ -205,7 +205,16 @@ void Source_PDF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 
   for (int num_elem=0; num_elem<nb_elem_tot; num_elem++)
     {
-      if (aire(num_elem) > 0.)
+      double norm =  sqrt(rotation(num_elem,0)*rotation(num_elem,0)
+                          +rotation(num_elem,1)*rotation(num_elem,1)
+                          +rotation(num_elem,2)*rotation(num_elem,2)
+                          +rotation(num_elem,3)*rotation(num_elem,3)
+                          +rotation(num_elem,4)*rotation(num_elem,4)
+                          +rotation(num_elem,5)*rotation(num_elem,5)
+                          +rotation(num_elem,6)*rotation(num_elem,6)
+                          +rotation(num_elem,7)*rotation(num_elem,7)
+                          +rotation(num_elem,8)*rotation(num_elem,8));
+      if (norm > 1e-6)
         {
           for (int i=0; i<nb_som_elem; i++)
             {
@@ -214,11 +223,11 @@ void Source_PDF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
                 {
                   for (int k=0; k<3; k++)
                     {
-                      vitesse_imposee(s,c) += aire(num_elem)*rotation(num_elem,3*c+k)*vitesse(s,k);
+                      vitesse_imposee(s,c) += rotation(num_elem,3*c+k)*vitesse(s,k);
                       //Cerr << "k = " << k << ", c = " << c << ", 3*c+k = " << 3*c+k << ", rotation = " << rotation(num_elem,3*c+k) << finl;
                     }
                 }
-              marqueur(s,0) += aire(num_elem);
+              marqueur(s,0) += 1.0;
             }
         }
     }
@@ -239,7 +248,6 @@ void Source_PDF::associer_zones(const Zone_dis& zone_dis,
 {
   la_zone_EF = ref_cast(Zone_EF, zone_dis.valeur());
   la_zone_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
-  // interface_TFSDIA::init();
 }
 
 DoubleVect Source_PDF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const
