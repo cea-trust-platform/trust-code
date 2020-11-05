@@ -46,6 +46,10 @@ public:
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
+
 private:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;

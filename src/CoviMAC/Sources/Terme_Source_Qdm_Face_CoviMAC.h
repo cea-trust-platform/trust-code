@@ -50,6 +50,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
   void mettre_a_jour(double );
+  void check_multiphase_compatibility() const { }; //ok
 
 protected:
 

@@ -55,10 +55,14 @@ public:
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
 
-  /* sensibilites dv_e = - ds W_e d(grad p_e) et ponderations v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
-  mutable DoubleTab W_e; //W_e(e, n_comp, i, j)
-  mutable DoubleTab mu_f; //mu_f(f, n_comp)
+  /* interface ajouter_blocs */
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
 
+  /* ponderations v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
+  mutable DoubleTab mu_f; //mu_f(f, n_comp, amont/aval)
+
+  void check_multiphase_compatibility() const { };
 private:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;

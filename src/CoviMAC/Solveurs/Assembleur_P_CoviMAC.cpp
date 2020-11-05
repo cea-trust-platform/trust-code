@@ -75,12 +75,12 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, la_zone_CoviMAC.valeur());
   const Op_Grad_CoviMAC_Face& grad = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
   const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_j = grad.fgrad_j;
-  const DoubleVect& pe = zone.porosite_elem();
+  const DoubleVect& pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, mon_equation->inconnue().valeur());
-  const DoubleTab& fgrad_c = grad.fgrad_c, &W_e = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).W_e, &nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv();
+  const DoubleTab& fgrad_c = grad.fgrad_c, &nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv();
   int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), piso = sub_type(Piso, equation().schema_temps()) && !sub_type(Implicite, equation().schema_temps());
 
-  ch.init_cl(), grad.update_grad();
+  ch.init_cl();
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
@@ -113,7 +113,7 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) == 1) //bord de Neumann -> flux a deux points
-      e = f_e(f, 0), mat(e, e) += pe(e) * zone.nu_dot(&W_e, e, 0, 1, &nf(f, 0), &nf(f, 0)) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
+      e = f_e(f, 0), mat(e, e) += pe(e) * fs(f) * fs(f) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
     else if (!ch.fcl(f, 0)) //face interne -> flux multipoints
       for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
             if ((eb = fgrad_j(j)) < ne_tot || ch.fcl(eb - ne_tot, 0) > 1) /* les valeurs au bords de Dirichlet varient comme l'element voisin */

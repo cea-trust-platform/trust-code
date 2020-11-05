@@ -61,45 +61,57 @@ Entree& Masse_CoviMAC_Elem::readOn(Entree& s)
 
 DoubleTab& Masse_CoviMAC_Elem::appliquer_impl(DoubleTab& sm) const
 {
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const DoubleVect& volumes = zone_CoviMAC.volumes();
-  const DoubleVect& porosite_elem = zone_CoviMAC.porosite_elem();
-  int nb_elem = zone_CoviMAC.nb_elem();
-  if(nb_elem==0)
-    {
-      sm.echange_espace_virtuel();
-      return sm;
-    }
-  int nb_comp = sm.size()/nb_elem;
-  int nb_dim=sm.nb_dim();
-  assert((nb_comp*nb_elem == sm.size())||(nb_dim==3));
-  if (nb_dim == 1)
-    for (int num_elem=0; num_elem<nb_elem; num_elem++)
-      sm(num_elem) /= (volumes(num_elem)*porosite_elem(num_elem));
-  else if (nb_dim == 2)
-    {
-      for (int num_elem=0; num_elem<nb_elem; num_elem++)
-        for (int k=0; k<nb_comp; k++)
-          sm(num_elem,k) /= (volumes(num_elem)*porosite_elem(num_elem));
-    }
-  else if (sm.nb_dim() == 3)
-    {
-      //int d0=sm.dimension(0);
-      int d1=sm.dimension(1);
-      int d2=sm.dimension(2);
-      for (int num_elem=0; num_elem<nb_elem; num_elem++)
-        for (int k=0; k<d1; k++)
-          for (int d=0; d<d2; d++)
-            sm(num_elem,k,d) /= (volumes(num_elem)*porosite_elem(num_elem));
-    }
-  else
-    {
-      Cerr<< "Masse_CoviMAC_Elem::appliquer ne peut pas s'appliquer a un DoubleTab a "<<sm.nb_dim()<<" dimensions"<<finl;
-      assert(0);
-      exit();
-    }
-  sm.echange_espace_virtuel();
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
+  const DoubleTab& der = equation().champ_conserve().derivees().at(equation().inconnue().le_nom().getString());
+
+  int i, e, ne_tot = zone.nb_elem_tot(), n, N = sm.line_size();
+  assert(sm.dimension_tot(0) == ne_tot && N == der.line_size());
+
+
+  for (i = 0, e = 0; e < ne_tot; e++) for (n = 0; n < N; n++, i++)
+      if (der.addr()[i] > 1e-10) sm.addr()[i] /= pe(e) * ve(e) * der.addr()[i];
+      else sm.addr()[i] = 0; //cas d'une evanescence
+
   return sm;
+}
+
+void Masse_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  /* une diagonale par derivee de champ_conserve_ presente dans matrices */
+  equation().init_champ_conserve();
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_Inc_base& cc = equation().champ_conserve();
+  int i, N = cc.valeurs().line_size(), ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();
+  IntTrav stencil(0, 2);
+  stencil.set_smart_resize(1);
+
+  for (i = 0; i < N * ne; i++) stencil.append_line(i, i);
+  Matrice_Morse mat;
+  Matrix_tools::allocate_morse_matrix(N * ne_tot, N * ne_tot, stencil, mat);
+  for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
+      i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+}
+
+void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
+{
+  const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
+  const Champ_Inc_base& cc = equation().champ_conserve();
+  const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
+  int e, i, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
+
+  /* second membre : avec ou sans resolution en increments*/
+  for (e = i = 0; e < ne; e++) for (n = 0; n < N; n++, i++)
+      secmem.addr()[i] += pe(e) * ve(e) * (passe.addr()[i] - resoudre_en_increments * present.addr()[i]) / dt;
+
+  /* matrices */
+  for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
+      {
+        const DoubleTab& der = cc.derivees().at(i_m.first);
+        for (e = i = 0; e < ne; e++) for (n = 0; n < N; n++, i++) (*i_m.second)(i, i) += pe(e) * ve(e) * der.addr()[i] / dt;
+      }
+
 }
 
 void Masse_CoviMAC_Elem::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)

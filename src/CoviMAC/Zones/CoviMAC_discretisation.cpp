@@ -707,7 +707,16 @@ Nom  CoviMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, co
         type += "_Face";
       type+= "_CoviMAC";
     }
-
+  else if (class_operateur=="Operateur_Evanescence")
+    {
+      type= Nom("Op_") + class_operateur.getSuffix("Operateur_") + "_" + type_operateur
+            + (type_operateur != "" ? "_" : "") + que_suis_je();
+      Nom type_ch=eqn.inconnue()->que_suis_je();
+      if (type_ch.debute_par("Champ_P0"))
+        type += "_Elem";
+      if (type_ch.debute_par("Champ_Face"))
+        type += "_Face";
+    }
   else
     {
       return Discret_Thyd::get_name_of_type_for(class_operateur,type_operateur,eqn);

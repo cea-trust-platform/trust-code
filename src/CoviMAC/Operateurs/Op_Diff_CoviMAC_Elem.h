@@ -41,13 +41,15 @@ class Op_Diff_CoviMAC_Elem : public Op_Diff_CoviMAC_base
 
 public :
   Op_Diff_CoviMAC_Elem();
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  virtual void calculer_flux_bord(const DoubleTab& inco) const;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
-  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const;
   void completer();
-  void dimensionner(Matrice_Morse& mat) const;
+  // virtual void calculer_flux_bord(const DoubleTab& inco) const { abort(); };
+
+  /* interface {dimensionner,ajouter}_blocs */
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
+
+  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const { };
 };
 
 /* comme des synonymes, mais avec l'info de ce qu'on est dans que_suis_je() */

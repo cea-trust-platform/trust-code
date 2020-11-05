@@ -42,6 +42,7 @@
 #include <cfloat>
 #include <Champ_P0_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
+#include <Pb_Multiphase.h>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);
 
@@ -76,7 +77,6 @@ void Op_Diff_CoviMAC_base::completer()
   const Equation_base& eq = equation();
   if (eq.que_suis_je() == "Transport_K_Eps") nu_.resize(0, 2);
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  zone.zone().creer_tableau_elements(nu_);
   zone.creer_tableau_faces(nu_fac_);
 
   /* interpolations de nu.grad T : on prend les tailles maximales possibles */
@@ -257,7 +257,7 @@ void Op_Diff_CoviMAC_base::update_nu() const
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, f;
 
-  /* 1. nu_ */
+  /* nu_ */
   //dimensionnement
   const DoubleTab& diffu=diffusivite().valeurs();
   if (equation().que_suis_je() != "Transport_K_Eps")
@@ -323,7 +323,14 @@ void Op_Diff_CoviMAC_base::update_nu() const
         }
     }
 
-  /* 2. nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
+  /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs() : NULL;
+  int e, n, nb, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), mult = N_nu / N;
+  assert(N_nu % N == 0);
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (nb = 0; nb < mult; nb++, i++)
+        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? alp->addr()[N * e + n] : 1);
+
+  /* nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
   // utilise-t-on des lois de paroi ?
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&

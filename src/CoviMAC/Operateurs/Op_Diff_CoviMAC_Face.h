@@ -40,11 +40,10 @@ class Op_Diff_CoviMAC_Face : public Op_Diff_CoviMAC_base
 
 public :
   void completer();
-  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
-  void dimensionner(Matrice_Morse& mat) const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void check_multiphase_compatibility() const {}; //ok
 protected :
   DoubleVect porosite_e;
   DoubleVect porosite_f;

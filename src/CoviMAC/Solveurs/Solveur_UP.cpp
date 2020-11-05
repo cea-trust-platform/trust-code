@@ -316,20 +316,23 @@ void Solveur_UP::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pres
   Inconnues_parts[0]=current;
   Inconnues_parts[1]=pression;
 
-  Operateur_Grad& gradient = eqnNS.operateur_gradient();
   Operateur_Div& divergence = eqnNS.operateur_divergence();
-  Matrice_Bloc Matrice_global(2,2) ; //  Div 0 puis 1/dt+A   +grapdP
+  Matrice_Bloc Matrice_global(2,2) ; //1/dt+A , grapdP puis (div, 0)
 
+  /* ligne Navier-Stokes -> interface assembler_blocs */
+  std::string nom_inco[2] = { "vitesse", "pression" };
+  matrices_t matrices;
+  for (int i = 0; i < 2; i++)
+    Matrice_global.get_bloc(0, i).typer("Matrice_Morse"), matrices[nom_inco[i]] = &ref_cast(Matrice_Morse,  Matrice_global.get_bloc(0, i).valeur());
+  eqnNS.dimensionner_blocs(matrices);
+  eqnNS.assembler_blocs_avec_inertie(matrices, residu_parts[0]);
+
+  /* ligne div = 0 -> a la main */
   Matrice_global.get_bloc(1,0).typer("Matrice_Morse");
   Matrice_Morse& mat_div=ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,0).valeur());
   divergence.valeur().dimensionner(mat_div);
-  divergence.valeur().contribuer_a_avec( current,mat_div);
-
-  Matrice_global.get_bloc(0,1).typer("Matrice_Morse");
-  Matrice_Morse& mat_grad=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,1).valeur());
-  gradient.valeur().dimensionner(mat_grad);
-  gradient.valeur().contribuer_a_avec(pression, mat_grad);
-  mat_grad.get_set_coeff()*=-1;
+  divergence.valeur().contribuer_a_avec(current, mat_div);
+  divergence.calculer(current, residu_parts[1]);
 
   Matrice_global.get_bloc(1,1).typer("Matrice_Diagonale");
   Matrice_Diagonale& mat_diag = ref_cast(Matrice_Diagonale,Matrice_global.get_bloc(1,1).valeur());
@@ -340,31 +343,11 @@ void Solveur_UP::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pres
     if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
   if (!has_P_ref && !Process::me()) mat_diag.coeff(0, 0) = 1; //revient a imposer P(0) = 0
 
-  Matrice_global.get_bloc(0,0).typer("Matrice_Morse");
-  Matrice_Morse& matrice=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,0).valeur());
-  eqnNS.dimensionner_matrice(matrice);
-  eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
-
-  DoubleTrav secmem_grad(residu_parts[0]);
-  /* pour que ajouter_NS voie le bon second membre */
-  gradient.valeur().ajouter_NS(pression, secmem_grad, &matrice, &current, &residu_parts[0]);
-  // gradient.valeur().ajouter(pression, secmem_grad);
-  residu_parts[0] -= secmem_grad;
-  divergence.calculer(current, residu_parts[1]);
-  /*
-      modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(eqnNS.zone_dis().valeur(),
-                                                       eqnNS.zone_Cl_dis(),
-                                                       matrice, current, residu_parts[0]) ;
-  */
-  /* int nb_f=current.dimension(0);
-  int nnz=matrice.tab1_[nb_f]-1;
-  matrice.dimensionner(nb_f,matrice.nb_colonnes(),nnz);
-  */
   le_solveur_.valeur().reinit();
   le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
 
   //Calcul de Uk = U*_k + U'k
-  current   = Inconnues_parts[0];
+  current  += Inconnues_parts[0];
   pression += Inconnues_parts[1];
   eqn.solv_masse().corriger_solution(current, current); //mise en coherence de ve avec vf
   //current.echange_espace_virtuel();

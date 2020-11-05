@@ -14,14 +14,63 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Config_Template_Version_CoviMAC_Operateur.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Operateurs/Conv_iterateur
+// File:        Op_Conv_EF_Stab_CoviMAC_Elem.h
+// Directory:   $TRUST_ROOT/src/CoviMAC/Operateurs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Config_Template_Version_CoviMAC_Operateur_included
-#define Config_Template_Version_CoviMAC_Operateur_included
 
-// To use template version of operateur in CoviMAC define Template_Version_CoviMAC to 1
-#define Template_Version_CoviMAC 1
-#endif
+#ifndef Op_Conv_EF_Stab_CoviMAC_Elem_included
+#define Op_Conv_EF_Stab_CoviMAC_Elem_included
+
+#include <Op_Conv_CoviMAC_base.h>
+#include <Matrice_Morse.h>
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Op_Conv_EF_Stab_CoviMAC_Elem
+//
+// <Description of class Op_Conv_EF_Stab_CoviMAC_Elem>
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Op_Conv_EF_Stab_CoviMAC_Elem : public Op_Conv_CoviMAC_base
+{
+
+  Declare_instanciable( Op_Conv_EF_Stab_CoviMAC_Elem ) ;
+
+public :
+  void completer();
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
+
+  /* interface ajouter_blocs */
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
+  void check_multiphase_compatibility() const { }; //of course
+
+  void creer_champ(const Motcle& motlu);
+
+  void mettre_a_jour(double temps);
+
+protected :
+  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+
+  /* si operateur de convection de Masse_Multiphase */
+  std::vector<Champ_Inc> cc_phases_; //flux massiques (kg/m2/s)
+  Motcles noms_cc_phases_; //leurs noms
+  std::vector<Champ_Inc> vd_phases_; //vitesses debitantes
+  Motcles noms_vd_phases_; //leurs noms
+};
+
+class Op_Conv_Amont_CoviMAC_Elem : public Op_Conv_EF_Stab_CoviMAC_Elem
+{
+  Declare_instanciable( Op_Conv_Amont_CoviMAC_Elem ) ;
+};
+
+class Op_Conv_Centre_CoviMAC_Elem : public Op_Conv_EF_Stab_CoviMAC_Elem
+{
+  Declare_instanciable( Op_Conv_Centre_CoviMAC_Elem ) ;
+};
+
+#endif /* Op_Conv_EF_Stab_CoviMAC_Elem_included */

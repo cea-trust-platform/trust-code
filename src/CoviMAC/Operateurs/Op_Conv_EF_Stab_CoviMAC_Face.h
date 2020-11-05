@@ -41,18 +41,31 @@ class Op_Conv_EF_Stab_CoviMAC_Face : public Op_Conv_CoviMAC_base
 
 public :
   void completer();
-  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
-  void dimensionner(Matrice_Morse& mat) const;
-  virtual void set_incompressible(const int flag);
+
+  /* interface ajouter_blocs */
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
+  void check_multiphase_compatibility() const { }; //of course
+  void set_incompressible(const int flag)
+  {
+    incompressible_ = flag;
+  }
 
 protected :
   double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f;
-  DoubleVect porosite_e;
+  DoubleVect porosite_f, porosite_e; //pour F5
+};
 
+class Op_Conv_Amont_CoviMAC_Face : public Op_Conv_EF_Stab_CoviMAC_Face
+{
+  Declare_instanciable( Op_Conv_Amont_CoviMAC_Face ) ;
+};
+
+class Op_Conv_Centre_CoviMAC_Face : public Op_Conv_EF_Stab_CoviMAC_Face
+{
+  Declare_instanciable( Op_Conv_Centre_CoviMAC_Face ) ;
 };
 
 #endif /* Op_Conv_EF_Stab_CoviMAC_Face_included */

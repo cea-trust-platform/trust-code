@@ -617,6 +617,24 @@ void disp(const Matrice_Morse& M)
   disp(A);
 }
 
+void disp(const tabs_t& mvect)
+{
+  for (auto &&n_v : mvect)
+    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp(n_v.second), fprintf(stderr, "\n");
+}
+
+void disp(const std::map<std::string, Matrice_Morse>& mmat)
+{
+  for (auto &&n_v : mmat)
+    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp(n_v.second), fprintf(stderr, "\n");
+}
+
+void disp(const matrices_t& mmat)
+{
+  for (auto &&n_v : mmat)
+    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp(*n_v.second), fprintf(stderr, "\n");
+}
+
 DoubleVect& Zone_CoviMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) const
 {
   for (int n_bord=0; n_bord<les_bords_.size(); n_bord++)
@@ -777,7 +795,6 @@ void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab&
 
             /* interpolation et contribution au flux */
             for (j = 0; j < 2; j++) phi(j, n) = (j ? 1 : -1) / (1. / h[0] + 1. / h[1]);
-            if (dot(&xfe(1, 0), &xfe(1, 0), &xfe(0, 0), &xfe(0, 0)) < 1e-12) continue; //projections coincidantes -> flux a 2 points
             for (A.resize(nc, nl), B.resize(nc), P.resize(nc), i = 0; i < 2; i++) //rien a faire si les deux projections sont confondues
               {
                 for (B = 0, B(D) = 1, j = 0, jb = feb_d(f); j < nc; j++, jb++)
@@ -787,15 +804,14 @@ void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab&
                 /* moindres carres par DGELS */
                 nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-                for (j = 0; j < nc; j++) if (dabs(B(j) * P(j)) > 1e-6) //ecretage sur les coeffs de l'interpolation
-                    phi(j, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
+                for (j = 0; j < nc; j++) phi(j, n) += (i ? -1 : 1) * B(j) * P(j) / (1. / h[0] + 1. / h[1]);
               }
           }
 
         /* remplissage */
         for (j = 0, jb = feb_d(f); j < nc; j++, jb++)
           {
-            for (skip = 1, n = 0; n < N; n++) skip &= (phi(j, n) == 0); //ecretage fait au-dessus
+            for (skip = 1, n = 0; n < N; n++) skip &= (dabs(phi(j, n) * (1. / h[0] + 1. / h[1])) < 1e-12);
             if (skip) continue;
             for (phif_c.resize(phif_j.size() + 1, N), n = 0; n < N; n++) phif_c(phif_j.size(), n) = phi(j, n);
             phif_j.append_line(feb_j(jb));

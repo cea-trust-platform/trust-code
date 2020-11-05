@@ -207,15 +207,12 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
   if (isCoviMAC)
     {
-      eqnNS.assembler_avec_inertie(matrice,current,resu);
-      gradient.valeur().calculer_NS(pression,gradP, &matrice, &current, &resu); /* seul CoviMAC utilise les 3 derniers arguments */
-      gradP *= -1;
-      first_special_treatment( eqn, eqnNS, current, dt, gradP );
-      resu += gradP;
+      eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
+      matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
     }
   else
     {
-      gradient.valeur().calculer_NS(pression, gradP, &matrice, &current, &resu); /* seul CoviMAC utilise les 3 derniers arguments */
+      gradient.valeur().calculer(pression,gradP);
       resu -= gradP;
       first_special_treatment( eqn, eqnNS, current, dt, resu );
       eqnNS.assembler_avec_inertie(matrice,current,resu);
