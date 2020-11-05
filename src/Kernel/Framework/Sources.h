@@ -53,12 +53,14 @@ public:
   void completer();
   void dimensionner(Matrice_Morse&) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void contribuer_blocs(const DoubleTab&, Matrice_Morse&, const std::map<std::string, Matrice_Morse *>&) const;
   //void contribuer_au_second_membre(DoubleTab& ) const ;
   virtual void associer_champ_rho(const Champ_base& champ_rho);
   virtual int a_pour_Champ_Fonc(const Motcle& mot,
                                 REF(Champ_base)& ch_ref) const;
   int impr(Sortie&) const;
   int initialiser(double temps);
+  void check_multiphase_compatibility() const;
 };
 
 #endif

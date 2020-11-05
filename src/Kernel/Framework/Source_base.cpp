@@ -251,14 +251,14 @@ int Source_base::impr(Sortie& os) const
 // Description:
 //    Dimensionnement de la matrice implicite des termes sources.
 //    Par defaut ne fait rien.
-void Source_base::dimensionner(Matrice_Morse&) const
+void Source_base::dimensionner(Matrice_Morse& mat) const
 {
-  ;
+  dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
 }
 
-void Source_base::dimensionner_bloc_vitesse(Matrice_Morse&) const
+void Source_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
 {
-  ;
+  dimensionner_blocs({{ "vitesse", &mat }});
 }
 
 // Description:
@@ -276,6 +276,12 @@ void Source_base::contribuer_au_second_membre(DoubleTab& ) const
 {
   Cerr<<"Source_base::contribuer_au_second_membre(DoubleTab& ) const uncoded"<<finl;
   exit();
+}
+
+/* par defaut, un simple ajouter() */
+void Source_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  ajouter(secmem);
 }
 
 // Description:

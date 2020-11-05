@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,6 +65,26 @@ Sortie& Operateur_Grad_base::printOn(Sortie& os) const
 Entree& Operateur_Grad_base::readOn(Entree& is)
 {
   return is;
+}
+
+void Operateur_Grad_base::dimensionner(Matrice_Morse& mat) const
+{
+  /* on tente dimensionner_blocs(), mais en pression! */
+  dimensionner_blocs({{ "pression", &mat }});
+}
+
+DoubleTab& Operateur_Grad_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
+{
+  /* on tente ajouter_blocs */
+  secmem *= -1, ajouter_blocs({}, secmem), secmem *= -1; /* pour avoir le bon signe */
+  return secmem;
+}
+
+void Operateur_Grad_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  /* on tente ajouter_blocs() */
+  DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
+  matrice.get_set_coeff() *= -1, ajouter_blocs({{ "pression", &matrice }}, secmem), matrice.get_set_coeff() *= -1; /* pour avoir le bon signe */
 }
 
 // Description: Calcul sans les conditions aux limites ?

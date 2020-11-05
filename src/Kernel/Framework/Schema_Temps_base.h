@@ -28,6 +28,7 @@
 #include <DoubleTab.h>
 #include <Parser_U.h>
 #include <SFichier.h>
+#include <Interface_blocs.h>
 
 class Equation;
 class Equation_base;
@@ -343,6 +344,9 @@ public :
 
   // pour implicite ajoute l'inertie a la matrice et au scd membre
   virtual void ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secmem,const Equation_base& eqn) const;
+
+  //interface ajouter_blocs
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const Equation_base& eqn, const tabs_t& semi_impl = {}) const;
 
   // Flag to disable the writing of the .progress file
   inline int disable_progress() const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,6 +64,9 @@ public :
 
   virtual void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const;
   virtual void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const;
+
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const { };
+  void ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl = { }) const { };
 
 protected :
 

@@ -2008,12 +2008,25 @@ static void construire_matrice_implicite(Operateur_base& op,
     }
 }
 
-/* pour que le gradient puisse elargir le stencil de l'equation de N-S */
-void Navier_Stokes_std::dimensionner_matrice_internal(Matrice_Morse& matrice)
+/* dans CoviMAC, le gradient contribue a la matrice de l'equation de N-S */
+void Navier_Stokes_std::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
-  Equation_base::dimensionner_matrice_internal(matrice);
-  gradient.valeur().dimensionner_NS(matrice);
-  return;
+  Equation_base::dimensionner_matrice_sans_mem(matrice);
+  if (discretisation().que_suis_je() == "CoviMAC")
+    gradient.valeur().dimensionner_blocs({{ "vitesse", &matrice }});
+}
+
+/* le gradient passe en dernier */
+void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  Equation_base::dimensionner_blocs(matrices, semi_impl);
+  gradient.valeur().dimensionner_blocs(matrices, semi_impl);
+}
+
+void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  Equation_base::assembler_blocs(matrices, secmem, semi_impl);
+  gradient.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)

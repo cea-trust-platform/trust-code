@@ -222,18 +222,28 @@ int Operateur_base::impr(Sortie& os) const
 // Exception: methode a surcharger
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void Operateur_base::dimensionner(Matrice_Morse& ) const
+void Operateur_base::dimensionner(Matrice_Morse& mat) const
 {
-  Cerr << "You must overload the method " << que_suis_je()
-       << "::dimensionner(Matrice_Morse& )" << finl;
-  exit();
+  /* on tente dimensionner_blocs() */
+  dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
 }
 
-void Operateur_base::dimensionner_bloc_vitesse(Matrice_Morse& ) const
+void Operateur_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
 {
-  Cerr << "You must overload the method " << que_suis_je()
-       << "::dimensionner_bloc_vitesse(Matrice_Morse& )" << finl;
-  exit();
+  /* on tente dimensionner_blocs() */
+  dimensionner_blocs({{ "vitesse", &mat }});
+}
+
+void Operateur_base::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
+{
+  Cerr << que_suis_je() << " : method dimensionner_blocs() not coded!" << finl;
+  Process::exit();
+}
+
+void Operateur_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  Cerr << que_suis_je() << " : method ajouter_blocs() not coded!" << finl;
+  Process::exit();
 }
 
 // Description:
@@ -267,6 +277,18 @@ void Operateur_base::modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const
   exit();
 }
 
+DoubleTab&  Operateur_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
+{
+  /* on tente ajouter_blocs */
+  ajouter_blocs({}, secmem);
+  return secmem;
+}
+
+DoubleTab&  Operateur_base::calculer(const DoubleTab& inco, DoubleTab& secmem) const
+{
+  secmem = 0;
+  return ajouter(inco, secmem);
+}
 
 // Description:
 //    NE FAIT RIEN
@@ -288,18 +310,18 @@ void Operateur_base::modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const
 // Exception: methode a surcharger
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void Operateur_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const
+void Operateur_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  Cerr << "You must overload the method " << que_suis_je()
-       << "::contribuer_a_avec(const DoubleTab&, Matrice_Morse&)" << finl;
-  exit();
+  /* on tente ajouter_blocs() */
+  DoubleTrav secmem(inco); //on va le jeter
+  ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matrice }}, secmem);
 }
 
-void Operateur_base::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const
+void Operateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  Cerr << "You must overload the method " << que_suis_je()
-       << "::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&)" << finl;
-  exit();
+  /* on tente ajouter_blocs() */
+  DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
+  ajouter_blocs({{ "vitesse", &matrice }}, secmem);
 }
 
 // Description:

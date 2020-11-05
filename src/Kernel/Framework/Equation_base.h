@@ -27,6 +27,7 @@
 #include <Ref_Zone_dis.h>
 #include <Zone_Cl_dis.h>
 #include <Ref_Schema_Temps_base.h>
+#include <Interface_blocs.h>
 #include <Solveur_Masse.h>
 #include <Sources.h>
 #include <Parametre_equation.h>
@@ -37,7 +38,6 @@
 #include <Parser_U.h>
 #include <Matrice_Morse.h>
 #include <vector>
-#include <map>
 #include <MD_Vector_tools.h>
 
 class Operateur;
@@ -50,6 +50,7 @@ class Champ_Inc;
 class Param;
 
 enum Type_modele { TURBULENCE };
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -168,8 +169,9 @@ public :
   virtual Nom expression_residu();
 
   // methodes pour l'implicite
-  virtual void dimensionner_matrice(Matrice_Morse& mat_morse); //avec memoization (matrice_stockee)
-  virtual void dimensionner_matrice_internal(Matrice_Morse& mat_morse); //methode sous-jacente
+  virtual void dimensionner_matrice(Matrice_Morse& mat_morse); //memorise le stencil de la matrice apres le 1er appel
+  virtual void dimensionner_matrice_sans_mem(Matrice_Morse& mat_morse); //methode interne appellee par celle ci-dessus
+
   // ajoute les contributions des operateurs et des sources
   virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
   // modifie la matrice et le second mmebre en fonction des CL
@@ -180,6 +182,40 @@ public :
   virtual void dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc);
   virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const;
   virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const;
+
+  /*
+    interface {dimensionner/ajouter/assembler}_blocs
+    specificites : - dimensionner_blocs() non memoize (a gerer par l'appelant) / appelable sur des matrices non vides
+                   - assembler_blocs() utilise les valeurs des inconnues/champs a l'instant present (genre inconnue().valeurs())
+                   - assembler_blocs_*() raisonne en increments : M.dInco = S -> attention aux seuils des solveurs
+                   - certaines variables (ensemble semi_impl) peuvent etre traitees en "semi-implicite"
+                     (on utilise des valeurs predites, pas de derivees renseignees)
+  */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  virtual void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
+  /* methodes auxiliaires de l'interface _blocs : champ conserve par l'equation et ses valeurs sur les CLs de type Dirichlet ou Neumann_val_ext
+     par defaut, champ_conserve = coefficient_temporel * inconnue
+     ce champ est mutable pour que le schema en temps puisse le mettre a jour
+  */
+  Champ_Inc_base& champ_conserve() const //le champ  : autant de valeurs spatiales / temporelles que l'inconnue
+  {
+    return champ_conserve_.valeur();
+  }
+  int has_champ_conserve() const
+  {
+    return champ_conserve_.non_nul();
+  }
+
+  void init_champ_conserve() const; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_conserve_
+  /* fonction de calcul par defaut de champ_conserve */
+  static void calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  /* renvoit le nom du champ conserve et la fonction pour le calculer -> a surcharger  */
+  virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
+  {
+    return { "", calculer_champ_conserve};
+  }
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
@@ -208,7 +244,7 @@ public :
     return parametre_equation_ ;
   };
   virtual const REF(Objet_U)& get_modele(Type_modele type) const;
-  int equation_non_resolue() const;
+  virtual int equation_non_resolue() const;
 
   //pour les schemas en temps a pas multiples
   inline virtual const Champ_Inc& derivee_en_temps() const
@@ -268,6 +304,12 @@ protected :
   Champs_compris champs_compris_;
   Champs_Fonc list_champ_combi;
 
+  //memoization of the matrix for PolyMAC
+  mutable Matrice_Morse matrice_stockee;
+  mutable int matrice_init;
+
+  //pour l'interface assembler_blocs
+  mutable Champ_Inc champ_conserve_;
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
 
@@ -294,9 +336,6 @@ private :
   Champ_Inc derivee_en_temps_;
   int calculate_time_derivative_;
 
-  //memoization of the matrix for PolyMAC
-  mutable Matrice_Morse matrice_stockee;
-  mutable int matrice_init;
 };
 
 
@@ -403,4 +442,3 @@ inline const Solveur_Masse& Equation_base::solv_masse() const
 }
 
 #endif
-

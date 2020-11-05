@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 
 #ifndef Solveur_Masse_base_included
 #define Solveur_Masse_base_included
-
+#include <Interface_blocs.h>
 #include <MorEqn.h>
 
 class Zone_dis;
@@ -34,6 +34,7 @@ class DoubleTab;
 class DoubleVect;
 class Matrice_Base;
 class Matrice_Morse;
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -73,7 +74,14 @@ public :
 
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
   void set_name_of_coefficient_temporel(const Nom&);
-
+  int has_coefficient_temporel() const
+  {
+    return has_coefficient_temporel_;
+  }
+  const Nom& get_name_of_coefficient_temporel() const
+  {
+    return name_of_coefficient_temporel_;
+  }
 
   // cette methode remplace la methode appliquer des version avant 154
   virtual DoubleTab& appliquer_impl(DoubleTab& x) const =0;
@@ -81,6 +89,10 @@ public :
   // j'ajoute une methode dimensionner()
   // qui dimensionne la matrice pour le cas ou tous les operateurs sont negligeables
   virtual void dimensionner(Matrice_Morse& matrix) const;
+
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
 
   // j'ajoute une methode completer()
   // qui est appelee par la methode completer() des equations.

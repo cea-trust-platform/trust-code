@@ -354,3 +354,15 @@ int Sources::initialiser(double temps)
     }
   return ok;
 }
+
+void Sources::check_multiphase_compatibility() const
+{
+  CONST_LIST_CURSEUR(Source) curseur(*this);
+  while(curseur)
+    {
+      const Source& src = curseur.valeur();
+      const Source_base& src_base = src.valeur();
+      src_base.check_multiphase_compatibility();
+      ++curseur;
+    }
+}

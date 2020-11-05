@@ -1037,6 +1037,11 @@ void Schema_Temps_base::ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secme
   eqn.solv_masse().ajouter_masse(dt,secmem,eqn.inconnue().passe(),pen);
 }
 
+void Schema_Temps_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const Equation_base& eqn, const tabs_t& semi_impl) const
+{
+  eqn.solv_masse().valeur().ajouter_blocs(matrices, secmem, pas_de_temps(), semi_impl, 1);
+}
+
 // Description:
 // //Actualisation de stationnaire_atteint_ et residu_
 // (critere residu_<seuil_statio_)

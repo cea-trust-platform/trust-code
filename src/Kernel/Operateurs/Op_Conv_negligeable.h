@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,18 +47,16 @@ class Op_Conv_negligeable: public Operateur_negligeable,
 
 public :
 
-  inline DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
-  inline DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
-  inline void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline void associer_zone_cl_dis(const Zone_Cl_dis_base&)
   {
     ;
   } ;
-  inline void dimensionner(Matrice_Morse&) const;
-  inline void dimensionner_bloc_vitesse(Matrice_Morse&) const;
+  /* interface {dimensionner,ajouter}_blocs -> ne font rien */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { };
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const { };
+
   inline void mettre_a_jour(double);
   void associer_vitesse(const Champ_base& ) ;
   const Champ_base& vitesse() const;
@@ -66,6 +64,7 @@ public :
   virtual void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const;
   virtual void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const;
 
+  void check_multiphase_compatibility() const { };
 protected :
 
   REF(Champ_base) la_vitesse;
@@ -73,76 +72,6 @@ protected :
                        const Zone_Cl_dis&,
                        const Champ_Inc& ) ;
 };
-
-
-// Description:
-//    Ajoute la contribution de l'operateur a un tableau passe en parametre.
-//    Simple appel a Operateur_negligeable::ajouter(const DoubleTab&,DoubleTab&)
-// Precondition:
-// Parametre: DoubleTab& x
-//    Signification: le tableau sur lequel on applique l'operateur
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: DoubleTab& y
-//    Signification: tableau auquel on ajoute la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: DoubleTab&
-//    Signification: le parametre d'entree y non modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline DoubleTab&
-Op_Conv_negligeable::ajouter(const DoubleTab& x, DoubleTab& y) const
-{
-  return Operateur_negligeable::ajouter(x,y);
-}
-
-
-// Description:
-//    Initialise le parametre tableau avec la contribution
-//    de l'operateur negligeable: initialise le tableau a ZERO.
-//    Simple appel a Operateur_negligeable::(calculer(const DoubleTab&, DoubleTab&)
-// Precondition:
-// Parametre: DoubleTab& x
-//    Signification: le tableau sur lequel on applique l'operateur
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: DoubleTab& y
-//    Signification: tableau dans lequel stocke la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: l'ancien contenu est ecrase
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau d'entree y mis a zero
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline DoubleTab&
-Op_Conv_negligeable::calculer(const DoubleTab& x, DoubleTab& y) const
-{
-  return Operateur_negligeable::calculer(x,y);
-}
-
-//Description:
-//on assemble la matrice.
-
-inline void  Op_Conv_negligeable::contribuer_a_avec(const DoubleTab& inco,
-                                                    Matrice_Morse& amatrice) const
-{
-  ;
-}
-
-inline void Op_Conv_negligeable::contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const
-{
-  ;
-}
-
 
 //Description:
 //on ajoute la contribution du second membre.
@@ -154,16 +83,6 @@ inline void  Op_Conv_negligeable::contribuer_au_second_membre(DoubleTab& resu) c
 
 // Modification des Cl
 inline void  Op_Conv_negligeable::modifier_pour_Cl(Matrice_Morse& amatrice, DoubleTab& resu) const
-{
-  ;
-}
-
-inline void  Op_Conv_negligeable::dimensionner(Matrice_Morse& amatrice) const
-{
-  ;
-}
-
-inline void  Op_Conv_negligeable::dimensionner_bloc_vitesse(Matrice_Morse& amatrice) const
 {
   ;
 }

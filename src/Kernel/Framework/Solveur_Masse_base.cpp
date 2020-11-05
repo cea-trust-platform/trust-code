@@ -411,6 +411,20 @@ void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
   matrix.dimensionner(indice);
 }
 
+void Solveur_Masse_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()], mat2;
+  if (!mat) return; //rien a faire
+  dimensionner(mat2);
+  mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+}
+
+void Solveur_Masse_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
+{
+  Cerr << que_suis_je() << " : method ajouter_blocs() not coded!" << finl;
+  Process::exit();
+}
+
 // Ajout d'une methode completer
 // Ne fait rien par defaut
 void Solveur_Masse_base::completer(void) { }

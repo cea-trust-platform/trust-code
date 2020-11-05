@@ -28,6 +28,7 @@
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
 #include <Matrice_Bloc.h>
+#include <Interface_blocs.h>
 
 class DoubleTab;
 class DoubleTabs;
@@ -66,6 +67,11 @@ public :
   virtual void associer_champ_rho(const Champ_base& champ_rho);
   virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const;
   virtual void contribuer_jacobienne(Matrice_Bloc& , int ) const {}
+
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { };
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   virtual void creer_champ(const Motcle& motlu);

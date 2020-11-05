@@ -96,7 +96,16 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();
   virtual int impr(Sortie& os) const;
-  virtual void dimensionner_matrice_internal(Matrice_Morse& mat_morse);
+
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+
+  /*
+    interface {dimensionner,assembler}_blocs
+    specificites : prend en compte le gradient de pression (en dernier)
+  */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  virtual void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
 
   int sauvegarder(Sortie&) const;
   int reprendre(Entree&);

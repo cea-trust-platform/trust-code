@@ -41,19 +41,17 @@ class Operateur_Grad_base  : public Operateur_base
 {
   Declare_base(Operateur_Grad_base);
 public :
-  /* parametres supplementaires : (matrice, inco, secmem) pour l'equation de Navier-Stokes, utilises par Op_Grad_CoviMAC_Face pour mieux gerer la pression aux bords de Dirichlet */
-  virtual void dimensionner_NS(Matrice_Morse& mat) const
-  {
-    return;
-  }
-  virtual DoubleTab& ajouter_NS(const DoubleTab& inco, DoubleTab& resu, Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
-  {
-    return ajouter(inco, resu); //par defaut, on les ignore
-  }
-  virtual DoubleTab& calculer_NS(const DoubleTab& inco, DoubleTab& resu, Matrice_Morse* mat_NS, const DoubleTab* inco_NS, const DoubleTab* secmem_NS) const
-  {
-    return calculer(inco, resu);
-  }
+
+  /* pour Operteur_Grad, ces methodes agissent sur la matrice pression -> vitesse */
+  void dimensionner(Matrice_Morse& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+
+  /*
+    l'interface ajouter_blocs tient compte du signe du gradient (- grad p), tandis que ajouter() calcule (grad p)
+    -> on doit modifier l'implementation par defaut de ajouter() pour en tenir compte
+  */
+  DoubleTab&  ajouter(const DoubleTab& inco, DoubleTab& secmem) const;
+
   virtual DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
 };
 

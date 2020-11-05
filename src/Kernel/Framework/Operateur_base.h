@@ -64,8 +64,8 @@ class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_inte
 {
   Declare_base(Operateur_base);
 public :
-  virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const=0;
-  virtual DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const=0;
+  virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
+  virtual DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
   virtual void associer_champ(const Champ_Inc&);
   virtual void associer(const Zone_dis&,
                         const Zone_Cl_dis&,
@@ -75,9 +75,14 @@ public :
   virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;
   virtual void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const /* =0 */;
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
+  /* permet de remplir des dependances en d'autres variables */
   virtual void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
   virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
   void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
+
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
   virtual void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const { };
   virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const { };

@@ -42,6 +42,7 @@
 #include <Param.h>
 #include <Source_dep_inco_base.h>
 #include <SolveurSys.h>
+#include <Zone_VF.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
@@ -1205,6 +1206,9 @@ void Equation_base::mettre_a_jour(double temps)
   inconnue().mettre_a_jour(temps);
   if (calculate_time_derivative()) derivee_en_temps().mettre_a_jour(temps);
 
+  //avancement / mise a jour de champ_conserve
+  if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
+
   les_sources.mettre_a_jour(temps);
 
 
@@ -1236,6 +1240,7 @@ void Equation_base::abortTimeStep()
   for (int i=0; i<nombre_d_operateurs(); i++)
     operateur(i).l_op_base().abortTimeStep();
   inconnue()->abortTimeStep();
+  if (champ_conserve_.non_nul()) champ_conserve_->abortTimeStep();
   if (medium_owner_) milieu().abortTimeStep();
 }
 
@@ -1271,7 +1276,6 @@ int Equation_base::preparer_calcul()
   inconnue()->verifie_valeurs_cl();
   inconnue().changer_temps(temps);
   if (calculate_time_derivative()) derivee_en_temps().changer_temps(temps);
-
   la_zone_Cl_dis->initialiser(temps);
 
   Nom msg=que_suis_je();
@@ -1321,9 +1325,11 @@ bool Equation_base::initTimeStep(double dt)
       double tps=sch.temps_futur(i);
       // Mise a jour du temps dans l'inconnue
       inconnue()->changer_temps_futur(tps,i);
+      if (champ_conserve_.non_nul()) champ_conserve_->changer_temps_futur(tps,i);
       if (calculate_time_derivative()) derivee_en_temps()->changer_temps_futur(tps,i);
 
       inconnue()->futur(i)=inconnue()->valeurs();
+      if (champ_conserve_.non_nul()) champ_conserve_->futur(i) = champ_conserve().valeurs();
       if (calculate_time_derivative()) derivee_en_temps()->futur(i)=derivee_en_temps()->valeurs();
 
       // Mise a jour du temps dans les CL
@@ -2192,15 +2198,17 @@ const RefObjU& Equation_base::get_modele(Type_modele type) const
 
 }
 // MODIF ELI LAUCOIN (22/11/2007) : je rajoute un avancer et un reculer
-// par defaut, cela ne fait qu'avancer ou reculer l'inconnue
+// par defaut, cela ne fait qu'avancer ou reculer l'inconnue (et champ_conserve_ si initialise)
 void Equation_base::avancer(int i)
 {
   inconnue().avancer(i);
+  if (champ_conserve_.non_nul()) champ_conserve_->avancer(i);
 }
 
 void Equation_base::reculer(int i)
 {
   inconnue().reculer(i);
+  if (champ_conserve_.non_nul()) champ_conserve_->reculer(i);
 }
 // FIN MODIF ELI LAUCOIN (22/11/2007)
 
@@ -2220,11 +2228,12 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
       matrice.set_nb_columns(matrice_stockee.nb_colonnes());
       return;
     }
-  dimensionner_matrice_internal(matrice);
+
+  dimensionner_matrice_sans_mem(matrice); //le vrai appel
 
   matrice.get_set_coeff() = 0.0;  // just to be sure ...
 
-  if (probleme().discretisation().que_suis_je().finit_par("MAC"))
+  if (probleme().discretisation().que_suis_je().finit_par("MAC") || probleme().discretisation().que_suis_je() == "DDFV")
     {
       matrice_stockee.get_set_tab1().ref_array(matrice.get_set_tab1());
       matrice_stockee.get_set_tab2().ref_array(matrice.get_set_tab2());
@@ -2234,8 +2243,7 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
     }
 }
 
-/* sans memoization */
-void Equation_base::dimensionner_matrice_internal(Matrice_Morse& matrice)
+void Equation_base::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   // [ABN]: dimensioning of the implicit matrix: it can receive input from:
   //  - the operators
@@ -2387,6 +2395,64 @@ void Equation_base::assembler_avec_inertie( Matrice_Morse& mat_morse,const Doubl
   schema_temps().ajouter_inertie(mat_morse,secmem,(*this));
   modifier_pour_Cl(mat_morse,secmem);
   statistiques().end_count(assemblage_sys_counter_);
+}
+
+/* comme dimmensionner_matrice(), mais sans memoization */
+void Equation_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  /* operateurs, masse, sources */
+  for (int op = 0; op < nombre_d_operateurs(); op++) operateur(op).l_op_base().dimensionner_blocs(matrices, semi_impl);
+  solv_masse().valeur().dimensionner_blocs(matrices);
+  for (int i = 0; i < les_sources.size(); i++) les_sources(i).valeur().dimensionner_blocs(matrices, semi_impl);
+}
+
+void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  /* mise a zero */
+  secmem = 0;
+  for (auto && i_m : matrices) i_m.second->get_set_coeff() = 0;
+  /* operateurs, sources, masse */
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
+  for (int i = 0; i < les_sources.size(); i++)
+    les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+}
+
+void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  assembler_blocs(matrices, secmem, semi_impl);
+  schema_temps().ajouter_blocs(matrices, secmem, *this);
+}
+
+/* creation de champ_conserve_, cl_champ_conserve_ */
+void Equation_base::init_champ_conserve() const
+{
+  if (champ_conserve_.non_nul()) return; //deja fait
+  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().dimension(0), Nc = inconnue().valeurs().line_size();
+  //champ_conserve_ : meme type / support que l'inconnue
+  discretisation().creer_champ(champ_conserve_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  champ_conserve_->associer_eqn(*this);
+  auto nom_fonc = get_fonc_champ_conserve();
+  champ_conserve_->nommer(nom_fonc.first.c_str()), champ_conserve_->init_champ_calcule(nom_fonc.second);
+}
+
+/* methode de calcul par defaut de champ_conserve : produit coefficient_temporel * inconnue */
+void Equation_base::calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
+{
+  const Equation_base& eqn = ch.equation();
+  const Champ_base *coeff = eqn.solv_masse().valeur().has_coefficient_temporel() ? &eqn.get_champ(eqn.solv_masse().valeur().get_name_of_coefficient_temporel()) : NULL; //coeff temporel
+  const Champ_Inc_base& inco = eqn.inconnue();
+  //valeur du champ lui-meme
+  val = inco.valeurs(t);
+  if (coeff) tab_multiply_any_shape(val, coeff->valeurs());
+  if (val_only) return;
+
+  bval = inco.valeur_aux_bords();
+  if (coeff) tab_multiply_any_shape(bval, coeff->valeur_aux_bords());
+
+  DoubleTab& der = deriv[inco.le_nom().getString()];
+  if (coeff) der = coeff->valeurs();
+  else der.resize(val.dimension_tot(0), val.line_size()), der = 1;
 }
 
 // Impression du residu dans fic (generalement dt_ev)
