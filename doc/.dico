@@ -574,7 +574,6 @@
  Op_Diff_VEFpenalise_const_P1NC Op_Diff_VEF_Face_Penalise Op_Diff_VEF_Face_Penalise.h
  Op_Diff_VEFSTAB_const_P1NC Op_Diff_VEF_Face_Stab Op_Diff_VEF_Face_Stab.h
  Op_Diff_VEFSTAB_var_P1NC Op_Diff_VEF_Face_Stab_Var Op_Diff_VEF_Face_Stab_Var.h
- Op_Diff_VEF_Anisotrope_base Op_Diff_VEF_Anisotrope_base Op_Diff_VEF_Anisotrope_base.h
  Op_Diff_VEF_base Op_Diff_VEF_base Op_Diff_VEF_base.h
  Op_Diff_VEF_const_P1NC Op_Diff_VEF_Face Op_Diff_VEF_Face.h
  Op_Diff_VEF_const_Q1NC Op_Diff_VEF_Face_Q1 Op_Diff_VEF_Face_Q1.h
