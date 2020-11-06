@@ -51,7 +51,7 @@ read pb
 {
 	conduction
 	{
-		diffusion { anisotrope }
+		diffusion { }
 		initial_conditions { temperature champ_uniforme 1 0. }
 		boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0.0 }
 		sources {

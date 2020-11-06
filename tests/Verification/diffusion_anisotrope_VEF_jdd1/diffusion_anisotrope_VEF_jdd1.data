@@ -49,7 +49,7 @@ read pb
 	# Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
 	conduction
 	{
-		diffusion { anisotrope }
+		diffusion { }
 		initial_conditions
     {
 			temperature champ_uniforme 1 0.
