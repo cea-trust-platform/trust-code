@@ -40,7 +40,7 @@
 #include <Porosites_champ.h>
 #include <Check_espace_virtuel.h>
 
-Implemente_instanciable( Op_Diff_VEF_Anisotrope_Face, "Op_Diff_VEFANISOTROPE_var_P1NC", Op_Diff_VEF_Anisotrope_base ) ;
+Implemente_instanciable( Op_Diff_VEF_Anisotrope_Face, "Op_Diff_VEFANISOTROPE_var_P1NC", Op_Diff_VEF_base) ;
 
 
 //// printOn

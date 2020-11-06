@@ -23,7 +23,7 @@
 #ifndef Op_Diff_VEF_Anisotrope_Face_included
 #define Op_Diff_VEF_Anisotrope_Face_included
 
-#include <Op_Diff_VEF_Anisotrope_base.h>
+#include <Op_Diff_VEF_base.h>
 #include <Ref_Champ_Inc.h>
 #include <Ref_Champ_Uniforme.h>
 #include <Matrice_Morse.h>
@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-class Op_Diff_VEF_Anisotrope_Face : public Op_Diff_VEF_Anisotrope_base
+class Op_Diff_VEF_Anisotrope_Face : public Op_Diff_VEF_base
 {
   Declare_instanciable( Op_Diff_VEF_Anisotrope_Face ) ;
 
