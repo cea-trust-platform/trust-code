@@ -92,14 +92,11 @@ project_reference_directory="${project_directory}/tests/Reference"
 
 project_executable_name="${project_directory}/${project_executable_name}"
 
-cd ${project_directory}/build/src/exec$OPT
-ctest -j$TRUST_NB_PHYSICAL_CORES
-exit $?
 
 
 # lancement des tests
-mkdir -p $project_test_directory
-cd $project_test_directory
+#mkdir -p $project_test_directory
+#cd $project_test_directory
 TRUST_TESTS=$project_reference_directory
 
 # Pas encore OK .... il faudrait regarder les fiches....
@@ -149,6 +146,13 @@ TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=1
 export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS
 fi
 export PATH=$BALTIK_ROOT/bin:${PATH} 
+
+
+cd ${project_directory}/build/src/exec$OPT
+cmake .
+ctest -j$TRUST_NB_PHYSICAL_CORES
+exit $?
+
 #echo $liste_cas | lance_test -nomail $project_executable_name $project_test_directory | tee lance_test_out
 rm -f .pb
 (echo $liste_cas | lance_test -nomail -no_timeout  $project_executable_name $project_test_directory ; status=$?;  [ $status -ne 0 ]  && echo 1 > .pb )| tee lance_test_out
