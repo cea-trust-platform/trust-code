@@ -610,7 +610,7 @@ then
 
          cmake $TRUST_ROOT/src -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT -DCMAKE_BUILD_TYPE=$build_type -Ukernel $MODE_SPECIAL -DCOMPIL_DYN=${COMPIL_DYN}
 
-         [ $? != 0 ] && echo 'Problem of configuring.' && echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
+         [ $? != 0 ] && echo 'Problem of configuring.' && echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec_debug$opt && exit -1
 	 # GF pour eviter message 
 	 export MAKELEVEL=0
 
@@ -625,7 +625,7 @@ then
 	     status=${PIPESTATUS[0]}
 	     if [ $status != 0 ] 
 		 then
-		 echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec && exit -1
+		 echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec_debug$opt && exit -1
 		 break
 	     fi
          fi
