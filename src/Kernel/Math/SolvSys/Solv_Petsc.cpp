@@ -187,9 +187,11 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 14:
     case 15:
       {
+        if (rang == 15) fixer_limpr(-1);  // Quiet
+        else fixer_limpr(1); // On imprime le residu
         solver_supported_on_gpu_by_petsc=1; // Not really, reserved to expert...
         solver_supported_on_gpu_by_amgx=1;  // Not really, reserved to expert...
-        Cerr << "Reading of the " << (amgx_ ? "AmgX" : "Petsc") << " commands:" << finl;
+        if (limpr() >= 0) Cerr << "Reading of the " << (amgx_ ? "AmgX" : "Petsc") << " commands:" << finl;
         Nom valeur;
         is >> motlu;
         if (amgx_)
@@ -240,12 +242,6 @@ void Solv_Petsc::create_solver(Entree& entree)
                   is >> motlu;
                 }
             }
-        if (rang == 15)
-          break; // Quiet
-        if (limpr()>-1)
-          {
-            fixer_limpr(1); // On imprime le residu
-          }
         // Pour faciliter le debugage:
         if (rang == 14) // Verbose
           {
@@ -1443,18 +1439,18 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
       if (value=="")
         {
           PetscOptionsSetValue(PETSC_NULL, option, PETSC_NULL);
-          Cerr << "Option Petsc: " << option << finl;
+          if (limpr() >= 0) Cerr << "Option Petsc: " << option << finl;
         }
       else
         {
           PetscOptionsSetValue(PETSC_NULL, option, value);
-          Cerr << "Option Petsc: " << option << " " << value << finl;
+          if (limpr() >= 0) Cerr << "Option Petsc: " << option << " " << value << finl;
         }
       return 1;
     }
   else
     {
-      //Cerr << "Option Petsc: " << option << " " << value << " not taken cause " << option << " already defined to " << actual_value << finl;
+      if (limpr() >= 0) Cerr << "Option Petsc: " << option << " " << value << " not taken cause " << option << " already defined to " << actual_value << finl;
       return 0;
     }
 }
