@@ -35,7 +35,7 @@ dynamic: liblata.so lata2dx_reactor.o
 	strip liblata.so
 	strip lata2dx_reactor
 depend:
-	@makedepend -- $(INCDIRS) $(SYSINC_DEP) -- $(SRCS)
+	@$(TRUST_MD) -- $(INCDIRS) $(SYSINC_DEP) -- $(SRCS)
 
 lata2dx_reactor: $(OBJECTS)
 	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
