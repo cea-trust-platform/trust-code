@@ -29,9 +29,6 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 PolyMAC  dis
-# VDF  dis #
-option_vdf { P_imposee_aux_faces oui }
-
 
 Schema_euler_implicite sch
 Read sch
@@ -39,6 +36,7 @@ Read sch
     tinit 0
 	nb_pas_dt_max 3
     dt_max  0.1
+    facsec 1e30
     seuil_statio 1e-10
     solveur implicite
     {
@@ -52,8 +50,6 @@ Read sch
             -ksp_rtol 1e-8
             -fieldsplit_b0_ksp_max_it 10
             -fieldsplit_b1_ksp_max_it 10
-
-
         }
     }
 }

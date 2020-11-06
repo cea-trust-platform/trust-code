@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -124,7 +124,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       is >> loipar.valeur();
       return 1;
     }
-  else if (loipar.valeur().que_suis_je()!="negligeable_VDF" && loipar.valeur().que_suis_je()!="negligeable_VEF" && loipar.valeur().que_suis_je()!="negligeable_PolyMAC")
+  else if (loipar.valeur().que_suis_je()!="negligeable_VDF" && loipar.valeur().que_suis_je()!="negligeable_VEF" && loipar.valeur().que_suis_je()!="negligeable_PolyMAC" && loipar.valeur().que_suis_je()!="negligeable_CoviMAC")
     {
       if (mot=="dt_impr_ustar")
         {

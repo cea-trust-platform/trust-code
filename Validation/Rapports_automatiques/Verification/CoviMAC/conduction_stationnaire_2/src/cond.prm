@@ -1,0 +1,147 @@
+Parameters {
+	Title "Vérification de la conduction thermique stationnaire avec terme source : terme source linéaire"
+	Description "On considère un problème de conduction thermique stationnaire avec un terme source volumique variant linéairement dans la direction $x$.  On compare la solution obtenue par PolyMAC à la solution analytique.  La température est imposée en entrée et sortie du domaine (cf. jeu de données).  On compare le profil de température dans la direction $x$ ainsi que le champ de température bidimensionnel.  On compare également les flux conductifs sur les parois en entrée et sortie."
+	Author "D. Jamet, Y.Gorsse"
+    TestCase "cartesian" "jdd.data"
+    TestCase "triangle" "jdd.data"
+    TestCase "non_conformal" "jdd.data"
+	IncludeData 1
+}
+
+Chapter {
+	Title "Champs de température"
+	Description "On compare les champs de température calculé par PolyMAC et analytique.  Cette comparaison se fait sur un profil en $y=cte$ et sur le champ 2D."
+
+	Figure {
+		Include_Description_Curves 0
+		Title "Comparaison des profils calculé et analytique"
+		Dimension 2
+	        LabelX "x"
+	        LabelY "T"
+        
+	        width 7cm
+        	
+	        Curve {
+        	        legend "cartesien"
+                	origin "Trio_U"
+	                Version ""
+        	        segment cartesian/jdd.data temperature_x
+                	Style linespoints
+                }
+	        Curve {
+        	        legend "triangle"
+                	origin "Trio_U"
+	                Version ""
+        	        segment triangle/jdd.data temperature_x
+                	Style linespoints
+                }
+	        Curve {
+        	        legend "non conforme"
+                	origin "Trio_U"
+	                Version ""
+        	        segment non_conformal/jdd.data temperature_x
+                	Style linespoints
+                }
+	
+		Curve {
+        	        legend "analytique"
+                	origin "ref"
+	                segment cartesian/jdd.data temperature_x
+        	        Style lines
+			columns ($1) (-3./(6.*0.25)*($1)/2.*(($1)*($1)-2.*2.))
+                }
+	}
+
+	visu {
+                Title "Comparaison des champs 2D calculé et analytique"
+                description "On trace le champ d'écart entre la température calculée et la solution analytique.  La solution analytique est représentée par des isovaleurs du champ de température."
+                mesh cartesian/jdd.lata dom 
+                Isovalues cartesian/jdd.lata dom TEMPERATURE ELEM
+                #instruction_visit DefineScalarExpression("ERREUR_SOM_dom","TEMPERATURE_ELEM_dom-(-3./(6.*0.25)*(coord(dom)[0])/2.*((coord(dom)[0])*(coord(dom)[0])-2.*2.))")
+                #pseudocolor cartesian/jdd.lata dom ERREUR SOM
+        }
+
+
+}
+
+
+Chapter {
+	Title "Flux conductifs aux frontières du domaine"
+	Description "Les flux conductifs calculés par GENEPI en $x=0$ et $x=L$ sont comparés aux flux théoriques.  L'erreur correspondante est également donnée."
+
+
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 2
+		label  flux  gauche  | flux droit
+		line {
+			legend theorie
+			Version "1.5.3-beta_build_180907"
+			values -1. -2.
+			alias ref
+		}
+		line {
+			legend cartesian
+			origin "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			nb_columns_file 6
+			file cartesian/cond_fin.out
+			columns $2 $3
+		}
+		line {
+			legend ecart_cartesian
+			alias err_cart
+			origin "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			difference ecart_relatif cartesian ref
+			 display_line 0	
+		}
+		line {
+	        	legend "erreur en %"
+			alias err_cart_bis
+		        difference formule   err_cart ref int(v1*10000)/100.
+	        }
+		line {
+			legend triangle
+			origin "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			nb_columns_file 6
+			file triangle/cond_fin.out
+			columns $2 $3
+		}
+		line {
+			legend ecart_triangle
+			alias err_tri
+			origin "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			difference ecart_relatif triangle ref
+			 display_line 0	
+		}
+		line {
+	        	legend "erreur en %"
+			alias err_tri_bis
+		        difference formule   err_tri ref int(v1*10000)/100.
+	        }
+		line {
+			legend non_conformal
+			origin "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			nb_columns_file 6
+			file non_conformal/cond_fin.out
+			columns $2 $3
+		}
+		line {
+			legend ecart_non_conformal
+			alias err_nc
+			origin "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			difference ecart_relatif non_conformal ref
+			 display_line 0	
+		}
+		line {
+	        	legend "erreur en %"
+			alias err_nc_bis
+		        difference formule   err_nc ref int(v1*10000)/100.
+	        }
+	}
+}

@@ -141,52 +141,6 @@ Entree& Zone_PolyMAC::readOn(Entree& is)
   return is;
 }
 
-
-MD_Vector condensed_md_vector(const IntVect& renum)
-{
-  MD_Vector mdr;
-  const MD_Vector& mds = renum.get_md_vector();
-  if (!mds.non_nul()) return mdr;
-  const MD_Vector_std& mdstd = ref_cast(MD_Vector_std, mds.valeur());
-
-  //items[proc] = { items a envoyer, items a recevoir, debut/fin de blocs a recevoir }
-  std::map<int, std::array<std::vector<int>, 3> > items;
-  int i, j, k, l, p;
-  for (i = 0; i < mdstd.pe_voisins_.size_array(); i++)
-    {
-      p = mdstd.pe_voisins_(i);
-      //filtre sur les items a envoyer
-      for (j = 0; j < mdstd.items_to_send_.get_list_size(i); j++) if ((k = renum(mdstd.items_to_send_(i, j))) >= 0)
-          items[p][0].push_back(k);
-      //filtre sur les items a recevoir
-      for (j = 0; j < mdstd.items_to_recv_.get_list_size(i); j++) if ((k = renum(mdstd.items_to_recv_(i, j))) >= 0)
-          items[p][1].push_back(k);
-      //filtre sur les blocs a recevoir
-      for (j = 0; j < mdstd.blocs_to_recv_.get_list_size(i); j += 2) for (k = mdstd.blocs_to_recv_(i, j); k < mdstd.blocs_to_recv_(i, j + 1); k++)
-          if ((l = renum(k)) >= 0)
-            {
-              if (items[p][2].size() && l == items[p][2].back()) items[p][2].back()++; //on s'ajoute au dernier bloc...
-              else items[p][2].insert(items[p][2].end(), { l, l + 1 });                //ou on en cree un autre
-            }
-    }
-  ArrOfInt pe_voisins(items.size());
-  VECT(ArrOfInt) items_to_send(items.size()), items_to_recv(items.size()), blocs_to_recv(items.size());
-  i = 0;
-  for (auto &&kv : items)
-    {
-      for (j = 0, items_to_send(i).resize(k = kv.second[0].size()); j < k; j++) items_to_send(i)(j) = kv.second[0][j];
-      for (j = 0, items_to_recv(i).resize(k = kv.second[1].size()); j < k; j++) items_to_recv(i)(j) = kv.second[1][j];
-      for (j = 0, blocs_to_recv(i).resize(k = kv.second[2].size()); j < k; j++) blocs_to_recv(i)(j) = kv.second[2][j];
-      pe_voisins(i) = kv.first, i++;
-    }
-  int nb_items = 0, nb_items_tot = 0;
-  for (i = 0; i < renum.size(); i++) nb_items += (renum(i) >= 0);
-  for (i = renum.size(), nb_items_tot = nb_items; i < renum.size_totale(); i++) nb_items_tot += (renum(i) >= 0);
-  MD_Vector_std mdrs(nb_items_tot, nb_items, pe_voisins, items_to_send, items_to_recv, blocs_to_recv);
-  mdr.copy(mdrs);
-  return mdr;
-}
-
 void Zone_PolyMAC::swap(int fac1, int fac2, int nb_som_faces )
 {
 
@@ -928,57 +882,6 @@ void Zone_PolyMAC::creer_faces_virtuelles_non_std()
 #endif
 }
 
-void disp(const DoubleTab& A)
-{
-  int i, j, k;
-  if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
-      for (j = 0, fprintf(stderr, i ? "}},{" : "{{"); j < A.dimension(1); j++)
-        for (k = 0, fprintf(stderr, j ? "},{" : "{"); k < A.dimension(2); k++)
-          fprintf(stderr, "%.10E%s ", A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
-  else if (A.nb_dim() == 2) for (i = 0; i < A.dimension_tot(0); i++)
-      for (j = 0, fprintf(stderr, i ? "},{" : "{{"); j < A.dimension(1); j++)
-        fprintf(stderr, "%.10E%s ", A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
-  else for (i = 0, fprintf(stderr, "{"); i < A.dimension_tot(0); i++)
-      fprintf(stderr, "%.10E%s ", A.addr()[i], i + 1 < A.dimension_tot(0) ? "," : "");
-  fprintf(stderr, A.nb_dim() == 3 ? "}}}\n" : (A.nb_dim() == 2 ? "}}\n" : "}\n"));
-}
-
-void disp(const ArrOfDouble& A)
-{
-  int i;
-  for (i = 0, fprintf(stderr, "{"); i < A.size_array(); i++)
-    fprintf(stderr, "%.10E%s ", A.addr()[i], i + 1 < A.size_array() ? "," : "");
-  fprintf(stderr, "}\n");
-}
-
-void disp(const IntTab& A)
-{
-  int i, j;
-  if (A.nb_dim() == 2) for (i = 0; i < A.dimension(0); i++)
-      for (j = 0, fprintf(stderr, i ? "},{" : "{{"); j < A.dimension(1); j++)
-        fprintf(stderr, "%d%s ", A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
-  else for (i = 0, fprintf(stderr, "{"); i < A.dimension(0); i++)
-      fprintf(stderr, "%d%s ", A.addr()[i], i + 1 < A.dimension(0) ? "," : "");
-  fprintf(stderr, A.nb_dim() == 2 ? "}}\n" : "}\n");
-}
-
-void disp(const ArrOfInt& A)
-{
-  int i;
-  for (i = 0, fprintf(stderr, "{"); i < A.size_array(); i++)
-    fprintf(stderr, "%d%s ", A.addr()[i], i + 1 < A.size_array() ? "," : "");
-  fprintf(stderr, "}\n");
-}
-
-void disp(const Matrice_Morse& M)
-{
-  DoubleTab A(M.nb_lignes(), M.nb_colonnes());
-  for (int i = 0; i < A.dimension(0); i++)
-    for (int k = M.get_tab1().addr()[i] - 1; k < M.get_tab1().addr()[i + 1] - 1; k++)
-      A(i, M.get_tab2().addr()[k] - 1) = M.get_coeff().addr()[k];
-  disp(A);
-}
-
 DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) const
 {
   for (int n_bord=0; n_bord<les_bords_.size(); n_bord++)
@@ -1186,8 +1089,7 @@ void Zone_PolyMAC::init_m2() const
       for (auto &s_fs : som_face) for (auto i1 : s_fs.second) for (auto i2 : s_fs.second) W(i1, i2) = 1;
 
       /* matrice W2 stabilisee */
-      if (W_stabiliser(W, R, N, ctr, spectre)) ctr[2]++; /* le stencil reduit marche */
-      else W = 1, W_stabiliser(W, R, N, ctr, spectre); /* il faut une matrice complete */
+      W = 1, W_stabiliser(W, R, N, ctr, spectre); /* il faut une matrice complete */
 
       /* matrice M2 : W2^-1 */
       M = W;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1164,7 +1164,7 @@ void Postraitement::init()
                 exit();
               }
             // PL: Ajout automatique du postraitement aux faces pour PolyMAC seul, sinon doit etre specifie par FACES
-            if (Motcle(loc_post) == "FACES" || champ->get_ref_zone_dis_base().que_suis_je()=="Zone_PolyMAC")
+            if (Motcle(loc_post) == "FACES" || champ->get_ref_zone_dis_base().que_suis_je().finit_par("MAC"))
               {
                 REF(Zone_dis_base) ref_zone_dis = champ->get_ref_zone_dis_base();
                 if (ref_zone_dis.non_nul())
@@ -1352,7 +1352,7 @@ int Postraitement::postraiter_champs()
       Champ espace_stockage;
       const Champ_base& champ_ecriture = champ.get_champ(espace_stockage);
       DoubleTab val_vec;
-      bool isChamp_Face_PolyMAC = champ_ecriture.que_suis_je()=="Champ_Face_PolyMAC";
+      bool isChamp_Face_PolyMAC = (champ_ecriture.que_suis_je()=="Champ_Face_PolyMAC" || champ_ecriture.que_suis_je()=="Champ_Face_CoviMAC");
       if (isChamp_Face_PolyMAC)
         champ_ecriture.valeur_aux_faces(val_vec);
       const DoubleTab& valeurs_post = isChamp_Face_PolyMAC ? val_vec : champ_ecriture.valeurs();

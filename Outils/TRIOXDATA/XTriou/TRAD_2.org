@@ -303,6 +303,7 @@ read_tgrid interprete lire_tgrid -1 Keyword to reaf Tgrid/Gambit mesh files. 2D 
 discretisation_base objet_u discretisation_base -1 Basic class for space discretization of thermohydraulic turbulent problems.
 vdf discretisation_base vdf -1 Finite difference volume discretization.
 vef discretisation_base vef -1 Finite element volume discretization (P1NC/P0 element) NL2 Warning: it becomes an obsolete discretization.
+covimac discretisation_base covimac -1 covimac discretization.
 polymac discretisation_base polymac -1 polymac discretization.
 vefprep1b vef vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
   attr p0 rien p0 1 Pressure nodes are added on element centres

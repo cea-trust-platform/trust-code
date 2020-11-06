@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -136,6 +136,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   converge = 1;
   if (nb_ite>1) return;
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
+  const bool isCoviMAC = (eqnNS.discretisation().que_suis_je() == "CoviMAC");
   if (eqnNS.discretisation().que_suis_je() == "PolyMAC")
     return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice);
   Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
@@ -164,13 +165,23 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //Construction de matrice et resu
   //matrice = A[Un] = M/delta_t + CONV +DIFF
   //resu =  A[Un]Un -(A[Un]Un-Ss) + Sv -BtPn
-  gradient.calculer(pression,gradP);
-  resu -= gradP;
 
-  //sometimes we need a first special treatement like for ALE for example
-  first_special_treatment( eqn, eqnNS, current, dt, resu );
+  if (isCoviMAC)
+    {
+      eqnNS.assembler_avec_inertie(matrice,current,resu);
+      gradient.valeur().calculer_NS(pression,gradP, &matrice, &current, &resu); /* seul CoviMAC utilise les 3 derniers arguments */
+      gradP *= -1;
+      first_special_treatment( eqn, eqnNS, current, dt, gradP );
+      resu += gradP;
+    }
+  else
+    {
+      gradient.valeur().calculer_NS(pression, gradP, &matrice, &current, &resu); /* seul CoviMAC utilise les 3 derniers arguments */
+      resu -= gradP;
+      first_special_treatment( eqn, eqnNS, current, dt, resu );
+      eqnNS.assembler_avec_inertie(matrice,current,resu);
+    }
 
-  eqnNS.assembler_avec_inertie(matrice,current,resu);
   le_solveur_.valeur().reinit();
 
   //sometimes we need a second special treatement like for ALE for example
@@ -237,6 +248,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       //Calcul de Un+1 = U* -delta_t*delta_P
       current -= gradP;
+      eqn.solv_masse().corriger_solution(current, current); //pour CoviMAC : sert a corriger ve
       current.echange_espace_virtuel();
       divergence.calculer(current,secmem);
 

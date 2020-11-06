@@ -1,0 +1,135 @@
+Parameters
+{
+    Title "Test dicretisation PolyMAC"
+    Description ""
+    Author "Y.G."
+    TestCase . gauche
+    TestCase . droite
+    TestCase . haut
+    TestCase . bas 
+    TestCase . devant 
+    TestCase . derriere
+}
+
+Chapter
+{
+    Title "PolyMAC"
+    Description "Test du gradient de pression en non conforme"
+    
+    visu
+    {
+        # Width 11cm,viewport= 0 0 1024 800,clip
+        # instruction_visit v=GetView3D()
+        normal3D 0. 0. 1.
+        up3D 0 0 0
+        Title "Mesh : PolyMAC"
+        # mesh cartesian.med mesh
+        mesh        droite.lata dom
+        pseudocolor droite.lata dom PRESSION ELEM
+        vector      droite.lata dom VITESSE ELEM
+        Description " A remplir "
+    }
+
+
+    Tableau
+    {
+        Titre "Comparaison theorie/numerique"
+        nb_colonnes 2
+        # label "Erreur P" | "Erreur v"
+        label \latex_( $\Vert P \Vert_{\infty}$ \latex_) |  \latex_( $\Vert \vec{v} \Vert_{\infty}$ \latex_)
+        Ligne
+        {
+            Legende "droite"
+            fichier droite_erreurs.txt
+        }
+        Ligne
+        {
+            Legende "gauche"
+            fichier gauche_erreurs.txt
+        }
+        Ligne
+        {
+            Legende "devant"
+            fichier devant_erreurs.txt
+        }
+        Ligne
+        {
+            Legende "derriere"
+            fichier derriere_erreurs.txt
+        }
+        Ligne
+        {
+            Legende "haut"
+            fichier haut_erreurs.txt
+        }
+        Ligne
+        {
+            Legende "bas"
+            fichier bas_erreurs.txt
+        }
+    }
+    # Tableau
+    # {
+    #     Titre "Comparaison théorie/numérique"
+    #     nb_colonnes 1
+    #     label  Perte de pression
+    #     Ligne
+    #     {
+    #         Legende Analytique
+    #         alias ref
+    #         Version "1.5.3-beta_build_180907"
+    #         valeurs 1571.
+    #     }
+    #     Ligne
+    #     {
+    #         Legende Calcul
+    #         alias calcul
+    #         Origine "Trio_U"
+    #         Version "1.5.3-beta_build_180907"
+    #         nb_colonnes_fichier 8
+    #         fichier ./cartesian/cartesian_ERRP.son
+    #         colonnes ($2)
+    #     }
+    #     Ligne
+    #     {
+    #         Legende Ecart_relatif
+    #         alias erreur
+    #         Origine "Trio_U"
+    #         Version "1.5.3-beta_build_180907"
+    #         difference ecart_relatif calcul ref
+    #         afficher_ligne 0
+    #     }
+    #     Ligne
+    #     {
+    #         legende "Erreur en %"
+    #         alias err_relative
+    #         difference formule erreur ref int(v1*10000)/100.
+    #     }
+    # }
+
+    # Figure
+    # {
+    #     Title "Pression"
+    #     Width 12cm
+    #     Dimension 2
+    #     LabelX "x"
+    #     RangeX 0 1
+    #     LabelY "Pression"
+    #     RangeY 0.8E5 1.5E5
+    #     Include_Description_Curves 0
+    #     legend below
+    #     Curve
+    #     {
+    #         legend "Analytique"
+    #         fonction 1E5+1000.*9.81*(x-1)
+    #         Style lines
+    #     }
+    #      Curve
+    #     {
+    #         legend "PolyMAC"
+    #         file PolyMAC.dat
+    #         columns ($1) ($2)
+    #         Style lines
+    #     }
+    # }
+}

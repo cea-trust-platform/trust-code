@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -275,7 +275,9 @@ int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr)
       || (discr.que_suis_je() == "VDF_Interface")
       || (discr.que_suis_je() == "VDF_Front_Tracking")
       || (discr.que_suis_je() == "VEFPreP1B")
-      || (discr.que_suis_je() == "PolyMAC") )
+      || (discr.que_suis_je() == "VEFPreP1B")
+      || (discr.que_suis_je() == "PolyMAC")
+      || (discr.que_suis_je() == "CoviMAC") )
     return 1;
   else
     {

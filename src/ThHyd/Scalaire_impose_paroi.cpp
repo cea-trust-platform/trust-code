@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,6 +103,8 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
   else if (type_discr == "VEFPreP1B_Front_Tracking")
     return 1;
   else if (type_discr == "PolyMAC")
+    return 1;
+  else if (type_discr == "CoviMAC")
     return 1;
   else
     {

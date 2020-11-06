@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,6 +96,7 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();
   virtual int impr(Sortie& os) const;
+  virtual void dimensionner_matrice_internal(Matrice_Morse& mat_morse);
 
   int sauvegarder(Sortie&) const;
   int reprendre(Entree&);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,6 +60,7 @@ public:
   Cond_lim_utilisateur_base();
   int is_pb_VDF();
   int is_pb_PolyMAC();
+  int is_pb_CoviMAC();
   int is_pb_VEF();
   int is_pb_rayo();
 

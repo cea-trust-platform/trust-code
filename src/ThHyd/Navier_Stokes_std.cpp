@@ -1009,6 +1009,7 @@ void Navier_Stokes_std::projeter()
 
           tab_vitesse.ajoute(-dt,gradP);
           tab_vitesse.echange_espace_virtuel();
+          solveur_masse.corriger_solution(tab_vitesse, tab_vitesse);
         }
 
       Debog::verifier("Navier_Stokes_std::projeter, vitesse", tab_vitesse);
@@ -1813,6 +1814,14 @@ static void construire_matrice_implicite(Operateur_base& op,
           op.set_solveur().valeur().reinit();
         }
     }
+}
+
+/* pour que le gradient puisse elargir le stencil de l'equation de N-S */
+void Navier_Stokes_std::dimensionner_matrice_internal(Matrice_Morse& matrice)
+{
+  Equation_base::dimensionner_matrice_internal(matrice);
+  gradient.valeur().dimensionner_NS(matrice);
+  return;
 }
 
 DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)

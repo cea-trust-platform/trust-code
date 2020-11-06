@@ -1,0 +1,4 @@
+Includes = -I. -I$(TRUST_ROOT)/src/Kernel/Math\
+               -I$(TRUST_ROOT)/src/Kernel/Utilitaires
+	
+Lib = $(TRUST_LIB)/libcovimac

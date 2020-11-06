@@ -40,17 +40,7 @@ Read sch
     seuil_statio -1
     solveur implicite
     {
-        solveur petsc cli
-        {
-            -pc_type fieldsplit
-            -pc_fieldsplit_0_field b1
-            -pc_fieldsplit_1_field b0
-            -pc_fieldsplit_type schur
-            -ksp_type fgmres
-            -ksp_rtol 1e-8
-            -fieldsplit_b0_ksp_max_it 10
-            -fieldsplit_b1_ksp_max_it 10
-        }
+        solveur petsc cholesky { }
     }
 }
 

@@ -1794,21 +1794,21 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()) && nb_matrices_creees_ == 1)
     {
       std::map<std::string, std::vector<int>> champ;
-      //liste (MD_Vector_composite, offset de ses elements, prefixe des noms de ses champs)
-      std::vector<std::tuple<const MD_Vector_composite *, int, std::string>>
-                                                                          mdc_list = { std::make_tuple(&ref_cast(MD_Vector_composite, b.get_md_vector().valeur()), 0, std::string("b") ) };
+      //liste (MD_Vector_composite, offset de ses elements, multiplicateur (nb d'items du tableau par item du MD_Vector) prefixe des noms de ses champs)
+      std::vector<std::tuple<const MD_Vector_composite *, int, int, std::string>>
+                                                                               mdc_list = { std::make_tuple(&ref_cast(MD_Vector_composite, b.get_md_vector().valeur()), 0, b.line_size(), std::string("b") ) };
       while (mdc_list.size()) //remplissage recursif de champs_ -> (nom du champ, indices)
         {
           const MD_Vector_composite& mdc = *std::get<0>(mdc_list.back());
-          int idx = std::get<1>(mdc_list.back());
-          std::string prefix = std::get<2>(mdc_list.back());
+          int idx = std::get<1>(mdc_list.back()), mult = std::get<2>(mdc_list.back());
+          std::string prefix = std::get<3>(mdc_list.back());
           mdc_list.pop_back();
           for (int i = 0; i < mdc.nb_parts(); i++)
             {
               const MD_Vector_base& mdb = mdc.get_desc_part(i).valeur();
-              int nb_seq = mdb.nb_items_seq_local();
+              int mult2 = mult * max(mdc.get_shape(i), 1), nb_seq = mdb.nb_items_seq_local() * mult2;
               if (sub_type(MD_Vector_composite, mdb)) //un autre MD_Vector_Composite! on le met dans la liste
-                mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, prefix + std::to_string((long long) i)));
+                mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, mult2, prefix + std::to_string((long long) i)));
               else
                 {
                   std::vector<int> indices;
@@ -1823,7 +1823,7 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       PetscSection sec;
       PetscSectionCreate(PETSC_COMM_WORLD, &sec);
       PetscSectionSetNumFields(sec, champ.size());
-      PetscSectionSetChart(sec, decalage_local_global_, decalage_local_global_ + b.get_md_vector().valeur().nb_items_seq_local());
+      PetscSectionSetChart(sec, decalage_local_global_, decalage_local_global_ + b.line_size() * b.get_md_vector().valeur().nb_items_seq_local());
       int idx = 0;
       for (auto && kv : champ)
         {

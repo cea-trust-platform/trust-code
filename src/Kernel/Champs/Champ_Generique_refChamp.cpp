@@ -237,7 +237,7 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
     {
       loc = NODE;
     }
-  else if ((ch.que_suis_je()=="Champ_Face_PolyMAC" || ch.valeurs().dimension(0) == ref_cast(Zone_VF,z_dis_base).nb_faces()) && index <= 0)
+  else if ((ch.que_suis_je()=="Champ_Face_PolyMAC" || ch.que_suis_je()=="Champ_Face_CoviMAC" || ch.valeurs().dimension(0) == ref_cast(Zone_VF,z_dis_base).nb_faces()) && index <= 0)
     {
       loc = FACE;
     }

@@ -1,0 +1,136 @@
+Parameters
+{
+    Title "Test des fonctionnalités DP_impose et K regul"
+    #Description ""
+    Author "A.G. and Y.G."
+    #TestCase cartesian "jdd.data"
+    #TestCase tetra     "jdd.data"
+    TestCase PolyMAC "jdd.data"
+    Prerequis "paste PolyMAC/jdd_P1.son PolyMAC/jdd_P2.son > PolyMAC/jdd_P1P2.son"
+    TestCase CoviMAC "jdd.data"
+    Prerequis "paste CoviMAC/jdd_P1.son CoviMAC/jdd_P2.son > CoviMAC/jdd_P1P2.son"
+}
+
+Chapter
+{
+    Title "Description"
+    Description "domaine fermé avec une frontiere interne (en gris sur la figure), et deux surfaces permettant d'imposer les termes source testés. En bleu, la régulation sur le débit, et en orange le DP imposé. Une circulation du fluide apparait, et le débit généré se régule sur la valeur cible."
+    Figure
+    {
+        width 16cm
+        picture ./domaine.png
+    }
+
+    Figure
+    {
+        Include_Description_Curves 0
+        Title_figure PolyMAC
+        Dimension 2
+        LabelX "Time"
+        LabelY ""
+        width 7.5cm
+        nb_img_without_newline 2
+        Curve
+        {
+            legend "K"
+            fichier PolyMAC/jdd_pb_K_surf1.out
+            colonnes ($1) ($2)
+            Style lines
+        }
+        Curve
+        {
+            legend "debit calcule"
+            fichier PolyMAC/jdd_pb_K_surf1.out
+            colonnes ($1) (-$3)
+            Style lines
+        }
+        Curve
+        {
+            legend "debit cible"
+            fichier PolyMAC/jdd_pb_K_surf1.out
+            colonnes ($1) ($4)
+            Style lines
+        }
+    }
+    Figure
+    {
+        Include_Description_Curves 0
+        Title_figure CoviMAC
+        Dimension 2
+        LabelX "Time"
+        LabelY ""
+        width 7.5cm
+        nb_img_without_newline 2
+        Curve
+        {
+            legend "K"
+            fichier CoviMAC/jdd_pb_K_surf1.out
+            colonnes ($1) ($2)
+            Style lines
+        }
+        Curve
+        {
+            legend "debit calcule"
+            fichier CoviMAC/jdd_pb_K_surf1.out
+            colonnes ($1) (-$3)
+            Style lines
+        }
+        Curve
+        {
+            legend "debit cible"
+            fichier CoviMAC/jdd_pb_K_surf1.out
+            colonnes ($1) ($4)
+            Style lines
+        }
+    }
+    Figure
+    {
+        Include_Description_Curves 0
+        Title_figure PolyMAC
+        Dimension 2
+        LabelX "Time"
+        LabelY "Delta de pression"
+        width 7.5cm
+                nb_img_without_newline 2
+
+        Curve
+        {
+            legend "DP impose"
+            fichier PolyMAC/jdd_pb_DP_surf2.out
+            colonnes ($1) ($2)
+            Style lines
+        }
+        Curve
+        {
+            legend "DP mesure"
+            file PolyMAC/jdd_P1P2.son
+            colonnes ($1) ($2-$4)
+            Style lines
+        }
+    }
+    Figure
+    {
+        Include_Description_Curves 0
+        Title_figure CoviMAC
+        Dimension 2
+        LabelX "Time"
+        LabelY "Delta de pression"
+        width 7.5cm
+                nb_img_without_newline 2
+
+        Curve
+        {
+            legend "DP impose"
+            fichier CoviMAC/jdd_pb_DP_surf2.out
+            colonnes ($1) ($2)
+            Style lines
+        }
+        Curve
+        {
+            legend "DP mesure"
+            file CoviMAC/jdd_P1P2.son
+            colonnes ($1) ($2-$4)
+            Style lines
+        }
+    }
+}

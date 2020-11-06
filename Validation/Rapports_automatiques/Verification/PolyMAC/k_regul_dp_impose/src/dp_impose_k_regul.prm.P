@@ -5,8 +5,10 @@ Parameters
     Author "A.G. and Y.G."
     #TestCase cartesian "jdd.data"
     #TestCase tetra     "jdd.data"
-    TestCase poly      "jdd.data"
-    Prerequis "paste poly/jdd_P1.son poly/jdd_P2.son > poly/jdd_P1P2.son"
+#Pforeach _dis_ ( PolyMAC CoviMAC )
+    TestCase _dis_ "jdd.data"
+    Prerequis "paste _dis_/jdd_P1.son _dis_/jdd_P2.son > _dis_/jdd_P1P2.son"
+#Pendforeach(_dis_)
 }
 
 Chapter
@@ -18,58 +20,66 @@ Chapter
         width 16cm
         picture ./domaine.png
     }
+
+#Pforeach _dis_ ( PolyMAC CoviMAC )
     Figure
     {
         Include_Description_Curves 0
-        #Title ""
+        Title_figure _dis_
         Dimension 2
         LabelX "Time"
         LabelY ""
-        width 12cm
+        width 7.5cm
+        nb_img_without_newline 2
         Curve
         {
             legend "K"
-            fichier poly/jdd_pb_K_surf1.out
+            fichier _dis_/jdd_pb_K_surf1.out
             colonnes ($1) ($2)
             Style lines
         }
         Curve
         {
             legend "debit calcule"
-            fichier poly/jdd_pb_K_surf1.out
+            fichier _dis_/jdd_pb_K_surf1.out
             colonnes ($1) (-$3)
             Style lines
         }
         Curve
         {
             legend "debit cible"
-            fichier poly/jdd_pb_K_surf1.out
+            fichier _dis_/jdd_pb_K_surf1.out
             colonnes ($1) ($4)
             Style lines
         }
     }
+#Pendforeach(_dis_)
 
+#Pforeach _dis_ ( PolyMAC CoviMAC )
     Figure
     {
         Include_Description_Curves 0
-        #Title "Comparaison des profils calculé et analytique"
+        Title_figure _dis_
         Dimension 2
         LabelX "Time"
         LabelY "Delta de pression"
-        width 12cm
+        width 7.5cm
+                nb_img_without_newline 2
+
         Curve
         {
             legend "DP impose"
-            fichier poly/jdd_pb_DP_surf2.out
+            fichier _dis_/jdd_pb_DP_surf2.out
             colonnes ($1) ($2)
             Style lines
         }
         Curve
         {
             legend "DP mesure"
-            file poly/jdd_P1P2.son
+            file _dis_/jdd_P1P2.son
             colonnes ($1) ($2-$4)
             Style lines
         }
     }
+#Pendforeach(_dis_)
 }

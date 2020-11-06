@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -297,7 +297,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                   md = values_source_i.get_md_vector( );
 
                   //composite case, in particular Champ_{P0,Face}_PolyMAC...
-                  if (zvf_source_i.que_suis_je()=="Zone_PolyMAC" && sub_type( MD_Vector_composite, md.valeur( )))
+                  if (zvf_source_i.que_suis_je().finit_par("MAC") && sub_type( MD_Vector_composite, md.valeur( )))
                     {
                       const MD_Vector& md0 = ref_cast(MD_Vector_composite, md.valeur()).get_desc_part(0);
                       if (md0 == zvf_source_i.zone( ).les_elems().get_md_vector( ))
@@ -530,17 +530,14 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
     is_VDF = 1;
   if (localisation_ == "elem")
     {
-      positions = zvf.xp();
-      if (positions.size() == 0)
+      if (zvf.xp().nb_dim() != 2) /* xp() non initialise */
         {
           zvf.zone().calculer_centres_gravite(positions);
         }
-      if (positions.size()>0)
+      else
         {
-          // ToDo : corriger un jour xp dimensionne a nb_elem_tot et qui devrait etre un vecteur distribue comme xv...
-          // La correction serait a faire au niveau de Elem_geom_base::calculer_centre_gravite mais ensuite cela oblige
-          // a corriger pas mal de code pour tenir compte de ce changement.
-          positions.resize(zvf.nb_elem(), positions.dimension(1));
+          positions.resize(zvf.nb_elem(), zvf.xp().dimension(1));
+          memcpy(positions.addr(), zvf.xp().addr(), positions.size() * sizeof(double));
         }
     }
   else if (localisation_ == "som")
