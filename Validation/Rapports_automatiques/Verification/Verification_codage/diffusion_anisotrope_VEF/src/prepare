@@ -54,10 +54,12 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 2 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 2 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA2 > $DEST_DATA2
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
@@ -68,10 +70,12 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA2 > $DEST_DATA2
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
@@ -95,6 +99,7 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 2 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA3 > $DEST_DATA3
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
@@ -105,6 +110,7 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA3 > $DEST_DATA3
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
@@ -128,6 +134,7 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 2 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA4 > $DEST_DATA4
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
@@ -138,6 +145,7 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA4 > $DEST_DATA4
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
@@ -160,6 +168,7 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 2 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA5 > $DEST_DATA5
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
@@ -170,6 +179,7 @@ for CAS in $LISTE_CAS; do
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/; 
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA5 > $DEST_DATA5
 
         sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
