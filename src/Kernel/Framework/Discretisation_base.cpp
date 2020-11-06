@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -522,8 +522,17 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
       if ( (nom_discr == "VDF") || (nom_discr == "VEF") )
         {
           Nom nb_inc;
-          if (diffusivite.nb_comp() == 1 || nom_discr=="VEF")
+          // Modif Elie Saikali (Nov 2020)
+          if (diffusivite.nb_comp() == 1 && nom_discr=="VDF")
             nb_inc = "_";
+          else if (nom_discr=="VEF")
+            {
+              // not concerned if diffusivite.le_nom() == "coefficient_diffusion"
+              if (diffusivite.nb_comp() > 1 && diffusivite.le_nom() == "conductivite")
+                nb_inc = "ANISOTROPE_";
+              else
+                nb_inc = "_";
+            }
           else
             nb_inc = "_Multi_inco_";
           type+= nb_inc ;
