@@ -109,6 +109,18 @@ extern "C"
                           const int*    const, // LWORK
                           const int*    const // INFO
                          );
+
+  void F77DECLARE(DGETRS)(const char*   const, // TRANS
+                          const int*    const, // N
+                          const int*    const, // NRHS
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const, // IPIV
+                          const double* const, // B
+                          const int*    const, // LDB
+                          const int*    const  // INFO
+                         );
+
   // FIN MODIF ELI LAUCOIN (19/03/2008)
 
   void F77DECLARE(DSYEV)(const char*   const, // JOBZ
@@ -301,6 +313,18 @@ extern "C"
                           const int*    const, // LWORK
                           const int*    const  // INFO
                          );
+
+  void F77DECLARE(dgetrs)(const char*   const, // TRANS
+                          const int*    const, // N
+                          const int*    const, // NRHS
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const int*    const, // IPIV
+                          const double* const, // B
+                          const int*    const, // LDB
+                          const int*    const  // INFO
+                         );
+
   // FIN MODIF ELI LAUCOIN (19/03/2008)
 
   void F77DECLARE(dsyev)(const char*   const, // JOBZ
@@ -540,6 +564,21 @@ inline void F77NAME(DGETRI)(const int*    const N,
 {
   F77NAME(dgetri)(N,A,LDA,IPIV,WORK,LWORK,INFO);
 }
+
+inline void F77DECLARE(DGETRS)(const char*   const TRANS,
+                               const int*    const N,
+                               const int*    const NRHS,
+                               const double* const A,
+                               const int*    const LDA,
+                               const int*    const IPIV,
+                               const double* const B,
+                               const int*    const LDB,
+                               const int*    const INFO
+                              )
+{
+  F77NAME(dgetrs)(TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO);
+}
+
 // FIN MODIF ELI LAUCOIN (19/03/2008)
 
 inline void F77NAME(DSYEV)(const char*   const JOBZ,
@@ -661,24 +700,24 @@ inline  void F77NAME(DPOTRF)(const char*   const UPLO,
   F77NAME(dpotrf)(UPLO, N, A, LDA, INFO);
 }
 
-inline  void F77DECLARE(DPOTRI)(const char*   const UPLO,
-                                const int*    const N,
-                                const double* const A,
-                                const int*    const LDA,
-                                const int*    const INFO
-                               )
+inline  void F77NAME(DPOTRI)(const char*   const UPLO,
+                             const int*    const N,
+                             const double* const A,
+                             const int*    const LDA,
+                             const int*    const INFO
+                            )
 {
   F77NAME(dpotri)(UPLO, N, A, LDA, INFO);
 }
 
-inline void F77DECLARE(DPPSV)(const char*   const UPLO,
-                              const int*    const N,
-                              const int*    const NRHS,
-                              const double* const AP,
-                              const double* const B,
-                              const int*    const LDB,
-                              const int*    const INFO
-                             )
+inline void F77NAME(DPPSV)(const char*   const UPLO,
+                           const int*    const N,
+                           const int*    const NRHS,
+                           const double* const AP,
+                           const double* const B,
+                           const int*    const LDB,
+                           const int*    const INFO
+                          )
 {
   F77NAME(dppsv)(UPLO, N, NRHS, AP, B, LDB, INFO);
 }
