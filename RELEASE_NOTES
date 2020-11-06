@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
-05/11/20 (TRUST)  New feature : Anisotropic diffusion (VEF) is available for laminar flow or solid conduction
+05/11/20 (TRUST)  New feature : Anisotropic diffusion (VEF) is available for laminar flow or solid conduction (see new validation sheet diffusion_anisotrope_VEF for examples)
 28/10/20 (TRUST)  Improvement : Reduce memory footprint when using implicit time schemes
 27/10/20 (TRUST)  New keyword : Typer_Lire (or Type_Read) to read and type an object, eg: Type_Read sch schea_euler_implicite { ... }
 27/10/20 (TRUST)  Bug Fixed   : Champ_front_xyz_debit uses now the correct convention: a positive value for flow inlet
