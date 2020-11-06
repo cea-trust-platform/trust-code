@@ -27,6 +27,7 @@ sed "s/long main(long/int main(int/" -i  Outils/lata2dx/lata2dx//*cpp
 sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
 sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
 sed -i "s/vector<long> P_c(nv + 1), P_l(nv), A_c, A_l;/vector<long long> P_c(nv + 1), P_l(nv), A_c, A_l;/" src/PolyMAC/Zones/Zone_PolyMAC.cpp
+sed -i "s/%d/%ld/g" src/CoviMAC/Zones/Zone_CoviMAC.cpp
 
 # For ICoCo, we cannot use 64 bits because it is MEDCoupling (only 32bits) based
 #sed -i "s/long [*]p/int *p/" src/Kernel/Champs/Champ_input_P0.cpp
