@@ -93,7 +93,7 @@ project_reference_directory="${project_directory}/tests/Reference"
 project_executable_name="${project_directory}/${project_executable_name}"
 
 cd ${project_directory}/build/src/exec$OPT
-ctest -j$TRUST_NB_PROCS
+ctest -j$TRUST_NB_PHYSICAL_CORES
 exit $?
 
 
