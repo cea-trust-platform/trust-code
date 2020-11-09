@@ -168,7 +168,7 @@ void Champ_Face_CoviMAC::init_ve2() const
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &e_s = zone.zone().les_elems(), &f_s = zone.face_sommets();
-  int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo, un = 1, rank;
+  int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo=0, un = 1, rank;
   double eps = 1e-8;
   const double *xf;
   zone.init_ve();
