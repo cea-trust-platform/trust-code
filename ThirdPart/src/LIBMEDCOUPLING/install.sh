@@ -55,7 +55,7 @@ sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.
 sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.cxx )
 
 echo "Patching findClosestTupleId() method"
-patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch
+patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch || exit -1
 
 echo "Patching HDF detection procedure and exit if procedure has changed..."
 FindSalomeHDF5=$(find $src_dir/.. -name FindSalomeHDF5.cmake )
@@ -63,10 +63,10 @@ sed -i "1,$ s?GET_PROPERTY(?#GET_PROPERTY(?" 			$FindSalomeHDF5 || exit -1
 sed -i "1,$ s?MESSAGE(FATAL_ERROR?#MESSAGE(FATAL_ERROR ?" 	$FindSalomeHDF5 || exit -1 
 
 echo "Patching gatherArraysT() and allGathersArraysT() method"
-patch -p1 $(find $src_dir -name CommInterface.hxx ) < $tool_dir/CommInterface.patch
+patch -p1 $(find $src_dir -name CommInterface.hxx ) < $tool_dir/CommInterface.patch || exit -1
 
 echo "Patching DataArrayInt allocation method (initialisation with numpy array only available if WITH_NUMPY is defined)"
-patch -p1 $(find $src_dir -name DataArrayInt.i ) < $tool_dir/DataArrayInt.patch
+patch -p1 $(find $src_dir -name DataArrayInt.i ) < $tool_dir/DataArrayInt.patch || exit -1
 
 echo "Patching explicit instantiation of ParaDataArrayTemplate"
 sed -i 's/template class /template class MEDCoupling::/' $(find $src_dir -name ParaDataArray.cxx )

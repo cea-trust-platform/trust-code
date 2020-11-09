@@ -93,6 +93,8 @@ $TRUST_ROOT/exec/python/bin/cmake $options $plugins  \
 -DCMAKE_BUILD_TYPE=Release \
 -DHDF5_ROOT="$TRUST_MED_ROOT" ../$GMSH_SRC 2>&1 || exit -1
 
+# Si OpenGL non detecte sur Fedora: sudo dnf install mesa-libGLU-devel
+
 # Check that FLTK has been found correctly:
 grep "define HAVE_FLTK" Common/GmshConfig.h 
 if ! [ $? -eq 0 ]; then

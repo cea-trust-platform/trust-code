@@ -1,11 +1,12 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dns install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
 05/11/20 (TRUST)  New feature : Equation residuals can now be post-processed
 04/11/20 (TRUST)  Bug fixed   : In VDF, advanced fields using flux_bords wasn't correct near corners of the domain
 03/11/20 (TRUST)  Portability : Support of AOCC compilers and HPC-X MPI for AMD processors on orcus cluster
 28/10/20 (TRUST)  Improvement : Reduce memory footprint when using implicit time schemes
-27/10/20 (TRUST)  New keyword : Typer_Lire (or Type_Read) to read and type an object, eg: Type_Read sch schea_euler_implicite { ... }
+27/10/20 (TRUST)  New keyword : Typer_Lire (or Type_Read) to read and type an object, eg: Type_Read sch schema_euler_implicite { ... }
 27/10/20 (TRUST)  Bug Fixed   : Champ_front_xyz_debit uses now the correct convention: a positive value for flow inlet
 27/10/20 (TRUST)  Feature     : Adding beta_co parameter as a field that can be post-processed ("champ_compris") in Fluide_Incompressible
 19/10/20 (TRUST)  Bug fixed   : MED mesh with more than one group per family (to define boundaries) were not read
