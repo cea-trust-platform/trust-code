@@ -1201,16 +1201,9 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
 
-// Creation du solver AmgX si demande (NB: les objets PETSc sont crees mais ne seront pas utilises)
+  // Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
   if (amgx_)
     {
-      Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
-      /* Possible de jouer avec simple precision peut etre:
-      1. (lowercase) letter: whether the code will run on the host (h) or device (d).
-      2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
-      3. (uppercase) letter: whether the vector precision is float (F) or double (D).
-      4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
-      typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
       Nom filename(Objet_U::nom_du_cas());
       filename+=".amgx";
       SFichier s(filename);
@@ -1223,9 +1216,6 @@ void Solv_Petsc::create_solver(Entree& entree)
       s << "# print_grid_stats=1" << finl;
       s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
       Cerr << "Writing and reading the AmgX config file: " << filename << finl;
-#ifdef PETSC_HAVE_CUDA
-      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
-#endif
     }
 #else
   Cerr << "Error, the code is not built with PETSc support." << finl;
@@ -1977,6 +1967,16 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   if (amgx_)
     {
 #ifdef PETSC_HAVE_CUDA
+      Nom filename(Objet_U::nom_du_cas());
+      filename+=".amgx";
+      Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
+      /* Possible de jouer avec simple precision peut etre:
+      1. (lowercase) letter: whether the code will run on the host (h) or device (d).
+      2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
+      3. (uppercase) letter: whether the vector precision is float (F) or double (D).
+      4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
+      typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
+      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
       SolveurAmgX_.setA(MatricePetsc_);
 #endif
     }
