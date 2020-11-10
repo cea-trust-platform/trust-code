@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,9 @@
 #include <SFichier.h>
 #include <Interpolation_IBM_base.h>
 
+
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
+// XD source_pdf_base source_base source_pdf_base 1 Base class of the source term for the Immersed Boundary Penalized Direct Forcing method (PDF)
 
 /*##################################################################################################
 ####################################################################################################
@@ -43,11 +45,11 @@ Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
 Entree& Source_PDF_base::readOn(Entree& s)
 {
   Param param(que_suis_je());
-  param.ajouter("aire", &champ_aire_lu_,Param::REQUIRED);
-  param.ajouter("rotation", &champ_rotation_lu_,Param::REQUIRED);
-  param.ajouter_flag("transpose_rotation", &transpose_rotation_,Param::OPTIONAL);
-  param.ajouter("modele",&modele_lu_,Param::REQUIRED);
-  param.ajouter("interpolation",&interpolation_lue_,Param::OPTIONAL);
+  param.ajouter("aire", &champ_aire_lu_,Param::REQUIRED);         // XD_ADD_P champ_don_base volumic field: a boolean for the cell (0 or 1) indicating if the obstacle is in the cell
+  param.ajouter("rotation", &champ_rotation_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base volumic field with 9 components representing the change of basis on cells (local to global). Used for rotating cases for example.
+  param.ajouter_flag("transpose_rotation", &transpose_rotation_,Param::OPTIONAL); // XD_ADD_P int whether to transpose the basis change matrix.
+  param.ajouter("modele",&modele_lu_,Param::REQUIRED);                // XD_ADD_P pdf_model model used for the Penalized Direct Forcing
+  param.ajouter("interpolation",&interpolation_lue_,Param::OPTIONAL); // XD_ADD_P interpolation_ibm_base interpolation method
   param.lire_avec_accolades(s);
   interpolation_bool_ = false;
   if ((&interpolation_lue_)->non_nul())

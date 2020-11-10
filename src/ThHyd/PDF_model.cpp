@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@
 #include <Param.h>
 
 Implemente_instanciable(PDF_model,"PDF_model",Objet_U) ;
+// XD pdf_model objet_u pdf_model 1 Parametrisation of the Penalized Direct Forcing model for the Immersed Boundary Method (IBM)
 
 Sortie& PDF_model::printOn(Sortie& os) const
 {
@@ -42,16 +43,16 @@ Entree& PDF_model::readOn(Entree& is)
 {
   type_vitesse_imposee_ = 0; //DEFAULT VALUE
   Param param(que_suis_je());
-  param.ajouter("eta",&eta_, Param::REQUIRED);
+  param.ajouter("eta",&eta_, Param::REQUIRED); // XD_ADD_P double penalization coefficient
   temps_relax_=1.0e+12;
-  param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL);
+  param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL); // XD_ADD_P double time relaxation on the forcing term to help convergence
   echelle_relax_=5.0e-2;
-  param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL);
-  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED);
+  param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL); // XD_ADD_P double time relaxation on the forcing term to help convergence
+  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED); // XD_ADD_P chaine(into=["data","function"]) Type of prescribed velocity (a MED field or an analytical exp)
   param.dictionnaire("data",0);
   param.dictionnaire("fonction",1);
-  param.ajouter_flag("local",&local_);
-  param.ajouter_non_std("vitesse_imposee",(this),Param::REQUIRED);
+  param.ajouter_flag("local",&local_);  // XD_ADD_P int whether the prescribed velocity is expressed in the global or local basis
+  param.ajouter_non_std("vitesse_imposee",(this),Param::REQUIRED); // XD_ADD_P bloc_lecture prescribed velocity
   param.lire_avec_accolades_depuis(is);
   coefku_ = 1./eta_;
   return is;

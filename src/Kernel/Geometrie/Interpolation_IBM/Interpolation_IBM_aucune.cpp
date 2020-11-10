@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,16 +12,18 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Interpolation_IBM_aucune.cpp
-// Directory : $GENEPI3_ROOT/src/EF/Interpolation_IBM
+// File:        Interpolation_IBM_aucune.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Interpolation_IBM_aucune.h>
 
 Implemente_instanciable( Interpolation_IBM_aucune, "Interpolation_IBM_aucune", Interpolation_IBM_base ) ;
+// XD interpolation_ibm_aucune interpolation_ibm_base interpolation_ibm_aucune 0 Immersed Boundary Method (IBM): no interpolation.
 
 Sortie& Interpolation_IBM_aucune::printOn( Sortie& os ) const
 {

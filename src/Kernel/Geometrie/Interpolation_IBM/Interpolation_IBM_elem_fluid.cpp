@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 #include <IntTab.h>
 
 Implemente_instanciable( Interpolation_IBM_elem_fluid, "Interpolation_IBM_element_fluide", Interpolation_IBM_base ) ;
+// XD interpolation_ibm_elem_fluid interpolation_ibm_base interpolation_ibm_elem_fluid 1 Immersed Boundary Method (IBM): fluid element interpolation.
 
 Sortie& Interpolation_IBM_elem_fluid::printOn( Sortie& os ) const
 {
@@ -39,10 +40,10 @@ Sortie& Interpolation_IBM_elem_fluid::printOn( Sortie& os ) const
 Entree& Interpolation_IBM_elem_fluid::readOn( Entree& is )
 {
   Param param(que_suis_je());
-  param.ajouter("points_fluides",&fluid_points_lu_,Param::REQUIRED);
-  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);
-  param.ajouter("elements_fluides",&fluid_elems_lu_,Param::REQUIRED);
-  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED);
+  param.ajouter("points_fluides",&fluid_points_lu_,Param::REQUIRED);  // XD_ADD_P champ_don_base Node field giving the projection of the point below (points_solides) falling into the pure cell fluid
+  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P champ_don_base Node field giving the projection of the node on the immersed boundary
+  param.ajouter("elements_fluides",&fluid_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Node field giving the number of the element (cell) containing the pure fluid point
+  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Cell field giving the SALOME cell number
   param.lire_avec_accolades_depuis(is);
   return is;
 }

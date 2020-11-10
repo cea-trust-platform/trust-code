@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Interpolation_IBM_mean_gradient.cpp
-// Directory : $TRUST_ROOT/src/EF/Interpolation_IBM
+// File:        Interpolation_IBM_mean_gradient.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Interpolation_IBM_mean_gradient.h>
 #include <Param.h>
@@ -27,6 +28,7 @@
 #include <Domaine.h>
 
 Implemente_instanciable( Interpolation_IBM_mean_gradient, "Interpolation_IBM_gradient_moyen", Interpolation_IBM_base ) ;
+// XD interpolation_ibm_mean_gradient interpolation_ibm_base interpolation_ibm_mean_gradient 1 Immersed Boundary Method (IBM): mean gradient interpolation.
 
 Sortie& Interpolation_IBM_mean_gradient::printOn( Sortie& os ) const
 {
@@ -37,10 +39,10 @@ Sortie& Interpolation_IBM_mean_gradient::printOn( Sortie& os ) const
 Entree& Interpolation_IBM_mean_gradient::readOn( Entree& is )
 {
   Param param(que_suis_je());
-  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);
-  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);
-  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED);
-  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED);
+  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P champ_don_base Node field giving the projection of the node on the immersed boundary
+  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P champ_don_base Node field of booleans indicating whether the node belong to an element where the interface is
+  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Cell field giving the SALOME cell number
+  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Node field giving the element number containing the solid point
   param.lire_avec_accolades_depuis(is);
   return is;
 }

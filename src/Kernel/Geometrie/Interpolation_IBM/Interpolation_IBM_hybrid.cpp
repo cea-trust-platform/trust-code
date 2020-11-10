@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Interpolation_IBM_hybrid.cpp
-// Directory : $TRUST_ROOT/src/EF/Interpolation_IBM
+// File:        Interpolation_IBM_hybrid.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Interpolation_IBM_hybrid.h>
 #include <Param.h>
@@ -25,6 +26,7 @@
 #include <IntTab.h>
 
 Implemente_instanciable( Interpolation_IBM_hybrid, "Interpolation_IBM_hybride", Interpolation_IBM_elem_fluid ) ;
+// XD interpolation_ibm_hybrid interpolation_ibm_elem_fluid interpolation_ibm_hybrid 1 Immersed Boundary Method (IBM): hybrid (fluid/mean gradient) interpolation.
 
 Sortie& Interpolation_IBM_hybrid::printOn( Sortie& os ) const
 {
@@ -36,8 +38,8 @@ Entree& Interpolation_IBM_hybrid::readOn( Entree& is )
 {
   Interpolation_IBM_elem_fluid::readOn(is);
   Param param(que_suis_je());
-  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);
-  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED);
+  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P champ_don_base Node field of booleans indicating whether the node belong to an element where the interface is
+  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Node field giving the element number containing the solid point
   param.lire_avec_accolades_depuis(is);
   return is;
 }
