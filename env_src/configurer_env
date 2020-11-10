@@ -353,7 +353,7 @@ check_nvidia_cuda()
    # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
    # Runtime : CUDA_ROOT=/usr			$CUDA_ROOT/include/cuda/cuda.h !
    [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
-   nvcc="`\ls $CUDA_PATH/bin/nvcc $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
+   nvcc="`\ls $NVHPC/Linux_x86_64/*/compilers/bin/nvcc $CUDA_PATH/bin/nvcc $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
    ################
    # Detection nvcc
    ################
@@ -371,11 +371,22 @@ check_nvidia_cuda()
    ################
    # Detection CUDA
    ################
-   [ "$CUDA_PATH" != "" ] && CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null` # JeanZay
-   [ "$CUDA_LIB" = "" ] && CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* 2>/dev/null | head -1`"
-   [ "$CUDA_LIB" = "" ] && echo "Cuda lib libcudart.so not found!" && exit -1
+   if [ "$NVHPC" != "" ]
+   then
+      CUDA_LIB=`ls $NVHPC/Linux_x86_64/*/cuda/lib*/libcudart.so.*.* 2>/dev/null | head -1` # Orcus
+   elif [ "$CUDA_PATH" != "" ]
+   then
+      CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null | head -1` # JeanZay
+   elif [ "$CUDA_LIB" = "" ]
+   then
+      CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* 2>/dev/null | head -1`" # PCs
+   else
+      echo "Cuda lib libcudart.so not found!" && exit -1
+   fi
    CUDA_LIB=`dirname $CUDA_LIB`
+   echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
    CUDA_ROOT=`dirname $CUDA_LIB`
+   echo "Cuda CUDA_ROOT=$CUDA_ROOT"
    #############################
    # Installation NVIDIA Samples
    #############################
@@ -391,22 +402,32 @@ check_nvidia_cuda()
       mkdir -p NVIDIA_CUDA_Samples
       cp -r $CUDA_SAMPLES_PATH/1_Utilities NVIDIA_CUDA_Samples
       (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && sed -i "1,$ s?../../common/inc?$CUDA_SAMPLES_PATH/common/inc?g" Makefile && CUDA_PATH="" make)
+   elif [ "$NVHPC" != "" ]
+   then
+      mkdir -p NVIDIA_CUDA_Samples
+      cp -r $NVHPC/Linux_x86_64/*/examples/OpenACC/SDK/src/deviceQuery NVIDIA_CUDA_Samples
+      #(cd NVIDIA_CUDA*Samples/deviceQuery && sed -i "1,$ s?../../common/?$CUDA_ROOT/../examples/OpenACC/SDK/common/?g" Makefile && make)
+      # Probleme pour tester correctement sur orcus...
+      COMPUTE_CAPABILITY="1.3"
    else
       echo "NVIDIA_CUDA Samples not found."
       exit -1
    fi
-   ###################################
-   # Test de la carte avec deviceQuery
-   ###################################
-   (
+   if [ "$COMPUTE_CAPABILITY" = "" ]
+   then
+      ###################################
+      # Test de la carte avec deviceQuery
+      ###################################
+      (
        # On utilise le script trust en specifiant -gpu
        source ../env_TRUST.sh 1>/dev/null 2>&1
        LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
        export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
        trust -gpu dummy_file 1>$TRUST_ENV/card.log &
-       $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
-   )
-   COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+       $TRUST_ROOT/bin/KSH/wait_for $! 600 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
+      )
+      COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+   fi
    # On ne supporte que les cartes double precision
    TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
    if [ "$TRUST_USE_CUDA" = 0 ]
@@ -2046,14 +2067,7 @@ m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUS
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
    m="# PATH to CUDA";
-   if [ ${CUDA_ROOT#$TRUST_ROOT} = $CUDA_ROOT ]
-   then
-      # CUDA installe
-      e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
-   else
-      # CUDA downloade
-      e="CUDA_ROOT=\"\$TRUST_ROOT${CUDA_ROOT#$TRUST_ROOT}\" && export CUDA_ROOT";
-   fi
+   e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
    ecrit $m"|"$e"|"$env
    echo "ADD_PATH $CUDA_ROOT/bin" >> $env
    echo "ADD_LD_LIBRARY_PATH $CUDA_LIB" >> $env
