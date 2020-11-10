@@ -1011,9 +1011,9 @@ void Solv_Petsc::create_solver(Entree& entree)
                 break;
               }
             case 9: // ilu
-              preconditionnement_non_symetrique_ = 1;
             case 8: // icc
               {
+                if (rang==9) preconditionnement_non_symetrique_ = 1;
                 pc_supported_on_gpu_by_amgx=1;
                 if (amgx_)
                   amgx_option+="preconditioner=MULTICOLOR_DILU\n";
