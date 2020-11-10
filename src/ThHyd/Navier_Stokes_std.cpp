@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,6 +69,16 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   champs_compris_.ajoute_nom_compris("taux_cisaillement");
   champs_compris_.ajoute_nom_compris("pression_hydrostatique");
   champs_compris_.ajoute_nom_compris("gradient_vitesse");
+  // Default values for IBM parameters
+  postraiter_gradient_pression_sans_masse_ = 0;
+  correction_matrice_projection_initiale_ = 0;
+  correction_calcul_pression_initiale_ = 0;
+  correction_vitesse_projection_initiale_ = 1;
+  correction_matrice_pression_ = 1;
+  matrice_pression_penalisee_H1_ = 0;
+  correction_vitesse_modifie_ = 1;
+  correction_pression_modifie_ = 0;
+  gradient_pression_qdm_modifie_ = 0;
 }
 // Description:
 //    Simple appel a:  Equation_base::printOn(Sortie&)
