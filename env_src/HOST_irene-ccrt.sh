@@ -38,7 +38,7 @@ define_modules_config()
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env
    . $env
 }
 
@@ -78,7 +78,7 @@ define_soumission_batch()
    #rome         up       269056      2102    1875  128  8  16   1
    queue=skylake
    [ "$bigmem" = 1 ] && queue=knl && ntasks=68
-   [ "$gpu" = 1 ]    && queue=hybrid
+   [ "$gpu" = 1 ]    && queue=hybrid && ntasks=96
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1

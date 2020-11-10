@@ -25,20 +25,26 @@ define_modules_config()
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
    # Load modules
-   intel="intel/19.0.5.281"
-   # module="$intel mpi/intelmpi/2019.0.5.281"
-   # car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
-   # openmpi="mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering"
-   # Recommendations CCRT debut 2021 (bcp de coeurs) a la place de la ligne precedente:
-   intel="intel/20.0.4"
-   openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5"
-   sw="feature/hcoll/multicast/disable"
-   romio_hints="feature/openmpi/io/collective_buffering"
-   module="$intel $openmpi $romio_hints"
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      cuda_version=10.2.89
+      module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/$cuda_version"
+   else
+      intel="intel/19.0.5.281"
+      # module="$intel mpi/intelmpi/2019.0.5.281"
+      # car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
+      # openmpi="mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering"
+      # Recommendations CCRT debut 2021 (bcp de coeurs) a la place de la ligne precedente:
+      intel="intel/20.0.4"
+      openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5"
+      sw="feature/hcoll/multicast/disable"
+      romio_hints="feature/openmpi/io/collective_buffering"
+      module="$intel $openmpi $romio_hints"
+   fi
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env
    echo "module sw $sw 1>/dev/null" >> $env
    . $env
 }
@@ -48,7 +54,9 @@ define_modules_config()
 ##############################
 define_soumission_batch()
 {
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   soumission=2
+   [ "$prod" = 1 ] && soumission=1
+   [ "$gpu"  = 1 ] && soumission=1
    # ram=16000 # 16 GB asked
    # So we use now n cores for one task to have 4*n GB per task
    [ "$bigmem" = 1 ] && cpus_per_task=4 && soumission=1 # To have 16GB per task
@@ -77,6 +85,7 @@ define_soumission_batch()
    #rome         up       269056      2102    1875  128  8  16   1
    queue=rome
    [ "$bigmem" = 1 ] && queue=knl && ntasks=68
+   [ "$gpu" = 1 ]    && queue=v100 && ntasks=80 # 4 cartes v100 par noeud
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1
@@ -89,7 +98,7 @@ define_soumission_batch()
    else
       node=0
    fi
-   binding="-e '-m block:block --cpu-bind=rank'" # Optimisation des perfs en // comme sur orcus (+30%)
+   [ "$queue" = rome ] && binding="-e '-m block:block --cpu-bind=rank'" # Optimisation des perfs en // comme sur orcus (+30%)
    mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"

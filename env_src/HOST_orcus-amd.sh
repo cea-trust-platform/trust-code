@@ -15,8 +15,7 @@ define_modules_config()
    intel=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      cuda_version=9.2.148 # 10.1.168 Bizarre
-      module="slurm compilers/gcc/6.5.0 mpi/openmpi/gcc/6.5.0/4.0.1 cuda/toolkit/$cuda_version cuda/blas/$cuda_version"
+      module="slurm compilers/gcc/6.5.0 mpi/openmpi/gcc/6.5.0/4.0.1 nvidia_hpc_sdk/20.7"
    elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
