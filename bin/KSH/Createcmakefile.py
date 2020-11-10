@@ -6,14 +6,15 @@ def read_libs_from_makeliba():
     libtrio=[]
     listL=[]
     for mot in a.split():
-        if (mot.find('-l')>-1):
-            libtrio.append(mot.replace('-l',''))
-        elif (mot.find('-L')>-1):
+        # Commence par chercher -L car parfois -l present dans le chemin (ex: /x86_64-linux/) provoque un bon bug pour -l
+        if (mot.find('-L')>-1):
             P=mot[2:]
             if not P in listL:
                 listL.append(P)
                 pass
             pass
+        elif (mot.find('-l')>-1):
+            libtrio.append(mot.replace('-l',''))
         elif (mot.find('/lib')>-1)and(mot[0]!='-'):
             libtrio.append(mot[mot.rfind('/lib')+4:-2])
             P=(mot[:mot.rfind('/lib')])
