@@ -54,7 +54,7 @@ define_soumission_batch()
    #prepost      up   20:00:00      4    mix 
 
 
-   queue=cpu_p1 && [ "$gpu" = 1 ] && queue=gpu_p1 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpu_p3
+   queue=cpu_p1 && [ "$gpu" = 1 ] && queue=gpu_p3 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpu_p1
    # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
    #   Name   Priority MaxSubmit     MaxWall MaxNodes 
    #---------- ---------- --------- ----------- -------- 

@@ -27,7 +27,8 @@ then
       echo "Update $0 for your needs." && exit -1
    fi
    cd $LIB && mkdir -p build && cd build
-   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && $TRUST_MAKE && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
+   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    [ $? != 0 ] && exit -1
    # Test
    cd $AMGX_DIR/$LIB/lib/examples
