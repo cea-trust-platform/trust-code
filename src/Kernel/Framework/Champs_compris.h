@@ -45,7 +45,10 @@ class Champs_compris : public Objet_U
 
 public :
 
+  // Return the field if found, otherwise raises.
   virtual const Champ_base& get_champ(const Motcle& nom) const;
+  // Same thing, but without raising:
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
   virtual void ajoute_champ(const Champ_base& champ);
   virtual void ajoute_nom_compris(const Nom& nom);
   virtual const Noms liste_noms_compris() const;
@@ -59,11 +62,12 @@ protected :
 
 };
 
+// ToDo commenter pour supprimer totalement les exceptions dans Flica5 ou TRUST:
 class Champs_compris_erreur
 {
 
 public:
-  inline Champs_compris_erreur() {};
+  inline Champs_compris_erreur() {}
 
 };
 #endif

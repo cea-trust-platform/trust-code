@@ -173,6 +173,10 @@ const Champ_base& Source_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
+bool Source_base::has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
 
 void Source_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
