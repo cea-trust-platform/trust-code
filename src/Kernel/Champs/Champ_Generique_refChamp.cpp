@@ -79,6 +79,7 @@ int Champ_Generique_refChamp::lire_motcle_non_standard(const Motcle& mot, Entree
           exit();
         }
       Probleme_base& pb = ref_cast_non_const(Probleme_base, ob);
+      ref_pb_ = pb;
       // Recherche du champ "nom_champ" dans le probleme:
       REF(Champ_base) ref_champ;
       Noms liste_noms;
@@ -237,7 +238,8 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
     {
       loc = NODE;
     }
-  else if ((ch.que_suis_je()=="Champ_Face_PolyMAC" || ch.que_suis_je()=="Champ_Face_CoviMAC" || ch.valeurs().dimension(0) == ref_cast(Zone_VF,z_dis_base).nb_faces()) && index <= 0)
+  else if ((ch.que_suis_je()=="Champ_Face_PolyMAC" || ch.que_suis_je()=="Champ_Face_CoviMAC"
+            || ch.valeurs().dimension(0) == ref_cast(Zone_VF,z_dis_base).nb_faces()) && index <= 0)
     {
       loc = FACE;
     }
@@ -365,9 +367,7 @@ void Champ_Generique_refChamp::get_copy_connectivity(Entity index1, Entity index
 // Renvoie le probleme qui porte le champ cible
 const Probleme_base& Champ_Generique_refChamp::get_ref_pb_base() const
 {
-  const Objet_U& ob = interprete().objet(nom_pb_);
-  const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  return pb;
+  return ref_pb_;
 }
 
 // Description:
@@ -380,9 +380,7 @@ const Champ_base& Champ_Generique_refChamp::get_ref_champ_base() const
 {
   if (!ref_champ_.non_nul())
     throw Champ_Generique_erreur("NOT_INITIALIZED");
-
-  const Champ_base& ch = ref_champ_.valeur();
-  return ch;
+  return ref_champ_.valeur();
 }
 
 void Champ_Generique_refChamp::reset()
@@ -412,13 +410,10 @@ void Champ_Generique_refChamp::mettre_a_jour(double temps)
 const Champ_base& Champ_Generique_refChamp::get_champ(Champ& espace_stockage) const
 {
   {
-    Objet_U& ob = Interprete::objet(nom_pb_);
-    const Probleme_base& pb = ref_cast(Probleme_base,ob);
     const Nom& nom_cible = get_ref_champ_base().le_nom();
-    pb.get_champ(nom_cible);
+    ref_pb_->get_champ(nom_cible);
     return get_ref_champ_base();
   }
-
 }
 
 const Champ_base& Champ_Generique_refChamp::get_champ_without_evaluation(Champ& espace_stockage) const
@@ -480,7 +475,7 @@ const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
   const Champ_base& ch = get_ref_champ_base();
 
   // Champs discrets a une seule localisation :
-  if (sub_type(Champ_Inc_P0_base,ch) || sub_type(Champ_Fonc_P0_base,ch) )
+  if (sub_type(Champ_Inc_P0_base,ch) || sub_type(Champ_Fonc_P0_base,ch))
     {
       directive = "champ_elem";
       //    assert(localisation_=="ELEMENTS");
@@ -496,7 +491,7 @@ const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
     {
       const Nom& type = ch.que_suis_je();
       if ((type.debute_par("Champ_Face")) || (type=="Champ_P1NC") || (type=="Champ_Q1NC") ||
-          (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC") )
+          (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC"))
         {
           directive = "champ_face";
           //      assert(localisation_=="FACES");
