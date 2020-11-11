@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,20 +24,13 @@
 #include <Domaine.h>
 #include <Octree_Double.h>
 
-double Champ_implementation_P1::form_function(const ArrOfDouble& position, int cell, int ddl) const
+double Champ_implementation_P1::form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const
 {
-  const Zone& zone       = get_zone_geom();
-  const IntTab& cells    = zone.les_elems();
-  const DoubleTab& nodes = zone.domaine().les_sommets();
-
-  int nb_nodes_per_cell = cells.dimension(1);
+  int nb_nodes_per_cell = les_elems.dimension(1);
   assert(ddl < nb_nodes_per_cell);
 
-  ArrOfInt index(nb_nodes_per_cell);
   for (int i=0; i<nb_nodes_per_cell; i++)
-    {
-      index[i] = cells(cell,(i+ddl)%nb_nodes_per_cell);
-    }
+    index[i] = les_elems(cell,(i+ddl)%nb_nodes_per_cell);
 
   if (nb_nodes_per_cell==2)
     {
@@ -120,50 +113,64 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, int c
 
   return result;
 }
-void Champ_implementation_P1::value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp) const
+void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
   const Zone&      zone              = get_zone_geom();
-  const IntTab&    cells             = zone.les_elems();
+  const IntTab&    les_elems         = zone.les_elems();
+  const DoubleTab& nodes = zone.domaine().les_sommets();
   const int     nb_nodes_per_cell = zone.nb_som_elem();
+  ArrOfInt index(nb_nodes_per_cell);
+  ArrOfDouble position(Objet_U::dimension);
+  resu = 0;
+  for (int ic=0; ic<cells.size_array(); ic++)
+    {
+      int cell = cells(ic);
+      if (cell<0) continue;
+      for (int k=0; k<Objet_U::dimension; k++)
+        position(k) = positions(ic,k);
 
-  assert(cell>=0);
-  assert(cell < cells.dimension_tot(0));
-  if (ncomp!=-1)
-    {
-      for (int j=0; j< nb_nodes_per_cell; j++)
+      assert(cell >= 0);
+      assert(cell < les_elems.dimension_tot(0));
+      if (ncomp != -1)
         {
-          int node = cells(cell,j);
-          resu(0) += values(node,ncomp) * form_function(position,cell,j);
-        }
-    }
-  else
-    {
-      if (values.nb_dim()==1)
-        {
-          assert(resu.size_array()==1);
-          for (int j=0; j< nb_nodes_per_cell; j++)
+          for (int j = 0; j < nb_nodes_per_cell; j++)
             {
-              int node = cells(cell,j);
-              resu(0) += values(node) * form_function(position,cell,j);
+              int node = les_elems(cell, j);
+              resu(ic) += values(node, ncomp) * form_function(position,les_elems,nodes,index,cell,j);
             }
         }
       else
         {
-          int nb_components=resu.size_array();
-          assert(values.nb_dim() == 2);
-          assert(values.dimension(1) == nb_components);
-          for (int j=0; j<nb_nodes_per_cell; j++)
+          if (values.nb_dim() == 1)
             {
-              double weight = form_function(position, cell, j);
-              int node   = cells(cell,j);
-              for (int k=0; k<nb_components; k++)
+              int nb_dim = resu.nb_dim();
+              assert(nb_dim == 1 || resu.dimension_tot(1)==1);
+              for (int j = 0; j < nb_nodes_per_cell; j++)
                 {
-                  resu(k) += values(node,k) * weight;
+                  int node = les_elems(cell, j);
+                  if (nb_dim == 1)
+                    resu(ic) += values(node) * form_function(position,les_elems,nodes,index,cell,j);
+                  else
+                    resu(ic, 0) += values(node) * form_function(position,les_elems,nodes,index,cell,j);
+                }
+            }
+          else
+            {
+              int nb_components = resu.size_array();
+              assert(values.nb_dim() == 2);
+              assert(values.dimension(1) == nb_components);
+              for (int j = 0; j < nb_nodes_per_cell; j++)
+                {
+                  double weight = form_function(position,les_elems,nodes,index,cell,j);
+                  int node = les_elems(cell, j);
+                  for (int k = 0; k < nb_components; k++)
+                    resu(ic, k) += values(node, k) * weight;
                 }
             }
         }
     }
 }
+
 // Description:
 //  Initialise le tableau de valeurs aux sommets du domaine dom a partir de valeurs lues dans "input".
 //  (on dimensionne, associe la structure parallele et remplit les valeurs reelles et virtuelles)

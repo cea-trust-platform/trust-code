@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,9 +42,7 @@ public :
   virtual const Champ_base& le_champ(void) const =0;
 
 protected :
-  //  virtual double form_function(const ArrOfDouble& position, int cell, int ddl) const =0;
-
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const =0;
+  virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const =0;
 public :
   inline virtual ~Champ_implementation_sommet_base() { };
 

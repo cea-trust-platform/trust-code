@@ -44,9 +44,10 @@ public :
   virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
 
 protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
+  virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const;
 
-
+private :
+  virtual double form_function(const ArrOfDouble& position, int cell, int ddl) const;
 };
 
 #endif /* Champ_implementation_Q1_inclus */

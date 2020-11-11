@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,9 @@ public :
   static void init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input);
 
 protected :
-  virtual double form_function(const ArrOfDouble& position, int cell, int ddl) const;
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
+  virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const;
+private :
+  virtual double form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const;
 };
 extern double coord_barycentrique_P1(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i);
 extern double coord_barycentrique_P1(const IntTab& polys, const DoubleTab& coord, double x, double y, double z, int le_poly, int i);

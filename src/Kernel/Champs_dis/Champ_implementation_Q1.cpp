@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -128,161 +128,138 @@ void calcul_plan_hexa(Vecteur3& coeff_plan,double& d,int cell,const IntTab& cell
   coeff_plan*=(1./coeff_plan.length());
   d=-Vecteur3::produit_scalaire(coeff_plan,S0);
 }
-void Champ_implementation_Q1::value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp) const
+
+void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
   const Zone&      zone  = get_zone_geom();
-  const IntTab&    cells = zone.les_elems();
+  const IntTab&    les_elems = zone.les_elems();
   const DoubleTab& nodes = zone.domaine().les_sommets();
-
-  const int nb_nodes_per_cell = cells.dimension(1);
+  const int nb_nodes_per_cell = les_elems.dimension(1);
+  ArrOfDouble position(Objet_U::dimension);
 
   Vecteur3 coeff_plan;
   double d;
   IntTab cell3D;
   Vecteur3 coord_bar;
 
-  if (nb_nodes_per_cell==4)
+  resu = 0;
+  for (int ic=0; ic<cells.size_array(); ic++)
     {
-      if (Objet_U::dimension == 3)
-        {
-          cell3D.resize(1,8);
-          for (int i=0; i<4; i++)
-            cell3D(0,2*i)=cells(cell,i);
-          calcul_plan_hexa(coeff_plan,d,0,cell3D,nodes,0);
-          double A=d;
-          for (int i=0; i<Objet_U::dimension; i++) A+=coeff_plan[i]*position(i);
-          if (dabs(A)>dabs(d)*1e-5)
-            {
-              Cerr<<"Error point not in the plane "<<finl;
-              Process::exit();
-            }
-          coord_bar=0.5;
-        }
-      else
-        for (int dir=0; dir<2; dir++)
-          {
+      int cell = cells(ic);
+      if (cell<0) continue;
+      for (int k = 0; k < Objet_U::dimension; k++)
+        position(k) = positions(ic, k);
 
-            calcul_plan_quadra(coeff_plan,d,cell,cells,nodes,dir);
-            double A=d;
-            for (int i=0; i<Objet_U::dimension; i++) A+=coeff_plan[i]*position(i);
-            calcul_plan_quadra(coeff_plan,d,cell,cells,nodes,dir+2);
-            double B=d;
-            for (int i=0; i<Objet_U::dimension; i++) B+=coeff_plan[i]*position(i);
-            assert(inf_ou_egal((A*B),0,1e-10));
-            coord_bar[dir]=A/(A-B);
-          }
-    }
-  else
-    {
-      assert(Objet_U::dimension == 3);
-      for (int dir=0; dir<3; dir++)
+      if (nb_nodes_per_cell == 4)
         {
-
-          calcul_plan_hexa(coeff_plan,d,cell,cells,nodes,dir);
-          double A=d;
-          for (int i=0; i<3; i++) A+=coeff_plan[i]*position(i);
-          calcul_plan_hexa(coeff_plan,d,cell,cells,nodes,dir+3);
-          double B=d;
-          for (int i=0; i<3; i++) B+=coeff_plan[i]*position(i);
-          assert(inf_ou_egal((A*B),0,1e-10));
-          coord_bar[dir]=A/(A-B);
-        }
-    }
-  ArrOfDouble val(nb_nodes_per_cell);
-  int nb_components=resu.size_array();
-  for(int  k=0; k<nb_components; k++)
-    {
-      if (ncomp!=-1)
-        {
-          assert(resu.size_array()==1);
-          for (int j=0; j< nb_nodes_per_cell; j++)
+          if (Objet_U::dimension == 3)
             {
-              int node = cells(cell,j);
-              val(j) = values(node,ncomp);
-            }
-        }
-      else
-        {
-          if (values.nb_dim()==1)
-            {
-              assert(resu.size_array()==1);
-              for (int j=0; j< nb_nodes_per_cell; j++)
+              cell3D.resize(1, 8);
+              for (int i = 0; i < 4; i++)
+                cell3D(0, 2 * i) = les_elems(cell, i);
+              calcul_plan_hexa(coeff_plan, d, 0, cell3D, nodes, 0);
+              double A = d;
+              for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position(i);
+              if (dabs(A) > dabs(d) * 1e-5)
                 {
-                  int node = cells(cell,j);
-                  val(j) = values(node);
+                  Cerr << "Error point not in the plane " << finl;
+                  Process::exit();
+                }
+              coord_bar = 0.5;
+            }
+          else
+            for (int dir = 0; dir < 2; dir++)
+              {
+
+                calcul_plan_quadra(coeff_plan, d, cell, les_elems, nodes, dir);
+                double A = d;
+                for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position(i);
+                calcul_plan_quadra(coeff_plan, d, cell, les_elems, nodes, dir + 2);
+                double B = d;
+                for (int i = 0; i < Objet_U::dimension; i++) B += coeff_plan[i] * position(i);
+                assert(inf_ou_egal((A * B), 0, 1e-10));
+                coord_bar[dir] = A / (A - B);
+              }
+        }
+      else
+        {
+          assert(Objet_U::dimension == 3);
+          for (int dir = 0; dir < 3; dir++)
+            {
+
+              calcul_plan_hexa(coeff_plan, d, cell, les_elems, nodes, dir);
+              double A = d;
+              for (int i = 0; i < 3; i++) A += coeff_plan[i] * position(i);
+              calcul_plan_hexa(coeff_plan, d, cell, les_elems, nodes, dir + 3);
+              double B = d;
+              for (int i = 0; i < 3; i++) B += coeff_plan[i] * position(i);
+              assert(inf_ou_egal((A * B), 0, 1e-10));
+              coord_bar[dir] = A / (A - B);
+            }
+        }
+      ArrOfDouble val(nb_nodes_per_cell);
+      int nb_dim = resu.nb_dim();
+      int nb_components = nb_dim == 1 ? 1 : resu.dimension_tot(1);
+      for (int k = 0; k < nb_components; k++)
+        {
+          if (ncomp != -1)
+            {
+              for (int j = 0; j < nb_nodes_per_cell; j++)
+                {
+                  int node = les_elems(cell, j);
+                  val(j) = values(node, ncomp);
                 }
             }
           else
             {
-              assert(values.nb_dim() == 2);
-              assert(values.dimension(1) == resu.size_array());
-              for (int j=0; j<nb_nodes_per_cell; j++)
+              if (values.nb_dim() == 1)
                 {
-                  int node   = cells(cell,j);
-
-                  val(j) = values(node,k);
+                  for (int j = 0; j < nb_nodes_per_cell; j++)
+                    {
+                      int node = les_elems(cell, j);
+                      val(j) = values(node);
+                    }
+                }
+              else
+                {
+                  assert(values.nb_dim() == 2);
+                  for (int j = 0; j < nb_nodes_per_cell; j++)
+                    {
+                      int node = les_elems(cell, j);
+                      val(j) = values(node, k);
+                    }
                 }
             }
-        }
-      double res=0;
-      if (nb_nodes_per_cell==4)
-        {
-
-          const double& i=coord_bar[0];
-          const double& j=coord_bar[1];
-          double unmi=1.-i;
-          double unmj=1.-j;
-
-          res=unmj*(unmi*val[0]+i*val[1])
-              +j*(unmi*val[2]+i*val[3]);
-        }
-      else
-        {
-          assert(Objet_U::dimension==3);
-          const double& i=coord_bar[0];
-          const double& j=coord_bar[1];
-          const double& kk=coord_bar[2];
-          double unmi=1.-i;
-          double unmj=1.-j;
-          double unmk=1.-kk;
-          //assert((i>=0.)&&(unmi>=0.));
-          //assert((j>=0.)&&(unmj>=0.));
-          //assert((k>=0.)&&(unmk>=0.));
-
-          res=unmk*( unmj*(unmi*val[0]+i*val[1])
-                     +j*(unmi*val[2]+i*val[3]))
-              +   kk*( unmj*(unmi*val[4]+i*val[5])
-                       +j*(unmi*val[6]+i*val[7]));
-          if (0)
+          double res = 0;
+          if (nb_nodes_per_cell == 4)
             {
-              int sc=-1;
-              double l=Objet_U::precision_geom*Objet_U::precision_geom;
-              for (int s=0; s<nb_nodes_per_cell; s++)
-                {
-                  int som=cells(cell,s);
-                  double dist=0;
-                  for (int j2=0; j2<Objet_U::dimension; j2++)
-                    {
-                      double dx=(nodes(som,j2)-position(j2));
-                      dist+=dx*dx;
-                    }
-                  if (dist<l)
-                    sc=s;
-                }
-              if (sc!=-1)
-                {
-                  //Cerr<< ddl<< " sc "<< sc <<finl;
-                  if (!est_egal(res,val[sc]))
-                    {
-                      Cerr<<" ici "<<sc << " " << res <<" "<<val[sc]<<" "<<i<<" "<<j<< " "<<kk<<finl;
-                      Process::exit();
-                    }
+              const double& i = coord_bar[0];
+              const double& j = coord_bar[1];
+              double unmi = 1. - i;
+              double unmj = 1. - j;
 
-                }
+              res = unmj * (unmi * val[0] + i * val[1])
+                    + j * (unmi * val[2] + i * val[3]);
             }
+          else
+            {
+              assert(Objet_U::dimension == 3);
+              const double& i = coord_bar[0];
+              const double& j = coord_bar[1];
+              const double& kk = coord_bar[2];
+              double unmi = 1. - i;
+              double unmj = 1. - j;
+              double unmk = 1. - kk;
+              res = unmk * (unmj * (unmi * val[0] + i * val[1])
+                            + j * (unmi * val[2] + i * val[3]))
+                    + kk * (unmj * (unmi * val[4] + i * val[5])
+                            + j * (unmi * val[6] + i * val[7]));
+            }
+          if (nb_dim==1)
+            resu(ic) = res;
+          else
+            resu(ic, k) = res;
         }
-
-      resu(k)=res;
     }
 }
 #endif
