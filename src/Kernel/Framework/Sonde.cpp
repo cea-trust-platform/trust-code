@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1251,13 +1251,6 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
 {
   // La mise a jour du champ est a supprimer car elle doit deja etre faite dans Post::mettre_a_jour()
   double temps_courant = mon_champ->get_time();
-
-  if ( temps_courant != un_temps )
-    {
-      Champ espace_stockage;
-      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
-      ma_source_mod.mettre_a_jour(un_temps);
-    }
   double dt=mon_post->probleme().schema_temps().pas_de_temps();
   double nb;
   // Le *(1+Objet_U::precision_geom) est pour eviter des erreurs d'arrondi selon les machines
@@ -1269,6 +1262,10 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   // On doit ecrire les sondes
   if (nb>nb_bip)
     {
+      Champ espace_stockage;
+      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
+      ma_source_mod.mettre_a_jour(un_temps);
+
       // Si le maillage est deformable il faut reconstruire les sondes
       if (mon_post->probleme().domaine().deformable())
         {
@@ -1525,13 +1522,10 @@ void Sonde::ajouter_bords(const DoubleTab& coords_bords)
 {
   double eps = mon_champ->get_ref_domain().epsilon();
   const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
-  const Zone& zone = mon_champ->get_ref_domain().zone(0);
 
   const DoubleTab xv = zoneVF.xv();
-  const IntTab& elem_faces = zoneVF.elem_faces();
-  const IntTab& face_voisins = zoneVF.face_voisins();
-  const int nfaces_par_element = zone.nb_faces_elem() ;
-  int nbre_points = les_positions_.dimension(0);
+  const IntTab& e_f = zoneVF.elem_faces(), &f_e = zoneVF.face_voisins();
+  int nbre_points = les_positions_.dimension(0), face;
 
   faces_bords_.set_smart_resize(1);
 
@@ -1545,10 +1539,9 @@ void Sonde::ajouter_bords(const DoubleTab& coords_bords)
       int elem = elem_[e];
       if (elem !=-1)
         {
-          for(int fac=0; fac<nfaces_par_element; fac++)
+          for (int j = 0; j < e_f.dimension(1) && (face = e_f(elem, j)) >= 0; j++)
             {
-              int face=elem_faces(elem,fac);
-              if(face_voisins(face,1)==-1 || face_voisins(face,0)==-1)
+              if(f_e(face, 1) == -1 || f_e(face, 0) == -1)
                 {
                   double dist=0.;
                   for (int idim=0; idim<dimension; idim++)
@@ -1564,9 +1557,9 @@ void Sonde::ajouter_bords(const DoubleTab& coords_bords)
             }
         }
     }
-  // [ABN] skiping the assert below. On funny shaped domains (e.g. U-shape) a probe might
-  // re-enter the domain, and hence hit more than two faces overall:
-  // assert(mp_sum(faces_bords_.size_array())<=2);
+// [ABN] skiping the assert below. On funny shaped domains (e.g. U-shape) a probe might
+// re-enter the domain, and hence hit more than two faces overall:
+// assert(mp_sum(faces_bords_.size_array())<=2);
 }
 
 void Sonde::mettre_a_jour_bords()
@@ -1577,7 +1570,7 @@ void Sonde::mettre_a_jour_bords()
       REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
       const Zone_Cl_dis& zcl = ch_inc.zone_Cl_dis();
-
+      const DoubleTab& vals_ch = ch_inc.valeurs();
       if (zcl.non_nul())
         {
           const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
@@ -1597,15 +1590,21 @@ void Sonde::mettre_a_jour_bords()
 
               if (valcl.size() == 0)
                 {
-                  Cerr << "Error: Sonde::mettre_a_jour_bords(): 'gravcl' option - unable to extract face value for BC of type '" << cl.valeur().que_suis_je() << "'" << finl;
-                  Cerr << "Try using 'grav' keyword instead, or shift your probe to avoid this boundary cond." << finl;
-                  Process::exit(1);
-                }
+                  int elem0 = face_voisins(face,0);
+                  int elem1 = face_voisins(face,1);
 
-              if (face_voisins(face,0) != -1)
-                valeurs_locales(nbval-1) = valcl[0];
+                  if (elem0 != -1)
+                    valeurs_locales(nbval-1) = vals_ch[elem0];
+                  else
+                    valeurs_locales(0) = vals_ch[elem1];
+                }
               else
-                valeurs_locales(0) = valcl[0];
+                {
+                  if (face_voisins(face,0) != -1)
+                    valeurs_locales(nbval-1) = valcl[0];
+                  else
+                    valeurs_locales(0) = valcl[0];
+                }
             }
         }
     }
