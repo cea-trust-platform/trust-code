@@ -16,8 +16,8 @@ then
    echo "================="
    echo
 fi
-tests="src/ksp/ksp/examples/tutorials/ex2"
-#[ "$option" != -ref ] && tests=$tests" src/snes/examples/tutorials/ex19"
+tests="src/ksp/ksp/tutorials/ex2"
+#[ "$option" != -ref ] && tests=$tests" src/snes/tutorials/ex19"
 for test in $tests
 do
    cd $PETSC_DIR/`dirname $test`

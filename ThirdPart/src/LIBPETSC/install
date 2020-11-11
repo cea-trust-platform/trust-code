@@ -208,6 +208,12 @@ then
 # si le build de TRUST avec TRUST_DISABLE_MPI ne fonctionne pas.
 #   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi
+
+###########################################################################
+# Construction de la liste des packages a utiliser pour le build de petsc #
+###########################################################################
+with_packages=""
+
 ################
 # GPU support? #
 ################
@@ -216,17 +222,11 @@ then
    echo "****************************************"
    echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
    with_gpu="--with-cuda"
-   if [ -f $CUDA_ROOT/include/cuda.h ]
-   then
-      # Cas toolkit (facile):
-      with_gpu=$with_gpu" --with-cuda-dir=$CUDA_ROOT"
-   else
-      # Cas runtime (difficile, tout doit etre specifie):
-      with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
-      with_gpu=$with_gpu" --with-cuda-include=$CUDA_ROOT/include/cuda"
-      #with_gpu=$with_gpu" --with-cuda-lib=[$CUDA_ROOT/lib64/libcudart.so,$CUDA_ROOT/lib64/libcublas.so,$CUDA_ROOT/lib64/libcufft.so]"
-      with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64,-lcuda,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
-   fi
+   with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
+   CUDA_INCLUDE=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h 2>/dev/null | head -1`
+   with_gpu=$with_gpu" --with-cuda-include=`dirname $CUDA_INCLUDE`"
+   CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ] && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs" # Necessaire sur irene pas sur jeanzay (fait ch..r)
+   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS,-lcuda,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
    CUDAFLAGS="-O3 -ccbin $TRUST_cc_BASE"
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
@@ -282,11 +282,6 @@ else
 fi
 
 
-
-###########################################################################
-# Construction de la liste des packages a utiliser pour le build de petsc #
-###########################################################################
-with_packages=""
 
 #################################################
 # Trilinos Multi Level Preconditionning package #
