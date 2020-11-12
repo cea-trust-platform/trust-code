@@ -23,6 +23,8 @@ Version	Qui				Tache
 
 
 
+1.8.x   trust@cea.fr            LDC: Nettoyer le vieux code med fichier
+1.8.x   trust@cea.fr            LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI182047)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 182046)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 182048)
