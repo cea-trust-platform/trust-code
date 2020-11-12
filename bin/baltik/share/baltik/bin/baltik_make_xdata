@@ -6,7 +6,7 @@ cd -
 org=$TRUST_ROOT/Outils/TRIOXDATA/
 cp -ar $org/XTriou $dest 
 # on change le nom du projet pour la doc
-project_name_tmp=`echo ${project_name/_/ }`
+project_name_tmp=`echo ${project_name//_/ }`
 sed "s/TRUST Reference/$project_name_tmp Reference/g" -i $dest/XTriou/objet_u.py
 
 ln -sf  $org/EditData $org/VerifData $org/check_jdd $org/XDATA*    $org/Installer $org/Install_all  $org/Makefile $dest
