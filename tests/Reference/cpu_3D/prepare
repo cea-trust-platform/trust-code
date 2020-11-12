@@ -1,0 +1,3 @@
+#!/bin/bash
+touch dummy.data
+TRUST_ENABLE_ERROR_HANDLERS=1 trust dummy
