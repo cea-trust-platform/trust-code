@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,9 +109,6 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
       alpha=1./Objet_U::dimension;
       beta=1./(Objet_U::dimension*(Objet_U::dimension+1));
     }
-  char* theValue = getenv("TRUST_MATRICE_BLOC_SYM_FORME_NON_OPTIMALE");
-  if (theValue != NULL) mettre_matrice_sous_forme_optimale_=0;
-  else mettre_matrice_sous_forme_optimale_=1;
 }
 
 const Zone_VEF_PreP1b& Assembleur_P_VEFPreP1B::zone_Vef() const
@@ -354,55 +351,39 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
   // Modification de la matrice si pas de pression de reference
   /////////////////////////////////////////////////////////////
   modifier_matrice(la_matrice_de_travail_);
-  ////////////////////////////////////////
-  // Optimisation eventuelle de la matrice
-  ////////////////////////////////////////
-  if (mettre_matrice_sous_forme_optimale_)
-    {
-      int conversion_matrice_morse=1;
-      char* theValue_cons = getenv("TRUST_MAT_BLOC_SYM_CONSERVEE");
-      if (theValue_cons != NULL) conversion_matrice_morse=0;
 
-      if (conversion_matrice_morse
-          && zone_vef.get_alphaE()!=nombre_supports // On n'est pas en P0
-          && ref_cast(Navier_Stokes_std,mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym())
-        {
-          //////////////////////////////////////////////////////////
-          // La matrice retournee est une Matrice_Morse_Sym nettoyee
-          // si le solveur utilisee supporte ce type de matrice
-          // et si on n'est pas en P0 seulement (dans ce cas la, la
-          // conversion en Mat_Morse_Sym n'apporte rien, et plante le SSOR
-          // car la matrice morse contient alors des parties virtuelles
-          // alors qu'il n'y a pas d'items communs et on tombe sur
-          // l'assert assert(*tab2_ptr<=n); Deux autres solutions:
-          // -Modifier le SSOR pour ne resoudre que la partie reelle
-          // -Dans le cas de P0 seul, il faudrait vider VV et RV dans la Mat_Bloc_Sym
-          //////////////////////////////////////////////////////////
-          la_matrice.typer("Matrice_Morse_Sym");
-          ref_cast(Matrice_Bloc_Sym, la_matrice_de_travail_.valeur()).BlocSymToMatMorseSym(ref_cast(Matrice_Morse_Sym,la_matrice.valeur()));
-          ref_cast(Matrice_Morse_Sym,la_matrice.valeur()).compacte(2);// Suppression des coefficients nuls et quasi non nuls
-        }
-      else
-        {
-          /////////////////////////////////////////////////////////
-          // La matrice retournee est une Matrice_Bloc_Sym nettoyee
-          /////////////////////////////////////////////////////////
-          la_matrice = la_matrice_de_travail_;
-          for(int i=0; i<nombre_supports; i++)
-            for(int j=i; j<nombre_supports; j++)
-              {
-                Matrice_Bloc_Sym& mat_bloc_sym =  ref_cast( Matrice_Bloc_Sym, la_matrice.valeur() );
-                Matrice_Bloc& bloc_ij=ref_cast(Matrice_Bloc, mat_bloc_sym.get_bloc(i,j).valeur());
-                ref_cast(Matrice_Morse, bloc_ij.get_bloc(0,0).valeur()).compacte(2); // Suppression des coefficients nuls et quasi non nuls
-              }
-        }
+  // Conversion eventuelle en Matrice_Morse_Sym
+  if (ref_cast(Navier_Stokes_std,mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym() &&
+      zone_vef.get_alphaE()!=nombre_supports) // On n'est pas en P0
+    {
+      //////////////////////////////////////////////////////////
+      // La matrice retournee est une Matrice_Morse_Sym nettoyee
+      // si le solveur utilisee supporte ce type de matrice
+      // et si on n'est pas en P0 seulement (dans ce cas la, la
+      // conversion en Mat_Morse_Sym n'apporte rien, et plante le SSOR
+      // car la matrice morse contient alors des parties virtuelles
+      // alors qu'il n'y a pas d'items communs et on tombe sur
+      // l'assert assert(*tab2_ptr<=n); Deux autres solutions:
+      // -Modifier le SSOR pour ne resoudre que la partie reelle
+      // -Dans le cas de P0 seul, il faudrait vider VV et RV dans la Mat_Bloc_Sym
+      //////////////////////////////////////////////////////////
+      la_matrice.typer("Matrice_Morse_Sym");
+      ref_cast(Matrice_Bloc_Sym, la_matrice_de_travail_.valeur()).BlocSymToMatMorseSym(ref_cast(Matrice_Morse_Sym,la_matrice.valeur()));
+      ref_cast(Matrice_Morse_Sym,la_matrice.valeur()).compacte(2);// Suppression des coefficients nuls et quasi non nuls
     }
   else
     {
-      /////////////////////////////////////////////////////
-      // La matrice retournee est la Matrice_Bloc_Sym brute
-      /////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////
+      // La matrice retournee est une Matrice_Bloc_Sym nettoyee
+      /////////////////////////////////////////////////////////
       la_matrice = la_matrice_de_travail_;
+      for(int i=0; i<nombre_supports; i++)
+        for(int j=i; j<nombre_supports; j++)
+          {
+            Matrice_Bloc_Sym& mat_bloc_sym =  ref_cast( Matrice_Bloc_Sym, la_matrice.valeur() );
+            Matrice_Bloc& bloc_ij=ref_cast(Matrice_Bloc, mat_bloc_sym.get_bloc(i,j).valeur());
+            ref_cast(Matrice_Morse, bloc_ij.get_bloc(0,0).valeur()).compacte(2); // Suppression des coefficients nuls et quasi non nuls
+          }
     }
 
   //////////////////////////////////////////////////////

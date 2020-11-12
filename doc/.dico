@@ -474,6 +474,7 @@
  Matrice_Morse_Diag Matrice_Morse_Diag Matrice_Morse_Diag.h
  Matrice_Morse_Sym Matrice_Morse_Sym Matrice_Morse_Sym.h
  Matrice_Nulle Matrice_Nulle Matrice_Nulle.h
+ Matrice_Petsc Matrice_Petsc Matrice_Petsc.h
  MD_Vector_base MD_Vector_base MD_Vector.h
  MD_Vector_base2 MD_Vector_base2 MD_Vector_base2.h
  MD_Vector_composite MD_Vector_composite MD_Vector_composite.h
