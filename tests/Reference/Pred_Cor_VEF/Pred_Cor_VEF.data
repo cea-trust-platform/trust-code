@@ -68,7 +68,7 @@ Fluide_Incompressible fluide
 
 Read fluide
 {
-   mu Champ_Fonc_Tabule 1 temperature 
+   mu champ_fonc_tabule temperature 1 
         {      2
                0        1
                2.0e-6   2.0e-3     

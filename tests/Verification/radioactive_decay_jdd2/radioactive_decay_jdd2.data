@@ -95,7 +95,7 @@ Read pb_fluide
         sources
         {
             source_Constituant champ_uniforme 2 0.5 0.8 ,
-            source_Constituant champ_fonc_fonction 2 concentration -0.01*val -2.0*val
+            source_Constituant champ_fonc_fonction concentration 2 -0.01*val -2.0*val
         }
     }
 

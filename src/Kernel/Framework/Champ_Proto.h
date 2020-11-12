@@ -56,6 +56,7 @@ public:
   virtual DoubleTab& valeurs()=0;
   virtual const DoubleTab& valeurs() const=0;
   int lire_dimension(Entree& , const Nom& );
+  int lire_dimension(int dim , const Nom& le_nom_);
 
   // Attention : ces operateurs sont tres couteux car ils
   // utilisent la methode virtuelle valeurs(). Conseil:

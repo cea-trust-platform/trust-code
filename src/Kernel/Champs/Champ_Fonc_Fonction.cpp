@@ -51,8 +51,8 @@ Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const
 //     exemple:
 //     Champ_Fonc_Fonction ch
 //     Lire ch
-//     1 (nombre de composantes)
 //     temperature  (ch est fonction de la temperature)
+//     1 (nombre de composantes)
 //     {
 //     2
 //     0 500 0 250  (ch(0)=0 && ch(500)=250
@@ -72,12 +72,13 @@ Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const
 // Postcondition:
 Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 {
-
-
   int nbcomp;
-  nbcomp = lire_dimension(is,que_suis_je());
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction", val1, val2, nbcomp, nom_champ_parametre_);
+  nbcomp = lire_dimension(nbcomp,que_suis_je());
   fixer_nb_comp(nbcomp);
-  is >> nom_champ_parametre_;
   Cerr<<"We read the analytic function "<<finl;
   la_table.lire_f(is, nbcomp);
   return is;
@@ -116,8 +117,8 @@ Sortie& Sutherland::printOn(Sortie& os) const
 //     exemple:
 //     Sutherland ch
 //     Lire ch
-//     1 (nombre de composantes)
 //     temperature  (ch est fonction de la temperature)
+//     1 (nombre de composantes)
 //     {
 //     2
 //     0 500 0 250  (ch(0)=0 && ch(500)=250
@@ -139,7 +140,7 @@ Entree& Sutherland::readOn(Entree& is)
 {
 
   Cerr<< "Sutherland::readOn usage { A a C c TREF Tref }"<<finl;
-  Cerr<<"== Champ_Fonc_Fonction 1 Temperature a*(c+Tref)/(c+val)*(val/Tref)^1.5"<<finl;
+  Cerr<<"== Champ_Fonc_Fonction Temperature 1 a*(c+Tref)/(c+val)*(val/Tref)^1.5"<<finl;
   Motcle accferme="}";
   Motcle accouverte="{";
 
@@ -205,7 +206,7 @@ void Sutherland::lire_expression()
 {
   // On cree une chaine correspondant a Sutherland
   // c.a.d Champ_Fonc_fonction 1 temperature A * (Tref+C)/(val+C) * pow(val/Tref,1.5);
-  Nom chaine("1 temperature ");
+  Nom chaine("temperature 1 ");
   Nom nA(A_);
   Nom nT(Tref_);
   Nom nC(C_);

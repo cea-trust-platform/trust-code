@@ -87,9 +87,9 @@ Read sch
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-        mu Champ_Fonc_Fonction 1 temperature (1.461e-6*(val^1.5)/(val+111.))
+        mu champ_fonc_fonction temperature 1 (1.461e-6*(val^1.5)/(val+111.))
         pression 100000.
-        lambda Champ_Fonc_Fonction 1 temperature (2.06803521126761000000e-3*(val^1.5)/(val+111.))
+        lambda champ_fonc_fonction temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
         loi_etat gaz_parfait 	
 	 {
            Prandtl 0.71

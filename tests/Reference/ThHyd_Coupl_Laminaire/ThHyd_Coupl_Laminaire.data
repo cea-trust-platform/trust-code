@@ -109,7 +109,7 @@ Read He
         rho Champ_Uniforme 1 4.40684
         lambda Champ_Uniforme 1 0.344964     
         Cp Champ_Uniforme 1 5193.
-        beta_th Champ_fonc_fonction 1 temperature 1/val
+        beta_th champ_fonc_fonction temperature 1 1/val
 }
 
 Champ_Uniforme gravite
