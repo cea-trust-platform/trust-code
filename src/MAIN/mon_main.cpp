@@ -34,6 +34,9 @@
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // chdir pour PGI et AIX
+#ifndef NDEBUG
+#include <catch_and_trace.h>
+#endif
 
 // Initialisation des compteurs, dans stat_counters.cpp
 extern void declare_stat_counters();
@@ -88,6 +91,10 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   // Desactive le signal handler en optimise pour eviter d'etre trop bavard
   // et de "masquer" les messages d'erreur TRUST:
   PetscPopSignalHandler();
+#ifndef NDEBUG
+  // Install error handlers catching SIGFPE and SIGABORT and giving a trace of where the fault happened
+  install_handlers();
+#endif
 #else
   // MPI_Init pour les machines ou Petsc n'est pas
   // installe: ex AIX avec MPICH: il faut que argc et argv soit passes

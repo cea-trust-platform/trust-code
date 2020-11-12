@@ -23,16 +23,8 @@
 #include <MAIN.h>
 #include <mon_main.h>
 
-#ifndef NDEBUG
-#include <catch_and_trace.h>
-#endif
-
 True_int main(True_int argc, char** argv)
 {
-#ifndef NDEBUG
-  // Install error handlers catching SIGFPE and SIGABORT and giving a trace of where the fault happened
-  install_handlers();
-#endif
 
   mon_main* p=NULL;
 
