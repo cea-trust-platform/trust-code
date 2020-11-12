@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Nom.h>
+#include <Motcle.h>
 #include <stdio.h>
 #include <string>
 #include <math.h>
@@ -757,6 +758,23 @@ int operator ==(const char* const un_autre, const Nom& un_nom)
   return (un_nom == un_autre);
 }
 
+// Case insensitive equality test with Motcle. Made as efficient as possible.
+int operator ==(const Nom& un_nom, const Motcle& mot_cle)
+{
+  int length = un_nom.longueur();
+  if (length != mot_cle.longueur())
+    return 0;
+  for(int p = 0; p < length; p++)
+    if (mot_cle[p] != toupper(un_nom[p]))
+      return 0;
+  return 1;
+}
+
+int operator ==(const Motcle& mot_cle, const Nom& un_nom)
+{
+  return (un_nom == mot_cle);
+}
+
 // Description:
 //     Comparaison d'un nom avec une chaine de caractere
 // Precondition:
@@ -790,6 +808,18 @@ int operator !=(const char* const un_autre, const Nom& un_nom)
 {
   return ! (un_autre == un_nom);
 }
+
+// Case insensitive equality test with Motcle
+int operator !=(const Nom& un_nom, const Motcle& mot_cle)
+{
+  return ! (un_nom == mot_cle);
+}
+
+int operator !=(const Motcle& mot_cle, const Nom& un_nom)
+{
+  return ! (mot_cle == un_nom);
+}
+
 
 // Description:
 //     Renvoie *this;

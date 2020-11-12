@@ -3,6 +3,7 @@ Developer notes version 1.8.2_beta : Changes since version 1.8.1 :
 -------------------------------------------------------------
 17/11/20 (TRUST)  Add a Matrice_Petsc class to build directly Petsc based matrix for PETSc solvers
 16/11/20 (TRUST)  Calls backtrace displayed in Journal when SIGABRT or SIGFPE raised (in debug mode only, to use it in optim mode: enable TRUST_ENABLE_ERROR_HANDLERS environment variable)
+12/11/20 (TRUST)  New (case insensitive comparison operators between Nom et Motcle
 29/10/20 (TRUST)  Diffusive operators coding turbulent shear stress come back from TrioCFD to TRUST
 19/10/20 (TRUST)  Add gui and check_gui targets into the Trust Makefile to build and check XDATA
 -------------------------------------------------------------
