@@ -1,0 +1,108 @@
+# PARALLEL OK #
+dimension 2
+
+DOMaine DOM
+
+Pb_conduction pb
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names DOM DOM Mesh_1.med
+# END MESH #
+
+# Scatter DOM.Zones DOM #
+
+vefprep1b dis
+
+scheme_euler_implicit scheme
+Read scheme
+{
+    tinit 0.
+    tmax 10.
+    dt_min 1e-8
+    dt_max 1.
+    dt_impr 1.e-3
+    dt_sauv 1.e-3
+    seuil_statio 1.e-6
+    facsec 10000
+    facsec_max 50000
+    max_iter_implicite 50
+    Solveur Implicite
+    {
+      Solveur petsc cholesky { quiet }
+    }
+}
+
+solide sol
+read sol
+{
+    rho champ_uniforme 1 1.0
+    lambda champ_fonc_med last_time conduc2d_iso.med DOM CONDUCTIVITY_ELEM_dom elem 0
+    Cp champ_uniforme 1 1.0
+}
+
+associate pb DOM
+associate pb scheme
+associate pb sol
+
+discretize pb dis
+
+read pb
+{
+	conduction
+	{
+		diffusion { }
+		initial_conditions { temperature champ_uniforme 1 0. }
+		boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0 }
+		sources {
+			Puissance_thermique Champ_Fonc_XYZ DOM 1 (-4.0*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)-4.0*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
+                	}
+
+	}
+
+	# post traitement  #
+	post_processing
+	{
+		Definition_champs
+		{
+			solution Transformation {
+						methode formule expression 1 (sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y))
+						localisation som
+						}
+
+			solution_elem Transformation {
+						methode formule expression 1 (sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y))
+						localisation elem
+						}
+
+			error transformation  {
+						methode formule expression 1 abs(solution-temperature_physique)
+						sources_reference { solution , temperature_physique }
+						localisation som
+					      }
+
+			error_elem transformation  {
+							methode formule expression 1 abs(solution_elem-temperature_physique)
+							sources_reference {  solution_elem , temperature_physique }
+							localisation elem
+						   }
+
+		}
+
+		format lata
+		fields dt_post 1.
+		{
+			temperature elem
+			temperature som
+			diffusivite_thermique elem
+			diffusivite_thermique som
+			solution
+			solution_elem
+			error
+			error_elem
+		}
+	}
+}
+
+solve pb
+
+end

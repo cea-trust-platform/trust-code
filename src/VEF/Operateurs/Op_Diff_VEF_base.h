@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,6 +63,11 @@ public:
   virtual int impr(Sortie& os) const;
   virtual void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
   inline double viscA(int face_i, int face_j, int num_elem, double diffu) const;
+  // Anisotrope (tensor)
+  // diffusivite considered as DoubleTab (case of scalair) or ArrOfDouble (in the case multi-scalar)
+  inline double viscA(int face_i, int face_j, int num_elem, DoubleTab& diffu) const;
+  inline double viscA(int face_i, int face_j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const;
+
   double calculer_dt_stab() const;
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
   virtual Motcle get_localisation_pour_post(const Nom& option) const;
@@ -99,6 +104,49 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, double diffu) 
     return -(pscal*diffu)*inverse_volumes(num_elem);
   else
     return (pscal*diffu)*inverse_volumes(num_elem);
+}
+
+// dinhvan 20/08/18 reproduction de la formule par proposition de Piere
+// case of scalair
+inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, DoubleTab& diffu) const
+{
+  const Zone_VEF& zone=la_zone_vef.valeur();
+  const IntTab& face_voisins=zone.face_voisins();
+  const DoubleTab& face_normales=zone.face_normales();
+  const DoubleVect& inverse_volumes=zone.inverse_volumes();
+
+  double DSiSj=0;
+  for (int k=0; k<dimension; k++)
+    for (int l=0; l<dimension; l++)
+      DSiSj += diffu(num_elem,k*dimension+l)*face_normales(i,k)*face_normales(j,l); // steph
+
+  if ( (face_voisins(i,0) == face_voisins(j,0)) ||
+       (face_voisins(i,1) == face_voisins(j,1)) )
+    return -DSiSj*inverse_volumes(num_elem);
+  else
+    return DSiSj*inverse_volumes(num_elem);
+}
+
+// dinhvan 14 sept 18: tableau diffu est vu comme bidimensionnel mais pas 1D, ni 3D,
+// si scalaire de type [[value]], si tenseur de type [nb_elem x nb_comp]
+// case of multi-scalar
+inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const
+{
+  const Zone_VEF& zone=la_zone_vef.valeur();
+  const IntTab& face_voisins=zone.face_voisins();
+  const DoubleTab& face_normales=zone.face_normales();
+  const DoubleVect& inverse_volumes=zone.inverse_volumes();
+
+  double DSiSj=0;
+  for (int k=0; k<dimension; k++)
+    for (int l=0; l<dimension; l++)
+      DSiSj += diffu_ci_cj_elem(k*dimension+l)*face_normales(i,k)*face_normales(j,l);
+
+  if ( (face_voisins(i,0) == face_voisins(j,0)) ||
+       (face_voisins(i,1) == face_voisins(j,1)) )
+    return -DSiSj*inverse_volumes(num_elem);
+  else
+    return DSiSj*inverse_volumes(num_elem);
 }
 
 #endif

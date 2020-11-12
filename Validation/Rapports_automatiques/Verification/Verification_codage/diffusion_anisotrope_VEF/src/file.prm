@@ -1,0 +1,578 @@
+Parameters {
+        Title "Anisotropic diffusion operator for the VEF discretization in TRUST"
+        Description "\latex_( \input{\orig/intro} \latex_)"
+        VersionTrio_U "1.8.0"
+        Author "Elie Saikali and Pierre Ledac"
+        TestCase TC1 TC1.data
+        TestCase TC2/Ar1/M1 TC2.data
+        TestCase TC2/Ar1/M2 TC2.data 2
+        TestCase TC2/Ar1/M3 TC2.data 4
+        TestCase TC2/Ar1/M1 TC2_iso.data
+        TestCase TC2/Ar1/M2 TC2_iso.data 2
+        TestCase TC2/Ar1/M3 TC2_iso.data 4
+      	TestCase TC2/Ar10/M1 TC2.data
+      	TestCase TC2/Ar10/M2 TC2.data 2
+      	TestCase TC2/Ar10/M3 TC2.data 4
+      	TestCase TC2/Ar100/M1 TC2.data
+      	TestCase TC2/Ar100/M2 TC2.data 2
+      	TestCase TC2/Ar100/M3 TC2.data 4
+      	TestCase TC2/Ar1000/M1 TC2.data
+      	TestCase TC2/Ar1000/M2 TC2.data 2
+      	TestCase TC2/Ar1000/M3 TC2.data 4
+}
+
+
+chapter
+{
+
+	Description "\latex_( \input{\orig/test_case1} \latex_)"
+
+        title "Test case 1 : anisotropic and discontinuous \latex_( $\kappa$ \latex_)"
+
+        visu {
+                title "The Mesh"
+                Width 15cm
+                operator no_databaseinfo
+                operator_to_all no_legend
+                cycles -1
+                mesh TC1/TC1.lata DOM
+        }
+
+
+        visu {
+                title "Conductivity tensor : component 1"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
+        }
+
+
+visu {
+                title "Conductivity tensor : component 2 (or 3)"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
+        }
+
+
+visu {
+                title "Conductivity tensor : component 4"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC1/TC1.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC1/TC1.lata ERROR_ELEM_ELEM_DOM
+        }
+
+
+}
+
+# test case 2
+
+chapter
+{
+
+        Description "\latex_( \input{\orig/test_case2} \latex_)"
+
+        title "Test case 2 : \latex_( anisotropic and non-uniform $\kappa$\latex_)"
+
+        visu {
+                title "The Mesh M1"
+                Width 15cm
+                operator no_databaseinfo
+                operator_to_all no_legend
+                cycles -1
+                mesh TC2/Ar100/M1/TC2.lata DOM
+        }
+
+	 visu {
+                title "The Mesh M2"
+                Width 15cm
+                operator no_databaseinfo
+                operator_to_all no_legend
+                cycles -1
+                mesh TC2/Ar100/M2/TC2.lata DOM
+        }
+
+	 visu {
+                title "The Mesh M3"
+                Width 15cm
+                operator no_databaseinfo
+                operator_to_all no_legend
+                cycles -1
+                mesh TC2/Ar100/M3/TC2.lata DOM
+        }
+
+
+}
+
+chapter
+{
+
+	title "\latex_(Results of test case 2 with $A_r=1$ \latex_)"
+	Description "\latex_(When the anisotropy ratio is set to unity, the obtained conductivity tensor is diagonal $\kappa^{xy}=\kappa^{yx}=0$. The diagonal components are non zero and identical; $\kappa^{xx}=\kappa^{yy}$. The fields are visualized in figures 4.1-4.3 where we note that the conductivity is diagonally distributed in the domain; highest values at the top right corner, and diffuses symmetrically to the facing corner where it takes the smallest value. The obtained temperature distribution at steady state with mesh M1 (physical time about 5.3 s) is shown in figure 4.4 and the difference from the analytical solution is illustrated in absolute value in figure 4.5. It can be stated that the solution is not far and not different from the exact solution, although the error values are not too small compared to test case 1; here the difference can reach to about $1.10^{-3}$ K. With M2, the resolution is improved and the time required to reach a steady state is reduced (4.3 s of physical time). This can be illustrated in figures 4.6 and 4.7. Moreover, better improvements are recorded with M3: steady state reaches at 3.7 s, and absolute error about $8.10^{-5}$ K at maximum (see figures 4.8 and 4.9). However, we note that even with this fine resolution, the error is much larger than that of test case 1 (compared to $10^{-11}$ in that case). We interpret this issue to be related to the VEF discretization and the fact of the diffusion along the diagonal of the squared domain. To illustrate on this point and to justify that the situation is not originating from a bug in the code implementation, we test the same simulation with an isotropic conductivity taking the same values as $\kappa^{xx}$ (figure 4.10). It is clear how the obtained temperature and error fields are identical for the three meshes (figures 4.11 to 4.16) and thus justifies the claimed interpretation.  \latex_)"
+
+        visu {
+                title "Conductivity tensor : component 1"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 2 (or 3)"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 4"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M2/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M2/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M3/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M3/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+
+visu {
+                title "Isotropic conductivity field"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2_iso.lata DIFFUSIVITE_THERMIQUE_SOM_DOM
+        }
+
+visu {
+                title "Temperature at steady state (Isotropic conductivity) : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2_iso.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (Isotropic) : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M1/TC2_iso.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state (Isotropic conductivity) : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M2/TC2_iso.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (Isotropic) : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M2/TC2_iso.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state (Isotropic conductivity) : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M3/TC2_iso.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (Isotropic) : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1/M3/TC2_iso.lata ERROR_ELEM_ELEM_DOM
+        }
+
+}
+
+
+chapter
+{
+
+	title "\latex_(Results of test case 2 with $A_r=10$ \latex_)"
+	Description "\latex_(When the anisotropy ratio is set to 10, all terms of the conductivity tensor are non-zero. Recall that the tensor, from its definition, positive-definit and symmetrical. Figures 5.1-5.3 depict the distribution of the $\kappa$ components. It is clear now that the extra-diagonal components of the tensor are obliquely concentrated. We note for mesh M1 that the time required to achieve a steady state is a bit longer compared to the previous calculation with $A_r=1$ and same mesh (physical time of 7.7 s compared to 5.3 s). This is surely the effect of the increase in the anisotropic ratio. The obtained temperature distribution is shown in figure 5.4 and the difference from the analytical solution is considered in absolute value in figure 5.5. Again, for same reasons as before, the difference between the numerical solution and the exact solution takes a maximum value of about $4.10^{-3}$ K near the boundary $\partial \Omega$. The numerical resolution improves and the time required to attain a steady state reduces by refining the mesh. See figures 5.6 and 5.7 for M2, figures 5.8 and 5.9 for M3. Again, having an error at the order of $3.10^{-4}$ K is mainly related to the VEF discretization and the fact of the diffusion dominance along the diagonal of the squared domain. \latex_)"
+
+        visu {
+                title "Conductivity tensor : component 1"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 2 (or 3)"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 4"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M1/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M1/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+visu {
+                title "Temperature at steady state : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M2/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M2/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M3/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar10/M3/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+}
+
+
+chapter
+{
+
+	title "\latex_(Results of test case 2 with $A_r=100$ \latex_)"
+	Description "\latex_(Figures 6.1-6.3 show the distribution of the $\kappa$ components when the anisotropy ratio is set to 100. With mesh M1, the obtained temperature distribution (at steady state) is shown in figure 6.4 and the difference from the analytical solution is plotted in absolute value in figure 6.5. Here, we note that the error values increase. Beside the problematic of the diagonal propagation and the VEF discretization, we note from the temperature field that the solution contains some parasitic behavior. Moreover, we note that the physical time required to attain a steady state is much longer than the previous calculations (here we achieve a steady state after 63 s of physical time). A clear influence of the mesh is noted when M2 is employed where the steady state time reduces to about 12 s. Moreover, the parasitic behavior is improved as seen in figure 6.6 and the error is reduced (figure 6.7). Much bettr improvements are recorded with the finest mesh M3 (see figures 6.8 and 6.9). Here, the steady solution is obtained at a physical time of 4 s, but the error remains high (order of $3.10^{-3}$ K at maximum near boundaries). As a conclusion, it can be stated that increasing the anisotropic ratio is challanging for the quality of the simulation and that the physical time serves as an indicator for the stability of the simulation and the quality of the results. Keeping in mind the problematic of such a particular conductivity distribution and the limitation of VEF (probably), it can be stated that the solution is satisfactorly prdicted and that TRUST is able to perform a satisfactory numerical simulation for such a ratio of anisotropy. However, \textbf{a grid convergence study is required} to improve the numerical prediction.  \latex_)"
+
+        visu {
+                title "Conductivity tensor : component 1"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 2 (or 3)"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 4"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M1/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M1/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M2/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M2/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+visu {
+                title "Temperature at steady state : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M3/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar100/M3/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+
+}
+
+
+chapter
+{
+
+	title "Test case 2 : \latex_( $A_r=1000$ \latex_)"
+	Description "\latex_(Further numerical issues rise when the anisotropic ratio is increased to $A_r=1000$ (see figures 7.1-7.3 for the $\kappa$ tensor). Here, the solution obtained with meshes M1 and M2 are wrong and very far from the real solution (see figures 7.4-7.7). The steady state is very slow and attained at $t=100$ s of physical time. A promosing improvement appears with mesh M3 as seen in figures 7.8 and 7.9. However, surely a much finer mesh is necessary to predict a good resolution and deal with such a high anisotropic ratio of the conduction problem. \latex_)"
+
+        visu {
+                title "Conductivity tensor : component 1"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 2 (or 3)"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+        }
+
+visu {
+                title "Conductivity tensor : component 4"
+                Width 15cm
+                operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M1/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M1"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M1/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M2/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M2"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M2/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+visu {
+                title "Temperature at steady state : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M3/TC2.lata TEMPERATURE_SOM_DOM
+        }
+
+
+visu {
+                title "Difference from analytical solution (absolute value) : M3"
+                Width 15cm
+                #operator no_databaseinfo
+                #operator_to_all no_legend
+                cycles -1
+                pseudocolor TC2/Ar1000/M3/TC2.lata ERROR_ELEM_ELEM_DOM
+        }
+
+}
+
+Chapter {
+        Title "Concluding remarks"
+        Description "\latex_(In this report, a validation study concerning the implementation of an anisotropic diffusion operator for VEF in the TRUST platform is documented. Different simulations are performed and numerical results at steady-state are compared to analytical solutions for validations. Two test cases are investigated, either with an anisotropic discontinuous conductivity tensor or a non-uniform one. The mesh sensitivity is highlighted where numerical results show that TRUST can handle high anisotropic ratios only if a good mesh is used. We advise the user to perform a grid convergence study before starting the physical interpretation of the numerical data. Till present, we have only one limitation for this anisotropic operator: \textbf{the code can only handle a positive-definite and symmetric conductivity tensor}.  \latex_)"
+}
+
+Chapter {
+        Title "Computer performance"
+        tableau_performance {
+        }
+}

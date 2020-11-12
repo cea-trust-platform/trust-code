@@ -1,0 +1,69 @@
+\documentclass{article}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[document]{ragged2e}
+\usepackage{graphicx, color, layout}
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+        backgroundcolor=\color{backcolour},
+        commentstyle=\color{codegreen},
+        keywordstyle=\color{magenta},
+        numberstyle=\tiny\color{codegray},
+        stringstyle=\color{codepurple},
+        basicstyle=\footnotesize,
+        breakatwhitespace=false,
+        breaklines=true,
+        captionpos=b,
+        keepspaces=true,
+        numbers=left,
+        numbersep=5pt,
+        showspaces=false,
+        showstringspaces=false,
+        showtabs=false,
+        tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+ 	\title{Useful scripts to prepare a TRUST simulation with an anisotropic conductivity}
+ 	\author{Elie Saikali and Pierre Ledac}
+	\date{\today}
+
+	\maketitle
+
+	\section{Prepare the field $\kappa$}
+	\subsection{Test case 1 : anisotropic and discontinuous}
+	\lstinputlisting[language=python]{TC1/Cond_Field_Anis.py}
+
+	\subsection{Test case 2 : anisotropic and non-uniform}
+	\lstinputlisting[language=python]{TC2/Cond_Field_Anis_NonUniform.py}
+
+	\section{Prepare the term source to put in TRUST data file}
+	\lstinputlisting[language=python]{terme_source.py}
+
+	\section{TRUST data files}
+	\subsection{Test case 1 : anisotropic and discontinuous}
+	\lstinputlisting[language=python]{TC1/TC1.data}
+
+	\subsection{Test case 2 : anisotropic and non-uniform}
+	\lstinputlisting[language=python]{TC2/TC2_Ar100.data}
+
+\end{document}

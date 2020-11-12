@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,26 +114,41 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser
   // pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
   // ToDo: reecrire ces deux methodes discretiser
+
+  // E. Saikali
+  // The thermal conductivity and diffusivity fields are considered as
+  // multi_scalaire fields, sure if the number of components read
+  // in the data file for lambda > 1, i.e: case of anisotropic diffusion !
+
+  int lambda_nb_comp = 0;
+
   if(ch_lambda.non_nul())
     {
+      // Returns number of components of lambda field
+      lambda_nb_comp = ch_lambda.nb_comp( );
       if (sub_type(Champ_Fonc_MED,ch_lambda.valeur()))
         {
           double temps=ch_lambda.valeur().temps();
           Cerr<<"Convert Champ_fonc_MED lambda in Champ_Don..."<<finl;
           Champ_Don ch_lambda_prov;
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,ch_lambda_prov);
+          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_prov);
           ch_lambda_prov.affecter_(ch_lambda.valeur());
           ch_lambda.detach();
           ch_alpha.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,ch_lambda);
+          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda);
           ch_lambda.valeur().valeurs()=ch_lambda_prov.valeur().valeurs();
         }
+
+      if(lambda_nb_comp >1) // Pour anisotrope
+        ch_lambda.valeur().fixer_nature_du_champ(multi_scalaire);
+
       dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
+
       // le vrai nom sera donne plus tard
       if (sub_type(Champ_Fonc_Tabule,ch_lambda.valeur()))
         {
           double temps=ch_lambda.valeur().temps();
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,ch_alpha);
+          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
         }
       if (sub_type(Champ_Tabule_Morceaux,ch_lambda.valeur()))
         {
@@ -142,12 +157,14 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           for (int i=0 ; i<lambda_tabule.nb_champs_tabules(); i++)
             dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",lambda_tabule.champ_tabule(i),pb);
         }
+
       champs_compris_.ajoute_champ(ch_lambda.valeur());
     }
   if (!ch_alpha.non_nul()&&(ch_lambda.non_nul()))
     {
       double temps=ch_lambda.valeur().temps();
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,ch_alpha);
+      // ch_alpha (i.e. diffusivite_thermique) will have same component number as ch_lambda
+      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
     }
   if (ch_alpha.non_nul())
     {
