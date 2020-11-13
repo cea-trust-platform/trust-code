@@ -74,8 +74,7 @@ define_soumission_batch()
    #qos_prepo+          0     10000                  
    project=""
    if [ "$gpu" = 1 ]
-   then
-      [ "`id | grep ikp`" != "" ] && project="ikp@gpu" && gpus_per_node=1
+      [ "`id | grep ikp`" != "" ] && project="ikp@gpu" && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible...
    else
       [ "`id | grep fej`" != "" ] && project="fej@cpu"
       cpus_per_task=40
@@ -83,7 +82,7 @@ define_soumission_batch()
    hintnomultithread=1
    cpu=30 && [ "$prod" = 1 ] && cpu=110 # 30 minutes or 1 day
    ntasks=20 # number of cores ?
-   node=0
+   node=1 # --exclusive
    mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
 }
