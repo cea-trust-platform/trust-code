@@ -44,6 +44,7 @@
 #include <Check_espace_virtuel.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Solv_Petsc.h>
+#include <Matrice_Petsc.h>
 
 Implemente_instanciable(Assembleur_P_VEFPreP1B,"Assembleur_P_VEFPreP1B",Assembleur_P_VEF);
 
@@ -109,6 +110,7 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
       alpha=1./Objet_U::dimension;
       beta=1./(Objet_U::dimension*(Objet_U::dimension+1));
     }
+  la_matrice_de_travail_.typer("Matrice_Bloc_Sym");
 }
 
 const Zone_VEF_PreP1b& Assembleur_P_VEFPreP1B::zone_Vef() const
@@ -231,159 +233,176 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
   set_resoudre_increment_pression(incr_pression);
   set_resoudre_en_u(resoudre_en_u);
 
-  DoubleTab inverse_quantitee_entrelacee;
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();
-
-  calculer_inv_volume(inverse_quantitee_entrelacee, zone_Cl_VEF, quantitee_entrelacee);
-
-
-  const Zone_VEF_PreP1b& zone_vef = zone_Vef();
-  Cerr << "Assemblage de la matrice de pression" << (zone_vef.get_alphaE()?" P0":"") << (zone_vef.get_alphaS()?" P1":"") << (zone_vef.get_alphaA()?" Pa":"") << " en cours..." << finl;
-
-  // Les decoupages doivent etre de largeur de joint de 2
-  // si le support P1 ou Pa est utilise...
+  SolveurSys& solveur_pression = ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression();
   bool read_matrix = false;
-  const SolveurSys& solveur_pression = ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression();
-  if (sub_type(Solv_Petsc, solveur_pression.valeur())) read_matrix = ref_cast(Solv_Petsc, solveur_pression.valeur()).read_matrix();
-  if (Process::nproc()>1 &&
-      zone_vef.zone().nb_joints() &&
-      zone_vef.zone().joint(0).epaisseur()<2 &&
-      (zone_vef.get_alphaS() || zone_vef.get_alphaA()) &&
-      !read_matrix)
+  if (sub_type(Solv_Petsc, solveur_pression.valeur()))
+    read_matrix = ref_cast(Solv_Petsc, solveur_pression.valeur()).read_matrix();
+  if (read_matrix) // Lecture de la matrice dans un fichier
     {
-      Cerr << "Ghost cells width of " << zone_vef.zone().joint(0).epaisseur() << " is not enough for assembling VEFPreP1B pressure matrix" << finl;
-      Cerr << "for parallel calculation. Partition your mesh with larg_joint option set to 2." << finl;
-      Process::exit();
+      la_matrice.typer("Matrice_Petsc");
+      //ref_cast(Matrice_Petsc, la_matrice.valeur()).RestoreMatrixFromFile();
     }
-  // Typage et dimensionnement de la matrice au format natif
-  int construite=la_matrice_de_travail_.non_nul();
-  if(!construite)
-    la_matrice_de_travail_.typer("Matrice_Bloc_Sym");
-  Matrice_Bloc_Sym& la_matrice_bloc_sym_de_travail=ref_cast(Matrice_Bloc_Sym, la_matrice_de_travail_.valeur());
-  int P0 = 0;
-  int P1 = P0 + zone_vef.get_alphaE();
-  int Pa = P1 + zone_vef.get_alphaS();
-  int nombre_supports = Pa + zone_vef.get_alphaA();
-  DoubleVect coef_som;
-  if (zone_vef.get_alphaS())
+  else // Assemblage de la matrice
     {
-      zone_vef.zone().creer_tableau_elements(coef_som);
-      for (int elem=0; elem<coef_som.size_totale(); elem++)
-        coef_som[elem]=Op_Grad_VEF_P1B_Face::calculer_coef_som(elem,zone_Cl_VEF, zone_vef);
-      coef_som.echange_espace_virtuel();
-    }
-  // Assemblage de la matrice complete selon les supports choisis
-  if(!construite)
-    {
-      la_matrice_bloc_sym_de_travail.dimensionner(nombre_supports, nombre_supports);
-      if (zone_vef.get_alphaE())
-        assemblerP0P0(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0,P0), inverse_quantitee_entrelacee);
+      const Zone_VEF_PreP1b& zone_vef = zone_Vef();
+      Cerr << "Assemblage de la matrice de pression" << (zone_vef.get_alphaE() ? " P0" : "")
+           << (zone_vef.get_alphaS() ? " P1" : "") << (zone_vef.get_alphaA() ? " Pa" : "") << " en cours..." << finl;
 
-      if (zone_vef.get_alphaS())
-        assemblerP1P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1,P1), inverse_quantitee_entrelacee,coef_som);
-
-      if (zone_vef.get_alphaE() && zone_vef.get_alphaS())
-        assemblerP0P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0,P1), inverse_quantitee_entrelacee,coef_som);
-
-      if (zone_vef.get_alphaA())
-        assemblerPaPa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa,Pa), inverse_quantitee_entrelacee);
-
-      if (zone_vef.get_alphaS() && zone_vef.get_alphaA())
-        assemblerP1Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1,Pa), inverse_quantitee_entrelacee,coef_som);
-
-      if (zone_vef.get_alphaE() && zone_vef.get_alphaA())
-        assemblerP0Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0,Pa), inverse_quantitee_entrelacee);
-    }
-  // On met a zero la matrice meme si elle a ete correctement construite et remplie dans les methodes
-  // assemblerPiPi et on la remplit a nouveau. Pourquoi? Pour avoir une couverture de tests
-  // suffisante des methodes updatePiPi en attendant de factoriser correctement les
-  // methodes assemblerPiPi et updatePiPi
-  zero(la_matrice_bloc_sym_de_travail);
-  {
-    if (zone_vef.get_alphaE())
-      updateP0P0(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0,P0), inverse_quantitee_entrelacee);
-
-    if (zone_vef.get_alphaS())
-      {
-        updateP1P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1,P1), inverse_quantitee_entrelacee,coef_som);
-        if (zone_vef.get_cl_pression_sommet_faible()==0)
-          modifieP1P1neumann(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1,P1), inverse_quantitee_entrelacee,coef_som);
-      }
-    if (zone_vef.get_alphaE() && zone_vef.get_alphaS())
-      updateP0P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0,P1), inverse_quantitee_entrelacee,coef_som);
-
-    if (zone_vef.get_alphaA())
-      updatePaPa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa,Pa), inverse_quantitee_entrelacee);
-
-    if (zone_vef.get_alphaS() && zone_vef.get_alphaA())
-      updateP1Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1,Pa), inverse_quantitee_entrelacee,coef_som);
-
-    if (zone_vef.get_alphaE() && zone_vef.get_alphaA())
-      updateP0Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0,Pa), inverse_quantitee_entrelacee);
-  }
-  int ordre_matrice=mp_sum(la_matrice_bloc_sym_de_travail.nb_lignes());
-  Cerr << "Order of the matrix = " << ordre_matrice << finl;
-
-  // Methode verifier
-  char* theValue = getenv("TRUST_VERIFIE_MATRICE_VEF");
-  if(theValue != NULL) verifier(*this, la_matrice_bloc_sym_de_travail, zone_vef, inverse_quantitee_entrelacee);
-
-  ////////////////////////////////////////////
-  // Changement de base eventuel P0P1->P1Bulle
-  ////////////////////////////////////////////
-  if (changement_base())
-    {
-      // Changement de base pour la matrice P0+P1->P1Bulle
-      changer_base_matrice(la_matrice_de_travail_); // A->A~
-
-      // Si pas deja fait, on prends un solveur (SolveurPP1B) qui fera les changements de base pour la solution et le second membre
-      SolveurSys& solveur_pression_=ref_cast(Navier_Stokes_std,mon_equation.valeur()).solveur_pression();
-      if(solveur_pression_.valeur().que_suis_je()!="SolveurPP1B")
+      // Les decoupages doivent etre de largeur de joint de 2
+      // si le support P1 ou Pa est utilise...
+      if (Process::nproc() > 1 &&
+          zone_vef.zone().nb_joints() &&
+          zone_vef.zone().joint(0).epaisseur() < 2 &&
+          (zone_vef.get_alphaS() || zone_vef.get_alphaA()))
         {
-          SolveurSys solveur_pression_lu=solveur_pression_;
-          solveur_pression_.typer("SolveurPP1B");
-          SolveurPP1B& solveur_pression_PP1B = ref_cast(SolveurPP1B,solveur_pression_.valeur());
-          solveur_pression_PP1B.associer(*this,solveur_pression_lu);
+          Cerr << "Ghost cells width of " << zone_vef.zone().joint(0).epaisseur()
+               << " is not enough for assembling VEFPreP1B pressure matrix" << finl;
+          Cerr << "for parallel calculation. Partition your mesh with larg_joint option set to 2." << finl;
+          Process::exit();
+        }
+
+      DoubleTab inverse_quantitee_entrelacee;
+      const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();
+      calculer_inv_volume(inverse_quantitee_entrelacee, zone_Cl_VEF, quantitee_entrelacee);
+      int P0 = 0;
+      int P1 = P0 + zone_vef.get_alphaE();
+      int Pa = P1 + zone_vef.get_alphaS();
+      int nombre_supports = Pa + zone_vef.get_alphaA();
+      DoubleVect coef_som;
+      if (zone_vef.get_alphaS())
+        {
+          zone_vef.zone().creer_tableau_elements(coef_som);
+          for (int elem = 0; elem < coef_som.size_totale(); elem++)
+            coef_som[elem] = Op_Grad_VEF_P1B_Face::calculer_coef_som(elem, zone_Cl_VEF, zone_vef);
+          coef_som.echange_espace_virtuel();
+        }
+
+      // Assemblage de la matrice complete selon les supports choisis
+      Matrice_Bloc_Sym& la_matrice_bloc_sym_de_travail = ref_cast(Matrice_Bloc_Sym, la_matrice_de_travail_.valeur());
+      if (la_matrice_bloc_sym_de_travail.nb_bloc_lignes()==0)
+        {
+          la_matrice_bloc_sym_de_travail.dimensionner(nombre_supports, nombre_supports);
+          if (zone_vef.get_alphaE())
+            assemblerP0P0(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P0),
+                          inverse_quantitee_entrelacee);
+
+          if (zone_vef.get_alphaS())
+            assemblerP1P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
+                          inverse_quantitee_entrelacee, coef_som);
+
+          if (zone_vef.get_alphaE() && zone_vef.get_alphaS())
+            assemblerP0P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P1),
+                          inverse_quantitee_entrelacee, coef_som);
+
+          if (zone_vef.get_alphaA())
+            assemblerPaPa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa, Pa),
+                          inverse_quantitee_entrelacee);
+
+          if (zone_vef.get_alphaS() && zone_vef.get_alphaA())
+            assemblerP1Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, Pa),
+                          inverse_quantitee_entrelacee, coef_som);
+
+          if (zone_vef.get_alphaE() && zone_vef.get_alphaA())
+            assemblerP0Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
+                          inverse_quantitee_entrelacee);
+        }
+      // On met a zero la matrice meme si elle a ete correctement construite et remplie dans les methodes
+      // assemblerPiPi et on la remplit a nouveau. Pourquoi? Pour avoir une couverture de tests
+      // suffisante des methodes updatePiPi en attendant de factoriser correctement les
+      // methodes assemblerPiPi et updatePiPi
+      zero(la_matrice_bloc_sym_de_travail);
+      {
+        if (zone_vef.get_alphaE())
+          updateP0P0(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P0),
+                     inverse_quantitee_entrelacee);
+
+        if (zone_vef.get_alphaS())
+          {
+            updateP1P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
+                       inverse_quantitee_entrelacee, coef_som);
+            if (zone_vef.get_cl_pression_sommet_faible() == 0)
+              modifieP1P1neumann(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
+                                 inverse_quantitee_entrelacee, coef_som);
+          }
+        if (zone_vef.get_alphaE() && zone_vef.get_alphaS())
+          updateP0P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P1),
+                     inverse_quantitee_entrelacee, coef_som);
+
+        if (zone_vef.get_alphaA())
+          updatePaPa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa, Pa),
+                     inverse_quantitee_entrelacee);
+
+        if (zone_vef.get_alphaS() && zone_vef.get_alphaA())
+          updateP1Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, Pa),
+                     inverse_quantitee_entrelacee, coef_som);
+
+        if (zone_vef.get_alphaE() && zone_vef.get_alphaA())
+          updateP0Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
+                     inverse_quantitee_entrelacee);
+      }
+      int ordre_matrice = mp_sum(la_matrice_bloc_sym_de_travail.nb_lignes());
+      Cerr << "Order of the matrix = " << ordre_matrice << finl;
+
+      // Methode verifier
+      char *theValue = getenv("TRUST_VERIFIE_MATRICE_VEF");
+      if (theValue != NULL) verifier(*this, la_matrice_bloc_sym_de_travail, zone_vef, inverse_quantitee_entrelacee);
+
+      ////////////////////////////////////////////
+      // Changement de base eventuel P0P1->P1Bulle
+      ////////////////////////////////////////////
+      if (changement_base())
+        changer_base_matrice(la_matrice_de_travail_); // A->A~
+
+      /////////////////////////////////////////////////////////////
+      // Modification de la matrice si pas de pression de reference
+      /////////////////////////////////////////////////////////////
+      modifier_matrice(la_matrice_de_travail_);
+
+      // Conversion eventuelle en Matrice_Morse_Sym
+      if (ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym() &&
+          zone_vef.get_alphaE() != nombre_supports) // On n'est pas en P0
+        {
+          //////////////////////////////////////////////////////////
+          // La matrice retournee est une Matrice_Morse_Sym nettoyee
+          // si le solveur utilisee supporte ce type de matrice
+          // et si on n'est pas en P0 seulement (dans ce cas la, la
+          // conversion en Mat_Morse_Sym n'apporte rien, et plante le SSOR
+          // car la matrice morse contient alors des parties virtuelles
+          // alors qu'il n'y a pas d'items communs et on tombe sur
+          // l'assert assert(*tab2_ptr<=n); Deux autres solutions:
+          // -Modifier le SSOR pour ne resoudre que la partie reelle
+          // -Dans le cas de P0 seul, il faudrait vider VV et RV dans la Mat_Bloc_Sym
+          //////////////////////////////////////////////////////////
+          la_matrice.typer("Matrice_Morse_Sym");
+          ref_cast(Matrice_Bloc_Sym, la_matrice_de_travail_.valeur()).BlocSymToMatMorseSym(
+            ref_cast(Matrice_Morse_Sym, la_matrice.valeur()));
+          ref_cast(Matrice_Morse_Sym, la_matrice.valeur()).compacte(
+            2);// Suppression des coefficients nuls et quasi non nuls
+        }
+      else
+        {
+          /////////////////////////////////////////////////////////
+          // La matrice retournee est une Matrice_Bloc_Sym nettoyee
+          /////////////////////////////////////////////////////////
+          la_matrice = la_matrice_de_travail_;
+          for (int i = 0; i < nombre_supports; i++)
+            for (int j = i; j < nombre_supports; j++)
+              {
+                Matrice_Bloc_Sym& mat_bloc_sym = ref_cast(Matrice_Bloc_Sym, la_matrice.valeur());
+                Matrice_Bloc& bloc_ij = ref_cast(Matrice_Bloc, mat_bloc_sym.get_bloc(i, j).valeur());
+                ref_cast(Matrice_Morse, bloc_ij.get_bloc(0, 0).valeur()).compacte(
+                  2); // Suppression des coefficients nuls et quasi non nuls
+              }
         }
     }
 
-  /////////////////////////////////////////////////////////////
-  // Modification de la matrice si pas de pression de reference
-  /////////////////////////////////////////////////////////////
-  modifier_matrice(la_matrice_de_travail_);
-
-  // Conversion eventuelle en Matrice_Morse_Sym
-  if (ref_cast(Navier_Stokes_std,mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym() &&
-      zone_vef.get_alphaE()!=nombre_supports) // On n'est pas en P0
+  // Si pas deja fait, on prends un solveur (SolveurPP1B) qui fera les changements de base pour la solution et le second membre
+  if (changement_base() && solveur_pression.valeur().que_suis_je() != "SolveurPP1B")
     {
-      //////////////////////////////////////////////////////////
-      // La matrice retournee est une Matrice_Morse_Sym nettoyee
-      // si le solveur utilisee supporte ce type de matrice
-      // et si on n'est pas en P0 seulement (dans ce cas la, la
-      // conversion en Mat_Morse_Sym n'apporte rien, et plante le SSOR
-      // car la matrice morse contient alors des parties virtuelles
-      // alors qu'il n'y a pas d'items communs et on tombe sur
-      // l'assert assert(*tab2_ptr<=n); Deux autres solutions:
-      // -Modifier le SSOR pour ne resoudre que la partie reelle
-      // -Dans le cas de P0 seul, il faudrait vider VV et RV dans la Mat_Bloc_Sym
-      //////////////////////////////////////////////////////////
-      la_matrice.typer("Matrice_Morse_Sym");
-      ref_cast(Matrice_Bloc_Sym, la_matrice_de_travail_.valeur()).BlocSymToMatMorseSym(ref_cast(Matrice_Morse_Sym,la_matrice.valeur()));
-      ref_cast(Matrice_Morse_Sym,la_matrice.valeur()).compacte(2);// Suppression des coefficients nuls et quasi non nuls
-    }
-  else
-    {
-      /////////////////////////////////////////////////////////
-      // La matrice retournee est une Matrice_Bloc_Sym nettoyee
-      /////////////////////////////////////////////////////////
-      la_matrice = la_matrice_de_travail_;
-      for(int i=0; i<nombre_supports; i++)
-        for(int j=i; j<nombre_supports; j++)
-          {
-            Matrice_Bloc_Sym& mat_bloc_sym =  ref_cast( Matrice_Bloc_Sym, la_matrice.valeur() );
-            Matrice_Bloc& bloc_ij=ref_cast(Matrice_Bloc, mat_bloc_sym.get_bloc(i,j).valeur());
-            ref_cast(Matrice_Morse, bloc_ij.get_bloc(0,0).valeur()).compacte(2); // Suppression des coefficients nuls et quasi non nuls
-          }
+      SolveurSys solveur_pression_lu = solveur_pression;
+      solveur_pression.typer("SolveurPP1B");
+      SolveurPP1B& solveur_pression_PP1B = ref_cast(SolveurPP1B, solveur_pression.valeur());
+      solveur_pression_PP1B.associer(*this, solveur_pression_lu);
     }
 
   //////////////////////////////////////////////////////
