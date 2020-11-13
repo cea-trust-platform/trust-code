@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+13/11/20 (TRUST)  Bug fixed   : read_matrix pressure solver option fixed in VEF (pressure matrix was rebuilt uselessly before being read from a file) 
 09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dns install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
 05/11/20 (TRUST)  New feature : Equation residuals can now be post-processed
 04/11/20 (TRUST)  Bug fixed   : In VDF, advanced fields using flux_bords wasn't correct near corners of the domain

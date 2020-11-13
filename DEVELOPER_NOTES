@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.2_beta : Changes since version 1.8.1 :
 -------------------------------------------------------------
+13/11/20 (TRUST)  Add a Matrice_Petsc class to build directly Petsc based matrix for PETSc solvers
 29/10/20 (TRUST)  Diffusive operators coding turbulent shear stress come back from TrioCFD to TRUST
 19/10/20 (TRUST)  Add gui and check_gui targets into the Trust Makefile to build and check XDATA
 -------------------------------------------------------------
