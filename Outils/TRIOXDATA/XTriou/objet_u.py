@@ -28,7 +28,7 @@ def mySave(self,fileName):
         pass
     st+=']\n'
     #print str
-    stream = file(fileName, "aw")
+    stream = open(fileName, "a")
     stream.write(st)
     stream.close()
     pass
@@ -106,6 +106,9 @@ try:
     def myinit(self,parent,after,xtree):
         # print "myinit"
 
+        if xtree.name=="is_read":
+            self.xtree=None
+            return
         if xtree.name=="name_u":
             #print "ok"
             if (parent.xtree.parent.parent is not None) or isinstance(parent.node,interprete) or isinstance(parent.node,comment):
