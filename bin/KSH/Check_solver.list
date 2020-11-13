@@ -124,18 +124,18 @@ let i=$i+1;solver[$i]="Petsc_GPU Cholesky_cholmod { impr }"							;gpu[$i]=1	;sy
 ###############################
 # AMGX solveurs tested on GPU #
 ###############################
-# ToDo: blocage en // + plantages non deterministes en sequentil
+let i=$i+1;solver[$i]="Petsc      GCP      { precond DIAG { } seuil $seuil impr }"				;amgx[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc      GCP      { precond SSOR { omega 1.6 } seuil $seuil impr }"			;amgx[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc      GCP      { precond C-AMG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc      GCP      { precond SA-AMG { } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond SSOR { omega 1.6 } seuil $seuil }" 			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 0 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 1 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 0 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 1 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GMRES    { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver=PCG preconditioner=MULTICOLOR_GS tolerance=$seuil }" 	;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond C-AMG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond SA-AMG { } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1 # ;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 0 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond BLOCK_JACOBI_ILU { level 1 } seuil $seuil }" 		;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 0 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond ILU  { level 1 } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc_AMGX GMRES    { precond DIAG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver=PCG preconditioner=MULTICOLOR_GS tolerance=$seuil }" 	;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond C-AMG { } seuil $seuil }" 					;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_AMGX GCP      { precond SA-AMG { } seuil $seuil }" 				;amgx[$i]=1	;sym[$i]=1
 
