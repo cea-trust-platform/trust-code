@@ -2490,7 +2490,8 @@ Here is a list of post-processable fields, but it is not the only ones.
 
     if 'listobj_impl' in l:
         l.remove('listobj_impl')
-        l.append('listobj_impl')
+        if not lutil:
+          l.append('listobj_impl')
     if 'objet_lecture' in l:
         l.remove('objet_lecture')
         l.append('objet_lecture')

@@ -33,11 +33,12 @@ ifeq ($(TRUST_WITHOUT_PDFLATEX),1)
 	@echo "TRUST_WITHOUT_PDFLATEX=1 ... so we will not build the PDF documentation."
 else
 	mkdir -p doc_r
-	(cd doc_r; ln -sf ../doc_ressources/* .)
+	(cd doc_r; ln -sf ../doc_ressources/* .; ln -sf ${TRUST_ROOT}/doc/TRUST/Generic_Guide/fieldnames.tex .)
 	cp tests/ref/lutil.py .
 	python -c "from triou import *;gen_doc_base(3)"
 	mv *.tex doc_r
 	cp *.sty doc_r/.
+	@grep -v batchmode  doc_r/doc.tex  > doc_r/doc_inter.tex
 	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
 endif
 test:	triou.py
