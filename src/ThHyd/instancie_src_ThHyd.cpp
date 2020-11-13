@@ -28,6 +28,7 @@
 #include <Neumann_paroi_adiabatique.h>
 #include <Neumann_paroi_flux_nul.h>
 #include <Neumann_sortie_libre.h>
+#include <PDF_model.h>
 #include <Paroi_Knudsen_non_negligeable.h>
 #include <Pb_Hydraulique.h>
 #include <Pb_Hydraulique_Concentration.h>
@@ -66,15 +67,16 @@ Neumann_paroi inst22;verifie_pere(inst22);
 Neumann_paroi_adiabatique inst23;verifie_pere(inst23);
 Neumann_paroi_flux_nul inst24;verifie_pere(inst24);
 Neumann_sortie_libre inst25;verifie_pere(inst25);
-Paroi_Knudsen_non_negligeable inst26;verifie_pere(inst26);
-Pb_Hydraulique inst27;verifie_pere(inst27);
-Pb_Hydraulique_Concentration inst28;verifie_pere(inst28);
-Pb_Thermohydraulique inst29;verifie_pere(inst29);
-Pb_Thermohydraulique_Concentration inst30;verifie_pere(inst30);
-Scalaire_impose_paroi inst31;verifie_pere(inst31);
-Sortie_libre_Text_H_ext inst32;verifie_pere(inst32);
-Sortie_libre_pression_imposee inst33;verifie_pere(inst33);
-Sortie_libre_pression_moyenne_imposee inst34;verifie_pere(inst34);
-Temperature_imposee_paroi inst35;verifie_pere(inst35);
-Traitement_particulier_NS inst36;verifie_pere(inst36);
+PDF_model inst26;verifie_pere(inst26);
+Paroi_Knudsen_non_negligeable inst27;verifie_pere(inst27);
+Pb_Hydraulique inst28;verifie_pere(inst28);
+Pb_Hydraulique_Concentration inst29;verifie_pere(inst29);
+Pb_Thermohydraulique inst30;verifie_pere(inst30);
+Pb_Thermohydraulique_Concentration inst31;verifie_pere(inst31);
+Scalaire_impose_paroi inst32;verifie_pere(inst32);
+Sortie_libre_Text_H_ext inst33;verifie_pere(inst33);
+Sortie_libre_pression_imposee inst34;verifie_pere(inst34);
+Sortie_libre_pression_moyenne_imposee inst35;verifie_pere(inst35);
+Temperature_imposee_paroi inst36;verifie_pere(inst36);
+Traitement_particulier_NS inst37;verifie_pere(inst37);
 }

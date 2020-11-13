@@ -153,6 +153,18 @@ public :
   virtual void div_ale_derivative( DoubleTrav& derivee_ale, double timestep, DoubleTab& derivee, DoubleTrav& secmemP );
   virtual void update_pressure_matrix( void );
 
+  // <IBM> Methods for Immersed Boundary Method (IBM)
+  inline const int& get_matrice_pression_penalisee_H1() const;
+  inline const int& get_correction_matrice_pression() const;
+  inline const int& get_correction_vitesse_modifie() const;
+  inline const int& get_correction_pression_modifie() const;
+  inline const int& get_gradient_pression_qdm_modifie() const;
+  inline const int& get_i_source_pdf() const;
+  inline const DoubleTab& get_champ_coeff_pdf_som() const;
+  inline const int& get_correction_vitesse_projection_initiale() const;
+  inline const int& get_correction_calcul_pression_initiale() const;
+  inline const int& get_correction_matrice_projection_initiale() const;
+  // </IBM>
 protected:
   virtual void discretiser_assembleur_pression();
 
@@ -204,6 +216,20 @@ protected:
   // pour genepi il est important d avori divu =0 car accumulation d'erreur
   // meme si c'est pas faisable avec tous les schemas
   int div_u_nul_et_non_dsurdt_divu_;
+
+  // <IBM> Members required by the Immersed Boundary Method (IBM)
+  int postraiter_gradient_pression_sans_masse_;
+  int correction_matrice_projection_initiale_;
+  int correction_calcul_pression_initiale_;
+  int correction_vitesse_projection_initiale_;
+  int correction_matrice_pression_;
+  int matrice_pression_penalisee_H1_;
+  int correction_vitesse_modifie_;
+  int correction_pression_modifie_;
+  int gradient_pression_qdm_modifie_;
+  int i_source_pdf_;
+  DoubleTab champ_coeff_pdf_som_;
+  // </IBM>
 
 private :
   // Pression au debut du pas de temps, utile pour abortTimeStep, notamment en Piso
@@ -341,5 +367,59 @@ inline Operateur_Conv& Navier_Stokes_std::get_terme_convectif()
   return terme_convectif;
 }
 
+//
+// <IBM> Methods for Immersed Boundary Method (IBM)
+//
+
+inline const int& Navier_Stokes_std::get_matrice_pression_penalisee_H1() const
+{
+  return matrice_pression_penalisee_H1_;
+}
+
+inline const int& Navier_Stokes_std::get_correction_matrice_pression() const
+{
+  return correction_matrice_pression_;
+}
+
+inline const int& Navier_Stokes_std::get_correction_vitesse_modifie() const
+{
+  return correction_vitesse_modifie_;
+}
+
+inline const int& Navier_Stokes_std::get_correction_pression_modifie() const
+{
+  return correction_pression_modifie_;
+}
+
+inline const int& Navier_Stokes_std::get_gradient_pression_qdm_modifie() const
+{
+  return gradient_pression_qdm_modifie_;
+}
+
+inline const int& Navier_Stokes_std::get_i_source_pdf() const
+{
+  return i_source_pdf_;
+}
+
+inline const DoubleTab& Navier_Stokes_std::get_champ_coeff_pdf_som() const
+{
+  return champ_coeff_pdf_som_;
+}
+
+inline const int& Navier_Stokes_std::get_correction_vitesse_projection_initiale() const
+{
+  return correction_vitesse_projection_initiale_;
+}
+
+inline const int& Navier_Stokes_std::get_correction_calcul_pression_initiale() const
+{
+  return correction_calcul_pression_initiale_;
+}
+
+inline const int& Navier_Stokes_std::get_correction_matrice_projection_initiale() const
+{
+  return correction_matrice_projection_initiale_;
+}
+// </IBM>
 
 #endif

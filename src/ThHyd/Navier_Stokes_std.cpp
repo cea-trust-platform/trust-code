@@ -47,6 +47,7 @@
 #include <MD_Vector_tools.h>
 #include <ConstDoubleTab_parts.h>
 #include <Zone_VF.h>
+#include <Source_PDF_base.h> // For Immersed Boundary Method (IBM)
 
 Implemente_instanciable_sans_constructeur(Navier_Stokes_std,"Navier_Stokes_standard",Equation_base);
 
@@ -70,6 +71,16 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   champs_compris_.ajoute_nom_compris("gradient_vitesse");
   champs_compris_.ajoute_nom_compris("vitesse_residu");
 
+  // Default values for IBM parameters
+  postraiter_gradient_pression_sans_masse_ = 0;
+  correction_matrice_projection_initiale_ = 0;
+  correction_calcul_pression_initiale_ = 0;
+  correction_vitesse_projection_initiale_ = 1;
+  correction_matrice_pression_ = 1;
+  matrice_pression_penalisee_H1_ = 0;
+  correction_vitesse_modifie_ = 1;
+  correction_pression_modifie_ = 0;
+  gradient_pression_qdm_modifie_ = 0;
 }
 
 // Description:
@@ -132,7 +143,32 @@ Entree& Navier_Stokes_std::readOn(Entree& is)
   divergence.set_description((Nom)"Volumetric flow rate=Integral(u*ndS) [m"+(Nom)(dimension+bidim_axi)+".s-1] if SI units used");
   gradient.set_fichier("Force_pression");
   gradient.set_description("Pressure drag exerted by the fluid=Integral(P*ndS) [N] if SI units used");
-
+  int i_source = -1;
+  int nb_source_pdf = 0;
+  int nb_source  = sources().size();
+  Cerr << "nb_source : " << nb_source << finl;
+  for(int i = 0; i<nb_source; i++)
+    {
+      //Cerr << (sources())[i].valeur().que_suis_je() << ", " << (sources())[i].valeur().que_suis_je().find("gne") << finl;
+      if ((sources())[i].valeur().que_suis_je().find("Source_PDF") > -1)
+        {
+          i_source = i;
+          nb_source_pdf++;
+        }
+    }
+  if (nb_source_pdf>1)
+    {
+      Cerr<<"(IBM) More than one Source_PDF_base detected."<<finl;
+      Cerr<<"(IBM) Case not supported."<<finl;
+      Cerr<<"Aborting..."<<finl;
+      abort();
+    }
+  i_source_pdf_ = i_source;
+  if (i_source_pdf_ != -1)
+    {
+      sources()[i_source_pdf_].valeur().set_description((Nom)"Sum of the source term on the obstacle (~= force induced by the obstacle under some assumptions)");
+      sources()[i_source_pdf_].valeur().set_fichier((Nom)"Force_induced_by_obstacle");
+    }
   return is;
 }
 
@@ -148,11 +184,22 @@ void Navier_Stokes_std::set_param(Param& param)
   param.ajouter_non_std("Traitement_particulier",(this));
   param.ajouter_non_std("Erreur_max_DivU",(this));
   param.ajouter("uzawa",&seuil_uzawa);
-  //  param.ajouter_non_std("vitesse_transportante",(this));
+  //param.ajouter_non_std("vitesse_transportante",(this));
   param.ajouter_non_std("seuil_divU",(this));
   param.ajouter_non_std("solveur_bar",(this));
   param.ajouter("projection_initiale",&projection_initiale);
   param.ajouter_non_std("methode_calcul_pression_initiale",(this));
+
+  // Parameters for IBM
+  param.ajouter_flag("postraiter_gradient_pression_sans_masse",&postraiter_gradient_pression_sans_masse_,Param::OPTIONAL);
+  param.ajouter("correction_matrice_projection_initiale",&correction_matrice_projection_initiale_,Param::OPTIONAL);
+  param.ajouter("correction_calcul_pression_initiale",&correction_calcul_pression_initiale_,Param::OPTIONAL);
+  param.ajouter("correction_vitesse_projection_initiale",&correction_vitesse_projection_initiale_,Param::OPTIONAL);
+  param.ajouter("correction_matrice_pression",&correction_matrice_pression_,Param::OPTIONAL);
+  param.ajouter("matrice_pression_penalisee_H1",&matrice_pression_penalisee_H1_,Param::OPTIONAL);
+  param.ajouter("correction_vitesse_modifie",&correction_vitesse_modifie_,Param::OPTIONAL);
+  param.ajouter("correction_pression_modifie",&correction_pression_modifie_,Param::OPTIONAL);
+  param.ajouter("gradient_pression_qdm_modifie",&gradient_pression_qdm_modifie_,Param::OPTIONAL);
 }
 
 int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -971,6 +1018,13 @@ void Navier_Stokes_std::projeter()
       //  B u = 0
       //  => e B(M-1)Bt l = Bv
       //
+      if ((i_source_pdf_ != -1) && (correction_vitesse_projection_initiale_==1))
+        {
+          Cerr<<"(IBM) Immersed Interface: modified initial velocity for initial projection."<<finl;
+          const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+          src.correct_vitesse(champ_coeff_pdf_som_, tab_vitesse);
+          tab_vitesse.echange_espace_virtuel();
+        }
       divergence.calculer(tab_vitesse, secmem);
       // Desormais on calcule le pas de temps avant la projection
       // Avant, on avait dt=dt_min au debut du calcul
@@ -1002,6 +1056,11 @@ void Navier_Stokes_std::projeter()
         {
           // M-1 Bt l
           gradient->multvect(lagrange, gradP);
+          if ((i_source_pdf_ != -1) && (correction_vitesse_projection_initiale_==1))
+            {
+              Cerr<<"(IBM) Immersed Interface: modified velocity corrector for initial projection."<<finl;
+              gradP /= champ_coeff_pdf_som_;
+            }
           gradP.echange_espace_virtuel();
 
           solveur_masse.appliquer(gradP);
@@ -1082,13 +1141,56 @@ int Navier_Stokes_std::preparer_calcul()
   Nom nom_eq2(nom_eq);
   nom_eq2.prefix("_QC");
 
-  if ((nom_eq2==nom_eq))
-    assembleur_pression_.assembler(matrice_pression_);
+  if (i_source_pdf_ != -1)
+    {
+      Cerr<<"(IBM) Immersed Interface: compute pressure matrix coefficients."<<finl;
+      Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+      src.updateChampRho();
+      // if (src.getInterpolationBool())
+      //   {
+      //     src.calculer_vitesse_imposee();
+      //   }
+      DoubleTab coeff;
+      coeff = src.compute_coeff_matrice_pression();
+      coeff.echange_espace_virtuel();
+      //Cerr<<"Min/max : "<< mp_min_vect(coeff) << " " << mp_max_vect(coeff) <<finl;
+      champ_coeff_pdf_som_ = coeff;
+      if (correction_matrice_projection_initiale_==1)
+        {
+          Cerr<<"(IBM) Immersed Interface: modified pressure matrix for initial projection."<<finl;
+          DoubleTab inv_coeff(champ_coeff_pdf_som_);
+          inv_coeff = 1. ;
+          inv_coeff *= champ_coeff_pdf_som_;
+          src.multiply_coeff_volume(inv_coeff);
+          inv_coeff.echange_espace_virtuel();
+          assembleur_pression().valeur().assembler_mat(matrice_pression_,inv_coeff,1,1);
+        }
+      else
+        {
+          if ((nom_eq2==nom_eq))
+            {
+              assembleur_pression_.assembler(matrice_pression_);
+            }
+          else
+            {
+              Cerr<<"Assembling for quasi-compressible"<<finl;
+              assembleur_pression_.assembler_QC(le_fluide->masse_volumique().valeurs(),matrice_pression_);
+            }
+        }
+    }
   else
     {
-      Cerr<<"Assembling for quasi-compressible"<<finl;
-      assembleur_pression_.assembler_QC(le_fluide->masse_volumique().valeurs(),matrice_pression_);
+      if ((nom_eq2==nom_eq))
+        {
+          assembleur_pression_.assembler(matrice_pression_);
+        }
+      else
+        {
+          Cerr<<"Assembling for quasi-compressible"<<finl;
+          assembleur_pression_.assembler_QC(le_fluide->masse_volumique().valeurs(),matrice_pression_);
+        }
     }
+
   // GF en cas de reprise on conserve la valeur de la pression
   // avant elle ne servait qu' a initialiser le lagrange pour la projection
   // C'est important pour le Simpler/Piso de bien repartir de la pression
@@ -1131,6 +1233,19 @@ int Navier_Stokes_std::preparer_calcul()
         DoubleTrav secmem(la_pression.valeurs());
         DoubleTrav vpoint(gradient_P.valeurs());
         vpoint-=gradient_P.valeurs();
+        if ((i_source_pdf_ != -1) && ((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1)))
+          {
+            // Source_PDF& src = ref_cast(Source_PDF, (sources())[i_source_pdf_].valeur());
+            // if (src.getInterpolationBool())
+            //   {
+            //     src.calculer_vitesse_imposee();
+            //   }
+            if ((i_source_pdf_ != -1)&&(((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1))))
+              {
+                Cerr<<"(IBM) Immersed Interface: modified pressure gradient for initial pressure computation."<<finl;
+                vpoint/=champ_coeff_pdf_som_;
+              }
+          }
         if (methode_calcul_pression_initiale_>=2)
           for (int op=0; op<nombre_d_operateurs(); op++)
             operateur(op).ajouter(vpoint);
@@ -1145,6 +1260,21 @@ int Navier_Stokes_std::preparer_calcul()
                 mod=1;
               }
             sources().ajouter(vpoint);
+            // <IBM> Taking into account potential Source_PDF term for Immersed Boundary Method
+            if ((i_source_pdf_ != -1) && ((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1)))
+              {
+                // Source_PDF& src = ref_cast(Source_PDF, (sources())[i_source_pdf_].valeur());
+                // if (src.getInterpolationBool())
+                //   {
+                //     src.calculer_vitesse_imposee();
+                //   }
+                if ((i_source_pdf_ != -1)&&(((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1))))
+                  {
+                    Cerr<<"(IBM) Immersed Interface: modified pressure gradient for initial pressure computation."<<finl;
+                    vpoint/=champ_coeff_pdf_som_;
+                  }
+              }
+            // </IBM>
             if (mod)
               le_schema_en_temps->set_dt()=0;
           }
@@ -1159,6 +1289,16 @@ int Navier_Stokes_std::preparer_calcul()
 
             DoubleTrav inc_pre(la_pression.valeurs());
             solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
+            // <IBM> Correction of pressure for Immersed Boundary Method
+            Cerr << "Pressure increment computed successfully" << finl;
+            if ((i_source_pdf_ != -1) && (correction_calcul_pression_initiale_ == 1))
+              {
+                Cerr<<"(IBM) Immersed Interface: correction of initial pressure."<<finl;
+                const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+                src.correct_incr_pressure(champ_coeff_pdf_som_, inc_pre);
+                inc_pre.echange_espace_virtuel();
+              }
+            // </IBM>
             // On veut que l'espace virtuel soit a jour, donc all_items
             operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
           }
@@ -1174,6 +1314,29 @@ int Navier_Stokes_std::preparer_calcul()
 
   Debog::verifier("Navier_Stokes_std::preparer_calcul, vitesse", inconnue());
   Debog::verifier("Navier_Stokes_std::preparer_calcul, pression", la_pression);
+
+  // <IBM> Immersed Boundary Method
+  if (i_source_pdf_ != -1)
+    {
+      DoubleTab coeff(champ_coeff_pdf_som_);
+      coeff = 1.;
+      if (matrice_pression_penalisee_H1_==1)
+        {
+          Cerr<<"(IBM) Immersed Interface: H1 penalty of pressure matrix."<<finl;
+          coeff /= champ_coeff_pdf_som_;
+        }
+      else if (correction_matrice_pression_==1)
+        {
+          Cerr<<"(IBM) Immersed Interface: modification of pressure matrix."<<finl;
+          coeff *= champ_coeff_pdf_som_;
+          //Cerr<<"Min/max of coefficients: "<< mp_min_vect(champ_coeff_pdf_som_) << " " << mp_max_vect(champ_coeff_pdf_som_) <<finl;
+        }
+      const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+      src.multiply_coeff_volume(coeff);
+      coeff.echange_espace_virtuel();
+      assembleur_pression().valeur().assembler_mat(matrice_pression_,coeff,1,1);
+    }
+  // </IBM>
 
   return 1;
 }
@@ -1216,7 +1379,10 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
   if (postraitement_gradient_P_)
     {
       gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
-      solveur_masse.appliquer(gradient_P.valeurs());
+      if (!postraiter_gradient_pression_sans_masse_)
+        {
+          solveur_masse.appliquer(gradient_P.valeurs());
+        }
     }
   gradient_P.mettre_a_jour(temps);
 
@@ -1309,7 +1475,38 @@ bool Navier_Stokes_std::initTimeStep(double dt)
             }
         }
     }
-  return Equation_base::initTimeStep(dt);
+
+  // <IBM> Immersed Boundary Method
+  double ddt = Equation_base::initTimeStep(dt);
+
+  if (i_source_pdf_ != -1)
+    {
+      Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+      if (!sub_type(Fluide_Incompressible,le_fluide.valeur()))
+        {
+          src.updateChampRho();
+        }
+      src.calculer_vitesse_imposee();
+      bool mat_var = src.get_matrice_pression_variable_bool_();
+      if (mat_var == false) return  ddt;
+      Cerr << "(IBM) Immersed Interface: update of pressure matrix coefficents."<<finl;
+      champ_coeff_pdf_som_ = src.compute_coeff_matrice_pression();
+      champ_coeff_pdf_som_.echange_espace_virtuel();
+      //Cerr<<"Min/max of coefficients: "<< mp_min_vect(champ_coeff_pdf_som_) << " " << mp_max_vect(champ_coeff_pdf_som_) <<finl;
+
+      if ((correction_matrice_pression_==1) || (matrice_pression_penalisee_H1_==1))
+        {
+          Cerr<<"(IBM) Immersed Interface: update of pressure matrix."<<finl;
+          DoubleTab inv_coeff(champ_coeff_pdf_som_);
+          inv_coeff = 1.;
+          inv_coeff *= champ_coeff_pdf_som_;
+          src.multiply_coeff_volume(inv_coeff);
+          inv_coeff.echange_espace_virtuel();
+          assembleur_pression().valeur().assembler_mat(matrice_pression_,inv_coeff,1,1);
+        }
+    }
+  // </IBM>
+  return ddt;
 }
 
 // Description:

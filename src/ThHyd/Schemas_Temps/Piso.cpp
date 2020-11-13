@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Piso.h>
+#include <Source_PDF_base.h>
 #include <Zone_VF.h>
 #include <EChaine.h>
 #include <Debog.h>
@@ -166,6 +167,30 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //matrice = A[Un] = M/delta_t + CONV +DIFF
   //resu =  A[Un]Un -(A[Un]Un-Ss) + Sv -BtPn
 
+  // <IBM> Taking into account penality term for Immersed Boundary Method
+  const int& i_source_PDF = eqnNS.get_i_source_pdf();
+  if (i_source_PDF != -1)
+    {
+      Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eqnNS.sources())[i_source_PDF].valeur());
+      Cerr<<"Immersed Interface: Dirichlet velocity in momentum equation for PDF (if any)."<<finl;
+      DoubleTab secmem_pdf(resu);
+      src.calculer_pdf(secmem_pdf);
+      resu -= secmem_pdf;
+      src.set_sec_mem_pdf(secmem_pdf);
+      resu.echange_espace_virtuel();
+
+      DoubleTab coeff;
+      coeff = eqnNS.get_champ_coeff_pdf_som();
+      if (eqnNS.get_gradient_pression_qdm_modifie()==1)
+        {
+          Cerr<<"(IBM) Immersed Interface: modified pressure gradient in momentum equation."<<finl;
+          gradP/=coeff;
+        }
+      gradP.echange_espace_virtuel();
+    }
+  // </IBM>
+
+
   if (isCoviMAC)
     {
       eqnNS.assembler_avec_inertie(matrice,current,resu);
@@ -245,6 +270,14 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       //Calcul de Bt(delta_t*delta_P)
       gradient.valeur().multvect(correction_en_pression,gradP);
       eqn.solv_masse().appliquer(gradP);
+      if ((i_source_PDF != -1) && (eqnNS.get_correction_vitesse_modifie()==1))
+        {
+          Cerr<<"(IBM) Immersed Interface: modified velocity correction."<<finl;
+          DoubleTab coeff;
+          coeff = eqnNS.get_champ_coeff_pdf_som();
+          gradP/=coeff;
+          gradP.echange_espace_virtuel();
+        }
 
       //Calcul de Un+1 = U* -delta_t*delta_P
       current -= gradP;
@@ -255,7 +288,21 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       //Calcul de Pn+1 = Pn + (delta_t*delta_P)/delat_t
       Debog::verifier("Piso::iterer_NS correction avant dt",correction_en_pression);
       correction_en_pression /= dt;
-      pression += correction_en_pression;
+
+      // <IBM> Immersed Interface: modified pressure correction.
+      if ((i_source_PDF != -1) && (eqnNS.get_correction_pression_modifie()==1))
+        {
+          Cerr<<"Immersed Interface: modified pressure correction."<<finl;
+          DoubleTab coeff;
+          coeff = eqnNS.get_champ_coeff_pdf_som();
+          const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eqnNS.sources())[i_source_PDF].valeur());
+          src.correct_pressure(coeff,pression,correction_en_pression);
+        }
+      else
+        {
+          pression += correction_en_pression;
+        }
+      // </IBM>
       eqnNS.assembleur_pression().valeur().modifier_solution(pression);
       pression.echange_espace_virtuel();
       Debog::verifier("Piso::iterer_NS pression finale",pression);

@@ -14,39 +14,28 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
-// Version:     /main/7
+// File:        Interpolation_IBM_base.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
+#include <Interpolation_IBM_base.h>
 
-#include <Champ_implementation_sommet_base.h>
+Implemente_base(Interpolation_IBM_base, "Interpolation_IBM_base", Objet_U);
+// XD interpolation_ibm_base objet_u interpolation_ibm_base 0 Base class for all the interpolation methods available in the Immersed Boundary Method (IBM).
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
-//
-// Decrire ici la classe Champ_implementation_Q1
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+void Interpolation_IBM_base::discretise(const Discretisation_base&, Zone_dis_base&)
 {
+  return;
+}
 
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+Sortie& Interpolation_IBM_base::printOn( Sortie& os ) const
+{
+  return os;
+}
 
-public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
-
-protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
-
-
-};
-
-#endif /* Champ_implementation_Q1_inclus */
+Entree& Interpolation_IBM_base::readOn( Entree& is )
+{
+  return is;
+}

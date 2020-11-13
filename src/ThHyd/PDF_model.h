@@ -14,39 +14,56 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
-// Version:     /main/7
+// File:        PDF_model.h
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
+#ifndef PDF_model_included
+#define PDF_model_included
 
-#include <Champ_implementation_sommet_base.h>
+#include <Champ_Don.h>
+#include <Motcle.h>
+#include <Zone_VF.h>
+#include <DoubleTab.h>
+#include <Parser.h>
 
 /////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
+// .NAME        : PDF_model
+// .HEADER      : genepi3 genepi3/src/Equations/Plaques
+// .LIBRARY     : ?
+// .DESCRIPTION : class PDF_model
 //
-// Decrire ici la classe Champ_implementation_Q1
+// <Description of class PDF_model>
 //
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+class PDF_model : public Objet_U
 {
 
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+  Declare_instanciable(PDF_model) ;
 
 public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
-
+  double get_vitesse_imposee(ArrOfDouble&,int);
+  void affecter_vitesse_imposee(Zone_VF&, const DoubleTab&);
+  double eta() const
+  {
+    return eta_;
+  }
 protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
-
-
+  int lire_motcle_non_standard(const Motcle&, Entree&);
+  Champ_Don vitesse_imposee_lu_;
+  Champ_Don vitesse_imposee_;
+  double eta_;
+  double coefku_;
+  double temps_relax_;
+  double echelle_relax_;
+  int type_vitesse_imposee_;
+  int local_;
+  Parser* parsers_;
+  friend class Source_PDF_base;
+  friend class Source_PDF;
 };
 
-#endif /* Champ_implementation_Q1_inclus */
+#endif /* PDF_model */

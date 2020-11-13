@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,8 @@
 #include <Champ_Q1_EF.h>
 #include <Zone_EF.h>
 #include <Domaine.h>
+#include <Equation.h>
+#include <Debog.h>
 
 
 Implemente_instanciable(Champ_Q1_EF,"Champ_Q1_EF",Champ_Inc_Q1_base);
@@ -120,4 +122,75 @@ int Champ_Q1_EF::imprime(Sortie& os, int ncomp) const
   os << finl;
   Cout << "Champ_Q1_EF::imprime FIN >>>>>>>>>> " << finl;
   return 1;
+}
+
+void Champ_Q1_EF::gradient(DoubleTab& gradient_elem)
+{
+  // Calcul du gradient de la vitesse pour le calcul de la vorticite
+  // Gradient ordre 1 (valeur moyenne dans un element)
+  // Order 1 gradient (mean value within an element)
+  const Zone_EF& zone_EF_ = zone_EF();
+  const DoubleTab& vitesse = equation().inconnue().valeurs();
+  const IntTab& elems= zone_EF_.zone().les_elems();
+  int nb_som_elem=zone_EF_.zone().nb_som_elem();
+  int nb_elems=zone_EF_.zone().nb_elem_tot();
+  const DoubleVect& volume_thilde=zone_EF_.volumes_thilde();
+  const DoubleTab& Bij_thilde=zone_EF_.Bij_thilde();
+
+  assert(gradient_elem.dimension(0) == nb_elems);
+  assert(gradient_elem.dimension(1) == dimension); // line
+  assert(gradient_elem.dimension(2) == dimension); // column
+
+  operator_egal(gradient_elem, 0.); // Espace reel uniquement
+
+  for (int num_elem=0; num_elem<nb_elems; num_elem++)
+    {
+      for (int a=0; a<dimension; a++) // composante numero 1, component number 1
+        {
+          for (int b=0; b<dimension; b++) // composante numero 2, component number 2
+            {
+              for (int j=0; j<nb_som_elem; j++)
+                {
+                  int s = elems(num_elem,j);
+                  gradient_elem(num_elem,a,b) += vitesse(s,a)*Bij_thilde(num_elem,j,b);
+                }
+              gradient_elem(num_elem,a,b) /= volume_thilde(num_elem);
+            }
+        }
+    }
+}
+
+void Champ_Q1_EF::cal_rot_ordre1(DoubleTab& vorticite)
+{
+  const Zone_EF& zone_EF_ = zone_EF();
+  int nb_elems=zone_EF_.zone().nb_elem_tot();
+
+  DoubleTab gradient_elem(0, dimension, dimension);
+  // le tableau est initialise dans la methode gradient():
+  zone_EF_.zone().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
+  gradient(gradient_elem);
+  Debog::verifier("apres calcul gradient",gradient_elem);
+  int num_elem;
+  switch(dimension)
+    {
+    case 2 :
+      {
+        for (num_elem=0; num_elem<nb_elems; num_elem++)
+          {
+            vorticite(num_elem)=gradient_elem(num_elem,1,0)-gradient_elem(num_elem,0,1);
+          }
+      }
+      break;
+    case 3 :
+      {
+        for (num_elem=0; num_elem<nb_elems; num_elem++)
+          {
+            vorticite(num_elem,0)=gradient_elem(num_elem,2,1)-gradient_elem(num_elem,1,2);
+            vorticite(num_elem,1)=gradient_elem(num_elem,0,2)-gradient_elem(num_elem,2,0);
+            vorticite(num_elem,2)=gradient_elem(num_elem,1,0)-gradient_elem(num_elem,0,1);
+          }
+      }
+    }
+  Debog::verifier("apres calcul vort",vorticite);
+  return ;
 }

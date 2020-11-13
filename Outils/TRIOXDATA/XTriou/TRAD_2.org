@@ -451,7 +451,24 @@ navier_stokes_standard eqn_base navier_stokes_standard -1 Navier-Stokes equation
   attr dt_projection deuxmots dt_projection 1 nb value : This keyword checks every nb time-steps the equality of velocity divergence to zero. value is the criteria convergency for the solver used.
   attr seuil_divU floatfloat seuil_divU 1 value factor : this keyword is intended to minimise the number of iterations during the pressure system resolution. The convergence criteria during this step (\'seuil\' in solveur_pression) is dynamically adapted according to the mass conservation. At tn , the linear system Ax=B is considered as solved if the residual ||Ax-B||<seuil(tn). For tn+1, the threshold value seuil(tn+1) will be evualated as: NL2 If ( |max(DivU)*dt|<value ) NL2 Seuil(tn+1)= Seuil(tn)*factor NL2 Else NL2 Seuil(tn+1)= Seuil(tn)*factor NL2 Endif NL2 The first parameter (value) is the mass evolution the user is ready to accept per timestep, and the second one (factor) is the factor of evolution for \'seuil\' (for example 1.1, so 10% per timestep). Investigations has to be lead to know more about the effects of these two last parameters on the behaviour of the simulations.
   attr traitement_particulier traitement_particulier traitement_particulier 1 Keyword to post-process particular values.
+  attr correction_matrice_projection_initiale entier correction_matrice_projection_initiale 1 (IBM advanced) fix matrix of initial projection for PDF
+  attr correction_calcul_pression_initiale entier correction_calcul_pression_initiale 1 (IBM advanced) fix initial pressure computation for PDF
+  attr correction_vitesse_projection_initiale entier correction_vitesse_projection_initiale 1 (IBM advanced) fix initial velocity computation for PDF
+  attr correction_matrice_pression entier correction_matrice_pression 1 (IBM advanced) fix pressure matrix for PDF
+  attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
+  attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
+  attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
+  attr postraiter_gradient_pression_sans_masse entier postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
 penalisation_l2_ftd_lec objet_lecture nul 0 not_set
+  attr postraiter_gradient_pression_sans_masse entier postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
+  attr correction_matrice_projection_initiale entier correction_matrice_projection_initiale 1 (IBM advanced) fix matrix of initial projection for PDF
+  attr correction_calcul_pression_initiale entier correction_calcul_pression_initiale 1 (IBM advanced) fix initial pressure computation for PDF
+  attr correction_vitesse_projection_initiale entier correction_vitesse_projection_initiale 1 (IBM advanced) fix initial velocity computation for PDF
+  attr correction_matrice_pression entier correction_matrice_pression 1 (IBM advanced) fix pressure matrix for PDF
+  attr matrice_pression_penalisee_H1 entier matrice_pression_penalisee_H1 1 (IBM advanced) fix pressure matrix for PDF
+  attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
+  attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
+  attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
   attr bord chaine bord 0 not_set
   attr val list val 0 not_set
 penalisation_l2_ftd listobj pp 1 penalisation_l2_ftd_lec 0 not_set

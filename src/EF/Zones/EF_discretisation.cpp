@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,9 +22,12 @@
 
 #include <EF_discretisation.h>
 #include <Zone_EF.h>
-#include <Champ_Fonc_Tabule.h>
+#include <Champ_P1_EF.h>
+#include <Champ_Q1_EF.h>
 #include <Champ_Fonc_P0_EF.h>
-
+#include <Rotationnel_Champ_P1_EF.h>
+#include <Rotationnel_Champ_Q1_EF.h>
+#include <Champ_Fonc_Tabule.h>
 #include <Champ_Fonc_Tabule_P0_EF.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>

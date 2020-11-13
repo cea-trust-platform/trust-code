@@ -14,39 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
-// Version:     /main/7
+// File:        Interpolation_IBM_hybrid.h
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
+#ifndef Interpolation_IBM_hybrid_included
+#define Interpolation_IBM_hybrid_included
 
-#include <Champ_implementation_sommet_base.h>
+#include <Interpolation_IBM_elem_fluid.h>
+#include <Interpolation_IBM_mean_gradient.h>
+#include <IntList.h>
 
 /////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
 //
-// Decrire ici la classe Champ_implementation_Q1
+// .DESCRIPTION : class Interpolation_IBM_hybrid
 //
-//////////////////////////////////////////////////////////////////////////////
+// <Description of class Interpolation_IBM_hybrid>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid
 {
 
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+  Declare_instanciable( Interpolation_IBM_hybrid ) ;
 
 public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
-
+  void discretise(const Discretisation_base&, Zone_dis_base&);
+  inline IntList& getSommetsVoisinsOf(int i)
+  {
+    return sommets_voisins_[i];
+  };
 protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
-
+  void computeFluidElems(Zone_dis_base&);
+  void computeSommetsVoisins(Zone_dis_base&);
+  Champ_Don is_dirichlet_lu_;
+  Champ_Don solid_elems_lu_;
+  IntList* sommets_voisins_;
+  friend class Source_PDF;
+  Interpolation_IBM_mean_gradient* my_mean_gradient;
 
 };
 
-#endif /* Champ_implementation_Q1_inclus */
+#endif /* Interpolation_IBM_hybrid_included */

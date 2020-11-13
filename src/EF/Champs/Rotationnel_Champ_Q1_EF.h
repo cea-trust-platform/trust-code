@@ -14,39 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
+// File:        Rotationnel_Champ_Q1_EF.h
+// Directory:   $TRUST_ROOT/src/EF/Champs
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
+#ifndef Rotationnel_Champ_Q1_EF_included
+#define Rotationnel_Champ_Q1_EF_included
 
-#include <Champ_implementation_sommet_base.h>
-
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
 //
-// Decrire ici la classe Champ_implementation_Q1
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Champ_Rotationnel.h>
+#include <Champ_Fonc_P0_EF.h>
+#include <Ref_Champ_Q1_EF.h>
 
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+
+class Rotationnel_Champ_Q1_EF : public Champ_Rotationnel,
+  public Champ_Fonc_P0_EF
 {
+  Declare_instanciable(Rotationnel_Champ_Q1_EF);
 
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+public:
 
-public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
+  inline const Champ_Q1_EF& mon_champ() const;
+  inline void mettre_a_jour(double );
+  void associer_champ(const Champ_Q1_EF& );
+  void me_calculer(double );
 
-protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
+protected:
 
-
+  REF(Champ_Q1_EF) mon_champ_;
 };
 
-#endif /* Champ_implementation_Q1_inclus */
+inline const Champ_Q1_EF& Rotationnel_Champ_Q1_EF::mon_champ() const
+{
+  return mon_champ_.valeur();
+}
+
+inline void Rotationnel_Champ_Q1_EF::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+}
+
+
+
+#endif
+

@@ -14,39 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
-// Version:     /main/7
+// File:        Rotationnel_Champ_P1_EF.cpp
+// Directory:   $TRUST_ROOT/src/EF/Champs
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
+#include <Rotationnel_Champ_P1_EF.h>
+#include <Champ_P1_EF.h>
 
-#include <Champ_implementation_sommet_base.h>
+Implemente_instanciable(Rotationnel_Champ_P1_EF,"Rotationnel_Champ_P1_EF",Champ_Fonc_P0_EF);
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
-//
-// Decrire ici la classe Champ_implementation_Q1
-//
-//////////////////////////////////////////////////////////////////////////////
 
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+//     printOn()
+/////
+
+Sortie& Rotationnel_Champ_P1_EF::printOn(Sortie& s) const
 {
+  return s << que_suis_je() << " " << le_nom();
+}
 
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+//// readOn
+//
 
-public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
+Entree& Rotationnel_Champ_P1_EF::readOn(Entree& s)
+{
+  return s ;
+}
 
-protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
+void Rotationnel_Champ_P1_EF::associer_champ(const Champ_P1_EF& un_champ)
+{
+  mon_champ_= un_champ;
+}
 
-
-};
-
-#endif /* Champ_implementation_Q1_inclus */
+void Rotationnel_Champ_P1_EF::me_calculer(double tps)
+{
+  //  Cerr<<"Rotationnel_Champ_P1_EF::me_calculer"<<finl;
+  //      mon_champ_->calculer_rotationnel_ordre2_centre_element(valeurs());
+  //mon_champ_->cal_rot_ordre1(valeurs());
+  Cerr << __FILE__ << __LINE__ << "Rotationnel_Champ_P1_EF::me_calculer : ERROR : the curl of a P1 vector fields in a FE context has not been implemented yet." << finl;
+  abort();
+}

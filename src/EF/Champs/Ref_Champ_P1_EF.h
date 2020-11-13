@@ -14,39 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
-// Version:     /main/7
+// File:        Ref_Champ_P1_EF.h
+// Directory:   $TRUST_ROOT/src/EF/Champs
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
-
-#include <Champ_implementation_sommet_base.h>
-
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
-//
-// Decrire ici la classe Champ_implementation_Q1
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
-{
-
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
-
-public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
-
-protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
-
-
-};
-
-#endif /* Champ_implementation_Q1_inclus */
+#ifndef Ref_Champ_P1_EF_included
+#define Ref_Champ_P1_EF_included
+#include <Ref.h>
+class Champ_P1_EF;
+Declare_ref(Champ_P1_EF);
+#endif

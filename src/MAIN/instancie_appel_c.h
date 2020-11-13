@@ -21,6 +21,7 @@ instancie_src_Kernel_Cond_Lim();
 instancie_src_Kernel_Framework();
 instancie_src_Kernel_Geometrie();
 instancie_src_Kernel_Geometrie_Decoupeur();
+instancie_src_Kernel_Geometrie_Interpolation_IBM();
 instancie_src_Kernel_ICoCo();
 instancie_src_Kernel_Math();
 instancie_src_Kernel_Math_Matrices();

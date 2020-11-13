@@ -14,39 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_implementation_Q1.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
-// Version:     /main/7
+// File:        Interpolation_IBM.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_implementation_Q1_included
-#define Champ_implementation_Q1_included
+#include <Interpolation_IBM.h>
+#include <Nom.h>
 
-#include <Champ_implementation_sommet_base.h>
+Implemente_deriv(Interpolation_IBM_base);
+Implemente_instanciable( Interpolation_IBM, "Interpolation_IBM", Interpolation_IBM_base ) ;
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
-//
-// Decrire ici la classe Champ_implementation_Q1
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+Sortie& Interpolation_IBM::printOn( Sortie& os ) const
 {
+  DERIV(Interpolation_IBM_base)::printOn( os );
+  return os;
+}
 
-public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
-
-public :
-  inline virtual ~Champ_implementation_Q1() { };
-  virtual void value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp=-1) const;
-
-protected :
-  virtual  double form_function(const ArrOfDouble& position, int cell, int ddl) const;
-
-
-};
-
-#endif /* Champ_implementation_Q1_inclus */
+Entree& Interpolation_IBM::readOn( Entree& is )
+{
+  Nom nom_modele("Interpolation_IBM_");
+  Nom type_mod;
+  is >> type_mod;
+  nom_modele+=type_mod;
+  typer(nom_modele);
+  is >> valeur();
+  return is;
+}
