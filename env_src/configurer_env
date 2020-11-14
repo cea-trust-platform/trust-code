@@ -379,7 +379,7 @@ check_nvidia_cuda()
       CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null | head -1` # JeanZay
    elif [ "$CUDA_LIB" = "" ]
    then
-      CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* 2>/dev/null | head -1`" # PCs
+      CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* /usr/local/*/lib*/libcudart.so.*.* 2>/dev/null | head -1`" # PCs
    else
       echo "Cuda lib libcudart.so not found!" && exit -1
    fi
@@ -387,68 +387,6 @@ check_nvidia_cuda()
    echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
    CUDA_ROOT=`dirname $CUDA_LIB`
    echo "Cuda CUDA_ROOT=$CUDA_ROOT"
-   #############################
-   # Installation NVIDIA Samples
-   #############################
-   echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
-   CUDA_SAMPLES=`ls $CUDA_ROOT/bin/cuda-install-samples*.sh 2>/dev/null`
-   CUDA_SAMPLES_PATH=/usr/share/cuda/samples
-   if [ "$CUDA_SAMPLES" != "" ]
-   then
-      [ "`ls NVIDIA_CUDA*Samples/1_Utilities/deviceQuery 2>/dev/null`" = "" ] && $CUDA_SAMPLES .
-      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && CUDA_PATH=$CUDA_ROOT make)
-   elif [ -d $CUDA_SAMPLES_PATH ]
-   then
-      mkdir -p NVIDIA_CUDA_Samples
-      cp -r $CUDA_SAMPLES_PATH/1_Utilities NVIDIA_CUDA_Samples
-      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && sed -i "1,$ s?../../common/inc?$CUDA_SAMPLES_PATH/common/inc?g" Makefile && CUDA_PATH="" make)
-   elif [ "$NVHPC" != "" ]
-   then
-      mkdir -p NVIDIA_CUDA_Samples
-      cp -r $NVHPC/Linux_x86_64/*/examples/OpenACC/SDK/src/deviceQuery NVIDIA_CUDA_Samples
-      #(cd NVIDIA_CUDA*Samples/deviceQuery && sed -i "1,$ s?../../common/?$CUDA_ROOT/../examples/OpenACC/SDK/common/?g" Makefile && make)
-      # Probleme pour tester correctement sur orcus...
-      COMPUTE_CAPABILITY="1.3"
-   else
-      echo "NVIDIA_CUDA Samples not found."
-      exit -1
-   fi
-   if [ "$COMPUTE_CAPABILITY" = "" ]
-   then
-      ###################################
-      # Test de la carte avec deviceQuery
-      ###################################
-      (
-       # On utilise le script trust en specifiant -gpu
-       source ../env_TRUST.sh 1>/dev/null 2>&1
-       LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
-       export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
-       trust -gpu dummy_file 1>$TRUST_ENV/card.log &
-       $TRUST_ROOT/bin/KSH/wait_for $! 600 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
-      )
-      COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
-   fi
-   # On ne supporte que les cartes double precision
-   TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
-   if [ "$TRUST_USE_CUDA" = 0 ]
-   then
-      echo "No. See error:"
-      cat $TRUST_ENV/card.log
-      exit -1
-   else
-      echo "Yes. The NVIDIA card is:"
-      grep Device $TRUST_ENV/card.log
-      # See https://docs.nvidia.com/cuda/archive/10.0/cuda-toolkit-release-notes/index.html
-      # Cuda 11 et icc 19.1 OK
-      # Cuda 10 et icc 18 OK mais des problemes avec Intel sur AmgX -> on reste en GNU <= 7.3.0
-      #if [ ${TRUST_CC_BASE%g++} = $TRUST_CC_BASE ]
-      #then
-      #   echo "But it will not be used cause you should use GNU compilers to build PETSc with CUDA."
-      #   echo "So try to run: ./configure -cuda -c++=g++ -cc=gcc -fc=gfortran"
-      #   echo "To force using GNU compilers."
-      #   TRUST_USE_CUDA=0 && exit -1
-      #fi
-   fi
 }
 
 ########################################################
@@ -1071,6 +1009,21 @@ then
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
 fi   
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
+
+########
+# CUDA #
+########
+if [ "$TRUST_USE_CUDA" = 1 ]
+then
+   check_nvidia_cuda
+   m="# PATH to CUDA";
+   e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
+   ecrit $m"|"$e"|"$env;eval $e
+   echo "ADD_PATH \$CUDA_ROOT/bin" >> $env
+   echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT${CUDA_LIB#$CUDA_ROOT} " >> $env
+else
+   TRUST_USE_CUDA=0
+fi
 
 #############
 # Debut MPI #
@@ -2054,23 +2007,64 @@ fi
 # Test si le support GPU est possible avec PETSc
 ################################################
 m="# PATH to PETSc";e="PETSC_DIR=\"\$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"\" && export PETSC_DIR";ecrit $m"|"$e"|"$env
-# Si la machine est utilisee pour construire un binaire semi-statique (get_binary), on ne met pas le support
-# car les shared libraries Cuda font que le binaire ne sera pas portable...
-if [ "$TRUST_USE_CUDA" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines get_binary | grep $HOST`" = "" ]
-then
-   check_nvidia_cuda
-   Defines=$Defines" -DTRUST_USE_CUDA -DPETSC_SKIP_COMPLEX"
-else
-   TRUST_USE_CUDA=0
-fi
-m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   m="# PATH to CUDA";
-   e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
-   ecrit $m"|"$e"|"$env
-   echo "ADD_PATH $CUDA_ROOT/bin" >> $env
-   echo "ADD_LD_LIBRARY_PATH $CUDA_LIB" >> $env
+   #############################
+   # Installation NVIDIA Samples
+   #############################
+   echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
+   CUDA_SAMPLES=`ls $CUDA_ROOT/bin/cuda-install-samples*.sh 2>/dev/null`
+   CUDA_SAMPLES_PATH=/usr/share/cuda/samples
+   if [ "$CUDA_SAMPLES" != "" ]
+   then
+      [ "`ls NVIDIA_CUDA*Samples/1_Utilities/deviceQuery 2>/dev/null`" = "" ] && $CUDA_SAMPLES .
+      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && CUDA_PATH=$CUDA_ROOT make 1>$TRUST_ENV/card.log 2>&1)
+   elif [ -d $CUDA_SAMPLES_PATH ]
+   then
+      mkdir -p NVIDIA_CUDA_Samples
+      cp -r $CUDA_SAMPLES_PATH/1_Utilities NVIDIA_CUDA_Samples
+      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && sed -i "1,$ s?../../common/inc?$CUDA_SAMPLES_PATH/common/inc?g" Makefile && CUDA_PATH="" make 1>$TRUST_ENV/card.log 2>&1)
+   elif [ "$NVHPC" != "" ]
+   then
+      mkdir -p NVIDIA_CUDA_Samples
+      cp -r $NVHPC/Linux_x86_64/*/examples/OpenACC/SDK/src/deviceQuery NVIDIA_CUDA_Samples
+      #(cd NVIDIA_CUDA*Samples/deviceQuery && sed -i "1,$ s?../../common/?$CUDA_ROOT/../examples/OpenACC/SDK/common/?g" Makefile && make 1>$TRUST_ENV/card.log 2>&1)
+      # Probleme pour tester correctement sur orcus...
+      COMPUTE_CAPABILITY="1.3"
+   else
+      echo "NVIDIA_CUDA Samples not found."
+      exit -1
+   fi
+   if [ "$COMPUTE_CAPABILITY" = "" ]
+   then
+      ###################################
+      # Test de la carte avec deviceQuery
+      ###################################
+      (
+       # On utilise le script trust en specifiant -gpu
+       source ../env_TRUST.sh 1>/dev/null 2>&1
+       LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
+       export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
+       trust -gpu dummy_file 1>>$TRUST_ENV/card.log &
+       $TRUST_ROOT/bin/KSH/wait_for $! 600 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
+      )
+      COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+   fi
+   # On ne supporte que les cartes double precision
+   TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
+   if [ "$TRUST_USE_CUDA" = 0 ]
+   then
+      echo "No. See error:"
+      cat $TRUST_ENV/card.log
+      exit -1
+   else
+      awk '/Device 0/ {print "Yes. The NVIDIA card is "$0}' $TRUST_ENV/card.log
+   fi
+   m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
+   Defines=$Defines" -DTRUST_USE_CUDA -DPETSC_SKIP_COMPLEX"
+   # Vu sur orcus (fait ch..r) -pedantic pose probleme:
+   echo "Cuda: -pedantic suppressed in \$CppFlags"
+   CppFlags=`echo $CppFlags | sed "s?-pedantic??g"`
 fi
 ##########
 # VAMPIR #

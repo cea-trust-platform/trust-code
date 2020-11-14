@@ -120,7 +120,7 @@ af0d057274faf5b11966f02a5d62a4d7  petsc/metis-5.1.0-p8.tar.gz
 2484682a84eddda48ddcbe725adea875  petsc/scotch-6.0.9.tar.gz
 b721c134f138620824347930f0333ceb  petsc/superlu-5.2.1.tar.gz
 cfa3a57cadd5b6df544bbb88942015b3  petsc/superlu_dist-6.3.0.tar.gz
-09b6819826850ed6aa5a561b31a63b0a  petsc/viennacl-b09c65a.tar.gz
+fa590049a51453d0df7f51b305e3db5e  petsc/viennacl-b09c65a.tar.gz
 fa3a9bf9b2d6ed2431f1baa46f4058b8  tcl_tk/tcl8.5.13-src.tar.gz
 1fc7dbb7495160756dbc805224afa360  tcl_tk/tk8.5.13-src.tar.gz
 d44b5dddebd8a7a7309aea6c36fda117  utils/bc-1.06.tar.gz

@@ -16,6 +16,7 @@ define_modules_config()
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       module="slurm compilers/gcc/6.5.0 mpi/openmpi/gcc/6.5.0/4.0.1 nvidia_hpc_sdk/20.7"
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/20.7"
    elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
