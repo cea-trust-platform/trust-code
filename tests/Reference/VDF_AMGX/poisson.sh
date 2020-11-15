@@ -12,7 +12,7 @@ if [ "$1" = "" ]
 then
    # Cas AmgXWrapper:
    NP=40 && N=150 # Out of memory a N=300 sur V100 16GB
-   [ `hostname` = is242981.intra.cea.fr ] && NP=4 && N=85 # Sinon out of memory
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && NP=4 && N=85 # Sinon out of memory
    # Test CPU avec PETSc
    echo -e "$NP CPU         ($N*$N*$N, Petsc C-AMG): \c"
    [ ! -f PETSc_SolverOptions_GAMG.info ] && cp $configs/PETSc_SolverOptions_GAMG.info .

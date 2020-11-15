@@ -14,7 +14,7 @@ let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond BLOCK_JACOBI_ILU { 
 # BICGSTAB
 let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type bcgs -pc_type sor -ksp_atol $seuil }"	
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond DIAG { } impr }"							;rank[$i]=3;
-let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SSOR { omega 1 } impr }"	# EISENSTAT ne marche pas 3.0.0 mais OK avec 3.1.0
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SSOR { omega 1 } impr }"	# EISENSTAT ne marche pas 3.0.0 mais OK avec 3.1.0
 let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type bcgs -pc_type hypre -pc_hypre_type pilut -pc_hypre_pilut_factorrowsize 20 -pc_hypre_pilut_tol 0.01 -ksp_atol $seuil }"	;
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"	
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }"				;rank[$i]=0;
@@ -73,7 +73,7 @@ let i=$i+1;solver[$i]="Petsc Cholesky_Lapack { impr }"						;par[$i]=0	;sym[$i]=
 # GC + SSOR / EISENSTAT / ASM 
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=2;
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.65 } impr aij }"			;sym[$i]=1	;rank[$i]=2;
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond EISENSTAT { omega 1.65 } impr }"			;sym[$i]=1	# OK avec 3.1.0 mais apporte rien
+#let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond EISENSTAT { omega 1.65 } impr }"			;sym[$i]=1	# OK avec 3.1.0 mais apporte rien
 
 # GC / ASM ILU(0)
 let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -ksp_atol $seuil }"				;sym[$i]=1	
@@ -98,6 +98,7 @@ let i=$i+1;solver[$i]="Petsc GMRES      { seuil $seuil precond BOOMERAMG { } CLI
 
 # PIPECG + SSOR
 let i=$i+1;solver[$i]="Petsc PIPECG   { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc PIPECG2  { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1
 
 ##########################
 # Solveurs tested on GPU #

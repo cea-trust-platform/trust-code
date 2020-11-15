@@ -23,6 +23,8 @@ then
    then
       # Latest:
       git clone https://github.com/NVIDIA/AMGX.git $LIB
+      cd $LIB && git checkout origin/v2.1.x # Pour Cuda 11 !
+      cd -
    else
       echo "Update $0 for your needs." && exit -1
    fi
@@ -55,11 +57,11 @@ then
    BUILD=RELEASE
    CMAKE_CXX_FLAGS="" && [ "$PETSC_HAVE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
-   cmake $CMAKE_CXX_FLAGS -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
+   cmake $CMAKE_CXX_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
    # Creation d'une librairie statique en plus de la dynamique libAmgXWrapper.so
-   ar cru $AMGX_DIR/$LIB/lib64/libAmgXWrapper_static.a CMakeFiles/AmgXWrapper.dir/src/*.o
+   ar cru $AMGX_DIR/$LIB/lib64/libAmgXWrapper_static.a CMakeFiles/AmgXWrapper.dir/src/*.o || exit -1
    # Test
    cd $AMGX_DIR/$LIB
    rm -r -f example && mkdir -p example && cd example
@@ -79,6 +81,7 @@ then
    # is242981	P400 (2Go)	   	10.2	11.0   10.0.1	OpenMPI 4.0.3   	0.90s   0.78s
    # is234639	P600 		 1.1	10.0	10.2	7.4.0	OpenMPI 4.0.3		1.83s	0.67s
    # is225303 	K4000 		 1.2   	 8.0 	 9.0	5.4.0	MPICH 3.2		2.08s	crash Cuda failure: 'invalid device function' dense_lu_solver.cu:698
+   # portable   GTX 1050 Ti     2.1	11.1	11.2	9.3.0   OpenMPI 4.0.3		2.07s	0.46s
    # is240831	P2000		 3.0	10.1	10.1	7.5.0	MPICH 3.2		1.72s   0.30s
    # irene	P100-PCIE-12Go	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.16s	0.11s
    # cobalt	P100-PCIE-16Go	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.35s	0.08s

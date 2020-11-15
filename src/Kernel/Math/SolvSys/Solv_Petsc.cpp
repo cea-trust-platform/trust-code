@@ -180,7 +180,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
   // Reprendre le formalisme de GCP { precond ssor { omega val } seuil val }
-  Motcles les_solveurs(18);
+  Motcles les_solveurs(19);
   {
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
@@ -200,6 +200,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[15] = "CLI_QUIET";
     les_solveurs[16] = "CHOLESKY_MUMPS_BLR";
     les_solveurs[17] = "CHOLESKY_CHOLMOD";
+    les_solveurs[18] = "PIPECG2";
   }
   int solver_supported_on_gpu_by_petsc=0;
   int solver_supported_on_gpu_by_amgx=0;
@@ -278,6 +279,11 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 10:
       {
         KSPSetType(SolveurPetsc_, KSPPIPECG);
+        break;
+      }
+    case 18:
+      {
+        KSPSetType(SolveurPetsc_, KSPPIPECG2);
         break;
       }
     case 2:
@@ -2158,7 +2164,7 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
       if (matrice_symetrique_)
         {
-          if (type_ksp_==KSPCG || type_ksp_==KSPPIPECG || type_ksp_==KSPGROPPCG || type_ksp_==KSPRICHARDSON)
+          if (type_ksp_==KSPCG || type_ksp_==KSPPIPECG || type_ksp_==KSPPIPECG2 || type_ksp_==KSPGROPPCG || type_ksp_==KSPRICHARDSON)
             {
               // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
               KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);

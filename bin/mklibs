@@ -26,7 +26,7 @@ then
          [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
       done
       [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig -lrt"
-      AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper_static"
+      [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper_static"
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
       petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h	
@@ -34,7 +34,7 @@ then
       then
 	 # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
          # -lnvToolsExt: ajoute suite undefined reference sur cobalt
-	 PETSC=$PETSC" `awk '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) if (index($i,"cuda") || (index($i,"-lcu"))) libs=libs" "$i;} END {print libs" -lnvToolsExt"}' $petscmachineinfo`"
+	 [ "$TRUST_USE_CUDA" = 1 ] && PETSC=$PETSC" `awk '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) if (index($i,"cuda") || (index($i,"-lcu"))) libs=libs" "$i;} END {print libs" -lnvToolsExt"}' $petscmachineinfo`"
 	 # X11 (avec une bidouille pour castor, pas capable de trouver sa librairie X11)
 	 if [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
 	 then

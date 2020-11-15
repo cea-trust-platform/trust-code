@@ -61,9 +61,6 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   static char help[] = "TRUST may solve linear systems with Petsc library.\n\n" ;
   Nom pwd(::pwd());
   // On initialise Petsc
-#ifdef TRUST_USE_CUDA
-  PetscOptionsSetValue(PETSC_NULL, "-cuda_initialize", "no");
-#endif
 #ifdef MPI_INIT_NEEDS_MPIRUN
   True_int flag;
   MPI_Initialized(&flag);
