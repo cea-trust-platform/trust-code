@@ -22,7 +22,7 @@ Mailler dom
 		}
 }
 
-      
+system "export TRUST_ENABLE_ERROR_HANDLERS=1"      
 # END MESH #
 # BEGIN PARTITION
 Partition dom

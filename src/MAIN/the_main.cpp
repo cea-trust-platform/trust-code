@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 True_int main(True_int argc, char** argv)
 {
+
   mon_main* p=NULL;
 
   int st= main_TRUST(argc,argv,p,0);
