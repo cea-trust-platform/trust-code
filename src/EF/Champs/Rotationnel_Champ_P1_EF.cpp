@@ -52,6 +52,6 @@ void Rotationnel_Champ_P1_EF::me_calculer(double tps)
   //  Cerr<<"Rotationnel_Champ_P1_EF::me_calculer"<<finl;
   //      mon_champ_->calculer_rotationnel_ordre2_centre_element(valeurs());
   //mon_champ_->cal_rot_ordre1(valeurs());
-  Cerr << __FILE__ << __LINE__ << "Rotationnel_Champ_P1_EF::me_calculer : ERROR : the curl of a P1 vector fields in a FE context has not been implemented yet." << finl;
+  Cerr << __FILE__ << (int)__LINE__ << "Rotationnel_Champ_P1_EF::me_calculer : ERROR : the curl of a P1 vector fields in a FE context has not been implemented yet." << finl;
   abort();
 }

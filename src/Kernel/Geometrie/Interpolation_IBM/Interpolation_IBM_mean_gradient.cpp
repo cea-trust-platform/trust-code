@@ -205,7 +205,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
                               // test de verification prepro Salome/Trust :
                               if ((elems_xpf != elem_found) && (elem_found != -1))
                                 {
-                                  Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : elem solid prepro != elem solid Trust" << finl;
+                                  Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : elem solid prepro != elem solid Trust" << finl;
                                   flag_xpf = false;
                                   flag_prt_nodes = true;
                                 }
@@ -227,7 +227,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
                           if (!flag_xpf)
                             {
                               // Traitement des erreurs
-                              Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : joint width too low?" << finl;
+                              Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : joint width too low?" << finl;
                               Cerr<<"Nb elem; Nb elem tot = "<<nb_elem<<" "<<nb_elem_tot<<finl;
                               Cerr<<"Nb som;  Nb som tot  = "<<nb_som<<" "<<nb_som_tot<<finl;
                               Cerr<<"element; node_Dirichlet = "<<num_elem<<" "<<num_som<<finl;
@@ -284,6 +284,6 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
             }
         }
     }
-  Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : nb nodes for interpolation = " <<nb_nodes_in_list<<finl;
+  Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : nb nodes for interpolation = " <<nb_nodes_in_list<<finl;
 }
 

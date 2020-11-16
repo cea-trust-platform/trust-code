@@ -140,7 +140,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
                         }
                       else
                         {
-                          Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_elem_fluid::computeFluidElems : ERROR : joint width too low?" << finl;
+                          Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_elem_fluid::computeFluidElems : ERROR : joint width too low?" << finl;
                           Cerr<<"node elems_fluid_ref(node) index = "<<i<<" "<<elems_fluid_ref(i)<<" "<<indexr<<finl;
                           Cerr<<"elems_fluid_trust(index) < 0. = "<<elems_fluid_trust(indexr)<<finl;
                           Cerr<<"nb som som_tot elem elem_tot = "<<nb_som<<" "<<nb_som_tot<<" "<<nb_elem<<" "<<nb_elem_tot<<finl;
@@ -155,7 +155,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
                 }
               else
                 {
-                  Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_elem_fluid::computeFluidElems : ERROR : joint width too low?" << finl;
+                  Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_elem_fluid::computeFluidElems : ERROR : joint width too low?" << finl;
                   Cerr<<"node elems_fluid_ref(node) = "<<i<<" "<<elems_fluid_ref(i)<<finl;
                   Cerr<<"index = "<<indexr<<" < 0 ou >= "<<dimtag<<finl;
                   exit();

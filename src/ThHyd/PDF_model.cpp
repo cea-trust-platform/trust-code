@@ -118,7 +118,7 @@ void PDF_model::affecter_vitesse_imposee(Zone_VF& la_zone, const DoubleTab& coor
     }
   else
     {
-      Cerr << __FILE__ << ", line " << __LINE__ << " : Unexpected error." << finl;
+      Cerr << __FILE__ << ", line " << (int)__LINE__ << " : Unexpected error." << finl;
       exit();
     }
 }

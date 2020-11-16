@@ -990,7 +990,7 @@ int Source_PDF::impr(Sortie& os) const
 {
   if (out_=="??")
     {
-      Cerr << __FILE__ << __LINE__ << " ERROR / Source_PDF::impr" << finl;
+      Cerr << __FILE__ << (int)__LINE__ << " ERROR / Source_PDF::impr" << finl;
       Cerr << "No balance printed for " << que_suis_je() << finl;
       Cerr << "Because output file name is not specified." << finl;
       return 0;
@@ -1000,7 +1000,7 @@ int Source_PDF::impr(Sortie& os) const
       int nb_compo=bilan_.size();
       if (nb_compo==0)
         {
-          Cerr << __FILE__ << __LINE__ << " ERROR / Source_PDF::impr" << finl;
+          Cerr << __FILE__ << (int)__LINE__ << " ERROR / Source_PDF::impr" << finl;
           Cerr << "No balance printed for " << que_suis_je() << finl;
           Cerr << "Because bilan_ array is not filled." << finl;
           return 0;
