@@ -114,7 +114,7 @@ if ! [ $status -eq 0 ]; then
 fi
 
 # Clean build folder
-( cd .. ; rm -rf configuration* medcoupling* )
+cd .. ; rm -rf configuration* medcoupling*
 
 # Creation of env file. Done in a temporary file, because the final env.sh is the main target of the Makefile
 # but we need an env file for the test below ... 
@@ -123,8 +123,6 @@ MC_ENV_FILE_tmp=$install_dir/env_tmp.sh
 MC_ENV_FILE=$install_dir/env.sh
 echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
 echo "export LD_LIBRARY_PATH=$install_dir/lib/:$TRUST_MED_ROOT/lib:$TRUST_ROOT/exec/python/lib/:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE_tmp
-#version=`$TRUST_ROOT/exec/python/bin/python  -c "import sys; print (sys.version[:3])"`
-#echo "export PYTHONPATH=$install_dir/bin/:$install_dir/lib/python$version/site-packages/:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
 echo "export PYTHONPATH=$install_dir/bin/:`find $install_dir/lib -name site-packages`/:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
 
 echo "@@@@@@@@@@@@ Testing install ..."
