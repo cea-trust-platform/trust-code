@@ -41,53 +41,63 @@ Sortie& PDF_model::printOn(Sortie& os) const
 
 Entree& PDF_model::readOn(Entree& is)
 {
-  type_vitesse_imposee_ = 0; //DEFAULT VALUE
+  type_vitesse_imposee_ = -1; //DEFAULT VALUE = not set
   Param param(que_suis_je());
   param.ajouter("eta",&eta_, Param::REQUIRED); // XD_ADD_P double penalization coefficient
   temps_relax_=1.0e+12;
   param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL); // XD_ADD_P double time relaxation on the forcing term to help convergence
   echelle_relax_=5.0e-2;
   param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL); // XD_ADD_P double time relaxation on the forcing term to help convergence
-  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED); // XD_ADD_P chaine(into=["data","function"]) Type of prescribed velocity (a MED field or an analytical exp)
-  param.dictionnaire("data",0);
-  param.dictionnaire("fonction",1);
-  param.ajouter_flag("local",&local_);  // XD_ADD_P int whether the prescribed velocity is expressed in the global or local basis
-  param.ajouter_non_std("vitesse_imposee",(this),Param::REQUIRED); // XD_ADD_P bloc_lecture prescribed velocity
+//  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED);
+//  param.dictionnaire("data",0);
+//  param.dictionnaire("fonction",1);
+  param.ajouter_flag("local",&local_);                                      // XD_ADD_P rien whether the prescribed velocity is expressed in the global or local basis
+  param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL);     // XD_ADD_P field_base prescribed velocity as a field
+  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P troismots prescribed velocity as a set of ananlyticla components
   param.lire_avec_accolades_depuis(is);
+  if (type_vitesse_imposee_ == -1)
+    {
+      Cerr << "PDF_model: you must specify either 'vitesse_imposee_data' or 'vitesse_imposee_fonction'" << finl;
+      Process::exit();
+    }
   coefku_ = 1./eta_;
   return is;
 }
 
 int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
 {
-  if (un_mot == "vitesse_imposee")
+  if (un_mot == "vitesse_imposee_fonction")
     {
       if (Process::je_suis_maitre())
         {
           Cerr << " PDF_model is reading imposed velocity... " << finl;
         }
-      if (type_vitesse_imposee_ == 1)
+      type_vitesse_imposee_ = 1;
+      Nom expr_vit_imp;
+      int dim = Objet_U::dimension;
+      parsers_ = new Parser[dim];
+      for (int i = 0; i < dim; i++)
         {
-          Nom expr_vit_imp;
-          int dim = Objet_U::dimension;
-          parsers_ = new Parser[dim];
-          for (int i = 0; i < dim; i++)
-            {
-              is >> expr_vit_imp;
-              String2 sx(expr_vit_imp);
-              parsers_[i].setString(sx);
-              parsers_[i].setNbVar(4);
-              parsers_[i].addVar("x");
-              parsers_[i].addVar("y");
-              parsers_[i].addVar("z");
-              parsers_[i].addVar("t");
-              parsers_[i].parseString();
-            }
+          is >> expr_vit_imp;
+          String2 sx(expr_vit_imp);
+          parsers_[i].setString(sx);
+          parsers_[i].setNbVar(4);
+          parsers_[i].addVar("x");
+          parsers_[i].addVar("y");
+          parsers_[i].addVar("z");
+          parsers_[i].addVar("t");
+          parsers_[i].parseString();
         }
-      else
-        {
-          is >> vitesse_imposee_lu_;
-        }
+    }
+  else if (un_mot == "vitesse_imposee_data")
+    {
+      type_vitesse_imposee_ = 0;
+      is >> vitesse_imposee_lu_;
+    }
+  else
+    {
+      Cerr << "PDF_model: token not understood: " << un_mot << finl;
+      Process::exit();
     }
   return 1;
 }

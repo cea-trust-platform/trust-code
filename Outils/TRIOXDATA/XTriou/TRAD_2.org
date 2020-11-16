@@ -16,6 +16,10 @@ bloc_lecture objet_lecture nul 0 to read between two braces
 deuxmots objet_lecture nul 0 Two words.
   attr mot_1 chaine mot_1 0 First word.
   attr mot_2 chaine mot_2 0 Second word.
+troismots objet_lecture nul 0 Three words.
+  attr mot_1 chaine mot_1 0 First word.
+  attr mot_2 chaine mot_2 0 Snd word.
+  attr mot_3 chaine mot_3 0 Third word.
 format_file objet_lecture nul 0 File formatted.
   attr format chaine(into=["binaire","formatte","xyz","single_hdf"]) format 1 Type of file (the file format).
   attr name_file chaine name_file 0 Name of file.
@@ -458,7 +462,7 @@ navier_stokes_standard eqn_base navier_stokes_standard -1 Navier-Stokes equation
   attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
   attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
   attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
-  attr postraiter_gradient_pression_sans_masse entier postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
+  attr postraiter_gradient_pression_sans_masse rien postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
 penalisation_l2_ftd_lec objet_lecture nul 0 not_set
   attr postraiter_gradient_pression_sans_masse entier postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
   attr correction_matrice_projection_initiale entier correction_matrice_projection_initiale 1 (IBM advanced) fix matrix of initial projection for PDF

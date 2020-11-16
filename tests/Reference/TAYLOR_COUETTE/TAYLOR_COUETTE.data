@@ -108,9 +108,8 @@ Lire pb
                 modele
                 {
                     eta 1.E-12
-                    type_vitesse_imposee fonction
                     local
-                    vitesse_imposee 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
+                    vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
                 interpolation element_fluide
                 {

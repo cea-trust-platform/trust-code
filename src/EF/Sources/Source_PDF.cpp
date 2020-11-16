@@ -41,7 +41,7 @@
 #include <SFichier.h>
 
 Implemente_instanciable(Source_PDF,"Source_PDF_ef",Source_dep_inco_base);
-// XD Source_PDF source_pdf_base Source_PDF -1 Source term for Penalised Direct Forcing (PDF) method.
+// XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
 
 /*##################################################################################################
 ####################################################################################################
