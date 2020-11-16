@@ -445,7 +445,7 @@ DoubleTab Source_PDF::compute_pond(const DoubleTab& rho_m, const DoubleTab& aire
 ####################################################################################################
 ##################################################################################################*/
 
-static inline void calcul_vitesse_locale(const ArrOfDouble& vitesse, ArrOfDouble& vitesse_locale,const DoubleTab& rotation,int elem)
+/* static inline void calcul_vitesse_locale(const ArrOfDouble& vitesse, ArrOfDouble& vitesse_locale,const DoubleTab& rotation,int elem)
 {
   assert(Objet_U::dimension==3);
   // VL=rot*V
@@ -457,7 +457,7 @@ static inline void calcul_vitesse_locale(const ArrOfDouble& vitesse, ArrOfDouble
         vitesse_locale(i)+=rotation(elem,3*i+k)*vitesse(k);
     }
   assert(est_egal(norme_array(vitesse_locale),norme_array(vitesse),1e-7));
-}
+} */
 
 /*##################################################################################################
 ####################################################################################################
