@@ -22,7 +22,7 @@ Version	Qui				Tache
 1.8.2   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
 
 
-
+1.8.x   trust@cea.fr            LDC: invalider l ancienne syntaxe des champ_fonc_fonction (pour le moment on est bicompatible)
 1.8.x   trust@cea.fr            LDC: Nettoyer le vieux code med fichier
 1.8.x   trust@cea.fr            LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI182047)
