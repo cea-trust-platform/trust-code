@@ -40,10 +40,10 @@ Sortie& Interpolation_IBM_elem_fluid::printOn( Sortie& os ) const
 Entree& Interpolation_IBM_elem_fluid::readOn( Entree& is )
 {
   Param param(que_suis_je());
-  param.ajouter("points_fluides",&fluid_points_lu_,Param::REQUIRED);  // XD_ADD_P champ_don_base Node field giving the projection of the point below (points_solides) falling into the pure cell fluid
-  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P champ_don_base Node field giving the projection of the node on the immersed boundary
-  param.ajouter("elements_fluides",&fluid_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Node field giving the number of the element (cell) containing the pure fluid point
-  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Cell field giving the SALOME cell number
+  param.ajouter("points_fluides",&fluid_points_lu_,Param::REQUIRED);  // XD_ADD_P field_base Node field giving the projection of the point below (points_solides) falling into the pure cell fluid
+  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P field_base Node field giving the projection of the node on the immersed boundary
+  param.ajouter("elements_fluides",&fluid_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Node field giving the number of the element (cell) containing the pure fluid point
+  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Cell field giving the SALOME cell number
   param.lire_avec_accolades_depuis(is);
   return is;
 }

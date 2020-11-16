@@ -95,8 +95,7 @@ Read pb
                 modele
                 {
                     eta 1.0e-12
-                    type_vitesse_imposee data
-                    vitesse_imposee champ_uniforme 3 0. 0. 0.
+                    vitesse_imposee_data champ_uniforme 3 0. 0. 0.
                 }
                 interpolation element_fluide
                 {

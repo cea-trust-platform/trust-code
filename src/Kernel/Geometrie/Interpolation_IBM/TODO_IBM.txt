@@ -1,0 +1,5 @@
+* Pre-processing with MEDCoupling should be integrated into the C++ rather than 
+having all the MED fields elem_fluid, elem_solid, etc ...
+* PDF_model : vitesse param should be split into two opt arg vitesse_med and vitesse_analytic (easier for XDATA)
+* Interp_IBM_hybrid should use multiple C++ inheritance
+

@@ -39,10 +39,10 @@ Sortie& Interpolation_IBM_mean_gradient::printOn( Sortie& os ) const
 Entree& Interpolation_IBM_mean_gradient::readOn( Entree& is )
 {
   Param param(que_suis_je());
-  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P champ_don_base Node field giving the projection of the node on the immersed boundary
-  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P champ_don_base Node field of booleans indicating whether the node belong to an element where the interface is
-  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Cell field giving the SALOME cell number
-  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Node field giving the element number containing the solid point
+  param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P field_base Node field giving the projection of the node on the immersed boundary
+  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P field_base Node field of booleans indicating whether the node belong to an element where the interface is
+  param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Cell field giving the SALOME cell number
+  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Node field giving the element number containing the solid point
   param.lire_avec_accolades_depuis(is);
   return is;
 }

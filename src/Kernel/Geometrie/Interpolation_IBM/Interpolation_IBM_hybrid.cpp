@@ -38,8 +38,8 @@ Entree& Interpolation_IBM_hybrid::readOn( Entree& is )
 {
   Interpolation_IBM_elem_fluid::readOn(is);
   Param param(que_suis_je());
-  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P champ_don_base Node field of booleans indicating whether the node belong to an element where the interface is
-  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P champ_don_base Node field giving the element number containing the solid point
+  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P field_base Node field of booleans indicating whether the node belong to an element where the interface is
+  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Node field giving the element number containing the solid point
   param.lire_avec_accolades_depuis(is);
   return is;
 }

@@ -25,6 +25,9 @@
 
 Implemente_deriv(Interpolation_IBM_base);
 Implemente_instanciable( Interpolation_IBM, "Interpolation_IBM", Interpolation_IBM_base ) ;
+// XD interpolation_ibm interpolation_ibm_base interpolation_ibm 0 Generic class for the interpolation method available in the Immersed Boundary Method (IBM).
+// XD    attr inter_typ chaine(into=["aucune","element_fluide","gradient_moyen","hybride"]) inter_typ 1 Type of interpolation.
+// XD    attr interp bloc_lecture interp 1 Interpolation parameters
 
 Sortie& Interpolation_IBM::printOn( Sortie& os ) const
 {
