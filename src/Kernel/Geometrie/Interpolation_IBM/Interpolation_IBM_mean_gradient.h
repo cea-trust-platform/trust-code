@@ -58,7 +58,7 @@ protected :
   IntList* sommets_voisins_;
   Champ_Don corresp_elems_;
   Champ_Don solid_elems_;
-  friend class Source_PDF;
+  friend class Source_PDF_EF;
   friend class Interpolation_IBM_hybrid;
 };
 

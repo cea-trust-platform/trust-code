@@ -97,7 +97,7 @@ Read pb
                     eta 1.0e-12
                     vitesse_imposee_data champ_uniforme 3 0. 0. 0.
                 }
-                interpolation element_fluide
+                interpolation IBM_element_fluide
                 {
                     points_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Fluid som 0.
                     points_solides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Solid som 0.

@@ -63,7 +63,7 @@ protected :
   int local_;
   Parser* parsers_;
   friend class Source_PDF_base;
-  friend class Source_PDF;
+  friend class Source_PDF_EF;
 };
 
 #endif /* PDF_model */

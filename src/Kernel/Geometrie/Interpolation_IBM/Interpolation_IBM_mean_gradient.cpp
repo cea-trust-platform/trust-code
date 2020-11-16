@@ -27,8 +27,8 @@
 #include <IntTab.h>
 #include <Domaine.h>
 
-Implemente_instanciable( Interpolation_IBM_mean_gradient, "Interpolation_IBM_gradient_moyen", Interpolation_IBM_base ) ;
-// XD interpolation_ibm_mean_gradient interpolation_ibm_base interpolation_ibm_mean_gradient 1 Immersed Boundary Method (IBM): mean gradient interpolation.
+Implemente_instanciable( Interpolation_IBM_mean_gradient, "Interpolation_IBM_gradient_moyen|IBM_gradient_moyen", Interpolation_IBM_base ) ;
+// XD interpolation_ibm_mean_gradient interpolation_ibm_base ibm_gradient_moyen 1 Immersed Boundary Method (IBM): mean gradient interpolation.
 
 Sortie& Interpolation_IBM_mean_gradient::printOn( Sortie& os ) const
 {

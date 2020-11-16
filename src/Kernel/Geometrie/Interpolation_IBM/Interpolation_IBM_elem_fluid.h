@@ -1,3 +1,4 @@
+
 /****************************************************************************
 * Copyright (c) 2020, CEA
 * All rights reserved.
@@ -52,7 +53,7 @@ protected :
   Champ_Don fluid_points_;
   Champ_Don fluid_elems_;
   Champ_Don corresp_elems_;
-  friend class Source_PDF;
+  friend class Source_PDF_EF;
 };
 
 #endif /* Interpolation_IBM_elem_fluid_included */

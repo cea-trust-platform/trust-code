@@ -25,8 +25,8 @@
 #include <DoubleTab.h>
 #include <IntTab.h>
 
-Implemente_instanciable( Interpolation_IBM_hybrid, "Interpolation_IBM_hybride", Interpolation_IBM_elem_fluid ) ;
-// XD interpolation_ibm_hybrid interpolation_ibm_elem_fluid interpolation_ibm_hybrid 1 Immersed Boundary Method (IBM): hybrid (fluid/mean gradient) interpolation.
+Implemente_instanciable( Interpolation_IBM_hybrid, "Interpolation_IBM_hybride|IBM_hybride", Interpolation_IBM_elem_fluid ) ;
+// XD interpolation_ibm_hybrid interpolation_ibm_elem_fluid ibm_hybrid 1 Immersed Boundary Method (IBM): hybrid (fluid/mean gradient) interpolation.
 
 Sortie& Interpolation_IBM_hybrid::printOn( Sortie& os ) const
 {
