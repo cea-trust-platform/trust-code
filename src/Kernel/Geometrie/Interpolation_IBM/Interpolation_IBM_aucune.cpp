@@ -22,8 +22,8 @@
 
 #include <Interpolation_IBM_aucune.h>
 
-Implemente_instanciable( Interpolation_IBM_aucune, "Interpolation_IBM_aucune", Interpolation_IBM_base ) ;
-// XD interpolation_ibm_aucune interpolation_ibm_base interpolation_ibm_aucune 0 Immersed Boundary Method (IBM): no interpolation.
+Implemente_instanciable( Interpolation_IBM_aucune, "Interpolation_IBM_aucune|IBM_aucune", Interpolation_IBM_base ) ;
+// XD interpolation_ibm_aucune interpolation_ibm_base ibm_aucune 0 Immersed Boundary Method (IBM): no interpolation.
 
 Sortie& Interpolation_IBM_aucune::printOn( Sortie& os ) const
 {

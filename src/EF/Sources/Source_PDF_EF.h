@@ -14,15 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_PDF.h
+// File:        Source_PDF_EF.h
 // Directory:   $TRUST_ROOT/src/EF/Sources
 // Version:     /main/2
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Source_PDF_included
-#define Source_PDF_included
+#ifndef Source_PDF_EF_included
+#define Source_PDF_EF_included
 
 #include <Source_PDF_base.h>
 #include <Ref_Zone_EF.h>
@@ -33,17 +33,17 @@
 class Probleme_base;
 
 //
-// .DESCRIPTION class Source_PDF
+// .DESCRIPTION class Source_PDF_EF
 //  Source term for the penalisation of the momentum in the Immersed Boundary Method (IBM)
 //
 // .SECTION voir aussi Source_PDF_base
 //
 //
 
-class Source_PDF : public Source_PDF_base
+class Source_PDF_EF : public Source_PDF_base
 {
 
-  Declare_instanciable(Source_PDF);
+  Declare_instanciable(Source_PDF_EF);
 
 public:
   void associer_pb(const Probleme_base& );

@@ -24,10 +24,7 @@
 #include <Nom.h>
 
 Implemente_deriv(Interpolation_IBM_base);
-Implemente_instanciable( Interpolation_IBM, "Interpolation_IBM", Interpolation_IBM_base ) ;
-// XD interpolation_ibm interpolation_ibm_base interpolation_ibm 0 Generic class for the interpolation method available in the Immersed Boundary Method (IBM).
-// XD    attr inter_typ chaine(into=["aucune","element_fluide","gradient_moyen","hybride"]) inter_typ 1 Type of interpolation.
-// XD    attr interp bloc_lecture interp 1 Interpolation parameters
+Implemente_instanciable( Interpolation_IBM, "Interpolation_IBM", DERIV(Interpolation_IBM_base) ) ;
 
 Sortie& Interpolation_IBM::printOn( Sortie& os ) const
 {
@@ -37,11 +34,5 @@ Sortie& Interpolation_IBM::printOn( Sortie& os ) const
 
 Entree& Interpolation_IBM::readOn( Entree& is )
 {
-  Nom nom_modele("Interpolation_IBM_");
-  Nom type_mod;
-  is >> type_mod;
-  nom_modele+=type_mod;
-  typer(nom_modele);
-  is >> valeur();
-  return is;
+  return DERIV(Interpolation_IBM_base)::readOn(is);
 }

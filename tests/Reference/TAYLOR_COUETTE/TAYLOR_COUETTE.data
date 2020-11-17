@@ -111,7 +111,7 @@ Lire pb
                     local
                     vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
-                interpolation element_fluide
+                interpolation IBM_element_fluide
                 {
                     points_fluides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh projection_Fluid som 0.
                     points_solides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh projection_Solid som 0.

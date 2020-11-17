@@ -14,13 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_PDF.cpp
+// File:        Source_PDF_EF.cpp
 // Directory:   $TRUST_ROOT/src/EF/Sources
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_PDF.h>
 #include <Champ_Uniforme.h>
 #include <Domaine.h>
 #include <Zone_EF.h>
@@ -39,9 +38,10 @@
 #include <Dirichlet.h>
 #include <Symetrie.h>
 #include <SFichier.h>
+#include <Source_PDF_EF.h>
 
-Implemente_instanciable(Source_PDF,"Source_PDF_ef",Source_dep_inco_base);
-// XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
+Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
+// XD source_pdf_ef source_pdf_base source_pdf_ef 1 Source term for Penalised Direct Forcing (PDF) method.
 
 /*##################################################################################################
 ####################################################################################################
@@ -49,13 +49,13 @@ Implemente_instanciable(Source_PDF,"Source_PDF_ef",Source_dep_inco_base);
 ####################################################################################################
 ##################################################################################################*/
 
-Entree& Source_PDF::readOn(Entree& s)
+Entree& Source_PDF_EF::readOn(Entree& s)
 {
   Source_PDF_base::readOn(s);
   return s;
 }
 
-Sortie& Source_PDF::printOn(Sortie& s ) const
+Sortie& Source_PDF_EF::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
@@ -66,7 +66,7 @@ Sortie& Source_PDF::printOn(Sortie& s ) const
 ####################################################################################################
 ##################################################################################################*/
 
-void Source_PDF::associer_pb(const Probleme_base& pb)
+void Source_PDF_EF::associer_pb(const Probleme_base& pb)
 {
   assert(Objet_U::dimension==3);
   int nb_comp=dimension*dimension;
@@ -152,7 +152,7 @@ void Source_PDF::associer_pb(const Probleme_base& pb)
   vitesse_imposee_ = modele_lu_.vitesse_imposee_.valeur().valeurs();
 }
 
-void Source_PDF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
+void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
 {
   int nb_som=la_zone_EF.valeur().zone().nb_som();
   int dim = Objet_U::dimension;
@@ -185,7 +185,7 @@ void Source_PDF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, cons
     }
 }
 
-void Source_PDF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
+void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
@@ -243,14 +243,14 @@ void Source_PDF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
     }
 }
 
-void Source_PDF::associer_zones(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_Cl_dis)
+void Source_PDF_EF::associer_zones(const Zone_dis& zone_dis,
+                                   const Zone_Cl_dis& zone_Cl_dis)
 {
   la_zone_EF = ref_cast(Zone_EF, zone_dis.valeur());
   la_zone_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
 }
 
-DoubleVect Source_PDF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const
+DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const
 {
   assert(Objet_U::dimension==3);
   ArrOfDouble tuvw(dimension);
@@ -276,7 +276,7 @@ DoubleVect Source_PDF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTa
   return diag_coef ;
 }
 
-DoubleTab Source_PDF::compute_coeff_elem() const
+DoubleTab Source_PDF_EF::compute_coeff_elem() const
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
@@ -326,7 +326,7 @@ DoubleTab Source_PDF::compute_coeff_elem() const
   return coeff;
 }
 
-DoubleTab Source_PDF::compute_coeff_matrice_pression() const
+DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
@@ -406,7 +406,7 @@ DoubleTab Source_PDF::compute_coeff_matrice_pression() const
   return coeff;
 }
 
-void Source_PDF::multiply_coeff_volume(DoubleTab& coeff) const
+void Source_PDF_EF::multiply_coeff_volume(DoubleTab& coeff) const
 {
   const DoubleVect& vol_som=ref_cast(Zone_EF, la_zone_EF.valeur()).volumes_sommets_thilde();
   int n = vol_som.size();
@@ -417,7 +417,7 @@ void Source_PDF::multiply_coeff_volume(DoubleTab& coeff) const
     }
 }
 
-DoubleTab Source_PDF::compute_pond(const DoubleTab& rho_m, const DoubleTab& aire, const DoubleVect& volume_thilde, int& nb_som_elem, int& nb_elems) const
+DoubleTab Source_PDF_EF::compute_pond(const DoubleTab& rho_m, const DoubleTab& aire, const DoubleVect& volume_thilde, int& nb_som_elem, int& nb_elems) const
 {
   DoubleTab pond = rho_m;
   double inv_nb_som = 1. / nb_som_elem;
@@ -469,7 +469,7 @@ DoubleTab Source_PDF::compute_pond(const DoubleTab& rho_m, const DoubleTab& aire
 This function redirects toward the ajouter_ which correspond to the model chosen.
 */
 
-DoubleTab& Source_PDF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
+DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
@@ -526,7 +526,7 @@ DoubleTab& Source_PDF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
 This function redirects toward the contribuer_avec_ which correspond to the model chosen.
 */
 
-void  Source_PDF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
+void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
@@ -579,7 +579,7 @@ void  Source_PDF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matric
   // verif_ajouter_contrib(vitesse, matrice) ;
 }
 
-void  Source_PDF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse& matrice) const
+void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse& matrice) const
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
@@ -618,7 +618,7 @@ void  Source_PDF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse&
     }
 }
 
-void Source_PDF::calculer_vitesse_imposee_elem_fluid()
+void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
@@ -674,7 +674,7 @@ void Source_PDF::calculer_vitesse_imposee_elem_fluid()
   //vitesse_imposee_calculee.echange_espace_virtuel();
 }
 
-void Source_PDF::calculer_vitesse_imposee_mean_grad()
+void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
@@ -743,7 +743,7 @@ void Source_PDF::calculer_vitesse_imposee_mean_grad()
   //vitesse_imposee_calculee.echange_espace_virtuel();
 }
 
-void Source_PDF::calculer_vitesse_imposee_hybrid()
+void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
@@ -847,7 +847,7 @@ void Source_PDF::calculer_vitesse_imposee_hybrid()
   //vitesse_imposee_calculee.echange_espace_virtuel();
 }
 
-void Source_PDF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
+void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
 {
   const DoubleTab& aire=champ_aire_.valeurs();
   int nb_elem = correction_en_pression.size();
@@ -908,7 +908,7 @@ void Source_PDF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& c
     }
 }
 
-void Source_PDF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pression, const DoubleTab& correction_en_pression) const
+void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pression, const DoubleTab& correction_en_pression) const
 {
   const DoubleTab& aire=champ_aire_.valeurs();
   int nb_elem = pression.size();
@@ -963,7 +963,7 @@ void Source_PDF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pressi
     }
 }
 
-void Source_PDF::correct_vitesse(const DoubleTab& coeff_node, DoubleTab& vitesse) const
+void Source_PDF_EF::correct_vitesse(const DoubleTab& coeff_node, DoubleTab& vitesse) const
 {
   int nb_data_vit = vitesse.size();
   int nb_node_2 = coeff_node.dimension(0) ;
@@ -986,11 +986,11 @@ void Source_PDF::correct_vitesse(const DoubleTab& coeff_node, DoubleTab& vitesse
     }
 }
 
-int Source_PDF::impr(Sortie& os) const
+int Source_PDF_EF::impr(Sortie& os) const
 {
   if (out_=="??")
     {
-      Cerr << __FILE__ << (int)__LINE__ << " ERROR / Source_PDF::impr" << finl;
+      Cerr << __FILE__ << (int)__LINE__ << " ERROR / Source_PDF_EF::impr" << finl;
       Cerr << "No balance printed for " << que_suis_je() << finl;
       Cerr << "Because output file name is not specified." << finl;
       return 0;
@@ -1000,7 +1000,7 @@ int Source_PDF::impr(Sortie& os) const
       int nb_compo=bilan_.size();
       if (nb_compo==0)
         {
-          Cerr << __FILE__ << (int)__LINE__ << " ERROR / Source_PDF::impr" << finl;
+          Cerr << __FILE__ << (int)__LINE__ << " ERROR / Source_PDF_EF::impr" << finl;
           Cerr << "No balance printed for " << que_suis_je() << finl;
           Cerr << "Because bilan_ array is not filled." << finl;
           return 0;

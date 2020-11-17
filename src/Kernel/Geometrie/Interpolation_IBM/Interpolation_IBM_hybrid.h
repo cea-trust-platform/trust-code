@@ -52,7 +52,7 @@ protected :
   Champ_Don is_dirichlet_lu_;
   Champ_Don solid_elems_lu_;
   IntList* sommets_voisins_;
-  friend class Source_PDF;
+  friend class Source_PDF_EF;
   Interpolation_IBM_mean_gradient* my_mean_gradient;
 
 };

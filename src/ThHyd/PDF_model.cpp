@@ -31,7 +31,7 @@
 #include <Param.h>
 
 Implemente_instanciable(PDF_model,"PDF_model",Objet_U) ;
-// XD pdf_model objet_u pdf_model 1 Parametrisation of the Penalized Direct Forcing model for the Immersed Boundary Method (IBM)
+// (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
 
 Sortie& PDF_model::printOn(Sortie& os) const
 {
@@ -41,19 +41,17 @@ Sortie& PDF_model::printOn(Sortie& os) const
 
 Entree& PDF_model::readOn(Entree& is)
 {
+  // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
   type_vitesse_imposee_ = -1; //DEFAULT VALUE = not set
   Param param(que_suis_je());
-  param.ajouter("eta",&eta_, Param::REQUIRED); // XD_ADD_P double penalization coefficient
+  param.ajouter("eta",&eta_, Param::REQUIRED);
   temps_relax_=1.0e+12;
-  param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL); // XD_ADD_P double time relaxation on the forcing term to help convergence
+  param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL);
   echelle_relax_=5.0e-2;
-  param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL); // XD_ADD_P double time relaxation on the forcing term to help convergence
-//  param.ajouter("type_vitesse_imposee",&type_vitesse_imposee_,Param::REQUIRED);
-//  param.dictionnaire("data",0);
-//  param.dictionnaire("fonction",1);
-  param.ajouter_flag("local",&local_);                                      // XD_ADD_P rien whether the prescribed velocity is expressed in the global or local basis
-  param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL);     // XD_ADD_P field_base prescribed velocity as a field
-  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P troismots prescribed velocity as a set of ananlyticla components
+  param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL);
+  param.ajouter_flag("local",&local_);
+  param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL);
+  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL);
   param.lire_avec_accolades_depuis(is);
   if (type_vitesse_imposee_ == -1)
     {
