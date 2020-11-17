@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
 -------------------------------------------------------------------------------------------------------
+16/11/20 (TRUST)  Keyword     : Syntax change for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, Champ_Fonc_Tabule, Champ_Fonc_Fonction_txyz_Morceaux with the depending field name now before the number of components
 12/11/20 (TRUST)  New feature : Anisotropic diffusion (VEF) is available for laminar flow or solid conduction (see new validation sheet diffusion_anisotrope_VEF for examples)
 09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dns install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
 05/11/20 (TRUST)  New feature : Equation residuals can now be post-processed
