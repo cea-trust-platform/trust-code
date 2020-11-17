@@ -35,7 +35,9 @@ DoubleVect& Champ_implementation_sommet_base::valeur_a_elem(const DoubleVect& po
   DoubleTab positions;
   positions = position;
   DoubleTab resu(1, nb_components);
-  value_interpolation(positions,poly,values,resu);
+  ArrOfInt polys(1);
+  polys(0) = poly;
+  value_interpolation(positions,polys,values,resu);
   for (int j=0; j<nb_components; j++)
     result(j) = resu(j, 0) ;
   return result;
@@ -51,7 +53,9 @@ double Champ_implementation_sommet_base::valeur_a_elem_compo(const DoubleVect& p
   DoubleTab positions;
   positions = position;
   DoubleTab resu(1, 1);
-  value_interpolation(positions,poly,values,resu,ncomp);
+  ArrOfInt polys(1);
+  polys(0) = poly;
+  value_interpolation(positions,polys,values,resu,ncomp);
   return resu(0, 0);
 }
 
