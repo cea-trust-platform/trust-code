@@ -58,14 +58,19 @@ public:
 
   int impr(Sortie& os) const;
 
-  /* interaction exterieure */
+  /* poids de l'amont/aval dans les equations a chaque face */
+  const DoubleTab& mu_f() const;
+
+  /* public pour utilisation par Assembleur_P_CoviMAC : [grad p]_f */
   mutable IntTab fgrad_d, fgrad_j;
-  mutable DoubleTab fgrad_c; // coefficients de |f| phi_f * [grad p]_f, calcules par Zone_CoviMAC::flux() a partir de Masse_CoviMAC_Face::W_e
+  mutable DoubleTab fgrad_c;
 
   void check_multiphase_compatibility() const { }; //ok
 
 private:
 
+  mutable double last_gradp_; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
+  mutable DoubleTab mu_f_; //il faut appeller mu_f() pour forcer la mise a jour du gradient
   REF(Zone_CoviMAC) ref_zone;
   REF(Zone_Cl_CoviMAC) ref_zcl;
 };

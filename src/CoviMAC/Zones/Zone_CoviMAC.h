@@ -150,16 +150,23 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
-  //elements et faces de bord connectes a chaque face en dehors de l'amont/aval :
+  //elements et faces de bord connectes a chaque face, classes par ordre d'indice croissant
   //fef_j([fef_d(f), fef_d(f + 1)[) (offset de nb_elem_tot() pour les faces de bord)
   void init_feb() const;
-  mutable IntTab febf_d, febf_j, febs_d, febs_j, feb_d, feb_j;
+  mutable IntTab feb_d, feb_j, ff_d, ff_j, febs_d, febs_j;
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
   inline double nu_dot(const DoubleTab* nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
-  //pour un champ T aux elements, interpole |f| nu.grad T aux faces [0, f_max[; indices donnes par fef_e, fef_f
-  //optionellement, remplit les coordonnes des points aux bords correspondant au flux a deux points
-  void fgrad(int f_max, const DoubleTab* nu, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *pxfb = NULL) const;
+  //pour un champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
+  //en preservant exactement les champs verifiant [nu grad T]_e = cte.
+  //Entrees : f_max            : calculer sur les faces [0, f_max[
+  //          nu (optionnel)   : diffusivite par element
+  //          nu_grad          : 1 si on veut [n_f.nu.grad T]_f
+  //Sorties : phif_{d,j,c}       : indices de l'interpolation dans phif_j(j), coeffs dans phif_c(j, compo, amont/aval) pour phif_d(f) <= j < phif_d(f + 1)
+  //                               l'amont/aval sont en premier dans phif_j (contrairement a feb_j)
+  //          phif_w (optionnel) : poids de la partie amont de l'interpolation a la composante n dans phif_w(f, n)
+  //          pxh (optionnel)    : points sur les faces de bord ou T doit etre evalue
+  void fgrad(int f_max, const DoubleTab* nu, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const;
 
   //pour un champ T aux elements, interpole |e| grad T aux elements (combine fgrad + ve)
   //fcl / tcl renseignent les CLs : tcl[fcl(f, 0)] = 1 (Neumann) / 2 (Dirichlet)

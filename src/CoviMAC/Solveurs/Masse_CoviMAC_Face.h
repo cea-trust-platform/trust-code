@@ -47,20 +47,13 @@ public:
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
-  void completer();
-  /* calcule les permeabilites dv_e = dt W_e (grap p)_e et les facteurs v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
-  /* les utilise pour remplir les lignes aux faces de la matrice */
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
-  /* doit etre appele apres le ajouter_masse matriciel */
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
 
   /* interface ajouter_blocs */
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
-
-  /* ponderations v_f = mu_f v_{f,am} + (1-mu_f) v_{f,av} */
-  mutable DoubleTab mu_f; //mu_f(f, n_comp, amont/aval)
 
   void check_multiphase_compatibility() const { };
 private:

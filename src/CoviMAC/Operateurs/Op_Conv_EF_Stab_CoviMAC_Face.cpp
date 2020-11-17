@@ -33,7 +33,7 @@
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Masse_CoviMAC_Face.h>
+#include <Op_Grad_CoviMAC_Face.h>
 #include <Param.h>
 #include <cmath>
 
@@ -144,7 +144,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
-  const DoubleTab& vit = ch.passe(), &nf = zone.face_normales(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f;
+  const DoubleTab& vit = ch.passe(), &nf = zone.face_normales(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
   const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
 
   /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */

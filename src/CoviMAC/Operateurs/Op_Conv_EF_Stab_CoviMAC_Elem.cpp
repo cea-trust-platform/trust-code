@@ -174,10 +174,10 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   /* convection aux faces interne (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
   for (f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
       {
-        for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (n = 0; n < N; n++)
+        for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
             {
               double fac = pf(f) * fs(f) * (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-              dv_flux(n) += fac * ((e = f_e(f, i)) >= 0 ? vcc.addr()[N * e + n] : bcc.addr()[N * f + n]); //f est reelle -> indice trivial dans bcc
+              dv_flux(n) += fac * (e >= 0 ? vcc.addr()[N * e + n] : bcc.addr()[N * f + n]); //f est reelle -> indice trivial dans bcc
               dc_flux(i, n) = e >= 0 ? fac * vit.addr()[N * f + n] : 0;
             }
 
@@ -189,7 +189,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
                 (*m_vit)(N * e + n, N * f + n) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
         for (auto &&d_m : d_cc) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-                for (n = 0; n < N; n++) (*d_m.second)(N * e + n, N * eb + n) += (i ? -1 : 1) * dc_flux(j, n);
+                for (n = 0; n < N; n++) (*d_m.second)(N * e + n, N * eb + n) += (i ? -1 : 1) * dc_flux(j, n) * d_m.first->addr()[N * eb + n];
       }
 }
 

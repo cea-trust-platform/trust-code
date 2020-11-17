@@ -28,7 +28,7 @@
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Masse_CoviMAC_Face.h>
+#include <Op_Grad_CoviMAC_Face.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>
@@ -78,9 +78,9 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleTab& vals = la_source->valeurs(), &mu_f = ref_cast(Masse_CoviMAC_Face, equation().solv_masse().valeur()).mu_f,
-                   &rho = equation().milieu().masse_volumique().valeurs(), &nf = zone.face_normales(),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs() : NULL;
+  const DoubleTab& vals = la_source->valeurs(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(),
+                   &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(),
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
   const IntTab& f_e = zone.face_voisins();
   int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = zone.nb_faces_tot(),
@@ -106,10 +106,10 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
                 {
                   double vnf = 0;
                   for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
-                  int strat = (i ? 1 : -1) * (rho_m(i) - rho.addr()[!cR * N * e + n]) * vnf > 0;
+                  int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
                   double R = alp && strat ? (alp->addr()[N * e + n] < 1e-4 ? 1 : 0) /* min(max(1 - alp->addr()[N * e + n] / 1e-4, 0.), 1.) */ : 0;
-                  resu.addr()[N * f + n] += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho.addr()[!cR * N * e + n]) * vnf;
-                  // Cerr << "f " << f << " i " << i << " n " << n << " a " << alp->addr()[N * e + n] << " r " << rho.addr()[!cR * N * e + n] << " R " << R << finl;
+                  resu.addr()[N * f + n] += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                  // Cerr << "f " << f << " i " << i << " n " << n << " a " << alp->addr()[N * e + n] << " r " << rho(!cR * e, n) << " R " << R << finl;
                 }
           }
       }

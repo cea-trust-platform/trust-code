@@ -58,6 +58,10 @@ Entree& Masse_CoviMAC_Elem::readOn(Entree& s)
 //
 ////////////////////////////////////////////////////////////////
 
+void Masse_CoviMAC_Elem::completer()
+{
+  equation().init_champ_conserve();
+}
 
 DoubleTab& Masse_CoviMAC_Elem::appliquer_impl(DoubleTab& sm) const
 {
@@ -79,7 +83,6 @@ DoubleTab& Masse_CoviMAC_Elem::appliquer_impl(DoubleTab& sm) const
 void Masse_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   /* une diagonale par derivee de champ_conserve_ presente dans matrices */
-  equation().init_champ_conserve();
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Inc_base& cc = equation().champ_conserve();
   int i, N = cc.valeurs().line_size(), ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();

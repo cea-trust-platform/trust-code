@@ -14,52 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Masse_CoviMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Solveurs
-// Version:     /main/8
+// File:        Ref_Champ_P0_CoviMAC.h
+// Directory:   $TRUST_ROOT/src/CoviMAC/Champs
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Masse_CoviMAC_Elem_included
-#define Masse_CoviMAC_Elem_included
+#ifndef Ref_Champ_P0_CoviMAC_included
+#define Ref_Champ_P0_CoviMAC_included
 
+#include <Ref.h>
+class Champ_P0_CoviMAC ;
+Declare_ref( Champ_P0_CoviMAC ) ;
 
-#include <Solveur_Masse.h>
-#include <Ref_Zone_CoviMAC.h>
-#include <Ref_Zone_Cl_CoviMAC.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_CoviMAC_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Masse_CoviMAC_Elem : public Solveur_Masse_base
-{
-
-  Declare_instanciable(Masse_CoviMAC_Elem);
-
-public:
-
-  void associer_zone_dis_base(const Zone_dis_base& );
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
-  void completer();
-
-  DoubleTab& appliquer_impl(DoubleTab& ) const;
-
-  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
-
-private:
-
-  REF(Zone_CoviMAC) la_zone_CoviMAC;
-  REF(Zone_Cl_CoviMAC) la_zone_Cl_CoviMAC;
-};
-
-#endif
-
-
-
-
-
+#endif /* Ref_Champ_P0_CoviMAC_included */

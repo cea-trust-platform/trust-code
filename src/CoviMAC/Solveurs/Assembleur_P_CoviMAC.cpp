@@ -74,10 +74,10 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, la_zone_CoviMAC.valeur());
   const Op_Grad_CoviMAC_Face& grad = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
+  const DoubleTab& mu_f = grad.mu_f(), &fgrad_c = grad.fgrad_c, &nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv();
   const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_j = grad.fgrad_j;
-  const DoubleVect& pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, mon_equation->inconnue().valeur());
-  const DoubleTab& fgrad_c = grad.fgrad_c, &nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv();
   int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), piso = sub_type(Piso, equation().schema_temps()) && !sub_type(Implicite, equation().schema_temps());
 
   ch.init_cl();
@@ -117,7 +117,7 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
     else if (!ch.fcl(f, 0)) //face interne -> flux multipoints
       for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
             if ((eb = fgrad_j(j)) < ne_tot || ch.fcl(eb - ne_tot, 0) > 1) /* les valeurs au bords de Dirichlet varient comme l'element voisin */
-              mat(e, eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) += (i ? 1 : -1) * fgrad_c(j, 0);
+              mat(e, eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) += (i ? 1 : -1) * pf(f) * fs(f) * (mu_f(f, 0, 0) * fgrad_c(j, 0, 0) + mu_f(f, 0, 1) * fgrad_c(j, 0, 1));
 
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 

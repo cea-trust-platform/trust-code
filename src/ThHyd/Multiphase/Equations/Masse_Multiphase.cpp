@@ -65,7 +65,7 @@ Entree& Masse_Multiphase::readOn(Entree& is)
 
   if (!evanescence.non_nul())
     {
-      EChaine eva("{ homogene { alpha_res 1e-6 } }");
+      EChaine eva("{ homogene { alpha_res 0 } }");
       eva >> evanescence;
     }
   champs_compris_.ajoute_champ(l_inco_ch);

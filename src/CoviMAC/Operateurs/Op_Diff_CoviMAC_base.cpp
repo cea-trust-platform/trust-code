@@ -42,6 +42,7 @@
 #include <cfloat>
 #include <Champ_P0_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
+#include <Op_Diff_CoviMAC_Face.h>
 #include <Pb_Multiphase.h>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);
@@ -328,7 +329,7 @@ void Op_Diff_CoviMAC_base::update_nu() const
   int e, n, nb, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
   for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (nb = 0; nb < mult; nb++, i++)
-        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? alp->addr()[N * e + n] : 1);
+        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? max(alp->addr()[N * e + n], 1e-8) : 1);
 
   /* nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
   // utilise-t-on des lois de paroi ?
@@ -350,6 +351,6 @@ void Op_Diff_CoviMAC_base::update_nu() const
     }
   nu_fac_.echange_espace_virtuel();
   /* heavy lifting */
-  zone.fgrad(zone.nb_faces_tot(), &nu_, phif_d, phif_j, phif_c, &phif_xb);
+  zone.fgrad(sub_type(Op_Diff_CoviMAC_Face, *this) ? zone.nb_faces_tot() : zone.nb_faces(), &nu_, 1, phif_d, phif_j, phif_c, &phif_w, &phif_xb);
   nu_a_jour_ = 1;
 }

@@ -117,14 +117,14 @@ void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, eb, f, n, N = ch.valeurs().line_size(), N_nu = nu_.line_size(), ne_tot = zone.nb_elem_tot();
+  int i, j, e, eb, f, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot();
 
   IntTrav stencil(0, 2), tpfa(0, N);
   stencil.set_smart_resize(1), zone.creer_tableau_faces(tpfa), tpfa = 1;
 
   update_nu();
   /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) de la zone sinon */
-  const IntTab& feb_d = nu_constant_ || N_nu <= N ? phif_d : zone.feb_d, &feb_j = nu_constant_ || N_nu <= N ? phif_j : zone.feb_j;
+  const IntTab& feb_d = nu_constant_ ? phif_d : zone.feb_d, &feb_j = nu_constant_ ? phif_j : zone.feb_j;
   Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
 
   /* flux a deux points aux faces de bord (sauf Neumann )*/
@@ -203,11 +203,12 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   std::vector<std::map<int, double>> dphi(N); //dphi[n][idx] : derivee de la composante n du flus par rapport a idx
   for (f = zone.premiere_face_int(), phi.resize(N); f < zone.nb_faces(); f++)
     {
-      /* phi = |f|nu.grad T */
+      /* phi = - |f|nu.grad T */
       for (phi = 0, i = phif_d(f); i < phif_d(f + 1); i++) for (e = phif_j(i), n = 0; n < N; n++)
           {
-            phi(n) += phif_c(i, n) * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n, 0));
-            if (mat && (e < ne_tot || Tb(e - ne_tot, n, 1))) dphi[n][e < ne_tot ? e : f_e(e - ne_tot, 0)] += phif_c(i, n) * (e < ne_tot ? 1 : Tb(e - ne_tot, n, 1));
+            double fac = fs(f) * (phif_w(f, n, 0) * phif_c(i, n, 0) + phif_w(f, n, 1) * phif_c(i, n, 1));
+            phi(n) += fac * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n, 0));
+            if (mat && (e < ne_tot || Tb(e - ne_tot, n, 1))) dphi[n][e < ne_tot ? e : f_e(e - ne_tot, 0)] += fac * (e < ne_tot ? 1 : Tb(e - ne_tot, n, 1));
           }
 
       /* contributions */

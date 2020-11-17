@@ -27,7 +27,6 @@
 Implemente_instanciable(Option_CoviMAC,"Option_CoviMAC",Interprete);
 // Option_CoviMAC interprete Option_CoviMAC 1 Class of CoviMAC options.
 
-int Option_CoviMAC::vertex_stencil = 0;
 int Option_CoviMAC::interp_ve1 = 0;
 
 // Description:
@@ -87,7 +86,6 @@ Entree& Option_CoviMAC::readOn(Entree& is)
 Entree& Option_CoviMAC::interpreter(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter_non_std("vertex_stencil",(this)); //chaine Use MPFA-like stencil for flux interpolation. By default, it is not activated
   param.ajouter_non_std("interp_ve1",(this));     //chaine Use first-order face->cell velocity interpolation. By default, it is not activated
   param.lire_avec_accolades_depuis(is);
   return is;
@@ -95,7 +93,6 @@ Entree& Option_CoviMAC::interpreter(Entree& is)
 
 int Option_CoviMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="vertex_stencil") vertex_stencil = 1;
   if (mot=="interp_ve1") interp_ve1 = 1;
   else return -1;
   return 1;

@@ -67,48 +67,26 @@ Entree& Masse_CoviMAC_Face::readOn(Entree& s)
 //
 //////////////////////////////////////////////////////////////
 
-void Masse_CoviMAC_Face::completer()
-{
-  /* dimensionnement et initialisation de mu_f */
-  const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleTab& nf = zone.face_normales(), &xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& pe = zone.porosite_elem();
-  const Equation_base& eq = equation();
-
-  int i, e, f, n, N = eq.inconnue().valeurs().line_size();
-  /* initialisation : de mu_f */
-  mu_f.resize(0, N, 2), zone.creer_tableau_faces(mu_f);
-  for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
-      {
-        double fac[2] = {0, }; //amont/aval
-        if (f_e(f, 1) >= 0) for (i = 0; i < 2; i++) e = f_e(f, i), fac[i] = (i ? -1 : 1) * pe(e) * zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
-        for (i = 0; i < 2; i++) mu_f(f, n, i) = f_e(f, 1) >= 0 ? fac[i] / (fac[0] + fac[1]) : (i == 0);
-      }
-}
-
-
 DoubleTab& Masse_CoviMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
-  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension,
-               cR = sub_type(Champ_Uniforme, equation().milieu().masse_volumique());
-  const DoubleTab& rho = equation().milieu().masse_volumique().valeurs(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs() : NULL;
+  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
+  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
+                   &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
   double fac;
 
   //vitesses aux faces
   for (f = 0; f < nf_tot; f++) for (n = 0; n < N; n++)
       {
-        for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += mu_f(f, n, i) * (alp ? alp->addr()[N * e + n] * rho(!cR * e, n) : 1);
+        for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += mu_f(f, n, i) * (a_r ? a_r->addr()[N * e + n] : 1);
         sm.addr()[N * f + n] /= pf(f) * vf(f) * fac; //vitesse calculee
       }
 
   //vitesses aux elements
   for (e = 0; e < ne_tot; e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        sm.addr()[N * (nf_tot + D * e + d) + n] /= pe(e) * ve(e) * (alp ? alp->addr()[N * e + n] * rho(!cR * e, n) : 1);
+        sm.addr()[N * (nf_tot + D * e + d) + n] /= pe(e) * ve(e) * (a_r ? a_r->addr()[N * e + n] : 1);
 
   return sm;
 }
@@ -139,18 +117,18 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
-  const DoubleTab& nf = zone.face_normales(), &rho = equation().milieu().masse_volumique().passe(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
-                    *coef = has_coefficient_temporel_ ? &equation().get_champ(name_of_coefficient_temporel_).valeurs() : NULL;
-  int i, e, f, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension, cR = (rho.dimension_tot(0) == 1);
+  const DoubleTab& nf = zone.face_normales(),
+                   *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
+                    &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
+  int i, e, f, nf_tot = zone.nb_faces_tot(), n, N = inco.line_size(), d, D = dimension;
 
   /* faces : si CLs, pas de produit par alpha * rho en multiphase */
   for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
       {
-        double a_m = 1, rho_m = 1;
-        if (alp && ch.fcl(f, 0) < 2) for (a_m = rho_m = i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            a_m += mu_f(f, n, i) * alp->addr()[N * e + n], rho_m += mu_f(f, n, i) * rho(!cR * e, n);
-        double fac = a_m * rho_m * (coef ? coef->addr()[N * f + n] : 1) * pf(f) * vf(f) / dt;
+        double ar_f = 1;
+        if (a_r && ch.fcl(f, 0) < 2) for (ar_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+            ar_f += mu_f(f, n, i) * a_r->addr()[N * e + n];
+        double fac = ar_f * pf(f) * vf(f) / dt;
         secmem.addr()[N * f + n] -= fac * resoudre_en_increments * inco.addr()[N * f + n];
         if (ch.fcl(f, 0) < 2) secmem.addr()[N * f + n] += fac * passe.addr()[N * f + n];
         else if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++)
@@ -160,7 +138,7 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 
   for (e = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++, i++)
         {
-          double fac = (coef ? coef->addr()[i] : 1) * pe(e) * ve(e) * (alp ? rho(!cR * e, n) * alp->addr()[N * e + n] : 1) / dt;
+          double fac = pe(e) * ve(e) * (a_r ? a_r->addr()[N * e + n] : 1) / dt;
           secmem.addr()[i] -= fac * (resoudre_en_increments * inco.addr()[i] - passe.addr()[i]);
           if (mat) (*mat)(i, i) += fac;
         }

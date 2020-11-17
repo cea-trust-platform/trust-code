@@ -36,7 +36,6 @@ public :
   Entree& interpreter(Entree&);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   int test_mot(const Motcle& mot) const;
-  static int vertex_stencil;
   static int interp_ve1;
 };
 
