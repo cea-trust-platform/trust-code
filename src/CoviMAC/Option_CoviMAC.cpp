@@ -25,7 +25,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Option_CoviMAC,"Option_CoviMAC",Interprete);
-// XD Option_CoviMAC interprete Option_CoviMAC 1 Class of CoviMAC options.
+// Option_CoviMAC interprete Option_CoviMAC 1 Class of CoviMAC options.
 
 int Option_CoviMAC::vertex_stencil = 0;
 int Option_CoviMAC::interp_ve1 = 0;
@@ -87,8 +87,8 @@ Entree& Option_CoviMAC::readOn(Entree& is)
 Entree& Option_CoviMAC::interpreter(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter_non_std("vertex_stencil",(this)); // XD_ADD_P chaine Use MPFA-like stencil for flux interpolation. By default, it is not activated
-  param.ajouter_non_std("interp_ve1",(this));     // XD_ADD_P chaine Use first-order face->cell velocity interpolation. By default, it is not activated
+  param.ajouter_non_std("vertex_stencil",(this)); //chaine Use MPFA-like stencil for flux interpolation. By default, it is not activated
+  param.ajouter_non_std("interp_ve1",(this));     //chaine Use first-order face->cell velocity interpolation. By default, it is not activated
   param.lire_avec_accolades_depuis(is);
   return is;
 }
