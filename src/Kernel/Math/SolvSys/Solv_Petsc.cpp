@@ -27,6 +27,7 @@
 #include <petscdmshell.h>
 #include <petscsection.h>
 #endif
+#include <Matrice_Petsc.h>
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
 #include <Matrice_Bloc_Sym.h>
@@ -43,8 +44,6 @@
 #include <MD_Vector_composite.h>
 #include <vector>
 #include <map>
-
-
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 Implemente_instanciable_sans_constructeur(Solv_Petsc_GPU,"Solv_Petsc_GPU",Solv_Petsc);
@@ -1266,6 +1265,12 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
               exit();
             }
         }
+      else if (sub_type(Matrice_Petsc, la_matrice))
+        {
+          // Matrice deja au format Petsc
+          MatricePetsc_ = ref_cast(Matrice_Petsc, la_matrice).getMat();
+          read_matrix_ = 1; // flag reutilise comme si on avait lu la matrice
+        }
       else if(sub_type(Matrice_Morse_Sym,la_matrice))
         {
           // Exemple: matrice de pression en VEFPreP1B
@@ -1580,7 +1585,7 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   if (preconditionnement_non_symetrique_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
 
-  // Creation de la matrice Petsc
+  // Creation de la matrice Petsc si necessaire
   if (!read_matrix_)
     Create_MatricePetsc(MatricePetsc_, mataij_, mat);
 

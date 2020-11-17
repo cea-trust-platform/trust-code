@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,6 @@ public :
 
 
   Matrice la_matrice_de_travail_;                // Matrice de travail
-  int mettre_matrice_sous_forme_optimale_;        // Matrice sous forme optimisee
 
 protected:
 
