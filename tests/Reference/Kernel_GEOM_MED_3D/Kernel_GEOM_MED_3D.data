@@ -7,7 +7,6 @@ Domaine hexaedre
 Domaine tetra
 Domaine hexaedre_vef
 
-
 Mailler hexaedre 
 {
  	Pave  Gauche
@@ -66,6 +65,11 @@ postraiter_domaine {
 		domaines { hexaedre tetra hexaedre_vef } 
 		fichier Kernel_GEOM_MED_3D.lml
 		format lml }
+
+Domaine FluidVolMesh		
+lire_med family_names_from_group_names FluidVolMesh FluidVolMesh mesh_with_several_groups_on_a_family.med # Fichier .med mal lu par TRUST 1.8.1 #
+discretiser_domaine FluidVolMesh
+
 End
 
 
