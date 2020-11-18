@@ -18,10 +18,10 @@ else
   if [ $1 = "XDATA" ]; then
       mkdir -p XDATA
       cd XDATA
-      tar zxvf $TRUST_ROOT/externalpackages/SALOME/xdata-9.2.1.tar.gz
+      tar zxvf $TRUST_ROOT/externalpackages/SALOME/xdata-9.6.0.tar.gz
       tar zxvf $TRUST_ROOT/externalpackages/SALOME/configuration-9.5.0.tar.gz
 
-      mv xdata-9.2.1  XDATA_SRC
+      mv xdata-9.6.0  XDATA_SRC
       mv configuration-9.5.0  CONFIGURATION_SRC
       cd XDATA_SRC
       ## Patching

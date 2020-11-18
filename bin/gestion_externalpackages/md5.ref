@@ -67,7 +67,7 @@ d65fd5cd636e65a731b82e9678c6f40c  Miniconda/local_channel/noarch/pytz-2019.3-py_
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
 6a4a21d33fe8d7bf0f46d7debd65d339  SALOME/configuration-9.5.0.tar.gz
 eed4ec683dc1e8692055b7ff5ece0d17  SALOME/medcoupling-9.5.0.tar.gz
-a2bdb92e4a31ff4e5c89dab762d1c95c  SALOME/xdata-9.2.1.tar.gz
+dae2b952c7ef8591e8322284ea244e73  SALOME/xdata-9.6.0.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
 642c81285e1bb833b14ab3f439964086  VisIt/Cython-0.25.2.tar.gz
 90a93507b8fdc88f46b9a8d7ed651c6c  VisIt/IceT-1-0-0.tar.gz
