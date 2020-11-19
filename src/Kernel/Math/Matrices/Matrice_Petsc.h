@@ -31,21 +31,39 @@ class Matrice_Petsc : public Matrice_Base
 public:
   virtual int ordre() const
   {
+#ifdef PETSCKSP_H
     PetscInt m,n;
     MatGetSize(Mat_, &m, &n);
     return m == n ? m : 0;
+#else
+    Cerr << "Matrice_Petsc non disponible." << finl;
+    Process::exit();
+    return 0;
+#endif
   };
   virtual int nb_lignes() const
   {
+#ifdef PETSCKSP_H
     PetscInt m,n;
     MatGetSize(Mat_, &m, &n);
     return m;
+#else
+    Cerr << "Matrice_Petsc non disponible." << finl;
+    Process::exit();
+    return 0;
+#endif
   }
   virtual int nb_colonnes() const
   {
+#ifdef PETSCKSP_H
     PetscInt m,n;
     MatGetSize(Mat_, &m, &n);
     return n;
+#else
+    Cerr << "Matrice_Petsc non disponible." << finl;
+    Process::exit();
+    return 0;
+#endif
   }
   virtual void scale(const double& x)
   {
@@ -71,6 +89,7 @@ public:
     Process::exit(-1);
     return r;
   }
+#ifdef PETSCKSP_H
   inline const Mat& getMat() const
   {
     return Mat_;
@@ -78,5 +97,6 @@ public:
 
 private :
   Mat Mat_;
+#endif
 };
 #endif
