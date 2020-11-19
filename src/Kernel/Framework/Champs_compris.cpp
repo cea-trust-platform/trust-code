@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,73 +65,70 @@ Entree& Champs_compris::readOn(Entree& is)
   return is;
 }
 
-static Nom nom; // Optimisation pour ne pas creer a de multiples reprises un objet
 const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
 {
-  nom = motcle;
-  if (nom=="??")
+  REF(Champ_base) ref_champ;
+  if (has_champ(motcle, ref_champ)) return ref_champ;
+  throw Champs_compris_erreur();
+  return ref_champ;
+}
+
+bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ) const
+{
+  if (motcle=="??")
     {
       Cerr<<"Champs_compris::get_champ()"<<finl;
       Cerr<<"No field can be requested using the identifier \'??\'"<<finl;
       exit();
     }
-
   CONST_LIST_CURSEUR(REF(Champ_base)) curseur = liste_champs_;
-  Nom nom_champ;
   while (curseur)
     {
-      const Champ_base& ch= curseur.valeur().valeur();
-      nom_champ = ch.le_nom();
-      if (nom_champ.majuscule()==nom)
-        {
-          return ch;
-        }
+      ref_champ = curseur.valeur().valeur();
+      if (ref_champ.le_nom() == motcle)  // case insensitive test
+        return true;
       else
         {
-          const Noms& syno = ch.get_synonyms();
-          int nb_syno=syno.size();
-          for (int s=0; s<nb_syno; s++)
+          const Noms& syno = ref_champ->get_synonyms();
+          int nb_syno = syno.size();
+          for (int s = 0; s < nb_syno; s++)
             {
-              nom_champ = syno[s];
-              if (nom_champ.majuscule()==nom)
-                return ch;
+              if (syno[s] == motcle)  // case insensitive test
+                return true;
             }
-          int nb_composantes = ch.nb_comp();
-          for (int i=0; i<nb_composantes; i++)
+          int nb_composantes = ref_champ->nb_comp();
+          for (int i = 0; i < nb_composantes; i++)
             {
-              nom_champ = ch.nom_compo(i);
-              if (nom_champ.majuscule()==nom)
-                {
-                  return ch;
-                }
+              if (motcle == ref_champ->nom_compo(i)) // case insensitive test
+                return true;
             }
         }
       ++curseur;
     }
-  throw Champs_compris_erreur();
-
-  REF(Champ_base) ref_champ;
-  return ref_champ;
-
+  return false;
 }
 
 int new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
 {
   Motcle mot(nom_champ);
-  int size=new_list.size();
-  for (int i=0; i<size; i++)
-    if (mot==new_list(i))
-      return 0;
+  CONST_LIST_CURSEUR(Nom) curseur = new_list;
+  while (curseur)
+    {
+      if (mot == curseur.valeur())
+        return 0;
+      ++curseur;
+    }
   new_list.add(nom_champ);
   return 1;
 }
 
-void rebuild_liste_noms( const  LIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_,Noms& liste_noms_construits_,int info=0)
+void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
 {
   if (liste_noms_construits_.size()<liste_noms_.size())
     liste_noms_construits_=liste_noms_;
   LIST(Nom) new_liste;
-  for (int i=0; i<liste_noms_.size(); i++)
+  int size = liste_noms_.size();
+  for (int i=0; i<size; i++)
     new_liste.add(liste_noms_[i]);
 
   REF(Champ_base) ref_champ;
@@ -145,8 +142,7 @@ void rebuild_liste_noms( const  LIST(REF(Champ_base))& liste_champs_, const Noms
       if (nom_champ!=Nom())
         new_liste_add_if_not(new_liste,nom_champ);
 
-
-      const Noms&  syno= ch.get_synonyms();
+      const Noms& syno= ch.get_synonyms();
       int nb_syno=syno.size();
       for (int s=0; s<nb_syno; s++)
         {
@@ -160,7 +156,6 @@ void rebuild_liste_noms( const  LIST(REF(Champ_base))& liste_champs_, const Noms
           if (nom_champ!=Nom())
             new_liste_add_if_not(new_liste,nom_champ);
         }
-
       ++curseur;
     }
   int size_new_liste=new_liste.size();
@@ -191,7 +186,6 @@ void rebuild_liste_noms( const  LIST(REF(Champ_base))& liste_champs_, const Noms
             //Cout<<liste_noms_construits_[i] << " va etre remplace par "<< new_liste(i)<<finl;
           }
         liste_noms_construits_[i]=new_liste(i);
-
       }
   //if ((prem==0) && (info))
   // Cout<<"liste apres modif "<<liste_noms_construits_<<finl;

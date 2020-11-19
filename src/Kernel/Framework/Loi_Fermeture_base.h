@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@ public:
   // Implementation des methodes de Champs_compris_interface:
   virtual void  creer_champ(const Motcle& motlu);
   virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
   virtual void get_noms_champs_postraitables(Noms& nom, Option opt=NONE) const;
   // Nouvelles methodes:
   virtual void associer_pb_base(const Probleme_base&);

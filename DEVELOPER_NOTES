@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.8.2_beta : Changes since version 1.8.1 :
 -------------------------------------------------------------
+19/11/20 (TRUST)  New method Champs_compris::has_champ(). Similar to get_champ() but do not raise exception.
+19/11/20 (TRUST)  New (case insensitive comparison operators between Nom et Motcle
 17/11/20 (TRUST)  Add a Matrice_Petsc class to build directly Petsc based matrix for PETSc solvers
 16/11/20 (TRUST)  Calls backtrace displayed in Journal when SIGABRT or SIGFPE raised (in debug mode only, to use it in optim mode: enable TRUST_ENABLE_ERROR_HANDLERS environment variable)
 29/10/20 (TRUST)  Diffusive operators coding turbulent shear stress come back from TrioCFD to TRUST

@@ -635,8 +635,9 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
   Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue().valeur());
   DoubleTab& val_vitesse_inconnue = champ_vitesse_inconnue.valeurs();
 
-  ArrOfDouble xf(nb_comp);
-  ArrOfDouble vf(nb_comp);
+  DoubleTab xf(1, nb_comp);
+  DoubleTab vf(1, nb_comp);
+  ArrOfInt cells(1);
 
   for (int i = 0; i < nb_som; i++)
     {
@@ -648,7 +649,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
             {
               double xj = dom.coord(i,j);
               double xjf = fluid_points(i,j);
-              xf(j) = xjf;
+              xf(0, j) = xjf;
               double xjs = solid_points(i,j);
               d1 += (xj-xjs)*(xj-xjs);
               d2 += (xjf-xj)*(xjf-xj);
@@ -656,11 +657,12 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
           d1 = sqrt(d1);
           d2 = sqrt(d2);
           double inv_d = 1.0 / (d1 + d2);
-          champ_vitesse_inconnue.value_interpolation(xf,int(fluid_elems(i)), val_vitesse_inconnue, vf);
+          cells(0) = int(fluid_elems(i));
+          champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
             {
               double vjs = vitesse_imposee_mod(i,j);
-              vitesse_imposee_calculee(i,j) = vjs + (vf(j)-vjs)*inv_d*d1;
+              vitesse_imposee_calculee(i,j) = vjs + (vf(0, j)-vjs)*inv_d*d1;
             }
         }
       else
@@ -760,8 +762,9 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
   Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue().valeur());
   DoubleTab& vitesse_inconnue = champ_vitesse_inconnue.valeurs();
 
-  ArrOfDouble xf(nb_comp);
-  ArrOfDouble vf(nb_comp);
+  DoubleTab xf(1, nb_comp);
+  DoubleTab vf(1, nb_comp);
+  ArrOfInt cells(1);
 
   for (int i = 0; i < nb_som; i++)
     {
@@ -773,7 +776,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
             {
               double xj = dom.coord(i,j);
               double xjf = fluid_points(i,j);
-              xf(j) = xjf;
+              xf(0, j) = xjf;
               double xjs = solid_points(i,j);
               d1 += (xj-xjs)*(xj-xjs);
               d2 += (xjf-xj)*(xjf-xj);
@@ -781,11 +784,12 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
           d1 = sqrt(d1);
           d2 = sqrt(d2);
           double inv_d = 1.0 / (d1 + d2);
-          champ_vitesse_inconnue.value_interpolation(xf,int(fluid_elems(i)), vitesse_inconnue, vf);
+          cells(0) = int(fluid_elems(i));
+          champ_vitesse_inconnue.value_interpolation(xf,cells, vitesse_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
             {
               double vjs = vitesse_imposee_mod(i,j);
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j) + (vf(j)-vjs)*inv_d*d1;
+              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j) + (vf(0, j)-vjs)*inv_d*d1;
             }
         }
       else if (fluid_elems(i) > -1.5 && fluid_elems(i) < -0.5)

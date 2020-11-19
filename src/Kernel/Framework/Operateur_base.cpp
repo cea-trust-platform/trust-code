@@ -508,6 +508,10 @@ const Champ_base& Operateur_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
+bool Operateur_base::has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
 
 void Operateur_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
@@ -539,15 +543,12 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
             {
               const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-
               if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
               int ndeb = le_bord.num_premiere_face();
               int nfin = ndeb + le_bord.nb_faces();
 
               for (int face=ndeb; face<nfin; face++)
-                {
-                  es_valeurs(face) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
-                }
+                es_valeurs(face) = flux_bords_(face,comp) / (surfacique ? aire(face-ndeb) : 1.);
             }
         }
     }

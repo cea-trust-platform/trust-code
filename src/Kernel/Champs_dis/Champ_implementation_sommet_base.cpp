@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,161 +30,42 @@ DoubleVect& Champ_implementation_sommet_base::valeur_a_elem(const DoubleVect& po
   const Champ_base& ch_base       = le_champ();
   int            nb_components = ch_base.nb_comp();
   const DoubleTab&  values        = ch_base.valeurs();
-
-  //  const Zone&      zone              = get_zone_geom();
-  //  const IntTab&    cells             = zone.les_elems();
-  //const int     nb_nodes_per_cell = zone.nb_som_elem();
-
-  //  assert(poly>=0);
-  //assert(poly < cells.dimension_tot(0));
   assert(result.size() == nb_components);
   assert(position.size() == Objet_U::dimension);
-
-  // result = 0.;
-  ArrOfDouble resu(nb_components);
-
-  value_interpolation(position,poly,values,resu);
+  DoubleTab positions;
+  positions = position;
+  DoubleTab resu(1, nb_components);
+  ArrOfInt polys(1);
+  polys(0) = poly;
+  value_interpolation(positions,polys,values,resu);
   for (int j=0; j<nb_components; j++)
-    {
-      result(j) = resu(j) ;
-    }
-  /*
-    if (nb_components == 1) {
-    result(0)+=resu(0);
-
-    if (values.nb_dim() == 1) {
-    for (int i=0; i<nb_nodes_per_cell; i++) {
-    int node = cells(poly,i);
-    result(0) += values(node) * form_function(position, poly, i);
-    }
-    }
-    else if (values.nb_dim() == 2) {
-    assert(values.dimension(1) == 1);
-    for (int i=0; i<nb_nodes_per_cell; i++) {
-    int node = cells(poly,i);
-    result(0) += values(node,0) * form_function(position, poly, i);
-    }
-    }
-    else {
-    Cerr << "Error TRUST in Champ_implementation_sommet_base::valeur_a_elem()" << finl;
-    Cerr << "The dimensions of the field are inconsistent" << finl;
-    Process::exit();
-    }
-
-    }
-    else {
-    assert(values.nb_dim() == 2);
-    assert(values.dimension(1) == nb_components);
-    for (int j=0; j<nb_components; j++) {
-    result(j) += resu(j) ;
-    }
-
-    }
-  */
+    result(j) = resu(j, 0) ;
   return result;
 }
 
 double Champ_implementation_sommet_base::valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const
 {
   const Champ_base& ch_base       = le_champ();
-  //  int            nb_components = ch_base.nb_comp();
   const DoubleTab&  values        = ch_base.valeurs();
-
-  //  const Zone&      zone              = get_zone_geom();
-  //const IntTab&    cells             = zone.les_elems();
-  //const int     nb_nodes_per_cell = zone.nb_som_elem();
-
   assert(ncomp>=0);
   assert(ncomp<ch_base.nb_comp());
-
   assert(position.size() == Objet_U::dimension);
-
-  double result = 0.;
-
-  ArrOfDouble resu(1);
-
-  value_interpolation(position,poly,values,resu,ncomp);
-
-  result = resu(0) ;
-  /*
-    if (nb_components == 1) {
-    if (values.nb_dim() == 1) {
-    for (int i=0; i<nb_nodes_per_cell; i++) {
-    int node = cells(poly,i);
-    result += values(node) * form_function(position, poly, i);
-    }
-    }
-    else if (values.nb_dim() == 2) {
-    assert(values.dimension(1) == 1);
-    for (int i=0; i<nb_nodes_per_cell; i++) {
-    int node = cells(poly,i);
-    result += values(node,0) * form_function(position, poly, i);
-    }
-    }
-    else {
-    Cerr << "Error TRUST in Champ_implementation_sommet_base::valeur_a_elem_compo()" << finl;
-    Cerr << "The dimensions of the field are inconsistent" << finl;
-    Process::exit();
-    }
-    }
-    else {
-    assert(values.nb_dim() == 2);
-    assert(values.dimension(1) == nb_components);
-    for (int i=0; i<nb_nodes_per_cell; i++) {
-    int node = cells(poly,i);
-    result += values(node,ncomp) * form_function(position, poly, i);
-    }
-    }
-  */
-  return result;
+  DoubleTab positions;
+  positions = position;
+  DoubleTab resu(1, 1);
+  ArrOfInt polys(1);
+  polys(0) = poly;
+  value_interpolation(positions,polys,values,resu,ncomp);
+  return resu(0, 0);
 }
 
 DoubleTab& Champ_implementation_sommet_base::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
 {
   const Champ_base& ch_base       = le_champ();
-  int            nb_components = ch_base.nb_comp();
   const DoubleTab&  values        = ch_base.valeurs();
-
-  //const Zone&      zone              = get_zone_geom();
-  //  const IntTab&    cells             = zone.les_elems();
-  //const int     nb_nodes_per_cell = zone.nb_som_elem();
-
-  int nb_polys = polys.size();
-
-  assert((result.dimension(0) == nb_polys)||(result.dimension_tot(0) == nb_polys));
+  assert((result.dimension(0) == polys.size())||(result.dimension_tot(0) == polys.size()));
   assert(positions.dimension(1) == Objet_U::dimension);
-
-  ArrOfDouble position(Objet_U::dimension);
-
-// result = 0.;
-
-
-  ArrOfDouble resu(nb_components);
-  for (int i=0; i<nb_polys; i++)
-    {
-      resu=0;
-      for (int j=0; j<Objet_U::dimension; j++)
-        {
-          position[j] = positions(i,j);
-        }
-      int cell = polys(i);
-      if (cell!=-1)
-        {
-          value_interpolation(position,cell,values,resu);
-          if (result.nb_dim()==1)
-            {
-              result(i)= resu(0);
-            }
-          else
-            {
-              for (int k=0; k<nb_components; k++)
-                {
-                  result(i,k)=resu(k);
-                }
-            }
-        }
-    }
-
+  value_interpolation(positions,polys,values,result);
   return result;
 }
 
@@ -192,34 +73,16 @@ DoubleVect& Champ_implementation_sommet_base::valeur_aux_elems_compo(const Doubl
 {
   const Champ_base& ch_base       = le_champ();
   const DoubleTab&  values        = ch_base.valeurs();
-
-
   int nb_polys = polys.size();
 
   assert(ncomp>=0);
   assert(ncomp<ch_base.nb_comp());
   assert(result.size() == nb_polys);
   assert(positions.dimension(1) == Objet_U::dimension);
-
-  ArrOfDouble position(Objet_U::dimension);
-  ArrOfDouble resu(1);
-  //result = 0.;
-  for (int i=0; i<nb_polys; i++)
-    {
-      resu(0)=0;
-      for (int j=0; j<Objet_U::dimension; j++)
-        {
-          position[j] = positions(i,j);
-        }
-      int cell = polys(i);
-
-      if (cell != -1)
-        {
-          value_interpolation(position,cell,values,resu,ncomp);
-          double value=resu(0);
-          result(i)=value;
-        }
-    }
+  DoubleTab resu(nb_polys, 1);
+  value_interpolation(positions, polys, values, resu);
+  for(int i=0; i<nb_polys; i++)
+    result(i)=resu(i,0);
   return result;
 }
 

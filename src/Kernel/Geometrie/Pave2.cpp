@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -162,13 +162,13 @@ void Pave::lire_front(Entree& is, Frontiere& front)
           if ( (dabs(Origine(0) - coupe)>epsilon()) &&
                (dabs(coupe - Origine(0)-Longueurs(0))>epsilon()) && (!internes))
             {
-              Cerr << "X = " << coupe << "is not a boundary" << finl;
+              Cerr << "X = " << coupe << " is not a boundary" << finl;
               exit();
             }
           if ( ((dabs(Origine(0) - coupe)<epsilon()) ||
                 (dabs(coupe - Origine(0)-Longueurs(0))<epsilon())) && (internes))
             {
-              Cerr << "X = " << coupe << "is a boundary" << finl;
+              Cerr << "X = " << coupe << " is a boundary" << finl;
               exit();
             }
           int jmin, jmax;
@@ -204,16 +204,21 @@ void Pave::lire_front(Entree& is, Frontiere& front)
         }
       else
         {
+          if (axi)
+            {
+              double deux_pi=M_PI*2.0 ;
+              coupe*=deux_pi;
+            }
           if ( (dabs(Origine(1) - coupe)>epsilon()) &&
                (dabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes))
             {
-              Cerr << "Y = " << coupe << "is not a boundary" << finl;
+              Cerr << "Y = " << coupe << " is not a boundary" << finl;
               exit();
             }
           if ( ((dabs(Origine(1) - coupe)<epsilon()) ||
                 (dabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes))
             {
-              Cerr << "Y = " << coupe <<"is a boundary" << finl;
+              Cerr << "Y = " << coupe <<" is a boundary" << finl;
               exit();
             }
           int imin, imax;
@@ -351,13 +356,13 @@ void Pave::lire_front(Entree& is, Frontiere& front)
           if ( (dabs(Origine(0)-coupe)>epsilon()) &&
                (dabs(Origine(0)+Longueurs(0)-coupe)>epsilon()) && (!internes) )
             {
-              Cerr << "X = " << coupe << "is not a boundary " << finl;
+              Cerr << "X = " << coupe << " is not a boundary " << finl;
               exit();
             }
           if ( ((dabs(Origine(0)-coupe)<epsilon()) ||
                 (dabs(Origine(0)+Longueurs(0)-coupe)<epsilon())) && (internes) )
             {
-              Cerr << "X = " << coupe << "is a boundary " << finl;
+              Cerr << "X = " << coupe << " is a boundary " << finl;
               exit();
             }
           int jmin, jmax, kmin, kmax;
@@ -405,13 +410,13 @@ void Pave::lire_front(Entree& is, Frontiere& front)
           if ( (dabs(Origine(1) - coupe)>epsilon()) &&
                (dabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes)        )
             {
-              Cerr << "Y = " << coupe << "is not a boundary " << finl;
+              Cerr << "Y = " << coupe << " is not a boundary " << finl;
               exit();
             }
           if ( ((dabs(Origine(1) - coupe)<epsilon()) ||
                 (dabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes)        )
             {
-              Cerr << "Y = " << coupe << "is a boundary " << finl;
+              Cerr << "Y = " << coupe << " is a boundary " << finl;
               exit();
             }
           int imin, imax, kmin, kmax;
@@ -448,13 +453,13 @@ void Pave::lire_front(Entree& is, Frontiere& front)
           if ( (dabs(Origine(2)-coupe)>epsilon()) &&
                (dabs(coupe-Origine(2)-Longueurs(2))>epsilon()) && (!internes))
             {
-              Cerr << "Z = " << coupe << "is not a boundary " << finl;
+              Cerr << "Z = " << coupe << " is not a boundary " << finl;
               exit();
             }
           if ( ((dabs(Origine(2)-coupe)<epsilon()) ||
                 (dabs(coupe-Origine(2)-Longueurs(2))<epsilon())) && (internes))
             {
-              Cerr << "Z = " << coupe << "is a boundary " << finl;
+              Cerr << "Z = " << coupe << " is a boundary " << finl;
               exit();
             }
           int imin, imax, jmin, jmax;
