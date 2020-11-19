@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,26 @@ int Champ_Proto::lire_dimension(Entree& is , const Nom& le_nom_)
   // verification meme en optim
   int dim = -1;
   is >> dim;
+  return lire_dimension(dim, le_nom_);
+}
+
+// Description:
+//    Verification de la dimension du champ
+//    Renvoie la dimension du champ
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: int
+//    Signification: la dimension du champ
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+int Champ_Proto::lire_dimension(int dim , const Nom& le_nom_)
+{
   if (dim < 1)
     {
       Cerr << "Error in int Champ_Proto::lire_dimension() for " << le_nom_

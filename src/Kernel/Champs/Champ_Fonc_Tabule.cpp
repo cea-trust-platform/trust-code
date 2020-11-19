@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,36 @@
 #include <Champ_Uniforme.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
+
+#include <string>
+#include <algorithm>
+void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
+{
+  std::string s((const char*)val1);
+  // lambda checking whehter a char is not a digit:
+  auto checkNotDig = [](unsigned char c)
+  {
+    return !std::isdigit(c);
+  };
+  bool isNum = !s.empty() && std::find_if(s.begin(), s.end(), checkNotDig) == s.end();
+  if (!isNum) // val1 is not a num - this is the correct new syntax
+    {
+      param = val1;
+      dim = atoi(val2);
+      return;
+    }
+  else   // Old syntax -- warn TODO remove this for 1.8.3
+    {
+
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "In call to " << nom_class << ":" << finl;
+      Cerr << "The syntax has changed in version 1.8.2 - you should now pass the dimension/number of components AFTER the field/parameter name. " << finl;
+      Cerr << "Please update your dataset the old syntax will be rejected in 1.8.3" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      param = val2;
+      dim = atoi(val1);
+    }
+}
 
 
 // Description:
@@ -51,8 +81,8 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 //     exemple:
 //     Champ_Fonc_Tabule ch
 //     Lire ch
-//     1 (nombre de composantes)
 //     champ  (ch est fonction d'un champ ch)
+//     1 (nombre de composantes)
 //     {
 //     2
 //     0 500 0 250  (ch(0)=0 && ch(500)=250
@@ -77,11 +107,14 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbcomp,i;
-  nbcomp=lire_dimension(is,que_suis_je());
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Tabule", val1, val2, nbcomp, nom_champ_parametre_);
+  nbcomp=lire_dimension(nbcomp,que_suis_je());
   if(nbcomp==1)
     {
       fixer_nb_comp(nbcomp);
-      is >> nom_champ_parametre_;
       is >> motlu;
       if (motlu == accolade_ouverte)
         {

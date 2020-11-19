@@ -93,7 +93,7 @@ Read pb
                 diffusion { }
                 convection { quick }
                 sources {
-                       Puissance_Thermique Champ_fonc_Fonction_txyz 1 temperature t*val*sin(3.14*x*y) 
+                       Puissance_Thermique champ_fonc_fonction_txyz temperature 1 t*val*sin(3.14*x*y) 
 		       }
                 boundary_conditions 
                 {

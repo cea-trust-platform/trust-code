@@ -9,7 +9,7 @@ then
    echo " cas rate a la traduction"
    #cat tests/cas_rate
    trad=0
-   for cas in `cat tests/cas_rate | grep -v "radioactive_decay"`   # Radioactive_decay cases uses champ_fonc_fonction with several compo ...
+   for cas in `cat tests/cas_rate`
    do
       trad=1
       echo "-------------------------------"
@@ -18,7 +18,7 @@ then
    done
    if [ $trad -eq 0 ]
    then
-      echo "   aucun (a part les exceptions -> radioactive_decay?)"
+      echo "   aucun "
    fi
 fi
 
@@ -28,7 +28,7 @@ cd test_complet
 ./fait_lance_test
 export PAR_F=0
 # Generate list of tests:
-find $TRUST_TESTS -name '*.lml.gz' -not -name "*radioactive_decay*" -follow -exec basename {} .lml.gz \; > liste_cas_xdata  # radioactive_decay is an exception!!
+find $TRUST_TESTS -name '*.lml.gz' -follow -exec basename {} .lml.gz \; > liste_cas_xdata
 echo liste_cas_xdata | ./lance_test_modif -nomail $exec `pwd` 1>lance_out 2>&1
 lanc=$?
 name=`basename $exec`

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Fonc_Fonction_txyz_Morceaux.h>
+#include <Champ_Fonc_Tabule.h>
 #include <Champ_Uniforme.h>
 #include <Sous_Zone.h>
 #include <Domaine.h>
@@ -83,13 +84,18 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   mon_domaine = ref_pb.valeur().domaine();
   Domaine& le_domaine=mon_domaine.valeur();
 
-  dim=lire_dimension(is,que_suis_je());
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz_Morceaux", val1, val2, dim, nom_champ_parametre_);
+
+  dim=lire_dimension(dim,que_suis_je());
   fixer_nb_comp(dim);
   parser_idx.resize(0, dim);
   le_domaine.creer_tableau_elements(parser_idx);
   valeurs_.resize(0, dim);
   le_domaine.creer_tableau_elements(valeurs_);
-  is >> nom_champ_parametre_;
+
   is >> nom;
   motlu=nom;
   if(motlu != Motcle("{") )

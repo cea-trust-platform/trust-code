@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,6 +56,7 @@ public:
   virtual DoubleTab& valeurs()=0;
   virtual const DoubleTab& valeurs() const=0;
   int lire_dimension(Entree& , const Nom& );
+  int lire_dimension(int dim , const Nom& le_nom_);
 
   // Attention : ces operateurs sont tres couteux car ils
   // utilisent la methode virtuelle valeurs(). Conseil:

@@ -60,7 +60,7 @@ Read sch
 Fluide_Incompressible water_alcohol
 Read water_alcohol
 {
-	mu Champ_Fonc_tabule 1 concentration { 2 0 1 1.7e-3 2.e-3 } 
+	mu champ_fonc_tabule concentration 1 { 2 0 1 1.7e-3 2.e-3 } 
 	rho Champ_Uniforme 1 1000
 	beta_co Champ_Uniforme 1 0.2
 }

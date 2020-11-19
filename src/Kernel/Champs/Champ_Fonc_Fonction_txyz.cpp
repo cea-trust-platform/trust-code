@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,11 +35,14 @@ Entree& Champ_Fonc_Fonction_txyz::readOn(Entree& is)
 {
   Nom motlu;
   int nbcomp;
-  nbcomp=lire_dimension(is,que_suis_je());
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz", val1, val2, nbcomp, nom_champ_parametre_);
+  nbcomp=lire_dimension(nbcomp,que_suis_je());
   if(nbcomp==1)
     {
       fixer_nb_comp(nbcomp);
-      is >> nom_champ_parametre_;
       la_table.lire_fxyzt(is,nbcomp);
     }
   else
