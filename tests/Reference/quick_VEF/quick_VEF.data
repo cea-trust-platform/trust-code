@@ -95,7 +95,11 @@ Read pb
 	}
 
 	Post_processing
-	{
+	{ 
+		definition_champs {
+                        vitesse_som interpolation { localisation som source refChamp { Pb_champ pb vitesse } }
+                }
+
 		Probes
 		{
 			sonde_vit vitesse periode 0.05 point 1 0. -0.6
@@ -103,6 +107,7 @@ Read pb
 			sonde_tempV temperature periode 0.05 segment 11 0 -1.5 0. 1.5
 			sonde_temp temperature periode 1. plan 21 21 -1.5 -1.5 1.5 -1.5 -1.5 1.5
 			sonde_t temperature periode 0.05 point 1 0. -0.6
+			sonde_vs vitesse_som periode 0.05 segment 11 0 -1.5 0. 1.5
 		}
 		fields dt_post 11.
 		{

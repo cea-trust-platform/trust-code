@@ -156,7 +156,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
             }
           else
             {
-              int nb_components = resu.size_array();
+              int nb_components = resu.dimension(1);
               assert(values.nb_dim() == 2);
               assert(values.dimension(1) == nb_components);
               for (int j = 0; j < nb_nodes_per_cell; j++)
