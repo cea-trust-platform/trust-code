@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,13 +79,6 @@ public:
   friend int operator !=(const Nom& , const Nom& ) ;
   friend int operator ==(const char* const, const Nom&) ;
   friend int operator !=(const char* const, const Nom&) ;
-
-  // Comparison with Motcle
-  friend int operator ==(const Nom& , const Motcle& ) ;
-  friend int operator !=(const Nom& , const Motcle& ) ;
-  friend int operator ==(const Motcle& , const Nom&) ;
-  friend int operator !=(const Motcle& , const Nom&) ;
-
   virtual int finit_par(const char* const) const;
 
   inline const char* getChar() const
