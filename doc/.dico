@@ -228,7 +228,7 @@
  Darcy_VEF_P1NC Source_Darcy_VEF_Face Source_Darcy_VEF_Face.h
  Debog Old_Debog Debog.h
  Debog_pb Debog_Pb Debog.h
- DecoupeBord_pour_rayonnement DecoupeBord DecoupeBord.h
+ DecoupeBord_pour_rayonnement|DecoupeBord DecoupeBord DecoupeBord.h
  Decouper_Bord_coincident Decouper_Bord_coincident Decouper_Bord_coincident.h
  Decouper|Partition Decouper Decouper.h
  Decroissance_Radioactive_P0_PolyMAC Terme_Source_Decroissance_Radioactive_P0_PolyMAC Terme_Source_Decroissance_Radioactive_P0_PolyMAC.h
