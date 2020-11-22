@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,15 @@ Sortie& Sin::printOn(Sortie& os) const
   return os;
 }
 Entree& Sin::readOn(Entree& is)
+{
+  return is;
+}
+Implemente_instanciable(Asin,"Asin",StdFunction);
+Sortie& Asin::printOn(Sortie& os) const
+{
+  return os;
+}
+Entree& Asin::readOn(Entree& is)
 {
   return is;
 }
@@ -204,6 +213,16 @@ Sortie& Abs::printOn(Sortie& os) const
   return os;
 }
 Entree& Abs::readOn(Entree& is)
+{
+  return is;
+}
+
+Implemente_instanciable(Sgn,"Sgn",StdFunction);
+Sortie& Sgn::printOn(Sortie& os) const
+{
+  return os;
+}
+Entree& Sgn::readOn(Entree& is)
 {
   return is;
 }

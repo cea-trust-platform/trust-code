@@ -11,6 +11,7 @@
  ArrOfDouble ArrOfDouble ArrOfDouble.h
  ArrOfFloat ArrOfFloat ArrOfFloat.h
  ArrOfInt ArrOfInt ArrOfInt.h
+ Asin Asin StdFunction.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h
  Assembleur_P_CoviMAC Assembleur_P_CoviMAC Assembleur_P_CoviMAC.h
@@ -870,6 +871,7 @@
  Segment_PolyMAC Segment_PolyMAC Segment_PolyMAC.h
  SFichier SFichier SFichier.h
  SFichierBin SFichierBin SFichierBin.h
+ Sgn Sgn StdFunction.h
  Simple Simple Simple.h
  Simpler Simpler Simpler.h
  Simpler_Base Simpler_Base Simpler_Base.h

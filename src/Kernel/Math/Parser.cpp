@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,6 +96,7 @@ void Parser::init_parser()
   if (unary_func.size()==0)
     {
       Sin SIN;
+      Asin ASIN;
       Cos COS;
       Acos ACOS;
       Tan TAN;
@@ -112,7 +113,9 @@ void Parser::init_parser()
       Atanh ATANH;
       Not NOT;
       Abs ABS;
+      Sgn SGN;
       addFunc(SIN);
+      addFunc(ASIN);
       addFunc(COS);
       addFunc(ACOS);
       addFunc(TAN);
@@ -128,6 +131,7 @@ void Parser::init_parser()
       addFunc(TANH);
       addFunc(NOT);
       addFunc(ABS);
+      addFunc(SGN);
       addFunc(ATANH);
       c_pi.nommer(Nom("PI"));
       c_pi.setValue(2*asin(1.));
