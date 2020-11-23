@@ -277,3 +277,40 @@ class Tableau_performance(Tableau):
         return
 
     pass
+
+class Tableau_performance_nvellevalid(Tableau):
+    '''Classe decrivant une tableau telle qu elle devra etre tracee dans le rapport de validation de TRUST.'''
+
+    #constructeur
+    def __init__(self, verbose=0, output=''):
+        Tableau.__init__(self,verbose,output)
+        self.label    = 'host|system|Total CPU Time|CPU time/step|number of cell'
+        self.nb_colonnes= 5
+        pass
+    def  lireParametres(self, fichier,casTest):
+        for cas in casTest:
+            from lib import get_detail_cas
+            case,dir,nb_proc,comment=get_detail_cas(cas)
+            ligne = Ligne(verbose=self.verbose, output=self.gestMsg)
+            CC=dir+"/"+case
+            ligne.legende=case
+            ligne.legende=CC
+            ligne.fichier=CC+".perf"
+            ligne.origine='TRUST'
+            ligne.nb_colonnes_fichier=6
+            ligne.colonnes="$2 $3 $4 $5 $6"
+            self.listeLignes.append(ligne)
+
+            pass
+        ligne = Ligne(verbose=self.verbose, output=self.gestMsg)
+        ligne.legende="Total"
+        ligne.fichier="temps_total"
+        ligne.origine='TRUST'
+        ligne.nb_colonnes_fichier=1
+        ligne.colonnes="rien rien $1 rien rien"
+        if (len(casTest)>1):
+            self.listeLignes.append(ligne)
+            pass
+        return
+
+    pass
