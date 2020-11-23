@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 test:
 	cp ../tests_src/* .;chmod +w *
-	(export PYTHONPATH=`pwd`:`pwd`/..:${PYTHONPATH};export XDATA_NO_XINTERCEPTOR=1;time python ../testall.py)
+	(export PYTHONPATH=`pwd`:`pwd`/..:${PYTHONPATH};export XDATA_NO_XINTERCEPTOR=1;touch cinits.py p_prem.py p_trois.py;time python ../testall.py)
 
 clean:
 	rm  `find . -maxdepth 1 -type f` ; cp ../tests_src/makefile .; chmod +w makefile
