@@ -64,7 +64,7 @@ dico_en={
 'fluidprop':'propfluide',
 'flowphy':'phyecou',
 'casesetup':'description_cas',
-'grid':'maillage',
+'grid_mesh':'maillage',
 'model_options':'options_modele',
 'other_options':'autres_options',
 'results':'resultats',
