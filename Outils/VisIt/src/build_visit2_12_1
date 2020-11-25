@@ -17197,6 +17197,8 @@ function build_qt
         # CC and CXX and see if that is enough to trigger qt's detection logic.
         #
         #
+        CXX_COMPILER=`basename $TRUST_CC_BASE`
+        C_COMPILER=`basename $TRUST_cc_BASE`
         if [[ "$(uname -m)" == "x86_64" ]] ; then
             if [[ "$C_COMPILER" == "icc" || "$CXX_COMPILER" == "icpc" ]]; then
                 QT_PLATFORM="linux-icc-64"
@@ -17210,6 +17212,8 @@ function build_qt
                 QT_PLATFORM="linux-g++"
             fi
         fi
+        # Provisoire:
+        LINK=$CXX_COMPILER
     fi
 
     # We may be building statically.
