@@ -42,6 +42,7 @@ export GCOV_PREFIX
 ORG=`dirname $0`
 ORG=`(cd $ORG;pwd)`
 trace=`basename  $GCOV_PREFIX`"/"
+exit_code=0
 
 for cas in baltik
   do
@@ -83,7 +84,7 @@ for cas in baltik
   # On quitte en erreur en dessous d'un certain niveau
   taux=`awk '/baltik code/ {taux=$1;min=69.50;ok=(taux>=min?"OK bigger than":"! KO lesser than");print "Line coverage of "taux"% "ok" limit " min"%"}' monana_glob`
   echo $taux
-  [ "`echo $taux | grep KO`" != "" ] && exit -1
+  [ "`echo $taux | grep KO`" != "" ] && exit_code=-1 && break
   if [ "$cas" = "TRUST" ]
       then
        $TRUST_ROOT/bin/KSH/tggcov_ -html  | sed "s/TRUST/$cas/"
@@ -107,11 +108,8 @@ xml=$project_directory/doc/Coverage/gcovr.xml
 html=$project_directory/doc/Coverage/html/index.html
 mkdir -p `dirname $html`
 filter="-e Trust_Fixes/ -e src/Ref/" # On ne mesure pas la couverture des Trust_fixes
-threshold="--fail-under-line 66" # Erreur si moins de 66%
 echo "XML coverage report for Jenkins: $xml"
 echo "HTML coverage report: $html"
-gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $threshold $filter
-if [ $? != 0 ]
-then
-   echo "Line coverage not enough!" && exit -1
-fi
+gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $filter
+exit $exit_code
+
