@@ -927,7 +927,7 @@ then
 	       E="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS CPUs...\c' ;trust $NOM $NB_CPUS 1>$NOM.out 2>$NOM.err;OK \$?"
 	       # Fin Nouveau
 	    fi
-	    ATTENTION=`$TRUST_Awk '/lance_test/ {gsub("# lance_test","ATTENTION",$0);gsub("#","possible sur ce cas...",$0);print $0}' $NOM.data`
+	    ATTENTION=`$TRUST_Awk '/lance_test/ {gsub("# lance_test","ATTENTION",$0);gsub("#","possible sur ce cas selon la machine de test.",$0);print $0}' $NOM.data`
 	    if [ $PAR = 1 ]
 	    then
 		if [ "`egrep 'BEGIN PARTITION|DEBUT DECOUPAGE' $NOM.data`" = "" ]

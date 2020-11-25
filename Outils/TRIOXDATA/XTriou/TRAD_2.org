@@ -1171,8 +1171,6 @@ extrudeparoi interprete extrudeparoi 1 Keyword dedicated in 3D (VEF) to create p
   attr epaisseur list epaisseur 1 n r1 r2 .... rn : (relative or absolute) width for each layer.
   attr critere_absolu entier critere_absolu 1 relative (0, the default) or absolute (1) width for each layer.
   attr projection_normale_bord rien projection_normale_bord 1 keyword to project layers on the same plane that contiguous boundaries. defaut values are : epaisseur_relative 1 0.5 projection_normale_bord 1
-ecriturelecturespecial interprete ecriturelecturespecial -1 Class to write or not to write a .xyz file on the disk at the end of the calculation.
-  attr type chaine type 0 If set to 0, no xyz file is created. If set to EFichierBin, it uses prior 1.7.0 way of reading xyz files (now LecFicDiffuseBin). If set to EcrFicPartageBin, it uses prior 1.7.0 way of writing xyz files (now EcrFicPartageMPIIO).
 listeqn listobj nul 1 eqn_base 0 List of equations.
 pb_avec_passif Pb_base pb_avec_passif -1 Class to create a classical problem with a scalar transport equation (e.g: temperature or concentration) and an additional set of passive scalars (e.g: temperature or concentration) equations.
   attr equations_scalaires_passifs listeqn equations_scalaires_passifs 0 Passive scalar equations. The unknowns of the passive scalar equation number N are named temperatureN or concentrationN or fraction_massiqueN. This keyword is used to define initial conditions and the post processing fields. This kind of problem is very useful to test in only one data file (and then only one calculation) different schemes or different boundary conditions for the scalar transport equation.

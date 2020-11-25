@@ -74,7 +74,8 @@ Entree& EcritureLectureSpecial::readOn(Entree& is)
 {
   return is;
 }
-
+// XD ecriturelecturespecial interprete ecriturelecturespecial -1 Class to write or not to write a .xyz file on the disk at the end of the calculation.
+// XD attr type chaine type 0 If set to 0, no xyz file is created. If set to EFichierBin, it uses prior 1.7.0 way of reading xyz files (now LecFicDiffuseBin). If set to EcrFicPartageBin, it uses prior 1.7.0 way of writing xyz files (now EcrFicPartageMPIIO).
 Entree& EcritureLectureSpecial::interpreter(Entree& is)
 {
   Nom option;
