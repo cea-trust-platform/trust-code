@@ -537,6 +537,9 @@ void Comm_Group_MPI::all_to_allv(const void *src_buffer, int *send_data_size, in
   void * ptr = (void *) src_buffer; // Cast a cause de l'interface de MPI_Alltoall
 
   const int n = nproc();
+  int size;
+
+#ifdef INT_is_64_
   std::vector<True_int> send_data_size_int(n);
   std::vector<True_int> send_data_offset_int(n);
   std::vector<True_int> recv_data_size_int(n);
@@ -553,9 +556,16 @@ void Comm_Group_MPI::all_to_allv(const void *src_buffer, int *send_data_size, in
 
   mpi_error(MPI_Alltoallv(ptr, send_data_size_int.data(), send_data_offset_int.data(), MPI_CHAR,
                           dest_buffer, recv_data_size_int.data(), recv_data_offset_int.data(), MPI_CHAR, mpi_comm_));
+  size = send_data_offset_int[n-1] + send_data_size_int[n-1] + recv_data_size_int[n-1] + recv_data_offset_int[n-1];
 
-  const int size = send_data_offset_int[n-1] + send_data_size_int[n-1] + recv_data_size_int[n-1] + recv_data_offset_int[n-1];
+#else
+  mpi_error(MPI_Alltoallv(ptr, send_data_size, send_data_offset, MPI_CHAR,
+                          dest_buffer, recv_data_size, recv_data_offset, MPI_CHAR, mpi_comm_));
+  size = send_data_offset[n-1] + send_data_size[n-1] + recv_data_size[n-1] + recv_data_offset[n-1];
+
+#endif
   statistiques().end_count(mpi_alltoall_counter_, size);
+
 
 }
 
