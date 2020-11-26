@@ -69,6 +69,7 @@ void Interpolation_IBM_mean_gradient::discretise(const Discretisation_base& dis,
 
 void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zone_EF)
 {
+  Cerr << "(IBM) Warning! Interpolation IBM_gradient_moyen has no validation test case." << finl;
   int nb_som = la_zone_EF.nb_som();
   int nb_som_tot = la_zone_EF.nb_som_tot();
   int nb_elem = la_zone_EF.nb_elem();
@@ -122,7 +123,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
         }
       int dimtag = nb_tag_max+1;
       DoubleTrav elems_solid_trust(dimtag);
-      elems_solid_trust = -1.e+50;
+      elems_solid_trust = -1;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
           int indextag = lrint(corresp_elems_ref(i)) ;

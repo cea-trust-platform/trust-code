@@ -1,0 +1,9 @@
+#!/bin/bash
+# Fait tourner certains modeles non verifies
+
+for TYPE in aucune hybrid gradient_moyen
+do
+   echo "Interpolation_IBM_$TYPE ..."
+   trust Interpolation_IBM_$TYPE 1>Interpolation_IBM_$TYPE.out 2>Interpolation_IBM_$TYPE.err || exit -1
+done
+exit 0

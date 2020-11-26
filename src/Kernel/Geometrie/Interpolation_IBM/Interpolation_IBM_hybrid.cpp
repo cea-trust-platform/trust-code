@@ -36,8 +36,9 @@ Sortie& Interpolation_IBM_hybrid::printOn( Sortie& os ) const
 
 Entree& Interpolation_IBM_hybrid::readOn( Entree& is )
 {
-  Interpolation_IBM_elem_fluid::readOn(is);
+  //Interpolation_IBM_elem_fluid::readOn(is);
   Param param(que_suis_je());
+  Interpolation_IBM_elem_fluid::set_param(param);
   param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P field_base Node field of booleans indicating whether the node belong to an element where the interface is
   param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Node field giving the element number containing the solid point
   param.lire_avec_accolades_depuis(is);
@@ -59,6 +60,7 @@ void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Zone_d
 
 void Interpolation_IBM_hybrid::computeFluidElems(Zone_dis_base& la_zone_EF)
 {
+  Cerr << "(IBM) Warning! Interpolation IBM_hybrid has no validation test case." << finl;
   Interpolation_IBM_elem_fluid::computeFluidElems(la_zone_EF);
 }
 

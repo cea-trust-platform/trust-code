@@ -27,6 +27,7 @@
 #include <Interpolation_IBM_base.h>
 #include <Champ_Don.h>
 #include <Zone.h>
+#include <Param.h>
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -45,6 +46,7 @@ public :
   void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
 protected :
   void computeFluidElems(Zone_dis_base&);
+  void set_param(Param&);
   Champ_Don solid_points_lu_;
   Champ_Don fluid_points_lu_;
   Champ_Don fluid_elems_lu_;
