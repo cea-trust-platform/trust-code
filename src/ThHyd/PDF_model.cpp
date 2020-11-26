@@ -30,6 +30,7 @@
 #include <PDF_model.h>
 #include <Param.h>
 
+
 Implemente_instanciable(PDF_model,"PDF_model",Objet_U) ;
 // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
 
@@ -73,7 +74,7 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
       type_vitesse_imposee_ = 1;
       Nom expr_vit_imp;
       int dim = Objet_U::dimension;
-      parsers_ = new Parser[dim];
+      parsers_.dimensionner(dim);
       for (int i = 0; i < dim; i++)
         {
           is >> expr_vit_imp;

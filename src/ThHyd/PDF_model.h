@@ -28,6 +28,7 @@
 #include <Zone_VF.h>
 #include <DoubleTab.h>
 #include <Parser.h>
+#include <Vect_Parser_U.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // .NAME        : PDF_model
@@ -61,9 +62,10 @@ protected :
   double echelle_relax_;
   int type_vitesse_imposee_;
   int local_;
-  Parser* parsers_;
   friend class Source_PDF_base;
   friend class Source_PDF_EF;
+private:
+  VECT(Parser_U) parsers_;
 };
 
 #endif /* PDF_model */
