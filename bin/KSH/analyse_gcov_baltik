@@ -108,8 +108,12 @@ xml=$project_directory/doc/Coverage/gcovr.xml
 html=$project_directory/doc/Coverage/html/index.html
 mkdir -p `dirname $html`
 filter="-e Trust_Fixes/ -e src/Ref/" # On ne mesure pas la couverture des Trust_fixes
+threshold="" && [ "$COVERAGE_THRESHOLD" = "" ] && threshold="--fail-under-line $COVERAGE_THRESHOLD" # Erreur si moins de $COVERAGE_THRESHOLD %
 echo "XML coverage report for Jenkins: $xml"
 echo "HTML coverage report: $html"
-gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $filter
+gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $threshold $filter
+if [ $? != 0 ]
+then
+   echo "Line coverage not enough!" && exit -1
+fi
 exit $exit_code
-
