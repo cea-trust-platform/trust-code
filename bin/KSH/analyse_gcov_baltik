@@ -1,6 +1,13 @@
 #!/bin/bash
 # Compilation par -ftest-coverage -fprofile-arcs: genere des fichiers .gcno
 # A l'execution, genere un fichier .gcda
+#
+# Ce script analyse les resultats gcov et produit notmament un rapport XML lisible par Cobertura dans Jenkins.
+# La variable COVERAGE_THRESHOLD peut etre settee avec un taux minimum de couverture (en %) en deca duquel
+# le script retournera en erreur. 
+#
+
+
 mon_ana()
 {
    file=$1
@@ -81,10 +88,6 @@ for cas in baltik
   $TRUST_ROOT/bin/KSH/tggcov_ -file all  | sed "s/TRUST/$cas/"  > monana_sort
   #cat monana_sort
 
-  # On quitte en erreur en dessous d'un certain niveau
-  taux=`awk '/baltik code/ {taux=$1;min=69.50;ok=(taux>=min?"OK bigger than":"! KO lesser than");print "Line coverage of "taux"% "ok" limit " min"%"}' monana_glob`
-  echo $taux
-  [ "`echo $taux | grep KO`" != "" ] && exit_code=-1 && break
   if [ "$cas" = "TRUST" ]
       then
        $TRUST_ROOT/bin/KSH/tggcov_ -html  | sed "s/TRUST/$cas/"
@@ -108,12 +111,12 @@ xml=$project_directory/doc/Coverage/gcovr.xml
 html=$project_directory/doc/Coverage/html/index.html
 mkdir -p `dirname $html`
 filter="-e Trust_Fixes/ -e src/Ref/" # On ne mesure pas la couverture des Trust_fixes
-threshold="" && [ "$COVERAGE_THRESHOLD" = "" ] && threshold="--fail-under-line $COVERAGE_THRESHOLD" # Erreur si moins de $COVERAGE_THRESHOLD %
+threshold="" && [ ! "$COVERAGE_THRESHOLD" = "" ] && threshold="--fail-under-line $COVERAGE_THRESHOLD" # Erreur si moins de $COVERAGE_THRESHOLD %
 echo "XML coverage report for Jenkins: $xml"
 echo "HTML coverage report: $html"
 gcovr -g -r . -s -k -p --xml $xml --xml-pretty --html-details --html -o $html $threshold $filter
 if [ $? != 0 ]
 then
-   echo "Line coverage not enough!" && exit -1
+   echo "Gcovr failed!! Line coverage not enough? Threshold set to $COVERAGE_THRESHOLD %" && exit -1
 fi
 exit $exit_code
