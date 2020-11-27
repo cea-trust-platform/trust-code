@@ -36,18 +36,16 @@
 #   Couplage_Implicite_Instationnaire_jdd1
 #   PETSC_GCP_SPAI_P0P1Pa
 #
+# and other direct calls to MPI_alltoall or MPI_alltoallv in IJK for example
+#
 {
    <hypre_set_up_factor>
    Memcheck:Cond
    fun:MPIC_Waitall
-   fun:MPIR_Alltoall_intra
+   fun:MPIR_Alltoall*_intra
    fun:MPIR_Alltoall
-   fun:MPIR_Alltoall_impl
+   fun:MPIR_Alltoall*_impl
    fun:PMPI_Alltoall
-   ...
-   fun:PCSetUp_HYPRE
-   fun:PCSetUp
-   fun:KSPSetUp
    ...
 }
 # MPCube - cas 'standard_hydraulic_head_diffusion_0013'
