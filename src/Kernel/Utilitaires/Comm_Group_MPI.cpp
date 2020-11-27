@@ -545,19 +545,15 @@ void Comm_Group_MPI::all_to_allv(const void *src_buffer, int *send_data_size, in
   std::vector<True_int> recv_data_size_int(n);
   std::vector<True_int> recv_data_offset_int(n);
 
-  std::transform(send_data_size, send_data_size + n, send_data_size_int.begin(),
-                 [](int i) -> True_int { return static_cast<True_int>(i); });
-  std::transform(send_data_offset, send_data_offset + n, send_data_offset_int.begin(),
-                 [](int i) -> True_int { return static_cast<True_int>(i); });
-  std::transform(recv_data_size, recv_data_size + n, recv_data_size_int.begin(),
-                 [](int i) -> True_int { return static_cast<True_int>(i); });
-  std::transform(recv_data_offset, recv_data_offset + n, recv_data_offset_int.begin(),
-                 [](int i) -> True_int { return static_cast<True_int>(i); });
+  auto cast_func = [](int i) -> True_int { return static_cast<True_int>(i); }
+                   std::transform(send_data_size,   send_data_size + n,   send_data_size_int.begin(),   cast_func);
+  std::transform(send_data_offset, send_data_offset + n, send_data_offset_int.begin(), cast_func);
+  std::transform(recv_data_size,   recv_data_size + n,   recv_data_size_int.begin(),   cast_func);
+  std::transform(recv_data_offset, recv_data_offset + n, recv_data_offset_int.begin(), cast_func);
 
   mpi_error(MPI_Alltoallv(ptr, send_data_size_int.data(), send_data_offset_int.data(), MPI_CHAR,
                           dest_buffer, recv_data_size_int.data(), recv_data_offset_int.data(), MPI_CHAR, mpi_comm_));
   size = send_data_offset_int[n-1] + send_data_size_int[n-1] + recv_data_size_int[n-1] + recv_data_offset_int[n-1];
-
 #else
   mpi_error(MPI_Alltoallv(ptr, send_data_size, send_data_offset, MPI_CHAR,
                           dest_buffer, recv_data_size, recv_data_offset, MPI_CHAR, mpi_comm_));
