@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 #include <Comm_Group.h>
 #include <communications.h>
 #include <Comm_Group_MPI.h>
+#include <string>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO,"EcrFicPartageMPIIO",SFichier);
 
@@ -44,6 +45,7 @@ Sortie& EcrFicPartageMPIIO::printOn(Sortie& s) const
 
 EcrFicPartageMPIIO::EcrFicPartageMPIIO() : SFichier()
 {
+  bin_ = 1; // Binaire par defaut
 #ifdef MPI_
   mpi_file_=NULL;
 #endif
@@ -64,10 +66,15 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
     mpi_comm = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
   else
     mpi_comm = MPI_COMM_WORLD;
-  int ierr = MPI_File_open(mpi_comm, (char*)name, MPI_MODE_CREATE|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_);
+  int ierr;
+  if (mode == ios::app)
+    ierr = MPI_File_open(mpi_comm, (char*)name, MPI_MODE_APPEND|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_);
+  else
+    ierr = MPI_File_open(mpi_comm, (char*)name, MPI_MODE_CREATE|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_);
   if (ierr)
     {
-      Cerr << "Error ierr= " << ierr << " when  MPI_File_open the file " << (Nom)name << finl;
+      Cerr << "Error ierr= " << ierr << " when MPI_File_open " << (Nom)name << finl;
+      Cerr << "mode=" << (mode == ios::app ? "append" : "create") << finl;
       Cerr << "Contact TRUST support." << finl;
       exit();
     }
@@ -75,9 +82,9 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
   MPI_File_set_errhandler(mpi_file_,MPI_ERRORS_ARE_FATAL);
   // Set initial displacement:
   disp_=0;
+  // Ecriture d'un entete specifique pour le build int64 ?
   if (mode==ios::out)
     {
-
       if (je_suis_maitre())
         {
           Nom marq("INT64");
@@ -86,12 +93,13 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
 #endif
         }
     }
+  /*
   else
     {
       Cerr<<"not coded in EcrFicPartageMPIIO::ouvrir"<<finl;
       exit();
-    }
-  return 0;
+    }*/
+  return 1;
 }
 void EcrFicPartageMPIIO::close()
 {
@@ -110,9 +118,12 @@ void EcrFicPartageMPIIO::check()
   MPI_Offset offset,disp;
   MPI_File_get_position(mpi_file_, &offset); // Relative position
   MPI_File_get_byte_offset(mpi_file_, offset, &disp); // Absolute position
+  //MPI_Offset disp;
+  //MPI_File_get_position(mpi_file_, &disp); // Relative position
   if (disp_!=disp)
     {
       Cerr << "Error in EcrFicPartageMPIIO::check()" << finl;
+      Cerr << "Decalage : disp_= " << (int)disp_ << " disp=" << (int)disp << finl;
       Cerr << "Contact TRUST support." << finl;
     }
 }
@@ -129,41 +140,71 @@ void EcrFicPartageMPIIO::write(MPI_Datatype MPI_TYPE, const void* ob)
 
 Sortie& EcrFicPartageMPIIO::operator <<(const Separateur& ob)
 {
-  check();
-  // On n'ecrit pas les separateurs. Voir Sortie::operator<<(const Separateur& ob)
+  if (bin_)
+    {
+      // On n'ecrit pas les separateurs. Voir Sortie::operator<<(const Separateur& ob)
+      check();
+    }
+  else
+    {
+      if (ob.get_type() == ob.ENDL)
+        (*this)<<"\n";
+      else if (ob.get_type() == ob.SPACE)
+        (*this)<<" ";
+      else
+        {
+          Cerr << ob.get_type() << " unknown in EcrFicPartageMPIIO::operator <<" << finl;
+          Process::exit();
+        }
+    }
   return *this;
 }
+
 Sortie& EcrFicPartageMPIIO::operator <<(const char* ob)
 {
   int size=strlen(ob) + 1;
+  //int size=strlen(ob);
   for (int i=0; i<size; i++)
     write(MPI_CHAR, &ob[i]);
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
 {
+  if (bin_)
+    {
 #ifdef INT_is_64_
-  write(MPI_LONG, &ob);
+      write(MPI_LONG, &ob);
 #else
-  write(MPI_INT, &ob);
+      write(MPI_INT, &ob);
 #endif
+    }
+  else
+    (*this)<<std::to_string(ob).c_str();
   return *this;
 }
-
 Sortie& EcrFicPartageMPIIO::operator <<(const unsigned& ob)
 {
-  write(MPI_UNSIGNED, &ob);
+  if (bin_)
+    write(MPI_UNSIGNED, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str();
   return *this;
 }
 
 Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
 {
-  write(MPI_FLOAT, &ob);
+  if (bin_)
+    write(MPI_FLOAT, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str();
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const double& ob)
 {
-  write(MPI_DOUBLE, &ob);
+  if (bin_)
+    write(MPI_DOUBLE, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str(); // ToDo utiliser sprintf
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const Objet_U& ob)
@@ -205,7 +246,6 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   disp_=(MPI_Offset)disp_int;
 
   MPI_Offset disp_me = disp_ + mppartial_sum(n) * sizeof_etype;
-
 
   // ROMIO hints:
   if (Process::nproc()>1024)
@@ -256,22 +296,4 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   return 1;
 }
 
-int EcrFicPartageMPIIO::put(const unsigned* ob, int n, int pas /* useless in binary */)
-{
-  return put(MPI_UNSIGNED, ob, n);
-}
-
-int EcrFicPartageMPIIO::put(const int* ob, int n, int pas /* useless in binary */)
-{
-#ifdef INT_is_64_
-  return put(MPI_LONG, ob, n);
-#else
-  return put(MPI_INT, ob, n);
-#endif
-}
-
-int EcrFicPartageMPIIO::put(const double* ob, int n, int pas /* useless in binary */)
-{
-  return put(MPI_DOUBLE, ob, n);
-}
 #endif

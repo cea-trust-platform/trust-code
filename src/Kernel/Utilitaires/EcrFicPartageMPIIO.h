@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,8 +82,18 @@ public:
   Sortie& operator <<(const double& ob);
   Sortie& operator <<(const Objet_U& ob);
   Sortie& operator <<(const char* ob);
-  int put(const unsigned* ob, int n, int pas);
-  int put(const int* ob, int n, int pas);
+  int put(const unsigned* ob, int n, int pas)
+  {
+    return put(MPI_UNSIGNED, ob, n);
+  }
+  int put(const int* ob, int n, int pas)
+  {
+#ifdef INT_is_64_
+    return put(MPI_LONG, ob, n);
+#else
+    return put(MPI_INT, ob, n);
+#endif
+  }
 #ifndef INT_is_64_
   int put(const long* ob, int n, int pas)
   {
@@ -94,11 +104,12 @@ public:
 #endif
   int put(const float* ob, int n, int pas)
   {
-    Cerr << "EcrFicPartageMPIIO::put(...) not implemented." << finl;
-    exit();
-    return 1;
-  };
-  int put(const double* ob, int n, int pas);
+    return put(MPI_FLOAT, ob, n);
+  }
+  int put(const double* ob, int n, int pas)
+  {
+    return put(MPI_DOUBLE, ob, n);
+  }
 
 private:
   void write(MPI_Datatype, const void*);

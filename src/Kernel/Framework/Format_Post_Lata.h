@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ public:
   //Methodes statiques appelees par les methodes communes de l interface
   // Methodes specifiques a ce format:
   enum Format { ASCII, BINAIRE };
-  enum Options_Para { SINGLE_FILE, MULTIPLE_FILES };
+  enum Options_Para { SINGLE_FILE, SINGLE_FILE_MPIIO, MULTIPLE_FILES };
   enum Status { RESET, INITIALIZED, WRITING_TIME };
 
 
