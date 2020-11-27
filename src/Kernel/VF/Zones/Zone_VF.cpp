@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -241,6 +241,8 @@ void Zone_VF::discretiser()
 
   delete les_faces_ptr;
 
+// Fill in the table face_numero_bord
+  remplir_face_numero_bord();
 
   ///////////////////////
   // On imprime des infos
@@ -676,4 +678,24 @@ void Zone_VF::creer_tableau_faces_bord(Array_base& t, Array_base::Resize_Options
 {
   const MD_Vector& md = md_vector_faces_bord();
   MD_Vector_tools::creer_tableau_distribue(md, t, opt);
+}
+
+void Zone_VF::remplir_face_numero_bord()
+{
+  Cerr << " Zone_VF::remplir_face_numero_bord" << finl;
+  face_numero_bord_.resize(nb_faces());
+  face_numero_bord_=-1; // init for inner faces.
+  Zone& lazone=zone();
+  int ndeb, nfin, num_face;
+  const int& nb_bords = lazone.nb_bords();
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
+    {
+      const Bord& le_bord = lazone.bord(n_bord);
+      ndeb = le_bord.num_premiere_face();
+      nfin = ndeb + le_bord.nb_faces();
+      for (num_face=ndeb; num_face<nfin; num_face++)
+        {
+          face_numero_bord_[num_face] = n_bord;
+        }
+    }
 }

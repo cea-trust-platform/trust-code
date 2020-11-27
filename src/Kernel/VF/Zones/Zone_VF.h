@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,6 +97,11 @@ public :
   inline double diametre_hydraulique_face(int ) const;
   inline double coefficient_frottement(int ) const;
   inline double coefficient_echange_thermique(int ) const;
+
+  inline int face_numero_bord(int num_face) const;
+  inline IntTab& face_numero_bord();
+  inline const IntTab& face_numero_bord() const;
+  void remplir_face_numero_bord();
 
   inline virtual const IntVect& orientation() const;
   inline virtual int orientation(int ) const;
@@ -222,6 +227,7 @@ protected:
   IntTab elem_faces_;                           // connectivite element/faces
   IntTab face_sommets_;                           // sommets des faces
   DoubleTab xa_;                            // centres de gravite des aretes
+  IntTab face_numero_bord_;                     // connectivite face/numero_bord
 
   // Descripteur parallele pour les tableaux aux faces (size() == nb_faces())
   MD_Vector md_vector_faces_;
@@ -743,6 +749,27 @@ inline int Zone_VF::est_une_face_virt_bord(int face) const
   else
     return 1;
 }
+
+
+// Description:
+inline int Zone_VF::face_numero_bord(int num_face) const
+{
+  assert(num_face < nb_faces());
+  return face_numero_bord_(num_face);
+}
+
+// Description:
+inline IntTab& Zone_VF::face_numero_bord()
+{
+  return face_numero_bord_;
+}
+
+// Description:
+inline const IntTab& Zone_VF::face_numero_bord() const
+{
+  return face_numero_bord_;
+}
+
 #endif
 
 
