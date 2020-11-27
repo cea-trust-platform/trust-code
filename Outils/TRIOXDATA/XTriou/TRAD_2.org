@@ -169,6 +169,7 @@ postraitement postraitement_base postraitement -1 An object of post-processing (
   attr sondes|Probes sondes sondes 1 Probe.
   attr domaine chaine domaine 1 This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   attr format chaine(into=["lml","lata","lata_v1","lata_v2","med","med_major"]) format 1 This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
+  attr parallele chaine(into=["simple","multiple","mpi-io"]) parallele 1 Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   attr champs|fields champs_posts champs 1 Field\'s write mode.
   attr statistiques stats_posts statistiques 1 Statistics between two points fixed : start of integration time and end of integration time.
   attr fichier chaine fichier 1 Name of file.
