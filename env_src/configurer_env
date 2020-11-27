@@ -574,7 +574,10 @@ then
       # Limitations sur la frontale des clusters:
       if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] || [ ${HOST#orcus-} != $HOST ]
       then
-	 TRUST_NB_PROCS=8
+        TRUST_NB_PROCS=8
+      elif [ ${HOST#summer} != $HOST ]
+      then
+        TRUST_NB_PROCS=4
       fi
    fi
    echo $TRUST_NB_PROCS
@@ -1184,7 +1187,7 @@ else
       then
          MPI_BIN=`dirname $mpiCC` # Variable temporaire utile ensuite
 	 # On a besoin de specifier le compilateur utilise par mpiCC
-	 if [ "`$mpiCC -show | grep openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ]
+	 if [ "`$mpiCC -show | grep openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi`" != "" ]
 	 then
             m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC"  && ecrit $m"|"$e"|"$env;eval $e
