@@ -134,26 +134,14 @@ Lire pb
             Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1
         }
     }
-    Post_processings
+    Post_processing
     {
-	med {
-	        format med
-        	fichier results/postdom
-        	Champs binaire dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
-	} 
-	lml
-	{
-		format lml fichier TAYLOR_COUETTE
+		format lml
         	Champs dt_post 1e0
         	{
             		pression elem
             		vitesse som
         	}
-	}
     }
 }
 resoudre pb
