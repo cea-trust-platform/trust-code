@@ -1,0 +1,10 @@
+#!/bin/bash
+# Comparaisons avec le format actuel du LATA
+echo "Comparaison du LATA actuel avec LATA MPI-IO"
+if [ -f PAR_Lata.lata ] && [ PAR_Lata.lata -nt Lata.lata ]
+then
+   compare_lata PAR_Lata.lata PAR_Lata_actuel.lata 1>verifie.log 2>&1 || exit -1
+else
+   compare_lata Lata.lata Lata_actuel.lata 1>verifie.log 2>&1 || exit -1
+fi
+exit 0
