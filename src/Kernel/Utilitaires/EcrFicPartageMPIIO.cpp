@@ -31,6 +31,21 @@
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO,"EcrFicPartageMPIIO",SFichier);
 
+static void handle_error(int errcode, const char *str)
+{
+  char msg[MPI_MAX_ERROR_STRING];
+  int resultlen;
+  MPI_Error_string(errcode, msg, &resultlen);
+  Cerr << "======================" << finl;
+  Cerr << str << ": " << msg << finl;
+  Cerr << "Contact TRUST support." << finl;
+  Process::exit();
+//  fprintf(stderr, "%s: %s\n", str, msg);
+//  MPI_Abort(MPI_COMM_WORLD, 1);
+}
+#define MPI_CHECK(fn) { int errcode; errcode = fn;\
+     if (errcode != MPI_SUCCESS) handle_error(errcode, #fn); }
+
 Entree& EcrFicPartageMPIIO::readOn(Entree& s)
 {
   throw;
@@ -66,18 +81,8 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
     mpi_comm = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
   else
     mpi_comm = MPI_COMM_WORLD;
-  int ierr;
-  if (mode == ios::app)
-    ierr = MPI_File_open(mpi_comm, (char*)name, MPI_MODE_APPEND|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_);
-  else
-    ierr = MPI_File_open(mpi_comm, (char*)name, MPI_MODE_CREATE|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_);
-  if (ierr)
-    {
-      Cerr << "Error ierr= " << ierr << " when MPI_File_open " << (Nom)name << finl;
-      Cerr << "mode=" << (mode == ios::app ? "append" : "create") << finl;
-      Cerr << "Contact TRUST support." << finl;
-      exit();
-    }
+  int MPI_MODE = mode == ios::app ? MPI_MODE_APPEND : MPI_MODE_CREATE;
+  MPI_CHECK(MPI_File_open(mpi_comm, (char*)name, MPI_MODE|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_));
   // Set MPI errors fatal:
   MPI_File_set_errhandler(mpi_file_,MPI_ERRORS_ARE_FATAL);
   // Set initial displacement:
