@@ -34,14 +34,12 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO,"Ecr
 static void handle_error(int errcode, const char *str)
 {
   char msg[MPI_MAX_ERROR_STRING];
-  int resultlen;
+  True_int resultlen;
   MPI_Error_string(errcode, msg, &resultlen);
   Cerr << "======================" << finl;
   Cerr << str << ": " << msg << finl;
   Cerr << "Contact TRUST support." << finl;
   Process::exit();
-//  fprintf(stderr, "%s: %s\n", str, msg);
-//  MPI_Abort(MPI_COMM_WORLD, 1);
 }
 #define MPI_CHECK(fn) { int errcode; errcode = fn;\
      if (errcode != MPI_SUCCESS) handle_error(errcode, #fn); }
@@ -158,7 +156,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const Separateur& ob)
         (*this)<<" ";
       else
         {
-          Cerr << ob.get_type() << " unknown in EcrFicPartageMPIIO::operator <<" << finl;
+          Cerr << "Unknown separator in EcrFicPartageMPIIO::operator <<" << finl;
           Process::exit();
         }
     }
