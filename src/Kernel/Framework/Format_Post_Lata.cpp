@@ -364,24 +364,11 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier,
   // Ecriture des donnees.
   if (sub_type(EcrFicPartageMPIIO, sfichier))
     {
-      // ToDo : ne plus bufferiser pour EcrFicPartageMPIIO
-      const int N = 16384;
-      int bufsize = (N / line_size + 1) * line_size;
-      float *tmp = new float[bufsize];
+      auto *tmp = new float[tab_size]; // No ArrOfFloat in TRUST
       const double *data = tab.addr();
-      for (int i = 0; i < tab_size; i += bufsize)
-        {
-          int j_max = bufsize;
-          if (j_max > tab_size - i)
-            j_max = tab_size - i;
-
-          // Conversion du bloc en float:
-          for (int j = 0; j < j_max; j++)
-            tmp[j] = data[i + j];
-
-          // Ecriture avec retour a la ligne a chaque ligne du tableau
-          sfichier.put(tmp, j_max, line_size);
-        }
+      for (int i = 0; i < tab_size; i++)
+        tmp[i] = data[i];
+      sfichier.put(tmp, tab_size, line_size);
       delete[] tmp;
       // Fin de bloc fortran
       if (fichier.is_master() && bloc_number == nb_blocs - 1)
@@ -448,7 +435,6 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
 
   const int tab_size = line_size * nb_lignes;
   int nb_octets = tab_size * sizeof(_LATA_INT_TYPE_);
-  ////switch(options_para_) {
   switch(option)
     {
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
@@ -474,32 +460,22 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
   // Debut de bloc fortran
   if (fichier.is_master())
     sfichier << nb_octets << finl;
+  int erreurs = 0;
 
   // Ecriture des donnees.
-  // On convertit le tout en _INT_TYPE_ par paquet de N valeurs
-  // Buffer dont la taille est un multiple de line_size:
-  const int N = 16384;
-  int bufsize = (N / line_size + 1) * line_size;
-  _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[bufsize];
-  const int *data = tab.addr();
-  int erreurs = 0;
-  for (i = 0; i < tab_size; i += bufsize)
+  if (sub_type(EcrFicPartageMPIIO, sfichier))
     {
-      int j;
-      int j_max = bufsize;
-      if (j_max > tab_size - i)
-        j_max = tab_size - i;
-
-      // Conversion du bloc en int_type:
-      for (j = 0; j < j_max; j++)
+      // On convertit le tout en _INT_TYPE_
+      _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[tab_size];
+      const int *data = tab.addr();
+      for (i = 0; i < tab_size; i++)
         {
           // valeur a ecrire (conversion en numerotation fortran si besoin)
-          int x = data[i+j];
-          if (x>-1)
-            x+=decalage_partiel;
+          int x = data[i];
+          if (x > -1)
+            x += decalage_partiel;
           else
-            x+=decalage;
-
+            x += decalage;
 
           // conversion en type int pour ecriture
           _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
@@ -507,13 +483,57 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
           int z = (int) y;
           if (x != z)
             erreurs++;
-          tmp[j] = y;
+          tmp[i] = y;
         }
-      // Ecriture avec retour a la ligne a chaque ligne du tableau
-      sfichier.put(tmp, j_max, line_size);
+      sfichier.put(tmp, tab_size, line_size);
+      delete[] tmp;
+      // Fin de bloc fortran
+      if (fichier.is_master())
+        sfichier << nb_octets << finl;
     }
-  delete[] tmp;
+  else
+    {
+      // On convertit le tout en _INT_TYPE_ par paquet de N valeurs
+      // Buffer dont la taille est un multiple de line_size:
+      const int N = 16384;
+      int bufsize = (N / line_size + 1) * line_size;
+      _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[bufsize];
+      const int *data = tab.addr();
+      for (i = 0; i < tab_size; i += bufsize)
+        {
+          int j;
+          int j_max = bufsize;
+          if (j_max > tab_size - i)
+            j_max = tab_size - i;
 
+          // Conversion du bloc en int_type:
+          for (j = 0; j < j_max; j++)
+            {
+              // valeur a ecrire (conversion en numerotation fortran si besoin)
+              int x = data[i + j];
+              if (x > -1)
+                x += decalage_partiel;
+              else
+                x += decalage;
+
+              // conversion en type int pour ecriture
+              _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
+              // reconversion en int pour comparaison
+              int z = (int) y;
+              if (x != z)
+                erreurs++;
+              tmp[j] = y;
+            }
+          // Ecriture avec retour a la ligne a chaque ligne du tableau
+          sfichier.put(tmp, j_max, line_size);
+        }
+      delete[] tmp;
+      fichier.syncfile();
+      // Fin de bloc fortran
+      if (fichier.is_master())
+        sfichier << nb_octets << finl;
+      fichier.syncfile();
+    }
   if (erreurs > 0)
     {
       Cerr << "Error in Format_Post_Lata::write_inttab\n"
@@ -521,13 +541,6 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
            << " Recompile the code with #define _LATA_INT_TYPE_ entier" << finl;
       exit();
     }
-
-  fichier.syncfile();
-  // Fin de bloc fortran
-  if (fichier.is_master())
-    sfichier << nb_octets << finl;
-  fichier.syncfile();
-
   return nb_lignes_tot;
 }
 

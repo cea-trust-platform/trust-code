@@ -228,6 +228,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const Objet_U& ob)
 // MPI_File_get_byte_offset converts a view relative offset (etype units) into an absolute byte position
 // MPI_File_set_view(file,disp,etype,...) disp should be specified in absolute bytes from the start of the file
 // sizeof(MPI_DOUBLE)=4 !!! Should use:MPI_Type_size( MPI_DOUBLE, &size ) to return 8 !!!
+// Ecriture d'une zone memoire pointee par ob contenant n MPI_TYPE :
 int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
 {
   MPI_Datatype etype;
