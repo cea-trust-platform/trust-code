@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,8 +52,8 @@ public:
   Entree& interpreter(Entree& fich);
   static void lecture_special(Champ_base& ch, Entree& fich);
   static void lecture_special(const Zone_VF& zvf, Entree& fich, DoubleTab& val);
-  static void ecriture_special(const Champ_base& ch, Sortie& fich);
-  static void ecriture_special(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val);
+  static int ecriture_special(const Champ_base& ch, Sortie& fich);
+  static int ecriture_special(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val);
 
   static int is_lecture_special();
   static int is_ecriture_special(int& special,int& a_faire);

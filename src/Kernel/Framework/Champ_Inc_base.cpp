@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -641,10 +641,14 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
       fich << que_suis_je() << finl;
       fich << temps_ << finl;
     }
+  int bytes = 0;
   if (special)
-    EcritureLectureSpecial::ecriture_special(*this,fich);
+    bytes = EcritureLectureSpecial::ecriture_special(*this,fich);
   else
-    valeurs().ecrit(fich);
+    {
+      bytes = 8 * valeurs().size_array();
+      valeurs().ecrit(fich);
+    }
   if (a_faire)
     {
       // fich << flush ; Ne flushe pas en binaire !
@@ -662,7 +666,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
     }
 #endif
   // Return the number of bytes written
-  return 8 * valeurs().size_array();
+  return bytes;
 }
 
 
