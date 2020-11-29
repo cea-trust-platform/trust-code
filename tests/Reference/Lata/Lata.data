@@ -76,7 +76,7 @@ Read pb
 {
 	Navier_Stokes_standard
 	{
-		solveur_pression petsc cholesky { }
+		solveur_pression GCP { precond SSOR { omega 1.6 } seuil 1.e-12 }
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
