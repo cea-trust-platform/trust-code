@@ -6,7 +6,9 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
-   #
+   # Initialisation de l environnement module $MODULE_PATH
+   echo "source /etc/profile.d/modules.sh " >> $env
+   # Load modules
    module="gcc ompi"
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
