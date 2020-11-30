@@ -79,8 +79,9 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
     mpi_comm = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
   else
     mpi_comm = MPI_COMM_WORLD;
-  int MPI_MODE = mode == ios::app ? MPI_MODE_APPEND : MPI_MODE_CREATE;
-  MPI_CHECK(MPI_File_open(mpi_comm, (char*)name, MPI_MODE|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_));
+  int MPI_OPEN = mode == ios::app ? MPI_MODE_APPEND : MPI_MODE_CREATE;
+  int MPI_MODE = (mode == ios::app || ios::out) ? MPI_MODE_WRONLY : MPI_MODE_RDONLY;
+  MPI_CHECK(MPI_File_open(mpi_comm, (char*)name, MPI_OPEN|MPI_MODE, MPI_INFO_NULL, &mpi_file_));
   // Set MPI errors fatal:
   MPI_File_set_errhandler(mpi_file_,MPI_ERRORS_ARE_FATAL);
   // Set initial displacement:
@@ -118,11 +119,10 @@ void EcrFicPartageMPIIO::check()
       Cerr << "Only master process can call EcrFicPartageMPIIO::operator <<(...)" << finl;
       exit();
     }
-  MPI_Offset offset,disp;
-  MPI_File_get_position(mpi_file_, &offset); // Relative position
-  MPI_File_get_byte_offset(mpi_file_, offset, &disp); // Absolute position
-  //MPI_Offset disp;
-  //MPI_File_get_position(mpi_file_, &disp); // Relative position
+  MPI_Offset offset; // Relative position
+  MPI_File_get_position(mpi_file_, &offset);
+  MPI_Offset disp;   // Absolute position
+  MPI_File_get_byte_offset(mpi_file_, offset, &disp);
   if (disp_!=disp)
     {
       Cerr << "Error in EcrFicPartageMPIIO::check()" << finl;
