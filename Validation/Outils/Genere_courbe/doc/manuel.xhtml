@@ -104,17 +104,22 @@
 		<td>New functionalities in Table: textsize<br></br>New: option code</td>
 	        
 	</tr>
-		<tr>
+	<tr>
 		<td>015</td>
 		<td>28/08/2018</td>
 		<td>New option for Figure: gnuplot_command</td>
 	        
 	</tr>
-		<tr>
+	<tr>
 		<td>016</td>
 		<td>27/12/2019</td>
-		<td>Use of python 3.7</td>
-	        
+		<td>Use of python 3.7</td>        
+	</tr>
+	
+	<tr>
+		<td>017</td>
+		<td>01/12/2020</td>
+		<td>Added new general option ExtraUsedFile</td>
 	</tr>
 </table>
 
@@ -289,6 +294,13 @@ Parameters {
 		<td>0/1/2</td>
 		<td>F</td>
 		<td class="desc">Integer enabling the inclusion (1) or not (0) of the TRUST data files in the validation file. The default value is now 2. With this value, the data names having a comment are included.</td>
+	</tr>
+	<tr>
+		<td>ExtraUsedFile|FichierExtraUtilise</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Path to a file needed to correctly run the PRM. This is only used for archiving purposes when performing the validation.</td>
 	</tr>
 </table>
 

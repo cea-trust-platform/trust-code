@@ -1,138 +1,68 @@
 #!/bin/bash
-#set -xv
-# Chargement de l'environnement Python si necessaire
-#Provisoire pour voir quelles machines ont besoin de python
-#[ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
+#
+# This script produces the .tgz file containing all the data produced by the computations required
+# in a PRM. The idea is to be able to reproduce the final PDF file with the old computation results
+# but the set of tools of the new version of TRUST.
+# This relies on the file build/used_files generated along the way by genererCourbe.py
+#
 
-
-# GF on va dans le vrai repertoire en cas de lien ... python a la bonne methode
-cd $(python -c "import os;print(os.path.realpath('.'))")
 echo "usage $0 src/file.prm [archive_name]"
-rm -rf preserve
+
+# cd to the real directory in case of link
+cd `pwd -P`
+prm=$1
+log_file=archive.log
+
+#
+# Prepare preserve dir and check computation has run:
+#
+rm -rf preserve archive.log
 mkdir preserve
 DIR=`dirname $0`
 DIR=`(cd $DIR; pwd)`
-$DIR/Run  $1 -not_run  -o test.pdf 1>err 2>&1
-[ ! -f build/test.pdf ] && echo "Impossible de generer le rapport on arrete tout. Lancer Run_fiche avant de lancer Run_fiche -archive." && exit 1
-
-
-ajoute_file_meshtv()
-{
-    # ajoute les fichiers meshtv aux fichiers visits
-    for file in $@
-    do
-     # file=`echo $file | sed "s?^/??g"`
-      echo $file
-      if [ "$file" != "${file%.visit}" ]
-      then
-         rexpr="${file%.visit}[[:print:]]*\.meshtv"
-         files=`tar tf ../all.tar`
-         for f in $files
-         do 
-            echo $f
-         done | grep -e $rexpr
-      fi
-    done
-}
-
-modif_prm()
-{
-  prm=$1  
-  grep -iv prerequis $prm > test_provisoire.prm; mv test_provisoire.prm $prm
-}
+$DIR/Run $prm -not_run  -o test.pdf 1>$log_file 2>&1
+[ ! -f build/test.pdf ] && echo "Unable to generate report. Exiting. Launch 'Run_fiche' before 'Run_fiche -archive'." && exit 1
+rm -rf build/test.pdf
 
 ##
 ## Main
 ##
-
-rm -f build/core*
-cp build/version_utilisee build/temps_total preserve
+echo "ARCHIVE: Copying necessary files ..."
+cp build/version_utilisee build/temps_total build/used_files preserve
 cp -r src/* preserve
+cp build/$1 preserve   # In F5 for example, the PRM itself is generated from a Python script ...
 chmod -R +w preserve
-ok=0
-files_old=toto
-prem=-999
-echo "@@@ LOG 0"
-while [ $ok -ne 1 ]; do
-  rm -f build/test.pdf
-  prm=`basename $1`
-  if [ $prem -eq -999 ]; then
-      origp=`pwd`;cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm;python $DIR/src/genererCourbes.py -p  $prm -v 1 --get_cmd_to_run=yes 1>/dev/null;prem=`grep  " definition figure" test_lu.prm|tail -1| awk '{print -$NF}'`; rm test_lu.prm ;cd $origp && [ "$prem" = "" ] && prem=1      
-  fi
-  echo "@@@ LOG 1"
-  if [ $prem -lt 1 ]; then
-    fig=`echo -1*$prem |bc`
-    echo generation image $fig
-    (cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm; echo "quit()" | python $DIR/src/genererCourbes.py -p  $prm --debug_figure=$fig -nodisplay 1>../err 2>&1)
-  else
-      if [ $prem -eq 1 ]; then
-         echo generation rapport
-        (cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm; echo "quit()" | python $DIR/src/genererCourbes.py -p  $prm -o ../build/test.pdf 1>../err 2>&1)
-      else
-         echo generation rapport de comparaison
-         echo "quit()" | $DIR/Run  $1 -not_run --compare=../preserve/ -o test.pdf 1>err 2>&1
-      fi
-  fi
-  cd preserve
-  echo "@@@ LOG 2"
-  orig=`pwd`"/"
+cd build 
+for f in `cat used_files`; do
+   ls $f 1>/dev/null 2>&1
+   if [ ! $? -eq 0 ]; then continue; fi
+   for f2 in `ls $f`; do
+       d=$(dirname $f2);
+       mkdir -p ../preserve/$d
+       cp $f2 ../preserve/$f2
+   done
+done
+cd ..
 
-  # on cherche les fichiers manquant
-  files=` egrep "No such file or directory:|can't read data file" ../err | awk '{print $NF}'| grep preserve | sed "s?../preserve/./??" |  sed "s?../preserve/??"`
-  files=` egrep "No such file or directory:|File not found|Skipping unreadable file|can't read data file|Error opening file|Cannot find or open file" ../err | awk '{print $NF}' | sed "s?\.\./preserve/\./??" | sed "s?$orig??g" |  sed "s?\.\./preserve/??g"| sort -u| sed "s?\"\./?\"?" | sed "s?/\./??g"| sed "s?\./??g"` 
-#   files=` egrep "No such file or directory:|File not found|Skipping unreadable file|can't read data file|Error opening file" ../err | awk '{print $NF}' | sed "s?\.\./preserve/\./??g" | sed "s?$orig??g" |  sed "s?\.\./preserve/??g"| sort -u| sed "s?\"\./?\"?g" | sed "s?/\./??g"| sed "s?\./??g"`
-  [ "$files" = "$files_old" ] && [ "$files" != "" ] &&  echo "Error: $files pas dans l archive" && exit -1
-  echo "@@@@@@ Files:" $files
-  files_old=$files
-  echo "@@@ LOG 3"
-  if [ "$files" != "" ]; then
-      files=`ajoute_file_meshtv "$files"`
-      # cmd="tr xf ../all.tar $files"
-      for file in $files; do
-          dir=`echo $file |xargs dirname`
-          mkdir -p $dir
-          cmd="cp ../build/$file $dir"
-          echo $cmd
-          eval $cmd  
-      done
-      ok=0
-  else
-      if [ $prem -le 1 ]; then 
-          prem=`echo $prem +1 | bc`
-          ok=0
-      else
-          ok=1
-      fi
-  fi
-  cd ..
-done  # end while
-echo "@@@ done while"
-
-[ ! -f build/test.pdf ] && echo "creation archive rate:"`cat err` && exit -1
-
+# Compressing
 archive=preserve
 [ "$2" != "" ] && archive=$2
-echo " on cree l'archive" $archive
-rm -rf preserve/log preserve/core*  #  GF on garde le .tmp pour garder les images ... preserve/.tmp
+echo "ARCHIVE: Creating archive:" $archive
 tar zcf $archive.tgz preserve
 rm -rf preserve all.tar
-# dernier test
+
+#
+# Last check from generated tgz
+#
+echo "ARCHIVE: Testing archive ..."
 tar zxf $archive.tgz
 cd preserve
-# on fait un dernier rapport sans executer prerequis pour eviter des soucis
-modif_prm $prm
-if [ -f prepare ]; then
- # echo "execution de  prepare dans "`pwd` 
- chmod +x prepare
- ./prepare
-fi
 
-echo "@@@ LOG 6"
-
-modif_prm $prm
-python $DIR/src/genererCourbes.py -p $prm -o ../old_rapport.pdf 1> ../err 2>&1
-[ $? -ne 0 ] && echo generation finale echoue &&  mv ../$archive.tgz ../${archive}_pb.tgz && exit 2
+python $DIR/src/genererCourbes.py -p $prm --no_prereq -o ../old_rapport.pdf 1> ../$log_file 2>&1
+[ $? -ne 0 ] && echo "*** FAILED generating archive!! Last logs of (failed) report build can be seen in $log_file" &&  mv ../$archive.tgz ../${archive}_FAILED.tgz && exit 2
 cd ..
 gzip -f old_rapport.pdf
-rm -rf preserve err
+rm -rf preserve 
+
+echo "ARCHIVE: All done! Last logs of (successful) report build can be seen in $log_file"
 

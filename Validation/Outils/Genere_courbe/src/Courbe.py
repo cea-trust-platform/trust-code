@@ -23,6 +23,7 @@ from lib import chaine2Ascii
 from lib import _accoladeF
 from lib import _TypesReconnus
 from lib import get_nom_cas
+from filelist import FileAccumulator
 
 class Courbe:
     '''Classe decrivant une courbe telle qu elle devra etre
@@ -55,6 +56,7 @@ tracee dans le rapport de validation de TRUST.'''
         self.description = []
         self.largeurLigne= 'Undefined'
         pass
+
     def  printFichierParametres(self):
         dec='\t\t'
         print(dec,"Courbe {")
@@ -83,6 +85,7 @@ tracee dans le rapport de validation de TRUST.'''
         dec='\t\t'
         print(dec,"}")
         pass
+
     #lecture des parametres de la courbe dans le fichier de parametres
     def lireParametres(self, fichier):
         '''Lecture des parametres de la courbe.'''
@@ -106,12 +109,16 @@ tracee dans le rapport de validation de TRUST.'''
                     self.version = valeur
                 elif motcle=='fichier':
                     self.fichier = valeur
+                    FileAccumulator.Append(valeur)
                 elif motcle=='plan':
                     self.plan = valeur
+                    FileAccumulator.AppendFromPlaneProbe(valeur)  # Warning this one is different! A LATA really.
                 elif motcle=='segment':
                     self.segment = valeur
+                    FileAccumulator.AppendFromProbe(valeur)
                 elif motcle=='points':
                     self.points = valeur
+                    FileAccumulator.AppendFromProbe(valeur)
                 elif motcle=='fonction':
                     self.fonction=valeur
                 elif motcle=='colonnes':

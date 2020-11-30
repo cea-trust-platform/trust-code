@@ -11,6 +11,8 @@ Parameters {
 	ParametersTrust \latex_(Initial conditions: We initially impose a speed composed of a rotation around the axis $(Oz)$ to $\omega = 20 rad/s$ and a parabolic profile corresponding to the analytical solution of a laminar flow in a tube according to $(Oz)$. \\ \textbf{vitesse champ\_fonc\_xyz dom} $\; 3 \;\; -20y \;\; 20x \;\; 2*(1-(x^2+y^2)/(5^{-2})^2)$ \latex_)
 	TestCase . cylindre_tourbillon.data
 	IncludeData 1
+    ExtraUsedFile cylindre_tourbillon.lata.VITESSE.ELEM.dom.0.0000000000
+    ExtraUsedFile Debit_ref 
 }
 
 Chapter {

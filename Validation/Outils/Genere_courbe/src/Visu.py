@@ -139,6 +139,7 @@ class Visu:
         dec='\t'
         print(dec,"}")
         pass
+
     def lireParametres(self, fichier):
         '''Lecture des parametres de la visu.'''
         self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
@@ -192,6 +193,7 @@ class Visu:
     #generation du graphique correspondant a la visu
     def genererGraphe(self, dest, indice,debug_figure):
         '''Generation du graphique correspondant a la visu.'''
+        from filelist import FileAccumulator
         list_data_base=[]
         for x in self.plot:
             if not(x[1] in list_data_base) and(x[0] in list_plot):
@@ -211,15 +213,16 @@ class Visu:
         ficPlot.write('annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n')
         ficPlot.write('try:\n  execfile(\'config_visit.py\')\n  print "user config loaded"\nexcept:\n  pass\n\nsondetmp=0\n\n')
         for database in list_data_base:
-
             ficPlot.write('res=OpenDatabase(\"%s\")\n' % (database))
             ficPlot.write('if res==0: print "can\'t read data file %s ";quit()\n'%(database))
+            #FileAccumulator.Append(database)
             pass
         # a faire CreateDatabaseCorrelation("database",["FTD_all_VEF/post1.lata","FTD_all_VEF/post2.lata"],0) print GetDatabaseCorrelation("database")
 
         queries_str="\n"
         for plot in self.plot:
             if (plot[0]=="mesh"):
+                FileAccumulator.AppendVisuMesh(plot[1], plot[2])  # second param is domain name
                 ficPlot.write('ActivateDatabase(\"%s\")\n'%plot[1])
 
                 if self.cycles:
@@ -246,8 +249,6 @@ class Visu:
                 pass
             elif (plot[0] in list(dico_plots.keys())):
                 directname=self.is_directname(plot)
-
-
                 ficPlot.write('ActivateDatabase(\"%s\")\n'%plot[1])
                 if self.cycles:
                     ficPlot.write('cycle0=%s\nif (cycle0<0): cycle0+=TimeSliderGetNStates()\n'%self.cycles.split()[0])
@@ -258,9 +259,12 @@ class Visu:
 
                 #if (plot[1].split('.')[-1]=="case"):
                 if (directname):
+                    field, loc, dom = FileAccumulator.ParseDirectName(plot[2])
+                    FileAccumulator.AppendVisuComplex(plot[1], dom, field, loc, self.cycles)  # file / domaine / field / localisation
                     ficPlot.write('ok=AddPlot(\"%s\",\"%s\")\n'%(dico_plots[plot[0]],plot[2]))
                     decal=2
                 else:
+                    FileAccumulator.AppendVisuComplex(plot[1], plot[2], plot[3], plot[4], self.cycles)  # file / domaine / field / localisation
                     ficPlot.write('ok=AddPlot(\"%s\",\"%s_%s_%s\")\n'%(dico_plots[plot[0]],plot[3],plot[4],plot[2]))
                     decal=4
                     pass
@@ -347,6 +351,7 @@ class Visu:
             elif (plot[0]=='instruction_visit'):
                 for i in range(1,len(plot)):
                     ficPlot.write(plot[i]+" ")
+                    FileAccumulator.AppendFromInstructionVisit(plot[i], self.cycles)
                 ficPlot.write('\n')
             elif (plot[0]=='normal3d') or (plot[0]=='up3d'):
                 ficPlot.write('v=GetView3D()\n')

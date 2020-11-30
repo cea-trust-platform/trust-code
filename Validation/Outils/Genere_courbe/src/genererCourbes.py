@@ -36,6 +36,7 @@ from CaseSetup import CaseSetup
 from Results import Results
 from SousChapitre import SousChapitre
 from Conclusion import Conclusion
+from filelist import FileAccumulator
 
 def Usage(gestMsg):
     '''Renvoie l usage du script.'''
@@ -54,9 +55,13 @@ def getOptions(argv, gestMsg):
     debug_figure=None
     sortie = 'rapport.pdf'
     novisit = False
+    noprereq = False
     #recuperation des options
     try:
-        options,arguments = getopt.getopt(argv, 'g:hfp:v:o:d:c:Dn:nv', ['get_cmd_to_run=','help', 'format', 'parametres=', 'verbose=', 'output=','debug_figure=','compare=','DEBOG','nodisplay', 'no_visit'])
+        options,arguments = getopt.getopt(argv, 'g:hfp:v:o:d:c:Dn:nv:np', 
+                                          ['get_cmd_to_run=','help', 'format', 'parametres=', 'verbose=', 
+                                           'output=','debug_figure=','compare=','DEBOG','nodisplay', 
+                                           'no_visit', 'no_prereq'])
     except getopt.GetoptError:
         gestMsg.ecrire(GestionMessages._ERR, '-> Error, unknown option. Options list is %s' % (argv), arret=True, usage=True, texteUsage=Usage(gestMsg))
 
@@ -93,6 +98,8 @@ def getOptions(argv, gestMsg):
             display_figure=False
         elif opt in ('--no_visit'):
             novisit=True
+        elif opt in ('--no_prereq'):
+            noprereq = True
         else:
             print("codage manquant pour "+str(opt))
             1/0
@@ -103,10 +110,9 @@ def getOptions(argv, gestMsg):
     if ficParametres=='':
         gestMsg.ecrire(GestionMessages._ERR, 'The parameter file has not been given !', texteUsage=Usage(gestMsg))
 
-    return verbose, ficParametres, sortie, get_cmd_to_run,debug_figure,old_path, novisit
+    return verbose, ficParametres, sortie, get_cmd_to_run,debug_figure,old_path, novisit, noprereq
 
-
-class genererCourbes:
+class GenererCourbes(object):
     '''
 NAME
     genererCourbes.py
@@ -166,7 +172,7 @@ TODO
     __format_fichier__ = 'ADU'
 
     #methode d'initialisation / constructeur
-    def __init__(self, parametersFile, verbose=0, output='', out='rapport.pdf', novisit=False):
+    def __init__(self, parametersFile, verbose=0, output='', out='rapport.pdf', novisit=False, noprereq=False):
         '''Constructeur.'''
         if output=='':
             self.gestMsg = GestionMessages(verbose,'log')
@@ -202,6 +208,7 @@ TODO
         self.sortie = out
         self.preRequis = []
         self.novisit = novisit
+        self.noprereq = noprereq
         self.nvellevalid = 2
 
 
@@ -313,12 +320,12 @@ TODO
             pass
 
         motcle,valeur,motcle_lu = extraireMotcleValeur(fichier,ligne, self.gestMsg)
-        
+
         if motcle=='parametres':
             #Lecture des parametres generaux
             verifie_accolade_suivante(ligne,fichier,self.gestMsg)
             fin = False
-            dico=['titre','auteur','description','reference','castest','code','versiontrio_u','parametrestrio_u','incluredata','prerequis','nvellevalidtrio']
+            dico=['titre','auteur','description','reference','castest','code','versiontrio_u','parametrestrio_u','incluredata','prerequis','nvellevalidtrio','fichierextrautilise']
             while not fin:
                 ligne = fichier.readline()
                 if not ligne:
@@ -349,7 +356,10 @@ TODO
                     elif motcle=='incluredata':
                         self.inclureData = int(valeur)
                     elif motcle=='prerequis':
-                        self.preRequis.append(valeur.replace('"',''))
+                        if not self.noprereq:
+                            self.preRequis.append(valeur.replace('"',''))
+                    elif motcle == 'fichierextrautilise':
+                        FileAccumulator.Append(valeur)
                     elif motcle=='nvellevalidtrio':
                         #Nouvelle version de script pour harmonisation des fiches de Validation de Trio-cfd
                         #Le nom des chapitres est impose, on ne balaye plus le mot cle chapitre
@@ -529,7 +539,7 @@ TODO
             res = os.system('pdflatex -interaction=nonstopmode %s >pdflatex.log' % nomFichierTex)
             nomFicPdf_court = nomFichierTex[:-3] + 'pdf'
             res = os.system('pdflatex -interaction=nonstopmode %s >pdflatex.log; [ $? != 0 ] && cat pdflatex.log && echo && rm -f %s' %(nomFichierTex , nomFicPdf_court))
-#           
+#
             os.chdir(ici)
             nomFicPdf = nomFichierTexComplet[:-3] + 'pdf'
             if os.path.exists(nomFicPdf):
@@ -584,16 +594,27 @@ TODO
 
 
 if __name__ == "__main__":
+    from filelist import FileAccumulator
+    from lib import get_detail_cas
+
     # global debug_figures
     argv = sys.argv[1:]
     gestMsg = GestionMessages(verbose=10, output='log', ecran=True)
-    verbose, ficParam, sortie, get_cmd_to_run,debug_figure,old_path,novisit= getOptions(argv, gestMsg)
+    verbose, ficParam, sortie, get_cmd_to_run,debug_figure,old_path,novisit, noprereq= getOptions(argv, gestMsg)
     gestMsg.setNiveauMessage(verbose)
     #creation de l'objet de generation des courbes
-    app = genererCourbes(parametersFile=ficParam, verbose=verbose, output=gestMsg, out=sortie, novisit=novisit)
+    app = GenererCourbes(parametersFile=ficParam, verbose=verbose, output=gestMsg, out=sortie, novisit=novisit, noprereq=noprereq)
+
+    # Activation de l'enregistrement de la liste des fichiers consultes seulement apres l extraction
+    # des commandes a lancer
+    FileAccumulator.active = not get_cmd_to_run
 
     #lecture du fichier de parametres
     app.lireFichierParametres()
+
+    for c in app.casTest:
+        case,dir,_,_ = get_detail_cas(c)
+        FileAccumulator.AppendTestCase(case, dir)
 
     if verbose>9:
         app.afficherParametres()
@@ -601,7 +622,6 @@ if __name__ == "__main__":
     if get_cmd_to_run:
         list_cas=[]
         for cas0 in app.casTest:
-            from lib import get_detail_cas
             case,dir,nb_proc,comment=get_detail_cas(cas0)
             list_cas.append(dir+"/"+case+".perf")
             data=case+'.data'
@@ -661,3 +681,7 @@ if __name__ == "__main__":
     if (debug_figure!=None)and(debug_figure!=-2):
         app.compile_latex=0
     app.genererRapport(debug_figure)
+
+    # Generate list of all files used during the process
+    FileAccumulator.WriteToFile("./used_files")
+

@@ -49,6 +49,7 @@ class Tableau:
         self.inclureDescLignes = 0
         self.transposed_display = 0
         pass
+
     def printFichierParametres(self):
         dec='\t'
         print(dec,"Tableau {")
@@ -69,6 +70,7 @@ class Tableau:
         dec='\t'
         print(dec,"}")
         pass
+
     #lecture des parametres du tableau dans le fichier de parametres
     def lireParametres(self, fichier):
         '''Lecture des parametres du tableau.'''
@@ -76,11 +78,11 @@ class Tableau:
         fin = False
         dico=['titre','nb_colonnes','formule','label','legende','description','ligne','lignes','incluredesclignes','transposed_display','textsize']
         sizedico = {'tiny':r'\tiny',
-                                'script':r'\scriptsize',
-                                'footnote':r'\footnotesize',
-                                'small':r'\small',
-                                'large':r'\large',
-                                'Large':r'\Large'}
+                    'script':r'\scriptsize',
+                    'footnote':r'\footnotesize',
+                    'small':r'\small',
+                    'large':r'\large',
+                    'Large':r'\Large'}
         while not fin:
             ligne = fichier.readline()
             if not ligne:

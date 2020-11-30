@@ -1,6 +1,6 @@
 Parameters {
         Title "Check python scripts Lata_to_med and Lata_to_case"
-	Description "This is to check that transforms .lata files into .med or .case files ."
+	    Description "This is to check that transforms .lata files into .med or .case files ."
         Author "Stephane Veys"
         TestCase . Obstacle.data
 }
@@ -19,8 +19,8 @@ Chapter {
 	Title "Take Only the last timestep"
 	description include_text_file("nts_case2_last")
 	Visu {
-		Title "Magnitude of velocity field around the obstacle at the final time"
-		pseudocolor Obstacle2_LastTS.case dom norme_VITESSE SOM
+		Title "Pressure field around the obstacle at the final time"
+		pseudocolor Obstacle2_LastTS.case dom PRESSION SOM
 		cycles 0
 		width 8cm
 	}

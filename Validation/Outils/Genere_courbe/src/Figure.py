@@ -17,6 +17,7 @@
 import sys, os
 
 from Courbe import Courbe
+from filelist import FileAccumulator
 
 from lib import GestionMessages
 from lib import getNomFonction
@@ -59,6 +60,7 @@ class Figure:
         self.nb_img_without_newline=-1
         self.ratio = 'noratio'
         pass
+
     def printFichierParametres(self):
         dec='\t'
         print(dec,"Figure {")
@@ -91,6 +93,7 @@ class Figure:
         for courbe in self.listeCourbes  : courbe.printFichierParametres()
         print(dec,"}")
         pass
+
     #lecture des parametres de la figure dans le fichier de parametres
     def lireParametres(self, fichier):
         '''Lecture des parametres de la figure.'''
@@ -165,6 +168,7 @@ class Figure:
                     self.width=valeur
                 elif motcle=='image':
                     self.image = valeur
+                    FileAccumulator.Append(self.image)
                 elif motcle == 'ratio':
                     self.ratio = valeur
                 else:
@@ -185,13 +189,14 @@ class Figure:
             pass
         range = '[%s:%s]' % (bornes[0], bornes[1])
         return range
+
     def genererGraphe(self, dest, indice,debug_figure):
         '''Generation du graphique correspondant a la figure.'''
         if len(self.listeCourbes)>0:
             self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
             nomFichierPlot = 'fic%03d.plot' % (indice)
             nomFichierPlotComplet = dest + '/fic%03d.plot' % (indice)
-            '''Gnuplot supporte mal le UTF-8'''      
+            '''Gnuplot supporte mal le UTF-8'''
             ficPlot = open(nomFichierPlotComplet, 'w', encoding='iso_8859_1')
             ficPlot.write('#Fichier de plot correspondant a la figure "%s"\n' % chaine2Ascii(self.titre))
             ficPlot.write('set encoding iso_8859_1\n')

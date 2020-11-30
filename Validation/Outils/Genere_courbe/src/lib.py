@@ -69,6 +69,7 @@ dico_en={
 'other_options':'autres_options',
 'results':'resultats',
 'conclusion':'conclusion',
+'extrausedfile': 'fichierextrautilise'
 }
 
 
@@ -154,7 +155,7 @@ class GestionMessages:
         lst=[]
         for m in dico:
             mot=""
-            if m in list(dico_inverse.keys()): 
+            if m in list(dico_inverse.keys()):
                 mot=dico_inverse[m]+"|"
             mot+=m
             lst.append(mot)
@@ -345,7 +346,9 @@ def replace_value_in_file(chaine):
         res+=suite[fin+len(separateur_fin):]
         return res
     return chaine
+
 def chaine2Tex(chaine):
+    from filelist import FileAccumulator
     separateur_debut='\latex_('
     separateur_fin='\latex_)'
     deb=chaine.find(separateur_debut)
@@ -415,7 +418,7 @@ def chaine2Tex(chaine):
         ff=mots[0].replace("\"","")
         if not(os.path.exists(ff)):
             print("in prm, incluce_text_file can't read data file :",ff)
-
+        FileAccumulator.Append(ff)
 
         res+="\lstinputlisting{\orig/%s}\n"%mots[0]
         res+=chaine2Tex(suite[fin+len(separateur_fin):])

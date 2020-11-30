@@ -23,6 +23,8 @@ from lib import _accoladeF
 from lib import _TypesReconnus
 from lib import get_nom_cas
 
+from filelist import FileAccumulator
+
 class Ligne:
     '''Classe decrivant une ligne telle qu elle devra etre
 tracee dans le rapport de validation de TRUST.'''
@@ -95,6 +97,7 @@ tracee dans le rapport de validation de TRUST.'''
                     self.version = valeur
                 elif motcle=='fichier':
                     self.fichier = valeur
+                    FileAccumulator.Append(valeur)
                 elif motcle=='valeurs':
 
                     #valeur_f=[ eval(x) for x in ligne.split()[1:] ]
@@ -302,6 +305,7 @@ tracee dans le rapport de validation de TRUST.'''
                     self.version = valeur
                 elif motcle=='fichier':
                     self.fichier = valeur
+                    FileAccumulator.Append(valeur)
                 elif motcle=='numero_premiere_ligne':
                     self.numero_premiere_ligne=int(valeur)
                 elif motcle=='numero_derniere_ligne':
@@ -392,7 +396,7 @@ tracee dans le rapport de validation de TRUST.'''
                                 # exec(cmd)
                                 original_string="$%d"%(j+1)
                                 replacement_string="val[%d]"%(j+ll*nb_colonnes_f)
-                                formule=formule.replace(original_string, replacement_string)                                
+                                formule=formule.replace(original_string, replacement_string)
                                 pass
                             # print formule
                             val2[i+ll*(nb_colonnes+1)]=eval(formule)
