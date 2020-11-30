@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,19 +84,6 @@ void Comm_Group_Noparallel::mp_collective_op(const int *x, int *resu, int n, Col
       resu[i] = 0;
 }
 
-// Description: Operation collective sur chaque element d'un tableau de taille n.
-//  x, resu et op doivent pointer sur un tableau de taille n.
-//  Pour chaque element x[i] on effectue l'operation op[i] et on met le resultat dans resu[i]
-void Comm_Group_Noparallel::mp_collective_op(const long long *x, long long *resu, int n, Collective_Op op) const
-{
-  if (op != COLL_PARTIAL_SUM)
-    for (int i = 0; i < n; i++)
-      resu[i] = x[i];
-  else
-    for (int i = 0; i < n; i++)
-      resu[i] = 0;
-}
-
 
 // Description: Operation collective sur chaque element d'un tableau de taille n.
 //  x et resu doivent pointer sur un tableau de taille n.
@@ -115,20 +102,6 @@ void Comm_Group_Noparallel::mp_collective_op(const double *x, double *resu, cons
 //  x, resu et op doivent pointer sur un tableau de taille n.
 //  Pour chaque element x[i] on effectue l'operation op[i] et on met le resultat dans resu[i]
 void Comm_Group_Noparallel::mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const
-{
-  for (int i = 0; i < n; i++)
-    {
-      if (op[i] != COLL_PARTIAL_SUM)
-        resu[i] = x[i];
-      else
-        resu[i] = 0;
-    }
-}
-
-// Description: Operation collective sur chaque element d'un tableau de taille n.
-//  x, resu et op doivent pointer sur un tableau de taille n.
-//  Pour chaque element x[i] on effectue l'operation op[i] et on met le resultat dans resu[i]
-void Comm_Group_Noparallel::mp_collective_op(const long long *x, long long *resu, const Collective_Op *op, int n) const
 {
   for (int i = 0; i < n; i++)
     {

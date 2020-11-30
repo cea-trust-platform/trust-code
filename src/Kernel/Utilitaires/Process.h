@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,6 @@ public:
   static double mp_max(double);
   static double mp_min(double);
   static int mp_sum(int);
-  static long long mp_sum(long long x);
   static bool mp_and(bool);
 
   static int me();                        /* mon rang dans le groupe courant */

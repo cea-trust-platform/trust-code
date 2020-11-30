@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -609,16 +609,6 @@ int mppartial_sum(int x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   int y;
-  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
-  return y;
-}
-
-// Description: Calul de la somme partielle de i sur les processeurs 0 a me()-1
-//  (renvoie 0 sur le processeur 0). Voir Comm_Group::mppartial_sum()
-long long mppartial_sum(long long x)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  long long y;
   grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
   return y;
 }

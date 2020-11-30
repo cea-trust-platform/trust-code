@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,8 @@
 #include <PE_Groups.h>
 #include <stat_counters.h>
 #include <Statistiques.h>
+#include <vector>
+#include <algorithm>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Comm_Group_MPI,"Comm_Group_MPI",Comm_Group);
 
@@ -60,8 +62,8 @@ static void mpi_print_error(int error_code)
   // Normalement on aurait pris trio_u_world_, mais on n'y a pas acces ici.
   // Pour faire abort, en l'occurence, c'est pas grave mais merci de ne pas
   // prendre comme exemple...
-  MPI_Abort(MPI_COMM_WORLD,-1);
   assert(0);
+  MPI_Abort(MPI_COMM_WORLD,-1);
   Process::exit();
 }
 
@@ -231,47 +233,6 @@ void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, const Collective_
   internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
 #endif
 }
-
-void Comm_Group_MPI::mp_collective_op(const long long *x, long long *resu, int n, Collective_Op op) const
-{
-#ifdef MPI_
-  if (n <= 0)
-    return;
-  switch(op)
-    {
-      // Note B.M.: cast en non const a cause de l'interface de MPI,
-      // plusieurs posts sur newsgroups incitent a penser que c'est ok
-      // (x ne sera jamais modifie par la librairie, sauf bug !)
-    case COLL_SUM:
-      statistiques().begin_count(mpi_sumint_counter_);
-      mpi_error(MPI_Allreduce((long long*) x, resu, n, MPI_LONG_LONG_INT, MPI_SUM, mpi_comm_));
-      statistiques().end_count(mpi_sumint_counter_);
-      break;
-    case COLL_MIN:
-      statistiques().begin_count(mpi_minint_counter_);
-      mpi_error(MPI_Allreduce((long long*) x, resu, n, MPI_LONG_LONG_INT, MPI_MIN, mpi_comm_));
-      statistiques().end_count(mpi_minint_counter_);
-      break;
-    case COLL_MAX:
-      statistiques().begin_count(mpi_maxint_counter_);
-      mpi_error(MPI_Allreduce((long long*) x, resu, n, MPI_LONG_LONG_INT, MPI_MAX, mpi_comm_));
-      statistiques().end_count(mpi_maxint_counter_);
-      break;
-    case COLL_PARTIAL_SUM:
-      internal_collective(x, resu, n, &op, -1 /* only one operation */, 0 /* recursion level */);
-      break;
-    }
-#endif
-}
-void Comm_Group_MPI::mp_collective_op(const long long *x, long long *resu, const Collective_Op *op, int n) const
-{
-#ifdef MPI_
-  if (n <= 0)
-    return;
-  internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
-#endif
-}
-
 
 // Description:
 // Point de synchronisation de tous les processeurs du groupe (permet
@@ -575,11 +536,33 @@ void Comm_Group_MPI::all_to_allv(const void *src_buffer, int *send_data_size, in
   assert(src_buffer != dest_buffer);
   void * ptr = (void *) src_buffer; // Cast a cause de l'interface de MPI_Alltoall
 
-  mpi_error(MPI_Alltoallv(ptr, (True_int *)send_data_size, (True_int *)send_data_offset, MPI_CHAR,
-                          dest_buffer, (True_int* )recv_data_size, (True_int *)recv_data_offset, MPI_CHAR, mpi_comm_));
-  const int n = nproc()-1;
-  const int size = send_data_offset[n] + send_data_size[n] + recv_data_size[n] + recv_data_offset[n];
+  const int n = nproc();
+  int size;
+
+#ifdef INT_is_64_
+  std::vector<True_int> send_data_size_int(n);
+  std::vector<True_int> send_data_offset_int(n);
+  std::vector<True_int> recv_data_size_int(n);
+  std::vector<True_int> recv_data_offset_int(n);
+
+  auto cast_func = [](int i) -> True_int { return static_cast<True_int>(i); }
+                   std::transform(send_data_size,   send_data_size + n,   send_data_size_int.begin(),   cast_func);
+  std::transform(send_data_offset, send_data_offset + n, send_data_offset_int.begin(), cast_func);
+  std::transform(recv_data_size,   recv_data_size + n,   recv_data_size_int.begin(),   cast_func);
+  std::transform(recv_data_offset, recv_data_offset + n, recv_data_offset_int.begin(), cast_func);
+
+  mpi_error(MPI_Alltoallv(ptr, send_data_size_int.data(), send_data_offset_int.data(), MPI_CHAR,
+                          dest_buffer, recv_data_size_int.data(), recv_data_offset_int.data(), MPI_CHAR, mpi_comm_));
+  size = send_data_offset_int[n-1] + send_data_size_int[n-1] + recv_data_size_int[n-1] + recv_data_offset_int[n-1];
+#else
+  mpi_error(MPI_Alltoallv(ptr, send_data_size, send_data_offset, MPI_CHAR,
+                          dest_buffer, recv_data_size, recv_data_offset, MPI_CHAR, mpi_comm_));
+  size = send_data_offset[n-1] + send_data_size[n-1] + recv_data_size[n-1] + recv_data_offset[n-1];
+
+#endif
   statistiques().end_count(mpi_alltoall_counter_, size);
+
+
 }
 
 // Description: pour que trio_u n'utilise qu'une partie des processeurs
@@ -698,19 +681,6 @@ void Comm_Group_MPI::internal_collective(const int *x, int *resu, int nx, const 
     }
 }
 
-void Comm_Group_MPI::internal_collective(const long long *x, long long *resu, int nx, const Collective_Op *op, int nop, int level) const
-{
-  // Pour l'instant algo bourrin, a optimiser...
-  for (int i = 0; i < nx; i++)
-    {
-      int j = (nop < 0) ? 0 : i;
-      if (op[j] != COLL_PARTIAL_SUM)
-        mp_collective_op(x+i, resu+i, 1, op[j]);
-      else
-        resu[i] = mppartial_sum(x[i]);
-    }
-}
-
 void Comm_Group_MPI::internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const
 {
   // Pour l'instant algo bourrin, a optimiser...
@@ -758,35 +728,4 @@ int Comm_Group_MPI::mppartial_sum(int x) const
   return somme;
 }
 
-// Description:
-// Renvoie la somme des x sur les processeurs precedents du groupe (moi non
-// compris). Le resultat sur le premier processeur du groupe est donc toujours 0.
-// Le resultat depend de l'ordre dans lequel les processeurs ont ete
-// fournis dans le constructeur.
-long long Comm_Group_MPI::mppartial_sum(long long x) const
-{
-  statistiques().begin_count(mpi_partialsum_counter_);
-  long long somme = 0;
-  MPI_Status status;
-  int tag = get_new_tag();
-  int rang = rank();
-  int np = nproc();
-
-  if (rang > 0)
-    {
-      // Recoit la somme partielle du precedent
-      mpi_error(MPI_Recv(& somme, 1, MPI_LONG_LONG_INT, rang-1, tag, mpi_comm_, &status));
-    }
-  if (rang+1 < np)
-    {
-      // Envoie la somme partielle au suivant
-      long long s = somme + x;
-      mpi_error(MPI_Send(& s, 1, MPI_LONG_LONG_INT, rang+1, tag, mpi_comm_));
-    }
-  statistiques().end_count(mpi_partialsum_counter_);
-  return somme;
-}
-
-
 #endif
-

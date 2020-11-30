@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,8 +36,6 @@ public:
   void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const;
   void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const;
   void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const;
-  void mp_collective_op(const long long *x, long long *resu, int n, Collective_Op op) const;
-  void mp_collective_op(const long long *x, long long *resu, const Collective_Op *op, int n) const;
 
   void   barrier(int tag) const;
   int    reverse_send_recv_list(const ArrOfInt& src_list,
