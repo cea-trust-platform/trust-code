@@ -41,7 +41,7 @@
 #include <Source_PDF_EF.h>
 
 Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
-// XD source_pdf_ef source_pdf_base source_pdf_ef 1 Source term for Penalised Direct Forcing (PDF) method.
+// XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
 
 /*##################################################################################################
 ####################################################################################################
