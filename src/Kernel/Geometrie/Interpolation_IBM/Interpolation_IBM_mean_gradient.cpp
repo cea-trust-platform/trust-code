@@ -150,7 +150,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
         }
     }
 
-  sommets_voisins_ = new IntList[nb_som];
+  sommets_voisins_ = IntLists(nb_som);
   int nb_nodes_in_list = 0;
 
   for (int num_elem = 0; num_elem < nb_elem_tot; num_elem++)

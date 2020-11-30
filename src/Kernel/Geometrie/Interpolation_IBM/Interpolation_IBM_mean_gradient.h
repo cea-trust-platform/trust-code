@@ -25,7 +25,7 @@
 
 #include <Interpolation_IBM_base.h>
 #include <Champ_Don.h>
-#include <IntList.h>
+#include <IntLists.h>
 #include <Zone.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ protected :
   Champ_Don solid_elems_lu_;
   Champ_Don corresp_elems_lu_;
   Champ_Don is_dirichlet_;
-  IntList* sommets_voisins_;
+  IntLists sommets_voisins_;
   Champ_Don corresp_elems_;
   Champ_Don solid_elems_;
   friend class Source_PDF_EF;

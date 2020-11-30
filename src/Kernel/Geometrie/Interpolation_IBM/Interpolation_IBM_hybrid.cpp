@@ -49,7 +49,7 @@ void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Zone_d
 {
   Interpolation_IBM_elem_fluid::discretise(dis,la_zone_EF);
 
-  my_mean_gradient = new Interpolation_IBM_mean_gradient;
+  my_mean_gradient = std::make_shared<Interpolation_IBM_mean_gradient>();
   dis.discretiser_champ("champ_sommets",la_zone_EF,"solid_elems","none",1,0., my_mean_gradient->solid_elems_);
   my_mean_gradient->solid_elems_.valeur().affecter(solid_elems_lu_);
   dis.discretiser_champ("champ_sommets",la_zone_EF,"is_dirichlet","none",1,0., my_mean_gradient->is_dirichlet_);

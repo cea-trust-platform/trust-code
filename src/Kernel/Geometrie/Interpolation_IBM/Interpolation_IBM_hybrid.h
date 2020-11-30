@@ -25,7 +25,8 @@
 
 #include <Interpolation_IBM_elem_fluid.h>
 #include <Interpolation_IBM_mean_gradient.h>
-#include <IntList.h>
+#include <IntLists.h>
+#include <memory>
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -51,9 +52,9 @@ protected :
   void computeSommetsVoisins(Zone_dis_base&);
   Champ_Don is_dirichlet_lu_;
   Champ_Don solid_elems_lu_;
-  IntList* sommets_voisins_;
+  IntLists sommets_voisins_;
   friend class Source_PDF_EF;
-  Interpolation_IBM_mean_gradient* my_mean_gradient;
+  std::shared_ptr<Interpolation_IBM_mean_gradient> my_mean_gradient;
 
 };
 
