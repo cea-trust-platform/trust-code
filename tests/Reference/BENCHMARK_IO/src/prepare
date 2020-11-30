@@ -1,0 +1,20 @@
+#!/bin/bash
+# Prepare le cas
+rm -r -f ../build
+mkdir -p ../build
+cp * ../build
+cd ../build
+
+[ ! -s cylindre.geom ] && gunzip -c ../../Cx/cylindre.geom.gz > cylindre.geom
+if [ cylindre.geom -nt DOM_0000.Zones ] || [ $jdd.data -nt DOM_0000.Zones ]
+then
+   # Decoupage:
+   rm -f *.Zones
+   # 2.5e6 mailles decoupe en NB_ZONES sur cluster, 2 sur un PC
+   NB_ZONES=128 && [ "$TRUST_WITHOUT_HOST" = 1 ] && NB_ZONES=2
+   make_PAR.data $jdd $NB_ZONES
+fi
+N=`ls *.Zones | wc -l`
+# Clean
+trust -clean 1>/dev/null 2>&1
+
