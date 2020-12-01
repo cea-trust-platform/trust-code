@@ -1,0 +1,73 @@
+#!/bin/bash
+
+TRUST_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable TRUST_ROOT   "
+    echo ""
+    echo "Please, install TRUST and run :  "
+    echo "  source /path/to/TRUST/env_TRUST.sh "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ "${TRUST_ROOT}" = "" ]
+then
+    TRUST_environnement_error
+fi
+
+# initialisation de la variable BALTIK_ROOT pour reutiliser certains scripts
+BALTIK_ROOT=$TRUST_ROOT/bin/baltik/share/baltik/bin
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/baltik_configuration_parsing
+
+ORG=`pwd`
+
+# On cherche tous les sous-BALTIK en localisant project.cfg 
+prjs=`find . -mindepth 2  -name project.cfg -exec dirname {} \;`
+
+for dir in $prjs
+  do
+  # nettoyer toutes les variables liees au project_directory precedent
+  unsetVAR=`env | grep project_directory |awk -F'='  '{print $1}';`
+  for var in $unsetVAR
+    do
+    # echo "unset de la variable $var" 
+    unset $var
+  #  echo "verification $var = `env | grep $var`"
+  done
+
+  cd $dir
+  echo "##########################################"
+  echo "# Verification du BALTIK $( basename $dir)"
+  echo "##########################################"
+  
+  LOG_file=$ORG/$dir/"modularity_$( basename $dir).log" 
+  # Construction et verification du sous-Baltik 
+  source $TRUST_ROOT/env_TRUST.sh  1>$LOG_file 2>&1
+  baltik_build_configure -execute  1>>$LOG_file 2>&1
+ 
+  # recuperer le nom du baltik a partir du project.cfg
+  # extraction de la section de description du fichier de configuration
+  project_description=`extract_section "project.cfg" description`
+  # extraction du nom du projet
+  project_name=`extract_field "$project_description" name` 
+
+  source env_${project_name}.sh 1>>$LOG_file 2>&1
+  env PAR_F=0 make check_all_optim  1>>$LOG_file 2>&1
+  if [ $? -ne 0 ] 
+    then
+    echo "ERROR: make check all optim KO !!!!" 
+    echo "See $LOG_file !"
+  else
+    echo "make check all optim OK"
+    rm $LOG_file 
+    make dist_clean 1>/dev/null 2>&1
+  fi
+  echo ""
+# TODO ajouter la verification avec git ?
+#  git status # il faut avoir uniquement Version_Kernel
+  git checkout src/Version_kernel
+  cd $ORG
+done
