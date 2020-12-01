@@ -1493,13 +1493,6 @@ Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is
 loi_fermeture_base objet_u loi_fermeture_base -3 Class for appends fermeture to problem 
 scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge). 
   attr ch front_field_base ch 0 Boundary field type.
-pdf_model objet_u pdf_model -1 Parametrisation of the Penalized Direct Forcing model for the Immersed Boundary Method (IBM)
-  attr eta floattant eta 0 penalization coefficient
-  attr temps_relaxation_coefficient_PDF floattant temps_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help   
-  attr echelle_relaxation_coefficient_PDF floattant echelle_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help convergence
-  attr local rien local 1 rien whether the prescribed velocity is expressed in the global or local basis
-  attr vitesse_imposee_data field_base vitesse_imposee_data 1 Prescribed velocity as a field
-  attr vitesse_imposee_fonction troismots vitesse_imposee_fonction 1 Prescribed velocity as a set of ananlyticla components
 bloc_pdf_model objet_lecture nul 1 not_set
   attr eta floattant eta 0 penalization coefficient
   attr temps_relaxation_coefficient_PDF floattant temps_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help   
