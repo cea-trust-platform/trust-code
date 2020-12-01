@@ -56,7 +56,7 @@ for dir in $prjs
 
   source env_${project_name}.sh 1>>$LOG_file 2>&1
   env PAR_F=0 make check_all_optim  1>>$LOG_file 2>&1
-  if [ $? -ne 0 ] 
+  if [ $? -ne 0 ] && [ "`grep "No test cases found" $LOG_file`" == "" ] 
     then
     echo "ERROR: make check all optim KO !!!!" 
     echo "See $LOG_file !"
