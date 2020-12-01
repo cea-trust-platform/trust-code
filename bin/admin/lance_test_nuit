@@ -33,6 +33,7 @@ check_components()
 	 Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}".log"
 	 Gui_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}"_gui.log"
 	 Doc_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}"_doxygen.log"
+	 Modularity_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}"_modularity.log"
          BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
          echo "  Check `pwd`"
 	 echo "    See $Composant_log"
@@ -112,6 +113,29 @@ check_components()
                fi
             fi
 	    #[ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
+            # Verification independance des sous BALTIKs
+	    MODULARITY_BALTIK_OK=1
+            # On fait le test uniquement le weekend
+	    if [ ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) ]
+	    then
+               echo " "
+               echo "Call to "$TRUST_ROOT"/bin/baltik/share/baltik/bin/baltik_check_project_modularity"
+               if  [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des Composants GIT
+               then
+                  $TRUST_ROOT/bin/baltik/share/baltik/bin/baltik_check_project_modularity 1>$Modularity_log 2>&1
+                  # TODO on fait un grep sur ERROR
+                  if [ "`grep "ERROR" $Modularity_log`" != "" ]
+                  then
+                     cat $Modularity_log
+                     cat $Modularity_log | mail_ -s\"[lance_test_nuit] baltik_check_project_modularity KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TRUST_MAIL
+                     echo "  KO"
+	             MODULARITY_BALTIK_OK=0
+                  else
+                     echo "  OK"
+                  fi
+               fi
+            fi
+	    [ $MODULARITY_BALTIK_OK = 0 ] && COMPOSANT_OK=0
 	    # Verification de Liste_fiche pour Create_light_archive.sh
 	    VERIF_LIGHT_OK=1
             if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
