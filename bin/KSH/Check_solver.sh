@@ -30,10 +30,10 @@ print()
        # Numero de la resolutions a partir de laquelle on mesure (4 pour solveur_pression, 1 pour le solveur_implicite)
        [ $resolution = solveur_pression ]  && nr=4  # Car avant: solveur_optimal eventuel+projection+resolution laplacien(P)=0
        [ $resolution = solveur_implicite ] && nr=2  # Car avant: solveur_optimal eventuel
-       nb_resolution=`grep 'clock Ax=B' $out | grep $resolution | $TRUST_Awk '{n++} END {print n}'` 
+       nb_resolution=`grep 'clock Ax=B' $out | grep $resolution | $TRUST_Awk 'BEGIN {n=0} {n++} END {print n}'` 
        if [ $nb_resolution -lt $nr ]
        then
-          echo "Le cas $ref.data n'a pas assez de resolutions avec $resolution" && exit -1
+          echo "Le cas $ref.data n'a pas assez de resolutions avec $resolution. Ajouter impr au solveur ?" && exit -1
        fi
        # Calcul du cpu moyen passe dans le solveur entre la resolution nr et la derniere
        cpu=` grep 'clock Ax=B' $out     | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$3} END {printf("%7.4f",s/n)}'` 

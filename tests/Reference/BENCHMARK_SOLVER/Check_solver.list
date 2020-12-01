@@ -4,7 +4,6 @@ let i=$i+1;solver[$i]="Petsc Cholesky { impr }"												# Methode directe
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond block_jacobi_icc { level 1 } impr }"					# Meilleure convergence de icc vs ssor
 let i=$i+1;solver[$i]="GCP            { seuil $seuil precond ssor { omega 1.65 } impr }"						
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ssor { omega 1.65 } impr }"						# SSOR PETSc plus lent que SSOR Trust
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ssor { omega 1.65 } }"						# SSOR PETSc plus lent que SSOR Trust
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond boomeramg { } cli { -pc_hypre_boomeramg_strong_threshold 0.9 } impr }"	# Meilleure convergence de amg vs icc mais plus rapide SSI beaucoup d'iterations !
 #let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond null { } cli { -ksp_divtol 1e20 } impr }"					
 #let i=$i+1;solver[$i]="GCP            { seuil $seuil precond_nul impr }"								# GC Trust plus lent que GC PETSc
