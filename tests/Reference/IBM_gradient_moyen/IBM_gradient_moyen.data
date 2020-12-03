@@ -101,19 +101,22 @@ Lire pb
         diffusion { option { grad_u_transpose_partout 1 } }
         sources
         {
+	    # Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
             Source_PDF
             {
+		transpose_rotation 
                 aire Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh aire elem 0.
                 rotation Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh rotation elem 0.
                 modele
                 {
+		    echelle_relaxation_coefficient_pdf 1
+		    temps_relaxation_coefficient_pdf 1
                     eta 1.E-12
                     local
                     vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
                 interpolation IBM_gradient_moyen
                 {
-		    # Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
 		    est_dirichlet Champ_Uniforme 1 0
                     points_solides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh projection_Solid som 0.
                     elements_solides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh fl_elem_number som 0.
