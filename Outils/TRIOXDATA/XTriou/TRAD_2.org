@@ -1499,13 +1499,7 @@ bloc_pdf_model objet_lecture nul 1 not_set
   attr echelle_relaxation_coefficient_PDF floattant echelle_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help convergence
   attr local rien local 1 rien whether the prescribed velocity is expressed in the global or local basis
   attr vitesse_imposee_data field_base vitesse_imposee_data 1 Prescribed velocity as a field
-  attr vitesse_imposee_fonction troismots vitesse_imposee_fonction 1 Prescribed velocity as a set of ananlytical component      
-source_pdf_base source_base source_pdf_base 1 Base class of the source term for the Immersed Boundary Penalized Direct Forcing method (PDF)
-  attr aire field_base aire 0 volumic field: a boolean for the cell (0 or 1) indicating if the obstacle is in the cell
-  attr rotation field_base rotation 0 volumic field with 9 components representing the change of basis on cells (local to global). Used for rotating cases for example.
-  attr transpose_rotation entier transpose_rotation 1 whether to transpose the basis change matrix.
-  attr modele bloc_pdf_model modele 0 model used for the Penalized Direct Forcing
-  attr interpolation interpolation_ibm_base interpolation 0 interpolation method
+  attr vitesse_imposee_fonction troismots vitesse_imposee_fonction 1 Prescribed velocity as a set of ananlytical component
 source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
 interpolation_ibm_base objet_u interpolation_ibm_base 0 Base class for all the interpolation methods available in the Immersed Boundary Method (IBM).
 interpolation_ibm_elem_fluid interpolation_ibm_base ibm_element_fluide 1 Immersed Boundary Method (IBM): fluid element interpolation.
