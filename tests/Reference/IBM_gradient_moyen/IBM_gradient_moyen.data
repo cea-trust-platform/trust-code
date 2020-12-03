@@ -111,7 +111,7 @@ Lire pb
                 {
 		    echelle_relaxation_coefficient_pdf 1
 		    temps_relaxation_coefficient_pdf 1
-                    eta 1.E-12
+                    eta 1.E-10
                     local
                     vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
