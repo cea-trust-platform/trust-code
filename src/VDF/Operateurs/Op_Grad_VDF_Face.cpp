@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,8 +84,9 @@ void Op_Grad_VDF_Face::dimensionner(Matrice_Morse& mat) const
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (int f = 0; f < zvdf.nb_faces(); f++) for (int i = 0, e; i < 2 && (e = zvdf.face_voisins(f, i)) >= 0; i++)
-      stencil.append_line(f, e);
+  int e;
+  for (int f = 0; f < zvdf.nb_faces(); f++) for (int i = 0; i < 2; i++)
+      if ((e = zvdf.face_voisins(f, i)) >= 0) stencil.append_line(f, e);
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(zvdf.nb_faces_tot(), zvdf.nb_elem_tot(), stencil, mat);
 }
