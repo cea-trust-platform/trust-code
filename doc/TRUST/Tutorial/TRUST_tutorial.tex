@@ -1237,21 +1237,21 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 
 \begin{itemize}
 
-\item First initialize TrioCFD full environment to have access to TrioCFD and TRUST studies :\\
+\item Initialize TrioCFD full environment to get access to TRUST\&TrioCFD tests:\\
 {\small{
 \textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
 \textbf{echo \$project\_directory} \\
 }}
 
-\item Copy the study named \textbf{Marche} (\textcolor{blue}{TrioCFD}) as explained page \pageref{method_copy} in the directory Formation\_TRUST/yourname. It simulates a 2D incompressible turbulent flow in the configuration described above using the k-$\varepsilon$ model.
+\item Copy the study named \textbf{Marche} (\textcolor{blue}{TrioCFD}) using: \textbf{triocfd -copy Marche}\\
+in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"trust"} script since both commands have the same options and use the same \$exec executable. This test case simulates a 2D incompressible turbulent flow in the above configuration using the k-$\varepsilon$ model.
 
 \item We want to add a source of constituent's diffusion so copy the \textbf{Constituants\index{Constituants}} study (\textcolor{blue}{TRUST}) which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
 
 \item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the TrioCFD Reference Manual).\\
-{\small{
-\textbf{evince \$project\_directory/share/doc/TrioCFD\_Reference\_Manual.pdf}\\
-}}
+\textbf{triocfd -index\index{triocfd -index}} then click on \textbf{Reference manual}
+
 
 \end{itemize}
 
@@ -1363,7 +1363,7 @@ Goals:
 }}
 \vspace{0.2cm}
 Notice that this directory corresponds to an automated validation test case. 
-If you want to run it and generate the pdf report, see the last exercise of this tutorial which is named "Validation form", but be careful this case needs more computational effort!
+If you want to run it and generate the pdf report, see the last exercise of this tutorial which is named "Validation form", but be careful this case needs huge computational effort!
 \end{itemize}
 
 \end{block}
@@ -1402,15 +1402,15 @@ If you want to run it and generate the pdf report, see the last exercise of this
 \begin{itemize}
 \item Then build the meshes:\\
 \textbf{./prepare} \\
-\textbf{trust BuildMeshes} \\
-Notice that we use \textbf{"trust"} command lines because this script will use the variable \$exec which is the path to the TrioCFD executable.
+\textbf{triocfd BuildMeshes} \\
+Notice that we use \textbf{"triocfd"} command lines, but it is also possible to use \textbf{"trust"} command because both scripts will use the variable \$exec which is the path to the TrioCFD executable.
 
 \item You can visualize the partitioned meshes with (MODEL=RANS or LES): \\
-\textbf{trust -mesh\index{trust -mesh} PeriodicBoxMODEL}
+\textbf{triocfd -mesh\index{triocfd -mesh} PeriodicBoxMODEL}
 
 \item Then, set the max number of time steps in the time scheme using \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} to 100 in the files PeriodicBoxRANS and PeriodicBoxLES and run a 2-cores parallel calculation, to initialize the turbulent flow in the box: \\
-\textbf{trust PeriodicBoxRANS 2} \\
-\textbf{trust PeriodicBoxLES 2} \\
+\textbf{triocfd PeriodicBoxRANS 2} \\
+\textbf{triocfd PeriodicBoxLES 2} \\
 (The full calculation takes approximately 1h in RANS and 10h in LES.)
 \end{itemize}
 
@@ -1434,8 +1434,8 @@ Notice that we use \textbf{"trust"} command lines because this script will use t
     \end{itemize}
 
 \item Run a 6-cores parallel calculation over the domain (it will stop by default after 10 times steps):\\
-\textbf{trust DomainFlowRANS 6}\\
-\textbf{trust DomainFlowLES 6}
+\textbf{triocfd DomainFlowRANS 6}\\
+\textbf{triocfd DomainFlowLES 6}
 
 \end{itemize}
 
@@ -1492,7 +1492,7 @@ Outlet: $P_0=0$
 }}
 
 \item Copy the study named Marche3D: 
-\textbf{trust -copy\index{trust -copy} Marche3D}
+\textbf{triocfd -copy\index{triocfd -copy} Marche3D}
 
 \item Edit the data file and: \\
     \begin{itemize}
@@ -1517,9 +1517,9 @@ Outlet: $P_0=0$
 \begin{itemize}
 
 \item Run the calculation and post-process the main calculated fields.\\
-\textbf{trust Marche3D} \\
+\textbf{triocfd Marche3D} \\
 
-\item Notice that we use \textbf{"trust"} command lines because this script will use the variable \$exec which is the path to the TrioCFD executable.
+\item Notice that we use \textbf{"triocfd"} command lines, but it is also possible to use \textbf{"trust"} script, since both scripts will use the variable \$exec which is the path to the TrioCFD executable.
 
 \item Replace the sub-grid model by the standard k\_eps model (RANS).
 \item Run the calculation and post-process of the velocity field to see the differences between the different turbulence models used.
@@ -1794,7 +1794,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} 
 
-\item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{trust -copy\index{trust -copy} FTD\_all\_VDF}
+\item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{triocfd -copy\index{triocfd -copy} FTD\_all\_VDF}
 
 \item This test case deals with a 3D two-phase flow in a tank with one initial interface between liquid and gas, a droplet, and a rotating solid in the liquid. The Discontinuous Front Tracking method is used with a 3D structured mesh.
 
@@ -1817,7 +1817,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{itemize}
 \item Increase the height of the tank (from 0.06 to 0.12).
 
-\item Add a second drop above the first one, at $z=0.08$ (keywords \textbf{ajout\_phase0\index{ajout\_phase0}} could be useful to add other interfaces, cf Reference Manual for \textbf{ajout\_phase0/ajout\_phase1\index{ajout\_phase1}} keywords). Don't forget the comma between the two definition of the drops.
+\item Add a second drop above the first one, at $z=0.08$ (keywords \textbf{ajout\_phase0\index{ajout\_phase0}} could be useful to add other interfaces, cf Reference Manual for \textbf{ajout\_phase0/ajout\_phase1\index{ajout\_phase1}} keywords). It is possible to access to the reference manual by typing \textbf{triocfd -index\index{triocfd -index}}. Don't forget the comma between the two definition of the drops.
 
 \item Change the \textbf{dt\_post\index{dt\_post}} period of the 3 post-processing blocks (0.05 to 0.01). The first one (add \textbf{format lata\index{format lata}}) is the classical block for post-processing probes and fields. Here, we want to see the concentration field and the \textbf{"indicatrice\_interf"} field. Value of this field is 0 for liquid and 1 for gas, so the interface is located at "indicatrice" value 0.5.
 
