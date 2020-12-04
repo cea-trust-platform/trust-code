@@ -40,14 +40,14 @@ Partition initial_dom
 {
     Partition_tool metis { Nb_parts 9 }
     Larg_joint 2
-    zones_name INITIAL_DOM
+    zones_name DOM
     single_hdf
 }
 End
 END PARTITION #
 
 # BEGIN SCATTER
-Raffiner_isotrope_parallele { single_hdf name_of_initial_zones INITIAL_DOM name_of_new_zones DOM }
+Raffiner_isotrope_parallele { single_hdf name_of_initial_zones DOM name_of_new_zones DOM }
 Scatter DOM.Zones dom
 END SCATTER #
 
