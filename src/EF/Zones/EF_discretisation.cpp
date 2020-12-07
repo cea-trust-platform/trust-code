@@ -379,7 +379,6 @@ void EF_discretisation::distance_paroi(const Schema_Temps_base& sch,
 void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
                                   Champ_Fonc& ch) const
 {
-#ifdef dependance
   Cerr << "Discretisation de la vorticite " << finl;
   const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
 
@@ -430,15 +429,12 @@ void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
       Cerr << "Pb dans le typage des elements dans EF_discretisation::vorticite" << finl;
       exit();
     }
-#endif
 }
 
 void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
                                               const Champ_Inc& ch_vitesse,
                                               Champ_Fonc& ch) const
 {
-
-#ifdef dependance
   if (sub_type(Champ_P1_EF,ch_vitesse.valeur()))
     {
       ch.typer("Rotationnel_Champ_P1_EF");
@@ -488,7 +484,6 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       Cerr << "Pb dans le typage des elements dans EF_discretisation::creer_champ_vorticite" << finl;
       exit();
     }
-#endif
 }
 
 

@@ -1,0 +1,151 @@
+# Hydraulique 2D laminaire CYLINDER ROTATING RE 100
+  Re = rho*w*(R1*R1)/mu
+  mu = rho*w*(R1*R1)/Re 
+  U = 1 m/s
+  w = 2
+  r = 0.5 m                  
+  Re = 100    
+  rho = 1          
+  mu = rho*U*2*r/Reynolds = 1*1*2*0.5/100 = 0.01 #
+# PARALLEL OK #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+EcritureLectureSpecial 0
+# BEGIN MESH #
+read_MED short_family_names dom domain_mesh ../MESHES_CYLINDER/res_domain_mesh_160_exact.med
+
+regroupebord dom Wall { TOP DOWN UP }
+regroupebord dom Postpro { BOTTOM }
+regroupebord dom Entree { IN }
+regroupebord dom Sortie { OUT }
+# END MESH #
+# BEGIN PARTITION
+
+Partition dom
+{
+	Partition_tool tranche { tranches 2 2 1 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+# DISCRETISATION EF #
+
+EF dis
+
+# SCHEMA EN TEMPS #
+
+Schema_Euler_implicite sch
+Lire sch
+{
+  tinit 0
+  tmax 300
+	dt_min 5.e-8
+	dt_impr 5.e-1
+	dt_sauv 1.
+	seuil_statio 1.e-5
+	solveur implicite
+  { 
+		seuil_convergence_implicite 1.e-10
+		seuil_convergence_solveur  1e-10
+		solveur Petsc IBICGSTAB { precond diag { } seuil 1e-10 } 
+  }
+  dt_start dt_calc
+  facsec 1.0
+}
+
+Fluide_Incompressible fluid
+
+Read fluid
+{
+	mu  Champ_Uniforme 1 0.01
+ 	rho Champ_Uniforme 1 1.0
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb fluid
+
+Discretiser pb dis
+
+Domaine out_chaud
+extraire_surface
+{
+	domaine out_chaud
+	probleme pb
+	avec_certains_bords 1 Sortie
+}
+Domaine wall
+extraire_surface
+{
+	domaine wall
+	probleme pb
+	avec_certains_bords 1 Wall
+}
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+    correction_matrice_projection_initiale 0
+    correction_calcul_pression_initiale 0
+    correction_vitesse_projection_initiale 1
+    projection_initiale 0
+    methode_calcul_pression_initiale avec_sources
+    correction_matrice_pression 1
+    correction_vitesse_modifie 1
+    gradient_pression_qdm_modifie 0
+    correction_pression_modifie 0
+		convection { generic btd }
+    solveur_pression petsc cholesky { }
+		diffusion { option { grad_u_transpose_partout 1 } }
+		sources 
+    {
+      Source_PDF
+      {
+        aire Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh aire elem 0.
+        rotation Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh rotation elem 0.
+        modele 
+        {
+          eta 1.E-12
+          vitesse_imposee_fonction 0. 0. 0.
+        }
+        interpolation IBM_element_fluide
+        {
+          points_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Fluid som 0.
+          points_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Solid som 0.
+          elements_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh fl_elem_number som 0.
+          correspondance_elements Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh TRUST_SALOME_correspondance elem 0.
+        }
+      }
+    }
+		conditions_initiales 
+    {
+		  vitesse champ_uniforme 3 0. 0. 0.
+		}
+		conditions_limites 
+    {
+			Wall Symetrie
+      Postpro Symetrie
+			Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1
+			Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 1. 0. 0.
+		}
+	}
+  Post_processing
+	{
+    format lata
+	  Champs dt_post 1e0
+		{
+      pression elem
+      vorticite elem
+			vitesse som
+		}
+  }
+}
+resoudre pb
+fin
