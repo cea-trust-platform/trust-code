@@ -64,24 +64,35 @@ void Champ_Fonc_Tabule_P0_CoviMAC::mettre_a_jour(double t)
     }
   int nb_elem=zone_CoviMAC.nb_elem();
   int nb_elem_tot=zone_CoviMAC.nb_elem_tot();
-  DoubleTab val_param_aux_elems(nb_elem_tot);
+  DoubleTab val_param_aux_elems;
+  if (mes_valeurs.nb_dim() == 1)
+    val_param_aux_elems.resize(nb_elem_tot);
+  else if (mes_valeurs.nb_dim() == 2)
+    val_param_aux_elems.resize(nb_elem_tot, mes_valeurs.dimension(1));
   const DoubleTab& centres_de_gravites=zone_CoviMAC.xp();
   IntVect les_polys(nb_elem_tot);
   for(int elem=0; elem<nb_elem_tot; elem++)
+    les_polys(elem)=elem;
+
+  // Estimate the field parameter on cells:
+  le_champ_parametre.valeur().valeur_aux_elems(centres_de_gravites,les_polys,val_param_aux_elems);
+  // Compute the field according to the parameter field
+  if (table.isfonction() != 2)
     {
-      les_polys(elem)=elem;
+      if (val_param_aux_elems.nb_dim() == 1)
+        for (int num_elem=0; num_elem<nb_elem; num_elem++)
+          mes_valeurs(num_elem) = table.val(val_param_aux_elems(num_elem));
+      else
+        {
+          int nbcomp=mes_valeurs.dimension(1);
+          for (int num_elem=0; num_elem<nb_elem; num_elem++)
+            for (int ncomp=0; ncomp<nbcomp; ncomp++)
+              mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp), ncomp);
+        }
     }
-  le_champ_parametre.valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_param_aux_elems);
-  if (val_param_aux_elems.nb_dim() == 1)
-    for (int num_elem=0; num_elem<nb_elem; num_elem++)
-      mes_valeurs(num_elem) = table.val(val_param_aux_elems(num_elem));
   else
-    {
-      int nbcomp=mes_valeurs.dimension(1);
-      for (int num_elem=0; num_elem<nb_elem; num_elem++)
-        for (int ncomp=0; ncomp<nbcomp; ncomp++)
-          mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp));
-    }
+    table.valeurs(val_param_aux_elems,centres_de_gravites,t,mes_valeurs);
+
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
