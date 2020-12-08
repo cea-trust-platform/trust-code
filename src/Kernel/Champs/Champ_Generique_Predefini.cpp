@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,6 +100,30 @@ const Noms Champ_Generique_Predefini::get_property(const Motcle& query) const
           mots[0] = "kg/(m.s2)";
         else if (Motcle(type_champ_)=="VISCOSITE_TURBULENTE")
           mots[0] = "m2/s";
+        else if (Motcle(type_champ_)=="VISCOUS_FORCE_X")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="VISCOUS_FORCE_Y")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="VISCOUS_FORCE_Z")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="PRESSURE_FORCES_X")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="PRESSURE_FORCES_Y")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="PRESSURE_FORCES_Z")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="TOTAL_FORCE_X")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="TOTAL_FORCE_Y")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="TOTAL_FORCE_Z")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="VISCOUS_FORCE")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="PRESSURE_FORCE")
+          mots[0] = "kg.m2/s";
+        else if (Motcle(type_champ_)=="TOTAL_FORCE")
+          mots[0] = "kg.m2/s";
         return mots;
         break;
       }
@@ -124,14 +148,28 @@ void Champ_Generique_Predefini::nommer_source()
 
 Nom Champ_Generique_Predefini::construit_expression()
 {
-  Motcles les_mots(3);
+  Motcles les_mots(15);
   {
     les_mots[0] = "energie_cinetique_totale";
     les_mots[1] = "energie_cinetique_elem";
     les_mots[2] = "viscosite_turbulente";
+    les_mots[3] = "viscous_force_x";
+    les_mots[4] = "viscous_force_y";
+    les_mots[5] = "viscous_force_z";
+    les_mots[6] = "pressure_force_x";
+    les_mots[7] = "pressure_force_y";
+    les_mots[8] = "pressure_force_z";
+    les_mots[9] = "total_force_x";
+    les_mots[10] = "total_force_y";
+    les_mots[11] = "total_force_z";
+    les_mots[12] = "viscous_force";
+    les_mots[13] = "pressure_force";
+    les_mots[14] = "total_force";
   }
 
   Nom expression("");
+  // on recupere la dimension du problem
+  int dim=Objet_U::dimension;
   int rang = les_mots.search(type_champ_);
   switch(rang)
     {
@@ -165,6 +203,173 @@ Nom Champ_Generique_Predefini::construit_expression()
         expression += " viscosite_dynamique_turbulente } } ";
         break;
       }
+
+    case 3:
+      {
+        expression  = " Morceau_equation { type operateur numero 0 option flux_bords compo 0 ";
+        expression += "  source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } }";
+        break;
+      }
+
+    case 4:
+      {
+        expression  = " Morceau_equation { type operateur numero 0 option flux_bords compo 1 ";
+        expression += "  source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } }";
+        break;
+      }
+
+    case 5:
+      {
+        expression  = " Morceau_equation { type operateur numero 0 option flux_bords compo 2 ";
+        expression += "  source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } }";
+        break;
+      }
+
+    case 6:
+      {
+        expression  = " Morceau_equation { type operateur numero 2 option flux_bords compo 0 ";
+        expression += "  source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } }";
+        break;
+      }
+
+    case 7:
+      {
+        expression  = " Morceau_equation { type operateur numero 2 option flux_bords compo 1 ";
+        expression += "  source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } }";
+        break;
+      }
+
+    case 8:
+      {
+        expression  = " Morceau_equation { type operateur numero 2 option flux_bords compo 2 ";
+        expression += "  source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } }";
+        break;
+      }
+
+    case 9:
+      {
+        expression  = " Transformation { methode formule expression 1 viscousFX+pressureFX sources { ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousFX } , ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureFX } ";
+        expression += " } }";
+        break;
+      }
+
+    case 10:
+      {
+        expression  = " Transformation { methode formule expression 1 viscousFY+pressureFY sources { ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousFY } , ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureFY } ";
+        expression += " } }";
+        break;
+      }
+
+    case 11:
+      {
+        expression  = " Transformation { methode formule expression 1 viscousFZ+pressureFZ sources { ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousFZ } , ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureFZ } ";
+        expression += " } }";
+        break;
+      }
+
+    case 12:
+      {
+        if (dim==3)
+          {
+            expression  = " Transformation { methode vecteur expression 3 viscousX viscousY viscousZ sources { ";
+            expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ ";
+            expression += nom_pb_;
+            expression += " vitesse } nom_source viscousZ } , ";
+          }
+        else
+          expression  = " Transformation { methode vecteur expression 2 viscousX viscousY sources { ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousX } , ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousY } ";
+        expression += " } }";
+        break;
+      }
+
+    case 13:
+      {
+        if (dim==3)
+          {
+            expression  = " Transformation { methode vecteur expression 3 pressureX pressureY pressureZ sources { ";
+            expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ ";
+            expression += nom_pb_;
+            expression += " vitesse } nom_source pressureZ } , ";
+          }
+        else
+          expression  = " Transformation { methode vecteur expression 2 pressureX pressureY sources { ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureX } , ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureY } ";
+        expression += " } }";
+        break;
+      }
+
+    case 14:
+      {
+        if (dim==3)
+          {
+            expression  = " Transformation { methode vecteur expression 3 viscousX+pressureX viscousY+pressureY viscousZ+pressureZ sources { ";
+            expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ ";
+            expression += nom_pb_;
+            expression += " vitesse } nom_source viscousZ } , ";
+            expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ ";
+            expression += nom_pb_;
+            expression += " vitesse } nom_source pressureZ } , ";
+          }
+        else
+          expression  = " Transformation { methode vecteur expression 2 viscousX+pressureX viscousY+pressureY sources { ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousX } , ";
+        expression += " Morceau_equation { type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source viscousY } , ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureX } , ";
+        expression += " Morceau_equation { type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse } nom_source pressureY } ";
+        expression += " } }";
+        break;
+      }
+
+
     default :
       {
         Cerr<<"Only keywords among "<<les_mots<<" are allowed."<<finl;

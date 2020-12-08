@@ -138,47 +138,45 @@ Read pb
 				# Calculate viscous force on the ring #
 				FVx Reduction_0D { 
 					methode sum source Interpolation { 
-						domaine ring localisation elem source Morceau_equation {
-							type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
-						}
+						domaine ring localisation elem source Predefini { pb_champ pb viscous_force_x } 
 					}
 				}
 				FVy Reduction_0D { 
 					methode sum source Interpolation { 
-						domaine ring localisation elem source Morceau_equation {
-							type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
-						}
+						domaine ring localisation elem source Predefini { pb_champ pb viscous_force_y } 
 					}
 				}
 				FVz Reduction_0D { 
 					methode sum source Interpolation { 
-						domaine ring localisation elem source Morceau_equation {
-							type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
-						}
+						domaine ring localisation elem source Predefini { pb_champ pb viscous_force_z } 
+					}
+				}
+				FV_vecteur Reduction_0D { 
+					methode sum source Interpolation { 
+						domaine ring localisation elem source Predefini { pb_champ pb viscous_force } 
 					}
 				}
 				# Calculate pressure force on the ring #
 				FPx Reduction_0D { 
 					methode sum source Interpolation { 
-						domaine ring localisation elem source Morceau_equation {
-							type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
-						}
+						domaine ring localisation elem source Predefini { pb_champ pb pressure_force_x } 
 					}
 				}
 				FPy Reduction_0D { 
 					methode sum source Interpolation { 
-						domaine ring localisation elem source Morceau_equation {
-							type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
-						}
+						domaine ring localisation elem source Predefini { pb_champ pb pressure_force_y } 
 					}
 				}
 				FPz Reduction_0D { 
 					methode sum source Interpolation { 
-						domaine ring localisation elem source Morceau_equation {
-							type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
-						}
+						domaine ring localisation elem source Predefini { pb_champ pb pressure_force_z } 
 					}
 				}
+				FP_vecteur Reduction_0D { 
+					methode sum source Interpolation { 
+						domaine ring localisation elem source Predefini { pb_champ pb pressure_force } 
+					}
+                                }
 				# Calculate pressure force on the cylinder (new feature, boundary domain are usable everywhere in the data file) #				
                                 FPx_cylinder Reduction_0D {
                                         methode sum source Interpolation {
@@ -186,7 +184,28 @@ Read pb
                                                         type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
                                                 }
                                         }
-				} 
+				}
+				# Calculate total force on the ring #
+                                FTx Reduction_0D {  
+                                        methode sum source Interpolation { 
+                                                domaine ring localisation elem source Predefini { pb_champ pb total_force_x }
+                                        }
+                                }
+                                FTy Reduction_0D {  
+                                        methode sum source Interpolation { 
+                                                domaine ring localisation elem source Predefini { pb_champ pb total_force_y }
+                                        }
+                                }
+                                FTz Reduction_0D {  
+                                        methode sum source Interpolation { 
+                                                domaine ring localisation elem source Predefini { pb_champ pb total_force_z }
+                                        }
+                                }
+                                FT_vecteur Reduction_0D {  
+                                        methode sum source Interpolation { 
+                                                domaine ring localisation elem source Predefini { pb_champ pb total_force }
+                                        }
+                                }
 			}
 			Probes
 			{
@@ -195,7 +214,13 @@ Read pb
 				FVz FVz periode 0.005 numero_elem_sur_maitre 0
 				FPx FPx periode 0.005 numero_elem_sur_maitre 0
 				FPy FPy periode 0.005 numero_elem_sur_maitre 0
-				FPz FPz periode 0.005 numero_elem_sur_maitre 0		
+				FPz FPz periode 0.005 numero_elem_sur_maitre 0	
+				FTx FTx periode 0.005 numero_elem_sur_maitre 0		
+				FTy FTy periode 0.005 numero_elem_sur_maitre 0		
+				FTz FTz periode 0.005 numero_elem_sur_maitre 0		
+				FV_vecteur FV_vecteur periode 0.005 numero_elem_sur_maitre 0
+				FP_vecteur FP_vecteur periode 0.005 numero_elem_sur_maitre 0
+				FT_vecteur FT_vecteur periode 0.005 numero_elem_sur_maitre 0
 				FPx_cylinder FPx_cylinder periode 0.005 numero_elem_sur_maitre 0 		
 			}
 			fields dt_post 1.
