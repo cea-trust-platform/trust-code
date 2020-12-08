@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ class DoubleTab;
 class Entree;
 class Sortie;
 class Motcle;
-class Fluide_Incompressible;
+class Fluide_base;
 class Matrice;
 class Assembleur;
 class Matrice_Morse;
@@ -62,7 +62,7 @@ public :
 
 protected:
 
-  DoubleTab& derivee_en_temps_inco(Navier_Stokes_std&,DoubleTab&,  Fluide_Incompressible& le_fluide,const Matrice& matrice_pression_,Assembleur& assembleur_pression_, int is_implicite);
+  DoubleTab& derivee_en_temps_inco(Navier_Stokes_std&,DoubleTab&,  Fluide_base& le_fluide,const Matrice& matrice_pression_,Assembleur& assembleur_pression_, int is_implicite);
   Champ_Inc rho_la_vitesse_;
   DoubleTab tab_W;
 

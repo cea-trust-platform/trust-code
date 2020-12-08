@@ -386,7 +386,7 @@ void VDF_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
 }
 
 
-void VDF_discretisation::reynolds_maille(const Zone_dis& z, const Fluide_Incompressible& le_fluide, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
+void VDF_discretisation::reynolds_maille(const Zone_dis& z, const Fluide_base& le_fluide, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
 {
   const Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
   champ.typer("Reynolds_maille_Champ_Face");

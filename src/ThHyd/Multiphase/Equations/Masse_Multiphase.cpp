@@ -32,7 +32,7 @@
 #include <DoubleTrav.h>
 #include <Matrice_Morse.h>
 #include <Param.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Champ_Uniforme.h>
 #include <EChaine.h>
 
@@ -114,13 +114,13 @@ void Masse_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleT
 
 // Description:
 //    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Fluide_Incompressible
+//    le milieu est en fait caste en Fluide_base
 // Precondition:
 // Parametre: Milieu_base& un_milieu
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Fluide_Incompressible"
+//                 doit pourvoir etre force au type "Fluide_base"
 //    Acces: entree
 // Retour:
 //    Signification:
@@ -130,7 +130,7 @@ void Masse_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleT
 // Postcondition:
 void Masse_Multiphase::associer_milieu_base(const Milieu_base& un_milieu)
 {
-  const Fluide_Incompressible& un_fluide = ref_cast(Fluide_Incompressible,un_milieu);
+  const Fluide_base& un_fluide = ref_cast(Fluide_base,un_milieu);
   associer_fluide(un_fluide);
 }
 
@@ -187,7 +187,7 @@ void Masse_Multiphase::discretiser()
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_base upcaste en Milieu_base)
 //    (version const)
 // Precondition:
 // Parametre:
@@ -196,7 +196,7 @@ void Masse_Multiphase::discretiser()
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_base upcaste en Milieu_base
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
@@ -209,7 +209,7 @@ const Milieu_base& Masse_Multiphase::milieu() const
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_base upcaste en Milieu_base)
 // Precondition:
 // Parametre:
 //    Signification:
@@ -217,7 +217,7 @@ const Milieu_base& Masse_Multiphase::milieu() const
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_base upcaste en Milieu_base
 //    Contraintes:
 // Exception:
 // Effets de bord:
@@ -237,13 +237,13 @@ Milieu_base& Masse_Multiphase::milieu()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes: reference constante
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Fluide_Incompressible& Masse_Multiphase::fluide() const
+const Fluide_base& Masse_Multiphase::fluide() const
 {
   if (!le_fluide.non_nul())
     {
@@ -262,13 +262,13 @@ const Fluide_Incompressible& Masse_Multiphase::fluide() const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes:
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition:
-Fluide_Incompressible& Masse_Multiphase::fluide()
+Fluide_base& Masse_Multiphase::fluide()
 {
   assert(le_fluide.non_nul());
   return le_fluide.valeur();
@@ -296,9 +296,9 @@ const Motcle& Masse_Multiphase::domaine_application() const
 }
 
 // Description:
-//    Associe un fluide de type Fluide_Incompressible a l'equation.
+//    Associe un fluide de type Fluide_base a l'equation.
 // Precondition:
-// Parametre: Fluide_Incompressible& un_fluide
+// Parametre: Fluide_base& un_fluide
 //    Signification: le milieu a associer a l'equation
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -309,10 +309,10 @@ const Motcle& Masse_Multiphase::domaine_application() const
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation a un milieu associe
-void Masse_Multiphase::associer_fluide(const Fluide_Incompressible& un_fluide)
+void Masse_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 {
-  assert(sub_type(Fluide_Incompressible,un_fluide));
-  le_fluide = ref_cast(Fluide_Incompressible,un_fluide);
+  assert(sub_type(Fluide_base,un_fluide));
+  le_fluide = ref_cast(Fluide_base,un_fluide);
 }
 
 void Masse_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)

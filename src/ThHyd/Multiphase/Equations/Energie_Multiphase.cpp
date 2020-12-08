@@ -118,13 +118,13 @@ int Energie_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 // Description:
 //    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Fluide_Incompressible ou en Fluide_Ostwald.
+//    le milieu est en fait caste en Fluide_base ou en Fluide_Ostwald.
 // Precondition:
 // Parametre: Milieu_base& un_milieu
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Fluide_Incompressible"
+//                 doit pourvoir etre force au type "Fluide_base"
 //    Acces: entree
 // Retour:
 //    Signification:
@@ -134,7 +134,7 @@ int Energie_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 // Postcondition:
 void Energie_Multiphase::associer_milieu_base(const Milieu_base& un_milieu)
 {
-  const Fluide_Incompressible& un_fluide = ref_cast(Fluide_Incompressible,un_milieu);
+  const Fluide_base& un_fluide = ref_cast(Fluide_base,un_milieu);
   associer_fluide(un_fluide);
 }
 
@@ -179,7 +179,7 @@ void Energie_Multiphase::discretiser()
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_base upcaste en Milieu_base)
 //    (version const)
 // Precondition:
 // Parametre:
@@ -188,7 +188,7 @@ void Energie_Multiphase::discretiser()
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_base upcaste en Milieu_base
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
@@ -201,7 +201,7 @@ const Milieu_base& Energie_Multiphase::milieu() const
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_base upcaste en Milieu_base)
 // Precondition:
 // Parametre:
 //    Signification:
@@ -209,7 +209,7 @@ const Milieu_base& Energie_Multiphase::milieu() const
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_base upcaste en Milieu_base
 //    Contraintes:
 // Exception:
 // Effets de bord:
@@ -229,13 +229,13 @@ Milieu_base& Energie_Multiphase::milieu()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes: reference constante
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Fluide_Incompressible& Energie_Multiphase::fluide() const
+const Fluide_base& Energie_Multiphase::fluide() const
 {
   if (!le_fluide.non_nul())
     {
@@ -254,13 +254,13 @@ const Fluide_Incompressible& Energie_Multiphase::fluide() const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes:
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition:
-Fluide_Incompressible& Energie_Multiphase::fluide()
+Fluide_base& Energie_Multiphase::fluide()
 {
   assert(le_fluide.non_nul());
   return le_fluide.valeur();
@@ -312,7 +312,7 @@ const Motcle& Energie_Multiphase::domaine_application() const
 // Description:
 //    Associe un fluide incompressible a l'equation.
 // Precondition:
-// Parametre: Fluide_Incompressible& un_fluide
+// Parametre: Fluide_base& un_fluide
 //    Signification: le milieu fluide incompressible a associer a l'equation
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -323,7 +323,7 @@ const Motcle& Energie_Multiphase::domaine_application() const
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation a un milieu associe
-void Energie_Multiphase::associer_fluide(const Fluide_Incompressible& un_fluide)
+void Energie_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 {
   le_fluide = un_fluide;
 }

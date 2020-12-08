@@ -44,7 +44,7 @@
 
 class Champ_Don;
 class Navier_Stokes_std;
-class Fluide_Incompressible;
+class Fluide_base;
 class Fluide_Ostwald;
 class Convection_Diffusion_Temperature;
 class Schema_Temps_base;
@@ -82,7 +82,7 @@ public:
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const;
   void grad_u(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
   void critere_Q(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const;
-  void reynolds_maille(const Zone_dis&, const Fluide_Incompressible&, const Champ_Inc&, Champ_Fonc&) const;
+  void reynolds_maille(const Zone_dis&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const;
   void courant_maille(const Zone_dis&, const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const;
   void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const;
   void y_plus(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const;

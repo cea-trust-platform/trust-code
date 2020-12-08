@@ -179,7 +179,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (auto &&n_eq : eqs) n_eq.second->dimensionner_blocs(mats[n_eq.first], semi_impl); //option semi-implicite
 
       /* si incompressible sans CLs de pression imposee, alors la pression est degeneree */
-      p_degen = sub_type(Fluide_Incompressible, eq_qdm.milieu());
+      p_degen = sub_type(Fluide_base, eq_qdm.milieu());
       for (i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
         p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
     }

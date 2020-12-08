@@ -23,7 +23,7 @@
 #include <QDM_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Operateur_Diff_base.h>
 #include <Schema_Temps_base.h>
 #include <Schema_Temps.h>
@@ -82,9 +82,9 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   evanescence.associer_eqn(*this);
   Navier_Stokes_std::readOn(is);
   assert(le_fluide.non_nul());
-  if (!sub_type(Fluide_Incompressible,le_fluide.valeur()))
+  if (!sub_type(Fluide_base,le_fluide.valeur()))
     {
-      Cerr<<"ERROR : the QDM_Multiphase equation can be associated only to a quasi compressible fluid."<<finl;
+      Cerr<<"ERROR : the QDM_Multiphase equation can be associated only to a fluid."<<finl;
       exit();
     }
   divergence.set_description((Nom)"Mass flow rate=Integral(rho*u*ndS) [kg.s-1]");

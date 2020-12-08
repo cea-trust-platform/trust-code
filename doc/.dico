@@ -355,6 +355,7 @@
  Frontiere Frontiere Frontiere.h
  Frontiere_dis_base Frontiere_dis_base Frontiere_dis_base.h
  Frontiere_ouverte Neumann_sortie_libre Neumann_sortie_libre.h
+ Frontiere_ouverte_alpha_impose Entree_fluide_alpha_impose Entree_fluide_alpha_impose.h
  Frontiere_ouverte_concentration_imposee Entree_fluide_concentration_imposee Entree_fluide_concentration_imposee.h
  Frontiere_ouverte_Fluctu_Temperature_imposee Entree_fluide_Fluctu_Temperature_imposee Entree_fluide_Fluctu_Temperature_imposee.h
  Frontiere_ouverte_Flux_Chaleur_Turbulente_imposee Entree_fluide_Flux_Chaleur_Turbulente_imposee Entree_fluide_Flux_Chaleur_Turbulente_imposee.h
@@ -375,6 +376,8 @@
  Frontiere_ouverte_vitesse_imposee Entree_fluide_vitesse_imposee Entree_fluide_vitesse_imposee.h
  Frontiere_ouverte_vitesse_imposee_sortie Entree_fluide_vitesse_imposee_libre Entree_fluide_vitesse_imposee_libre.h
  Front_VF Front_VF Front_VF.h
+ Frottement_Interfacial_bulles_Face_CoviMAC Frottement_Interfacial_CoviMAC_bulles Frottement_Interfacial_CoviMAC_bulles.h
+ Frottement_Interfacial_Coefficient_CoviMAC Frottement_Interfacial_Coefficient_CoviMAC Frottement_Interfacial_Coefficient_CoviMAC.h
  Gmres SolvElem_Gmres SolvElem_Gmres.h
  Gradient Champ_Generique_Gradient Champ_Generique_Gradient.h
  gradient_temperature_Champ_P1NC grad_T_Champ_P1NC grad_T_Champ_P1NC.h
@@ -493,6 +496,8 @@
  MD_Vector_std MD_Vector_std MD_Vector_std.h
  Merge_MED MergeMEDfiles MergeMEDfiles.h
  Milieu_base Milieu_base Milieu_base.h
+ Milieu_Na Milieu_Na Milieu_Na.h
+ Milieu_reel_base Milieu_reel_base Milieu_reel_base.h
  Modele_Permeabilite Modele_Permeabilite Modele_Permeabilite.h
  Modele_Permeabilite_base Modele_Permeabilite_base Modele_Permeabilite_base.h
  Modele_turbulence_hyd_nul Modele_turbulence_hyd_nul Modele_turbulence_hyd_nul.h
@@ -532,6 +537,8 @@
  Operateur_Div Operateur_Div Operateur_Div.h
  Operateur_Div_base Operateur_Div_base Operateur_Div_base.h
  Operateur_Eqn|Champ_Post_Operateur_Eqn Champ_Post_Operateur_Eqn Champ_Post_Operateur_Eqn.h
+ Operateur_Evanescence Operateur_Evanescence Operateur_Evanescence.h
+ Operateur_Evanescence_base Operateur_Evanescence_base Operateur_Evanescence_base.h
  Operateur_Grad Operateur_Grad Operateur_Grad.h
  Operateur_Grad_base Operateur_Grad_base Operateur_Grad_base.h
  Operateur_Statistique_tps Operateur_Statistique_tps Operateur_Statistique_tps.h
@@ -667,6 +674,8 @@
  Op_Div_VEFPreP1B_P1NC Op_Div_VEFP1B_Elem Op_Div_VEFP1B_Elem.h
  Op_Div_VEF_P1NC Op_Div_VEF_Elem Op_Div_VEF_Elem.h
  Op_Ecart_type Op_Ecart_type Op_Ecart_type.h
+ Op_Evanescence_Homogene_CoviMAC_Elem Op_Evanescence_Homogene_CoviMAC_Elem Op_Evanescence_Homogene_CoviMAC_Elem.h
+ Op_Evanescence_Homogene_CoviMAC_Face Op_Evanescence_Homogene_CoviMAC_Face Op_Evanescence_Homogene_CoviMAC_Face.h
  Op_Grad_CoviMAC_Face Op_Grad_CoviMAC_Face Op_Grad_CoviMAC_Face.h
  Op_Grad_EF Op_Grad_EF Op_Grad_EF.h
  Op_Grad_P0_to_Face Op_Grad_P0_to_Face Op_Grad_P0_to_Face.h
@@ -765,6 +774,7 @@
  Perte_Charge_VDF_Face Perte_Charge_VDF_Face Perte_Charge_VDF_Face.h
  Perte_Charge_VEF Perte_Charge_VEF Perte_Charge_VEF.h
  Perte_Charge_VEF_Face Perte_Charge_VEF_Face Perte_Charge_VEF_Face.h
+ Phases Phases Phases.h
  Pilote_ICoCo Pilote_ICoCo Pilote_ICoCo.h
  Piso Piso Piso.h
  Plaque_Thermique_VDF PlaqThVDF PlaqThVDF.h

@@ -80,7 +80,7 @@ DoubleTab& Navier_Stokes_QC_impl::rho_vitesse_impl(const DoubleTab& tab_rho,cons
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,DoubleTab& vpoint, Fluide_Incompressible& le_fluide,const Matrice& matrice_pression_,Assembleur& assembleur_pression_ ,int diffusion_implicite)
+DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,DoubleTab& vpoint, Fluide_base& le_fluide,const Matrice& matrice_pression_,Assembleur& assembleur_pression_ ,int diffusion_implicite)
 {
   int n = vpoint.dimension(0);
   DoubleTab& pression=eqn.pression().valeurs();

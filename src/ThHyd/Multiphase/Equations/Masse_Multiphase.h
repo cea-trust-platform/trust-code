@@ -25,7 +25,7 @@
 #define Masse_Multiphase_included
 
 #include <Convection_Diffusion_std.h>
-#include <Ref_Fluide_Incompressible.h>
+#include <Ref_Fluide_base.h>
 #include <Operateur_Evanescence.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -46,14 +46,14 @@ public :
   Masse_Multiphase();
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&);
-  void associer_fluide(const Fluide_Incompressible& );
+  void associer_fluide(const Fluide_base& );
   inline const Champ_Inc& inconnue() const;
   inline Champ_Inc& inconnue();
 
   void discretiser();
   const Milieu_base& milieu() const;
-  const Fluide_Incompressible& fluide() const;
-  Fluide_Incompressible& fluide();
+  const Fluide_base& fluide() const;
+  Fluide_base& fluide();
   Milieu_base& milieu();
   void associer_milieu_base(const Milieu_base& );
   virtual void completer();
@@ -91,7 +91,7 @@ public :
 protected :
 
   Champ_Inc l_inco_ch;
-  REF(Fluide_Incompressible) le_fluide;
+  REF(Fluide_base) le_fluide;
 
   Operateur_Evanescence evanescence;
 };

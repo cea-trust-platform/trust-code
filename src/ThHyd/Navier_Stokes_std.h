@@ -23,7 +23,7 @@
 #ifndef Navier_Stokes_std_included
 #define Navier_Stokes_std_included
 
-#include <Ref_Fluide_Incompressible.h>
+#include <Ref_Fluide_base.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
 #include <Operateur_Div.h>
@@ -71,11 +71,11 @@ public :
   void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   void associer_pb_base(const Probleme_base&);
-  inline void associer_fluide(const Fluide_Incompressible& );
+  inline void associer_fluide(const Fluide_base& );
   const Milieu_base& milieu() const;
   Milieu_base& milieu();
-  const Fluide_Incompressible& fluide() const;
-  Fluide_Incompressible& fluide();
+  const Fluide_base& fluide() const;
+  Fluide_base& fluide();
   void associer_milieu_base(const Milieu_base& );
   int nombre_d_operateurs() const;
   int nombre_d_operateurs_tot() const;
@@ -179,7 +179,7 @@ protected:
   virtual void discretiser_assembleur_pression();
 
 
-  REF(Fluide_Incompressible) le_fluide;
+  REF(Fluide_base) le_fluide;
 
   Champ_Inc la_vitesse;
   Champ_Inc la_pression;
@@ -355,7 +355,7 @@ inline const Champ_Inc& Navier_Stokes_std::div() const
 // Description:
 //    Associe un fluide incompressible a l'equation.
 // Precondition:
-// Parametre: Fluide_Incompressible& un_fluide
+// Parametre: Fluide_base& un_fluide
 //    Signification: le fluide incompressible a associer
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -367,7 +367,7 @@ inline const Champ_Inc& Navier_Stokes_std::div() const
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 // Postcondition: l'equation a un fluide associe
-inline void Navier_Stokes_std::associer_fluide(const Fluide_Incompressible& un_fluide)
+inline void Navier_Stokes_std::associer_fluide(const Fluide_base& un_fluide)
 {
   le_fluide = un_fluide;
 }

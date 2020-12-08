@@ -14,43 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_Incompressible.h
+// File:        Ref_Fluide_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/24
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Ref_Fluide_base_included
+#define Ref_Fluide_base_included
 
-#ifndef Fluide_Incompressible_included
-#define Fluide_Incompressible_included
 
-#include <Fluide_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Fluide_Incompressible
-//    Cette classe represente un d'un fluide incompressible ainsi que
-//    ses proprietes:
-//        - viscosite cinematique, (mu)
-//        - viscosite dynamique,   (nu)
-//        - masse volumique,       (rho)
-//        - diffusivite,           (alpha)
-//        - conductivite,          (lambda)
-//        - capacite calorifique,  (Cp)
-//        - dilatabilite thermique du constituant (beta_co)
-// .SECTION voir aussi
-//     Milieu_base
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_Incompressible : public Fluide_base
-{
-  Declare_instanciable_sans_constructeur(Fluide_Incompressible);
-
-public :
-
-  Fluide_Incompressible();
-  void verifier_coherence_champs(int& err,Nom& message);
-
-};
-
+#include <Ref.h>
+class Fluide_base;
+Declare_ref(Fluide_base);
 #endif

@@ -27,7 +27,7 @@
 #include <Discret_Thermique.h>
 #include <Champ_Don.h>
 class Navier_Stokes_std;
-class Fluide_Incompressible;
+class Fluide_base;
 class Fluide_Ostwald;
 class Equation_base;
 class Champ_Don;
@@ -50,8 +50,8 @@ class Convection_Diffusion_Temperature;
 //      void pression(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const
 //      void concentration(const Schema_Temps_base&, Zone_dis&, Champ_Inc&,
 //                         int =1) const
-//      void proprietes_physiques_fluide_incompressible(Zone_dis& ,
-//                         Fluide_Incompressible&, const Champ_Inc& ) const
+//      void proprietes_physiques_Fluide_base(Zone_dis& ,
+//                         Fluide_base&, const Champ_Inc& ) const
 //      void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald&,
 //                                                 const Navier_Stokes_std& ,
 //                                                   const Champ_Inc& ) const ;
@@ -80,7 +80,7 @@ public :
                                                    const Champ_Inc& ) const ;
   //pour VEF implemente const =0;
   virtual void critere_Q(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const;
-  inline virtual void reynolds_maille(const Zone_dis&, const Fluide_Incompressible&, const Champ_Inc&, Champ_Fonc&) const
+  inline virtual void reynolds_maille(const Zone_dis&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const
   {
     Cerr << "Reynolds_maille keyword not available for this discretization." << finl;
     exit();

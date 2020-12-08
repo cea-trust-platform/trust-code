@@ -23,7 +23,7 @@
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Domaine.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Discret_Thyd.h>
 #include <Avanc.h>
 #include <Debog.h>
@@ -798,13 +798,13 @@ SolveurSys& Navier_Stokes_std::solveur_pression()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Fluide_Incompressible& Navier_Stokes_std::fluide() const
+const Fluide_base& Navier_Stokes_std::fluide() const
 {
   return le_fluide.valeur();
 }
@@ -819,13 +819,13 @@ const Fluide_Incompressible& Navier_Stokes_std::fluide() const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-Fluide_Incompressible& Navier_Stokes_std::fluide()
+Fluide_base& Navier_Stokes_std::fluide()
 {
   return le_fluide.valeur();
 }
@@ -1588,13 +1588,13 @@ int Navier_Stokes_std::reprendre(Entree& is)
 
 // Description:
 //    Associe un mileu physique a l'equation en construisant
-//    dynamiquement (cast) un objet de type Fluide_Incompressible
+//    dynamiquement (cast) un objet de type Fluide_base
 //    a partir de l'objet Milieu_base passe en parametre.
 // Precondition:
 // Parametre: Milieu_base& un_milieu
 //    Signification: le milieu a associer a l'equation
 //    Valeurs par defaut:
-//    Contraintes: le milieu doit etre de type Fluide_Incompressible
+//    Contraintes: le milieu doit etre de type Fluide_base
 //    Acces: entree
 // Retour:
 //    Signification:
@@ -1604,9 +1604,9 @@ int Navier_Stokes_std::reprendre(Entree& is)
 // Postcondition:
 void Navier_Stokes_std::associer_milieu_base(const Milieu_base& un_milieu)
 {
-  if (sub_type(Fluide_Incompressible,un_milieu))
+  if (sub_type(Fluide_base, un_milieu))
     {
-      const Fluide_Incompressible& un_fluide = ref_cast(Fluide_Incompressible,un_milieu);
+      const Fluide_base& un_fluide = ref_cast(Fluide_base,un_milieu);
       associer_fluide(un_fluide);
     }
   else
@@ -1618,7 +1618,7 @@ void Navier_Stokes_std::associer_milieu_base(const Milieu_base& un_milieu)
 
 // Description:
 //    Renvoie le milieu physique de l'equation
-//    (le Fluide_Incompressible upcaste en Milieu_base)
+//    (le Fluide_base upcaste en Milieu_base)
 // Precondition:
 // Parametre:
 //    Signification:
@@ -1626,7 +1626,7 @@ void Navier_Stokes_std::associer_milieu_base(const Milieu_base& un_milieu)
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible de l'equation upcaste en Milieu_base
+//    Signification: le Fluide_base de l'equation upcaste en Milieu_base
 //    Contraintes:
 // Exception:
 // Effets de bord:
@@ -1643,7 +1643,7 @@ const Milieu_base& Navier_Stokes_std::milieu() const
 
 // Description:
 //    Renvoie le milieu physique de l'equation
-//    (le Fluide_Incompressible upcaste en Milieu_base)
+//    (le Fluide_base upcaste en Milieu_base)
 //    (version const)
 // Precondition:
 // Parametre:
@@ -1652,7 +1652,7 @@ const Milieu_base& Navier_Stokes_std::milieu() const
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible de l'equation upcaste en Milieu_base
+//    Signification: le Fluide_base de l'equation upcaste en Milieu_base
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:

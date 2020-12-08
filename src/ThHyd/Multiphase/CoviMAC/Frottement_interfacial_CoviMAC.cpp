@@ -78,7 +78,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                     &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
-                       &mu    = ref_cast(Fluide_Incompressible, equation().milieu()).viscosite_dynamique().passe();
+                       &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
 
   int e, f, i, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
                         cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
