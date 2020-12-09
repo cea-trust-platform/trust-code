@@ -135,8 +135,6 @@ transformation champ_post_de_champs_post transformation -1 To create a field wit
   attr expression listchaine expression 1 see methodes formule and vecteur
   attr numero entier numero 1 see methode composante
   attr localisation chaine localisation 1 type_loc indicate where is done the interpolation (elem for element or som for node). The optional keyword methode is limited to calculer_champ_post for the moment
-predefini champ_generique_base predefini -1 This keyword is used to post process predefined postprocessing fields. For the moment, only kinetic energy (energie_cinetique keyword to use for field_name) is available.
-  attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
 refchamp champ_generique_base refchamp -1 Field of prolem
   attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
   attr nom_source chaine nom_source 1 The alias name for the field
