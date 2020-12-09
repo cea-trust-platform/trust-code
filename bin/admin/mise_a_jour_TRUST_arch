@@ -891,25 +891,6 @@ do
 	 echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
 	 echo "End of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 
-	 ################################
-	 # Generation couverture de tests
-	 ################################
-	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ]
-	 then	 
-	 #   # Lancement de lcov qui produit un rapport sous $TRUST_ROOT/doc/Coverage/lcov/html
-         #   echo "--------------------------------------------------------" 
-         #   echo "Start of lcov at `date '+%H:%M:%S'`"
-            cd $TRUST_ROOT/doc/Coverage/lcov
-	    rm -r -f html lcov.log
-         #   cp $TRUST_TMP/tests/GCDA/ana/*.gcda $TRUST_ROOT/MonoDir$COMM/src/.
-         #   cp $TRUST_TMP/tests/GCDA/ana/*.gcno $TRUST_ROOT/MonoDir$COMM/src/.
-         #   chmod +x $TRUST_ROOT/MonoDir$COMM/src/*.gcno
-         #   make clean 1>>lcov.log 2>&1
-         #   make 1>lcov.log 2>&1 || echo "Error with lcov! See `pwd`/lcov.log `cat \`pwd\`/lcov.log`" | mail_ -s\"[mise_a_jour_TRUST_arch] KO lcov script on $HOST_BUILD\" $TRUST_MAIL
-         #   echo "Generation of `pwd`/lcov.log"
-         #   cd - 1>/dev/null 2>&1
-         #   echo "End of lcov at `date '+%H:%M:%S'`"
-	 fi
          #################################################
 	 # Mesure les performances en // avec le BENCHMARK
 	 #################################################
