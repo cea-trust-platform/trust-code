@@ -429,8 +429,6 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     }
 
   verifier_localisation();
-
-  creer_expression_macro();
   preparer_macro();
 
   if (Motcle(methode_)=="formule")
@@ -945,25 +943,30 @@ int Champ_Generique_Transformation::preparer_macro()
           msg = "Exactly one vector source field must be specified.";
           erreur = 1;
         }
-
-      nb_comp_ = 1;
-      nature_ch = scalaire;
-      fxyz.dimensionner(1);
-      fxyz[0].setNbVar(nb_var);
-      fxyz[0].setString(les_fct[0]);
-      for (int i=0; i<nb_sources; i++)
+      // la suite est faite si on n a pas d'erreur
+      if ( erreur==0 )
         {
-          Champ source_espace_stockage;
-          const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
-          int nb_comp = source.nb_comp();
-          const Noms compo = get_source(i).get_property("composantes");
-          for (int comp=0; comp<nb_comp; comp++)
+          nb_comp_ = 1;
+          nature_ch = scalaire;
+          // L'appel a creer_expression_macro est fait si on a un vecteur car elle fait appel aux composantes !
+          creer_expression_macro();
+          fxyz.dimensionner(1);
+          fxyz[0].setNbVar(nb_var);
+          fxyz[0].setString(les_fct[0]);
+          for (int i=0; i<nb_sources; i++)
             {
-              fxyz[0].addVar(compo[comp]);
-              Journal()<<" Source compo "<<compo[comp]<<finl;
+              Champ source_espace_stockage;
+              const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
+              int nb_comp = source.nb_comp();
+              const Noms compo = get_source(i).get_property("composantes");
+              for (int comp=0; comp<nb_comp; comp++)
+                {
+                  fxyz[0].addVar(compo[comp]);
+                  Journal()<<" Source compo "<<compo[comp]<<finl;
+                }
             }
+          fxyz[0].parseString();
         }
-      fxyz[0].parseString();
     }
   else if (Motcle(methode_)=="vecteur")
     {
@@ -995,11 +998,11 @@ int Champ_Generique_Transformation::preparer_macro()
           msg = "Exactly one vector source field must be specified.";
           erreur = 1;
         }
-
-      for (int i=0; i<nb_sources; i++)
+      // La suite est faite si on n'a pas d'erreur !!
+      if (erreur==0) // 1 source pas la peine de faire une boucle
         {
           Champ source_espace_stockage;
-          const Champ_base& source = get_source(i).get_champ_without_evaluation(source_espace_stockage);
+          const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
           if (source.nature_du_champ()!=vectoriel && source.nature_du_champ()!=multi_scalaire)
             {
               msg = "The source field is not of vector nature.";
