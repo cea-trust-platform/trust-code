@@ -2,7 +2,7 @@ Parameters {
 	Title "Validation of the immersed boundary module of TRUST"
 	Author "Georis Billo"
 	VersionTrio_U 1.8.2
-  Description "This report was made to run all validation case of the immersed boundary method implemented for the EF discretization in TRUST 1.8.1. The Immersed Boundary Method (IBM) involved is called Penalized Direct Forcing (PDF). It is used to take into account non moving infinetely rigid immersed obstacles. For the moment, the input volume mesh needs data from the immersed boundary (such as a normal vector field, projection of the nodes of the volume mesh on the immersed boundary, etc.) This methods involves a modification of the projection scheme (new time term + modification of the projection matrix). For the nodes located in the vicinity of the immmersed boundary, the velocity can be linearly interpolated. There are four variants for the interpolation: direct assignment (no interpolation), directional interpolation, multi-directional interpolation and a hybrid approach."
+  Description "This report was made to run all validation case of the immersed boundary method implemented for the EF discretization in TRUST 1.8.2. The Immersed Boundary Method (IBM) involved is called Penalized Direct Forcing (PDF). It is used to take into account non moving infinetely rigid immersed obstacles. For the moment, the input volume mesh needs data from the immersed boundary (such as a normal vector field, projection of the nodes of the volume mesh on the immersed boundary, etc.) This methods involves a modification of the projection scheme (new time term + modification of the projection matrix). For the nodes located in the vicinity of the immmersed boundary, the velocity can be linearly interpolated. There are four variants for the interpolation: direct assignment (no interpolation), directional interpolation, multi-directional interpolation and a hybrid approach."
   Reference "G. Billo. Second progress report of BILLO's phd : Numerical modelling of an in-vessel flow limiter using an immersed boundary approach. Tech. report, Ref. CEA/DES/IRESNE/DER/SESI/LEMS/NT DO 3, CEA, 2020."
  	TestCase poiseuille_pdf_align "PAR_poiseuille_pdf_align.data" 4
  	TestCase poiseuille_pdf_tilt_11_dir "PAR_poiseuille_pdf_tilt_11_dir.data" 4
@@ -267,7 +267,7 @@ Chapter
         {
           last_line
           legend "Configuration 1"
-          values 0.5 1 1 -1 1 1
+          values 0.5 1 1 -1 0.25 1
         }
     }
     
