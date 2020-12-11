@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python main.py
+python $TRUST_ROOT/bin/KSH/preprocessor.py jdd.prm.P jdd.prm

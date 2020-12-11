@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for M in $list_dis
+do
+    if [ "$M" = "triangle/VEFPreP1B" ]; then
+        cat $M/maillage_*/conv_p | awk '{print 1./sqrt($1+$2),$3}'| sort -n> $M/conv_glob_p
+        cat $M/maillage_*/conv_v | awk '{print 1./sqrt(2.0*$1),$2}'| sort -n> $M/conv_glob_v
+    else
+        cat $M/maillage_*/conv_p | awk '{print 1./sqrt($1),$3}'| sort -n> $M/conv_glob_p
+        cat $M/maillage_*/conv_v | awk '{print 1./sqrt($1),$2}'| sort -n> $M/conv_glob_v
+    fi
+done

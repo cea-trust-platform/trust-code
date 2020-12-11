@@ -1,7 +1,0 @@
-for M in `cat listmeshes`
-do
-for K in `cat listcas`
-do
-cat $M/${K}_*/conv| awk '{print $2,$1}'| sort -n> $M/conv_glob_${K}
-done
-done

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+resp=`tail -1 jdd_ERRP.son | awk '{print $2}'`
+nup=`grep "Total number of elements" $1.err | awk '{print $6}'`
+nus=`grep "Total number of nodes" $1.err | awk '{print $6}'`
+echo $nup $nus $resp > conv_p
+
+resv=`tail -1 jdd_ERRV.son | awk '{print $2}'`
+nuu=`grep "Total number of faces" $1.err | awk '{print $6}'`
+echo $nuu $resv > conv_v

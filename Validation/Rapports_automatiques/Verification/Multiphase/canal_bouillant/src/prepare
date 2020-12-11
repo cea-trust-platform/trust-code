@@ -1,0 +1,4 @@
+#!/bin/bash
+python eos_sodium.py canal.data
+python eos_sodium.py canal_bouillant.prm.P
+python $TRUST_ROOT/bin/KSH/preprocessor.py canal_bouillant.prm.P canal_bouillant.prm

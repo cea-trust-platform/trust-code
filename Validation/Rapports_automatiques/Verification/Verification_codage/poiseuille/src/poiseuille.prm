@@ -1,0 +1,190 @@
+Parameters
+{
+    Title "Ecoulement mixte Poiseuille Couette plan."
+    Author "Y. Gorsse"
+    code TRUST
+    Prerequisite "./extract_convergence"
+
+
+    TestCase cartesian/CoviMAC/maillage_12x12 jdd.data
+    TestCase cartesian/CoviMAC/maillage_24x24 jdd.data
+    TestCase cartesian/CoviMAC/maillage_36x36 jdd.data
+    TestCase cartesian/CoviMAC/maillage_6x6 jdd.data
+    TestCase cartesian/PolyMAC/maillage_12x12 jdd.data
+    TestCase cartesian/PolyMAC/maillage_24x24 jdd.data
+    TestCase cartesian/PolyMAC/maillage_36x36 jdd.data
+    TestCase cartesian/PolyMAC/maillage_6x6 jdd.data
+    TestCase cartesian/VDF/maillage_12x12 jdd.data
+    TestCase cartesian/VDF/maillage_24x24 jdd.data
+    TestCase cartesian/VDF/maillage_36x36 jdd.data
+    TestCase cartesian/VDF/maillage_6x6 jdd.data
+    TestCase non_conformal/CoviMAC/maillage_12x12 jdd.data
+    TestCase non_conformal/CoviMAC/maillage_24x24 jdd.data
+    TestCase non_conformal/CoviMAC/maillage_36x36 jdd.data
+    TestCase non_conformal/CoviMAC/maillage_6x6 jdd.data
+    TestCase non_conformal/PolyMAC/maillage_12x12 jdd.data
+    TestCase non_conformal/PolyMAC/maillage_24x24 jdd.data
+    TestCase non_conformal/PolyMAC/maillage_36x36 jdd.data
+    TestCase non_conformal/PolyMAC/maillage_6x6 jdd.data
+    TestCase triangle/CoviMAC/maillage_12x12 jdd.data
+    TestCase triangle/CoviMAC/maillage_24x24 jdd.data
+    TestCase triangle/CoviMAC/maillage_36x36 jdd.data
+    TestCase triangle/CoviMAC/maillage_6x6 jdd.data
+    TestCase triangle/PolyMAC/maillage_12x12 jdd.data
+    TestCase triangle/PolyMAC/maillage_24x24 jdd.data
+    TestCase triangle/PolyMAC/maillage_36x36 jdd.data
+    TestCase triangle/PolyMAC/maillage_6x6 jdd.data
+    TestCase triangle/VEFPreP1B/maillage_12x12 jdd.data
+    TestCase triangle/VEFPreP1B/maillage_24x24 jdd.data
+    TestCase triangle/VEFPreP1B/maillage_36x36 jdd.data
+    TestCase triangle/VEFPreP1B/maillage_6x6 jdd.data
+}
+
+Chapter
+{
+    Title "Ordres de convergence"
+    Description " "
+
+    Figure
+    {
+        labelx "Ne^{-1/2}"
+        labely erreur L2
+        logx
+        logy
+        Include_Description_Curves 0
+        legend below title "Legend"
+        width 15cm
+        Title "Ordres de convergence - v"
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("cartesian/CoviMAC order %3.1f", param1)
+            file cartesian/CoviMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("cartesian/PolyMAC order %3.1f", param1)
+            file cartesian/PolyMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("cartesian/VDF order %3.1f", param1)
+            file cartesian/VDF/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("non_conformal/CoviMAC order %3.1f", param1)
+            file non_conformal/CoviMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("non_conformal/PolyMAC order %3.1f", param1)
+            file non_conformal/PolyMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("triangle/CoviMAC order %3.1f", param1)
+            file triangle/CoviMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("triangle/PolyMAC order %3.1f", param1)
+            file triangle/PolyMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            fit_curve a*x**b a,b
+            legend sprintf("triangle/VEFPreP1B order %3.1f", param1)
+            file triangle/VEFPreP1B/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+    }
+    Figure
+    {
+        labelx "Ne^{-1/2}"
+        labely erreur L2
+        logx
+        logy
+        Include_Description_Curves 0
+        legend below title "Legend"
+        width 15cm
+        Title "Ordres de convergence - p"
+        Curve
+        {
+            legend cartesian/CoviMAC
+            file cartesian/CoviMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend cartesian/PolyMAC
+            file cartesian/PolyMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend cartesian/VDF
+            file cartesian/VDF/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend non_conformal/CoviMAC
+            file non_conformal/CoviMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend non_conformal/PolyMAC
+            file non_conformal/PolyMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend triangle/CoviMAC
+            file triangle/CoviMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend triangle/PolyMAC
+            file triangle/PolyMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend triangle/VEFPreP1B
+            file triangle/VEFPreP1B/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+    }
+}

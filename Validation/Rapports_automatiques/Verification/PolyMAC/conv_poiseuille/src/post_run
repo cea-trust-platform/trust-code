@@ -1,6 +1,0 @@
-#!/bin/bash
-
-res=`tail -1 cas_ERRP.son | awk '{print $2}'`
-echo $res RESOL FACSEC CAS > conv
-#res=`tail -1 cas_MAX_ERREUR_CONV_T.son | awk '{print $2}'`
-#echo $res RESOL FACSEC CAS > conv_T

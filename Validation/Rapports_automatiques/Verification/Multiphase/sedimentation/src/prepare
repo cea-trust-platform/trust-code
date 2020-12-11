@@ -1,0 +1,18 @@
+#!/bin/bash
+
+meshes_2d="Triangles Quadrangles Cartesian Locally_Refined"
+sed "s/%meshes_2d%/$meshes_2d/" sedimentation.prm.P.m  > sedimentation.prm.P
+python $TRUST_ROOT/bin/KSH/preprocessor.py sedimentation.prm.P sedimentation.prm
+share=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC/share
+
+for mesh in $meshes_2d
+do
+    for n in "3"
+    do
+        mkdir -p $mesh/jdd_$n
+        sed -i "/# bloc testcases #/ i\ TestCase $mesh cas.data" sedimentation.prm
+        meshname=$share/meshes/$mesh/jdd_$n/mesh.med
+        sed "s~__meshprerun__~$meshname~g" pre_run > $mesh/pre_run
+        cp sep.data $mesh/cas.data
+    done
+done

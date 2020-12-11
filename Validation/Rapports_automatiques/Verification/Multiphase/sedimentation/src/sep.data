@@ -1,0 +1,115 @@
+# PARALLEL OK #
+dimension 2
+Pb_multiphase pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+# END MESH #
+
+CoviMAC  dis
+option_covimac {  }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max 1e-2
+    tmax 10
+    seuil_statio 1e-6
+    solveur sets
+    {
+        solveur petsc cli { }
+        criteres_convergence
+        {
+            vitesse 1e-3
+        }
+    }
+}
+
+typer_lire eau_liquide Fluide_Incompressible
+{
+    rho    Champ_Uniforme 1 10
+    mu     Champ_Uniforme 1 1e-3
+    lambda Champ_Uniforme 1 1
+    Cp     Champ_Uniforme 1 1
+}
+
+typer_lire eau_gaz Fluide_Incompressible
+{
+    rho    Champ_Uniforme 1 1
+    mu     Champ_Uniforme 1 1e-3
+    lambda Champ_Uniforme 1 1
+    Cp     Champ_Uniforme 1 1
+}
+
+phases pb
+{
+    liquide { eau }
+    gaz     { eau }
+}
+
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    QDM_Multiphase
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { negligeable }
+        evanescence { homogene { alpha_res 1e-5 } }
+        initial_conditions
+        {
+            vitesse  Champ_Fonc_xyz dom 4 0 0 0 0
+            pression Champ_Fonc_xyz dom 1  -100*y*(y<0.5)-(45+10*y)*(y>0.5)
+        }
+        sources
+        {
+            frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 } ,
+            source_qdm champ_fonc_xyz dom 4  0 0 -10 -10
+        }
+        boundary_conditions
+        {
+            boundary symetrie
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 2 /* (y<0.5) (y>0.5) */ 0.5 0.5 }
+        convection { amont }
+        boundary_conditions { boundary paroi }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 2 0 0 }
+        boundary_conditions { boundary paroi_adiabatique }
+    }
+    Post_processing
+    {
+        probes
+        {
+            profil_vg vitesse_gaz_eau periode 1e-8 segment 500 0.5 0 0.5 1
+            profil_vl vitesse_liquide_eau periode 1e-8 segment 500 0.5 0 0.5 1
+            alpha       alpha_gaz_eau periode 1e-8 segment 500 0.5 0 0.5 1
+        }
+        Format lml
+        fields dt_post 1e-2
+        {
+            pression elem
+            vitesse_liquide_eau elem
+            vitesse_gaz_eau elem
+            alpha_liquide_eau elem
+            alpha_gaz_eau elem
+            vitesse_debitante_liquide_eau elem
+            vitesse_debitante_gaz_eau elem
+        }
+    }
+}
+Solve pb
+End
