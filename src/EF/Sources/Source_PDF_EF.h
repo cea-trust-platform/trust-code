@@ -62,6 +62,7 @@ public:
   void updateChampRho();
   int impr(Sortie&) const;
 protected:
+  Champ_Don champ_nodal_;
   void compute_vitesse_imposee_projete(const DoubleTab&, const DoubleTab&, double, double);
   void calculer_vitesse_imposee_hybrid();
   void calculer_vitesse_imposee_elem_fluid();
