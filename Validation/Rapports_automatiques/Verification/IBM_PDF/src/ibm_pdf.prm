@@ -4,6 +4,31 @@ Parameters {
 	VersionTrio_U 1.8.2
   Description "This report was made to run all validation case of the immersed boundary method implemented for the EF discretization in TRUST 1.8.1. The Immersed Boundary Method (IBM) involved is called Penalized Direct Forcing (PDF). It is used to take into account non moving infinetely rigid immersed obstacles. For the moment, the input volume mesh needs data from the immersed boundary (such as a normal vector field, projection of the nodes of the volume mesh on the immersed boundary, etc.) This methods involves a modification of the projection scheme (new time term + modification of the projection matrix). For the nodes located in the vicinity of the immmersed boundary, the velocity can be linearly interpolated. There are four variants for the interpolation: direct assignment (no interpolation), directional interpolation, multi-directional interpolation and a hybrid approach."
   Reference "G. Billo. Second progress report of BILLO's phd : Numerical modelling of an in-vessel flow limiter using an immersed boundary approach. Tech. report, Ref. CEA/DES/IRESNE/DER/SESI/LEMS/NT DO 3, CEA, 2020."
+ 	TestCase poiseuille_pdf_align "PAR_poiseuille_pdf_align.data" 4
+ 	TestCase poiseuille_pdf_tilt_11_dir "PAR_poiseuille_pdf_tilt_11_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_11_multi_dir "PAR_poiseuille_pdf_tilt_11_multi_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_11_hybrid "PAR_poiseuille_pdf_tilt_11_hybrid.data" 4
+ 	TestCase poiseuille_pdf_tilt_30_dir "PAR_poiseuille_pdf_tilt_30_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_30_multi_dir "PAR_poiseuille_pdf_tilt_30_multi_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_30_hybrid "PAR_poiseuille_pdf_tilt_30_hybrid.data" 4
+ 	TestCase poiseuille_pdf_tilt_45_dir "PAR_poiseuille_pdf_tilt_45_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_45_multi_dir "PAR_poiseuille_pdf_tilt_45_multi_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_45_hybrid "PAR_poiseuille_pdf_tilt_45_hybrid.data" 4
+ 	TestCase taylor_couette_pdf_dir "PAR_taylor_couette_pdf_dir.data" 4
+ 	TestCase taylor_couette_pdf_multi_dir "PAR_taylor_couette_pdf_multi_dir.data" 4
+ 	TestCase taylor_couette_pdf_hybrid "PAR_taylor_couette_pdf_hybrid.data" 4
+ 	TestCase cylinder_pdf_static_re_20_dir "PAR_cylinder_pdf_static_re_20_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_20_multi_dir "PAR_cylinder_pdf_static_re_20_multi_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_20_hybrid "PAR_cylinder_pdf_static_re_20_hybrid.data" 4
+ 	TestCase cylinder_pdf_static_re_100_dir "PAR_cylinder_pdf_static_re_100_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_100_multi_dir "PAR_cylinder_pdf_static_re_100_multi_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_100_hybrid "PAR_cylinder_pdf_static_re_100_hybrid.data" 4
+ 	TestCase cylinder_pdf_rotate_re_20_dir "PAR_cylinder_pdf_rotate_re_20_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_20_multi_dir "PAR_cylinder_pdf_rotate_re_20_multi_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_20_hybrid "PAR_cylinder_pdf_rotate_re_20_hybrid.data" 4
+ 	TestCase cylinder_pdf_rotate_re_100_dir "PAR_cylinder_pdf_rotate_re_100_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_100_multi_dir "PAR_cylinder_pdf_rotate_re_100_multi_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_100_hybrid "PAR_cylinder_pdf_rotate_re_100_hybrid.data" 4
 }
 
 Chapter
