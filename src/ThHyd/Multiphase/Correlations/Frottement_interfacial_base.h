@@ -44,7 +44,7 @@ class Frottement_interfacial_base : public Objet_U
   Declare_base(Frottement_interfacial_base);
 public:
   virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                           const DoubleTab& rho, const DoubleTab& mu,
+                           const DoubleTab& rho, const DoubleTab& mu, double Dh,
                            const DoubleTab& ndv, DoubleTab& coeff) const  = 0;
   virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
 };
