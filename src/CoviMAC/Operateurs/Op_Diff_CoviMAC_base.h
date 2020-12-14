@@ -65,34 +65,38 @@ public:
   const Champ_base& diffusivite() const;
   void mettre_a_jour(double t);
 
-  void update_nu() const; //met a jour nu et nu_fac; les specialisations font les interpolations
+  /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
   const DoubleTab& get_nu() const
   {
     return nu_;
   }
-
-  const DoubleTab& get_nu_fac() const
+  const DoubleTab& get_nu_bord() const /* aux faces de bords (peut etre modifie par les lois de paroi) */
   {
-    return nu_fac_;
+    return nu_bord_;
   }
+
+  /* methodes surchargeables dans des classes derivees pour modifier un avant de calculer les gradients dans update_nu() */
+  virtual int dimension_min_nu() const /* dimension minimale de nu / nu_bord par composante */
+  {
+    return 1;
+  };
+  virtual void modifier_nu(DoubleTab& nu, DoubleTab& nu_bord) const { }; /* par defaut, ne fait rien */
+
+  void update_nu() const; //met a jour nu et nu_fac; les specialisations font les interpolations
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
-  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:
   REF(Zone_CoviMAC) la_zone_poly_;
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
-
+  mutable DoubleTab nu_, nu_bord_; //conductivite aux elements, aux faces de bord
   /* interpolations de nu.grad T de chaque cote de chaque face */
   mutable IntTab phif_d, phif_j; //indices : phif_j([phif_d(f), phif_d(f + 1)[)
   mutable DoubleTab phif_c, phif_w, phif_xb; //coeffs :  phif_c([phif_d(f), phif_d(f + 1)[, n) pour la composante n
-
-  mutable int nu_a_jour_; //si on doit mettre a jour nu
-  int nu_constant_;       //1 si nu est constant dans le temps
   mutable SFichier Flux, Flux_moment, Flux_sum;
+  mutable int nu_constant_, nu_a_jour_; //nu est-il constant, est-il a jour?
 };
 
 #endif

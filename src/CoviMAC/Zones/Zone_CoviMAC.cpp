@@ -760,15 +760,17 @@ void Zone_CoviMAC::init_feb() const
 //en preservant exactement les champs verifiant [nu grad T]_e = cte.
 //Entrees : f_max            : calculer sur les faces [0, f_max[
 //          nu (optionnel)   : diffusivite par element
+//          nu_bord (opt)    : diffusivite aux faces de bord
 //          nu_grad          : 1 si on veut [n_f.nu.grad T]_f
 //Sorties : phif_{d,j,c}       : indices de l'interpolation dans phif_j(j), coeffs dans phif_c(j, compo, amont/aval) pour phif_d(f) <= j < phif_d(f + 1)
 //          phif_w (optionnel) : poids de la partie amont de l'interpolation a la composante n dans phif_w(f, n)
 //          pxh (optionnel)    : points sur les faces de bord ou T doit etre evalue
-void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const
+void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, const DoubleTab *nu_bord, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
   const DoubleVect& fs = face_surfaces();
+  const ArrOfInt& i_bord = ind_faces_virt_bord();
   int i, j, k, l, e, f, fb, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, d, db, D = dimension, nl = D + 1, nrhs = 2; //nombre de composantes
   char trans = 'N';
   /* stencils adaptatifs : permet d'omettre les points dont aucune composante n'a besoin */
@@ -794,10 +796,10 @@ void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, int nu_grad, IntTab& ph
         for (n = 0; n < N; n++) /* poids de l'amont dans la valeur a ce point */
           wh(f, n) = lambda(0, n) * def(1) / (lambda(1, n) * def(0) + lambda(0, n) * def(1));
       }
-    else if ((e = f_e(f, 0)) >= 0) for (n = 0; n < N; n++) /* face de bord : projection selon nf si on calcule grad, selon nu nf si on calcule nu_grad */
+    else if (f < nb_faces() ? ((fb = f) < premiere_face_int()) : (fb = i_bord[f - nb_faces()]) >= 0) for (e = f_e(f, 0), n = 0; n < N; n++) /* face de bord : projection selon nf si on calcule grad, selon nu nf si on calcule nu_grad */
         {
-          scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (nu_grad ? nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0)) : fs(f) * fs(f));
-          for (wh(f, n) = 1, d = 0; d < D; d++) xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu, e, n, N, &nf(f, 0), i3[d]) : nf(f, d));
+          scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (nu_grad ? nu_dot(nu_bord ? nu_bord : nu, nu_bord ? fb : e, n, N, &nf(f, 0), &nf(f, 0)) : fs(f) * fs(f));
+          for (wh(f, n) = 1, d = 0; d < D; d++) xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu_bord ? nu_bord : nu, nu_bord ? fb : e, n, N, &nf(f, 0), i3[d]) : nf(f, d));
         }
 
   /* gradient amont / aval : en interpolant T a la projection de l'amont / aval selon nf ou nu.nf */

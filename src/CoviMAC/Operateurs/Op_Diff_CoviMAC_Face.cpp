@@ -70,11 +70,13 @@ void Op_Diff_CoviMAC_Face::completer()
   porosite_f.ref(zone.porosite_face());
 
 
-  if (que_suis_je() == "Op_Diff_CoviMAC_Face") return;
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
-  const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
-  associer_diffusivite_turbulente(alpha_t);
+  if (modele_turbulence.non_nul())
+    {
+      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+      const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
+      associer_diffusivite_turbulente(alpha_t);
+    }
 }
 
 void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
@@ -139,6 +141,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
   update_nu();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const ArrOfInt& i_bord = zone.ind_faces_virt_bord();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;
@@ -151,8 +154,8 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
   for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0) > 2) //Dirichlet : remplissage de vb et contrib a la matrice
       {
         /* h_int : coefficent d'echange element-face */
-        for (e = f_e(f, 0), n = 0; n < N; n++)
-          h_int(n) = zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
+        for (e = f_e(f, 0), fb = f < zone.nb_faces() ? f : i_bord[f - zone.nb_faces()], n = 0; n < N; n++)
+          h_int(n) = zone.nu_dot(&nu_bord_, fb, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         /* vb : seulement si Dirichlet non homogene */
         if (ch.fcl(f, 0) == 3)
@@ -165,13 +168,13 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
           }
 
         /* contributions */
-        for (i = 0; i < e_f.dimension(1) && (fb = e_f(e, i)) >= 0; i++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) for (n = 0; n < N; n++) //face->face
+        for (i = 0; i < e_f.dimension(1) && (fc = e_f(e, i)) >= 0; i++) if (fc < zone.nb_faces() && ch.fcl(fc, 0) < 2) for (n = 0; n < N; n++) //face->face
               {
-                double dist_f = max(zone.dist_norm_bord(f), dabs(zone.dot(&xv(fb, 0), &nf(f, 0), &xv(f, 0))) / fs(f)); //fb peut etre plus loin du bord que e
-                double fac = mu_f(fb, n, e != f_e(fb, 0)) * zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (fs(f) * dist_f) * vf(fb) / ve(e);
-                resu.addr()[N * fb + n] -= fac * inco.addr()[N * fb + n];
-                if (mat) (*mat)(N * fb + n, N * fb + n) += fac;
-                for (d = 0; d < D; d++) resu.addr()[N * fb + n] += fac * nf(fb, d) / fs(fb) * vb(f, d, n);
+                double dist_f = max(zone.dist_norm_bord(f), dabs(zone.dot(&xv(fc, 0), &nf(f, 0), &xv(f, 0))) / fs(f)); //fb peut etre plus loin du bord que e
+                double fac = mu_f(fc, n, e != f_e(fc, 0)) * zone.nu_dot(&nu_bord_, fb, n, N, &nf(f, 0), &nf(f, 0)) / (fs(f) * dist_f) * vf(fc) / ve(e);
+                resu.addr()[N * fc + n] -= fac * inco.addr()[N * fc + n];
+                if (mat) (*mat)(N * fc + n, N * fc + n) += fac;
+                for (d = 0; d < D; d++) resu.addr()[N * fc + n] += fac * nf(fc, d) / fs(fc) * vb(f, d, n);
               }
         if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem (+ flux_bords si face reelle)
               {

@@ -86,7 +86,7 @@ void Op_Grad_CoviMAC_Face::completer()
   zone.init_feb();
   fgrad_c.resize(0, ref_cast(Navier_Stokes_std, equation()).pression().valeurs().line_size(), 2);
   if (!sub_type(Pb_Multiphase, equation().probleme()))
-    zone.fgrad(zone.nb_faces_tot(), NULL, 0, fgrad_d, fgrad_j, fgrad_c, &mu_f_, NULL), last_gradp_ = DBL_MAX;
+    zone.fgrad(zone.nb_faces_tot(), NULL, NULL, 0, fgrad_d, fgrad_j, fgrad_c, &mu_f_, NULL), last_gradp_ = DBL_MAX;
   else last_gradp_ = -DBL_MAX;
 }
 
@@ -104,7 +104,7 @@ const DoubleTab& Op_Grad_CoviMAC_Face::mu_f() const
   if (M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho.addr()[!cR * M * e + m];
   else if (M == 1) for (e = 0; e < ne_tot; nu(e, 0) = 1. / nu(e, 0), e++)
       for (n = 0; n < N; n++) nu(e, 0) += (alp ? alp->addr()[N * e + n] : 1) * rho.addr()[!cR * N * e + n];
-  zone.fgrad(zone.nb_faces_tot(), &nu, 0, fgrad_d, fgrad_j, fgrad_c, M == N ? &mu_f_ : &fgrad_w, NULL);
+  zone.fgrad(zone.nb_faces_tot(), &nu, NULL, 0, fgrad_d, fgrad_j, fgrad_c, M == N ? &mu_f_ : &fgrad_w, NULL);
 
   /* extension a N composantes dans le cas a 1 pression */
   if (M != N) for (mu_f_.resize(nf_tot, N, 2), f = 0; f < nf_tot; f++)
@@ -189,24 +189,12 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const IntTab& f_e = zone.face_voisins();
   const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
                    &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &mu = mu_f(),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
-                     &rho = equation().milieu().masse_volumique().passe();
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face();
-  int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size(), cR = rho.dimension_tot(0) == 1;
+  int i, j, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
 
   const std::string& nom_inc = ch.le_nom().getString();
   Matrice_Morse *mat_p = matrices["pression"], *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL;
-
-  /* en Pb_Multiphase, on reinterpole le gradient selon les masses volumiques prises en compte dans l'eq. de qdm -> celles de l'instant passe */
-  if (alp && last_gradp_ < equation().inconnue().valeur().recuperer_temps_passe())
-    {
-      DoubleTrav nu(ne_tot, M); /* diffusivite : 1 / rho_m en 1 pression, 1 / rho_k en N pressions */
-      if (M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho(!cR * e, m);
-      else if (M == 1) for (e = 0; e < ne_tot; nu(e, 0) = 1. / nu(e, 0), e++)
-          for (n = 0; n < N; n++) nu(e, 0) += alp->addr()[N * e + n] * rho.addr()[!cR * N * e + n];
-      zone.fgrad(zone.nb_faces_tot(), &nu, 0, fgrad_d, fgrad_j, fgrad_c, NULL, NULL);
-      last_gradp_ = equation().inconnue().valeur().recuperer_temps_passe();
-    }
 
   DoubleTrav pfb(nf_tot, N), gf(N, 2), alpha(N); // partie constante de la pression aux faces de bord, alpha |f| (grad p)_f
   std::map<int, std::map<int, double>> dgp_pb, dpb_v; //dependances vitesses -(dpb_v)-> pressions au bord -(dgp_pb)-> gradient

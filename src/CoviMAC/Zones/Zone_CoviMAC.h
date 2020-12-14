@@ -166,7 +166,7 @@ public :
   //                               l'amont/aval sont en premier dans phif_j (contrairement a feb_j)
   //          phif_w (optionnel) : poids de la partie amont de l'interpolation a la composante n dans phif_w(f, n)
   //          pxh (optionnel)    : points sur les faces de bord ou T doit etre evalue
-  void fgrad(int f_max, const DoubleTab* nu, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const;
+  void fgrad(int f_max, const DoubleTab* nu, const DoubleTab *nu_bord, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const;
 
   //pour un champ T aux elements, interpole |e| grad T aux elements (combine fgrad + ve)
   //fcl / tcl renseignent les CLs : tcl[fcl(f, 0)] = 1 (Neumann) / 2 (Dirichlet)

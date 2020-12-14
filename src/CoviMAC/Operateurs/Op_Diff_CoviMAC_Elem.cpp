@@ -102,11 +102,13 @@ void Op_Diff_CoviMAC_Elem::completer()
   ch.init_cl();
   flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
 
-  if (!que_suis_je().debute_par("Op_Dift")) return;
   const RefObjU& modele_turbulence = eq.get_modele(TURBULENCE);
-  const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-  const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
-  associer_diffusivite_turbulente(lambda_t);
+  if (modele_turbulence.non_nul())
+    {
+      const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
+      const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
+      associer_diffusivite_turbulente(lambda_t);
+    }
 }
 
 void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
@@ -150,13 +152,14 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   update_nu();
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const ArrOfInt& i_bord = zone.ind_faces_virt_bord();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
                     &inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
-  int i, e, f, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot(), D = dimension;
+  int i, e, f, fb, n, N = inco.line_size(), ne_tot = zone.nb_elem_tot(), D = dimension;
   double t = equation().schema_temps().temps_courant();
 
   /* faces de bord : flux a deux points + valeurs aux bord */
@@ -164,8 +167,8 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0)) //faces de bord seulement
       {
         /* h_int : coefficent d'echange element-face */
-        for (e = f_e(f, 0), n = 0; n < N; n++)
-          h_int(n) = zone.nu_dot(&nu_, e, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
+        for (e = f_e(f, 0), fb = f < zone.nb_faces() ? f : i_bord[f - zone.nb_faces()], n = 0; n < N; n++)
+          h_int(n) = zone.nu_dot(&nu_bord_, fb, n, N, &nf(f, 0), &nf(f, 0)) / (zone.dist_norm_bord(f) * fs(f) * fs(f));
 
         /* phi / Tb : selon CLs */
         if (ch.fcl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
