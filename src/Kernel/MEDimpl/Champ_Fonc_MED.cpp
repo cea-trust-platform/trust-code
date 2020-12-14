@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,8 @@
 #include <MEDCouplingFieldDouble.hxx>
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileField.hxx>
+#include <communications.h>
+
 using MEDCoupling::MEDCouplingField;
 using MEDCoupling::MEDCouplingFieldDouble;
 using MEDCoupling::MCAuto;
@@ -53,68 +55,89 @@ Champ_Fonc_MED::Champ_Fonc_MED():Champ_Fonc_base::Champ_Fonc_base()
 #endif
 }
 
-//     printOn()
-/////
-
 Sortie& Champ_Fonc_MED::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//// readOn
-//
 
+// XD champ_fonc_med field_base champ_fonc_med 0 Field to read a data field in a MED-format file .med at a specified time. It is very useful, for example, to resume a calculation with a new or refined geometry. The field post-processed on the new geometry at med format is used as initial condition for the resume.
+// XD attr use_existing_domain chaine(into=["use_existing_domain"]) use_existing_domain 1 not_set
+// XD attr last_time chaine(into=["last_time"]) last_time 1 to use the last time of the MED file instead of the specified time.
+// XD attr option decoup option 1 Keyword for a partition file
+// XD attr filename chaine filename 0 Name of the .med file.
+// XD attr domain_name chaine domain_name 0 Name of the domain.
+// XD attr field_name chaine field_name 0 Name of the problem unknown.
+// XD attr location chaine(into=["som","elem"]) location 0 To indicate where the field has been post-processed.
+// XD attr time floattant time 0 Time of the field in the .med file.
+
+// XD decoup objet_lecture nul 0 Optional keyword
+// XD attr key chaine(into=["decoup"]) key 0 Name of for a partition file
+// XD attr nom chaine nom 0 Name of for a partition file
 Entree& Champ_Fonc_MED::readOn(Entree& s)
 {
-  Nom nom_fic2,nom_dom,nom_champ, nom_decoup;
+  Nom chaine_lue,nom_dom,nom_champ, nom_decoup;
   Motcle localisation;
   double un_temps;
-  s>>nom_fic2;
-  int use_existing_domain=0, nom_decoup_lu = 0, field_size;
+  s>>chaine_lue;
+  int use_existing_domain=0, field_size;
   last_time_only_=0;
-  if (nom_fic2=="use_existing_domain")
+  if (chaine_lue=="use_existing_domain")
     {
       use_existing_domain=1;
-      s>>nom_fic2;
+      s>>chaine_lue;
     }
-  if (nom_fic2=="last_time")
+  if (chaine_lue=="last_time")
     {
       last_time_only_=1;
-      s>>nom_fic2;
+      s>>chaine_lue;
     }
-
-  if (nom_fic2=="decoup")
+  nom_decoup = Nom("decoup/") + nom_dom + ".txt";
+  if (chaine_lue=="decoup")
     {
       s>>nom_decoup;
-      s>>nom_fic2;
-      nom_decoup_lu = 1;
+      s>>chaine_lue;
+      if (use_medcoupling_)
+        {
+          Cerr << "Error: Decoup option is only available for the moment with Champ_Fonc_MEDFile keyword only." << finl;
+          Process::exit();
+        }
+      if (!use_existing_domain)
+        {
+          Cerr << "Error: you need to use use_existing_domain option with Decoup option." << finl;
+          Process::exit();
+        }
     }
-
+  nom_fichier_med_ = chaine_lue;
   lire_nom_med(nom_dom,s);
   lire_nom_med(nom_champ,s);
-
-  if (!nom_decoup_lu) nom_decoup = Nom("decoup/") + nom_dom + ".txt";
   s>>localisation;
   s>>un_temps;
-  traite_nom_fichier_med(nom_fic2);
+  traite_nom_fichier_med(nom_fichier_med_);
 //#ifdef MED_
-//  test_version(nom_fic2);
+//  test_version(nom_fichier_med_);
 //#endif
   // MEDCoupling:
   if (use_medcoupling_)
     Cerr << "Using MEDCoupling API. To switch to the MEDFile API, use Champ_Fonc_MEDfile keyword." << finl;
-  // Ajout d'un test bloquant pour empecher la lecture de fichiers 000n.med
-  Nom tmp(nom_fic2);
+  // La lecture de fichiers multiples .med fonctionne: voir cas test Champ_fonc_MED_Parallele
+  // Un test est fait plus loin pour bien verifier que les partitionnement se recouvrent pour cela
+  int multiple_med = 0;
+  Nom tmp(nom_fichier_med_);
   tmp.prefix("0001.med");
-  if (tmp!=nom_fic2 && Process::nproc()>1)
+  if (tmp!=nom_fichier_med_ && Process::nproc()>1)
     {
+      multiple_med = 1;
+      /*
+      // Ajout d'un test bloquant pour empecher la lecture de fichiers 000n.med
       Cerr << "Error, Champ_Fonc_MED can't read, for the moment, partitioned MED files." << finl;
       Cerr << "Try to build a single MED file by:" << finl;
       Cerr << "A) Using LATA format for the previous calculation." << finl;
       Cerr << "B) Convert the LATA files into a single MED file with Lata_to_MED keyword." << finl;
       Cerr << "C) Use this single MED file with Champ_Fonc_MED keyword." << finl;
-      exit();
+      exit(); */
     }
+  multiple_med = mp_max(multiple_med);
   nommer(nom_champ);
 
   bool domain_exist=( interprete().objet_existant(nom_dom) && sub_type(Domaine, interprete().objet(nom_dom)) );
@@ -122,15 +145,15 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
     {
       if (!domain_exist)
         {
-          Cerr << "The domain " << nom_dom << " does not exist !!!! In Champ_Fonc_MED " << nom_fic2 << " " << nom_dom
+          Cerr << "The domain " << nom_dom << " does not exist !!!! In Champ_Fonc_MED " << nom_fichier_med_ << " " << nom_dom
                << " " << nom_champ << " " << localisation << " " << un_temps << finl;
           exit();
         }
       else
         {
-          // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine:
-          Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
-          if (Process::nproc()>1 && mp_max(le_domaine.nb_som()>0) != 0)
+          // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine ou si decoup specifie:
+          const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
+          if (Process::nproc()>1 && mp_max(le_domaine.nb_som()>0) != 0 && use_medcoupling_==1)
             {
               Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom << finl;
               Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;
@@ -144,7 +167,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
     {
       Cerr<<nom_dom<<" was not read into the med file because it already exists." <<finl;
 
-      Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
+      const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
 
 #ifndef NDEBUG
       // on va verifier que l'on a le meme domaine en mode debug car lent
@@ -152,13 +175,13 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       if (nproc()==1)
         {
           LireMED liremed;
-          dom.nommer(nom_dom);
+          dom_med_.nommer(nom_dom);
           // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous zones
           Nom nom_dom_trio_non_nomme;
-          liremed.lire_geom(nom_fic2,dom,nom_dom,nom_dom_trio_non_nomme);
+          liremed.lire_geom(nom_fichier_med_,dom_med_,nom_dom,nom_dom_trio_non_nomme);
 
-          DoubleTab diff_som(dom.les_sommets());
-          IntTab diff_elem(dom.zone(0).les_elems());
+          DoubleTab diff_som(dom_med_.les_sommets());
+          IntTab diff_elem(dom_med_.zone(0).les_elems());
           diff_som.set_md_vector(le_domaine.les_sommets().get_md_vector());
           diff_elem.set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
           diff_som-=le_domaine.les_sommets();
@@ -176,43 +199,59 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
 
 
           // Le domaine un_dom a peut etre ete reordonne, on refait le test en reordonnant le domaine dom .....
-          dom.reordonner();
-          dom.les_sommets().set_md_vector(le_domaine.les_sommets().get_md_vector());
-          dom.les_sommets()-=le_domaine.les_sommets();
-          dom.les_sommets().set_md_vector(MD_Vector());
-          dom.zone(0).les_elems().set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
-          dom.zone(0).les_elems()-=le_domaine.zone(0).les_elems();
-          dom.zone(0).les_elems().set_md_vector(MD_Vector());
-          double err_som = max_abs_array(dom.les_sommets());
-          int err_elem = max_abs_array(dom.zone(0).les_elems());
+          dom_med_.reordonner();
+          dom_med_.les_sommets().set_md_vector(le_domaine.les_sommets().get_md_vector());
+          dom_med_.les_sommets()-=le_domaine.les_sommets();
+          dom_med_.les_sommets().set_md_vector(MD_Vector());
+          dom_med_.zone(0).les_elems().set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
+          dom_med_.zone(0).les_elems()-=le_domaine.zone(0).les_elems();
+          dom_med_.zone(0).les_elems().set_md_vector(MD_Vector());
+          double err_som = max_abs_array(dom_med_.les_sommets());
+          int err_elem = max_abs_array(dom_med_.zone(0).les_elems());
 
           if ((err_som>1e-5 || err_elem>0) && (err_som0>1e-5 || err_elem0>0))
             {
-              Cerr<<"Error the domain in the file "<<nom_fic2<<" and domain "<<nom_dom<<" are not the same (coords,conn)."<<finl;
+              Cerr<<"Error the domain in the file "<<nom_fichier_med_<<" and domain "<<nom_dom<<" are not the same (coords,conn)."<<finl;
               exit();
             }
 
-          //
-          dom=Domaine();
+          // Reset:
+          dom_med_=Domaine();
         }
 #endif
-      field_size = creer(nom_fic2,le_domaine,localisation,temps_sauv_);
+      field_size = creer(nom_fichier_med_,le_domaine,localisation,temps_sauv_);
     }
   else
     {
-      if (domain_exist)
+      if (domain_exist && !use_existing_domain)
         {
-          Cerr<<"INFO: You can use Champ_fonc_med use_existing_domain "<< nom_fic2<<" "<<nom_dom<<" "<<nom_champ<<" "<<localisation<<" "<<un_temps<<" to optimize."<<finl;
+          Cerr<<"INFO: You can use Champ_fonc_med use_existing_domain "<< nom_fichier_med_<<" "<<nom_dom<<" "<<nom_champ<<" "<<localisation<<" "<<un_temps<<" to optimize."<<finl;
         }
       LireMED liremed;
-      dom.nommer(nom_dom);
+      dom_med_.nommer(nom_dom);
       // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous zones
       Nom nom_dom_trio_non_nomme;
       // Remplit dom:
-      liremed.lire_geom(nom_fic2,dom,nom_dom,nom_dom_trio_non_nomme);
+      liremed.lire_geom(nom_fichier_med_,dom_med_,nom_dom,nom_dom_trio_non_nomme);
+      if (multiple_med)
+        {
+          // On verifie que l'on a bien des recouvrements identiques (verification imparfaite sur les BoundingBox)
+          DoubleTab BB1 = dom_med_.getBoundingBox();
+          const Domaine& dom_calcul = ref_cast(Domaine, interprete().objet(nom_dom));
+          DoubleTab BB2 = dom_calcul.getBoundingBox();
+          for (int i=0; i<dimension; i++)
+            for (int j=0; j<2; j++)
+              if (est_different(BB1(i,j), BB2(i,j)))
+                {
+                  Cerr << "Error, Champ_Fonc_MED can't read the partitionned MED files." << finl;
+                  Cerr << "Cause if seems the MED partition is different than the " << dom_calcul.le_nom() << " domain partition." << finl;
+                  Process::exit();
+                }
+          Cerr << "Ok MED partition matches the domain partition." << finl;
+        }
       // MODIF ELI LAUCOIN (06/03/2012) :
       // j'ajoute l'attribut temps_sauv_
-      field_size = creer(nom_fic2,dom,localisation,temps_sauv_);
+      field_size = creer(nom_fichier_med_,dom_med_,localisation,temps_sauv_);
     }
   if (last_time_only_)
     {
@@ -223,16 +262,30 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
   /* si on est en parallele : creation du filtre */
   if (Process::nproc() > 1 && field_size != le_champ().valeurs().dimension(0))
     {
-      EFichier fdec(nom_decoup);
       ArrOfInt dec;
-      fdec >> dec;
       filter.set_smart_resize(1);
-      for (int i = 0; i < dec.size_array(); i++) if (dec(i) == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
+      EFichier fdec;
+      fdec.ouvrir(nom_decoup);
+      // Cas ou le maillage du fichier .med suit la numerotation du maillage initial (necessite le fichier du decoupage pour retrouver la numerotation)
+      if (fdec.good())
+        {
+          fdec >> dec;
+          for (int i = 0; i < dec.size_array(); i++)
+            if (dec(i) == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
+          if (field_size != dec.size_array())
+            Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl, Process::exit();
+        }
+      else // Cas ou le maillage .med suit la numerotation du maillage decoupe
+        {
+          int nb_item = le_champ().valeurs().dimension(0);
+          int first_item = mppartial_sum(nb_item);
+          for (int i=0; i<nb_item; i++)
+            filter.append_array(first_item + i + 1);//les indices commencent a 1
+        }
       filter.set_smart_resize(0), filter.resize(filter.size_array());
+      Cerr << "Creating a filter to access efficiently values in " << nom_fichier_med_ << finl;
       if (filter.size_array() != le_champ().valeurs().dimension(0))
-        Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and domain!" << finl, Process::exit();
-      if (field_size != dec.size_array())
-        Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl, Process::exit();
+        Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between filter and domain!" << finl, Process::exit();
     }
   else if (field_size != le_champ().valeurs().dimension(0))
     Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field!" << finl, Process::exit();
@@ -272,7 +325,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       // Read a field
       std::string  meshName = mon_dom.le_nom().getString();
       std::string fieldName = nom_champ_dans_fichier_med_.getString();
-      std::string  fileName = nom_fic.getString();
+      std::string  fileName = nom_fichier_med_.getString();
       // Etude des conditions pour chercher ou nom un champ dans le fichier MED:
       bool search_field = true;
       nb_dt = temps_sauv_.size_array();
@@ -332,10 +385,10 @@ void Champ_Fonc_MED::lire(double t, int given_it)
   else
 #endif
     {
-      med_idt fid = MEDfileOpen(nom_fic, MED_ACC_RDONLY);
+      med_idt fid = MEDfileOpen(nom_fichier_med_, MED_ACC_RDONLY);
       if (fid < 0)
         {
-          Cerr << "Problem while opening the file " << nom_fic << finl;
+          Cerr << "Problem while opening the file " << nom_fichier_med_ << finl;
           exit();
         }
 
@@ -430,6 +483,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
                << " type ent " << (int) type_ent << finl;
           if (filter.size_array() > 0) //lecture sur domaine parallele -> avec un filtre
             {
+              Cerr << "Lecture avec un filtre..." << finl;
               med_filter flt = MED_FILTER_INIT;
               if(MEDfilterEntityCr(fid, size, 1, le_champ().valeurs().nb_dim() > 1 ? le_champ().valeurs().dimension(1) : 1, MED_ALL_CONSTITUENT,
                                    MED_FULL_INTERLACE, MED_COMPACT_STMODE, MED_ALLENTITIES_PROFILE, filter.size_array(), filter.addr(), &flt) < 0)
@@ -454,10 +508,6 @@ void Champ_Fonc_MED::lire(double t, int given_it)
   med_non_installe();
 #endif
 }
-const Domaine& Champ_Fonc_MED::domaine() const
-{
-  return mon_dom;
-}
 
 #ifdef MED_
 med_geometry_type type_geo_trio_to_type_med(const Nom& type);
@@ -466,12 +516,11 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
 #endif
 #endif
 
-int Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
+int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
 {
 #ifdef MED_
-
+  nom_fichier_med_ = nom_fic;
   mon_dom=un_dom;
-  nom_fic=nomfic;
   int nbcomp,size;
   const Nom& type_elem=un_dom.zone(0).type_elem()->que_suis_je();
   Nom type_champ;
@@ -558,7 +607,7 @@ int Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcle
               exit();
             }
         }
-      nom_champ_dans_fichier_med_ = medinfo1champ(nomfic, nom_champ_dans_fichier_med_, numero_ch, nbcomp, nb_dt,
+      nom_champ_dans_fichier_med_ = medinfo1champ(nom_fic, nom_champ_dans_fichier_med_, numero_ch, nbcomp, nb_dt,
                                                   type_ent, type_geo, size, un_dom.le_nom(), verifie_type, temps_sauv);
       if (type_ent == MED_NODE)
         {
@@ -611,7 +660,7 @@ MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName,
 {
   // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
   bool fast = meshName.c_str() == domaine().le_nom() && domaine().getUMesh() != NULL;
-  Cerr << "Champ_Fonc_MED::lire() Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str();
+  Cerr << "Champ_Fonc_MED::lire() Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str() << finl;
   MCAuto<MEDCouplingField> ffield;
   if (fast)
     {
@@ -675,7 +724,7 @@ const ArrOfDouble& Champ_Fonc_MED::get_saved_times(void) const
  * Read field with MEDFile API (soon deprecated)
  */
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MEDfile, "Champ_Fonc_MEDfile", Champ_Fonc_MED);
-// XD Champ_Fonc_MEDfile field_base Champ_Fonc_MEDfile -1 Obsolete keyword to read a field with MED file API
+// XD Champ_Fonc_MEDfile champ_fonc_med Champ_Fonc_MEDfile 0 Obsolete keyword to read a field with MED file API
 Champ_Fonc_MEDfile::Champ_Fonc_MEDfile()
 {
   use_medcoupling_ = false;

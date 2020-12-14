@@ -1,0 +1,4 @@
+#!/bin/bash
+make_PAR.data prepare
+trust PAR_prepare $? || exit -1
+mv -f PAR_prepare_0000.med single_file.med

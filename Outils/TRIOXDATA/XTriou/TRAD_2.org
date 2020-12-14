@@ -1421,14 +1421,6 @@ diffusion_stab diffusion_deriv stab 1 keyword allowing consistent and stable cal
 diffusion_standard diffusion_deriv standard 0 A new keyword, intended for LES calculations, has been developed to optimise and parameterise each term of the diffusion operator. Remark:NL2 NL2 1. This class requires to define a filtering operator : see solveur_barNL2 2. The former (original) version: diffusion { } -which omitted some of the term of the diffusion operator- can be recovered by using the following parameters in the new class :NL2 diffusion { standard grad_Ubar 0 nu 1 nut 1 nu_transp 0 nut_transp 1 filtrer_resu 0}.
   attr mot1 chaine(into=["defaut_bar"]) mot1 1 equivalent to grad_Ubar 1 nu 1 nut 1 nu_transp 1 nut_transp 1 filtrer_resu 1
   attr bloc_diffusion_standard bloc_diffusion_standard bloc_diffusion_standard 1 not_set
-champ_fonc_med field_base champ_fonc_med 0 Field to read a data field in a MED-format file .med at a specified time. It is very useful, for example, to resume a calculation with a new or refined geometry. The field post-processed on the new geometry at med format is used as initial condition for the resume.
-  attr use_existing_domain chaine(into=["use_existing_domain"]) use_existing_domain 1 not_set
-  attr last_time chaine(into=["last_time"]) last_time 1 to use the last time of the MED file instead of the specified time.
-  attr filename chaine filename 0 Name of the .med file.
-  attr domain_name chaine domain_name 0 Name of the domain.
-  attr field_name chaine field_name 0 Name of the problem unknown.
-  attr location chaine(into=["som","elem"]) location 0 To indicate where the field has been post-processed.
-  attr time floattant time 0 Time of the field in the .med file.
 reaction objet_lecture nul 1 Keyword to describe reaction: NL2 w =K pow(T,beta) exp(-Ea/( R T)) $\Pi$ pow(Reactif_i,activitivity_i). NL2 If K_inv >0, NL2 w= K pow(T,beta) exp(-Ea/( R T)) ( $\Pi$ pow(Reactif_i,activitivity_i) - Kinv/exp(-c_r_Ea/(R T)) $\Pi$ pow(Produit_i,activitivity_i ))
   attr reactifs chaine reactifs 0 LHS of equation (ex CH4+2*O2)
   attr produits chaine produits 0 RHS of equation (ex CO2+2*H20)
