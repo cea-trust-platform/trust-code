@@ -190,6 +190,11 @@ void Equation_base::completer()
         exit();
     }
 
+  //Ajout d un element vide qui sera renvoye si pas de modele trouve
+  RefObjU mod;
+  if (liste_modeles_.size()==0)
+    liste_modeles_.add(mod);
+
   // pour les eqns n'appelant pas preparer_calcul
   initialise_residu();
   int nb_op=nombre_d_operateurs();
@@ -203,11 +208,6 @@ void Equation_base::completer()
 
   les_sources.completer();
   schema_temps().completer();
-
-  //Ajout d un element vide qui sera renvoye si pas de modele trouve
-  RefObjU mod;
-  if (liste_modeles_.size()==0)
-    liste_modeles_.add(mod);
 
   // Determine implicite_ and sys_invariant_ variables:
   implicite_=0;
