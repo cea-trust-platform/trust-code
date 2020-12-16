@@ -22,6 +22,9 @@
 
 #include <Pb_Multiphase.h>
 #include <Champ_Uniforme.h>
+#include <Milieu_composite.h>
+#include <Interprete_bloc.h>
+#include <EChaine.h>
 
 Implemente_instanciable(Pb_Multiphase,"Pb_Multiphase",Pb_qdm_fluide);
 
@@ -171,6 +174,22 @@ void Pb_Multiphase::associer_milieu_base(const Milieu_base& mil)
   eq_masse.associer_milieu_base(mil);
 }
 
+void Pb_Multiphase::creer_milieu(const Noms noms_milieux)
+{
+  DerObjU ref;
+  ref.typer("Milieu_composite");
+  Objet_U& obj = Interprete_bloc::interprete_courant().ajouter("milieu", ref);
+  Milieu_composite& mil = ref_cast(Milieu_composite, obj);
+
+  Nom nmil("{ ");
+  for (int i = 0; i < noms_milieux.size(); i++)
+    nmil += noms_milieux[i] + " ";
+  nmil += "}";
+  EChaine chaine_mil(nmil);
+  chaine_mil >> mil;
+
+  associer_milieu_base(mil);
+}
 
 
 // Description:

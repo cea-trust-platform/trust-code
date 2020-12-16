@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,87 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Multiphase.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase
-// Version:     1
+// File:        Milieu_composite.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Milieu_composite_included
+#define Milieu_composite_included
 
-#ifndef Pb_Multiphase_included
-#define Pb_Multiphase_included
-
-#include <Interprete.h>
-#include <Pb_qdm_fluide.h>
-#include <QDM_Multiphase.h>
-#include <Masse_Multiphase.h>
-#include <Energie_Multiphase.h>
-#include <Verif_Cl.h>
+#include <List_Fluide_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_Multiphase
-//     Cette classe represente un probleme de thermohydraulique multiphase de type "3*N equations" :
-//      - QDM_Multiphase : equations de Navier-Stokes et de continuite pour chaque phase
-//                         inconnues : v_k (vitesses par phase)
-//                         champs auxiliaires : pression p, taux de presence a_k (sum a_k = 1)
-//      - Energie_Multiphase : equations de conservation de l'energie pour chaque phase
-//                             inconnues : T_k (temperatures)
-//    schema de resolution typique :
-//      1) QDM_Multiphase -> prediction des vitesses
-//                           conservation de la masse -> Newton (etape "semi-implicite")
-//      3) Energie_Multiphase -> advection/dffusion implicite de l'energie
-//
+//    Classe Milieu_composite
+//    Cette classe represente un fluide reel ainsi que
+//    ses proprietes:
+//        - viscosite cinematique, (mu)
+//        - viscosite dynamique,   (nu)
+//        - masse volumique,       (rho)
+//        - diffusivite,           (alpha)
+//        - conductivite,          (lambda)
+//        - capacite calorifique,  (Cp)
+//        - dilatabilite thermique du constituant (beta_co)
 // .SECTION voir aussi
-//     Pb_qdm_fluide QDM_Multiphase Masse_Multiphase Energie_Multiphase
+//     Milieu_base
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Multiphase : public Pb_qdm_fluide
+class Milieu_composite: public Fluide_base
 {
+  Declare_instanciable(Milieu_composite);
+public :
+  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  virtual void mettre_a_jour(double temps);
+  virtual int initialiser(const double& temps);
+  virtual void associer_equation(const Equation_base* eqn) const;
 
-  Declare_instanciable(Pb_Multiphase);
-
-public:
-  void discretiser(const Discretisation_base&);
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
-  void associer_milieu_base(const Milieu_base& );
-  void creer_milieu(const Noms);
-  int verifier();
-
-  /* nombre de phases du probleme */
-  int nb_phases() const
-  {
-    return noms_phases_.size();
-  }
-
-  const Nom& nom_phase(int i) const
-  {
-    return noms_phases_[i];
-  }
-
-  const Noms& noms_phases() const
-  {
-    return noms_phases_;
-  }
-
-  void set_noms_phases(Noms& noms)
-  {
-    noms_phases_ = noms;
-  }
-
-  QDM_Multiphase eq_qdm;
-  Energie_Multiphase eq_energie;
-  Masse_Multiphase eq_masse;
-
-protected:
-
-
-  Noms noms_phases_;
+protected :
+  void mettre_a_jour_tabs();
+  LIST(Fluide_base) fluides;
+  // static void calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
 
 };
-
-
 
 #endif

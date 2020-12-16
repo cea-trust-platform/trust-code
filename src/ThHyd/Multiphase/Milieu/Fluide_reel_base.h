@@ -47,7 +47,6 @@ class Fluide_reel_base: public Fluide_base, virtual public Lois_milieu_base
   Declare_base(Fluide_reel_base);
 public :
 
-
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);

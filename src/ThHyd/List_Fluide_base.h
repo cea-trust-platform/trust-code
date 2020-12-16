@@ -14,87 +14,32 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Multiphase.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase
-// Version:     1
+// File:        List_Fluide_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Pb_Multiphase_included
-#define Pb_Multiphase_included
+#ifndef List_Fluide_base_included
+#define List_Fluide_base_included
 
-#include <Interprete.h>
-#include <Pb_qdm_fluide.h>
-#include <QDM_Multiphase.h>
-#include <Masse_Multiphase.h>
-#include <Energie_Multiphase.h>
-#include <Verif_Cl.h>
+
+
+#include <Fluide_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_Multiphase
-//     Cette classe represente un probleme de thermohydraulique multiphase de type "3*N equations" :
-//      - QDM_Multiphase : equations de Navier-Stokes et de continuite pour chaque phase
-//                         inconnues : v_k (vitesses par phase)
-//                         champs auxiliaires : pression p, taux de presence a_k (sum a_k = 1)
-//      - Energie_Multiphase : equations de conservation de l'energie pour chaque phase
-//                             inconnues : T_k (temperatures)
-//    schema de resolution typique :
-//      1) QDM_Multiphase -> prediction des vitesses
-//                           conservation de la masse -> Newton (etape "semi-implicite")
-//      3) Energie_Multiphase -> advection/dffusion implicite de l'energie
+//     classe List_Fluide_base
+//     Represente une liste d'Fluide_bases
 //
 // .SECTION voir aussi
-//     Pb_qdm_fluide QDM_Multiphase Masse_Multiphase Energie_Multiphase
+//
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Multiphase : public Pb_qdm_fluide
-{
-
-  Declare_instanciable(Pb_Multiphase);
-
-public:
-  void discretiser(const Discretisation_base&);
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
-  void associer_milieu_base(const Milieu_base& );
-  void creer_milieu(const Noms);
-  int verifier();
-
-  /* nombre de phases du probleme */
-  int nb_phases() const
-  {
-    return noms_phases_.size();
-  }
-
-  const Nom& nom_phase(int i) const
-  {
-    return noms_phases_[i];
-  }
-
-  const Noms& noms_phases() const
-  {
-    return noms_phases_;
-  }
-
-  void set_noms_phases(Noms& noms)
-  {
-    noms_phases_ = noms;
-  }
-
-  QDM_Multiphase eq_qdm;
-  Energie_Multiphase eq_energie;
-  Masse_Multiphase eq_masse;
-
-protected:
 
 
-  Noms noms_phases_;
-
-};
-
+Declare_liste(Fluide_base);
 
 
 #endif

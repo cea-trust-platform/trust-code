@@ -144,8 +144,11 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,mu);
       dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,nu);
     }
-  dis.nommer_completer_champ_physique(zone_dis,"viscosite_dynamique","kg/m/s",mu.valeur(),pb);
-  champs_compris_.ajoute_champ(mu.valeur());
+  if (mu.non_nul())
+    {
+      dis.nommer_completer_champ_physique(zone_dis,"viscosite_dynamique","kg/m/s",mu.valeur(),pb);
+      champs_compris_.ajoute_champ(mu.valeur());
+    }
   if (sub_type(Champ_Fonc_Tabule,mu.valeur()))
     {
       dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,nu);
