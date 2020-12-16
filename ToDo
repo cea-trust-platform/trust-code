@@ -1,27 +1,9 @@
 Version	Qui				Tache
 
-1.8.2   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI182047)
-1.8.2   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 182046)
-1.8.2   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 182048)
-1.8.2   trust@cea.fr            LDC: ouvrir une DI pour installation reseau orcus/Titania (cf di 183455)
-1.8.2   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 182049)
-1.8.2   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
-1.8.2   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
-1.8.2   trust@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
-1.8.2   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
-1.8.2   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
-1.8.2   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon et vefprep1b
-1.8.2   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
-1.8.2   trust@cea.fr            LDC: Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
-1.8.2   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
-1.8.2   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
-1.8.2   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.8.2   trust@cea.fr            LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
-1.8.2   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
-1.8.2   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
-1.8.2   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
-
-
+1.8.x   pierre.ledac@cea.fr     LDC: Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
+1.8.x   trust@cea.fr            LDC: Refactoring de IBM_interpolation_hybride pour heritage multiple (et virer le shared_ptr !)
+1.8.x   trust@cea.fr            LDC: Refactoring de genererCourbe (classes nouvellefiche de TrioCFD Purpose, Description, etc ...)
+1.8.x   pierre.ledac@cea.fr     LDC: Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.x   trust@cea.fr            LDC: ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
 1.8.x   trust@cea.fr            LDC: invalider l ancienne syntaxe des champ_fonc_fonction (pour le moment on est bicompatible)
 1.8.x   trust@cea.fr            LDC: Nettoyer le vieux code med fichier
@@ -33,16 +15,14 @@ Version	Qui				Tache
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 182049)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
 1.8.x   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
-1.8.x   trust@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
 1.8.x   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
 1.8.x   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
 1.8.x   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon et vefprep1b
 1.8.x   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
-1.8.x   trust@cea.fr            LDC: Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
-1.8.x   trust@cea.fr            LDC: verifier le dossier extra de 1.7.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
+1.8.x   trust@cea.fr            LDC: verifier le dossier extra de 1.8.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
 1.8.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.8.x   trust@cea.fr            LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
+1.8.x   pierre.ledac@cea.fr     LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
 1.8.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.8.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.8.x   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks

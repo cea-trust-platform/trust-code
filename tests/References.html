@@ -133,6 +133,8 @@
 <TR><TD><SMALL><A HREF="#Decoup_period_3D">Decoup_period_3D</A></TD><TD><SMALL># Test de decoupage 3D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Decouper_bord_coincident">Decouper_bord_coincident</A></TD><TD><SMALL># Generation of a new coincident 2D mesh #</TD></TR>
 <TR><TD><SMALL><A HREF="#Def_VEF_impl">Def_VEF_impl</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
+<TR><TD><SMALL><A HREF="#Diff_Aniso_Disc_Square_Domain_2D">Diff_Aniso_Disc_Square_Domain_2D</A></TD><TD><SMALL># 2D heat conduction with a discontinuous anisotropic conductivity tensor #</TD></TR>
+<TR><TD><SMALL><A HREF="#Diff_Aniso_NonUniform_Square_Domain_2D">Diff_Aniso_NonUniform_Square_Domain_2D</A></TD><TD><SMALL># 2D heat conduction with a NonUniform anisotropic conductivity tensor #</TD></TR>
 <TR><TD><SMALL><A HREF="#Diff_impl_Pimp_non_nulle">Diff_impl_Pimp_non_nulle</A></TD><TD><SMALL># Hydraulique 3D VDF, test de la diffusion implicite avec pression imposee non nulle  #</TD></TR>
 <TR><TD><SMALL><A HREF="#DiffusionImpliciteQdm">DiffusionImpliciteQdm</A></TD><TD><SMALL># Diffusion implicite avec CL(t) variable et facsec=2 #</TD></TR>
 <TR><TD><SMALL><A HREF="#Disable_output_files_Hydro">Disable_output_files_Hydro</A></TD><TD><SMALL># Hydraulic 3D VEF PARALLEL test to disable the writing of output files #</TD></TR>
@@ -167,6 +169,9 @@
 <TR><TD><SMALL><A HREF="#Hyd_Cx_impl">Hyd_Cx_impl</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Cx_segsol">Hyd_Cx_segsol</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1 m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_EF_stab">Hyd_EF_stab</A></TD><TD><SMALL># Test du schema EF_stab en 2D #</TD></TR>
+<TR><TD><SMALL><A HREF="#IBM_aucune">IBM_aucune</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
+<TR><TD><SMALL><A HREF="#IBM_gradient_moyen">IBM_gradient_moyen</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
+<TR><TD><SMALL><A HREF="#IBM_hybrid">IBM_hybrid</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
 <TR><TD><SMALL><A HREF="#Import_MED">Import_MED</A></TD><TD><SMALL># differents tests de lecture de champ MED #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel">Kernel</A></TD><TD><SMALL># Cas test simple pour tester le Kernel et les commentaires #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Create_domain_from_sous_zone">Kernel_Create_domain_from_sous_zone</A></TD><TD><SMALL># Creation de domaines a partir de sous_zone #</TD></TR>
@@ -259,6 +264,7 @@
 <TR><TD><SMALL><A HREF="#PETSC_ThHyd_2D_VEF_Ostwald">PETSC_ThHyd_2D_VEF_Ostwald</A></TD><TD><SMALL># Thermohydraulique 2D VEF avec modele non newtonien Ostwald #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_VDF">PETSC_VDF</A></TD><TD><SMALL># Tests des solveurs NP sur un cas 3D avec pression imposee #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_VEF">PETSC_VEF</A></TD><TD><SMALL># Tests des solveurs Petsc sur un cas 3D avec pression imposee #</TD></TR>
+<TR><TD><SMALL><A HREF="#POISEUILLE_ALIGNED">POISEUILLE_ALIGNED</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE_ALIGNED</TD></TR>
 <TR><TD><SMALL><A HREF="#P_out_var_impl">P_out_var_impl</A></TD><TD><SMALL># Hydraulique 2D : Poiseuille 2D  P variable #</TD></TR>
 <TR><TD><SMALL><A HREF="#Parallele">Parallele</A></TD><TD><SMALL># 3D hydraulique VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Periodique_Metis">Periodique_Metis</A></TD><TD><SMALL># Test du mot cle Periodique_1Proc #</TD></TR>
@@ -356,6 +362,7 @@
 <TR><TD><SMALL><A HREF="#Sous_zone_VEF">Sous_zone_VEF</A></TD><TD><SMALL># Thermohydraulique 2D : fields par morceaux sur sous zones en VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#SymetrieSomVitesseParallele">SymetrieSomVitesseParallele</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Symetrie_Implicite">Symetrie_Implicite</A></TD><TD><SMALL># Cas avec une condition de symetrie non parallele aux axes en implicite #</TD></TR>
+<TR><TD><SMALL><A HREF="#TAYLOR_COUETTE">TAYLOR_COUETTE</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
 <TR><TD><SMALL><A HREF="#TP_THI_VEF">TP_THI_VEF</A></TD><TD><SMALL># Boite 3D avec periodicite dans les trois directions : Test de Traitement_particulier_NS_THI_VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#TP_Temp_QC_VEF">TP_Temp_QC_VEF</A></TD><TD><SMALL># Thermohydraulique 2D VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Terme_Source_Dirac_VDF">Terme_Source_Dirac_VDF</A></TD><TD><SMALL># Hydraulique 2D : Couplage Boussinesq et terme source Dirac #</TD></TR>
@@ -979,6 +986,14 @@
 <CENTER># Hydraulique 2D : Paroi defilante #</CENTER>
 <CENTER><a href=../tests/Reference/Def_VEF_impl/Def_VEF_impl.lml.gif><img src=../tests/Reference/Def_VEF_impl/Def_VEF_impl.lml.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/Def_VEF_impl/Def_VEF_impl.data>Edit</a> Def_VEF_impl.data </CENTER>
+<HR><CENTER><B><A NAME=Diff_Aniso_Disc_Square_Domain_2D>Diff_Aniso_Disc_Square_Domain_2D</A></B></CENTER>
+<CENTER># 2D heat conduction with a discontinuous anisotropic conductivity tensor #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Diff_Aniso_Disc_Square_Domain_2D/Diff_Aniso_Disc_Square_Domain_2D.data>Edit</a> Diff_Aniso_Disc_Square_Domain_2D.data </CENTER>
+<HR><CENTER><B><A NAME=Diff_Aniso_NonUniform_Square_Domain_2D>Diff_Aniso_NonUniform_Square_Domain_2D</A></B></CENTER>
+<CENTER># 2D heat conduction with a NonUniform anisotropic conductivity tensor #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Diff_Aniso_NonUniform_Square_Domain_2D/Diff_Aniso_NonUniform_Square_Domain_2D.data>Edit</a> Diff_Aniso_NonUniform_Square_Domain_2D.data </CENTER>
 <HR><CENTER><B><A NAME=Diff_impl_Pimp_non_nulle>Diff_impl_Pimp_non_nulle</A></B></CENTER>
 <CENTER># Hydraulique 3D VDF, test de la diffusion implicite avec pression imposee non nulle  #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1129,6 +1144,18 @@
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Hyd_EF_stab/Hyd_EF_stab.data>Edit</a> Hyd_EF_stab.data </CENTER>
 <CENTER><a href=../tests/Reference/Hyd_EF_stab/dom.geom>Edit</a> dom.geom </CENTER>
+<HR><CENTER><B><A NAME=IBM_aucune>IBM_aucune</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire POISEUILLE </CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/IBM_aucune/IBM_aucune.data>Edit</a> IBM_aucune.data </CENTER>
+<HR><CENTER><B><A NAME=IBM_gradient_moyen>IBM_gradient_moyen</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire POISEUILLE </CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/IBM_gradient_moyen/IBM_gradient_moyen.data>Edit</a> IBM_gradient_moyen.data </CENTER>
+<HR><CENTER><B><A NAME=IBM_hybrid>IBM_hybrid</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire POISEUILLE </CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/IBM_hybrid/IBM_hybrid.data>Edit</a> IBM_hybrid.data </CENTER>
 <HR><CENTER><B><A NAME=Import_MED>Import_MED</A></B></CENTER>
 <CENTER># differents tests de lecture de champ MED #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1533,6 +1560,10 @@
 <CENTER># Tests des solveurs Petsc sur un cas 3D avec pression imposee #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/PETSC_VEF/PETSC_VEF.data>Edit</a> PETSC_VEF.data </CENTER>
+<HR><CENTER><B><A NAME=POISEUILLE_ALIGNED>POISEUILLE_ALIGNED</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire POISEUILLE_ALIGNED</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/POISEUILLE_ALIGNED/POISEUILLE_ALIGNED.data>Edit</a> POISEUILLE_ALIGNED.data </CENTER>
 <HR><CENTER><B><A NAME=P_out_var_impl>P_out_var_impl</A></B></CENTER>
 <CENTER># Hydraulique 2D : Poiseuille 2D  P variable #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1944,6 +1975,10 @@
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Symetrie_Implicite/Symetrie_Implicite.data>Edit</a> Symetrie_Implicite.data </CENTER>
 <CENTER><a href=../tests/Reference/Symetrie_Implicite/couronne_30.geom>Edit</a> couronne_30.geom </CENTER>
+<HR><CENTER><B><A NAME=TAYLOR_COUETTE>TAYLOR_COUETTE</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire POISEUILLE </CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/TAYLOR_COUETTE/TAYLOR_COUETTE.data>Edit</a> TAYLOR_COUETTE.data </CENTER>
 <HR><CENTER><B><A NAME=TP_THI_VEF>TP_THI_VEF</A></B></CENTER>
 <CENTER># Boite 3D avec periodicite dans les trois directions : Test de Traitement_particulier_NS_THI_VEF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
