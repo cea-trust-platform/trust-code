@@ -65,6 +65,8 @@ public:
   void nommer_source();
   //virtual Entree &   lire(const Motcle & motcle, Entree & is);
   void set_param(Param& param);
+  void verification_cas_compo();
+  const Champ_base&  get_champ_compo_without_evaluation(Champ& espace_stockage) const;
 
 
 protected:
@@ -72,6 +74,7 @@ protected:
   REF(Equation_base) ref_eq_;
   int sans_solveur_masse_;
   Entity localisation_inco_;
+  int compo_;                            //Pour identifier la composante a recuperer
 };
 
 #endif
