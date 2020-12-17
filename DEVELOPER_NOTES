@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.8.3_beta : Changes since version 1.8.2 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.8.2 : Changes since version 1.8.1 :
 -------------------------------------------------------------
 03/12/20 (TRUST)  Add check_project_modularity target to check the sub-projects modularity

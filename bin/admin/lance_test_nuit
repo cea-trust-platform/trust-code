@@ -833,6 +833,10 @@ fi
    fi
    rm -f $tuto.new
    echo " "
+   if [ "`echo $new | grep beta`" = "" ]
+   then
+      touch doc/TRUST/Generic_Guide/Generic_Guide.tex
+   fi
 #fi
 
 [ ! -d $TRUST_ROOT/.git ] && echo "Error: You must have $TRUST_ROOT/.git directory to do this action" && exit
@@ -4130,11 +4134,17 @@ source /home/triou/env_TRUST_$new.sh
 # for CEA Saclay (orcus/Titania):
 source /home/trust_trio-public/env_TRUST-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
+# for CCRT-TGCC supercomputers (cobalt, irene-ccrt & irene AMD Rome):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
+# for int64 version on CCRT-TGCC supercomputer (irene AMD Rome)
+source /ccc/cont002/home/den/triou/env_TRUST-$new-int64.sh
+
+# for IDRIS supercomputer (jean-zay):
+source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new.sh
+
 # for CINES supercomputer (occigen):
-source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
+source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -4224,11 +4234,17 @@ source /home/triou/env_TrioCFD_$new.sh
 # for CEA Saclay (orcus/Titania):
 source /home/trust_trio-public/env_TrioCFD-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
+# for CCRT-TGCC supercomputers (cobalt, irene-ccrt & irene AMD Rome):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
+# for int64 version on CCRT-TGCC supercomputer (irene AMD Rome)
+source /ccc/cont002/home/den/triou/env_TrioCFD-$new-int64.sh
+
+# for IDRIS supercomputer (jean-zay):
+source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new.sh
+
 # for CINES supercomputer (occigen):
-source /panfs/panasas/softs/applications/trio_u/env_TrioCFD-$new.sh
+source /panfs/panasas/softs/applications/trio_u/TrioCFD/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
