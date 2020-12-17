@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #include <Champ_som_lu.h>
 #include <Domaine.h>
 #include <Debog.h>
-#include <EFichier.h>
+#include <LecFicDiffuse.h>
 #include <Champ_implementation_P1.h>
 #include <Interprete.h>
 
@@ -46,7 +46,7 @@ Entree& Champ_som_lu::readOn(Entree& is)
   is >> tolerance_; // tolerance en metres pour la recherche des coordonnees
   is >> nom; // nom du fichier a lire
   mon_domaine = dom;
-  EFichier file(nom);
+  LecFicDiffuse file(nom);
   fixer_nb_comp(nbcomp);
   Champ_implementation_P1::init_from_file(valeurs_, dom, nbcomp, tolerance_, file);
   return is;

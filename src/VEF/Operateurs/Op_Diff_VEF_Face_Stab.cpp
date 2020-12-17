@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -429,7 +429,7 @@ void Op_Diff_VEF_Face_Stab::ajouter_antidiffusion(const DoubleTab& Aij, const Do
   bool ok_facei=false;
   bool ok_facej=false;
 
-  SFichier mem_fichier("sij_memory.txt");
+
 
   const IntTab& elem_faces=zone_VEF.elem_faces();
 
@@ -522,10 +522,14 @@ void Op_Diff_VEF_Face_Stab::ajouter_antidiffusion(const DoubleTab& Aij, const Do
     }
 
   {
+    sij_max = Process::mp_max(sij_max);
+    sij_min = Process::mp_min(sij_min);
     if (info_ && Process::je_suis_maitre())
-      mem_fichier<<Process::mp_max(sij_max)<<" "<<Process::mp_min(sij_min)<<finl;
+      {
+        SFichier mem_fichier("sij_memory.txt");
+        mem_fichier<<sij_max<<" "<<sij_min<<finl;
+      }
   }
-
 }
 
 void Op_Diff_VEF_Face_Stab::calculer_coefficients(const DoubleTab& nu, DoubleTab& Aij) const

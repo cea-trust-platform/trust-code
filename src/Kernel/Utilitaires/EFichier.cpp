@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,15 @@
 
 Implemente_instanciable(EFichier,"EFichier",Entree_Fichier_base);
 
-EFichier::EFichier(const char* name,IOS_OPEN_MODE mode) :Entree_Fichier_base(name,mode) { }
+EFichier::EFichier(const char* name,IOS_OPEN_MODE mode) :Entree_Fichier_base(name,mode)
+{
+  if (Process::me()>1)
+    {
+      Cerr << "Error! You can't use EFichier to open the file " << name << " on several processes! Only on the master process." << finl;
+      Cerr << "May be a LecFicDiffuse is needed ?" << finl;
+      Process::exit();
+    }
+}
 
 Entree& EFichier::readOn(Entree& s)
 {

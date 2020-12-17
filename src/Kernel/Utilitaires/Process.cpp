@@ -215,7 +215,7 @@ void Process::exit(const Nom& message ,int i)
       Type_info::hierarchie(hier);
       hier << "\n             SYNONYMS\n";
       Synonyme_info::hierarchie(hier);
-      if (!get_disable_stop())
+      if (!get_disable_stop() && Process::je_suis_maitre())
         {
           Nom nomfic( Objet_U::nom_du_cas() );
           nomfic += ".stop";

@@ -275,7 +275,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
   Nom nomfic( nom_du_cas );
   nomfic += ".stop";
-  if (!get_disable_stop())
+  if (!get_disable_stop() && Process::je_suis_maitre())
     {
       SFichier ficstop( nomfic );
       ficstop << "Running..."<<finl;
@@ -355,7 +355,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   Cout << finl;
   Cout << "--------------------------------------------" << finl;
   Cout << "clock: Total execution: " << temps << " s" << finl;
-  if (!get_disable_stop())
+  if (!get_disable_stop() && Process::je_suis_maitre())
     {
       SFichier ficstop ( nomfic);
       ficstop  << "Finished correctly"<<finl;

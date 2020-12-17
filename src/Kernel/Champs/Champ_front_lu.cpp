@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -284,7 +284,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
 // Postcondition:
 int Champ_front_lu::is_bin(Nom name)
 {
-  EFichier fichier(name);
+  LecFicDiffuse fichier(name);
   Nom format;
   fichier >> format;
 
