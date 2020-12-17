@@ -40,7 +40,7 @@ class Op_Conv_EF_Stab_CoviMAC_Elem : public Op_Conv_CoviMAC_base
   Declare_instanciable( Op_Conv_EF_Stab_CoviMAC_Elem ) ;
 
 public :
-  void completer();
+  void preparer_calcul();
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
 
   /* interface ajouter_blocs */

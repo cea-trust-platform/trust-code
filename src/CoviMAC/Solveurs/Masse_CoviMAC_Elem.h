@@ -43,7 +43,7 @@ public:
 
   void associer_zone_dis_base(const Zone_dis_base& );
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
-  void completer();
+  void preparer_calcul();
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 

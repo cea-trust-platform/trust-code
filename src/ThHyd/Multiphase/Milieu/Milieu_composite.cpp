@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,12 @@ int Milieu_composite::initialiser(const double& temps)
 {
   for (int i = 0; i < fluides.size(); i++)
     fluides[i].initialiser(temps);
+
   mettre_a_jour_tabs();
+
+  const Equation_base& eqn = *equation.at("temperature");
+  ref_cast(Champ_Inc_base, rho.valeur()).associer_eqn(eqn);
+  ref_cast(Champ_Inc_base, rho.valeur()).init_champ_calcule(calculer_masse_volumique);
   return 1;
 }
 
@@ -80,14 +85,18 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   for (int n = 0; n < N; n++)
     fluides[n].discretiser(pb, dis);
 
-  Champ_Fonc rho_fonc;
-  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique", "kg/m^3", N, temps, rho_fonc);
-  rho = rho_fonc;
-  dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique", "kg/m/s", N, temps,       mu);
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique",   "m2/s", N, temps,       nu);
-  dis.discretiser_champ("champ_elem", zone_dis,           "diffusivite",   "m2/s", N, temps,    alpha);
-  dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",  "W/m/K", N, temps,   lambda);
-  dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique", "J/kg/K", N, temps,       Cp);
+  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", N, temps, rho_fonc);
+  Champ_Inc rho_inc;
+  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", N, pb.equation(0).inconnue()->nb_valeurs_temporelles(), temps, rho_inc);
+  rho = rho_inc;
+  dis.discretiser_champ("champ_elem", zone_dis,    "dT_masse_volumique",  "kg/m^3/K", N, temps,   dT_rho);
+  dis.discretiser_champ("champ_elem", zone_dis,    "dP_masse_volumique", "kg/m^3/Pa", N, temps,   dP_rho);
+
+  dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique",    "kg/m/s", N, temps,       mu);
+  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique",      "m2/s", N, temps,       nu);
+  dis.discretiser_champ("champ_elem", zone_dis,           "diffusivite",      "m2/s", N, temps,    alpha);
+  dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",     "W/m/K", N, temps,   lambda);
+  dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", N, temps,       Cp);
 
   champs_compris_.ajoute_champ(rho);
   champs_compris_.ajoute_champ(mu.valeur());
@@ -95,6 +104,9 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   champs_compris_.ajoute_champ(alpha.valeur());
   champs_compris_.ajoute_champ(lambda.valeur());
   champs_compris_.ajoute_champ(Cp.valeur());
+
+  const DoubleTab& xv_bord = ref_cast(Zone_VF, rho_inc->zone_dis_base()).xv_bord();
+  rho_bord.resize(xv_bord.dimension_tot(0), rho_inc->valeurs().line_size());
 
 }
 
@@ -119,13 +131,26 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* masse volumique */
   {
-    DoubleTab& tab = rho.valeurs();
+    DoubleTab& tab = rho_fonc.valeurs();
+    DoubleTab& dT_tab = dT_rho.valeurs();
+    DoubleTab& dP_tab = dP_rho.valeurs();
     const int Nl = rho.valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides[n].masse_volumique();
-        const int crho = sub_type(Champ_Uniforme, ch_n);
-        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs().addr()[!crho * i];
+        const DoubleTab& tab_bord = fluides[n].masse_volumique_bord();
+        const Champ_base& ch_n_dT = fluides[n].dT_masse_volumique();
+        const Champ_base& ch_n_dP = fluides[n].dP_masse_volumique();
+        const int crho = sub_type(Champ_Uniforme, ch_n), crho_b = (tab_bord.dimension_tot(0) == 1),
+                  crho_dT = sub_type(Champ_Uniforme, ch_n_dT), crho_dP = sub_type(Champ_Uniforme, ch_n_dP);
+        for (int i = 0; i < Nl; i++)
+          {
+            tab(i, n) = ch_n.valeurs().addr()[!crho * i];
+            dT_tab(i, n) = ch_n_dT.valeurs().addr()[!crho_dT * i];
+            dP_tab(i, n) = ch_n_dP.valeurs().addr()[!crho_dP * i];
+          }
+        for (int i = 0; i < rho_bord.dimension_tot(0); i++)
+          rho_bord(i, n) = tab_bord.addr()[!crho_b * i];
       }
   }
 
@@ -197,3 +222,23 @@ void Milieu_composite::associer_equation(const Equation_base *eqn) const
   for (int i = 0; i < fluides.size(); i++)
     fluides[i].associer_equation(eqn);
 }
+
+const Champ_base& Milieu_composite::masse_volumique_fonc() const
+{
+  return rho_fonc;
+}
+
+void Milieu_composite::calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
+{
+  const Milieu_composite& mil = ref_cast(Milieu_composite, ch.equation().milieu());
+  val = mil.masse_volumique_fonc().valeurs();
+
+  if (val_only) return;
+
+  bval = mil.masse_volumique_bord();
+
+  /* derivees */
+  DoubleTab& derT = deriv["temperature"]; //, &derP = deriv["pression"];
+  derT = mil.dT_masse_volumique().valeurs(); //, derP = mil.dP_masse_volumique().valeurs();
+}
+

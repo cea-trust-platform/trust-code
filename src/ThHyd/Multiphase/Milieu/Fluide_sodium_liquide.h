@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,6 @@
 #define Fluide_sodium_liquide_included
 
 #include <Fluide_reel_base.h>
-#include <Lois_sodium_liquide.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -33,9 +32,23 @@
 //    Cette classe represente un milieu reel
 //    dont les lois viennent de "Lois_Na"
 //////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_liquide: public Fluide_reel_base, virtual public Lois_sodium_liquide
+class Fluide_sodium_liquide: public Fluide_reel_base
 {
   Declare_instanciable(Fluide_sodium_liquide);
+
+protected :
+  // densite
+  virtual double    rho_(const double T, const double P) const;
+  virtual double dP_rho_(const double T, const double P) const;
+  virtual double dT_rho_(const double T, const double P) const;
+  // capacite calorifique
+  virtual double     cp_(const double T, const double P) const;
+  virtual double  dP_cp_(const double T, const double P) const;
+  virtual double  dT_cp_(const double T, const double P) const;
+  // lois champs "faibles" -> pas de derivees
+  virtual double   beta_(const double T, const double P) const;
+  virtual double     mu_(const double T) const;
+  virtual double lambda_(const double T) const;
 };
 
 #endif

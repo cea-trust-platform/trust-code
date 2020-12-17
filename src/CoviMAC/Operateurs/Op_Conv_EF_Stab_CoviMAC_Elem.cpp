@@ -104,9 +104,9 @@ Entree& Op_Conv_Centre_CoviMAC_Elem::readOn( Entree& is )
   return Op_Conv_EF_Stab_CoviMAC_Elem::readOn( is );
 }
 
-void Op_Conv_EF_Stab_CoviMAC_Elem::completer()
+void Op_Conv_EF_Stab_CoviMAC_Elem::preparer_calcul()
 {
-  Op_Conv_CoviMAC_base::completer();
+  Op_Conv_CoviMAC_base::preparer_calcul();
 
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,27 +36,28 @@ Entree& Fluide_reel_base::readOn(Entree& is)
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);
+  isotherme_ = (T_ref_ > 0 && P_ref_ > 0);
   if (isotherme_)
     {
-      if (T_ref_ == -1 || P_ref_ == -1) Process::exit("Fluide_reel : set T_ref and P_ref if you ant to use isotherme option.");
-      else
-        {
-          Nom n_ch("champ_uniforme 1 "), n_rho(n_ch), n_cp(n_ch), n_beta(n_ch), n_lambda(n_ch), n_mu(n_ch);
-          n_rho += Nom(rho_(T_ref_, P_ref_));
-          n_cp += Nom(cp_(T_ref_, P_ref_));
-          n_beta += Nom(beta_(T_ref_));
-          n_lambda += Nom(lambda_(T_ref_));
-          n_mu += Nom(mu_(T_ref_));
-          EChaine ch_rho(n_rho), ch_cp(n_cp), ch_beta(n_beta), ch_lambda(n_rho), ch_mu(n_cp);
-          ch_rho >> rho, ch_cp >> Cp, ch_beta >> beta_th, ch_lambda >> lambda, ch_mu >> mu;
-        }
+      // equivalent d'un Fluide incompressible
+      // -> on fait des champs uniformes et on passe par
+      // les methodes de Fluide_base
+      Nom n_ch("champ_uniforme 1 "), n_rho(n_ch), n_cp(n_ch), n_beta(n_ch), n_lambda(n_ch), n_mu(n_ch);
+      n_rho += Nom(rho_(T_ref_, P_ref_));
+      n_cp += Nom(cp_(T_ref_, P_ref_));
+      n_beta += Nom(beta_(T_ref_, P_ref_));
+      n_lambda += Nom(lambda_(T_ref_));
+      n_mu += Nom(mu_(T_ref_));
+      Cerr << "rho = " << rho_(T_ref_, P_ref_) << " cp = " << cp_(T_ref_, P_ref_) << " lambda = " << lambda_(T_ref_) << " mu = " << mu_(T_ref_) << " beta = " << beta_(T_ref_, P_ref_) << finl;
+      EChaine ch_rho(n_rho), ch_cp(n_cp), ch_beta(n_beta), ch_lambda(n_lambda), ch_mu(n_mu);
+      ch_rho >> rho, ch_cp >> Cp, ch_beta >> beta_th, ch_lambda >> lambda, ch_mu >> mu;
+      creer_champs_non_lus();
     }
   return is;
 }
 
 void Fluide_reel_base::set_param(Param& param)
 {
-  param.ajouter("isotherme",&isotherme_);
   param.ajouter("T_ref",&T_ref_);
   param.ajouter("P_ref",&P_ref_);
 }
@@ -68,24 +69,27 @@ Sortie& Fluide_reel_base::printOn(Sortie& os) const
 
 void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  if (isotherme_)
-    {
-      Fluide_base::discretiser(pb, dis);
-      return;
-    }
+  if (isotherme_) return Fluide_base::discretiser(pb, dis);
+
   Cerr << "Medium discretization." << finl;
 
   const Zone_dis_base& zone_dis = pb.equation(0).zone_dis();
   const double temps = pb.schema_temps().temps_courant();
 
   Champ_Fonc rho_fonc;
-  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique", "kg/m^3", 1, temps, rho_fonc);
+  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",   "kg/m^3", 1, temps, rho_fonc);
   rho = rho_fonc;
-  dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique", "kg/m/s", 1, temps,       mu);
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique",   "m2/s", 1, temps,       nu);
-  dis.discretiser_champ("champ_elem", zone_dis,           "diffusivite",   "m2/s", 1, temps,    alpha);
-  dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",  "W/m/K", 1, temps,   lambda);
-  dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique", "J/kg/K", 1, temps,       Cp);
+  dis.discretiser_champ("champ_elem", zone_dis,    "dT_masse_volumique",  "kg/m^3/K", 1, temps,   dT_rho);
+  dis.discretiser_champ("champ_elem", zone_dis,    "dP_masse_volumique", "kg/m^3/Pa", 1, temps,   dP_rho);
+  dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique",    "kg/m/s", 1, temps,       mu);
+  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique",      "m2/s", 1, temps,       nu);
+  dis.discretiser_champ("champ_elem", zone_dis,           "diffusivite",      "m2/s", 1, temps,    alpha);
+  dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",     "W/m/K", 1, temps,   lambda);
+  dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", 1, temps,       Cp);
+
+  const DoubleTab& xv_bord = ref_cast(Zone_VF, rho->zone_dis_base()).xv_bord();
+  rho_bord.resize(xv_bord.dimension_tot(0), 1);
+
 }
 
 int Fluide_reel_base::initialiser(const double& temps)
@@ -93,8 +97,9 @@ int Fluide_reel_base::initialiser(const double& temps)
   if (isotherme_) return Fluide_base::initialiser(temps);
 
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
-  else rho.mettre_a_jour(temps);
   Cp.initialiser(temps);
+  dT_rho.initialiser(temps);
+  dP_rho.initialiser(temps);
   mu.initialiser(temps);
   nu.initialiser(temps);
   alpha.initialiser(temps);
@@ -117,11 +122,14 @@ void Fluide_reel_base::mettre_a_jour_tabs(const double t)
   const Equation_base& eqn = *equation.at("temperature");
   const Champ_base& ch_T = eqn.probleme().get_champ("Temperature");
   const Champ_base& ch_P = eqn.probleme().get_champ("Pression");
-  const DoubleTab& temp = ch_T.valeurs(t);
-  const DoubleTab& pres = ch_P.valeurs(t);
+  const DoubleTab& temp = ch_T.valeurs(t), &temp_b = ch_T.valeur_aux_bords();
+  const DoubleTab& pres = ch_P.valeurs(t), &pres_b = ch_P.valeur_aux_bords();
+
   const int Nl = mu.valeurs().dimension_tot(0);
 
   DoubleTab& tab_rho = rho.valeurs();
+  DoubleTab& tab_dT_rho = dT_rho.valeurs();
+  DoubleTab& tab_dP_rho = dP_rho.valeurs();
   DoubleTab& tab_Cp = Cp.valeurs();
   DoubleTab& tab_mu = mu.valeurs();
   DoubleTab& tab_nu = nu.valeurs();
@@ -129,96 +137,19 @@ void Fluide_reel_base::mettre_a_jour_tabs(const double t)
   DoubleTab& tab_lambda = lambda.valeurs();
   for (int i = 0; i < Nl; i++)
     {
-      const double T = temp(i, id_composite), P = pres(i);
+      const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
       tab_rho(i) = rho_(T, P);
+      tab_dT_rho(i) = dT_rho_(T, P);
+      tab_dP_rho(i) = dP_rho_(T, P);
       tab_Cp(i) = cp_(T, P);
       tab_mu(i) = mu_(T);
       tab_lambda(i) = lambda_(T);
       tab_nu(i) = tab_mu(i) / tab_rho(i);
       tab_alpha(i) = tab_lambda(i) / tab_rho(i) / tab_Cp(i);
     }
+  for (int i = 0; i < rho_bord.dimension_tot(0); i++)
+    {
+      const double T = (T_ref_ > 0) ? T_ref_ : temp_b(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres_b(i, 0);
+      rho_bord(i, 0) = rho_(T, P);
+    }
 }
-
-// void Fluide_reel_base::calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
-// {
-//   const Champ_base& ch_T = ch.equation().probleme().get_champ("Temperature");
-//   const Champ_base& ch_P = ch.equation().probleme().get_champ("Pression");
-//   const DoubleTab& temp = ch_T.valeurs(t);
-//   const DoubleTab& pres = ch_P.valeurs(t);
-//   const Fluide_reel_base& mil = ref_cast(Fluide_reel_base, ch.equation().milieu());
-//   const int Nl = temp.dimension_tot(0), N = temp.line_size();
-//   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, ch.equation().probleme());
-
-//   for (int i = 0; i < Nl; i++) val(i) = mil.rho(temp(i, id_composite), pres(i));
-//   // if (val_only) return;
-
-//   // bval = ch_T.valeur_aux_bords();
-//   // DoubleTab b_P;
-//   // b_P.resize(bval.dimension_tot(0));
-//   // b_P = ch_P.valeur_aux(ref_cast(Zone_VF, ch.equation().zone_dis().valeur()).xv_bord(), b_P);
-//   // for (i = j = 0; i < bval.dimension_tot(0); i++) for (n = 0; n < N; n++, j++)
-//   //     {
-//   //       if (pb.nom_phase(n).debute_par("liq"))
-//   //         bval.addr()[j] = mil.rho_l(bval.addr()[j], b_P.addr()[i]);
-//   //       else if (pb.nom_phase(n).debute_par("gaz"))
-//   //         bval.addr()[j] = mil.rho_v(bval.addr()[j], b_P.addr()[i]);
-//   //       else Process::exit("Nom phase doit commencer par liq ou gaz");
-//   //     }
-
-//   // /* derivees : Cp */
-//   // DoubleTab& derT = deriv["temperature"];
-//   // DoubleTab& derP = deriv["pression"];
-//   // for (derT.resize(Nl, N), derP.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++)
-//   //     {
-//   //       derT.addr()[j] = mil.dT_rho_l(temp.addr()[j], pres.addr()[i]);
-//   //       derP.addr()[j] = mil.dT_rho_l(temp.addr()[j], pres.addr()[i]);
-//   //     }
-// }
-
-// void Fluide_reel_base::creer_energie_interne() const
-// {
-//   const Equation_base& eqn = *equation.at("temperature");
-//   eqn.discretisation().discretiser_champ("temperature", eqn.zone_dis(),"energie_interne", "J/m^3",
-//                                          eqn.inconnue()->nb_comp(),
-//                                          eqn.inconnue()->nb_valeurs_temporelles(),
-//                                          eqn.schema_temps().temps_courant(), e_int);
-//   e_int->associer_eqn(eqn);
-//   e_int->init_champ_calcule(calculer_energie_interne_reel);
-// }
-
-// void Fluide_reel_base::calculer_energie_interne_reel(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
-// {
-//   const Champ_base& ch_T = ch.equation().probleme().get_champ("Temperature");
-//   const Champ_base& ch_P = ch.equation().probleme().get_champ("Pression");
-//   const DoubleTab& temp = ch_T.valeurs(t);
-//   const DoubleTab& pres = ch_P.valeurs(t);
-//   const Fluide_reel_base& mil = ref_cast(Fluide_reel_base, ch.equation().milieu());
-//   const int Nl = temp.dimension_tot(0), N = temp.line_size();
-//   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, ch.equation().probleme());
-//   int i, j, n;
-
-//   for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++)
-//       if (pb.nom_phase(n).debute_par("liq"))
-//         val.addr()[j] = mil.ei_l(temp.addr()[j], pres.addr()[i]);
-//       else if (pb.nom_phase(n).debute_par("gaz"))
-//         val.addr()[j] = mil.ei_v(temp.addr()[j], pres.addr()[i]);
-//       else Process::exit("Nom phase doit commencer par liq ou gaz");
-//   if (val_only) return;
-
-//   bval = ch_T.valeur_aux_bords();
-//   DoubleTab b_P;
-//   b_P.resize(bval.dimension_tot(0));
-//   b_P = ch_P.valeur_aux(ref_cast(Zone_VF, ch.equation().zone_dis().valeur()).xv_bord(), b_P);
-//   for (i = j = 0; i < bval.dimension_tot(0); i++) for (n = 0; n < N; n++, j++)
-//       bval.addr()[j] = mil.ei_l(bval.addr()[j], b_P.addr()[i]);
-
-//   /* derivees */
-//   DoubleTab& derT = deriv["temperature"];
-//   // DoubleTab& derP = deriv["pression"];
-//   // for (derT.resize(Nl, N), derP.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++)
-//   for (derT.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++)
-//       {
-//         derT.addr()[j] = mil.dT_ei_l(temp.addr()[j], pres.addr()[i]);
-//         // derP.addr()[j] = mil.dP_ei_l(temp.addr()[j], pres.addr()[i]);
-//       }
-// }

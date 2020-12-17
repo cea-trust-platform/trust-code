@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Fluide_reel_base_included
 
 #include <Fluide_base.h>
-#include <Lois_milieu_base.h>
+#include <Param.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,7 +42,7 @@
 // .SECTION voir aussi
 //     Milieu_base
 //////////////////////////////////////////////////////////////////////////////
-class Fluide_reel_base: public Fluide_base, virtual public Lois_milieu_base
+class Fluide_reel_base: public Fluide_base
 {
   Declare_base(Fluide_reel_base);
 public :
@@ -53,8 +53,21 @@ public :
   virtual void set_param(Param& param);
 
 protected :
+  // densite
+  virtual double    rho_(const double T, const double P) const = 0;
+  virtual double dP_rho_(const double T, const double P) const = 0;
+  virtual double dT_rho_(const double T, const double P) const = 0;
+  // capacite calorifique
+  virtual double     cp_(const double T, const double P) const = 0;
+  virtual double  dP_cp_(const double T, const double P) const = 0;
+  virtual double  dT_cp_(const double T, const double P) const = 0;
+  // lois champs "faibles" -> pas de derivees
+  virtual double   beta_(const double T, const double P) const = 0;
+  virtual double     mu_(const double T) const = 0;
+  virtual double lambda_(const double T) const = 0;
+
   void mettre_a_jour_tabs(const double t);
-  // void mettre_a_jour_isotherme(const double t);
+
   int isotherme_ = 0;
   double T_ref_ = -1;
   double P_ref_ = -1;

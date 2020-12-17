@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@
 #include <Discretisation_tools.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Tabule_Morceaux.h>
+#include <EChaine.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 
@@ -192,6 +193,8 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   if  (rho.non_nul())
     {
       dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho,pb);
+      if (dT_rho.non_nul()) dis.nommer_completer_champ_physique(zone_dis, "dT_masse_volumique",  "kg/m^3/K", dT_rho, pb);
+      if (dP_rho.non_nul()) dis.nommer_completer_champ_physique(zone_dis, "dP_masse_volumique", "kg/m^3/Pa", dP_rho, pb);
 
       if (sub_type(Champ_Tabule_Morceaux,rho))
         {
@@ -286,10 +289,25 @@ void Milieu_base::preparer_calcul()
 
 void Milieu_base::creer_champs_non_lus()
 {
-  if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
+  if (rho.non_nul())
     {
-      creer_alpha();
+      creer_derivee_rho();
+      if (lambda.non_nul() && Cp.non_nul()) creer_alpha();
     }
+}
+
+void Milieu_base::creer_derivee_rho()
+{
+  Nom n_ch("champ_uniforme ");
+  n_ch += Nom(rho.nb_comp());
+  n_ch += " 0";
+  EChaine ech1(n_ch), ech2(n_ch);
+  ech1 >> dT_rho, ech2 >> dP_rho;
+
+  rho_bord.resize(1, rho.nb_comp());
+  for (int n = 0; n < rho.nb_comp(); ++n)
+    rho_bord(0, n) = rho.valeurs()(0, n);
+
 }
 
 // Description:
@@ -599,6 +617,27 @@ Champ_base& Milieu_base::masse_volumique()
 {
   return rho;
 }
+
+const Champ_Don& Milieu_base::dT_masse_volumique() const
+{
+  return dT_rho;
+}
+
+Champ_Don& Milieu_base::dT_masse_volumique()
+{
+  return dT_rho;
+}
+
+const Champ_Don& Milieu_base::dP_masse_volumique() const
+{
+  return dP_rho;
+}
+
+Champ_Don& Milieu_base::dP_masse_volumique()
+{
+  return dP_rho;
+}
+
 
 // Description:
 //    Renvoie l'energie interne du milieu.
@@ -917,4 +956,9 @@ void Milieu_base::calculer_energie_interne(const Champ_Inc_base& ch, double t, D
 void Milieu_base::set_id_composite(const int i)
 {
   id_composite = i;
+}
+
+const DoubleTab& Milieu_base::masse_volumique_bord() const
+{
+  return rho_bord;
 }

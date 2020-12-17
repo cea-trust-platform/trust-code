@@ -22,6 +22,7 @@
 #include <Entree_fluide_vitesse_imposee_libre.h>
 #include <Fluide_Incompressible.h>
 #include <Fluide_Ostwald.h>
+#include <Fluide_base.h>
 #include <Modele_Permeabilite.h>
 #include <NSCBC.h>
 #include <Navier_Stokes_std.h>

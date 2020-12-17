@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,47 +14,72 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Lois_milieu_base.h
+// File:        Fluide_sodium_gaz.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/18
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Lois_milieu_base_included
-#define Lois_milieu_base_included
-#include <DoubleTab.h>
-#include <Param.h>
+#include <Fluide_sodium_gaz.h>
+#include <Lois_sodium.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Lois_milieu_base
-//      utilitaire pour les operateurs de frottement interfacial prenant la forme
-//      F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
-//      cette classe definit une fonction C_{kl} dependant de :
-//        alpha, p, T -> inconnues (une valeur par phase chacune)
-//        rho, mu, sigma -> proprietes physiques (idem)
-//        dv_abs(i, k, l) -> i-eme ecart ||v_k - v_l||, a remplir pour k < l
-//    sortie :
-//        coeff(i, k, l) -> i_eme coefficient C_{kl}, rempli pour k < l
-//////////////////////////////////////////////////////////////////////////////
+Implemente_instanciable(Fluide_sodium_gaz, "Fluide_sodium_gaz", Fluide_reel_base);
 
-class Lois_milieu_base
+Sortie& Fluide_sodium_gaz::printOn(Sortie& os) const
 {
-public:
-  virtual ~Lois_milieu_base() = default;
-  // densite
-  virtual double    rho_(const double T, const double P) const = 0;
-  virtual double dP_rho_(const double T, const double P) const = 0;
-  virtual double dT_rho_(const double T, const double P) const = 0;
-  // capacite calorifique
-  virtual double     cp_(const double T, const double P) const = 0;
-  virtual double  dP_cp_(const double T, const double P) const = 0;
-  virtual double  dT_cp_(const double T, const double P) const = 0;
-  // lois champs "faibles" -> pas de derivees
-  virtual double     mu_(const double T) const = 0;
-  virtual double lambda_(const double T) const = 0;
-  virtual double   beta_(const double T) const = 0;
-};
+  return os;
+}
 
-#endif
+Entree& Fluide_sodium_gaz::readOn(Entree& is)
+{
+  Fluide_reel_base::readOn(is);
+  return is;
+}
+
+double Fluide_sodium_gaz::rho_(const double T, const double P) const
+{
+  return RhoV(T, P);
+}
+
+double Fluide_sodium_gaz::dT_rho_(const double T, const double P) const
+{
+  return DTRhoV(T, P);
+}
+
+double Fluide_sodium_gaz::dP_rho_(const double T, const double P) const
+{
+  return DPRhoV(T, P);
+}
+
+double Fluide_sodium_gaz::cp_(const double T, const double P) const
+{
+  const double eint = HV(T, P) - P / rho_(T, P);
+  return eint / T;
+}
+
+double Fluide_sodium_gaz::dT_cp_(const double T, const double P) const
+{
+  Process::exit("pas code");
+  return 0;
+}
+
+double Fluide_sodium_gaz::dP_cp_(const double T, const double P) const
+{
+  Process::exit("pas code");
+  return 0;
+}
+
+double Fluide_sodium_gaz::mu_(const double T) const
+{
+  return MuV(T);
+}
+
+double Fluide_sodium_gaz::lambda_(const double T) const
+{
+  return LambdaV(T);
+}
+
+double Fluide_sodium_gaz::beta_(const double T, const double P) const
+{
+  return DTIRhoV(T, P) / IRhoV(T, P);
+}

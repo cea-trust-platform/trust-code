@@ -53,6 +53,7 @@ void instancie_src_ThHyd_Multiphase();
 void instancie_src_ThHyd_Multiphase_Correlations();
 void instancie_src_ThHyd_Multiphase_CoviMAC();
 void instancie_src_ThHyd_Multiphase_Equations();
+void instancie_src_ThHyd_Multiphase_Milieu();
 void instancie_src_ThHyd_Multiphase_Operateurs();
 void instancie_src_ThHyd_Multiphase_Schemas_Temps();
 void instancie_src_ThHyd_Quasi_Compressible();

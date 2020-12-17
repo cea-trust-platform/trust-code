@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_sodium_liquide.h>
+#include <Lois_sodium.h>
 
 Implemente_instanciable(Fluide_sodium_liquide, "Fluide_sodium_liquide", Fluide_reel_base);
 
@@ -35,3 +36,50 @@ Entree& Fluide_sodium_liquide::readOn(Entree& is)
   return is;
 }
 
+double Fluide_sodium_liquide::rho_(const double T, const double P) const
+{
+  return RhoL(T, P);
+}
+
+double Fluide_sodium_liquide::dT_rho_(const double T, const double P) const
+{
+  return DTRhoL(T, P);
+}
+
+double Fluide_sodium_liquide::dP_rho_(const double T, const double P) const
+{
+  return DPRhoL(T, P);
+}
+
+double Fluide_sodium_liquide::cp_(const double T, const double P) const
+{
+  const double eint = HL(T, P) - P / rho_(T, P);
+  return eint / T;
+}
+
+double Fluide_sodium_liquide::dT_cp_(const double T, const double P) const
+{
+  Process::exit("pas code");
+  return 0;
+}
+
+double Fluide_sodium_liquide::dP_cp_(const double T, const double P) const
+{
+  Process::exit("pas code");
+  return 0;
+}
+
+double Fluide_sodium_liquide::mu_(const double T) const
+{
+  return MuL(T);
+}
+
+double Fluide_sodium_liquide::lambda_(const double T) const
+{
+  return LambdaL(T);
+}
+
+double Fluide_sodium_liquide::beta_(const double T, const double P) const
+{
+  return DTIRhoL(T) / IRhoL(T);
+}

@@ -58,7 +58,7 @@ Entree& Masse_CoviMAC_Elem::readOn(Entree& s)
 //
 ////////////////////////////////////////////////////////////////
 
-void Masse_CoviMAC_Elem::completer()
+void Masse_CoviMAC_Elem::preparer_calcul()
 {
   equation().init_champ_conserve();
 }

@@ -1161,6 +1161,9 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
     }
   //sinon, calcul a partir des CLs
   DoubleTrav result(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
+  // on initialise avec valeur_aux pour avoir des valeurs non nulles aux bords sans dirichlet ou neumann_val_ext
+  (*this).valeur_aux(ref_cast(Zone_VF, zone_dis_base()).xv_bord(), result);
+
   const Conds_lim& cls = zone_Cl_dis().valeur().les_conditions_limites();
   const ArrOfInt& i_bord = ref_cast(Zone_VF, zone_dis_base()).ind_faces_virt_bord(); //correspondance face -> face de bord
   int i, j, k, f, n, N = result.line_size(), nf = ref_cast(Zone_VF, zone_dis_base()).nb_faces();

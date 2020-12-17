@@ -1268,9 +1268,13 @@ void Equation_base::valider_iteration()
 // Postcondition:
 int Equation_base::preparer_calcul()
 {
+  solveur_masse.valeur().preparer_calcul();
   int nb_op=nombre_d_operateurs();
   for(int i=0; i<nb_op; i++)
-    dt_op_bak.add(0.);
+    {
+      operateur(i).l_op_base().preparer_calcul();
+      dt_op_bak.add(0.);
+    }
   initialise_residu();
   double temps=schema_temps().temps_courant();
   inconnue()->verifie_valeurs_cl();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,34 +14,29 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Lois_sodium_liquide.h
+// File:        Fluide_sodium_gaz.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/18
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Lois_sodium_liquide_included
-#define Lois_sodium_liquide_included
-#include <Lois_milieu_base.h>
+#ifndef Fluide_sodium_gaz_included
+#define Fluide_sodium_gaz_included
+
+#include <Fluide_reel_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Lois_sodium_liquide
-//      utilitaire pour les operateurs de frottement interfacial prenant la forme
-//      F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
-//      cette classe definit une fonction C_{kl} dependant de :
-//        alpha, p, T -> inconnues (une valeur par phase chacune)
-//        rho, mu, sigma -> proprietes physiques (idem)
-//        dv_abs(i, k, l) -> i-eme ecart ||v_k - v_l||, a remplir pour k < l
-//    sortie :
-//        coeff(i, k, l) -> i_eme coefficient C_{kl}, rempli pour k < l
+//    Classe Fluide_sodium_gaz
+//    Cette classe represente un milieu reel
+//    dont les lois viennent de "Lois_Na"
 //////////////////////////////////////////////////////////////////////////////
-
-class Lois_sodium_liquide : virtual public Lois_milieu_base
+class Fluide_sodium_gaz: public Fluide_reel_base
 {
-public:
-  virtual ~Lois_sodium_liquide() = default;
+  Declare_instanciable(Fluide_sodium_gaz);
+
+protected :
   // densite
   virtual double    rho_(const double T, const double P) const;
   virtual double dP_rho_(const double T, const double P) const;
@@ -51,9 +46,9 @@ public:
   virtual double  dP_cp_(const double T, const double P) const;
   virtual double  dT_cp_(const double T, const double P) const;
   // lois champs "faibles" -> pas de derivees
+  virtual double   beta_(const double T, const double P) const;
   virtual double     mu_(const double T) const;
   virtual double lambda_(const double T) const;
-  virtual double   beta_(const double T) const;
 };
 
 #endif
