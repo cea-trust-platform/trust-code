@@ -108,6 +108,7 @@ public:
 
   // equations associees au milieu
   virtual void associer_equation(const Equation_base* eqn) const;
+  void set_id_composite(const int i);
 
 protected:
 
@@ -139,6 +140,7 @@ protected:
   //methode de calcul par defaut de l'energie interne : produit Cp * T
   void creer_energie_interne() const; //creation sur demande
   static void calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  int id_composite = -1;
 };
 
 

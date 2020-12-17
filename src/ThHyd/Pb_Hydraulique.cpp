@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -154,12 +154,12 @@ Equation_base& Pb_Hydraulique::equation(int i)
 // Retour:
 //    Signification:
 //    Contraintes:
-// Exception: le milieu n'est pas du type Fluide_Incompressible
+// Exception: le milieu n'est pas du type Fluide_base
 // Effets de bord:
 // Postcondition:
 void Pb_Hydraulique::associer_milieu_base(const Milieu_base& mil)
 {
-  if (sub_type(Fluide_Incompressible,mil))
+  if (sub_type(Fluide_base,mil))
     eq_hydraulique.associer_milieu_base(mil);
   else if (sub_type(Fluide_Ostwald,mil))
     {

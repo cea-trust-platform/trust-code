@@ -14,48 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Hydraulique.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/15
+// File:        Fluide_reel_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Fluide_reel_base_included
+#define Fluide_reel_base_included
 
-#ifndef Pb_Hydraulique_included
-#define Pb_Hydraulique_included
-
-#include <Pb_qdm_fluide.h>
-#include <Champ_Don.h>
-#include <Navier_Stokes_std.h>
-
+#include <Fluide_base.h>
+#include <Lois_milieu_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Pb_Hydraulique
-//     Cette classe represente un probleme hydraulique standard dans lequel
-//     on resout les equations de Navier Stokes en regime laminaire
-//     pour un fluide incompressible
-//     La formulation est de type vitesse pression
+//    Classe Fluide_reel_base
+//    Cette classe represente un fluide reel ainsi que
+//    ses proprietes:
+//        - viscosite cinematique, (mu)
+//        - viscosite dynamique,   (nu)
+//        - masse volumique,       (rho)
+//        - diffusivite,           (alpha)
+//        - conductivite,          (lambda)
+//        - capacite calorifique,  (Cp)
+//        - dilatabilite thermique du constituant (beta_co)
 // .SECTION voir aussi
-//      Navier_Stokes_std Pb_qdm_fluide Fluide_base
+//     Milieu_base
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique : public Pb_qdm_fluide
+class Fluide_reel_base: public Fluide_base, virtual public Lois_milieu_base
 {
-  Declare_instanciable(Pb_Hydraulique);
-
+  Declare_base(Fluide_reel_base);
 public :
 
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const;
-  Equation_base& equation(int);
-  void associer_milieu_base(const Milieu_base& );
+
+  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  virtual void mettre_a_jour(double temps);
+  virtual int initialiser(const double& temps);
+  virtual void set_param(Param& param);
 
 protected :
-
-  Navier_Stokes_std eq_hydraulique;
-
+  void mettre_a_jour_tabs(const double t);
+  // void mettre_a_jour_isotherme(const double t);
+  int isotherme_ = 0;
+  double T_ref_ = -1;
+  double P_ref_ = -1;
 };
-
 
 #endif

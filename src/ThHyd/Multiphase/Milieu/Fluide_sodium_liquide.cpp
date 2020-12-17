@@ -14,48 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Hydraulique.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/15
+// File:        Fluide_sodium_liquide.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Fluide_sodium_liquide.h>
 
-#ifndef Pb_Hydraulique_included
-#define Pb_Hydraulique_included
+Implemente_instanciable(Fluide_sodium_liquide, "Fluide_sodium_liquide", Fluide_reel_base);
 
-#include <Pb_qdm_fluide.h>
-#include <Champ_Don.h>
-#include <Navier_Stokes_std.h>
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Pb_Hydraulique
-//     Cette classe represente un probleme hydraulique standard dans lequel
-//     on resout les equations de Navier Stokes en regime laminaire
-//     pour un fluide incompressible
-//     La formulation est de type vitesse pression
-// .SECTION voir aussi
-//      Navier_Stokes_std Pb_qdm_fluide Fluide_base
-//////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique : public Pb_qdm_fluide
+Sortie& Fluide_sodium_liquide::printOn(Sortie& os) const
 {
-  Declare_instanciable(Pb_Hydraulique);
+  return os;
+}
 
-public :
+Entree& Fluide_sodium_liquide::readOn(Entree& is)
+{
+  Fluide_reel_base::readOn(is);
+  return is;
+}
 
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const;
-  Equation_base& equation(int);
-  void associer_milieu_base(const Milieu_base& );
-
-protected :
-
-  Navier_Stokes_std eq_hydraulique;
-
-};
-
-
-#endif

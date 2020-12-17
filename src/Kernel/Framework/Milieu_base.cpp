@@ -913,3 +913,8 @@ void Milieu_base::calculer_energie_interne(const Champ_Inc_base& ch, double t, D
   if (cCp) for(der.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) der.addr()[j] = Cp.addr()[n];
   else der = Cp;
 }
+
+void Milieu_base::set_id_composite(const int i)
+{
+  id_composite = i;
+}

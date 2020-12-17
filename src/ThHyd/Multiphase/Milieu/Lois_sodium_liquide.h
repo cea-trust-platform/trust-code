@@ -14,48 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Hydraulique.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/15
+// File:        Lois_sodium_liquide.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#ifndef Pb_Hydraulique_included
-#define Pb_Hydraulique_included
-
-#include <Pb_qdm_fluide.h>
-#include <Champ_Don.h>
-#include <Navier_Stokes_std.h>
-
+#ifndef Lois_sodium_liquide_included
+#define Lois_sodium_liquide_included
+#include <Lois_milieu_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Pb_Hydraulique
-//     Cette classe represente un probleme hydraulique standard dans lequel
-//     on resout les equations de Navier Stokes en regime laminaire
-//     pour un fluide incompressible
-//     La formulation est de type vitesse pression
-// .SECTION voir aussi
-//      Navier_Stokes_std Pb_qdm_fluide Fluide_base
+//    classe Lois_sodium_liquide
+//      utilitaire pour les operateurs de frottement interfacial prenant la forme
+//      F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
+//      cette classe definit une fonction C_{kl} dependant de :
+//        alpha, p, T -> inconnues (une valeur par phase chacune)
+//        rho, mu, sigma -> proprietes physiques (idem)
+//        dv_abs(i, k, l) -> i-eme ecart ||v_k - v_l||, a remplir pour k < l
+//    sortie :
+//        coeff(i, k, l) -> i_eme coefficient C_{kl}, rempli pour k < l
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique : public Pb_qdm_fluide
+
+class Lois_sodium_liquide : virtual public Lois_milieu_base
 {
-  Declare_instanciable(Pb_Hydraulique);
-
-public :
-
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const;
-  Equation_base& equation(int);
-  void associer_milieu_base(const Milieu_base& );
-
-protected :
-
-  Navier_Stokes_std eq_hydraulique;
-
+public:
+  virtual ~Lois_sodium_liquide() = default;
+  // densite
+  virtual double    rho_(const double T, const double P) const;
+  virtual double dP_rho_(const double T, const double P) const;
+  virtual double dT_rho_(const double T, const double P) const;
+  // capacite calorifique
+  virtual double     cp_(const double T, const double P) const;
+  virtual double  dP_cp_(const double T, const double P) const;
+  virtual double  dT_cp_(const double T, const double P) const;
+  // lois champs "faibles" -> pas de derivees
+  virtual double     mu_(const double T) const;
+  virtual double lambda_(const double T) const;
+  virtual double   beta_(const double T) const;
 };
-
 
 #endif
