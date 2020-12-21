@@ -1071,6 +1071,8 @@ done
 cd $TRUST_ROOT
 # On met les bons droits
 change_droits
+# Ajout des droits d'execution car mal faits
+chmod ugo+x `find . -type f -executable`
 if [ "`grep intra.cea.fr /etc/* 2>/dev/null`" != "" ]
 then
    # Fichiers en 444 au moins
