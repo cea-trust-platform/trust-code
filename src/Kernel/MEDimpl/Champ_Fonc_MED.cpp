@@ -247,7 +247,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
                   Cerr << "Cause if seems the MED partition is different than the " << dom_calcul.le_nom() << " domain partition." << finl;
                   Process::exit();
                 }
-          Cerr << "Ok MED partition matches the domain partition." << finl;
+          Cerr << "Ok MED partition matches the domain partition so reading multiple MED files..." << finl;
         }
       // MODIF ELI LAUCOIN (06/03/2012) :
       // j'ajoute l'attribut temps_sauv_

@@ -225,6 +225,9 @@ Entree& Decouper::interpreter(Entree& is)
            << "\nGeneration of " << nb_parts_tot - nb_parties << " empty parts." << finl;
       nb_parties = nb_parts_tot;
     }
+  // Force un seul fichier .Zones au dela d'un certain nombre de rangs MPI:
+  if (Process::force_single_file(nb_parties, nom_zones_decoup+".Zones"))
+    format_hdf = 1;
 
   if (nom_fichier_decoupage != "?")
     ecrire_fichier_decoupage(nom_fichier_decoupage, elem_part, nb_parts_tot);

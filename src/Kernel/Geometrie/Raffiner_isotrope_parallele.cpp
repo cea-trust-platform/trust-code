@@ -206,6 +206,9 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
   param.ajouter("ascii",&form);  // XD_ADD_P flag writing Zones in ascii format
   param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P flag writing Zones in hdf format
   param.lire_avec_accolades(is);
+  // Force un fichier unique au dela d'un certain nombre de rangs MPI:
+  if (Process::force_single_file(Process::nproc(), org+".Zones"))
+    format_hdf = 1;
   int binaire=!form;
   if (form && format_hdf)
     {

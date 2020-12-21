@@ -14,64 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Process.h
+// File:        MultipleFiles.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/25
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Process_included
-#define Process_included
-
-#include <arch.h>
-class Objet_U;
-class Nom;
-class Sortie;
-
-int get_disable_stop();
-void change_disable_stop(int new_stop);
+#ifndef MultipleFiles_included
+#define MultipleFiles_included
+#include <Interprete.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
-// .SECTION voir aussi
-//   Objet_U
+//    classe MultipleFiles
+//    Cette classe permet de fixer la limite d'utilisation d'un fichier ecrit par process
+//    Directive:
+//          MultipleFiles integer
 //////////////////////////////////////////////////////////////////////////////
-
-class Process
+class MultipleFiles : public Interprete
 {
-public:
-  Process();
-  virtual ~Process();
+  Declare_instanciable(MultipleFiles);
 
-  static int je_suis_maitre();
-  static int nproc();
-  static void   barrier();
-  static double mp_sum(double);
-  static double mp_max(double);
-  static double mp_min(double);
-  static int mp_sum(int);
-  static bool mp_and(bool);
+public :
 
-  static int me();                        /* mon rang dans le groupe courant */
-  static void   exit(int exit_code = -1);
-  static void   exit(const Nom& message, int exit_code = -1);
-  static void   abort();
-
-  static Sortie& Journal(int message_level = 0);
-  static double ram_processeur();
-  static void imprimer_ram_totale(int all_process=0);
-  static int exception_sur_exit;
-  static int multiple_files;
-  static bool force_single_file(const int& ranks, const Nom& filename);
-private:
+  Entree& interpreter(Entree&);
 };
-
 #endif
-
