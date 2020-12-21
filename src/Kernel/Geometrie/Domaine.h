@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,6 +83,7 @@ public :
   int associer_(Objet_U&);
   inline DoubleTab& les_sommets();
   inline const DoubleTab& les_sommets() const;
+  DoubleTab getBoundingBox() const;
   //
 
   Zone& add(Zone&);
