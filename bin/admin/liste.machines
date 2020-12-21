@@ -48,6 +48,6 @@ linux   rsync_ssh	non	is224668.intra.cea.fr 		-all		-TrioCFD -IJK-FT 				-g 		-f
 linux   rsync_ssh	non	is241762.intra.cea.fr 		-all 		-TrioCFD  					        -g 		-force_provided_mpich 								# Fedora 30 	Bat 451	LMSF	Bureau Julie
 linux   rsync_ssh	non	is229956-gui.intra.cea.fr			-TrioCFD                        	-gui		-remote_install_TRUST_with_source -force_provided_openmpi				# Ubuntu 16	Bat 451	LGLS	Machine de Michel pce 54
 linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-pdflatex -force_provided_mpich								# CentOS 7.8 salle de formation
-linux	rsync_ssh	tache	is242979.intra.cea.fr				-TrioCFD 								-prof -force_provided_mpich 								# Ubuntu 20	Elie Bat 451 LGLS Bureau PL
+linux	rsync_ssh	tache	is242979.intra.cea.fr				-TrioCFD -SIDES -SCORPIO 								-prof -force_provided_mpich 								# Ubuntu 20	Elie Bat 451 LGLS Bureau PL
 linux   rsync_ssh	tache	is241478.intra.cea.fr 		-all		-TrioCFD -MPCube -FLICA5  					-g 		-force_provided_mpich 								# CentOS 7.8 salle de formation
 linux   rsync_ssh   tache   is233822.intra.cea.fr 			  					-semi_opt     	-force_provided_mpich 								# Fedora 26	pour Cath3D

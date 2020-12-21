@@ -294,7 +294,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   Cout<<"-------------------------------------------------------------------" << finl;
   Cout<<" " << finl;
   Cout<<"                          TRUST" << finl;
-  Cout<<"                      version : 1.8.2 "  << finl;
+  Cout<<"                      version : 1.8.3_beta "  << finl;
   Cout<<"                          CEA - DES" << finl;
   Cout<<" " << finl;
   info_atelier(Cout);

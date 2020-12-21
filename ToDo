@@ -8,11 +8,11 @@ Version	Qui				Tache
 1.8.3   trust@cea.fr            LDC: invalider l ancienne syntaxe des champ_fonc_fonction (pour le moment on est bicompatible)
 1.8.3   trust@cea.fr            LDC: Nettoyer le vieux code med fichier
 1.8.3   trust@cea.fr            LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
-1.8.3   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI182047)
-1.8.3   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 182046)
-1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 182048)
-1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation reseau orcus/Titania (cf di 183455)
-1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 182049)
+1.8.3   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI 188128)
+1.8.3   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
+1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
+1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
+1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 188130)
 1.8.3   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
 1.8.3   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.3   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
@@ -35,11 +35,11 @@ Version	Qui				Tache
 1.8.x   trust@cea.fr            LDC: invalider l ancienne syntaxe des champ_fonc_fonction (pour le moment on est bicompatible)
 1.8.x   trust@cea.fr            LDC: Nettoyer le vieux code med fichier
 1.8.x   trust@cea.fr            LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI182047)
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 182046)
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 182048)
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau orcus/Titania (cf di 183455)
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 182049)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI 188128)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 188130)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
 1.8.x   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.x   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
