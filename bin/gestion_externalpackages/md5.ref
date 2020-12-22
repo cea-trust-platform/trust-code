@@ -38,7 +38,7 @@ ca6c4700ae75cd60381eb45c7a613bd2  Miniconda/local_channel/linux-64/libgd-2.2.5-h
 9cb85601944ca7383b1769bff74b94e8  Miniconda/local_channel/linux-64/libpng-1.6.37-hbc83047_0.tar.bz2
 2fc57e5e131fe0a8dfd6aaa6e2f87bbe  Miniconda/local_channel/linux-64/libssh2-1.8.2-h1ba5d50_0.tar.bz2
 5a84a92c0a857aa12f28e157955245be  Miniconda/local_channel/linux-64/libtiff-4.0.9-he85c1e1_2.tar.bz2
-c139036e48b27c84ab08cdd18369851a  Miniconda/local_channel/linux-64/libuuid-1.0.3-h1bed415_2.tar.bz2
+39c6326f6ee5297632c47db6520546fe  Miniconda/local_channel/linux-64/libuuid-2.32.1-h14c3975_1000.tar.bz2
 6a685d2948a67d986897c1aace1a48a5  Miniconda/local_channel/linux-64/libwebp-1.0.1-h8e7db2f_0.tar.bz2
 a30332027922e249a80c25faea2f3b34  Miniconda/local_channel/linux-64/libxcb-1.13-h1bed415_1.tar.bz2
 1e0821f510ccb82ac1897e6412312167  Miniconda/local_channel/linux-64/libxml2-2.9.9-hea5a465_1.tar.bz2
@@ -60,7 +60,7 @@ cd3d7885462372262350ab83724ec095  Miniconda/local_channel/linux-64/sip-4.18.1-py
 db287bbb3c75472f65e009abef0b61a6  Miniconda/local_channel/linux-64/sympy-1.5.1-py37_0.tar.bz2
 b7339cc0a2e4df93a6043a3d8b4cc79f  Miniconda/local_channel/linux-64/tornado-6.0.3-py37h7b6447c_0.tar.bz2
 4dfda1ccfd0cc90c4fe6786acece9a30  Miniconda/local_channel/linux-64/xorg-libice-1.0.10-h516909a_0.tar.bz2
-78c03347efc45f0df5f79d20e1544c92  Miniconda/local_channel/linux-64/xorg-libsm-1.2.2-h470a237_5.tar.bz2
+56cc238b81624db9e3e36b2b6a482cc1  Miniconda/local_channel/linux-64/xorg-libsm-1.2.3-h84519dc_1000.tar.bz2
 5bdf7b9b44c894dddb0b193c453232c6  Miniconda/local_channel/noarch/pyparsing-2.4.5-py_0.tar.bz2
 58a898b1a4a13e8c0cfd0d4b1a999ba9  Miniconda/local_channel/noarch/python-dateutil-2.8.1-py_0.tar.bz2
 d65fd5cd636e65a731b82e9678c6f40c  Miniconda/local_channel/noarch/pytz-2019.3-py_0.tar.bz2

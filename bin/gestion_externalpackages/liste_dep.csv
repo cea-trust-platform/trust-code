@@ -105,7 +105,7 @@ MinicondaLocChannLinux,libopenblas-0.3.6-h5a2b251_2.tar.bz2,,ND,BSD,,https://rep
 MinicondaLocChannLinux,libpng-1.6.37-hbc83047_0.tar.bz2,outil,ND,zlib/libpng,,https://repo.anaconda.com/pkgs/main/linux-64/libpng-1.6.37-hbc83047_0.tar.bz2,
 MinicondaLocChannLinux,libssh2-1.8.2-h1ba5d50_0.tar.bz2,outil,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/libssh2-1.8.2-h1ba5d50_0.tar.bz2,
 MinicondaLocChannLinux,libtiff-4.0.9-he85c1e1_2.tar.bz2,outil,ND,HPND,,https://repo.anaconda.com/pkgs/main/linux-64/libtiff-4.0.9-he85c1e1_2.tar.bz2,
-MinicondaLocChannLinux,libuuid-1.0.3-h1bed415_2.tar.bz2,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/libuuid-1.0.3-h1bed415_2.tar.bz2,
+MinicondaLocChannLinux,libuuid-2.32.1-h14c3975_1000.tar.bz2,outil,ND,BSD,,https://conda.anaconda.org/conda-forge/linux-64/libuuid-2.32.1-h14c3975_1000.tar.bz2,
 MinicondaLocChannLinux,libwebp-1.0.1-h8e7db2f_0.tar.bz2,outil,ND,Google,,https://repo.anaconda.com/pkgs/main/linux-64/libwebp-1.0.1-h8e7db2f_0.tar.bz2,
 MinicondaLocChannLinux,libxcb-1.13-h1bed415_1.tar.bz2,,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/libxcb-1.13-h1bed415_1.tar.bz2,
 MinicondaLocChannLinux,libxml2-2.9.9-hea5a465_1.tar.bz2,,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/libxml2-2.9.9-hea5a465_1.tar.bz2,
@@ -127,5 +127,5 @@ MinicondaLocChannLinux,swig-3.0.12-h38cdd7d_3.tar.bz2,outil,ND,GPL,,https://repo
 MinicondaLocChannLinux,sympy-1.5.1-py37_0.tar.bz2,outil,ND,BSD-3-Clause,,https://repo.anaconda.com/pkgs/main/linux-64/sympy-1.5.1-py37_0.tar.bz2,
 MinicondaLocChannLinux,tornado-6.0.3-py37h7b6447c_0.tar.bz2,,ND,Apache,,https://repo.anaconda.com/pkgs/main/linux-64/tornado-6.0.3-py37h7b6447c_0.tar.bz2,
 MinicondaLocChannLinux,xorg-libice-1.0.10-h516909a_0.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libice-1.0.10-h516909a_0.tar.bz2,
-MinicondaLocChannLinux,xorg-libsm-1.2.2-h470a237_5.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libsm-1.2.2-h470a237_5.tar.bz2,
+MinicondaLocChannLinux,xorg-libsm-1.2.3-h84519dc_1000.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libsm-1.2.3-h84519dc_1000.tar.bz2,
 General,osqp-0.6.0.tar.gz,librairie,AG,"Apache License V2.0",https://osqp.org/,https://github.com/oxfordcontrol/osqp/archive/v0.6.0.tar.gz
