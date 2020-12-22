@@ -242,15 +242,7 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_Type_commit(&filetype);
 
   // Before collecting operations, update disp_ on all processes:
-
-  // 21/03/2018: Compilation error: no instance of overloaded function "envoyer_broadcast" matches the argument list argument types are: (MPI_Offset, int)
-  // on cobalt TGCC-CCRT cluster with module: Wi4MPI with bull-openmpi/2.0.2
-  // WARNING! This part is to be reviewed because not validated...
-  //envoyer_broadcast(disp_, 0);
-  int disp_int=(int)disp_;
-  envoyer_broadcast(disp_int, 0);
-  disp_=(MPI_Offset)disp_int;
-
+  envoyer_broadcast(disp_, 0);
   MPI_Offset disp_me = disp_ + mppartial_sum(n) * sizeof_etype;
   // ROMIO hints:
   if (Process::nproc()>1024)

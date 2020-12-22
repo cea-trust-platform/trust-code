@@ -1,3 +1,4 @@
+XX/XX/XX (TRUST)  Bug fixed   : Producing .xyz file could crash on large mesh (regression introduced in v1.7.8)
 XX/XX/XX (TRUST)  Output      : New option "format lata parallele mpi-io" to enable MPI parallel I/O when writing .lata files
 -------------------------------------------------------------------------------------------------------
 Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
