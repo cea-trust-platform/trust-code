@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.8.3	pierre.ledac@cea.fr	Supprimer le format LATA V1
 
 1.8.2   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI182047)
 1.8.2   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 182046)
