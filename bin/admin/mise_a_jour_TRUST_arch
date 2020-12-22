@@ -407,6 +407,7 @@ do
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    options=opt_avx && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-semi_opt" | grep ^$HOST_BUILD"\."`" != "" ] && options=$options" semi_opt" # avx plus semi_opt si specifie
+   [ "`$TRUST_ROOT/bin/admin/liste_machines "\-Semi_opt_gcov" | grep ^$HOST_BUILD"\."`" != "" ] && options="semi_opt gcov" # si Semi_opt_gcov on compile en semi_opt et gcov
    make && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp && make $options
    err_exe_compile=$?
    cat compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" >> compile.tmp && mv compile.tmp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
