@@ -92,4 +92,5 @@ Read pb
         }
 	sauvegarde_simple xyz cas.xyz # Pour avoir une seule sauvegarde par fichier #
 }
+EcritureLectureSpecial cas
 Solve pb

@@ -2,6 +2,17 @@
 # Prepare le cas
 rm -r -f ../build
 mkdir -p ../build
+
+# Augmente le nombre d'OST (striping) sur irene:
+# 6  OST sur $CCCWORKDIR	~700Mo/s
+# 42 OST sur $CCCSCRATCHDIR 	~1000Mo/
+# Pour changer stripe_count et avoir les ROMIO_HINTS:
+if [ $HOST#irene != $HOST ]
+then
+   module load feature/openmpi/io/collective_buffering # Sur irene
+   lfs getstripe ../build
+fi
+
 cp * ../build
 cd ../build
 
@@ -14,7 +25,9 @@ then
    NB_ZONES=128 && [ "$TRUST_WITHOUT_HOST" = 1 ] && NB_ZONES=2
    make_PAR.data $jdd $NB_ZONES
 fi
+grep "Total number of" DEC_$jdd.out
 N=`ls *.Zones | wc -l`
 # Clean
 trust -clean 1>/dev/null 2>&1
+
 
