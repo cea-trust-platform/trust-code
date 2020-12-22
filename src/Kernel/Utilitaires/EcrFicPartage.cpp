@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #include <Comm_Group.h>
 #include <communications.h>
 
-extern Stat_Counter_Id mpi_sendrecv_io_counter_;
+extern Stat_Counter_Id IO_EcrireFicPartageBin_counter_;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartage,"EcrFicPartage",SFichier);
 Entree& EcrFicPartage::readOn(Entree& s)
@@ -271,7 +271,9 @@ Sortie& EcrFicPartage::syncfile()
               if (bin_)
                 {
                   // Ecriture binaire sans conversion :
+                  statistiques().begin_count(IO_EcrireFicPartageBin_counter_);
                   os.write(buffer_data, buf_size);
+                  statistiques().end_count(IO_EcrireFicPartageBin_counter_, buf_size);
                 }
               else
                 {

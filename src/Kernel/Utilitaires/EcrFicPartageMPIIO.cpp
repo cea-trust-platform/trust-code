@@ -29,6 +29,8 @@
 #include <Comm_Group_MPI.h>
 #include <string>
 
+extern Stat_Counter_Id IO_EcrireFicPartageMPIIO_counter_;
+
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO,"EcrFicPartageMPIIO",SFichier);
 
 static void handle_error(int errcode, const char *str)
@@ -250,7 +252,6 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   disp_=(MPI_Offset)disp_int;
 
   MPI_Offset disp_me = disp_ + mppartial_sum(n) * sizeof_etype;
-
   // ROMIO hints:
   if (Process::nproc()>1024)
     {
@@ -286,7 +287,9 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_File_set_view(mpi_file_, disp_me, etype, filetype, (char*)"native", mpi_info);
 
   // Write all:
+  statistiques().begin_count(IO_EcrireFicPartageMPIIO_counter_);
   MPI_File_write_all(mpi_file_, (void*)ob, n, etype, MPI_STATUS_IGNORE);
+  statistiques().end_count(IO_EcrireFicPartageMPIIO_counter_, n * sizeof_etype);
 
   // Update the position of the pointer file:
   disp_+=mp_sum(n) * sizeof_etype;

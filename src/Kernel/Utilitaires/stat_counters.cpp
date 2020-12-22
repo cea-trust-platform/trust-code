@@ -73,6 +73,9 @@ Stat_Counter_Id interprete_scatter_counter_;
 Stat_Counter_Id temps_total_execution_counter_;
 Stat_Counter_Id initialisation_calcul_counter_;
 
+Stat_Counter_Id IO_EcrireFicPartageMPIIO_counter_;
+Stat_Counter_Id IO_EcrireFicPartageBin_counter_;
+
 Stat_Counter_Id m1;
 Stat_Counter_Id m2;
 Stat_Counter_Id m3;
@@ -169,10 +172,10 @@ void declare_stat_counters()
   mpi_maxint_counter_    = statistiques().new_counter(2, "MPI_maxint",    "MPI_allreduce", 1);
   mpi_barrier_counter_   = statistiques().new_counter(2, "MPI_barrier",   "MPI_allreduce", 1);
 
-  // Compte le temps de communication dans *_Fic_Par*
-  // nombre = approx le nombre de synchro fichiers
-  // quantity = nombre d'octets recus + nombre d'octets envoyes
-  mpi_sendrecv_io_counter_ = statistiques().new_counter(2, "MPI_send_recv_io", "io", 1);
+  // Compte le temps d'ecriture dans EcrireFicPartageXXX (gros volumes de donnees dans fichiers XYZ ou LATA)
+  // quantity = nombre d'octets ecrits
+  IO_EcrireFicPartageMPIIO_counter_ = statistiques().new_counter(2, "MPI_File_write_all", "IO", 0); // Appels sur chaque process
+  IO_EcrireFicPartageBin_counter_ = statistiques().new_counter(2, "write", "IO", 0); // Appel uniquement sur maitre, appels plus souvents car bufferise
 
   // Execution de Scatter::interpreter
   interprete_scatter_counter_ = statistiques().new_counter(2, "Scatter", 0);
@@ -270,6 +273,7 @@ void print_statistics_analyse(const char * message, int mode_append)
   Stat_Results marqueur3;
   Stat_Results pb_fluide;
   Stat_Results pb_combustible;
+  Stat_Results IO_seq, IO_par;
 
   // Stop the counters
   statistiques().stop_counters();
@@ -310,6 +314,7 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(source_counter_, source);
       statistiques().get_stats(postraitement_counter_, postraitement);
       statistiques().get_stats(sauvegarde_counter_, sauvegarde);
+
       statistiques().get_stats(temporary_counter_, temporary);
       statistiques().get_stats(assemblage_sys_counter_, assemblage);
       statistiques().get_stats(update_vars_counter_, update_vars);
@@ -324,6 +329,8 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(divers_counter_, divers);
       statistiques().get_stats(probleme_fluide_, pb_fluide);
       statistiques().get_stats(probleme_combustible_, pb_combustible);
+      statistiques().get_stats(IO_EcrireFicPartageBin_counter_, IO_seq);
+      statistiques().get_stats(IO_EcrireFicPartageMPIIO_counter_, IO_par);
 
       if (GET_COMM_DETAILS)
         {
@@ -427,52 +434,60 @@ void print_statistics_analyse(const char * message, int mode_append)
       double avg_wait_fraction = Process::mp_sum(wait_fraction)
                                  / Process::nproc();
 
-      double total_quantity = Process::mp_sum(sauvegarde.max_quantity);
-      // Print into .TU file
+      double total_quantity = Process::mp_sum(sauvegarde.quantity);
+      int debit_seq = IO_seq.max_time>0 ? (int) (Process::mp_sum(IO_seq.quantity) / (1024 * 1024) / IO_seq.max_time) : 0;
+      int debit_par = IO_par.max_time>0 ? (int) (Process::mp_sum(IO_par.quantity) / (1024 * 1024) / IO_par.max_time) : 0;
 
+      // Print into .TU file
 
       if (Process::je_suis_maitre())
         {
           SFichier stat_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
-          write_stat_file("probleme thermohydraulique  ", pb_fluide             , temps_total, stat_file);
-          write_stat_file("probleme combustible        ", pb_combustible        , temps_total, stat_file);
+          write_stat_file("probleme thermohydraulique  ", pb_fluide, temps_total, stat_file);
+          write_stat_file("probleme combustible        ", pb_combustible, temps_total, stat_file);
           stat_file << "\n";
           stat_file << "Timesteps                         " << pas_de_temps.max_count << "\n";
           stat_file << "Secondes / pas de temps           " << pas_de_temps.max_time / pas_de_temps.max_count << "\n";
-          write_stat_file("solveurs Ax=B               ", solveur               , pas_de_temps, stat_file);
-          write_stat_file("solveur diffusion_implicite ", diffusion_implicite   , pas_de_temps, stat_file);
-          write_stat_file("assemblage matrice_implicite", assemblage            , pas_de_temps, stat_file);
-          write_stat_file("mettre_a_jour               ", mettre_a_jour         , pas_de_temps, stat_file);
-          write_stat_file("update_vars                 ", update_vars           , pas_de_temps, stat_file);
-          write_stat_file("update_fields               ", update_fields         , pas_de_temps, stat_file);
-          write_stat_file("operateurs convection       ", convection            , pas_de_temps, stat_file);
-          write_stat_file("operateurs diffusion        ", diffusion             , pas_de_temps, stat_file);
-          write_stat_file("operateurs decroissance     ", decay                 , pas_de_temps, stat_file);
-          write_stat_file("operateurs gradient         ", gradient              , pas_de_temps, stat_file);
-          write_stat_file("operateurs divergence       ", divergence            , pas_de_temps, stat_file);
-          write_stat_file("operateurs source           ", source                , pas_de_temps, stat_file);
-          write_stat_file("operations postraitement    ", postraitement         , pas_de_temps, stat_file);
-          write_stat_file("calcul dt                   ", dt                    , pas_de_temps, stat_file);
-          write_stat_file("modele turbulence           ", nut                   , pas_de_temps, stat_file);
-          write_stat_file("operations sauvegarde       ", sauvegarde            , pas_de_temps, stat_file);
-          write_stat_file("marqueur1                   ", marqueur1             , pas_de_temps, stat_file);
-          write_stat_file("marqueur2                   ", marqueur2             , pas_de_temps, stat_file);
-          write_stat_file("marqueur3                   ", marqueur3             , pas_de_temps, stat_file);
-          write_stat_file("calcul divers               ", divers                , pas_de_temps, stat_file);
-
+          write_stat_file("solveurs Ax=B               ", solveur, pas_de_temps, stat_file);
+          write_stat_file("solveur diffusion_implicite ", diffusion_implicite, pas_de_temps, stat_file);
+          write_stat_file("assemblage matrice_implicite", assemblage, pas_de_temps, stat_file);
+          write_stat_file("mettre_a_jour               ", mettre_a_jour, pas_de_temps, stat_file);
+          write_stat_file("update_vars                 ", update_vars, pas_de_temps, stat_file);
+          write_stat_file("update_fields               ", update_fields, pas_de_temps, stat_file);
+          write_stat_file("operateurs convection       ", convection, pas_de_temps, stat_file);
+          write_stat_file("operateurs diffusion        ", diffusion, pas_de_temps, stat_file);
+          write_stat_file("operateurs decroissance     ", decay, pas_de_temps, stat_file);
+          write_stat_file("operateurs gradient         ", gradient, pas_de_temps, stat_file);
+          write_stat_file("operateurs divergence       ", divergence, pas_de_temps, stat_file);
+          write_stat_file("operateurs source           ", source, pas_de_temps, stat_file);
+          write_stat_file("operations postraitement    ", postraitement, pas_de_temps, stat_file);
+          write_stat_file("calcul dt                   ", dt, pas_de_temps, stat_file);
+          write_stat_file("modele turbulence           ", nut, pas_de_temps, stat_file);
+          write_stat_file("operations sauvegarde       ", sauvegarde, pas_de_temps, stat_file);
+          write_stat_file("marqueur1                   ", marqueur1, pas_de_temps, stat_file);
+          write_stat_file("marqueur2                   ", marqueur2, pas_de_temps, stat_file);
+          write_stat_file("marqueur3                   ", marqueur3, pas_de_temps, stat_file);
+          write_stat_file("calcul divers               ", divers, pas_de_temps, stat_file);
           if (echange_espace_virtuel.max_count > 0)
             {
-              stat_file << "Nb echange_espace_virtuel / pas de temps " << echange_espace_virtuel.max_count / pas_de_temps.max_count << "\n";
+              stat_file << "Nb echange_espace_virtuel / pas de temps "
+                        << echange_espace_virtuel.max_count / pas_de_temps.max_count << "\n";
             }
           if (comm_allreduce.max_count > 0)
             {
               double tmp = comm_allreduce.max_count / pas_de_temps.max_count;
               stat_file << "Nb MPI_allreduce / pas de temps " << tmp << "\n";
-              if (tmp>30)
+              if (tmp > 30)
                 {
-                  stat_file << "-----------------------------------------------------------------------------------------------------------------------------------------" << finl;
-                  stat_file << "Warning: The number of MPI_allreduce calls per time step is high. Contact TRUST support if you plan to run massive parallel calculation." << finl;
-                  stat_file << "-----------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                  stat_file
+                      << "-----------------------------------------------------------------------------------------------------------------------------------------"
+                      << finl;
+                  stat_file
+                      << "Warning: The number of MPI_allreduce calls per time step is high. Contact TRUST support if you plan to run massive parallel calculation."
+                      << finl;
+                  stat_file
+                      << "-----------------------------------------------------------------------------------------------------------------------------------------"
+                      << finl;
                 }
             }
           if (solveur.max_count > 0)
@@ -487,18 +502,20 @@ void print_statistics_analyse(const char * message, int mode_append)
             }
           if (sauvegarde.max_count > 0)
             {
-              stat_file << "I/O:" << finl;
               char s[20] = "";
               stat_file << "Nb sauvegardes         : " << sauvegarde.max_count
                         << "\n";
-              stat_file << "Secondes / sauvegarde  : "
-                        << sauvegarde.max_time / sauvegarde.max_count << "\n";
-              sprintf(s, "%2.2f", total_quantity / (1024 * 1024));
-              stat_file << "Donnees ecrites [Mo]   : " << s << "\n";
-              stat_file << "Debit           [Mo/s] : "
+              /*              stat_file << "Secondes / sauvegarde  : "
+                                      << sauvegarde.max_time / sauvegarde.max_count << "\n"; */
+              sprintf(s, "%2.2f", total_quantity / (sauvegarde.max_count * 1024 * 1024));
+              stat_file << "Data / sauvegarde [Mo] : " << s << "\n";
+              /* stat_file << "Debit           [Mo/s] : "
                         << (int) (total_quantity / (1024 * 1024)
-                                  / sauvegarde.max_time) << "\n";
+                                  / sauvegarde.max_time) << "\n"; */
             }
+          stat_file << "I/O:" << finl;
+          if (debit_seq>0) stat_file << "Debit write seq [Mo/s] : " << debit_seq << "\n";
+          if (debit_par>0) stat_file << "Debit write par [Mo/s] : " << debit_par << "\n";
 
           if (comm_sendrecv.max_count > 0)
             {

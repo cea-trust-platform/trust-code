@@ -1158,10 +1158,11 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
                   int avg_communication_type_pourcentage = Process::mp_sum(communication_type_pourcentage);
                   avg_communication_type_pourcentage /= Process::nproc();
 
-                  sprintf(desc,"%10s %-20s", "\tdont", si.description[counter_id] );
-
                   if(avg_communication_of_type_j)
-                    comm << desc << avg_communication_of_type_j << "s (" << avg_communication_type_pourcentage << "%) \n";
+                    {
+                      sprintf(desc, "%10s %-25s %.2e s (%2i%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
+                      comm << desc;
+                    }
                 }
 
             }
