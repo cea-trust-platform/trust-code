@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,10 +23,7 @@
 #include <Terme_Source_Canal_perio.h>
 #include <Motcle.h>
 #include <Double.h>
-#include <SFichier.h>
-#include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Schema_Temps_base.h>
 #include <communications.h>
 #include <Zone_VF.h>
 #include <Zone_Cl_dis_base.h>
@@ -247,17 +244,20 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
               Nom filename(nom_du_cas());
               filename+="_Channel_Flow_Rate_";
               filename+=ext_nom_source_ ;
-              SFichier flow_rate_file(filename,(premiere_ecriture?ios::out:ios::app));
-              flow_rate_file.setf(ios::scientific);
+              if (!flow_rate_file_.is_open())
+                {
+                  flow_rate_file_.ouvrir(filename, (premiere_ecriture?ios::out:ios::app));
+                  flow_rate_file_.setf(ios::scientific);
+                }
               // on met des commentaires dans l'entete du fichier
               if ((tps <= (tps_init+dt)) && premiere_ecriture)
                 {
                   if (equation().probleme().is_QC()==1)
-                    flow_rate_file << "# Time t     Flow rate Q(t) in [kg.s-1] if SI units used" << finl;
+                    flow_rate_file_ << "# Time t     Flow rate Q(t) in [kg.s-1] if SI units used" << finl;
                   else
-                    flow_rate_file << "# Time t     Flow rate Q(t) in [m3.s-1] if SI units used" << finl;
+                    flow_rate_file_ << "# Time t     Flow rate Q(t) in [m3.s-1] if SI units used" << finl;
                 }
-              flow_rate_file << tps+dt << " " << debit_e << finl;
+              flow_rate_file_ << tps+dt << " " << debit_e << finl;
 
               if (deb_==0)
                 {
@@ -445,31 +445,37 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
               Nom filename(nom_du_cas());
               filename+="_Pressure_Gradient_";
               filename+= ext_nom_source_ ;
-              SFichier pressure_gradient_file(filename,(premiere_ecriture?ios::out:ios::app));
-              pressure_gradient_file.setf(ios::scientific);
+              if (!pressure_gradient_file_.is_open())
+                {
+                  pressure_gradient_file_.ouvrir(filename, (premiere_ecriture?ios::out:ios::app));
+                  pressure_gradient_file_.setf(ios::scientific);
+                }
               if ((tps <= (tps_init+dt)) && premiere_ecriture)
                 {
                   if (equation().probleme().is_QC()==1)
-                    pressure_gradient_file << "# Time t     gradP(t)      gradP(t)-gradP(t-dt) in [kg.s-2.m-2] if SI units used" << finl;
+                    pressure_gradient_file_ << "# Time t     gradP(t)      gradP(t)-gradP(t-dt) in [kg.s-2.m-2] if SI units used" << finl;
                   else
-                    pressure_gradient_file << "# Time t     gradP(t)      gradP(t)-gradP(t-dt) in [m.s-2] if SI units used" << finl;
+                    pressure_gradient_file_ << "# Time t     gradP(t)      gradP(t)-gradP(t-dt) in [m.s-2] if SI units used" << finl;
                 }
-              pressure_gradient_file << tps+dt << " " << source_ << "  " << si << finl;
+              pressure_gradient_file_ << tps+dt << " " << source_ << "  " << si << finl;
 
               // Write the restart file:
               filename=nom_du_cas();
               filename+="_Channel_Flow_Rate_repr_";
               filename+=ext_nom_source_;
-              SFichier restart_file(filename,(premiere_ecriture?ios::out:ios::app));
-              restart_file.setf(ios::scientific);
+              if (!restart_file_.is_open())
+                {
+                  restart_file_.ouvrir(filename, (premiere_ecriture?ios::out:ios::app));
+                  restart_file_.setf(ios::scientific);
+                }
               if ((tps <= (tps_init+dt)) && premiere_ecriture)
                 {
                   if (equation().probleme().is_QC()==1)
-                    restart_file << "# Time t       Flow rate Q(t)    Flow rate Q(0) in [kg.s-1]   gradP(t) in [kg.s-2.m-2] if SI units used" << finl;
+                    restart_file_ << "# Time t       Flow rate Q(t)    Flow rate Q(0) in [kg.s-1]   gradP(t) in [kg.s-2.m-2] if SI units used" << finl;
                   else
-                    restart_file << "# Time t       Flow rate Q(t)    Flow rate Q(0) in [m3.s-1]   gradP(t) in [m.s-2] if SI units used" << finl;
+                    restart_file_ << "# Time t       Flow rate Q(t)    Flow rate Q(0) in [m3.s-1]   gradP(t) in [m.s-2] if SI units used" << finl;
                 }
-              restart_file << tps+dt << "   " <<  debit_e << "      " << debit_ref_ << "                 " << source_ << finl;
+              restart_file_ << tps+dt << "   " <<  debit_e << "      " << debit_ref_ << "                 " << source_ << finl;
             }
         }
       else

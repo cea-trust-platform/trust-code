@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #define Terme_Source_Canal_perio_included
 
 #include <Source_base.h>
+#include <SFichier.h>
 class Probleme_base;
 
 // .DESCRIPTION
@@ -63,6 +64,10 @@ protected :
   mutable double dernier_temps_calc_ ;
   int is_debit_impose_;
   double debit_impose_;
+private:
+  mutable SFichier flow_rate_file_;
+  mutable SFichier pressure_gradient_file_;
+  mutable SFichier restart_file_;
 };
 
 
