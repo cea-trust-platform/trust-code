@@ -1,3 +1,4 @@
+XX/XX/20 (TRUST)  I/O issue   : .dt_ev, .progress files (and other channel flow rate files) open/close each time step could lead to bad performance on some file systems
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.2 : Enhancements, modifications and corrected bugs since version 1.8.1 :
 --------------------------------------------------------------------------------------------------
