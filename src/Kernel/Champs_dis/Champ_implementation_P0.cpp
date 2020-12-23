@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -610,7 +610,8 @@ int Champ_implementation_P0::affecter_(const Champ_base& ch)
     }
   else
     {
-      Cerr << "Warning (if called each time step): computing field " << le_champ().le_nom() << " on domain " << le_champ().zone_dis_base().zone().domaine().le_nom() << " is not optimized... " << finl;
+      if (le_champ().zone_dis_base().zone().nb_elem()>10000)
+        Cerr << "Warning (if called each time step): computing field " << le_champ().le_nom() << " on domain " << le_champ().zone_dis_base().zone().domaine().le_nom() << " is not optimized... " << finl;
       return 0;
     }
 }
