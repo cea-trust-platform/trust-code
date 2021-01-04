@@ -1403,12 +1403,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
-  if (Reason<0 && Reason != KSP_DIVERGED_ITS)
+  if (Reason<0)
     {
       Cerr << "No convergence on the resolution with the Petsc solver." << finl;
       Cerr << "Reason given by Petsc: ";
       if      (Reason==KSP_DIVERGED_NULL)                Cerr << "KSP_DIVERGED_NULL" << finl;
-      else if (Reason==KSP_DIVERGED_ITS)                 Cerr << "KSP_DIVERGED_ITS" << finl;
       else if (Reason==KSP_DIVERGED_DTOL)                Cerr << "KSP_DIVERGED_DTOL" << finl;
       else if (Reason==KSP_DIVERGED_BREAKDOWN)           Cerr << "KSP_DIVERGED_BREAKDOWN" << finl;
       else if (Reason==KSP_DIVERGED_BREAKDOWN_BICG)      Cerr << "KSP_DIVERGED_BREAKDOWN_BICG" << finl;
@@ -1416,8 +1415,19 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       else if (Reason==KSP_DIVERGED_INDEFINITE_PC)       Cerr << "KSP_DIVERGED_INDEFINITE_PC" << finl;
       else if (Reason==KSP_DIVERGED_NANORINF)            Cerr << "KSP_DIVERGED_NANORINF" << finl;
       else if (Reason==KSP_DIVERGED_INDEFINITE_MAT)      Cerr << "KSP_DIVERGED_INDEFINITE_MAT" << finl;
+      else if (Reason==KSP_DIVERGED_ITS)
+        {
+          if (convergence_with_nb_it_max_)
+            Reason = KSP_CONVERGED_ITS;
+          else
+            {
+              Cerr << "KSP_DIVERGED_ITS" << finl;
+              Cerr << "That means the solver didn't converge within the maximal iterations number." << finl;
+              Cerr << "You can change the maximal number of iterations with the -ksp_max_it option." << finl;
+            }
+        }
       else Cerr << (int)Reason << finl;
-      exit();
+      if (Reason<0) exit();
     }
   // Recuperation du nombre d'iterations
   int nbiter;

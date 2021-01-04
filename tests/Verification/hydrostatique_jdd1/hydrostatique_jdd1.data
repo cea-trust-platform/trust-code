@@ -50,7 +50,6 @@ Read sch
             -pc_fieldsplit_1_field b0
             -pc_fieldsplit_type schur
             -ksp_type fgmres
-            -ksp_max_it 10
         }
     }
 }
