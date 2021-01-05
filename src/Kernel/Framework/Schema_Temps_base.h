@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 #include <math.h>
 #include <DoubleTab.h>
 #include <Parser_U.h>
+#include <SFichier.h>
 
 class Equation;
 class Equation_base;
@@ -404,7 +405,9 @@ protected :
 private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
+  SFichier progress_;
   int disable_progress_; // Flag to disable the writing of the .progress file
+  SFichier dt_ev_;
   int disable_dt_ev_; // Flag to disable the writing of the .dt_ev file
 };
 

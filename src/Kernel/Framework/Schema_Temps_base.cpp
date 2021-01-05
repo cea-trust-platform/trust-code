@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,21 +46,28 @@ void Schema_Temps_base::initialize()
   pb_base().calculer_pas_de_temps();
   if (je_suis_maitre())
     {
-      Nom fichier(nom_du_cas());
-      fichier+=".dt_ev";
       if (!disable_dt_ev())
         {
+          Nom fichier(nom_du_cas()+".dt_ev");
           struct stat f;
           // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
           if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
             {
-              SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
+              dt_ev_.ouvrir(fichier,schema_impr() ? (ios::out) : (ios::app));
+              dt_ev_.setf(ios::scientific);
               if (schema_impr())
-                fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+                dt_ev_ << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
               for (int i=0; i<pb_base().nombre_d_equations(); i++)
-                fic << pb_base().equation(i).expression_residu();
+                dt_ev_ << pb_base().equation(i).expression_residu();
+            }
+          else
+            {
+              dt_ev_.ouvrir(fichier,ios::app);
+              dt_ev_.setf(ios::scientific);
             }
         }
+      if (!disable_progress() && !progress_.is_open())
+        progress_.ouvrir(nom_du_cas()+".progress");
     }
 
   if ((nb_pas_dt_==0) && ( ((mode_dt_start_==0) && est_egal(tinit_,0.)) || (mode_dt_start_==-1)) )
@@ -200,18 +207,12 @@ void Schema_Temps_base::validateTimeStep()
   problem.mettre_a_jour(temps_courant_+dt_);
   if (je_suis_maitre())
     {
-      Nom fichier(nom_du_cas());
-      fichier+=".dt_ev";
       if (!disable_dt_ev())
         {
-          SFichier fic(fichier,ios::app);
-          // On supprime la precision d'impression pour avoir le meme format que la sauvegarde.
-          // fic.precision(precision_impr());
-          fic.setf(ios::scientific);
           if (schema_impr())
-            fic << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
+            dt_ev_ << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
           for (int i=0; i<pb_base().nombre_d_equations(); i++)
-            pb_base().equation(i).imprime_residu(fic);
+            pb_base().equation(i).imprime_residu(dt_ev_);
         }
 
       // Impression du temps CPU estime restant
@@ -261,13 +262,8 @@ void Schema_Temps_base::validateTimeStep()
                   Cout << ". Progress: "<<(percent)<< finl;
                 }
             }
-          Nom prg(nom_du_cas());
-          prg+=".progress";
           if (!disable_progress())
-            {
-              SFichier toto(prg);
-              toto<< (percent)<< finl;
-            }
+            progress_<< (percent)<< finl;
         }
     }
   // Update time scheme:
@@ -276,14 +272,8 @@ void Schema_Temps_base::validateTimeStep()
 }
 void Schema_Temps_base::terminate()
 {
-  Nom prg(nom_du_cas());
-  prg+=".progress";
-  if (!disable_progress())
-    {
-      SFichier toto(prg);
-      toto<< (int)100<< finl;
-    }
-
+  if (je_suis_maitre() && !disable_progress())
+    progress_<< (int)100<< finl;
 }
 
 // Description:
