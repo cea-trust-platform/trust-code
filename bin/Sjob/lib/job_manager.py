@@ -10,7 +10,10 @@ def sendall_str(conn, s):
     conn.sendall(bytes(s, "UTF-8"))
 
 def my_log(msg):
-    print(msg, flush=True)  # Be sure to flush.
+    from datetime import datetime
+    t = datetime.now().strftime("%d/%m %H:%M:%S")
+    m = "[%s] %s" % (t, msg)
+    print(m, flush=True)  # Be sure to flush.
 
 class Job(object):
     """ A single job in the queue """
@@ -400,9 +403,11 @@ class SJobManager(object):
         elif (cmd=="stop"):
             sendall_str(conn,"stop")
             conn.close()
+            my_log("Sserver terminated.")
             return 0
         elif (cmd=="kill_and_stop"):
             self.kill_all(conn)
+            my_log("Sserver terminated.")
             return 0
         elif (cmd=="kill_all"):
             self.kill_all(conn)
@@ -410,6 +415,7 @@ class SJobManager(object):
             my_log("ERROR command not understood: " + data)
             sendall_str(conn,'Command not understood!')
             conn.close()
+            my_log("Sserver terminated.")
             return 1
 
         self.launch_next_job()

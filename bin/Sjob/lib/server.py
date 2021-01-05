@@ -9,6 +9,12 @@ FINISH = False
 manager = None
 zeLock = None
 
+def checkPsUtil():
+    try:
+        import psutil
+    except:
+        raise Exception("Python package psutil could not be imported!! Aborting.")
+
 def periodicRefresh():
     """ Periodic refresh launched in a thread to handle jobs killed outside the Sserver """
     global FINISH, manager, zeLock
@@ -77,5 +83,6 @@ def main2():
     pass
 
 if  __name__ == '__main__':
+    checkPsUtil()
     main1()
     pass
