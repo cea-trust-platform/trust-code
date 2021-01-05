@@ -1092,6 +1092,7 @@ m="# Path to a browser";e="`cherche_file TRUST_WEBBROWSER google-chrome firefox 
 TRUST_BLAS_LAPACK=""
 # Try to improve detection of MKL (Intel):
 [ "$MKLROOT" = "" ] && MKLROOT=$MKL_ROOTDIR # Sur sagittarius
+[ "$MKLROOT" = "" ] && MKLROOT=$MKL_ROOT # Intel 20
 [ "$MKLROOT" = "" ] && MKLROOT=`type -p icpc 2>/dev/null | awk -F/bin '{print $1}'`
 if [ "$MKLROOT" != "" ]
 then
