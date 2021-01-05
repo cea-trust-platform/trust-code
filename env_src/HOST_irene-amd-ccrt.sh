@@ -26,15 +26,20 @@ define_modules_config()
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
    # Load modules
    intel="intel/19.0.5.281"
-   mpi="mpi/wi4mpi" 			# Pour pouvoir ensuite switcher entre intelmpi et openmpi...
-   mpi="mpi/intelmpi/2019.0.5.281"
-   mpi="mpi/openmpi/4.0.2" 		# Performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
+   # module="$intel mpi/intelmpi/2019.0.5.281"
+   # car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
+   # openmpi="mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering"
+   # Recommendations CCRT debut 2021 (bcp de coeurs) a la place de la ligne precedente:
+   intel="intel/20.0.4"
+   openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5"
+   sw="feature/hcoll/multicast/disable"
    romio_hints="feature/openmpi/io/collective_buffering"
-   module="$intel $mpi $romio_hints"
+   module="$intel $openmpi $romio_hints"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
+   echo "module sw $sw 1>/dev/null" >> $env
    . $env
 }
 
