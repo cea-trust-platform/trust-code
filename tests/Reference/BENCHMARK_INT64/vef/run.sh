@@ -8,7 +8,7 @@ gunzip -c cylindre.geom.gz > cylindre.geom
 make_PAR.data Cx 25600
 
 # Run:
-srun -p rome -n 25600 $exec PAR_Cx 25600 -journal=0 2>&1 | tee PAR_Cx.log
+ccc_mprun -p rome -n 25600 $exec PAR_Cx 25600 -journal=0 2>&1 | tee PAR_Cx.log
 
 # Some results:
 # AMD ROME ms/it GC/SSOR Trust	Load Imbalance

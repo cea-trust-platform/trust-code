@@ -15,7 +15,7 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts XXX }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
 	zones_name DOM
 }
@@ -32,10 +32,12 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 1
+	nb_pas_dt_max 5
 	tinit 0
+	dt_max 0.1
 	dt_sauv 1.e-8
 	dt_impr -1
+	seuil_statio -1
 }
 
 # A fluid is defined #
@@ -76,6 +78,7 @@ Read pb
 	}
         Convection_Diffusion_Temperature
         {
+		equation_non_resolue 1
                 diffusion { negligeable }
                 convection { negligeable }
                 boundary_conditions
@@ -89,4 +92,5 @@ Read pb
         }
 	sauvegarde_simple xyz cas.xyz # Pour avoir une seule sauvegarde par fichier #
 }
+EcritureLectureSpecial cas
 Solve pb

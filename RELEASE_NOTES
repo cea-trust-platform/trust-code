@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+06/01/21 (TRUST)  Bug fixed   : Producing .xyz file could crash on large mesh (regression introduced in v1.7.8)
+06/01/21 (TRUST)  Output      : New option "format lata parallele mpi-io" to enable MPI parallel I/O when writing .lata files
 05/01/21 (TRUST)  I/O issue   : .dt_ev, .progress files (and other channel flow rate files) open/close each time step could lead to bad performance on some file systems
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.2 : Enhancements, modifications and corrected bugs since version 1.8.1 :

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,24 @@
 #include <Comm_Group.h>
 #include <communications.h>
 #include <Comm_Group_MPI.h>
+#include <string>
+
+extern Stat_Counter_Id IO_EcrireFicPartageMPIIO_counter_;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO,"EcrFicPartageMPIIO",SFichier);
+
+static void handle_error(int errcode, const char *str)
+{
+  char msg[MPI_MAX_ERROR_STRING];
+  True_int resultlen;
+  MPI_Error_string(errcode, msg, &resultlen);
+  Cerr << "======================" << finl;
+  Cerr << str << ": " << msg << finl;
+  Cerr << "Contact TRUST support." << finl;
+  Process::exit();
+}
+#define MPI_CHECK(fn) { int errcode; errcode = fn;\
+     if (errcode != MPI_SUCCESS) handle_error(errcode, #fn); }
 
 Entree& EcrFicPartageMPIIO::readOn(Entree& s)
 {
@@ -44,6 +60,7 @@ Sortie& EcrFicPartageMPIIO::printOn(Sortie& s) const
 
 EcrFicPartageMPIIO::EcrFicPartageMPIIO() : SFichier()
 {
+  bin_ = 1; // Binaire par defaut
 #ifdef MPI_
   mpi_file_=NULL;
 #endif
@@ -64,20 +81,16 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
     mpi_comm = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
   else
     mpi_comm = MPI_COMM_WORLD;
-  int ierr = MPI_File_open(mpi_comm, (char*)name, MPI_MODE_CREATE|MPI_MODE_RDWR, MPI_INFO_NULL, &mpi_file_);
-  if (ierr)
-    {
-      Cerr << "Error ierr= " << ierr << " when  MPI_File_open the file " << (Nom)name << finl;
-      Cerr << "Contact TRUST support." << finl;
-      exit();
-    }
+  int MPI_OPEN = mode == ios::app ? MPI_MODE_APPEND : MPI_MODE_CREATE;
+  int MPI_MODE = (mode == ios::app || ios::out) ? MPI_MODE_WRONLY : MPI_MODE_RDONLY;
+  MPI_CHECK(MPI_File_open(mpi_comm, (char*)name, MPI_OPEN|MPI_MODE, MPI_INFO_NULL, &mpi_file_));
   // Set MPI errors fatal:
   MPI_File_set_errhandler(mpi_file_,MPI_ERRORS_ARE_FATAL);
   // Set initial displacement:
   disp_=0;
+  // Ecriture d'un entete specifique pour le build int64 ?
   if (mode==ios::out)
     {
-
       if (je_suis_maitre())
         {
           Nom marq("INT64");
@@ -86,12 +99,13 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
 #endif
         }
     }
+  /*
   else
     {
       Cerr<<"not coded in EcrFicPartageMPIIO::ouvrir"<<finl;
       exit();
-    }
-  return 0;
+    }*/
+  return 1;
 }
 void EcrFicPartageMPIIO::close()
 {
@@ -107,12 +121,14 @@ void EcrFicPartageMPIIO::check()
       Cerr << "Only master process can call EcrFicPartageMPIIO::operator <<(...)" << finl;
       exit();
     }
-  MPI_Offset offset,disp;
-  MPI_File_get_position(mpi_file_, &offset); // Relative position
-  MPI_File_get_byte_offset(mpi_file_, offset, &disp); // Absolute position
+  MPI_Offset offset; // Relative position
+  MPI_File_get_position(mpi_file_, &offset);
+  MPI_Offset disp;   // Absolute position
+  MPI_File_get_byte_offset(mpi_file_, offset, &disp);
   if (disp_!=disp)
     {
       Cerr << "Error in EcrFicPartageMPIIO::check()" << finl;
+      Cerr << "Decalage : disp_= " << (int)disp_ << " disp=" << (int)disp << finl;
       Cerr << "Contact TRUST support." << finl;
     }
 }
@@ -129,41 +145,71 @@ void EcrFicPartageMPIIO::write(MPI_Datatype MPI_TYPE, const void* ob)
 
 Sortie& EcrFicPartageMPIIO::operator <<(const Separateur& ob)
 {
-  check();
-  // On n'ecrit pas les separateurs. Voir Sortie::operator<<(const Separateur& ob)
+  if (bin_)
+    {
+      // On n'ecrit pas les separateurs. Voir Sortie::operator<<(const Separateur& ob)
+      check();
+    }
+  else
+    {
+      if (ob.get_type() == ob.ENDL)
+        (*this)<<"\n";
+      else if (ob.get_type() == ob.SPACE)
+        (*this)<<" ";
+      else
+        {
+          Cerr << "Unknown separator in EcrFicPartageMPIIO::operator <<" << finl;
+          Process::exit();
+        }
+    }
   return *this;
 }
+
 Sortie& EcrFicPartageMPIIO::operator <<(const char* ob)
 {
   int size=strlen(ob) + 1;
+  //int size=strlen(ob);
   for (int i=0; i<size; i++)
     write(MPI_CHAR, &ob[i]);
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
 {
+  if (bin_)
+    {
 #ifdef INT_is_64_
-  write(MPI_LONG, &ob);
+      write(MPI_LONG, &ob);
 #else
-  write(MPI_INT, &ob);
+      write(MPI_INT, &ob);
 #endif
+    }
+  else
+    (*this)<<std::to_string(ob).c_str();
   return *this;
 }
-
 Sortie& EcrFicPartageMPIIO::operator <<(const unsigned& ob)
 {
-  write(MPI_UNSIGNED, &ob);
+  if (bin_)
+    write(MPI_UNSIGNED, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str();
   return *this;
 }
 
 Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
 {
-  write(MPI_FLOAT, &ob);
+  if (bin_)
+    write(MPI_FLOAT, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str();
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const double& ob)
 {
-  write(MPI_DOUBLE, &ob);
+  if (bin_)
+    write(MPI_DOUBLE, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str(); // ToDo utiliser sprintf
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const Objet_U& ob)
@@ -182,6 +228,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const Objet_U& ob)
 // MPI_File_get_byte_offset converts a view relative offset (etype units) into an absolute byte position
 // MPI_File_set_view(file,disp,etype,...) disp should be specified in absolute bytes from the start of the file
 // sizeof(MPI_DOUBLE)=4 !!! Should use:MPI_Type_size( MPI_DOUBLE, &size ) to return 8 !!!
+// Ecriture d'une zone memoire pointee par ob contenant n MPI_TYPE :
 int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
 {
   MPI_Datatype etype;
@@ -195,18 +242,8 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_Type_commit(&filetype);
 
   // Before collecting operations, update disp_ on all processes:
-
-  // 21/03/2018: Compilation error: no instance of overloaded function "envoyer_broadcast" matches the argument list argument types are: (MPI_Offset, int)
-  // on cobalt TGCC-CCRT cluster with module: Wi4MPI with bull-openmpi/2.0.2
-  // WARNING! This part is to be reviewed because not validated...
-  //envoyer_broadcast(disp_, 0);
-  int disp_int=(int)disp_;
-  envoyer_broadcast(disp_int, 0);
-  disp_=(MPI_Offset)disp_int;
-
+  envoyer_broadcast(disp_, 0);
   MPI_Offset disp_me = disp_ + mppartial_sum(n) * sizeof_etype;
-
-
   // ROMIO hints:
   if (Process::nproc()>1024)
     {
@@ -242,7 +279,9 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_File_set_view(mpi_file_, disp_me, etype, filetype, (char*)"native", mpi_info);
 
   // Write all:
+  statistiques().begin_count(IO_EcrireFicPartageMPIIO_counter_);
   MPI_File_write_all(mpi_file_, (void*)ob, n, etype, MPI_STATUS_IGNORE);
+  statistiques().end_count(IO_EcrireFicPartageMPIIO_counter_, n * sizeof_etype);
 
   // Update the position of the pointer file:
   disp_+=mp_sum(n) * sizeof_etype;
@@ -256,22 +295,4 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   return 1;
 }
 
-int EcrFicPartageMPIIO::put(const unsigned* ob, int n, int pas /* useless in binary */)
-{
-  return put(MPI_UNSIGNED, ob, n);
-}
-
-int EcrFicPartageMPIIO::put(const int* ob, int n, int pas /* useless in binary */)
-{
-#ifdef INT_is_64_
-  return put(MPI_LONG, ob, n);
-#else
-  return put(MPI_INT, ob, n);
-#endif
-}
-
-int EcrFicPartageMPIIO::put(const double* ob, int n, int pas /* useless in binary */)
-{
-  return put(MPI_DOUBLE, ob, n);
-}
 #endif

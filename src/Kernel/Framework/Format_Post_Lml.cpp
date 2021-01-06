@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -460,121 +460,56 @@ int Format_Post_Lml::ecrire_temps_lml(const double temps,Nom& nom_fich)
 }
 
 int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
-                                      int ncomp,double temps_,
+                                      int ncomp, double temps_,
                                       const Nom&   id_du_champ,
                                       const Nom&   id_du_domaine,
                                       const Nom&   localisation,
                                       const DoubleTab& data,Nom& nom_fich)
 
 {
+  EcrFicPartage os;
+  os.ouvrir(nom_fich,ios::app);
+  Nom nom_top("Topologie_");
+  nom_top+= domaine.zone(0).le_nom();
+  nom_top+="_";
+  nom_top+=domaine.le_nom();
+  int dim = domaine.les_sommets().dimension(1);
+  Nom nom_post = id_du_champ;
+  Nom nom_dom= domaine.le_nom();
 
-  //////////////////////////////////////////////////////////////////////////////////////
   if (ncomp==-1)
     {
-
-      EcrFicPartage os;
-      os.ouvrir(nom_fich,ios::app);
-      int dim = domaine.les_sommets().dimension(1);
-
-      int nb_compo_=1;
-      if (data.nb_dim()>1)
-        nb_compo_=data.dimension(1);
-
-
-      Nom nom_top("Topologie_");
-      nom_top+= domaine.zone(0).le_nom();
-      nom_top+="_";
-      nom_top+=domaine.le_nom();
-      Nom nom_post=id_du_champ;
-      Nom nom_dom=domaine.le_nom();
-
+      int nb_compo_ = data.nb_dim()>1 ? data.dimension(1) : 1;
       if(localisation=="SOM")
         {
-          int nb_som=domaine.nb_som();
+          int nb_som = domaine.nb_som();
           int nb_som_tot = Process::mp_sum(nb_som);
           int nb_som_PE = mppartial_sum(nb_som);
-          if(je_suis_maitre())
+          if (dim==2)
             {
-              os << "CHAMPPOINT ";
-              os << nom_post << " " << nom_top << " " << temps_ << finl;
+              nb_som_tot*=2;
+              nb_som_PE*=2;
             }
-          int nb_compo_dv=nb_compo_;
-          if(nb_compo_==2) nb_compo_dv=3;
+          int nb_compo_dv = (nb_compo_==2 ? 3 : nb_compo_);
+
           if(je_suis_maitre())
             {
+              os << "CHAMPPOINT " << nom_post << " " << nom_top << " " << temps_ << finl;
               os << nom_post << " " << nb_compo_dv << " " << unite_[0] << " "
-                 << "type0" << " " ;
+                 << "type0" << " " << nb_som_tot << finl;
             }
-          if (dim ==3)
-            {
-              if(je_suis_maitre())
-                {
-                  os <<nb_som_tot << finl;
-                }
-              if (nb_compo_ == 1)
-                {
-                  os.lockfile();
-                  for (int j=0; j<nb_som; j++)
-                    os << j+1+nb_som_PE << " " << data(j,0) << finl;
-                  os.unlockfile();
-                  os.syncfile();
-                }
-              else
-                {
-                  os.lockfile();
-                  for (int j=0; j<nb_som; j++)
-                    {
-                      os << j+1+nb_som_PE << " " ;
-                      for (int ncomp2=0; ncomp2<nb_compo_; ncomp2++)
-                        os << data(j,ncomp2) << " ";
-                      if (nb_compo_==2) os << "0." ;
-                      os << finl;
-                    }
-                  os.unlockfile();
-                  os.syncfile();
-                }
-            }
-          else if (dim ==2)
-            {
-              if(je_suis_maitre())
-                {
-                  os << 2*nb_som_tot << finl;
-                }
-              if (nb_compo_ == 1)
-                {
-                  int j;
-                  os.lockfile();
-                  for (j=0; j<nb_som; j++)
-                    os << j+1+(2*nb_som_PE) << " " << data(j,0) << finl;
-                  for (j=0; j<nb_som; j++)
-                    os << nb_som+j+1+(2*nb_som_PE) << " " << data(j,0) << finl;
-                  os.unlockfile();
-                  os.syncfile();
-                }
-              else
-                {
-                  int j;
-                  os.lockfile();
-                  for (j=0; j<nb_som; j++)
-                    {
-                      os << j+1+(2*nb_som_PE) << " " ;
-                      for (int ncomp2=0; ncomp2<nb_compo_; ncomp2++)
-                        os << data(j,ncomp2) << " ";
-                      if (nb_compo_==2) os << "0." ;
-                      os << finl;
-                    }
-                  for (j=0; j<nb_som; j++)
-                    {
-                      os << nb_som+j+1+(2*nb_som_PE) << " " ;
-                      for (int ncomp2=0; ncomp2<nb_compo_; ncomp2++)
-                        os << data(j,ncomp2) << " ";
-                      if (nb_compo_==2) os << "0." ;
-                      os << finl;
-                    }
-                  os.unlockfile();
-                  os.syncfile();
-                }
-            }
+          os.lockfile();
+          for (int i=0; i<4-dim; i++)
+            for (int j = 0; j < nb_som; j++)
+              {
+                os << i * nb_som + j + 1 + nb_som_PE << " ";
+                for (int comp = 0; comp < nb_compo_; comp++)
+                  os << data(j, comp) << " ";
+                if (nb_compo_ == 2) os << "0.";
+                os << finl;
+              }
+          os.unlockfile();
+          os.syncfile();
         }
       else if(localisation=="ELEM")
         {
@@ -582,49 +517,21 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
           int nb_elem=zone.nb_elem();
           int nb_elem_tot = Process::mp_sum(nb_elem);
           int nb_elem_PE = mppartial_sum(nb_elem);
-          if (nb_compo_ == 1)
+          for (int comp=0; comp<nb_compo_; comp++)
             {
-              if(je_suis_maitre())
+              if (je_suis_maitre())
                 {
                   os << "CHAMPMAILLE ";
-                  os << nom_post << " " << nom_top << " " << temps_ << finl;
-                  os << nom_post << " " << nb_compo_ << " " << unite_[0] << " " ;
+                  os << (nb_compo_ == 1 ? nom_post : noms_compo[comp]) << " " << nom_top << " " << temps_ << finl;
+                  os << (nb_compo_ == 1 ? nom_post : noms_compo[comp]) << " " << (int)1 << " " << unite_[comp] << " " ;
                   os << "type0" << " " << nb_elem_tot << finl;
                 }
               os.lockfile();
-              for (int num_elem=0; num_elem<nb_elem; num_elem++)
-                os << num_elem+1+nb_elem_PE << " " << data(num_elem,0) << finl;
+              for (int j=0; j<nb_elem; j++)
+                os << j+1+nb_elem_PE << " " << data(j,comp) << finl;
               os.unlockfile();
               os.syncfile();
             }
-          else
-            {
-              Noms noms_post(nb_compo_);
-              //On supprime l ajout de l extension elem_dom car les composantes
-              //d un Champ_Generique_Interpolation possedent deja l extension loc_nom_domaine
-              for (int i=0; i<nb_compo_; i++)
-                {
-                  noms_post[i] = noms_compo[i];
-                }
-
-
-              for (int ncomp2=0; ncomp2<nb_compo_; ncomp2++)
-                {
-                  if(je_suis_maitre())
-                    {
-                      os << "CHAMPMAILLE ";
-                      os << noms_post[ncomp2]  << " " << nom_top << " " << temps_ << finl;
-                      os << noms_post[ncomp2] << " " << (int)1 << " " << unite_[ncomp2] << " " ;
-                      os << "type0" << " " << nb_elem_tot << finl;
-                    }
-                  os.lockfile();
-                  for (int num_elem=0; num_elem<nb_elem; num_elem++)
-                    os << num_elem+1+nb_elem_PE << " " << data(num_elem,ncomp2) << finl;
-                  os.unlockfile();
-                  os.syncfile();
-                }
-            }
-          //      Debog::verifier("Champ_base::postraiter_lml_dom type_elem valeurs 2 :",valeurs);
         }
       else
         {
@@ -632,82 +539,37 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
                << " with the keyword " << localisation << finl;
           return -1;
         }
-
-      os.flush();
-      os.syncfile();
-
     }
   else
     {
-      //////////////////////////////////////////////////////////////////////////
-
-      //////////////////////////////////////////////////////////////////////////
-
-
-      EcrFicPartage os;
-      os.ouvrir(nom_fich,ios::app);
-
-      //Cout << "Champ_base::postraiter_lml_dom " << que_suis_je() << " " << le_nom() << " sur " << dom.le_nom() << " aux " << loc_post << finl;
-      Nom nom_top("Topologie_");
-      nom_top+= domaine.zone(0).le_nom();
-      nom_top+="_";
-      nom_top+=domaine.le_nom();
-
-      int dim = domaine.les_sommets().dimension(1);
-
-      //On idendifie nom_post a id_du_champ car complement de nom ajoute dans calculer_valeurs_som_compo_post()
-      //ou calculer_valeurs_elem_compo_post()
-      ///Nom nom_post = noms_compo[ncomp];
-      Nom nom_post = id_du_champ;
-      Nom nom_dom= domaine.le_nom();
-
       if(localisation=="SOM")
         {
           int nb_som=domaine.nb_som();
           int nb_som_tot = Process::mp_sum(nb_som);
           int nb_som_PE = mppartial_sum(nb_som);
+          if (dim==2)
+            {
+              nb_som_tot*=2;
+              nb_som_PE*=2;
+            }
           if(je_suis_maitre())
             {
               os << "CHAMPPOINT ";
               os << nom_post << " " << nom_top << " " << temps_ << finl;
+              os << nom_post << " " << (int)1 << " " << unite_[ncomp] << " "
+                 << "type0" << " " << nb_som_tot << finl;
             }
-          if (dim ==3)
-            {
-              if(je_suis_maitre())
-                {
-                  os << nom_post << " " << (int)1 << " " << unite_[ncomp] << " "
-                     << "type0" << " " << nb_som_tot << finl;
-                }
-              os.lockfile();
-              for (int j=0; j<nb_som; j++)
-                {
-                  os << j+1+nb_som_PE << " " << data(j) << finl;
-                }
-              os.unlockfile();
-              os.syncfile();
-            }
-          else if (dim ==2)
-            {
-              if(je_suis_maitre())
-                {
-                  os << nom_post << " " << (int)1 << " " << unite_[ncomp] << " "
-                     << "type0" << " " << 2*nb_som_tot << finl;
-                }
-              os.lockfile();
-              int j;
-              for (j=0; j<nb_som; j++)
-                os << j+1+(2*nb_som_PE) << " " << data(j) << finl;
-              for (j=0; j<nb_som; j++)
-                os << nb_som+j+1+(2*nb_som_PE) << " " << data(j) << finl;
-              os.unlockfile();
-              os.syncfile();
-            }
+          os.lockfile();
+          for (int i=0; i<4-dim; i++)
+            for (int j=0; j<nb_som; j++)
+              os << i*nb_som+j+1+nb_som_PE << " " << data(j) << finl;
+          os.unlockfile();
+          os.syncfile();
         }
       else if(localisation=="ELEM")
         {
           const Zone& zone=domaine.zone(0);
           int nb_elem=zone.nb_elem();
-
           int nb_elem_tot = Process::mp_sum(nb_elem);
           int nb_elem_PE = mppartial_sum(nb_elem);
           if(je_suis_maitre())
@@ -718,8 +580,8 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
               os << "type0" << " " << nb_elem_tot << finl;
             }
           os.lockfile();
-          for (int num_elem=0; num_elem<nb_elem; num_elem++)
-            os << num_elem+1+nb_elem_PE << " " << data(num_elem) << finl;
+          for (int j=0; j<nb_elem; j++)
+            os << j+1+nb_elem_PE << " " << data(j) << finl;
           os.unlockfile();
           os.syncfile();
         }
@@ -727,19 +589,10 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
         {
           Cerr << "We do not know to postprocess " << id_du_champ
                << " with the keyword " << localisation << finl;
-
           return -1;
         }
-
-      os.flush();
-      os.syncfile();
-
-      //////////////////////////////////////////////////////////////////////////
     }
-
   return 1;
-
-
 }
 
 

@@ -1,8 +1,28 @@
-Test de l'implementation IO parallele
--------------------------------------
-Pour lancer:
-./run.sh
+Test des implementation IO parallele
+------------------------------------
+Reproduction de GAMELAN (20 000 mailles/MPI) pour tester
+# CLUSTER:  2 600 000 / 128 -> 20000 cells/MPI
+# PC:          40 000 /   2 -> 20000 cells/MPI
+
+Les jeux de donnees sont construis sans resoudre le probleme pour maximiser l'influence des I/O
+
+Pour tester MPI-IO sur l'ecriture xyz:
+./xyz.sh
+
+Pour tester MPI-IO sur l'ecriture lata:
+./lata.sh
+
+# On doit retrouver avec MPI-IO les debits disques maxi (donnees par exemple avec la commande dd.ksh. Sur SSD, presque 2Go/s)
+
+Modelisation performances:
+
+IO seq:
+temps_total = volume/MPI + volume/debit_reseau 	+ volume/debit_disque	= A + A*MPI + A*MPI/debit_disque	
+IO //:
+temps_total = volume/MPI + 			+ volume/debit_disque 	= A + 	    + A*MPI/(debit_disque*serveur_disque?)
+
+Volume/MPI=A
 
 ToDo:
 Suppression si nproc()=1 des commentaires //
-Verifier le total ecrit (ne correspond pas a la taille du fichier)
+
