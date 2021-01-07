@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -186,6 +186,21 @@ void Postraitement_lata::ecrire_champ(const Nom&         basename,
                                             basename,
                                             fmt,
                                             option);
+}
+
+int Postraitement_lata::finir_lata(const Nom& basename,
+                                   const Comm_Group * comm_group)
+{
+  Format_Post_Lata::Options_Para option;
+  if (comm_group)
+    option = Format_Post_Lata::SINGLE_FILE;
+  else
+    option = Format_Post_Lata::MULTIPLE_FILES;
+
+  Format_Post_Lata_V1::finir_lata_V1(basename,
+                                     option,
+                                     1);
+  return 1;
 }
 
 
