@@ -3,7 +3,13 @@
 # Generate SWIG of the TRUST ICoCo interface:
 
 source $TRUST_MEDCOUPLING_ROOT/env.sh || echo "MEDCoupling not available"
-cd $project_directory/share/swig
+
+if [[ -z ${MEDICoCo_project_directory} ]] # variable not set
+then
+    cd $project_directory/share/swig
+else
+    cd $MEDICoCo_project_directory/share/swig
+fi
 
 rm -rf install build
 mkdir -p build

@@ -1,6 +1,11 @@
 #!/bin/bash
 
-cd $project_directory/share/swig
+if [[ -z ${MEDICoCo_project_directory} ]] # variable not set
+then
+    cd $project_directory/share/swig
+else
+   cd $MEDICoCo_project_directory/share/swig
+fi
 
 ./test_only.sh || exit 255
 
