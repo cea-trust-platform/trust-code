@@ -33,6 +33,7 @@ extern Stat_Counter_Id IO_EcrireFicPartageMPIIO_counter_;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO,"EcrFicPartageMPIIO",SFichier);
 
+#ifdef MPI_
 static void handle_error(int errcode, const char *str)
 {
   char msg[MPI_MAX_ERROR_STRING];
@@ -45,6 +46,7 @@ static void handle_error(int errcode, const char *str)
 }
 #define MPI_CHECK(fn) { int errcode; errcode = fn;\
      if (errcode != MPI_SUCCESS) handle_error(errcode, #fn); }
+#endif
 
 Entree& EcrFicPartageMPIIO::readOn(Entree& s)
 {
