@@ -1,0 +1,30 @@
+#!/bin/bash
+# Teste le calcul mini-GAMELAN (~4-5e6 mailles) sur un noeud GPU de JeanZay ou Irene:
+cp ../GAMELAN/*.data .
+cp ../GAMELAN/*.geom .
+# On raffine 3 fois (8*8*8) 
+sed -i "1,$ s?dom.geom?dom.geom raffiner_isotrope dom raffiner_isotrope dom raffiner_isotrope dom?g" GAMELAN.data
+# On passe a un solveur iteratif
+sed -i "1,$ s?cholesky { }?GCP { precond ssor { omega 1.6 } seuil 1.e-7 impr }?" GAMELAN.data
+
+# Liste des cas:
+for cas in 40CPU 40CPU_1GPU # 1CPU 1CPU_1GPU 40CPU_2GPU 40CPU_2GPU
+do
+   mkdir -p $cas
+   cd $cas
+   cp ../GAMELAN.data .
+   ln -s -f ../dom.geom .
+   CPU=`echo $cas | awk -F_ '{gsub("CPU","",$1);print $1}'`
+   GPU=`echo $cas | awk -F_ '{gsub("GPU","",$2);print $2}'`
+   echo $CPU" CPU" et $GPU" GPU"
+   if [ $CPU -gt 1 ]
+   then
+      make_PAR.data GAMELAN $CPU
+      mv PAR_GAMELAN.data GAMELAN.data
+   fi
+   # Utilisation d'un solveur GPU AmgX:
+   [ "$GPU" != "" ] &&  sed -i "1,$ s?Petsc?Petsc_amgx?" GAMELAN.data
+   # Lancement calcul
+   trust -gpu GAMELAN $CPU 1>GAMELAN.out 2>GAMELAN.err
+   cd -
+done 

@@ -13,7 +13,7 @@ lire_fichier dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool Metis { Nb_parts 8 }
+    Partition_tool Metis { Nb_parts 2 }
     Larg_joint 2
     zones_name dom
 }

@@ -898,9 +898,16 @@ void Solv_Petsc::create_solver(Entree& entree)
                 //
                 // CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot
                 pc_supported_on_gpu_by_amgx=1;
+                pc_supported_on_gpu_by_petsc=1;
                 if (amgx_)
                   {
                     amgx_option+="preconditioner=MULTICOLOR_DILU\n";
+                  }
+                else if (gpu_)
+                  {
+                    add_option("pc_type","ilu");
+                    add_option("pc_factor_mat_solver_type","cusparse");
+                    add_option("pc_factor_levels",(Nom)level.value());
                   }
                 else
                   {
