@@ -40,7 +40,7 @@ else
 	mv *.tex doc_r
 	cp *.sty doc_r/.
 	@grep -v batchmode  doc_r/doc.tex  > doc_r/doc_inter.tex
-	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
+	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;makeindex doc.idx ;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
 endif
 test:	triou.py
 	(mkdir -p tests; cat tests_src/makefile > tests/makefile; cd tests; time $(MAKE))
