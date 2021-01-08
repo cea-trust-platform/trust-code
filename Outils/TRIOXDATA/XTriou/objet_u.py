@@ -27,7 +27,7 @@ def mySave(self,fileName):
         pass
     st+=']\n'
     #print str
-    stream = open(fileName, "aw")
+    stream = open(fileName, "a")
     stream.write(st)
     stream.close()
     pass
@@ -105,6 +105,9 @@ try:
     def myinit(self,parent,after,xtree):
         # print "myinit"
 
+        if xtree.name=="is_read":
+            self.xtree=None
+            return
         if xtree.name=="name_u":
             #print "ok"
             if (parent.xtree.parent.parent is not None) or isinstance(parent.node,interprete) or isinstance(parent.node,comment):
@@ -2486,7 +2489,8 @@ Here is a list of post-processable fields, but it is not the only ones.
 
     if 'listobj_impl' in l:
         l.remove('listobj_impl')
-        l.append('listobj_impl')
+        if not lutil:
+          l.append('listobj_impl')
     if 'objet_lecture' in l:
         l.remove('objet_lecture')
         l.append('objet_lecture')

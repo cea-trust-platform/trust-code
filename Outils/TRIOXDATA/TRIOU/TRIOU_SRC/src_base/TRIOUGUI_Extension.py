@@ -36,15 +36,15 @@ except:
 # -----------------------------
 # Message boxes
 # -----------------------------
-def QInformation(parent, title, message, btn1 = QString.null, btn2 = QString.null, btn3 = QString.null):
+def QInformation(parent, title, message, btn1 = STRNULL, btn2 = STRNULL, btn3 = STRNULL):
     """ Information message box """
     return QMessageBox.information(parent, title, message, btn1, btn2, btn3)
 
-def QWarning(parent, title, message, btn1 = QString.null, btn2 = QString.null, btn3 = QString.null):
+def QWarning(parent, title, message, btn1 = STRNULL, btn2 = STRNULL, btn3 = STRNULL):
     """ Warning message box """
     return QMessageBox.warning(parent, title, message, btn1, btn2, btn3)
 
-def QError(parent, title, message, btn1 = QString.null, btn2 = QString.null, btn3 = QString.null):
+def QError(parent, title, message, btn1 = STRNULL, btn2 = STRNULL, btn3 = STRNULL):
     """ Error message box """
     return QMessageBox.critical(parent, title, message, btn1, btn2, btn3)
 
@@ -124,15 +124,15 @@ def StartSolver():
 # action: import data file
 # -----------------------------
 def ImportDataFile():
-    aFilters = QStringList(); aFilters.append( qApp.tr( "Data files (*.data)" ) ); aFilters.append( qApp.tr( "All files (*.*)" ) )
+    #aFilters = QStringList(); aFilters.append( qApp.tr( "Data files (*.data)" ) ); aFilters.append( qApp.tr( "All files (*.*)" ) )
     #aFile = getSalomePyQt().getFileName( getSalomePyQt().getDesktop(), "", aFilters, "Import data file", 1 )
     print("ici")
     from xmainwindow import getMainWindow
     titi=getMainWindow()
-    aFile=QFileDialog.getOpenFileName(QString.null,
+    aFile=QFileDialog.getOpenFileName(STRNULL,
                                       "(*.data)",
                                       titi,"Import data file","Import data file")
-    if not aFile.isEmpty():
+    if aFile:
 
         from xcontext import getContext
         context = getContext()
@@ -143,8 +143,10 @@ def ImportDataFile():
             pass
         else:
             theWorkingDir = '/tmp'
-            theWorkingDir = os.tempnam( theWorkingDir, "TRIOU" )
-            os.makedirs( theWorkingDir )
+            import tempfile
+            theWorkingDir = tempfile.mkdtemp(prefix="xdataTRUST", dir=theWorkingDir)
+
+#            os.makedirs( theWorkingDir )
             os.system("ln -sf "+str(aFile)+' '+theWorkingDir)
             import sys
             syspath=sys.path
@@ -189,13 +191,15 @@ def ExportDataFile():
     else:
         from xmainwindow import getMainWindow
         titi=getMainWindow()
-        aFile=QFileDialog.getSaveFileName(QString.null,
+        aFile=QFileDialog.getSaveFileName(STRNULL,
                                           "(*.data)",
                                           titi,"Export data file","Export data file")
-        if not aFile.isEmpty():
+        if aFile:
             theWorkingDir = '/tmp'
-            theWorkingDir = os.tempnam( theWorkingDir, "TRIOU" )
-            os.makedirs( theWorkingDir )
+            #{theWorkingDir = os.tempnam( theWorkingDir, "TRIOU" )
+            #os.makedirs( theWorkingDir )
+            import tempfile
+            theWorkingDir = tempfile.mkdtemp(prefix="xdataTRUST", dir=theWorkingDir)
             #os.system("ln -sf "+str(aFile)+' '+theWorkingDir)
             # sauvegarde en python
             from xtree import getMainXTree
