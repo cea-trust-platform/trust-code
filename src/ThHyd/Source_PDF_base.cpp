@@ -185,6 +185,13 @@ DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) 
   return resu;
 }
 
+DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, const int i_traitement_special) const
+{
+  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+  return resu;
+}
+
 /*##################################################################################################
 ####################################################################################################
 ################################# CONTRIBUER_A_AVEC ################################################
@@ -206,6 +213,13 @@ DoubleTab& Source_PDF_base::calculer(DoubleTab& resu) const
   resu = 0;
   const DoubleTab& vitesse=equation().inconnue().valeurs();
   return ajouter_(vitesse,resu);
+}
+
+DoubleTab& Source_PDF_base::calculer(DoubleTab& resu, const int i_traitement_special) const
+{
+  resu = 0;
+  const DoubleTab& vitesse=equation().inconnue().valeurs();
+  return ajouter_(vitesse,resu, i_traitement_special);
 }
 
 void Source_PDF_base::calculer_vitesse_imposee_elem_fluid()

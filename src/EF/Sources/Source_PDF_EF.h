@@ -47,7 +47,8 @@ class Source_PDF_EF : public Source_PDF_base
 
 public:
   void associer_pb(const Probleme_base& );
-  DoubleTab& ajouter_(const DoubleTab& vitesse, DoubleTab&) const;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse& matrice) const ;
   DoubleVect diag_coeff_elem(ArrOfDouble&, const DoubleTab&, int) const ;

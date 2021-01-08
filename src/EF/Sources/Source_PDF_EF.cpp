@@ -40,6 +40,8 @@
 #include <SFichier.h>
 #include <Source_PDF_EF.h>
 
+#include <Op_Conv_EF.h>
+
 Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
 // XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
 
@@ -469,8 +471,12 @@ DoubleTab Source_PDF_EF::compute_pond(const DoubleTab& rho_m, const DoubleTab& a
 This function redirects toward the ajouter_ which correspond to the model chosen.
 */
 
-DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
+DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, const int i_traitement_special) const
 {
+  /* i_traitement_special = 0 => traitement classique; coefficient (1/eta) */
+  /* i_traitement_special = 1 => coefficient (1/eta -> 1) */
+  /* i_traitement_special = 2 => coefficient (1/eta -> 1 + 1/eta) */
+
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
   int nb_som_elem=zone_EF.zone().nb_som_elem();
@@ -491,9 +497,41 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) co
     {
       if (aire(num_elem)>0.)
         {
-          tuvw(0) =  1.0 / modele_lu_.eta_;
-          tuvw(1) =  1.0 / modele_lu_.eta_;
-          tuvw(2) =  1.0 / modele_lu_.eta_;
+          if (i_traitement_special == 0)
+            {
+              tuvw(0) =  1.0 / modele_lu_.eta_;
+              tuvw(1) =  1.0 / modele_lu_.eta_;
+              tuvw(2) =  1.0 / modele_lu_.eta_;
+            }
+          else if (i_traitement_special == 1) //terme temps en rho v
+            {
+              tuvw(0) =  1.0;
+              tuvw(1) =  1.0;
+              tuvw(2) =  1.0;
+            }
+          else if (i_traitement_special == 101) //terme temps en v
+            {
+              tuvw(0) =  1.0 / rho_m(num_elem);
+              tuvw(1) =  1.0 / rho_m(num_elem);
+              tuvw(2) =  1.0 / rho_m(num_elem);
+            }
+          else if (i_traitement_special == 2)
+            {
+              tuvw(0) =  1.0 + 1.0 / modele_lu_.eta_;
+              tuvw(1) =  1.0 + 1.0 / modele_lu_.eta_;
+              tuvw(2) =  1.0 + 1.0 / modele_lu_.eta_;
+            }
+          else if (i_traitement_special == 102)
+            {
+              tuvw(0) =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+              tuvw(1) =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+              tuvw(2) =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+            }
+          else
+            {
+              Cerr << "Source_PDF_EF::ajouter_ : i_traitement_special doit etre 0, 1 ou 2" << finl;
+              exit();
+            }
           for (int comp=0; comp<ncomp; comp++)
             {
               double tijvj=0;
@@ -513,6 +551,13 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) co
             }
         }
     }
+  return resu;
+}
+
+DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
+{
+  const int i_traitement_special = 0 ;
+  ajouter_(vitesse, resu, i_traitement_special) ;
   return resu;
 }
 
@@ -1016,8 +1061,22 @@ int Source_PDF_EF::impr(Sortie& os) const
           const DoubleTab& vitesse=equation().inconnue().valeurs();
           int nb_som_tot=la_zone_EF.valeur().zone().nb_som_tot();
           Nom espace=" \t";
+
+          Equation_base& eq_base = ref_cast_non_const(Equation_base, equation());
+          DoubleTrav secmem_conv(vitesse);
+          int transport_rhou=0;
+          if (eq_base.nombre_d_operateurs() > 1)
+            {
+              const Op_Conv_EF& op_conv = ref_cast(Op_Conv_EF, eq_base.operateur(1).l_op_base());
+              Cerr << "///////////////////////// .vitesse() : " << op_conv.vitesse().le_nom() << finl ;
+              transport_rhou= (op_conv.vitesse().le_nom()=="rho_u"?1:0);
+              eq_base.derivee_en_temps_conv(secmem_conv , vitesse);
+            }
+
+          int i_traitement_special = (transport_rhou==1?2:102);
           DoubleTab resu(vitesse);
-          calculer(resu);
+          calculer(resu, i_traitement_special);
+
           DoubleVect source_term[3];
           bilan_ = 0.0;
           for (int i=0; i<dimension; i++)
@@ -1026,7 +1085,8 @@ int Source_PDF_EF::impr(Sortie& os) const
               source_term[i] = 0.;
               for (int j=0; j<nb_som_tot; j++)
                 {
-                  source_term[i](j) = resu(j,i) - sec_mem_pdf(j,i);
+                  int filter = (dabs(resu(j,i)) > 1.e-6?1:0);
+                  source_term[i](j) = resu(j,i) - sec_mem_pdf(j,i) + secmem_conv(j,i)*filter;
                 }
               bilan_(i) = mp_somme_vect(source_term[i]);
             }

@@ -173,11 +173,26 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     {
       Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eqnNS.sources())[i_source_PDF].valeur());
       Cerr<<"Immersed Interface: Dirichlet velocity in momentum equation for PDF (if any)."<<finl;
+      // Terme PDF IB value : -rho/delta_t  ksi_gamma/epsilon U_gamma
       DoubleTab secmem_pdf(resu);
       src.calculer_pdf(secmem_pdf);
       resu -= secmem_pdf;
-      src.set_sec_mem_pdf(secmem_pdf);
       resu.echange_espace_virtuel();
+
+      // Terme en temps : -rho/delta_t ksi_gamma Un
+      int i_traitement_special = 101;
+      if (eqnNS.nombre_d_operateurs() > 1)
+        {
+          Cerr << "///////////////////////// vitesse_pour_transpor : " << eqnNS.vitesse_pour_transport().le_nom() << finl ;
+          if (eqnNS.vitesse_pour_transport().le_nom()=="rho_u") i_traitement_special = 1;
+        }
+      DoubleTrav secmem_pdf_time(resu);
+      src.calculer(secmem_pdf_time, i_traitement_special);
+      secmem_pdf += secmem_pdf_time;
+
+      // Sauvegarde de secmem_pdf
+      secmem_pdf.echange_espace_virtuel();
+      src.set_sec_mem_pdf(secmem_pdf);
 
       DoubleTab coeff;
       coeff = eqnNS.get_champ_coeff_pdf_som();
