@@ -152,6 +152,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   /*pb.discretisation().discretiser_champ("vitesse",la_zone_EF,vectoriel,nom_c1,unites1,nb_comp,0.,vitesse_imposee_);
   vitesse_imposee_.valeur().affecter(mod_.vitesse_imposee_);*/
   vitesse_imposee_ = modele_lu_.vitesse_imposee_.valeur().valeurs();
+  pb.discretisation().discretiser_champ("champ_sommets",la_zone_EF,"","",1,0., champ_nodal_);
 }
 
 void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
@@ -1081,7 +1082,7 @@ int Source_PDF_EF::impr(Sortie& os) const
           bilan_ = 0.0;
           for (int i=0; i<dimension; i++)
             {
-              source_term[i] = equation().probleme().get_champ("vitesse").valeurs();
+              source_term[i] = champ_nodal_.valeurs();
               source_term[i] = 0.;
               for (int j=0; j<nb_som_tot; j++)
                 {

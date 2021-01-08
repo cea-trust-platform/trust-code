@@ -233,7 +233,7 @@ void Schema_Temps_base::validateTimeStep()
           //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
           double dpercent=(1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
           // si la pente est >0 on diverge ....
-          if ((seuil_statio_>0)&&(cumul_slope_<-1e-20))
+          if ((seuil_statio_>0)&&(cumul_slope_<-1e-20) && seuil_statio_ < residu_) // dans un pb_couple on peut avoir (seuil_statio_ > residu) pour un des problemes
             {
               double distance= (-log(residu_+1e-20)+log(seuil_statio_))/(cumul_slope_)* nb_pas_dt();
 
