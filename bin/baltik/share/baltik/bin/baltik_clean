@@ -72,6 +72,7 @@ project_test_directory="${project_directory}/build/tests"
 
 # suppression du repertoire de compilation
 rm -rf $project_build_directory
+find ./ -name .check_sources.ok -exec rm -f {} \;
 
 # suppression du makefile
 rm -rf $project_makefile
@@ -129,6 +130,6 @@ if [ $ALL -eq 1 ]
     env_file_full=$project_directory/full_env_${project_name}.sh
     rm -f  $env_file $env_file_full
     rm -rf ${project_directory}/share/doc_auto
-    rm -f ${project_directory}/share/doc_src/Keywords.Vim ${project_directory}/share/doc_src/Keywords.txt.n
+    #rm -f ${project_directory}/share/doc_src/Keywords.Vim ${project_directory}/share/doc_src/Keywords.txt.n
     #rm -rf ${project_directory}/archives_dependencies
 fi
