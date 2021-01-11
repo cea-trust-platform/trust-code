@@ -575,9 +575,9 @@ then
       if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] || [ ${HOST#orcus-} != $HOST ]
       then
         TRUST_NB_PROCS=8
-      elif [ ${HOST#summer} != $HOST ]
+      elif [ "${HOST#summer}" != $HOST ]
       then
-        TRUST_NB_PROCS=4
+        TRUST_NB_PROCS=1
       fi
    fi
    echo $TRUST_NB_PROCS
