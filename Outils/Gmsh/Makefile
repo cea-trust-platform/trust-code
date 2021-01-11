@@ -1,4 +1,3 @@
-include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
 CC=$(TRUST_CC)
 name=gmsh
 install=$(TRUST_ROOT)/exec/$(name)
@@ -8,6 +7,7 @@ all : $(cible)
 
 $(cible) : Makefile install_gmsh Demo_Gmsh.sh $(TRUST_MED_ROOT)/lib/libmed.so
 	make clean
+	include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
 	@./install_gmsh #1>$(install).log 2>&1
 	make demo #1>>$(install).log 2>&1
 
@@ -15,6 +15,7 @@ demo:
 	./Demo_Gmsh.sh
 
 check:
+	include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
 	./install_gmsh -check
 
 clean:
