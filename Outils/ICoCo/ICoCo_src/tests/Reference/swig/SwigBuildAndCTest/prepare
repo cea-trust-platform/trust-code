@@ -4,10 +4,10 @@
 
 source $TRUST_MEDCOUPLING_ROOT/env.sh || echo "MEDCoupling not available"
 
-if [[ -z ${MEDICoCo_project_directory} ]] # variable not set
+if [[ ! -d "${MEDICoCo_project_directory}" ]] # variable not set
 then
     cd $project_directory/share/swig
-else
+else # We are included in a sub project
     cd $MEDICoCo_project_directory/share/swig
 fi
 

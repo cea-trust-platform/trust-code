@@ -17,10 +17,10 @@ done
 export OPT
 
 # Lancement du calcul couple ICOCO:
-if [[ -z ${MEDICoCo_project_directory} ]] # variable does not exist
+if [[ ! -d "${MEDICoCo_project_directory}" ]] # variable does not exist
 then
    sh $project_directory/share/bin/create_Makefile 2
-else
+else # we are included as a sub project
    sh $MEDICoCo_project_directory/share/bin/create_Makefile 2
 fi
 

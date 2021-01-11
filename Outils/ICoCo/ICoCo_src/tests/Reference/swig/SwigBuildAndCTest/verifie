@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [[ -z ${MEDICoCo_project_directory} ]] # variable not set
+if [[ ! -d "${MEDICoCo_project_directory}" ]] # variable not set
 then
     cd $project_directory/share/swig
-else
+else # we are included as a sub project
    cd $MEDICoCo_project_directory/share/swig
 fi
 
