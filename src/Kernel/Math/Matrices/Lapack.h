@@ -225,6 +225,16 @@ extern "C"
                           const int*    const  // INFO
                          );
 
+  void F77DECLARE(DPOSV)(const char*   const, // UPLO
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const int*    const  // INFO
+                        );
+
   void F77DECLARE(DPPSV)(const char*   const, // UPLO
                          const int*    const, // N
                          const int*    const, // NRHS
@@ -429,6 +439,16 @@ extern "C"
                           const int*    const, // LDA
                           const int*    const  // INFO
                          );
+
+  void F77DECLARE(dposv)(const char*   const, // UPLO
+                         const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const int*    const  // INFO
+                        );
 
   void F77DECLARE(dppsv)(const char*   const, // UPLO
                          const int*    const, // N
@@ -708,6 +728,19 @@ inline  void F77NAME(DPOTRI)(const char*   const UPLO,
                             )
 {
   F77NAME(dpotri)(UPLO, N, A, LDA, INFO);
+}
+
+inline void F77NAME(DPOSV)(const char*   const UPLO,
+                           const int*    const N,
+                           const int*    const NRHS,
+                           const double* const A,
+                           const int*    const LDA,
+                           const double* const B,
+                           const int*    const LDB,
+                           const int*    const INFO
+                          )
+{
+  F77NAME(dposv)(UPLO, N, NRHS, A, LDA, B, LDB, INFO);
 }
 
 inline void F77NAME(DPPSV)(const char*   const UPLO,
