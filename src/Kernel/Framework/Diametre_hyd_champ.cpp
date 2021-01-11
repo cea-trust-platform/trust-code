@@ -58,8 +58,7 @@ Entree& Diametre_hyd_champ::interpreter(Entree& is)
 
   // On passe par la zone_VF
   Zone_VF& zvf=ref_cast(Zone_VF, pb.equation(0).zone_dis().valeur());
-  DoubleVect& dh_elem = zvf.diametre_hydraulique_elem();
-  int nb_elem_tot = zvf.zone().nb_elem_tot();
+  DoubleTab& dh_elem = zvf.diametre_hydraulique_elem();
 
   // on discretise des champs equivalents pour pouvoir faire affecter
   // puis on recopie les valeurs
@@ -68,8 +67,7 @@ Entree& Diametre_hyd_champ::interpreter(Entree& is)
 
   dh_elem_p.valeur().valeurs()=0;
   dh_elem_p.valeur().affecter(le_champ);
-  for (int elem=0; elem<nb_elem_tot; elem++)
-    dh_elem(elem)=dh_elem_p.valeurs()(elem);
+  dh_elem = dh_elem_p.valeurs();
 
   return is;
 }
