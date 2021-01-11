@@ -566,7 +566,7 @@ void Zone_CoviMAC::calculer_h_carre()
     }
 }
 
-void disp(const DoubleTab& A)
+void disp_dt(const DoubleTab& A)
 {
   int i, j, k;
   if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
@@ -581,7 +581,7 @@ void disp(const DoubleTab& A)
   fprintf(stderr, A.nb_dim() == 3 ? "}}}\n" : (A.nb_dim() == 2 ? "}}\n" : "}\n"));
 }
 
-void disp(const ArrOfDouble& A)
+void disp_da(const ArrOfDouble& A)
 {
   int i;
   for (i = 0, fprintf(stderr, "{"); i < A.size_array(); i++)
@@ -589,7 +589,7 @@ void disp(const ArrOfDouble& A)
   fprintf(stderr, "}\n");
 }
 
-void disp(const IntTab& A)
+void disp_it(const IntTab& A)
 {
   int i, j;
   if (A.nb_dim() == 2) for (i = 0; i < A.dimension(0); i++)
@@ -600,7 +600,7 @@ void disp(const IntTab& A)
   fprintf(stderr, A.nb_dim() == 2 ? "}}\n" : "}\n");
 }
 
-void disp(const ArrOfInt& A)
+void disp_ia(const ArrOfInt& A)
 {
   int i;
   for (i = 0, fprintf(stderr, "{"); i < A.size_array(); i++)
@@ -608,31 +608,31 @@ void disp(const ArrOfInt& A)
   fprintf(stderr, "}\n");
 }
 
-void disp(const Matrice_Morse& M)
+void disp_m(const Matrice_Morse& M)
 {
   DoubleTab A(M.nb_lignes(), M.nb_colonnes());
   for (int i = 0; i < A.dimension(0); i++)
     for (int k = M.get_tab1().addr()[i] - 1; k < M.get_tab1().addr()[i + 1] - 1; k++)
       A(i, M.get_tab2().addr()[k] - 1) = M.get_coeff().addr()[k];
-  disp(A);
+  disp_dt(A);
 }
 
-void disp(const tabs_t& mvect)
+void disp_mt(const tabs_t& mvect)
 {
   for (auto &&n_v : mvect)
-    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp(n_v.second), fprintf(stderr, "\n");
+    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp_dt(n_v.second), fprintf(stderr, "\n");
 }
 
-void disp(const std::map<std::string, Matrice_Morse>& mmat)
+void disp_mm(const std::map<std::string, Matrice_Morse>& mmat)
 {
   for (auto &&n_v : mmat)
-    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp(n_v.second), fprintf(stderr, "\n");
+    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp_m(n_v.second), fprintf(stderr, "\n");
 }
 
-void disp(const matrices_t& mmat)
+void disp_mmp(const matrices_t& mmat)
 {
   for (auto &&n_v : mmat)
-    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp(*n_v.second), fprintf(stderr, "\n");
+    fprintf(stderr, "%s:\n", n_v.first.c_str()), disp_m(*n_v.second), fprintf(stderr, "\n");
 }
 
 DoubleVect& Zone_CoviMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) const
