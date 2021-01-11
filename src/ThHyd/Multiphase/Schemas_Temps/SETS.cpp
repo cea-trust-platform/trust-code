@@ -239,13 +239,14 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
         }
       if (!Process::me()) fprintf(stderr, "\n");
 
-      /* mises a jour : inconnues -> milieu -> champs conserves des equations */
+      /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_v : val) n_v.second += incr[n_v.first];
       cv &= corriger_alpha(val["alpha"]);
       eqn.solv_masse().corriger_solution(val["vitesse"], val["vitesse"]); //pour CoviMAC : sert a corriger ve
 
       eq_qdm.milieu().mettre_a_jour(t); //partage par toutes les equations
       for (auto &&n_eq : eqs) if (n_eq.second->has_champ_conserve()) n_eq.second->champ_conserve().mettre_a_jour(t);
+      for (auto &&n_eq : eqs) n_eq.second->sources().mettre_a_jour(t);
     }
 
   eqn.solv_masse().corriger_solution(val["vitesse"], val["vitesse"]); //pour CoviMAC : sert a corriger ve
@@ -272,6 +273,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (auto &&n_v : val_pred) val[n_v.first] = n_v.second;
       eq_qdm.milieu().mettre_a_jour(t); //partage par toutes les equations
       for (auto &&n_eq : eqs) if (n_eq.second->has_champ_conserve()) n_eq.second->champ_conserve().mettre_a_jour(t);
+      for (auto &&n_eq : eqs) n_eq.second->sources().mettre_a_jour(t);
     }
 
   return;
