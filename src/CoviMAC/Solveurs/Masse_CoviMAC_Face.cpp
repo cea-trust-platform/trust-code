@@ -80,13 +80,13 @@ DoubleTab& Masse_CoviMAC_Face::appliquer_impl(DoubleTab& sm) const
   //vitesses aux faces
   for (f = 0; f < nf_tot; f++) for (n = 0; n < N; n++)
       {
-        for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += mu_f(f, n, i) * (a_r ? a_r->addr()[N * e + n] : 1);
-        sm.addr()[N * f + n] /= pf(f) * vf(f) * fac; //vitesse calculee
+        for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += mu_f(f, n, i) * (a_r ? (*a_r)(e, n) : 1);
+        sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
       }
 
   //vitesses aux elements
   for (e = 0; e < ne_tot; e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        sm.addr()[N * (nf_tot + D * e + d) + n] /= pe(e) * ve(e) * (a_r ? a_r->addr()[N * e + n] : 1);
+        sm(nf_tot + D * e + d, n) /= pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1);
 
   return sm;
 }
@@ -127,20 +127,20 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
       {
         double ar_f = 1;
         if (a_r && ch.fcl(f, 0) < 2) for (ar_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            ar_f += mu_f(f, n, i) * a_r->addr()[N * e + n];
+            ar_f += mu_f(f, n, i) * (*a_r)(e, n);
         double fac = ar_f * pf(f) * vf(f) / dt;
-        secmem.addr()[N * f + n] -= fac * resoudre_en_increments * inco.addr()[N * f + n];
-        if (ch.fcl(f, 0) < 2) secmem.addr()[N * f + n] += fac * passe.addr()[N * f + n];
+        secmem(f, n) -= fac * resoudre_en_increments * inco(f, n);
+        if (ch.fcl(f, 0) < 2) secmem(f, n) += fac * passe(f, n);
         else if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++)
-            secmem.addr()[N * f + n] += fac * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
+            secmem(f, n) += fac * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
         if (mat) (*mat)(N * f + n, N * f + n) += fac;
       }
 
-  for (e = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++, i++)
+  for (e = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, i++) for (n = 0; n < N; n++)
         {
-          double fac = pe(e) * ve(e) * (a_r ? a_r->addr()[N * e + n] : 1) / dt;
-          secmem.addr()[i] -= fac * (resoudre_en_increments * inco.addr()[i] - passe.addr()[i]);
-          if (mat) (*mat)(i, i) += fac;
+          double fac = pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1) / dt;
+          secmem(i, n) -= fac * (resoudre_en_increments * inco(i, n) - passe(i, n));
+          if (mat) (*mat)(N * i + n, N * i + n) += fac;
         }
 
 }

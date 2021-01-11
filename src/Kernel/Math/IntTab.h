@@ -144,28 +144,28 @@ private:
 //int IntTab_test();
 inline int& IntTab::operator[](int i)
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return IntVect::operator[](i);
 }
 
 inline const int& IntTab::operator[](int i) const
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return IntVect::operator[](i);
 }
 
 inline int& IntTab::operator()(int i)
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return IntVect::operator[](i);
 }
 
 inline const int& IntTab::operator()(int i) const
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return IntVect::operator[](i);
 }

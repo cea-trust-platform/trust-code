@@ -157,7 +157,7 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
   ch.init_cl();
   //partie superieure : diagonale
   for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++)
-      secmem.addr()[N * e + n] += coef(e) * pe(e) * ve(e) * inco.addr()[N * e + n] / dt;
+      secmem(e, n) += coef(e) * pe(e) * ve(e) * inco(e, n) / dt;
 
   //partie inferieure : valeur imposee pour les CLs de Neumann / Dirichlet / Echange_Impose
   for (f = 0; secmem.dimension_tot(0) > ne_tot && f < zone.nb_faces(); f++)

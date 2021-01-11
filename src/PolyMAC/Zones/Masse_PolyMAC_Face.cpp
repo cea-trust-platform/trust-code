@@ -76,7 +76,7 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 
   assert(sm.nb_dim() <= 2); // sinon on ne fait pas ce qu'il faut
   int nb_faces_tot = zone_PolyMAC.nb_faces_tot();
-  int nb_aretes_tot = (dimension < 3 ? zone_PolyMAC.nb_som_tot() : zone_PolyMAC.zone().nb_aretes_tot()), nc = sm.nb_dim() == 2 ? sm.dimension(1) : 1;
+  int nb_aretes_tot = (dimension < 3 ? zone_PolyMAC.nb_som_tot() : zone_PolyMAC.zone().nb_aretes_tot()), nc = sm.line_size();
 
   if (sm.dimension_tot(0) != nb_faces_tot && sm.dimension_tot(0) != nb_faces_tot + nb_aretes_tot)
     {
@@ -86,7 +86,7 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 
   //mise a zero de la partie vitesse de sm sur les faces a vitesse imposee
   for (int f = 0; f < zone_PolyMAC.nb_faces(); f++) if (ch.icl(f, 0) > 1)
-      for (int k = 0; k < nc; k++) sm.addr()[nc * f + k]= 0;
+      for (int k = 0; k < nc; k++) sm(f, k) = 0;
 
   return sm;
 }

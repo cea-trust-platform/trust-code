@@ -110,7 +110,7 @@ Champ_base& Champ_Face_CoviMAC::affecter_(const Champ_base& ch)
   else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
 
   for (f = 0; f < zone.nb_faces_tot(); f++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        val.addr()[N * f + n] += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
+        val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
   update_ve(val);
   return *this;
 }
@@ -158,9 +158,9 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
   zone.init_ve();
   for (e = 0; e < ne_tot; e++)
     {
-      for (d = 0; d < D; d++) for (n = 0; n < N; n++) val.addr()[N * (nf_tot + D * e + d) + n] = 0;
+      for (d = 0; d < D; d++) for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
       for (j = zone.ved(e); j < zone.ved(e + 1); j++) for (f = zone.vej(j), d = 0; d < D; d++) for (n = 0; n < N; n++)
-            val.addr()[N * (nf_tot + D * e + d) + n] += zone.vec(j, d) * val.addr()[N * f + n] * pf(f) / pe(e);
+            val(nf_tot + D * e + d, n) += zone.vec(j, d) * val(f, n) * pf(f) / pe(e);
     }
 }
 
@@ -262,15 +262,15 @@ void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
   int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = zone.nb_faces_tot();
   init_ve2();
 
-  for (e = 0, ed = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, ed++) for (n = 0; n < N; n++, i++)
+  for (e = 0, ed = 0, i = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, ed++, i++) for (n = 0; n < N; n++)
         {
           /* partie "interne" */
-          for (val.addr()[i] = 0, j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
-            val.addr()[i] += ve2c(j) * val.addr()[N * ve2j(j) + n];
+          for (val(i, n) = 0, j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
+            val(i, n) += ve2c(j) * val(ve2j(j), n);
 
           /* partie "faces de bord" (Dirichlet seulement) */
           for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
-            val.addr()[i] += ve2bc(j) * ref_cast(Dirichlet, cls[fcl(ve2bj(j, 0), 1)].valeur()).val_imp(fcl(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
+            val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl(ve2bj(j, 0), 1)].valeur()).val_imp(fcl(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
         }
 
   val.echange_espace_virtuel();
@@ -312,17 +312,17 @@ DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, cons
     }
 
   for (int p = 0, e; p < les_polys.size(); p++) for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++) for (n = 0; n < N; n++)
-        val(p, N * d + n) = valeurs().addr()[N * (nf_tot + D * e + d) + n];
+        val(p, N * d + n) = valeurs()(nf_tot + D * e + d, n);
   return val;
 }
 
 DoubleVect& Champ_Face_CoviMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
-  int nf_tot = zone.nb_faces_tot(), D = dimension, N = valeurs().line_size();
+  int nf_tot = zone.nb_faces_tot(), D = dimension;
   assert(val.size() == polys.size());
 
-  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : valeurs().addr()[N * (nf_tot + D * e) + ncomp];
+  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : valeurs()(nf_tot + D * e, ncomp);
 
   return val;
 }

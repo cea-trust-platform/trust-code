@@ -95,29 +95,29 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
         if (1)
           {
             for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
-                  resu.addr()[N * f + n] += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? alp->addr()[N * e + n] : 1) * rho.addr()[!cR * N * e + n] * nf(f, d) / fs(f) * vals(!cR * e, N * d + n);
+                  resu(f, n) += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * nf(f, d) / fs(f) * vals(!cR * e, N * d + n);
           }
 
         if (0)
           {
-            if (alp) for (a_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += mu_f(f, n, i) * alp->addr()[N * e + n];
-            for (rho_m = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? alp->addr()[N * e + n] : 1) * rho.addr()[!cR * N * e + n];
+            if (alp) for (a_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += mu_f(f, n, i) * (*alp)(e, n);
+            for (rho_m = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
             for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
                 {
                   double vnf = 0;
                   for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
                   int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
-                  double R = alp && strat ? (alp->addr()[N * e + n] < 1e-4 ? 1 : 0) /* min(max(1 - alp->addr()[N * e + n] / 1e-4, 0.), 1.) */ : 0;
-                  resu.addr()[N * f + n] += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
-                  // Cerr << "f " << f << " i " << i << " n " << n << " a " << alp->addr()[N * e + n] << " r " << rho(!cR * e, n) << " R " << R << finl;
+                  double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */ : 0;
+                  resu(f, n) += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                  // Cerr << "f " << f << " i " << i << " n " << n << " a " << (*alp)(e, n) << " r " << rho(!cR * e, n) << " R " << R << finl;
                 }
           }
       }
     else if (ch.fcl(f, 0) < 2) for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
-          resu.addr()[N * f + n] += pf(f) * vf(f) * (alp ? alp->addr()[N * e + n] * rho.addr()[!cR * N * e + n] : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+          resu(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
   for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        resu.addr()[N * (nf_tot + D * e + d) + n] += pe(e) * ve(e) * (alp ? rho.addr()[!cR * N * e + n] * alp->addr()[N * e + n] : 1) * vals(!cS * e, N * d + n);
+        resu(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
 
   return resu;
 }

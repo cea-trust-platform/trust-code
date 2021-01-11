@@ -351,8 +351,8 @@ void Energie_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, doubl
   const DoubleTab& alpha = ch_alpha.valeurs(t), &rho = ch_rho.valeurs(t), &en = ch_en.valeurs(t);
 
   /* valeurs du champ */
-  int i, j, n, N = val.line_size(), Nl = val.dimension_tot(0), cR = sub_type(Champ_Uniforme, ch_rho);
-  for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) val.addr()[j] = alpha.addr()[j] * rho.addr()[cR ? n : j] * en.addr()[j];
+  int i, n, N = val.line_size(), Nl = val.dimension_tot(0), cR = sub_type(Champ_Uniforme, ch_rho);
+  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
   if (val_only) return;
 
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
@@ -360,10 +360,10 @@ void Energie_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, doubl
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
   else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, ch.zone_dis_base()).xv_bord(), b_rho);
-  for (j = 0; j < Nb * N; j++) bval.addr()[j] = b_al.addr()[j] * b_rho.addr()[j] * b_en.addr()[j];
+  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
 
   DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * en
-  for (d_a.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) d_a.addr()[j] = rho.addr()[cR ? n : j] * en.addr()[j];
+  for (d_a.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * en(i, n);
 
   /* derivees a travers rho et en */
   const tabs_t d_vide = {}, &d_rho = pch_rho ? pch_rho->derivees() : d_vide, &d_en = ch_en.derivees();
@@ -375,8 +375,8 @@ void Energie_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, doubl
     {
       const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *de = d_en.count(var) ? &d_en.at(var) : NULL;
       DoubleTab& d_v = deriv[var];
-      for (d_v = alpha, i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++)
-          d_v.addr()[j] *= (dr ? dr->addr()[j] * en.addr()[j] : 0) + (de ? rho.addr()[cR ? n : j] * de->addr()[j] : 0);
+      for (d_v = alpha, i = 0; i < Nl; i++) for (n = 0; n < N; n++)
+          d_v(i, n) *= (dr ? (*dr)(i, n) * en(i, n) : 0) + (de ? rho(!cR * i, n) * (*de)(i, n) : 0);
     }
 }
 

@@ -145,12 +145,12 @@ void Milieu_composite::mettre_a_jour_tabs()
                   crho_dT = sub_type(Champ_Uniforme, ch_n_dT), crho_dP = sub_type(Champ_Uniforme, ch_n_dP);
         for (int i = 0; i < Nl; i++)
           {
-            tab(i, n) = ch_n.valeurs().addr()[!crho * i];
-            dT_tab(i, n) = ch_n_dT.valeurs().addr()[!crho_dT * i];
-            dP_tab(i, n) = ch_n_dP.valeurs().addr()[!crho_dP * i];
+            tab(i, n) = ch_n.valeurs()(!crho * i, 0);
+            dT_tab(i, n) = ch_n_dT.valeurs()(!crho_dT * i, 0);
+            dP_tab(i, n) = ch_n_dP.valeurs()(!crho_dP * i, 0);
           }
         for (int i = 0; i < rho_bord.dimension_tot(0); i++)
-          rho_bord(i, n) = tab_bord.addr()[!crho_b * i];
+          rho_bord(i, n) = tab_bord(!crho_b * i, 0);
       }
   }
 
@@ -162,7 +162,7 @@ void Milieu_composite::mettre_a_jour_tabs()
       {
         const Champ_base& ch_n = fluides[n].viscosite_dynamique();
         const int cch = sub_type(Champ_Uniforme, ch_n);
-        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs().addr()[!cch * i];
+        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
   }
 
@@ -174,7 +174,7 @@ void Milieu_composite::mettre_a_jour_tabs()
       {
         const Champ_base& ch_n = fluides[n].viscosite_cinematique();
         const int cch = sub_type(Champ_Uniforme, ch_n);
-        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs().addr()[!cch * i];
+        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
   }
 
@@ -186,7 +186,7 @@ void Milieu_composite::mettre_a_jour_tabs()
       {
         const Champ_base& ch_n = fluides[n].diffusivite();
         const int cch = sub_type(Champ_Uniforme, ch_n);
-        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs().addr()[!cch * i];
+        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
   }
 
@@ -198,7 +198,7 @@ void Milieu_composite::mettre_a_jour_tabs()
       {
         const Champ_base& ch_n = fluides[n].conductivite();
         const int cch = sub_type(Champ_Uniforme, ch_n);
-        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs().addr()[!cch * i];
+        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
   }
 
@@ -210,7 +210,7 @@ void Milieu_composite::mettre_a_jour_tabs()
       {
         const Champ_base& ch_n = fluides[n].capacite_calorifique();
         const int cch = sub_type(Champ_Uniforme, ch_n);
-        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs().addr()[!cch * i];
+        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
   }
 }

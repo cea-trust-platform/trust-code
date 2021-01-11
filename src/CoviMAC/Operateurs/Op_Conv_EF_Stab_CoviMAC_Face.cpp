@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,8 +161,8 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   for (f = 0; f < zone.nb_faces_tot(); f++) if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || ch.fcl(f, 0) == 3))
       {
         for (i = 0, dfac = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
-            dfac(i, n) = fs(f) * vit.addr()[N * f + n] * pe(e >= 0 ? e : f_e(f, 0)) * (a_r ? a_r->addr()[N * (e >= 0 ? e : f_e(f, 0)) + n] : 1)
-                         * (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
+            dfac(i, n) = fs(f) * vit(f, n) * pe(e >= 0 ? e : f_e(f, 0)) * (a_r ? (*a_r)(e >= 0 ? e : f_e(f, 0), n) : 1)
+                         * (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && ch.fcl(fb, 0) < 2) //partie "faces"
@@ -173,10 +173,10 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                             {
                               double fac = (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e);
                               if (!fac) continue;
-                              if (fd >= 0) secmem.addr()[N * fb + n] -= fac * mult * inco.addr()[N * fd + n]; //autre face calculee
+                              if (fd >= 0) secmem(fb, n) -= fac * mult * inco(fd, n); //autre face calculee
                               else for (d = 0; d < D; d++)  //CL de Dirichlet
-                                  secmem.addr()[N * fb + n] -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n);
-                              if (comp) secmem.addr()[N * fb + n] += fac * inco.addr()[N * fb + n]; //partie v div(alpha rho v)
+                                  secmem(fb, n) -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n);
+                              if (comp) secmem(fb, n) += fac * inco(fb, n); //partie v div(alpha rho v)
                               if (!mat) continue;
                               if (fd >= 0 && ch.fcl(fd, 0) < 2) (*mat)(N * fb + n, N * fd + n) += fac * mult;
                               if (comp) (*mat)(N * fb + n, N * fb + n) -= fac;
@@ -186,8 +186,8 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                               {
                                 //pas d'equivalence : mu_f * n_f * operateur aux elements
                                 double fac = (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n) / ve(e) * nf(fb, d) / fs(fb);
-                                secmem.addr()[N * fb + n] -= fac * inco.addr()[N * (nf_tot + D * eb + d) + n];
-                                if (comp) secmem.addr()[N * fb + n] += fac * inco.addr()[N * (nf_tot + D * e + d) + n];
+                                secmem(fb, n) -= fac * inco(nf_tot + D * eb + d, n);
+                                if (comp) secmem(fb, n) += fac * inco(nf_tot + D * e + d, n);
                                 if (!mat || !fac) continue;
                                 (*mat)(N * fb + n, N * (nf_tot + D * eb + d) + n) += fac;
                                 if (comp) (*mat)(N * fb + n, N * (nf_tot + D * e + d) + n) -= fac;
@@ -196,9 +196,9 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             if (e < zone.nb_elem()) for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) if (dfac(j, n)) //partie "elem"
                       {
                         double fac = (i ? -1 : 1) * dfac(j, n);
-                        secmem.addr()[N * (nf_tot + D * e + d) + n] -= fac * (eb >= 0 ? inco.addr()[N * (nf_tot + D * eb + d) + n]
-                                                                              : ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n));
-                        if (comp) secmem.addr()[N * (nf_tot + D * e + d) + n] += fac * inco.addr()[N * (nf_tot + D * e + d) + n]; //partie v div(alpha rho v)
+                        secmem(nf_tot + D * e + d, n) -= fac * (eb >= 0 ? inco(nf_tot + D * eb + d, n)
+                                                                : ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n));
+                        if (comp) secmem(nf_tot + D * e + d, n) += fac * inco(nf_tot + D * e + d, n); //partie v div(alpha rho v)
                         if (!mat) continue;
                         if (eb >= 0) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n) += fac;
                         if (comp) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) -= fac;

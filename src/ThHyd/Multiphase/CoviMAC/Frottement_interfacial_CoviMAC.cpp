@@ -91,12 +91,12 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
         /* interpolations */
         for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, dv = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
-            for (n = 0; n < N; n++) a_l(n)   += mu_f(f, n, i) * alpha.addr()[N * e + n];
-            for (n = 0; n < N; n++) p_l(n)   += mu_f(f, n, i) * press.addr()[Np * e + n * (Np > 1)];
-            for (n = 0; n < N; n++) T_l(n)   += mu_f(f, n, i) *  temp.addr()[N * e + n];
-            for (n = 0; n < N; n++) rho_l(n) += mu_f(f, n, i) *   rho.addr()[!cR * N * e + n];
-            for (n = 0; n < N; n++) mu_l(n)  += mu_f(f, n, i) *    mu.addr()[!cM * N * e + n];
-            for (n = 0; n < N; n++) dh += mu_f(f, n, i) * alpha.addr()[N * e + n] * dh_e(e);
+            for (n = 0; n < N; n++) a_l(n)   += mu_f(f, n, i) * alpha(e, n);
+            for (n = 0; n < N; n++) p_l(n)   += mu_f(f, n, i) * press(e, n * (Np > 1));
+            for (n = 0; n < N; n++) T_l(n)   += mu_f(f, n, i) *  temp(e, n);
+            for (n = 0; n < N; n++) rho_l(n) += mu_f(f, n, i) *   rho(!cR * e, n);
+            for (n = 0; n < N; n++) mu_l(n)  += mu_f(f, n, i) *    mu(!cM * e, n);
+            for (n = 0; n < N; n++) dh += mu_f(f, n, i) * alpha(e, n) * dh_e(e);
             for (k = 0; k < N; k++) for (l = k + 1; l < N; l++) dv(k, l) = max(dv(k, l), ch.v_norm(passe, passe, e, f, k, l, NULL, NULL));
           }
 
@@ -107,7 +107,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
         for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
               {
                 double fac = pf(f) * vf(f) * coeff(min(k, l), max(k, l), 0);
-                secmem.addr()[N * f + k] -= fac * (inco.addr()[N * f + k] - inco.addr()[N * f + l]);
+                secmem(f, k) -= fac * (inco(f, k) - inco(f, l));
                 if (mat) (*mat)(N * f + k, N * f + k) += fac, (*mat)(N * f + k, N * f + l) -= fac;
               }
       }
@@ -116,11 +116,11 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
   for (e = 0; e < zone.nb_elem(); e++)
     {
       /* arguments de coeff */
-      for (n = 0; n < N; n++) a_l(n)   = alpha.addr()[N * e + n];
-      for (n = 0; n < N; n++) p_l(n)   = press.addr()[Np * e + n * (Np > 1)];
-      for (n = 0; n < N; n++) T_l(n)   =  temp.addr()[N * e + n];
-      for (n = 0; n < N; n++) rho_l(n) =   rho.addr()[!cR * N * e + n];
-      for (n = 0; n < N; n++) mu_l(n)  =    mu.addr()[!cM * N * e + n];
+      for (n = 0; n < N; n++) a_l(n)   = alpha(e, n);
+      for (n = 0; n < N; n++) p_l(n)   = press(e, n * (Np > 1));
+      for (n = 0; n < N; n++) T_l(n)   =  temp(e, n);
+      for (n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
+      for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
 
       for (k = 0; k < N; k++) for (l = k + 1; l < N; l++) dv(k, l) = ch.v_norm(passe, passe, e, -1, k, l, NULL, NULL);
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (k = 0; k < N; k++) for (l = k + 1; l < N; l++)
@@ -133,7 +133,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
       for (d = 0, i = nf_tot + D * e; d < D; d++, i++) for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
               {
                 double fac = pe(e) * ve(e) * coeff(min(k, l), max(k, l), 0);
-                secmem.addr()[N * i + k] -= fac * (inco.addr()[N * i + k] - inco.addr()[N * i + l]);
+                secmem(i, k) -= fac * (inco(i, k) - inco(i, l));
                 if (mat) (*mat)(N * i + k, N * i + k) += fac, (*mat)(N * i + k, N * i + l) -= fac;
               }
     }

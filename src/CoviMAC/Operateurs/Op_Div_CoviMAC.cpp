@@ -101,8 +101,8 @@ DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
   for (f = 0; f < zone.nb_faces(); f++)
     {
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
-          div.addr()[N * e + n] += (i ? -1 : 1) * fs(f) * pf(f) * vit.addr()[N * f + n];
-      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit.addr()[N * f + n];
+          div(e, n) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f, n);
+      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit(f, n);
     }
 
   div.echange_espace_virtuel();

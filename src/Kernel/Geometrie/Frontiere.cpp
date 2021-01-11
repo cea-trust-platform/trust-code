@@ -458,7 +458,7 @@ void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
   for (int i = 0; i < size; i++)
     {
       int face = num_premiere_face() + i;
-      for (int n = 0; n < N; n++) x.addr()[N * i + n] = y.addr()[M * face + n];
+      for (int n = 0; n < N; n++) x(i, n) = y.addr()[M * face + n];
     }
 }
 

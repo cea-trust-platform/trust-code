@@ -101,9 +101,9 @@ const DoubleTab& Op_Grad_CoviMAC_Face::mu_f() const
   int i, e, f, n, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), N = ch.valeurs().line_size(), m, M = press.line_size(), cR = rho.dimension_tot(0) == 1;
 
   DoubleTrav nu(ne_tot, M), fgrad_w; /* diffusivite : 1 / rho_m en 1 pression, 1 / rho_k en N pressions */
-  if (M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho.addr()[!cR * M * e + m];
+  if (M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho(!cR * e, m);
   else if (M == 1) for (e = 0; e < ne_tot; nu(e, 0) = 1. / nu(e, 0), e++)
-      for (n = 0; n < N; n++) nu(e, 0) += (alp ? alp->addr()[N * e + n] : 1) * rho.addr()[!cR * N * e + n];
+      for (n = 0; n < N; n++) nu(e, 0) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
   zone.fgrad(zone.nb_faces_tot(), &nu, NULL, 0, fgrad_d, fgrad_j, fgrad_c, M == N ? &mu_f_ : &fgrad_w, NULL);
 
   /* extension a N composantes dans le cas a 1 pression */
@@ -203,14 +203,14 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         pfb(f, n) = ref_cast(Neumann_val_ext, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), m);
     else if (ch.fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
       {
-        for (e = f_e(f, 0), m = 0, n = 0; n < N; n++, m += (M > 1)) pfb(f, n) = press.addr()[M * e + m];
-        for (n = 0; n < N; n++) if (!alp || alp->addr()[N * e + n] > 1e-8) //pas de correction dans la phase evanescente
+        for (e = f_e(f, 0), m = 0, n = 0; n < N; n++, m += (M > 1)) pfb(f, n) = press(e, m);
+        for (n = 0; n < N; n++) if (!alp || (*alp)(e, n) > 1e-8) //pas de correction dans la phase evanescente
             {
-              double fac = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / (fs(f) * fs(f) * ve(e) * (alp ? alp->addr()[N * e + n] : 1));
+              double fac = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / (fs(f) * fs(f) * ve(e) * (alp ? (*alp)(e, n) : 1));
               std::map<int, double> *dv = mat_v ? &dpb_v[N * f + n] : NULL; //dv[indice dans mat_NS] = coeff
-              for (d = 0, i = N * (nf_tot + D * e) + n; d < D; d++, i += N) if (dabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
+              for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
                   {
-                    pfb(f, n) += fac * nf(f, d) * secmem.addr()[i]; //partie constante -> directement dans pfb
+                    pfb(f, n) += fac * nf(f, d) * secmem(i, n); //partie constante -> directement dans pfb
                     if (dv) for (j = mat_v->get_tab1()(i) - 1; j < mat_v->get_tab1()(i + 1) - 1; j++) //partie lineaire -> dans dpb_v
                         if (mat_v->get_coeff()(j)) (*dv)[mat_v->get_tab2()(j) - 1] -= fac * nf(f, d) * mat_v->get_coeff()(j);
                   }
@@ -221,21 +221,21 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   std::vector<std::array<std::map<int, double>, 2>> dgf_pe(N), dgf_pb(N); //dependance de [grad p]_f en les pressions aux elements, en les pressions au bord de dpb_v
   for (f = 0; f < zone.nb_faces_tot(); f++)
     {
-      for (alpha = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) alpha(n) += mu(f, n, i) * (alp ? alp->addr()[N * e + n] : 1);
+      for (alpha = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) alpha(n) += mu(f, n, i) * (alp ? (*alp)(e, n) : 1);
 
       /* |f| grad p */
       if (!ch.fcl(f, 0)) for (gf = 0, i = fgrad_d(f); i < fgrad_d(f + 1); i++) //face interne -> flux multipoints
           for (e = fgrad_j(i), n = 0, m = 0; n < N; n++, m += (M > 1)) for (j = 0; j < 2; j++)
               {
                 double fac = mu(f, n, j) * fgrad_c(i, m, j);
-                gf(n, j) += fac * (e < ne_tot ? press.addr()[M * e + m] : pfb(e - ne_tot, n));
+                gf(n, j) += fac * (e < ne_tot ? press(e, m) : pfb(e - ne_tot, n));
                 if (mat_p && (e < ne_tot || ch.fcl(e - ne_tot, 0) > 1)) dgf_pe[n][j][e < ne_tot ? e : f_e(e - ne_tot, 0)] += fac;
                 if (mat_v && e >= ne_tot && dpb_v.count(N * (e - ne_tot) + n)) dgf_pb[n][j][e - ne_tot] += fac;
               }
       else for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1)) //face de bord -> flux a deux points
           {
             double fac = fs(f) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
-            gf(n, 0) = fac * (pfb(f, n) - press.addr()[M * e + m]);
+            gf(n, 0) = fac * (pfb(f, n) - press(e, m));
             if (mat_p && ch.fcl(f, 0) == 1) dgf_pe[n][0][e] -= fac;
             if (mat_v && dpb_v.count(N * f + n)) dgf_pb[n][0][f] += fac;
           }
@@ -244,7 +244,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       if (ch.fcl(f, 0) < 2) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++)
             {
               double fac = alpha(n) * pf(f) * vf(f);
-              secmem.addr()[N * f + n] -= fac * gf(n, j);
+              secmem(f, n) -= fac * gf(n, j);
               if (f < zone.nb_faces()) for (auto &&i_c : dgf_pe[n][j]) (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
               for (auto &&i_c : dgf_pb[n][j]) dgp_pb[N * f + n][N * i_c.first + n] += fac * i_c.second;
             }
@@ -252,8 +252,8 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++)
             if (fs(f) * dabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
-                  double fac = (i ? -1 : 1) * fs(f) * pe(e) * (xv(f, d) - xp(e, d)) * (alp ? alp->addr()[N * e + n] : 1);
-                  secmem.addr()[N * (nf_tot + D * e + d) + n] -= fac * gf(n, i);
+                  double fac = (i ? -1 : 1) * fs(f) * pe(e) * (xv(f, d) - xp(e, d)) * (alp ? (*alp)(e, n) : 1);
+                  secmem(nf_tot + D * e + d, n) -= fac * gf(n, i);
                   for (auto &i_c : dgf_pe[n][i]) (*mat_p)(N * (nf_tot + D * e + d) + n, M * i_c.first + m) += fac * i_c.second;
                   for (auto &i_c : dgf_pb[n][i]) dgp_pb[N * (nf_tot + D * e + d) + n][N * i_c.first + n] += fac * i_c.second;
                 }

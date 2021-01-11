@@ -174,10 +174,7 @@ void Champ_Inc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::Re
         {
           // Note B.M.: les methodes fixer_nb_valeurs_nodales sont appelees a tort et a travers.
           // Ne rien faire si le tableau a deja la bonne structure
-          if ((nb_compo_ == 1) && (nature_du_champ()!=multi_scalaire))
-            tab.resize(0);
-          else
-            tab.resize(0, nb_compo_);
+          tab.resize(0, nb_compo_);
         }
       if (!(tab.get_md_vector() == md))
         {
@@ -1173,10 +1170,10 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
       const Front_VF& fr = ref_cast(Front_VF, cls[i].valeur().frontiere_dis());
       if (sub_type(Dirichlet, cls[i].valeur())) //Dirichlet -> val_imp
         for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), k = f < nf ? f : i_bord[f - nf], n = 0; n < N; n++)
-            result.addr()[N * k + n] = ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
+            result(k, n) = ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
       else if (sub_type(Neumann_val_ext, cls[i].valeur()))
         for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), k = f < nf ? f : i_bord[f - nf], n = 0; n < N; n++)
-            result.addr()[N * k + n] = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
+            result(k, n) = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
     }
   return result;
 }

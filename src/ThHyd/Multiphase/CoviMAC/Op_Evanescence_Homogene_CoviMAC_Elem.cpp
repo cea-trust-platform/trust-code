@@ -106,9 +106,9 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
       /* coeff d'evanescence, second membre */
       for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
           {
-            coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * (coeff(e, n, 0) = min(max(1 - a_m / a_eps, 0.), 1.) / (p_degen ? rho.addr()[!cR * N * e + n] : 1));
-            double flux = coeff(e, n, 0) * secmem.addr()[N * e + n] + coeff(e, n, 1) * (inco.addr()[N * e + n] - !alp * inco.addr()[N * e + k]);
-            secmem.addr()[N * e + k] += (p_degen ? rho(!cR * e, k) : 1) * flux, secmem.addr()[N * e + n] -= (p_degen ? rho.addr()[!cR * N * e + n] : 1) * flux;
+            coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * (coeff(e, n, 0) = min(max(1 - a_m / a_eps, 0.), 1.) / (p_degen ? rho(!cR * e, n) : 1));
+            double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - !alp * inco(e, k));
+            secmem(e, k) += (p_degen ? rho(!cR * e, k) : 1) * flux, secmem(e, n) -= (p_degen ? rho(!cR * e, n) : 1) * flux;
           }
     }
 
@@ -122,7 +122,7 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
                 {
                   int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
                   mat.get_set_coeff()(j) += (p_degen ? rho(!cR * e, k) : 1) * ( coeff(e, n, 0) * mat.get_set_coeff()(i) - coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));
-                  mat.get_set_coeff()(i) += (p_degen ? rho.addr()[!cR * N * e + n] : 1) * (-coeff(e, n, 0) * mat.get_set_coeff()(i) + coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));
+                  mat.get_set_coeff()(i) += (p_degen ? rho(!cR * e, n) : 1) * (-coeff(e, n, 0) * mat.get_set_coeff()(i) + coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));
                 }
       }
 }

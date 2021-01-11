@@ -185,10 +185,10 @@ DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
   assert(dst.dimension(0) == zone.xv().dimension(0) && N == (dst.nb_dim() == 1 ? 1 : dst.dimension(1)));
 
   if (src.dimension_tot(0) > zone.nb_elem_tot()) //on a les valeurs aux faces
-    for (f = 0; f < dst.dimension(0); f++) for (n = 0; n < N; n++) dst.addr()[N * f + n] = src.addr()[N * (zone.nb_elem_tot() + f) + n];
+    for (f = 0; f < dst.dimension(0); f++) for (n = 0; n < N; n++) dst(f, n) = src(zone.nb_elem_tot() + f, n);
   else for (f = 0; f < dst.dimension(0); f++) //on prend (amont + aval) / 2
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
-          dst.addr()[N * f + n] += src.addr()[N * e + n] * (f < zone.premiere_face_int() ? 1 : 0.5);
+          dst(f, n) += src(e, n) * (f < zone.premiere_face_int() ? 1 : 0.5);
 
   return dst;
 }

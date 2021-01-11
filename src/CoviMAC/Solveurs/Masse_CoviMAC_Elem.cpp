@@ -69,13 +69,13 @@ DoubleTab& Masse_CoviMAC_Elem::appliquer_impl(DoubleTab& sm) const
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
   const DoubleTab& der = equation().champ_conserve().derivees().at(equation().inconnue().le_nom().getString());
 
-  int i, e, ne_tot = zone.nb_elem_tot(), n, N = sm.line_size();
+  int e, ne_tot = zone.nb_elem_tot(), n, N = sm.line_size();
   assert(sm.dimension_tot(0) == ne_tot && N == der.line_size());
 
 
-  for (i = 0, e = 0; e < ne_tot; e++) for (n = 0; n < N; n++, i++)
-      if (der.addr()[i] > 1e-10) sm.addr()[i] /= pe(e) * ve(e) * der.addr()[i];
-      else sm.addr()[i] = 0; //cas d'une evanescence
+  for (e = 0; e < ne_tot; e++) for (n = 0; n < N; n++)
+      if (der(e, n) > 1e-10) sm(e, n) /= pe(e) * ve(e) * der(e, n);
+      else sm(e, n) = 0; //cas d'une evanescence
 
   return sm;
 }
@@ -102,17 +102,17 @@ void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const Champ_Inc_base& cc = equation().champ_conserve();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
-  int e, i, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
+  int i, e, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
 
   /* second membre : avec ou sans resolution en increments*/
-  for (e = i = 0; e < ne; e++) for (n = 0; n < N; n++, i++)
-      secmem.addr()[i] += pe(e) * ve(e) * (passe.addr()[i] - resoudre_en_increments * present.addr()[i]) / dt;
+  for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
+      secmem(e, n) += pe(e) * ve(e) * (passe(e, n) - resoudre_en_increments * present(e, n)) / dt;
 
   /* matrices */
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
         const DoubleTab& der = cc.derivees().at(i_m.first);
-        for (e = i = 0; e < ne; e++) for (n = 0; n < N; n++, i++) (*i_m.second)(i, i) += pe(e) * ve(e) * der.addr()[i] / dt;
+        for (e = i = 0; e < ne; e++) for (n = 0; n < N; n++, i++) (*i_m.second)(i, i) += pe(e) * ve(e) * der(e, n) / dt;
       }
 
 }

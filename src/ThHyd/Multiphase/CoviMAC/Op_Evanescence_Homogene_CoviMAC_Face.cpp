@@ -108,7 +108,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
         /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
         for (a_max = 0, k = -1, n = 0; n < N; n++)
           {
-            if (iter) a_m = alpha(f_e(f, f_e(f, 1) >= 0 && inco.addr()[N * f + n] < 0), n);
+            if (iter) a_m = alpha(f_e(f, f_e(f, 1) >= 0 && inco(f, n) < 0), n);
             else for (a_m = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) a_m += mu_f(f, n, i) * alpha(e, n);
             if (a_m > a_max) k = n, a_max = a_m;
           }
@@ -118,13 +118,13 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
         /* phases evanescentes : avec alpha amont. La phase majoritaire ne peut pas etre evanescente! */
         for (n = 0; n < N; n++)
           {
-            if (iter) a_m = alpha(f_e(f, f_e(f, 1) >= 0 && inco.addr()[N * f + n] < 0), n);
+            if (iter) a_m = alpha(f_e(f, f_e(f, 1) >= 0 && inco(f, n) < 0), n);
             else for (a_m = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) a_m += mu_f(f, n, i) * alpha(e, n);
             if (n != k && a_m < a_eps)
               {
                 coeff(f, n, 1) = mat_diag(N * f + k, N * f + k) * (coeff(f, n, 0) = min(max(1 - a_m / a_eps, 0.), 1.));
-                double flux = coeff(f, n, 0) * secmem.addr()[N * f + n] + coeff(f, n, 1) * (inco.addr()[N * f + n] - inco.addr()[N * f + k]);
-                secmem.addr()[N * f + k] += flux, secmem.addr()[N * f + n] -= flux;
+                double flux = coeff(f, n, 0) * secmem(f, n) + coeff(f, n, 1) * (inco(f, n) - inco(f, k));
+                secmem(f, k) += flux, secmem(f, n) -= flux;
               }
           }
 
@@ -141,8 +141,8 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
       for (i = nf_tot + D * e, d = 0; d < D; d++, i++) for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
             {
               coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = min(max(1 - a_m / a_eps, 0.), 1.));
-              double flux = coeff(i, n, 0) * secmem.addr()[N * i + n] + coeff(i, n, 1) * (inco.addr()[N * i + n] - inco.addr()[N * i + k]);
-              secmem.addr()[N * i + k] += flux, secmem.addr()[N * i + n] -= flux;
+              double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k));
+              secmem(i, k) += flux, secmem(i, n) -= flux;
             }
     }
 

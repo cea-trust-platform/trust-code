@@ -41,7 +41,7 @@
 //        v[n]      -> norme de la vitesse de la phase n
 //        Tp        -> temperature de la paroi (une seule!)
 //        lambda[n], mu[n], rho[n], rho_Cp[n] -> diverses proprietes physiques de la phase n
-//        
+//
 //    sorties :
 //        F[n]           -> flux de chaleur vers la phase n
 //       dFa[N * n + m]  -> derivee par rapport a alpha_m

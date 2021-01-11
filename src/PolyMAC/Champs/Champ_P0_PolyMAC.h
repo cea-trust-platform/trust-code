@@ -89,7 +89,7 @@ inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTa
   if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
   N > 1 ? dst.resize(zone.nb_faces(), N) : dst.resize(zone.nb_faces()); //aargh
   for (i = 0; i < fvf.nb_faces(); i++) for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++)
-      dst.addr()[N * f + n] = src.addr()[N * (has_faces ? zone.nb_elem_tot() + f : e) + n];
+      dst(f, n) = src(has_faces ? zone.nb_elem_tot() + f : e, n);
 
   if (distant) fr.frontiere().trace_face_distant(dst, x);
   else fr.frontiere().trace_face_local(dst, x);

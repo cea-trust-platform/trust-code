@@ -117,11 +117,11 @@ static inline int corriger_alpha(DoubleTab& alpha)
     {
       for (a_sum = 0, n = 0; n < N; n++)
         {
-          ok &= alpha.addr()[N * i + n] > -1e-6;
-          alpha.addr()[N * i + n] = max(alpha.addr()[N * i + n], 0.);
-          a_sum += alpha.addr()[N * i + n];
+          ok &= alpha(i, n) > -1e-6;
+          alpha(i, n) = max(alpha(i, n), 0.);
+          a_sum += alpha(i, n);
         }
-      for (n = 0; n < N; n++) alpha.addr()[N * i + n] /= a_sum;
+      for (n = 0; n < N; n++) alpha(i, n) /= a_sum;
     }
   return ok;
 }
@@ -485,6 +485,6 @@ void SETS::assembler(const std::string inco_p, const std::vector<std::string> ex
   else secmem.resize(inco_a.dimension_tot(0));
 
   const DoubleTab& b = b_p.at("alpha");
-  for (i = 0; i < na; i++) if (calc[i]) for (secmem(i) = 1, m = 0, ib = M * i; m < M; m++, ib++)
-        secmem(i) -= b.addr()[ib] + inco_a.addr()[ib];
+  for (i = 0; i < na; i++) if (calc[i]) for (secmem(i) = 1, m = 0; m < M; m++)
+        secmem(i) -= b(i, m) + inco_a(i, m);
 }

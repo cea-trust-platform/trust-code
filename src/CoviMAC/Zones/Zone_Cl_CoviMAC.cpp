@@ -124,7 +124,7 @@ void Zone_Cl_CoviMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
-                  ch_tab.addr()[N * num_face + n] = 0;
+                  ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_entree_fluide,la_cl) )
             {
@@ -141,7 +141,7 @@ void Zone_Cl_CoviMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
                     for (int d=0; d<dimension; d++)
                       vn+=ma_zone_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
                     vn/=ma_zone_VF.face_surfaces(num_face);
-                    ch_tab.addr()[N * num_face + n] = vn;
+                    ch_tab(num_face, n) = vn;
                   }
             }
           else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )
@@ -150,7 +150,7 @@ void Zone_Cl_CoviMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
-                  ch_tab.addr()[N * num_face + n] = 0;
+                  ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_paroi_defilante,la_cl) )
             {
@@ -158,7 +158,7 @@ void Zone_Cl_CoviMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
-                  ch_tab.addr()[N * num_face + n] = 0;
+                  ch_tab(num_face, n) = 0;
             }
         }
       modif_perio_fait_  = 1;

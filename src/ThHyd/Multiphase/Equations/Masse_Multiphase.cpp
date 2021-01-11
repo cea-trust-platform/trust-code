@@ -320,10 +320,10 @@ void Masse_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, double 
   const Champ_base& ch_rho = ch.equation().milieu().masse_volumique();
   const Champ_Inc_base& ch_alpha = ch.equation().inconnue(), *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL;
   const DoubleTab& alpha = ch_alpha.valeurs(t), &rho = ch_rho.valeurs(t);
-  int i, j, nl = val.dimension_tot(0), n, N = val.line_size(), cR = sub_type(Champ_Uniforme, ch_rho);
+  int i, nl = val.dimension_tot(0), n, N = val.line_size(), cR = sub_type(Champ_Uniforme, ch_rho);
 
   /* valeurs du champ */
-  for (i = j = 0; i < nl; i++) for (n = 0; n < N; n++, j++) val.addr()[j] = alpha.addr()[j] * rho.addr()[cR ? n : j];
+  for (i = 0; i < nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n);
   if (val_only) return;
 
   /* valeur aux bords */
@@ -333,7 +333,7 @@ void Masse_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, double 
 
   /* derivees */
   DoubleTab& d_a = deriv["alpha"]; //derivee en alpha : rho
-  for (d_a.resize(nl, N), i = j = 0; i < nl; i++) for (n = 0; n < N; n++, j++) d_a.addr()[j] = rho.addr()[cR ? n : j];
+  for (d_a.resize(nl, N), i = 0; i < nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i , n);
   if (pch_rho) for (auto &&d_c : pch_rho->derivees()) //derivees en les dependances de rho
       deriv[d_c.first] = d_c.second, tab_multiply_any_shape(deriv[d_c.first], alpha);
 }

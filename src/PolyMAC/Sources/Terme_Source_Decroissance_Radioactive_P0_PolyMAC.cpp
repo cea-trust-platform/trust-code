@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,9 +80,8 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::ajouter(DoubleTab& 
   const DoubleVect& ve = zone.volumes();
   const DoubleTab& c = equation().inconnue().valeurs();
 
-  for (int f = 0; f < nb_elem; f++)
-    for (int l = 0; l < nb_groupes; l++)
-      resu.addr()[nb_groupes * f + l] -= lambda[l] * c.addr()[nb_groupes * f + l] * ve(f);
+  for (int e = 0; e < nb_elem; e++) for (int l = 0; l < nb_groupes; l++)
+      resu(e, l) -= lambda[l] * c(e, l) * ve(e);
 
   return resu;
 }
@@ -100,10 +99,6 @@ void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::contribuer_a_avec(const D
   const Zone_VF& zone = la_zone_PolyMAC.valeur();
   const DoubleVect& ve = zone.volumes();
 
-  for (int f = 0; f < nb_elem; f++)
-    for (int l = 0; l < nb_groupes; l++)
-      {
-        const int k = f * nb_groupes + l;
-        matrice(k, k) += lambda[l] * ve(f);
-      }
+  for (int e = 0, k = 0; e < nb_elem; e++) for (int l = 0; l < nb_groupes; l++, k++)
+      matrice(k, k) += lambda[l] * ve(e);
 }

@@ -154,28 +154,28 @@ void local_max_abs_tab(const DoubleTab& tableau, ArrOfDouble& max_colonne);
 void mp_max_abs_tab(const DoubleTab& tableau, ArrOfDouble& max_colonne);
 inline double& DoubleTab::operator[](int i)
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return DoubleVect::operator[](i);
 }
 
 inline const double& DoubleTab::operator[](int i) const
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return DoubleVect::operator[](i);
 }
 
 inline double& DoubleTab::operator()(int i)
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return DoubleVect::operator[](i);
 }
 
 inline const double& DoubleTab::operator()(int i) const
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return DoubleVect::operator[](i);
 }

@@ -187,8 +187,8 @@ void Echange_contact_PolyMAC::update_coeffs()
             else
               {
                 if (f == fb) o_Himp(f, n) += fac;
-                else o_Text(f, n) -= fac * o_inc.valeurs().addr()[N * (ne_tot + fb) + n];
-                o_Text(f, n) += fac * o_inc.valeurs().addr()[N * e + n];
+                else o_Text(f, n) -= fac * o_inc.valeurs()(ne_tot + fb, n);
+                o_Text(f, n) += fac * o_inc.valeurs()(e, n);
               }
           }
       for (n = 0; stab_ && monolithic && n < N; n++) for (k = 0; k < 2; k++) o_delta_int(f, n, k) = o_op_diff.delta_f_int(f, n, k);

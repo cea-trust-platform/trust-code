@@ -114,7 +114,7 @@ inline void Op_Diff_PolyMAC_base::remplir_nu_ef(int e, DoubleTab& nu_ef) const
     {
       f = e_f(e, i);
       /* diffusivite de chaque composante dans la direction (xf - xe) */
-      if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_.addr()[N * e + n]; //isotrope
+      if (N_nu == N) for (n = 0; n < N; n++) nu_ef(i, n) = nu_(e, n); //isotrope
       else if (N_nu == N * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
             nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
       else if (N_nu == N * dimension * dimension) for (n = 0; n < N; n++) for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) for (k = 0; k < dimension; k++)

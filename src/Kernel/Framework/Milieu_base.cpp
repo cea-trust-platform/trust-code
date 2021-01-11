@@ -935,9 +935,9 @@ void Milieu_base::calculer_energie_interne(const Champ_Inc_base& ch, double t, D
   const DoubleTab& temp = eqn.inconnue()->valeurs(t), &Cp = ch_Cp.valeurs();
 
   /* le cas ou Cp est un Champ_Uniforme est tres penible*/
-  int cCp = sub_type(Champ_Uniforme, ch_Cp), i, j, n, Nl = temp.dimension_tot(0), N = temp.line_size();
+  int cCp = sub_type(Champ_Uniforme, ch_Cp), i, n, Nl = temp.dimension_tot(0), N = temp.line_size();
   /* valeurs : Cp * T */
-  for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) val.addr()[j] = temp.addr()[j] * Cp.addr()[cCp ? n : j];
+  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = temp(i, n) * Cp(!cCp * i, n);
   if (val_only) return;
 
   /* valeurs aux bord : si Cp n'a pas de Zone_dis_base, appeller valeur_aux(xv_bord, ..) au lieu de valeur_aux_bords() */
@@ -949,7 +949,7 @@ void Milieu_base::calculer_energie_interne(const Champ_Inc_base& ch, double t, D
 
   /* derivees : Cp */
   DoubleTab& der = deriv["temperature"];
-  if (cCp) for(der.resize(Nl, N), i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) der.addr()[j] = Cp.addr()[n];
+  if (cCp) for(der.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) der(i, n) = Cp(n);
   else der = Cp;
 }
 

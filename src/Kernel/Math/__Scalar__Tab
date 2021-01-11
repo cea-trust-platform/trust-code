@@ -145,28 +145,28 @@ void mp_max_abs_tab(const __Scalar__Tab & tableau, ArrOf__Scalar__ & max_colonne
 #Pendif
 inline __scalar__& __Scalar__Tab::operator[](int i)
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return __Scalar__Vect::operator[](i);
 }
 
 inline const __scalar__& __Scalar__Tab::operator[](int i) const 
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return __Scalar__Vect::operator[](i);
 }
 
 inline __scalar__& __Scalar__Tab::operator()(int i)
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return __Scalar__Vect::operator[](i);
 }
 
 inline const __scalar__& __Scalar__Tab::operator()(int i) const 
 {
-  assert(nb_dim_ == 1);
+  assert(nb_dim_ == 1 || (nb_dim_ == 2 && dimensions_[1] == 1));
   assert(i >= 0 && i < dimension_tot_0_);
   return __Scalar__Vect::operator[](i);
 }

@@ -107,10 +107,7 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::R
     {
       // Note B.M.: les methodes fixer_nb_valeurs_nodales sont appelees a tort et a travers.
       // Ne rien faire si le tableau a deja la bonne structure
-      if(nb_compo_ == 1)
-        valeurs_.resize(0);
-      else
-        valeurs_.resize(0, nb_compo_);
+      valeurs_.resize(0, nb_compo_);
     }
   // Ca va planter si on a attache une autre structure parallele (c'est voulu !)
   if (!(valeurs_.get_md_vector() == md))

@@ -300,10 +300,10 @@ void Op_Diff_CoviMAC_base::update_nu() const
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs() : NULL;
   for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (nb = 0; nb < mult; nb++, i++)
-        nu_(e, i) *= zone.porosite_elem()(e) * (alp ? max(alp->addr()[N * e + n], 1e-8) : 1);
+        nu_(e, i) *= zone.porosite_elem()(e) * (alp ? max((*alp)(e, n), 1e-8) : 1);
   /* ponderation de nu_bord par alpha si pb_Multiphase */
   for (f = 0; f < zone.premiere_face_int(); f++) for (n = 0, i = 0; n < N; n++) for (nb = 0; nb < mult; nb++, i++)
-        nu_bord_(f, i) *= (alp ? max(alp->addr()[N * f_e(f, 0) + n], 1e-8) : 1);
+        nu_bord_(f, i) *= (alp ? max((*alp)(f_e(f, 0), n), 1e-8) : 1);
 
   /* modification de nu_ / nu_bord_ par une classe fille */
   modifier_nu(nu_, nu_bord_);

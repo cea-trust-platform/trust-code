@@ -145,10 +145,10 @@ void QDM_Multiphase::mettre_a_jour(double temps)
           {
             DoubleTab& src = psrc[i], &dst = pdst[i];
             if (src.line_size() == N) /* une colonne par composante */
-              for (j = 0; j < src.dimension_tot(0); j++) dst.addr()[j] = src.addr()[N * j + n];
+              for (j = 0; j < src.dimension_tot(0); j++) dst(j) = src(j, n);
             else if (src.line_size() == N * D) /* stockage N * d + n */
               for (j = 0; j < src.dimension_tot(0); j++) for (d = 0; d < D; d++)
-                  dst.addr()[D * j + d] = src.addr()[N * (D * j + d) + n];
+                  dst(j, d) = src(D * j + d, n);
             else abort(); //on ne connait pas
           }
       }

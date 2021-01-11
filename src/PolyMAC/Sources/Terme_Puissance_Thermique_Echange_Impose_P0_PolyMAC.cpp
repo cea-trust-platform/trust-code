@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,17 +57,17 @@ Entree& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::readOn(Entree& s )
 
 void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::mettre_a_jour(double temps)
 {
-  int nb_elem = la_zone_PolyMAC.valeur().nb_elem();
   const Zone_VF& zone = la_zone_PolyMAC.valeur();
   const DoubleVect& volumes = zone.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
+  int nb_elem = la_zone_PolyMAC.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
 
-  bilan()(0) = 0;
+  bilan().resize(N), bilan() = 0;
 
-  for (int e = 0; e < nb_elem; e++)
-    bilan()(0) += himp.addr()[himp.dimension(0) > 1 ? e : 0] * volumes(e) * (Text.addr()[Text.dimension(0) > 1 ? e : 0] - T(e));
+  for (int e = 0; e < nb_elem; e++) for (n = 0; n < N; n++)
+      bilan()(n) += himp(!c_h * e, n) * volumes(e) * (Text(!c_T * e, n) - T(e, n));
 
   himp_.mettre_a_jour(temps);
   Text_.mettre_a_jour(temps);
@@ -92,15 +92,15 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::associer_zones(const Z
 
 DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::ajouter(DoubleTab& resu )  const
 {
-  int nb_elem=la_zone_PolyMAC.valeur().nb_elem();
   const Zone_VF&     zone               = la_zone_PolyMAC.valeur();
   const DoubleVect& volumes = zone.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
+  int nb_elem=la_zone_PolyMAC.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
 
-  for (int e = 0; e < nb_elem; e++)
-    resu(e) -= volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0] * (T(e) - Text.addr()[Text.dimension(0) > 1 ? e : 0]);
+  for (int e = 0; e < nb_elem; e++) for (n = 0; n < N; n++)
+      resu(e, n) -= volumes(e) * himp(!c_h * e, n) * (T(e, n) - Text(!c_T * e, n));
 
   return resu;
 }
@@ -112,11 +112,11 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::calculer(DoubleT
 }
 void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  int nb_elem=la_zone_PolyMAC.valeur().nb_elem();
   const Zone_VF&     zone               = la_zone_PolyMAC.valeur();
   const DoubleVect& volumes = zone.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
+  int nb_elem=la_zone_PolyMAC.valeur().nb_elem(), c_h = himp.dimension(0) == 1, n, N = himp.line_size();
 
-  for (int e = 0; e < nb_elem; e++)
-    matrice(e, e) += volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0];
+  for (int e = 0, i = 0; e < nb_elem; e++) for (n = 0; n < N; n++, i++)
+      matrice(i, i) += volumes(e) * himp(!c_h * e, n);
 }

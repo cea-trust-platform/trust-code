@@ -173,10 +173,10 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         /* phi / Tb : selon CLs */
         if (ch.fcl(f, 0) < 3) for (n = 0; n < N; n++) //Echange_impose_base
             {
-              double invh = (alp ? 1. / alp->addr()[N * e + n] : 1.) / ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).h_imp(ch.fcl(f, 2), n);
+              double invh = (alp ? 1. / (*alp)(e, n) : 1.) / ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).h_imp(ch.fcl(f, 2), n);
               if (ch.fcl(f, 0) == 1) invh += 1. / h_int(n);
-              phi(n, 0) = (inco.addr()[N * e + n] - ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).T_ext(ch.fcl(f, 2), n)) / invh, phi(n, 1) = 1. / invh;
-              Tb(f, n, 0) = inco.addr()[N * e + n] - phi(n) / h_int(n), Tb(f, n, 1) = 1;
+              phi(n, 0) = (inco(e, n) - ref_cast(Echange_impose_base, cls[ch.fcl(f, 1)].valeur()).T_ext(ch.fcl(f, 2), n)) / invh, phi(n, 1) = 1. / invh;
+              Tb(f, n, 0) = inco(e, n) - phi(n) / h_int(n), Tb(f, n, 1) = 1;
             }
         else if (ch.fcl(f, 0) == 3) abort(); //monolithique
         else if (ch.fcl(f, 0) < 6) for (n = 0; n < N; n++) //Neumann
@@ -185,7 +185,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               else if (sub_type(Neumann, cls[ch.fcl(f, 1)].valeur())) phi(n, 0) = ref_cast(Neumann, cls[ch.fcl(f, 1)].valeur()).flux_impose(ch.fcl(f, 2), n);
               else phi(n, 0) = 0.;
               phi(n, 1) = 0;
-              Tb(f, n, 0) = inco.addr()[N * e + n] - phi(n, 0) / h_int(n), Tb(f, n, 1) = 1;
+              Tb(f, n, 0) = inco(e, n) - phi(n, 0) / h_int(n), Tb(f, n, 1) = 1;
             }
         else for (n = 0; n < N; n++) //Dirichlet
             {
@@ -193,11 +193,11 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               const Champ_front_var_instationnaire *cfv = sub_type(Champ_front_var_instationnaire, cfb) ? &ref_cast(Champ_front_var_instationnaire, cfb) : NULL;
               double Tf = Tb(f, n, 0) = !cfv || !cfv->valeur_au_temps_et_au_point_disponible() ? ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), n) :
                                         cfv->valeur_au_temps_et_au_point(t, -1, phif_xb(f, n, 0), phif_xb(f, n, 1), D < 3 ? 0 : phif_xb(f, n, 2), n);
-              phi(n, 0) = h_int(n) * (inco.addr()[N * e + n] - Tf), phi(n, 1) = h_int(n);
+              phi(n, 0) = h_int(n) * (inco(e, n) - Tf), phi(n, 1) = h_int(n);
             }
 
         /* contributions */
-        for (n = 0; n < N; n++) secmem.addr()[N * e + n] -= fs(f) * phi(n, 0);
+        for (n = 0; n < N; n++) secmem(e, n) -= fs(f) * phi(n, 0);
         if (mat) for (n = 0; n < N; n++) (*mat)(N * e + n, N * e + n) += fs(f) * phi(n, 1);
         if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) flux_bords_(f, n) = - fs(f) * phi(n, 0);
       }
@@ -210,12 +210,12 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       for (phi = 0, i = phif_d(f); i < phif_d(f + 1); i++) for (e = phif_j(i), n = 0; n < N; n++)
           {
             double fac = fs(f) * (phif_w(f, n, 0) * phif_c(i, n, 0) + phif_w(f, n, 1) * phif_c(i, n, 1));
-            phi(n) += fac * (e < ne_tot ? inco.addr()[N * e + n] : Tb(e - ne_tot, n, 0));
+            phi(n) += fac * (e < ne_tot ? inco(e, n) : Tb(e - ne_tot, n, 0));
             if (mat && (e < ne_tot || Tb(e - ne_tot, n, 1))) dphi[n][e < ne_tot ? e : f_e(e - ne_tot, 0)] += fac * (e < ne_tot ? 1 : Tb(e - ne_tot, n, 1));
           }
 
       /* contributions */
-      for (i = 0; i < 2; i++) for (n = 0; n < N; n++) secmem.addr()[N * f_e(f, i) + n] -= (i ? 1 : -1) * phi(n);
+      for (i = 0; i < 2; i++) for (n = 0; n < N; n++) secmem(f_e(f, i), n) -= (i ? 1 : -1) * phi(n);
       if (mat) for (n = 0; n < N; dphi[n].clear(), n++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < zone.nb_elem()) for (auto &i_c : dphi[n])
                 (*mat)(N * e + n, N * i_c.first + n) += (i ? 1 : -1) * i_c.second;
     }

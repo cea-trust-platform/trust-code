@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,14 +133,14 @@ void Op_Diff_PolyMAC_Elem::update_delta_int() const
           //partie 'face-face'
           for (f = e_f(e, i), k = zone.w2i(j); k < zone.w2i(j + 1); k++) for (fb = e_f(e, l = zone.w2j(k)), fac = fs(f) * fs(fb) / ve(e) * zone.w2c(k), n = 0; n < N; n++)
               {
-                fac_n = fac * nu_ef(l, n) * (inco.addr()[N * (ne_tot + fb) + n] - inco.addr()[N * e + n]);
+                fac_n = fac * nu_ef(l, n) * (inco(ne_tot + fb, n) - inco(e, n));
                 de_num(n) += fac_n, delta_f_int(f, n, 0) += fac_n;
-                delta_f_int(f, n, 1) += dabs(inco.addr()[N * (ne_tot + fb) + n] - inco.addr()[N * (ne_tot + f) + n]);
+                delta_f_int(f, n, 1) += dabs(inco(ne_tot + fb, n) - inco(ne_tot + f, n));
               }
           //partie 'face-element'
           for (n = 0; n < N; n++)
             {
-              fac = dabs(inco.addr()[N * e + n] - inco.addr()[N * (ne_tot + f) + n]);
+              fac = dabs(inco(e, n) - inco(ne_tot + f, n));
               de_den(n) += fac, delta_f_int(f, n, 1) += fac;
             }
         }
@@ -267,13 +267,13 @@ void Op_Diff_PolyMAC_Elem::ajouter_termes_croises(const DoubleTab& inco, const P
         for (j = 0; j < fvf.nb_faces(); j++)
           {
             f = fvf.num_face(j);
-            for (n = 0; n < N; n++) resu.addr()[N * (ne_tot + f) + n] -= cl.coeff(j, 0, n) * inco.addr()[N * (ne_tot + f) + n]; //terme de la face elle-meme
+            for (n = 0; n < N; n++) resu(ne_tot + f, n) -= cl.coeff(j, 0, n) * inco(ne_tot + f, n); //terme de la face elle-meme
             for (k = 0; k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++) for (n = 0; n < N; n++)
                 {
                   //operateur
-                  resu.addr()[N * (ne_tot + f) + n] -= cl.coeff(j, k + 1, n) * autre_inco.addr()[N * l + n];
+                  resu(ne_tot + f, n) -= cl.coeff(j, k + 1, n) * autre_inco(l, n);
                   //correction non lineaire
-                  if (stab_) resu.addr()[N * (ne_tot + f) + n] -= max(delta_f(f, n), cl.delta(j, k, n)) * (inco.addr()[N * (ne_tot + f) + n] - autre_inco.addr()[N * l + n]);
+                  if (stab_) resu(ne_tot + f, n) -= max(delta_f(f, n), cl.delta(j, k, n)) * (inco(ne_tot + f, n) - autre_inco(l, n));
                 }
           }
       }
@@ -336,30 +336,30 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
           for (f = e_f(e, i), j = zone.w2i(zone.m2d(e) + i), mfe = 0; j < zone.w2i(zone.m2d(e) + i + 1); j++, mfe += mff)
             {
               for (fb = e_f(e, zone.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * zone.w2c(j); n < N; n++) mff(n) = fac * nu_ef(zone.w2j(j), n);
-              for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
-              for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) -= mff(n) * inco.addr()[N * (ne_tot + fb) + n];
-              for (n = 0; n < N; n++) resu.addr()[N * e + n] += mff(n) * inco.addr()[N * (ne_tot + fb) + n];
+              for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) -= mff(n) * inco(ne_tot + fb, n);
+              for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) -= mff(n) * inco(ne_tot + fb, n);
+              for (n = 0; n < N; n++) resu(e, n) += mff(n) * inco(ne_tot + fb, n);
 
               //correction non lineaire : partie "faces/faces"
               for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++)
-                resu.addr()[N * (ne_tot + f) + n] -= max(delta_f(f, n), delta_f(fb, n)) * (inco.addr()[N * (ne_tot + f) + n] - inco.addr()[N * (ne_tot + fb) + n]);
+                resu(ne_tot + f, n) -= max(delta_f(f, n), delta_f(fb, n)) * (inco(ne_tot + f, n) - inco(ne_tot + fb, n));
             }
-          for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu.addr()[N * (ne_tot + f) + n] += mfe(n) * inco.addr()[N * e + n];
-          for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) += mfe(n) * inco.addr()[N * e + n];
+          for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) += mfe(n) * inco(e, n);
+          for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) += mfe(n) * inco(e, n);
 
           //Echange_impose_base
           if (ch.icl(f, 0) > 0 && ch.icl(f, 0) < 2 && f < zone.nb_faces()) for (n = 0; n < N; n++)
-              resu.addr()[N * (ne_tot + f) + n] -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n)
-                                                   * (inco.addr()[N * (ch.icl(f, 0) == 1 ? ne_tot + f : e) + n] - ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n));
+              resu(ne_tot + f, n) -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n)
+                                     * (inco(ch.icl(f, 0) == 1 ? ne_tot + f : e, n) - ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n));
 
           //correction non lineaire : parties "elements/faces" et "faces/elements"
           for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
             {
-              double corr = max(delta_e(e, n), delta_f(f, n)) * (inco.addr()[N * e + n] - inco.addr()[N * (ne_tot + f) + n]);
-              resu.addr()[N * e + n] -= corr, resu.addr()[N * (ne_tot + f) + n] += corr;
+              double corr = max(delta_e(e, n), delta_f(f, n)) * (inco(e, n) - inco(ne_tot + f, n));
+              resu(e, n) -= corr, resu(ne_tot + f, n) += corr;
             }
         }
-      for (n = 0; n < N; n++) resu.addr()[N * e + n] -= mee(n) * inco.addr()[N * e + n];
+      for (n = 0; n < N; n++) resu(e, n) -= mee(n) * inco(e, n);
     }
 
   return resu;

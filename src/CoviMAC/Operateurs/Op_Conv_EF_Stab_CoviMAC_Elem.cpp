@@ -176,20 +176,20 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
       {
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
             {
-              double fac = pf(f) * fs(f) * (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-              dv_flux(n) += fac * (e >= 0 ? vcc.addr()[N * e + n] : bcc.addr()[N * f + n]); //f est reelle -> indice trivial dans bcc
-              dc_flux(i, n) = e >= 0 ? fac * vit.addr()[N * f + n] : 0;
+              double fac = pf(f) * fs(f) * (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
+              dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
+              dc_flux(i, n) = e >= 0 ? fac * vit(f, n) : 0;
             }
 
         //second membre
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0; n < N; n++)
-              secmem.addr()[N * e + n] -= (i ? -1 : 1) * dv_flux(n) * vit.addr()[N * f + n];
+              secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, n);
         //derivees : vitesse
         if (m_vit) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0; n < N; n++)
                 (*m_vit)(N * e + n, N * f + n) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
         for (auto &&d_m : d_cc) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-                for (n = 0; n < N; n++) (*d_m.second)(N * e + n, N * eb + n) += (i ? -1 : 1) * dc_flux(j, n) * d_m.first->addr()[N * eb + n];
+                for (n = 0; n < N; n++) (*d_m.second)(N * e + n, N * eb + n) += (i ? -1 : 1) * dc_flux(j, n) * (*d_m.first)(eb, n);
       }
 }
 
@@ -221,7 +221,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
 
-  int i, e, f, n, N = vcc.line_size(), nf_tot = zone.nb_faces_tot();
+  int i, e, f, d, D = dimension, n, N = vcc.line_size(), nf_tot = zone.nb_faces_tot();
   if (cc_phases_.size()) for (n = 0; n < N; n++) if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
         {
           Champ_Face_CoviMAC& c_ph = ref_cast(Champ_Face_CoviMAC, cc_phases_[n].valeur());
@@ -229,13 +229,13 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
           /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
           for (f = 0; f < zone.nb_faces(); f++)
             {
-              for (v_ph.addr()[f] = 0, i = 0; i < 2; i++)
-                v_ph.addr()[f] += (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc.addr()[N * e + n] : bcc.addr()[N * f + n]);
-              v_ph.addr()[f] *= vit.addr()[N * f + n];
+              for (v_ph(f) = 0, i = 0; i < 2; i++)
+                v_ph(f) += (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
+              v_ph(f) *= vit(f, n);
             }
           c_ph.update_ve(v_ph); //interpolation face -> element d'ordre 1 (sans matrices)
-          for (f = 0; f < zone.nb_faces(); f++) v_ph.addr()[f] *= pf(f);
-          for (e = 0; e < zone.nb_elem(); e++) v_ph.addr()[nf_tot + e] *= pe(e); //pour repasser en debitant
+          for (f = 0; f < zone.nb_faces(); f++) v_ph(f) *= pf(f);
+          for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) v_ph(nf_tot + D * e + d) *= pe(e); //pour repasser en debitant
           c_ph.changer_temps(temps);
         }
 
@@ -246,15 +246,14 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
           /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
           for (f = 0; f < zone.nb_faces(); f++)
             {
-              for (v_ph.addr()[f] = 0, i = 0; i < 2; i++)
-                v_ph.addr()[f] += (1. + (vit.addr()[N * f + n] * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp.addr()[N * e + n] : balp.addr()[N * f + n]);
-              v_ph.addr()[f] *= vit.addr()[N * f + n];
+              for (v_ph(f) = 0, i = 0; i < 2; i++)
+                v_ph(f) += (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
+              v_ph(f) *= vit(f, n);
             }
           c_ph.update_ve(v_ph); //interpolation face -> element d'ordre 1 (sans matrices)
-          for (f = 0; f < zone.nb_faces(); f++) v_ph.addr()[f] *= pf(f);
-          for (e = 0; e < zone.nb_elem(); e++) v_ph.addr()[nf_tot + e] *= pe(e); //pour repasser en debitant
+          for (f = 0; f < zone.nb_faces(); f++) v_ph(f) *= pf(f);
+          for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) v_ph(nf_tot + D * e + d) *= pe(e); //pour repasser en debitant
           c_ph.changer_temps(temps);
         }
-
 }
 

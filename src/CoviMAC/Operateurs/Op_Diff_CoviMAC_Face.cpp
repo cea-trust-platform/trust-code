@@ -172,20 +172,20 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
               {
                 double dist_f = max(zone.dist_norm_bord(f), dabs(zone.dot(&xv(fc, 0), &nf(f, 0), &xv(f, 0))) / fs(f)); //fb peut etre plus loin du bord que e
                 double fac = mu_f(fc, n, e != f_e(fc, 0)) * zone.nu_dot(&nu_bord_, fb, n, N, &nf(f, 0), &nf(f, 0)) / (fs(f) * dist_f) * vf(fc) / ve(e);
-                resu.addr()[N * fc + n] -= fac * inco.addr()[N * fc + n];
+                resu(fc, n) -= fac * inco(fc, n);
                 if (mat) (*mat)(N * fc + n, N * fc + n) += fac;
-                for (d = 0; d < D; d++) resu.addr()[N * fc + n] += fac * nf(fc, d) / fs(fc) * vb(f, d, n);
+                for (d = 0; d < D; d++) resu(fc, n) += fac * nf(fc, d) / fs(fc) * vb(f, d, n);
               }
         if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //elem->elem (+ flux_bords si face reelle)
               {
-                resu.addr()[N * (nf_tot + D * e + d) + n] -= fs(f) * h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
+                resu(nf_tot + D * e + d, n) -= fs(f) * h_int(n) * (inco(nf_tot + D * e + d, n) - vb(f, d, n));
                 if (mat) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + n) += fs(f) * h_int(n);
               }
         if (f < zone.premiere_face_int()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-              flux_bords_(f, N * d + n) = - fs(f) * h_int(n) * (inco.addr()[N * (nf_tot + D * e + d) + n] - vb(f, d, n));
+              flux_bords_(f, N * d + n) = - fs(f) * h_int(n) * (inco(nf_tot + D * e + d, n) - vb(f, d, n));
       }
     else if (ch.fcl(f, 0)) for (d = 0; d < D; d++) for (e = f_e(f, 0), n = 0; n < N; n++) //Neumann/Symetrie : vb / dvb seulement
-          vb(f, d, n) = inco.addr()[N * (nf_tot + D * e + d) + n], dvb(f, d, n) = 1;
+          vb(f, d, n) = inco(nf_tot + D * e + d, n), dvb(f, d, n) = 1;
 
   /* faces internes : interpolation -> flux amont/aval -> combinaison convexe */
   for (f = 0; f < zone.nb_faces_tot(); f++) if (f_e(f, 0) >= 0 && f_e(f, 1) >= 0) for (f_eps = min(vf(f) / fs(f), eps), i = 0; i < 2; i++) for (e = f_e(f, i), j = phif_d(f); j < phif_d(f + 1); j++)
@@ -198,7 +198,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
                     for (fd = (j == i + phif_d(f) ? fb : fc), mult = pf(fd) / pe(f_e(f, j - phif_d(f))) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
                       {
                         double fac = mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * mult * coeff(n);
-                        resu.addr()[N * fb + n] -= fac * inco.addr()[N * fd + n];
+                        resu(fb, n) -= fac * inco(fd, n);
                         if (mat && ch.fcl(fd, 0) < 2) (*mat)(N * fb + n, N * fd + n) += fac;
                       }
                   else
@@ -206,13 +206,13 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
                       for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) //pas d'equivalence: elem -> face
                             {
                               double fac = mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * nf(fb, d) / fs(fb) * coeff(n) * (eb == e ? 1 - f_eps : 1);
-                              resu.addr()[N * fb + n] -= fac * (eb < ne_tot ? inco.addr()[N * (nf_tot + D * eb + d) + n] : vb(eb - ne_tot, d, n));
+                              resu(fb, n) -= fac * (eb < ne_tot ? inco(nf_tot + D * eb + d, n) : vb(eb - ne_tot, d, n));
                               if (mat && (eb < ne_tot || dvb(eb - ne_tot, d, n))) (*mat)(N * fb + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n) += fac * (eb < ne_tot ? 1 : dvb(eb - ne_tot, d, n));
                             }
                       if (eb == e) for (n = 0; n < N; n++)
                           {
                             double fac = mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * coeff(n) * f_eps;
-                            resu.addr()[N * fb + n] -= fac * inco.addr()[N * fb + n];
+                            resu(fb, n) -= fac * inco(fb, n);
                             if (mat) (*mat)(N * fb + n, N * fb + n) += fac;
                           }
                     }
@@ -221,7 +221,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
             //elem -> elem
             if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
                   {
-                    resu.addr()[N * (nf_tot + D * e + d) + n] -= coeff(n) * (eb < ne_tot ? inco.addr()[N * (nf_tot + D * eb + d) + n] : vb(eb - ne_tot, d, n));
+                    resu(nf_tot + D * e + d, n) -= coeff(n) * (eb < ne_tot ? inco(nf_tot + D * eb + d, n) : vb(eb - ne_tot, d, n));
                     if (mat && (eb < ne_tot || dvb(eb - ne_tot, d, n))) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * (eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) + d) + n) += coeff(n) * (eb < ne_tot ? 1 : dvb(eb - ne_tot, d, n));
                   }
           }
