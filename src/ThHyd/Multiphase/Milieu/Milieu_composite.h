@@ -50,12 +50,14 @@ public :
   virtual int initialiser(const double& temps);
   virtual void associer_equation(const Equation_base* eqn) const;
   const Champ_base& masse_volumique_fonc() const;
+  const Champ_base& energie_interne_fonc() const;
 
 protected :
-  Champ_Fonc rho_fonc;
+  Champ_Fonc rho_fonc, ei_fonc;
   void mettre_a_jour_tabs();
   LIST(Fluide_base) fluides;
   static void calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  static void calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
 
 };
 

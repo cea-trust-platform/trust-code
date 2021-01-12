@@ -284,7 +284,6 @@ void Milieu_base::preparer_calcul()
   int err=0;
   Nom msg;
   verifier_coherence_champs(err,msg);
-  /* creation automatique de energie_interne = Cp * T si Cp est defini et si on resout la temperature */
 }
 
 void Milieu_base::creer_champs_non_lus()
@@ -415,6 +414,11 @@ void Milieu_base::mettre_a_jour(double temps)
   //Cerr << que_suis_je() << "Milieu_base::mettre_a_jour" << finl;
   if (rho.non_nul())
     rho.mettre_a_jour(temps);
+  if (e_int.non_nul())
+    {
+      if (id_composite != -1) update_e_int(temps);
+      e_int.mettre_a_jour(temps);
+    }
   if (g.non_nul())
     g.valeur().mettre_a_jour(temps);
   if (lambda.non_nul())
@@ -432,7 +436,6 @@ void Milieu_base::mettre_a_jour(double temps)
   if (rho_cp_comme_T_.non_nul())
     update_rho_cp(temps);
 
-  if (e_int.non_nul()) e_int.mettre_a_jour(temps);
 }
 
 void Milieu_base::update_rho_cp(double temps)
@@ -483,7 +486,7 @@ bool Milieu_base::initTimeStep(double dt)
   /* champs dont on doit creer des cases */
   std::vector<Champ_Inc_base *> vch;
   if (rho.non_nul() && sub_type(Champ_Inc_base, rho.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, rho.valeur()));
-  if (e_int.non_nul()) vch.push_back(&e_int.valeur());
+  if (e_int.non_nul() && sub_type(Champ_Inc_base, e_int.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, e_int.valeur()));
 
   for (auto &pch : vch) for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
       pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
@@ -560,6 +563,11 @@ int Milieu_base::initialiser(const double& temps)
 {
   Cerr << que_suis_je() << "Milieu_base:::initialiser" << finl;
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
+  if (e_int.non_nul())
+    {
+      update_e_int(temps);
+      e_int.mettre_a_jour(temps);
+    }
   if (g.non_nul())
     g.valeur().initialiser(temps);
   if (lambda.non_nul())
@@ -656,7 +664,6 @@ Champ_Don& Milieu_base::dP_masse_volumique()
 // Postcondition: la methode ne modifie pas l'objet
 const Champ_base& Milieu_base::energie_interne() const
 {
-  if (!e_int.non_nul()) creer_energie_interne();
   return e_int;
 }
 
@@ -676,8 +683,27 @@ const Champ_base& Milieu_base::energie_interne() const
 // Postcondition:
 Champ_base& Milieu_base::energie_interne()
 {
-  if (!e_int.non_nul()) creer_energie_interne();
   return e_int;
+}
+
+const Champ_Don& Milieu_base::dT_energie_interne() const
+{
+  return dT_e_int;
+}
+
+Champ_Don& Milieu_base::dT_energie_interne()
+{
+  return dT_e_int;
+}
+
+const Champ_Don& Milieu_base::dP_energie_interne() const
+{
+  return dP_e_int;
+}
+
+Champ_Don& Milieu_base::dP_energie_interne()
+{
+  return dP_e_int;
 }
 
 // Description:
@@ -917,42 +943,6 @@ void Milieu_base::associer_equation(const Equation_base *eqn) const
   equation[nom_inco] = eqn;
 }
 
-void Milieu_base::creer_energie_interne() const
-{
-  const Equation_base& eqn = *equation.at("temperature");
-  eqn.discretisation().discretiser_champ("temperature", eqn.zone_dis(),"energie_interne", "J/m^3",
-                                         eqn.inconnue()->nb_comp(),
-                                         eqn.inconnue()->nb_valeurs_temporelles(),
-                                         eqn.schema_temps().temps_courant(), e_int);
-  e_int->associer_eqn(eqn);
-  e_int->init_champ_calcule(calculer_energie_interne);
-}
-
-void Milieu_base::calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
-{
-  const Equation_base& eqn = ch.equation();
-  const Champ_Don_base& ch_Cp = eqn.milieu().capacite_calorifique().valeur();
-  const DoubleTab& temp = eqn.inconnue()->valeurs(t), &Cp = ch_Cp.valeurs();
-
-  /* le cas ou Cp est un Champ_Uniforme est tres penible*/
-  int cCp = sub_type(Champ_Uniforme, ch_Cp), i, n, Nl = temp.dimension_tot(0), N = temp.line_size();
-  /* valeurs : Cp * T */
-  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = temp(i, n) * Cp(!cCp * i, n);
-  if (val_only) return;
-
-  /* valeurs aux bord : si Cp n'a pas de Zone_dis_base, appeller valeur_aux(xv_bord, ..) au lieu de valeur_aux_bords() */
-  bval = eqn.inconnue()->valeur_aux_bords();
-  DoubleTab bCp;
-  if (ch_Cp.a_une_zone_dis_base()) bCp = ch_Cp.valeur_aux_bords();
-  else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bCp);
-  tab_multiply_any_shape(bval, bCp);
-
-  /* derivees : Cp */
-  DoubleTab& der = deriv["temperature"];
-  if (cCp) for(der.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) der(i, n) = Cp(n);
-  else der = Cp;
-}
-
 void Milieu_base::set_id_composite(const int i)
 {
   id_composite = i;
@@ -961,4 +951,9 @@ void Milieu_base::set_id_composite(const int i)
 const DoubleTab& Milieu_base::masse_volumique_bord() const
 {
   return rho_bord;
+}
+
+const DoubleTab& Milieu_base::energie_interne_bord() const
+{
+  return e_int_bord;
 }

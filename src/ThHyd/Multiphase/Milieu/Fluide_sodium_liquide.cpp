@@ -51,22 +51,24 @@ double Fluide_sodium_liquide::dP_rho_(const double T, const double P) const
   return DPRhoL(T, P);
 }
 
+double Fluide_sodium_liquide::eint_(const double T, const double P) const
+{
+  return HL(T, P) - P / RhoL(T, P);
+}
+
+double Fluide_sodium_liquide::dT_eint_(const double T, const double P) const
+{
+  return DTHL(T, P) + P * DTRhoL(T, P) / RhoL(T, P) / RhoL(T, P);
+}
+
+double Fluide_sodium_liquide::dP_eint_(const double T, const double P) const
+{
+  return DPHL(T, P) - (RhoL(T, P) - P * DPRhoL(T, P)) / RhoL(T, P) / RhoL(T, P);
+}
+
 double Fluide_sodium_liquide::cp_(const double T, const double P) const
 {
-  const double eint = HL(T, P) - P / rho_(T, P);
-  return eint / T;
-}
-
-double Fluide_sodium_liquide::dT_cp_(const double T, const double P) const
-{
-  Process::exit("pas code");
-  return 0;
-}
-
-double Fluide_sodium_liquide::dP_cp_(const double T, const double P) const
-{
-  Process::exit("pas code");
-  return 0;
+  return DTHL(T, P);
 }
 
 double Fluide_sodium_liquide::mu_(const double T) const

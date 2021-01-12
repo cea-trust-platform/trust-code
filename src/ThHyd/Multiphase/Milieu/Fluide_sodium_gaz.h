@@ -38,17 +38,18 @@ class Fluide_sodium_gaz: public Fluide_reel_base
 
 protected :
   // densite
-  virtual double    rho_(const double T, const double P) const;
-  virtual double dP_rho_(const double T, const double P) const;
-  virtual double dT_rho_(const double T, const double P) const;
+  virtual double     rho_(const double T, const double P) const;
+  virtual double  dP_rho_(const double T, const double P) const;
+  virtual double  dT_rho_(const double T, const double P) const;
   // capacite calorifique
-  virtual double     cp_(const double T, const double P) const;
-  virtual double  dP_cp_(const double T, const double P) const;
-  virtual double  dT_cp_(const double T, const double P) const;
+  virtual double    eint_(const double T, const double P) const;
+  virtual double dP_eint_(const double T, const double P) const;
+  virtual double dT_eint_(const double T, const double P) const;
   // lois champs "faibles" -> pas de derivees
-  virtual double   beta_(const double T, const double P) const;
-  virtual double     mu_(const double T) const;
-  virtual double lambda_(const double T) const;
+  virtual double      cp_(const double T, const double P) const;
+  virtual double    beta_(const double T, const double P) const;
+  virtual double      mu_(const double T) const;
+  virtual double  lambda_(const double T) const;
 };
 
 #endif

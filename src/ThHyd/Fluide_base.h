@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,6 +97,8 @@ protected :
 
   void creer_nu();
   virtual void calculer_nu();
+  void creer_energie_interne();
+  virtual void update_e_int(double t);
 
 protected:
 

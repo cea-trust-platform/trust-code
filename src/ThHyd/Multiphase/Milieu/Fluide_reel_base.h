@@ -53,18 +53,20 @@ public :
   virtual void set_param(Param& param);
 
 protected :
+
   // densite
-  virtual double    rho_(const double T, const double P) const = 0;
-  virtual double dP_rho_(const double T, const double P) const = 0;
-  virtual double dT_rho_(const double T, const double P) const = 0;
+  virtual double     rho_(const double T, const double P) const = 0;
+  virtual double  dP_rho_(const double T, const double P) const = 0;
+  virtual double  dT_rho_(const double T, const double P) const = 0;
   // capacite calorifique
-  virtual double     cp_(const double T, const double P) const = 0;
-  virtual double  dP_cp_(const double T, const double P) const = 0;
-  virtual double  dT_cp_(const double T, const double P) const = 0;
+  virtual double    eint_(const double T, const double P) const = 0;
+  virtual double dP_eint_(const double T, const double P) const = 0;
+  virtual double dT_eint_(const double T, const double P) const = 0;
   // lois champs "faibles" -> pas de derivees
-  virtual double   beta_(const double T, const double P) const = 0;
-  virtual double     mu_(const double T) const = 0;
-  virtual double lambda_(const double T) const = 0;
+  virtual double      cp_(const double T, const double P) const = 0;
+  virtual double    beta_(const double T, const double P) const = 0;
+  virtual double      mu_(const double T) const = 0;
+  virtual double  lambda_(const double T) const = 0;
 
   void mettre_a_jour_tabs(const double t);
 

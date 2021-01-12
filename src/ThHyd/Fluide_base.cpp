@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@
 #include <Schema_Temps_base.h>
 #include <Param.h>
 #include <Champ_Fonc_MED.h>
+#include <EChaine.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_base,"Fluide_base",Milieu_base);
 
@@ -166,6 +167,17 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       dis.nommer_completer_champ_physique(zone_dis,"dilatabilite_solutale",".",beta_co.valeur(),pb);
       champs_compris_.ajoute_champ(beta_co.valeur());
     }
+  if (id_composite != -1)
+    {
+      Champ_Fonc ei_fonc;
+      dis.discretiser_champ("champ_elem", zone_dis, "energie_interne", "J/m^3", 1, temps, ei_fonc);
+      e_int = ei_fonc;
+      const DoubleTab& xv_bord = ref_cast(Zone_VF, zone_dis).xv_bord();
+      e_int_bord.resize(xv_bord.dimension_tot(0), 1);
+      creer_energie_interne();
+
+    }
+
   Milieu_base::discretiser(pb,dis);
 
 }
@@ -341,6 +353,40 @@ void Fluide_base::calculer_nu()
       i, j, n, Nl = tabnu.dimension_tot(0), N = tabnu.line_size();
   /* valeurs : mu / rho */
   for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) tabnu.addr()[j] = tabmu.addr()[cMu ? n : j] / tabrho.addr()[cRho ? n : j];
+}
+
+void Fluide_base::creer_energie_interne()
+{
+  dT_e_int = Cp;
+  dT_e_int->nommer("DT_energie_interne");
+
+  Nom n_ch("champ_uniforme ");
+  n_ch += Nom(Cp.nb_comp());
+  n_ch += " 0";
+  EChaine ech1(n_ch);
+  ech1 >> dP_e_int;
+  dP_e_int->nommer("DP_energie_interne");
+}
+
+void Fluide_base::update_e_int(double t)
+{
+  const Equation_base& eqn = *equation.at("temperature");
+  const Champ_base& ch_T = eqn.probleme().get_champ("Temperature");
+  const DoubleTab& temp = ch_T.valeurs(t), &temp_b = ch_T.valeur_aux_bords();
+
+  const int Nl = e_int.valeurs().dimension_tot(0), N = Cp.valeurs().line_size(), cCp = sub_type(Champ_Uniforme, Cp.valeur());
+  if ((N > 1 && id_composite != -1) || id_composite == -1) Process::exit("energie_interne should be used only with Milieu_composite -> the fluids should have only one component each");
+  DoubleTab bCp;
+  if (Cp.valeur().a_une_zone_dis_base()) bCp = Cp.valeur().valeur_aux_bords();
+  else bCp.resize(temp_b.dimension_tot(0), N), Cp.valeur().valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bCp);
+
+  DoubleTab& tab_ei = e_int.valeurs();
+  const DoubleTab& tab_Cp = Cp.valeurs();
+  dT_e_int.valeurs() = tab_Cp;
+  for (int i = 0; i < Nl; i++)
+    tab_ei(i, 0) = tab_Cp(!cCp * i, 0) * temp(i, id_composite);
+  for (int i = 0; i < e_int_bord.dimension_tot(0); i++)
+    e_int_bord(i, 0) = bCp(i, 0) * temp_b(i, id_composite);
 }
 
 
