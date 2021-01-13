@@ -493,8 +493,8 @@ DoubleTab Domaine::getBoundingBox() const
   int nbsom=coord_sommets().dimension(0);
   for (int j=0; j<dimension; j++)
     {
-      double min_=DMAXFLOAT;
-      double max_=-DMAXFLOAT;
+      double min_=0.5*DMAXFLOAT;
+      double max_=-0.5*DMAXFLOAT;
       for (int i=0; i<nbsom; i++)
         {
           double c = coord_sommets()(i,j);
