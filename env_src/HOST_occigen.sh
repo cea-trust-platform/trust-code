@@ -56,7 +56,7 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # openmpi 2.0.0 2.0.1
    #module="$intel openmpi/intel/2.0.1" # error mpif-sizeof.h
    #module="openmpi/gnu/2.0.1"
-   # int64 build built with: module="intel/19.3 openmpi/icc/2.0.4.12"
+   # int64 build built with: module="intel/19.3 openmpi/intel/2.0.4"
    # int64 build failed with intel/18.1 and intel/19.3+intelmpi/2019.3.199
    #
    echo "# Module $module detected and loaded on $HOST."
