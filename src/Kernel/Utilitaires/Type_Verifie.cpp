@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ static Motcles motcle_obsolete;
 // Parcours du jeu de donnees pour verification des mots cles obsoletes
 void verifie(const Nom& type)
 {
-  int n=58;
+  int n=57;
   if( motcle_obsolete.size()!=n)
     {
       int i=0;
@@ -58,7 +58,6 @@ void verifie(const Nom& type)
       motcle_obsolete[i++] = "Schema_Crank_Nicholson";
       motcle_obsolete[i++] = "Resoudre_ALE";
       motcle_obsolete[i++] = "Resoudre_QComp";
-      motcle_obsolete[i++] = "Decoupebord";
       motcle_obsolete[i++] = "Periodique_1Proc";
       motcle_obsolete[i++] = "Corriger_coord_perio";
       motcle_obsolete[i++] = "Echange_domcut";
@@ -127,7 +126,6 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.5.2, on doit utiliser Sch_CN_EX_iteratif ou Sch_CN_iteratif a la place";
       nouvelle_syntaxe[i++] = "1.5.2, on doit utiliser Resoudre a la place";
       nouvelle_syntaxe[i++] = "1.5.2, on doit utiliser Resoudre a la place";
-      nouvelle_syntaxe[i++] = "1.5.3, on doit utiliser Decoupebord_pour_rayonnement a la place. Voir la nouvelle syntaxe.";
       nouvelle_syntaxe[i++] = "1.5.3, on doit utiliser le mot cle Periodique dans le decoupeur pour specifier les bords periodiques.";
       nouvelle_syntaxe[i++] = "1.5.5, on doit utiliser Corriger_frontiere_periodique { ... corriger_coordonnees }";
       nouvelle_syntaxe[i++] = "1.5.7, il n'est plus necessaire pour paralleliser certaines conditions limites.";

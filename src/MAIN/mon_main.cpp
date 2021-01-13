@@ -264,10 +264,14 @@ void mon_main::dowork(const Nom& nom_du_cas)
         filename += s;
       }
     filename += ".log";
+    // Si journal_master_, seul le process maitre ecrit dans le journal:
     if (journal_master_ && !Process::je_suis_maitre())
-      {
-        verbose_level_ = 0;
-      }
+      verbose_level_ = 0;
+
+    // Si un journal unique n'est pas active, alors desactive les journaux logs au dela d'un certain nombre de rangs MPI:
+    if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
+      verbose_level_ = 0;
+
     init_journal_file(verbose_level_, journal_shared_,filename, 0 /* append=0 */);
     if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";
     Process::Journal() << "Journal logging started" << finl;
@@ -275,7 +279,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
   Nom nomfic( nom_du_cas );
   nomfic += ".stop";
-  if (!get_disable_stop())
+  if (!get_disable_stop() && Process::je_suis_maitre())
     {
       SFichier ficstop( nomfic );
       ficstop << "Running..."<<finl;
@@ -355,7 +359,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   Cout << finl;
   Cout << "--------------------------------------------" << finl;
   Cout << "clock: Total execution: " << temps << " s" << finl;
-  if (!get_disable_stop())
+  if (!get_disable_stop() && Process::je_suis_maitre())
     {
       SFichier ficstop ( nomfic);
       ficstop  << "Finished correctly"<<finl;

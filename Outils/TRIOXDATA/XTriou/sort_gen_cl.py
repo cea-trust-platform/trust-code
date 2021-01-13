@@ -91,7 +91,7 @@ def gen_class(cl,dico):
     pass
 
 for cl in lst:
-    # print 'ici',cl
+    print('class: ',cl)
     gen_class(cl,dico)
 
     pass

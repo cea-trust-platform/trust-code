@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -487,11 +487,9 @@ void Domaine::creer_mes_domaines_frontieres(const Zone_VF& zone_vf)
     }
 }
 
-void Domaine::imprimer() const
+DoubleTab Domaine::getBoundingBox() const
 {
-  Cerr << "==============================================" << finl;
-  Cerr << "The extreme coordinates of the domain " << le_nom() << " are:" << finl;
-  // Il n'existe pas de recherche du min et du max dans DoubleTab donc je code:
+  DoubleTab BB(dimension, 2);
   int nbsom=coord_sommets().dimension(0);
   for (int j=0; j<dimension; j++)
     {
@@ -503,8 +501,22 @@ void Domaine::imprimer() const
           min_ = (c < min_ ? c : min_);
           max_ = (c > max_ ? c : max_);
         }
-      min_ = mp_min(min_);
-      max_ = mp_max(max_);
+      BB(j,0) = min_;
+      BB(j,1) = max_;
+    }
+  return BB;
+}
+
+void Domaine::imprimer() const
+{
+  Cerr << "==============================================" << finl;
+  Cerr << "The extreme coordinates of the domain " << le_nom() << " are:" << finl;
+  // Il n'existe pas de recherche du min et du max dans DoubleTab donc je code:
+  DoubleTab BB = getBoundingBox();
+  for (int j=0; j<dimension; j++)
+    {
+      double min_ = mp_min(BB(j,0));
+      double max_ = mp_max(BB(j,1));
       if (j==0) Cerr << "x ";
       if (j==1) Cerr << "y ";
       if (j==2) Cerr << "z ";

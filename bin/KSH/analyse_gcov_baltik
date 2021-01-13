@@ -51,8 +51,10 @@ ORG=`(cd $ORG;pwd)`
 trace=`basename  $GCOV_PREFIX`"/"
 exit_code=0
 
-for cas in baltik
-  do
+liste="baltik"
+[ ${project_directory%Super_Build} != $project_directory ] && liste=$liste" TRUST" # Uniquement pour le Super_Build
+for cas in $liste
+do
   cd `dirname $GCOV_PREFIX`
   
   filtre=""
@@ -76,9 +78,10 @@ for cas in baltik
   echo "Analysis by gcov..."
   rm -f gcov_out gcov_err
   gcov *.gcno 1>gcov_out 2>gcov_err
+  echo "Creating `pwd`/cpp.gcov"
   mkdir cpp.gcov
   mv *.cpp.gcov cpp.gcov
-  cd  cpp.gcov
+  cd cpp.gcov
   #echo "Analysis of the coverage of $cas part "
   #tout 1>monana_out 2>&1
   #echo "`pwd`/monana_out file created" 
@@ -89,13 +92,12 @@ for cas in baltik
   #cat monana_sort
 
   if [ "$cas" = "TRUST" ]
-      then
-       $TRUST_ROOT/bin/KSH/tggcov_ -html  | sed "s/TRUST/$cas/"
+  then
+       $TRUST_ROOT/bin/KSH/tggcov_ -html | sed "s/TRUST/$cas/"
       (cd ..;tar zcf $DEST.tgz *.html cpp.gcov)
       (cd ../..; echo "To update coverage :" ;echo "cp $PWD/TRUST_cpp.gcov.tgz \$TRUST_ROOT/doc/Coverage/cpp.gcov.tar.gz")
   fi
   
- 
   cd ..
   rm -rf $DEST
   mv cpp.gcov $DEST

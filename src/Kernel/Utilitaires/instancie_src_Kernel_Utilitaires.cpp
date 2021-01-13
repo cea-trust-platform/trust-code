@@ -29,6 +29,7 @@
 #include <Lire_Fichier.h>
 #include <Lire_Fichier_Bin.h>
 #include <Motcle.h>
+#include <MultipleFiles.h>
 #include <Nom.h>
 #include <Noms.h>
 #include <Objet_a_lire.h>
@@ -69,15 +70,16 @@ Lire_Fichier inst24;verifie_pere(inst24);
 Lire_Fichier_Bin inst25;verifie_pere(inst25);
 Motcle inst26;verifie_pere(inst26);
 Motcles inst27;verifie_pere(inst27);
-Nom inst28;verifie_pere(inst28);
-Noms inst29;verifie_pere(inst29);
-Objet_a_lire inst30;verifie_pere(inst30);
-Read_unsupported_ASCII_file_from_ICEM inst31;verifie_pere(inst31);
-SFichier inst32;verifie_pere(inst32);
-SFichierBin inst33;verifie_pere(inst33);
-System inst34;verifie_pere(inst34);
-Typer_Lire inst35;verifie_pere(inst35);
-liste inst36;verifie_pere(inst36);
-ptrParam inst37;verifie_pere(inst37);
-vect_impl inst38;verifie_pere(inst38);
+MultipleFiles inst28;verifie_pere(inst28);
+Nom inst29;verifie_pere(inst29);
+Noms inst30;verifie_pere(inst30);
+Objet_a_lire inst31;verifie_pere(inst31);
+Read_unsupported_ASCII_file_from_ICEM inst32;verifie_pere(inst32);
+SFichier inst33;verifie_pere(inst33);
+SFichierBin inst34;verifie_pere(inst34);
+System inst35;verifie_pere(inst35);
+Typer_Lire inst36;verifie_pere(inst36);
+liste inst37;verifie_pere(inst37);
+ptrParam inst38;verifie_pere(inst38);
+vect_impl inst39;verifie_pere(inst39);
 }

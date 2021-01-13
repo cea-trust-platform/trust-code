@@ -8,7 +8,7 @@ except:
 
 #import string
 def get_d(l):
-    d=split(l,'\n')[0]
+    d=l.split('\n')[0]
     i=0
     l=len(d)
     while ((i<l) and(d[i]==' ')):

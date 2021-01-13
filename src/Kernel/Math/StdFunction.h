@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define StdFunction_included
 
 #include <UnaryFunction.h>
-#include <math.h>
+#include <cmath>
 #include <Double.h>
 
 /////////////////////////////////////////////////////////////////////////=
@@ -56,6 +56,16 @@ public:
   }
 };
 
+class Asin : public StdFunction
+{
+  Declare_instanciable(Asin);
+public:
+  double eval(double x)
+  {
+    return asin(x);
+  }
+};
+
 class Cos : public StdFunction
 {
   Declare_instanciable(Cos);
@@ -65,6 +75,7 @@ public:
     return cos(x);
   }
 };
+
 class Acos : public StdFunction
 {
   Declare_instanciable(Acos);
@@ -230,6 +241,16 @@ public:
   double eval(double x)
   {
     return dabs(x);
+  }
+};
+
+class Sgn : public StdFunction
+{
+  Declare_instanciable(Sgn);
+public:
+  double eval(double x)
+  {
+    return (x > 0) - (x < 0);
   }
 };
 

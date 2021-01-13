@@ -1,0 +1,106 @@
+Dimension 3
+
+# --------- DEFINITION DU PROBLEME --------- #
+Pb_Hydraulique pb
+Domaine dom
+
+# --------- MAILLAGE --------- #
+# BEGIN MESH #
+Read_file dom Cylindre_tournant_Castem_fin.geom /* Lecture d'un cylindre compris avec 0<z<0.1, -0.1<x<0.1, -0.1<y<0.1 */
+DecoupeBord {
+    domaine dom
+    bords_a_decouper 		1 	SPAROI 		
+    condition_geometrique 	1 	int(5*(0.5+(1-2*(y<0))*acos(x/sqrt(x*x+y*y))/(2*pi)))+5*(z<0.05) /* SPAROI coupee en 5 selon teta, et 2 selon Z */
+    /* Numerotation des sous frontieres SPAROI%i de i=0 a 5 */
+}
+discretiser_domaine dom
+Postraiter_domaine { format lata domaine dom fichier initial_dom.lata }
+Read_file dom dom.newgeom	/* Relecture du maillage avec les nouvelles frontieres */
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+# --------- DISCRETISATION --------- #
+VEFPreP1B dis
+
+# --------- SCHEMA EN TEMPS --------- #
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.
+    nb_pas_dt_max 1
+}
+
+# --------- DEFINITION DU FLUIDE --------- #
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme       1 0.015
+    rho Champ_Uniforme      1 1500.
+}
+
+# --------- ASSOCIATION --------- #
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+
+# --------- LECTURE DES CONDITIONS DE CALCUL --------- #
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { muscl }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 3 0. 0. 1.
+        }
+        boundary_conditions
+        {
+            SENTREE 	frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0. 1.
+            SSORTIE 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            SPAROI%0  	paroi_fixe
+	    SPAROI%1  	paroi_fixe
+            SPAROI%2  	paroi_fixe
+	    SPAROI%3  	paroi_fixe
+            SPAROI%4  	paroi_fixe
+	    SPAROI%5  	paroi_fixe
+	    SPAROI%6  	paroi_fixe
+	    SPAROI%7  	paroi_fixe
+	    SPAROI%8  	paroi_fixe
+	    SPAROI%9  	paroi_fixe
+        }
+    }
+
+    postraitement
+    {
+        format lata
+        fields dt_post 1.e-1
+        {
+            pression elem
+        }
+    }
+}
+# Les forces sont dans les fichiers DecoupeBord_pb_*.out #
+
+# --------- IMPRESSION DES COUPLES --------- #
+Calculer_moments dom centre_de_gravite 0 0. 0.1 
+# Voir les fichiers DecoupeBord_pb_*_moment.out #
+
+# --------- LANCEMENT DU CALCUL --------- #
+Solve pb

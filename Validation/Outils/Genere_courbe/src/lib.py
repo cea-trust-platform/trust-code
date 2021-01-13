@@ -158,7 +158,7 @@ class GestionMessages:
                 mot=dico_inverse[m]+"|"
             mot+=m
             lst.append(mot)
-        message='Unknown parameter. We were expecting a parameter of %s  like %s, and not %s' %(what,lst,motcle)
+        message='Unknown parameter %s. We were expecting a parameter of %s  like %s' %(motcle,what,lst)
 
         return self.ecrire(criticite, message, arret, usage, niveau, texteUsage,fichier)
 #GestionnaireMessages = GestionMessages()

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,6 +68,8 @@ public:
   static double ram_processeur();
   static void imprimer_ram_totale(int all_process=0);
   static int exception_sur_exit;
+  static int multiple_files;
+  static bool force_single_file(const int& ranks, const Nom& filename);
 private:
 };
 

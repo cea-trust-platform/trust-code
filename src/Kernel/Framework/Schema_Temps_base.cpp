@@ -262,7 +262,7 @@ void Schema_Temps_base::validateTimeStep()
                   Cout << ". Progress: "<<(percent)<< finl;
                 }
             }
-          if (!disable_progress())
+          if (!disable_progress() && Process::je_suis_maitre())
             progress_<< (percent)<< finl;
         }
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,10 @@ public :
                                   ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
 #endif
 
-  const Domaine& domaine() const;
+  const Domaine& domaine() const
+  {
+    return mon_dom;
+  }
   virtual void lire(double tps,int given_iteration=-1);
   int nb_pas_temps()
   {
@@ -100,13 +103,15 @@ public :
   inline virtual const Champ_Fonc_base& le_champ() const;
   inline virtual Champ_Fonc_base& le_champ();
   const ArrOfDouble& get_saved_times(void) const;
+
+
 protected:
   REF(Domaine) mon_dom;
-  Domaine dom;
+  Domaine dom_med_;
   Zone_VF_inst zonebidon_inst;
   int numero_ch;
   int nb_dt;
-  Nom nom_fic;
+  Nom nom_fichier_med_;
 #ifdef MED_
   med_entity_type type_ent;
   med_geometry_type type_geo;

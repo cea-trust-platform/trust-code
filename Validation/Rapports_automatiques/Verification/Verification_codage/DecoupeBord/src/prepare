@@ -1,0 +1,2 @@
+#!/bin/bash
+cp -f $TRUST_ROOT/tests/Reference/Cylindre_tournant/Cylindre_tournant_Castem_fin.geom .

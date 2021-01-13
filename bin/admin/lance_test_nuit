@@ -2623,16 +2623,16 @@ echo "############################"
 echo "# Verify the code coverage #"
 echo "############################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-#############
-# GCOV/LCOV #
-#############
+########
+# GCOV #
+########
 repertoire_gcov=$TRUST_ROOT/MonoDir$COMM/src
 machines=`liste_machines "\-all" "\-gcov"`
 echo "Validation by -gcov on $machines"
 if [ "$machines" = "" ]
 then
    echo "  No coverage by gcov!!!" 
-   echo "Warning: No host -all -gcov in liste.machines! No coverage by gcov." | mail_ -s\"[lance_test_nuit] GCOV/LCOV: NO coverage!!!\" $TRUST_MAIL
+   echo "Warning: No host -all -gcov in liste.machines! No coverage by gcov." | mail_ -s\"[lance_test_nuit] GCOV: NO coverage!!!\" $TRUST_MAIL
 fi
 for machine_gcov in $machines # Compilation avec -gcov et passage de tous les cas tests
 do
@@ -2676,25 +2676,6 @@ do
       else
          echo "    => NOT updated"
       fi
-      #rm -f $TRUST_TMP/$file                  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-      #ls -la $TRUST_ROOT"/doc/Coverage/"$file # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-      # Copie apres menage des fichiers .gcda et .gcno pour pouvoir utiliser tggcov_ plus loin
-      #echo "    Copy *.gcda and *.gcno files to $repertoire_gcov"
-      #for suffixe in gcda gcno
-      #do
-      #   find $repertoire_gcov -name '*'.$suffixe | xargs rm -f
-      #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[A-N]*.$suffixe $repertoire_gcov/.
-      #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[N-Z]*.$suffixe $repertoire_gcov/.
-      #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[a-z]*.$suffixe $repertoire_gcov/.
-      #   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/*.$suffixe $repertoire_gcov/. 1>/dev/null 2>&1
-      #   find $repertoire_gcov -name '*'.$suffixe | wc -l
-      #done
-      # Copie lcov (genere sur la machine car compilateur et gcov doivent matcher)
-      #echo "    Copy html directory to $TRUST_ROOT/doc/Coverage/lcov"
-      #rm -r -f $TRUST_ROOT/doc/Coverage/lcov/html
-      #mkdir $TRUST_ROOT/doc/Coverage/lcov/html
-      #scp -r triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/doc/Coverage/lcov/html $TRUST_ROOT/doc/Coverage/lcov
-      #ls -l $TRUST_ROOT/doc/Coverage/lcov/ | grep html
    fi
 done
 ###########
@@ -4036,7 +4017,7 @@ then
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
-   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$flica5_PROJECT_LEADER
+   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$genepi3_PROJECT_LEADER
 fi
 
 #####################################
