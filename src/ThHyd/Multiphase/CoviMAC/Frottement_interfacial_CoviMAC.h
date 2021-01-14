@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Frottement_interfacial_CoviMAC_included
 
 #include <Source_base.h>
-#include <Frottement_interfacial.h>
+#include <Correlation.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -58,7 +58,7 @@ public :
   void associer_pb(const Probleme_base& ) { };
   void mettre_a_jour(double temps) { };
 private:
-  Frottement_interfacial correlation_; //correlation donnant le coeff de frottement interfacial
+  Correlation correlation_; //correlation donnant le coeff de frottement interfacial
 };
 
 #endif

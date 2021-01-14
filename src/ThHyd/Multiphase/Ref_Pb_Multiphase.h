@@ -14,30 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Flux_chaleur_parietal.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/11
+// File:        Ref_Pb_Multiphase.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Flux_chaleur_parietal.h>
-
-Implemente_deriv(Flux_chaleur_parietal_base);
-Implemente_instanciable(Flux_chaleur_parietal,"Flux_chaleur_parietal",DERIV(Flux_chaleur_parietal_base));
-
-Sortie& Flux_chaleur_parietal::printOn(Sortie& os) const
-{
-  return DERIV(Flux_chaleur_parietal_base)::printOn(os);
-}
-
-Entree& Flux_chaleur_parietal::readOn(Entree& is)
-{
-  /* le premier mot sert a typer la correlation*/
-  Nom nom;
-  is >> nom;
-  DERIV(Flux_chaleur_parietal_base)::typer(Nom("Flux_chaleur_parietal_") + nom);
-  /* le reste lui est passe en parametre */
-  return valeur().lire(is);
-}
-
-Declare_ref(Flux_chaleur_parietal_base);
+#ifndef Ref_Pb_Multiphase_included
+#define Ref_Pb_Multiphase_included
+#include <Ref.h>
+class Pb_Multiphase;
+Declare_ref(Pb_Multiphase);
+#endif

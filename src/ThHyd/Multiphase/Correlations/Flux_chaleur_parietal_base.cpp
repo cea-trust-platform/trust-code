@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Flux_chaleur_parietal_base.h>
-Implemente_base(Flux_chaleur_parietal_base, "Flux_chaleur_parietal_base", Objet_U);
+Implemente_base(Flux_chaleur_parietal_base, "Flux_chaleur_parietal_base", Correlation_base);
 
 Sortie& Flux_chaleur_parietal_base::printOn(Sortie& os) const
 {
@@ -31,9 +31,4 @@ Sortie& Flux_chaleur_parietal_base::printOn(Sortie& os) const
 Entree& Flux_chaleur_parietal_base::readOn(Entree& is)
 {
   return is;
-}
-
-Entree& Flux_chaleur_parietal_base::lire(Entree& is)
-{
-  return readOn(is);
 }

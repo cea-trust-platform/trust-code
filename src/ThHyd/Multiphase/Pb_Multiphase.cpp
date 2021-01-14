@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,6 +68,52 @@ Entree& Pb_Multiphase::readOn(Entree& is)
 {
   return Pb_qdm_fluide::readOn(is);
 }
+
+Entree& Pb_Multiphase::lire_equations(Entree& is)
+{
+  bool corr;
+  Motcle mot;
+
+  is >> mot;
+  if ((corr = (mot == "correlations"))) lire_correlations(is);
+
+  Cerr << "Reading of the equations" << finl;
+  for(int i = 0; i < nombre_d_equations(); i++)
+    {
+      if (corr) is >> mot ;
+      is >> getset_equation_by_name(mot);
+    }
+
+  return is;
+}
+
+Entree& Pb_Multiphase::lire_correlations(Entree& is)
+{
+  // en majuscule car on va utiliser des Motcle pour eviter les soucis de casse
+  std::vector<std::string> authorized_correlations = {"FLUX_PARIETAL", "MULTIPLICATEUR_DIPHASIQUE", "FROTTEMENT_INTERFACIAL"};
+  Motcle mot;
+  is >> mot;
+  if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
+
+  for (is >> mot; mot != "}"; is >> mot)
+    if (std::find(authorized_correlations.begin(), authorized_correlations.end(), mot.getString()) != authorized_correlations.end())
+      {
+        Correlation c;
+        is >> c;
+        c.associer_pb_multiphase(*this);
+        correlations[mot.getString()] = c;
+      }
+    else Cerr << "correlations : " << mot << " unknown!" << finl, Process::exit();
+
+  return is;
+}
+
+void Pb_Multiphase::completer()
+{
+  for (auto &&kv : correlations) kv.second.valeur().completer();
+  return Pb_qdm_fluide::completer();
+}
+
 
 void Pb_Multiphase::discretiser(const Discretisation_base& disc)
 {
@@ -216,6 +262,3 @@ int Pb_Multiphase::verifier()
   const Zone_Cl_dis& zone_Cl_th = eq_energie.zone_Cl_dis();
   return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
 }
-
-
-

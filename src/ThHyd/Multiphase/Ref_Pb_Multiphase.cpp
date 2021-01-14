@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,37 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frottement_interfacial.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/11
+// File:        Ref_Pb_Multiphase.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Frottement_interfacial_included
-#define Frottement_interfacial_included
-
-#include <Ref.h>
-#include <Deriv.h>
-#include <Frottement_interfacial_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Frottement_interfacial
-//     Classe generique de la hierarchie des coefficients de frottement interfacial.
-//     Un objet Frottement_interfacial peut referencer n'importe quel objet
-//     derivant de Frottement_interfacial_base.
-// .SECTION voir aussi
-//     Frottement_interfacial_base
-//////////////////////////////////////////////////////////////////////////////
-
-class Frottement_interfacial_base;
-
-Declare_deriv(Frottement_interfacial_base);
-
-class Frottement_interfacial : public DERIV(Frottement_interfacial_base)
-{
-  Declare_instanciable(Frottement_interfacial);
-};
-
-#endif
+#include <Ref_Pb_Multiphase.h>
+#include <Pb_Multiphase.h>
+Implemente_ref(Pb_Multiphase);

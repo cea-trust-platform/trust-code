@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #ifndef Frottement_interfacial_base_included
 #define Frottement_interfacial_base_included
 #include <DoubleTab.h>
-#include <Param.h>
+#include <Correlation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -39,14 +39,13 @@
 //        coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
 //////////////////////////////////////////////////////////////////////////////
 
-class Frottement_interfacial_base : public Objet_U
+class Frottement_interfacial_base : public Correlation_base
 {
   Declare_base(Frottement_interfacial_base);
 public:
   virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                            const DoubleTab& rho, const DoubleTab& mu, double Dh,
                            const DoubleTab& ndv, DoubleTab& coeff) const  = 0;
-  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
 };
 
 #endif

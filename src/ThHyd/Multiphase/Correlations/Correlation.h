@@ -14,37 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Flux_chaleur_parietal.h
+// File:        Correlation.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Flux_chaleur_parietal_included
-#define Flux_chaleur_parietal_included
+#ifndef Correlation_included
+#define Correlation_included
 
 #include <Ref.h>
 #include <Deriv.h>
-#include <Flux_chaleur_parietal_base.h>
+#include <Correlation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Flux_chaleur_parietal
-//     Classe generique de la hierarchie des correlations de flux de chaleur parietal.
-//     Un objet Flux_chaleur_parietal peut referencer n'importe quel objet
-//     derivant de Flux_chaleur_parietal_base.
+//     classe Correlation
+//     Un objet Correlation peut referencer n'importe quel objet
+//     derivant de Correlation_base.
 // .SECTION voir aussi
-//     Flux_chaleur_parietal_base
+//     Correlation_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Flux_chaleur_parietal_base;
+class Correlation_base;
 
-Declare_deriv(Flux_chaleur_parietal_base);
+Declare_deriv(Correlation_base);
 
-class Flux_chaleur_parietal : public DERIV(Flux_chaleur_parietal_base)
+class Correlation : public DERIV(Correlation_base)
 {
-  Declare_instanciable(Flux_chaleur_parietal);
+  Declare_instanciable(Correlation);
+
+public:
+  void associer_pb_multiphase(const Pb_Multiphase& pb);
+
 };
 
 #endif

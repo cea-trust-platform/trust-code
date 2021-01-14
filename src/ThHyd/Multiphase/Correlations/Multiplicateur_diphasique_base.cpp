@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Multiplicateur_diphasique_base.h>
-Implemente_base(Multiplicateur_diphasique_base, "Multiplicateur_diphasique_base", Objet_U);
+Implemente_base(Multiplicateur_diphasique_base, "Multiplicateur_diphasique_base", Correlation_base);
 
 Sortie& Multiplicateur_diphasique_base::printOn(Sortie& os) const
 {
@@ -31,9 +31,4 @@ Sortie& Multiplicateur_diphasique_base::printOn(Sortie& os) const
 Entree& Multiplicateur_diphasique_base::readOn(Entree& is)
 {
   return is;
-}
-
-Entree& Multiplicateur_diphasique_base::lire(Entree& is)
-{
-  return readOn(is);
 }

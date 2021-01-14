@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>
 #include <Champ_Uniforme.h>
+#include <Frottement_interfacial_base.h>
 
 Implemente_instanciable(Frottement_interfacial_CoviMAC,"Frottement_interfacial_Face_CoviMAC", Source_base);
 
@@ -84,6 +85,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                         cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
   DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), dv(N, N), coeff(N, N, 2); //arguments pour coeff
   double dh;
+  const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
   for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2)
@@ -101,7 +103,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
           }
 
         /* calcul du coefficient */
-        correlation_->coefficient(a_l, p_l, T_l, rho_l, mu_l, dh, dv, coeff);
+        correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh, dv, coeff);
 
         /* contributions */
         for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
@@ -127,7 +129,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
             dv(k, l)  =max(dv(k, l), ch.v_norm(passe, passe, e, f, k, l, NULL, NULL));
 
       /* calcul du coefficient */
-      correlation_->coefficient(a_l, p_l, T_l, rho_l, mu_l, dh_e(e), dv, coeff);
+      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh_e(e), dv, coeff);
 
       /* contributions */
       for (d = 0, i = nf_tot + D * e; d < D; d++, i++) for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)

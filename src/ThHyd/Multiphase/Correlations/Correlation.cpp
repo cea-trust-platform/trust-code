@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,30 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frottement_interfacial.cpp
+// File:        Correlation.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Frottement_interfacial.h>
+#include <Correlation.h>
 
-Implemente_deriv(Frottement_interfacial_base);
-Implemente_instanciable(Frottement_interfacial,"Frottement_interfacial",DERIV(Frottement_interfacial_base));
+Implemente_deriv(Correlation_base);
+Implemente_instanciable(Correlation,"Correlation0",DERIV(Correlation_base));
 
-Sortie& Frottement_interfacial::printOn(Sortie& os) const
+Sortie& Correlation::printOn(Sortie& os) const
 {
-  return DERIV(Frottement_interfacial_base)::printOn(os);
+  return DERIV(Correlation_base)::printOn(os);
 }
 
-Entree& Frottement_interfacial::readOn(Entree& is)
+Entree& Correlation::readOn(Entree& is)
 {
   /* le premier mot sert a typer la correlation*/
   Nom nom;
   is >> nom;
-  DERIV(Frottement_interfacial_base)::typer(Nom("Frottement_interfacial_") + nom);
+  DERIV(Correlation_base)::typer(nom);
   /* le reste lui est passe en parametre */
   return valeur().lire(is);
 }
 
-Declare_ref(Frottement_interfacial_base);
+void Correlation::associer_pb_multiphase(const Pb_Multiphase& pb)
+{
+  valeur().associer_pb_multiphase(pb);
+}
+
+Declare_ref(Correlation_base);

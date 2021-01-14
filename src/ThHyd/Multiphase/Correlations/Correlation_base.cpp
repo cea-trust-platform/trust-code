@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,37 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique.h
+// File:        Correlation_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/11
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Multiplicateur_diphasique_included
-#define Multiplicateur_diphasique_included
+#include <Correlation_base.h>
+Implemente_base(Correlation_base, "Correlation_base", Objet_U);
 
-#include <Ref.h>
-#include <Deriv.h>
-#include <Multiplicateur_diphasique_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Multiplicateur_diphasique
-//     Classe generique de la hierarchie des multiplicateurs diphasiques
-//     Un objet Multiplicateur_diphasique peut referencer n'importe quel objet
-//     derivant de Multiplicateur_diphasique_base.
-// .SECTION voir aussi
-//     Multiplicateur_diphasique_base
-//////////////////////////////////////////////////////////////////////////////
-
-class Multiplicateur_diphasique_base;
-
-Declare_deriv(Multiplicateur_diphasique_base);
-
-class Multiplicateur_diphasique : public DERIV(Multiplicateur_diphasique_base)
+Sortie& Correlation_base::printOn(Sortie& os) const
 {
-  Declare_instanciable(Multiplicateur_diphasique);
-};
+  return os;
+}
 
-#endif
+Entree& Correlation_base::readOn(Entree& is)
+{
+  return is;
+}
+
+Entree& Correlation_base::lire(Entree& is)
+{
+  return readOn(is);
+}
+
+void Correlation_base::associer_pb_multiphase(const Pb_Multiphase& pb)
+{
+  pb_multi = pb;
+}

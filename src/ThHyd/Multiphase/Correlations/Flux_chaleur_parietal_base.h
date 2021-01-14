@@ -23,7 +23,7 @@
 #ifndef Flux_chaleur_parietal_base_included
 #define Flux_chaleur_parietal_base_included
 #include <DoubleTab.h>
-#include <Param.h>
+#include <Correlation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -50,7 +50,7 @@
 //       dFtp[n]         -> derivee par rapport a Tp
 //////////////////////////////////////////////////////////////////////////////
 
-class Flux_chaleur_parietal_base : public Objet_U
+class Flux_chaleur_parietal_base : public Correlation_base
 {
   Declare_base(Flux_chaleur_parietal_base);
 public:
@@ -58,7 +58,6 @@ public:
                     const double *alpha, const double *T, const double p, const double *v, const double Tp,
                     const double *lambda, const double *mu, const double *rho, const double *rho_Cp,
                     double *F, double *dFa, double *dFp, double *dFv, double *dFtl, double *dFtp) const = 0;
-  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
 };
 
 #endif

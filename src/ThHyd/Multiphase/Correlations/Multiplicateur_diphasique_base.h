@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #ifndef Multiplicateur_diphasique_base_included
 #define Multiplicateur_diphasique_base_included
 #include <DoubleTab.h>
-#include <Param.h>
+#include <Correlation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -39,13 +39,12 @@
 //        coeff(k, 0/1) -> coefficients C_{kp} et C'_{kp}
 //////////////////////////////////////////////////////////////////////////////
 
-class Multiplicateur_diphasique_base : public Objet_U
+class Multiplicateur_diphasique_base : public Correlation_base
 {
   Declare_base(Multiplicateur_diphasique_base);
 public:
   virtual void coefficient(const double *alpha, const DoubleTab& Fk, double Fm,
                            DoubleTab& coeff) const  = 0;
-  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
 };
 
 #endif

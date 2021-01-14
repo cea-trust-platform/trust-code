@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <Masse_Multiphase.h>
 #include <Energie_Multiphase.h>
 #include <Verif_Cl.h>
+#include <Correlation.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -62,6 +63,9 @@ public:
   void associer_milieu_base(const Milieu_base& );
   void creer_milieu(const Noms);
   int verifier();
+  virtual Entree& lire_equations(Entree& is);
+  virtual Entree& lire_correlations(Entree& is);
+  virtual void completer();
 
   /* nombre de phases du probleme */
   int nb_phases() const
@@ -88,10 +92,22 @@ public:
   Energie_Multiphase eq_energie;
   Masse_Multiphase eq_masse;
 
+  const Correlation& get_correlation(std::string nom_correlation) const
+  {
+    Motcle mot(nom_correlation.c_str());
+    return correlations.at(mot.getString());
+  }
+
+  int has_correlation(std::string nom_correlation) const
+  {
+    Motcle mot(nom_correlation.c_str());
+    return correlations.count(mot.getString());
+  }
+
 protected:
 
-
   Noms noms_phases_;
+  std::map<std::string, Correlation> correlations;
 
 };
 

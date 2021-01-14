@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,30 +14,27 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique.cpp
+// File:        Correlation_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/11
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Multiplicateur_diphasique.h>
+#ifndef Correlation_base_included
+#define Correlation_base_included
+#include <Param.h>
+#include <Ref_Pb_Multiphase.h>
 
-Implemente_deriv(Multiplicateur_diphasique_base);
-Implemente_instanciable(Multiplicateur_diphasique,"Multiplicateur_diphasique",DERIV(Multiplicateur_diphasique_base));
-
-Sortie& Multiplicateur_diphasique::printOn(Sortie& os) const
+class Correlation_base : public Objet_U
 {
-  return DERIV(Multiplicateur_diphasique_base)::printOn(os);
-}
+  Declare_base(Correlation_base);
+public:
+  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
+  void associer_pb_multiphase(const Pb_Multiphase& pb);
+  virtual void completer() { }; // par defaut ne fait rien
 
-Entree& Multiplicateur_diphasique::readOn(Entree& is)
-{
-  /* le premier mot sert a typer la correlation*/
-  Nom nom;
-  is >> nom;
-  DERIV(Multiplicateur_diphasique_base)::typer(Nom("Multiplicateur_diphasique_") + nom);
-  /* le reste lui est passe en parametre */
-  return valeur().lire(is);
-}
+protected:
+  REF(Pb_Multiphase) pb_multi;
+};
 
-Declare_ref(Multiplicateur_diphasique_base);
+#endif
