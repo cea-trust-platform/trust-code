@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -235,21 +235,15 @@ int Solv_Cholesky::Cholesky(const Matrice_Morse_Sym& matrice,
 
 int Solv_Cholesky::Fact_Cholesky(const Matrice_Morse_Sym& mat1, const int size_reelle)
 {
-  // int i;
-  int j;
-  int k;
-  //int N = mat1.ordre();
-  int N = size_reelle;
-
   largeur_de_bande_ = mat1.largeur_de_bande();
   // stockage de la matrice en format bande FORTRAN
-  matrice_bande_factorisee_fortran_.resize_array(N*largeur_de_bande_);
+  matrice_bande_factorisee_fortran_.resize_array(size_reelle*largeur_de_bande_);
 
-  for (j=0; j<N; j++)
+  for (int j=0; j<size_reelle; j++)
     {
       int  i;
       i = j+1 - largeur_de_bande_;
-      k = 0;
+      int k = 0;
       while (k < largeur_de_bande_)
         {
           if (i >= 0)
@@ -269,6 +263,7 @@ int Solv_Cholesky::Fact_Cholesky(const Matrice_Morse_Sym& mat1, const int size_r
   // int DBG=1;
   // int PRC=0;
   char UPLO = 'U';
+  int N = size_reelle;
   int KD = largeur_de_bande_ - 1;// mu nbre de diagonales superieures
   int LDAB = largeur_de_bande_; //n_
   int INFO = 0;

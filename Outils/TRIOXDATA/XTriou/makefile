@@ -34,12 +34,13 @@ ifeq ($(TRUST_WITHOUT_PDFLATEX),1)
 	@echo "TRUST_WITHOUT_PDFLATEX=1 ... so we will not build the PDF documentation."
 else
 	mkdir -p doc_r
-	(cd doc_r; ln -sf ../doc_ressources/* .)
+	(cd doc_r; ln -sf ../doc_ressources/* .; ln -sf ${TRUST_ROOT}/doc/TRUST/Generic_Guide/fieldnames.tex .)
 	cp tests/ref/lutil.py .
 	python -c "from triou import *;gen_doc_base(3)"
 	mv *.tex doc_r
 	cp *.sty doc_r/.
-	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
+	@grep -v batchmode  doc_r/doc.tex  > doc_r/doc_inter.tex
+	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;makeindex doc.idx ;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
 endif
 test:	triou.py
 	(mkdir -p tests; cat tests_src/makefile > tests/makefile; cd tests; time $(MAKE))
@@ -61,4 +62,5 @@ clean:
 	rm -f existepas.stop test doc.pdf doc_r.pdf triou.py *.pyc  syno.py gencl.py gencles.py gentriopy.py2 *.ver sed2 sedfile sedfile2 trace traces update_xd
 	rm -f Keywords.txt TRAD_2
 	rm -rf doc_r doc menu
+	rm -rf __pycache__
 	(rm -rf tests) || exit 0 #(cd tests &&  make clean) || exit 0

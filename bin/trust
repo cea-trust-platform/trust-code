@@ -108,6 +108,7 @@ help()
    echo "-baltik [baltik_name]         : Instanciate an empty Baltik project."
    echo "-index                        : Access to the TRUST ressource index."
    echo "-doc                          : Access to the TRUST manual (Generic Guide)."
+   echo "-html                         : Access to the doxygen documentation."
    echo "-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords."
    echo "-edit                         : Edit datafile."
 #   echo "-xedit                        : Edit datafile with xdata."
@@ -226,6 +227,22 @@ do
       else
 	 echo "$doc not found!" 
 	 exit -1
+      fi
+   elif [ "$1" = "-html" ]
+   then
+      if [ "$project_directory" != "" ]
+      then
+         doc=$project_directory/build/html/index.html
+         [ ! -f $doc ] && doc=$TRUST_ROOT/doc/html/index.html
+      else
+         doc=$TRUST_ROOT/doc/html/index.html
+      fi
+      if [ -f $doc ]
+      then
+         ($TRUST_WEBBROWSER $doc &) && exit 0
+      else
+        echo "$doc not found!"
+        exit -1
       fi
    elif [ "$1" = "-baltik" ]
    then

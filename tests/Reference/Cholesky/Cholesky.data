@@ -1,6 +1,6 @@
 # Thermohydraulique 2D : Couplage Boussinesq et schema quick #
-# PARALLEL OK 8 #
-# Cholesky n'est pas parallelise mais remplace par GCP pour le test de comparaison sequentiel-parallele #
+# PARALLEL NOT #
+# Cholesky n'est pas parallelise #
 # Test elementaire pour le Solveur direct Cholesky #
 dimension 2
 Pb_Thermohydraulique pb
