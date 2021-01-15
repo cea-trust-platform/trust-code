@@ -596,6 +596,7 @@
  Op_Diff_PolyMAC_base Op_Diff_PolyMAC_base Op_Diff_PolyMAC_base.h
  Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem Op_Diff_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
  Op_Diff_PolyMAC_Face|Op_Dift_PolyMAC_Face_PolyMAC Op_Diff_PolyMAC_Face Op_Diff_PolyMAC_Face.h
+ Op_Diff_VDFANISO_var_P0_VDF Op_Diff_VDF_var_Elem_aniso Op_Diff_VDF_var_Elem_aniso.h
  Op_Diff_VDF_base Op_Diff_VDF_base Op_Diff_VDF_base.h
  Op_Diff_VDF_const_Face Op_Diff_VDF_Face Op_Diff_VDF_Face.h
  Op_Diff_VDF_const_Face_Axi Op_Diff_VDF_Face_Axi Op_Diff_VDF_Face_Axi.h
