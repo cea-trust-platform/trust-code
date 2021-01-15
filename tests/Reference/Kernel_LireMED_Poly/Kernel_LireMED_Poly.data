@@ -1,0 +1,9 @@
+# convertToPoly mesh from a MED file #
+# PARALLEL NOT #
+dimension 2
+domaine dom
+lire_med convertAllToPoly family_names_from_group_names dom Mesh logo_trust.med
+Transformer dom x/(94.8028+81.14334615222) (y+81.14334615222)/(94.8028+81.14334615222)
+Discretiser_domaine dom
+Postraiter_domaine { domaine dom fichier Kernel_LireMED_Poly format lml }
+

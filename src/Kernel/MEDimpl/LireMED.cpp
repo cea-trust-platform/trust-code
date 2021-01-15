@@ -120,14 +120,20 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
 #else
 Entree& LireMED::interpreter_(Entree& is)
 {
-  Cerr << "Syntax: Lire_MED [ vef ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
+  Cerr << "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
   int isvefforce=0;
+  int convertAllToPoly=0;
   int isfamilyshort = 0;
   Nom nom_dom_trio,nom_dom, nom_fic;
   is >> nom_dom_trio ;
   if (Motcle(nom_dom_trio)=="vef")
     {
       isvefforce=1;
+      is>>nom_dom_trio;
+    }
+  else if (Motcle(nom_dom_trio)=="convertAllToPoly")
+    {
+      convertAllToPoly=1;
       is>>nom_dom_trio;
     }
   if (Motcle(nom_dom_trio)=="family_names_from_group_names")
@@ -159,7 +165,7 @@ Entree& LireMED::interpreter_(Entree& is)
     }
   associer_domaine(nom_dom_trio);
   Domaine& dom=domaine();
-  lire_geom(nom_fic,dom,nom_dom,nom_dom_trio,isvefforce,isfamilyshort);
+  lire_geom(nom_fic,dom,nom_dom,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
   return is;
 }
 
@@ -1257,7 +1263,7 @@ Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, co
 }
 #endif
 
-void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int isfamilyshort)
+void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
 {
 
   VECT(ArrOfInt) sommets_joints;
@@ -1332,10 +1338,6 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           Cerr << "as the algorithm will try to detect the useless direction in the mesh." << finl;
           //assert(dim == dimension);
         }
-      // Stockage du mesh au niveau du domaine, utile pour:
-      // Champ_Fonc_MED plus rapide (maillage non relu)
-      // Futurs developpements avec MEDCoupling
-      dom.setUMesh(mesh);
 
       // Get the nodes: size and fill sommets2:
       int nnodes = mesh->getNumberOfNodes();
@@ -1351,26 +1353,49 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       //const int *connIndex = mesh->getNodalConnectivityIndex()->begin();
       // Use ArrOfInt to benefit from assert:
       ArrOfInt conn, connIndex;
-      conn.ref_data(mesh->getNodalConnectivity()->getPointer(), mesh->getNodalConnectivity()->getNbOfElems());
-      connIndex.ref_data(mesh->getNodalConnectivityIndex()->getPointer(), mesh->getNodalConnectivityIndex()->getNbOfElems());
-
-      int mesh_type_cell = conn[connIndex[0]];
-      type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary,axi1d);
-      type_ele.typer(type_elem);
-      // Detect a mesh with different cells (not supported):
-      for (int i = 0; i < ncells; i++)
+      bool supported_mesh = false;
+      while (supported_mesh == false)
         {
-          int type_cell = conn[connIndex[i]];
-          if (type_cell != mesh_type_cell)
+          conn.ref_data(mesh->getNodalConnectivity()->getPointer(), mesh->getNodalConnectivity()->getNbOfElems());
+          connIndex.ref_data(mesh->getNodalConnectivityIndex()->getPointer(),
+                             mesh->getNodalConnectivityIndex()->getNbOfElems());
+
+          int mesh_type_cell = conn[connIndex[0]];
+          type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary, axi1d);
+          type_ele.typer(type_elem);
+          // Detect a mesh with different cells (not supported):
+          for (int i = 0; i < ncells; i++)
             {
-              Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
-              Cerr << "TRUST does not support different element types for the mesh." << finl;
-              Cerr << "The new elements of kind "
-                   << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary,axi1d)
-                   << " are not read." << finl;
-              Process::exit();
+              int type_cell = conn[connIndex[i]];
+              if (type_cell != mesh_type_cell)
+                {
+                  Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
+                  Cerr << "TRUST does not support different element types for the mesh." << finl;
+                  Cerr << "New elements of kind "
+                       << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
+                  if (!convertAllToPoly)
+                    {
+                      Cerr << " are not read." << finl;
+                      Cerr << "Either you remesh your domain with a single element type," << finl;
+                      Cerr << "or you convert your cells to polyedrons and polygons by inserting an option in your command line:" << finl;
+                      Cerr << "LireMED convertAllToPoly ... " << finl;
+                      Cerr << "After that, you should use a discretization supporting polyedrons !" << finl;
+                      Process::exit();
+                    }
+                  Cerr << finl;
+                  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+                  Cerr << "Conversion to polyedrons and polygons..." << finl;
+                  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+                  mesh->convertAllToPoly();
+                  break;
+                }
+              if (i==ncells-1) supported_mesh = true;
             }
         }
+      // Stockage du mesh au niveau du domaine, utile pour:
+      // Champ_Fonc_MED plus rapide (maillage non relu)
+      // Futurs developpements avec MEDCoupling
+      dom.setUMesh(mesh);
 
       // Fill les_elem2 : Different treatment according type_elem:
       if (sub_type(Polyedre, type_ele.valeur()))
@@ -1559,7 +1584,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   MCAuto<DataArrayInt> ids(file->getGroupArr(-1, groups[i], false));
                   int nb_faces = (int) ids->getNbOfElems();
                   int nb_families = file->getFamiliesIdsOnGroup(groups[i]).size();
-                  Cerr << "Provisoire boundary group_name=" << groups[i].c_str() << " with " << nb_faces << " faces on ";
+                  Cerr << "group_name=" << groups[i].c_str() << " with " << nb_faces << " faces on ";
                   Cerr << nb_families << " families (";
                   for (int j=0; j<nb_families; j++)
                     Cerr << file->getFamiliesIdsOnGroup(groups[i])[j] << " ";
@@ -1574,7 +1599,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   int nb_faces = (int) ids->getNbOfElems();
                   int nb_groups = file->getGroupsOnFamily(families[i]).size();
                   int family_id = file->getFamilyId(families[i]);
-                  Cerr << "Provisoire boundary family_name=" << families[i].c_str() << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
+                  Cerr << "family_name=" << families[i].c_str() << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
                   Cerr << nb_groups << " groups (";
                   for (int j=0; j<nb_groups; j++)
                     Cerr << file->getGroupsOnFamily(families[i])[j].c_str() << " ";
@@ -1639,6 +1664,12 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                       Indices_bord[nb_bords - 1] = family_id;
                     }
                 }
+            }
+          if (noms_bords.size()==0)
+            {
+              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+              Cerr << "Warning: no boundary detected for the mesh." << finl;
+              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
             }
         }
     }

@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+XX/01/21 (TRUST)  Bug fixed   : Add messages to enhance PolyMAC use : detect incorrect mesh or time scheme
+XX/01/21 (TRUST)  New option  : Add convertAllToPoly option to LireMED keyword to convert mixed type cells mesh (eg. tetra and hexa) to polyedras/polygons only cells
 09/03/21 (TRUST)  Keyword     : Terme_puissance_thermique_echange_impose to set a thermal source term P=h(T-Text) now available in VDF
 08/03/21 (TRUST)  New feature : Possible to post-process a component of an equation operator/source (Operateur_Eqn option of Definition_champs block)
 08/03/21 (TRUST)  New feature : Add predifined fields to post-process viscous forces, pressure forces and total forces in Definition_champs block
@@ -8,7 +10,7 @@ Release notes version 1.8.3_beta : Enhancements, modifications and corrected bug
 23/02/21 (TRUST)  New Keyword : Keyword 'Merge_MED' allows to merge multiple MED files produced during a parallel computation.
 08/02/21 (TRUST)  New feature : (VDF only) Add support for anistropic diffusion coefficient in conduction equation. For now only works with diagonal tensors.
 01/02/21 (TRUST)  Keyword     : Add PIPECG2 kewyord to enable a parallel optimized CG (single non-blocking allreduce per 2 iterations)
-01/02/21 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for AmgX GPU solvers and PETSc CPU/GPU solvers 
+01/02/21 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for AmgX GPU solvers and PETSc CPU/GPU solvers
 01/02/21 (TRUST)  Keyword     : Add parallel LU/Cholesky factorization on GPU with SuperLU: petsc_gpu cholesky_superlu { }
 01/02/21 (TRUST)  Keyword     : Add sequential Cholesky (not LU) factorization on GPU with Cholmod: petsc_gpu cholesky_cholmod { }
 01/02/21 (TRUST)  Performance : Introduce GPU support (./configure -cuda) for solvers with keywords: petsc_amgx (using AmgX library) or petsc_gpu (using PETSc library)
