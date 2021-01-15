@@ -24,7 +24,7 @@
 
 // DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.cpp
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso,"Op_Diff_VDFANISO_var_P0_VDF",Op_Diff_VDF_Elem_base);
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso,"Op_Diff_VDFANISOTROPE_var_P0_VDF",Op_Diff_VDF_Elem_base);
 
 implemente_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
 
