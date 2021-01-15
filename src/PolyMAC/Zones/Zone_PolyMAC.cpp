@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -492,6 +492,14 @@ void Zone_PolyMAC::discretiser()
             for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
             S += s;
           }
+      if (S == 0 && sub_type(Hexa_PolyMAC,type_elem_.valeur()))
+        {
+          Cerr << "===============================" << finl;
+          Cerr << "Error in your mesh for PolyMAC!" << finl;
+          Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
+          Cerr << "Polyedriser " << zone().domaine().le_nom() << finl;
+          Process::exit();
+        }
       for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
     }
   xv_.echange_espace_virtuel();
