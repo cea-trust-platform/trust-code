@@ -1,0 +1,108 @@
+# TRUST logo filled #
+# PARALLEL OK 2 #
+dimension 2
+domaine dom
+# BEGIN MESH #
+lire_fichier dom logo_trust.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Pb_thermohydraulique pb
+PolyMAC dis
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0.
+    tmax 12
+    solveur implicite {
+        solveur petsc gmres { precond diag { } rtol 1.e-6 }
+    }
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 0.5 } }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions {
+            Bord 	paroi_fixe
+            inlet	frontiere_ouverte_pression_imposee Champ_front_Fonc_xyz 1 1
+            outlet	frontiere_ouverte_pression_imposee Champ_front_Fonc_xyz 1 0
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Bord 	paroi_adiabatique
+            inlet  	frontiere_ouverte_temperature_imposee Champ_front_Fonc_xyz 1 1
+            outlet	frontiere_ouverte_temperature_imposee Champ_front_Fonc_xyz 1 0
+        }
+        initial_conditions { Temperature Champ_Fonc_xyz dom 1 0 }
+    }
+
+    Postraitements
+    {
+        lata
+        {
+            format lata fichier ThHyd_2D_PolyMAC
+            fields dt_post 0.1
+            {
+                vitesse elem
+                temperature elem
+                pression elem
+            }
+        }
+        lml
+        {
+            format lml fichier ThHyd_2D_PolyMAC
+            fields dt_post 1e10
+            {
+                vitesse elem
+                temperature elem
+                pression elem
+            }
+        }
+    }
+}
+Solve pb
+
+
