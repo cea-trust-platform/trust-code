@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,7 +132,7 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
               const IntTab& faces_voisin=faces.voisins();
               if (faces_voisin.dimension(0) > 0 && local_max_vect(faces_voisin)!=-1)
                 {
-                  Cerr<<" we use faces_voisins"<<finl;
+                  //Cerr<<" we use faces_voisins"<<finl;
                   for (j=0; j<nb_faces; j++)
                     {
                       int el1=faces_voisin(j,0);
@@ -202,9 +202,8 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
   noms_post[0]=nom_bord;
   Noms unites(1);
   unites[0]="1";
-  Cerr<<Process::me() <<" ch_elem2 size"<<fichier<< " "<<nom_dom<<" " <<nom_bord<<" "<<ch_elem2.dimension(0)<<finl;
+  //Cerr<<Process::me() <<" ch_elem2 size"<<fichier<< " "<<nom_dom<<" " <<nom_bord<<" "<<ch_elem2.dimension(0)<<finl;
   post.ecrire_champ(dom,unites,noms_post,-1,0.,0.,nom_bord, nom_dom, "ELEM","scalar",ch_elem2);
-
 }
 // Description:
 //    Fonction principale de l'interprete.

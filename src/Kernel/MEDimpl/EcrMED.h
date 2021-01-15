@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@
 ///////////////////////////////////////////////////////////////////////////
 #include <Interprete.h>
 #include <Ref_Zone_dis_base.h>
+#include <med++.h>
 
 class Domaine;
 class Nom;
@@ -58,10 +59,18 @@ public :
   {
     major_mode = majorMod;
   };
+  bool getMajorMode()
+  {
+    return major_mode;
+  }
   ///! Set use_medcoupling flag
   void setMEDCoupling(bool mc)
   {
     use_medcoupling_ = mc;
+  }
+  Nom version()
+  {
+    return major_mode ? _MED_VERSION(MED_NUM_MAJEUR,0,0) : MED_VERSION_STR;
   }
   Entree& interpreter(Entree&);
   void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
