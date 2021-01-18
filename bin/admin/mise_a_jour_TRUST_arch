@@ -407,6 +407,7 @@ do
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    options=opt_avx && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-semi_opt" | grep ^$HOST_BUILD"\."`" != "" ] && options=$options" semi_opt" # avx plus semi_opt si specifie
+   [ "`$TRUST_ROOT/bin/admin/liste_machines "\-Semi_opt_gcov" | grep ^$HOST_BUILD"\."`" != "" ] && options="semi_opt gcov" # si Semi_opt_gcov on compile en semi_opt et gcov
    make && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp && make $options
    err_exe_compile=$?
    cat compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" >> compile.tmp && mv compile.tmp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
@@ -890,25 +891,6 @@ do
 	 echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
 	 echo "End of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 
-	 ################################
-	 # Generation couverture de tests
-	 ################################
-	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ]
-	 then	 
-	 #   # Lancement de lcov qui produit un rapport sous $TRUST_ROOT/doc/Coverage/lcov/html
-         #   echo "--------------------------------------------------------" 
-         #   echo "Start of lcov at `date '+%H:%M:%S'`"
-            cd $TRUST_ROOT/doc/Coverage/lcov
-	    rm -r -f html lcov.log
-         #   cp $TRUST_TMP/tests/GCDA/ana/*.gcda $TRUST_ROOT/MonoDir$COMM/src/.
-         #   cp $TRUST_TMP/tests/GCDA/ana/*.gcno $TRUST_ROOT/MonoDir$COMM/src/.
-         #   chmod +x $TRUST_ROOT/MonoDir$COMM/src/*.gcno
-         #   make clean 1>>lcov.log 2>&1
-         #   make 1>lcov.log 2>&1 || echo "Error with lcov! See `pwd`/lcov.log `cat \`pwd\`/lcov.log`" | mail_ -s\"[mise_a_jour_TRUST_arch] KO lcov script on $HOST_BUILD\" $TRUST_MAIL
-         #   echo "Generation of `pwd`/lcov.log"
-         #   cd - 1>/dev/null 2>&1
-         #   echo "End of lcov at `date '+%H:%M:%S'`"
-	 fi
          #################################################
 	 # Mesure les performances en // avec le BENCHMARK
 	 #################################################
@@ -1071,6 +1053,8 @@ done
 cd $TRUST_ROOT
 # On met les bons droits
 change_droits
+# Ajout des droits d'execution car mal faits
+chmod ugo+x `find . -type f -executable`
 if [ "`grep intra.cea.fr /etc/* 2>/dev/null`" != "" ]
 then
    # Fichiers en 444 au moins

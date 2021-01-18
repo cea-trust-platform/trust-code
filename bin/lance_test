@@ -927,7 +927,7 @@ then
 	       E="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS CPUs...\c' ;trust $NOM $NB_CPUS 1>$NOM.out 2>$NOM.err;OK \$?"
 	       # Fin Nouveau
 	    fi
-	    ATTENTION=`$TRUST_Awk '/lance_test/ {gsub("# lance_test","ATTENTION",$0);gsub("#","possible sur ce cas...",$0);print $0}' $NOM.data`
+	    ATTENTION=`$TRUST_Awk '/lance_test/ {gsub("# lance_test","ATTENTION",$0);gsub("#","possible sur ce cas selon la machine de test.",$0);print $0}' $NOM.data`
 	    if [ $PAR = 1 ]
 	    then
 		if [ "`egrep 'BEGIN PARTITION|DEBUT DECOUPAGE' $NOM.data`" = "" ]
@@ -946,6 +946,16 @@ then
 		    NB_CPUS_SA=$NB_CPUS
 		    echo $ECHO_OPTS "Partitioning for parallel calculation...\c" 
 		    . make_PAR.data $NOM $NB_CPUS
+		    # Solveur direct Cholesky n'est pas parallelise mais remplace par GCP pour le test de comparaison sequentiel-parallele
+		    # => le script make_PAR.data modifie les jdd SEQ_$NOM.data et PAR_$NOM.data
+		    # Or ici le script lance_test lance les jdd $NOM.data et PAR_$NOM.data puis compare leurs resultats
+		    # => le jdd $NOM.data doit aussi etre modifie pour comparer le meme cas sequentiel-parallele
+		    if [ "`grep -i Cholesky $NOM.data | grep -vi precond_local | grep -vi Petsc`" != "" ]
+		    then
+			sed -e "s? precond_local Cholesky {? precond_local Cholesky {?gI" \
+-e "s? cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-10?gI" $NOM.data > tmp.data
+			mv -f tmp.data $NOM.data
+		    fi
 		    # Verifie si un gmon.out est cree
 		    type=dec
 		    gmon

@@ -1,0 +1,10 @@
+#!/bin/bash
+# Verifie que aucun fichier multiple n'a ete cree pour Zones, .sauv, log
+[ "`ls *Zones 2>/dev/null | wc -l`" != 1 ] 		&& echo "Erreur: on doit avoir 1 .Zones" && exit -1
+[ "`ls *rep   2>/dev/null | wc -l`" != 1 ] 		&& echo "Erreur: on doit avoir 1 .rep" && exit -1
+# Impossible de tester via le jeu de donnees car lu apres l'initialisation des journaux:
+rm -f MultipleFiles*log 
+TRUST_MultipleFiles=1 trust MultipleFiles 4 1>MultipleFiles.out_err 2>&1 || exit -1
+[ "`ls MultipleFiles*log   2>/dev/null | wc -l`" != 0 ] && echo "Erreur: on doit avoir 0 .log" && exit -1
+exit 0
+

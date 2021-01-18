@@ -1,6 +1,17 @@
--------------------------------------------------------------------------------------------------------
-Release notes version 1.8.2_beta : Enhancements, modifications and corrected bugs since version 1.8.1 :
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
+--------------------------------------------------------------------------------------------------
+13/01/21 (TRUST)  Bug fixed   : Regression introduced into 1.8.2 fixed : reading distributed mesh (scatter) could hang on during parallel calculation
+13/01/21 (TRUST)  New keyword : MultipleFiles keyword to change the upper number of MPI ranks (default 5120) where single files for I/O is enabled by default
+13/01/21 (TRUST)  Bug fixed   : Possible hang during massive parallel calculation with multiple open of .stop and .progress files
+13/01/21 (TRUST)  Keyword     : New option "decoup filename" in Champ_Fonc_MEDFile keyword to read efficiently a single .med in parallel. filename is the partition info file (ecrire_decoupage option from Partition keyword)
+13/01/21 (TRUST)  New feature : During a parallel calculation, multiple .med files can now be used with Champ_Fonc_MED keyword if MED partition matches the domain partition
+06/01/21 (TRUST)  Bug fixed   : Producing .xyz file could crash on large mesh (regression introduced in v1.7.8)
+06/01/21 (TRUST)  Output      : New option "format lata parallele mpi-io" to enable MPI parallel I/O when writing .lata files
+05/01/21 (TRUST)  I/O issue   : .dt_ev, .progress files (and other channel flow rate files) open/close each time step could lead to bad performance on some file systems
+--------------------------------------------------------------------------------------------------
+Release notes version 1.8.2 : Enhancements, modifications and corrected bugs since version 1.8.1 :
+--------------------------------------------------------------------------------------------------
 19/11/20 (TRUST)  Keyword     : Syntax change for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, Champ_Fonc_Tabule, Champ_Fonc_Fonction_txyz_Morceaux with the depending field name now before the number of components
 17/11/20 (TRUST)  Bug fixed   : read_matrix pressure solver option fixed in VEF (pressure matrix was rebuilt uselessly before being read from a file) 
 13/11/20 (TRUST)  New feature : Immersed Boundary Method (IBM) using PDF (Penalized Direct Forcing) formulation. Only for EF.

@@ -18,7 +18,7 @@ Gmsh,gmsh-4.4.1-source.tgz,outil,abn,GPL,http://geuz.org/gmsh,http://gmsh.info/s
 Gmsh,fltk-1.3.5-source.tar.gz,,abn,LGPL,http://www.fltk.org/index.php,https://www.fltk.org/pub/fltk/1.3.5/fltk-1.3.5-source.tar.gz,
 MED,med-4.1.0.tar.gz,lib,AK,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.1.0.tar.gz,
 MED,hdf5-1.10.3.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.gz,
-SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,
+SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,,https://downloads.sourceforge.net/project/trust-platform/1.8.2/extra/CurvePlot-9.4.0.tar.gz,
 SALOME,configuration-9.5.0.tar.gz,lib,AK,,
 SALOME,xdata-9.6.0.tar.gz,lib,abn,LGPL,
 VisIt,zlib-1.2.7.tar.gz,,SV,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.7/zlib-1.2.7.tar.gz/download,"pour la licence voir : http://opensource.org/licenses/Zlib pour plus d'infos ou http://www.zlib.net/zlib_license.html"
@@ -62,7 +62,7 @@ petsc,scalapack-2.0.2.tgz,,GF,"BSD modified",http://www.netlib.org/scalapack/,ht
 petsc,pastix_5.2.3.tar.bz2,,GF,"CeCILL-C license",http://ftp.mcs.anl.gov/pub/petsc/externalpackages/pastix_5.2.3.tar.bz2,
 petsc,metis-5.1.0-p5.tar.gz,,SV,Apache,http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,https://bitbucket.org/petsc/pkg-metis/get/v5.1.0-p5.tar.gz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
-SALOME,medcoupling-9.5.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,https://downloads.sourceforge.net/project/trust-platform/1.8.1/extra/medcoupling-9.5.0.tar.gz,
+SALOME,medcoupling-9.5.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,https://downloads.sourceforge.net/project/trust-platform/1.8.2/extra/medcoupling-9.5.0.tar.gz,
 General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
 utils,gawk-4.1.4.tar.gz,outil,GF,GPL,http://www.gnu.org/software/gawk,http://ftp.gnu.org/gnu/gawk/gawk-4.1.4.tar.gz,
@@ -105,7 +105,7 @@ MinicondaLocChannLinux,libopenblas-0.3.6-h5a2b251_2.tar.bz2,,ND,BSD,,https://rep
 MinicondaLocChannLinux,libpng-1.6.37-hbc83047_0.tar.bz2,outil,ND,zlib/libpng,,https://repo.anaconda.com/pkgs/main/linux-64/libpng-1.6.37-hbc83047_0.tar.bz2,
 MinicondaLocChannLinux,libssh2-1.8.2-h1ba5d50_0.tar.bz2,outil,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/libssh2-1.8.2-h1ba5d50_0.tar.bz2,
 MinicondaLocChannLinux,libtiff-4.0.9-he85c1e1_2.tar.bz2,outil,ND,HPND,,https://repo.anaconda.com/pkgs/main/linux-64/libtiff-4.0.9-he85c1e1_2.tar.bz2,
-MinicondaLocChannLinux,libuuid-1.0.3-h1bed415_2.tar.bz2,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/libuuid-1.0.3-h1bed415_2.tar.bz2,
+MinicondaLocChannLinux,libuuid-2.32.1-h14c3975_1000.tar.bz2,outil,ND,BSD,,https://conda.anaconda.org/conda-forge/linux-64/libuuid-2.32.1-h14c3975_1000.tar.bz2,
 MinicondaLocChannLinux,libwebp-1.0.1-h8e7db2f_0.tar.bz2,outil,ND,Google,,https://repo.anaconda.com/pkgs/main/linux-64/libwebp-1.0.1-h8e7db2f_0.tar.bz2,
 MinicondaLocChannLinux,libxcb-1.13-h1bed415_1.tar.bz2,,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/libxcb-1.13-h1bed415_1.tar.bz2,
 MinicondaLocChannLinux,libxml2-2.9.9-hea5a465_1.tar.bz2,,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/libxml2-2.9.9-hea5a465_1.tar.bz2,
@@ -127,5 +127,5 @@ MinicondaLocChannLinux,swig-3.0.12-h38cdd7d_3.tar.bz2,outil,ND,GPL,,https://repo
 MinicondaLocChannLinux,sympy-1.5.1-py37_0.tar.bz2,outil,ND,BSD-3-Clause,,https://repo.anaconda.com/pkgs/main/linux-64/sympy-1.5.1-py37_0.tar.bz2,
 MinicondaLocChannLinux,tornado-6.0.3-py37h7b6447c_0.tar.bz2,,ND,Apache,,https://repo.anaconda.com/pkgs/main/linux-64/tornado-6.0.3-py37h7b6447c_0.tar.bz2,
 MinicondaLocChannLinux,xorg-libice-1.0.10-h516909a_0.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libice-1.0.10-h516909a_0.tar.bz2,
-MinicondaLocChannLinux,xorg-libsm-1.2.2-h470a237_5.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libsm-1.2.2-h470a237_5.tar.bz2,
+MinicondaLocChannLinux,xorg-libsm-1.2.3-h84519dc_1000.tar.bz2,,ND,MIT,,https://conda.anaconda.org/conda-forge/linux-64/xorg-libsm-1.2.3-h84519dc_1000.tar.bz2,
 General,osqp-0.6.0.tar.gz,librairie,AG,"Apache License V2.0",https://osqp.org/,https://github.com/oxfordcontrol/osqp/archive/v0.6.0.tar.gz

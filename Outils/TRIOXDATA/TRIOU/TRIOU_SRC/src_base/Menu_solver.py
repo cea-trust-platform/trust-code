@@ -53,9 +53,8 @@ def linkref(mode):
             if isAttributeLink(ref):
                 val=getattr(obj,ref.name)
                 if val:
-                    from types import StringType
                     if (mode==0):
-                        if type(val) is StringType:
+                        if type(val) == type(""):
                             print("modif ",obj,ref.name," object:",obj.name_u,isAttributeLink(ref))
                             from triou import trouve_class_list
                             val2=trouve_class_list(val,listclass)
@@ -63,7 +62,7 @@ def linkref(mode):
                             pass
                         pass
                     else:
-                        if not type(val) is StringType:
+                        if type(val) != type(""):
                             print("modif ",obj,ref.name," object:",obj.name_u,isAttributeLink(ref))
                             from triou import trouve_class_list
                             #val2=trouve_class_list(val,listclass)

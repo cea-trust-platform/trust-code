@@ -29,7 +29,7 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 2 }
+	Partition_tool metis { nb_parts 2 }
 	zones_name DOM
         Larg_joint 2
 }

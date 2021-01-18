@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #include <SFichier.h>
 #include <Parser_U.h>
 
-Implemente_instanciable(DecoupeBord,"DecoupeBord_pour_rayonnement",Interprete_geometrique_base);
+Implemente_instanciable(DecoupeBord,"DecoupeBord_pour_rayonnement|DecoupeBord",Interprete_geometrique_base);
 
 Sortie& DecoupeBord::printOn(Sortie& os) const
 {

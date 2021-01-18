@@ -98,6 +98,7 @@ def getLinesWithRegExp(lines):
                 if (re.findall("Param::REQUIRED",line)):
                     optionnel=False
                     pass
+                print("line:",line)
                 param=line.split('"')[1].lower()
                 mparam=param.split("|")[0]
                 if mparam=="lambda":

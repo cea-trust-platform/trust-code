@@ -833,6 +833,10 @@ fi
    fi
    rm -f $tuto.new
    echo " "
+   if [ "`echo $new | grep beta`" = "" ]
+   then
+      touch doc/TRUST/Generic_Guide/Generic_Guide.tex
+   fi
 #fi
 
 [ ! -d $TRUST_ROOT/.git ] && echo "Error: You must have $TRUST_ROOT/.git directory to do this action" && exit
@@ -891,12 +895,18 @@ fi
          #git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
          git remote update
          git checkout .
-         git pull
+         git pull 1>tmp.log 2>&1
+         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+         rm tmp.log 1>/dev/null 2>&1
       else
          git remote update
          git checkout .
-         git checkout portage
-         git pull
+         git checkout portage 1>tmp.log 2>&1
+         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git checkout portage KO\" $TRUST_MAIL
+         rm tmp.log 1>/dev/null 2>&1
+         git pull 1>tmp.log 2>&1
+         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+         rm tmp.log 1>/dev/null 2>&1
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
       cd - 1>/dev/null 2>&1
@@ -2613,16 +2623,16 @@ echo "############################"
 echo "# Verify the code coverage #"
 echo "############################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-#############
-# GCOV/LCOV #
-#############
+########
+# GCOV #
+########
 repertoire_gcov=$TRUST_ROOT/MonoDir$COMM/src
 machines=`liste_machines "\-all" "\-gcov"`
 echo "Validation by -gcov on $machines"
 if [ "$machines" = "" ]
 then
    echo "  No coverage by gcov!!!" 
-   echo "Warning: No host -all -gcov in liste.machines! No coverage by gcov." | mail_ -s\"[lance_test_nuit] GCOV/LCOV: NO coverage!!!\" $TRUST_MAIL
+   echo "Warning: No host -all -gcov in liste.machines! No coverage by gcov." | mail_ -s\"[lance_test_nuit] GCOV: NO coverage!!!\" $TRUST_MAIL
 fi
 for machine_gcov in $machines # Compilation avec -gcov et passage de tous les cas tests
 do
@@ -2666,25 +2676,6 @@ do
       else
          echo "    => NOT updated"
       fi
-      #rm -f $TRUST_TMP/$file                  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-      #ls -la $TRUST_ROOT"/doc/Coverage/"$file # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-      # Copie apres menage des fichiers .gcda et .gcno pour pouvoir utiliser tggcov_ plus loin
-      #echo "    Copy *.gcda and *.gcno files to $repertoire_gcov"
-      #for suffixe in gcda gcno
-      #do
-      #   find $repertoire_gcov -name '*'.$suffixe | xargs rm -f
-      #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[A-N]*.$suffixe $repertoire_gcov/.
-      #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[N-Z]*.$suffixe $repertoire_gcov/.
-      #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[a-z]*.$suffixe $repertoire_gcov/.
-      #   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/*.$suffixe $repertoire_gcov/. 1>/dev/null 2>&1
-      #   find $repertoire_gcov -name '*'.$suffixe | wc -l
-      #done
-      # Copie lcov (genere sur la machine car compilateur et gcov doivent matcher)
-      #echo "    Copy html directory to $TRUST_ROOT/doc/Coverage/lcov"
-      #rm -r -f $TRUST_ROOT/doc/Coverage/lcov/html
-      #mkdir $TRUST_ROOT/doc/Coverage/lcov/html
-      #scp -r triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/doc/Coverage/lcov/html $TRUST_ROOT/doc/Coverage/lcov
-      #ls -l $TRUST_ROOT/doc/Coverage/lcov/ | grep html
    fi
 done
 ###########
@@ -2842,7 +2833,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=57.86 # 57.86 v1.8.1 ; 60.03 v1.8.0 ; 66.73 v1.7.9 ; 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=65.88 #65.88 v1.8.2 ; 57.86 v1.8.1 ; 60.03 v1.8.0 ; 66.73 v1.7.9 ; 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ $coverage = 1 ]
 then
@@ -2973,7 +2964,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=78.83 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=79.28 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -4026,7 +4017,7 @@ then
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
-   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$flica5_PROJECT_LEADER
+   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$genepi3_PROJECT_LEADER
 fi
 
 #####################################
@@ -4124,11 +4115,17 @@ source /home/triou/env_TRUST_$new.sh
 # for CEA Saclay (orcus/Titania):
 source /home/trust_trio-public/env_TRUST-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
+# for CCRT-TGCC supercomputers (cobalt, irene-ccrt & irene AMD Rome):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
+# for int64 version on CCRT-TGCC supercomputer (irene AMD Rome)
+source /ccc/cont002/home/den/triou/env_TRUST-$new-int64.sh
+
+# for IDRIS supercomputer (jean-zay):
+source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new.sh
+
 # for CINES supercomputer (occigen):
-source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
+source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -4218,11 +4215,17 @@ source /home/triou/env_TrioCFD_$new.sh
 # for CEA Saclay (orcus/Titania):
 source /home/trust_trio-public/env_TrioCFD-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
+# for CCRT-TGCC supercomputers (cobalt, irene-ccrt & irene AMD Rome):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
+# for int64 version on CCRT-TGCC supercomputer (irene AMD Rome)
+source /ccc/cont002/home/den/triou/env_TrioCFD-$new-int64.sh
+
+# for IDRIS supercomputer (jean-zay):
+source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new.sh
+
 # for CINES supercomputer (occigen):
-source /panfs/panasas/softs/applications/trio_u/env_TrioCFD-$new.sh
+source /panfs/panasas/softs/applications/trio_u/TrioCFD/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------

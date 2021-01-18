@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1158,10 +1158,15 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
                   int avg_communication_type_pourcentage = Process::mp_sum(communication_type_pourcentage);
                   avg_communication_type_pourcentage /= Process::nproc();
 
-                  sprintf(desc,"%10s %-20s", "\tdont", si.description[counter_id] );
-
                   if(avg_communication_of_type_j)
-                    comm << desc << avg_communication_of_type_j << "s (" << avg_communication_type_pourcentage << "%) \n";
+                    {
+#ifdef INT_is_64_
+                      sprintf(desc, "%10s %-25s %.2e s (%2li%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
+#else
+                      sprintf(desc, "%10s %-25s %.2e s (%2i%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
+#endif
+                      comm << desc;
+                    }
                 }
 
             }

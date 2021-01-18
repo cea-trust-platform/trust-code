@@ -11,6 +11,7 @@
  ArrOfDouble ArrOfDouble ArrOfDouble.h
  ArrOfFloat ArrOfFloat ArrOfFloat.h
  ArrOfInt ArrOfInt ArrOfInt.h
+ Asin Asin StdFunction.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h
  Assembleur_P_CoviMAC Assembleur_P_CoviMAC Assembleur_P_CoviMAC.h
@@ -227,7 +228,7 @@
  Darcy_VEF_P1NC Source_Darcy_VEF_Face Source_Darcy_VEF_Face.h
  Debog Old_Debog Debog.h
  Debog_pb Debog_Pb Debog.h
- DecoupeBord_pour_rayonnement DecoupeBord DecoupeBord.h
+ DecoupeBord_pour_rayonnement|DecoupeBord DecoupeBord DecoupeBord.h
  Decouper_Bord_coincident Decouper_Bord_coincident Decouper_Bord_coincident.h
  Decouper|Partition Decouper Decouper.h
  Decroissance_Radioactive_P0_PolyMAC Terme_Source_Decroissance_Radioactive_P0_PolyMAC Terme_Source_Decroissance_Radioactive_P0_PolyMAC.h
@@ -499,6 +500,7 @@
  Motcle Motcle Motcle.h
  Motcles Motcles Motcle.h
  Moyenne_volumique Moyenne_volumique Moyenne_volumique.h
+ MultipleFiles MultipleFiles MultipleFiles.h
  Multi_Schema_ThHyd Multi_Sch_ThHyd Multi_Sch_ThHyd.h
  Navier_Stokes_QC Navier_Stokes_QC Navier_Stokes_QC.h
  Navier_Stokes_standard Navier_Stokes_std Navier_Stokes_std.h
@@ -870,6 +872,7 @@
  Segment_PolyMAC Segment_PolyMAC Segment_PolyMAC.h
  SFichier SFichier SFichier.h
  SFichierBin SFichierBin SFichierBin.h
+ Sgn Sgn StdFunction.h
  Simple Simple Simple.h
  Simpler Simpler Simpler.h
  Simpler_Base Simpler_Base Simpler_Base.h

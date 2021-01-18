@@ -1,0 +1,8 @@
+#!/bin/bash
+trust prepare 1>prepare.out_err 2>&1 || exit -1
+mv -f initial_0000.med initial.med
+echo "Creation of initial.med" # Numerotation sequentielle
+make_PAR.data prepare
+trust PAR_prepare $? 1>PAR_prepare.out_err 2>&1 || exit -1
+mv -f PAR_prepare_0000.med single_file.med
+echo "Creation of single_file.med" # Renumerotation suite au partitionnement en //

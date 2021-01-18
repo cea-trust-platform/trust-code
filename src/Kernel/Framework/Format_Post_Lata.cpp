@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Format_Post_Lata.h>
 #include <EcrFicPartageBin.h>
+#include <EcrFicPartageMPIIO.h>
 #include <Fichier_Lata.h>
 #include <Param.h>
 #include <communications.h>
@@ -67,6 +68,7 @@ Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
 
   switch(parallel)
     {
+    case Format_Post_Lata::SINGLE_FILE_MPIIO:
     case Format_Post_Lata::SINGLE_FILE:
       {
         is_parallel_ = 1;
@@ -77,7 +79,12 @@ Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
         if  (Process::nproc() == 1)
           fichier_ = new SFichier;
         else
-          fichier_ = new EcrFicPartage;
+          {
+            if (format == Format_Post_Lata::BINAIRE && parallel == Format_Post_Lata::SINGLE_FILE_MPIIO)
+              fichier_ = new EcrFicPartageMPIIO;
+            else
+              fichier_ = new EcrFicPartage;
+          }
         break;
       }
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -301,7 +308,7 @@ int Format_Post_Lata::preparer_post(const Nom& id_du_domaine,const int& est_le_p
 
 // Description:
 //  fichier est un fichier lata de donnees (pas le fichier maitre)
-//  on y ecrit le tableau tab tel quel (en binaire ou asii et sur un ou
+//  on y ecrit le tableau tab tel quel (en binaire ou ascii et sur un ou
 //  plusieurs fichiers en parallel).
 //  nb_colonnes est rempli avec le produit des tab.dimension(i) pour i>0
 //
@@ -319,28 +326,24 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier,
                                       const int bloc_number,
                                       const int nb_blocs)
 {
-  int nb_lignes = 0;
   int line_size = 1;
-  int i;
-  nb_lignes = tab.dimension(0);
+  int nb_lignes = tab.dimension(0);
   const int nb_dim = tab.nb_dim();
-  for (i = 1; i < nb_dim; i++)
+  for (int i = 1; i < nb_dim; i++)
     line_size *= tab.dimension(i);
 
   int nb_lignes_tot = 0;
-
   const int tab_size = line_size * nb_lignes;
   int nb_octets = tab_size * sizeof(float);
-  ////switch(options_para_) {
   switch(option)
     {
+    case Format_Post_Lata::SINGLE_FILE_MPIIO:
     case Format_Post_Lata::SINGLE_FILE:
       nb_lignes_tot = Process::mp_sum(nb_lignes);
       // En parallele, tous les tableaux doivent avoir le meme nombre
       // de colonnes (ou etre vides).
       nb_colonnes = (int) Process::mp_max(line_size); // Zut. Pas de mp_max(int) !!!
       nb_octets = nb_colonnes*nb_lignes_tot * sizeof(float);
-
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -359,32 +362,46 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier,
     sfichier << nb_octets * nb_blocs << finl;
 
   // Ecriture des donnees.
-  // On convertit le tout en float par paquet de N valeurs
-  // Buffer dont la taille est un multiple de line_size:
-  const int N = 16384;
-  int bufsize = (N / line_size + 1) * line_size;
-  float *tmp = new float[bufsize];
-  const double *data = tab.addr();
-  for (i = 0; i < tab_size; i += bufsize)
+  if (sub_type(EcrFicPartageMPIIO, sfichier))
     {
-      int j;
-      int j_max = bufsize;
-      if (j_max > tab_size - i)
-        j_max = tab_size - i;
-
-      // Conversion du bloc en float:
-      for (j = 0; j < j_max; j++)
-        tmp[j] = data[i+j];
-
-      // Ecriture avec retour a la ligne a chaque ligne du tableau
-      sfichier.put(tmp, j_max, line_size);
+      auto *tmp = new float[tab_size]; // No ArrOfFloat in TRUST
+      const double *data = tab.addr();
+      for (int i = 0; i < tab_size; i++)
+        tmp[i] = data[i];
+      sfichier.put(tmp, tab_size, line_size);
+      delete[] tmp;
+      // Fin de bloc fortran
+      if (fichier.is_master() && bloc_number == nb_blocs - 1)
+        sfichier << nb_octets * nb_blocs << finl;
     }
-  delete[] tmp;
-  fichier.syncfile();
-  // Fin de bloc fortran
-  if (fichier.is_master() && bloc_number == nb_blocs - 1)
-    sfichier << nb_octets * nb_blocs << finl;
-  fichier.syncfile();
+  else
+    {
+      // On convertit le tout en float par paquet de N valeurs
+      // Buffer dont la taille est un multiple de line_size:
+      const int N = 16384;
+      int bufsize = (N / line_size + 1) * line_size;
+      float *tmp = new float[bufsize];
+      const double *data = tab.addr();
+      for (int i = 0; i < tab_size; i += bufsize)
+        {
+          int j_max = bufsize;
+          if (j_max > tab_size - i)
+            j_max = tab_size - i;
+
+          // Conversion du bloc en float:
+          for (int j = 0; j < j_max; j++)
+            tmp[j] = data[i + j];
+
+          // Ecriture avec retour a la ligne a chaque ligne du tableau
+          sfichier.put(tmp, j_max, line_size);
+        }
+      delete[] tmp;
+      fichier.syncfile();
+      // Fin de bloc fortran
+      if (fichier.is_master() && bloc_number == nb_blocs - 1)
+        sfichier << nb_octets * nb_blocs << finl;
+      fichier.syncfile();
+    }
 
   return nb_lignes_tot;
 }
@@ -418,9 +435,9 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
 
   const int tab_size = line_size * nb_lignes;
   int nb_octets = tab_size * sizeof(_LATA_INT_TYPE_);
-  ////switch(options_para_) {
   switch(option)
     {
+    case Format_Post_Lata::SINGLE_FILE_MPIIO:
     case Format_Post_Lata::SINGLE_FILE:
       nb_lignes_tot = Process::mp_sum(nb_lignes);
       // En parallele, tous les tableaux doivent avoir le meme nombre
@@ -443,32 +460,22 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
   // Debut de bloc fortran
   if (fichier.is_master())
     sfichier << nb_octets << finl;
+  int erreurs = 0;
 
   // Ecriture des donnees.
-  // On convertit le tout en _INT_TYPE_ par paquet de N valeurs
-  // Buffer dont la taille est un multiple de line_size:
-  const int N = 16384;
-  int bufsize = (N / line_size + 1) * line_size;
-  _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[bufsize];
-  const int *data = tab.addr();
-  int erreurs = 0;
-  for (i = 0; i < tab_size; i += bufsize)
+  if (sub_type(EcrFicPartageMPIIO, sfichier))
     {
-      int j;
-      int j_max = bufsize;
-      if (j_max > tab_size - i)
-        j_max = tab_size - i;
-
-      // Conversion du bloc en int_type:
-      for (j = 0; j < j_max; j++)
+      // On convertit le tout en _INT_TYPE_
+      _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[tab_size];
+      const int *data = tab.addr();
+      for (i = 0; i < tab_size; i++)
         {
           // valeur a ecrire (conversion en numerotation fortran si besoin)
-          int x = data[i+j];
-          if (x>-1)
-            x+=decalage_partiel;
+          int x = data[i];
+          if (x > -1)
+            x += decalage_partiel;
           else
-            x+=decalage;
-
+            x += decalage;
 
           // conversion en type int pour ecriture
           _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
@@ -476,13 +483,57 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
           int z = (int) y;
           if (x != z)
             erreurs++;
-          tmp[j] = y;
+          tmp[i] = y;
         }
-      // Ecriture avec retour a la ligne a chaque ligne du tableau
-      sfichier.put(tmp, j_max, line_size);
+      sfichier.put(tmp, tab_size, line_size);
+      delete[] tmp;
+      // Fin de bloc fortran
+      if (fichier.is_master())
+        sfichier << nb_octets << finl;
     }
-  delete[] tmp;
+  else
+    {
+      // On convertit le tout en _INT_TYPE_ par paquet de N valeurs
+      // Buffer dont la taille est un multiple de line_size:
+      const int N = 16384;
+      int bufsize = (N / line_size + 1) * line_size;
+      _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[bufsize];
+      const int *data = tab.addr();
+      for (i = 0; i < tab_size; i += bufsize)
+        {
+          int j;
+          int j_max = bufsize;
+          if (j_max > tab_size - i)
+            j_max = tab_size - i;
 
+          // Conversion du bloc en int_type:
+          for (j = 0; j < j_max; j++)
+            {
+              // valeur a ecrire (conversion en numerotation fortran si besoin)
+              int x = data[i + j];
+              if (x > -1)
+                x += decalage_partiel;
+              else
+                x += decalage;
+
+              // conversion en type int pour ecriture
+              _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
+              // reconversion en int pour comparaison
+              int z = (int) y;
+              if (x != z)
+                erreurs++;
+              tmp[j] = y;
+            }
+          // Ecriture avec retour a la ligne a chaque ligne du tableau
+          sfichier.put(tmp, j_max, line_size);
+        }
+      delete[] tmp;
+      fichier.syncfile();
+      // Fin de bloc fortran
+      if (fichier.is_master())
+        sfichier << nb_octets << finl;
+      fichier.syncfile();
+    }
   if (erreurs > 0)
     {
       Cerr << "Error in Format_Post_Lata::write_inttab\n"
@@ -490,13 +541,6 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
            << " Recompile the code with #define _LATA_INT_TYPE_ entier" << finl;
       exit();
     }
-
-  fichier.syncfile();
-  // Fin de bloc fortran
-  if (fichier.is_master())
-    sfichier << nb_octets << finl;
-  fichier.syncfile();
-
   return nb_lignes_tot;
 }
 
@@ -546,60 +590,15 @@ Entree& Format_Post_Lata::readOn(Entree& is)
 
 void Format_Post_Lata::set_param(Param& param)
 {
-  param.ajouter("nom_fichier",&lata_basename_,Param::REQUIRED);
-  param.ajouter_non_std("format",(this));
-  param.ajouter_non_std("parallel",(this));
+  Cerr << "Format_Post_Lata::set_param: Not implemented." << finl;
+  Process::exit();
 }
 
 int Format_Post_Lata::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Motcle motlu;
-  int i;
-  if (mot=="format")
-    {
-      Motcles formats(2);
-      formats[0] = "ascii";
-      formats[1] = "binaire";
-      is >> motlu;
-      i = formats.search(motlu);
-      switch(i)
-        {
-        case 0:
-          format_ = ASCII;
-          break;
-        case 1:
-          format_ = BINAIRE;
-          break;
-        default:
-          Cerr << "Unknown format : " << motlu << "\n Keywords understood : " << formats << finl;
-          exit();
-        }
-      return 1;
-    }
-  else if (mot=="parallel")
-    {
-      Motcles parallel(2);
-      parallel[0] = "single_file";
-      parallel[1] = "multiple_files";
-      is >> motlu;
-      i = parallel.search(motlu);
-      switch(i)
-        {
-        case 0:
-          options_para_ = SINGLE_FILE;
-          break;
-        case 1:
-          options_para_ = MULTIPLE_FILES;
-          break;
-        default:
-          Cerr << "Parallel mode unknown : " << motlu << "\n Keywords understood : " << parallel << finl;
-          exit();
-        }
-      return 1;
-    }
-  else
-    return Format_Post_base::lire_motcle_non_standard(mot,is);
-  return 1;
+  Cerr << "Format_Post_Lata::lire_motcle_non_standard: Not implemented." << finl;
+  Process::exit();
+  return 0;
 }
 
 // Description: Initialisation de la classe avec des parametres par
@@ -619,13 +618,15 @@ int Format_Post_Lata::initialize(const Nom& file_basename, const int& format, co
   if (format==0)
     format_=ASCII;
 
-  if (Motcle(option_para)=="SIMPLE")
+  if (Motcle(option_para)=="MPI-IO")
+    options_para_ = SINGLE_FILE_MPIIO;
+  else if (Motcle(option_para)=="SIMPLE")
     options_para_ = SINGLE_FILE;
   else if (Motcle(option_para)=="MULTIPLE")
     options_para_ = MULTIPLE_FILES;
   else
     {
-      Cerr<<"The option chosen for lata format for the parallel is not correct"<<finl;
+      Cerr<<"The option " << option_para << " for lata format for the parallel is not correct."<<finl;
       exit();
     }
 
@@ -882,7 +883,7 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
 
     // Elements
     // Les indices de sommets, elements et autres dans le fichier lata commencent a 1 :
-    if (options_para_ == SINGLE_FILE)
+    if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
       {
         // Tous les processeurs ecrivent dans un fichier unique, il faut
         // renumeroter les indices pour passer en numerotation globale.
@@ -952,28 +953,29 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
   }
   // En mode parallele, on ecrit en plus des fichiers contenant les donnees paralleles
   // sur les sommets, les elements et les faces...
-  if (options_para_ == SINGLE_FILE && Process::nproc() > 1)
-    {
-      IntTab data(1,2);
-      data(0, 0) = decalage_sommets;
-      data(0, 1) = sommets.dimension(0);
-      ecrire_item_int("JOINTS_SOMMETS",
-                      id_domaine,
-                      "", /* id_zone */
-                      "", /* localisation */
-                      "", /* reference */
-                      data,
-                      0); /* reference_size */
-      data(0, 0) = decalage_elements;
-      data(0, 1) = elements.dimension(0);
-      ecrire_item_int("JOINTS_ELEMENTS",
-                      id_domaine,
-                      "", /* id_zone */
-                      "", /* localisation */
-                      "", /* reference */
-                      data,
-                      0); /* reference_size */
-    }
+  if (Process::nproc() > 1)
+    if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
+      {
+        IntTab data(1,2);
+        data(0, 0) = decalage_sommets;
+        data(0, 1) = sommets.dimension(0);
+        ecrire_item_int("JOINTS_SOMMETS",
+                        id_domaine,
+                        "", /* id_zone */
+                        "", /* localisation */
+                        "", /* reference */
+                        data,
+                        0); /* reference_size */
+        data(0, 0) = decalage_elements;
+        data(0, 1) = elements.dimension(0);
+        ecrire_item_int("JOINTS_ELEMENTS",
+                        id_domaine,
+                        "", /* id_zone */
+                        "", /* localisation */
+                        "", /* reference */
+                        data,
+                        0); /* reference_size */
+      }
 
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
@@ -1050,7 +1052,7 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine,const Noms& unite_,con
                                Fichier_Lata::ERASE, format_, options_para_);
 
     filename_champ = fichier_champ.get_filename();
-    size_tot = write_doubletab(fichier_champ, valeurs, nb_compo,options_para_);
+    size_tot = write_doubletab(fichier_champ, valeurs, nb_compo, options_para_);
   }
 
   // Ouverture du fichier .lata en mode append.
@@ -1131,7 +1133,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
       {
         decal = 1;
         decal_partiel=1;
-        if (options_para_ == SINGLE_FILE)
+        if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
           {
             // Tous les processeurs ecrivent dans un fichier unique, il faut
             // renumeroter les indices pour passer en numerotation globale.
@@ -1183,7 +1185,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
   }
 
   // Astuce pour les donnees paralleles des faces:
-  if (id_item == "FACES" && options_para_ == SINGLE_FILE && Process::nproc() > 1)
+  if ((id_item == "FACES" && Process::nproc() > 1) && (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO))
     {
       const int n = valeurs.dimension(0);
       IntTab data(1,2);

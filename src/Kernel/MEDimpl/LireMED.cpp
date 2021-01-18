@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1436,7 +1436,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 
       // Detect Subzones (based on group of volumes);
       unsigned nb_volume_groups = file->getGroupsOnSpecifiedLev(0).size();
-      if (nb_volume_groups>0)
+      if (nb_volume_groups>0 && Process::je_suis_maitre() && nom_dom_trio!=Nom())
         {
           SFichier jdd_seq(nom_dom_trio + "_ssz.geo");
           SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");

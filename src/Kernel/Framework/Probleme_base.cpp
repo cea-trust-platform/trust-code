@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -498,6 +498,8 @@ Entree& Probleme_base::readOn(Entree& is)
           // Read the filename:
           Nom nomfic;
           is >> nomfic;
+          // Force reprise hdf au dela d'un certain nombre de rangs MPI:
+          if (format_rep!="xyz" && Process::force_single_file(Process::nproc(), nomfic)) format_rep = "single_hdf";
           // Open the file:
           DERIV(Entree_Fichier_base) fic;
 #ifdef MPI_
@@ -518,6 +520,12 @@ Entree& Probleme_base::readOn(Entree& is)
           if( format_rep == "single_hdf")
             {
 #ifdef MPI_
+              LecFicDiffuse test;
+              if (!test.ouvrir(nomfic))
+                {
+                  Cerr << "Error! " << nomfic << " file not found ! " << finl;
+                  Process::exit();
+                }
               fic_hdf.open(nomfic, true);
               fic_hdf.read_dataset("/sauv", Process::me(),input_data);
 #endif
@@ -639,7 +647,7 @@ Entree& Probleme_base::readOn(Entree& is)
             }
           // Ecriture du format de reprise
           Cerr << "The version of the resumption format of file " << nomfic << " is " << reprise_version_ << finl;
-          if( format_rep != "single_hdf")
+          if(format_rep != "single_hdf")
             reprendre(fic.valeur());
           else
             {
@@ -680,6 +688,10 @@ Entree& Probleme_base::readOn(Entree& is)
       is >> motlu;
     }
   ficsauv_.detach();
+  // Force sauvegarde hdf au dela d'un certain nombre de rangs MPI:
+  if (format_sauv!="xyz" && Process::force_single_file(Process::nproc(), nom_fich))
+    format_sauv = "single_hdf";
+
   if ( (Motcle(format_sauv) != "binaire")
        && (Motcle(format_sauv) != "formatte")
        && (Motcle(format_sauv) != "xyz")

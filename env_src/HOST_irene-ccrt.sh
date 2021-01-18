@@ -21,32 +21,14 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
-   #
-   # Create ROMIO_HINTS file for MPI IO optimizations on Lustre file system
-   echo "# ROMIO HINTS
-# Select the max OST available:
-striping_factor -1
-# Collective comm between nodes before write:
-romio_cb_write enable
-# Collective comm between nodes before read:
-romio_cb_read  enable
-# One process on each node do the coll comm task:
-cb_config_list *:1" > ROMIO_HINTS.env
-   echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
-   #
    # qstat inexistente sur les dernieres machines du CCRT/TGCC
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
-   # modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
-   # echo "# For $HOST cluster:
-   # module () {
-   #    eval \`tclsh $modulecmd sh \$*\`
-   # }" >> $env
-   #
    # Load modules
    intel="intel/18.0.3.222" 
    intelmpi="mpi/intelmpi/2018.0.3.222"
-   module="$intel $intelmpi"
+   romio_hints="feature/openmpi/io/collective_buffering"
+   module="$intel $intelmpi $romio_hints"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

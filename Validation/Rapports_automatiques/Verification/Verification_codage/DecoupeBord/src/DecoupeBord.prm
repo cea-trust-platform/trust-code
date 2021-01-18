@@ -1,0 +1,78 @@
+Parameters {
+	Title "HowTo: split a mesh boundary"
+	Author "Pierre LEDAC"
+	VersionTrio_U 1.8.2_beta
+ 	TestCase . DecoupeBord.data
+	IncludeData 1
+}
+
+Chapter {
+	Title "Visualization" 
+	
+	visu {
+		width 9cm
+		title "Initial mesh with one boundary for the wall"
+		mesh initial_dom.lata dom
+		normal3D 0.5 0.25 0.5
+		zoom3D 0.2 0. 0.8
+		# up3D 0 1 -1.0
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI)", 0, 0)
+	}
+	visu {
+		width 10cm
+		title "Mesh with splitted boundaries for the wall"
+		mesh DecoupeBord.lata dom
+		normal3D 0.5 0.25 0.5
+		zoom3D 0.2 0. 0.8
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%0)", 0, 0)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (51, 102, 255, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%1)", 1, 1)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (255, 102, 255, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%2)", 2, 2)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (255, 255, 0, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%3)", 3, 3)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (255, 255, 255, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%4)", 4, 4)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (100, 255, 100, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%5)", 5, 5)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (55, 0, 155, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%6)", 6, 6)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (100, 255, 0, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%7)", 7, 7)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (1, 0, 155, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%8)", 8, 8)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (100, 12, 100, 255))
+		Instruction_visit SetPlotOptions(s)
+
+		Instruction_visit AddPlot("Subset", "blocks(dom_boundaries/SPAROI%9)", 9, 9)
+		Instruction_visit s = SubsetAttributes()
+		Instruction_visit s.SetMultiColor(0, (55, 0, 0, 255))
+		Instruction_visit SetPlotOptions(s)
+	}
+}
+

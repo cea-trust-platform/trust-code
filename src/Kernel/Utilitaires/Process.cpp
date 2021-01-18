@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,6 +68,27 @@ static int        disable_stop_ = 0;
 static int        cerr_to_journal_ = 0;
 extern Stat_Counter_Id mpi_allreduce_counter_;
 int Process::exception_sur_exit=0;
+int Process::multiple_files=5120; // Valeur modifiable dans le jeu de donnees ou variable d'environnement:
+bool Process::force_single_file(const int& ranks, const Nom& filename)
+{
+  char* theValue = getenv("TRUST_MultipleFiles");
+  if (theValue != NULL) multiple_files=atoi(theValue);
+  if (ranks>multiple_files)
+    {
+      if (Process::je_suis_maitre())   // Attention, necessaire, car appel possible tres tot dans main.cpp alors que Cerr par defini completement sur les processes
+        {
+          Cerr << "======================================================================================================" << finl;
+          Cerr << "Warning! Single file option is forced for " << filename << " above " << multiple_files << " MPI ranks." << finl;
+          Cerr << "for I/O performance reasons on cluster and inodes number limitation." << finl;
+          Cerr << "If you want to keep multiple files, add at the beginning of your data file to outpass the limitation:" << finl;
+          Cerr << "MultipleFiles " << ranks << finl;
+          Cerr << "=====================================================================================================" << finl;
+        }
+      return true;
+    }
+  else
+    return false;
+}
 
 // Description: renvoie 1 si on est sur le processeur maitre du groupe courant
 //  (c'est a dire me() == 0), 0 sinon. Voir Comm_Group::rank()
@@ -215,7 +236,7 @@ void Process::exit(const Nom& message ,int i)
       Type_info::hierarchie(hier);
       hier << "\n             SYNONYMS\n";
       Synonyme_info::hierarchie(hier);
-      if (!get_disable_stop())
+      if (!get_disable_stop() && Process::je_suis_maitre())
         {
           Nom nomfic( Objet_U::nom_du_cas() );
           nomfic += ".stop";

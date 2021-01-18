@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,8 @@ Entree& EcritureLectureSpecial::readOn(Entree& is)
 {
   return is;
 }
-
+// XD ecriturelecturespecial interprete ecriturelecturespecial -1 Class to write or not to write a .xyz file on the disk at the end of the calculation.
+// XD attr type chaine type 0 If set to 0, no xyz file is created. If set to EFichierBin, it uses prior 1.7.0 way of reading xyz files (now LecFicDiffuseBin). If set to EcrFicPartageBin, it uses prior 1.7.0 way of writing xyz files (now EcrFicPartageMPIIO).
 Entree& EcritureLectureSpecial::interpreter(Entree& is)
 {
   Nom option;
@@ -141,14 +142,14 @@ int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void EcritureLectureSpecial::ecriture_special(const Champ_base& ch, Sortie& fich)
+int EcritureLectureSpecial::ecriture_special(const Champ_base& ch, Sortie& fich)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF, ch.zone_dis_base());
   const DoubleTab& val = ch.valeurs();
-  ecriture_special(zvf, fich, val);
+  return ecriture_special(zvf, fich, val);
 }
 
-void ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, const DoubleTab& val)
+int ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, const DoubleTab& val)
 {
   const int nb_dim = val.nb_dim();
   const int nb_comp = (nb_dim == 2) ? val.dimension(1) : 1;
@@ -212,29 +213,30 @@ void ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, c
       if (j)
         fich.put(tmp.addr(), j, dim + nb_comp /* nb colonnes en ascii */);
     }
+  return 8 * (dim + nb_comp) * nb_val; // Bytes
 }
 
 // Description:
 //  Partie "interieure" de l'ecriture, appellee par la methode en dessous.
 //  Methode recursive, si le tableau a ecrire a un descripteur MD_Vector_composite
-static void ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
+static int ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
-
+  int bytes = 0;
   if (sub_type(MD_Vector_composite, md.valeur()))
     {
       // Champs p1bulles et autres: appel recursif pour les differents sous-tableaux:
       ConstDoubleTab_parts parts(val);
       int n = zvf.que_suis_je() == "Zone_PolyMAC" || zvf.que_suis_je() == "Zone_CoviMAC" ? 1 : parts.size();//on saute les variables auxiliaires de Champ_{P0,Face}_PolyMAC
       for (int i = 0; i < n; i++)
-        ecriture_special_part2(zvf, fich, parts[i]);
+        bytes += ecriture_special_part2(zvf, fich, parts[i]);
     }
   else if (sub_type(MD_Vector_std, md.valeur()))
     {
       ArrOfBit items_to_write;
       MD_Vector_tools::get_sequential_items_flags(md, items_to_write);
       const DoubleTab& coords = get_ref_coordinates_items(zvf, md);
-      ecrit(fich, items_to_write, coords, val);
+      bytes += ecrit(fich, items_to_write, coords, val);
       fich.syncfile();
     }
   else
@@ -243,6 +245,7 @@ static void ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const Doubl
            << md.valeur().que_suis_je() << finl;
       Process::exit();
     }
+  return bytes;
 }
 
 // Description:
@@ -253,7 +256,7 @@ static void ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const Doubl
 // Exception:
 // Effets de bord:
 // Postcondition:
-void EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
+int EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
   if (!md.non_nul())
@@ -263,7 +266,7 @@ void EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, 
     }
   const int nb_items_seq = md.valeur().nb_items_seq_tot();
   if (nb_items_seq == 0)
-    return;
+    return 0;
 
   const int nb_dim = val.nb_dim();
   const int nb_comp = (nb_dim == 2) ? val.dimension(1) : 1;
@@ -280,7 +283,7 @@ void EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, 
       fich << n <<finl;
     }
 
-  ecriture_special_part2(zvf, fich, val);
+  int bytes = ecriture_special_part2(zvf, fich, val);
 
   if (Process::je_suis_maitre())
     {
@@ -297,7 +300,7 @@ void EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, 
       fich << (int)0 <<finl;
     }
   fich.syncfile();
-
+  return bytes;
 }
 
 // Description:

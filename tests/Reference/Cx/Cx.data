@@ -132,7 +132,7 @@ Read pb
 		}
 		lata
 		{
-			format lata fichier Cx
+			format lata fichier Cx parallele mpi-io
 			Definition_champs
 			{
 				# Calculate viscous force on the ring #

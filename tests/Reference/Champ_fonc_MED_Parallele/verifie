@@ -1,0 +1,7 @@
+#!/bin/bash
+# Comparaison du resultat avec la lecture d'un simple MED
+cp Champ_fonc_MED_Parallele.data verifie.data
+sed -i "1,$ s?multiple_files?single_file?g" verifie.data
+sed -i "1,$ s?Champ_fonc_MED_Parallele?verifie?g" verifie.data
+trust verifie 3 1>verifie.out_err 2>&1 || exit -1
+compare_lata Champ_fonc_MED_Parallele.lata verifie.lata 1>compare.log 2>&1

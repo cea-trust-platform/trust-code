@@ -5,17 +5,19 @@ clean()
    # Nettoyage des paquets
    echo $ECHO_OPTS "Cleaning...\c"
    # 
-   for paquet in `\ls *.tar.gz *.tgz *.zip *.tar.bz2 2>/dev/null `
+   for paquet in `\ls *.tar.gz *.tgz *.zip *.tar.bz2 *.tar.xz 2>/dev/null `
    do
       [ -d ${paquet%.tar.gz} ] && rm -r -f ${paquet%.tar.gz}
       [ -d ${paquet%.tgz} ]    && rm -r -f ${paquet%.tgz}
       [ -d ${paquet%.zip} ]    && rm -r -f ${paquet%.zip}
       [ -d ${paquet%.tar.bz2} ]    && rm -r -f ${paquet%.tar.bz2}
+      [ -d ${paquet%.tar.xz} ] && rm -r -f ${paquet%.tar.xz}
       rm -f $paquet
    done
    rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  
    rm -f build_visit2_5_2* build_visit*help
    rm -f build_visit*"_log" *.cmake *.conf tmp* *.py releases
+   rm -f visit-install
    echo "OK"
 }
 

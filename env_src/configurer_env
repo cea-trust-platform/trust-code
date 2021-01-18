@@ -575,9 +575,9 @@ then
       if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] || [ ${HOST#orcus-} != $HOST ]
       then
         TRUST_NB_PROCS=8
-      elif [ ${HOST#summer} != $HOST ]
+      elif [ "${HOST#summer}" != $HOST ]
       then
-        TRUST_NB_PROCS=4
+        TRUST_NB_PROCS=1
       fi
    fi
    echo $TRUST_NB_PROCS
@@ -600,6 +600,7 @@ then
    rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir* $TRUST_ROOT/build
    rm -f $TRUST_ROOT/configure.log
    rm -f  $TRUST_ROOT/tags $TRUST_ROOT/TAGS  $TRUST_ROOT/compile*log $TRUST_ROOT/License.txt_*
+   rm -f $TRUST_ROOT/.toto
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
    exit 0
@@ -1092,6 +1093,7 @@ m="# Path to a browser";e="`cherche_file TRUST_WEBBROWSER google-chrome firefox 
 TRUST_BLAS_LAPACK=""
 # Try to improve detection of MKL (Intel):
 [ "$MKLROOT" = "" ] && MKLROOT=$MKL_ROOTDIR # Sur sagittarius
+[ "$MKLROOT" = "" ] && MKLROOT=$MKL_ROOT # Intel 20
 [ "$MKLROOT" = "" ] && MKLROOT=`type -p icpc 2>/dev/null | awk -F/bin '{print $1}'`
 if [ "$MKLROOT" != "" ]
 then

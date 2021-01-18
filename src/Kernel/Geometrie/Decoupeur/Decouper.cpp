@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,6 +134,8 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
                                    Postraitement_base::ELEMENTS,
                                    data,
                                    format);
+
+  Postraitement_lata::finir_lata(nom_fichier_lata);
 }
 
 static void ecrire_sous_zones(const Nom& nom_zones_decoup,
@@ -225,6 +227,9 @@ Entree& Decouper::interpreter(Entree& is)
            << "\nGeneration of " << nb_parts_tot - nb_parties << " empty parts." << finl;
       nb_parties = nb_parts_tot;
     }
+  // Force un seul fichier .Zones au dela d'un certain nombre de rangs MPI:
+  if (Process::force_single_file(nb_parties, nom_zones_decoup+".Zones"))
+    format_hdf = 1;
 
   if (nom_fichier_decoupage != "?")
     ecrire_fichier_decoupage(nom_fichier_decoupage, elem_part, nb_parts_tot);
