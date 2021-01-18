@@ -6,8 +6,7 @@ mpi=$(MPI_INCLUDE)/mpi.h
 
 all:$(AMGX_LIB) $(AMGXWRAPPER_LIB)
 
-# ToDo rajouter install et makefile comme dependances
-$(AMGX_LIB): $(mpi)
+$(AMGX_LIB): install makefile $(mpi)
 	./install $(AMGX_DIR)
 
 $(AMGXWRAPPER_LIB): install makefile $(mpi)

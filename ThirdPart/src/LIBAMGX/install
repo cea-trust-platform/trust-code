@@ -15,19 +15,7 @@ if [ $LIB = AmgX ]
 then
    # Build
    cd $ROOT
-   if [ "$TRUST_WITHOUT_HOST" = 0 ]
-   then
-      # Hors reseau:
-      tar xfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"47ae6962cd.tar.gz
-   elif [ "$TRUST_WITHOUT_HOST" = 1 ]
-   then
-      # Latest:
-      git clone https://github.com/NVIDIA/AMGX.git $LIB
-      cd $LIB && git checkout origin/v2.1.x # Pour Cuda 11 !
-      cd -
-   else
-      echo "Update $0 for your needs." && exit -1
-   fi
+   tar xfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"*.tar.gz
    cd $LIB && mkdir -p build && cd build
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
    cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
