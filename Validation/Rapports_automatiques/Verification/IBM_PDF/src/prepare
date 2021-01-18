@@ -1,0 +1,5 @@
+#!/bin/bash
+for rep in `find * -type d`
+do
+   ([ "`ls $rep/*.data 2>/dev/null`" != "" ] && cd $rep && trust -partition `basename $PWD`)
+done
