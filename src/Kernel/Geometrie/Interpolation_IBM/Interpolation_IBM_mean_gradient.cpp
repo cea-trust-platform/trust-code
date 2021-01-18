@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -122,7 +122,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
         }
       int dimtag = nb_tag_max+1;
       DoubleTrav elems_solid_trust(dimtag);
-      elems_solid_trust = -1.e+50;
+      elems_solid_trust = -0.1*DMAXFLOAT;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
           int indextag = lrint(corresp_elems_ref(i)) ;
