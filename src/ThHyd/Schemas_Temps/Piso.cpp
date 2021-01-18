@@ -183,7 +183,6 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       int i_traitement_special = 101;
       if (eqnNS.nombre_d_operateurs() > 1)
         {
-          Cerr << "///////////////////////// vitesse_pour_transpor : " << eqnNS.vitesse_pour_transport().le_nom() << finl ;
           if (eqnNS.vitesse_pour_transport().le_nom()=="rho_u") i_traitement_special = 1;
         }
       DoubleTrav secmem_pdf_time(resu);

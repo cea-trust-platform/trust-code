@@ -331,5 +331,12 @@ void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int& f
 
 void Source_PDF_base::updateChampRho()
 {
-  champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique"));
+  if (equation().probleme().que_suis_je() == "Pb_Melange")
+    {
+      champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique_melange"));
+    }
+  else
+    {
+      champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique"));
+    }
 }
