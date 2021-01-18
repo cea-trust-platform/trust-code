@@ -245,7 +245,7 @@ echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk '/default_
 echo "[-force_old_openmpi]              Download and use the OpenMPI `awk '/old_version=/ {gsub("old_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version (valgrind free)."
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk '/latest_version=/ {gsub("latest_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental)"
+echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental). It activates OpenMP support."
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
@@ -418,6 +418,7 @@ do
    elif [ "${1#-cuda}" != "$1" ]
    then
       export TRUST_USE_CUDA=1
+      export TRUST_OPENMP=1
 
    elif [ "${1#-with-64-bit-indices}" != "$1" ]
    then

@@ -904,7 +904,6 @@ void Solv_Petsc::create_solver(Entree& entree)
                 //
                 // CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot
                 pc_supported_on_gpu_by_amgx=1;
-                pc_supported_on_gpu_by_petsc=1;
                 if (amgx_)
                   {
                     amgx_option+="preconditioner=MULTICOLOR_DILU\n";
@@ -1028,6 +1027,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 if (rang==9) preconditionnement_non_symetrique_ = 1;
                 pc_supported_on_gpu_by_amgx=1;
+                pc_supported_on_gpu_by_petsc=1;
                 if (amgx_)
                   amgx_option+="preconditioner=MULTICOLOR_DILU\n";
                 else
