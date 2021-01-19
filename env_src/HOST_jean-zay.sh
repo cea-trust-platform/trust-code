@@ -53,8 +53,9 @@ define_soumission_batch()
    #archive      up   20:00:00      7    mix 
    #prepost      up   20:00:00      4    mix 
 
-
-   queue=cpu_p1 && [ "$gpu" = 1 ] && queue=gpu_p3 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpu_p1
+   #queue=cpu_p1 && [ "$gpu" = 1 ] && queue=gpu_p3 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpu_p1
+   # http://www.idris.fr/eng/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm-eng.html Une seule partition gpu_p13
+   queue=cpu_p1 && [ "$gpu" = 1 ] && queue=gpu_p13 && constraint=v100-16g # pour gpu_p3 ou constraint=v100-32g (gpu_p1)
    # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
    #   Name   Priority MaxSubmit     MaxWall MaxNodes 
    #---------- ---------- --------- ----------- -------- 
@@ -74,6 +75,7 @@ define_soumission_batch()
    #qos_prepo+          0     10000                  
    project=""
    if [ "$gpu" = 1 ]
+   then
       [ "`id | grep ikp`" != "" ] && project="ikp@gpu" && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible...
    else
       [ "`id | grep fej`" != "" ] && project="fej@cpu"

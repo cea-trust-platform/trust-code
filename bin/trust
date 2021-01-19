@@ -672,7 +672,7 @@ then
                             / petsc_gpu / {use_petsc_gpu=1;exit}
 	                    END {print use_petsc_gpu}'`
 fi
-if [ $TRUST_USE_CUDA = 1 ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
    gpu=1
 fi
@@ -790,7 +790,6 @@ then
 		echo "#SBATCH -o myjob.%j.o"				>> $sub_file	# Output log
 		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
 		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
-		#[ "$project" != "" ] && echo "#SBATCH --constraint=$project" >> $sub_file	# Account (PL: non ne marche pas sur jean-zay/IDRIS)
 		[ "$constraint" != "" ] && echo "#SBATCH --constraint=$constraint"	>> $sub_file	# Constraint
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
