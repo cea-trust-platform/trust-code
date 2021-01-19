@@ -22,6 +22,8 @@
 #ifndef lois_sodium_included
 #define lois_sodium_included
 
+#include <cmath>
+
 //proprietes physiques
 /* Lois physiques du sodium issues de fits sur DEN/DANS/DM2S/STMF/LMES/RT/12-018/A */
 #define Tk ((T) + 273.15)
@@ -64,7 +66,7 @@ inline double TLh(double h, double T0, double P)
 {
   double T = T0, sec;
   int i;
-  for (i = 0; i < 100 && dabs( sec = HL(T, P) - h ) > 1e-8; i++)
+  for (i = 0; i < 100 && std::abs( sec = HL(T, P) - h ) > 1e-8; i++)
     T -= sec / DTHL(T, P);
   return i < 100 ? T : -1e10;
 }
@@ -103,7 +105,7 @@ inline double TLe(double e, double T0, double P)
 {
   double T = T0, sec;
   int i;
-  for (i = 0; i < 100 && dabs( sec = EL(T, P) - e ) > 1e-3; i++)
+  for (i = 0; i < 100 && std::abs( sec = EL(T, P) - e ) > 1e-3; i++)
     T -= sec / DTEL(T, P);
   return i < 100 ? T : -1e10;
 }
@@ -126,77 +128,77 @@ inline double SigmaL(double T)
 /* Nusselt du liquide -> Skupinski */
 inline double NuL(double T, double P, double w, double Dh)
 {
-  double Pe = RhoL(T, P) * dabs(w) * Dh * DTHL(T, P) / LambdaL(T);
+  double Pe = RhoL(T, P) * std::abs(w) * Dh * DTHL(T, P) / LambdaL(T);
   return 4.82 + 0.0185 * pow(Pe, 0.827);
 }
 /* temperature de saturation */
-inline double Tsat( double P )
+inline double Tsat_Na( double P )
 {
   double A = 7.8130, B = 11209, C = 5.249e5;
   return 2 * C / ( -B + sqrt(B*B + 4 * A * C - 4 * C * log(P / 1e6))) - 273.15;
 }
 /* sa derivee */
-inline double DTsat( double P )
+inline double DTsat_Na( double P )
 {
-  double A = 7.8130, B = 11209, C = 5.249e5, Tsk = Tsat(P) + 273.15;
+  double A = 7.8130, B = 11209, C = 5.249e5, Tsk = Tsat_Na(P) + 273.15;
   return Tsk * Tsk / ( P * sqrt(B*B + 4 * A * C - 4 * C * log(P / 1e6)));
 }
 /* pression de vapeur saturante */
-inline double Psat( double T )
+inline double Psat_Na( double T )
 {
   double A = 7.8130, B = 11209, C = 5.249e5;
   return 1e6 * exp(A - B / Tk - C / (Tk * Tk));
 }
 /* sa derivee */
-inline double DPsat( double T )
+inline double DPsat_Na( double T )
 {
   double B = 11209, C = 5.249e5;
-  return (B / (Tk * Tk) + 2 * C / (Tk * Tk * Tk)) * Psat(T);
+  return (B / (Tk * Tk) + 2 * C / (Tk * Tk * Tk)) * Psat_Na(T);
 }
 /* enthalpie massique de saturation */
 inline double Hsat( double P )
 {
-  return HL(Tsat(P), P);
+  return HL(Tsat_Na(P), P);
 }
 /* sa derivee */
 inline double DHsat( double P )
 {
-  return DTsat(P) * DTHL(Tsat(P), P) + DPHL(Tsat(P), P);
+  return DTsat_Na(P) * DTHL(Tsat_Na(P), P) + DPHL(Tsat_Na(P), P);
 }
-/* chaleur latente, a prendre a Tsat */
-inline double Lvap( double P )
+/* chaleur latente, a prendre a Tsat_Na */
+inline double Lvap_Na( double P )
 {
-  double Tc = 2503.7, Tsk = Tsat(P) + 273.15;
+  double Tc = 2503.7, Tsk = Tsat_Na(P) + 273.15;
   return 3.9337e5 * ( 1 - Tsk / Tc) + 4.3986e6 * pow( 1 - Tsk / Tc, .29302);
 }
 
 /* sa derivee */
-inline double DLvap( double P )
+inline double DLvap_Na( double P )
 {
-  double Tc = 2503.7, Tsk = Tsat(P) + 273.15;
-  return DTsat(P) * (-3.9337e5 / Tc - 4.3986e6  * .29302 * pow( 1 - Tsk / Tc, .29302 - 1) / Tc);
+  double Tc = 2503.7, Tsk = Tsat_Na(P) + 273.15;
+  return DTsat_Na(P) * (-3.9337e5 / Tc - 4.3986e6  * .29302 * pow( 1 - Tsk / Tc, .29302 - 1) / Tc);
 }
 
-/* densite de la vapeur : (gaz parfait) * f1(Tsat) * f2(DTsat)*/
+/* densite de la vapeur : (gaz parfait) * f1(Tsat_Na) * f2(DTsat_Na)*/
 #define  f1(Ts) (2.49121 + Ts * (-5.53796e-3 + Ts * (7.5465e-6 + Ts * (-4.20217e-9 + Ts * 8.59212e-13))))
 #define Df1(Ts) (-5.53796e-3 + Ts * (2 * 7.5465e-6 + Ts * (-3 * 4.20217e-9 + Ts * 4 * 8.59212e-13)))
 #define  f2(dT) (1 + dT * (-5e-4 + dT * (6.25e-7 - dT * 4.1359e-25)))
 #define Df2(dT) (-5e-4 + dT * (2 * 6.25e-7 - dT * 3 * 4.1359e-25))
 inline double RhoV( double T, double P )
 {
-  double Tsk = Tsat(P) + 273.15, dT = Tk - Tsk;
+  double Tsk = Tsat_Na(P) + 273.15, dT = Tk - Tsk;
   return P * 2.7650313e-3 * f1(Tsk) * f2(dT) / Tk;
 }
 /* ses derivees */
 inline double DTRhoV( double T, double P )
 {
-  double Tsk = Tsat(P) + 273.15, dT = Tk - Tsk;
+  double Tsk = Tsat_Na(P) + 273.15, dT = Tk - Tsk;
   return P * 2.7650313e-3 * f1(Tsk) * (Df2(dT) - f2(dT) / Tk) / Tk;
 }
 inline double DPRhoV( double T, double P )
 {
-  double Tsk = Tsat(P) + 273.15, dT = Tk - Tsk;
-  return 2.7650313e-3 * (f1(Tsk) * f2(dT) + P * DTsat(P) * (Df1(Tsk) * f2(dT) - f1(Tsk) * Df2(dT))) / Tk;
+  double Tsk = Tsat_Na(P) + 273.15, dT = Tk - Tsk;
+  return 2.7650313e-3 * (f1(Tsk) * f2(dT) + P * DTsat_Na(P) * (Df1(Tsk) * f2(dT) - f1(Tsk) * Df2(dT))) / Tk;
 }
 #undef f1
 #undef Df1
@@ -221,19 +223,19 @@ inline double DPIRhoV( double T, double P )
 #define DCpVs(Ts) (14.1191 + Ts * (- 2 * 1.62025e-2 + Ts * 3 * 5.76923e-6))
 inline double HV( double T, double P)
 {
-  double Ts = Tsat(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
-  return HL(Ts, P) + Lvap(P) + Cp0 * dT + (Cp0 - CpVs(Ts)) * (1 - exp(k * dT)) / k;
+  double Ts = Tsat_Na(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
+  return HL(Ts, P) + Lvap_Na(P) + Cp0 * dT + (Cp0 - CpVs(Ts)) * (1 - exp(k * dT)) / k;
 }
 /* ses derivees */
 inline double DTHV( double T, double P)
 {
-  double Ts = Tsat(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
+  double Ts = Tsat_Na(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
   return Cp0 - (Cp0 - CpVs(Ts)) * exp(k * dT);
 }
 inline double DPHV( double T, double P)
 {
-  double Ts = Tsat(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
-  return DPHL(Ts, P) + DLvap(P) + DTsat(P) * (DTHL(Ts, P) - Cp0 - DCpVs(Ts) * (1 - exp(k * dT)) / k + (Cp0 - CpVs(Ts)) * exp(k * dT));
+  double Ts = Tsat_Na(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
+  return DPHL(Ts, P) + DLvap_Na(P) + DTsat_Na(P) * (DTHL(Ts, P) - Cp0 - DCpVs(Ts) * (1 - exp(k * dT)) / k + (Cp0 - CpVs(Ts)) * exp(k * dT));
 }
 #undef CpVs
 #undef DCpVs
@@ -267,7 +269,7 @@ inline double MuV( double T )
 /* Nusselt de la vapeur -> Dittus/ Boetler */
 inline double NuV(double T, double P, double w, double Dh)
 {
-  double Re = RhoV(T, P) * dabs(w) * Dh / MuV(T), Pr = MuV(T) * DTHV(T, P) / LambdaV(T);
+  double Re = RhoV(T, P) * std::abs(w) * Dh / MuV(T), Pr = MuV(T) * DTHV(T, P) / LambdaV(T);
   return 0.023 * pow(Re, 0.8) * pow(Pr, 0.4);
 }
 

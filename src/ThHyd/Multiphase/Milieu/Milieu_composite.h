@@ -24,6 +24,8 @@
 #define Milieu_composite_included
 
 #include <List_Fluide_base.h>
+#include <Saturation.h>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -51,14 +53,21 @@ public :
   virtual void associer_equation(const Equation_base* eqn) const;
   const Champ_base& masse_volumique_fonc() const;
   const Champ_base& energie_interne_fonc() const;
+  const Champ_base& enthalpie_fonc() const;
+  bool has_saturation(int k, int l) const;
+  Saturation_base& get_saturation(int k, int l) const;
+  virtual void abortTimeStep();
+  virtual bool initTimeStep(double dt);
 
 protected :
-  Champ_Fonc rho_fonc, ei_fonc;
+  Champ_Fonc rho_fonc, ei_fonc, h_fonc;
   void mettre_a_jour_tabs();
   LIST(Fluide_base) fluides;
   static void calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
   static void calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
-
+  static void calculer_enthalpie(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  std::pair<std::string, int> check_fluid_name(const Nom& name);
+  std::vector<std::vector<Saturation_base *>> tab_saturation;
 };
 
 #endif

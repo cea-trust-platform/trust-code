@@ -14,42 +14,81 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation_constant.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#include <Saturation_constant.h>
 
-#include <Fluide_reel_base.h>
+Implemente_instanciable(Saturation_constant, "Saturation_constant", Saturation_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
+Sortie& Saturation_constant::printOn(Sortie& os) const
 {
-  Declare_instanciable(Fluide_sodium_gaz);
+  return os;
+}
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
-};
+Entree& Saturation_constant::readOn(Entree& is)
+{
+  Param param(que_suis_je());
+  param.ajouter("Tsat", &tsat_);
+  param.ajouter("Psat", &psat_);
+  param.ajouter("Lvap", &lvap_);
+  param.ajouter("Hlsat", &hls_);
+  param.ajouter("Hvsat", &hvs_);
+  param.lire_avec_accolades_depuis(is);
+  // verifications hlsat/hvsat/lvap
+  const int i = (lvap_ > 0) + (hls_ > 0) + (hvs_ > 0);
+  if (i != 2) Process::exit(que_suis_je() + " Please give 2 properties among {Lvap, Hlsat, Hvsat}");
+  if (lvap_ > 0 && hls_ > 0) hvs_ = hls_ + lvap_;
+  else if (lvap_ > 0 && hvs_ > 0) hls_ = hvs_ - lvap_;
+  else if (hls_ > 0 && hvs_ > 0) lvap_ = hvs_ - hls_;
+  else Process::exit(que_suis_je() + "bad parameters");
+  return is;
+}
 
-#endif
+double Saturation_constant::Tsat_(const double P) const
+{
+  return tsat_;
+}
+double Saturation_constant::dP_Tsat_(const double P) const
+{
+  return 0;
+}
+double Saturation_constant::Psat_(const double T) const
+{
+  return psat_;
+}
+double Saturation_constant::dT_Psat_(const double T) const
+{
+  return 0;
+}
+double Saturation_constant::Lvap_(const double P) const
+{
+  return lvap_;
+}
+double Saturation_constant::dP_Lvap_(const double P) const
+{
+  return 0;
+}
+
+double Saturation_constant::Hls_(const double P) const
+{
+  return hls_;
+}
+
+double Saturation_constant::dP_Hls_(const double P) const
+{
+  return 0;
+}
+
+double Saturation_constant::Hvs_(const double P) const
+{
+  return hvs_;
+}
+
+double Saturation_constant::dP_Hvs_(const double P) const
+{
+  return 0;
+}

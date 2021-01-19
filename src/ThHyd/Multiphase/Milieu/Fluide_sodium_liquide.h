@@ -41,10 +41,10 @@ protected :
   virtual double     rho_(const double T, const double P) const;
   virtual double  dP_rho_(const double T, const double P) const;
   virtual double  dT_rho_(const double T, const double P) const;
-  // capacite calorifique
-  virtual double    eint_(const double T, const double P) const;
-  virtual double dP_eint_(const double T, const double P) const;
-  virtual double dT_eint_(const double T, const double P) const;
+  // enthalpie
+  virtual double       h_(const double T, const double P) const;
+  virtual double    dP_h_(const double T, const double P) const;
+  virtual double    dT_h_(const double T, const double P) const;
   // lois champs "faibles" -> pas de derivees
   virtual double      cp_(const double T, const double P) const;
   virtual double    beta_(const double T, const double P) const;

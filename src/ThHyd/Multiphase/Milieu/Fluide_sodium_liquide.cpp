@@ -51,19 +51,19 @@ double Fluide_sodium_liquide::dP_rho_(const double T, const double P) const
   return DPRhoL(T, P);
 }
 
-double Fluide_sodium_liquide::eint_(const double T, const double P) const
+double Fluide_sodium_liquide::h_(const double T, const double P) const
 {
-  return HL(T, P) - P / RhoL(T, P);
+  return HL(T, P);
 }
 
-double Fluide_sodium_liquide::dT_eint_(const double T, const double P) const
+double Fluide_sodium_liquide::dT_h_(const double T, const double P) const
 {
-  return DTHL(T, P) + P * DTRhoL(T, P) / RhoL(T, P) / RhoL(T, P);
+  return DTHL(T, P);
 }
 
-double Fluide_sodium_liquide::dP_eint_(const double T, const double P) const
+double Fluide_sodium_liquide::dP_h_(const double T, const double P) const
 {
-  return DPHL(T, P) - (RhoL(T, P) - P * DPRhoL(T, P)) / RhoL(T, P) / RhoL(T, P);
+  return DPHL(T, P);
 }
 
 double Fluide_sodium_liquide::cp_(const double T, const double P) const

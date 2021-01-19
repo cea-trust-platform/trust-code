@@ -370,8 +370,8 @@ inline void Fluide_Quasi_Compressible::secmembre_divU_Z(DoubleTab& tab_W) const
     }
 }
 
-inline double Fluide_Quasi_Compressible::calculer_H(double h)  const
+inline double Fluide_Quasi_Compressible::calculer_H(double hh)  const
 {
-  return loi_etat_->calculer_H(Pth_,h);
+  return loi_etat_->calculer_H(Pth_,hh);
 }
 #endif

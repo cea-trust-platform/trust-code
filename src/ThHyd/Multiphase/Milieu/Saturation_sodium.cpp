@@ -14,42 +14,64 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation_sodium.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#include <Saturation_sodium.h>
+#include <Lois_sodium.h>
 
-#include <Fluide_reel_base.h>
+Implemente_instanciable(Saturation_sodium, "Saturation_sodium", Saturation_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
+Sortie& Saturation_sodium::printOn(Sortie& os) const
 {
-  Declare_instanciable(Fluide_sodium_gaz);
+  return os;
+}
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
-};
+Entree& Saturation_sodium::readOn(Entree& is)
+{
+  return Saturation_base::readOn(is);
+}
 
-#endif
+double Saturation_sodium::Tsat_(const double P) const
+{
+  return Tsat_Na(P);
+}
+double Saturation_sodium::dP_Tsat_(const double P) const
+{
+  return DTsat_Na(P);
+}
+double Saturation_sodium::Psat_(const double T) const
+{
+  return Psat_Na(T);
+}
+double Saturation_sodium::dT_Psat_(const double T) const
+{
+  return DPsat_Na(T);
+}
+double Saturation_sodium::Lvap_(const double P) const
+{
+  return Lvap_Na(P);
+}
+double Saturation_sodium::dP_Lvap_(const double P) const
+{
+  return DLvap_Na(P);
+}
+double Saturation_sodium::Hls_(const double P) const
+{
+  return HL(Tsat_Na(P), P);
+}
+double Saturation_sodium::dP_Hls_(const double P) const
+{
+  return DPHL(Tsat_Na(P), P);
+}
+double Saturation_sodium::Hvs_(const double P) const
+{
+  return HV(Tsat_Na(P), P);
+}
+double Saturation_sodium::dP_Hvs_(const double P) const
+{
+  return DPHV(Tsat_Na(P), P);
+}

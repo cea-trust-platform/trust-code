@@ -76,9 +76,8 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   const Zone_dis_base& zone_dis = pb.equation(0).zone_dis();
   const double temps = pb.schema_temps().temps_courant();
 
-  Champ_Fonc rho_fonc, ei_fonc;
-  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",   "kg/m^3", 1, temps, rho_fonc);
-  rho = rho_fonc;
+  Champ_Fonc rho_fonc, ei_fonc, h_fonc;
+  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", 1, temps, rho_fonc);
   dis.discretiser_champ("champ_elem", zone_dis,    "dT_masse_volumique",  "kg/m^3/K", 1, temps,   dT_rho);
   dis.discretiser_champ("champ_elem", zone_dis,    "dP_masse_volumique", "kg/m^3/Pa", 1, temps,   dP_rho);
   dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique",    "kg/m/s", 1, temps,       mu);
@@ -87,13 +86,17 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",     "W/m/K", 1, temps,   lambda);
   dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", 1, temps,       Cp);
   dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",     "J/m^3", 1, temps,  ei_fonc);
-  e_int = ei_fonc;
   dis.discretiser_champ("champ_elem", zone_dis,    "DT_energie_interne",   "J/m^3/K", 1, temps, dT_e_int);
   dis.discretiser_champ("champ_elem", zone_dis,    "DP_energie_interne",  "J/m^3/Pa", 1, temps, dP_e_int);
+  dis.discretiser_champ("champ_elem", zone_dis,             "enthalpie",     "J/m^3", 1, temps,   h_fonc);
+  dis.discretiser_champ("champ_elem", zone_dis,          "DT_enthalpie",   "J/m^3/K", 1, temps,     dT_h);
+  dis.discretiser_champ("champ_elem", zone_dis,          "DP_enthalpie",  "J/m^3/Pa", 1, temps,     dP_h);
+  rho = rho_fonc, e_int = ei_fonc, h = h_fonc;
 
   const DoubleTab& xv_bord = ref_cast(Zone_VF, rho->zone_dis_base()).xv_bord();
   rho_bord.resize(xv_bord.dimension_tot(0), 1);
   e_int_bord.resize(xv_bord.dimension_tot(0), 1);
+  h_bord.resize(xv_bord.dimension_tot(0), 1);
 
 }
 
@@ -103,6 +106,7 @@ int Fluide_reel_base::initialiser(const double& temps)
 
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
   if (sub_type(Champ_Don_base, e_int.valeur())) ref_cast(Champ_Don_base, e_int.valeur()).initialiser(temps);
+  if (sub_type(Champ_Don_base, h.valeur())) ref_cast(Champ_Don_base, h.valeur()).initialiser(temps);
   dT_rho.initialiser(temps);
   dP_rho.initialiser(temps);
   dT_e_int.initialiser(temps);
@@ -116,13 +120,19 @@ int Fluide_reel_base::initialiser(const double& temps)
   return 1;
 }
 
+void Fluide_reel_base::set_T0(double T0)
+{
+  if (isotherme_)
+    {
+      T0_ = T0;
+      e0_ = h_(T0_, P_ref_) - P_ref_ / rho_(T0_, P_ref_);
+    }
+}
+
 void Fluide_reel_base::mettre_a_jour(double temps)
 {
   if (isotherme_) return Fluide_base::mettre_a_jour(temps);
   mettre_a_jour_tabs(temps);
-  Milieu_base::mettre_a_jour(temps);
-  // rho.mettre_a_jour(temps);
-  // e_int.mettre_a_jour(temps);
 }
 
 void Fluide_reel_base::mettre_a_jour_tabs(const double t)
@@ -136,13 +146,19 @@ void Fluide_reel_base::mettre_a_jour_tabs(const double t)
   const DoubleTab& pres = ch_P.valeurs(t), &pres_b = ch_P.valeur_aux_bords();
 
   const int Nl = mu.valeurs().dimension_tot(0);
-
+  // masse volumique et derivees
   DoubleTab& tab_rho = rho.valeurs();
   DoubleTab& tab_dT_rho = dT_rho.valeurs();
   DoubleTab& tab_dP_rho = dP_rho.valeurs();
+  // energie interne et derivees
   DoubleTab& tab_ei = e_int.valeurs();
   DoubleTab& tab_dT_ei = dT_e_int.valeurs();
   DoubleTab& tab_dP_ei = dP_e_int.valeurs();
+  // enthalpie et derivees
+  DoubleTab& tab_h = h.valeurs();
+  DoubleTab& tab_dT_h = dT_h.valeurs();
+  DoubleTab& tab_dP_h = dP_h.valeurs();
+  // autres champs
   DoubleTab& tab_Cp = Cp.valeurs();
   DoubleTab& tab_mu = mu.valeurs();
   DoubleTab& tab_nu = nu.valeurs();
@@ -151,12 +167,19 @@ void Fluide_reel_base::mettre_a_jour_tabs(const double t)
   for (int i = 0; i < Nl; i++)
     {
       const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
+      // masse volumique et derivees
       tab_rho(i) = rho_(T, P);
       tab_dT_rho(i) = dT_rho_(T, P);
       tab_dP_rho(i) = dP_rho_(T, P);
-      tab_ei(i) = eint_(T, P);
-      tab_dT_ei(i) = dT_eint_(T, P);
-      tab_dP_ei(i) = dP_eint_(T, P);
+      // enthalpie et derivees
+      tab_h(i) = h_(T, P);
+      tab_dT_h(i) = dT_h_(T, P);
+      tab_dP_h(i) = dP_h_(T, P);
+      // energie interne et derivees -> a partir de h et rho et derivees
+      tab_ei(i) = tab_h(i) - P / tab_rho(i);
+      tab_dT_ei(i) = tab_dT_h(i) - (         0 - P * tab_dT_rho(i)) / tab_rho(i) / tab_rho(i);
+      tab_dP_ei(i) = tab_dP_h(i) - (tab_rho(i) - P * tab_dP_rho(i)) / tab_rho(i) / tab_rho(i);
+      // autres champs
       tab_Cp(i) = cp_(T, P);
       tab_mu(i) = mu_(T);
       tab_lambda(i) = lambda_(T);
@@ -167,11 +190,7 @@ void Fluide_reel_base::mettre_a_jour_tabs(const double t)
     {
       const double T = (T_ref_ > 0) ? T_ref_ : temp_b(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres_b(i, 0);
       rho_bord(i, 0) = rho_(T, P);
-      e_int_bord(i, 0) = eint_(T, P);
+      h_bord(i, 0) = h_(T, P);
+      e_int_bord(i, 0) = h_bord(i, 0) - P / rho_bord(i, 0);
     }
-}
-
-void Fluide_reel_base::update_e_int(double t)
-{
-  if (isotherme_) return Fluide_base::update_e_int(t);
 }

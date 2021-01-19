@@ -351,7 +351,7 @@ void Energie_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, doubl
 {
   const Champ_base& ch_rho = ch.equation().milieu().masse_volumique();
   const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, ch.equation().probleme()).eq_masse.inconnue(),
-                        &ch_en = ref_cast(Champ_Inc_base, ch.equation().milieu().energie_interne()), //toujours un Champ_Inc
+                        &ch_en = ref_cast(Champ_Inc_base, ref_cast(Fluide_base, ch.equation().milieu()).energie_interne()), //toujours un Champ_Inc
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc
   const DoubleTab& alpha = ch_alpha.valeurs(t), &rho = ch_rho.valeurs(t), &en = ch_en.valeurs(t);
 

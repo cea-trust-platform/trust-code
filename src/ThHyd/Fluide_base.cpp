@@ -169,13 +169,26 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (id_composite != -1)
     {
-      Champ_Fonc ei_fonc;
-      dis.discretiser_champ("champ_elem", zone_dis, "energie_interne", "J/m^3", 1, temps, ei_fonc);
-      e_int = ei_fonc;
+      // champs aux elements
+      Champ_Fonc ei_fonc, h_fonc;
+      dis.discretiser_champ("champ_elem", zone_dis, "energie_interne",    "J/m^3", 1, temps, ei_fonc);
+      dis.discretiser_champ("champ_elem", zone_dis,      "enethalpie",    "J/m^3", 1, temps,  h_fonc);
+      dis.discretiser_champ("champ_elem", zone_dis,    "DP_enthalpie", "J/m^3/Pa", 1, temps,    dP_h);
+      e_int = ei_fonc, h = h_fonc;
+      // valeurs au bord
       const DoubleTab& xv_bord = ref_cast(Zone_VF, zone_dis).xv_bord();
       e_int_bord.resize(xv_bord.dimension_tot(0), 1);
-      creer_energie_interne();
+      h_bord.resize(xv_bord.dimension_tot(0), 1);
+      // derivees
+      dT_e_int = Cp, dT_h = Cp;
+      dT_e_int->nommer("DT_energie_interne"), dT_h->nommer("DT_enthalpie");
 
+      Nom n_ch("champ_uniforme ");
+      n_ch += Nom(Cp.nb_comp());
+      n_ch += " 0";
+      EChaine ech1(n_ch);
+      ech1 >> dP_e_int;
+      dP_e_int->nommer("DP_energie_interne");
     }
 
   Milieu_base::discretiser(pb,dis);
@@ -355,38 +368,36 @@ void Fluide_base::calculer_nu()
   for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) tabnu.addr()[j] = tabmu.addr()[cMu ? n : j] / tabrho.addr()[cRho ? n : j];
 }
 
-void Fluide_base::creer_energie_interne()
-{
-  dT_e_int = Cp;
-  dT_e_int->nommer("DT_energie_interne");
-
-  Nom n_ch("champ_uniforme ");
-  n_ch += Nom(Cp.nb_comp());
-  n_ch += " 0";
-  EChaine ech1(n_ch);
-  ech1 >> dP_e_int;
-  dP_e_int->nommer("DP_energie_interne");
-}
-
-void Fluide_base::update_e_int(double t)
+void Fluide_base::update_ei_h(double t)
 {
   const Equation_base& eqn = *equation.at("temperature");
   const Champ_base& ch_T = eqn.probleme().get_champ("Temperature");
-  const DoubleTab& temp = ch_T.valeurs(t), &temp_b = ch_T.valeur_aux_bords();
+  const Champ_base& ch_P = eqn.probleme().get_champ("Pression");
+  const DoubleTab& temp = ch_T.valeurs(t), &pres = ch_P.valeurs(t), &tab_rho = rho.valeurs(),
+                   &temp_b = ch_T.valeur_aux_bords(), &pres_b = ch_P.valeur_aux_bords();
 
-  const int Nl = e_int.valeurs().dimension_tot(0), N = Cp.valeurs().line_size(), cCp = sub_type(Champ_Uniforme, Cp.valeur());
+  const int Nl = e_int.valeurs().dimension_tot(0), N = Cp.valeurs().line_size(),
+            cCp = sub_type(Champ_Uniforme, Cp.valeur()), cr = sub_type(Champ_Uniforme, rho.valeur());
   if ((N > 1 && id_composite != -1) || id_composite == -1) Process::exit("energie_interne should be used only with Milieu_composite -> the fluids should have only one component each");
   DoubleTab bCp;
   if (Cp.valeur().a_une_zone_dis_base()) bCp = Cp.valeur().valeur_aux_bords();
   else bCp.resize(temp_b.dimension_tot(0), N), Cp.valeur().valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bCp);
 
-  DoubleTab& tab_ei = e_int.valeurs();
+  DoubleTab& tab_ei = e_int.valeurs(), &tab_h = h.valeurs(), &tab_DP_h = dP_h.valeurs();
   const DoubleTab& tab_Cp = Cp.valeurs();
   dT_e_int.valeurs() = tab_Cp;
   for (int i = 0; i < Nl; i++)
-    tab_ei(i, 0) = tab_Cp(!cCp * i, 0) * temp(i, id_composite);
+    {
+      tab_ei(i, 0) = e0_ + tab_Cp(!cCp * i, 0) * (temp(i, id_composite) - T0_);
+      tab_h(i, 0) = tab_ei(i, 0) + pres[i] / tab_rho(!cr * i, 0);
+      tab_DP_h(i, 0) = 1 / tab_rho(!cr * i, 0);
+    }
+  const int crb = rho_bord.dimension_tot(0) == 1;
   for (int i = 0; i < e_int_bord.dimension_tot(0); i++)
-    e_int_bord(i, 0) = bCp(i, 0) * temp_b(i, id_composite);
+    {
+      e_int_bord(i, 0) = e0_ + bCp(i, 0) * (temp_b(i, id_composite) - T0_);
+      h_bord(i, 0) = e_int_bord(i, 0) + pres_b(i) / rho_bord(!crb * i, 0);
+    }
 }
 
 
@@ -411,6 +422,12 @@ void Fluide_base::update_e_int(double t)
 void Fluide_base::mettre_a_jour(double temps)
 {
   Milieu_base::mettre_a_jour(temps);
+  if (e_int.non_nul())
+    {
+      if (id_composite != -1) update_ei_h(temps);
+      e_int.mettre_a_jour(temps);
+      h.mettre_a_jour(temps);
+    }
   if (beta_co.non_nul())
     beta_co.mettre_a_jour(temps);
   mu.mettre_a_jour(temps);
@@ -466,6 +483,11 @@ int Fluide_base::initialiser(const double& temps)
   Milieu_base::initialiser(temps);
   mu.initialiser(temps);
 
+  if (e_int.non_nul())
+    {
+      update_ei_h(temps);
+      e_int.mettre_a_jour(temps);
+    }
   if (beta_co.non_nul())
     beta_co.initialiser(temps);
   calculer_nu();
@@ -524,4 +546,80 @@ void Fluide_base::fixer_type_rayo()
 int Fluide_base::longueur_rayo_is_discretised()
 {
   return longueur_rayo_.non_nul();
+}
+
+void Fluide_base::set_T0(double T0)
+{
+  T0_ = T0;
+  e0_ = Cp.valeurs()(0, 0) * T0;
+}
+
+const Champ_base& Fluide_base::energie_interne() const
+{
+  return e_int;
+}
+
+Champ_base& Fluide_base::energie_interne()
+{
+  return e_int;
+}
+
+const Champ_Don& Fluide_base::dT_energie_interne() const
+{
+  return dT_e_int;
+}
+
+Champ_Don& Fluide_base::dT_energie_interne()
+{
+  return dT_e_int;
+}
+
+const Champ_Don& Fluide_base::dP_energie_interne() const
+{
+  return dP_e_int;
+}
+
+Champ_Don& Fluide_base::dP_energie_interne()
+{
+  return dP_e_int;
+}
+
+const DoubleTab& Fluide_base::energie_interne_bord() const
+{
+  return e_int_bord;
+}
+
+const Champ_base& Fluide_base::enthalpie() const
+{
+  return h;
+}
+
+Champ_base& Fluide_base::enthalpie()
+{
+  return h;
+}
+
+const Champ_Don& Fluide_base::dT_enthalpie() const
+{
+  return dT_h;
+}
+
+Champ_Don& Fluide_base::dT_enthalpie()
+{
+  return dT_h;
+}
+
+const Champ_Don& Fluide_base::dP_enthalpie() const
+{
+  return dP_h;
+}
+
+Champ_Don& Fluide_base::dP_enthalpie()
+{
+  return dP_h;
+}
+
+const DoubleTab& Fluide_base::enthalpie_bord() const
+{
+  return h_bord;
 }

@@ -51,22 +51,22 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);
   virtual void set_param(Param& param);
+  virtual void set_T0(double T0);
 protected :
 
   // densite
   virtual double     rho_(const double T, const double P) const = 0;
   virtual double  dP_rho_(const double T, const double P) const = 0;
   virtual double  dT_rho_(const double T, const double P) const = 0;
-  // capacite calorifique
-  virtual double    eint_(const double T, const double P) const = 0;
-  virtual double dP_eint_(const double T, const double P) const = 0;
-  virtual double dT_eint_(const double T, const double P) const = 0;
+  // enthalpie
+  virtual double       h_(const double T, const double P) const = 0;
+  virtual double    dP_h_(const double T, const double P) const = 0;
+  virtual double    dT_h_(const double T, const double P) const = 0;
   // lois champs "faibles" -> pas de derivees
   virtual double      cp_(const double T, const double P) const = 0;
   virtual double    beta_(const double T, const double P) const = 0;
   virtual double      mu_(const double T) const = 0;
   virtual double  lambda_(const double T) const = 0;
-  virtual void update_e_int(double t);
 
   void mettre_a_jour_tabs(const double t);
 

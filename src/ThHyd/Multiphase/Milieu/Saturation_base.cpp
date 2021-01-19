@@ -14,42 +14,77 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#include <Saturation_base.h>
+Implemente_base(Saturation_base, "Saturation_base", Objet_U);
 
-#include <Fluide_reel_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
+Sortie& Saturation_base::printOn(Sortie& os) const
 {
-  Declare_instanciable(Fluide_sodium_gaz);
+  return os;
+}
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
-};
+Entree& Saturation_base::readOn(Entree& is)
+{
+  Param param(que_suis_je());
+  param.ajouter("P_ref", &P_ref_);
+  param.ajouter("T_ref", &T_ref_);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-#endif
+double Saturation_base::get_Pref() const
+{
+  return P_ref_;
+}
+
+double Saturation_base::Tsat(const double Pi) const
+{
+  const double P = P_ref_ > 0 ? P_ref_ : Pi;
+  return Tsat_(P);
+}
+double Saturation_base::dP_Tsat(const double P) const
+{
+  return P_ref_ > 0 ? 0 : dP_Tsat_(P);
+}
+double Saturation_base::Psat(const double Ti) const
+{
+  const double T = T_ref_ > 0 ? T_ref_ : Ti;
+  return Psat_(T);
+}
+double Saturation_base::dT_Psat(const double T) const
+{
+  return T_ref_ > 0 ? 0 : dT_Psat_(T);
+}
+double Saturation_base::Lvap(const double Pi) const
+{
+  const double P = P_ref_ > 0 ? P_ref_ : Pi;
+  return Lvap_(P);
+}
+double Saturation_base::dP_Lvap(const double P) const
+{
+  return P_ref_ > 0 ? 0 : dP_Lvap_(P);
+}
+
+double Saturation_base::Hls(const double Pi) const
+{
+  const double P = P_ref_ > 0 ? P_ref_ : Pi;
+  return Hls_(P);
+}
+double Saturation_base::dP_Hls(const double P) const
+{
+  return P_ref_ > 0 ? 0 : dP_Hls_(P);
+}
+double Saturation_base::Hvs(const double Pi) const
+{
+  const double P = P_ref_ > 0 ? P_ref_ : Pi;
+  return Hvs_(P);
+}
+double Saturation_base::dP_Hvs(const double P) const
+{
+  return P_ref_ > 0 ? 0 : dP_Hvs_(P);
+}

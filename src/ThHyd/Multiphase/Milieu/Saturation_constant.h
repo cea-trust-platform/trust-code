@@ -14,42 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation_constant.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#ifndef Saturation_constant_included
+#define Saturation_constant_included
+#include <Param.h>
+#include <Saturation_base.h>
+#include <Double.h>
 
-#include <Fluide_reel_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
+class Saturation_constant : public Saturation_base
 {
-  Declare_instanciable(Fluide_sodium_gaz);
+  Declare_instanciable(Saturation_constant);
+public:
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
+  virtual double    Tsat_(const double P) const;
+  virtual double dP_Tsat_(const double P) const;
+  virtual double    Psat_(const double T) const;
+  virtual double dT_Psat_(const double T) const;
+  virtual double    Lvap_(const double P) const;
+  virtual double dP_Lvap_(const double P) const;
+  virtual double     Hls_(const double P) const;
+  virtual double  dP_Hls_(const double P) const;
+  virtual double     Hvs_(const double P) const;
+  virtual double  dP_Hvs_(const double P) const;
+
+protected:
+  double tsat_ = -DMAXFLOAT;
+  double psat_ = -DMAXFLOAT;
+  double lvap_ = -DMAXFLOAT;
+  double hls_  = -DMAXFLOAT;
+  double hvs_  = -DMAXFLOAT;
 };
 
 #endif

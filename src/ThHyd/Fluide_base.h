@@ -57,6 +57,21 @@ public :
   inline Champ_Don& viscosite_dynamique();
   inline Champ_Don& beta_c();
 
+  virtual const Champ_base& energie_interne() const;
+  virtual Champ_base&       energie_interne();
+  virtual const Champ_Don& dT_energie_interne() const;
+  virtual Champ_Don&       dT_energie_interne();
+  virtual const Champ_Don& dP_energie_interne() const;
+  virtual Champ_Don&       dP_energie_interne();
+
+  virtual const Champ_base& enthalpie() const;
+  virtual Champ_base&       enthalpie();
+  virtual const Champ_Don& dT_enthalpie() const;
+  virtual Champ_Don&       dT_enthalpie();
+  virtual const Champ_Don& dP_enthalpie() const;
+  virtual Champ_Don&       dP_enthalpie();
+
+
   // Modif CHD 07/05/03 Ajout des parametres pour un fluide semi
   // transparent on les ramene ici pour ne plus avoir a utiliser
   // de Fluide incompressible semi transparent.
@@ -78,14 +93,21 @@ public :
   int initialiser(const double& temps);
   void creer_champs_non_lus();
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-
-
+  virtual void set_T0(double T0);
+  const DoubleTab& energie_interne_bord() const;
+  const DoubleTab& enthalpie_bord() const;
 
 protected :
 
+  Champ e_int;
+  Champ_Don dT_e_int, dP_e_int;
+  Champ h;
+  Champ_Don dT_h, dP_h;
   Champ_Don mu;
   Champ_Don nu;
   Champ_Don beta_co;
+  DoubleTab e_int_bord, h_bord;
+  double e0_ = 0, T0_ = 0;
 
   // Parametres du fluide rayonnant semi transparent
   Champ_Don coeff_absorption_;
@@ -97,8 +119,7 @@ protected :
 
   void creer_nu();
   virtual void calculer_nu();
-  void creer_energie_interne();
-  virtual void update_e_int(double t);
+  virtual void update_ei_h(double t);
 
 protected:
 

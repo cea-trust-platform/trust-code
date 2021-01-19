@@ -14,42 +14,49 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#ifndef Saturation_base_included
+#define Saturation_base_included
+#include <Param.h>
+#include <Ref_Pb_Multiphase.h>
 
-#include <Fluide_reel_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
+class Saturation_base : public Objet_U
 {
-  Declare_instanciable(Fluide_sodium_gaz);
+  Declare_base(Saturation_base);
+public:
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
+  double    Tsat(const double P) const;
+  double dP_Tsat(const double P) const;
+  double    Psat(const double T) const;
+  double dT_Psat(const double T) const;
+  double    Lvap(const double P) const;
+  double dP_Lvap(const double P) const;
+  double     Hls(const double P) const;
+  double  dP_Hls(const double P) const;
+  double     Hvs(const double P) const;
+  double  dP_Hvs(const double P) const;
+
+  virtual double    Tsat_(const double P) const = 0;
+  virtual double dP_Tsat_(const double P) const = 0;
+  virtual double    Psat_(const double T) const = 0;
+  virtual double dT_Psat_(const double T) const = 0;
+  virtual double    Lvap_(const double P) const = 0;
+  virtual double dP_Lvap_(const double P) const = 0;
+  virtual double     Hls_(const double P) const = 0;
+  virtual double  dP_Hls_(const double P) const = 0;
+  virtual double     Hvs_(const double P) const = 0;
+  virtual double  dP_Hvs_(const double P) const = 0;
+
+  double get_Pref() const;
+
+protected:
+  double P_ref_ = -1, T_ref_ = -1;
+  REF(Pb_Multiphase) pb_multi;
 };
 
 #endif

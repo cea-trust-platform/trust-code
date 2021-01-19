@@ -414,11 +414,6 @@ void Milieu_base::mettre_a_jour(double temps)
   //Cerr << que_suis_je() << "Milieu_base::mettre_a_jour" << finl;
   if (rho.non_nul())
     rho.mettre_a_jour(temps);
-  if (e_int.non_nul())
-    {
-      if (id_composite != -1) update_e_int(temps);
-      e_int.mettre_a_jour(temps);
-    }
   if (g.non_nul())
     g.valeur().mettre_a_jour(temps);
   if (lambda.non_nul())
@@ -475,21 +470,10 @@ void Milieu_base::update_rho_cp(double temps)
 void Milieu_base::abortTimeStep()
 {
   if (rho.non_nul()) rho->abortTimeStep();
-  if (e_int.non_nul()) e_int->abortTimeStep();
 }
 
 bool Milieu_base::initTimeStep(double dt)
 {
-  if (!equation.size()) return true; //pas d'equation associee -> ???
-  const Schema_Temps_base& sch = equation.begin()->second->schema_temps(); //on recupere le schema en temps par la 1ere equation
-
-  /* champs dont on doit creer des cases */
-  std::vector<Champ_Inc_base *> vch;
-  if (rho.non_nul() && sub_type(Champ_Inc_base, rho.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, rho.valeur()));
-  if (e_int.non_nul() && sub_type(Champ_Inc_base, e_int.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, e_int.valeur()));
-
-  for (auto &pch : vch) for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
-      pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
   return true;
 }
 
@@ -563,11 +547,6 @@ int Milieu_base::initialiser(const double& temps)
 {
   Cerr << que_suis_je() << "Milieu_base:::initialiser" << finl;
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
-  if (e_int.non_nul())
-    {
-      update_e_int(temps);
-      e_int.mettre_a_jour(temps);
-    }
   if (g.non_nul())
     g.valeur().initialiser(temps);
   if (lambda.non_nul())
@@ -644,66 +623,6 @@ const Champ_Don& Milieu_base::dP_masse_volumique() const
 Champ_Don& Milieu_base::dP_masse_volumique()
 {
   return dP_rho;
-}
-
-
-// Description:
-//    Renvoie l'energie interne du milieu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_base&
-//    Signification: le champ donne representant l'energie interne
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const Champ_base& Milieu_base::energie_interne() const
-{
-  return e_int;
-}
-
-// Description:
-//    Renvoie l'energie interne du milieu
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant l'energie interne
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Champ_base& Milieu_base::energie_interne()
-{
-  return e_int;
-}
-
-const Champ_Don& Milieu_base::dT_energie_interne() const
-{
-  return dT_e_int;
-}
-
-Champ_Don& Milieu_base::dT_energie_interne()
-{
-  return dT_e_int;
-}
-
-const Champ_Don& Milieu_base::dP_energie_interne() const
-{
-  return dP_e_int;
-}
-
-Champ_Don& Milieu_base::dP_energie_interne()
-{
-  return dP_e_int;
 }
 
 // Description:
@@ -953,7 +872,11 @@ const DoubleTab& Milieu_base::masse_volumique_bord() const
   return rho_bord;
 }
 
-const DoubleTab& Milieu_base::energie_interne_bord() const
+void Milieu_base::nommer(const Nom& nom)
 {
-  return e_int_bord;
+  nom_ = nom;
+}
+const Nom& Milieu_base::le_nom() const
+{
+  return nom_;
 }

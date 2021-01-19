@@ -51,19 +51,19 @@ double Fluide_sodium_gaz::dP_rho_(const double T, const double P) const
   return DPRhoV(T, P);
 }
 
-double Fluide_sodium_gaz::eint_(const double T, const double P) const
+double Fluide_sodium_gaz::h_(const double T, const double P) const
 {
-  return HV(T, P) - P / RhoV(T, P);
+  return HV(T, P);
 }
 
-double Fluide_sodium_gaz::dT_eint_(const double T, const double P) const
+double Fluide_sodium_gaz::dT_h_(const double T, const double P) const
 {
-  return DTHV(T, P) + P * DTRhoV(T, P) / RhoV(T, P) / RhoV(T, P);
+  return DTHV(T, P);
 }
 
-double Fluide_sodium_gaz::dP_eint_(const double T, const double P) const
+double Fluide_sodium_gaz::dP_h_(const double T, const double P) const
 {
-  return DPHV(T, P) - (RhoV(T, P) - P * DPRhoV(T, P)) / RhoV(T, P) / RhoV(T, P);
+  return DPHV(T, P);
 }
 
 double Fluide_sodium_gaz::cp_(const double T, const double P) const

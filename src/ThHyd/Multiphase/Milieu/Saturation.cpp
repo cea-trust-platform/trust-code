@@ -14,42 +14,28 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#include <Saturation.h>
 
-#include <Fluide_reel_base.h>
+Implemente_deriv(Saturation_base);
+Implemente_instanciable(Saturation,"Saturation",DERIV(Saturation_base));
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
+Sortie& Saturation::printOn(Sortie& os) const
 {
-  Declare_instanciable(Fluide_sodium_gaz);
+  return DERIV(Saturation_base)::printOn(os);
+}
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
-};
+Entree& Saturation::readOn(Entree& is)
+{
+  Nom nom;
+  is >> nom;
+  DERIV(Saturation_base)::typer(nom);
+  return is;
+}
 
-#endif
+Declare_ref(Saturation_base);

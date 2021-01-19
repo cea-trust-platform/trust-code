@@ -14,42 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_sodium_gaz.h
+// File:        Saturation.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_sodium_gaz_included
-#define Fluide_sodium_gaz_included
+#ifndef Saturation_included
+#define Saturation_included
 
-#include <Fluide_reel_base.h>
+#include <Ref.h>
+#include <Deriv.h>
+#include <Saturation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
+//     classe Saturation
+//     Un objet Saturation peut referencer n'importe quel objet
+//     derivant de Saturation_base.
+// .SECTION voir aussi
+//     Saturation_base
 //////////////////////////////////////////////////////////////////////////////
-class Fluide_sodium_gaz: public Fluide_reel_base
-{
-  Declare_instanciable(Fluide_sodium_gaz);
 
-protected :
-  // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
-  // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
-  // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
+class Saturation_base;
+
+Declare_deriv(Saturation_base);
+
+class Saturation : public DERIV(Saturation_base)
+{
+  Declare_instanciable(Saturation);
+
+public:
+  void associer_pb_multiphase(const Pb_Multiphase& pb);
+
 };
 
 #endif
