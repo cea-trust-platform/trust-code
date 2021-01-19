@@ -1,3 +1,5 @@
+# TRUST BSD3 license
+
 To detect the environment, run:
 ./configure
 
