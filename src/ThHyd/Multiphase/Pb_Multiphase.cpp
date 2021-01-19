@@ -91,7 +91,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is)
 Entree& Pb_Multiphase::lire_correlations(Entree& is)
 {
   // en majuscule car on va utiliser des Motcle pour eviter les soucis de casse
-  std::set<std::string> authorized_correlations = {"FLUX_PARIETAL", "MULTIPLICATEUR_DIPHASIQUE", "FROTTEMENT_INTERFACIAL"};
+  std::set<std::string> authorized_correlations = {"FLUX_PARIETAL", "FLUX_INTERFACIAL", "MULTIPLICATEUR_DIPHASIQUE", "FROTTEMENT_INTERFACIAL"};
   Motcle mot;
   is >> mot;
   if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
