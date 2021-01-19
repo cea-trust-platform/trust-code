@@ -45,6 +45,8 @@ add_package()
       elif [ $lower_name = "ptscotch" ]
       then
          sed -i "1,$ s?make clean ptesmumps esmumps?make clean \&\& make $j ptesmumps \&\& make $j esmumps?g" $config/PTScotch.py || exit -1
+         # -std=c99 ne marche pas toujours, on ajoute -std=gnu99
+         sed -i "1,$ s? -DINT? -std=gnu99 -DINT?g" $config/PTScotch.py || exit -1
       elif [ $lower_name = "suitesparse" ]
       then
          sed -i "1,$ s?library?library $j?g" $config/SuiteSparse.py || exit -1
@@ -63,7 +65,6 @@ minimal_mumps=0 # && [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 scotch=1
 [ $minimal_mumps = 1 ] && scotch=0
 [ ! -f /usr/bin/bison ] && scotch=0 # Si bison pas trouve, on n'installe plus bison+m4 (difficile)
-[ "$TRUST_INT64" = 1 ] && scotch=0 # Ne compile pas... Pourtant semble supporte
 
 if [ "$1" = "" ]
 then
@@ -450,7 +451,7 @@ then
    #######
    [ $minimal_mumps = 0 ]  && add_package hypre
 fi
-[ "$TRUST_INT64" = 0 ] && add_package ml
+[ "$TRUST_INT64" = 0 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && add_package ml
 
 ##########
 # Valgrind
