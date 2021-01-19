@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,8 @@
 #include <Op_Diff_negligeable.h>
 #include <Echange_impose_base.h>
 #include <ConstDoubleTab_parts.h>
+#include <Navier_Stokes_std.h>
+#include <Probleme_base.h>
 
 Implemente_instanciable(Masse_CoviMAC_Elem,"Masse_CoviMAC_Elem",Solveur_Masse_base);
 
@@ -85,15 +87,21 @@ void Masse_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   /* une diagonale par derivee de champ_conserve_ presente dans matrices */
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Inc_base& cc = equation().champ_conserve();
-  int i, N = cc.valeurs().line_size(), ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();
-  IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
+  int e, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), n, N = cc.valeurs().line_size();
 
-  for (i = 0; i < N * ne; i++) stencil.append_line(i, i);
-  Matrice_Morse mat;
-  Matrix_tools::allocate_morse_matrix(N * ne_tot, N * ne_tot, stencil, mat);
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
-      i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      {
+        /* nombre de composantes de la varaible : autant que le champ par defaut, mais peut etre different pour la pression */
+        int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
+
+        IntTrav stencil(0, 2);
+        stencil.set_smart_resize(1);
+
+        for (e = 0; e < ne; e++) for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * e + n * (M > 1));
+        Matrice_Morse mat;
+        Matrix_tools::allocate_morse_matrix(N * ne_tot, M * ne_tot, stencil, mat);
+        i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      }
 }
 
 void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
@@ -102,7 +110,7 @@ void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const Champ_Inc_base& cc = equation().champ_conserve();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
-  int i, e, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
+  int e, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
 
   /* second membre : avec ou sans resolution en increments*/
   for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
@@ -111,8 +119,9 @@ void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   /* matrices */
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
+        int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
         const DoubleTab& der = cc.derivees().at(i_m.first);
-        for (e = i = 0; e < ne; e++) for (n = 0; n < N; n++, i++) (*i_m.second)(i, i) += pe(e) * ve(e) * der(e, n) / dt;
+        for (e = 0; e < ne; e++) for (n = 0; n < N; n++) (*i_m.second)(N * e + n, M * e + n * (M > 1)) += pe(e) * ve(e) * der(e, n) / dt;
       }
 
 }

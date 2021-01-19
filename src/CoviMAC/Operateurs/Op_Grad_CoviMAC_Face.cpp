@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,8 +133,8 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   Matrice_Morse *mat_p = matrices["pression"], *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL, mat2_p, mat2_v;
   std::map<int, std::set<int>> dpb_v, dgp_pb; //dependances vitesses -(dpb_v)-> pressions au bord -(dgp_pb)-> gradient
   if (mat_v) for (f = 0; f < zone.nb_faces_tot(); f++) if (ch.fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
-          for (d = 0, i = N * (nf_tot + D * e) + n; d < D; d++, i += N) if (dabs(nf(f, d)) > 1e-6 * fs(f))
-              for (dpb_v[N * f + n].insert(i), j = mat_v->get_tab1()(i) - 1; j < mat_v->get_tab1()(i + 1) - 1; j++)
+          for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f))
+              for (dpb_v[N * f + n].insert(N * i + n), j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * (i + 1) + n) - 1; j++)
                 dpb_v[N * f + n].insert(mat_v->get_tab2()(j) - 1);
 
   /* aux faces : gradient aux faces + remplissage de dgp_pb */
@@ -211,7 +211,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
                   {
                     pfb(f, n) += fac * nf(f, d) * secmem(i, n); //partie constante -> directement dans pfb
-                    if (dv) for (j = mat_v->get_tab1()(i) - 1; j < mat_v->get_tab1()(i + 1) - 1; j++) //partie lineaire -> dans dpb_v
+                    if (dv) for (j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * (i + 1) + n) - 1; j++) //partie lineaire -> dans dpb_v
                         if (mat_v->get_coeff()(j)) (*dv)[mat_v->get_tab2()(j) - 1] -= fac * nf(f, d) * mat_v->get_coeff()(j);
                   }
             }

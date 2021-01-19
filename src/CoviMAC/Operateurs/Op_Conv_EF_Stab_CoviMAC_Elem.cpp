@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,35 +121,28 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d_scal = 0, d_vit = mats.count("vitesse");
-  //devra-t-on calculer des derivees scalaires?
+  int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_conserve();
-  if (!semi_impl.count(cc.le_nom().getString())) for (auto &&i_m : mats) if (cc.derivees().count(i_m.first)) d_scal = 1;
 
-  IntTab s_scal(0, 2), s_vit(0, 2); //stencil des inconnues scalaires, de la vitesse
-  s_scal.set_smart_resize(1), s_vit.set_smart_resize(1);
+  for (auto &&i_m : mats) if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
+      {
+        Matrice_Morse mat;
+        IntTrav stencil(0, 2);
+        stencil.set_smart_resize(1);
+        int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
 
-  for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
-        {
-          if (d_vit) for (n = 0; n < N; n++) s_vit.append_line(N * e + n, N * f + n); //derivee en la vitesse
-          if (d_scal) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) s_scal.append_line(N * e + n, N * eb + n); //derivee en les incos scalaires amont/aval
-        }
+        if (i_m.first == "vitesse") /* vitesse */
+          {
+            for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
+                  for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
+          }
+        else for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* inconnues scalaires */
+                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * eb + n * (M > 1));
 
-  Matrice_Morse m_vit, m_scal;
-  if (d_vit)
-    {
-      tableau_trier_retirer_doublons(s_vit);
-      Matrix_tools::allocate_morse_matrix(N * ne_tot, N * nf_tot, s_vit, m_vit);
-      mats["vitesse"]->nb_colonnes() ? *mats["vitesse"] += m_vit : *mats["vitesse"] = m_vit;
-    }
-
-  if (d_scal)
-    {
-      tableau_trier_retirer_doublons(s_scal);
-      Matrix_tools::allocate_morse_matrix(N * ne_tot, N * ne_tot, s_scal, m_scal);
-      if (!semi_impl.count(cc.le_nom().getString())) for (auto &deriv : cc.derivees()) //une matrice par derivee de champ_conserve
-          if (mats.count(deriv.first)) mats[deriv.first]->nb_colonnes() ? *mats[deriv.first] += m_scal : *mats[deriv.first] = m_scal;
-    }
+        tableau_trier_retirer_doublons(stencil);
+        Matrix_tools::allocate_morse_matrix(N * ne_tot, M * (i_m.first == "vitesse" ? nf_tot : ne_tot), stencil, mat);
+        i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      }
 }
 
 // ajoute la contribution de la convection au second membre resu
@@ -162,13 +155,13 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   const Champ_Inc_base& cc = equation().champ_conserve();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
+  int i, j, e, eb, f, n, N = vcc.line_size(), M = sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
 
   Matrice_Morse *m_vit = mats["vitesse"];
-  std::vector<std::pair<const DoubleTab *, Matrice_Morse *>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice)
+  std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
   if (!semi_impl.count(nom_cc)) for (auto &i_m : mats) if (cc.derivees().count(i_m.first))
-        d_cc.push_back(std::make_pair(&cc.derivees().at(i_m.first), i_m.second));
+        d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, i_m.first == "pression" ? M : N));
 
-  int i, j, e, eb, f, n, N = vcc.line_size();
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
 
   /* convection aux faces interne (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
@@ -188,8 +181,8 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
         if (m_vit) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0; n < N; n++)
                 (*m_vit)(N * e + n, N * f + n) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
-        for (auto &&d_m : d_cc) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-                for (n = 0; n < N; n++) (*d_m.second)(N * e + n, N * eb + n) += (i ? -1 : 1) * dc_flux(j, n) * (*d_m.first)(eb, n);
+        for (auto &&d_m_i : d_cc) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+                for (n = 0; n < N; n++) (*std::get<1>(d_m_i))(N * e + n, std::get<2>(d_m_i) * eb + n * (std::get<2>(d_m_i) > 1)) += (i ? -1 : 1) * dc_flux(j, n) * (*std::get<0>(d_m_i))(eb, n);
       }
 }
 

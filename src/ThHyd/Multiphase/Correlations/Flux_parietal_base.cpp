@@ -14,21 +14,21 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Flux_chaleur_parietal_base.cpp
+// File:        Flux_parietal_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Flux_chaleur_parietal_base.h>
-Implemente_base(Flux_chaleur_parietal_base, "Flux_chaleur_parietal_base", Correlation_base);
+#include <Flux_parietal_base.h>
+Implemente_base(Flux_parietal_base, "Flux_parietal_base", Correlation_base);
 
-Sortie& Flux_chaleur_parietal_base::printOn(Sortie& os) const
+Sortie& Flux_parietal_base::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Flux_chaleur_parietal_base::readOn(Entree& is)
+Entree& Flux_parietal_base::readOn(Entree& is)
 {
   return is;
 }

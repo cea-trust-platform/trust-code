@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -136,7 +136,7 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
         if (mat) (*mat)(N * f + n, N * f + n) += fac;
       }
 
-  for (e = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, i++) for (n = 0; n < N; n++)
+  for (e = 0, i = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, i++) for (n = 0; n < N; n++)
         {
           double fac = pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1) / dt;
           secmem(i, n) -= fac * (resoudre_en_increments * inco(i, n) - passe(i, n));

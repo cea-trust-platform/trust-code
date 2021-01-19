@@ -30,12 +30,17 @@ Sortie& Correlation::printOn(Sortie& os) const
   return DERIV(Correlation_base)::printOn(os);
 }
 
+void Correlation::set_type_prefix(const Nom& nom)
+{
+  type_prefix_ = nom;
+}
+
 Entree& Correlation::readOn(Entree& is)
 {
   /* le premier mot sert a typer la correlation*/
   Nom nom;
   is >> nom;
-  DERIV(Correlation_base)::typer(nom);
+  DERIV(Correlation_base)::typer(type_prefix_ != "??" ? type_prefix_ + "_" + nom : nom);
   /* le reste lui est passe en parametre */
   return valeur().lire(is);
 }

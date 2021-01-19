@@ -148,7 +148,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
               for (j = 0; j < src.dimension_tot(0); j++) dst(j) = src(j, n);
             else if (src.line_size() == N * D) /* stockage N * d + n */
               for (j = 0; j < src.dimension_tot(0); j++) for (d = 0; d < D; d++)
-                  dst(j, d) = src(D * j + d, n);
+                  dst(j, d, 0) = src(j, d, n);
             else abort(); //on ne connait pas
           }
       }

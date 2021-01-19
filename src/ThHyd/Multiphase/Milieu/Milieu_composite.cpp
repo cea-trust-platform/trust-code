@@ -96,12 +96,12 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("champ_elem", zone_dis,    "dP_masse_volumique", "kg/m^3/Pa", N, temps,   dP_rho);
 
   /* energie interne : champ_inc */
-  dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",     "J/m^3", 1, temps,  ei_fonc);
+  dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",     "J/m^3", N, temps,  ei_fonc);
   Champ_Inc ei_inc;
   dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",    "J/m^3", N, pb.equation(0).inconnue()->nb_valeurs_temporelles(), temps, ei_inc);
   e_int = ei_inc;
-  dis.discretiser_champ("champ_elem", zone_dis,    "DT_energie_interne",  "J/m^3/K", 1, temps, dT_e_int);
-  dis.discretiser_champ("champ_elem", zone_dis,    "DP_energie_interne", "J/m^3/Pa", 1, temps, dP_e_int);
+  dis.discretiser_champ("champ_elem", zone_dis,    "DT_energie_interne",  "J/m^3/K", N, temps, dT_e_int);
+  dis.discretiser_champ("champ_elem", zone_dis,    "DP_energie_interne", "J/m^3/Pa", N, temps, dP_e_int);
 
   /* autres champs : champ_fonc */
   dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique",    "kg/m/s", N, temps,       mu);

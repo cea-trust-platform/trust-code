@@ -14,24 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Flux_chaleur_parietal_base.h
+// File:        Flux_parietal_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Flux_chaleur_parietal_base_included
-#define Flux_chaleur_parietal_base_included
+#ifndef Flux_parietal_base_included
+#define Flux_parietal_base_included
 #include <DoubleTab.h>
 #include <Correlation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Flux_chaleur_parietal_base
-//      correlations de flux de chaleur parietal de la forme
-//      Phi_k = F(alpha_l, T_l, p, T_p, v_l, D_h, D_h, D_ch)
-//      cette classe definit une fonction flux avec :
+//    classe Flux_parietal_base
+//      correlations de flux parietal de la forme
+//        flux de chaleur : q_{pk}  = F(alpha_l, T_l, p, T_p, v_l, D_h, D_h, D_ch)
+//        flux de masse : Gamma_{pk} = G(alpha_l, T_l, p, T_p, v_l, D_h, D_h, D_ch)
+//          (par ex ebullition nucleee : Gamma_{pg} = -Gamma_{pl} = q_{pi} / Lvap)
+//      cette classe definit deux fonctions flux_chaleur, flux_masse avec :
 //    entrees :
 //        N : nombre de phases
 //        D_h, D_ch -> diametre hyd, diametre hyd chauffant
@@ -43,21 +45,25 @@
 //        lambda[n], mu[n], rho[n], rho_Cp[n] -> diverses proprietes physiques de la phase n
 //
 //    sorties :
-//        F[n]           -> flux de chaleur vers la phase n
-//       dFa[N * n + m]  -> derivee par rapport a alpha_m
-//       dFp[n]          -> derivee par rapport a p
-//       dFtf[N * n + m] -> derivee par rapport a T[m]
-//       dFtp[n]         -> derivee par rapport a Tp
+//        {F,G}[n]           -> flux de chaleur/masse vers la phase n
+//       d{F,G}a[N * n + m]  -> derivee par rapport a alpha_m
+//       d{F,G}p[n]          -> derivee par rapport a p
+//       d{F,G}tf[N * n + m] -> derivee par rapport a T[m]
+//       d{F,G}tp[n]         -> derivee par rapport a Tp
 //////////////////////////////////////////////////////////////////////////////
 
-class Flux_chaleur_parietal_base : public Correlation_base
+class Flux_parietal_base : public Correlation_base
 {
-  Declare_base(Flux_chaleur_parietal_base);
+  Declare_base(Flux_parietal_base);
 public:
-  virtual void flux(int N, double D_h, double D_ch,
-                    const double *alpha, const double *T, const double p, const double *v, const double Tp,
-                    const double *lambda, const double *mu, const double *rho, const double *rho_Cp,
-                    double *F, double *dFa, double *dFp, double *dFv, double *dFtl, double *dFtp) const = 0;
+  virtual void flux_chaleur(int N, double D_h, double D_ch,
+                            const double *alpha, const double *T, const double p, const double *v, const double Tp,
+                            const double *lambda, const double *mu, const double *rho, const double *rho_Cp,
+                            double *F, double *dFa, double *dFp, double *dFv, double *dFtl, double *dFtp) const = 0;
+  virtual void flux_masse(int N, double D_h, double D_ch,
+                          const double *alpha, const double *T, const double p, const double *v, const double Tp,
+                          const double *lambda, const double *mu, const double *rho, const double *rho_Cp,
+                          double *G, double *dGa, double *dGp, double *dGv, double *dGtl, double *dGtp) const = 0;
 };
 
 #endif

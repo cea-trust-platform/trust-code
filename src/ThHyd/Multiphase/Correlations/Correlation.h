@@ -46,8 +46,11 @@ class Correlation : public DERIV(Correlation_base)
   Declare_instanciable(Correlation);
 
 public:
+  void set_type_prefix(const Nom &nom); //determine le type de correlation que l'on va creer lors du readOn
   void associer_pb_multiphase(const Pb_Multiphase& pb);
 
+private:
+  Nom type_prefix_;
 };
 
 #endif

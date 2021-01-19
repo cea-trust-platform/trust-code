@@ -39,6 +39,7 @@ Sortie& Frottement_interfacial_CoviMAC::printOn(Sortie& os) const
 
 Entree& Frottement_interfacial_CoviMAC::readOn(Entree& is)
 {
+  correlation_.set_type_prefix("Frottement_interfacial");
   is >> correlation_; //type et lit la correlation de FI
   return is;
 }

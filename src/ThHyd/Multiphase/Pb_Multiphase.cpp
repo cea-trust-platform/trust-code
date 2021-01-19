@@ -71,16 +71,17 @@ Entree& Pb_Multiphase::readOn(Entree& is)
 
 Entree& Pb_Multiphase::lire_equations(Entree& is)
 {
-  bool corr;
+  bool already_read;
   Motcle mot;
 
   is >> mot;
-  if ((corr = (mot == "correlations"))) lire_correlations(is);
+  if (mot == "correlations") lire_correlations(is), already_read = false;
+  else already_read = true;
 
   Cerr << "Reading of the equations" << finl;
-  for(int i = 0; i < nombre_d_equations(); i++)
+  for(int i = 0; i < nombre_d_equations(); i++, already_read = false)
     {
-      if (corr) is >> mot ;
+      if (!already_read) is >> mot;
       is >> getset_equation_by_name(mot);
     }
 
@@ -90,15 +91,15 @@ Entree& Pb_Multiphase::lire_equations(Entree& is)
 Entree& Pb_Multiphase::lire_correlations(Entree& is)
 {
   // en majuscule car on va utiliser des Motcle pour eviter les soucis de casse
-  std::vector<std::string> authorized_correlations = {"FLUX_PARIETAL", "MULTIPLICATEUR_DIPHASIQUE", "FROTTEMENT_INTERFACIAL"};
+  std::set<std::string> authorized_correlations = {"FLUX_PARIETAL", "MULTIPLICATEUR_DIPHASIQUE", "FROTTEMENT_INTERFACIAL"};
   Motcle mot;
   is >> mot;
   if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
 
-  for (is >> mot; mot != "}"; is >> mot)
-    if (std::find(authorized_correlations.begin(), authorized_correlations.end(), mot.getString()) != authorized_correlations.end())
+  for (is >> mot; mot != "}"; is >> mot) if (authorized_correlations.count(mot.getString()))
       {
         Correlation c;
+        c.set_type_prefix(mot);
         is >> c;
         c.associer_pb_multiphase(*this);
         correlations[mot.getString()] = c;
