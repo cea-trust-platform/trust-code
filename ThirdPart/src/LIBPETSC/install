@@ -59,11 +59,11 @@ cd ${PETSC_ROOT}/..
 mkdir -p build
 cd build
 
-minimal_mumps=0
+minimal_mumps=0 # && [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 scotch=1
-# [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 [ $minimal_mumps = 1 ] && scotch=0
 [ ! -f /usr/bin/bison ] && scotch=0 # Si bison pas trouve, on n'installe plus bison+m4 (difficile)
+[ "$TRUST_INT64" = 1 ] && scotch=0 # Ne compile pas... Pourtant semble supporte
 
 if [ "$1" = "" ]
 then

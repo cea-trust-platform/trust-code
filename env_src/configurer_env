@@ -1952,7 +1952,7 @@ else
    TRUST_USE_MUMPS=0
    echo "No"
 fi
-[ "$TRUST_INT64" = "1" ] && TRUST_USE_MUMPS=0 # Mumps provided by Petsc does not accept 64 bit integers
+#[ "$TRUST_INT64" = "1" ] && TRUST_USE_MUMPS=0 # Mumps provided by Petsc does not accept 64 bit integers
 m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRUST_USE_MUMPS";ecrit $m"|"$e"|"$env
 
 ####################################
