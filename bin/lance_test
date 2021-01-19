@@ -374,8 +374,9 @@ add_test_case_from_validation()
            msg="\nThe validation form $FICHE_ROOT is new or its number of test cases has changed ...\n"
            msg_warning="\n-----------------------------Warning--------------------------------------\n"
            msg_warning+="You can skip the validation form or a part of its test cases : \n"
-           msg_warning+="- To skip the validation form add a file skip_prm in $FICHE_ROOT \n"
-           msg_warning+="- To not build one or sevral test cases add them in the file liste_cas_exclu_nr in $FICHE_ROOT/src\n"
+           msg_warning+="- To skip the validation form, add a file skip_prm into $FICHE_ROOT \n"
+           msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in $FICHE_ROOT/src\n"
+           msg_warning+="- To build no test cases, add a file fiche_exclu_nr into $FICHE_ROOT/src\n"
            msg_warning+="--------------------------------------------------------------------------\n"
            echo $ECHO_OPTS $msg $msg_warning
 	    FICHE_ROOT=${Rapports_auto_root}/$FICHE_ROOT
