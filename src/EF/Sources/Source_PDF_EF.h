@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,8 @@ class Source_PDF_EF : public Source_PDF_base
 
 public:
   void associer_pb(const Probleme_base& );
-  DoubleTab& ajouter_(const DoubleTab& vitesse, DoubleTab&) const;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse& matrice) const ;
   DoubleVect diag_coeff_elem(ArrOfDouble&, const DoubleTab&, int) const ;
@@ -62,6 +63,7 @@ public:
   void updateChampRho();
   int impr(Sortie&) const;
 protected:
+  Champ_Don champ_nodal_;
   void compute_vitesse_imposee_projete(const DoubleTab&, const DoubleTab&, double, double);
   void calculer_vitesse_imposee_hybrid();
   void calculer_vitesse_imposee_elem_fluid();

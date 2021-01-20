@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1203,10 +1203,12 @@ int Navier_Stokes_std::preparer_calcul()
 
 
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression av projeter", la_pression.valeurs());
+  int proj_fait=0;
   if (projection_a_faire())
     {
       Cerr << "Projection of initial and boundaries conditions " << finl;
       projeter();
+      proj_fait=1;
     }
   else
     {
@@ -1261,18 +1263,14 @@ int Navier_Stokes_std::preparer_calcul()
               }
             sources().ajouter(vpoint);
             // <IBM> Taking into account potential Source_PDF term for Immersed Boundary Method
-            if ((i_source_pdf_ != -1) && ((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1)))
+            if ((i_source_pdf_ != -1) && ((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1)) && proj_fait)
               {
-                // Source_PDF& src = ref_cast(Source_PDF, (sources())[i_source_pdf_].valeur());
-                // if (src.getInterpolationBool())
-                //   {
-                //     src.calculer_vitesse_imposee();
-                //   }
-                if ((i_source_pdf_ != -1)&&(((correction_matrice_projection_initiale_==1)||(matrice_pression_penalisee_H1_==1))))
-                  {
-                    Cerr<<"(IBM) Immersed Interface: modified pressure gradient for initial pressure computation."<<finl;
-                    vpoint/=champ_coeff_pdf_som_;
-                  }
+                const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+                Cerr<<"Immersed Interface: Dirichlet velocity in initial pressure computation for PDF (if any)."<<finl;
+                DoubleTrav secmem_pdf(vpoint);
+                src.calculer_pdf(secmem_pdf);
+                vpoint -= secmem_pdf;
+                vpoint.echange_espace_virtuel();
               }
             // </IBM>
             if (mod)
@@ -1482,10 +1480,7 @@ bool Navier_Stokes_std::initTimeStep(double dt)
   if (i_source_pdf_ != -1)
     {
       Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
-      if (!sub_type(Fluide_Incompressible,le_fluide.valeur()))
-        {
-          src.updateChampRho();
-        }
+      src.updateChampRho();
       src.calculer_vitesse_imposee();
       bool mat_var = src.get_matrice_pression_variable_bool_();
       if (mat_var == false) return  ddt;

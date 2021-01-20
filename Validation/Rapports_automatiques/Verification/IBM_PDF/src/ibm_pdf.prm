@@ -1,0 +1,1244 @@
+Parameters {
+	Title "Validation of the immersed boundary module of TRUST"
+	Author "Georis Billo"
+	VersionTrio_U 1.8.2
+  Description "This report was made to run all validation case of the immersed boundary method implemented for the EF discretization in TRUST 1.8.2. The Immersed Boundary Method (IBM) involved is called Penalized Direct Forcing (PDF). It is used to take into account non moving infinetely rigid immersed obstacles. For the moment, the input volume mesh needs data from the immersed boundary (such as a normal vector field, projection of the nodes of the volume mesh on the immersed boundary, etc.) This methods involves a modification of the projection scheme (new time term + modification of the projection matrix). For the nodes located in the vicinity of the immmersed boundary, the velocity can be linearly interpolated. There are four variants for the interpolation: direct assignment (no interpolation), directional interpolation, multi-directional interpolation and a hybrid approach."
+  Reference "G. Billo. Second progress report of BILLO's phd : Numerical modelling of an in-vessel flow limiter using an immersed boundary approach. Tech. report, Ref. CEA/DES/IRESNE/DER/SESI/LEMS/NT DO 3, CEA, 2020."
+ 	TestCase poiseuille_pdf_align "PAR_poiseuille_pdf_align.data" 4
+ 	TestCase poiseuille_pdf_tilt_11_dir "PAR_poiseuille_pdf_tilt_11_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_11_multi_dir "PAR_poiseuille_pdf_tilt_11_multi_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_11_hybrid "PAR_poiseuille_pdf_tilt_11_hybrid.data" 4
+ 	TestCase poiseuille_pdf_tilt_30_dir "PAR_poiseuille_pdf_tilt_30_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_30_multi_dir "PAR_poiseuille_pdf_tilt_30_multi_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_30_hybrid "PAR_poiseuille_pdf_tilt_30_hybrid.data" 4
+ 	TestCase poiseuille_pdf_tilt_45_dir "PAR_poiseuille_pdf_tilt_45_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_45_multi_dir "PAR_poiseuille_pdf_tilt_45_multi_dir.data" 4
+ 	TestCase poiseuille_pdf_tilt_45_hybrid "PAR_poiseuille_pdf_tilt_45_hybrid.data" 4
+ 	TestCase taylor_couette_pdf_dir "PAR_taylor_couette_pdf_dir.data" 4
+ 	TestCase taylor_couette_pdf_multi_dir "PAR_taylor_couette_pdf_multi_dir.data" 4
+ 	TestCase taylor_couette_pdf_hybrid "PAR_taylor_couette_pdf_hybrid.data" 4
+ 	TestCase cylinder_pdf_static_re_20_dir "PAR_cylinder_pdf_static_re_20_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_20_multi_dir "PAR_cylinder_pdf_static_re_20_multi_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_20_hybrid "PAR_cylinder_pdf_static_re_20_hybrid.data" 4
+ 	TestCase cylinder_pdf_static_re_100_dir "PAR_cylinder_pdf_static_re_100_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_100_multi_dir "PAR_cylinder_pdf_static_re_100_multi_dir.data" 4
+ 	TestCase cylinder_pdf_static_re_100_hybrid "PAR_cylinder_pdf_static_re_100_hybrid.data" 4
+ 	TestCase cylinder_pdf_rotate_re_20_dir "PAR_cylinder_pdf_rotate_re_20_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_20_multi_dir "PAR_cylinder_pdf_rotate_re_20_multi_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_20_hybrid "PAR_cylinder_pdf_rotate_re_20_hybrid.data" 4
+ 	TestCase cylinder_pdf_rotate_re_100_dir "PAR_cylinder_pdf_rotate_re_100_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_100_multi_dir "PAR_cylinder_pdf_rotate_re_100_multi_dir.data" 4
+ 	TestCase cylinder_pdf_rotate_re_100_hybrid "PAR_cylinder_pdf_rotate_re_100_hybrid.data" 4
+}
+
+Chapter
+{
+    Title "2D Poiseuille flow with conforming immersed boundaries"
+    Description "Poiseuille flow refers to a viscous fluid flow between two parallel plane plates, what we call channel, or within a cylindrical tube. In two dimension, which is our case of interest for verification purposes, both cases are equivalent. The distance between the plates is assumed widely smaller than the dimensions of the plates. So we can use the lubrication theory to obtain the analytical solution. We used this case with conforming immersed boundary so that we can use and validate the direct assignment approach."
+   
+    Figure
+    {
+        Title "Schematic representation of the conforming Poiseuille test case"
+        Description ""
+        Width 9cm
+        Picture figures/scheme_poiseuille_aligned.pdf
+    }
+    
+    Table 
+    {
+        Title "Geometrical parameters used for the 2D Poiseuille flow (channel aligned with the mesh)"
+        nb_columns 6
+        label $w$ (m) | $l$ (m) | \latex_($U_{\infty}$ (m.s$^{-1})$\latex_) | \latex_($\rho$ (kg.m$^{-3}$)\latex_) | \latex_($\nu$ (m$^2$.s$^{-1}$)\latex_) | \latex_($\mathit{Re} =  U_{\infty} w \nu^{-1}$\latex_)
+        line
+        {
+          last_line
+          legend "Configuration 1"
+          values 1 4 1 1 1 1
+        }
+    }
+   
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map"
+        mesh        poiseuille_pdf_align/PAR_poiseuille_pdf_align.lata dom
+        pseudocolor poiseuille_pdf_align/PAR_poiseuille_pdf_align.lata dom PRESSION ELEM
+        vector poiseuille_pdf_align/PAR_poiseuille_pdf_align.lata dom VITESSE SOM
+        Description "Reynolds = 1."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+}
+
+Chapter
+{
+    Title "2D Poiseuille flow with channel tilted"
+    Description "Globally, this case is the same as the previous one (lubrification theory gives analytical solutions). However, this time the immersed boundaries are not conforming (the channel is tilted and three angles are tested : 11, 30 and 45°) and so a linear interpolation of the imposed velocity in the vicinity of the immersed boundaries is considered. Three interpolation techniques are available : directional, multi-directional and hybrid (directional where it is possible and multi-directional elsewhere)."
+    
+    Figure
+    {
+        Title "Schematic representation of the Poiseuille with tilted channel test case"
+        Description ""
+        Width 9cm
+        Picture figures/scheme_poiseuille_tilted.pdf
+    }
+    
+    Table 
+    {
+        Title "Geometrical parameters used for the 2D Poiseuille flow (channel tilted)"
+        nb_columns 7
+        label $\theta$ ($^\circ$) | $w$ (m) | $l$ (m) | \latex_($U_{\infty}$ (m.s$^{-1})$\latex_) | \latex_($\rho$ (kg.m$^{-3}$)\latex_) | \latex_($\nu$ (m$^2$.s$^{-1}$)\latex_) | \latex_($\mathit{Re} =  U_{\infty} w \nu^{-1}$\latex_)
+        line
+        {
+          last_line
+          legend "Configuration 1"
+          values 11 1 4 1 1 1 1
+        }
+        line
+        {
+          legend "Configuration 2"
+          values 30 1 4 1 1 1 1
+        }
+        line
+        {
+          last_line
+          legend "Configuration 3"
+          values 45 1 4 1 1 1 1
+        }
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 11 degrees and directional interpolation"
+        mesh        poiseuille_pdf_tilt_11_dir/PAR_poiseuille_pdf_tilt_11_dir.lata dom
+        pseudocolor poiseuille_pdf_tilt_11_dir/PAR_poiseuille_pdf_tilt_11_dir.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_11_dir/PAR_poiseuille_pdf_tilt_11_dir.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 11 degrees, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 11 degrees and multi-directional interpolation"
+        mesh        poiseuille_pdf_tilt_11_multi_dir/PAR_poiseuille_pdf_tilt_11_multi_dir.lata dom
+        pseudocolor poiseuille_pdf_tilt_11_multi_dir/PAR_poiseuille_pdf_tilt_11_multi_dir.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_11_multi_dir/PAR_poiseuille_pdf_tilt_11_multi_dir.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 11 degrees, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 11 degrees and hybrid interpolation"
+        mesh        poiseuille_pdf_tilt_11_hybrid/PAR_poiseuille_pdf_tilt_11_hybrid.lata dom
+        pseudocolor poiseuille_pdf_tilt_11_hybrid/PAR_poiseuille_pdf_tilt_11_hybrid.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_11_hybrid/PAR_poiseuille_pdf_tilt_11_hybrid.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 11 degrees, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 30 degrees and directional interpolation"
+        mesh        poiseuille_pdf_tilt_30_dir/PAR_poiseuille_pdf_tilt_30_dir.lata dom
+        pseudocolor poiseuille_pdf_tilt_30_dir/PAR_poiseuille_pdf_tilt_30_dir.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_30_dir/PAR_poiseuille_pdf_tilt_30_dir.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 30 degrees, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 30 degrees and multi-directional interpolation"
+        mesh        poiseuille_pdf_tilt_30_multi_dir/PAR_poiseuille_pdf_tilt_30_multi_dir.lata dom
+        pseudocolor poiseuille_pdf_tilt_30_multi_dir/PAR_poiseuille_pdf_tilt_30_multi_dir.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_30_multi_dir/PAR_poiseuille_pdf_tilt_30_multi_dir.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 30 degrees, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 30 degrees and hybrid interpolation"
+        mesh        poiseuille_pdf_tilt_30_hybrid/PAR_poiseuille_pdf_tilt_30_hybrid.lata dom
+        pseudocolor poiseuille_pdf_tilt_30_hybrid/PAR_poiseuille_pdf_tilt_30_hybrid.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_30_hybrid/PAR_poiseuille_pdf_tilt_30_hybrid.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 30 degrees, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 45 degrees and directional interpolation"
+        mesh        poiseuille_pdf_tilt_45_dir/PAR_poiseuille_pdf_tilt_45_dir.lata dom
+        pseudocolor poiseuille_pdf_tilt_45_dir/PAR_poiseuille_pdf_tilt_45_dir.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_45_dir/PAR_poiseuille_pdf_tilt_45_dir.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 45 degrees, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 45 degrees and multi-directional interpolation"
+        mesh        poiseuille_pdf_tilt_45_multi_dir/PAR_poiseuille_pdf_tilt_45_multi_dir.lata dom
+        pseudocolor poiseuille_pdf_tilt_45_multi_dir/PAR_poiseuille_pdf_tilt_45_multi_dir.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_45_multi_dir/PAR_poiseuille_pdf_tilt_45_multi_dir.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 45 degrees, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Velocity vector and pressure map with a tilt angle of 45 degrees and hybrid interpolation"
+        mesh        poiseuille_pdf_tilt_45_hybrid/PAR_poiseuille_pdf_tilt_45_hybrid.lata dom
+        pseudocolor poiseuille_pdf_tilt_45_hybrid/PAR_poiseuille_pdf_tilt_45_hybrid.lata dom PRESSION ELEM
+        vector poiseuille_pdf_tilt_45_hybrid/PAR_poiseuille_pdf_tilt_45_hybrid.lata dom VITESSE SOM
+        Description "Reynolds = 1, tilt angle = 45 degrees, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+}
+
+Chapter
+{
+    Title "Taylor couette flow"
+    Description ""
+    
+    Figure
+    {
+        Title "Schematic representation of the Taylor Couette test case"
+        Description "Taylor-Couette flow refers to the flow between two infinitely long concentric circular cylinders which are rotating at different angular velocities. The following Figure, paired with the following Table, gives the test case configuration where \latex_($\Omega_f$\latex_) represents the physical domain, $\Omega_s$ represents the non-physical domain (\latex_($\Omega = \Omega_f \cup \Omega_s$\latex_) is the computational or fictitious domain), \latex_($\Gamma_1$\latex_) (resp. \latex_($\Gamma_2$\latex_)) is the immersed boundaries corresponding to the inner (resp. outer) cylinders (they correspond to a no-slip condition, which means a Dirichlet BC with the Dirichlet fluid velocities given by the cylinders velocities), \latex_($r_1$\latex_) (resp. \latex_($r_2$\latex_)) is the radius of the inner (resp. outer) cylinder, \latex_($l = 2r_2 + \frac{1}{4}$\latex_) is the side of the square domain, \latex_($\omega_1$\latex_) (resp. \latex_($\omega_2$\latex_)) is the inner (resp. outer) cylinder angular velocity and \latex_($(e_r,e_\theta)$\latex_) is the polar frame. The stability of this flow in ensured by a condition on the Taylor number, denoted \latex_($\mathit{Ta} := \frac{{\omega_1}^{2}r_1(r_2-r_1)^3}{\nu^2} < \mathit{Ta}_c$\latex_) where \latex_($\mathit{Ta}_c \approx 1.7$\latex_) is the critical Taylor number computed by linear analysis. The numerical application gives, in our case, \latex_($\mathit{Ta} = 1$\latex_), so the criterion is respected. This means that, using lubrication theory once again, we are able to compute a steady-state solution in which the fluid velocity is purely azimuthal."
+        Width 9cm
+        Picture figures/scheme_taylor_couette.pdf
+    }
+    
+    Table 
+    {
+        Title "Geometrical parameters used for the laminar Taylor-Couette flow"
+        nb_columns 6
+        label \latex_($r_1$(m)\latex_) | \latex_($r_2$(m)\latex_) | \latex_($\omega_1$(rad.s$^{-1}$)\latex_) | \latex_($\omega_2$(rad.s$^{-1}$)\latex_) | \latex_($\nu$(m$^2$.s$^{-1}$)\latex_) | \latex_($\mathit{Re} = \lvert \omega \rvert r_1^2\nu^{-1}$\latex_)
+        line
+        {
+          last_line
+          legend "Configuration 1"
+          values 0.5 1 1 -1 0.25 1
+        }
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Taylor Couette flow with directional interpolation"
+        mesh        taylor_couette_pdf_dir/PAR_taylor_couette_pdf_dir.lata dom
+        pseudocolor taylor_couette_pdf_dir/PAR_taylor_couette_pdf_dir.lata dom_magnitude VITESSE SOM
+        Description "Reynolds = 1, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Taylor Couette flow with multi-directional interpolation"
+        mesh        taylor_couette_pdf_multi_dir/PAR_taylor_couette_pdf_multi_dir.lata dom
+        pseudocolor taylor_couette_pdf_multi_dir/PAR_taylor_couette_pdf_multi_dir.lata dom_magnitude VITESSE SOM
+        Description "Reynolds = 1, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0 1 -1.0
+        Cycles -1
+        Title "Taylor Couette flow with hybrid interpolation"
+        mesh        taylor_couette_pdf_hybrid/PAR_taylor_couette_pdf_hybrid.lata dom
+        pseudocolor taylor_couette_pdf_hybrid/PAR_taylor_couette_pdf_hybrid.lata dom_magnitude VITESSE SOM
+        Description "Reynolds = 1, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+}
+
+Chapter
+{
+    Title "Flow around a circular cylinder."
+    Description "The flow around a circular cylinder is a widely studied problem in the field of fluid dynamics. The following Figure, paired with the following Table, gives the test case configuration where \latex_($\Omega_f$ (resp. $\Omega_s$)\latex_) represents the physical domain (resp. the non-physical domaine), \latex_($\Omega = \Omega_f \cup \Omega_s$\latex_) is the computational or fictitious domain, \latex_($\Gamma$\latex_) is the immersed boundaries corresponding to the surface of the cylinder, \latex_($r$\latex_) is the cylinder radius, \latex_($l = 120 r$\latex_) is the side of the square domain (it is large to avoid boundary effects), \latex_($\mathbf{u}_{\infty}$\latex_) represents the uniform inlet velocity field and \latex_($\omega$\latex_) is the cylinder angular velocity. There is no analytical solution, but many experiments and simulations give macroscopic indicators, such as the drag and lift coefficients, as comparison elements in the static case (\latex_(\textit{i.e.} $\omega = 0$\latex_)). The rotating case haven't been studied so much. However, some experimental data are available. The results are presented in the following chapters."
+
+    Figure
+    {
+        Title "Schematic representation of the flow around a circular cylinder.
+        Description ""
+        Width 9cm
+        Picture figures/scheme_cylinder.pdf
+    }
+    
+    Table 
+    {
+        Title "Geometrical parameters used for the 2D Poiseuille flow (channel tilted)"
+        nb_columns 5
+        label \latex_($r$ (m)\latex_) | \latex_($U_{\infty}$ (m.s$^{-1}$)\latex_) | \latex_($\omega$ (rad.s$^{-1}$)\latex_) | \latex_($\nu$ (m$^2$.s$^{-1}$)\latex_) | \latex_($\mathit{Re} = 2 U_{\infty} r\nu^{-1}$\latex_)        
+        line
+        {
+          last_line
+          legend "Configuration 1"
+          values 0.5 1 0 0.05 20
+        }
+        line
+        {
+          legend "Configuration 2"
+          values 0.5 1 0 0.01 100
+        }
+        line
+        {
+          last_line
+          legend "Configuration 3"
+          values 0.5 1 2 0.05 20
+        }
+        line
+        {
+          last_line
+          legend "Configuration 3"
+          values 0.5 1 2 0.01 100
+        }
+    }
+   
+}
+
+Chapter
+{
+    Title "Steady flow around a static circular cylinder"
+    Description ""
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a static circular cylinder at Reynolds = 20 with directional interpolation"
+        mesh        cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom
+        pseudocolor cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 20, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with directional inteprolation"
+        mesh        cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom
+        isovalues cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with directional inteprolation"
+        mesh        cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom
+        isovalues cylinder_pdf_static_re_20_dir/PAR_cylinder_pdf_static_re_20_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a static circular cylinder at Reynolds = 20 with multi-directional interpolation"
+        mesh        cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom
+        pseudocolor cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 20, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom
+        isovalues cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom
+        isovalues cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a static circular cylinder at Reynolds = 20 with hybrid interpolation"
+        mesh        cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom
+        pseudocolor cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 20, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with hybrid inteprolation"
+        mesh        cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom
+        isovalues cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with hybrid inteprolation"
+        mesh        cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom
+        isovalues cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+}
+
+Chapter
+{
+    Title "Steady flow around a rotating circular cylinder"
+    Description ""
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a rotating circular cylinder at Reynolds = 20 with directional interpolation"
+        mesh        cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom
+        pseudocolor cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 20, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_20_dir/PAR_cylinder_pdf_rotate_re_20_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a rotating circular cylinder at Reynolds = 20 with multi-directional interpolation"
+        mesh        cylinder_pdf_rotate_re_20_multi_dir/PAR_cylinder_pdf_rotate_re_20_multi_dir.lata dom
+        pseudocolor cylinder_pdf_rotate_re_20_multi_dir/PAR_cylinder_pdf_rotate_re_20_multi_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_20_multi_dir/PAR_cylinder_pdf_static_re_20_multi_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 20, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_20_multi_dir/PAR_cylinder_pdf_rotate_re_20_multi_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_20_multi_dir/PAR_cylinder_pdf_rotate_re_20_multi_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_20_multi_dir/PAR_cylinder_pdf_rotate_re_20_multi_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_20_multi_dir/PAR_cylinder_pdf_rotate_re_20_multi_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a rotating circular cylinder at Reynolds = 20 with hybrid interpolation"
+        mesh        cylinder_pdf_rotate_re_20_hybrid/PAR_cylinder_pdf_rotate_re_20_hybrid.lata dom
+        pseudocolor cylinder_pdf_rotate_re_20_hybrid/PAR_cylinder_pdf_rotate_re_20_hybrid.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_20_hybrid/PAR_cylinder_pdf_static_re_20_hybrid.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 20, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with hybrid inteprolation"
+        mesh        cylinder_pdf_rotate_re_20_hybrid/PAR_cylinder_pdf_rotate_re_20_hybrid.lata dom
+        isovalues cylinder_pdf_rotate_re_20_hybrid/PAR_cylinder_pdf_rotate_re_20_hybrid.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with hybrid inteprolation"
+        mesh        cylinder_pdf_rotate_re_20_hybrid/PAR_cylinder_pdf_rotate_re_20_hybrid.lata dom
+        isovalues cylinder_pdf_rotate_re_20_hybrid/PAR_cylinder_pdf_rotate_re_20_hybrid.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 20, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+}
+
+Chapter
+{
+    Title "Unsteady flow around a static circular cylinder"
+    Description ""
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a static circular cylinder at Reynolds = 100 with directional interpolation"
+        mesh        cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom
+        pseudocolor cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 100, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with directional inteprolation"
+        mesh        cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom
+        isovalues cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with directional inteprolation"
+        mesh        cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom
+        isovalues cylinder_pdf_static_re_100_dir/PAR_cylinder_pdf_static_re_100_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a static circular cylinder at Reynolds = 100 with multi-directional interpolation"
+        mesh        cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom
+        pseudocolor cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 100, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom
+        isovalues cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom
+        isovalues cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a static circular cylinder at Reynolds = 100 with hybrid interpolation"
+        mesh        cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom
+        pseudocolor cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 100, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with hybrid inteprolation"
+        mesh        cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom
+        isovalues cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with hybrid inteprolation"
+        mesh        cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom
+        isovalues cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+}
+
+Chapter
+{
+    Title "Unsteady flow around a rotating circular cylinder"
+    Description ""
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a rotating circular cylinder at Reynolds = 100 with directional interpolation"
+        mesh        cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom
+        pseudocolor cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 100, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_100_dir/PAR_cylinder_pdf_rotate_re_100_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a rotating circular cylinder at Reynolds = 100 with multi-directional interpolation"
+        mesh        cylinder_pdf_rotate_re_100_multi_dir/PAR_cylinder_pdf_rotate_re_100_multi_dir.lata dom
+        pseudocolor cylinder_pdf_rotate_re_100_multi_dir/PAR_cylinder_pdf_rotate_re_100_multi_dir.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_100_multi_dir/PAR_cylinder_pdf_static_re_100_multi_dir.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 100, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_100_multi_dir/PAR_cylinder_pdf_rotate_re_100_multi_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_100_multi_dir/PAR_cylinder_pdf_rotate_re_100_multi_dir.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with multi-directional inteprolation"
+        mesh        cylinder_pdf_rotate_re_100_multi_dir/PAR_cylinder_pdf_rotate_re_100_multi_dir.lata dom
+        isovalues cylinder_pdf_rotate_re_100_multi_dir/PAR_cylinder_pdf_rotate_re_100_multi_dir.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, multi-directional interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+    
+    visu
+    {
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Cycles -1
+        Title "Flow around a rotating circular cylinder at Reynolds = 100 with hybrid interpolation"
+        mesh        cylinder_pdf_rotate_re_100_hybrid/PAR_cylinder_pdf_rotate_re_100_hybrid.lata dom
+        pseudocolor cylinder_pdf_rotate_re_100_hybrid/PAR_cylinder_pdf_rotate_re_100_hybrid.lata dom PRESSION ELEM
+        vector cylinder_pdf_static_re_100_hybrid/PAR_cylinder_pdf_static_re_100_hybrid.lata dom VITESSE SOM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit VectorAtts = VectorAttributes()
+        Instruction_visit VectorAtts.useStride = 1
+        Instruction_visit VectorAtts.stride = 1
+        Instruction_visit VectorAtts.autoScale = 0
+        Instruction_visit VectorAtts.scale = 0.5
+        Instruction_visit SetPlotOptions(VectorAtts)
+        Description "Reynolds = 100, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Pressure contour with hybrid inteprolation"
+        mesh        cylinder_pdf_rotate_re_100_hybrid/PAR_cylinder_pdf_rotate_re_100_hybrid.lata dom
+        isovalues cylinder_pdf_rotate_re_100_hybrid/PAR_cylinder_pdf_rotate_re_100_hybrid.lata dom PRESSION ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 10
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+    
+    visu
+    {
+        Cycles -1
+        Title "Vorticity contour with hybrid inteprolation"
+        mesh        cylinder_pdf_rotate_re_100_hybrid/PAR_cylinder_pdf_rotate_re_100_hybrid.lata dom
+        isovalues cylinder_pdf_rotate_re_100_hybrid/PAR_cylinder_pdf_rotate_re_100_hybrid.lata dom VORTICITE_Z ELEM
+        Instruction_visit SetActivePlots(1)
+        Instruction_visit ContourAtts = ContourAttributes()
+        Instruction_visit ContourAtts.lineWidth = 2
+        Instruction_visit ContourAtts.wireframe = 1
+        Instruction_visit ContourAtts.contourNLevels = 15
+        Instruction_visit SetPlotOptions(ContourAtts)
+        Instruction_visit View3DAtts = View3DAttributes()
+        Instruction_visit View3DAtts.perspective = 0
+        Instruction_visit SetView3D(View3DAtts)
+        normal3D 0. 0. 1.
+        up3D 0. 1. 0.
+        zoom3D 0.0 0.0 10.
+        Description "Reynolds = 100, hybrid interpolation."
+      	operator no_databaseinfo
+      	operator no_triad
+      	operator no_axes
+    }
+
+}

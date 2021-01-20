@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -185,6 +185,13 @@ DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) 
   return resu;
 }
 
+DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, const int i_traitement_special) const
+{
+  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+  return resu;
+}
+
 /*##################################################################################################
 ####################################################################################################
 ################################# CONTRIBUER_A_AVEC ################################################
@@ -206,6 +213,13 @@ DoubleTab& Source_PDF_base::calculer(DoubleTab& resu) const
   resu = 0;
   const DoubleTab& vitesse=equation().inconnue().valeurs();
   return ajouter_(vitesse,resu);
+}
+
+DoubleTab& Source_PDF_base::calculer(DoubleTab& resu, const int i_traitement_special) const
+{
+  resu = 0;
+  const DoubleTab& vitesse=equation().inconnue().valeurs();
+  return ajouter_(vitesse,resu, i_traitement_special);
 }
 
 void Source_PDF_base::calculer_vitesse_imposee_elem_fluid()
@@ -317,5 +331,12 @@ void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int& f
 
 void Source_PDF_base::updateChampRho()
 {
-  champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique"));
+  if (equation().probleme().que_suis_je() == "Pb_Melange")
+    {
+      champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique_melange"));
+    }
+  else
+    {
+      champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique"));
+    }
 }

@@ -1,0 +1,5 @@
+#!/bin/bash
+#recuperation des donnees physiques
+
+echo "STATIC_RE_20_dir"
+python ../script_aerodynamic_coeff.py PAR_cylinder_pdf_static_re_20_dir_pb_Force_induced_by_obstacle.out cylinder_pdf_static_re_20_dir_coeff_time.dat cylinder_pdf_static_re_20_dir_coeff_stat.dat

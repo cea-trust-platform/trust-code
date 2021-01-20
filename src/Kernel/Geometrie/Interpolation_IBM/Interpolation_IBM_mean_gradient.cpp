@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,6 @@ void Interpolation_IBM_mean_gradient::discretise(const Discretisation_base& dis,
 
 void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zone_EF)
 {
-  Cerr << "(IBM) Warning! Interpolation IBM_gradient_moyen has no validation test case." << finl;
   int nb_som = la_zone_EF.nb_som();
   int nb_som_tot = la_zone_EF.nb_som_tot();
   int nb_elem = la_zone_EF.nb_elem();
@@ -123,7 +122,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
         }
       int dimtag = nb_tag_max+1;
       DoubleTrav elems_solid_trust(dimtag);
-      elems_solid_trust = -1;
+      elems_solid_trust = -0.1*DMAXFLOAT;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
           int indextag = lrint(corresp_elems_ref(i)) ;
@@ -199,16 +198,16 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
                           // Element contenant le projete du point fluide
                           int elems_xpf = lrint(elems_solid_ref(num_som_2));
                           bool flag_xpf = true;
-                          bool flag_prt_nodes = false;
+                          //bool flag_prt_nodes = false;
                           int elem_found = la_zone_EF.zone().chercher_elements(xpf1,xpf2,xpf3);
                           if (elems_xpf >= 0)
                             {
                               // test de verification prepro Salome/Trust :
                               if ((elems_xpf != elem_found) && (elem_found != -1))
                                 {
-                                  Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : elem solid prepro != elem solid Trust" << finl;
-                                  flag_xpf = false;
-                                  flag_prt_nodes = true;
+                                  Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : WARNING : elem solid prepro " << elems_xpf << " != elem solid Trust " << elem_found << finl;
+                                  flag_xpf = true;
+                                  //flag_prt_nodes = true;
                                 }
                             }
                           else
@@ -228,7 +227,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
                           if (!flag_xpf)
                             {
                               // Traitement des erreurs
-                              Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : joint width too low?" << finl;
+                              Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : ERROR : joint width too low?" << finl;
                               Cerr<<"Nb elem; Nb elem tot = "<<nb_elem<<" "<<nb_elem_tot<<finl;
                               Cerr<<"Nb som;  Nb som tot  = "<<nb_som<<" "<<nb_som_tot<<finl;
                               Cerr<<"element; node_Dirichlet = "<<num_elem<<" "<<num_som<<finl;
@@ -238,7 +237,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
                               Cerr<<"coords_point(node_fluide) : xf yf zf    = "<<xf1<<" "<<xf2<<" "<<xf3<<finl;
                               Cerr<<"solid_points(node_fluide) : xpf ypf zpf = "<<xpf1<<" "<<xpf2<<" "<<xpf3<<finl;
                               Cerr<<"chercher_elements(xpf,ypf,zpf) = "<<elem_found<<finl;
-                              if (flag_prt_nodes)
+                              /*if (flag_prt_nodes)
                                 {
                                   double x1kf = 0.0;
                                   double x2kf = 0.0;
@@ -261,7 +260,7 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
                                     }
                                   Cerr<<"bary elems_solid_ref   = "<<x1kf<<" "<<x2kf<<" "<<x3kf<<finl;
                                   Cerr<<"bary chercher_elements = "<<x1kf2<<" "<<x2kf2<<" "<<x3kf2<<finl;
-                                }
+                                }*/
                               exit();
                             }
                           // On demande que le projete du point fluide soit dans un element
@@ -285,6 +284,5 @@ void Interpolation_IBM_mean_gradient::computeSommetsVoisins(Zone_dis_base& la_zo
             }
         }
     }
-  Cerr << __FILE__ << (int)__LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : nb nodes for interpolation = " <<nb_nodes_in_list<<finl;
+  Cerr << __FILE__ << __LINE__ << "Interpolation_IBM_mean_gradient::computeSommetsVoisins : nb nodes for interpolation = " <<nb_nodes_in_list<<finl;
 }
-

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,8 +55,10 @@ public:
     return  matrice_pression_variable_bool_;
   };
   virtual void associer_pb(const Probleme_base& );
-  virtual DoubleTab& ajouter_(const DoubleTab& vitesse, DoubleTab&) const;
-  DoubleTab& calculer(DoubleTab& ) const;
+  virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const;
+  virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const;
+  DoubleTab& calculer(DoubleTab&) const;
+  DoubleTab& calculer(DoubleTab&, const int) const;
   DoubleTab& calculer_pdf(DoubleTab& ) const;
   void mettre_a_jour(double );
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;

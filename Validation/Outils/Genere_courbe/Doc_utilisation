@@ -41,3 +41,4 @@ Les rapports deja realises se trouvent sous $TRUST_ROOT/Validation/Rapports_auto
 
 Si on ne souhaite pas faire tourner une fiche de validation on ajoute le fichier skip_prm dans le repertoire au dessus de /src
 Si on ne souhaite pas ajouter un ou plusieurs cas tests de non regression a la base des cas test TRUST on ajoute le fichier liste_cas_exclu_nr dans le dossier /src . Ce fichier doit contenir le chemin relatif vers chaucun des cas test non traites
+Si on ne souhaite ajouter aucun cas test de non regression a la base des cas tests, on ajoute le fichier fiche_exclu_nr dans /src
