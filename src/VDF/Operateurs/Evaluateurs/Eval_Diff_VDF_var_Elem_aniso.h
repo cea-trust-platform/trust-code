@@ -439,7 +439,7 @@ inline double Eval_Diff_VDF_var_Elem_aniso::flux_face(const DoubleTab& inco, int
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite)
   // La C.L fournit h_imp ; il faut calculer e/diffusivite
 
-  double h_total_inv;
+  double h_total_inv, heq;
   double h_imp = la_cl.h_imp(face-num1);
   double T_ext = la_cl.T_ext(face-num1);
   double e;
@@ -451,14 +451,36 @@ inline double Eval_Diff_VDF_var_Elem_aniso::flux_face(const DoubleTab& inco, int
   if (n0 != -1)
     {
       //e = la_zone->xv(face,ori) - la_zone->xp(n0,ori);
-      h_total_inv = 1/h_imp + e/dt_diffusivite(n0,ori);
-      flux = (T_ext - inco[n0])*surface(face)/h_total_inv;
+      if (dt_diffusivite(n0,ori) == 0.0)
+        {
+//        h_total_inv = 1/h_imp;
+          heq = 0.0;
+        }
+      else
+        {
+          h_total_inv = 1/h_imp + e/dt_diffusivite(n0,ori);
+          heq = 1.0 / h_total_inv;
+        }
+
+//      flux = (T_ext - inco[n0])*surface(face)/h_total_inv;
+      flux = heq*(T_ext - inco[n0])*surface(face);
     }
   else
     {
       //e = la_zone->xp(n1,ori) - la_zone->xv(face,ori);
-      h_total_inv = 1/h_imp + e/dt_diffusivite(n1,ori);
-      flux = (inco[n1] - T_ext)*surface(face)/h_total_inv;
+      if (dt_diffusivite(n1,ori) == 0.0)
+        {
+//        h_total_inv = 1/h_imp;
+          heq = 0.0;
+        }
+      else
+        {
+          h_total_inv = 1/h_imp + e/dt_diffusivite(n1,ori);
+          heq = 1.0 / h_total_inv;
+        }
+
+//      flux = (inco[n1] - T_ext)*surface(face)/h_total_inv;
+      flux = heq*(inco[n1] - T_ext)*surface(face);
     }
   return flux;
 }
@@ -473,7 +495,7 @@ inline void Eval_Diff_VDF_var_Elem_aniso::coeffs_face(int boundary_index, int fa
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite)
   // La C.L fournit h_imp ; il faut calculer e/diffusivite
 
-  double h_total_inv;
+  double h_total_inv, heq;
   double h_imp = la_cl.h_imp(face-num1);
   double e;
   int i = elem_(face,0);
@@ -483,15 +505,37 @@ inline void Eval_Diff_VDF_var_Elem_aniso::coeffs_face(int boundary_index, int fa
   if (i != -1)
     {
       // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-      h_total_inv =  1/h_imp + e/dt_diffusivite(i,ori);
-      aii = surface(face)/h_total_inv;
+      if (dt_diffusivite(i,ori) == 0.0)
+        {
+//        h_total_inv =  1/h_imp;
+          heq = 0.0;
+        }
+      else
+        {
+          h_total_inv =  1/h_imp + e/dt_diffusivite(i,ori);
+          heq = 1.0 / h_total_inv;
+        }
+
+//      aii = surface(face)/h_total_inv;
+      aii = heq*surface(face);
       ajj = 0;
     }
   else
     {
       // e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-      h_total_inv =  1/h_imp + e/dt_diffusivite(elem_(face,1),ori);
-      ajj = surface(face)/h_total_inv;
+      if (dt_diffusivite(elem_(face,1),ori) == 0.0)
+        {
+//        h_total_inv =  1/h_imp;
+          heq = 0.0;
+        }
+      else
+        {
+          h_total_inv =  1/h_imp + e/dt_diffusivite(elem_(face,1),ori);
+          heq = 1.0 / h_total_inv;
+        }
+
+//      ajj = surface(face)/h_total_inv;
+      ajj = heq*surface(face);
       aii = 0;
     }
 }
@@ -505,7 +549,7 @@ inline double Eval_Diff_VDF_var_Elem_aniso::secmem_face(int boundary_index,int f
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite)
   // La C.L fournit h_imp ; il faut calculer e/diffusivite
 
-  double h_total_inv;
+  double h_total_inv, heq;
   double h_imp = la_cl.h_imp(face-num1);
   double T_ext = la_cl.T_ext(face-num1);
   double e;
@@ -517,14 +561,36 @@ inline double Eval_Diff_VDF_var_Elem_aniso::secmem_face(int boundary_index,int f
   if (i != -1)
     {
       //e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-      h_total_inv = 1/h_imp + e/dt_diffusivite(i,ori);
-      flux = T_ext*surface(face)/h_total_inv;
+      if (dt_diffusivite(i,ori) == 0.0)
+        {
+//        h_total_inv = 1/h_imp;
+          heq = 0.0;
+        }
+      else
+        {
+          h_total_inv = 1/h_imp + e/dt_diffusivite(i,ori);
+          heq = 1.0 / h_total_inv;
+        }
+
+//      flux = T_ext*surface(face)/h_total_inv;
+      flux = heq*T_ext*surface(face);
     }
   else
     {
       //e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-      h_total_inv = 1/h_imp + e/dt_diffusivite(elem_(face,1),ori);
-      flux = - T_ext*surface(face)/h_total_inv;
+      if (dt_diffusivite(elem_(face,1),ori) == 0.0)
+        {
+//        h_total_inv = 1/h_imp;
+          heq = 0.0;
+        }
+      else
+        {
+          h_total_inv = 1/h_imp + e/dt_diffusivite(elem_(face,1),ori);
+          heq = 1.0 / h_total_inv;
+        }
+
+//      flux = - T_ext*surface(face)/h_total_inv;
+      flux = - heq*T_ext*surface(face);
     }
   return flux;
 }
