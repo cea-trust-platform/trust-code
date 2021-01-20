@@ -530,7 +530,7 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
             }
           else
             {
-              Cerr << "Source_PDF_EF::ajouter_ : i_traitement_special doit etre 0, 1 ou 2" << finl;
+              Cerr << "Source_PDF_EF::ajouter_ : i_traitement_special should be 0, 1, 2, 101 or 102" << finl;
               exit();
             }
           for (int comp=0; comp<ncomp; comp++)
