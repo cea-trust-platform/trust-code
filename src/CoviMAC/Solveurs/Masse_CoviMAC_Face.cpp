@@ -132,7 +132,7 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
         secmem(f, n) -= fac * resoudre_en_increments * inco(f, n);
         if (ch.fcl(f, 0) < 2) secmem(f, n) += fac * passe(f, n);
         else if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++)
-            secmem(f, n) += fac * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), D * n + d) * nf(f, d) / fs(f);
+            secmem(f, n) += fac * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n) * nf(f, d) / fs(f);
         if (mat) (*mat)(N * f + n, N * f + n) += fac;
       }
 
