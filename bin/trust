@@ -666,11 +666,6 @@ then
                             /^fin/ && (dieses%2==0) && (NF==1) {exit} \
                             / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / || / resoudre / {use_petsc=1;exit}
 	                    END {print use_petsc}'`
-   USE_PETSC_GPU=`sed "s/\t/ /g" $NOM.data | $TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc_gpu=0} \
-                            // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
-                            /^fin/ && (dieses%2==0) && (NF==1) {exit} \
-                            / petsc_gpu / {use_petsc_gpu=1;exit}
-	                    END {print use_petsc_gpu}'`
 fi
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
@@ -785,12 +780,12 @@ then
 		echo "#!/bin/bash"					>> $sub_file	# Shell
 		echo "#SBATCH -J $NOM" 					>> $sub_file	# Job name
 		[ "$queue" != "" ] && echo "#SBATCH -p $queue"		>> $sub_file	# Partition
+		[ "$constraint" != "" ] && echo "#SBATCH -C $constraint">> $sub_file	# Constraint
 		[ "$qos" != "" ] && echo "#SBATCH --qos=$qos"		>> $sub_file	# Quality of service
 		echo "#SBATCH -t $cpu"					>> $sub_file	# Time in minutes
 		echo "#SBATCH -o myjob.%j.o"				>> $sub_file	# Output log
 		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
 		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
-		[ "$constraint" != "" ] && echo "#SBATCH --constraint=$constraint"	>> $sub_file	# Constraint
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
 		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task
