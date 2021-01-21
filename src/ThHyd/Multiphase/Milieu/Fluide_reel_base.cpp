@@ -170,3 +170,8 @@ void Fluide_reel_base::mettre_a_jour_tabs(const double t)
       e_int_bord(i, 0) = eint_(T, P);
     }
 }
+
+void Fluide_reel_base::update_e_int(double t)
+{
+  if (isotherme_) return Fluide_base::update_e_int(t);
+}

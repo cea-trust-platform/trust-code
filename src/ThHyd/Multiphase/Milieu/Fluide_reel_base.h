@@ -51,7 +51,6 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);
   virtual void set_param(Param& param);
-
 protected :
 
   // densite
@@ -67,6 +66,7 @@ protected :
   virtual double    beta_(const double T, const double P) const = 0;
   virtual double      mu_(const double T) const = 0;
   virtual double  lambda_(const double T) const = 0;
+  virtual void update_e_int(double t);
 
   void mettre_a_jour_tabs(const double t);
 
