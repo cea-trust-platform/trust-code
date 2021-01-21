@@ -278,7 +278,7 @@ Chapter
         Cycles -1
         Title "Taylor Couette flow with directional interpolation"
         mesh        taylor_couette_pdf_dir/PAR_taylor_couette_pdf_dir.lata dom
-        pseudocolor taylor_couette_pdf_dir/PAR_taylor_couette_pdf_dir.lata dom_magnitude VITESSE SOM
+        pseudocolor taylor_couette_pdf_dir/PAR_taylor_couette_pdf_dir.lata dom norme_VITESSE SOM
         Description "Reynolds = 1, directional interpolation."
       	operator no_databaseinfo
       	operator no_triad
@@ -292,7 +292,7 @@ Chapter
         Cycles -1
         Title "Taylor Couette flow with multi-directional interpolation"
         mesh        taylor_couette_pdf_multi_dir/PAR_taylor_couette_pdf_multi_dir.lata dom
-        pseudocolor taylor_couette_pdf_multi_dir/PAR_taylor_couette_pdf_multi_dir.lata dom_magnitude VITESSE SOM
+        pseudocolor taylor_couette_pdf_multi_dir/PAR_taylor_couette_pdf_multi_dir.lata dom norme_VITESSE SOM
         Description "Reynolds = 1, multi-directional interpolation."
       	operator no_databaseinfo
       	operator no_triad
@@ -306,7 +306,7 @@ Chapter
         Cycles -1
         Title "Taylor Couette flow with hybrid interpolation"
         mesh        taylor_couette_pdf_hybrid/PAR_taylor_couette_pdf_hybrid.lata dom
-        pseudocolor taylor_couette_pdf_hybrid/PAR_taylor_couette_pdf_hybrid.lata dom_magnitude VITESSE SOM
+        pseudocolor taylor_couette_pdf_hybrid/PAR_taylor_couette_pdf_hybrid.lata dom norme_VITESSE SOM
         Description "Reynolds = 1, hybrid interpolation."
       	operator no_databaseinfo
       	operator no_triad
