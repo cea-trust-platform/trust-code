@@ -14,25 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Partitionneur_Metis.h
+// File:        Partitionneur_Parmetis.h
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Decoupeur
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Partitionneur_Metis_included
-#define Partitionneur_Metis_included
+#ifndef Partitionneur_Parmetis_included
+#define Partitionneur_Parmetis_included
 
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
 #include <metis.h>
+#include <parmetis.h>
 
 // .DESCRIPTION
 //  Partition d'un domaine en nb_parties parties equilibrees en utilisant
-//  la librairie METIS. Voir construire_partition
+//  la librairie PARMETIS. Voir construire_partition
 
-class Partitionneur_Metis : public Partitionneur_base
+class Partitionneur_Parmetis : public Partitionneur_base
 {
-  Declare_instanciable(Partitionneur_Metis);
+  Declare_instanciable(Partitionneur_Parmetis);
 public:
 
   void set_param(Param& param);
@@ -47,14 +48,6 @@ private:
   REF(Domaine) ref_domaine_;
   int nb_parties_;
 
-  // Options de metis
-  enum AlgoMetis { PMETIS, KMETIS };
-  AlgoMetis algo_;
-  int match_type_;
-  int ip_type_;
-  int ref_type_;
-  int nb_essais_;
-
   // Drapeau: utiliser ou pas la ponderation des edges dans metis.
   //  C'est mieux de l'utiliser s'il y a des bords periodiques, le
   //  graphe est mieux equilibre. En revanche, metis utilisera plus
@@ -66,12 +59,4 @@ private:
   int use_segment_to_build_connectivite_elem_elem_;
 
 };
-#ifndef NO_METIS
-typedef struct
-{
-  const char * name;
-  int option;
-} Metis_String_Option;
-
-#endif
 #endif

@@ -34,9 +34,9 @@
 #include <Sortie_Brute.h>
 #include <FichierHDF.h>
 #include <IntVect.h>
+#include <communications.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
-
 
 // Description: Appel invalide. exit.
 const DomaineCutter& DomaineCutter::operator=(const DomaineCutter& dc)
@@ -1233,13 +1233,43 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   DomaineCutter_Correspondance dc_correspondance;
 
   ArrOfInt myZones(nb_parties_);
-  myZones = -1;
+  myZones = 0;
   const int nbelem = elem_part.size_array();
   for(int i=0; i < nbelem; i++)
     {
       const int part = elem_part[i];
       myZones[part] = 1;
     }
+
+  //check to see if my Zones are shared with other procs
+  VECT(ArrOfInt) otherProcZones(Process::nproc());
+  for(int p=0; p<Process::nproc(); p++)
+    {
+      otherProcZones[p].resize_array(nb_parties_);
+      otherProcZones[p] = 0;
+    }
+  envoyer(myZones, me(), 0, 2001);
+  if(je_suis_maitre())
+    for(int p=0; p<nproc(); p++)
+      recevoir(otherProcZones[p],0, p, 2001);
+
+
+  for(int part=0; part<nb_parties_; part++)
+    {
+      int s = 0;
+      for(int proc=0; proc < Process::nproc(); proc++)
+        s += otherProcZones[proc][part];
+
+      if(s>1)
+        {
+          Cerr << "A zone is dispatched on several processors... This case is not coded yet" << finl;
+          Process::exit();
+
+        }
+    }
+
+
+
 
   // Needed for HDF5 Zones output:
   FichierHDF fic_hdf;
@@ -1277,7 +1307,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
-          if(myZones[i_part] < 0) continue;
+          if( !myZones[i_part] ) continue;
           Cerr << " Construction of part number " << i_part << finl;
           Domaine sous_domaine;
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine);

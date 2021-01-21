@@ -29,7 +29,8 @@
 #include <Matrice_Morse.h>
 #include <Array_tools.h>
 #include <Comm_Group_MPI.h>
-#include <communications.cpp>
+#include <communications.h>
+#include <Domain_Graph.h>
 
 inline void not_implemented(const Nom& chaine)
 {
@@ -71,7 +72,6 @@ void Partitionneur_Metis::set_param(Param& param)
   param.ajouter_condition("(value_of_nb_parts_ge_1)_and_(value_of_nb_parts_le_100000)","The following condition must be satisfied : 1 <= nb_parties <= 100000");
   param.ajouter_non_std("pmetis",(this));
   param.ajouter_non_std("kmetis",(this));
-  param.ajouter_non_std("parmetis",(this));
   param.ajouter_non_std("match_type",(this));
   param.ajouter_non_std("initial_partition_type",(this));
   param.ajouter_non_std("refinement_type",(this));
@@ -93,12 +93,6 @@ int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       algo_ = KMETIS;
       return 1;
     }
-  else if (mot=="parmetis")
-    {
-      Cerr << "PARALLEL ALGORITHM" << finl;
-      algo_ = PARMETIS;
-      return 1;
-    }
   else if (mot=="match_type")
     {
       not_implemented(mot);
@@ -117,7 +111,7 @@ int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   else
     return Partitionneur_base::lire_motcle_non_standard(mot,is);
 
-  if(algo_ != PARMETIS && Process::nproc() >1)
+  if(Process::nproc() >1)
     {
       Cerr << "WARNING! You're using a sequential algorithm on " << nproc() << "processors " << finl;
       Cerr << "Use PARMETIS for parallel domain cutting" << finl;
@@ -131,427 +125,6 @@ void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
   ref_domaine_ = domaine;
 }
 
-static void construire_connectivite_real_som_virtual_elem(const int       nb_sommets,
-                                                          const IntTab&      les_elems,
-                                                          Static_Int_Lists& som_elem,
-                                                          const IntTab& elem_virt_pe_num,
-                                                          const  ArrOfInt& offsets)
-{
-  // Nombre d'elements du domaine
-  const int nb_elem = les_elems.dimension_tot(0);
-  const int local_nb_elem = les_elems.dimension(0);
-  // Nombre de sommets par element
-  const int nb_sommets_par_element = les_elems.dimension(1);
-
-  // Construction d'un tableau initialise a zero : pour chaque sommet,
-  // nombre d'elements voisins de ce sommet
-  ArrOfInt nb_elements_voisins(nb_sommets);
-
-  // Premier passage : on calcule le nombre d'elements voisins de chaque
-  // sommet pour creer la structure de donnees
-  int elem, i;
-
-  //real elements
-  for (elem = 0; elem < nb_elem; elem++)
-    {
-      for (i = 0; i < nb_sommets_par_element; i++)
-        {
-          int sommet = les_elems(elem, i);
-          if(sommet >= nb_sommets) continue; //skipping virtual node
-          // GF cas des polyedres
-          if (sommet==-1) break;
-          nb_elements_voisins[sommet]++;
-        }
-    }
-
-  som_elem.set_list_sizes(nb_elements_voisins);
-
-  // On reutilise le tableau pour stocker le nombre d'elements dans
-  // chaque liste pendant qu'on la remplit
-  nb_elements_voisins = 0;
-
-  // Remplissage du tableau des elements voisins.
-  for (elem = 0; elem < nb_elem; elem++)
-    {
-      for (i = 0; i < nb_sommets_par_element; i++)
-        {
-          int sommet = les_elems(elem, i);
-          if(sommet >= nb_sommets) continue;
-          // GF cas des polyedres
-          if (sommet==-1) break;
-          int n = (nb_elements_voisins[sommet])++;
-
-          int elem_num_global = -1;
-          if(elem>= local_nb_elem)
-            {
-              int proc_of_elem = elem_virt_pe_num(elem-local_nb_elem, 0);
-              int elem_number_on_local_proc = elem_virt_pe_num(elem-local_nb_elem, 1);
-              elem_num_global = elem_number_on_local_proc + offsets[proc_of_elem];
-            }
-          else
-            elem_num_global = elem + offsets[Process::me()];
-
-          som_elem.set_value(sommet, n, elem_num_global);
-        }
-    }
-
-  // Tri de toutes les listes dans l'ordre croissant
-  som_elem.trier_liste(-1);
-}
-
-#ifndef NO_METIS
-static void construire_graph_from_segment(const Domaine& dom,
-                                   const int use_weights,
-                                   Graph_Type& graph)
-{
-  const IntTab& liaisons = dom.zone(0).les_elems();
-
-
-  // ****************************************************************
-  // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
-  int nb_edges = liaisons.size_array(); // 2 liens par liaison
-  int nb_elem=liaisons.local_max_vect()+1;  // mouif
-  graph.nvtxs = nb_elem;
-  graph.xadj = imalloc(nb_elem+1, "readgraph: xadj");
-  graph.vwgts = NULL;
-  if (! use_weights)
-    {
-      graph.weightflag = 0;
-      graph.ewgts = NULL;
-    }
-  else
-    {
-      abort();
-      graph.weightflag = 1;
-      graph.ewgts = imalloc(nb_edges, "readgraph: ewgts");
-    }
-
-  // on construit connectivite item item
-  IntTab stencyl(0,2);
-  stencyl.set_smart_resize(1);
-  int size=0;
-  int nbl=liaisons.dimension(0);
-  for (int i=0; i<nbl; i++)
-    {
-      stencyl.resize(size+2,2);
-      int n1=liaisons(i,0);
-      int n2=liaisons(i,1);
-      {
-        stencyl(size,0)=n1;
-        stencyl(size,1)=n2;
-
-        size++;
-        stencyl(size,0)=n2;
-        stencyl(size,1)=n1;
-
-        size++;
-      }
-    }
-  tableau_trier_retirer_doublons(stencyl);
-  Matrice_Morse A;
-  Matrix_tools::allocate_morse_matrix(nb_elem,nb_elem,stencyl,A);
-
-  nb_edges=A.get_tab2().size_array(); // des liens peuvent etre doubles
-  graph.nedges = nb_edges;
-  graph.adjncy = imalloc(nb_edges, "readgraph: adjncy");
-
-  //
-  assert(A.get_tab1().size_array()==graph.nvtxs+1);
-  for (int c=0; c<graph.nvtxs+1; c++)
-    {
-      graph.xadj[c]=A.get_tab1()(c)-1;
-    }
-  // assert(A.tab2_.size_array()==graph.nedges);
-  for (int c=0; c<graph.nedges; c++)
-    {
-      graph.adjncy[c]=A.get_tab2()(c)-1;
-    }
-}
-
-
-// Si use_weights, on pondere les liens entre les elements periodiques
-// pour les forcer a etre sur le meme processeur. Cela diminue le nombre
-// de corrections a faire ensuite (voir (***))
-static void construire_graph_elem_elem(const Domaine& dom,
-                                const Noms& liste_bords_periodiques,
-                                const int use_weights,
-                                Graph_Type& graph,
-                                Static_Int_Lists& graph_elements_perio)
-{
-  Static_Int_Lists som_elem;
-  const Zone& zone = dom.zone(0);
-  const Elem_geom_base& type_elem = zone.type_elem().valeur();
-  IntTab faces_element_reference;
-  const int is_regular =
-    type_elem.get_tab_faces_sommets_locaux(faces_element_reference);
-  if (! is_regular)
-    {
-      Cerr << "Error in Partitionneur_Metis::construire_graph_elem_elem\n"
-           << " The type of element is not supported" << finl;
-      ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
-    }
-  int nb_faces_par_element = faces_element_reference.dimension(0);
-  const int nb_sommets_par_face = faces_element_reference.dimension(1);
-
-  const IntTab& elem_som = zone.les_elems();
-  const int nb_elem = zone.nb_elem();
-
-  ArrOfInt offsets(Process::nproc());
-  offsets = mppartial_sum(nb_elem);
-  envoyer_all_to_all(offsets, offsets);
-  int my_offset = offsets[Process::me()];
-
-  Cerr << " Construction of the som_elem connectivity" << finl;
-  if(Process::nproc() > 1)
-    {
-      //what we're doing here is not equivalent to construire_connectivite_som_elem with virtual elements set to 1
-      //in the latter, we also build the connectivity for virtual nodes
-      //here, we add the connectivity of real nodes only with virtual elements
-      // + we want som_elem to contain global numerotation for elements
-      IntTab elem_virt_pe_num;
-      zone.construire_elem_virt_pe_num(elem_virt_pe_num);
-      construire_connectivite_real_som_virtual_elem(dom.nb_som(),
-                                                    elem_som,
-                                                    som_elem,
-                                                    elem_virt_pe_num,
-                                                    offsets);
-
-    }
-  else
-    construire_connectivite_som_elem(dom.nb_som(),
-                                     elem_som,
-                                     som_elem,
-                                     0 /* ne pas inclure les elements virtuels */);
-
-
-
-  int nb_connexions_perio = 0;
-  if (liste_bords_periodiques.size() > 0)
-    {
-      Cerr << " Construction of graph connectivity for periodic boundaries" << finl;
-      nb_connexions_perio = Partitionneur_base::calculer_graphe_connexions_periodiques(dom.zone(0),
-                                                                                       liste_bords_periodiques,
-                                                                                       som_elem,
-                                                                                       graph_elements_perio);
-    }
-
-  // ****************************************************************
-  // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
-
-  // Nombre total de faces de bord:
-  const int nb_faces_bord = zone.nb_faces_frontiere();
-
-  // Chaque element du maillage est un "vertex" du graph.
-  // Les "edges" du graph relient chaque element a ses voisins par une face.
-  // Il y a autant d'edges que de faces ayant deux voisins, fois 2
-  // Formule classique: nb_faces internes = nnn/2 avec :
-  int nnn = nb_elem * nb_faces_par_element - nb_faces_bord + nb_connexions_perio;
-  if (sub_type(Poly_geom_base,zone.type_elem().valeur()))
-    {
-      const Poly_geom_base& poly=ref_cast(Poly_geom_base,zone.type_elem().valeur());
-      nnn= poly.get_somme_nb_faces_elem() - nb_faces_bord + nb_connexions_perio;
-    }
-
-  const int nb_edges = nnn + nb_faces_bord;
-
-  graph.nvtxs = nb_elem + zone.nb_faces_joint(); //each joint face is linked to a virtual element
-  graph.xadj = imalloc(nb_elem+1, "readgraph: xadj");
-  graph.adjncy = imalloc(nb_edges + nb_faces_bord, "readgraph: adjncy");
-  graph.vwgts = NULL;
-  if (! use_weights)
-    {
-      graph.weightflag = 0;
-      graph.ewgts = NULL;
-    }
-  else
-    {
-      graph.weightflag = 1;
-      graph.ewgts = imalloc(nb_edges + nb_faces_bord, "readgraph: ewgts");
-    }
-
-  graph.vtxdist = imalloc(Process::nproc()+1, "readgraph: vtxdist");
-  for(int p = 0; p < Process::nproc(); p++)
-    graph.vtxdist[p] = offsets[p];
-  graph.vtxdist[Process::nproc()] = Process::mp_sum(nb_elem);
-
-  Cerr << " Construction of the elem_elem connectivity" << finl;
-  // ***************************************************************
-  // DEUXIEME ETAPE: remplissage du graph
-  //  Algorithme: Pour chaque element, boucle sur les faces de l'element
-  //  et on ajoute un "edge" entre l'element et ses voisins. On cherche
-  //  l'element voisin par une face a l'aide de la fonction find_adjacent_elements.
-  //
-  // Deux tableaux de travail:
-  ArrOfInt une_face(nb_sommets_par_face); // Les sommets de la face en cours
-  ArrOfInt voisins; // Les elements voisins d'une_face
-  voisins.set_smart_resize(1);
-
-  int error = 0;
-  int edge_count = 0;
-  int i_elem;
-  for (i_elem = 0; i_elem < nb_elem; i_elem++)
-    {
-      graph.xadj[i_elem] = edge_count;
-      int i_face;
-
-      if (!is_regular)
-        {
-          ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,i_elem);
-          int nb_faces_elem       = faces_element_reference.dimension(0);
-          while ( faces_element_reference(nb_faces_elem-1,0)==-1)
-            nb_faces_elem--;
-          nb_faces_par_element= nb_faces_elem;
-        }
-      for (i_face = 0; i_face < nb_faces_par_element; i_face++)
-        {
-          // Construction de cette face de l'element:
-          // (indice des sommets de la face dans le domaine)
-          {
-            int i;
-            for (i = 0; i < nb_sommets_par_face; i++)
-              {
-                const int i_som = faces_element_reference(i_face, i);
-                if (i_som<0)
-                  une_face[i] = i_som;
-                else
-                  {
-                    const int sommet = elem_som(i_elem, i_som);
-                    une_face[i] = sommet;
-                  }
-              }
-          }
-          // Recherche des elements voisins de cette face:
-          // (indices des elements contenant les sommets de la face)
-          find_adjacent_elements(som_elem, une_face, voisins);
-          const int nb_voisins = voisins.size_array();
-          int elem_voisin = -1;
-          switch (nb_voisins)
-            {
-            case 0:
-              {
-                // Aucun voisin: erreur interne
-                error = 3;
-                break;
-              }
-            case 1:
-              {
-                // Un seul voisin, c'est une face frontiere
-                const int elem = voisins[0];
-                if (elem != i_elem + my_offset)
-                  error = 3; // l'element i_elem n'est pas voisin: erreur interne
-                else
-                  elem_voisin = -1;
-                break;
-              }
-            case 2:
-              {
-                // Le cas le plus courant:
-                const int elem0 = voisins[0];
-                const int elem1 = voisins[1];
-                if (elem0 == i_elem + my_offset) //neighbours contain global numerotation
-                  elem_voisin = elem1;
-                else if (elem1 == i_elem + my_offset)
-                  elem_voisin = elem0;
-                else
-                  error = 3; // l'element i_elem n'est pas voisin: erreur interne
-                break;
-              }
-            default:
-              {
-                // Plus de deux voisins
-                error = 2;
-              }
-            }
-
-          if (error)
-            break;
-
-          if (elem_voisin >= 0)
-            {
-              if (edge_count >= nb_edges)
-                {
-                  error = 1;
-                  break;
-                }
-              graph.adjncy[edge_count] = elem_voisin;
-              if (use_weights)
-                {
-                  //internal connection have more weight: it's better if the generated partition is not dispatched on several processors
-                  if( my_offset <= elem_voisin && elem_voisin < nb_elem) //neighbour belongs to me
-                    graph.ewgts[edge_count] = 3;
-                  else
-                    graph.ewgts[edge_count] = 1;
-
-
-                }
-              edge_count++;
-            }
-        }
-      // Ajout des connexions supplementaires pour les faces periodiques
-      if (nb_connexions_perio > 0)
-        {
-          const int n = graph_elements_perio.get_list_size(i_elem);
-          for (int i = 0; i < n; i++)
-            {
-              const int elem_voisin = graph_elements_perio(i_elem, i);
-              if (edge_count >= nb_edges)
-                {
-                  error = 1;
-                  break;
-                }
-              graph.adjncy[edge_count] = elem_voisin;
-              // Les connexions entre faces periodiques sont fortes:
-              // on veut que ces elements soient sur le meme processeur
-              // Attention, si on met un poids nettement plus eleve que les autres
-              // edges, on degrade la qualite du decoupage !
-              if (use_weights)
-                {
-                  graph.ewgts[edge_count] = 4;
-                }
-              edge_count++;
-            }
-        }
-      else if (use_weights)
-        {
-          if(Process::nproc() == 1)
-            {
-              Cerr << "Warning: You specify use_weights option with Metis but you didn't use Periodique keyword" << finl;
-              Cerr << "to define the boundary where periodicity apply." << finl;
-              Cerr << "Either suppress use_weight or add Periodique keyword." << finl;
-              Process::exit();
-            }
-        }
-      if (error > 0)
-        break;
-    }
-  graph.xadj[nb_elem] = edge_count;
-  graph.nedges = edge_count;
-
-  if (error == 1)
-    {
-      Cerr << "Error in Partitionneur_Metis::construire_graph_elem_elem\n"
-           << " The number of element-element connections is greater than expected\n"
-           << " The number of boundary faces is wrong.\n"
-           << " You must discretize the domain to check." << finl;
-      Process::exit();
-    }
-  else if (error == 2)
-    {
-      Cerr << "Error in Partitionneur_Metis::construire_graph_elem_elem\n"
-           << " Problem in the mesh: one internal face has more than two neighboring elements\n"
-           << " List of neighboring elements:" << voisins
-           << "\n Nodes of the face:" << une_face;
-      Process::exit();
-    }
-  else if (error)
-    {
-      Cerr << "Internal error in Partitionneur_Metis::construire_graph_elem_elem\n"
-           << " (error " << error << ") Problem in neighborhood algorithms"
-           << finl;
-      Process::exit();
-    }
-}
-#endif
 // Description:
 //  Calcule le graphe de connectivite pour Metis, appelle le partitionneur
 //  et remplit elem_part (pour chaque element, numero de la partie qui lui
@@ -597,23 +170,22 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
 
   Cerr << "Partitionneur_Metis::construire_partition" << finl;
   Cerr << " Construction of graph connectivity..." << finl;
-  Graph_Type graph;
   Static_Int_Lists graph_elements_perio;
+  //const Domaine& dom = ref_domaine_.valeur();
+  Domain_Graph graph;
   if (use_segment_to_build_connectivite_elem_elem_==0)
     {
-      construire_graph_elem_elem(ref_domaine_.valeur(), liste_bords_periodiques_,
-                                 use_weights_,
-                                 graph,
-                                 graph_elements_perio);
+      graph.construire_graph_elem_elem(ref_domaine_.valeur(), liste_bords_periodiques_,
+                                       use_weights_,
+                                       graph_elements_perio);
 
     }
   else
     {
-      construire_graph_from_segment(ref_domaine_.valeur(), use_weights_,
-                                    graph);
+      graph.construire_graph_from_segment(ref_domaine_.valeur(), use_weights_);
 
     }
-  idx_t * partition = imalloc(graph.nvtxs,"Allocation partition");
+  std::vector<idx_t> partition(graph.nvtxs);
 #ifdef METIS
   idx_t int_parts = nb_parties_;
 #endif
@@ -644,7 +216,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
         int status = METIS_PartGraphRecursive(&graph.nvtxs, &ncon, graph.xadj,
                                               graph.adjncy, graph.vwgts, NULL, graph.ewgts,
                                               &int_parts, NULL, NULL, options,
-                                              &edgecut, partition);
+                                              &edgecut, partition.data());
         if (status != METIS_OK)
           {
             Cerr << "Call to METIS failed." << finl;
@@ -676,38 +248,12 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
         int status = METIS_PartGraphKway(&graph.nvtxs, &ncon, graph.xadj,
                                          graph.adjncy, graph.vwgts, NULL, graph.ewgts,
                                          &int_parts, NULL, NULL, options ,
-                                         &edgecut, partition);
+                                         &edgecut, partition.data());
         if (status != METIS_OK)
           {
             Cerr << "Call to METIS failed." << finl;
             if (status == METIS_ERROR_INPUT)  Cerr << "It seems there is an input error." << finl;
             if (status == METIS_ERROR_MEMORY) Cerr << "It seems it couldn't allocate enough memory." << finl;
-            if (status == METIS_ERROR)        Cerr << "It seems there is a METIS internal error." << finl;
-            Cerr << "Contact TRUST support." << finl;
-            exit();
-          }
-        break;
-      }
-    case PARMETIS:
-      {
-        Cerr << " Call for PARMETIS" << finl;
-        idx_t options[3];
-        options[0] = 1; //personnalized options
-        options[1] = 111111111; // Mode verbose maximal;
-        options[2] = 0; //random seed
-
-        idx_t ncon=1;
-        real_t ubvec = 1.05; //recommanded value
-        idx_t numflag = 0; //numerotation C
-        std::vector<real_t> tpwgts(ncon*int_parts, 1./int_parts); //we want the weight to be equally distributed on each sub_somain
-        MPI_Comm comm = Comm_Group_MPI::get_trio_u_world();
-        int status = ParMETIS_V3_PartKway(graph.vtxdist, graph.xadj, graph.adjncy,
-                                          graph.vwgts, graph.ewgts, &graph.weightflag,
-                                          &numflag, &ncon, &int_parts, tpwgts.data(), &ubvec, options ,
-                                          &edgecut, partition, &comm);
-        if (status != METIS_OK)
-          {
-            Cerr << "Call to PARMETIS failed." << finl;
             if (status == METIS_ERROR)        Cerr << "It seems there is a METIS internal error." << finl;
             Cerr << "Contact TRUST support." << finl;
             exit();
@@ -726,12 +272,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
   Cerr << "===============" << finl;
 
-  free(graph.xadj);
-  free(graph.adjncy);
-  if (graph.ewgts)
-    free(graph.ewgts);
-
-  free(graph.vtxdist);
+  graph.free_memory();
 
   const int n = ref_domaine_.valeur().zone(0).nb_elem(); //graph.nvtxs; !!WARNING: wrong if we used construire_graph_from_segment
   elem_part.resize_array(n);
@@ -754,44 +295,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
       //Cerr << "Correction elem0 on processor 0" << finl;
       //corriger_elem0_sur_proc0(elem_part); // WARNING: fait parfois des problemes: reecrire version parallele
     }
-  free(partition);
+
 #endif
 }
 
-// Description:
-// Precondition:
-// Parametre: int n
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Precondition:
-// Parametre: char * msg
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int*
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-#ifndef NO_METIS
-idx_t *imalloc(int n, const char * msg)
-{
-  idx_t *ptr;
-
-  if (n == 0)
-    return NULL;
-
-  ptr = (idx_t *)malloc(sizeof(idx_t)*n);
-
-  if (ptr == NULL)
-    {
-      printf("TRUST has detected a memory allocation fail: %s int\n", msg);
-      Process::exit();
-    }
-  return ptr;
-}
-#endif
