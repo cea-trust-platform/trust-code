@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ Entree& Champ_front_xyz_debit::readOn(Entree& is)
   param.ajouter("velocity_profil", &velocity_profil_, Param::OPTIONAL); // XD_ADD_P front_field_base velocity_profil 0 velocity field to define the profil of velocity.
   param.ajouter("flow_rate", &flow_rate_, Param::REQUIRED); //  XD_ADD_P front_field_base flow_rate 1 uniform field in space to define the flow rate. It could be, for example, champ_front_uniforme, ch_front_input_uniform or champ_front_fonc_t
   param.lire_avec_accolades_depuis(is);
-  fixer_nb_comp(dimension);
+  fixer_nb_comp(dimension * flow_rate_.nb_comp());
   return is;
 }
 
@@ -59,12 +59,6 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
       Cerr << "\nError in Champ_front_xyz_debit::initialiser() \nflow_rate must be of type champ_front_uniforme, ch_front_input_uniforme, champ_front_tabule or champ_front_fonc_t!" << finl;
       exit();
     }
-  if (flow_rate_.valeur().nb_comp()!=1)
-    {
-      Cerr << "\nError in Champ_front_xyz_debit::initialiser() \nflow_rate must only have 1 component!" << finl;
-      exit();
-    }
-
   if (!flow_rate_alone_)
     {
       velocity_profil_.valeur().initialiser(tps,inco);
@@ -74,10 +68,11 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
           exit();
         }
     }
-  initialiser_coefficient(inco);
+  initialiser_coefficient(inco, tps);
 
   // For tabular sizing only
   normal_vectors_=les_valeurs[0].valeurs();
+  integrale_.resize(flow_rate_.valeur().valeurs().line_size());
   integrale_ = 0.;
   DoubleTab velocity_user;
   if (!flow_rate_alone_)
@@ -94,67 +89,51 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
   for (int t=0; t<nb_cases; t++)
     {
       DoubleTab& velocity_field=les_valeurs[t].valeurs(); // values of the field at time t, type Roue_ptr
-      double flow_rate = le_bord.nb_faces() ? flow_rate_.valeur().valeurs()(0,0) : 0;
-      calculer_champ_vitesse(le_bord,velocity_field, flow_rate, velocity_user);
-      const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
-      double un_ij=0;
-      double Q_nvo=0;
-      double u_scal_n=0;
-      int face =0;
-      double dS=0;
-      int premiere_face=le_bord.num_premiere_face();
-      for(int i=0; i<le_bord.nb_faces(); i++)
-        {
-          face = i + premiere_face;
-          dS=zone_VF.face_surfaces( face );
-          u_scal_n=0;
-          for(int j=0; j<dimension; j++)
-            {
-              if ( velocity_field.size()>dimension )
-                un_ij=normal_vectors_(i,j)*velocity_field(i,j);
-              else
-                un_ij=normal_vectors_(i,j)*velocity_field(0,j); // champ uniforme
-              u_scal_n+=un_ij;
-            }
-          Q_nvo+=dS*u_scal_n;
-        }
-      Q_nvo=mp_sum(Q_nvo);
+      calculer_champ_vitesse(le_bord, velocity_field, velocity_user, tps);
     }
   return 1;
 }
 
 void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user)
 {
-//  Cerr << "Champ_front_xyz_debit::calculer_normales_et_integrale" << finl;
+  const int N = flow_rate_.valeur().valeurs().line_size();
   const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
+
   for(int i = 0, f = le_bord.num_premiere_face(); i < le_bord.nb_faces(); i++, f++)
     {
-      double dS = zone_VF.face_surfaces(f), u_scal_n = 0;
-      // fill the j^th component of the normal vector associated to the surface number i
-      for(int j=0; j<dimension; j++)
+      const double dS = zone_VF.face_surfaces(f);
+      for (int n = 0; n < N; ++n)
         {
-          normal_vectors_(i, j) = -zone_VF.normalized_boundaries_outward_vector(f, 1.)(j); // inward normal
-          u_scal_n += normal_vectors_(i, j) * (velocity_user.size() ? velocity_user(velocity_user.size() > dimension ? i : 0, j) : normal_vectors_(i, j));
+          double u_scal_n = 0;
+          for(int j = 0; j < dimension; j++)
+            {
+              normal_vectors_(i, j) = -zone_VF.normalized_boundaries_outward_vector(f, 1.)(j); // inward normal
+              u_scal_n += normal_vectors_(i, j) * (velocity_user.size() ? velocity_user(velocity_user.size() > dimension ? i : 0, j) : normal_vectors_(i, j));
+            }
+          integrale_(n) += dS * u_scal_n / coeff_(i, n) * zone_VF.porosite_face(f);
         }
-      integrale_+=dS*u_scal_n*zone_VF.porosite_face(f);
     }
-  integrale_=mp_sum(integrale_);
+  for (int n = 0; n < N; ++n)
+    integrale_(n) = mp_sum(integrale_(n));
 }
 
-void Champ_front_xyz_debit::initialiser_coefficient(const Champ_Inc_base& inco)
+void Champ_front_xyz_debit::initialiser_coefficient(const Champ_Inc_base& inco, double tps)
 {
-//  Cerr << "Champ_front_xyz_debit::initialiser_coefficient" << finl;
+  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
+  coeff_.resize(le_bord.nb_faces(), flow_rate_.nb_comp());
   coeff_ = 1.;
 }
 
-void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, double flow_rate, DoubleTab& velocity_user)
+void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, DoubleTab& velocity_user, double temps)
 {
-//  Cerr << "Champ_front_xyz_debit::calculer_champ_vitesse" << finl;
-  double v_mult = flow_rate*coeff_/integrale_ ; //the profile/normals must be multiplied by this to get the correct inward flow
-  if (!flow_rate_alone_) for(int i=0; i<le_bord.nb_faces(); i++) for(int j=0; j<dimension; j++)
-        velocity_field(i,j) = v_mult * velocity_user(velocity_user.size() > dimension ? i : 0,j);
-  else for(int i=0; i<le_bord.nb_faces(); i++) for(int j=0; j<dimension; j++)
-        velocity_field(i,j) = v_mult * normal_vectors_(i,j);
+  const int N = flow_rate_.nb_comp();
+
+  for(int i = 0; i < le_bord.nb_faces(); i++) for (int n = 0; n < N; ++n) for(int j = 0; j < dimension; j++)
+        {
+          double v_mult = flow_rate_.valeur().valeurs_au_temps(temps)(0, n) / integrale_(n) ; //the profile/normals must be multiplied by this to get the correct inward flow
+          double n_mult = flow_rate_alone_ ? normal_vectors_(i,j) : (velocity_user(velocity_user.size() > dimension ? i : 0, j));
+          velocity_field(i, N * j + n) = v_mult * n_mult;
+        }
 }
 
 void Champ_front_xyz_debit::associer_fr_dis_base(const Frontiere_dis_base& fr)
@@ -226,6 +205,7 @@ int Champ_front_xyz_debit::reculer(double temps)
 void Champ_front_xyz_debit::mettre_a_jour(double temps)
 {
 //  Cerr << "Champ_front_xyz_debit::mettre_a_jour  temps = " << temps << finl;
+  if (update_coeff_) update_coeff(temps);
   DoubleTab velocity_user;
 
   flow_rate_.valeur().mettre_a_jour(temps);
@@ -241,8 +221,7 @@ void Champ_front_xyz_debit::mettre_a_jour(double temps)
     }
   DoubleTab& velocity_field=valeurs_au_temps(temps); // values of the field at time t, type Roue_ptr
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
-  double flow_rate = le_bord.nb_faces() ? flow_rate_.valeur().valeurs_au_temps(temps)(0,0) : 0;
   if (velocity_field.size_array())
-    calculer_champ_vitesse(le_bord, velocity_field, flow_rate, velocity_user);
+    calculer_champ_vitesse(le_bord, velocity_field, velocity_user, temps);
 }
 

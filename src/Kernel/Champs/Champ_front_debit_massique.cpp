@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #include <Champ_front_debit_massique.h>
 #include <Champ_Don.h>
 #include <Champ_Inc_base.h>
+#include <Champ_Uniforme.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Zone_VF.h>
@@ -42,8 +43,23 @@ Entree& Champ_front_debit_massique::readOn(Entree& is)
   return Champ_front_debit::readOn(is);
 }
 
-void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco)
+void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco, double temps)
 {
+  Champ_front_debit::initialiser_coefficient(inco, temps);
   const Champ_base& masse_volumique = inco.equation().milieu().masse_volumique();
-  coeff_ = masse_volumique.valeurs().nb_dim() == 1 ? 1. / masse_volumique(0) : 1. / masse_volumique(0, 0);
+  rho_ = inco.equation().milieu().masse_volumique_bord();
+  assert(flow_rate_.valeur().valeurs().line_size() == rho_.valeur().line_size());
+  const int crho = sub_type(Champ_Uniforme, masse_volumique);
+  update_coeff_ = !crho;
+  update_coeff(temps);
+}
+
+void Champ_front_debit_massique::update_coeff(double temps)
+{
+  const int N = coeff_.line_size();
+  const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
+
+  for(int i = 0; i < le_bord.nb_faces(); i++) for (int n = 0; n < N; ++n)
+      coeff_(i, n) = 1. / rho_.valeur()(i, n);
+
 }

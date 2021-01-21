@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ Entree& Champ_front_debit::readOn(Entree& is)
 {
   flow_rate_alone_=1;
   is >> flow_rate_;
-  fixer_nb_comp(dimension);
+  fixer_nb_comp(dimension * flow_rate_.nb_comp());
   return is;
 }
 
@@ -51,11 +51,5 @@ int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
 //  Cerr << "Champ_front_debit::initialiser" << finl;
   Champ_front_xyz_debit::initialiser(tps, inco);
   return 1;
-}
-
-void Champ_front_debit::initialiser_coefficient(const Champ_Inc_base& inco)
-{
-//  Cerr << "Champ_front_debit::initialiser_coefficient" << finl;
-  coeff_ = 1.0;
 }
 

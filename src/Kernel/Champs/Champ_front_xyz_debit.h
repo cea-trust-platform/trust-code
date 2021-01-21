@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,16 +47,18 @@ protected:
   // here we want normal vectors only, formely known as normales_divisees_par_aire_
   // We need the normal vector (only) because the velocity field will be perpendicular the surface
   DoubleTab normal_vectors_;
-  double coeff_;
-  double integrale_;
+  DoubleTab coeff_;
+  DoubleTab integrale_;
   bool flow_rate_alone_=0;
+  bool update_coeff_ = false;
 
-  virtual void initialiser_coefficient(const Champ_Inc_base& inco);
+  virtual void initialiser_coefficient(const Champ_Inc_base& inco, double tps);
   void calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user);
-  void calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, double flow_rate, DoubleTab& velocity_user);
+  void calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, DoubleTab& velocity_user, double temps);
 
 public:
   virtual int initialiser(double tps, const Champ_Inc_base& inco);
+  virtual void update_coeff(double temps) { };
   void mettre_a_jour(double temps);
   void associer_fr_dis_base(const Frontiere_dis_base& fr);
   void set_temps_defaut(double temps);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 
 #include <Champ_front_normal.h>
 #include <Champ_front_debit.h>
+#include <Ref_DoubleTab.h>
 //.DESCRIPTION  class Champ_front_debit_massique
 //
 // Classe derivee de Champ_front_debit pour les amateurs de kg/s
@@ -36,9 +37,12 @@
 class Champ_front_debit_massique : public Champ_front_debit
 {
   Declare_instanciable(Champ_front_debit_massique);
+public:
+  virtual void update_coeff(double temps);
 
 protected:
-  virtual void initialiser_coefficient(const Champ_Inc_base& inco);
+  virtual void initialiser_coefficient(const Champ_Inc_base& inco, double temps);
+  REF(DoubleTab) rho_;
 };
 
 #endif
