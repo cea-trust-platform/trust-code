@@ -1793,7 +1793,8 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
 
 #ifdef PETSC_HAVE_OPENMP
   // Dans le cas d'OpenMP, seul le format aij est multithreade:
-  mataij_=1;
+  // PL (01/2021): plus vrai
+  // mataij_=1;
 #endif
 
   // Dans le cas de save_matrix_ en parallele

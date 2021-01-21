@@ -3,15 +3,19 @@ tmp=`pwd`
 initial_datafile=`basename $tmp .data`
 if [ "$PETSC_HAVE_OPENMP" = 1 ] && [ -f PAR_$initial_datafile.TU ]
 then
-   threads=1
+   threads=2
    datafile=$initial_datafile"_"$threads
    cp -f $initial_datafile.data $datafile.data
-   OMP_NUM_THREADS=1 trust $datafile 1>$datafile.out 2>$datafile.err || exit -1
+   OMP_NUM_THREADS=$threads trust $datafile 1>$datafile.out 2>$datafile.err || exit -1
    compare_lata $initial_datafile.lml $datafile.lml || exit -1
    echo "
 Compare KSPSolve performance for:
-1) MPI 1 task  			$initial_datafile data file
-2) MPI 1 task and $threads threads 	$datafile data file
-3) MPI 2 tasks 			PAR_$initial_datafile data file"
-   grep "KSPSolve " *_petsc.TU
+1) 1 MPI 1 thread/MPI         $initial_datafile.out
+2) 1 MPI $threads threads/MPI $datafile.out
+3) 2 MPI 1 thread/MPI	      PAR_$initial_datafile.out"
+   #grep "KSPSolve " *_petsc.TU
+   echo "Multithreading gains for factorization only (and for matrix order>>10000):"
+   grep "Elapsed time for factorization" *.out
+   # To do MPI+OpenMP in PETSc, see https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
+   # --with-openmp --with-hwloc
 fi
