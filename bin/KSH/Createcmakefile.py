@@ -333,7 +333,7 @@ ENDIF(NOT VISUAL)
 
 ''')
     out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
-    out.write('include_directories(${METIS_ROOT}/include  ${TRUST_MED_ROOT}/include  ${TRUST_MEDCOUPLING_ROOT}/include  ${MPI_INCLUDE} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include )\n')
+    out.write('include_directories(${METIS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include )\n')
     out.write('add_definitions(${ADD_CPPFLAGS})\n')
 
     out.write('''

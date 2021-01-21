@@ -1721,7 +1721,7 @@ case $TRUST_ARCH_CC in
 	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
 	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
 	# On ne met pas -static car plante en // sur dom1 avec scali meme avec -ldl
-	if [ "`basename $TRUST_F77_BASE`" = gfortran ]
+	if [ "`basename $TRUST_F77_BASE`" = gfortran ] || [ "`basename $TRUST_F77_BASE`" = cuda-gfortran ]
 	then
 	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
 	   touch test.cpp
@@ -2013,43 +2013,18 @@ then
    # Installation NVIDIA Samples
    #############################
    echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
-   CUDA_SAMPLES=`ls $CUDA_ROOT/bin/cuda-install-samples*.sh 2>/dev/null`
-   CUDA_SAMPLES_PATH=/usr/share/cuda/samples
-   if [ "$CUDA_SAMPLES" != "" ]
-   then
-      [ "`ls NVIDIA_CUDA*Samples/1_Utilities/deviceQuery 2>/dev/null`" = "" ] && $CUDA_SAMPLES .
-      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && CUDA_PATH=$CUDA_ROOT make 1>$TRUST_ENV/card.log 2>&1)
-   elif [ -d $CUDA_SAMPLES_PATH ]
-   then
-      mkdir -p NVIDIA_CUDA_Samples
-      cp -r $CUDA_SAMPLES_PATH/1_Utilities NVIDIA_CUDA_Samples
-      (cd NVIDIA_CUDA*Samples/1_Utilities/deviceQuery && sed -i "1,$ s?../../common/inc?$CUDA_SAMPLES_PATH/common/inc?g" Makefile && CUDA_PATH="" make 1>$TRUST_ENV/card.log 2>&1)
-   elif [ "$NVHPC" != "" ]
-   then
-      mkdir -p NVIDIA_CUDA_Samples
-      cp -r $NVHPC/Linux_x86_64/*/examples/OpenACC/SDK/src/deviceQuery NVIDIA_CUDA_Samples
-      #(cd NVIDIA_CUDA*Samples/deviceQuery && sed -i "1,$ s?../../common/?$CUDA_ROOT/../examples/OpenACC/SDK/common/?g" Makefile && make 1>$TRUST_ENV/card.log 2>&1)
-      # Probleme pour tester correctement sur orcus...
-      COMPUTE_CAPABILITY="1.3"
-   else
-      echo "NVIDIA_CUDA Samples not found."
-      exit -1
-   fi
-   if [ "$COMPUTE_CAPABILITY" = "" ]
-   then
-      ###################################
-      # Test de la carte avec deviceQuery
-      ###################################
-      (
-       # On utilise le script trust en specifiant -gpu
+   # Test de la carte:
+   (
        source ../env_TRUST.sh 1>/dev/null 2>&1
        LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
-       export exec=`pwd`/`ls NVIDIA_CUDA*/1_Utilities/deviceQuery/deviceQuery`
+       rm -r -f nvc_get_devices
+       tar xfz $TRUST_ROOT/externalpackages/AmgX/nvc_get_devices.tgz
+       cd nvc_get_devices && ./build.sh
+       export exec=`pwd`/nvc_get_devices
        trust -gpu dummy_file 1>>$TRUST_ENV/card.log &
-       $TRUST_ROOT/bin/KSH/wait_for $! 600 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)  
-      )
-      COMPUTE_CAPABILITY="`awk '/CUDA Capability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
-   fi
+       $TRUST_ROOT/bin/KSH/wait_for $! 600 # Pour eviter blocage
+   )
+   COMPUTE_CAPABILITY="`awk '/apability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
    # On ne supporte que les cartes double precision
    TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
    if [ "$TRUST_USE_CUDA" = 0 ]

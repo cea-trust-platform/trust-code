@@ -215,6 +215,10 @@ then
    else
       LIBMETIS=""
    fi
+   # A chaque ajout d'une librairie pour TRUST, modifier plusieurs fichiers importants:
+   # bin/mklibs pour le link
+   # bin/KSH/Createcmakefile.py pour les includes de la librairie
+   # env_src/make.all_includes.TRUST pour les includes aussi
    reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` `[ "$TRUST_USE_CUDA" = 1 ] && echo LIBAMGX` LIBOSQP"
    time=`date "+%s"`
    for rep in $reps
