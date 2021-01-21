@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
 #include <metis.h>
+#include <parmetis.h>
 
 // .DESCRIPTION
 //  Partition d'un domaine en nb_parties parties equilibrees en utilisant
@@ -48,7 +49,7 @@ private:
   int nb_parties_;
 
   // Options de metis
-  enum AlgoMetis { PMETIS, KMETIS };
+  enum AlgoMetis { PMETIS, KMETIS, PARMETIS };
   AlgoMetis algo_;
   int match_type_;
   int ip_type_;
@@ -89,6 +90,7 @@ struct graph_def
   idx_t *adjncy;
   idx_t *vwgts;
   idx_t *ewgts;
+  idx_t *vtxdist;                     //for parmetis: distribution of the initial graph on the proc
 };
 
 typedef struct graph_def Graph_Type;

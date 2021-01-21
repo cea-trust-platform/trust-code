@@ -1146,6 +1146,30 @@ void Zone::construire_elem_virt_pe_num()
     }
 }
 
+void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num) const
+{
+  IntTab tableau_echange(mes_elems);
+  assert(tableau_echange.dimension(1) >= 2);
+  int i;
+  const int n = nb_elem();
+  const int n_virt = nb_elem_tot() - n;
+  const int moi = me();
+  for (i = 0; i < n; i++)
+    {
+      tableau_echange(i, 0) = moi;
+      tableau_echange(i, 1) = i;
+    }
+  tableau_echange.echange_espace_virtuel();
+
+  elem_virt_pe_num.resize(n_virt, 2);
+  for (i = 0; i < n_virt; i++)
+    {
+      elem_virt_pe_num(i, 0) = tableau_echange(n + i, 0);
+      elem_virt_pe_num(i, 1) = tableau_echange(n + i, 1);
+    }
+}
+
+
 const IntTab& Zone::elem_virt_pe_num() const
 {
   return elem_virt_pe_num_;

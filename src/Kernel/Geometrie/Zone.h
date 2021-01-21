@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -198,6 +198,7 @@ public:
   inline const ArrOfInt& ind_faces_virt_bord() const;
 
   void construire_elem_virt_pe_num();
+  void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num) const;
   const IntTab& elem_virt_pe_num() const;
 
   virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;

@@ -220,6 +220,7 @@ Entree& Decouper::interpreter(Entree& is)
   int nb_parties = 0;
   if (elem_part.size_array() > 0)
     nb_parties = max_array(elem_part) + 1;
+  nb_parties = mp_max(nb_parties);
   Cerr << "The partitioner has generated " << nb_parties << " parts." << finl;
 
   // Prise en compte de la directive nb_parts_tot

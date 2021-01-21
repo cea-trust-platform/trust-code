@@ -1232,6 +1232,15 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   const Domaine& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
 
+  ArrOfInt myZones(nb_parties_);
+  myZones = -1;
+  const int nbelem = elem_part.size_array();
+  for(int i=0; i < nbelem; i++)
+    {
+      const int part = elem_part[i];
+      myZones[part] = 1;
+    }
+
   // Needed for HDF5 Zones output:
   FichierHDF fic_hdf;
 
@@ -1268,6 +1277,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
+          if(myZones[i_part] < 0) continue;
           Cerr << " Construction of part number " << i_part << finl;
           Domaine sous_domaine;
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine);
