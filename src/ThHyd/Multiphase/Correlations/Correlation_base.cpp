@@ -38,7 +38,7 @@ Entree& Correlation_base::lire(Entree& is)
   return readOn(is);
 }
 
-void Correlation_base::associer_pb_multiphase(const Pb_Multiphase& pb)
+void Correlation_base::associer_pb(const Probleme_base& pb)
 {
-  pb_multi = pb;
+  pb_ = pb;
 }

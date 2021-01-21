@@ -23,18 +23,18 @@
 #ifndef Correlation_base_included
 #define Correlation_base_included
 #include <Param.h>
-#include <Ref_Pb_Multiphase.h>
+#include <Ref_Probleme_base.h>
 
 class Correlation_base : public Objet_U
 {
   Declare_base(Correlation_base);
 public:
   virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
-  void associer_pb_multiphase(const Pb_Multiphase& pb);
+  void associer_pb(const Probleme_base& pb);
   virtual void completer() { }; // par defaut ne fait rien
 
 protected:
-  REF(Pb_Multiphase) pb_multi;
+  REF(Probleme_base) pb_;
 };
 
 #endif

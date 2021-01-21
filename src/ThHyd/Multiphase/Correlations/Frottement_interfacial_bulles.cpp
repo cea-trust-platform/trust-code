@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,6 @@ void Frottement_interfacial_bulles::coefficient(const DoubleTab& alpha, const Do
   int k, l, N = ndv.dimension(0);
   double rho_m = 0;
   for (k = 0; k < N; k++) rho_m += alpha(k) * rho(k);
-  for (k = 0; k < N; k++) for (l = 0; l < N; l++)
-      coeff(k, l, 0) = (coeff(k, l, 1) = 1. / 8 * C_d_ * 3 * alpha(k) * alpha(l) / r_bulle_ * rho_m) * ndv(k, l);
+  for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (l != k)
+        coeff(k, l, 0) = (coeff(k, l, 1) = 1. / 8 * C_d_ * 3 * alpha(k) * alpha(l) / r_bulle_ * rho_m) * ndv(k, l);
 }

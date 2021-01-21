@@ -47,7 +47,7 @@ class Correlation : public DERIV(Correlation_base)
 
 public:
   void set_type_prefix(const Nom &nom); //determine le type de correlation que l'on va creer lors du readOn
-  void associer_pb_multiphase(const Pb_Multiphase& pb);
+  void associer_pb(const Probleme_base& pb);
 
 private:
   Nom type_prefix_;

@@ -101,7 +101,7 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
         Correlation c;
         c.set_type_prefix(mot);
         is >> c;
-        c.associer_pb_multiphase(*this);
+        c.associer_pb(*this);
         correlations[mot.getString()] = c;
       }
     else Cerr << "correlations : " << mot << " unknown!" << finl, Process::exit();
