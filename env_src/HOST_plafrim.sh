@@ -10,18 +10,21 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    # Load modules
-   module=slurm
    echo "# Module $module detected and loaded on $HOST."
    # Initialisation de l environnement module $MODULE_PATH 
    #echo "source /cm/local/apps/environment-modules/3.2.10/init/bash" >> $env
-   echo "module load $module 1>/dev/null" >> $env
-   #
    # module="mpi/openmpi/4.0.1  compiler/gcc/9.2.0" sur la nouvelle plafrim ?
    # avec mpi/openmpi/gcc/4.0.0 et mpi/openmpi/gcc/4.0.1 le mpif90 ne marche pas
-   module="compiler/gcc/4.8.4 mpi/openmpi/gcc/3.0.0"
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      module="compiler/cuda/11.2 compiler/gcc/9.3.0 mpi/openmpi/4.0.3"
+   else
+      module="slurm compiler/gcc/4.8.4 mpi/openmpi/gcc/3.0.0"
+   fi
    #
    echo "# Module $module detected and loaded on $HOST."
-   echo "module load $module 1>/dev/null" >> $env     
+   echo "module purge 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
@@ -34,66 +37,23 @@ squeue" > $TRUST_ROOT/bin/qstat
 ##############################
 define_soumission_batch()
 {
+# $ sinfo
+# PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+# routage*     up 3-00:00:00     20 drain* miriel[005,008,016-017,019-020,022,024,027,032,038,043-044,062,068,073,075,081,083,086]
+# routage*     up 3-00:00:00      3  drain sirocco[07,10,13]
+# routage*     up 3-00:00:00      8    mix bora040,sirocco[08-09,11,18-20],souris
+# routage*     up 3-00:00:00     79  alloc bora[003,005,008-010,012,015-024,027,029,034,037,039,042-044],diablo04,miriel[001-004,006,009-015,018,021,023,025-026,028-031,033-037,039-042,045,048,050-053,056-058,060,063-064,067,069-071,076,078-079,084-085,087-088],sirocco14
+# routage*     up 3-00:00:00     61   idle arm01,bora[001-002,004,006-007,011,013-014,025-026,028,030-033,035-036,038,041],brise,diablo[01-03,05],kona[01-04],sirocco[01-05,12,15-17,21],visu01,zonda[01-21]
+# preempt      up 3-00:00:00     20 drain* miriel[005,008,016-017,019-020,022,024,027,032,038,043-044,062,068,073,075,081,083,086]
+# preempt      up 3-00:00:00     53  alloc miriel[001-004,006,009-015,018,021,023,025-026,028-031,033-037,039-042,045,048,050-053,056-058,060,063-064,067,069-071,076,078-079,084-085,087-088]
+# preempt      up 3-00:00:00     21   idle zonda[01-21]
+# testing      up 2-00:00:00      3   idle mistral[02-03,06]
+# unstable     up 3-00:00:00      3  down* miriel[007,066,072]
+# unstable     up 3-00:00:00      1   idle miriel061
    soumission=2 && [ "$prod" = 1 ] && soumission=1
-   # sinfo :
-   #PARTITION     AVAIL  TIMELIMIT  NODES  STATE 
-   #defq*            up    2:00:00     46 mix
-   #longq            up 3-00:00:00     56 mix
-   #court            up    4:00:00     56 mix
-   #multiPart        up    1:00:00     57 mix
-   #special          up      30:00     56 mix
-   #court_souris     up    4:00:00      1 alloc 
-   #court_sirocco    up    4:00:00     16 mix
-   #long_sirocco     up 3-00:00:00      7 mix
-   #kona             up 1-00:00:00      4 idle
-   #visu             up    8:00:00      1 idle 
-   #court_brise      up 3-00:00:00      1 idle
-   #hack             up 1-00:00:00      2 idle 
-   #arm              up 3-00:00:00      1 idle 
-
-   queue=court #&& [ "$bigmem" = 1 ] && queue=large && soumission=1
-   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
-   #  Name      Priority  MaxSubmit     MaxWall        MaxNodes 
-   #---------- ---------- --------- ----------- -------- 
-   # normal          0                                
-   # multi           0         2                      
-   # longq           0        10       3-00:00:00       16 
-   # court           0        10         04:00:00          
-   # special         0        20                      
-   # verylong        0                                
-   # sirocco         0                                
-   # mistral         0                                
-   # qoscompute      0                                
-   # qoscrt_mi+      0        10                      
-   # qoscrt_si+      0         4                      
-   # qoslg_mis+      0         5                      
-   # qoslg_sir+      0         2                      
-   # qoscrt_mi+      0        16                      
-   # qoslg_mir+      0        16                      
-   # qos_souris   1000                                
-   # defq            0  
+   queue=routage && constraint=bora && [ "$gpu"  = 1 ] && soumission=1 && constraint=sirocco
    cpu=30 && [ "$prod" = 1 ] && cpu=120 # 30 minutes or 1 day
-   ntasks=20 # 20 cores per node for slim or large queue (24 for fat, 8 for eris and 12 for pluton)
-   node=0
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
-   then
-      #node=1
-      #if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
-      #then
-      #   echo "=================================================================================================================="
-      #   echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
-      #   echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
-      #   echo "=================================================================================================================="
-      #fi
-      qos=court
-      #[ "$prod" = 1 ] && cpu=2880 # 2 days
-      [ "$prod" = 1 ] && cpu=120 # 1 day
-   else
-      #node=0
-      queue=court
-      qos=court
-      [ "$prod" = 1 ] && cpu=60 # 1 hour
-   fi
-   mpirun="mpirun -np \$SLURM_NTASKS"
+   node=1 # --exclusive
+   mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
 }

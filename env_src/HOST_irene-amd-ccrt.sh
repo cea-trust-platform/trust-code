@@ -45,7 +45,7 @@ define_modules_config()
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
-   echo "module sw $sw 1>/dev/null" >> $env
+   [ "$sw" != "" ] && echo "module sw $sw 1>/dev/null" >> $env
    . $env
 }
 
@@ -85,7 +85,8 @@ define_soumission_batch()
    #rome         up       269056      2102    1875  128  8  16   1
    queue=rome
    [ "$bigmem" = 1 ] && queue=knl && ntasks=68
-   [ "$gpu" = 1 ]    && queue=v100 && ntasks=80 # 4 cartes v100 par noeud
+   # Partition v100 (4 cartes v100 par noeud): 1 GPU par 10 coeurs alloues donc si moins de 10 coeurs, on fixe a 10:
+   [ "$gpu" = 1 ]    && queue=v100 && ntasks=80 && [ $NB_PROCS -lt 10 ] && cpus_per_task=10
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1
