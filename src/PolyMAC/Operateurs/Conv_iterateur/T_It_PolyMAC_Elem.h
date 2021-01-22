@@ -2424,7 +2424,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2436,7 +2436,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2448,7 +2448,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2460,7 +2460,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2472,7 +2472,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2484,7 +2484,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2496,7 +2496,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2513,7 +2513,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                   int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(f);
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, f, local_face, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) -= aef;
                 }
             }
           break;
@@ -2525,7 +2525,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2537,7 +2537,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) += aef;
+                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
                 }
             }
           break;
@@ -2556,7 +2556,7 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                   if ( (e2 = elem(f, 1)) > -1)
                     {
                       if ( (ndeb+frontiere_dis.nb_faces()/2) <= f )
-                        matrice(e2, f) += aef;
+                        matrice(e2, f) -= aef;
                     }
                 }
             }
