@@ -70,6 +70,14 @@ inline Eval_Diff_VDF_var_aniso::Eval_Diff_VDF_var_aniso()
 // associe le champ de diffusivite
 inline void Eval_Diff_VDF_var_aniso::associer(const Champ_base& diffu)
 {
+  if (diffu.le_nom() == "conductivite" && diffu.nb_comp() != Objet_U::dimension)
+    {
+      Cerr << "Error in Eval_Diff_VDF_var_aniso::associer (anisotropic diffusion VDF operator) !" << finl;
+      Cerr << "Ensure that the dimension of the conductivity field is equal to the dimension of the domain !" << finl;
+      Cerr << "A general conductivity tensor with non-zero cross-corellation terms is not yet supported (switch to VEF) !" << finl;
+      Process::exit();
+    }
+
   diffusivite_ = diffu;
   dt_diffusivite.ref(diffu.valeurs());
 }
