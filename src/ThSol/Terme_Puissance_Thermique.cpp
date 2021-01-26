@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,19 +65,20 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   la_puissance_lu.typer(type);
   Champ_Don_base& ch_puissance_lu = ref_cast(Champ_Don_base,la_puissance_lu.valeur());
   is >> ch_puissance_lu;
+  const int nb_comp = ch_puissance_lu.nb_comp();
 
-  eqn.probleme().discretisation().discretiser_champ("CHAMP_ELEM", eqn.zone_dis(), "pp", "1",1,0., la_puissance);
+  eqn.probleme().discretisation().discretiser_champ("CHAMP_ELEM", eqn.zone_dis(), "pp", "1",nb_comp,0., la_puissance);
 
   if (la_puissance_lu.le_nom()=="anonyme")
-    la_puissance_lu->fixer_nom_compo("Puissance_volumique");
+    for (int n = 0; n < nb_comp; n++) la_puissance_lu->fixer_nom_compo(n, Nom("Puissance_volumique") + (nb_comp ? Nom(n) :""));
   else
     {
-// on met a jour le nom des compos
+      // on met a jour le nom des compos
       Cerr << "The field 'Puissance_volumique' has been renamed as '" << la_puissance_lu.le_nom() << "'." << finl;
       la_puissance_lu->fixer_nom_compo(la_puissance_lu.le_nom());
     }
 
-  la_puissance->fixer_nom_compo(la_puissance_lu.le_nom());
+  for (int n = 0; n < nb_comp; n++) la_puissance->fixer_nom_compo(n, la_puissance_lu.le_nom() + (nb_comp ? Nom(n) :""));
   // PL: Il faut faire nommer_completer_champ_physique les 2 champs (plantage sinon pour une puissance de type Champ_fonc_tabule)
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());

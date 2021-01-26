@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,9 +71,10 @@ inline double Eval_Puiss_Th_CoviMAC_Elem::calculer_terme_source(int num_elem) co
     }
 }
 
-inline void Eval_Puiss_Th_CoviMAC_Elem::calculer_terme_source(int , DoubleVect& ) const
+inline void Eval_Puiss_Th_CoviMAC_Elem::calculer_terme_source(int e, DoubleVect& S) const
 {
-  ;
+  const int N = S.size(), pc = sub_type(Champ_Uniforme,la_puissance.valeur().valeur());
+  for (int n = 0; n < N; n++) S[n] = puissance(!pc * e, n) * volumes(e) * porosite_vol(e);
 }
 
 #endif
