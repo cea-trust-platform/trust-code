@@ -34,8 +34,9 @@ then
     echo "Bad format detected for $prm:"
     file $prm
     echo "Converting to UTF-8..."
-    iconv -f ISO-8859-15 -t UTF-8//TRANSLIT -o $TRUST_TMP/tmp_file $prm || exit -1
-    mv -f $TRUST_TMP/tmp_file $prm
+    tmpf=`mktemp_`
+    iconv -f ISO-8859-15 -t UTF-8//TRANSLIT -o $tmpf $prm || exit -1
+    mv -f $tmpf $prm
 fi
 
 [ "$1" = "-help" ] && usage
