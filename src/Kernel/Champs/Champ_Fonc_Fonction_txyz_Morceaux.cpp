@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,10 +84,8 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   mon_domaine = ref_pb.valeur().domaine();
   Domaine& le_domaine=mon_domaine.valeur();
 
-  Nom val1, val2;
-  is >> val1;
-  is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz_Morceaux", val1, val2, dim, nom_champ_parametre_);
+  is >> nom_champ_parametre_;
+  is >> dim;
 
   dim=lire_dimension(dim,que_suis_je());
   fixer_nb_comp(dim);
