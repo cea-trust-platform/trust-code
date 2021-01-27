@@ -97,6 +97,10 @@ Read pb
  		  temperature elem
 		}
  */
+ 		fields dt_post 1.e10
+		{
+			temperature
+		}
 	}
 }
 

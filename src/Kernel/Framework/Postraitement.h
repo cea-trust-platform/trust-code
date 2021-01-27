@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -180,7 +180,10 @@ public:
   {
     return tableaux_demande_;
   }
-
+  inline bool besoin_postraiter_champs()
+  {
+    return (champs_demande_) || (stat_demande_) || (stat_demande_definition_champs_);
+  }
 
   inline LIST(Nom)& noms_champs_a_post();
   inline const Liste_Champ_Generique& champs_post_complet() const;

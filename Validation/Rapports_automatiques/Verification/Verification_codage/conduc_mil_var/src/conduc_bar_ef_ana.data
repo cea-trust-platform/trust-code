@@ -100,6 +100,10 @@ Read pb
 		Probes
 		{
 			sonde_horiz temperature periode 1. segment 31 0.0 0.5 1.0 0.5 
+		}
+		fields dt_post 1.e10
+		{
+			temperature
 		}		
 	}
 }
