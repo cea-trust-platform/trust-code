@@ -896,7 +896,12 @@ fi
          git remote update
          git checkout .
          git pull 1>tmp.log 2>&1
-         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
+         fi
          rm tmp.log 1>/dev/null 2>&1
       else
          git remote update
@@ -905,7 +910,12 @@ fi
          [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git checkout portage KO\" $TRUST_MAIL
          rm tmp.log 1>/dev/null 2>&1
          git pull 1>tmp.log 2>&1
-         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
+         fi
          rm tmp.log 1>/dev/null 2>&1
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi

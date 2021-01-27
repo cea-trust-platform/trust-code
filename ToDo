@@ -1,6 +1,7 @@
 Version	Qui				Tache
 
-1.8.3	pierre.ledac@cea.fr	Supprimer le format LATA V1
+1.8.3   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
+1.8.3	pierre.ledac@cea.fr	    Supprimer le format LATA V1
 1.8.3   adrien.bruneton@cea.fr  Refactoring de IBM_interpolation_hybride pour heritage multiple (et virer le shared_ptr !)
 1.8.3   adrien.bruneton@cea.fr  Refactoring de genererCourbe (classes nouvellefiche de TrioCFD Purpose, Description, etc ...)
 1.8.3   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
