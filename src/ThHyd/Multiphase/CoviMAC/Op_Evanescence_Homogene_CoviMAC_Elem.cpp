@@ -30,6 +30,7 @@
 #include <Schema_Implicite_base.h>
 #include <SETS.h>
 #include <Param.h>
+#include <Milieu_composite.h>
 
 Implemente_instanciable(Op_Evanescence_Homogene_CoviMAC_Elem,"Op_Evanescence_Homogene_CoviMAC_Elem",Operateur_Evanescence_base);
 
@@ -77,11 +78,13 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::dimensionner_blocs(matrices_t matrice
 void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (!alpha_res_) return;
+  const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
   const DoubleTab& inco = ch.valeurs(), &alpha = pb.eq_masse.inconnue().valeurs(),
-                   &rho = equation().milieu().masse_volumique().valeurs();
+                   &rho = equation().milieu().masse_volumique().valeurs(),
+                    &p = pb.eq_qdm.pression().valeurs();
   const SETS *sch = sub_type(Schema_Implicite_base, pb.eq_qdm.schema_temps()) && sub_type(SETS, ref_cast(Schema_Implicite_base, pb.eq_qdm.schema_temps()).solveur().valeur())
                     ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.eq_qdm.schema_temps()).solveur().valeur()) : NULL;
 
@@ -105,8 +108,9 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
       /* coeff d'evanescence, second membre */
       for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
           {
+            const double val = milc.has_saturation(n, k) ? milc.get_saturation(n, k).Tsat(p[e]) : inco(e, k);
             coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * (coeff(e, n, 0) = min(max(1 - a_m / a_eps, 0.), 1.) / (p_degen ? rho(!cR * e, n) : 1));
-            double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - !alp * inco(e, k));
+            double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - !alp * val);
             secmem(e, k) += (p_degen ? rho(!cR * e, k) : 1) * flux, secmem(e, n) -= (p_degen ? rho(!cR * e, n) : 1) * flux;
           }
     }
