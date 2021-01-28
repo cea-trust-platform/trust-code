@@ -100,7 +100,8 @@ define_soumission_batch()
    else
       node=0
    fi
-   [ "$queue" = rome ] && binding="-e '-m block:block --cpu-bind=rank'" # Optimisation des perfs en // comme sur orcus (+30%)
+   # PL: 01/2021 On desactive le binding (recommendation CCRT) suivant:
+   # binding="-e '-m block:block --cpu-bind=rank'" # Optimisation des perfs en // comme sur orcus (+30%)
    mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
