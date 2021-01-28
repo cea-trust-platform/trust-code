@@ -201,7 +201,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       fprintf(stderr, "\n");
     }
 
-  for (it = 0, cv = 0; !cv && it < it_max; it++)
+  for (it = 0, cv = 0; (!cv && it < it_max) || it < 2; it++)
     {
       /* remplissage par assembler_blocs */
       for (auto &&n_eq : eqs) n_eq.second->assembler_blocs_avec_inertie(mats[n_eq.first], sec[n_eq.first], semi_impl);
@@ -217,7 +217,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       DoubleTrav secmem_pression;
       assembler("pression", {}, A_p, b_p, mats, sec, val["alpha"], matrice_pression, secmem_pression, p_degen);
       cv = it && mp_max_abs_vect(secmem_pression) < 1e-6; //si l'erreur sur alpha est tres faible, alors peut sortir sans resoudre
-      if (cv) continue;
+      // if (cv) continue;
 
       /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
       SolveurSys& solv_p = eq_qdm.solveur_pression();
