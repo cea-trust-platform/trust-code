@@ -978,13 +978,6 @@ tayl_green champ_don_base tayl_green 0 Class Tayl_green.
 fonction_champ_reprise objet_lecture nul 0 not_set
   attr mot chaine(into=["fonction"]) mot 0 not_set
   attr fonction listchaine fonction 0 n f1(val) f2(val) ... fn(val)] time
-champ_fonc_reprise champ_don_base champ_fonc_reprise 0 This field is used to read a data field in a save file (.xyz or .sauv) at a specified time. It is very useful, for example, to run a thermohydraulic calculation with velocity initial condition read into a save file from a previous hydraulic calculation.
-  attr format chaine(into=["binaire","formatte","xyz"]) format 1 Type of file (the file format). If xyz format is activated, the .xyz file from the previous calculation will be given for filename, and if formatte or binaire is choosen, the .sauv file of the previous calculation will be specified for filename. In the case of a parallel calculation, if the mesh partition does not changed between the previous calculation and the next one, the binaire format should be preferred, because is faster than the xyz format.
-  attr filename chaine filename 0 Name of the save file.
-  attr pb_name ref_Pb_base pb_name 0 Name of the problem.
-  attr champ chaine champ 0 Name of the problem unknown. It may also be the temporal average of a problem unknown (like moyenne_vitesse, moyenne_temperature,...)
-  attr fonction fonction_champ_reprise fonction 1 Optional keyword to apply a function on the field being read in the save file (e.g. to read a temperature field in Celsius units and convert it for the calculation on Kelvin units, you will use: fonction 1 273.+val )
-  attr temps chaine time 0 Time of the saved field in the save file or last_time. If you give the keyword last_time instead, the last time saved in the save file will be used.
 source_qdm source_base source_qdm 0 Momentum source term in the Navier-Stokes equations.
   attr ch field_base champ 0 Field type.
 perte_charge_singuliere source_base perte_charge_singuliere 1 Source term that is used to model a pressure loss over a surface area (transition through a grid, sudden enlargement) defined by the faces of elements located on the intersection of a subzone named subzone_name and a X,Y, or Z plane located at X,Y or Z = location.

@@ -38,6 +38,13 @@
 extern void convert_to(const char *s, double& ob);
 Implemente_instanciable(Champ_Fonc_reprise,"Champ_Fonc_reprise",Champ_Fonc_base);
 
+// XD champ_fonc_reprise champ_don_base champ_fonc_reprise 0 This field is used to read a data field in a save file (.xyz or .sauv) at a specified time. It is very useful, for example, to run a thermohydraulic calculation with velocity initial condition read into a save file from a previous hydraulic calculation.
+// XD  attr format chaine(into=["binaire","formatte","xyz","single_hdf"]) format 1 Type of file (the file format). If xyz format is activated, the .xyz file from the previous calculation will be given for filename, and if formatte or binaire is choosen, the .sauv file of the previous calculation will be specified for filename. In the case of a parallel calculation, if the mesh partition does not changed between the previous calculation and the next one, the binaire format should be preferred, because is faster than the xyz format. If single_hdf is used, the same constraints/advantages as binaire apply, but a single (HDF5) file is produced on the filesystem instead of having one file per processor.
+// XD attr filename chaine filename 0 Name of the save file.
+// XD attr pb_name ref_Pb_base pb_name 0 Name of the problem.
+// XD attr champ chaine champ 0 Name of the problem unknown. It may also be the temporal average of a problem unknown (like moyenne_vitesse, moyenne_temperature,...)
+// XD attr fonction fonction_champ_reprise fonction 1 Optional keyword to apply a function on the field being read in the save file (e.g. to read a temperature field in Celsius units and convert it for the calculation on Kelvin units, you will use: fonction 1 273.+val )
+// XD attr temps chaine time 0 Time of the saved field in the save file or last_time. If you give the keyword last_time instead, the last time saved in the save file will be used.
 
 //     printOn()
 /////
