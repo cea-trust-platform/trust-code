@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@
 #include <EFichierBin.h>
 #include <stat_counters.h>
 #include <Deriv_Entree_Fichier_base.h>
+#include <FichierHDFPar.h>
 
 extern void convert_to(const char *s, double& ob);
 Implemente_instanciable(Champ_Fonc_reprise,"Champ_Fonc_reprise",Champ_Fonc_base);
@@ -50,7 +51,7 @@ Sortie& Champ_Fonc_reprise::printOn(Sortie& s) const
 //
 Entree& Champ_Fonc_reprise::readOn(Entree& s)
 {
-  Cerr<<"Usage : Champ_Fonc_reprise [xyz|formatte|binaire] fichier.xyz nom_pb nom_inco [fonction n f1(val) f2(val) ... fn(val)] [temps|last_time]"<<finl;
+  Cerr<<"Usage : Champ_Fonc_reprise [xyz|formatte|binaire|single_hdf] fichier.xyz nom_pb nom_inco [fonction n f1(val) f2(val) ... fn(val)] [temps|last_time]"<<finl;
   Nom nom_fic,nom_pb,nom_champ;
   Nom nom_champ_inc;
   Motcle format_rep("xyz");
@@ -60,12 +61,18 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   // Lecture
 
   s>>nom_fic;
-  if ((nom_fic==Motcle("xyz"))||(nom_fic==Motcle("binaire"))||(nom_fic==Motcle("formatte")))
+  if ((nom_fic==Motcle("xyz"))||(nom_fic==Motcle("binaire"))||(nom_fic==Motcle("single_hdf"))||(nom_fic==Motcle("formatte")))
     {
       format_rep=nom_fic;
       s>>nom_fic;
     }
   s>>nom_pb>>nom_champ;
+
+  if (format_rep == "single_hdf" && Process::nproc() == 1)
+    {
+      Cerr << "Resuming with a single_hdf option is only available for a parallel calculation !" << finl;
+      Process::exit();
+    }
 
   if (Motcle(nom_champ).debute_par("MOYENNE_"))
     nom_champ_inc=((Motcle)nom_champ).suffix("MOYENNE_");
@@ -127,7 +134,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   else
     {
       Cerr << nom_champ_inc << " is not an unknown of problem " << nom_pb << finl;
-      exit();
+      Process::exit();
     }
 
   // Ouverture du fichier
@@ -137,6 +144,12 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
 
   int mode_lec_sa= EcritureLectureSpecial::mode_lec;
   DERIV(Entree_Fichier_base) fic_rep;
+
+#ifdef MPI_
+  Entree_Brute input_data;
+  FichierHDFPar fic_hdf; //FichierHDF fic_hdf;
+#endif
+
   if (format_rep == "xyz")
     {
       EcritureLectureSpecial::mode_lec=1;
@@ -148,51 +161,95 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       EcritureLectureSpecial::mode_lec=0;
       if (format_rep == "binaire")
         fic_rep.typer("LecFicDistribueBin");
+      else if (format_rep == "single_hdf")
+        {
+#ifdef MPI_
+          LecFicDiffuse test;
+          if (!test.ouvrir(nom_fic))
+            {
+              Cerr << "Error! " << nom_fic << " file not found ! " << finl;
+              Process::exit();
+            }
+          fic_hdf.open(nom_fic, true);
+          fic_hdf.read_dataset("/sauv", Process::me(),input_data);
+#endif
+        }
       else
         fic_rep.typer("LecFicDistribue");
       Cerr << "Opening file " << nom_fic << " (LecFicDistribueBin)" << finl;
     }
-  fic_rep->ouvrir(nom_fic);
-  if(fic_rep->fail())
-    {
-      Cerr<<"Error while opening the file of resumption : " <<nom_fic<<finl;
-      exit();
-    }
 
-  EFichier& fich=ref_cast(EFichier,fic_rep.valeur());
-
-  if (fich.eof())
+  if (format_rep != "single_hdf")
     {
-      Cerr << "Error in Champ_Fonc_reprise::reprendre" << finl;
-      Cerr << "The resumption file does not exist" << finl;
-      Cerr << "or could not be opened correctly." << finl;
-      exit();
+      fic_rep->ouvrir(nom_fic);
+
+      if(fic_rep->fail())
+        {
+          Cerr<<"Error while opening the file of resumption : " <<nom_fic<<finl;
+          Process::exit();
+        }
+
+      if (fic_rep->eof())
+        {
+          Cerr << "Error in Champ_Fonc_reprise::reprendre" << finl;
+          Cerr << "The resumption file does not exist" << finl;
+          Cerr << "or could not be opened correctly." << finl;
+          Process::exit();
+        }
     }
 
   if (last_time)
     {
-      un_temps = get_last_time(fich);
-      fich.close();
-      fich.ouvrir(nom_fic);
+      if(format_rep == "single_hdf")
+        {
+#ifdef MPI_
+          un_temps = get_last_time(input_data);
+          fic_hdf.read_dataset("/sauv", Process::me(), input_data);
+#endif
+        }
+      else
+        {
+          un_temps = get_last_time(fic_rep.valeur());
+          fic_rep->close();
+          fic_rep->ouvrir(nom_fic);
+        }
+      Cerr << "In the " << nom_fic << " file, we find the last time: " << un_temps << " and read the fields." << finl;
     }
 
   // Depuis la 1.5.5, lecture du format de sauvegarde
-  fich >> ident_lu;
+  if(format_rep != "single_hdf")
+    fic_rep.valeur() >> ident_lu;
+  else
+    {
+#ifdef MPI_
+      input_data >> ident_lu;
+#endif
+    }
+
   int format_sauvegarde=0;
   if (ident_lu=="format_sauvegarde:")
-    fich >> format_sauvegarde; // Read the format
+    {
+      if(format_rep != "single_hdf")
+        fic_rep.valeur() >> format_sauvegarde; // Read the format
+      else
+        {
+#ifdef MPI_
+          input_data >> format_sauvegarde;
+#endif
+        }
+    }
   else
     {
       // Version anterieure, on referme et on reouvre
       if (format_rep=="xyz")
         {
-          fich.close();
-          fich.ouvrir(nom_fic);
+          fic_rep->close();
+          fic_rep->ouvrir(nom_fic);
         }
       else
         {
           Cerr<<"This .sauv file is too old and the format is not supported anymore."<<finl;
-          exit();
+          Process::exit();
         }
     }
 
@@ -251,20 +308,40 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       {
         Cerr<<"The number of components read " <<fxyz.size()<<" for the resume function"<<finl;
         Cerr<<"does not corresponds to the number of components "<<ch_inc.nb_comp()<<" of field target"<<finl;
-        exit();
+        Process::exit();
       }
 
   // Lecture du fichier
-  avancer_fichier(fich, nom_ident);
+  if (format_rep != "single_hdf")
+    avancer_fichier(fic_rep.valeur(), nom_ident);
+  else
+    {
+#ifdef MPI_
+      avancer_fichier(input_data, nom_ident);
+#endif
+    }
 
   if (reprend_champ_moyen)
     {
-      int n; // Nombre d'operateurs statistiques
-      fich >> n;
       double tdeb,tfin;
-      fich >> tdeb;
-      fich >> tfin;
-      avancer_fichier(fich,nom_ident_champ_stat);
+      int n; // Nombre d'operateurs statistiques
+      if (format_rep != "single_hdf")
+        {
+          fic_rep.valeur() >> n;
+          fic_rep.valeur() >> tdeb;
+          fic_rep.valeur() >> tfin;
+          avancer_fichier(fic_rep.valeur(),nom_ident_champ_stat);
+        }
+      else
+        {
+#ifdef MPI_
+          input_data >> n;
+          input_data >> tdeb;
+          input_data >> tfin;
+          avancer_fichier(input_data,nom_ident_champ_stat);
+#endif
+        }
+
       // On cree un operateur_statistique qui va nous permettre de relire le champ moyen
       Op_Moyenne champ_moyen;
       //On construit un Champ_Generique_refChamp pour pouvoir associer un Champ_Generique_base
@@ -282,17 +359,52 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       champ_moyen.associer(pb.domaine_dis().zone_dis(0),champ.valeur(),tdeb,tfin);
       champ_moyen.completer(pb);
       champ_moyen.fixer_tstat_deb(tdeb,tfin);
-      champ_moyen.reprendre(fich);
+      if (format_rep != "single_hdf")
+        champ_moyen.reprendre(fic_rep.valeur());
+      else
+        {
+#ifdef MPI_
+          champ_moyen.reprendre(input_data);
+#endif
+        }
       // On remplit le champ
       le_champ().valeurs() = champ_moyen.calculer_valeurs();
     }
   else if (reprend_modele_k_eps)
     {
-      avancer_fichier(fich, nom_ident_champ_keps);
-      le_champ().reprendre(fich);
+      if (format_rep != "single_hdf")
+        {
+          avancer_fichier(fic_rep.valeur(), nom_ident_champ_keps);
+          le_champ().reprendre(fic_rep.valeur());
+        }
+      else
+        {
+#ifdef MPI_
+          avancer_fichier(input_data, nom_ident_champ_keps);
+          le_champ().reprendre(input_data);
+#endif
+        }
+
     }
   else
-    le_champ().reprendre(fich);
+    {
+      if (format_rep != "single_hdf")
+        le_champ().reprendre(fic_rep.valeur());
+      else
+        {
+#ifdef MPI_
+          le_champ().reprendre(input_data);
+#endif
+        }
+
+    }
+
+  if(format_rep == "single_hdf")
+    {
+#ifdef MPI_
+      fic_hdf.close();
+#endif
+    }
 
   EcritureLectureSpecial::mode_lec=mode_lec_sa;
   statistiques().end_count(temporary_counter_);
@@ -312,14 +424,14 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
           if (nb_compo!=1)
             {
               Cerr << "Error in the function read because the field " << le_champ().le_nom() << " has a single dimension." << finl;
-              exit();
+              Process::exit();
             }
         }
       else if (nb_compo!=tab_valeurs.dimension_tot(1))
         {
           Cerr << "Error in the number of components of the function read:" << nb_compo << finl;
           Cerr << "The number of components of field " << le_champ().le_nom() << " is:" << tab_valeurs.dimension_tot(1) << finl;
-          exit();
+          Process::exit();
         }
       for (int i=0; i<sz; i++)
         {

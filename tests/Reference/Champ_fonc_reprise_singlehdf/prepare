@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cp -f $TRUST_TESTS/Reference/Obstacle/Obstacle.geo .
+trust decoupage
+
+sed "s~/\* sauvegarde single_hdf datafile.sauv \*/~sauvegarde single_hdf datafile.sauv~;
+     s~/\* vitesse Champ_Uniforme 2 0. 0. \*/~vitesse Champ_Uniforme 2 0. 0.~;
+     s~vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time~/\* vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time \*/~" Champ_fonc_reprise_singlehdf.data > Obstacle.data
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   trust Obstacle 2
+else
+   exit -1
+fi

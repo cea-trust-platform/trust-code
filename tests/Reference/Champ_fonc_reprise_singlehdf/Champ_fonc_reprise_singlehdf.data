@@ -1,0 +1,162 @@
+# ThemoHydraulique 2D avec Champ_Fonc_Reprise depuis un probleme hydraulique #
+# PARALLEL ONLY 2 #
+dimension 2
+
+Pb_conduction pb_conduction
+Pb_Thermohydraulique pb
+Domaine dom
+Domaine dom_conduction
+
+# BEGIN SCATTER #
+Scatter DOM.Zones dom
+Scatter DOM_conduction.Zones dom_conduction
+# END SCATTER #
+
+# Je choisis une discretisation #
+VDF ma_discretisation
+
+Scheme_euler_explicit mon_schema
+Read mon_schema
+{
+	tinit 0
+	tmax 2.0
+	dt_min 1.e-4
+	dt_max 1.
+	dt_impr 5.e-3
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+# Je definis un milieu #
+Fluide_Incompressible milieu
+Read milieu
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 1.0 
+	Cp Champ_Uniforme 1 500
+	beta_th Champ_Uniforme 1 0.0001	
+}
+
+Solide solide
+Read solide
+{
+	rho Champ_Uniforme 1 2000.
+	lambda Champ_Uniforme 1 50.    
+	Cp Champ_Uniforme 1 50
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+Associate solide gravite
+Associate milieu gravite
+
+Associate pb dom
+Associate pb milieu
+
+Associate pb_conduction dom_conduction
+Associate pb_conduction solide
+
+Probleme_Couple pbc
+Associate pbc pb
+Associate pbc pb_conduction
+Associate pbc mon_schema
+Discretize pbc ma_discretisation
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-06 
+			impr 
+		}
+		convection { quick }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time
+			/* vitesse Champ_Uniforme 2 0. 0. */
+			}
+		boundary_conditions {
+			Solide paroi_fixe
+			Canal symetrie
+			Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 1. 0.
+		}
+
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { quick }
+		boundary_conditions 
+		{
+			Solide paroi_contact pb_conduction  Solide
+			Canal  symetrie
+			Sortie frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+			Entree frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+		}
+		initial_conditions { Temperature Champ_Uniforme 1 20. }
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105	0.14 0.115
+			sonde_vit vitesse periode 0.005 segment 22 0.14 0.0 0.14 0.22
+			sonde_P pression periode 0.01 plan 23 11 0.01 0.005 0.91 0.005 0.01 0.21
+			sonde_Pmoy Moyenne_pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_Pect Ecart_type_pression periode 0.005 points 2 0.13 0.105 0.13 0.115	
+			sonde_profil_moyen Moyenne_vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115	
+		}
+		
+		
+		
+		fields dt_post 1.
+		{
+			vitesse elem
+			temperature elem
+		}
+		Statistiques dt_post 1.
+		{
+			t_deb 0.5 t_fin 10.
+			
+			
+			moyenne vitesse
+			ecart_type vitesse
+			moyenne pression
+			ecart_type pression
+		}
+	}
+	/* sauvegarde single_hdf datafile.sauv */
+}
+
+Read pb_conduction
+{
+	Conduction
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1 30.
+			}
+		boundary_conditions {
+			Solide paroi_contact pb  Solide
+		}
+	}
+	Post_processing
+	{
+		Probes
+		{
+			sonde_tsol temperature periode 1. point 1 0.11 0.11
+		}
+		fields dt_post 1.
+		{
+			temperature elem
+		}
+	}
+}
+Solve pbc
+End
