@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,10 +73,10 @@ Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const
 Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 {
   int nbcomp;
-  Nom val1, val2;
-  is >> val1;
-  is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction", val1, val2, nbcomp, nom_champ_parametre_);
+
+  is >> nom_champ_parametre_;
+  is >> nbcomp;
+
   nbcomp = lire_dimension(nbcomp,que_suis_je());
   fixer_nb_comp(nbcomp);
   Cerr<<"We read the analytic function "<<finl;

@@ -6,7 +6,6 @@ Version	Qui				Tache
 1.8.3   adrien.bruneton@cea.fr  Refactoring de genererCourbe (classes nouvellefiche de TrioCFD Purpose, Description, etc ...)
 1.8.3   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.3   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
-1.8.3   adrien.bruneton@cea.fr  invalider l ancienne syntaxe des champ_fonc_fonction (pour le moment on est bicompatible)
 1.8.3   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
 1.8.3   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.8.3   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI 188128)
@@ -33,7 +32,6 @@ Version	Qui				Tache
 1.8.x   adrien.bruneton@cea.fr  LDC: Refactoring de genererCourbe (classes nouvellefiche de TrioCFD Purpose, Description, etc ...)
 1.8.x   pierre.ledac@cea.fr     LDC: Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.x   adrien.bruneton@cea.fr  LDC: ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
-1.8.x   adrien.bruneton@cea.fr  LDC: invalider l ancienne syntaxe des champ_fonc_fonction (pour le moment on est bicompatible)
 1.8.x   adrien.bruneton@cea.fr  LDC: Nettoyer le vieux code med fichier
 1.8.x   adrien.bruneton@cea.fr  LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI 188128)

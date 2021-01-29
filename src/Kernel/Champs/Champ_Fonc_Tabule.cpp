@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,36 +25,10 @@
 
 Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
 
-#include <string>
-#include <algorithm>
-void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
-{
-  std::string s((const char*)val1);
-  // lambda checking whehter a char is not a digit:
-  auto checkNotDig = [](unsigned char c)
-  {
-    return !std::isdigit(c);
-  };
-  bool isNum = !s.empty() && std::find_if(s.begin(), s.end(), checkNotDig) == s.end();
-  if (!isNum) // val1 is not a num - this is the correct new syntax
-    {
-      param = val1;
-      dim = atoi(val2);
-      return;
-    }
-  else   // Old syntax -- warn TODO remove this for 1.8.3
-    {
-
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "In call to " << nom_class << ":" << finl;
-      Cerr << "The syntax has changed in version 1.8.2 - you should now pass the dimension/number of components AFTER the field/parameter name. " << finl;
-      Cerr << "Please update your dataset the old syntax will be rejected in 1.8.3" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      param = val2;
-      dim = atoi(val1);
-    }
-}
-
+// XD champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as a function of another field.
+// XD  attr inco chaine inco 0 Name of the field (for example: temperature).
+// XD  attr dim int dim 0 Number of field components.
+// XD  attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
 
 // Description:
 //    NE FAIT RIEN
@@ -107,10 +81,10 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbcomp,i;
-  Nom val1, val2;
-  is >> val1;
-  is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Tabule", val1, val2, nbcomp, nom_champ_parametre_);
+
+  is >> nom_champ_parametre_;
+  is >> nbcomp;
+
   nbcomp=lire_dimension(nbcomp,que_suis_je());
   if(nbcomp==1)
     {

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+29/01/21 (TRUST)  Keyword     : Old syntax of Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, Champ_Fonc_Tabule, Champ_Fonc_Fonction_txyz_Morceaux is now obsolete. The depending field name should be before the number of components
 13/01/21 (TRUST)  Bug fixed   : Regression introduced into 1.8.2 fixed : reading distributed mesh (scatter) could hang on during parallel calculation
 13/01/21 (TRUST)  New keyword : MultipleFiles keyword to change the upper number of MPI ranks (default 5120) where single files for I/O is enabled by default
 13/01/21 (TRUST)  Bug fixed   : Possible hang during massive parallel calculation with multiple open of .stop and .progress files
