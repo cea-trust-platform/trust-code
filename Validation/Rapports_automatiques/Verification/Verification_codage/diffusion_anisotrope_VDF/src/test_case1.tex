@@ -1,0 +1,27 @@
+For this test case, the source term is set to zero; $\dot{q_v}=0$. The heat conductivity tensor is anisotropic and discontinuous, defined $\forall (x,y)\in \Omega$ as 
+
+\begin{equation}\label{tensor_c1}
+\kappa(x,y)=
+\left\{
+\begin{aligned}
+&\displaystyle\left(\begin{matrix} 1 & 0 \\ 0 & 4 \end{matrix}\right) \quad : \quad x\in[0,0.5], \\
+&\displaystyle\left(\begin{matrix} 10 & 0 \\ 0 & 2 \end{matrix}    \right) \quad : \quad x\in[0.5,1].
+\end{aligned}
+\right.
+\end{equation}
+
+For such a $\kappa$ distribution, the analytical solution $T_{exact}$ is one-dimensional. With the Dirichlet boundary conditions defined as $T_{exact}(x=0)=0$ and $T_{exact}(x=1)=1$, the solution reads as
+\begin{equation}\label{sol_c1}
+T_{exact}(x)=\left\{
+\begin{aligned}
+&\displaystyle \frac{20x}{11} \quad &: \quad x\in[0,0.5], \\
+&\displaystyle\frac{9}{11} + \frac{2x}{11}\quad &: \quad x\in[0.5,1].
+\end{aligned}
+\right.
+\end{equation}
+
+The mesh uniform formed of 51x51 squares.  The boundary conditions at the left and at the right walls are set to $T=0$ and 1 K respectively. At the top and the bottom boundaries, a Dirichlet condition is prescribed satisfying the equation \eqref{sol_c1}.
+
+The components of the conductivity tensor are illustrated in figures 2.2-2.4 where the discontinuity of the fields is clearly noted. Figure 2.5 depict the temperature distribution at the steady state (physical time about 0.75 s). The error relative to the exact solution is considered in figure 2.6.  It is clear how the difference between the numerical and exact solution is very small. 
+
+

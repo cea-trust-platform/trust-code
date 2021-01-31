@@ -1,0 +1,143 @@
+# 2D heat conduction with a discontinuous anisotropic conductivity tensor #
+# PARALLEL OK 4 #
+
+dimension 2
+DOMaine DOM
+Pb_conduction pb
+
+# BEGIN MESH #
+Mailler DOM
+{
+        Pave Cavite
+                {
+                Origine 0. 0.
+                Nombre_de_Noeuds 51 51
+                Longueurs 1.0 1.0
+                }
+                {
+                Bord Left X = 0.    0. <= Y <= 1.0
+                Bord Up   Y = 1.0  0. <= X <= 1.0
+                Bord Down    Y = 0.    0. <= X <= 1.0
+                Bord Right  X = 1.0  0. <= Y <= 1.0
+                }
+}
+# END MESH #
+# BEGIN PARTITION
+Partition DOM
+{
+        Partition_tool tranche { tranches 2 2 }
+        Larg_joint 1
+        zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones DOM
+END SCATTER #
+
+vdf dis
+scheme_euler_implicit scheme
+
+Read scheme
+{
+    tinit 0.
+    tmax 10.
+    dt_min 1e-8
+    dt_max 1.
+    seuil_statio 1.e-9
+    facsec 1000
+    facsec_max 5000
+    max_iter_implicite 50
+    Solveur Implicite
+    {
+      Solveur petsc cholesky { quiet }
+    }
+}
+
+solide sol
+read sol
+{
+    rho champ_uniforme 1 1.0
+    lambda champ_fonc_xyz DOM 2 (1.0*(x[0.5)+10.0*(x>0.5)) (4.0*(x[0.5)+2.0*(x>0.5))
+	Cp champ_uniforme 1 1.0
+}
+
+associate pb DOM
+associate pb scheme
+associate pb sol
+
+discretize pb dis
+
+read pb
+{
+	# Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
+	conduction
+	{
+		diffusion { }
+		initial_conditions
+    {
+			temperature champ_uniforme 1 0.
+		}
+		boundary_conditions
+    {
+			Left paroi_temperature_imposee champ_front_uniforme 1 0
+			Right paroi_temperature_imposee champ_front_uniforme 1 1.
+			Down paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+			Up paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+		}
+	}
+
+	post_processing
+	{
+
+		Definition_champs
+		{
+
+		solution_elem Transformation {
+					methode formule expression 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+					localisation elem
+					}
+
+		tempo Transformation {
+                                methode formule expression 1 temp
+                                        source refChamp {
+                                        Pb_Champ pb temperature nom_source temp
+                                }
+                        }
+
+
+		error_elem transformation  {
+					methode formule expression 1 solution_elem-tempo
+					sources_reference {  solution_elem , tempo }
+					localisation elem
+					   }
+
+		}
+
+		format LATA
+		fields dt_post 1.
+		{
+			error_elem
+		}
+	}
+
+  post_processings
+	{
+    volume
+    {
+      format LATA
+  		fields dt_post 1.
+  		{
+  			temperature elem
+  			diffusivite_thermique elem
+  		}
+    }
+  }
+}
+
+solve pb
+lata_to_med NOM_DU_CAS NOM_DU_CAS
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+
+end
