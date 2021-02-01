@@ -2326,6 +2326,8 @@ cd $TRUST_ROOT/bin
 
 # Fichier include non existant, on cree un fichier vide
 includes="
+$TRUST_ROOT/lib/src/LIBAMGX/AmgXWrapper/include/AmgXSolver.hpp
+$TRUST_ROOT/lib/src/LIBAMGX/AmgX/include/amgx_c.h
 $TRUST_ROOT/lib/src/LIBMETIS/include/metis.h
 $TRUST_ROOT/lib/src/LIBMED/MED/include/med.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataV1_field_definitions.h
