@@ -346,140 +346,47 @@ check_nvidia_cuda()
    #########################
    # To active CUDA support:
    #########################
+   # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
    # -Drivers NVidia installed
-   # -Cuda Compilateur found or installed
-   export PETSC_HAVE_CUDA=0
-   NVIDIA_VERSION=`\ls /usr/lib*/libcuda.so.*.* /usr/lib*/nvidia/libcuda.so.*.* 2>/dev/null | awk -Flibcuda.so. '{print $2}' | tail -1`
-   if [ "$NVIDIA_VERSION" = "" ]
+   # -Cuda Compilateur nvcc found or installed
+   # Plusieurs installations possibles:
+   # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
+   # Runtime : CUDA_ROOT=/usr			$CUDA_ROOT/include/cuda/cuda.h !
+   [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
+   nvcc="`\ls $NVHPC/Linux_x86_64/*/compilers/bin/nvcc $CUDA_PATH/bin/nvcc $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
+   ################
+   # Detection nvcc
+   ################
+   if [ "`$nvcc --version 2>/dev/null`" != "" ]
    then
-      echo "No NVIDIA drivers detected on $HOSTNAME."
+      echo "Cuda compiler nvcc: $nvcc"
    else
-      echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
-      BITS=32 && [ "`uname -m | grep 64`" != "" ] && BITS=64
-      #########################################################################
-      # CUDA detecte? On ne doit pas prendre CUDA d'une autre version TRUST...
-      #########################################################################
-      if [ "`nvcc --version 2>/dev/null`" != "" ] && [ "`which nvcc | grep -v TRUST`" != "" ]
-      then
-	 CUDA_ROOT=`which nvcc`
-	 CUDA_ROOT=`dirname $CUDA_ROOT`
-	 CUDA_ROOT=`dirname $CUDA_ROOT`
-      else
-	 ########################################
-	 # Sinon, installation du toolkit de CUDA
-	 ########################################
-	 CUDA_VERSION_XY=5.5 		# Needs 319.xx drivers
-         CUDA_DRIVER_XYZ=319
-         CUDA_VERSION_XYZ=5.5.22
-	 CUDA_URL=http://developer.download.nvidia.com/compute/cuda/`echo $CUDA_VERSION_XY | awk '{gsub("\\\.","_",$1);print $1}'`/rel/installers
-	 CUDA_TOOLKIT=cuda_$CUDA_VERSION_XYZ"_linux_"$BITS.run
-	 if [ "$CUDA_VERSION_XY" = 6.0 ]
-	 then
-	    CUDA_VERSION_XY=6.0
-	    CUDA_DRIVER_XYZ=319
-	    CUDA_VERSION_XYZ=6.0.26_rc
-	    CUDA_URL=http://developer.download.nvidia.com/assets/cuda/secure/CUDA`echo $CUDA_VERSION_XY | awk '{gsub("\\\.","",$1);print $1}'`/RC/installers
-	    CUDA_TOOLKIT=cuda_$CUDA_VERSION_XYZ"_linux"$BITS.run
-	 fi
-         if [ "`echo $NVIDIA_VERSION | awk -F. -v CUDA_DRIVER_XYZ=$CUDA_DRIVER_XYZ '{print ($1<CUDA_DRIVER_XYZ)}'`" = 1 ]
-         then
-            echo "NVIDIA drivers detected but version ($NVIDIA_VERSION) is too old."
-            echo "An update to $CUDA_DRIVER_XYZ.x version is necessary to use CUDA $CUDA_VERSION_XY"
-	 else
-	    CUDA_ROOT=$TRUST_ROOT/exec/cuda$CUDA_VERSION_XY
-	    if [ ! -f $CUDA_ROOT/bin/nvcc ]
-	    then
-               echo "PETSc need C CUDA compiler $CUDA_VERSION_XY, so we try to install it:"
-	       # Telechargement
-	       if [ ! -f $CUDA_TOOLKIT ]
-	       then
-		  echo $ECHO_OPTS "Downloading $CUDA_URL/$CUDA_TOOLKIT ...\c"
-		  wget_ $CUDA_URL/$CUDA_TOOLKIT 1>wget.log 2>&1
-		  if [ $? != 0 ]
-		  then
-		     echo "Download of $CUDA_TOOLKIT failed at:"
-		     echo $CUDA_URL
-		  else
-		     echo "OK"
-		  fi
-	       fi
-	       # Installation
-	       if [ -s $CUDA_TOOLKIT ]
-	       then
-		  rm -r -f $TRUST_ROOT/exec/cuda*
-		  rm -r -f $CUDA_ROOT
-		  mkdir -p $CUDA_ROOT
-		  chmod +x $CUDA_TOOLKIT
-		  # DISPLAT set to "" avoid cuda installer remotely open a terminal...
-		  DISPLAY="" ./$CUDA_TOOLKIT -silent -verbose -toolkit -toolkitpath=$CUDA_ROOT -samples -samplespath=$CUDA_ROOT/samples 1>toolkit.log 2>&1
-		  if [ $? = 0 ]
-		  then
-	             echo "OK"
-		  else
-	             echo "KO. See `pwd`/toolkit.log"
-		  fi
-               fi
-	       # Test
-	       if [ "`$CUDA_ROOT/bin/nvcc --version 2>/dev/null | grep $CUDA_VERSION_XY`" = "" ]
-	       then
-		  echo "$CUDA_ROOT/bin/nvcc not well installed!"
-		  CUDA_ROOT=""
-	       fi
-	    fi
-	 fi
-      fi
-      # Test CUDA compiler
-      if [ "$CUDA_ROOT" = "" ]
-      then
-	 echo "No C CUDA compiler found."
-      else
-	 # On prend le run time livre 3.2 que s'il n'y a pas de runtime installe
-	 # (ex sur gre027058, il faut cuda 3.2 mais on utilise le runtime 3.0 installe)
-	 if [ "`\ls /usr/lib*/libcudart.so.*.* 2>/dev/null`"  = "" ]
-	 then
-	    CUDA_LIB=$CUDA_ROOT/lib`[ $BITS = 64 ] && echo 64`
-	 else
-	    CUDA_LIB=/usr/lib`[ $BITS = 64 ] && echo 64`
-	 fi
-	 #########################################
-	 # Test CUDA encore plus leger qu'avec SDK
-	 # Voir: http://code.google.com/p/gpulammps/source/browse/trunk/lib/gpu/?r=313
-	 #########################################
-	 # NB: Le test ne fonctionne pas sur les machines du CCRT...
-	 echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
-	 rm -r -f nvc_get_devices
-	 tar xfz $TRUST_ROOT/externalpacakges/nvc_get_devices.tgz
-	 cd nvc_get_devices
-	 $CUDA_ROOT/bin/nvcc -o nvc_get_devices *.cu
-	 cd ..
-	 (
-	    # On utilise le script trust en specifiant -gpu
-	    source ../env_TRUST.sh 1>/dev/null 2>&1
-	    LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
-	    export exec=`pwd`/nvc_get_devices/nvc_get_devices
-	    trust -gpu dummy_file 1>$TRUST_ENV/card.log &
-            $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)
-	 )
-	 COMPUTE_CAPABILITY="`awk '/Revision number/ {print $NF}' $TRUST_ENV/card.log | head -1`"
-	 # On ne supporte que les cartes double precision car les simple precision oblige a compiler
-	 # PETSc sans Hypre, MUMPS, etc et il faudrait modifier pas mal SolvPetsc.cpp
-	 PETSC_HAVE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
-	 if [ "$PETSC_HAVE_CUDA" = 0 ]
-	 then
-	    echo "No"
-	 else
-	    echo "Yes. The NVIDIA card is:"
-	    grep Device $TRUST_ENV/card.log
-	    if [ ${TRUST_CC_BASE%g++} = $TRUST_CC_BASE ]
-	    then
-	       echo "But it will not be used cause you should use GNU compilers to build PETSc with CUDA."
-	       echo "So try to run: ./configure -force_petsc_have_cuda -c++=g++ -cc=gcc -fc=gfortran"
-	       echo "To force using GNU compilers."
-	       PETSC_HAVE_CUDA=0
-	    fi
-	 fi
-      fi
+      echo "Error, no nvcc cuda compiler found."
+      echo "On Fedora, for instance you will install CUDA runtime with:" 
+      echo "dnf config-manager --add-repo=https://negativo17.org/repos/fedora-nvidia.repo"
+      echo "sudo dnf install nvidia-driver nvidia-driver-cuda cuda cuda-devel akmod-nvidia nvidia-settings cuda-gcc cuda-gcc-c++ cuda-gcc-gfortran cuda-samples"
+      echo "See more there: https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7"
+      exit -1
    fi
+   ################
+   # Detection CUDA
+   ################
+   if [ "$NVHPC" != "" ]
+   then
+      CUDA_LIB=`ls $NVHPC/Linux_x86_64/*/cuda/lib*/libcudart.so.*.* 2>/dev/null | head -1` # Orcus
+   elif [ "$CUDA_PATH" != "" ]
+   then
+      CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null | head -1` # JeanZay
+   elif [ "$CUDA_LIB" = "" ]
+   then
+      CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* /usr/local/*/lib*/libcudart.so.*.* 2>/dev/null | head -1`" # PCs
+   else
+      echo "Cuda lib libcudart.so not found!" && exit -1
+   fi
+   CUDA_LIB=`dirname $CUDA_LIB`
+   echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
+   CUDA_ROOT=`dirname $CUDA_LIB`
+   echo "Cuda CUDA_ROOT=$CUDA_ROOT"
 }
 
 ########################################################
@@ -769,7 +676,7 @@ case $arch in
 	# 1.5.3: on place gfortran devant g77 si GCC>=4.x
 	#fortran_gnu="g77 gfortran" && [ "`/usr/bin/gcc --version 2>/dev/null | head -1 | awk '/ 4\./ {print 1}'`" = 1 ] && fortran_gnu="gfortran g77"
 	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum
-        fortran_gnu="gfortran g77"
+        fortran_gnu="cuda-gfortran gfortran g77"
 	# On met icpc en 1er/GNU car sur titane (icpc 10% plus rapide que gcc sur le cas cpu_3D...)
 	# si une version recente (>=v10) d'icpc existe car sur ecrins la 8.x ne marche pas bien...
 	# 1.6.9: On interdit strictement Intel 12.x qui fait crasher/bloquer MUMPS (voir MC1520)
@@ -779,9 +686,9 @@ case $arch in
 	   TRUST_F77_BASE="ifort ifc efc $fortran_gnu"
 	   TRUST_cc_BASE="icc ecc gcc"
 	else
-	   TRUST_CC_BASE="armclang++ g++ icpc icc ecc"
+	   TRUST_CC_BASE="armclang++ cuda-g++ g++ icpc icc ecc"
 	   TRUST_F77_BASE="armflang $fortran_gnu ifort ifc efc"
-	   TRUST_cc_BASE="armclang gcc icc ecc"
+	   TRUST_cc_BASE="armclang cuda-gcc gcc icc ecc"
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -980,7 +887,7 @@ TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
 ###########
 # Cas gcc 3
 ###########
-if [ "${TRUST_CC_BASE%/g++}" != "$TRUST_CC_BASE" ]
+if [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ]
 then
    # On trouve sur RedHat 5.3 une sortie de g++ -v: gcc driver version 4.1.2 20070626 (Red Hat 4.1.2-14) executing gcc version 3.4.6
    # NB: g++ --version n'est pas terrible non plus (peyrolle retournera gcc-4.0.1)
@@ -1102,6 +1009,21 @@ then
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
 fi   
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
+
+########
+# CUDA #
+########
+if [ "$TRUST_USE_CUDA" = 1 ]
+then
+   check_nvidia_cuda
+   m="# PATH to CUDA";
+   e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
+   ecrit $m"|"$e"|"$env;eval $e
+   echo "ADD_PATH \$CUDA_ROOT/bin" >> $env
+   echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT${CUDA_LIB#$CUDA_ROOT} " >> $env
+else
+   TRUST_USE_CUDA=0
+fi
 
 #############
 # Debut MPI #
@@ -1769,7 +1691,7 @@ case $TRUST_ARCH_CC in
 	ccFLAGS="-O3"
 	ShLibFlag="\$(TRUST_CC) -shared"
    	;;
-   linux_g++*|cygw*g++*) TRUST_SUPPORTED=1
+   linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
         # Les quotes autour de X.Y sont importants car sinon dependant des variables telles que LC_NUMERIC,....
    # 08/06/15 : pour portabilite sur Fedora22, passage de v5.1.1 a v5.1.2 sur test GNU
    # 27/06/16 : pour portabilite sur Ubuntu16, passage de v5.1.2 a v5.3.2 sur test GNU
@@ -1799,7 +1721,7 @@ case $TRUST_ARCH_CC in
 	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
 	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
 	# On ne met pas -static car plante en // sur dom1 avec scali meme avec -ldl
-	if [ "`basename $TRUST_F77_BASE`" = gfortran ]
+	if [ "`basename $TRUST_F77_BASE`" = gfortran ] || [ "`basename $TRUST_F77_BASE`" = cuda-gfortran ]
 	then
 	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
 	   touch test.cpp
@@ -1975,8 +1897,8 @@ fi
 ###################################
 # Cas du compilateur gnu 2.x et 3.x
 ###################################
-[ ${TRUST_ARCH_CC%_g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
-[ ${TRUST_ARCH_CC%_g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
+[ ${TRUST_ARCH_CC%g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
+[ ${TRUST_ARCH_CC%g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
 ###############
 # Cas de IA64 #
 ###############
@@ -2030,7 +1952,7 @@ else
    TRUST_USE_MUMPS=0
    echo "No"
 fi
-[ "$TRUST_INT64" = "1" ] && TRUST_USE_MUMPS=0 # Mumps provided by Petsc does not accept 64 bit integers
+#[ "$TRUST_INT64" = "1" ] && TRUST_USE_MUMPS=0 # Mumps provided by Petsc does not accept 64 bit integers
 m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRUST_USE_MUMPS";ecrit $m"|"$e"|"$env
 
 ####################################
@@ -2085,32 +2007,39 @@ fi
 # Test si le support GPU est possible avec PETSc
 ################################################
 m="# PATH to PETSc";e="PETSC_DIR=\"\$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"\" && export PETSC_DIR";ecrit $m"|"$e"|"$env
-PETSC_HAVE_CUDA=0
-# Si la machine est utilisee pour construire un binaire semi-statique (get_binary), on ne met pas le support
-# car les shared libraries Cuda font que le binaire ne sera pas portable...
-if [ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 0 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines get_binary | grep $HOST`" = "" ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   check_nvidia_cuda
-   # Defines prend en compte eventuellement:
-   [ "$PETSC_HAVE_CUDA" = 1 ] && Defines=$Defines" -DPETSC_HAVE_CUDA -DPETSC_SKIP_COMPLEX"
-fi
-# 1.6.8 , disable CUDA cause some strange crash with PETSc sometimes on PC with CUDA...
-# May be screen and video card dependant : install on a PC, run and crash on another screen...
-m="# PETSc will use CUDA ?";e="PETSC_HAVE_CUDA=\"$PETSC_HAVE_CUDA\" && export PETSC_HAVE_CUDA";ecrit $m"|"$e"|"$env
-if [ "$PETSC_HAVE_CUDA" = 1 ]
-then
-   m="# PATH to CUDA";
-   if [ ${CUDA_ROOT#$TRUST_ROOT} = $CUDA_ROOT ]
+   #############################
+   # Installation NVIDIA Samples
+   #############################
+   echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
+   # Test de la carte:
+   (
+       source ../env_TRUST.sh 1>/dev/null 2>&1
+       LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
+       rm -r -f nvc_get_devices
+       tar xfz $TRUST_ROOT/externalpackages/AmgX/nvc_get_devices.tgz
+       cd nvc_get_devices && ./build.sh
+       export exec=`pwd`/nvc_get_devices
+       trust -gpu dummy_file 1>>$TRUST_ENV/card.log &
+       $TRUST_ROOT/bin/KSH/wait_for $! 600 # Pour eviter blocage
+   )
+   COMPUTE_CAPABILITY="`awk '/apability/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+   # On ne supporte que les cartes double precision
+   TRUST_USE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
+   if [ "$TRUST_USE_CUDA" = 0 ]
    then
-      # CUDA installe
-      e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
+      echo "No. See error:"
+      cat $TRUST_ENV/card.log
+      exit -1
    else
-      # CUDA downloade
-      e="CUDA_ROOT=\"\$TRUST_ROOT${CUDA_ROOT#$TRUST_ROOT}\" && export CUDA_ROOT";
+      awk '/Device 0/ {print "Yes. The NVIDIA card is "$0}' $TRUST_ENV/card.log
    fi
-   ecrit $m"|"$e"|"$env
-   echo "ADD_PATH $CUDA_ROOT/bin" >> $env
-   echo "ADD_LD_LIBRARY_PATH $CUDA_LIB" >> $env
+   m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
+   Defines=$Defines" -DTRUST_USE_CUDA -DPETSC_SKIP_COMPLEX"
+   # Vu sur orcus (fait ch..r) -pedantic pose probleme:
+   echo "Cuda: -pedantic suppressed in \$CppFlags"
+   CppFlags=`echo $CppFlags | sed "s?-pedantic??g"`
 fi
 ##########
 # VAMPIR #

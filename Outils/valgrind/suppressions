@@ -4,6 +4,68 @@
 #     - the name of the test case involved
 #     - the OS of the machine involved (and the hostname if you want)
 
+###
+###  AMGX library (See https://github.com/NVIDIA/AMGX/issues/108)
+###
+# Triggered by all test case using AmgX solvers
+{
+   <AMGX_solver_setup>
+   Memcheck:Cond
+   ...
+   fun:AMGX_solver_setup
+}
+
+###
+###  OMP library
+###
+# Triggered by all test case when building with ./configure -openmp
+{
+   <OMP_LIB>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib64/libgomp.so.*
+}
+
+###
+###  CUDA library
+###
+# Triggered by all test case using Cuda
+{
+   <CUBLAS_LIB>
+   Memcheck:Leak
+   ...
+   obj:/usr/lib64/libcublasLt.so.*
+}
+{
+   <CUSOLVER_LIB>
+   Memcheck:Leak
+   ...
+   obj:/usr/lib64/libcusolver.so.*
+}
+{
+   <CUBLAS_LIB>
+   Memcheck:Leak
+   ...
+   obj:/usr/lib64/libcublas.so.*
+}
+{
+   <CUDA_LIB>
+   Memcheck:Leak
+   ...
+   obj:/usr/lib64/libcuda.so.*
+}
+{
+   <OPENMPI_LIB>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:do_open
+   fun:opal_cuda_support_init.part.0
+   fun:opal_cuda_check_bufs
+   fun:mca_coll_cuda_allreduce
+}
 
 ###
 ###  MKL library

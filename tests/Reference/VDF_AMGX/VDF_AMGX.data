@@ -1,0 +1,138 @@
+# Warning: Degraded data file of GAMELAN simulation. Do not use except for non regression testing ! #
+# PARALLEL OK #
+
+dimension 3
+
+Pb_Thermohydraulique_QC pb1
+
+Domaine dom
+
+# BEGIN MESH #
+lire_fichier dom dom.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_Rationnel_ordre_2 sch
+
+Lire sch
+{
+    nb_pas_dt_max 10
+    tinit 0.
+    dt_start dt_calc
+    tmax 20.
+    dt_min 1.e-7
+    dt_max 6.e-3
+    dt_impr 1.e-7
+
+    seuil_statio 1.e-14
+    facsec 1
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-10
+    tcpumax 23.30
+
+}
+
+Fluide_Quasi_Compressible air
+Lire air
+{
+    pression   100000.
+
+    mu Champ_Fonc_Fonction temperature 1 (0.86269e-5*val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))/(((val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))+(1.0-val)*0.0020159*((1.0+(((0.86269/1.792)^0.5)*((0.02897/0.0020159)^0.25)))^2)))+(1.792e-5*(1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))/((((1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))+(val)*0.02897*((1.0+(((1.792/0.86269)^0.5)*((0.0020159/0.02897)^0.25)))^2)))
+
+    lambda Champ_Fonc_Fonction temperature 1 7.72e-5*(100000.0*0.02897)/(8.314472*284.15*((((0.02897/0.0020159)-1.0)*val)+1.00))
+
+    loi_etat gaz_parfait {
+
+        Prandtl 0.189301713586576
+        Cp 1.
+        gamma 1.4
+    }
+
+    traitement_pth constant
+
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0. -9.81
+
+Associer air gravite
+
+Associer pb1 dom
+Associer pb1 air
+Associer pb1 sch
+
+option_vdf {
+    p_imposee_aux_faces oui
+}
+Discretiser pb1 dis
+
+Lire pb1
+{
+    Navier_Stokes_QC
+    {
+
+        solveur_pression petsc gcp { precond ssor { } seuil 1.e-8 impr }
+        convection { centre }
+        diffusion { }
+
+        conditions_initiales
+        {
+            vitesse Champ_uniforme 3 0. 0. 0.
+        }
+        conditions_limites
+        {
+            w_w_w_w paroi_fixe
+            c_c_c_c_c_c_c%0 paroi_fixe
+            p paroi_fixe
+            in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.  0.0264513805222214
+            o_o_o_o    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+            f    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+            g  Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+        }
+
+    }
+
+    Convection_diffusion_Chaleur_QC
+    {
+        convection  { quick }
+        diffusion { }
+        conditions_initiales
+        {
+            temperature Champ_Fonc_XYZ dom 1 273+10*(x+y+z)
+        }
+
+        conditions_limites
+        {
+            w_w_w_w paroi_adiabatique
+            c_c_c_c_c_c_c%0 paroi_adiabatique
+            p  paroi_adiabatique
+            in frontiere_ouverte_temperature_imposee  Champ_front_Uniforme 1 273
+            o_o_o_o  frontiere_ouverte T_ext Champ_front_Uniforme 1 273
+            f  frontiere_ouverte T_ext Champ_front_Uniforme 1 272
+            g   frontiere_ouverte T_ext Champ_front_Uniforme 1 272
+        }
+    }
+    Postraitement 
+    {
+       Champs dt_post 1000
+       {
+       	   pression elem
+       }
+    }
+}
+Resoudre pb1
+Fin
+

@@ -124,7 +124,6 @@ MC_ENV_FILE=$install_dir/env.sh
 echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
 echo "export LD_LIBRARY_PATH=$install_dir/lib/:$TRUST_MED_ROOT/lib:$TRUST_ROOT/exec/python/lib/:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE_tmp
 echo "export PYTHONPATH=$install_dir/bin/:`find $install_dir/lib -name site-packages`/:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
-
 echo "@@@@@@@@@@@@ Testing install ..."
 if [ $status -eq 0 ]  # install was successful
 then

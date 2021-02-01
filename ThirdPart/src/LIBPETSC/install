@@ -2,6 +2,58 @@
 # Script d'installation de PETSC
 package=$1
 
+######################################
+# Ajout d'un package au build de PETSc
+######################################
+add_package()
+{
+   echo $ECHO_OPTS "Looking for package $1... \c"
+   external_package=`cd ..;ls -rt $1*.tar.gz $1*.tgz $1*.tar.bz2 2>/dev/null | tail -1`
+   #external_package=`grep petsc $TRUST_ROOT/bin/gestion_externalpackages/liste_dep.csv  | awk -F, '{print "/"$2}' | grep "/"$1`
+   lower_name=`echo $1 | awk '{print tolower($1)}'`
+   if [ "$external_package" = "" ]
+   then
+      # Download
+      with_package="--download-$lower_name=yes"
+   else
+      # Located
+      with_package="--download-$lower_name=../$external_package"
+   fi
+   echo "PETSc needs to build it with $with_package"
+   with_packages=$with_packages" "$with_package
+
+   ###############################
+   # Hack pour un parallel build #
+   ###############################
+   # PL: Si le parallel build echoue retour au build sequentiel avec typiquement "make $j lib || make lib"
+   # Utilisation de flock pour eviter des ar/ranlib en concurrence
+   if [ -f /usr/bin/flock ]
+   then
+      config=config/BuildSystem/config/packages
+      j="-j$TRUST_NB_PROCS"
+      if [ $lower_name = "scalapack" ]
+      then
+         sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
+         sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
+	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
+      elif [ $lower_name = "mumps_marche_pas" ]
+      then
+         sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
+         sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
+         sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
+	 sed -i "1,$ s?make alllib?make $j alllib \|\| make alllib?g"     $config/MUMPS.py || exit -1
+      elif [ $lower_name = "ptscotch" ]
+      then
+         sed -i "1,$ s?make clean ptesmumps esmumps?make clean \&\& make $j ptesmumps \&\& make $j esmumps?g" $config/PTScotch.py || exit -1
+         # -std=c99 ne marche pas toujours, on ajoute -std=gnu99
+         sed -i "1,$ s? -DINT? -std=gnu99 -DINT?g" $config/PTScotch.py || exit -1
+      elif [ $lower_name = "suitesparse" ]
+      then
+         sed -i "1,$ s?library?library $j?g" $config/SuiteSparse.py || exit -1
+      fi
+   fi
+}
+
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
 mkdir -p ${PETSC_ROOT}
@@ -9,9 +61,8 @@ cd ${PETSC_ROOT}/..
 mkdir -p build
 cd build
 
-minimal_mumps=0
+minimal_mumps=0 # && [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 scotch=1
-# [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 [ $minimal_mumps = 1 ] && scotch=0
 [ ! -f /usr/bin/bison ] && scotch=0 # Si bison pas trouve, on n'installe plus bison+m4 (difficile)
 
@@ -117,7 +168,7 @@ for file in `ls $TRUST_ROOT/externalpackages/petsc/*`
 do
    ln -sf $file .
 done
-ln -sf `ls scotch*.tar.gz` ptscotch.tar.gz
+ln -sf `ls $TRUST_ROOT/externalpackages/petsc/scotch*.tar.gz` ptscotch.tar.gz
 
 ####################
 # Download if needed
@@ -159,34 +210,26 @@ then
 #   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi
 
+###########################################################################
+# Construction de la liste des packages a utiliser pour le build de petsc #
+###########################################################################
+with_packages=""
+
 ################
 # GPU support? #
 ################
-if [ $PETSC_HAVE_CUDA = 1 ]
+if [ $TRUST_USE_CUDA = 1 ]
 then
-   REVISION_NUMBER=`$TRUST_Awk '/Revision number:/ {gsub("\\\.","",$NF);print $NF}' $TRUST_ENV/card.log | head -1`
    echo "****************************************"
-   echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
-   echo "REVISION_NUMBER=$REVISION_NUMBER"
-   [ "$REVISION_NUMBER" = "" ] && exit -1
-   ###################################################
-   # Installation de CUPS (algebre lineaire pour CUDA)
-   # CUSP has been renamed CUSPLIBRARY
-   # https://github.com/cusplibrary/cusplibrary
-   ###################################################
-   CUSP=cusplibrary-0.5.1
-   rm -r -f $ROOT/$CUSP
-   #unzip pas toujours installe sur les PCs
-   #On transforme le .zip en .tgz
-   (cd $ROOT;gunzip -f -c $CUSP.tgz | tar -xf -)
-   echo "CUSP is installed."
-   # Add ViennaCL promising: See http://viennacl.sourceforge.net/viennacl-about.html (needs OpenCL)
-   # --download-viennacl=../ViennaCL-1.5.1.tar.gz --with-opencl-dir=$OPENCL_INTEL_ROOT
-   with_gpu="--with-cuda=1 --with-cuda-dir=$CUDA_ROOT
---with-cusp=1 --with-cusp-dir=$ROOT/$CUSP
---with-thrust=1 --with-cuda-arch=sm_$REVISION_NUMBER
---with-ssl=0
-" # SSL nouveau par defaut
+   echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
+   with_gpu="--with-cuda"
+   with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
+   CUDA_INCLUDE=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h 2>/dev/null | head -1`
+   with_gpu=$with_gpu" --with-cuda-include=`dirname $CUDA_INCLUDE`"
+   CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ] && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs" # Necessaire sur irene pas sur jeanzay (fait ch..r)
+   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS,-lcuda,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
+   CUDAFLAGS="-O3 -ccbin $TRUST_cc_BASE"
+   add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
 else
@@ -239,60 +282,7 @@ else
    options="--with-x=0" # Car --with-x=1 pose probleme pour Insure
 fi
 
-######################################
-# Ajout d'un package au build de PETSc
-######################################
-add_package()
-{
-   echo $ECHO_OPTS "Looking for package $1... \c"
-   external_package=`cd ..;ls -rt $1*.tar.gz $1*.tgz $1*.tar.bz2 2>/dev/null | tail -1`
-   #external_package=`grep petsc $TRUST_ROOT/bin/gestion_externalpackages/liste_dep.csv  | awk -F, '{print "/"$2}' | grep "/"$1`
-   lower_name=`echo $1 | awk '{print tolower($1)}'`
-   if [ "$external_package" = "" ]
-   then
-      # Download
-      with_package="--download-$lower_name=yes"
-   else
-      # Located
-      with_package="--download-$lower_name=../$external_package"
-   fi
-   echo "PETSc needs to build it with $with_package"
-   with_packages=$with_packages" "$with_package
 
-   ###############################
-   # Hack pour un parallel build #
-   ###############################
-   # PL: Si le parallel build echoue retour au build sequentiel avec typiquement "make $j lib || make lib"
-   # Utilisation de flock pour eviter des ar/ranlib en concurrence
-   if [ -f /usr/bin/flock ]
-   then
-      config=config/BuildSystem/config/packages
-      j="-j$TRUST_NB_PROCS"
-      if [ $lower_name = "scalapack" ]
-      then
-         sed -i "1,$ s?ARCH         = ?ARCH         = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
-         sed -i "1,$ s?RANLIB       = ?RANLIB       = flock $TRUST_TMP/lib.lock ?g" $config/scalapack.py || exit -1
-	 sed -i "1,$ s?make lib?make $j lib \|\| make lib?g"                        $config/scalapack.py || exit -1
-      elif [ $lower_name = "mumps_marche_pas" ]
-      then
-         sed -i "1,$ s?FL = ?FL = flock $TRUST_TMP/lib.lock ?g"           $config/MUMPS.py || exit -1
-         sed -i "1,$ s?AR      = ?AR      = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
-         sed -i "1,$ s?RANLIB  = ?RANLIB  = flock $TRUST_TMP/lib.lock ?g" $config/MUMPS.py || exit -1
-	 sed -i "1,$ s?make alllib?make $j alllib \|\| make alllib?g"     $config/MUMPS.py || exit -1
-      elif [ $lower_name = "ptscotch" ]
-      then
-         sed -i "1,$ s?make clean ptesmumps esmumps?make clean \&\& make $j ptesmumps \&\& make $j esmumps?g" $config/PTScotch.py || exit -1
-      elif [ $lower_name = "suitesparse" ]
-      then
-         sed -i "1,$ s?library?library $j?g" $config/SuiteSparse.py || exit -1
-      fi
-   fi
-}
-
-###########################################################################
-# Construction de la liste des packages a utiliser pour le build de petsc #
-###########################################################################
-with_packages=""
 
 #################################################
 # Trilinos Multi Level Preconditionning package #
@@ -312,7 +302,7 @@ then
       # Choix de Scalapack natif #
       ############################
       libscalapack=`ls $TRUST_BLAS_LAPACK/lib*scalapack_lp64.a 2>/dev/null`
-      libscalapack=""
+      # libscalapack="" PL: on retente d'utiliser Scalapack de MKL pour TRUST 1.8.3
       # On desactive car SCALAPACK natif sur CCRT/SuperMUC bloque MUMPS parfois avec Petsc 3.2 (ex PAR_Cx sur 5 ou 6 processeurs) !
       # Avec Petsc 3.3 cela a l'air bon ? Oui mais les orderings parallele crashe signe d'une mauvaise installation de Scalapack d'apres MUMPS
       # A essayer avec Petsc 3.4 ?
@@ -407,11 +397,13 @@ fi
 # Add other package if MPI is used:
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # SUPERLU_DIST (supprime dans 1.8.1 car probleme avec OpenMPI natif)
-   # [ $minimal_mumps = 0 ] && add_package superlu_dist
+   # SUPERLU_DIST: Attention avec OpenMPI natif...
+   # SuperLU_dist sur GPU necessite OpenMP ! Argh...
+   #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ $TRUST_USE_CUDA = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
+   [ $minimal_mumps = 0 ] && [ $TRUST_USE_CUDA = 1 ] && [ $PETSC_HAVE_OPENMP = 1 ] && add_package superlu_dist
 
-   # New (Cholmod):
-   [ $minimal_mumps = 0 ] && add_package SuiteSparse
+   # New (SuiteSparse/Cholmod):
+   [ $minimal_mumps = 0 ] && add_package SuiteSparse # Version GPU (Cholesky pas LU)
 
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
@@ -459,6 +451,7 @@ then
    #######
    [ $minimal_mumps = 0 ]  && add_package hypre
 fi
+[ "$TRUST_INT64" = 0 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && add_package ml
 
 ##########
 # Valgrind
@@ -533,9 +526,10 @@ do
    --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
    --with-clean=1 \
    --with-ssl=0 \
+   --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install \
    $with_packages \
    $with_blas \
-   $with_gpu \
+   $with_gpu --CUDAFLAGS="$CUDAFLAGS" \
    $with_openmp \
    $with_mpi \
    $with_64bit_indices \
@@ -554,9 +548,9 @@ do
       # Cas tests
       ###########
       err=0
-      if [ "$PETSC_HAVE_CUDA" != 1 ]
+      if [ "$TRUST_USE_CUDA" != 1 ]
       then
-         # Tests with PETSC_HAVE_CUDA=1 are done below
+         # Tests with TRUST_USE_CUDA=1 are done below
         #  bloque de temps en temps make test
         echo No running make test
 	 err=$?
@@ -599,9 +593,9 @@ cd $ROOT
 ###########
 # Tests GPU
 ###########
-if [ "$PETSC_HAVE_CUDA" = 1 ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   $DIR/test_gpu || exit -1
+   $DIR/test_gpu #|| exit -1
 fi
 
 ##############

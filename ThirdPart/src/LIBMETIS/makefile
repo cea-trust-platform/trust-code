@@ -1,5 +1,5 @@
 lib=../../../lib/src/LIBMETIS/lib/libmetis.a
-metis=metis-5.1.0-p5
+metis=metis-5.1.0-p10
 tar=$(metis).tar.gz
 all:$(lib)
 $(lib):  makefile Install

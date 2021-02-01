@@ -44,9 +44,13 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # }" >> $env
    #
    # Load modules
-   intel="intel/18.0.3.222"
-   intelmpi="mpi/intelmpi/2018.0.3.222"
-   module="$intel $intelmpi"
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      cuda_version=10.2.89
+      module="gnu/7.3.0 mpi/openmpi/2.0.4 cuda/$cuda_version"
+   else
+      module="intel/18.0.3.222 mpi/intelmpi/2018.0.3.222"
+   fi
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -68,7 +72,9 @@ cb_config_list *:1" > ROMIO_HINTS.env
 ##############################
 define_soumission_batch()
 {
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   soumission=2
+   [ "$prod" = 1 ] && soumission=1
+   [ "$gpu"  = 1 ] && soumission=1
    # -M ram with ram>4000 is not supported anymore (06/2014)
    # ram=64000 # 64 GB asked
    # So we use now n cores for one task to have 4*n GB per task
@@ -94,7 +100,9 @@ define_soumission_batch()
    #PARTITION    STATUS TOT_CPUS TOT_NODES    MpC  CpN SpN CpS TpC
    #broadwell    up        39256      7597    4392  28   4   7   1
    #xlarge       up          192       192   48000  64   4  16   1
-   queue=broadwell && [ "$bigmem" = 1 ] && queue=xlarge && ntasks=64
+   queue=broadwell
+   [ "$bigmem" = 1 ] && queue=xlarge && ntasks=64
+   [ "$gpu" = 1 ]    && queue=v100 && [ "`sinfo | grep $queue | grep idle`" = "" ] && [ $qos = test ] && queue=hybrid # Pour tester si v100 pas libre, on prend hybrid
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1

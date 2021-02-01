@@ -28,7 +28,7 @@ cas=$1 && [ "$1" = "" ] && exit -1
 NPROCS=$2
 [ ! -f $cas.data ] && exit -1
 err=0
-petsc_options="-log_summary -mat_no_inode -preload off -ksp_view"
+petsc_options="-log_view -mat_no_inode -preload off -ksp_view"
 line_solver=`grep -i solveur_pression $cas.data`
 # List of solver
 ksp="gcp"
@@ -41,7 +41,7 @@ then
       [ "`grep "$seuil" $cas.data`" = "" ] && echo "Error in $0 !" && exit -1
       line="$ksp { precond $pc $seuil impr }"
       new_line_solver="solveur_pression petsc`[ $device = gpu ] && echo _gpu` $line"
-      options=$options" `[ $device = gpu ] && echo -cusp_synchronize`" # cusp_synchronize is necessary to have correct timings with GPU on several routines, eg MatMult (KSPSolv seems fine though, but slower with -cusp_synchronize) 
+      options=$options" `[ $device = gpu ] && echo -cuda_synchronize`" # cuda_synchronize is necessary to have correct timings with GPU on several routines, eg MatMult (KSPSolv seems fine though, but slower with -cuda_synchronize) 
       #core_per_node="-c 4" # To map one CPU on one GPU if 4CPU+1GPU on a socket
       echo $ECHO_OPTS "1,$ s?$line_solver?$new_line_solver?g\nw $device"_"$cas.data" | ed $cas.data 1>/dev/null 2>&1 || exit -1
       echo $ECHO_OPTS "Running test case on $device with $NPROCS core ($line): $device"_"$cas $options ... \c"

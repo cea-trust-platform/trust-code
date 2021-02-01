@@ -40,5 +40,6 @@ Solv_Optimal inst15;verifie_pere(inst15);
 Test_solveur inst16;verifie_pere(inst16);
 Solv_Petsc inst17;verifie_pere(inst17);
 Solv_Petsc_GPU inst18;verifie_pere(inst18);
-SolveurSys inst19;verifie_pere(inst19);
+Solv_Petsc_AMGX inst19;verifie_pere(inst19);
+SolveurSys inst20;verifie_pere(inst20);
 }

@@ -6,14 +6,15 @@ def read_libs_from_makeliba():
     libtrio=[]
     listL=[]
     for mot in a.split():
-        if (mot.find('-l')>-1):
-            libtrio.append(mot.replace('-l',''))
-        elif (mot.find('-L')>-1):
+        # Commence par chercher -L car parfois -l present dans le chemin (ex: /x86_64-linux/) provoque un bon bug pour -l
+        if (mot.find('-L')>-1):
             P=mot[2:]
             if not P in listL:
                 listL.append(P)
                 pass
             pass
+        elif (mot.find('-l')>-1):
+            libtrio.append(mot.replace('-l',''))
         elif (mot.find('/lib')>-1)and(mot[0]!='-'):
             libtrio.append(mot[mot.rfind('/lib')+4:-2])
             P=(mot[:mot.rfind('/lib')])
@@ -332,7 +333,7 @@ ENDIF(NOT VISUAL)
 
 ''')
     out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
-    out.write('include_directories(${METIS_ROOT}/include  ${TRUST_MED_ROOT}/include  ${TRUST_MEDCOUPLING_ROOT}/include  ${MPI_INCLUDE} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include )\n')
+    out.write('include_directories(${METIS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include )\n')
     out.write('add_definitions(${ADD_CPPFLAGS})\n')
 
     out.write('''

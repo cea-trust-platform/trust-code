@@ -13,14 +13,15 @@ define_modules_config()
    echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
    intel=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
-   if [ $intel = 1 ]
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      module="slurm compilers/gcc/6.5.0 mpi/openmpi/gcc/6.5.0/4.0.1 nvidia_hpc_sdk/20.7"
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/20.7"
+   elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
       module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Marche pas attention (crashes TRUST)
       module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3" # Recommande par AG
-      echo "module purge 1>/dev/null" >> $env
-      echo "module load $module 1>/dev/null" >> $env
-      echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0"      
@@ -33,6 +34,9 @@ define_modules_config()
       # echo "export UCX_NET_DEVICES=mlx5_0:1; " >> $env #pour eviter de prendre la mauvaise carte IB sur n0[37-48]
    fi
    echo "# Module $module detected and loaded on $HOST."   
+   echo "module purge 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null" >> $env
+   echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
@@ -45,7 +49,9 @@ squeue" > $TRUST_ROOT/bin/qstat
 ##############################
 define_soumission_batch()
 {
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   soumission=2
+   [ "$prod" = 1 ] && soumission=1
+   [ "$gpu"  = 1 ] && soumission=1
    # sinfo :
    # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
    # amdq         up   infinite     34  alloc n[002-035]
@@ -55,7 +61,7 @@ define_soumission_batch()
    # gpuq         up   infinite      1   idle gpu01
 
    # On se base sur la frontale pour selectionner la queue par defaut:
-   queue=amdq
+   queue=amdq && [ "$gpu" = 1 ] && queue=gpuq_5118 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpuq_5218
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,11 @@ public:
   friend int operator ==(const char* const, const Nom&) ;
   friend int operator !=(const char* const, const Nom&) ;
   virtual int finit_par(const char* const) const;
-
+  inline bool contient(const Nom& nom)
+  {
+    std::size_t found = getString().find(nom.getString());
+    return found!=std::string::npos;
+  }
   inline const char* getChar() const
   {
     return nom_.c_str();

@@ -1,9 +1,8 @@
-Includes = -I. -I$(TRUST_ROOT)/include/backward\
+Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBAMGX/AmgXWrapper/include -I$(TRUST_ROOT)/lib/src/LIBAMGX/AmgX/include -I$(TRUST_ROOT)/include/backward\
 	-I$(MPI_INCLUDE)\
 	-I$(PETSC_ROOT)/$(TRUST_ARCH)$(OPT)/include\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	
-
 Lib = $(TRUST_LIB)/libsolvsys

@@ -25,14 +25,20 @@ define_modules_config()
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
    # Load modules
-   intel="intel/18.0.3.222" 
-   intelmpi="mpi/intelmpi/2018.0.3.222"
-   romio_hints="feature/openmpi/io/collective_buffering"
-   module="$intel $intelmpi $romio_hints"
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      cuda_version=10.2.89
+      module="gnu/7.3.0 mpi/openmpi/2.0.4 cuda/$cuda_version"
+   else
+      intel="intel/18.0.3.222" 
+      intelmpi="mpi/intelmpi/2018.0.3.222"
+      romio_hints="feature/openmpi/io/collective_buffering"
+      module="$intel $intelmpi $romio_hints"
+   fi
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env
    . $env
 }
 
@@ -41,7 +47,9 @@ define_modules_config()
 ##############################
 define_soumission_batch()
 {
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   soumission=2
+   [ "$prod" = 1 ] && soumission=1
+   [ "$gpu"  = 1 ] && soumission=1
    # ram=16000 # 16 GB asked
    # So we use now n cores for one task to have 4*n GB per task
    [ "$bigmem" = 1 ] && cpus_per_task=4 && soumission=1 # To have 16GB per task
@@ -70,6 +78,7 @@ define_soumission_batch()
    #rome         up       269056      2102    1875  128  8  16   1
    queue=skylake
    [ "$bigmem" = 1 ] && queue=knl && ntasks=68
+   [ "$gpu" = 1 ]    && queue=hybrid && ntasks=96
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1
