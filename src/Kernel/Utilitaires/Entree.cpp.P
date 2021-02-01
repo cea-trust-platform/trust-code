@@ -212,8 +212,8 @@ void convert_to(const char *s, float& ob)
 {
   errno = 0;
   char * errorptr = 0;
-#ifndef _COMPILE_AVEC_GCC_3 /* NO_PROCESS */
-  // PL: strtof n'existe pas semble t'il qu'avec gcc3. pour le reste on utiliser strtod
+#ifndef _COMPILE_AVEC_GCC_ /* NO_PROCESS */
+  // PL: strtof n'existe pas semble t'il qu'avec gcc. pour le reste on utiliser strtod
   // BM: le risque, c'est qu'on ait un overflow qu'on ne detectera pas avec stdtod
   ob = strtod(s, &errorptr);
 #else /* NO_PROCESS */

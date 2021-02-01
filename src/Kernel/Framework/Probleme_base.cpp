@@ -1981,7 +1981,6 @@ int Probleme_base::allocate_file_size(long int& size) const
 {
 #ifndef MICROSOFT
 #ifndef RS6000
-#ifndef _COMPILE_AVEC_GCC_
 #ifdef CHECK_ALLOCATE
   Nom Fichier_File_size(Objet_U::nom_du_cas());
   Fichier_File_size+="_File_size";
@@ -2017,7 +2016,6 @@ int Probleme_base::allocate_file_size(long int& size) const
 #endif
 #endif
 #endif
-#endif
   return 1;
 }
 
@@ -2039,7 +2037,6 @@ int Probleme_base::allocate_file_size(long int& size) const
 int Probleme_base::file_size_xyz() const
 {
 #ifndef RS6000
-#ifndef _COMPILE_AVEC_GCC_
   Nom nom_fich_xyz(".xyz");
   sauver_xyz(0);
   if (Process::je_suis_maitre())
@@ -2051,7 +2048,6 @@ int Probleme_base::file_size_xyz() const
       remove(nom_fich_xyz);
     }
   nb_pb_total+=1;                                        // Permet de connaitre le nombre de probleme total a la fin du preparer_calcul
-#endif
 #endif
   return 1;
 }

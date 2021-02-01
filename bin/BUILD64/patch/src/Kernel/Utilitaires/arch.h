@@ -47,7 +47,7 @@
 // PL: stdlib.h necessaire pour exit() partout dans le code excepte g++>3.x?
 #include <stdlib.h>
 
-#ifdef _COMPILE_AVEC_GCC_3
+#ifdef _COMPILE_AVEC_GCC_
 #define IOS_OPEN_MODE std::_Ios_Openmode
 #define IOS_FORMAT std::_Ios_Fmtflags
 #else
