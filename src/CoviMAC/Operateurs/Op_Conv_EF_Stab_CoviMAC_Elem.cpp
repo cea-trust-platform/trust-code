@@ -110,7 +110,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::preparer_calcul()
 
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  zone.init_equiv(), equation().init_champ_conserve();
+  zone.init_equiv(), equation().init_champ_convecte();
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_CoviMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
@@ -121,7 +121,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
   int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size();
-  const Champ_Inc_base& cc = equation().champ_conserve();
+  const Champ_Inc_base& cc = equation().champ_convecte();
 
   for (auto &&i_m : mats) if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
       {
@@ -151,7 +151,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
-  const Champ_Inc_base& cc = equation().champ_conserve();
+  const Champ_Inc_base& cc = equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
   int i, j, e, eb, f, n, N = vcc.line_size(), M = sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
@@ -206,9 +206,9 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
   Op_Conv_CoviMAC_base::mettre_a_jour(temps);
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  const Champ_Inc_base& cc = equation().champ_conserve();
+  const Champ_Inc_base& cc = equation().champ_convecte();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
-  const DoubleTab& vit = vitesse_->valeurs(), &vcc = equation().champ_conserve().valeurs(), bcc = cc.valeur_aux_bords(), &alp = equation().inconnue().valeurs();
+  const DoubleTab& vit = vitesse_->valeurs(), &vcc = equation().champ_convecte().valeurs(), bcc = cc.valeur_aux_bords(), &alp = equation().inconnue().valeurs();
   DoubleTab balp;
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 

@@ -1211,6 +1211,7 @@ void Equation_base::mettre_a_jour(double temps)
 
   //avancement / mise a jour de champ_conserve
   if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
+  if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
 
   les_sources.mettre_a_jour(temps);
 
@@ -1244,6 +1245,7 @@ void Equation_base::abortTimeStep()
     operateur(i).l_op_base().abortTimeStep();
   inconnue()->abortTimeStep();
   if (champ_conserve_.non_nul()) champ_conserve_->abortTimeStep();
+  if (champ_convecte_.non_nul()) champ_convecte_->abortTimeStep();
   if (medium_owner_) milieu().abortTimeStep();
 }
 
@@ -1333,10 +1335,12 @@ bool Equation_base::initTimeStep(double dt)
       // Mise a jour du temps dans l'inconnue
       inconnue()->changer_temps_futur(tps,i);
       if (champ_conserve_.non_nul()) champ_conserve_->changer_temps_futur(tps,i);
+      if (champ_convecte_.non_nul()) champ_convecte_->changer_temps_futur(tps,i);
       if (calculate_time_derivative()) derivee_en_temps()->changer_temps_futur(tps,i);
 
       inconnue()->futur(i)=inconnue()->valeurs();
       if (champ_conserve_.non_nul()) champ_conserve_->futur(i) = champ_conserve().valeurs();
+      if (champ_convecte_.non_nul()) champ_convecte_->futur(i) = champ_convecte().valeurs();
       if (calculate_time_derivative()) derivee_en_temps()->futur(i)=derivee_en_temps()->valeurs();
 
       // Mise a jour du temps dans les CL
@@ -2210,12 +2214,14 @@ void Equation_base::avancer(int i)
 {
   inconnue().avancer(i);
   if (champ_conserve_.non_nul()) champ_conserve_->avancer(i);
+  if (champ_convecte_.non_nul()) champ_convecte_->avancer(i);
 }
 
 void Equation_base::reculer(int i)
 {
   inconnue().reculer(i);
   if (champ_conserve_.non_nul()) champ_conserve_->reculer(i);
+  if (champ_convecte_.non_nul()) champ_convecte_->reculer(i);
 }
 // FIN MODIF ELI LAUCOIN (22/11/2007)
 

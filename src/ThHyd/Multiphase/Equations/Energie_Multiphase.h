@@ -79,8 +79,25 @@ public :
     return { "alpha_rho_e", calculer_champ_conserve };
   }
 
+  static void calculer_champ_convecte(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_convecte() const
+  {
+    return { "alpha_rho_h", calculer_champ_convecte };
+  }
+
+
   /* cette equation n'est pas resolue directement dans le schema ICE */
   int equation_non_resolue() const;
+
+  virtual Champ_Inc_base& champ_convecte() const //par defaut le champ conserve
+  {
+    return champ_convecte_.valeur();
+  }
+  virtual int has_champ_convecte() const
+  {
+    return champ_convecte_.non_nul();
+  }
+  virtual void init_champ_convecte() const; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_convecte_
 
 protected :
 

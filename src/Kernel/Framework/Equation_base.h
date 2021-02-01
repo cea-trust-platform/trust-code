@@ -218,6 +218,19 @@ public :
     return { "", calculer_champ_conserve};
   }
 
+  virtual Champ_Inc_base& champ_convecte() const //par defaut le champ conserve
+  {
+    return champ_conserve_.valeur();
+  }
+  virtual int has_champ_convecte() const
+  {
+    return champ_conserve_.non_nul();
+  }
+  virtual void init_champ_convecte() const
+  {
+    init_champ_conserve();
+  };
+
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   virtual void creer_champ(const Motcle& motlu);
@@ -311,6 +324,7 @@ protected :
 
   //pour l'interface assembler_blocs
   mutable Champ_Inc champ_conserve_;
+  mutable Champ_Inc champ_convecte_;
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
 

@@ -153,6 +153,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       {
         semi_impl[n_eq.first].ref(n_eq.second->inconnue().passe());
         semi_impl[n_eq.second->champ_conserve().le_nom().getString()].ref(n_eq.second->champ_conserve().passe());
+        semi_impl[n_eq.second->champ_convecte().le_nom().getString()].ref(n_eq.second->champ_convecte().passe());
       }
   //en SETS, on remplace la valeur passee de v par celle donnee par une etape de prediction
   if (sets_ && !first_call_)
@@ -248,6 +249,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       eq_qdm.milieu().mettre_a_jour(t); //partage par toutes les equations
       for (auto &&n_eq : eqs) if (n_eq.second->has_champ_conserve()) n_eq.second->champ_conserve().mettre_a_jour(t);
+      for (auto &&n_eq : eqs) if (n_eq.second->has_champ_convecte()) n_eq.second->champ_convecte().mettre_a_jour(t);
       for (auto &&n_eq : eqs) n_eq.second->sources().mettre_a_jour(t);
     }
 
