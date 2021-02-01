@@ -5,7 +5,7 @@ FILE3=../ICoCo_tutorial.pdf
 default:  all
 
 $(FILE1): TRUST_tutorial.tex Makefile
-ifeq (, $(shell which pdflatex))
+ifeq (, $(shell which pdflatex 2>/dev/null))
 	@echo "No pdflatex command, consider installing texlive package"
 else
 	$(MAKE) clean_TRUST_tutorial
@@ -18,7 +18,7 @@ else
 endif
 
 $(FILE2): Baltik_tutorial.tex Makefile
-ifeq (, $(shell which pdflatex))
+ifeq (, $(shell which pdflatex 2>/dev/null))
 	@echo "No pdflatex command, consider installing texlive package"
 else
 	$(MAKE) clean_Baltik_tutorial
@@ -29,7 +29,7 @@ else
 endif
 
 $(FILE3): ICoCo_tutorial.tex Makefile
-ifeq (, $(shell which pdflatex))
+ifeq (, $(shell which pdflatex 2>/dev/null))
 	@echo "No pdflatex command, consider installing texlive package"
 else
 	$(MAKE) clean_ICoCo_tutorial
