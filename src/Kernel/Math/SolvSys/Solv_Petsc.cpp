@@ -1682,7 +1682,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       if (Reason<0) exit();
     }
   // Recuperation du nombre d'iterations
-  int nbiter;
+  int nbiter=-1;
   if (amgx_)
     {
 #ifdef PETSC_HAVE_CUDA

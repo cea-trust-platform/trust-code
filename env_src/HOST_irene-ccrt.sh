@@ -31,9 +31,10 @@ define_modules_config()
       module="gnu/7.3.0 mpi/openmpi/2.0.4 cuda/$cuda_version"
    else
       intel="intel/18.0.3.222" 
-      intelmpi="mpi/intelmpi/2018.0.3.222"
       romio_hints="feature/openmpi/io/collective_buffering"
-      module="$intel $intelmpi $romio_hints"
+      mpi="mpi/intelmpi/2018.0.3.222"       # 1.8.2
+      mpi="mpi/openmpi/2.0.4 $romio_hints"  # 1.8.3 (car crash intelmpi sur grands nbrs de procs)
+      module="$intel $mpi"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."

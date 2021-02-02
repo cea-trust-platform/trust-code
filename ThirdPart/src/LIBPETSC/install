@@ -302,7 +302,7 @@ then
       # Choix de Scalapack natif #
       ############################
       libscalapack=`ls $TRUST_BLAS_LAPACK/lib*scalapack_lp64.a 2>/dev/null`
-      # libscalapack="" PL: on retente d'utiliser Scalapack de MKL pour TRUST 1.8.3
+      libscalapack="" PL: on retente d'utiliser Scalapack de MKL pour TRUST 1.8.3
       # On desactive car SCALAPACK natif sur CCRT/SuperMUC bloque MUMPS parfois avec Petsc 3.2 (ex PAR_Cx sur 5 ou 6 processeurs) !
       # Avec Petsc 3.3 cela a l'air bon ? Oui mais les orderings parallele crashe signe d'une mauvaise installation de Scalapack d'apres MUMPS
       # A essayer avec Petsc 3.4 ?
