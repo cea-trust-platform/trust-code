@@ -884,21 +884,6 @@ echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chem
 m="# Path to C++ compiler";e="`cherche_file TRUST_CC_BASE $TRUST_CC_BASE`";configure_compilateur_ccache;ecrit $m"|"$e"|"$env;eval $e
 m="# Path to C compiler";e="`cherche_file TRUST_cc_BASE $TRUST_cc_BASE`";configure_compilateur_ccache;ecrit $m"|"$e"|"$env;eval $e
 TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
-###########
-# Cas gcc 3
-###########
-if [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ]
-then
-   # On trouve sur RedHat 5.3 une sortie de g++ -v: gcc driver version 4.1.2 20070626 (Red Hat 4.1.2-14) executing gcc version 3.4.6
-   # NB: g++ --version n'est pas terrible non plus (peyrolle retournera gcc-4.0.1)
-   TRUST_VERSION_GNU=`print_GNU_VERSION`
-   if [ "$TRUST_VERSION_GNU" = "" ] ; then
-      echo "`$TRUST_CC_BASE -v 2>&1`" && echo "GNU version not found. Contact TRUST support."
-      [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
-      exit -1
-   fi
-   [ ${TRUST_VERSION_GNU#2} = $TRUST_VERSION_GNU ] && TRUST_ARCH_CC=$TRUST_ARCH_CC"3"
-fi
 m="# Machine-compiler architecture";e="TRUST_ARCH_CC=$TRUST_ARCH_CC && export TRUST_ARCH_CC";ecrit $m"|"$e"|"$env
 m="# Path to Fortran compiler";e="`cherche_file TRUST_F77_BASE $TRUST_F77_BASE`";ecrit $m"|"$e"|"$env;eval $e
 ####################################################
@@ -1704,6 +1689,7 @@ case $TRUST_ARCH_CC in
    # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
    # 19/07/19 : passage a 9.0.1 pour Fedora 30
    # 01/04/20 : passage a 9.2.0 sur test GNU
+        TRUST_VERSION_GNU=`print_GNU_VERSION`
         TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="10.2.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
@@ -1718,7 +1704,7 @@ case $TRUST_ARCH_CC in
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
 	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
-	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
+	[ $TRUST_ARCH_CC = linux_g++ ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
 	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
 	# On ne met pas -static car plante en // sur dom1 avec scali meme avec -ldl
 	if [ "`basename $TRUST_F77_BASE`" = gfortran ] || [ "`basename $TRUST_F77_BASE`" = cuda-gfortran ]
@@ -1894,11 +1880,10 @@ elif [ $TRUST_SUPPORTED = 1 ]
 then
    echo "\$TRUST_ARCH_CC=$TRUST_ARCH_CC is a supported platform for TRUST."
 fi
-###################################
-# Cas du compilateur gnu 2.x et 3.x
-###################################
-[ ${TRUST_ARCH_CC%g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
-[ ${TRUST_ARCH_CC%g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
+########################
+# Cas du compilateur gnu
+########################
+[ ${TRUST_ARCH_CC%g++} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
 ###############
 # Cas de IA64 #
 ###############

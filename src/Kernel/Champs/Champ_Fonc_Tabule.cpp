@@ -24,11 +24,39 @@
 #include <Champ_Uniforme.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
-
 // XD champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as a function of another field.
 // XD  attr inco chaine inco 0 Name of the field (for example: temperature).
 // XD  attr dim int dim 0 Number of field components.
 // XD  attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
+
+#include <string>
+#include <algorithm>
+void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
+{
+  std::string s((const char*)val1);
+  // lambda checking whehter a char is not a digit:
+  auto checkNotDig = [](unsigned char c)
+  {
+    return !std::isdigit(c);
+  };
+  bool isNum = !s.empty() && std::find_if(s.begin(), s.end(), checkNotDig) == s.end();
+  if (!isNum) // val1 is not a num - this is the correct new syntax
+    {
+      param = val1;
+      dim = atoi(val2);
+      return;
+    }
+  else   // Detect old syntax and inform user
+    {
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "Error in call to " << nom_class << ":" << finl;
+      Cerr << "The syntax has changed in version 1.8.2." << finl;
+      Cerr << "You should now pass the dimension/number of components AFTER the field/parameter name." << finl;
+      Cerr << "Please update your dataset or contact TRUST support team" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      exit();
+    }
+}
 
 // Description:
 //    NE FAIT RIEN
@@ -81,10 +109,10 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbcomp,i;
-
-  is >> nom_champ_parametre_;
-  is >> nbcomp;
-
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Tabule", val1, val2, nbcomp, nom_champ_parametre_);
   nbcomp=lire_dimension(nbcomp,que_suis_je());
   if(nbcomp==1)
     {

@@ -29,13 +29,11 @@
 #include <Vect_Parser_U.h>
 
 Implemente_instanciable(Champ_Fonc_Fonction_txyz_Morceaux,"Champ_Fonc_Fonction_txyz_Morceaux",Champ_Don_base);
-
 // XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-zone. It makes possible the definition of a field that depends on the time and the space.
 // XD   attr problem_name ref_Pb_base problem_name 0 Name of the problem.
 // XD   attr inco chaine inco 0 Name of the field (for example: temperature).
 // XD   attr nb_comp int nb_comp 0 Number of field components.
 // XD   attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_fonction_txyz_morceaux type object.
-
 
 // Description:
 //    Imprime les valeurs du champs sur un flot de sortie
@@ -91,8 +89,10 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   mon_domaine = ref_pb.valeur().domaine();
   Domaine& le_domaine=mon_domaine.valeur();
 
-  is >> nom_champ_parametre_;
-  is >> dim;
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz_Morceaux", val1, val2, dim, nom_champ_parametre_);
 
   dim=lire_dimension(dim,que_suis_je());
   fixer_nb_comp(dim);

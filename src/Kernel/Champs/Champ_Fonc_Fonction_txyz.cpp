@@ -36,10 +36,10 @@ Entree& Champ_Fonc_Fonction_txyz::readOn(Entree& is)
 {
   Nom motlu;
   int nbcomp;
-
-  is >> nom_champ_parametre_;
-  is >> nbcomp;
-
+  Nom val1, val2;
+  is >> val1;
+  is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz", val1, val2, nbcomp, nom_champ_parametre_);
   nbcomp=lire_dimension(nbcomp,que_suis_je());
   if(nbcomp==1)
     {

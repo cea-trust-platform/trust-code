@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@
 #define implemente(a,t) name2(implemente_,a)(t)
 
 // GF nouvelle macro pour fabriquer des vrais noms pour les listes, les Deriv, les Ref,
-#ifdef _COMPILE_AVEC_GCC_3
+#ifdef _COMPILE_AVEC_GCC_
 #define string_macro_trio(a,b) _inter_name(b)
 #define _inter_name(a) #a
 #else
