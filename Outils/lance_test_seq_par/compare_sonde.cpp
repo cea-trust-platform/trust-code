@@ -366,6 +366,8 @@ void recupere_max(ifstream& entree,double* val_max,int nbc,int nl1, int max_val_
 	   val_max[el]=fabs(val_min[el]);
 	     
        }
+   
+  delete[] val_min;
   
 }
 void usage()
