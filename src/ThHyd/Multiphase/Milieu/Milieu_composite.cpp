@@ -67,6 +67,7 @@ Entree& Milieu_composite::readOn(Entree& is)
           if (espn == espm && pn != pm && Interprete::objet_existant(mot))
             {
               Cerr << "Saturation between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
+              phases_melange[especes[n].first].insert(n), phases_melange[especes[n].first].insert(m);
               satn.push_back(&ref_cast(Saturation_base, Interprete::objet(mot)));
               if (satn.back()->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
                 {
@@ -166,6 +167,15 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",     "W/m/K", N, temps,   lambda);
   dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", N, temps,       Cp);
 
+  /* champs de quantites melange */
+  for (auto &&kv : phases_melange)
+    {
+      dis.discretiser_champ("champ_elem", zone_dis,   Nom("masse_volumique_") + kv.first.c_str() + "_melange", "kg/m^3", 1, temps, rho_m);
+      dis.discretiser_champ("champ_elem", zone_dis,         Nom("enthalpie_") + kv.first.c_str() + "_melange",  "J/m^3", 1, temps,   h_m);
+      champs_compris_.ajoute_champ(rho_m);
+      champs_compris_.ajoute_champ(h_m);
+    }
+
   champs_compris_.ajoute_champ(rho);
   champs_compris_.ajoute_champ(mu.valeur());
   champs_compris_.ajoute_champ(nu.valeur());
@@ -197,6 +207,8 @@ void Milieu_composite::mettre_a_jour(double temps)
   lambda.valeur().changer_temps(temps);
   alpha.valeur().changer_temps(temps);
   Cp.valeur().changer_temps(temps);
+  if (rho_m.non_nul()) rho_m.changer_temps(temps), rho_m.valeur().changer_temps(temps);
+  if (h_m.non_nul()) h_m.changer_temps(temps), h_m.valeur().changer_temps(temps);
   mettre_a_jour_tabs();
   Fluide_base::mettre_a_jour(temps);
 }
@@ -339,6 +351,25 @@ void Milieu_composite::mettre_a_jour_tabs()
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
   }
+
+  if (rho_m.non_nul() && h_m.non_nul())
+    {
+      DoubleTab& trm = rho_m.valeurs(), &thm = h_m.valeurs();
+      trm = 0, thm = 0;
+
+      const Equation_base& eqn = *equation.at("alpha");
+      const DoubleTab& a = eqn.inconnue().valeurs(),
+                       &r = rho_fonc.valeurs(), &ent = h_fonc.valeurs();
+      const Nom ph = (rho_m.le_nom().getSuffix("masse_volumique_")).getPrefix("_melange");
+      const int Nl = rho_m.valeurs().dimension_tot(0);
+      // masse volumique melange
+      for (auto n : phases_melange[ph.getString()])
+        for (int i = 0; i < Nl; i++) trm(i) += a(i, n) * r(i, n);
+      // enthalpie melange
+      for (auto n : phases_melange[ph.getString()])
+        for (int i = 0; i < Nl; i++) thm(i) += a(i, n) * r(i, n) * ent(i, n);
+      for (int i = 0; i < Nl; i++) thm(i) /= trm(i);
+    }
 }
 
 void Milieu_composite::associer_equation(const Equation_base *eqn) const

@@ -61,6 +61,7 @@ public :
 
 protected :
   Champ_Fonc rho_fonc, ei_fonc, h_fonc;
+  Champ_Fonc rho_m, h_m;
   void mettre_a_jour_tabs();
   LIST(Fluide_base) fluides;
   static void calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
@@ -68,6 +69,7 @@ protected :
   static void calculer_enthalpie(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
   std::pair<std::string, int> check_fluid_name(const Nom& name);
   std::vector<std::vector<Saturation_base *>> tab_saturation;
+  std::map<std::string, std::set<int>> phases_melange;
 };
 
 #endif
