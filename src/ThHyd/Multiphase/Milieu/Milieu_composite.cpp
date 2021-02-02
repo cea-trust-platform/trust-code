@@ -71,8 +71,10 @@ Entree& Milieu_composite::readOn(Entree& is)
               satn.push_back(&ref_cast(Saturation_base, Interprete::objet(mot)));
               if (satn.back()->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
                 {
-                  fluides[n].set_T0(satn.back()->Tsat(satn.back()->get_Pref()));
-                  fluides[m].set_T0(satn.back()->Tsat(satn.back()->get_Pref()));
+                  const double hn = pn ? satn.back()->Hvs(satn.back()->get_Pref()) : satn.back()->Hls(satn.back()->get_Pref()),
+                               hm = pm ? satn.back()->Hvs(satn.back()->get_Pref()) : satn.back()->Hls(satn.back()->get_Pref()),
+                               T0 = satn.back()->Tsat(satn.back()->get_Pref());
+                  fluides[n].set_h0_T0(hn, T0), fluides[m].set_h0_T0(hm, T0);
                 }
             }
           else satn.push_back(NULL);

@@ -51,7 +51,7 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);
   virtual void set_param(Param& param);
-  virtual void set_T0(double T0);
+  virtual void set_h0_T0(double h0, double T0);
 protected :
 
   // densite

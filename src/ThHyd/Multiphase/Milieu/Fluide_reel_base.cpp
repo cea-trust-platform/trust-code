@@ -43,12 +43,12 @@ Entree& Fluide_reel_base::readOn(Entree& is)
       // -> on fait des champs uniformes et on passe par
       // les methodes de Fluide_base
       Nom n_ch("champ_uniforme 1 "), n_rho(n_ch), n_cp(n_ch), n_beta(n_ch), n_lambda(n_ch), n_mu(n_ch);
-      n_rho += Nom(rho_(T_ref_, P_ref_));
-      n_cp += Nom(cp_(T_ref_, P_ref_));
-      n_beta += Nom(beta_(T_ref_, P_ref_));
-      n_lambda += Nom(lambda_(T_ref_));
-      n_mu += Nom(mu_(T_ref_));
-      Cerr << "rho = " << rho_(T_ref_, P_ref_) << " cp = " << cp_(T_ref_, P_ref_) << " lambda = " << lambda_(T_ref_) << " mu = " << mu_(T_ref_) << " beta = " << beta_(T_ref_, P_ref_) << finl;
+      n_rho += Nom(rho_(T_ref_, P_ref_), "%25e");
+      n_cp += Nom(cp_(T_ref_, P_ref_), "%25e");
+      n_beta += Nom(beta_(T_ref_, P_ref_), "%25e");
+      n_lambda += Nom(lambda_(T_ref_), "%25e");
+      n_mu += Nom(mu_(T_ref_), "%25e");
+      Cerr << "rho = " << n_rho << " cp = " << n_cp << " lambda = " << n_lambda << " mu = " << n_mu << " beta = " << n_beta << finl;
       EChaine ch_rho(n_rho), ch_cp(n_cp), ch_beta(n_beta), ch_lambda(n_lambda), ch_mu(n_mu);
       ch_rho >> rho, ch_cp >> Cp, ch_beta >> beta_th, ch_lambda >> lambda, ch_mu >> mu;
       creer_champs_non_lus();
@@ -120,13 +120,9 @@ int Fluide_reel_base::initialiser(const double& temps)
   return 1;
 }
 
-void Fluide_reel_base::set_T0(double T0)
+void Fluide_reel_base::set_h0_T0(double h0, double T0)
 {
-  if (isotherme_)
-    {
-      T0_ = T0;
-      e0_ = h_(T0_, P_ref_) - P_ref_ / rho_(T0_, P_ref_);
-    }
+  if (isotherme_) return Fluide_base::set_h0_T0(h0, T0);
 }
 
 void Fluide_reel_base::mettre_a_jour(double temps)

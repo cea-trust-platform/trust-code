@@ -372,12 +372,9 @@ void Fluide_base::update_ei_h(double t)
 {
   const Equation_base& eqn = *equation.at("temperature");
   const Champ_base& ch_T = eqn.probleme().get_champ("Temperature");
-  const Champ_base& ch_P = eqn.probleme().get_champ("Pression");
-  const DoubleTab& temp = ch_T.valeurs(t), &pres = ch_P.valeurs(t), &tab_rho = rho.valeurs(),
-                   &temp_b = ch_T.valeur_aux_bords(), &pres_b = ch_P.valeur_aux_bords();
+  const DoubleTab& temp = ch_T.valeurs(t), &temp_b = ch_T.valeur_aux_bords();
 
-  const int Nl = e_int.valeurs().dimension_tot(0), N = Cp.valeurs().line_size(),
-            cCp = sub_type(Champ_Uniforme, Cp.valeur()), cr = sub_type(Champ_Uniforme, rho.valeur());
+  const int Nl = e_int.valeurs().dimension_tot(0), N = Cp.valeurs().line_size(), cCp = sub_type(Champ_Uniforme, Cp.valeur());
   if ((N > 1 && id_composite != -1) || id_composite == -1) Process::exit("energie_interne should be used only with Milieu_composite -> the fluids should have only one component each");
   DoubleTab bCp;
   if (Cp.valeur().a_une_zone_dis_base()) bCp = Cp.valeur().valeur_aux_bords();
@@ -389,14 +386,13 @@ void Fluide_base::update_ei_h(double t)
   for (int i = 0; i < Nl; i++)
     {
       tab_ei(i, 0) = e0_ + tab_Cp(!cCp * i, 0) * (temp(i, id_composite) - T0_);
-      tab_h(i, 0) = tab_ei(i, 0) + pres[i] / tab_rho(!cr * i, 0);
-      tab_DP_h(i, 0) = 1 / tab_rho(!cr * i, 0);
+      tab_h(i, 0) = tab_ei(i, 0);
+      tab_DP_h(i, 0) = 0;
     }
-  const int crb = rho_bord.dimension_tot(0) == 1;
   for (int i = 0; i < e_int_bord.dimension_tot(0); i++)
     {
       e_int_bord(i, 0) = e0_ + bCp(i, 0) * (temp_b(i, id_composite) - T0_);
-      h_bord(i, 0) = e_int_bord(i, 0) + pres_b(i) / rho_bord(!crb * i, 0);
+      h_bord(i, 0) = e_int_bord(i, 0);
     }
 }
 
@@ -548,10 +544,10 @@ int Fluide_base::longueur_rayo_is_discretised()
   return longueur_rayo_.non_nul();
 }
 
-void Fluide_base::set_T0(double T0)
+void Fluide_base::set_h0_T0(double h0, double T0)
 {
   T0_ = T0;
-  e0_ = Cp.valeurs()(0, 0) * T0;
+  e0_ = h0;
 }
 
 const Champ_base& Fluide_base::energie_interne() const

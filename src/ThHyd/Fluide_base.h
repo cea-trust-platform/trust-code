@@ -93,7 +93,7 @@ public :
   int initialiser(const double& temps);
   void creer_champs_non_lus();
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-  virtual void set_T0(double T0);
+  virtual void set_h0_T0(double h0, double T0);
   const DoubleTab& energie_interne_bord() const;
   const DoubleTab& enthalpie_bord() const;
 
