@@ -9,8 +9,8 @@ linux	rsync_ssh	cible	is210376.intra.cea.fr		     	-MPCube -TrioCFD -FLICA5 -IJK
 linux	rsync_ssh	cible	is212957.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC	-gcov		-force_provided_mpich								# Ubuntu 16	Bat 451 LMEC	bureau TMA TRUST
 linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT						-build_64_bit -without-doc						# RedHat 7.6	CEA CCRT
-linux	rsync_ssh	non	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
-linux	rsync_ssh	non	irene-amd-ccrt-gpu.ccc.cea.fr	-limited	-TrioCFD -IJK-FT				-cuda		-without-doc									# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited	-TrioCFD -IJK-FT				-cuda		-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD         						-benchmark -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited	-TrioCFD -IJK-FT        			-cuda 		-without-doc -disable-plot2d -without-visit                					# RedHat 8.1
