@@ -5,6 +5,24 @@
 #     - the OS of the machine involved (and the hostname if you want)
 
 ###
+###  PETSc
+###
+# Triggered by all test cases on some compilers (03/02/2021) after PETSc update (3.14.1)
+# PETSc memory leak reproduced on a simple PETSc test case:
+# $PETSC_DIR/share/petsc/examples/src/ksp/ksp/tutorials/ex23.c 
+#
+{
+   <PETSC_3.14.1>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlsym
+   fun:PetscInitialize
+   fun:main
+}
+
+###
 ###  AMGX library (See https://github.com/NVIDIA/AMGX/issues/108)
 ###
 # Triggered by all test case using AmgX solvers

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Check a big test case from PETSc
 export PETSC_DIR=$PETSC_ROOT/linux_opt
-cp $PETSC_DIR/share/petsc/examples/src/ksp/ksp/examples/tutorials/ex23.c $PETSC_DIR/share/petsc/examples/src/ksp/ksp/examples/tutorials/makefile .
+cp $PETSC_DIR/share/petsc/examples/src/ksp/ksp/tutorials/ex23.c $PETSC_DIR/share/petsc/examples/src/ksp/ksp/tutorials/makefile .
 make ex23
 options="-n 10 -mat_view" 
 options="-n 1000"		
