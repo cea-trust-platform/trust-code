@@ -126,6 +126,8 @@ echo "./configure" >> configure.sh
 
 #echo "./configure && make $MODE" >> make.sh # ajout du configure, necessaire quand il a un pre_configure (ex -std=c++0x)
 echo "make $MODE" >> make.sh
+
+# droits apres la compilation
 if [ "$project" = triocfd ]
 then
   echo "cd ../../" >> make.sh
@@ -134,7 +136,17 @@ then
   echo "find triocfd -type d -exec chmod 755 {} \;" >> make.sh
   echo "cd triocfd/triocfd" >> make.sh
   echo "chmod ugo+x TrioCFD*" >> make.sh
+elif [ "$project" = flica5 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+then
+  echo "cd ../../
+setfacl -Rm g:dm2s-user-cat-b:rx $projet
+setfacl -Rdm g:dm2s-user-cat-b:rx $projet
+setfacl -Rm g:dm2s-user-cat-a:rx $projet
+setfacl -Rdm g:dm2s-user-cat-a:rx $projet
+setfacl -Rx g:dm2s-projet-trust_trio-r $projet
+cd $projet/$projet" >> make.sh
 fi
+
 if [ "$cases" != ""  ]
 then
     echo $cases | awk -F, '{for (i=1;i<=NF;i++) {print $i}}' > liste_pb.all
@@ -183,6 +195,23 @@ if [ $doclean -ge 2 ]
 fi
 
 tar zxf $projet.tar.gz
+echo "we remove $project.tar and $project.tar.gz"
+rm $projet.tar $projet.tar.gz
+
+
+
+if [ "$project" = flica5 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+then
+   # droits au moment de la creation du dossier
+   cd ..
+   setfacl -Rx g:dm2s-projet-trust_trio-r flica5
+   setfacl -Rm g:dm2s-user-cat-b:rx flica5
+   setfacl -Rdm g:dm2s-user-cat-b:rx flica5
+   setfacl -Rm g:dm2s-user-cat-a:rx flica5
+   setfacl -Rdm g:dm2s-user-cat-a:rx flica5
+   cd -
+fi
+
 
 cd $projet
 ../baltik/bin/baltik_build_configure
