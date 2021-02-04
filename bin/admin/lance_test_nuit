@@ -703,7 +703,7 @@ echo>>$liste_log
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
 # petsc-3.10.0 : superlu_dist.py correction TMA
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v MUMPS_5.2.0-p1.tar.gz | grep -v ml-e5040d11aa07.tar.gz | grep -v VTK-8.1.0 | grep -v scalapack-2.0.2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.12.2 | grep -v scotch_6.0.6-p1 | grep -v osqp-0.6.0.tar.gz | grep -v _libgcc_mutex-0.1-main.tar.bz2 | grep -v CurvePlot-9.4.0.tar.gz | grep -v configuration-9.5.0.tar.gz | grep -v medcoupling-9.5.0.tar.gz | grep -v xdata-9.6.0.tar.gz | grep -v hdf5-1.10.3.tar.gz | grep -v superlu_dist-6.1.1.tar.gz | grep -v hypre-2.14.0.tar.gz | grep -v Miniforge3-Linux-aarch64.sh | grep -v IceT-1-0-0.tar.gz | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 | grep -v osqp-0.6.0 | grep -v _libgcc_mutex-0.1-main | grep -v CurvePlot-9.4.0 | grep -v configuration-9.5.0 | grep -v medcoupling-9.5.0 | grep -v xdata-9.6.0 | grep -v hdf5-1.10.3 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v IceT-1-0-0 | grep -v AmgX_6dba8067ca | grep -v nvc_get_devices | grep -v AmgXWrapper_1a93865fe88 | grep -v viennacl-dc552a8 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -716,7 +716,7 @@ then
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    # petsc-3.10.0 : superlu_dist.py correction TMA
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v MUMPS_5.2.0-p1.tar.gz | grep -v ml-e5040d11aa07.tar.gz | grep -v VTK-8.1.0 | grep -v scalapack-2.0.2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v petsc-3.12.2 | grep -v scotch_6.0.6-p1 |  grep -v osqp-0.6.0.tar.gz | grep -v _libgcc_mutex-0.1-main.tar.bz2 | grep -v CurvePlot-9.4.0.tar.gz | grep -v configuration-9.5.0.tar.gz | grep -v medcoupling-9.5.0.tar.gz | grep -v xdata-9.6.0.tar.gz | grep -v hdf5-1.10.3.tar.gz | grep -v superlu_dist-6.1.1.tar.gz | grep -v hypre-2.14.0.tar.gz | grep -v Miniforge3-Linux-aarch64.sh | grep -v IceT-1-0-0.tar.gz`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 |  grep -v osqp-0.6.0 | grep -v _libgcc_mutex-0.1-main | grep -v CurvePlot-9.4.0 | grep -v configuration-9.5.0 | grep -v medcoupling-9.5.0 | grep -v xdata-9.6.0 | grep -v hdf5-1.10.3 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v IceT-1-0-0 | grep -v AmgX_6dba8067ca | grep -v nvc_get_devices | grep -v AmgXWrapper_1a93865fe88 | grep -v viennacl-dc552a8`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
