@@ -45,7 +45,7 @@ public :
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
 private:
-  double alpha_res_; //seuil de declenchement du traitement de l'evanescence
+  double alpha_res_, alpha_res_min_ = 0; //seuil de declenchement du traitement de l'evanescence
 };
 
 #endif
