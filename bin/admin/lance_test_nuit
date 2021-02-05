@@ -4112,8 +4112,6 @@ tar xf externalpackages-$new.tar;
 ./configure \$OPTIONS;
 make
 
-# Option to minimize build. You need to set this variable and then run one of the 3 methods above
-OPTIONS=\"-disable-optionals\"
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------
@@ -4198,9 +4196,6 @@ To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRA
 wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
 chmod +x Installer_TrioCFD.sh;
 ./Installer_TrioCFD.sh -configure-options \"\$OPTIONS\"
-
-# Option to minimize build. You need to set this variable and then run previous method:
-OPTIONS=\"-disable-optionals\"
 
 # Second method if TRUST-$new platform is already installed:
 wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
