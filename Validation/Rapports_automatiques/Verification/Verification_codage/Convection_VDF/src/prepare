@@ -1,0 +1,8 @@
+#!/bin/bash
+keyword=""
+for i in 0 1 2
+do
+   cp -f test.data test$i.data
+   sed -i "1,$ s?# Raffiner_isotrope dom #?$keyword?g" test$i.data
+   keyword=$keyword"Raffiner_isotrope dom "
+done

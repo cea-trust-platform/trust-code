@@ -5,22 +5,22 @@ Domaine dom
 
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 3  3  3 
-                Longueurs 1. 1. 1.
-        }
-        {
-                Bord sym      X = 0.  0. <= Y <= 1.  0. <= Z <= 1. 
-                Bord sym      X = 1.  0. <= Y <= 1.  0. <= Z <= 1. 
-                Bord sym      Y = 0.  0. <= X <= 1.  0. <= Z <= 1. 
-                Bord sym      Y = 1.  0. <= X <= 1.  0. <= Z <= 1. 
-                Bord bas      Z = 0.  0. <= X <= 1.  0. <= Y <= 1.
-                Bord haut     Z = 1.  0. <= X <= 1.  0. <= Y <= 1.
- 
-                }
-} 
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 3  3  3
+        Longueurs 1. 1. 1.
+    }
+    {
+        Bord sym      X = 0.  0. <= Y <= 1.  0. <= Z <= 1.
+        Bord sym      X = 1.  0. <= Y <= 1.  0. <= Z <= 1.
+        Bord sym      Y = 0.  0. <= X <= 1.  0. <= Z <= 1.
+        Bord sym      Y = 1.  0. <= X <= 1.  0. <= Z <= 1.
+        Bord bas      Z = 0.  0. <= X <= 1.  0. <= Y <= 1.
+        Bord haut     Z = 1.  0. <= X <= 1.  0. <= Y <= 1.
+
+    }
+}
 transformer dom x-0.5 y-0.5 z
 tetraedriser_homogene_fin dom
 
@@ -29,35 +29,35 @@ tetraedriser_homogene_fin dom
 Sous_zone zone_tout
 Associate zone_tout dom
 Read zone_tout {
-          Boite
-          Origine  -5.  -5. -5.
-          Cotes   10. 10. 10. 
-          }
+    Boite
+    Origine  -5.  -5. -5.
+    Cotes   10. 10. 10.
+}
 
 
 VEFPreP1b dis
 
 Scheme_euler_explicit sch
 
-Read sch 
+Read sch
 {
-        tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-        tmax 100.
-        dt_min 1.e-7
-        dt_max 1.e-1
-	dt_start dt_calc
-        dt_impr 0.001
-        dt_sauv 20.
-        seuil_statio 1.e-8  
-        facsec 0.5
+    tmax 100.
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.001
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 4.
-	rho Champ_Uniforme 1 5.
+    mu Champ_Uniforme 1 4.
+    rho Champ_Uniforme 1 5.
 }
 
 Associate pb dom
@@ -67,40 +67,41 @@ Associate pb fluide
 Discretize pb dis
 
 Porosites_champ pb champ_uniforme 1 0.5 Read pb
-	{
-	Navier_Stokes_Standard
-		{
-                solveur_pression Gcp { precond ssor { omega 1.5 }
-                                        seuil 1.e-12
-                                        }
-                convection { negligeable }
-                diffusion  { negligeable }
-        	sources {
-	 Perte_charge_reguliere Longitudinale X 2. A 1. B 3.  zone_tout ,
-	 Perte_charge_reguliere Longitudinale Y 2. A 1. B 3.  zone_tout ,
-	 Perte_charge_reguliere Longitudinale Z 2. A 1. B 3.  zone_tout 
-	}
-		initial_conditions { vitesse Champ_fonc_xyz dom 3  0. 0. 0. }
-		boundary_conditions
-			{
-            		sym    symetrie
-			haut   frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 0.
-            		bas    frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 2. }  
-			}
- 	}
-	Post_processing
-        	{       
-                Probes
-                {
-                 vit vitesse periode 0.5 point 1 0. 0. 1
-		 p pression_pa periode 0.5 point 1 0. 0. 0.
-                }
-		fields dt_post 1.
-		{
-		pression elem
-		}
-		}
-	}
+{
+    Navier_Stokes_Standard
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-12
+        }
+        convection { negligeable }
+        diffusion  { negligeable }
+        sources {
+            Perte_charge_reguliere Longitudinale X 2. A 1. B 3.  zone_tout ,
+            Perte_charge_reguliere Longitudinale Y 2. A 1. B 3.  zone_tout ,
+            Perte_charge_reguliere Longitudinale Z 2. A 1. B 3.  zone_tout
+        }
+        initial_conditions { vitesse Champ_fonc_xyz dom 3  0. 0. 0. }
+        boundary_conditions
+        {
+            sym    symetrie
+            haut   frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 0.
+            bas    frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 2. }
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            vit vitesse periode 0.5 point 1 0. 0. 1
+            p pression_pa periode 0.5 point 1 0. 0. 0.
+        }
+        fields dt_post 1.
+        {
+            pression elem
+        }
+    }
+}
 
 Solve pb
 End
