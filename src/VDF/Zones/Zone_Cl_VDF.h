@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,8 @@ enum type_arete
   PERIO_FLUIDE = 7,
   SYM_SYM = 8,
   PAROI_FLUIDE = 14,
-  FLUIDE_PAROI = 15
+  FLUIDE_PAROI = 15,
+  FLUIDE_FLUIDE = 16
 };
 } // namespace TypeAreteCoinVDF
 

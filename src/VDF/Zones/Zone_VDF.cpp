@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -940,7 +940,7 @@ void Zone_VDF::modifier_pour_Cl(const Conds_lim& conds_lim)
                           indic_f1 = k;
                         }
 
-                  if ((n_type == TypeAreteCoinVDF::PAROI_FLUIDE) || (n_type == TypeAreteCoinVDF::FLUIDE_PAROI))// arete coin paroi-fluide
+                  if ((n_type == TypeAreteCoinVDF::PAROI_FLUIDE) || (n_type == TypeAreteCoinVDF::FLUIDE_PAROI) || (n_type == TypeAreteCoinVDF::FLUIDE_FLUIDE))// arete coin paroi-fluide
                     {
                       if ((f(0) >= ndeb)&&(f(0) < nfin))
                         {

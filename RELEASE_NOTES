@@ -1,7 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
-XX/01/21 (TRUST)  Bug fixed   : Useless write of a result file (containing mesh only) with no fields post_processing block  
+XX/XX/21 (TRUST)  Warning     : Detect in VDF a (rare case) with cells near two fluid faces corner where a missing contribution is not computed yet for several schemes except upwind scheme
+XX/01/21 (TRUST)  Bug fixed   : Useless write of a result file (containing mesh only) with no fields post_processing block
 XX/01/21 (TRUST)  Bug fixed   : Add messages to enhance PolyMAC use : detect incorrect mesh or time scheme
 XX/01/21 (TRUST)  New option  : Add convertAllToPoly option to LireMED keyword to convert mixed type cells mesh (eg. tetra and hexa) to polyedras/polygons only cells
 09/03/21 (TRUST)  Keyword     : Terme_puissance_thermique_echange_impose to set a thermal source term P=h(T-Text) now available in VDF

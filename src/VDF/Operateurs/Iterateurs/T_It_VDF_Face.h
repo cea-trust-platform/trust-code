@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -576,6 +576,25 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
               flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
               ((DoubleTab&)(tab_flux_bords))(fac1,orientation(fac3))-=0.5*signe*flux;
+            }
+          break;
+        case TypeAreteCoinVDF::FLUIDE_FLUIDE:
+          if (flux_evaluateur.calculer_arete_coin_fluide())
+            {
+              double flux3=0;
+              int n=la_zone->nb_faces_bord();
+              fac1 = Qdm(n_arete,0);
+              fac2 = Qdm(n_arete,1);
+              fac3 = Qdm(n_arete,2);
+              signe = Qdm(n_arete,3);
+              flux_evaluateur.flux_arete_coin_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              resu[fac3]+=signe*flux3;
+              resu[fac1]+=flux1_2;
+              //resu[fac2]-=flux1_2;
+              if (fac1<n)
+                tab_flux_bords(fac1,orientation(fac3))-=0.5*signe*flux3;
+              //if (fac2<n)
+              //  tab_flux_bords(fac2,orientation(fac3))-=0.5*signe*flux3;
             }
           break;
         default :
@@ -1542,6 +1561,20 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
               resu[fac3]+=signe*flux;
             }
           break;
+        case TypeAreteCoinVDF::FLUIDE_FLUIDE:
+          if (flux_evaluateur.calculer_arete_coin_fluide())
+            {
+              double flux3=0;
+              fac1 = Qdm(n_arete,0);
+              fac2 = Qdm(n_arete,1);
+              fac3 = Qdm(n_arete,2);
+              signe = Qdm(n_arete,3);
+              flux_evaluateur.secmem_arete_coin_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              resu[fac3]+=signe*flux3;
+              resu[fac1]+=flux1_2;
+              //resu[fac2]-=flux1_2;
+            }
+          break;
         default :
           break;
         }
@@ -2392,7 +2425,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
   int signe;
   int n_type;
   int fac1, fac2, fac3, fac4;
-  double aii=0, ajj=0, aii1_2, aii3_4=0, ajj1_2;
+  double aii=0, ajj=0, aii1_2=0, aii3_4=0, ajj1_2;
   for (n_arete=premiere_arete_coin; n_arete<derniere_arete_coin; n_arete++)
     {
       n_type=type_arete_coin(n_arete-premiere_arete_coin);
@@ -2451,6 +2484,18 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
               /* flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
                  resu[fac3]+=signe*flux; */
             }
+          break;
+        case TypeAreteCoinVDF::FLUIDE_FLUIDE:
+          fac1 = Qdm(n_arete,0);
+          fac2 = Qdm(n_arete,1);
+          fac3 = Qdm(n_arete,2);
+          signe = Qdm(n_arete,3);
+          flux_evaluateur.coeffs_arete_coin_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+          matrice(fac3,fac3)+=signe*aii3_4;
+          matrice(fac1,fac1)+=aii1_2;
+          //matrice(fac1,fac2)-=ajj1_2;
+          //matrice(fac2,fac1)-=aii1_2;
+          //matrice(fac2,fac2)+=ajj1_2;
           break;
         default :
           break;
