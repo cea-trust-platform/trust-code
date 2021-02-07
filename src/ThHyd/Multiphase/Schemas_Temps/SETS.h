@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,8 @@ public :
 
 protected :
 
-  int sets_;   // 1 si on fait l'etape de prediction des vitesses
+  int sets_;      // 1 si on fait l'etape de prediction des vitesses
+  int first_call_;//au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
 
   /* criteres de convergences par inconnue (en norme Linf), modifiables par le mot-cle "criteres_convergence" */
   std::map<std::string, double> crit_conv;

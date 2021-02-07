@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,6 +75,7 @@ Entree& SETS::readOn(Entree& is )
 {
   /* valeurs par defaut des criteres de convergence */
   crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "vitesse", 1e-2 }, { "pression", 100 } };
+  first_call_ = 1;
   Simpler::readOn(is);
   return is;
 }
@@ -154,7 +155,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
         semi_impl[n_eq.second->champ_conserve().le_nom().getString()].ref(n_eq.second->champ_conserve().passe());
       }
   //en SETS, on remplace la valeur passee de v par celle donnee par une etape de prediction
-  if (sets_)
+  if (sets_ && !first_call_)
     {
       DoubleTrav secmem(current);
       /* assemblage "implicite, vitesses seulement" */
@@ -169,6 +170,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       semi_impl["vitesse"] = current;
     }
   else semi_impl["vitesse"].ref(eq_qdm.inconnue().passe());
+  first_call_ = 0;
 
   //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl.nb_lignes())
