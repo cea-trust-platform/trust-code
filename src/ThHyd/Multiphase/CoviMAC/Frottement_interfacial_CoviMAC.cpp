@@ -51,14 +51,14 @@ void Frottement_interfacial_CoviMAC::dimensionner_blocs(matrices_t matrices, con
   Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
-  ch.init_cl();
+  const IntTab& fcl = ch.fcl();
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
   int i, e, f, k, l, N = inco.line_size(), d, D = dimension;
   /* faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (k = 0; k < N; k++) for (l = 0; l < N; l++)
+  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (k = 0; k < N; k++) for (l = 0; l < N; l++)
           stencil.append_line(N * f + k, N * f + l);
   /* elements */
   for (e = 0, i = zone.nb_faces_tot(); e < zone.nb_elem(); e++) for (d = 0; d < D; d++, i++) for (k = 0; k < N; k++) for (l = 0; l < N; l++)
@@ -73,7 +73,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &dh_e = zone.diametre_hydraulique_elem();
   const DoubleTab& inco = ch.valeurs(), &passe = ch.passe(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
@@ -89,7 +89,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2)
+  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
       {
         /* interpolations */
         for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, dv = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)

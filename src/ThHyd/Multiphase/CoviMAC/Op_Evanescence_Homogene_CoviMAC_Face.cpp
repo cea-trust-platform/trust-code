@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::dimensionner_blocs(matrices_t matrice
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
-  ch.init_cl();
+  const IntTab& fcl = ch.fcl();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, l, e, f, n, N = inco.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot();
@@ -64,7 +64,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::dimensionner_blocs(matrices_t matrice
         std::set<int> idx;
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */
-        for (f = 0; f < zone.nb_faces(); f++, idx.clear()) if (ch.fcl(f, 0) < 2)
+        for (f = 0; f < zone.nb_faces(); f++, idx.clear()) if (fcl(f, 0) < 2)
             {
               for (i = N * f, n = 0; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                   idx.insert(mat.get_tab2()(j) - 1);
@@ -89,7 +89,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
 {
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
 
@@ -103,7 +103,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
   IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
   DoubleTrav coeff(inco.dimension_tot(0), inco.line_size(), 2); //coeff(i, n, 0/1) : coeff a appliquer a l'equation existante / a l'eq. "inco = v_maj"
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2)
+  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
       {
         /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
         for (a_max = 0, k = -1, n = 0; n < N; n++)
@@ -152,7 +152,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
         int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
         Matrice_Morse& mat = *n_m.second;
         /* faces */
-        for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) < 2) for (n = 0; n < N; n++) if (coeff(f, n, 0))
+        for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (n = 0; n < N; n++) if (coeff(f, n, 0))
                 for (k = maj(f), i = mat.get_tab1()(N * f + n) - 1, j = mat.get_tab1()(N * f + k) - 1; i < mat.get_tab1()(N * f + n + 1) - 1; i++, j++)
                   {
                     int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())

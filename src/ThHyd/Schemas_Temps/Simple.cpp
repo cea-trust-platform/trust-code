@@ -345,6 +345,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       else
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
+  eqn.mettre_a_jour(eqn.schema_temps().temps_courant());
 
   solveur->reinit();
   return (converge==1);
@@ -366,7 +367,16 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   Matrice_Bloc& Mglob = mat_mdv[key].first;
   MD_Vector& mdv = mat_mdv[key].second;
 
-  if (init) //1er passage -> dimensionnement
+  if (init) for (Mglob.dimensionner(eqs.size(), eqs.size()), i = 0; i < eqs.size(); i++)
+      for (j = 0; j < eqs.size(); j++) Mglob.get_bloc(i, j).typer("Matrice_Morse");
+
+  /* pour interface_blocs */
+  std::vector<matrices_t> mats(eqs.size()); //ligne de matrices de l'equation i
+  const std::string& nom_inco = eqs[0]->inconnue().le_nom().getString();
+  for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+      mats[i][j == i ? nom_inco : nom_inco + "_" + eqs[j]->probleme().le_nom().getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+
+  if (init) //1er passage -> dimensionnement des MD_Vector et des matrices
     {
       //extra_items[i] : items du probleme i dont on a besoin sur le processeur courant
       //format: extra_items[indice de probleme][proc, item local] = item distant sur Process::me()
@@ -381,18 +391,27 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
       mdv.copy(mdc);
 
       /* dimensionnement de la matrice globale */
-      Mglob.dimensionner(eqs.size(), eqs.size());
-      for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-          {
-            Mglob.get_bloc(i, j).typer("Matrice_Morse");
-            Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
-            int nl = mdc.get_desc_part(i).valeur().get_nb_items_tot(), nc = mdc.get_desc_part(j).valeur().get_nb_items_tot();
-            if (i == j) eqs[i]->dimensionner_matrice(mat), Matrix_tools::extend_matrix(mat, nl, nc);
-            eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), extra_items[j], nl, nc);
-            if (i == j) mat += mat2;
-          }
+      try /* on tente dimensioner_blocs */
+        {
+          for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
+          for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+              Matrix_tools::extend_matrix(ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()),
+                                          mdc.get_desc_part(i).valeur().get_nb_items_tot(),
+                                          mdc.get_desc_part(j).valeur().get_nb_items_tot());
+        }
+      catch (const std::runtime_error& e) /* methode classique */
+        {
+          for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+              {
+                Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
+                int nl = mdc.get_desc_part(i).valeur().get_nb_items_tot(), nc = mdc.get_desc_part(j).valeur().get_nb_items_tot();
+                if (i == j) eqs[i]->dimensionner_matrice(mat), Matrix_tools::extend_matrix(mat, nl, nc);
+                eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), extra_items[j], nl, nc);
+                if (i == j) mat += mat2;
+              }
+        }
     }
-  else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) //on realloue les tableaux de coeffs
+  else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) //passages suivantes -> il suffit de reallouer les tableaux coeff()
         {
           Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
           mat.get_set_coeff().resize(mat.get_set_tab2().size());
@@ -411,15 +430,23 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   inconnues.echange_espace_virtuel(), dudt = inconnues;
 
   //remplissage des matrices
-  for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-      {
-        Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
-        eqs[i]->ajouter_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], residu_parts[i]);
-        eqs[i]->contribuer_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], mat);
-        /* si i == j, alors assembler_avec_inertie() se charge du produit matrice/vecteur : sinon, on doit le faire a la main */
-        if (i == j) eqs[i]->assembler_avec_inertie(mat, inconnues_parts[i], residu_parts[i]);
-        else mat.ajouter_multvect(inconnues_parts[j], residu_parts[i]);
-      }
+  try //on essaie ajouter_blocs
+    {
+      for (i = 0; i < eqs.size(); i++) eqs[i]->assembler_blocs_avec_inertie(mats[i], residu_parts[i], {});
+      Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
+    }
+  catch (const std::runtime_error& e) /* methode classique */
+    {
+      for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+          {
+            Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+            eqs[i]->ajouter_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], residu_parts[i]);
+            eqs[i]->contribuer_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], mat);
+            /* si i == j, alors assembler_avec_inertie() se charge du produit matrice/vecteur : sinon, on doit le faire a la main */
+            if (i == j) eqs[i]->assembler_avec_inertie(mat, inconnues_parts[i], residu_parts[i]);
+            else mat.ajouter_multvect(inconnues_parts[j], residu_parts[i]);
+          }
+    }
 
   // resolution
   solveur.valeur().reinit();
@@ -452,6 +479,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
       eqs[i]->inconnue().valeurs() = eqs[i]->inconnue().futur();
       eqs[i]->inconnue().valeur().Champ_base::changer_temps(t);
     }
+  for(i = 0; i < eqs.size(); i++) eqs[i]->mettre_a_jour(eqs[i]->schema_temps().temps_courant());
 
   //on desalloue les tableaux de coeffs
   for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()).get_set_coeff().reset();

@@ -273,9 +273,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           }
       /* mises a jour */
       for (auto &&n_v : val_pred) val[n_v.first] = n_v.second;
-      eq_qdm.milieu().mettre_a_jour(t); //partage par toutes les equations
-      for (auto &&n_eq : eqs) if (n_eq.second->has_champ_conserve()) n_eq.second->champ_conserve().mettre_a_jour(t);
-      for (auto &&n_eq : eqs) n_eq.second->sources().mettre_a_jour(t);
+      for (auto &&n_eq : eqs) n_eq.second->mettre_a_jour(t); //fait milieu -> champ conserve -> sources
     }
 
   return;

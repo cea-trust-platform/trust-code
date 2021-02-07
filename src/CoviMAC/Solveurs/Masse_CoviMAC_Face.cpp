@@ -72,22 +72,23 @@ DoubleTab& Masse_CoviMAC_Face::appliquer_impl(DoubleTab& sm) const
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
-  int i, e, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
+  int i, e, f, nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
                    &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
   double fac;
 
   //vitesses aux faces
-  for (f = 0; f < nf_tot; f++) for (n = 0; n < N; n++)
+  for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
       {
         for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += mu_f(f, n, i) * (a_r ? (*a_r)(e, n) : 1);
         sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
       }
 
   //vitesses aux elements
-  for (e = 0; e < ne_tot; e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+  for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
         sm(nf_tot + D * e + d, n) /= pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1);
 
+  sm.echange_espace_virtuel();
   return sm;
 }
 
@@ -103,7 +104,7 @@ void Masse_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   IntTrav sten(0, 2);
   sten.set_smart_resize(1);
   for (f = 0, i = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++, i++) sten.append_line(i, i); //faces reelles
-  for (e = 0, i = N * nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++, i++) sten.append_line(i, i); //elems reels
+  for (e = 0, i = N * nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++, i++) sten.append_line(i, i); //elems reels
   Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), sten, mat2);
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }
@@ -113,9 +114,8 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
   Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
   const Zone_CoviMAC& zone = la_zone_CoviMAC;
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_CoviMAC->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales(),
                    *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
@@ -126,17 +126,17 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
       {
         double ar_f = 1;
-        if (a_r && ch.fcl(f, 0) < 2) for (ar_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        if (a_r && fcl(f, 0) < 2) for (ar_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
             ar_f += mu_f(f, n, i) * (*a_r)(e, n);
         double fac = ar_f * pf(f) * vf(f) / dt;
         secmem(f, n) -= fac * resoudre_en_increments * inco(f, n);
-        if (ch.fcl(f, 0) < 2) secmem(f, n) += fac * passe(f, n);
-        else if (ch.fcl(f, 0) == 3) for (d = 0; d < D; d++)
-            secmem(f, n) += fac * ref_cast(Dirichlet, cls[ch.fcl(f, 1)].valeur()).val_imp(ch.fcl(f, 2), N * d + n) * nf(f, d) / fs(f);
+        if (fcl(f, 0) < 2) secmem(f, n) += fac * passe(f, n);
+        else if (fcl(f, 0) == 3) for (d = 0; d < D; d++)
+            secmem(f, n) += fac * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) * nf(f, d) / fs(f);
         if (mat) (*mat)(N * f + n, N * f + n) += fac;
       }
 
-  for (e = 0, i = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, i++) for (n = 0; n < N; n++)
+  for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++, i++) for (n = 0; n < N; n++)
         {
           double fac = pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1) / dt;
           secmem(i, n) -= fac * (resoudre_en_increments * inco(i, n) - passe(i, n));

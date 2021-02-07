@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 
 #include <Neumann_val_ext.h>
 
-Implemente_base(Neumann_val_ext,"Neumann_val_ext",Cond_lim_base);
+Implemente_base(Neumann_val_ext,"Neumann_val_ext",Neumann);
 
 
 // Description:

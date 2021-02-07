@@ -44,8 +44,10 @@
 #include <Champ_Face_CoviMAC.h>
 #include <Op_Diff_CoviMAC_Face.h>
 #include <Pb_Multiphase.h>
+#include <Echange_contact_CoviMAC.h>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);
+Implemente_ref(Op_Diff_CoviMAC_base);
 
 //// printOn
 //
@@ -68,7 +70,9 @@ void Op_Diff_CoviMAC_base::mettre_a_jour(double t)
 {
   Operateur_base::mettre_a_jour(t);
   //si le champ est constant en temps, alors pas besoin de recalculer nu_ et les interpolations
-  if (!nu_constant_) nu_a_jour_ = 0;
+  if (t <= t_last_maj_) return;
+  if (!nu_constant_) nu_a_jour_ = 0, xwh_a_jour_ = 0, phif_a_jour_ = 0;
+  t_last_maj_ = t;
 }
 
 
@@ -76,19 +80,44 @@ void Op_Diff_CoviMAC_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), N_nu = max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
-  nu_.resize(0, N_nu), nu_bord_.resize(0, N_nu);
+  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
+  if (N_nu == N) nu_.resize(0, N); //isotrope
+  else if (N_nu == N * D) nu_.resize(0, N, D); //diagonal
+  else if (N_nu == N * D * D) nu_.resize(0, N, D, D); //complet
+  else Process::exit(Nom("Op_Diff_CoviMAC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  zone.zone().creer_tableau_elements(nu_), zone.creer_tableau_faces_bord(nu_bord_);
+  zone.zone().creer_tableau_elements(nu_);
+  invh_.resize(0, N), zone.creer_tableau_faces_bord(invh_);
 
-  /* interpolations de nu.grad T : on prend les tailles maximales possibles */
-  zone.init_feb();
-  phif_d.resize(zone.nb_faces_tot() + 1), phif_j.resize(zone.feb_d(zone.nb_faces_tot()));
-  phif_c.resize(zone.feb_d(zone.nb_faces_tot()), eq.inconnue().valeurs().line_size());
-  phif_xb.resize(zone.nb_faces_tot(), eq.inconnue().valeurs().line_size(), dimension);
+  xh_.resize(0, N, D), zone.creer_tableau_faces(xh_); //position des poids harmoniques
+  wh_.resize(0, N), zone.creer_tableau_faces(wh_); //poids de l'amont
+
+  int f_max = sub_type(Op_Diff_CoviMAC_Face, *this) ? zone.nb_faces_tot() : zone.nb_faces(); //en Op_.._Face, on doit aussi faire les faces virtuelles
+  phif_w.resize(f_max, N); //tableaux phif_* statiques
 
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) && !has_diffusivite_turbulente();
-  nu_a_jour_ = 0;
+}
+
+void Op_Diff_CoviMAC_base::init_op_ext() const
+{
+  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
+  int i, M, N = equation().inconnue().valeurs().line_size(), n_mono;
+
+  op_ext = { this };//le premier op_ext est l'operateur local
+  pe_ext.resize(0, 3), zone.creer_tableau_faces_bord(pe_ext);
+  for (pe_ext = -1, i = 0, n_mono = 0, M = N; i < cls.size(); i++) if (sub_type(Echange_contact_CoviMAC, cls[i].valeur())) //on ajoute ceux des Echange_contact
+      {
+        const Echange_contact_CoviMAC& cl = ref_cast(Echange_contact_CoviMAC, cls[i].valeur());
+        const Op_Diff_CoviMAC_base *o_diff = &cl.o_diff.valeur();
+        if (std::find(op_ext.begin(), op_ext.end(), o_diff) == op_ext.end()) op_ext.push_back(o_diff);
+        M = max(M, o_diff->equation().inconnue().valeurs().line_size()); //M -> nb de composantes maximal
+        const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
+        const IntTab& fe_dist = cl.fe_dist();
+        for (int j = 0, idx = std::find(op_ext.begin(), op_ext.end(), o_diff) - op_ext.begin(); j < fvf.nb_faces_tot(); j++, n_mono++)
+          pe_ext(fvf.num_face(j), 0) = idx, pe_ext(fvf.num_face(j), 1) = fe_dist(j, 1), pe_ext(fvf.num_face(j), 2) = n_mono;
+      }
+  whm_.resize(n_mono, N, M, 2);
 }
 
 int Op_Diff_CoviMAC_base::impr(Sortie& os) const
@@ -245,73 +274,73 @@ void Op_Diff_CoviMAC_base::associer_diffusivite(const Champ_base& diffu)
   diffusivite_ = diffu;
 }
 
-
 const Champ_base& Op_Diff_CoviMAC_base::diffusivite() const
 {
   return diffusivite_.valeur();
 }
 
-
-void Op_Diff_CoviMAC_base::update_nu() const
+void Op_Diff_CoviMAC_base::update_nu_invh() const
 {
-  if (nu_a_jour_) return; //deja fait
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  const DoubleTab& nu_src = diffusivite().valeurs();
-  int e, i, j, f, n, nb, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(),
-                         c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension, mult = N_nu / N;
+  const DoubleTab& nu_src = diffusivite().valeurs(), &nf = zone.face_normales();
+  const DoubleVect& fs = zone.face_surfaces();
+  int e, i, j, f, fb, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(),
+                         c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
-  if (N_nu == N_nu_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_(e, n) = nu_src(!c_nu * e, n); //facile
+  if (N_nu == N_nu_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
   else if (N_nu == N * D && N_nu_src == N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
-          nu_(e, D * n + d) = nu_src(!c_nu * e, n);
+          nu_(e, n, d) = nu_src(!c_nu * e, n);
   else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
-        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, D * (D * n + d) + db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
+        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
   else abort();
 
-  /* nu_bord_ : nu_ de l'element voisin */
-  for (f = 0; f < zone.premiere_face_int(); f++) for (n = 0; n < N_nu; n++) nu_bord_(f, n) = nu_(f_e(f, 0), n);
-
-  /* turbulence : ajout de la diffusivite turbulente a nu_, modification de nu_bord_ par les lois de paroi */
-  if (has_diffusivite_turbulente())
+  if (has_diffusivite_turbulente()) /* prise en compte de la turbulence */
     {
       const DoubleTab& nut_src = diffusivite_turbulente().valeurs();
       int c_nut = (nut_src.dimension_tot(0) == 1), N_nut_src = nut_src.line_size();
-      if (N_nu == N_nut_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_(e, n) += nut_src(!c_nut * e, n); //facile
+      if (N_nu == N_nut_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e + n] += nut_src(!c_nut * e, n); //facile
       else if (N_nu == N * D && N_nut_src == N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
-              nu_(e, D * n + d) += nut_src(!c_nut * e, N_nut_src < N_nu ? n : D * n + d);
+              nu_(e, n, d) += nut_src(!c_nut * e, n);
       else if (N_nu == N * D * D && (N_nut_src == N || N_nut_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
-            for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, D * (D * n + d) + db) += (d == db) * nut_src(!c_nut * e, N_nut_src == N ? n : D * n + d);
+            for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) += (d == db) * nut_src(!c_nut * e, N_nut_src == N ? n : D * n + d);
       else abort();
-
-      const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-      int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
-                    ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
-      if (loi_par) for (i = 0; i < cls.size(); i++)
-          {
-            const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
-            for (j = 0; j < fvf.nb_faces(); j++) for(f = fvf.num_face(j), n = 0; n < N_nu; n++)
-                nu_bord_(f, n) *= zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, j);
-          }
     }
 
-  /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
-  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs() : NULL;
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (nb = 0; nb < mult; nb++, i++)
-        nu_(e, i) *= zone.porosite_elem()(e) * (alp ? max((*alp)(e, n), 1e-8) : 1);
-  /* ponderation de nu_bord par alpha si pb_Multiphase */
-  for (f = 0; f < zone.premiere_face_int(); f++) for (n = 0, i = 0; n < N; n++) for (nb = 0; nb < mult; nb++, i++)
-        nu_bord_(f, i) *= (alp ? max((*alp)(f_e(f, 0), n), 1e-8) : 1);
+  /* modification par une classe fille */
+  modifier_nu(nu_);
 
-  /* modification de nu_ / nu_bord_ par une classe fille */
-  modifier_nu(nu_, nu_bord_);
+  /* resistivite (1 / h) aux faces de bord */
+  const RefObjU* modele_turbulence = has_diffusivite_turbulente() ? &equation().get_modele(TURBULENCE) : NULL;
+  const Turbulence_paroi_scal_base *loi_par = modele_turbulence && modele_turbulence->non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence->valeur()) ?
+                                              &ref_cast(Modele_turbulence_scal_base,modele_turbulence->valeur()).loi_paroi().valeur() : NULL;
+  if (loi_par && loi_par->use_equivalent_distance()) for (i = 0; i < cls.size(); i++)
+      {
+        const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
+        for (j = 0; j < fvf.nb_faces_tot(); j++) for (f = fvf.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+            invh_(fb, n) = (loi_par->equivalent_distance(i, j) - zone.dist_norm_bord(f)) * fs(f) * fs(f) / zone.nu_dot(&nu_, f_e(f, 0), n, &nf(f, 0), &nf(f, 0));
+      }
+  else invh_ = 0;
 
-  /* partie virtuelle de nu_bord_ (faisable a la main, mais penible...) */
-  nu_bord_.echange_espace_virtuel();
-
-  /* heavy lifting */
-  zone.fgrad(sub_type(Op_Diff_CoviMAC_Face, *this) ? zone.nb_faces_tot() : zone.nb_faces(), &nu_, &nu_bord_, 1, phif_d, phif_j, phif_c, &phif_w, &phif_xb);
   nu_a_jour_ = 1;
+}
+
+void Op_Diff_CoviMAC_base::update_xwh() const
+{
+  if (!op_ext_init_) init_op_ext(), op_ext_init_ = 1;
+  la_zone_poly_->harmonic_points(la_zcl_poly_->les_conditions_limites(), 0, 1, &nu(), &invh(), xh_, wh_, &whm_);
+  xwh_a_jour_ = 1;
+}
+
+void Op_Diff_CoviMAC_base::update_phif() const
+{
+  if (phif_a_jour_) return; //deja fait
+  const Champ_Inc_base& ch = equation().inconnue().valeur();
+  const IntTab& fcl = sub_type(Champ_Face_CoviMAC, ch) ? ref_cast(Champ_Face_CoviMAC, ch).fcl() : ref_cast(Champ_P0_CoviMAC, ch).fcl();
+  la_zone_poly_->fgrad(la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &invh(), xh(), wh(), &whm(),
+                       &pe_ext, 1, phif_w, phif_d, phif_e, phif_c, &phif_pe, &phif_pc);
+  phif_a_jour_ = 1;
 }

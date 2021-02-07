@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public :
   virtual const Zone_dis_base& zone_dis_base() const;
   int                       imprime(Sortie& , int ) const;
 
-  //tableaux utilitaires sur les CLs
+  //tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
   //types de CL : 0 -> pas de CL
   //              1 -> Echange_externe_impose
   //              2 -> Echange_global_impose
@@ -58,14 +58,19 @@ public :
   //              5 -> Neumann_val_ext
   //              6 -> Dirichlet
   //              7 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab fcl; //fcl(f, .) = (no de la face, type de la CL, no de la CL, indice dans la CL)
+  inline const IntTab& fcl() const
+  {
+    if (!fcl_init_) init_fcl();
+    return fcl_;
+  }
 
 protected :
 
   REF(Zone_VF) la_zone_VF;
 
-
+  void init_fcl() const;
+  mutable IntTab fcl_;
+  mutable int fcl_init_ = 0;
 };
 
 #endif

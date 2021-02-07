@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ void Operateur_Grad_base::dimensionner(Matrice_Morse& mat) const
 DoubleTab& Operateur_Grad_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
 {
   /* on tente ajouter_blocs */
-  secmem *= -1, ajouter_blocs({}, secmem), secmem *= -1; /* pour avoir le bon signe */
+  secmem *= -1, ajouter_blocs({}, secmem, {{ "pression", inco }}), secmem *= -1; /* pour avoir le bon signe */
   return secmem;
 }
 

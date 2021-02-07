@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,10 +70,8 @@ void Op_Div_CoviMAC::associer(const Zone_dis& zone_dis,
 void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, n, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), N = equation().inconnue().valeurs().line_size(), D = dimension;
-  ch.init_cl();
 
   IntTab stencil(0,2);
   stencil.set_smart_resize(1);
@@ -87,12 +85,10 @@ void Op_Div_CoviMAC::dimensionner(Matrice_Morse& matrice) const
 DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, n, N = vit.line_size();
   assert(div.line_size() == N);
-  ch.init_cl();
 
   DoubleTab& tab_flux_bords = ref_cast(DoubleTab,flux_bords_);
   tab_flux_bords.resize(zone.nb_faces_bord(),1);
@@ -116,7 +112,6 @@ void Op_Div_CoviMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) cons
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, n, N = ch.valeurs().line_size();
-  ch.init_cl();
 
   for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
       for (n = 0; n < N; n++) mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);

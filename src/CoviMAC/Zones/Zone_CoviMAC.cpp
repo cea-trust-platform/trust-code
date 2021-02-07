@@ -55,6 +55,8 @@
 #include <ConstDoubleTab_parts.h>
 #include <Lapack.h>
 #include <Option_CoviMAC.h>
+#include <Echange_contact_CoviMAC.h>
+#include <Dirichlet_homogene.h>
 
 #include <LireMED.h>
 #include <EcrMED.h>
@@ -701,15 +703,13 @@ void Zone_CoviMAC::init_ve() const
 }
 
 
-//elements et faces/sommets de bord connectes a chaque face, hors amont/aval : feb_j([feb_d(f), feb_d(f + 1)[)
-void Zone_CoviMAC::init_feb() const
+//stencil face/face : fsten_f([fsten_d(f, 0), fsten_d(f + 1, 0)[)
+void Zone_CoviMAC::init_stencils() const
 {
-  if (is_init["feb"]) return;
+  if (is_init["stencils"]) return;
   const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_f = elem_faces(), &e_s = zone().les_elems();
-  int i, j, k, e, eb, f, fb, s, ne_tot = nb_elem_tot(), ns_tot = zone().domaine().nb_som_tot(), ok;
-  feb_d.set_smart_resize(1), feb_d.resize(1), feb_j.set_smart_resize(1);
-  ff_d.set_smart_resize(1), ff_d.resize(1), ff_j.set_smart_resize(1);
-  febs_d.set_smart_resize(1), febs_d.resize(1), febs_j.set_smart_resize(1);
+  int i, j, k, e, f, fb, s, ns_tot = zone().domaine().nb_som_tot(), ok;
+  fsten_d.set_smart_resize(1), fsten_d.resize(1), fsten_f.set_smart_resize(1);
 
   //is_fb(f) = 1 pour les faces de bord
   IntTrav is_fb(nb_faces_tot());
@@ -721,18 +721,11 @@ void Zone_CoviMAC::init_feb() const
   for (e = 0; e < nb_elem_tot(); e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++) som_e[s].insert(e);
   for (f = 0; f < nb_faces_tot(); f++) if (is_fb(f)) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) som_f[s].insert(f);
 
-  std::set<int> soms, s_e, sf_e, sf_f; //sommets de la face f, elems connectes a e par soms, sommets / faces connectes par une face commune
-  for (f = 0; f < nb_faces_tot(); feb_d.append_line(feb_j.size()), ff_d.append_line(ff_j.size()), febs_d.append_line(febs_j.size()), f++) if (is_fb(f) || f_e(f, 1) >= 0)
+  std::set<int> soms, sf_f; //sommets de la face f, elems connectes a e par soms, sommets / faces connectes par une face commune
+  for (f = 0; f < nb_faces_tot(); fsten_d.append_line(fsten_f.size()), f++) if (f_e(f, 0) >= 0 && (is_fb(f) || f_e(f, 1) >= 0))
       {
-        soms.clear(), s_e.clear(), sf_e.clear(), sf_f.clear();
+        soms.clear(), sf_f.clear();
         for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++) soms.insert(s);
-
-        /* connectivite par les sommets */
-        for (auto &som : soms)
-          {
-            for (auto &el : som_e[som]) s_e.insert(el);
-            for (auto &fa : som_f[som]) s_e.insert(ne_tot + fa);
-          }
 
         /* connectivite par faces + sommets */
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //tout ce qui touche un sommet de f et est voisin de l'amont/aval
@@ -740,187 +733,201 @@ void Zone_CoviMAC::init_feb() const
             {
               for (k = 0, ok = 0; !ok && k < f_s.dimension(1) && (s = f_s(fb, k)) >= 0; k++) ok |= soms.count(s);
               if (!ok) continue; //pas de sommet en commun avec f
-              sf_f.insert(fb);
-              if (is_fb(fb)) sf_e.insert(ne_tot + fb); //on gagne une face de bord
-              else if ((eb = f_e(fb, e == f_e(fb, 0))) >= 0) sf_e.insert(eb); //on gagne un element
+              if (fb != f) sf_f.insert(fb); //face
             }
-
-        /* remplissage : elements, faces de bord (offset ne_tot) */
-        for (auto && el :  s_e) febs_j.append_line(el);
-        for (auto && el : sf_e)  feb_j.append_line(el);
-        for (auto && fa : sf_f)   ff_j.append_line(fa);
+        /* remplissage */
+        for (auto && fa : sf_f) fsten_f.append_line(fa);
       }
 
-  CRIMP(feb_d), CRIMP(feb_j), CRIMP(ff_d), CRIMP(ff_j), CRIMP(febs_d), CRIMP(febs_j);
-  is_init["feb"] = 1;
+  CRIMP(fsten_d), CRIMP(fsten_f);
+  is_init["stencils"] = 1;
 }
 
 
-//pour un champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
-//en preservant exactement les champs verifiant [nu grad T]_e = cte.
-//Entrees : f_max            : calculer sur les faces [0, f_max[
-//          nu (optionnel)   : diffusivite par element
-//          nu_bord (opt)    : diffusivite aux faces de bord
-//          nu_grad          : 1 si on veut [n_f.nu.grad T]_f
-//Sorties : phif_{d,j,c}       : indices de l'interpolation dans phif_j(j), coeffs dans phif_c(j, compo, amont/aval) pour phif_d(f) <= j < phif_d(f + 1)
-//          phif_w (optionnel) : poids de la partie amont de l'interpolation a la composante n dans phif_w(f, n)
-//          pxh (optionnel)    : points sur les faces de bord ou T doit etre evalue
-void Zone_CoviMAC::fgrad(int f_max, const DoubleTab* nu, const DoubleTab *nu_bord, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const
+//construction des "points harmoniques" aux faces lies au gradient d'un champ aux elements
+//entrees : cls          : conditions aux limites
+//          is_p         : cas de la pression dans Navier-Stokes (CL de Neumann -> Dirichlet, le reste -> Neumann homogene)
+//          nu_grad      : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+//          nu(e, n, ..) : diffusivite aux elements (optionnel)
+//          invh(f, n)   : resistivite (1 / h) aux faces de bord (optionnel)
+//sorties : xh(f, n, d)           : point harmonique a la face f pour la composante n
+//          wh(f, n)              : pour les faces internes : Th(f, n) = wh(f, n) * Te(amont, n) + (1 - wh(f, n)) * Te(aval, n) si interne
+//          whm(f_ech, n, 0/1, m) : pour les faces Echange_contact : Th(f, n) = sum_m,i whm(f_ech, n, i, m) T(f_e(f, i), m)
+void Zone_CoviMAC::harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, const DoubleTab *nu, const DoubleTab *invh, DoubleTab& xh, DoubleTab& wh, DoubleTab *whm) const
 {
   const IntTab& f_e = face_voisins();
   const DoubleTab& nf = face_normales();
   const DoubleVect& fs = face_surfaces();
-  const ArrOfInt& i_bord = ind_faces_virt_bord();
-  int i, j, k, l, e, f, fb, n, N = phif_c.dimension(1), ne_tot = nb_elem_tot(), nw, infoo, d, db, D = dimension, nl = D + 1, nrhs = 2; //nombre de composantes
-  char trans = 'N';
-  /* stencils adaptatifs : permet d'omettre les points dont aucune composante n'a besoin */
-  phif_d.set_smart_resize(1), phif_d.resize(1), phif_j.set_smart_resize(1), phif_j.resize(0), phif_c.set_smart_resize(1), phif_c.resize(0, N, 2);
-  if (phif_w) phif_w->resize(f_max, N, 2);
+  int i, j, e, f, fb, n, N = xh.dimension(1), nf_tot = nb_faces_tot(), d, D = dimension;
 
-  /* aux faces : "harmonic average points" aux faces internes, points projetes aux faces de bord */
-  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }}, scal;
-  DoubleTrav lambda(2, N), xef(2, D), def(2),               //de chaque cote : produit nf.nu.nf, projections des CG amont/aval sur la face, distances point-projection
-             lambda_f(2, N, D), vxh, wh(nb_faces_tot(), N); //                 vecteur nu.nf - lambda n_f
-  DoubleTab& xh = pxh ? *pxh : vxh;
-  if (!pxh) xh.resize(nb_faces_tot(), N, D);
-  for (f = 0; f < nb_faces_tot(); f++) if (f_e(f, 0) >= 0 && f_e(f, 1) >= 0)  /* face interne : formule de 10.1007/978-3-642-20671-9_98 */
+  DoubleTrav lambda(2, N), xef(2, D), def(2), lambda_t(2, N, D);
+  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }};
+
+  /* faces de bord : on delegue les CLs monolithique a Echange_contact_CoviMAC et on traite les autres */
+  wh = -1; //valeur par defaut : a la fin, wh = -1 que les faces au bord des joints
+  for (i = 0; i < cls.size(); i++)
+    if (sub_type(Echange_contact_CoviMAC, cls[i].valeur())) ref_cast(Echange_contact_CoviMAC, cls[i].valeur()).harmonic_points(xh, *whm);
+    else /* vraie face de bord */
       {
-        for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) lambda(i, n) = nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0)) / (fs(f) * fs(f));
+        const Cond_lim_base& cl = cls[i].valeur();
+        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
+        int neu  = sub_type(Neumann, cl), neu_h = sub_type(Neumann_homogene, cl), sym = sub_type(Symetrie, cl),
+            dir  = sub_type(Dirichlet, cl), dir_h = sub_type(Dirichlet_homogene, cl),
+            echg = sub_type(Echange_impose_base, cl);
+        for (j = 0; j < fvf.nb_faces_tot(); j++)
+          {
+            f = fvf.num_face(j), e = f_e(f, 0), fb = fbord(f); //numero de l'elem en face, de face de bord
+            //diffusion : partie normale (nf.nu.nf), partie tangente (nu.nf - (nf.nu.nf)nf )
+            for (n = 0; n < N; n++) for (lambda(0, n) = nu_dot(nu, e, n, &nf(f, 0), &nf(f, 0)) / (fs(f) * fs(f)), d = 0; d < D; d++)
+                lambda_t(0, n, d) = (nu_dot(nu, e, n, i3[d], &nf(f, 0)) - lambda(0, n) * nf(f, d)) / fs(f);
+            for (def(0) = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / fs(f), d = 0; d < D; d++) //projection elem->face
+              xef(0, d) = xp_(e, d) + def(0) * nf(f, d) / fs(f), xef(1, d) = xv_(f, d);
+
+            if (is_p ? (neu || neu_h) : (dir || dir_h || echg)) for (n = 0; n < N; n++) //Dirichlet / Echange_impose_base : pt harmonique avec def(1) -> 0
+                {
+                  double r = (invh ? (*invh)(fb, n) : 0) + (echg ? 1. / ref_cast(Echange_impose_base, cl).h_imp(j, n) : 0); //resistance thermique totale
+                  for (wh(f, n) = 1 - 1. / (1 + r * lambda(0, n) / def(0)), d = 0; d < D; d++) //poids de l'amont
+                    xh(f, n, d) = (def(0) * xef(1, d) + r * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + r * lambda(0, n)); //position
+                }
+            else if (is_p ? (dir || dir_h || sym) : (neu || neu_h || sym)) for (n = 0; n < N; n++) //Neumann : projection sur la face selon nu.nf
+                {
+                  double scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (fs(f) * (nu_grad ? lambda(0, n) : 1));
+                  for (wh(f, n) = 1, d = 0; d < D; d++) xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu, e, n, &nf(f, 0), i3[d]) : nf(f, d)) / fs(f);
+                }
+            else abort();
+          }
+      }
+
+  /* faces internes */
+  for (f = premiere_face_int(); f < nf_tot; f++) if (f_e(f, 0) >= 0 && f_e(f, 1) >= 0) /* on doit avoir les deux voisins */
+      {
+        for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) lambda(i, n) = nu_dot(nu, e, n, &nf(f, 0), &nf(f, 0)) / (fs(f) * fs(f));
         for (i = 0; i < 2; i++) for (e = f_e(f, i), def(i) = (i ? -1 : 1) * dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / fs(f), d = 0; d < D; d++)
             xef(i, d) = xp_(e, d) + (i ? -1 : 1) * def(i) * nf(f, d) / fs(f);
         for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
-              lambda_f(i, n, d) = (nu_dot(nu, e, n, N, i3[d], &nf(f, 0)) - lambda(i, n) * nf(f, d)) / fs(f);
+              lambda_t(i, n, d) = (nu_dot(nu, e, n, i3[d], &nf(f, 0)) - lambda(i, n) * nf(f, d)) / fs(f);
         for (n = 0; n < N; n++) for (d = 0; d < D; d++) /* position du "harmonic average point "*/
-            xh(f, n, d) = (lambda(1, n) * def(0) * xef(1, d) + lambda(0, n) * def(1) * xef(0, d) + def(0) * def(1) * (lambda_f(1, n, d) - lambda_f(0, n, d)))
+            xh(f, n, d) = (lambda(1, n) * def(0) * xef(1, d) + lambda(0, n) * def(1) * xef(0, d) + def(0) * def(1) * (lambda_t(1, n, d) - lambda_t(0, n, d)))
                           / (lambda(1, n) * def(0) + lambda(0, n) * def(1));
         for (n = 0; n < N; n++) /* poids de l'amont dans la valeur a ce point */
           wh(f, n) = lambda(0, n) * def(1) / (lambda(1, n) * def(0) + lambda(0, n) * def(1));
       }
-    else if (f < nb_faces() ? ((fb = f) < premiere_face_int()) : (fb = i_bord[f - nb_faces()]) >= 0) for (e = f_e(f, 0), n = 0; n < N; n++) /* face de bord : projection selon nf si on calcule grad, selon nu nf si on calcule nu_grad */
-        {
-          scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (nu_grad ? nu_dot(nu_bord ? nu_bord : nu, nu_bord ? fb : e, n, N, &nf(f, 0), &nf(f, 0)) : fs(f) * fs(f));
-          for (wh(f, n) = 1, d = 0; d < D; d++) xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu_bord ? nu_bord : nu, nu_bord ? fb : e, n, N, &nf(f, 0), i3[d]) : nf(f, d));
-        }
-
-  /* gradient amont / aval : en interpolant T a la projection de l'amont / aval selon nf ou nu.nf */
-  DoubleTrav A, B, phi, W(1), base(N, 2, D, D), dist(2, N);
-  A.set_smart_resize(1), B.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1);
-  for (f = 0; f < nb_faces_tot(); f++, phif_d.append_line(phif_j.size())) if (f_e(f, 0) >= 0 && f_e(f, 1) >= 0)  /* faces internes seulement */
-      {
-        //liste de faces / elements pour l'interpolation, nombre de faces / d'elements/faces de bord
-        const int *fa = &ff_j(ff_d(f)), *eb = &feb_j(feb_d(f)), n_f = ff_d(f + 1) - ff_d(f), n_eb = feb_d(f + 1) - feb_d(f);
-        A.resize(N, n_f, nl), B.resize(N, 2, n_f), phi.resize(n_eb, N, 2);
-
-        /* base : base de "vecteurs tests" amont/aval d'un gradient verifiant nf.nu_am.vec_am = nf.nu_av.vec_av */
-        for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) lambda(i, n) = nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
-        for (n = 0; n < N; n++) for (i = 0; i < 2; i++) for (d = 0; d < D; d++) for (db = 0; db < D; db++)
-                base(n, i, d, db) = i3[d][db] + (nu_dot(nu, f_e(f, !i), n, N, &nf(f, 0), i3[d]) - nu_dot(nu, f_e(f, i), n, N, &nf(f, 0), i3[d])) * nf(f, db) / (2 * lambda(i, n));
-
-        /* matrices pour DGELS (format LAPACK) */
-        for (n = 0; n < N; n++) for (i = 0; i < n_f; i++) for (j = (dot(&xh(fa[i], n, 0), &nf(f, 0), &xh(f, n, 0)) > 0), d = 0; d < nl; d++)
-              A(n, i, d) = d < D ? dot(&xh(fa[i], n, 0), &base(n, j, d, 0), &xh(f, n, 0)) : 1;
-
-        /* seconds membres : au passage, on stocke la distance ||x_{ef} - x_e|| dans dist */
-        for (B = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
-            {
-              dist(i, n) = (i ? -1 : 1) * dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (nu_grad ? lambda(i, n) / fs(f) : fs(f));
-              for (d = 0; d < D; d++) B(n, i, d) = xp_(e, d) + (i ? -1 : 1) * dist(i, n) * (nu_grad ? nu_dot(nu, e, n, N, &nf(f, 0), i3[d]) : nf(f, d)) / fs(f) - xh(f, n, d);
-            }
-
-        /* une resolution par composante */
-        nw = -1, F77NAME(dgels)(&trans, &nl, &n_f, &nrhs, &A(0, 0, 0), &nl, &B(0, 0, 0), &n_f, &W(0), &nw, &infoo);
-        for (W.resize(nw = W(0)), n = 0; n < N; n++) F77NAME(dgels)(&trans, &nl, &n_f, &nrhs, &A(n, 0, 0), &nl, &B(n, 0, 0), &n_f, &W(0), &nw, &infoo);
-
-        /* stockage : passage des HAP aux elements */
-        for (phi = 0, i = 0; i < 2; i++) for (j = std::lower_bound(eb, eb + n_eb, f_e(f, i)) - eb, n = 0; n < N; n++) //partie 2 points
-            for (k = 0; k < 2; k++) phi(j, n, k) = (i ? 1 : -1) * (k ? wh(f, n) : 1 - wh(f, n)) / dist(k, n);
-        for (i = 0; i < n_f; i++) for (fb = fa[i], j = 0; j < 2 && f_e(fb, j) >= 0; j++)
-            for (k = std::lower_bound(eb, eb + n_eb, wh(fb, 0) == 1 ? ne_tot + fb : f_e(fb, j)) - eb, n = 0; n < N; n++)
-              for (l = 0; l < 2; l++) phi(k, n, l) += (l ? -1 : 1) / dist(l, n) * B(n, l, i) * (j ? 1 - wh(fb, n) : wh(fb, n));
-        /* dans le stencil : amont/aval d'abord en obligatoire */
-        for (i = 0; i < 2; phif_j.append_line(f_e(f, i)), i++)
-          for (phif_c.resize((k = phif_j.size()) + 1, N, 2), j = std::lower_bound(eb, eb + n_eb, f_e(f, i)) - eb, n = 0; n < N; n++)
-            for (l = 0; l < 2; l++) phif_c(k, n, l) = phi(j, n, l);
-        /* puis le reste en option */
-        for (i = 0; i < n_eb; i++) if (eb[i] != f_e(f, 0) && eb[i] != f_e(f, 1))
-            {
-              for (scal = 0, n = 0; n < N; n++) for (l = 0; l < 2; l++) scal = max(scal, dabs(phi(i, n, l)) / (dist(0, n) + dist(1, n)));
-              if (scal < 1e-10) continue; //on peut sauter cette ligne
-              for (phif_c.resize((k = phif_j.size()) + 1, N, 2), phif_j.append_line(eb[i]), n = 0; n < N; n++) for (l = 0; l < 2; l++)
-                  phif_c(k, n, l) = phi(i, n, l);
-            }
-        /* poids : ceux equilibrant les contributions amont / aval dans le cas a deux points */
-        if (phif_w) for (n = 0; n < N; n++)
-            {
-              (*phif_w)(f, n, 0) = dist(0, n) * wh(f, n) / (dist(0, n) * wh(f, n) + dist(1, n) * (1 - wh(f, n)));
-              (*phif_w)(f, n, 1) = 1 - (*phif_w)(f, n, 0);
-            }
-      }
-    else if (phif_w) for (n = 0; n < N; n++) (*phif_w)(f, n, 0) = 1, (*phif_w)(f, n, 1) = 0; //faces de bord : on remplit quand meme les poids
 }
 
-
-//pour un champ T aux elements, interpole grad T aux elements (combine fgrad + ve)
-//fcl / is_flux renseignent les CLs : is_flux[fcl(f, 0)] = 0 (Tb impose) / 1 ([nu grad T]_b impose)
-//dependance en les Te / Tb / dTb dans egrad_(j/c)([egrad_d(e), egrad_d(e + 1)[)
-void Zone_CoviMAC::egrad(const IntTab& fcl, const std::vector<int>& is_flux, const DoubleTab *nu, int N, IntTab& egrad_d, IntTab& egrad_j, DoubleTab& egrad_c, DoubleTab *pxfb) const
+//pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
+//en preservant exactement les champs verifiant [nu grad T]_e = cte.
+//Entrees : cls           : conditions aux limites
+//          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_CoviMAC)
+//          nu(e, n, ..)  : diffusivite aux elements (optionnel)
+//          invh(f, n)    : resistivite (1/h) aux bords (optionnel)
+//          xh, wh, whm   : donnees sur les points harmoniques retournees par harmonic_points()
+//          pe_ext        : donnees sur les CL Echange_contact retournees par Op_Diff_CoviMAC_base
+//          nu_grad       : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+//Sorties : phif_w(f, n)                         : poids de l'amont dans la compo n du flux
+//          phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
+//          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
+//          phif_pe(i, 0/1), phif_pc(i, n, m, c) : indices (pb, elem) /coefficients distants et/ou non diagonaux
+void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const DoubleTab *invh,
+                         const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad,
+                         DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab *phif_pe, DoubleTab *phif_pc) const
 {
-  const IntTab& f_e = face_voisins(), &e_f = elem_faces();
-  const DoubleTab& nf = face_normales(), &vfd = volumes_entrelaces_dir();
-  const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
-  int i, j, jb, k, e, eb, f, n, ne_tot = nb_elem_tot(), d, D = dimension, nc, nl = D + 1, nw, infoo, un = 1; //nombre de composantes
+  const IntTab& f_e = face_voisins();
+  const DoubleTab& nf = face_normales();
+  const DoubleVect& fs = face_surfaces();
+  int i, j, k, l, e, f, e_s, f_s, f_sb, m, n, N = xh.dimension(1), M = whm ? whm->dimension(2) : N, ne_tot = nb_elem_tot(), nw, infoo, d, D = dimension, f_max = phif_w.dimension(0), nnz, hdiag;
   char trans = 'N';
+  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }};
+  phif_d.set_smart_resize(1), phif_e.set_smart_resize(1), phif_e.resize(0), phif_c.set_smart_resize(1), phif_c.resize(0, N, 2);
+  if (phif_pe) phif_d.resize(1, 2), phif_pe->set_smart_resize(1), phif_pe->resize(0, 2), phif_pc->set_smart_resize(1), phif_pc->resize(0, N, M, 2);
+  else phif_d.resize(1);
 
-  /* 1. localisation des valeurs aux bords : CG des faces pour les CL de Dirichlet, projection de xp sur la face pour les CLs de Neumann */
-  DoubleTrav vxfb, A, B, P, W(1), fval_c(febs_d(nb_faces()), N);
-  A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1);
-  DoubleTab& xfb = pxfb ? *pxfb : vxfb;
-  if (!pxfb) xfb.resize(nb_faces_tot(), N, D);
-  double scal, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0}, { 0, 0, 1 }};
-  for (f = 0; f < nb_faces_tot(); f++)
-    if (!fcl(f, 0)) continue; //face interne
-    else if (!is_flux[fcl(f, 0)]) for (n = 0; n < N; n++) for (d = 0; d < D; d++) xfb(f, n, d) = xv_(f, d); //Dirichlet -> CG de la face
-    else for (e = f_e(f, 0), n = 0; n < N; n++) //Neumann -> projection de xp
-        {
-          scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / nu_dot(nu, e, n, N, &nf(f, 0), &nf(f, 0));
-          for (d = 0; d < D; d++) xfb(f, n, d) = xp_(e, d) + scal * nu_dot(nu, e, n, N, &nf(f, 0), i3[d]);
-        }
+  DoubleTrav base, A, B, interp, phi, W(1), r_int(N, 2), lambda(2);
+  base.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), interp.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1);
+  std::vector<std::pair<int, int>> p_e; //stencil aux elements
+  init_stencils();
 
-  /* 2. interpolation des valeurs du champ aux CG des faces reelles, avec les stencils febs_d / febs_j */
-  for (f = 0; f < nb_faces(); f++) for (nc = febs_d(f + 1) - febs_d(f), n = 0; n < N; n++)
+  for (f = 0; f < f_max; (phif_pe ? phif_d.append_line(phif_e.size(), phif_pe->dimension(0)) : phif_d.append_line(phif_e.size())), f++)
+    if (fcl(f, 0) >= 0 && sub_type(Echange_contact_CoviMAC, cls[fcl(f, 1)].valeur())) //Echange_contact -> delegation
       {
-        const double *xam = &xp_(f_e(f, 0), 0), *xav = f_e(f, 1) >= 0 ? &xp_(f_e(f, 1), 0) : &xfb(f, n, 0), *xe; //points amont/aval
-        auto v3 = cross(dimension, dimension, xam, xav, &xv_(f, 0), &xv_(f, 0));
-        if ((D < 3 ? dabs(v3[2]) : dot(&v3[0], &v3[0])) < 1e-6 * fs(f) * fs(f)) //CG aligne avec les points amont/aval -> interp a deux points
-          fval_c(febs_d(f), n) = vfd(f, 1) / vf(f), fval_c(febs_d(f) + 1, n) = vfd(f, 0) / vf(f);
-        else //sinon -> interp  comme dans fgrad
-          {
-            for (A.resize(nc, nl), B.resize(nc), P.resize(nc), B = 0, B(D) = 1, j = 0, jb = febs_d(f); j < nc; j++, jb++)
-              for (e = febs_j(jb), xe = e < ne_tot ? &xp_(e, 0) : &xfb(e - ne_tot, n, 0), P(j) = 1. / sqrt(dot(xe, xe, &xv_(f, 0), &xv_(f, 0))), k = 0; k < nl; k++)
-                A(j, k) = (k < D ? xe[k] - xv_(f, k) : 1) * P(j);
+        ref_cast(Echange_contact_CoviMAC, cls[fcl(f, 1)].valeur()).fgrad(phif_w, phif_d, phif_e, phif_c, *phif_pe, *phif_pc); //remplit toutes les faces de la CL
+        phif_d.resize(phif_d.dimension(0) - 1, 2), f = phif_d.dimension(0) - 1; //pour que f et phif_d soient bons a la prochaine iteration de la boucle
+      }
+    else if (wh(f, 0) >= 0) //faces internes ou de bord "normales" -> il faut etre assez loin du joint pour que tous les ooints harmoniques soient definis
+      {
+        int ok = 1, n_f = fsten_d(f + 1) - fsten_d(f), nc = n_f + 1, nl = D + 1, nrhs = 1 + (f_e(f, 1) >= 0); //nombre de faces dans le stencil, indice de face de bord
+        const int *fa = &fsten_f(fsten_d(f)); //pointeur vers la premiere face du stencil
+        for (i = 0; i < n_f; i++) ok &= (wh(fa[i], 0) >= 0);
+        if (!ok) continue; //il manque un point harmonique -> on sort
 
-            /* moindres carres par DGELS */
-            nw = -1,             F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-            W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &W(0), &nw, &infoo);
-            for (j = 0, jb = febs_d(f); j < nc; j++, jb++) fval_c(jb, n) = B(j) * P(j);
+        base.resize(nrhs, D, D), A.resize(nc, nl), B.resize(nrhs, nc), interp.resize(nc, N, nrhs); //systeme Ax = B -> format LAPACK
+        for (interp = 0, n = 0; n < N; n++) for (i = 0; i < nrhs; i++) interp(n_f, n, i) = 1; //interpolation de depart : celle au point harmonique
+        for (n = 0; n < N; n++)
+          {
+            /* base : base de "vecteurs tests" amont/aval d'un gradient verifiant nf.nu_am.vec_am = nf.nu_av.vec_av */
+            for (i = 0; i < nrhs; i++) lambda(i) = nu_dot(nu, f_e(f, i), n, &nf(f, 0), &nf(f, 0)) / (fs(f) * fs(f));
+            for (i = 0; i < nrhs; i++) for (j = 0; j < D; j++) for (d = 0; d < D; d++)
+                  base(i, j, d) = i3[j][d] + (i ? -1 : 1) * (nu_dot(nu, f_e(f, f_e(f, 1) >= 0), n, &nf(f, 0), i3[j]) - nu_dot(nu, f_e(f, 0), n, &nf(f, 0), i3[j])) * nf(f, d) / (2 * lambda(i) * fs(f) * fs(f));
+
+            /* seconds membres : au passage, on calcule la resistance interne r = d / lambda */
+            for (B = 0, i = 0; i < nrhs; i++)
+              {
+                e = f_e(f, i), r_int(n, i) = (i ? -1 : 1) * dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (fs(f) * (nu_grad ? lambda(i) : 1));
+                for (d = 0; d < D; d++) B(i, d) = xp_(e, d) + (i ? -1 : 1) * r_int(n, i) * (nu_grad ? nu_dot(nu, e, n, &nf(f, 0), i3[d]) : nf(f, d)) / fs(f) - xh(f, n, d);
+              }
+
+            /* interpolation des points projetes amont / aval */
+            if (std::pow(1e6 * local_max_abs_vect(B), D - 1) > fs(f)) //si les pts projetes ne sont pas dessus -> corrections
+              {
+                /* matrice A (format LAPACK) */
+                for (i = 0; i < n_f; i++) for (k = (dot(&xh(fa[i], n, 0), &nf(f, 0), &xh(f, n, 0)) > 0 && nrhs > 1), d = 0; d < nl; d++) //faces du stencil
+                    A(i, d) = d < D ? dot(&xh(fa[i], n, 0), &base(k, d, 0), &xh(f, n, 0)) : 1;
+                for (d = 0; d < nl; d++) A(n_f, d) = d < D ? 0 : 1; //face elle-meme
+
+                /* resolution */
+                nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+                W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+                /* correction de interp (avec ecretage) */
+                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+              }
+          }
+
+        /* construction du stencil aux elements */
+        for (p_e.clear(), i = 0; i <= n_f; i++) for (f_s = i < n_f ? fa[i] : f, f_sb = fbord(f_s), j = 0; j < 2; j++)
+            if ((e_s = f_e(f_s, j)) >= 0) p_e.push_back(std::make_pair(0, e_s)); //element normal
+            else if (f_sb >= 0 && pe_ext && (e_s = (*pe_ext)(f_sb, 1)) >= 0) p_e.push_back(std::make_pair((*pe_ext)(f_sb, 0), e_s)); //de l'autre cote d'un Echange_contact
+            else if (f_sb >= 0) p_e.push_back(std::make_pair(0, ne_tot + f_s)); //CL non Echange_contact -> dependance en les valeurs aux bords
+        std::sort(p_e.begin(), p_e.end()), p_e.erase(std::unique(p_e.begin(), p_e.end()), p_e.end()); //classement + deduplication
+
+        /* passage au flux */
+        phi.resize(p_e.size(), N, M, 2), phi = 0;
+        for (n = 0; n < N; n++) phif_w(f, n) = nrhs < 2 ? 1 : r_int(n, 0) * wh(f, n) / (r_int(n, 0) * wh(f, n) + r_int(n, 1) * (1 - wh(f, n))); //poids de l'amont
+
+        for (i = 0; i <= n_f; i++) for (f_s = i < n_f ? fa[i] : f, f_sb = fbord(f_s), j = 0; j < 2; j++)
+            if ((e_s = f_e(f_s, j) >= 0 ? f_e(f_s, j) : f_sb >= 0 && pe_ext && (*pe_ext)(f_sb, 0) >= 0 ? (*pe_ext)(f_sb, 1) : -1) >= 0) //il existe un element source (interne ou externe)
+              {
+                k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(f_e(f_s, j) >= 0 ? 0 : (*pe_ext)(f_sb, 0), e_s)) - p_e.begin();//position dans le stencil
+                if (f_sb < 0 || !pe_ext || (*pe_ext)(f_sb, 0) < 0) for (n = 0; n < N; n++) for (l = 0; l < nrhs; l++) //point harmonique standard -> composantes separees
+                      phi(k, n, n, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l) * (j ? 1 - wh(f_s, n) : wh(f_s, n));
+                else for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < 2; l++) //pt harmonique a une Echange_contact -> melange des composantes
+                        phi(k, n, m, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l) * (*whm)((*pe_ext)(f_sb, 2), n, m, l);
+              }
+            else for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), n = 0; n < N; n++) //face de bord -> dependance en la CL
+                for (l = 0; l < nrhs; l++) phi(k, n, n, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l)
+                                                                * (wh(f_s, n) < 1 ? 1 - wh(f_s, n) : dist_norm_bord(f_s) / (nu_grad ? -nu_dot(nu, f_e(f_s, 0), n, &nf(f_s, 0), &nf(f_s, 0)) / (fs(f_s) * fs(f_s)) : 1));
+        //amont/aval
+        for (i = 0; i < nrhs; i++) for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(0, f_e(f, i))) - p_e.begin(), n = 0; n < N; n++)
+            phi(k, n, n, i) += (i ? 1 : -1) / r_int(n, i);
+
+        /* remplissage de phif_e/pe/c/pc */
+        for (i = 0; i < (int) p_e.size(); i++)
+          {
+            for (nnz = 0, hdiag = 0, n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < nrhs; l++) if (phi(i, n, m, l) != 0) nnz++, hdiag |= (m != n);
+            if (!nnz) continue; //on peut sauter ce point
+            if (p_e[i].first == 0 && !hdiag) //contrib diagonale d'un elem local -> dans phif_e/c
+              for (phif_e.append_line(p_e[i].second), k = phif_c.dimension(0), phif_c.resize(k + 1, N, 2), n = 0; n < N; n++)
+                for (l = 0; l < 2; l++) phif_c(k, n, l) = phi(i, n, n, l);
+            else for (phif_pe->append_line(p_e[i].first, p_e[i].second), k = phif_pc->dimension(0), phif_pc->resize(k + 1, N, M, 2), n = 0; n < N; n++)
+                for (m = 0; m < M; m++) for (l = 0; l < 2; l++) (*phif_pc)(k, n, m, l) = phi(i, n, m, l);
           }
       }
-
-  /* 3. gradient aux elements par theoreme de la divergence */
-  egrad_d.set_smart_resize(1), egrad_d.resize(1), egrad_j.set_smart_resize(1), egrad_j.resize(0), egrad_c.set_smart_resize(1), egrad_c.resize(0, N, D);
-  std::map<int, std::map<std::array<int, 2>, double>> eg_map; //coeffs du gradient aux elements : eg_map[elem][compo] = coeff
-  for (e = 0; e < nb_elem(); e++, eg_map.clear(), egrad_d.append_line(egrad_j.dimension(0)))
-    {
-      //theoreme de la divergence sur les faces de e
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = febs_d(f); j < febs_d(f + 1); j++)
-          for (eb = febs_j(j), n = 0; n < N; n++) for (d = 0; d < D; d++) if (dabs(nf(f, d) * fval_c(j, n)) > 1e-6* fs(f))
-                eg_map[eb][ {{n, d}}] += (e == f_e(f, 0) ? 1 : -1) * nu_dot(nu, e, n, N, &nf(f, 0), i3[d]) * fval_c(j, n);
-
-      //stockage
-      for (auto && eb_c : eg_map)
-        {
-          egrad_j.append_line(eb_c.first), egrad_c.resize(egrad_c.dimension(0) + 1, N, D);
-          for (auto && dn_c : eb_c.second) egrad_c(egrad_c.dimension(0) - 1, dn_c.first[0], dn_c.first[1]) = dn_c.second;
-        }
-    }
 }

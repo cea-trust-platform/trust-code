@@ -139,6 +139,11 @@ public :
 
   void detecter_faces_non_planes() const;
 
+  inline int fbord(int f) const //renvoie l'indice de face de bord de f si f est de bord, -1 sinon
+  {
+    return f < premiere_face_int() ? f : f < nb_faces() ? -1 : ind_faces_virt_bord()[f - nb_faces()];
+  }
+
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
   //faces "equivalentes" : equiv(f, 0/1, i) = face equivalente a e_f(f_e(f, 0/1), i) de l'autre cote, -1 si il n'y en a pas
@@ -150,28 +155,41 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
-  //elements et faces de bord connectes a chaque face, classes par ordre d'indice croissant
-  //fef_j([fef_d(f), fef_d(f + 1)[) (offset de nb_elem_tot() pour les faces de bord)
-  void init_feb() const;
-  mutable IntTab feb_d, feb_j, ff_d, ff_j, febs_d, febs_j;
+  //stencils : fsten -> pour le gradient aux faces "fgrad", esten -> pour le gradient aux elems "egrad"
+  void init_stencils() const;
+  mutable IntTab fsten_d, fsten_f;
+
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
-  inline double nu_dot(const DoubleTab* nu, int e, int n, int N, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
-  //pour un champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
+  //construction des "points harmoniques" aux faces lies au gradient d'un champ aux elements
+  //entrees : cls          : conditions aux limites
+  //          is_p         : cas de la pression dans Navier-Stokes (CL de Neumann -> Dirichlet, le reste -> Neumann homogene)
+  //          nu_grad      : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+  //          nu(e, n, ..) : diffusivite aux elements (optionnel)
+  //          invh(f, n)   : resistivite (1 / h) aux faces de bord (optionnel)
+  //sorties : xh(f, n, d)           : point harmonique a la face f pour la composante n
+  //          wh(f, n)              : pour les faces internes : Th(f, n) = wh(f, n) * Te(amont, n) + (1 - wh(f, n)) * Te(aval, n) si interne
+  //          whm(f_ech, n, 0/1, m) : pour les faces Echange_contact : Th(f, n) = sum_m,i whm(f_ech, n, i, m) T(f_e(f, i), m)
+  void harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, const DoubleTab *nu, const DoubleTab *invh, DoubleTab& xh, DoubleTab& wh, DoubleTab *whm) const;
+
+
+  //pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
   //en preservant exactement les champs verifiant [nu grad T]_e = cte.
-  //Entrees : f_max            : calculer sur les faces [0, f_max[
-  //          nu (optionnel)   : diffusivite par element
-  //          nu_grad          : 1 si on veut [n_f.nu.grad T]_f
-  //Sorties : phif_{d,j,c}       : indices de l'interpolation dans phif_j(j), coeffs dans phif_c(j, compo, amont/aval) pour phif_d(f) <= j < phif_d(f + 1)
-  //                               l'amont/aval sont en premier dans phif_j (contrairement a feb_j)
-  //          phif_w (optionnel) : poids de la partie amont de l'interpolation a la composante n dans phif_w(f, n)
-  //          pxh (optionnel)    : points sur les faces de bord ou T doit etre evalue
-  void fgrad(int f_max, const DoubleTab* nu, const DoubleTab *nu_bord, int nu_grad, IntTab& phif_d, IntTab& phif_j, DoubleTab& phif_c, DoubleTab *phif_w, DoubleTab *pxh) const;
-
-  //pour un champ T aux elements, interpole |e| grad T aux elements (combine fgrad + ve)
-  //fcl / tcl renseignent les CLs : tcl[fcl(f, 0)] = 1 (Neumann) / 2 (Dirichlet)
-  //dependance en les Te / Tb / dTb dans egrad_(j/c)([egrad_d(e), egrad_d(e + 1)[)
-  void egrad(const IntTab& fcl, const std::vector<int>& is_flux, const DoubleTab *nu, int N, IntTab& egrad_d, IntTab& egrad_j, DoubleTab& egrad_c, DoubleTab *pxfb = NULL) const;
+  //Entrees : cls           : conditions aux limites
+  //          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_CoviMAC)
+  //          nu(e, n, ..)  : diffusivite aux elements (optionnel)
+  //          invh(f, n)    : resistivite (1/h) aux bords (optionnel)
+  //          xh, wh, whm   : donnees sur les points harmoniques retournees par harmonic_points()
+  //          pe_ext        : donnees sur les CL Echange_contact retournees par Op_Diff_CoviMAC_base
+  //          nu_grad       : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+  //Sorties : phif_w(f, n)                         : poids de l'amont dans la compo n du flux
+  //          phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
+  //          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
+  //          phif_pe(i, 0/1), phif_pc(i, n, m, c) : indices (pb, elem) /coefficients distants et/ou non diagonaux
+  void fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const DoubleTab *invh,
+             const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad,
+             DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab *phif_pe, DoubleTab *phif_pc) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;
@@ -395,17 +413,17 @@ inline double Zone_CoviMAC::dist_face_elem1_period(int num_face,int n1,double l)
   return 0;
 }
 
-//remplit dans le DoubleTab(N, dimension) resu les produits nu.v quelle que soit la forme de nu
-inline double Zone_CoviMAC::nu_dot(const DoubleTab* nu, int e, int n, int N, const double *a, const double *b, const double *ma, const double *mb) const
+//renvoie le produit scalaire a.nu.b quelle que soient le nombre de composantes et le type de tenseur de nu
+inline double Zone_CoviMAC::nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma, const double *mb) const
 {
   if (!nu) return dot(a, b, ma, mb);
-  int i, j, N_nu = nu->line_size();
+  int d, db, D = dimension;
   double resu = 0;
-  if (N_nu <= N) resu = nu->addr()[N_nu < N ? e : N * e + n] * dot(a, b, ma, mb); //isotrope
-  else if (N_nu == N * dimension) for (i = 0; i < dimension; i++) //anisotrope diagonal
-      resu += nu->addr()[dimension * (N * e + n) + i] * (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
-  else if (N_nu == N * dimension * dimension) for (i = 0; i < dimension; i++) //anisotrope complet
-      for (j = 0; j < dimension; j++) resu += nu->addr()[dimension * (dimension * (N * e + n) + i) + j] * (a[i] - (ma ? ma[i] : 0)) * (b[j] - (mb ? mb[j] : 0));
+  if (nu->nb_dim() == 2) resu += (*nu)(e, n) * dot(a, b, ma, mb); //isotrope
+  else if (nu->nb_dim() == 3) for (d = 0; d < D; d++) //anisotrope diagonal
+      resu += (*nu)(e, n, d) * (a[d] - (ma ? ma[d] : 0)) * (b[d] - (mb ? mb[d] : 0));
+  else for (d = 0; d < D; d++) for (db = 0; db < D; db++)
+        resu += (*nu)(e, n, d, db) * (a[d] - (ma ? ma[d] : 0)) * (b[db] - (mb ? mb[db] : 0));
   return resu;
 }
 

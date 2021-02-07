@@ -62,7 +62,7 @@ public:
   const DoubleTab& mu_f() const;
 
   /* public pour utilisation par Assembleur_P_CoviMAC : [grad p]_f */
-  mutable IntTab fgrad_d, fgrad_j;
+  mutable IntTab fgrad_d, fgrad_e;
   mutable DoubleTab fgrad_c;
 
   void check_multiphase_compatibility() const { }; //ok

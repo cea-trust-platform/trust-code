@@ -110,8 +110,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::preparer_calcul()
 
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
-  ch.init_cl(), zone.init_equiv(), equation().init_champ_conserve();
+  zone.init_equiv(), equation().init_champ_conserve();
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_CoviMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
@@ -150,7 +149,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur()).fcl;
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const Champ_Inc_base& cc = equation().champ_conserve();
   const std::string& nom_cc = cc.le_nom().getString();
@@ -164,12 +163,12 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
 
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
 
-  /* convection aux faces interne (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
+  /* convection aux faces internes (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
   for (f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
       {
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
             {
-              double fac = pf(f) * fs(f) * (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
+              double fac = pf(f) * fs(f) * (1. + (vit(f, n) * (i ? -1 : 1) > 0 ? 1. : vit(f, n) ? -1 : 0) * alpha) / 2;
               dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
               dc_flux(i, n) = e >= 0 ? fac * vit(f, n) : 0;
             }

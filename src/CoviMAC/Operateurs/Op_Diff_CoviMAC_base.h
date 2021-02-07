@@ -62,32 +62,61 @@ public:
 
   void associer_diffusivite(const Champ_base& );
   void completer();
+
+  //liste d'Op_Diff de problemes resolus simultanement (thermique monolithique)
+  mutable std::vector<const Op_Diff_CoviMAC_base *> op_ext;
+  mutable IntTab pe_ext; // tableau aux faces de bord : (indice dans op_ext, indice d'element) pour les faces de type Echange_contact
+
   const Champ_base& diffusivite() const;
   void mettre_a_jour(double t);
 
-  /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
-  const DoubleTab& get_nu() const
-  {
-    return nu_;
-  }
-  const DoubleTab& get_nu_bord() const /* aux faces de bords (peut etre modifie par les lois de paroi) */
-  {
-    return nu_bord_;
-  }
-
-  /* methodes surchargeables dans des classes derivees pour modifier un avant de calculer les gradients dans update_nu() */
+  /* methodes surchargeables dans des classes derivees pour modifier nu avant de calculer les gradients dans update_nu_xwh */
   virtual int dimension_min_nu() const /* dimension minimale de nu / nu_bord par composante */
   {
     return 1;
   };
-  virtual void modifier_nu(DoubleTab& nu, DoubleTab& nu_bord) const { }; /* par defaut, ne fait rien */
+  virtual void modifier_nu(DoubleTab& nu) const { };
 
-  void update_nu() const; //met a jour nu et nu_fac; les specialisations font les interpolations
+  /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
+  inline const DoubleTab& nu() const /* aux elements */
+  {
+    if (!nu_a_jour_) update_nu_invh();
+    return nu_;
+  }
+  inline const DoubleTab& invh() const /* aux faces de bord */
+  {
+    if (!nu_a_jour_) update_nu_invh();
+    return invh_;
+  }
+
+  /* points harmoniques aux faces (cf. Zone_CoviMAC::harmonic_points) */
+  inline const DoubleTab& xh() const //position
+  {
+    if (!xwh_a_jour_) update_xwh();
+    return xh_;
+  }
+  inline const DoubleTab& wh() const //poids de l'amont (faces internes ou de bord)
+  {
+    if (!xwh_a_jour_) update_xwh();
+    return wh_;
+  }
+  inline const DoubleTab& whm() const //poids (faces Echange_contact)
+  {
+    if (!xwh_a_jour_) update_xwh();
+    return whm_;
+  }
+
+  /* flux aux faces : cf. Zone_CoviMAC::fgrad */
+  void update_phif() const;
+  //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[), (i_op, elem distant) dans phif_e([phif_d(f), phif_d(f + 1)[)
+  mutable IntTab phif_d, phif_e, phif_pe; //stencils
+  mutable DoubleTab phif_w, phif_c, phif_pc; //ponderation amont/aval, ponderation, coefficients
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
 
 protected:
+
   REF(Zone_CoviMAC) la_zone_poly_;
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
@@ -96,7 +125,19 @@ protected:
   mutable IntTab phif_d, phif_j; //indices : phif_j([phif_d(f), phif_d(f + 1)[)
   mutable DoubleTab phif_c, phif_w, phif_xb; //coeffs :  phif_c([phif_d(f), phif_d(f + 1)[, n) pour la composante n
   mutable SFichier Flux, Flux_moment, Flux_sum;
-  mutable int nu_constant_, nu_a_jour_; //nu est-il constant, est-il a jour?
+  mutable int nu_constant_, nu_a_jour_ = 0, op_ext_init_ = 0, xwh_a_jour_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / xh,wh,whm,kh a jour / phif a jour
+
+  double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
+  void update_nu_invh() const; //mise a jour
+  /* diffusivite aux elems, 1 / h aux faces de bord */
+  mutable DoubleTab nu_, invh_;
+  /* tableaux op_ext et pe_ext */
+  void init_op_ext() const; //initialisation
+
+  /* points harmoniques aux faces */
+  void update_xwh() const; //mise a jour
+  mutable DoubleTab xh_, wh_, whm_; //position, poids de l'amont, partie constante (1 par composante pour Op_.._Elem, D par composante pour Op_.._Face), partie Echange_contact (melange les composantes)
 };
 
+Declare_ref(Op_Diff_CoviMAC_base);
 #endif

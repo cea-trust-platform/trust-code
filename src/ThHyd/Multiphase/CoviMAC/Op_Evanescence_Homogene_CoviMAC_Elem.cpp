@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,6 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::dimensionner_blocs(matrices_t matrice
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
-  ch.init_cl();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, e, n, N = inco.line_size();

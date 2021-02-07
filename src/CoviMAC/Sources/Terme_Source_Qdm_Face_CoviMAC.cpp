@@ -82,15 +82,13 @@ void Terme_Source_Qdm_Face_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab
                    &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = zone.nb_faces_tot(),
                n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
-  ch.init_cl();
-
 
   /* contributions aux faces (par chaque voisin), aux elems */
   DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
-  for (a_f = 1, f = 0; f < zone.nb_faces(); f++) if (!ch.fcl(f, 0)) //face interne
+  for (a_f = 1, f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0)) //face interne
       {
         if (1)
           {
@@ -113,7 +111,7 @@ void Terme_Source_Qdm_Face_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab
                 }
           }
       }
-    else if (ch.fcl(f, 0) < 2) for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
+    else if (fcl(f, 0) < 2) for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
           secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
   for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)

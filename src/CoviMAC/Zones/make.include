@@ -14,6 +14,7 @@ Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBOSQP/include -I$(TRUST_ROOT)/include/b
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/CoviMAC\
 	-I$(TRUST_ROOT)/src/CoviMAC/Champs\
+	-I$(TRUST_ROOT)/src/CoviMAC/Cond_Lim\
 	-I$(TRUST_ROOT)/src/CoviMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\

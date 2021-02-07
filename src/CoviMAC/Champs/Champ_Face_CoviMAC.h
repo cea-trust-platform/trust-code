@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,19 +79,20 @@ public :
   };
 
 
-  //tableaux de correspondance lies aux CLs
+  //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   //types de CL : 0 -> pas de CL
   //              1 -> Neumann ou Neumann_homogene
   //              2 -> Symetrie
   //              3 -> Dirichlet
   //              4 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab fcl; // fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
+  inline const IntTab& fcl() const
+  {
+    if (!fcl_init_) init_fcl();
+    return fcl_;
+  }
 
   //interpolation du tenseur (grad v)
   void init_gve() const;
-
-
 
   //interpolations vitesse aux faces -> vitesse aux elems
   void update_ve(DoubleTab& val) const; //ordre 1
@@ -123,6 +124,10 @@ public :
 
 protected:
   REF(Zone_VF) ref_zone_vf_;
+
+  void init_fcl() const;
+  mutable IntTab fcl_;
+  mutable int fcl_init_ = 0;
 };
 
 #endif /* Champ_Face_CoviMAC_included */

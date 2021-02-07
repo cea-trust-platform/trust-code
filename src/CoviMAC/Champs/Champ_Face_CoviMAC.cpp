@@ -128,25 +128,24 @@ double Champ_Face_CoviMAC::valeur_a_elem_compo(const DoubleVect& position, int p
 }
 
 //tableaux de correspondance pour les CLs
-void Champ_Face_CoviMAC::init_cl() const
+void Champ_Face_CoviMAC::init_fcl() const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, f, n;
 
-  if (fcl.dimension(0)) return;
-  fcl.resize(zone.nb_faces_tot(), 3);
+  fcl_.resize(zone.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
-      int idx = sub_type(Neumann, cls[n].valeur()) + sub_type(Neumann_homogene, cls[n].valeur())+ sub_type(Neumann_val_ext, cls[n].valeur())
+      int idx = sub_type(Neumann, cls[n].valeur()) + sub_type(Neumann_homogene, cls[n].valeur())
                 + 2 * sub_type(Symetrie, cls[n].valeur())
                 + 3 * sub_type(Dirichlet, cls[n].valeur()) + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (!idx) Cerr << "Champ_Face_CoviMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), fcl(f, 0) = idx, fcl(f, 1) = n, fcl(f, 2) = i;
+        f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
     }
-  CRIMP(fcl);
+  fcl_init_ = 1;
 }
 
 void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
@@ -179,18 +178,18 @@ void Champ_Face_CoviMAC::init_ve2() const
   int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo=0, un = 1, rank;
   double eps = 1e-8;
   const double *xf;
-  zone.init_ve();
+  zone.init_ve(), init_fcl();
 
   //position des points aux faces de bord : CG si interne ou Dirichlet, projection si Neumann
   DoubleTrav xfb(zone.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
   IntTrav pvt;
-  ve2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1), init_cl();
-  for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) == 1 || fcl(f, 0) == 2) //Neumann / Symetrie
+  ve2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1);
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2) //Neumann / Symetrie
       {
         double scal = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e = f_e(f, 0), 0)) / (fs(f) * fs(f));
         for (d = 0; d < D; d++) xfb(f, d) = xp(e, d) + scal * nf(f, d);
       }
-    else if (fcl(f, 0)) for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
+    else if (fcl_(f, 0)) for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
 
   /* connectivites som-elem et elem-elem */
   std::vector<std::set<int>> s_f(zone.zone().nb_som()), e_s_f(zone.nb_elem());
@@ -207,7 +206,7 @@ void Champ_Face_CoviMAC::init_ve2() const
     {
       /* stencil : faces de l'element et de ses voisins par som-elem + toutes composantes a ses faces de bord */
       for (auto &&fa : e_s_f[e]) if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = i_v.size(), i_v.push_back({{fa, -1}});
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) if (fcl(f, 0)) for (d = 0; d < D; d++)
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) if (fcl_(f, 0)) for (d = 0; d < D; d++)
             v_i[ {{f, d }}] = i_v.size(), i_v.push_back({{f, d}});
 
       /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Zone_CoviMAC::{e,f}grad)  */
@@ -237,14 +236,14 @@ void Champ_Face_CoviMAC::init_ve2() const
 
       /* implicitation des CLs de Neumann / Symetrie */
       Matrice33 M(1, 0, 0, 0, 1, 0, 0, 0, 1), iM;
-      for (i = 0; i < nc; i++) if (i_v[i][1] >= 0 && fcl(i_v[i][0], 0) < 2) for (j = 0; j < D; j++)
+      for (i = 0; i < nc; i++) if (i_v[i][1] >= 0 && fcl_(i_v[i][0], 0) < 2) for (j = 0; j < D; j++)
             M(j, i_v[i][1]) -= ve2(i, j);
       Matrice33::inverse(M, iM);
       for (ve2i.resize(nc, D), i = 0; i < nc; i++) for (j = 0; j < D; j++) for (ve2i(i, j) = 0, k = 0; k < D; k++)
             ve2i(i, j) += iM(j, k) * ve2(i, k);
 
       /* stockage */
-      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size())) for (i = 0; i < nc; i++) if (dabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl(i_v[i][0], 0) == 3))
+      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size())) for (i = 0; i < nc; i++) if (dabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl_(i_v[i][0], 0) == 3))
             {
               i_v[i][1] < 0 ? ve2j.append_line(i_v[i][0])  : ve2bj.append_line(i_v[i][0], i_v[i][1]);
               (i_v[i][1] < 0 ? &ve2c : &ve2bc)->append_line(ve2i(i, d) * pf(i_v[i][0]) / pe(e));
@@ -260,7 +259,7 @@ void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = zone.nb_faces_tot();
-  init_ve2();
+  init_ve2(), init_fcl();
 
   for (e = 0, ed = 0, i = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, ed++, i++) for (n = 0; n < N; n++)
         {
@@ -270,7 +269,7 @@ void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
 
           /* partie "faces de bord" (Dirichlet seulement) */
           for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
-            val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl(ve2bj(j, 0), 1)].valeur()).val_imp(fcl(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
+            val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
         }
 
   val.echange_espace_virtuel();
@@ -386,7 +385,6 @@ DoubleVect& Champ_Face_CoviMAC::calcul_S_barre(const DoubleTab& vitesse, DoubleV
 DoubleTab& Champ_Face_CoviMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   assert(distant==0);
-  init_cl();
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const int dim = vectoriel ? dimension : 1, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();

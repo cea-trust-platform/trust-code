@@ -1206,6 +1206,9 @@ void Equation_base::mettre_a_jour(double temps)
   inconnue().mettre_a_jour(temps);
   if (calculate_time_derivative()) derivee_en_temps().mettre_a_jour(temps);
 
+  // mise a jour du milieu : seulement si l'equation en est responsable
+  if (medium_owner_) milieu().mettre_a_jour(temps);
+
   //avancement / mise a jour de champ_conserve
   if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
 
@@ -1214,7 +1217,7 @@ void Equation_base::mettre_a_jour(double temps)
 
   // On tourne la roue des CLs
   // Update the boundary condition:
-  zone_Cl_dis()->avancer(temps);
+  if (temps > schema_temps().temps_courant()) zone_Cl_dis()->avancer(temps);
 }
 
 

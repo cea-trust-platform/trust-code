@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,9 +29,11 @@ class Front_VF;
 class Zone_CoviMAC;
 class Faces;
 #include <Ref_IntTab.h>
+#include <Ref_Front_VF.h>
 #include <IntTab.h>
 #include <Ref_Champ_Inc.h>
 #include <MD_Vector_tools.h>
+#include <Op_Diff_CoviMAC_base.h>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////
@@ -46,40 +48,36 @@ class Faces;
 
 class Echange_contact_CoviMAC  : public Echange_externe_impose
 {
-
   Declare_instanciable(Echange_contact_CoviMAC);
 public :
-  virtual void completer();
+  virtual void completer() { }; //non utilise
   virtual int initialiser(double temps);
-  void calculer_correspondance();
-  virtual void mettre_a_jour(double );
-  inline Champ_front& T_autre_pb()
+  virtual void mettre_a_jour(double temps) { }; //non utilise
+
+  REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
+  int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
+  REF(Op_Diff_CoviMAC_base) diff, o_diff; //operateurs de diffusion de chaque cote
+
+  /* elements / face de l'autre cote de la frontiere */
+  const IntTab& fe_dist() const //liste (i_face, i_elem) dans la Zone distante
   {
-    return T_autre_pb_;
-  };
-  inline const Champ_front& T_autre_pb() const
-  {
-    return T_autre_pb_;
-  };
-  inline const Nom& nom_autre_pb() const
-  {
-    return nom_autre_pb_;
-  };
-  //item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
-  //initialiement non rempli si l'item n'est pas accessible (parallelisme) : extra_items permet de le completer
-  mutable IntTab item;
-  //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
-  //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
-  mutable DoubleTab coeff, delta_int, delta;
-  //extra_item[ numero de proc, numero d'item ] = (indices (i, j) dans item ayant besoin de cet item)
-  //-> infos pour rendre les items manquants de remote_item accessibles
-  std::map<std::array<int, 2>, std::vector<std::array<int, 2>>> extra_items;
-  int monolithic; //1 si on resout la thermique en monolithique
+    init_fe_dist();
+    return fe_dist_;
+  }
+
+  /* positions et poids des points harmoniques : appele par Zone_CoviMAC::harmonic_points */
+  void harmonic_points(DoubleTab& xh, DoubleTab& wh) const;
+
+  /* remplissage de nu.grad T aux faces reelles de la CL : appele par Zone_CoviMAC::fgrad */
+  void fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab& phif_pe, DoubleTab& phif_pc) const;
+
 protected :
-  int stab_; //1 si on utilise la stabilisation de Le Potier
-  mutable int coeffs_a_jour_, delta_a_jour_; //dernier temps auquel on a mis a jour les coeffs
-  double h_paroi;
-  Champ_front T_autre_pb_;
-  Nom nom_autre_pb_;
+  Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
+  double invh_paroi_; //resistance thermique (1 / h) de la paroi
+  double t_last_maj_; //dernier temps auquel on a appele mettre_a_jour()
+
+  void init_fe_dist() const; //initialisation
+  mutable IntTab fe_dist_;
+  mutable int fe_init_;
 };
 #endif

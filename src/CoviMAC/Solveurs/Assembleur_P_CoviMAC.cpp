@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,13 +74,10 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, la_zone_CoviMAC.valeur());
   const Op_Grad_CoviMAC_Face& grad = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
-  const DoubleTab& mu_f = grad.mu_f(), &fgrad_c = grad.fgrad_c, &nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv();
-  const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_j = grad.fgrad_j;
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, mon_equation->inconnue().valeur());
-  int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), piso = sub_type(Piso, equation().schema_temps()) && !sub_type(Implicite, equation().schema_temps());
-
-  ch.init_cl();
+  const DoubleTab& mu_f = grad.mu_f(), &fgrad_c = grad.fgrad_c;
+  const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e;
+  const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces();
+  int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
@@ -93,13 +90,11 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
-      const IntTab& feb_d = piso ? zone.feb_d : fgrad_d, &feb_j = piso ? zone.feb_j : fgrad_j;
-      for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0)) stencil.append_line(f_e(f, 0), f_e(f, 0)); //faces de bord -> flux a deux points
-        else for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne) for (j = feb_d(f); j < feb_d(f + 1); j++) //faces internes -> flux multipoints
-                eb = feb_j(j), stencil.append_line(e, eb < ne_tot ? eb : f_e(eb - ne_tot, 0));
+      for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
+              if ((eb = fgrad_e(j)) < ne_tot) stencil.append_line(e, eb);
 
       tableau_trier_retirer_doublons(stencil);
-      Matrix_tools::allocate_morse_matrix(zone.nb_elem_tot(), zone.nb_elem_tot(), stencil, mat);
+      Matrix_tools::allocate_morse_matrix(ne_tot, ne_tot, stencil, mat);
       tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
       stencil_done = 1;
     }
@@ -112,12 +107,8 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
     }
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
-  for (f = 0; f < zone.nb_faces(); f++) if (ch.fcl(f, 0) == 1) //bord de Neumann -> flux a deux points
-      e = f_e(f, 0), mat(e, e) += pe(e) * fs(f) * fs(f) / zone.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0));
-    else if (!ch.fcl(f, 0)) //face interne -> flux multipoints
-      for (i = 0; i < 2; i++) if ((e = f_e(f, i)) < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
-            if ((eb = fgrad_j(j)) < ne_tot || ch.fcl(eb - ne_tot, 0) > 1) /* les valeurs au bords de Dirichlet varient comme l'element voisin */
-              mat(e, eb < ne_tot ? eb : f_e(eb - ne_tot, 0)) += (i ? 1 : -1) * pf(f) * fs(f) * (mu_f(f, 0, 0) * fgrad_c(j, 0, 0) + mu_f(f, 0, 1) * fgrad_c(j, 0, 1));
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++) if ((eb = fgrad_e(j)) < ne_tot)
+            mat(e, eb) += (i ? 1 : -1) * pf(f) * fs(f) * (mu_f(f, 0, 0) * fgrad_c(j, 0, 0) + mu_f(f, 0, 1) * fgrad_c(j, 0, 1));
 
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,11 +59,10 @@ void Terme_Boussinesq_CoviMAC_Face::associer_zones(const Zone_dis& zone_dis,
 void Terme_Boussinesq_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
-  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& grav = gravite().valeurs();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& pf = zone.porosite_face();
   const DoubleVect& fs = zone.face_surfaces();
@@ -71,12 +70,12 @@ void Terme_Boussinesq_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
   DoubleVect g(dimension);
   g = grav;
 
-  int nb_dim = param.nb_dim();
+  int nb_dim = param.line_size();
 
   // Verifie la validite de T0:
   check();
   int e, i, f, n;
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; ch.fcl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; fcl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
