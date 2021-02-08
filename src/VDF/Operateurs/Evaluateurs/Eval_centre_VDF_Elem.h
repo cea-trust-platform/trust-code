@@ -171,7 +171,7 @@ public:
   inline void coeffs_face(int, int,const Periodique&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int, int,const NSCBC&, DoubleVect& aii, DoubleVect& ajj ) const;
 
-  //virtual void coeffs_face(const DoubleTab&, int ,int, const Nouvelle_Cl_VDF&, int,
+  //void coeffs_face(const DoubleTab&, int ,int, const Nouvelle_Cl_VDF&, int,
   //                           DoubleVect& aii, DoubleVect& ajj ) const;
 
   inline void coeffs_faces_interne(int, DoubleVect& aii, DoubleVect& ajj ) const;

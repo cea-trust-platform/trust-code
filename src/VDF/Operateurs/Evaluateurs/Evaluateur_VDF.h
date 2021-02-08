@@ -51,7 +51,7 @@ class Evaluateur_VDF
 public:
 
   inline Evaluateur_VDF();
-  inline virtual ~Evaluateur_VDF() {};
+  inline virtual ~Evaluateur_VDF() {}
 
   Evaluateur_VDF(const Evaluateur_VDF& );
   virtual void associer_zones(const Zone_VDF& , const Zone_Cl_VDF& );
