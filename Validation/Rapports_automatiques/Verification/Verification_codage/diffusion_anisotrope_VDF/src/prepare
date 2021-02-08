@@ -1,0 +1,218 @@
+#!/bin/bash
+
+# Elie Saikali, 31 jan 2021
+# Validation file preparation
+# We consider 2 test cases : TC1 and TC2
+# Files of TC1 do not need preparation, they are ready
+# Here, we prepare the files of TC2 !
+
+
+# In TC2, 4 subcases are also considered by changing the anisotropy ratio
+# This leads to a differnt Puissance_thermique source for each subcase
+
+cd TC2
+cp ../TC1/get_max_error.py .
+cp ../TC1/post_run .
+LISTE_CAS="Ar1 Ar10 Ar100 Ar1000"
+LISTE_MESH="M1 M2 M3" # 3 mesh for sensetivity analysis :)
+
+for CAS in $LISTE_CAS; do
+  for MESH in $LISTE_MESH; do
+
+    REP=./$CAS/$MESH
+    mkdir -p $REP
+    SRCDATA0=TC2.data
+    SRCDATA1=TC2_Ar1.data
+    SRCDATA2=TC2_iso.data
+    SRCDATA3=TC2_Ar10.data
+    SRCDATA4=TC2_Ar100.data
+    SRCDATA5=TC2_Ar1000.data
+    SRCDOMAINE=domaine.data
+    PRERUN=pre_run
+    POSTRUN=post_run
+    SCRIPTMED=get_max_error.py
+    # Files that will change
+    DEST_DATA1=$REP/$SRCDATA0
+    DEST_DATA2=$REP/$SRCDATA2
+    DEST_DATA3=$REP/$SRCDATA0
+    DEST_DATA4=$REP/$SRCDATA0
+    DEST_DATA5=$REP/$SRCDATA0
+    DEST_DOMAINE=$REP/$SRCDOMAINE
+
+    if test "$CAS" = "Ar1"; then
+
+      cp $PRERUN $REP/$PRERUN
+      cp $POSTRUN $REP/$POSTRUN
+      cp $SCRIPTMED $REP/$SCRIPTMED
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA1 $DEST_DATA1
+	# sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA1
+
+        sed "s~DOM 2 (y\*y+x\*x)  (x\*x+y\*y)~DOM 1 (y\*y+x\*x)~" $SRCDATA1 > $DEST_DATA2
+	# sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA2
+
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 2 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA1 > $DEST_DATA1
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 2 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/;
+             s~DOM 2 (y\*y+x\*x)  (x\*x+y\*y)~DOM 1 (y\*y+x\*x)~" $SRCDATA1 > $DEST_DATA2
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 4 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA1 > $DEST_DATA1
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 4 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/;
+             s~DOM 2 (y\*y+x\*x)  (x\*x+y\*y)~DOM 1 (y\*y+x\*x)~" $SRCDATA1 > $DEST_DATA2
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      fi
+
+    elif test "$CAS" = "Ar10"; then
+
+      cp $PRERUN $REP/$PRERUN
+      cp $POSTRUN $REP/$POSTRUN
+      cp $SCRIPTMED $REP/$SCRIPTMED
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA3 $DEST_DATA3
+	# sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA3
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 2 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA3 > $DEST_DATA3
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 4 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA3 > $DEST_DATA3
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      fi
+
+    elif test "$CAS" = "Ar100"; then
+
+      cp $PRERUN $REP/$PRERUN
+      cp $POSTRUN $REP/$POSTRUN
+      cp $SCRIPTMED $REP/$SCRIPTMED
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA4 $DEST_DATA4
+	# sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA4
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 2 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA4 > $DEST_DATA4
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 4 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA4 > $DEST_DATA4
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+      fi
+
+    else # Ar1000
+
+      cp $PRERUN $REP/$PRERUN
+      cp $POSTRUN $REP/$POSTRUN
+      cp $SCRIPTMED $REP/$SCRIPTMED
+
+      if test "$MESH" = "M1"; then
+
+        cp $SRCDATA5 $DEST_DATA5
+	# sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA5
+        cp $SRCDOMAINE $DEST_DOMAINE
+
+      elif test "$MESH" = "M2"; then
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 2 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA5 > $DEST_DATA5
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+
+      else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK 4 #/# PARALLEL ONLY 4 #/;
+             s/# BEGIN SCATTER/# BEGIN SCATTER #/;
+             s/END SCATTER #/# END SCATTER #/" $SRCDATA5 > $DEST_DATA5
+
+        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
+             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
+             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
+             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
+      fi
+
+    fi
+
+
+  done
+done

@@ -45,7 +45,7 @@ chapter
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
+                pseudocolor TC1/TC1_VOLUME.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
         }
 
 
@@ -55,7 +55,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
+                pseudocolor TC1/TC1_VOLUME.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
         }
 
 
@@ -65,7 +65,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
+                pseudocolor TC1/TC1_VOLUME.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
         }
 
 visu {
@@ -74,7 +74,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC1/TC1.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC1/TC1_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -141,7 +141,7 @@ chapter
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+                pseudocolor TC2/Ar1/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
         }
 
 visu {
@@ -150,7 +150,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+                pseudocolor TC2/Ar1/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
         }
 
 visu {
@@ -159,7 +159,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+                pseudocolor TC2/Ar1/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
         }
 
 visu {
@@ -168,7 +168,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1/M1/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -187,7 +187,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M2/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1/M2/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -206,7 +206,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M3/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1/M3/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -226,7 +226,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2_iso.lata DIFFUSIVITE_THERMIQUE_SOM_DOM
+                pseudocolor TC2/Ar1/M1/TC2_iso_VOLUME.lata DIFFUSIVITE_THERMIQUE_ELEM_DOM
         }
 
 visu {
@@ -235,7 +235,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2_iso.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1/M1/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -254,7 +254,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M2/TC2_iso.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1/M2/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -273,7 +273,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M3/TC2_iso.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1/M3/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -301,7 +301,7 @@ chapter
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+                pseudocolor TC2/Ar10/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
         }
 
 visu {
@@ -310,7 +310,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+                pseudocolor TC2/Ar10/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
         }
 
 visu {
@@ -319,7 +319,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+                pseudocolor TC2/Ar10/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
         }
 
 visu {
@@ -328,7 +328,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M1/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar10/M1/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -346,7 +346,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M2/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar10/M2/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -365,7 +365,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar10/M3/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar10/M3/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -393,7 +393,7 @@ chapter
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+                pseudocolor TC2/Ar100/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
         }
 
 visu {
@@ -402,7 +402,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+                pseudocolor TC2/Ar100/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
         }
 
 visu {
@@ -411,7 +411,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+                pseudocolor TC2/Ar100/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
         }
 
 visu {
@@ -420,7 +420,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M1/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar100/M1/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -439,7 +439,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M2/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar100/M2/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -457,7 +457,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar100/M3/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar100/M3/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -486,7 +486,7 @@ chapter
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_0_SOM_DOM
+                pseudocolor TC2/Ar1000/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_0_ELEM_DOM
         }
 
 visu {
@@ -495,7 +495,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_1_SOM_DOM
+                pseudocolor TC2/Ar1000/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_1_ELEM_DOM
         }
 
 visu {
@@ -504,7 +504,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata DIFFUSIVITE_THERMIQUE_3_SOM_DOM
+                pseudocolor TC2/Ar1000/M1/TC2_VOLUME.lata DIFFUSIVITE_THERMIQUE_3_ELEM_DOM
         }
 
 visu {
@@ -513,7 +513,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M1/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1000/M1/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -532,7 +532,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M2/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1000/M2/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -551,7 +551,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1000/M3/TC2.lata TEMPERATURE_SOM_DOM
+                pseudocolor TC2/Ar1000/M3/TC2_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -566,9 +566,115 @@ visu {
 
 }
 
+Chapter
+{
+  Table
+    {
+        Title "Max and average error"
+        Description "The table below summarizes the maximum and average error values obtained in all cases at the steady state. It can be clearly noted how the numerical issues rise by increasing the anisotropy ratio, athough that the error decreases by refining the mesh (for test case 2 basically). This probably show some limitation of the VEF anisotropic diffusion."
+
+        nb_columns 2
+        label  Max value | Average value
+
+        line {
+                legend "Test Case 1"
+                file TC1/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=1 : M1"
+                file TC2/Ar1/M1/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=10 : M1"
+                file TC2/Ar10/M1/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=100 : M1"
+                file TC2/Ar100/M1/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=1000 : M1"
+                file TC2/Ar1000/M1/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+
+        line {
+                legend "Test Case 2, Ar=1 : M2"
+                file TC2/Ar1/M2/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=10 : M2"
+                file TC2/Ar10/M2/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=100 : M2"
+                file TC2/Ar100/M2/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=1000 : M2"
+                file TC2/Ar1000/M2/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=1 : M3"
+                file TC2/Ar1/M3/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=10 : M3"
+                file TC2/Ar10/M3/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=100 : M3"
+                file TC2/Ar100/M3/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+        line {
+                legend "Test Case 2, Ar=1000 : M3"
+                file TC2/Ar1000/M3/Error_values.txt
+                nb_columns_file 2
+                columns $1 $2
+                last_line
+        }
+
+    }
+}
+
 Chapter {
         Title "Concluding remarks"
-        Description "\latex_(In this report, a validation study concerning the implementation of an anisotropic diffusion operator for VEF in the TRUST platform is documented. Different simulations are performed and numerical results at steady-state are compared to analytical solutions for validations. Two test cases are investigated, either with an anisotropic discontinuous conductivity tensor or a non-uniform one. The mesh sensitivity is highlighted where numerical results show that TRUST can handle high anisotropic ratios only if a good mesh is used. We advise the user to perform a grid convergence study before starting the physical interpretation of the numerical data. Till present, we have only one limitation for this anisotropic operator: \textbf{the code can only handle a positive-definite and symmetric conductivity tensor}.  \latex_)"
+        Description "\latex_(In this report, a validation study concerning the implementation of an anisotropic diffusion operator for VEF in the TRUST platform is documented. Different simulations are performed and numerical results at steady-state are compared to analytical solutions for validations. Two test cases are investigated, either with an anisotropic discontinuous conductivity tensor or a non-uniform one. The mesh sensitivity is highlighted where numerical results show that TRUST can handle high anisotropic ratios only if a good mesh is used. We advise the user to perform a grid convergence study before starting the physical interpretation of the numerical data. Numerical issues and convergence problems can rise for high anisotropic ratio problems. Till present, we have only one limitation for the VEF anisotropic operator: \textbf{the code can only handle a positive-definite and symmetric conductivity tensor}.  \latex_)"
 }
 
 Chapter {

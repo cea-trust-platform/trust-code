@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -552,7 +552,12 @@ inline double CLASSNAME::flux_face(const DoubleTab& inco , int faceD ,
 
 
   double d0 = zvdf.xp(elem0,orientation(faceD)) - zvdf.xp(elem3,orientation(faceD));
+#ifdef ANISO
+  double heq = (dt_diffusivite(elem0,oriD)/d0);
+#else
   double heq = (nu_1(elem0)/d0);
+#endif
+
   double flux = heq*(inco(elem0) - inco(elem3))*surface(faceD)*porosite(faceD);
 
   return flux;
@@ -625,5 +630,3 @@ inline double CLASSNAME::secmem_faces_interne( int ) const
 {
   return 0;
 }
-
-
