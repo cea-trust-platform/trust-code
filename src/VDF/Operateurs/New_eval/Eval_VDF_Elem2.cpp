@@ -14,72 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/10
-//
 //////////////////////////////////////////////////////////////////////////////
+#include <Champ_P0_VDF.h>
+#include <Eval_VDF_Elem2.h>
 
-
-#ifndef Op_Diff_VDF_Elem_included
-#define Op_Diff_VDF_Elem_included
-
-#include <Op_Diff_VDF_Elem_base.h>
-#include <ItVDFEl.h>
-#include <Op_VDF_Elem.h>
-#include "New_eval/Eval_Diff_VDF_const_Elem.h"
-
-//
-// .DESCRIPTION class Op_Diff_VDF_Elem
-//
-//  Cette classe represente l'operateur de diffusion associe a une equation de
-//  transport.
-//  La discretisation est VDF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElCs.h.h
-//
-declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Diff_VDF_Elem : public Op_Diff_VDF_Elem_base
+void Eval_VDF_Elem2::associer_inconnue(const Champ_base& inco)
 {
-
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem);
-
-public:
-
-  Op_Diff_VDF_Elem();
-  inline Op_Diff_VDF_Elem(const Iterateur_VDF_base&);
-protected:
-  inline Eval_VDF_Elem& get_eval_elem();
-};
-
-// Ce constructeur permet de creer des classes filles des evalateurs
-// (utilise dans le constructeur de Op_Diff_VDF_Elem_temp_FTBM)
-inline Op_Diff_VDF_Elem::Op_Diff_VDF_Elem(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
-{
+  assert(sub_type(Champ_P0_VDF,inco));
+  inconnue=inco;
 }
-// Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem& Op_Diff_VDF_Elem::get_eval_elem()
-{
-  Eval_Diff_VDF_const_Elem& eval_diff = (Eval_Diff_VDF_const_Elem&) iter.evaluateur();
-  return (Eval_VDF_Elem&) eval_diff;
-}
-#endif
+
+

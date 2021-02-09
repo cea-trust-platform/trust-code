@@ -26,8 +26,8 @@
 
 #include <Op_Diff_VDF_Elem_base.h>
 #include <ItVDFEl.h>
-#include <Eval_Diff_VDF_var_Elem.h>
 #include <Op_VDF_Elem.h>
+#include "New_eval/Eval_Diff_VDF_var_Elem.h"
 
 //
 // .DESCRIPTION class Op_Diff_VDF_var_Elem
