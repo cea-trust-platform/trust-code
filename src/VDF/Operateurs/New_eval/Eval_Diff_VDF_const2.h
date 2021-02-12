@@ -22,7 +22,7 @@
 #ifndef Eval_Diff_VDF_const2_included
 #define Eval_Diff_VDF_const2_included
 
-#include <Eval_Diff_VDF.h>
+#include <Eval_Diff_VDF2.h>
 #include <Champ_Face.h>
 #include <Champ_base.h>
 #include <Ref_Champ_Uniforme.h>
@@ -40,26 +40,38 @@ class Champ_base;
 //.SECTION voir aussi Evaluateur_VDF
 
 
-class Eval_Diff_VDF_const2 : public Eval_Diff_VDF
+class Eval_Diff_VDF_const2 : public Eval_Diff_VDF2
 
 {
 public:
 
   inline Eval_Diff_VDF_const2();
   inline void associer(const Champ_base& );
-  inline const Champ_base& get_diffusivite() const;
   inline const Champ_Uniforme& diffusivite() const;
 
   inline void mettre_a_jour( );
+
+  // Methods used by the flux computation in template class:
+  inline double nu_1_impl(int i) const
+  {
+    return db_diffusivite;
+  }
+
+  inline double nu_2_impl(int i) const
+  {
+    return db_diffusivite;
+  }
+
+  inline double compute_heq_impl(double d0, int i, double d1, int j) const
+  {
+    return db_diffusivite/(d0+d1);
+  }
+
 
 protected:
 
   REF(Champ_Uniforme) diffusivite_;
   double db_diffusivite;
-
-  inline double dist_face(int, int, int) const;
-  inline double dist_face_period(int, int, int) const;
-
 };
 
 inline Eval_Diff_VDF_const2::Eval_Diff_VDF_const2():db_diffusivite(-1.0e+300)
@@ -70,24 +82,6 @@ inline const Champ_Uniforme& Eval_Diff_VDF_const2::diffusivite() const
 {
   return diffusivite_.valeur();
 }
-
-inline const Champ_base& Eval_Diff_VDF_const2::get_diffusivite() const
-{
-  return diffusivite();
-}
-
-// Description:
-// renvoie la distance entre les faces fac1 et fac2 dans la direction k
-inline double Eval_Diff_VDF_const2::dist_face(int fac1, int fac2, int k) const
-{
-  return xv(fac2,k) - xv(fac1,k);
-}
-
-inline double Eval_Diff_VDF_const2::dist_face_period(int fac1, int fac2, int k) const
-{
-  return la_zone->dist_face_period(fac1,fac2,k);
-}
-
 
 // Description:
 // associe le champ de diffusivite

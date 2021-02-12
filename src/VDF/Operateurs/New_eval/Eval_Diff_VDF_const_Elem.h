@@ -30,23 +30,9 @@
 // .SECTION voir aussi Eval_Diff_VDF_const
 
 
-class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem, Eval_Diff_VDF_const2>
+class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem>,
+                                 public Eval_Diff_VDF_const2
 {
-  public:
-    inline double nu_1_impl(int i) const
-    {
-      return db_diffusivite;
-    }
-
-    inline double nu_2_impl(int i) const
-    {
-      return db_diffusivite;
-    }
-
-    inline double compute_heq_impl(double d0, int i, double d1, int j) const
-    {
-      return db_diffusivite/(d0+d1);
-    }
 };
 
 #endif

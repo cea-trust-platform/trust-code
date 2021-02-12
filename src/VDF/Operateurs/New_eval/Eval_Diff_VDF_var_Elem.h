@@ -29,25 +29,9 @@
 //
 // .SECTION voir aussi Eval_Diff_VDF_var
 
-class Eval_Diff_VDF_var_Elem :   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem, Eval_Diff_VDF_var2>
+class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>,
+                               public Eval_Diff_VDF_var2
 {
-
-public:
-  inline double nu_1_impl(int i) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double nu_2_impl(int i) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double compute_heq_impl(double d0, int i, double d1, int j) const
-  {
-    return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
-  }
-
 };
 
 #endif

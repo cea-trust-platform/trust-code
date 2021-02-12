@@ -13,82 +13,30 @@
 *
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
-
+//
+// File:        Eval_Diff_VDF.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
+// Version:     /main/8
+//
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Eval_Diff_VDF_var2_included
-#define Eval_Diff_VDF_var2_included
 
-#include <Eval_Diff_VDF2.h>
-#include <Ref_Champ_base.h>
-#include <Champ_base.h>
-#include <Champ_Uniforme.h>
-#include <Zone_VDF.h>
+#ifndef Eval_Diff_VDF2_included
+#define Eval_Diff_VDF2_included
 
-//
-// .DESCRIPTION class Eval_Diff_VDF_var
-//
-// Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui n'est pas constant en espace.
-
-//.SECTION voir aussi Evaluateur_VDF
-
-
-class Eval_Diff_VDF_var2 : public Eval_Diff_VDF2
+class Champ_base;
+class Champ_Don;
+class Eval_Diff_VDF2
 {
-
 public:
-  inline void associer(const Champ_base& );
-  inline void mettre_a_jour( );
-  inline const Champ_base& diffusivite() const;
+  inline virtual ~Eval_Diff_VDF2() {}
 
-  // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i) const
+  virtual void associer(const Champ_base&) =0;
+  virtual void mettre_a_jour()
   {
-    return dv_diffusivite(i);
-  }
-
-  inline double nu_2_impl(int i) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double compute_heq_impl(double d0, int i, double d1, int j) const
-  {
-    return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
-  }
-
-protected:
-
-  REF(Champ_base) diffusivite_;
-  DoubleVect dv_diffusivite;
+    return ;
+  };
 };
-
-//
-//  Fonctions inline de la classe Eval_Diff_VDF_var
-//
-
-// Description:
-// associe le champ de diffusivite
-inline void Eval_Diff_VDF_var2::associer(const Champ_base& diffu)
-{
-  diffusivite_ = diffu;
-  dv_diffusivite.ref(diffu.valeurs());
-}
-
-// Description:
-// mise a jour de DoubleVect diffusivite
-inline void Eval_Diff_VDF_var2::mettre_a_jour( )
-{
-  (diffusivite_->valeurs().echange_espace_virtuel());
-  dv_diffusivite.ref(diffusivite_->valeurs());
-}
-
-inline const Champ_base& Eval_Diff_VDF_var2::diffusivite() const
-{
-  assert(diffusivite_.non_nul());
-  return diffusivite_.valeur();
-}
 
 #endif
