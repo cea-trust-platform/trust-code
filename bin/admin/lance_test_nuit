@@ -80,7 +80,7 @@ check_components()
 	    fi
             if [[ "$Composant" == "triocfd" ]]
             then
-                 git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+                 git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
             fi
             # Fait desormais via un post_configure dans Test_Baltik:
 	    #[ "$Composant" = Test_Baltik ] && echo "We call ./Configure_Tests for Test_Baltik from `pwd`" && ./Configure_Tests
@@ -116,7 +116,7 @@ check_components()
                echo "Call to ./share/Distribution/Create_Light_archive.sh"
 	       rm -rf Prov
 	       ./share/Distribution/Create_light_archive.sh 1>tmp.log 2>&1
-               if [ $? != 0 ]
+               if [ "`grep 'Pb not uptodate' tmp.log`" != "" ]
                then
                   cat tmp.log
                   cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL

@@ -15,11 +15,37 @@
    <PETSC_3.14.1>
    Memcheck:Leak
    match-leak-kinds: reachable
-   fun:calloc
+   fun:*alloc
+   ...
    fun:_dlerror_run
    fun:dlsym
    fun:PetscInitialize
+   ...
    fun:main
+}
+
+###
+###  Hypre Library
+###
+{
+   <hypre_2.19.0>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:hypre_CAlloc
+   fun:hypre_HandleCreate
+   fun:hypre_handle
+   fun:hypre_IJMatrixInitializeParCSR
+   fun:HYPRE_IJMatrixInitialize
+   fun:MatConvert_AIJ_HYPRE
+   fun:MatConvert
+   fun:PCSetUp_HYPRE
+   fun:PCSetUp
+   fun:KSPSetUp
+   fun:_ZN10Solv_Petsc14Create_objectsERK13Matrice_MorseRK10DoubleVect
+   fun:_ZN10Solv_Petsc16resoudre_systemeERK12Matrice_BaseRK10DoubleVectRS3_
+   fun:_ZN10SolveurSys16resoudre_systemeERK12Matrice_BaseRK10DoubleVectRS3_
+   ...
 }
 
 ###

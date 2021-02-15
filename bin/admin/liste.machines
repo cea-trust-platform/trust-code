@@ -44,11 +44,11 @@ linux	rsync_ssh	tache   is241482.intra.cea.fr				        	                     -
 linux	rsync_ssh	tache	is241480.intra.cea.fr				-TrioCFD   						-platform -force_latest_openmpi	-without-pdflatex				# CentOS 7.8	Bat 451	LMSF	Salle de formation
 linux	rsync_ssh	tache	is230500-build64.intra.cea.fr			-TrioCFD -IJK-FT -PEMFC 							-build_64_bit -without-pdflatex							# CentOS 7.8	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	cible	is231771.intra.cea.fr				-TRUST -TrioCFD -GENEPI3 						-force_provided_mpich								# CentOS 7.8	Bat 451 LGLS	bureau Pierre Ledac
-linux   rsync_ssh	tache	is223288.intra.cea.fr 			-TrioCFD  					-semi_opt 	-force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
+linux   rsync_ssh	tache	is223288.intra.cea.fr 			     					-semi_opt 	-force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
 linux   rsync_ssh	tache	is212912.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 18	Bat 451	LMSF	Bureau Michel (machine pilote)
-linux   rsync_ssh	non	is212958.intra.cea.fr 		-all		-TrioCFD  					    -g 		-force_provided_mpich 								# CentOS 7.8	Bat 451	LMSF	Bureau Michel (machine pilote Titania/orcus)
-linux   rsync_ssh	non	is224668.intra.cea.fr 		-all		-TrioCFD -IJK-FT 				-g 		-force_provided_mpich 								# Ubuntu 18.04	Bat 451	LMSF	Bureau Michel (machine pilote Titania/orcus)
-linux   rsync_ssh	non	is213122.intra.cea.fr 		-all		-TrioCFD -IJK-FT -PEMFC     	-g 		-force_provided_mpich 								# Ubuntu 20.04	Bat 451	LMSF	Bureau Michel (machine pilote Titania/orcus)
+linux   rsync_ssh	non	is212958.intra.cea.fr 		-all		-TrioCFD  					    -g 		-force_provided_mpich 								# CentOS 7.8	Bat 451	LMSF	Bureau Michel (machine pilote Titania)
+linux   rsync_ssh	non	is224668.intra.cea.fr 		-all		-TrioCFD -IJK-FT 				-g 		-force_provided_mpich 								# Ubuntu 18.04	Bat 451	LMSF	Bureau Michel (machine pilote Titania)
+linux   rsync_ssh	non	is213122.intra.cea.fr 		-all		-TrioCFD -IJK-FT -PEMFC     	 		-force_provided_mpich 								# Ubuntu 20.04	Bat 451	LMSF	Bureau Michel (machine pilote Titania)
 linux   rsync_ssh	non	is241762.intra.cea.fr 		-all 		-TrioCFD  					        -g 		-force_provided_mpich 								# Fedora 30 	Bat 451	LMSF	Bureau Julie
 linux   rsync_ssh	non	is229956-gui.intra.cea.fr			-TrioCFD                        	-gui		-remote_install_TRUST_with_source -force_provided_openmpi				# Ubuntu 16	Bat 451	LGLS	Machine de Michel pce 54
 linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-pdflatex -force_provided_mpich								# CentOS 7.8 salle de formation

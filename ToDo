@@ -1,5 +1,6 @@
 Version	Qui				Tache
 
+1.8.3   adrien.bruneton@cea.fr  Fix Canal_perio source term for energy equation in VEF.
 1.8.3   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.8.3	pierre.ledac@cea.fr	    Supprimer le format LATA V1
 1.8.3   adrien.bruneton@cea.fr  Refactoring de IBM_interpolation_hybride pour heritage multiple (et virer le shared_ptr !)
@@ -27,6 +28,7 @@ Version	Qui				Tache
 1.8.3   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.8.3   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
 
+1.8.x   adrien.bruneton@cea.fr  Fix Canal_perio source term for energy equation in VEF.
 1.8.x   pierre.ledac@cea.fr     LDC: Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.x   adrien.bruneton@cea.fr  LDC: Refactoring de IBM_interpolation_hybride pour heritage multiple (et virer le shared_ptr !)
 1.8.x   adrien.bruneton@cea.fr  LDC: Refactoring de genererCourbe (classes nouvellefiche de TrioCFD Purpose, Description, etc ...)
