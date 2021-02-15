@@ -21,6 +21,7 @@
 #include <LataToMED.h>
 #include <LireMED.h>
 #include <LireMEDfile.h>
+#include <MergeMEDfiles.h>
 #include <Pb_MED.h>
 #include <Read_MED_For_Testing_No_Verify_Option.h>
 #include <ScatterMED.h>
@@ -46,8 +47,9 @@ LataToMED inst17;verifie_pere(inst17);
 latatoother inst18;verifie_pere(inst18);
 LireMED inst19;verifie_pere(inst19);
 LireMEDfile inst20;verifie_pere(inst20);
-Pb_MED inst21;verifie_pere(inst21);
-Pbc_MED inst22;verifie_pere(inst22);
-Read_MED_For_Testing_No_Verify_Option inst23;verifie_pere(inst23);
-ScatterMED inst24;verifie_pere(inst24);
+MergeMEDfiles inst21;verifie_pere(inst21);
+Pb_MED inst22;verifie_pere(inst22);
+Pbc_MED inst23;verifie_pere(inst23);
+Read_MED_For_Testing_No_Verify_Option inst24;verifie_pere(inst24);
+ScatterMED inst25;verifie_pere(inst25);
 }

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# do nothing for the seq calculation... Wait for the // one
+if [ -f PAR_merge_med_ALL_0000.med ]
+then	
+  trust merge_files.data 1>merge_files.out 2>merge_files.err
+  # Comparisions seq & // med merging
+  compare_lata PAR_merge_med_ALL.med merge_med_ALL.med 1>verifie.log 2>&1 || exit -1
+
+  numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+  if [[ "$numb_diff" -gt "0" ]]
+  then
+    echo "Error ! The merge is not good and the seq-// med files are not identical !"
+    exit -1
+  else
+    echo "All OK for the med merge !"
+  fi
+fi
