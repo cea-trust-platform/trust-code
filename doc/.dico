@@ -486,6 +486,7 @@
  MD_Vector_base2 MD_Vector_base2 MD_Vector_base2.h
  MD_Vector_composite MD_Vector_composite MD_Vector_composite.h
  MD_Vector_std MD_Vector_std MD_Vector_std.h
+ Merge_MED MergeMEDfiles MergeMEDfiles.h
  Milieu_base Milieu_base Milieu_base.h
  Modele_Permeabilite Modele_Permeabilite Modele_Permeabilite.h
  Modele_Permeabilite_base Modele_Permeabilite_base Modele_Permeabilite_base.h
