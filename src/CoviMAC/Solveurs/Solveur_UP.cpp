@@ -301,8 +301,8 @@ void Solveur_UP::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pres
   MD_Vector md_UP;
   {
     MD_Vector_composite mds;
-    mds.add_part(current.get_md_vector());
-    mds.add_part(pression.get_md_vector());
+    mds.add_part(current.get_md_vector(), current.line_size());
+    mds.add_part(pression.get_md_vector(), pression.line_size());
     md_UP.copy(mds);
   }
 

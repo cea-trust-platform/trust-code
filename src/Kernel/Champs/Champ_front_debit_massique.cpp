@@ -56,10 +56,10 @@ void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& i
 
 void Champ_front_debit_massique::update_coeff(double temps)
 {
-  const int N = coeff_.line_size();
+  const int N = coeff_.line_size(), cR = rho_.valeur().dimension(0) == 1;
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
 
   for(int i = 0; i < le_bord.nb_faces(); i++) for (int n = 0; n < N; ++n)
-      coeff_(i, n) = 1. / rho_.valeur()(i, n);
+      coeff_(i, n) = 1. / rho_.valeur()(!cR * i, n);
 
 }

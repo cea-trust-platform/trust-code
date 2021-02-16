@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,8 +89,6 @@ void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
-  if (matrices.size() > 1 && !semi_impl.count("alpha_rho")) //implicite complet -> pas code
-    Cerr << que_suis_je() << " : non-velocity derivatives not coded yet!" << finl, Process::exit();
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
   int i, j, k, e, eb, f, fb, fc, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension;

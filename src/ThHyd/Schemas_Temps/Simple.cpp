@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -367,8 +367,8 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
 
       //MD_Vector enrichi pour contenir les extra_items
       MD_Vector_composite mdc; //MD_Vector_composite global
-      for (i = 0; i < eqs.size(); i++) //DANGER ne marchera pas si line_size() > 0
-        mdc.add_part(MD_Vector_tools::extend(eqs[i]->inconnue().valeurs().get_md_vector(), extra_items[i]));
+      for (i = 0; i < eqs.size(); i++)
+        mdc.add_part(MD_Vector_tools::extend(eqs[i]->inconnue().valeurs().get_md_vector(), extra_items[i]), eqs[i]->inconnue().valeurs().line_size());
       mdv.copy(mdc);
 
       /* dimensionnement de la matrice globale */

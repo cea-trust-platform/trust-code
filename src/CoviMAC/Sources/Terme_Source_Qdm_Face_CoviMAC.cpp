@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
         if (1)
           {
             for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
-                  resu(f, n) += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * nf(f, d) / fs(f) * vals(!cR * e, N * d + n);
+                  resu(f, n) += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
           }
 
         if (0)

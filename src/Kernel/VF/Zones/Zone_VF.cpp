@@ -464,53 +464,10 @@ const IntTab& Zone_VF::face_virt_pe_num() const
 // and eventually scaled by scale_factor
 DoubleTab Zone_VF::normalized_boundaries_outward_vector(int global_face_number, double scale_factor) const
 {
-  const IntTab& face_som = face_sommets();
-  const DoubleTab& les_coords = zone().domaine().coord_sommets();
   const IntTab& neighbor_faces = face_voisins();
-
-  //points number 0 and 1
-  int n0 = face_som(global_face_number,0);
-  int n1 = face_som(global_face_number,1);
-  //vector linking n0 to n1
-  double v1x = les_coords(n0,0)-les_coords(n1,0);
-  double v1y = les_coords(n0,1)-les_coords(n1,1);
-  double v2x=0,v2y=0;
   DoubleTab normal_vector(dimension); //result
-
-  if(dimension==3)
-    {
-      //third component of vector linking n0 to n1
-      double v1z = les_coords(n0,2)-les_coords(n1,2);
-      //point number 2
-      int n2 = face_som(global_face_number,2);
-      //vector linking n0 to n2
-      v2x = les_coords(n0,0)-les_coords(n2,0);
-      v2y = les_coords(n0,1)-les_coords(n2,1);
-      double v2z = les_coords(n0,2)-les_coords(n2,2);
-      //to use produit_vectoriel
-      Vecteur3 v1(v1x, v1y, v1z);
-      Vecteur3 v2(v2x, v2y, v2z);
-      Vecteur3 normal_vector_V3;
-      //fill normal_vector
-      Vecteur3::produit_vectoriel(v1,v2,normal_vector_V3);
-      //compute the norm to normalized the vector
-      double norm=normal_vector_V3.length();
-      double scale=1./norm;
-      normal_vector_V3*=scale;
-      normal_vector(0)=normal_vector_V3[0];
-      normal_vector(1)=normal_vector_V3[1];
-      normal_vector(2)=normal_vector_V3[2];
-    }
-  else
-    {
-      //build normal vector
-      v2x=v1y;
-      v2y=-v1x;
-      //compute the norm to normalized the vector
-      double norm=sqrt(v2x*v2x + v2y*v2y);
-      normal_vector(0)=v2x/norm;
-      normal_vector(1)=v2y/norm;
-    }
+  for (int d = 0; d < dimension; d++)
+    normal_vector(d) = face_normales(global_face_number, d) / face_surfaces(global_face_number);
 
   //now we have a normalized normal vector
   //but it remains to orient it correctly (outwards)

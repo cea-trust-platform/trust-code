@@ -304,8 +304,8 @@ void Milieu_base::creer_derivee_rho()
   ech1 >> dT_rho, ech2 >> dP_rho;
 
   rho_bord.resize(1, rho.nb_comp());
-  for (int n = 0; n < rho.nb_comp(); ++n)
-    rho_bord(0, n) = rho.valeurs()(0, n);
+  if (rho.valeurs().dimension(0)) for (int n = 0; n < rho.nb_comp(); ++n)
+      rho_bord(0, n) = rho.valeurs()(0, n);
 
 }
 

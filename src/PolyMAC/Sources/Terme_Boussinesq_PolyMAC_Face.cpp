@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
   DoubleVect g(dimension);
   g = grav;
 
-  int nb_dim = param.nb_dim();
+  int nb_dim = param.line_size();
 
   // Verifie la validite de T0:
   check();
