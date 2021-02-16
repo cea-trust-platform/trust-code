@@ -383,9 +383,9 @@ check_nvidia_cuda()
    else
       echo "Cuda lib libcudart.so not found!" && exit -1
    fi
-   CUDA_LIB=`dirname $CUDA_LIB`
+   CUDA_LIB=`dirname $CUDA_LIB 2>/dev/null`
    echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
-   CUDA_ROOT=`dirname $CUDA_LIB`
+   CUDA_ROOT=`dirname $CUDA_LIB 2>/dev/null`
    echo "Cuda CUDA_ROOT=$CUDA_ROOT"
 }
 
@@ -1003,6 +1003,7 @@ m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && expo
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
    check_nvidia_cuda
+   [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
    ecrit $m"|"$e"|"$env;eval $e
