@@ -1215,7 +1215,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   type_pc_=(Nom)type_pc;
 
   // Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
-  if (amgx_)
+  if (amgx_ && Process::je_suis_maitre())
     {
       Nom filename(Objet_U::nom_du_cas());
       filename+=".amgx";
