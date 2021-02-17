@@ -3611,6 +3611,10 @@ deja_livre=0
 if [ $accord_admin = 1 ]
 then
    echo ${new%_beta}" == "$new" => agreement_administrator = "$accord_admin
+   # Add latest version of TRUST tutorials to git
+   cp $TRUST_ROOT/doc/TRUST/Tutorial/TRUST_tutorial.pdf $TRUST_ROOT/doc/TRUST/
+   cp $TRUST_ROOT/doc/TRUST/Tutorial/ICoCo_tutorial.pdf $TRUST_ROOT/doc/TRUST/
+   cp $TRUST_ROOT/doc/TRUST/Tutorial/Baltik_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    # Commit
    echo "Call git commit --u=no --all -m Commit before the $new version."
    git commit --u=no --all -m"Commit before the $new version."

@@ -31,7 +31,7 @@ linux	rsync_ssh	non	is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT 				-g		-force
 linux	rsync_ssh	non	is221710.intra.cea.fr							 					-force_provided_mpich -remote_install_TRUST_kernel_only				# Fedora 24	Bat 454	LMEC	bureau Marc Elmo (Couplage Cathare/TRUST)
 linux	rsync_ssh	non	is221710-womed.intra.cea.fr			-TRUST -MPCube -TrioCFD -GENEPI3 				-force_provided_mpich 								# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
 linux	rsync_ssh	non	is224594-clang.intra.cea.fr			-FLICA5	-GENEPI3 -IJK-FT -TrioMC		-clang		-force_provided_openmpi								# Fedora 30	Bat 454 LMEC	bureau Yannick Gorsse
-linux	rsync_ssh	non	is233137.intra.cea.fr				-TRUST -FLICA5 						-disable-mpi 									# Fedora 26	Bat 451 LMSF	bureau Guillaume Bois
+linux	rsync_ssh	non	is233137.intra.cea.fr				-FLICA5 						-disable-mpi 									# Fedora 26	Bat 451 LMSF	bureau Guillaume Bois
 linux	rsync_ssh	non	is226423-clang.intra.cea.fr			-MPCube	-FLICA5					-clang40	-force_provided_openmpi -without-visit							# Ubuntu 16	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is212915.intra.cea.fr				-TrioCFD -SIDES -SCORPIO -PEMFC 				-g		-force_provided_mpich	-without-pdflatex					# CentOS 7.8	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is154709.intra.cea.fr		-all		-GENEPI3 							-disable-mpi -without-pdflatex							# CentOS 7.8	Bat 451	LGLS	salle de formation5
