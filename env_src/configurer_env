@@ -2028,6 +2028,7 @@ then
          awk '/Device 0/ {print "Yes. The NVIDIA card is "$0}' $TRUST_ENV/card.log
       fi
    else
+      rm -f $TRUST_ENV/card.log
       echo "Not tested."
    fi
    m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
