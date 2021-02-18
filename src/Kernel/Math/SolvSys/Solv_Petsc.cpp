@@ -174,8 +174,12 @@ void Solv_Petsc::create_solver(Entree& entree)
       add_option("log_view",petsc_TU); 	// Monitor performances at the end of the calculation
       PetscLogAllBegin(); 		// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
+#ifdef NDEBUG
+  // PETSc 3.14 active par defaut les exceptions, on desactive en production ?
+  // PetscSetFPTrap(PETSC_FP_TRAP_OFF);
+  // Utiliser -fp_trap 0 a l'execution plutot: Segfault vu sur petsc gmres { precond diag ... }
+#endif
   //add_option("on_error_abort",""); // ne marche pas semble t'il
-
   // On doit pouvoir lire des mots cles de base (GCP, GMRES, CHOLESKY)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
@@ -1055,6 +1059,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 pc_supported_on_gpu_by_amgx=1;
                 pc_supported_on_gpu_by_petsc=1;
+                preconditionnement_non_symetrique_ = 1;
                 if (amgx_)
                   {
                     amgx_option+="preconditioner(p)=AMG\n";
