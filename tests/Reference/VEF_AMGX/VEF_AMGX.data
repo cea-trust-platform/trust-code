@@ -26,6 +26,7 @@ Mailler dom
     }
 }
 Tetraedriser_homogene dom
+Transformer dom x y*(1+0.1*x) z*(1+0.2*x*y)
 # END MESH #
 
 # BEGIN PARTITION
@@ -95,7 +96,7 @@ Read pb
             sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
         }
 
-        Format lata
+        Format lml
         fields dt_post 1.
         {
             pression_pa elem
