@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -430,6 +430,15 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
                         os.add_col((ch + "_" + noms_compo_courts[d]).getChar());
                       }
                   else os.add_col(ch.getChar());
+                  // if periodic BC, we write the boundary name twice on the header of .out files
+                  if ((sub_type(Periodique,les_cls[num_cl].valeur())) && (Objet_U::nom_du_cas()+"_"+eqn.probleme().le_nom()+"_Force_pression"!=out_))
+                    {
+                      if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
+                          {
+                            os.add_col((ch + "_" + noms_compo_courts[d]).getChar());
+                          }
+                      else os.add_col(ch.getChar());
+                    }
                 }
             }
         }
