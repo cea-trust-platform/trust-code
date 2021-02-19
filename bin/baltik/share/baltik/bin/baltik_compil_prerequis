@@ -76,8 +76,15 @@ test_execution()
 	 LDD=`grep LD_LIBRARY_PATH $test_dep/make.include.atelier  | sed "s/#//"`
 	 eval $LDD 
 	 rm -rf $test_dep
-	 ./test_prog_opt
-	 status=$?
+         if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
+         then
+            # On ne teste pas le prerequis sur les clusters avec GPU : generalement erreur sur libcuda.so.1 not found
+            # Ou alors il faudrait faire: exec=`pwd`/test_prog_opt trust -gpu dummy
+            status=0
+         else
+	    ./test_prog_opt
+	    status=$?
+         fi
         fi
 	
 	status_tot=$status 
