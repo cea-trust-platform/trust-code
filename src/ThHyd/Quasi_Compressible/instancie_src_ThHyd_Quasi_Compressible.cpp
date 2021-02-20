@@ -16,6 +16,7 @@
 #include <Loi_Etat_GP.h>
 #include <Loi_Etat_GR_rhoT.h>
 #include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Rho_T.h>
 #include <Navier_Stokes_QC.h>
 #include <Neumann_paroi_QC.h>
 #include <Neumann_sortie_libre_Temp_H.h>
@@ -39,14 +40,15 @@ Loi_Etat inst10;verifie_pere(inst10);
 Loi_Etat_GP inst11;verifie_pere(inst11);
 Loi_Etat_GR_rhoT inst12;verifie_pere(inst12);
 Loi_Etat_Melange_GP inst13;verifie_pere(inst13);
-Navier_Stokes_QC inst14;verifie_pere(inst14);
-Neumann_paroi_QC inst15;verifie_pere(inst15);
-Neumann_sortie_libre_Temp_H inst16;verifie_pere(inst16);
-Pb_Thermohydraulique_QC inst17;verifie_pere(inst17);
-Sortie_libre_pression_imposee_QC inst18;verifie_pere(inst18);
-Source_QC_QDM_Gen inst19;verifie_pere(inst19);
-Source_Quasi_Compressible_Chaleur_Verif inst20;verifie_pere(inst20);
-Source_Quasi_Compressible_Chaleur_Verif_VEF inst21;verifie_pere(inst21);
-Source_Quasi_Compressible_Chaleur_Verif_VEF_P1NC inst22;verifie_pere(inst22);
-Temperature_imposee_paroi_H inst23;verifie_pere(inst23);
+Loi_Etat_Rho_T inst14;verifie_pere(inst14);
+Navier_Stokes_QC inst15;verifie_pere(inst15);
+Neumann_paroi_QC inst16;verifie_pere(inst16);
+Neumann_sortie_libre_Temp_H inst17;verifie_pere(inst17);
+Pb_Thermohydraulique_QC inst18;verifie_pere(inst18);
+Sortie_libre_pression_imposee_QC inst19;verifie_pere(inst19);
+Source_QC_QDM_Gen inst20;verifie_pere(inst20);
+Source_Quasi_Compressible_Chaleur_Verif inst21;verifie_pere(inst21);
+Source_Quasi_Compressible_Chaleur_Verif_VEF inst22;verifie_pere(inst22);
+Source_Quasi_Compressible_Chaleur_Verif_VEF_P1NC inst23;verifie_pere(inst23);
+Temperature_imposee_paroi_H inst24;verifie_pere(inst24);
 }

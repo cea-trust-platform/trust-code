@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -216,7 +216,8 @@ void Loi_Etat_base::calculer_mu()
   Champ_Don& mu = le_fluide->viscosite_dynamique();
   if (!sub_type(Champ_Uniforme,mu.valeur()))
     {
-      if (sub_type(Champ_Fonc_Tabule,mu.valeur()))
+      // E. Saikali : Pourquoi pas Champ_fonc_xyz pour mu ???
+      if (sub_type(Champ_Fonc_Tabule,mu.valeur()) || sub_type(Champ_Don_base,mu.valeur()))
         mu.mettre_a_jour(temperature_.valeur().temps());
       else
         {
@@ -260,6 +261,13 @@ void Loi_Etat_base::calculer_lambda()
           for (i=0 ; i<n ; i++)
             {
               tab_lambda[i] = mu0 * tab_Cp[i] / Pr_;
+            }
+        }
+      else if (sub_type(Champ_Don_base,mu.valeur()) && tab_mu.nb_dim() > 1 )
+        {
+          for (i=0 ; i<n ; i++)
+            {
+              tab_lambda[i] = tab_mu(i,0) * tab_Cp[i] / Pr_;
             }
         }
       else
@@ -309,6 +317,13 @@ void Loi_Etat_base::calculer_nu()
               tab_nu[i] = mu0 / tab_rho[i];
             }
         }
+      else if (sub_type(Champ_Don_base,mu.valeur()) && tab_mu.nb_dim() > 1 )
+        {
+          for (i=0 ; i<n ; i++)
+            {
+              tab_nu[i] = tab_mu(i,0) / tab_rho[i];
+            }
+        }
       else
         {
           for (i=0 ; i<n ; i++)
@@ -332,6 +347,16 @@ void Loi_Etat_base::calculer_nu()
               for (face=0; face<nfe; face++) rhoelem+=tab_rho(elem_faces(i,face));
               rhoelem/=nfe;
               tab_nu[i] = mu0 /rhoelem;
+            }
+        }
+      else if (sub_type(Champ_Don_base,mu.valeur()) && tab_mu.nb_dim() > 1 )
+        {
+          for (i=0 ; i<n ; i++)
+            {
+              rhoelem=0;
+              for (face=0; face<nfe; face++) rhoelem+=tab_rho(elem_faces(i,face));
+              rhoelem/=nfe;
+              tab_nu[i] = tab_mu(i,0) /rhoelem;
             }
         }
       else
