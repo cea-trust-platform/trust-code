@@ -1010,22 +1010,6 @@ void Solv_Petsc::create_solver(Entree& entree)
                 check_not_defined(ordering);
                 break;
               }
-            case 7:
-              {
-                PCSetType(PreconditionneurPetsc_, PCHYPRE);
-                PCHYPRESetType(PreconditionneurPetsc_, "boomeramg"); // Classical C-AMG
-                // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de
-                // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
-                // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
-                add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
-                // Voir https://mooseframework.inl.gov/application_development/hypre.html
-                if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
-                check_not_defined(omega);
-                check_not_defined(level);
-                check_not_defined(epsilon);
-                check_not_defined(ordering);
-                break;
-              }
             case 9: // ilu
             case 8: // icc
               {
@@ -1052,6 +1036,35 @@ void Solv_Petsc::create_solver(Entree& entree)
                 PCSetType(PreconditionneurPetsc_, PCBJACOBI);
                 check_not_defined(omega);
                 check_not_defined(epsilon);
+                break;
+              }
+            case 7:
+              {
+                PCSetType(PreconditionneurPetsc_, PCHYPRE);
+                PCHYPRESetType(PreconditionneurPetsc_, "boomeramg"); // Classical C-AMG
+                // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de
+                // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
+                // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
+                add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
+                // Voir https://mooseframework.inl.gov/application_development/hypre.html
+                if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
+                check_not_defined(omega);
+                check_not_defined(level);
+                check_not_defined(epsilon);
+                check_not_defined(ordering);
+                // Page 16: https://prace-ri.eu/wp-content/uploads/WP294-PETSc4FOAM-A-Library-to-plug-in-PETSc-into-the-OpenFOAM-Framework.pdf
+                /*
+                add_option("pc_hypre_boomeramg_max_iter","1");
+                add_option("pc_hypre_boomeramg_strong_threshold","0.7");
+                add_option("pc_hypre_boomeramg_grid_sweeps_up","1");
+                add_option("pc_hypre_boomeramg_grid_sweeps_down","1");
+                add_option("pc_hypre_boomeramg_agg_nl","2");
+                add_option("pc_hypre_boomeramg_agg_num_paths","1");
+                add_option("pc_hypre_boomeramg_max_levels","25");
+                add_option("pc_hypre_boomeramg_coarsen_type","HMIS");
+                add_option("pc_hypre_boomeramg_interp_type","ext+i");
+                add_option("pc_hypre_boomeramg_P_max","2");
+                add_option("pc_hypre_boomeramg_truncfactor","0.2");*/
                 break;
               }
             case 10: // Classical AMG
@@ -1099,29 +1112,6 @@ void Solv_Petsc::create_solver(Entree& entree)
                     if (rang==10) // C-AMG
                       {
                         add_option("pc_gamg_type","classical");
-                        /* AmgWrapper:
-                        add_option("pc_type","hypre");
-                        add_option("pc_hypre_type","boomeramg");
-                        add_option("pc_hypre_boomeramg_cycle_type","V");
-                        add_option("pc_hypre_boomeramg_max_levels","100");
-                        add_option("pc_hypre_boomeramg_max_iter","1");
-                        add_option("pc_hypre_boomeramg_tol","0.0");
-                        add_option("pc_hypre_boomeramg_truncfactor","0.0");
-                        add_option("pc_hypre_boomeramg_P_max","0");
-                        add_option("pc_hypre_boomeramg_agg_nl","0");
-                        add_option("pc_hypre_boomeramg_agg_num_paths","1");
-                        add_option("pc_hypre_boomeramg_strong_threshold","0.25");
-                        add_option("pc_hypre_boomeramg_max_row_sum","1.0");
-                        add_option("pc_hypre_boomeramg_grid_sweeps_down","1");
-                        add_option("pc_hypre_boomeramg_grid_sweeps_up","1");
-                        add_option("pc_hypre_boomeramg_grid_sweeps_coarse","1");
-                        add_option("pc_hypre_boomeramg_relax_type_all","Jacobi");
-                        add_option("pc_hypre_boomeramg_relax_type_coarse","Gaussian-elimination");
-                        add_option("pc_hypre_boomeramg_relax_weight_all","1.0");
-                        add_option("pc_hypre_boomeramg_outer_relax_weight_all","1.0");
-                        add_option("pc_hypre_boomeramg_measure_type","local");
-                        add_option("pc_hypre_boomeramg_coarsen_type","HMIS");
-                        add_option("pc_hypre_boomeramg_interp_type","ext+i-cc"); */
                       }
                     else // SA-AMG
                       {
@@ -1986,16 +1976,20 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   if (amgx_)
     {
 #ifdef PETSC_HAVE_CUDA
-      Nom filename(Objet_U::nom_du_cas());
-      filename+=".amgx";
-      Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
-      /* Possible de jouer avec simple precision peut etre:
-      1. (lowercase) letter: whether the code will run on the host (h) or device (d).
-      2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
-      3. (uppercase) letter: whether the vector precision is float (F) or double (D).
-      4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
-      typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
-      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
+      if (!amgx_initialized())
+        {
+          Nom filename(Objet_U::nom_du_cas());
+          filename+=".amgx";
+          Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
+          /* Possible de jouer avec simple precision peut etre:
+          1. (lowercase) letter: whether the code will run on the host (h) or device (d).
+          2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
+          3. (uppercase) letter: whether the vector precision is float (F) or double (D).
+          4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
+          typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
+          SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
+          amgx_initialized_=true;
+        }
       SolveurAmgX_.setA(MatricePetsc_);
 #endif
     }
@@ -2458,6 +2452,14 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   /****************************/
   MatAssemblyBegin(MatricePetsc, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(MatricePetsc, MAT_FINAL_ASSEMBLY);
+  // Recuperation de la memoire max
+  /*
+  if (limpr()==1)
+    {
+      MatInfo info;
+      MatGetInfo(MatricePetsc,MAT_GLOBAL_MAX,&info);
+      Cerr << "Max memory used by matrix on a MPI rank: " << (int)(info.memory/1024/1024) << " MB" << finl;
+    }*/
 }
 
 #endif

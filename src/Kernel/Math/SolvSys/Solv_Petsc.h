@@ -88,6 +88,10 @@ public :
   {
     return amgx_;
   };
+  inline bool amgx_initialized()
+  {
+    return amgx_initialized_;
+  };
   void lecture(Entree&);
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
@@ -153,6 +157,7 @@ protected :
   int read_matrix_;		// Read constant matrix in a file
   bool gpu_;                    // Utilisation des solveurs GPU de PETSc
   bool amgx_;			// Utilisation des solveurs GPU de AMGX
+  bool amgx_initialized_;	// Amgx initialise
 #ifdef PETSC_HAVE_CUDA
   AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
 #endif
@@ -254,6 +259,7 @@ inline void Solv_Petsc::initialize()
   controle_residu_=0;
   gpu_=false;
   amgx_=false;
+  amgx_initialized_=false;
   block_size_=1;
   option_prefix_="??";
   dm_=NULL;
