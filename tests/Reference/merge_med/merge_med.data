@@ -1,0 +1,191 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK 4 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file upwind.geo ;
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 2 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0
+	tmax 2.5
+	dt_min 5.e-3
+	dt_max 5.e-3
+	dt_impr 5.e-1
+	dt_sauv 1
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-8 impr
+		}
+		convection { amont }
+		diffusion {  }
+		initial_conditions {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Obstacle paroi_fixe
+			Symetrie symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			     Champ_front_Uniforme 2  1. 0.
+		}
+	}
+
+	Post_processing
+	{
+		
+		Definition_champs 
+		 {  
+			   							       		   		    	
+		}
+		Format lml
+		fields dt_post 1.3
+		{
+			pression elem
+		}
+	}
+	liste_de_postraitements 
+	{
+		all Post_processing 
+		{
+		Definition_champs 
+		{
+
+		  	# Calcul du produit scalaire grad(Pression).Vitesse #
+	  		pscal_gradP_vit Transformation {
+			  	methode produit_scalaire
+				sources {
+				 	Interpolation { localisation elem source refChamp { Pb_champ pb gradient_pression } } ,
+				  	Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
+				}
+		    	}
+		    	# Calcul du produit scalaire Vitesse.Vitesse #
+	       		pscal_vit_vit_elem Transformation {
+				methode produit_scalaire
+				sources {
+					refChamp { Pb_champ pb vitesse } ,
+				 	refChamp { Pb_champ pb vitesse } 
+				}
+				localisation elem 
+		    	}
+		    
+			pscal_vit_vit_elem_interp Transformation {
+				methode produit_scalaire
+				sources {
+			 		Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } } ,
+					Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
+				}
+		    	}   
+		    
+	        	pscal_vit_vit_som Interpolation { localisation som sources_reference { pscal_vit_vit_elem_interp } }   
+		    
+	        	pscal_vit_vit_faces Interpolation { localisation faces sources_reference { pscal_vit_vit_elem_interp } }
+		        
+	  	 	norme_transfo_vit Transformation {
+		  	  	methode norme
+			  	source Interpolation { 
+			  	localisation elem
+			    	source refChamp { Pb_champ pb vitesse } } 
+			}
+			   
+	         	vecteur_unitairex transformation { methode vecteur expression 2 1. 0. localisation faces }   
+			
+		  	vecteur_transfo transformation { methode vecteur  expression 2 x t localisation faces }
+			
+		  	vecteur_source_elem Transformation { 
+				methode vecteur  expression 2 pression_natif_dom y
+		 		source refChamp { Pb_champ pb pression }
+				localisation elem	
+			}
+		  	vecteur_source_faces Transformation { 
+				methode vecteur expression  2 pression_natif_dom y
+		 		source refChamp { Pb_champ pb pression }
+				localisation faces	
+			}
+			
+		  	compo_vitessex Transformation { 
+				methode composante numero 0 
+		 		source refChamp { Pb_champ pb vitesse }
+				localisation elem	
+			}
+			
+		  	compo_vitessex_elem Interpolation { localisation elem sources_reference { compo_vitessex } }
+			
+			# Calcul de la composante selon X du gradient de pression #
+		  	compo_graPx Transformation { 
+				methode composante numero 0 
+				source refChamp { Pb_champ pb gradient_pression }
+				localisation elem 
+			}
+			# Interpolation de cette composante aux elements #
+		 	compo_graPx_elem Interpolation { localisation elem sources_reference { compo_graPx } }	
+
+
+
+	    }
+		format MED 
+		fields dt_post 1.3
+		  {
+			pression elem
+			vitesse elem
+			masse_volumique elem
+			gradient_pression elem
+			pscal_gradP_vit elem
+			pscal_vit_vit_elem
+			pscal_vit_vit_elem_interp
+			pscal_vit_vit_som
+			norme_transfo_vit elem
+			vecteur_unitairex elem
+			vecteur_transfo elem
+			vecteur_source_elem
+			compo_vitessex_elem
+			compo_graPx_elem
+
+		 }
+	     }
+	
+	}
+}
+Solve pb
+End
