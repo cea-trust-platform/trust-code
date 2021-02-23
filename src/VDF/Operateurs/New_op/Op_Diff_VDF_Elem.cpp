@@ -24,7 +24,7 @@
 
 // DO NOT EDIT  THIS FILE BUT  OpDifVDFElCs.h.cpp
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem,"Op_Diff_VDF_const_P0_VDF",Op_Diff_VDF_Elem_base);
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem,"Op_Diff_VDF_const_P0_VDF",Op_Diff_VDF_Elem_base2);
 
 implemente_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
 
@@ -52,6 +52,6 @@ Entree& Op_Diff_VDF_Elem::readOn(Entree& s )
 // Description:
 // constructeur
 Op_Diff_VDF_Elem::Op_Diff_VDF_Elem() :
-  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_const_Elem)())
+  Op_Diff_VDF_Elem_base2(It_VDF_Elem(Eval_Diff_VDF_const_Elem)())
 {
 }

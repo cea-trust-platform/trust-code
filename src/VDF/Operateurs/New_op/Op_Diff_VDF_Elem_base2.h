@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,72 +14,89 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_var_Elem.h
+// File:        Op_Diff_VDF_Elem_base2.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/11
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Diff_VDF_var_Elem_included
-#define Op_Diff_VDF_var_Elem_included
+#ifndef Op_Diff_VDF_Elem_base2_included
+#define Op_Diff_VDF_Elem_base2_included
 
-#include <Op_Diff_VDF_Elem_base.h>
+#include <Op_Diff_VDF_base.h>
 #include <ItVDFEl.h>
 #include <Op_VDF_Elem.h>
-#include "New_eval/Eval_Diff_VDF_var_Elem.h"
-
+class Eval_VDF_Elem2;
 //
-// .DESCRIPTION class Op_Diff_VDF_var_Elem
+// .DESCRIPTION class Op_Diff_VDF_Elem_base2
 //
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  transport.
 //  La discretisation est VDF
 //  Le champ diffuse est scalaire
-//  Le champ de diffusivite n'est pas uniforme
+//  Le champ de diffusivite est uniforme
 //  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+//  L'evaluateur associe est de type Eval_Diff_VDF_const_Elem
 
 //
 // .SECTION voir aussi
 //
 //
 
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.h
-//
-declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem)
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Diff_VDF_var_Elem
+// CLASS: Op_Diff_VDF_Elem_base2
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_var_Elem : public Op_Diff_VDF_Elem_base
+class Op_Diff_VDF_Elem_base2 : public Op_Diff_VDF_base, public Op_VDF_Elem
 {
 
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem);
+  Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base2);
 
 public:
+  inline Op_Diff_VDF_Elem_base2(const Iterateur_VDF_base& iterateur);
 
-  Op_Diff_VDF_var_Elem();
-  inline Op_Diff_VDF_var_Elem(const Iterateur_VDF_base&);
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,
+                const Champ_Inc& );
+  void associer_diffusivite(const Champ_base& );
+
+  const Champ_base& diffusivite() const;
+  inline  void dimensionner(Matrice_Morse& ) const;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  double calculer_dt_stab() const;
+  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const;
+  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  Matrice_Morse& matrice) const;
+  void get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const;
+
 protected:
-  inline Eval_VDF_Elem& get_eval_elem();
+  virtual Eval_VDF_Elem2& get_eval_elem()=0;
 };
+
+
+//
+// Fonctions inline de la classe Op_Diff_VDF_Elem_base2
+//
+
 
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
-inline Op_Diff_VDF_var_Elem::Op_Diff_VDF_var_Elem(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
+inline Op_Diff_VDF_Elem_base2::Op_Diff_VDF_Elem_base2(const Iterateur_VDF_base& iterateur)
+  : Op_Diff_VDF_base(iterateur)
 {
+  declare_support_masse_volumique(1);
 }
-// Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem& Op_Diff_VDF_var_Elem::get_eval_elem()
+// Description:
+// on dimensionne notre matrice.
+inline  void Op_Diff_VDF_Elem_base2::dimensionner(Matrice_Morse& matrice) const
 {
-  Eval_Diff_VDF_var_Elem& eval_diff = (Eval_Diff_VDF_var_Elem&) iter.evaluateur();
-  return (Eval_VDF_Elem&) eval_diff;
+  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
 }
+
+inline void Op_Diff_VDF_Elem_base2::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
+{
+  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
+}
+
 #endif

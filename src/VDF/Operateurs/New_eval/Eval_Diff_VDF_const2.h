@@ -45,9 +45,16 @@ class Eval_Diff_VDF_const2 : public Eval_Diff_VDF2
 {
 public:
 
-  inline Eval_Diff_VDF_const2();
+  inline Eval_Diff_VDF_const2() :db_diffusivite(-1.0e+300)
+  {}
+
   inline void associer(const Champ_base& );
-  inline const Champ_Uniforme& diffusivite() const;
+
+  inline const Champ_base& get_diffusivite() const
+   {
+     assert(diffusivite_.non_nul());
+     return diffusivite_.valeur();
+   }
 
   inline void mettre_a_jour( );
 
@@ -74,18 +81,9 @@ protected:
   double db_diffusivite;
 };
 
-inline Eval_Diff_VDF_const2::Eval_Diff_VDF_const2():db_diffusivite(-1.0e+300)
-{
-}
-
-inline const Champ_Uniforme& Eval_Diff_VDF_const2::diffusivite() const
-{
-  return diffusivite_.valeur();
-}
-
 // Description:
 // associe le champ de diffusivite
-inline void Eval_Diff_VDF_const2::associer(const Champ_base& diffu)
+void Eval_Diff_VDF_const2::associer(const Champ_base& diffu)
 {
   diffusivite_ = ref_cast(Champ_Uniforme, diffu);
   db_diffusivite = diffusivite_.valeur()(0,0);

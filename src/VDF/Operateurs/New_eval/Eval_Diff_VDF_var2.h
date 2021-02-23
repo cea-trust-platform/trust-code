@@ -41,7 +41,12 @@ class Eval_Diff_VDF_var2 : public Eval_Diff_VDF2
 public:
   inline void associer(const Champ_base& );
   inline void mettre_a_jour( );
-  inline const Champ_base& diffusivite() const;
+
+  inline const Champ_base& get_diffusivite() const
+  {
+    assert(diffusivite_.non_nul());
+    return diffusivite_.valeur();
+  }
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i) const
@@ -71,7 +76,7 @@ protected:
 
 // Description:
 // associe le champ de diffusivite
-inline void Eval_Diff_VDF_var2::associer(const Champ_base& diffu)
+void Eval_Diff_VDF_var2::associer(const Champ_base& diffu)
 {
   diffusivite_ = diffu;
   dv_diffusivite.ref(diffu.valeurs());
@@ -83,12 +88,6 @@ inline void Eval_Diff_VDF_var2::mettre_a_jour( )
 {
   (diffusivite_->valeurs().echange_espace_virtuel());
   dv_diffusivite.ref(diffusivite_->valeurs());
-}
-
-inline const Champ_base& Eval_Diff_VDF_var2::diffusivite() const
-{
-  assert(diffusivite_.non_nul());
-  return diffusivite_.valeur();
 }
 
 #endif

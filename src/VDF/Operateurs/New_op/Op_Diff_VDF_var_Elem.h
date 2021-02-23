@@ -14,44 +14,72 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_var_Elem.cpp
+// File:        Op_Diff_VDF_var_Elem.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/13
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_var_Elem.h>
 
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.cpp
+#ifndef Op_Diff_VDF_var_Elem_included
+#define Op_Diff_VDF_var_Elem_included
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem,"Op_Diff_VDF_var_P0_VDF",Op_Diff_VDF_Elem_base);
+#include <Op_Diff_VDF_Elem_base2.h>
+#include <ItVDFEl.h>
+#include <Op_VDF_Elem.h>
+#include <Eval_Diff_VDF_var_Elem.h>
 
-implemente_It_VDF_Elem(Eval_Diff_VDF_var_Elem)
+//
+// .DESCRIPTION class Op_Diff_VDF_var_Elem
+//
+//  Cette classe represente l'operateur de diffusion associe a une equation de
+//  transport.
+//  La discretisation est VDF
+//  Le champ diffuse est scalaire
+//  Le champ de diffusivite n'est pas uniforme
+//  L'iterateur associe est de type Iterateur_VDF_Elem
+//  L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
 
-
-//// printOn
+//
+// .SECTION voir aussi
+//
 //
 
-Sortie& Op_Diff_VDF_var_Elem::printOn(Sortie& s ) const
+
+// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.h
+//
+declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem)
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Op_Diff_VDF_var_Elem
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Op_Diff_VDF_var_Elem : public Op_Diff_VDF_Elem_base2
 {
-  return s << que_suis_je() ;
-}
 
+  Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem);
 
-//// readOn
-//
+public:
 
-Entree& Op_Diff_VDF_var_Elem::readOn(Entree& s )
-{
-  return s ;
-}
+  Op_Diff_VDF_var_Elem();
+  inline Op_Diff_VDF_var_Elem(const Iterateur_VDF_base&);
+protected:
+  inline Eval_VDF_Elem2& get_eval_elem();
+};
 
-//
-// Fonctions inline de la classe Op_Diff_VDF_var_Elem
-//
-// Description:
-// constructeur
-Op_Diff_VDF_var_Elem::Op_Diff_VDF_var_Elem() :
-  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_var_Elem)())
+// Ce constructeur permet de creer des classes filles des evalateurs
+// (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
+inline Op_Diff_VDF_var_Elem::Op_Diff_VDF_var_Elem(const Iterateur_VDF_base& iterateur)
+  : Op_Diff_VDF_Elem_base2(iterateur)
 {
 }
+// Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
+inline Eval_VDF_Elem2& Op_Diff_VDF_var_Elem::get_eval_elem()
+{
+  Eval_Diff_VDF_var_Elem& eval_diff = (Eval_Diff_VDF_var_Elem&) iter.evaluateur();
+  return (Eval_VDF_Elem2&) eval_diff;
+}
+#endif

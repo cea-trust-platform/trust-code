@@ -12,26 +12,19 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Diff_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef Eval_Diff_VDF2_included
 #define Eval_Diff_VDF2_included
 
 class Champ_base;
 class Champ_Don;
+
 class Eval_Diff_VDF2
 {
 public:
   inline virtual ~Eval_Diff_VDF2() {}
 
+  virtual const Champ_base& get_diffusivite() const=0;
   virtual void associer(const Champ_base&) =0;
   virtual void mettre_a_jour()
   {

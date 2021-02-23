@@ -14,30 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Evaluateur_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/12
+// File:        Op_Diff_VDF_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Evaluateur_VDF_included
-#define Evaluateur_VDF_included
+#ifndef Op_Diff_VDF_Elem_included
+#define Op_Diff_VDF_Elem_included
 
-#include <IntTab.h>
-#include <DoubleTab.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Op_Diff_VDF_Elem_base2.h>
+#include <ItVDFEl.h>
+#include <Op_VDF_Elem.h>
+#include <Eval_Diff_VDF_const_Elem.h>
 
 //
-// .DESCRIPTION class Evaluateur_VDF
+// .DESCRIPTION class Op_Diff_VDF_Elem
 //
-// Classe de base des evaluateurs VDF. Cette classe n'appartient pas a la
-// hierarchie des Objet_U.
-// Cette classe porte une reference a un objet de type Zone_VDF et une
-// reference a un objet de type Zone_Cl_VDF. Elle porte des tableaux locaux
-// qui sont en fait des references aux tableaux de l'objet de type Zone_VDF
-// (ces tableaux locaux n'existent pas en memoire).
+//  Cette classe represente l'operateur de diffusion associe a une equation de
+//  transport.
+//  La discretisation est VDF
+//  Le champ diffuse est scalaire
+//  Le champ de diffusivite n'est pas uniforme
+//  L'iterateur associe est de type Iterateur_VDF_Elem
+//  L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
 
 //
 // .SECTION voir aussi
@@ -45,41 +46,40 @@
 //
 
 
-class Evaluateur_VDF
+// DO NOT EDIT  THIS FILE BUT  OpDifVDFElCs.h.h
+//
+declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Op_Diff_VDF_Elem
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Op_Diff_VDF_Elem : public Op_Diff_VDF_Elem_base2
 {
+
+  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem);
 
 public:
 
-  inline Evaluateur_VDF();
-  inline virtual ~Evaluateur_VDF() {}
-
-  Evaluateur_VDF(const Evaluateur_VDF& );
-  virtual void associer_zones(const Zone_VDF& , const Zone_Cl_VDF& );
-//  virtual void associer_porosite(const DoubleVect&);
-
+  Op_Diff_VDF_Elem();
+  inline Op_Diff_VDF_Elem(const Iterateur_VDF_base&);
 protected:
-
-  REF(Zone_VDF) la_zone;
-  REF(Zone_Cl_VDF) la_zcl;
-  int dimension;
-  int premiere_face_bord;
-  IntTab elem_;                       // les 2 elements voisins d'une face
-  DoubleVect surface;          // surfaces des faces
-  IntVect orientation;         // orientations des faces
-  DoubleVect porosite;               // porosites surfaciques
-  DoubleVect volume_entrelaces;//
-  DoubleTab xv;                // coord des centres des faces
-
-  double dist_norm_bord(int) const;
-
+  inline Eval_VDF_Elem2& get_eval_elem();
 };
 
-//
-//   Fonctions inline de Evaluateur_VDF
-//
-
-inline Evaluateur_VDF::Evaluateur_VDF()
-{}
-
-
+// Ce constructeur permet de creer des classes filles des evalateurs
+// (utilise dans le constructeur de Op_Diff_VDF_Elem_temp_FTBM)
+inline Op_Diff_VDF_Elem::Op_Diff_VDF_Elem(const Iterateur_VDF_base& iterateur)
+  : Op_Diff_VDF_Elem_base2(iterateur)
+{
+}
+// Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
+inline Eval_VDF_Elem2& Op_Diff_VDF_Elem::get_eval_elem()
+{
+  Eval_Diff_VDF_const_Elem& eval_diff = (Eval_Diff_VDF_const_Elem&) iter.evaluateur();
+  return (Eval_VDF_Elem2&) eval_diff;
+}
 #endif
