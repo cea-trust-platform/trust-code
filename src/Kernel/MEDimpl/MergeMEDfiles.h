@@ -52,7 +52,7 @@ private:
   void mergeFields(const std::vector< std::string >& field_names,
                    const std::vector< std::string >& meshes_names,
                    const std::vector<std::string>& listmed,
-                   const std::vector< std::pair< std::pair< int,int>,double >>& lst_dt,
+                   const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
                    const int mesh_numb,
                    const int iter_numb,
                    Nom out_file,

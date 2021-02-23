@@ -34,6 +34,10 @@ using namespace MEDCoupling;
 #endif
 
 Implemente_instanciable(MergeMEDfiles,"Merge_MED",Interprete);
+// XD Merge_MED interprete Merge_MED 0 This keyword allows to merge multiple MED files produced during a parallel computation into a single MED file.
+// XD attr med_files_base_name chaine(into=["NOM_DU_CAS","med_files_base_name"]) med_files_base_name 0 Base name of multiple med files that should appear as base_name_xxxxx.med, where xxxxx denotes the MPI rank number.
+// XD attr time_iterations chaine(into=["all_times","last_time"]) time_iterations 0 Identifies whether to merge all time iterations present in the MED files or only the last one.
+
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
@@ -98,7 +102,7 @@ std::vector<std::string> glob_med_files(const std::string& fileName)
 void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
                                 const std::vector< std::string >& meshes_names,
                                 const std::vector<std::string>& listmed,
-                                const std::vector< std::pair< std::pair< int,int>,double >>& lst_dt,
+                                const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
                                 const int mesh_numb,
                                 const int iter_numb,
                                 Nom out_file,
@@ -201,7 +205,7 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
 
   // we use all_field_names[0] to check the iterations hoping that the med files are written correctly
   // with same number of iterations for all fields ...
-  std::vector< std::pair< std::pair< int,int>,double >> lst_dt=GetAllFieldIterations(listmed[0],all_field_names[0]);
+  std::vector< std::pair< std::pair< True_int,True_int>,double >> lst_dt=GetAllFieldIterations(listmed[0],all_field_names[0]);
   // Sort the iterations incrementally ...
   std::sort(lst_dt.begin(), lst_dt.end(), less_than_key());
 
@@ -263,7 +267,7 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
 void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
                                 const std::vector< std::string >& meshes_names,
                                 const std::vector<std::string>& listmed,
-                                const std::vector< std::pair< std::pair< int,int>,double >>& lst_dt,
+                                const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
                                 const int mesh_numb,
                                 const int iter_numb,
                                 Nom out_file,
