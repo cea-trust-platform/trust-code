@@ -1,12 +1,12 @@
 # Hydraulique 2D laminaire avec "trou" dans le maillage #
-# PARALLEL ONLY 4 #
+# PARALLEL OK #
 dimension 2
 Pb_hydraulique pb
 Domaine dom
 
-# BEGIN MESH 
+# BEGIN MESH #
 Read_file upwind.geo ;
- END MESH #
+# END MESH #
 
 # BEGIN PARTITION
 Partition dom
@@ -18,9 +18,9 @@ Partition dom
 End
 END PARTITION #
 
-# BEGIN SCATTER #
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-# END SCATTER #
+END SCATTER #
 
 VDF dis
 
@@ -74,21 +74,6 @@ Read pb
 
 	Post_processing
 	{
-		
-		Definition_champs 
-		 {  
-			   							       		   		    	
-		}
-		Format lml
-		fields dt_post 1.3
-		{
-			pression elem
-		}
-	}
-	liste_de_postraitements 
-	{
-		all Post_processing 
-		{
 		Definition_champs 
 		{
 
@@ -184,11 +169,7 @@ Read pb
 
 		 }
 	     }
-	
-	}
 }
 Solve pb
-
-Merge_MED merge_med_ALL all_times /* last_time */
 
 End

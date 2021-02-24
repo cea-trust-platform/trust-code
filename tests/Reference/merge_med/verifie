@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# do nothing for the seq calculation... Wait for the // one
-if [ -f PAR_merge_med_ALL_0000.med ]
+# merge_med.data generates multiple med than it merge all med files into a single one
+# decoup.data generates .Zones needed by merge_med.data, it is called by prepare
+# seq.data runs a sequential computation
+# verifie compares sequential med with merged med
+if [ -f merge_med_ALL.med ]
 then	
-  trust merge_files.data 1>merge_files.out 2>merge_files.err
+  trust seq.data 1>seq.out 2>seq.err
   # Comparisions seq & // med merging
-  compare_lata PAR_merge_med_ALL.med merge_med_ALL.med 1>verifie.log 2>&1 || exit -1
+  compare_lata seq_0000.med merge_med_ALL.med 1>verifie.log 2>&1 || exit -1
 
   numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
   if [[ "$numb_diff" -gt "0" ]]

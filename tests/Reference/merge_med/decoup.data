@@ -1,0 +1,21 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL ONLY 4 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file upwind.geo ;
+# END MESH #
+
+# BEGIN PARTITION #
+Partition dom
+{
+	Partition_tool tranche { tranches 2 2 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+# END PARTITION #
+
+End
