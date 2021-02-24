@@ -56,7 +56,7 @@ private:
                    const int mesh_numb,
                    const int iter_numb,
                    Nom out_file,
-                   const bool first_time, const bool isCell) const;
+                   bool& first_time, const bool isCell) const;
 };
 
 #endif /* MergeMEDfiles_included */
