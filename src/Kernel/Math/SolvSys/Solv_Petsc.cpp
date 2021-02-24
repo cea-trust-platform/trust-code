@@ -277,7 +277,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         // But It requires two extra work vectors than the conventional implementation in PETSc.
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver=PCG\n";
+        if (amgx_) amgx_option+="solver(s)=PCG\n";
         break;
       }
     case 10:
@@ -295,7 +295,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPGMRES);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver=FGMRES\n";
+        if (amgx_) amgx_option+="solver(s)=FGMRES\n";
         break;
       }
     case 8:
@@ -346,7 +346,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPBCGS);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver=BICGSTAB\n";
+        if (amgx_) amgx_option+="solver(s)=BICGSTAB\n";
         break;
       }
     case 6:
@@ -533,7 +533,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 convergence_with_seuil=1;
                 if (amgx_)
                   {
-                    amgx_option+="convergence=ABSOLUTE\ntolerance=";
+                    amgx_option+="s:convergence=ABSOLUTE\ns:tolerance=";
                     amgx_option+=Nom(seuil_,"%e")+"\n";
                   }
                 break;
@@ -577,10 +577,10 @@ void Solv_Petsc::create_solver(Entree& entree)
                           level.defined=1;
                           if (amgx_)
                             {
-                              Nom ilu_sparsity_level="ilu_sparsity_level=";
+                              Nom ilu_sparsity_level="p:ilu_sparsity_level=";
                               ilu_sparsity_level+=(Nom)level.value();
                               amgx_option+=ilu_sparsity_level+"\n";
-                              Nom coloring_level="coloring_level="; // 1 par defaut
+                              Nom coloring_level="p:coloring_level="; // 1 par defaut
                               coloring_level+=Nom(level.value()+1);    // Doit valoir ilu_sparsity_level+1 pour MULTICOLOT_INU (voir AmgX reference guide)
                               amgx_option+=coloring_level+"\n";
                             }
@@ -622,7 +622,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 convergence_with_nb_it_max_=1;
                 if (amgx_)
                   {
-                    amgx_option+="max_iters=";
+                    amgx_option+="s:max_iters=";
                     amgx_option+=Nom(nb_it_max_)+"\n";
                   }
                 break;
@@ -828,7 +828,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 convergence_with_seuil=1;
                 if (amgx_)
                   {
-                    amgx_option+="convergence=RELATIVE_INI_CORE\ntolerance=";
+                    amgx_option+="s:convergence=RELATIVE_INI_CORE\ns:tolerance=";
                     amgx_option+=Nom(seuil_relatif_,"%e")+"\n";
                   }
                 break;
@@ -910,7 +910,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 pc_supported_on_gpu_by_amgx=1;
                 if (amgx_)
                   {
-                    amgx_option+="preconditioner=MULTICOLOR_DILU\n";
+                    amgx_option+="s:preconditioner(p)=MULTICOLOR_DILU\n";
                   }
                 else if (gpu_)
                   {
@@ -943,11 +943,11 @@ void Solv_Petsc::create_solver(Entree& entree)
                 pc_supported_on_gpu_by_amgx=1;
                 if (amgx_)
                   {
-                    amgx_option+="preconditioner=MULTICOLOR_GS\n"; // Dans AMGX, c'est un Gauss Seidel...
-                    Nom relaxation_factor="relaxation_factor="; // Defaut 0.9
+                    amgx_option+="s:preconditioner(p)=MULTICOLOR_GS\n"; // Dans AMGX, c'est un Gauss Seidel...
+                    Nom relaxation_factor="p:relaxation_factor="; // Defaut 0.9
                     relaxation_factor+=Nom(omega.value()-1); // Astuce moyenne... ToDo faire un GS ?
                     amgx_option+=relaxation_factor+"\n";
-                    if (matrice_symetrique_) amgx_option+="symmetric_GS=1\n";
+                    if (matrice_symetrique_) amgx_option+="p:symmetric_GS=1\n";
                   }
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -1003,7 +1003,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 PCSetType(PreconditionneurPetsc_, PCJACOBI);
                 pc_supported_on_gpu_by_petsc=1;
                 pc_supported_on_gpu_by_amgx=1;
-                if (amgx_) amgx_option+="preconditioner=BLOCK_JACOBI\n";
+                if (amgx_) amgx_option+="s:preconditioner(p)=BLOCK_JACOBI\n";
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -1017,7 +1017,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 pc_supported_on_gpu_by_amgx=1;
                 pc_supported_on_gpu_by_petsc=1;
                 if (amgx_)
-                  amgx_option+="preconditioner=MULTICOLOR_DILU\n";
+                  amgx_option+="s:preconditioner(p)=MULTICOLOR_DILU\n"; // MULTICOLOR_ILU plante...
                 else
                   {
                     add_option("sub_pc_type",rang==8 ? "icc" : "ilu");
@@ -1075,7 +1075,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 preconditionnement_non_symetrique_ = 1;
                 if (amgx_)
                   {
-                    amgx_option+="preconditioner(p)=AMG\n";
+                    amgx_option+="s:preconditioner(p)=AMG\n";
                     amgx_option+="s:use_scalar_norm=1\n";
                     amgx_option+="p:error_scaling=0\n";
                     amgx_option+="p:print_grid_stats=1\n";
@@ -1217,11 +1217,11 @@ void Solv_Petsc::create_solver(Entree& entree)
       SFichier s(filename);
       // Syntax: See https://github.com/NVIDIA/AMGX/raw/master/doc/AMGX_Reference.pdf
       s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option;
-      if (!amgx_option.contient("store_res_history")) s << "store_res_history=1" << finl;
-      if (!amgx_option.contient("monitor_residual"))  s << "monitor_residual=1" << finl;
-      if (!amgx_option.contient("print_solve_stats")) s << "print_solve_stats=1" << finl;
-      if (!amgx_option.contient("obtain_timings"))    s << "obtain_timings=1" << finl;
-      s << "# print_grid_stats=1" << finl;
+      if (!amgx_option.contient("store_res_history")) s << "s:store_res_history=1" << finl;
+      if (!amgx_option.contient("monitor_residual"))  s << "s:monitor_residual=1" << finl;
+      if (!amgx_option.contient("print_solve_stats")) s << "s:print_solve_stats=1" << finl;
+      if (!amgx_option.contient("obtain_timings"))    s << "s:obtain_timings=1" << finl;
+      s << "# s:print_grid_stats=1" << finl;
       s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
       Cerr << "Writing and reading the AmgX config file: " << filename << finl;
     }

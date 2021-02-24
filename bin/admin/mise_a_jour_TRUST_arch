@@ -870,7 +870,7 @@ do
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=cpu_3D
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda" | grep ^$HOST_BUILD"\."`" ]
 	 then
-	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_CUDA
+	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_AMGX
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_OPENMP
