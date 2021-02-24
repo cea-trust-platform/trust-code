@@ -29,10 +29,6 @@ sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
 sed -i "s/vector<long> P_c(nv + 1), P_l(nv), A_c, A_l;/vector<long long> P_c(nv + 1), P_l(nv), A_c, A_l;/" src/PolyMAC/Zones/Zone_PolyMAC.cpp
 sed -i "s/%d/%ld/g" src/CoviMAC/Zones/Zone_CoviMAC.cpp
 
-# For ICoCo, we cannot use 64 bits because it is MEDCoupling (only 32bits) based
-#sed -i "s/long [*]p/int *p/" src/Kernel/Champs/Champ_input_P0.cpp
-#sed -i "s/long [*]p/int *p/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
-
 sed -i "s/std::vector< std::pair<long,long> > time_steps_;/std::vector< std::pair<int,int> > time_steps_;/" src/Kernel/MEDimpl/Champ_Fonc_MED.h
 sed -i "s/std::vector< std::pair<long,long> > tst = ft1->getTimeSteps(tps);/std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);/" src/Kernel/MEDimpl/Champ_Fonc_MED_Table_Temps.cpp
 sed -i "s/std::vector<long> nel = file->getNonEmptyLevels();/std::vector<int> nel = file->getNonEmptyLevels();/" src/Kernel/MEDimpl/LireMED.cpp
