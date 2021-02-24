@@ -106,7 +106,7 @@ void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
                                 const int mesh_numb,
                                 const int iter_numb,
                                 Nom out_file,
-                                const bool first_time, const bool isCell) const
+                                bool& first_time, const bool isCell) const
 {
   // Wee loop on all field names
   for (const auto & fld_name: field_names)
@@ -140,10 +140,15 @@ void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
       MCAuto<MEDCouplingFieldDouble> merged_field = MEDCouplingFieldDouble::MergeFields(fields);
       merged_field->mergeNodes(Objet_U::precision_geom, 1.0e-12);  // first epsilon for node coincidence, second for different field values if on nodes.
 
-      if (first_time)
-        WriteField(out_file.getString(),merged_field,true);
-      else
-        WriteField(out_file.getString(),merged_field,false); // append on the existing file
+      if (je_suis_maitre())
+        {
+          if (first_time)
+            WriteField(out_file.getString(),merged_field,true);
+          else
+            WriteField(out_file.getString(),merged_field,false); // append on the existing file
+        }
+      // the single med file is created. We will append it !
+      first_time=0;
 
       // Memory release:
       for (auto & f: fields)
@@ -181,6 +186,9 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
   Cerr<<"Syntax MergeMEDfiles::interpreter [NOM_DU_CAS|med_files_base_name] [all_times|last_time]"<<finl;
   Nom med_name,time_opt;
   is >> med_name>> time_opt;
+
+  if (med_name == "NOM_DU_CAS")
+    med_name= nom_du_cas();
 
   Nom files=med_name+"_*.med";
 
@@ -235,7 +243,8 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
 
   // Output file we are waiting for
   Nom out_file=med_name+".med";
-  int first_time = 1;
+  // test if the single med file is created or no
+  bool first_time = 1;
 
   size_t first_iter = time_opt == "last_time" ? (lst_dt.size()-1) : 0;
   for (size_t iter=first_iter; iter<lst_dt.size(); iter++) // loop over all iterations
@@ -247,7 +256,6 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
 
           mergeFields(cell_fields,meshes_names,listmed,lst_dt,msh,iter,out_file,first_time, true);
           mergeFields(node_fields,meshes_names,listmed,lst_dt,msh,iter,out_file,first_time, false);
-          first_time=0;
         }
     }
 
@@ -271,7 +279,7 @@ void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
                                 const int mesh_numb,
                                 const int iter_numb,
                                 Nom out_file,
-                                const bool first_time, const bool isCell) const
+                                bool& first_time, const bool isCell) const
 {
   Cerr << "Version compiled without MEDCoupling" << finl;
   Process::exit();
