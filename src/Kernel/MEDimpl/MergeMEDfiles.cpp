@@ -35,7 +35,7 @@ using namespace MEDCoupling;
 
 Implemente_instanciable(MergeMEDfiles,"Merge_MED",Interprete);
 // XD Merge_MED interprete Merge_MED 0 This keyword allows to merge multiple MED files produced during a parallel computation into a single MED file.
-// XD attr med_files_base_name chaine(into=["NOM_DU_CAS","med_files_base_name"]) med_files_base_name 0 Base name of multiple med files that should appear as base_name_xxxxx.med, where xxxxx denotes the MPI rank number.
+// XD attr med_files_base_name chaine med_files_base_name 0 Base name of multiple med files that should appear as base_name_xxxxx.med, where xxxxx denotes the MPI rank number. If you specify NOM_DU_CAS, it will automatically take the basename from your datafile's name.
 // XD attr time_iterations chaine(into=["all_times","last_time"]) time_iterations 0 Identifies whether to merge all time iterations present in the MED files or only the last one.
 
 

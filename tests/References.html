@@ -135,7 +135,6 @@
 <TR><TD><SMALL><A HREF="#Decoup_period_2D">Decoup_period_2D</A></TD><TD><SMALL># Decoupage 2D pour le parallele : exemple avec des sous zones d'un decoupage equilibre #</TD></TR>
 <TR><TD><SMALL><A HREF="#Decoup_period_3D">Decoup_period_3D</A></TD><TD><SMALL># Test de decoupage 3D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Decouper_bord_coincident">Decouper_bord_coincident</A></TD><TD><SMALL># Generation of a new coincident 2D mesh #</TD></TR>
-<TR><TD><SMALL><A HREF="#Def_VEF_impl">Def_VEF_impl</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
 <TR><TD><SMALL><A HREF="#Diff_Aniso_Disc_Square_Domain_2D">Diff_Aniso_Disc_Square_Domain_2D</A></TD><TD><SMALL># 2D heat conduction with a discontinuous anisotropic conductivity tensor #</TD></TR>
 <TR><TD><SMALL><A HREF="#Diff_Aniso_NonUniform_Square_Domain_2D">Diff_Aniso_NonUniform_Square_Domain_2D</A></TD><TD><SMALL># 2D heat conduction with a NonUniform anisotropic conductivity tensor #</TD></TR>
 <TR><TD><SMALL><A HREF="#Diff_impl_Pimp_non_nulle">Diff_impl_Pimp_non_nulle</A></TD><TD><SMALL># Hydraulique 3D VDF, test de la diffusion implicite avec pression imposee non nulle  #</TD></TR>
@@ -259,6 +258,7 @@
 <TR><TD><SMALL><A HREF="#PCR">PCR</A></TD><TD><SMALL># Hydraulique 2D pertes de charges regulieres #</TD></TR>
 <TR><TD><SMALL><A HREF="#PCS">PCS</A></TD><TD><SMALL># Hydraulique 2D pertes de charges singulieres #</TD></TR>
 <TR><TD><SMALL><A HREF="#PCS_med_VEF">PCS_med_VEF</A></TD><TD><SMALL># Perte_Charge_Singuliere MED 3D VEF #</TD></TR>
+<TR><TD><SMALL><A HREF="#PETSC_AMGX">PETSC_AMGX</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_CUDA">PETSC_CUDA</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_Canal_perio_VEF_3D">PETSC_Canal_perio_VEF_3D</A></TD><TD><SMALL># SIMULATION D UN CANAL 3D #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP">PETSC_GCP</A></TD><TD><SMALL># Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #</TD></TR>
@@ -1002,10 +1002,6 @@
 <CENTER># Generation of a new coincident 2D mesh #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Decouper_bord_coincident/Decouper_bord_coincident.data>Edit</a> Decouper_bord_coincident.data </CENTER>
-<HR><CENTER><B><A NAME=Def_VEF_impl>Def_VEF_impl</A></B></CENTER>
-<CENTER># Hydraulique 2D : Paroi defilante #</CENTER>
-<CENTER><a href=../tests/Reference/Def_VEF_impl/Def_VEF_impl.lml.gif><img src=../tests/Reference/Def_VEF_impl/Def_VEF_impl.lml.gif.fin></a></CENTER>
-<CENTER><a href=../tests/Reference/Def_VEF_impl/Def_VEF_impl.data>Edit</a> Def_VEF_impl.data </CENTER>
 <HR><CENTER><B><A NAME=Diff_Aniso_Disc_Square_Domain_2D>Diff_Aniso_Disc_Square_Domain_2D</A></B></CENTER>
 <CENTER># 2D heat conduction with a discontinuous anisotropic conductivity tensor #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1544,6 +1540,10 @@
 <CENTER># Perte_Charge_Singuliere MED 3D VEF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/PCS_med_VEF/PCS_med_VEF.data>Edit</a> PCS_med_VEF.data </CENTER>
+<HR><CENTER><B><A NAME=PETSC_AMGX>PETSC_AMGX</A></B></CENTER>
+<CENTER># Hydraulique 2D : Paroi defilante #</CENTER>
+<CENTER><a href=../tests/Reference/PETSC_AMGX/PETSC_AMGX.lml.gif><img src=../tests/Reference/PETSC_AMGX/PETSC_AMGX.lml.gif.fin></a></CENTER>
+<CENTER><a href=../tests/Reference/PETSC_AMGX/PETSC_AMGX.data>Edit</a> PETSC_AMGX.data </CENTER>
 <HR><CENTER><B><A NAME=PETSC_CUDA>PETSC_CUDA</A></B></CENTER>
 <CENTER># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
