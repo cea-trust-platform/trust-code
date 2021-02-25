@@ -153,7 +153,6 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
     }
 
   // Cas particulier: si nb_parts == 1, METIS ne veut rien faire...
-  //ToDo: I don't know is that's the case with ParMetis
   if (nb_parties_ == 1)
     {
 
@@ -274,7 +273,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
 
   graph.free_memory();
 
-  const int n = ref_domaine_.valeur().zone(0).nb_elem(); //graph.nvtxs; !!WARNING: wrong if we used construire_graph_from_segment
+  const int n = graph.nvtxs;
   elem_part.resize_array(n);
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
@@ -292,8 +291,8 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
 
   if (use_segment_to_build_connectivite_elem_elem_==0)
     {
-      //Cerr << "Correction elem0 on processor 0" << finl;
-      //corriger_elem0_sur_proc0(elem_part); // WARNING: fait parfois des problemes: reecrire version parallele
+      Cerr << "Correction elem0 on processor 0" << finl;
+      corriger_elem0_sur_proc0(elem_part);
     }
 
 #endif

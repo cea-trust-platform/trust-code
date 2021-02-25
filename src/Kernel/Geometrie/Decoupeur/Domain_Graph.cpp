@@ -29,6 +29,7 @@
 #include <communications.h>
 #include <Domain_Graph.h>
 #include <Partitionneur_base.h>
+#include <map>
 
 // Description:
 // Precondition:
@@ -145,6 +146,7 @@ void Domain_Graph::free_memory()
 
   free(xadj);
   free(adjncy);
+  free(edgegsttab);
   if (ewgts)
     free(ewgts);
 
@@ -216,6 +218,7 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
     {
       adjncy[c]=A.get_tab2()(c)-1;
     }
+
 }
 #endif
 
@@ -274,7 +277,6 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
                                      0 /* ne pas inclure les elements virtuels */);
 
 
-
   int nb_connexions_perio = 0;
   if (liste_bords_periodiques.size() > 0)
     {
@@ -307,6 +309,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   nvtxs = nb_elem + zone.nb_faces_joint(); //each joint face is linked to a virtual element
   xadj = imalloc(nb_elem+1, "readgraph: xadj");
   adjncy = imalloc(nb_edges + nb_faces_bord, "readgraph: adjncy");
+  edgegsttab = imalloc(nb_edges + nb_faces_bord, "readgraph: edgegsttab");
   vwgts = NULL;
   if (! use_weights)
     {
@@ -370,9 +373,12 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
                   }
               }
           }
+          //Cerr << "\tFACE#" << i_face << finl;
           // Recherche des elements voisins de cette face:
           // (indices des elements contenant les sommets de la face)
           find_adjacent_elements(som_elem, une_face, voisins);
+          //Cerr << voisins << finl;
+
           const int nb_voisins = voisins.size_array();
           int elem_voisin = -1;
           switch (nb_voisins)
@@ -424,16 +430,18 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
                   break;
                 }
               adjncy[edge_count] = elem_voisin;
+
               if (use_weights)
                 {
-                  //internal connection have more weight: it's better if the generated partition is not dispatched on several processors
-                  if( my_offset <= elem_voisin && elem_voisin < nb_elem) //neighbour belongs to me
-                    ewgts[edge_count] = 3;
+                  //internal connection have more weight:
+                  //it's better if the generated partition is not dispatched on several processors
+                  if( my_offset <= elem_voisin && elem_voisin < nb_elem+my_offset) //neighbour belongs to me = strong connection
+                    ewgts[edge_count] = 4;
                   else
-                    ewgts[edge_count] = 1;
-
+                    ewgts[edge_count] = 1; // -1 peut faire des partitions discontinues ou pas equilibrees du tout
 
                 }
+
               edge_count++;
             }
         }
@@ -476,6 +484,48 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
     }
   xadj[nb_elem] = edge_count;
   nedges = edge_count;
+
+  Cerr << "MY_OFFSET = " << my_offset << finl;
+  std::map<int,int> global_to_local_index;
+  int cnt=nb_elem;
+  for(int e=0; e<nb_edges + nb_faces_bord; e++)
+    {
+      int vertex = adjncy[e];
+      if( my_offset <= vertex && vertex < nb_elem+my_offset) //neighbour belongs to me
+        {
+          edgegsttab[e] = vertex - my_offset;
+        }
+      else
+        {
+          std::map<int,int>::iterator it = global_to_local_index.find(vertex);
+          if(it != global_to_local_index.end())
+            {
+              edgegsttab[e] = global_to_local_index[vertex];
+
+            }
+          else
+            {
+              global_to_local_index[vertex] =cnt++;
+              edgegsttab[e] = global_to_local_index[vertex];
+            }
+
+        }
+    }
+
+  Cerr << "XADJ:" << finl;
+  for(int i=0; i< nb_elem+1; i++)
+    Cerr << xadj[i] << " ";
+  Cerr << finl;
+
+  Cerr << "adjncy:" << finl;
+  for(int i=0; i< nb_edges + nb_faces_bord; i++)
+    Cerr << adjncy[i] << " ";
+  Cerr << finl;
+
+  Cerr << "edgegsttab:" << finl;
+  for(int i=0; i< nb_edges + nb_faces_bord; i++)
+    Cerr << edgegsttab[i] << " ";
+  Cerr << finl;
 
   if (error == 1)
     {

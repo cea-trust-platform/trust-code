@@ -14,12 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Partitionneur_Parmetis.cpp
+// File:        Partitionneur_Ptscotch.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Decoupeur
 // Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <Partitionneur_Parmetis.h>
+#include <Partitionneur_Ptscotch.h>
 #include <Domaine.h>
 #include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
@@ -34,44 +34,44 @@
 
 inline void not_implemented(const Nom& chaine)
 {
-  Cerr << chaine << " is not implemented yet to the PARMETIS API." << finl;
+  Cerr << chaine << " is not implemented yet to the Ptscotch API." << finl;
   Process::exit();
 }
 
-Implemente_instanciable_sans_constructeur(Partitionneur_Parmetis,"Partitionneur_Parmetis",Partitionneur_base);
+Implemente_instanciable_sans_constructeur(Partitionneur_Ptscotch,"Partitionneur_Ptscotch",Partitionneur_base);
 
-Partitionneur_Parmetis::Partitionneur_Parmetis()
+Partitionneur_Ptscotch::Partitionneur_Ptscotch()
 {
   nb_parties_ = -1;
   use_weights_ = 0;
 }
 
-Sortie& Partitionneur_Parmetis::printOn(Sortie& os) const
+Sortie& Partitionneur_Ptscotch::printOn(Sortie& os) const
 {
-  Cerr << "Partitionneur_Parmetis::printOn invalid\n" << finl;
+  Cerr << "Partitionneur_Ptscotch::printOn invalid\n" << finl;
   exit();
   return os;
 }
 
-Entree& Partitionneur_Parmetis::readOn(Entree& is)
+Entree& Partitionneur_Ptscotch::readOn(Entree& is)
 {
   Partitionneur_base::readOn(is);
   return is;
 }
 
-void Partitionneur_Parmetis::set_param(Param& param)
+void Partitionneur_Ptscotch::set_param(Param& param)
 {
   param.ajouter("nb_parts",&nb_parties_,Param::REQUIRED);
   param.ajouter_condition("(value_of_nb_parts_ge_1)_and_(value_of_nb_parts_le_100000)","The following condition must be satisfied : 1 <= nb_parties <= 100000");
   param.ajouter_flag("use_weights",&use_weights_);
 }
 
-int Partitionneur_Parmetis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Partitionneur_Ptscotch::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   return Partitionneur_base::lire_motcle_non_standard(mot,is);
 }
 
-void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
+void Partitionneur_Ptscotch::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
 }
@@ -84,21 +84,21 @@ void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
 //  et a equilibrer le nombre d'elements par partie.
 // Precondition:
 //  domaine associe et nombre de parties initialise
-void Partitionneur_Parmetis::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Ptscotch::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
 {
 #ifdef NO_METIS
-  Cerr << "PARMETIS is not compiled with this version. Use another partition tool like Tranche." << finl;
+  Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
   if (!ref_domaine_.non_nul())
     {
-      Cerr << "Error in Partitionneur_Parmetis::construire_partition\n";
+      Cerr << "Error in Partitionneur_Ptscotch::construire_partition\n";
       Cerr << " The domain has not been associated" << finl;
       exit();
     }
   if (nb_parties_ <= 0)
     {
-      Cerr << "Error in Partitionneur_Parmetis::construire_partition\n";
+      Cerr << "Error in Partitionneur_Ptscotch::construire_partition\n";
       Cerr << " The parts number has not been initialized" << finl;
       exit();
     }
@@ -117,7 +117,7 @@ void Partitionneur_Parmetis::construire_partition(ArrOfInt& elem_part, int& nb_p
         }
     }
   // Cas particulier: si nb_parts == 1, METIS ne veut rien faire...
-  //ToDo: I don't know is that's the case with ParMetis
+  //ToDo: I don't know is that's the case with Ptscotch
   if (nb_parties_ == 1)
     {
 
@@ -130,7 +130,7 @@ void Partitionneur_Parmetis::construire_partition(ArrOfInt& elem_part, int& nb_p
   if (ref_domaine_.valeur().zone(0).nb_elem() == 0)
     return;
 
-  Cerr << "Partitionneur_Parmetis::construire_partition" << finl;
+  Cerr << "Partitionneur_Ptscotch::construire_partition" << finl;
   Cerr << " Construction of graph connectivity..." << finl;
   Static_Int_Lists graph_elements_perio;
   //const Domaine& dom = ref_domaine_.valeur();
@@ -140,47 +140,42 @@ void Partitionneur_Parmetis::construire_partition(ArrOfInt& elem_part, int& nb_p
                                    graph_elements_perio);
 
 
-  std::vector<idx_t> partition(graph.nvtxs);
-#ifdef METIS
-  idx_t int_parts = nb_parties_;
-#endif
-  idx_t edgecut = 0; // valeur renvoyee par metis (nombre total de faces de joint)
-  Cerr << " Call for PARMETIS" << finl;
-  idx_t options[3];
-  options[0] = 1; //personnalized options
-  options[1] = 111111111; // Mode verbose maximal;
-  options[2] = 0; //random seed
+  const int n = ref_domaine_.valeur().zone(0).nb_elem();
+  int* partition = new int[n];
 
-  idx_t ncon=1;
-  real_t ubvec = 1.05; //recommanded value
-  idx_t numflag = 0; //numerotation C
-  std::vector<real_t> tpwgts(ncon*int_parts, 1./int_parts); //we want the weight to be equally distributed on each sub_somain
-  MPI_Comm comm = Comm_Group_MPI::get_trio_u_world();
-  int status = ParMETIS_V3_PartKway(graph.vtxdist, graph.xadj, graph.adjncy,
-                                    graph.vwgts, graph.ewgts, &graph.weightflag,
-                                    &numflag, &ncon, &int_parts, tpwgts.data(), &ubvec, options ,
-                                    &edgecut, partition.data(), &comm);
-  if (status != METIS_OK)
-    {
-      Cerr << "Call to PARMETIS failed." << finl;
-      if (status == METIS_ERROR)        Cerr << "It seems there is a METIS internal error." << finl;
-      Cerr << "Contact TRUST support." << finl;
-      exit();
-    }
+  SCOTCH_randomReset();
+  SCOTCH_Dgraph scotch_graph;
+  SCOTCH_dgraphInit(&scotch_graph, Comm_Group_MPI::get_trio_u_world());
+  SCOTCH_dgraphBuild(&scotch_graph,
+                     0,             // baseval               , base first indice 0
+                     n,   // vertlocnbr            , nb of local graph nodes
+                     n,   // vertlocmax            , should be set to vertlocnbr for graphs without holes
+                     graph.xadj,    // vertloctab[vertnbr+1] , index vertex table
+                     0,             // vendloctab            , index end vertex table if disjoint, set to zero
+                     graph.ewgts, //graph.ewgts,  // veloloctab            , graph vertices loads, set to zero
+                     0,     // vlblocltab            , vertex label array : global vertex index
+                     graph.xadj[n],       // edgelocnbr            , number of edges
+                     graph.xadj[n],       // edgelocsiz            , same as edgelocnbr if edgeloctab is compact
+                     graph.adjncy,        // edgeloctab[edgelocnbr], global indexes of edges
+                     graph.edgegsttab,   // edgegsttab            , optional, should be computed internally, set to zero
+                     0); // edloloctab            , graph edges loads, set to zero
 
-  Cerr << "Partitioning quality : edgecut = " << edgecut << finl;
-  Cerr << "-> It is roughly the total number of edges (faces) which will be shared by the processors." << finl;
-  Cerr << "-> The lesser this number is, the lesser the total volume of communication between processors." << finl;
-  Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
-  Cerr << "===============" << finl;
+  SCOTCH_Strat scotch_strategy;
+  SCOTCH_stratInit(&scotch_strategy);
+
+  SCOTCH_dgraphPart(&scotch_graph,nb_parties_,&scotch_strategy,partition);
+
+
+  SCOTCH_stratExit(&scotch_strategy);
+  SCOTCH_dgraphExit(&scotch_graph);
 
   graph.free_memory();
 
-  const int n = ref_domaine_.valeur().zone(0).nb_elem();
   elem_part.resize_array(n);
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
 
+  delete [] partition;
   Cerr << "elem part before periodic correction" << finl;
   Cerr << elem_part << finl;
 
@@ -200,8 +195,6 @@ void Partitionneur_Parmetis::construire_partition(ArrOfInt& elem_part, int& nb_p
 
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
-
-
 
 #endif
 }

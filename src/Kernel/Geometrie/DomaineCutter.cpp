@@ -1245,31 +1245,34 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   VECT(ArrOfInt) otherProcZones(Process::nproc());
   for(int p=0; p<Process::nproc(); p++)
     {
-      otherProcZones[p].resize_array(nb_parties_);
-      otherProcZones[p] = 0;
-    }
-  envoyer(myZones, me(), 0, 2001);
-  if(je_suis_maitre())
-    for(int p=0; p<nproc(); p++)
-      recevoir(otherProcZones[p],0, p, 2001);
-
-
-  for(int part=0; part<nb_parties_; part++)
-    {
-      int s = 0;
-      for(int proc=0; proc < Process::nproc(); proc++)
-        s += otherProcZones[proc][part];
-
-      if(s>1)
+      if(p==0)
+        otherProcZones[p] = myZones;
+      else
         {
-          Cerr << "A zone is dispatched on several processors... This case is not coded yet" << finl;
-          Process::exit();
-
+          otherProcZones[p].resize_array(nb_parties_);
+          otherProcZones[p] = 0;
         }
     }
+  if(Process::je_suis_maitre())
+    {
+      for(int p=1; p<Process::nproc(); p++)
+        recevoir(otherProcZones[p], p, 0, p);
 
+      for(int part=0; part<nb_parties_; part++)
+        {
+          int s = 0;
+          for(int proc=0; proc < Process::nproc(); proc++)
+            s += otherProcZones[proc][part];
 
-
+          if(s>1)
+            {
+              Cerr << "A zone is dispatched on several processors... This case is not coded yet" << finl;
+              Process::exit();
+            }
+        }
+    }
+  else
+    envoyer(myZones, Process::me(), 0, Process::me());
 
   // Needed for HDF5 Zones output:
   FichierHDF fic_hdf;

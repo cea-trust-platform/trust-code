@@ -41,7 +41,6 @@ public:
   void associer_domaine(const Domaine& domaine);
   void construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const;
 
-
 private:
 
   // Parametres du partitionneur
@@ -56,7 +55,6 @@ private:
   //  valide dans avec ou sans l'option car on verifie de toutes facons
   //  la partition generee par metis (voir (***))
   int use_weights_;
-  int use_segment_to_build_connectivite_elem_elem_;
 
 };
 #endif

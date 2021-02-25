@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Array_tools.h>
 #include <Param.h>
 #include <IntLists.h>
+#include <communications.h>
 
 Implemente_deriv(Partitionneur_base);
 
@@ -63,21 +64,20 @@ void Partitionneur_base::declarer_bords_periodiques(const Noms& noms_bords_perio
 // Description: corrige la partition pour que l'element 0 du domaine initial
 //  se trouve sur le premier sous-domaine de la partition.
 //  On echange le premier sous-domaine et celui qui contient l'element 0.
+// ToDo: is it necessary ? involves communication in parallel...
 void Partitionneur_base::corriger_elem0_sur_proc0(ArrOfInt& elem_part)
 {
-  const int n = elem_part.size_array();
-  const int pe_to_xchange = elem_part[0];
-
   Cerr << "Correction of the splitting to put the element 0 on processor 0." << finl;
-
-  if (n == 0 || pe_to_xchange == 0)
+  int pe_to_xchange =  elem_part[0];
+  envoyer_broadcast(pe_to_xchange, 0);
+  if (pe_to_xchange == 0)
     {
       Cerr << " No correction to be made" << finl;
       return;
     }
 
   Cerr << " Exchange of parts 0 and " << pe_to_xchange << finl;
-
+  const int n = elem_part.size_array();
   for (int i = 0; i < n; i++)
     {
       const int pe = elem_part[i];
@@ -150,12 +150,18 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
                                                                Static_Int_Lists& graph)
 {
   const int nb_elem = zone.nb_elem();
+
   // Pour chaque element, combient a-t-il de faces periodiques ?
   ArrOfInt nb_faces_perio(nb_elem);
   // Liste de correspondances element0 <=> element1
   // entre l'element voisin d'une face et l'element voisin de la face periodique opposee
   IntTab correspondances(0,2);
   correspondances.set_smart_resize(1);
+
+  ArrOfInt offsets(Process::nproc());
+  offsets = mppartial_sum(nb_elem);
+  envoyer_all_to_all(offsets, offsets);
+  int my_offset = offsets[Process::me()];
 
   // Premiere etape: remplissage de nb_faces_perio et correspondances
   // Parcours des bords periodiques
@@ -203,8 +209,9 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
           // Les indices des deux elements "voisins" par la face periodique:
           int elem0 = elems_voisins[i];
           int elem1 = elems_voisins[i+nb_faces]; // Indice de la face perio correspondante
-          ++nb_faces_perio[elem0];
-          ++nb_faces_perio[elem1];
+
+          ++nb_faces_perio[elem0 - my_offset*(elem0 >= my_offset)];
+          ++nb_faces_perio[elem1 - my_offset*(elem1 >= my_offset)];
           if (elem0 == elem1)
             {
               Cerr << "Error in calculer_correspondance_faces_perio: the faces " << i
@@ -230,10 +237,11 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
     {
       const int elem0 = correspondances(i, 0);
       const int elem1 = correspondances(i, 1);
-      const int j0 = nb_faces_perio[elem0]++;
-      graph.set_value(elem0, j0, elem1);
-      const int j1 = nb_faces_perio[elem1]++;
-      graph.set_value(elem1, j1, elem0);
+
+      const int j0 = nb_faces_perio[elem0 - my_offset*(elem0 >= my_offset)]++;
+      graph.set_value(elem0 - my_offset*(elem0 >= my_offset), j0, elem1);
+      const int j1 = nb_faces_perio[elem1 - my_offset*(elem1 >= my_offset)]++;
+      graph.set_value(elem1 - my_offset*(elem1 >= my_offset), j1, elem0);
     }
   Cerr << " There is " << n*2 << " periodic connections." << finl;
   return n * 2;
@@ -657,8 +665,9 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
   // Initialisation du tableau renum_som_perio
   for (int i = 0; i < nb_sommets_reels; i++)
     renum_som_perio[i] = i;
+  int parallel_algo = Process::nproc() > 1;
   Reordonner_faces_periodiques::renum_som_perio(domaine, liste_bords_perio, renum_som_perio,
-                                                0 /* pas d'espace virtuel */);
+                                                parallel_algo /* pas d'espace virtuel en sequentiel */);
 
   if (liste_bords_perio.size() > 1)
     count += corriger_multiperiodique(domaine, liste_bords_perio, renum_som_perio, som_elem, elem_part);

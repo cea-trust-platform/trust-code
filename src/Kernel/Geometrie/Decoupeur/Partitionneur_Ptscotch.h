@@ -14,60 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Domain_Graph.h
+// File:        Partitionneur_Ptscotch.h
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Decoupeur
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Domain_Graph_included
-#define Domain_Graph_included
+#ifndef Partitionneur_Ptscotch_included
+#define Partitionneur_Ptscotch_included
+
+#include <Partitionneur_base.h>
+#include <Ref_Domaine.h>
+#include <ptscotch.h>
 
 // .DESCRIPTION
-//  Build the graph of the domain that the METIS/PARMETIS/PTSCOTHC libraries need
+//  Partition d'un domaine en nb_parties parties equilibrees en utilisant
+//  la librairie Ptscotch. Voir construire_partition
 
-#include <metis.h>
-
-#ifndef NO_METIS
-// Metis 5.0 introduit le type idx_t
-#ifdef IDXTYPEWIDTH
-#define METIS
-typedef int idx_t;
-#endif
-#endif
-
-class Domain_Graph
+class Partitionneur_Ptscotch : public Partitionneur_base
 {
-
-  friend class Partitionneur_Metis;
-  friend class Partitionneur_Parmetis;
-  friend class Partitionneur_Ptscotch;
-
+  Declare_instanciable(Partitionneur_Ptscotch);
 public:
 
-  void construire_graph_from_segment(const Domaine& dom,
-                                     const int use_weights );
-
-  void construire_graph_elem_elem(const Domaine& dom,
-                                  const Noms& liste_bords_periodiques,
-                                  const int use_weights,
-                                  Static_Int_Lists& graph_elements_perio);
-
-
-  void free_memory();
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void associer_domaine(const Domaine& domaine);
+  void construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const;
 
 private:
-#ifndef NO_METIS
-  idx_t nvtxs;                        /* The number of vertices */
-  idx_t nedges;                        /* The total number of edges */
-  idx_t weightflag;
-  idx_t *xadj;                        /* CRS storage scheme */
-  idx_t *adjncy;
-  idx_t *vwgts;
-  idx_t *ewgts;
-  idx_t *vtxdist;                     //for parmetis: distribution of the initial graph on the procs
-  idx_t *edgegsttab;                  //for ptscotch: local numbering of vertices
-#endif
+
+  // Parametres du partitionneur
+  REF(Domaine) ref_domaine_;
+  int nb_parties_;
+
+  // Drapeau: utiliser ou pas la ponderation des edges dans metis.
+  //  C'est mieux de l'utiliser s'il y a des bords periodiques, le
+  //  graphe est mieux equilibre. En revanche, metis utilisera plus
+  //  de memoire (peut poser probleme sur les gros maillages).
+  //  Cette option n'est pas indispensable: le maillage genere est
+  //  valide dans avec ou sans l'option car on verifie de toutes facons
+  //  la partition generee par metis (voir (***))
+  int use_weights_;
 
 };
-
 #endif
