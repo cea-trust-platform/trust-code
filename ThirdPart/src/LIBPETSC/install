@@ -226,8 +226,9 @@ then
    with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
    CUDA_INCLUDE=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h 2>/dev/null | head -1`
    with_gpu=$with_gpu" --with-cuda-include=`dirname $CUDA_INCLUDE`"
-   CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ] && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs" # Necessaire sur irene pas sur jeanzay (fait ch..r)
-   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS,-lcuda,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
+   CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ]        && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs"        # Necessaire sur irene pas sur jeanzay (fait ch..r)
+   CUDA_MATH=""  && [ -d $CUDA_ROOT/../math_libs/lib64 ] &&  CUDA_MATH=",-L$CUDA_ROOT/../math_libs/lib64" # Nouveau HPC SDK sur orcus            (fait ch..r)
+   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS$CUDA_MATH,-lcuda,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
    CUDAFLAGS="-O3 -ccbin $TRUST_cc_BASE"
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu

@@ -15,13 +15,14 @@ define_modules_config()
    intel=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="slurm compilers/gcc/6.5.0 mpi/openmpi/gcc/6.5.0/4.0.1 nvidia_hpc_sdk/20.7"
-      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/20.7"
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/20.7" # Marche pas, libcuda.so non trouvee !
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/21.2"
    elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
       module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Marche pas attention (crashes TRUST)
       module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3" # Recommande par AG
+      source="source mpivars.sh release -ofi_internal" # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0"      
@@ -36,7 +37,7 @@ define_modules_config()
    echo "# Module $module detected and loaded on $HOST."   
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
-   echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
+   echo $source >> $env
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
