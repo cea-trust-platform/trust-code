@@ -48,7 +48,7 @@ Read sch
   tmax 100.
 	dt_min 5.e-8
 	dt_impr 5.e-1
-	dt_sauv 100.
+	dt_sauv 300.0
 	seuil_statio 1.e-4
 	solveur implicite
   { 
@@ -120,7 +120,7 @@ Lire pb
   Post_processing
 	{
     format lata
-	  Champs binaire dt_post 1e0
+	  Champs binaire dt_post 300
 		{      
       pression elem
 			vitesse som
