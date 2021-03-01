@@ -979,6 +979,7 @@
  SSOR SSOR SSOR.h
  ssor_bloc PrecondA PrecondA.h
  StdFunction StdFunction StdFunction.h
+ StiffenedGas StiffenedGas StiffenedGas.h
  Supprime_Bord SupprimeBord SupprimeBord.h
  Sutherland Sutherland Champ_Fonc_Fonction.h
  Symetrie Symetrie Symetrie.h
