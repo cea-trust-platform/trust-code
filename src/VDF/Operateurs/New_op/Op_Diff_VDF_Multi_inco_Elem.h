@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Multi_inco_var_Elem.h
+// File:        Op_Diff_VDF_Multi_inco_Elem.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Diff_VDF_Multi_inco_var_Elem_included
-#define Op_Diff_VDF_Multi_inco_var_Elem_included
+#ifndef Op_Diff_VDF_Multi_inco_Elem_included
+#define Op_Diff_VDF_Multi_inco_Elem_included
 
-#include <Op_Diff_VDF_Elem_base.h>
+#include <Op_Diff_VDF_Elem_base2.h>
 #include <ItVDFEl.h>
-#include <Eval_Diff_VDF_Multi_inco_var_Elem.h>
+#include <Eval_Diff_VDF_Multi_inco_const_Elem.h>
 #include <Op_VDF_Elem.h>
 
 //
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_var_Elem
+// .DESCRIPTION class Op_Diff_VDF_Multi_inco_Elem
 //
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  transport.
@@ -45,41 +45,38 @@
 //
 //
 
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFmiElVr.h.h
-//
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)
+declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
 
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Diff_VDF_Multi_inco_var_Elem
+// CLASS: Op_Diff_VDF_Multi_inco_Elem
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Multi_inco_var_Elem : public Op_Diff_VDF_Elem_base
+class Op_Diff_VDF_Multi_inco_Elem : public Op_Diff_VDF_Elem_base2
 {
 
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem);
+  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem);
 
 public:
 
-  Op_Diff_VDF_Multi_inco_var_Elem();
-  inline Op_Diff_VDF_Multi_inco_var_Elem(const Iterateur_VDF_base&);
+  Op_Diff_VDF_Multi_inco_Elem();
+  inline Op_Diff_VDF_Multi_inco_Elem(const Iterateur_VDF_base&);
 protected:
-  inline Eval_VDF_Elem& get_eval_elem();
+  inline Eval_VDF_Elem2& get_eval_elem();
 };
 
 // Ce constructeur permet de creer des classes filles des evalateurs
-// (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_var_Elem_temp_FTBM)
-inline Op_Diff_VDF_Multi_inco_var_Elem::Op_Diff_VDF_Multi_inco_var_Elem(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
+// (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_Elem_temp_FTBM)
+inline Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem(const Iterateur_VDF_base& iterateur)
+  : Op_Diff_VDF_Elem_base2(iterateur)
 {
 }
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem& Op_Diff_VDF_Multi_inco_var_Elem::get_eval_elem()
+inline Eval_VDF_Elem2& Op_Diff_VDF_Multi_inco_Elem::get_eval_elem()
 {
-  Eval_Diff_VDF_Multi_inco_var_Elem& eval_diff = (Eval_Diff_VDF_Multi_inco_var_Elem&) iter.evaluateur();
-  return (Eval_VDF_Elem&) eval_diff;
+  Eval_Diff_VDF_Multi_inco_const_Elem& eval_diff = dynamic_cast<Eval_Diff_VDF_Multi_inco_const_Elem&>(iter.evaluateur());
+  return eval_diff;
 }
 #endif

@@ -14,44 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Multi_inco_var_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/9
+// File:        Eval_Diff_VDF_Multi_inco_const_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Multi_inco_var_Elem.h>
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFmiElVr.h.cpp
-
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem,"Op_Diff_VDF_Multi_inco_var_P0_VDF",Op_Diff_VDF_Elem_base);
-
-implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)
 
 
-//// printOn
+#ifndef Eval_Diff_VDF_Multi_inco_const_Elem_included
+#define Eval_Diff_VDF_Multi_inco_const_Elem_included
+
+#include <Eval_Diff_VDF_Multi_inco_const2.h>
+#include <Eval_Diff_VDF_Elem.h>
+
 //
+// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const_Elem
+//
+// Evaluateur VDF pour la diffusion
+// Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
+// Il y a une diffusivite par inconnue
+// Le champ de diffusivite associe a chaque inconnue est constant.
 
-Sortie& Op_Diff_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const
+//
+// .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
+class Eval_Diff_VDF_Multi_inco_const_Elem :
+      public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem>,
+      public Eval_Diff_VDF_Multi_inco_const2
 {
-  return s << que_suis_je() ;
-}
+};
 
-
-//// readOn
+//// DEBUT DES DEFINES
+//#define CLASSNAME Eval_Diff_VDF_Multi_inco_const_Elem
 //
+//#define nu_1(i,k) diffusivite(k)
+//#define nu_2(i,k) diffusivite(k)
+//#define f_heq(d0,i,d1,j,k) heq=nu_2(i,k)/(d0+d1);
+//// FIN DES DEFINES
+//#include <Cal_std.h>
+//#include <Scal_corps_base_inut.h>
+//#include <Vect_corps_base.h>
 
-Entree& Op_Diff_VDF_Multi_inco_var_Elem::readOn(Entree& s )
-{
-  return s ;
-}
 
-//
-// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_var_Elem
-//
-// Description:
-// constructeur
-Op_Diff_VDF_Multi_inco_var_Elem::Op_Diff_VDF_Multi_inco_var_Elem() :
-  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)())
-{
-}
+#endif

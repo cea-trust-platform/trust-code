@@ -13,81 +13,44 @@
 *
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
-
+//
+// File:        Eval_Diff_VDF_Multi_inco_var_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
+// Version:     /main/12
+//
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Eval_Diff_VDF_var2_included
-#define Eval_Diff_VDF_var2_included
+#ifndef Eval_Diff_VDF_Multi_inco_var_Elem_included
+#define Eval_Diff_VDF_Multi_inco_var_Elem_included
 
-#include <Eval_Diff_VDF2.h>
-#include <Ref_Champ_base.h>
-#include <Champ_base.h>
-#include <Champ_Uniforme.h>
-#include <Zone_VDF.h>
+#include <Eval_Diff_VDF_Multi_inco_var2.h>
+#include <Eval_Diff_VDF_Elem.h>
 
 //
-// .DESCRIPTION class Eval_Diff_VDF_var
+// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_var_Elem
 //
-// Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui n'est pas constant en espace.
+// Evaluateur VDF pour la diffusion
+// Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
+// Il y a une diffusivite par inconnue
+// Le champ de diffusivite associe a chaque inconnue n'est pas constant.
 
-//.SECTION voir aussi Evaluateur_VDF
-
-
-class Eval_Diff_VDF_var2 : public Eval_Diff_VDF2
+//.SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
+class Eval_Diff_VDF_Multi_inco_var_Elem :
+      public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>,
+      public Eval_Diff_VDF_Multi_inco_var2
 {
-
-public:
-  inline void associer(const Champ_base& );
-  inline void mettre_a_jour( );
-
-  inline const Champ_base& get_diffusivite() const
-  {
-    assert(diffusivite_.non_nul());
-    return diffusivite_.valeur();
-  }
-
-  // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
-  {
-    return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
-  }
-
-protected:
-
-  REF(Champ_base) diffusivite_;
-  DoubleVect dv_diffusivite;
 };
 
-//
-//  Fonctions inline de la classe Eval_Diff_VDF_var
-//
-
-// Description:
-// associe le champ de diffusivite
-void Eval_Diff_VDF_var2::associer(const Champ_base& diffu)
-{
-  diffusivite_ = diffu;
-  dv_diffusivite.ref(diffu.valeurs());
-}
-
-// Description:
-// mise a jour de DoubleVect diffusivite
-inline void Eval_Diff_VDF_var2::mettre_a_jour( )
-{
-  (diffusivite_->valeurs().echange_espace_virtuel());
-  dv_diffusivite.ref(diffusivite_->valeurs());
-}
+//// DEBUT DES DEFINES
+//#define CLASSNAME Eval_Diff_VDF_Multi_inco_var_Elem
+//#define nu_1(i,k) dt_diffusivite(i,k)
+//#define nu_2(i,k) dt_diffusivite(i,k)
+//#define f_heq(d0,i,d1,j,k) heq=1./(d0/nu_2(i,k) + d1/nu_2(j,k))
+//#undef D_AXI
+//// FIN DES DEFINES
+//#include <Cal_std.h>
+//#include <Scal_corps_base_inut.h>
+//#include <Vect_corps_base.h>
 
 #endif

@@ -34,4 +34,18 @@ class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>
 {
 };
 
+//// DEBUT DES DEFINES
+//#define CLASSNAME Eval_Diff_VDF_var_Elem
+//#define f_heq_old(d0,i,d1,j,k) heq=1./(d0/dt_diffusivite(i,k) + d1/dt_diffusivite(j,k))
+//#define nu_1(i) dv_diffusivite(i)
+//#define nu_2(i) dv_diffusivite(i)
+//#define f_heq(d0,i,d1,j) heq=1./(d0/nu_2(i) + d1/nu_2(j))
+//#define MULTD
+//#undef D_AXI
+//// FIN DES DEFINES
+//#include <Cal_std.h>
+//#include <Scal_corps_base.h>
+//#include <Vect_corps_base_inut.h>
+//
+
 #endif

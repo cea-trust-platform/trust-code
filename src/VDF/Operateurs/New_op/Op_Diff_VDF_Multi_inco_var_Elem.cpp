@@ -13,81 +13,45 @@
 *
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
-
+//
+// File:        Op_Diff_VDF_Multi_inco_var_Elem.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Version:     /main/9
+//
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Op_Diff_VDF_Multi_inco_var_Elem.h>
 
-#ifndef Eval_Diff_VDF_var2_included
-#define Eval_Diff_VDF_var2_included
+// DO NOT EDIT  THIS FILE BUT  OpDifVDFmiElVr.h.cpp
 
-#include <Eval_Diff_VDF2.h>
-#include <Ref_Champ_base.h>
-#include <Champ_base.h>
-#include <Champ_Uniforme.h>
-#include <Zone_VDF.h>
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem,"Op_Diff_VDF_Multi_inco_var_P0_VDF",Op_Diff_VDF_Elem_base2);
 
+implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)
+
+
+//// printOn
 //
-// .DESCRIPTION class Eval_Diff_VDF_var
-//
-// Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui n'est pas constant en espace.
 
-//.SECTION voir aussi Evaluateur_VDF
-
-
-class Eval_Diff_VDF_var2 : public Eval_Diff_VDF2
+Sortie& Op_Diff_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const
 {
-
-public:
-  inline void associer(const Champ_base& );
-  inline void mettre_a_jour( );
-
-  inline const Champ_base& get_diffusivite() const
-  {
-    assert(diffusivite_.non_nul());
-    return diffusivite_.valeur();
-  }
-
-  // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
-  {
-    return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
-  }
-
-protected:
-
-  REF(Champ_base) diffusivite_;
-  DoubleVect dv_diffusivite;
-};
-
-//
-//  Fonctions inline de la classe Eval_Diff_VDF_var
-//
-
-// Description:
-// associe le champ de diffusivite
-void Eval_Diff_VDF_var2::associer(const Champ_base& diffu)
-{
-  diffusivite_ = diffu;
-  dv_diffusivite.ref(diffu.valeurs());
+  return s << que_suis_je() ;
 }
 
-// Description:
-// mise a jour de DoubleVect diffusivite
-inline void Eval_Diff_VDF_var2::mettre_a_jour( )
+
+//// readOn
+//
+
+Entree& Op_Diff_VDF_Multi_inco_var_Elem::readOn(Entree& s )
 {
-  (diffusivite_->valeurs().echange_espace_virtuel());
-  dv_diffusivite.ref(diffusivite_->valeurs());
+  return s ;
 }
 
-#endif
+//
+// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_var_Elem
+//
+// Description:
+// constructeur
+Op_Diff_VDF_Multi_inco_var_Elem::Op_Diff_VDF_Multi_inco_var_Elem() :
+  Op_Diff_VDF_Elem_base2(It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)())
+{
+}

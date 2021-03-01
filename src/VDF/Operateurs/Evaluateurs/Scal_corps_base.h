@@ -20,39 +20,41 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef MULTD
-#define MULTD 2*
+#   define MULTD 2*
 #endif
+
+
 #ifdef D_AXI
-#define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord_axi(face)
-#define Dist_face_elem0(face,n0) dist_face_elem0_axi(face,n0)
-#define Dist_face_elem1(face,n1) dist_face_elem1_axi(face,n1)
-#ifndef DEQUIV
-#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(global_face)
-#endif
+#   define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord_axi(face)
+#   define Dist_face_elem0(face,n0) dist_face_elem0_axi(face,n0)
+#   define Dist_face_elem1(face,n1) dist_face_elem1_axi(face,n1)
+#   ifndef DEQUIV
+#     define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(global_face)
+#   endif
 #else
-#define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord(face)
-#define Dist_face_elem0(face,n0) dist_face_elem0(face,n0)
-#define Dist_face_elem1(face,n1) dist_face_elem1(face,n1)
-#ifndef DEQUIV
-#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(global_face)
-#endif
+#   define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord(face)
+#   define Dist_face_elem0(face,n0) dist_face_elem0(face,n0)
+#   define Dist_face_elem1(face,n1) dist_face_elem1(face,n1)
+#   ifndef DEQUIV
+#     define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(global_face)
+#   endif
 #endif
 
 #ifdef MODIF_DEQ
-#define Dist_norm_bord_externe(boundary_index,global_face,local_face)	     \
+#   define Dist_norm_bord_externe(boundary_index,global_face,local_face)	     \
   if (ind_Fluctu_Term==1)                                                    \
       e=Dist_norm_bord_externe_(global_face) ;				     \
   else                                                                       \
     e=equivalent_distance[boundary_index](local_face);
 //e=d_equiv(face-la_zone->premiere_face_bord());
 #else
-#ifdef DEQUIV
-#define Dist_norm_bord_externe(boundary_index,global_face,local_face)	    \
+#   ifdef DEQUIV
+#     define Dist_norm_bord_externe(boundary_index,global_face,local_face)	    \
   e=equivalent_distance[boundary_index](local_face);
 //  e=d_equiv(face-la_zone->premiere_face_bord());
-#else
-#define Dist_norm_bord_externe(boundary_index,global_face,local_face) e=Dist_norm_bord_externe_(global_face)
-#endif
+#   else
+#     define Dist_norm_bord_externe(boundary_index,global_face,local_face) e=Dist_norm_bord_externe_(global_face)
+#   endif
 #endif
 // Fonctions de calcul des flux pour une grandeur scalaire
 

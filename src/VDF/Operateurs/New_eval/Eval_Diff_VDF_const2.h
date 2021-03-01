@@ -59,17 +59,17 @@ public:
   inline void mettre_a_jour( );
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i) const
+  inline double nu_1_impl(int i, int compo) const
   {
     return db_diffusivite;
   }
 
-  inline double nu_2_impl(int i) const
+  inline double nu_2_impl(int i, int compo) const
   {
     return db_diffusivite;
   }
 
-  inline double compute_heq_impl(double d0, int i, double d1, int j) const
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
     return db_diffusivite/(d0+d1);
   }

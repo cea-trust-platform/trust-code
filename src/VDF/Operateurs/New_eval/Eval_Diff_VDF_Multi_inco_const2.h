@@ -12,47 +12,73 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef Eval_Diff_VDF_Multi_inco_const2_included
+#define Eval_Diff_VDF_Multi_inco_const2_included
+
+#include <Eval_Diff_VDF2.h>
+#include <Champ_Face.h>
+#include <Champ_Uniforme.h>
+#include <Ref_Champ_Uniforme.h>
+
+class Champ_base;
+
 //
-// File:        Op_Diff_VDF_Multi_inco_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/11
+// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const2
 //
-//////////////////////////////////////////////////////////////////////////////
+// Cette classe represente un evaluateur de flux diffusif
+// pour un vecteur d'inconnues avec une diffusivite par
+// inconnue. Le champ de diffusivite associe a chaque inconnue
+// est constant.
 
-#include <Op_Diff_VDF_Multi_inco_Elem.h>
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFmiElCs.h.cpp
-
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem,"Op_Diff_VDF_Multi_inco_const_P0_VDF",Op_Diff_VDF_Elem_base);
-
-implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
-
-
-//// printOn
+//
+// .SECTION voir aussi Evaluateur_VDF
 //
 
-Sortie& Op_Diff_VDF_Multi_inco_Elem::printOn(Sortie& s ) const
+
+class Eval_Diff_VDF_Multi_inco_const2 : public Eval_Diff_VDF2
 {
-  return s << que_suis_je() ;
+public:
+
+  inline void associer(const Champ_base& );
+  inline const Champ_base& get_diffusivite() const;
+
+  inline void mettre_a_jour() {}
+
+  // Methods used by the flux computation in template class:
+  inline double nu_1_impl(int i, int compo) const
+  {
+    return dv_diffusivite(compo);
+  }
+
+  inline double nu_2_impl(int i, int compo) const
+  {
+    return dv_diffusivite(compo);
+  }
+
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
+  {
+    return dv_diffusivite(compo)/(d0+d1);
+  }
+
+protected:
+
+  REF(Champ_Uniforme) diffusivite_;
+  DoubleVect dv_diffusivite;  // nb of components = nb of multi-inco
+  inline double dist_face(int, int, int) const;
+
+
+};
+
+inline void Eval_Diff_VDF_Multi_inco_const2::associer(const Champ_base& diffu)
+{
+  diffusivite_ = ref_cast(Champ_Uniforme, diffu);
+  dv_diffusivite.ref(diffu.valeurs());
+}
+inline const Champ_base& Eval_Diff_VDF_Multi_inco_const2::get_diffusivite() const
+{
+  return diffusivite_;
 }
 
-
-//// readOn
-//
-
-Entree& Op_Diff_VDF_Multi_inco_Elem::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_Elem
-//
-// Description:
-// constructeur
-Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem() :
-  Op_Diff_VDF_Elem_base(
-    It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)())
-{
-}
+#endif

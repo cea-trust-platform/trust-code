@@ -35,4 +35,16 @@ class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_E
 {
 };
 
+//// DEBUT DES DEFINES
+//#define CLASSNAME Eval_Diff_VDF_const_Elem
+//#define nu_1(i) db_diffusivite
+//#define nu_2(i) db_diffusivite
+//#define f_heq(d0,i,d1,j) heq=db_diffusivite/(d0+d1)
+//#define MULTD
+//#undef D_AXI
+//// FIN DES DEFINES
+//#include <Cal_std.h>
+//#include <Scal_corps_base.h>
+//#include <Vect_corps_base_inut.h>
+
 #endif

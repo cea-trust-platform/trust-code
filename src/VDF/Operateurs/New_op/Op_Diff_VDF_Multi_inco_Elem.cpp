@@ -14,72 +14,43 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Multi_inco_Elem.h
+// File:        Op_Diff_VDF_Multi_inco_Elem.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/10
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Op_Diff_VDF_Multi_inco_Elem.h>
 
-#ifndef Op_Diff_VDF_Multi_inco_Elem_included
-#define Op_Diff_VDF_Multi_inco_Elem_included
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem,"Op_Diff_VDF_Multi_inco_const_P0_VDF",Op_Diff_VDF_Elem_base2);
 
-#include <Op_Diff_VDF_Elem_base.h>
-#include <ItVDFEl.h>
-#include <Eval_Diff_VDF_Multi_inco_const_Elem.h>
-#include <Op_VDF_Elem.h>
+implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
 
-//
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_Elem
-//
-//  Cette classe represente l'operateur de diffusion associe a une equation de
-//  transport.
-//  La discretisation est VDF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
 
-//
-// .SECTION voir aussi
-//
+//// printOn
 //
 
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFmiElCs.h.h
-//
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_Multi_inco_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Diff_VDF_Multi_inco_Elem : public Op_Diff_VDF_Elem_base
+Sortie& Op_Diff_VDF_Multi_inco_Elem::printOn(Sortie& s ) const
 {
+  return s << que_suis_je() ;
+}
 
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem);
 
-public:
+//// readOn
+//
 
-  Op_Diff_VDF_Multi_inco_Elem();
-  inline Op_Diff_VDF_Multi_inco_Elem(const Iterateur_VDF_base&);
-protected:
-  inline Eval_VDF_Elem& get_eval_elem();
-};
+Entree& Op_Diff_VDF_Multi_inco_Elem::readOn(Entree& s )
+{
+  return s ;
+}
 
-// Ce constructeur permet de creer des classes filles des evalateurs
-// (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_Elem_temp_FTBM)
-inline Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
+//
+// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_Elem
+//
+// Description:
+// constructeur
+Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem() :
+  Op_Diff_VDF_Elem_base2(
+    It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)())
 {
 }
-// Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem& Op_Diff_VDF_Multi_inco_Elem::get_eval_elem()
-{
-  Eval_Diff_VDF_Multi_inco_const_Elem& eval_diff = (Eval_Diff_VDF_Multi_inco_const_Elem&) iter.evaluateur();
-  return (Eval_VDF_Elem&) eval_diff;
-}
-#endif
