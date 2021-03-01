@@ -48,47 +48,12 @@ public:
   void associer_inconnue(const Champ_base& );
 
   // contribution de la derivee en vitesse d'une equation scalaire
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int ) const
+  template <typename BC_TYPE>
+  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const
   {
     return 0.;
   }
   double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Echange_global_impose&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_paroi&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Symetrie&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const NSCBC&, int ) const
   {
     return 0.;
   }
