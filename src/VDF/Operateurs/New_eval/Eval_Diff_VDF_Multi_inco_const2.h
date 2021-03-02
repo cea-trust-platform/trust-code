@@ -66,8 +66,6 @@ protected:
 
   REF(Champ_Uniforme) diffusivite_;
   DoubleVect dv_diffusivite;  // nb of components = nb of multi-inco
-  inline double dist_face(int, int, int) const;
-
 
 };
 

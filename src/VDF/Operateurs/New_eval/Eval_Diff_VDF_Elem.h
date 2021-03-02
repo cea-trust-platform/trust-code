@@ -201,49 +201,61 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::compute_heq(double d0, int i0, doub
 
 
 // TODO TODO FIXME : all this should become CRTP member functions as above
-#define MULTD  // was in the initial const_Elem / var_Elem
+
+// FIXME : this is only predifined for const_Elem / var_Elem / var_Elem_aniso
+// NOT FOR Multi_Inco
+// I do this now : I define a methods specific for Vect cases assuming that MULTD is not defined...
+#define MULTD
 
 
 // TODO TODO FIXME : all this should become CRTP member functions as above
 #ifndef MULTD
-#define MULTD 2*
+#	define MULTD 2*
 #endif
+
+
 #ifdef D_AXI
-#define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord_axi(face)
-#define Dist_face_elem0(face,n0) dist_face_elem0_axi(face,n0)
-#define Dist_face_elem1(face,n1) dist_face_elem1_axi(face,n1)
-#ifndef DEQUIV
-#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(global_face)
-#endif
+#	define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord_axi(face)
+#	define Dist_norm_bord_VEC(face) 2*la_zone->dist_norm_bord_axi(face)
+#	define Dist_face_elem0(face,n0) dist_face_elem0_axi(face,n0)
+#	define Dist_face_elem1(face,n1) dist_face_elem1_axi(face,n1)
+#	ifndef DEQUIV
+#		define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(global_face)
+#     	define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord_axi(global_face)
+#	endif
 #else
-#define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord(face)
-#define Dist_face_elem0(face,n0) dist_face_elem0(face,n0)
-#define Dist_face_elem1(face,n1) dist_face_elem1(face,n1)
-#ifndef DEQUIV
-#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(global_face)
-#endif
+#	define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord(face)
+#	define Dist_norm_bord_VEC(face) 2*la_zone->dist_norm_bord(face)
+#	define Dist_face_elem0(face,n0) dist_face_elem0(face,n0)
+#	define Dist_face_elem1(face,n1) dist_face_elem1(face,n1)
+#	ifndef DEQUIV
+#		define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(global_face)
+#     	define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord(global_face)
+#	endif
 #endif
 
 #ifdef MODIF_DEQ
-#define Dist_norm_bord_externe(boundary_index,global_face,local_face)      \
+#	define Dist_norm_bord_externe(boundary_index,global_face,local_face)      \
   if (ind_Fluctu_Term==1)                                                    \
       e=Dist_norm_bord_externe_(global_face) ;             \
   else                                                                       \
     e=equivalent_distance[boundary_index](local_face);
 //e=d_equiv(face-la_zone->premiere_face_bord());
 #else
-#ifdef DEQUIV
-#define Dist_norm_bord_externe(boundary_index,global_face,local_face)     \
+#	ifdef DEQUIV
+#	define Dist_norm_bord_externe(boundary_index,global_face,local_face)     \
   e=equivalent_distance[boundary_index](local_face);
 //  e=d_equiv(face-la_zone->premiere_face_bord());
-#else
-#define Dist_norm_bord_externe(boundary_index,global_face,local_face) e=Dist_norm_bord_externe_(global_face)
-#endif
+#	else
+#		define Dist_norm_bord_externe(boundary_index,global_face,local_face) e=Dist_norm_bord_externe_(global_face)
+#	endif
 #endif
 
-
-// TODO : impl. an inline method for this ...
-#define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord(global_face)
+#ifdef DEQUIV
+#   define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) equivalent_distance[boundary_index](local_face)
+#endif
+//// TODO : impl. an inline method for this ...
+//#define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord(global_face)
 
 
 template <typename DERIVED_T>
@@ -748,7 +760,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
-  double dist = Dist_norm_bord(face);
+  double dist = Dist_norm_bord_VEC(face);
   if (n0 != -1)
 #ifdef ISQUASI
     for (k=0; k<flux.size(); k++)
@@ -779,7 +791,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int, const Diric
   int k;
   int i = elem_(face,0);
   // int j = elem(face,1);
-  double dist = Dist_norm_bord(face);
+  double dist = Dist_norm_bord_VEC(face);
 
   if (i != -1)
     {
@@ -805,7 +817,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Dirichlet
   int i = elem_(face,0);
   //  int j = elem(face,1);
   int k;
-  double dist = Dist_norm_bord(face);
+  double dist = Dist_norm_bord_VEC(face);
 
   if (i != -1)
     for (k=0; k<flux.size(); k++)
@@ -867,7 +879,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
-  double dist = Dist_norm_bord(face);
+  double dist = Dist_norm_bord_VEC(face);
   if (n0 != -1)
 #ifdef ISQUASI
     for (k=0; k<flux.size(); k++)
@@ -899,7 +911,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int num1, const 
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
-  double dist = Dist_norm_bord(face);
+  double dist = Dist_norm_bord_VEC(face);
   if (n0 != -1)
     {
 #ifdef ISQUASI
