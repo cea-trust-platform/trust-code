@@ -443,6 +443,7 @@ void Milieu_composite::abortTimeStep()
 {
   Fluide_base::abortTimeStep();
   if (e_int.non_nul()) e_int->abortTimeStep();
+  if (h.non_nul()) h->abortTimeStep();
 }
 
 bool Milieu_composite::initTimeStep(double dt)
@@ -454,6 +455,7 @@ bool Milieu_composite::initTimeStep(double dt)
   std::vector<Champ_Inc_base *> vch;
   if (rho.non_nul() && sub_type(Champ_Inc_base, rho.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, rho.valeur()));
   if (e_int.non_nul() && sub_type(Champ_Inc_base, e_int.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, e_int.valeur()));
+  if (h.non_nul() && sub_type(Champ_Inc_base, h.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, h.valeur()));
 
   for (auto &pch : vch) for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
       pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
