@@ -50,29 +50,10 @@ cd $build_root
 tar zxf $archive_mc
 tar zxf $archive_conf
 
-echo "Patching DisjointDEC"
-sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.hxx )
-sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.cxx )
-
-echo "Patching findClosestTupleId() method"
-patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch || exit -1
-
 echo "Patching HDF detection procedure and exit if procedure has changed..."
 FindSalomeHDF5=$(find $src_dir/.. -name FindSalomeHDF5.cmake )
 sed -i "1,$ s?GET_PROPERTY(?#GET_PROPERTY(?" 			$FindSalomeHDF5 || exit -1 
 sed -i "1,$ s?MESSAGE(FATAL_ERROR?#MESSAGE(FATAL_ERROR ?" 	$FindSalomeHDF5 || exit -1 
-
-echo "Patching gatherArraysT() and allGathersArraysT() method"
-patch -p1 $(find $src_dir -name CommInterface.hxx ) < $tool_dir/CommInterface.patch || exit -1
-
-echo "Patching DataArrayInt allocation method (initialisation with numpy array only available if WITH_NUMPY is defined)"
-patch -p1 $(find $src_dir -name DataArrayInt.i ) < $tool_dir/DataArrayInt.patch || exit -1
-
-echo "Patching explicit instantiation of ParaDataArrayTemplate"
-sed -i 's/template class /template class MEDCoupling::/' $(find $src_dir -name ParaDataArray.cxx )
-
-echo "Patching MEDCouplingMemArray for gcc 10"
-sed -i "s/if((\*it)<0 || (\*it)>=oldNbOfCompo)/if((*it)>=oldNbOfCompo)/" $(find $src_dir -name MEDCouplingMemArray.txx )
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
@@ -94,6 +75,8 @@ OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-Wno-narrowing"
 if [ "$TRUST_INT64" = "1" ]
 then
     OPTIONS="$OPTIONS -DMEDCOUPLING_USE_64BIT_IDS=ON"
+else
+    OPTIONS="$OPTIONS -DMEDCOUPLING_USE_64BIT_IDS=OFF"
 fi
 
 echo "About to execute CMake -- options are: $OPTIONS"
@@ -114,7 +97,7 @@ if ! [ $status -eq 0 ]; then
 fi
 
 # Clean build folder
-cd .. ; rm -rf configuration* medcoupling*
+cd .. ; #rm -rf configuration* medcoupling*
 
 # Creation of env file. Done in a temporary file, because the final env.sh is the main target of the Makefile
 # but we need an env file for the test below ... 
@@ -131,20 +114,12 @@ then
   ## Test de fonctionnement
   ##
   source $MC_ENV_FILE_tmp
-  python -c "import medcoupling"
+  python -c "import medcoupling"  # also provides MEDLoader functionalities
   if [ $? -eq 0 ]
   then
-    echo "MEDCoupling library OK"
+    echo "medcoupling library OK"
   else
-    echo "MEDCoupling library KO"
-    exit -1
-  fi
-  python -c "import MEDLoader"
-  if [ $? -eq 0 ]
-  then
-    echo "MEDLoader library OK"
-  else
-    echo "MEDLoader library KO"
+    echo "medcoupling library KO"
     exit -1
   fi
 fi
@@ -152,7 +127,6 @@ fi
 echo "@@@@@@@@@@@@ Updating TRUST include files ..."
 touch $install_dir/include/*
 
-[ ! -f $icocomedfield_hxx ] && echo "#define NO_MEDFIELD " > $icocomedfield_hxx
 if [ "$TRUST_INT64" = "1" ]
 then
     [ ! -f $medcoupling_hxx ]  && printf "#define MEDCOUPLING_\n#define MEDCOUPLING_USE_64BIT_IDS" > $medcoupling_hxx
