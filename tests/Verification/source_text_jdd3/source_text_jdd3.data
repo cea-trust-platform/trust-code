@@ -21,9 +21,9 @@ Mailler dom_fluide
         Bord haut   Y = 1.0  0.0 <= X <= 1.0
     }
 }
-/* DEBUTVEFPreP1B */
+/* DEBUTVEFPreP1B
 trianguler_h dom_fluide
-/* FINVEFPreP1B */
+FINVEFPreP1B */
 
 # END MESH #
 
@@ -54,7 +54,7 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-VEFPreP1B  dis
+VDF  dis
 
 Fluide_Incompressible fluide
 Read fluide
