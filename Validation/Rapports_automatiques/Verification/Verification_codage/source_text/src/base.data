@@ -21,7 +21,10 @@ Mailler dom_fluide
         Bord haut   Y = 1.0  0.0 <= X <= 1.0
     }
 }
+/* DEBUTVEFPreP1B
 trianguler_h dom_fluide
+FINVEFPreP1B */
+
 # END MESH #
 
 # BEGIN PARTITION
