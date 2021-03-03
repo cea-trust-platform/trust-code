@@ -943,7 +943,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 pc_supported_on_gpu_by_amgx=1;
                 if (amgx_)
                   {
-                    amgx_option+="s:preconditioner(p)=MULTICOLOR_GS\n"; // Dans AMGX, c'est un Gauss Seidel...
+                    amgx_option+="s:preconditioner(p)=GS\n"; // Dans AMGX, c'est un Gauss Seidel... MULTICOLOR_GS lent
                     Nom relaxation_factor="p:relaxation_factor="; // Defaut 0.9
                     relaxation_factor+=Nom(omega.value()-1); // Astuce moyenne... ToDo faire un GS ?
                     amgx_option+=relaxation_factor+"\n";
@@ -1217,13 +1217,13 @@ void Solv_Petsc::create_solver(Entree& entree)
       SFichier s(filename);
       // Syntax: See https://github.com/NVIDIA/AMGX/raw/master/doc/AMGX_Reference.pdf
       s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option;
-      if (!amgx_option.contient("store_res_history")) s << "s:store_res_history=1" << finl;
-      if (!amgx_option.contient("monitor_residual"))  s << "s:monitor_residual=1" << finl;
-      if (!amgx_option.contient("print_solve_stats")) s << "s:print_solve_stats=1" << finl;
-      if (!amgx_option.contient("obtain_timings"))    s << "s:obtain_timings=1" << finl;
-      s << "# s:print_grid_stats=1" << finl;
+      if (!amgx_option.contient("s:store_res_history")) s << "s:store_res_history=1" << finl;
+      if (!amgx_option.contient("s:monitor_residual"))  s << "s:monitor_residual=1" << finl;
+      if (!amgx_option.contient("s:print_solve_stats")) s << "s:print_solve_stats=1" << finl;
+      if (!amgx_option.contient("s:obtain_timings"))    s << "s:obtain_timings=1" << finl;
+      if (!amgx_option.contient("s:max_iters"))         s << "s:max_iters=10000" << finl; // 100 par defaut trop bas...
       s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
-      Cerr << "Writing and reading the AmgX config file: " << filename << finl;
+      Cerr << "Writing the AmgX config file: " << filename << finl;
     }
 #else
   Cerr << "Error, the code is not built with PETSc support." << finl;
@@ -1987,6 +1987,7 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
           3. (uppercase) letter: whether the vector precision is float (F) or double (D).
           4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
           typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
+          Cerr << "Initializing Amgx and reading the " << filename << " file." << finl;
           SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
           amgx_initialized_=true;
         }

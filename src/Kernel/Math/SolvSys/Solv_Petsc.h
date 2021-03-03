@@ -212,7 +212,11 @@ inline void Solv_Petsc::reset()
       if (amgx_)
         {
 #ifdef PETSC_HAVE_CUDA
-          SolveurAmgX_.finalize();
+          if (amgx_initialized_)
+            {
+              SolveurAmgX_.finalize();
+              amgx_initialized_ = false;
+            }
 #endif
         }
     }
