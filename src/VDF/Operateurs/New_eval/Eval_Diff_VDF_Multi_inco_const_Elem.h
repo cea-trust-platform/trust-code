@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-
 #ifndef Eval_Diff_VDF_Multi_inco_const_Elem_included
 #define Eval_Diff_VDF_Multi_inco_const_Elem_included
 
@@ -36,12 +35,13 @@
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue est constant.
 
-//
 // .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
 class Eval_Diff_VDF_Multi_inco_const_Elem :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem>,
   public Eval_Diff_VDF_Multi_inco_const2
 {
+public:
+  static constexpr bool Is_Multd = false;
 };
 
 #endif

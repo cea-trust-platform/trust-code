@@ -26,8 +26,6 @@
 
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem2.h>
-//#include <Eval_Diff_VDF_var_Elem_aniso.h>
-//class Eval_Diff_VDF_var_Elem_aniso;
 
 //
 // .DESCRIPTION class Eval_Diff_VDF_Elem
@@ -37,6 +35,27 @@ template <typename DERIVED_T>
 class Eval_Diff_VDF_Elem : public Eval_VDF_Elem2, public Evaluateur_VDF
 {
 public:
+
+  // These static constexpr bools & Methods that will generalize the implementation
+  // almost for all operator classes
+  // The previous MACRO methodology do not exist anymore
+  // (previously MULTD /  D_AXI / DEQUIV / MODIF_DEQ / ISQUASI)...
+  // See their generic declaration later & override them in the derived class if
+  // needed to stay coherent with the previous macros
+  static constexpr bool Is_Multd = true;
+  static constexpr bool Is_Axi = false;
+  static constexpr bool Is_Dequiv = false;
+  static constexpr bool Is_Modif_Deq = false;
+  static constexpr bool Is_Quasi = false;
+
+  inline double Dist_norm_bord (int face) const;
+  inline double Dist_face_elem0(int face, int n0) const;
+  inline double Dist_face_elem1(int face, int n1) const;
+  inline double Dist_norm_bord_externe_VEC(int boundary_index, int global_face, int local_face) const;
+  inline double Dist_norm_bord_externe_(int global_face) const;
+
+  // CRTP pattern to static_cast the appropriate class and get the implementation
+  // This is magic !
   inline double nu_1(int i, int compo=0) const;
   inline double nu_2(int i, int compo=0) const;
   inline double compute_heq(double, int, double, int, int compo=0) const;
@@ -224,7 +243,9 @@ public:
 
 #include <Eval_Diff_VDF_var_Elem_aniso.h>
 
+//************************
 // CRTP pattern
+//************************
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::nu_1(int i, int compo) const
 {
@@ -239,7 +260,6 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::nu_2(int i, int compo) const
   return nu;
 }
 
-// CRTP pattern
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::compute_heq(double d0, int i0, double d1, int i1, int compo) const
 {
@@ -248,90 +268,79 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::compute_heq(double d0, int i0, doub
 }
 
 
+//************************
+// Replaced the MACROS
+//************************
 
+/*
+ * Notes MACRO (just to understand when,where and why (not sure of why :) )
+ *
+ * - MULTD :
+ *    TRUST : predefined for Diff/Dift const_Elem / var_Elem / var_Elem_aniso (not Multi-Inco)
+ *    TrioCFD : predefined for Diff/Dift K_Eps_var_VDF_Elem & K_Eps_Bas_Re_VDF_var_Elem
+ *
+ * - D_AXI :
+ *    TRUST : predefined for Diff/Dift Axi operators
+ *    TrioCFD : predefined for Diff/Dift Axi operators K_Eps
+ *
+ * - DEQUIV
+ *    TRUST : predefined for Dift (not Diff) Multi_inco_const_Elem / Multi_inco_var_Elem &&
+ *        Axi operators const_Elem_Axi / var_Elem_Axi / Multi_inco_var_Elem_Axi / Multi_inco_const_Elem_Axi
+ *
+ * - MODIF_DEQ
+ *    TRUST : predefined for Dift (not Diff) const_Elem / var_Elem (no Axi, no Multi_Inco)
+ *
+ * - ISQUASI
+ *    TrioCFD : predefined Diff_K_Eps_QC_VDF_Elem && Diff_K_Eps_QC_var_VDF_Elem
+ *
+ */
 
-/**************************************************
- * TOOL METHODS
- *************************************************/
-//// Description:
-//  // renvoie la distance entre les faces fac1 et fac2 dans la direction k
-//template <typename DERIVED_T>
-//inline double Eval_Diff_VDF_Elem<DERIVED_T>::dist_face(int, int, int) const
-//{
-//
-//    return xv(fac2,k) - xv(fac1,k);
-//
-//}
-//
-//template <typename DERIVED_T>
-//inline double Eval_Diff_VDF_Elem<DERIVED_T>::dist_face_period(int, int, int) const
-//{
-//  return la_zone->dist_face_period(fac1,fac2,k);
-//}
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_norm_bord (int face) const
+{
+  double val = DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(face) : la_zone->dist_norm_bord(face);
+  if (DERIVED_T::Is_Multd)
+    return val;
+  else
+    return 2*val;
+}
 
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_face_elem0(int face, int n0) const
+{
+  double val = DERIVED_T::Is_Axi ? la_zone->dist_face_elem0_axi(face,n0): la_zone->dist_face_elem0(face,n0);
+  return val;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_face_elem1(int face, int n1) const
+{
+  double val = DERIVED_T::Is_Axi ? la_zone->dist_face_elem1_axi(face,n1): la_zone->dist_face_elem1(face,n1);
+  return val;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_norm_bord_externe_VEC(int boundary_index, int global_face, int local_face) const
+{
+  // TODO : FIXME : to use later when Dift follows the template procedure...
+//	if (DERIVED_T::Is_Dequiv)
+//		return la_zone->equivalent_distance[boundary_index](local_face);
+//	else
+//		return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
+  assert (!DERIVED_T::Is_Dequiv);
+  return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_norm_bord_externe_(int global_face) const
+{
+  assert (!DERIVED_T::Is_Dequiv);
+  return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
+}
 
 /**************************************************
  * SCALAIRE
  *************************************************/
-
-
-// TODO TODO FIXME : all this should become CRTP member functions as above
-
-// FIXME : this is only predifined for const_Elem / var_Elem / var_Elem_aniso
-// NOT FOR Multi_Inco
-// I do this now : I define a methods specific for Vect cases assuming that MULTD is not defined...
-#define MULTD
-
-
-// TODO TODO FIXME : all this should become CRTP member functions as above
-#ifndef MULTD
-#	define MULTD 2*
-#endif
-
-
-#ifdef D_AXI
-#	define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord_axi(face)
-#	define Dist_norm_bord_VEC(face) 2*la_zone->dist_norm_bord_axi(face)
-#	define Dist_face_elem0(face,n0) dist_face_elem0_axi(face,n0)
-#	define Dist_face_elem1(face,n1) dist_face_elem1_axi(face,n1)
-#	ifndef DEQUIV
-#		define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(global_face)
-#     	define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord_axi(global_face)
-#	endif
-#else
-#	define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord(face)
-#	define Dist_norm_bord_VEC(face) 2*la_zone->dist_norm_bord(face)
-#	define Dist_face_elem0(face,n0) dist_face_elem0(face,n0)
-#	define Dist_face_elem1(face,n1) dist_face_elem1(face,n1)
-#	ifndef DEQUIV
-#		define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(global_face)
-#     	define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord(global_face)
-#	endif
-#endif
-
-#ifdef MODIF_DEQ
-#	define Dist_norm_bord_externe(boundary_index,global_face,local_face)      \
-  if (ind_Fluctu_Term==1)                                                    \
-      e=Dist_norm_bord_externe_(global_face) ;             \
-  else                                                                       \
-    e=equivalent_distance[boundary_index](local_face);
-//e=d_equiv(face-la_zone->premiere_face_bord());
-#else
-#	ifdef DEQUIV
-#	define Dist_norm_bord_externe(boundary_index,global_face,local_face)     \
-  e=equivalent_distance[boundary_index](local_face);
-//  e=d_equiv(face-la_zone->premiere_face_bord());
-#	else
-#		define Dist_norm_bord_externe(boundary_index,global_face,local_face) e=Dist_norm_bord_externe_(global_face)
-#	endif
-#endif
-
-#ifdef DEQUIV
-#   define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) equivalent_distance[boundary_index](local_face)
-#endif
-//// TODO : impl. an inline method for this ...
-//#define Dist_norm_bord_externe_VEC(boundary_index,global_face,local_face) la_zone->dist_norm_bord(global_face)
-
 
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab&, int ,
@@ -536,7 +545,33 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   double e;
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
-  Dist_norm_bord_externe(boundary_index,face,local_face);
+//  Dist_norm_bord_externe(boundary_index,face,local_face);
+  if (DERIVED_T::Is_Modif_Deq)
+    {
+      // TODO : FIXME : to implement when opp dift follow the procedure
+      Cerr << "Op_Dift are not templatized yet !" << finl;
+      Process::exit();
+//      if (ind_Fluctu_Term==1)
+//        e=Dist_norm_bord_externe_(face) ;
+//      else
+//        e=equivalent_distance[boundary_index](local_face);
+//      //e=d_equiv(face-la_zone->premiere_face_bord());
+    }
+  else
+    {
+      if (DERIVED_T::Is_Dequiv)
+        {
+          // TODO : FIXME : to implement when opp dift follow the procedure
+          Cerr << "Op_Dift is not templatized yet !" << finl;
+          Process::exit();
+//          e=equivalent_distance[boundary_index](local_face);
+//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+        }
+      else
+        e=Dist_norm_bord_externe_(face);
+    }
+
+
   //  int ori = orientation(face);
   double flux;
   if (n0 != -1)
@@ -570,7 +605,37 @@ inline double Eval_Diff_VDF_Elem<class Eval_Diff_VDF_var_Elem_aniso>::flux_face(
   double e;
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
-  Dist_norm_bord_externe(boundary_index,face,local_face);
+//  Dist_norm_bord_externe(boundary_index,face,local_face);
+
+  // FIXME FIXME FIXME
+  // BUG here ... Donno why i cant use Eval_Diff_VDF_var_Elem_aniso::Is_Modif_Deq & Eval_Diff_VDF_var_Elem_aniso::Is_Dequiv
+  // incomplete type 'Eval_Diff_VDF_var_Elem_aniso' used in nested name specifier
+  // I think its better to separate Class template specializations in different files ...
+  if (Is_Modif_Deq)
+    {
+      // TODO : FIXME : to implement when opp dift follow the procedure
+      Cerr << "Op_Dift are not templatized yet !" << finl;
+      Process::exit();
+//      if (ind_Fluctu_Term==1)
+//        e=Dist_norm_bord_externe_(face) ;
+//      else
+//        e=equivalent_distance[boundary_index](local_face);
+//      //e=d_equiv(face-la_zone->premiere_face_bord());
+    }
+  else
+    {
+      if (Is_Dequiv)
+        {
+          // TODO : FIXME : to implement when opp dift follow the procedure
+          Cerr << "Op_Dift is not templatized yet !" << finl;
+          Process::exit();
+//          e=equivalent_distance[boundary_index](local_face);
+//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+        }
+      else
+        e=Dist_norm_bord_externe_(face);
+    }
+
   int ori = orientation(face);
   double flux;
   if (n0 != -1)
@@ -620,7 +685,33 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
   int i = elem_(face,0);
   //  int j = elem(face,1);
   //  int ori = orientation(face);
-  Dist_norm_bord_externe(boundary_index,face,local_face);
+//  Dist_norm_bord_externe(boundary_index,face,local_face);
+
+  if (DERIVED_T::Is_Modif_Deq)
+    {
+      // TODO : FIXME : to implement when opp dift follow the procedure
+      Cerr << "Op_Dift are not templatized yet !" << finl;
+      Process::exit();
+//      if (ind_Fluctu_Term==1)
+//        e=Dist_norm_bord_externe_(face) ;
+//      else
+//        e=equivalent_distance[boundary_index](local_face);
+//      //e=d_equiv(face-la_zone->premiere_face_bord());
+    }
+  else
+    {
+      if (DERIVED_T::Is_Dequiv)
+        {
+          // TODO : FIXME : to implement when opp dift follow the procedure
+          Cerr << "Op_Dift is not templatized yet !" << finl;
+          Process::exit();
+//          e=equivalent_distance[boundary_index](local_face);
+//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+        }
+      else
+        e=Dist_norm_bord_externe_(face);
+    }
+
   if (i != -1)
     {
       // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
@@ -653,7 +744,33 @@ inline void Eval_Diff_VDF_Elem<class Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(
   int i = elem_(face,0);
   //  int j = elem(face,1);
   int ori = orientation(face);
-  Dist_norm_bord_externe(boundary_index,face,local_face);
+//  Dist_norm_bord_externe(boundary_index,face,local_face);
+
+  if (Is_Modif_Deq)
+    {
+      // TODO : FIXME : to implement when opp dift follow the procedure
+      Cerr << "Op_Dift are not templatized yet !" << finl;
+      Process::exit();
+//      if (ind_Fluctu_Term==1)
+//        e=Dist_norm_bord_externe_(face) ;
+//      else
+//        e=equivalent_distance[boundary_index](local_face);
+//      //e=d_equiv(face-la_zone->premiere_face_bord());
+    }
+  else
+    {
+      if (Is_Dequiv)
+        {
+          // TODO : FIXME : to implement when opp dift follow the procedure
+          Cerr << "Op_Dift is not templatized yet !" << finl;
+          Process::exit();
+//          e=equivalent_distance[boundary_index](local_face);
+//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+        }
+      else
+        e=Dist_norm_bord_externe_(face);
+    }
+
   if (i != -1)
     {
       // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
@@ -702,7 +819,33 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
   int i = elem_(face,0);
   //  int j = elem(face,1);
   //  int ori = orientation(face);
-  Dist_norm_bord_externe(boundary_index,face,local_face);
+//  Dist_norm_bord_externe(boundary_index,face,local_face);
+
+  if (DERIVED_T::Is_Modif_Deq)
+    {
+      // TODO : FIXME : to implement when opp dift follow the procedure
+      Cerr << "Op_Dift are not templatized yet !" << finl;
+      Process::exit();
+//      if (ind_Fluctu_Term==1)
+//        e=Dist_norm_bord_externe_(face) ;
+//      else
+//        e=equivalent_distance[boundary_index](local_face);
+//      //e=d_equiv(face-la_zone->premiere_face_bord());
+    }
+  else
+    {
+      if (DERIVED_T::Is_Dequiv)
+        {
+          // TODO : FIXME : to implement when opp dift follow the procedure
+          Cerr << "Op_Dift is not templatized yet !" << finl;
+          Process::exit();
+//          e=equivalent_distance[boundary_index](local_face);
+//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+        }
+      else
+        e=Dist_norm_bord_externe_(face);
+    }
+
   double flux;
   if (i != -1)
     {
@@ -736,7 +879,33 @@ inline double Eval_Diff_VDF_Elem<class Eval_Diff_VDF_var_Elem_aniso>::secmem_fac
   int i = elem_(face,0);
   //  int j = elem(face,1);
   int ori = orientation(face);
-  Dist_norm_bord_externe(boundary_index,face,local_face);
+//  Dist_norm_bord_externe(boundary_index,face,local_face);
+
+  if (Is_Modif_Deq)
+    {
+      // TODO : FIXME : to implement when opp dift follow the procedure
+      Cerr << "Op_Dift are not templatized yet !" << finl;
+      Process::exit();
+//      if (ind_Fluctu_Term==1)
+//        e=Dist_norm_bord_externe_(face) ;
+//      else
+//        e=equivalent_distance[boundary_index](local_face);
+//      //e=d_equiv(face-la_zone->premiere_face_bord());
+    }
+  else
+    {
+      if (Is_Dequiv)
+        {
+          // TODO : FIXME : to implement when opp dift follow the procedure
+          Cerr << "Op_Dift is not templatized yet !" << finl;
+          Process::exit();
+//          e=equivalent_distance[boundary_index](local_face);
+//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+        }
+      else
+        e=Dist_norm_bord_externe_(face);
+    }
+
   double flux;
   if (i != -1)
     {
@@ -1085,8 +1254,8 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab&
   double flux;
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
-  double d0 = la_zone->Dist_face_elem0(face,n0);
-  double d1 = la_zone->Dist_face_elem1(face,n1);
+  double d0 = Dist_face_elem0(face,n0);
+  double d1 = Dist_face_elem1(face,n1);
   assert(nu_1(n0)!=0.0);
   assert(nu_1(n1)!=0.0);
   double heq = compute_heq(d0,n0,d1,n1);
@@ -1102,8 +1271,8 @@ inline double Eval_Diff_VDF_Elem<class Eval_Diff_VDF_var_Elem_aniso>::flux_faces
   double flux;
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
-  double d0 = la_zone->dist_face_elem0(face,n0);
-  double d1 = la_zone->dist_face_elem1(face,n1);
+  double d0 = Dist_face_elem0(face,n0);
+  double d1 = Dist_face_elem1(face,n1);
   int ori = orientation(face);
   double heq;
   if (nu_1(n0,ori)==0.0 && nu_1(n1,ori)==0.0)
@@ -1125,8 +1294,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(int face, double
 {
   int i = elem_(face,0);
   int j = elem_(face,1);
-  double d0 = la_zone->Dist_face_elem0(face,i);
-  double d1 = la_zone->Dist_face_elem1(face,j);
+  double d0 = Dist_face_elem0(face,i);
+  double d1 = Dist_face_elem1(face,j);
   assert(nu_1(i)!=0.0);
   assert(nu_1(j)!=0.0);
   double heq = compute_heq(d0,i,d1,j);
@@ -1140,8 +1309,8 @@ inline void Eval_Diff_VDF_Elem<class Eval_Diff_VDF_var_Elem_aniso>::coeffs_faces
 {
   int i = elem_(face,0);
   int j = elem_(face,1);
-  double d0 = la_zone->dist_face_elem0(face,i);
-  double d1 = la_zone->dist_face_elem1(face,j);
+  double d0 = Dist_face_elem0(face,i);
+  double d1 = Dist_face_elem1(face,j);
   int ori = orientation(face);
   double heq;
   if (nu_1(i,ori)==0.0 && nu_2(j,ori)==0.0)
@@ -1178,27 +1347,43 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
-  double dist = Dist_norm_bord_VEC(face);
+  double dist = Dist_norm_bord(face);
   if (n0 != -1)
-#ifdef ISQUASI
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (la_cl.val_imp(face-num1,k)-inco(n0,k))/dv_mvol(n0)
-                *surface(face)*porosite(face)*nu_1(n0,k)/dist;
-#else
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (la_cl.val_imp(face-num1,k)-inco(n0,k))
-                *surface(face)*porosite(face)*nu_1(n0,k)/dist;
-#endif
+    {
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //        for (k=0; k<flux.size(); k++)
+          //          flux(k) = (la_cl.val_imp(face-num1,k)-inco(n0,k))/dv_mvol(n0)
+          //                    *surface(face)*porosite(face)*nu_1(n0,k)/dist;
+        }
+      else
+        {
+          for (k=0; k<flux.size(); k++)
+            flux(k) = (la_cl.val_imp(face-num1,k)-inco(n0,k))
+                      *surface(face)*porosite(face)*nu_1(n0,k)/dist;
+        }
+    }
   else  // n1 != -1
-#ifdef ISQUASI
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (inco(n1,k)-la_cl.val_imp(face-num1,k))/dv_mvol(n1)
-                *surface(face)*porosite(face)*nu_1(n1,k)/dist;
-#else
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (inco(n1,k)-la_cl.val_imp(face-num1,k))
-                *surface(face)*porosite(face)*nu_1(n1,k)/dist;
-#endif
+    {
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //        for (k=0; k<flux.size(); k++)
+          //          flux(k) = (inco(n1,k)-la_cl.val_imp(face-num1,k))/dv_mvol(n1)
+          //                    *surface(face)*porosite(face)*nu_1(n1,k)/dist;
+        }
+      else
+        {
+          for (k=0; k<flux.size(); k++)
+            flux(k) = (inco(n1,k)-la_cl.val_imp(face-num1,k))
+                      *surface(face)*porosite(face)*nu_1(n1,k)/dist;
+        }
+    }
 }
 
 //// coeffs_face avec Dirichlet_entree_fluide
@@ -1209,7 +1394,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int, const Diric
   int k;
   int i = elem_(face,0);
   // int j = elem(face,1);
-  double dist = Dist_norm_bord_VEC(face);
+  double dist = Dist_norm_bord(face);
 
   if (i != -1)
     {
@@ -1235,7 +1420,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Dirichlet
   int i = elem_(face,0);
   //  int j = elem(face,1);
   int k;
-  double dist = Dist_norm_bord_VEC(face);
+  double dist = Dist_norm_bord(face);
 
   if (i != -1)
     for (k=0; k<flux.size(); k++)
@@ -1297,29 +1482,45 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
-  double dist = Dist_norm_bord_VEC(face);
+  double dist = Dist_norm_bord(face);
   if (n0 != -1)
-#ifdef ISQUASI
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (-inco(n0,k))
-                *surface(face)*porosite(face)*nu_1(n0,k)/dv_mvol(n0)/dist;
-#else
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (-inco(n0,k))
-                *surface(face)*porosite(face)*nu_1(n0,k)/dist;
-#endif
+    {
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //                for (k=0; k<flux.size(); k++)
+          //                  flux(k) = (-inco(n0,k))
+          //                            *surface(face)*porosite(face)*nu_1(n0,k)/dv_mvol(n0)/dist;
+        }
+      else
+        {
+          for (k=0; k<flux.size(); k++)
+            flux(k) = (-inco(n0,k))
+                      *surface(face)*porosite(face)*nu_1(n0,k)/dist;
+        }
+    }
   else  // n1 != -1
-#ifdef ISQUASI
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (inco(n1,k))
-                *surface(face)*porosite(face)*nu_1(n1,k)/dv_mvol(n1)/dist;
-#else
-    for (k=0; k<flux.size(); k++)
-      flux(k) = (inco(n1,k))
-                *surface(face)*porosite(face)*nu_1(n1,k)/dist;
-#endif
-}
+    {
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //                for (k=0; k<flux.size(); k++)
+          //                  flux(k) = (inco(n1,k))
+          //                            *surface(face)*porosite(face)*nu_1(n1,k)/dv_mvol(n1)/dist;
+        }
+      else
+        {
+          for (k=0; k<flux.size(); k++)
+            flux(k) = (inco(n1,k))
+                      *surface(face)*porosite(face)*nu_1(n1,k)/dist;
+        }
 
+    }
+}
 //// coeffs_face avec Dirichlet_paroi_fixe
 //
 template <typename DERIVED_T>
@@ -1329,18 +1530,27 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int num1, const 
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
-  double dist = Dist_norm_bord_VEC(face);
+  double dist = Dist_norm_bord(face);
   if (n0 != -1)
     {
-#ifdef ISQUASI
-      for (k=0; k<aii.size(); k++)
-        aii(k) =
-          surface(face)*porosite(face)*nu_1(n0,k)/dv_mvol(n0)/dist;
-#else
-      for (k=0; k<aii.size(); k++)
-        aii(k) =
-          surface(face)*porosite(face)*nu_1(n0,k)/dist;
-#endif
+
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //          for (k=0; k<aii.size(); k++)
+          //            aii(k) =
+          //              surface(face)*porosite(face)*nu_1(n0,k)/dv_mvol(n0)/dist;
+        }
+      else
+        {
+          for (k=0; k<aii.size(); k++)
+            aii(k) =
+              surface(face)*porosite(face)*nu_1(n0,k)/dist;
+        }
+
+
       for (k=0; k<aii.size(); k++)
         ajj(k) =0;
     }
@@ -1348,16 +1558,23 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int num1, const 
   else  // n1 != -1
     {
       if (n1==-1) Process::exit();
-#ifdef ISQUASI
-      for (k=0; k<ajj.size(); k++)
-        ajj(k) =
-          surface(face)*porosite(face)*nu_1(n1,k)/dv_mvol(n1)/dist;
-#else
-      for (k=0; k<ajj.size(); k++)
-        ajj(k) =
-          surface(face)*porosite(face)*nu_1(n1,k)/dist;
 
-#endif
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //          for (k=0; k<ajj.size(); k++)
+          //            ajj(k) =
+          //              surface(face)*porosite(face)*nu_1(n1,k)/dv_mvol(n1)/dist;
+        }
+      else
+        {
+          for (k=0; k<ajj.size(); k++)
+            ajj(k) =
+              surface(face)*porosite(face)*nu_1(n1,k)/dist;
+        }
+
       for (k=0; k<ajj.size(); k++)
         aii(k) =0.;
 
@@ -1385,10 +1602,12 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite)
   // La C.L fournit h_imp ; il faut calculer e/diffusivite
 
-#ifdef ISQUASI
-  Cerr<<__FILE__<< " QC BORD non code ligne "<<(int)__LINE__<<finl;
-  Process::exit();
-#endif
+  if (DERIVED_T::Is_Quasi)
+    {
+      Cerr<<__FILE__<< " QC BORD non code ligne "<<(int)__LINE__<<finl;
+      Process::exit();
+    }
+
   double h_total_inv,e;
   int k;
   //  int ori = orientation(face);
@@ -1499,10 +1718,13 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
                                                      const Echange_global_impose& la_cl,
                                                      int num1,DoubleVect& flux) const
 {
-#ifdef ISQUASI
-  Cerr<<__FILE__<< " QC BORD non code ligne "<<(int)__LINE__<<finl;
-  Process::exit();
-#endif
+
+  if (DERIVED_T::Is_Quasi)
+    {
+      Cerr<<__FILE__<< " QC BORD non code ligne "<<(int)__LINE__<<finl;
+      Process::exit();
+    }
+
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
   int k;
@@ -1698,19 +1920,28 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   double d0 = la_zone->dist_face_elem0_period(face,n0,la_cl.distance());
   double d1 = la_zone->dist_face_elem1_period(face,n1,la_cl.distance());
   double heq;
-#ifdef ISQUASI
-  for (int k=0; k<flux.size(); k++)
+
+  if (DERIVED_T::Is_Quasi)
     {
-      heq = compute_heq(d0,n0,d1,n1,k);
-      flux(k) = heq*(inco(n1,k)/dv_mvol(n1) - inco(n0,k)/dv_mvol(n0))*surface(face)*porosite(face);
+      //TODO : implement when Diff_K_Eps_QC is templatized
+      Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+      Process::exit();
+      //            for (int k=0; k<flux.size(); k++)
+      //              {
+      //                heq = compute_heq(d0,n0,d1,n1,k);
+      //                flux(k) = heq*(inco(n1,k)/dv_mvol(n1) - inco(n0,k)/dv_mvol(n0))*surface(face)*porosite(face);
+      //              }
     }
-#else
-  for (int k=0; k<flux.size(); k++)
+  else
     {
-      heq = compute_heq(d0,n0,d1,n1,k);
-      flux(k) = heq*(inco(n1,k) - inco(n0,k))*surface(face)*porosite(face);
+      for (int k=0; k<flux.size(); k++)
+        {
+          heq = compute_heq(d0,n0,d1,n1,k);
+          flux(k) = heq*(inco(n1,k) - inco(n0,k))*surface(face)*porosite(face);
+        }
     }
-#endif
+
+
 }
 
 //// coeffs_face avec Periodique
@@ -1756,17 +1987,25 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
 {
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
-  double d0 = la_zone->Dist_face_elem0(face,n0);
-  double d1 = la_zone->Dist_face_elem1(face,n1);
+  double d0 = Dist_face_elem0(face,n0);
+  double d1 = Dist_face_elem1(face,n1);
   double heq;
   for (int k=0; k<flux.size(); k++)
     {
       heq = compute_heq(d0,n0,d1,n1,k);
-#ifdef ISQUASI
-      flux(k) = heq*(inco(n1,k)/dv_mvol(n1) - inco(n0,k)/dv_mvol(n0))*surface(face)*porosite(face);
-#else
-      flux(k) = heq*(inco(n1,k) - inco(n0,k))*surface(face)*porosite(face);
-#endif
+
+      if (DERIVED_T::Is_Quasi)
+        {
+          //TODO : implement when Diff_K_Eps_QC is templatized
+          Cerr << "Diff_K_Eps_QC are not templatized yet !" << finl;
+          Process::exit();
+          //          flux(k) = heq*(inco(n1,k)/dv_mvol(n1) - inco(n0,k)/dv_mvol(n0))*surface(face)*porosite(face);
+        }
+      else
+        {
+          flux(k) = heq*(inco(n1,k) - inco(n0,k))*surface(face)*porosite(face);
+        }
+
     }
 }
 
@@ -1778,8 +2017,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(int face, Double
   int k;
   int i = elem_(face,0);
   int j = elem_(face,1);
-  double d0 = la_zone->Dist_face_elem0(face,i);
-  double d1 = la_zone->Dist_face_elem1(face,j);
+  double d0 = Dist_face_elem0(face,i);
+  double d1 = Dist_face_elem1(face,j);
   double heq;
   for ( k=0; k<aii.size(); k++)
     {
@@ -1805,19 +2044,5 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_faces_interne( int, DoubleVect
       flux(k)=0.;
     }
 }
-
-
-// TODO TODO FIXME : all this should become CRTP member functions as above
-#undef DEQUIV
-#undef MULTD
-#undef D_AXI
-#undef Dist_face_elem0
-#undef Dist_face_elem1
-#undef Dist_norm_bord_externe
-#undef Dist_norm_bord_externe_
-#undef Dist_norm_bord
-#undef MODIF_DEQ
-#undef ISQUASI
-
 
 #endif
