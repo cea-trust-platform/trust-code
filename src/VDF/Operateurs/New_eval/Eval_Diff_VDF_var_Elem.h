@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Eval_Diff_VDF_var_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Eval_Diff_VDF_var_Elem_included
 #define Eval_Diff_VDF_var_Elem_included
@@ -30,22 +37,8 @@
 // .SECTION voir aussi Eval_Diff_VDF_var
 
 class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>,
-                               public Eval_Diff_VDF_var2
+  public Eval_Diff_VDF_var2
 {
 };
-
-//// DEBUT DES DEFINES
-//#define CLASSNAME Eval_Diff_VDF_var_Elem
-//#define f_heq_old(d0,i,d1,j,k) heq=1./(d0/dt_diffusivite(i,k) + d1/dt_diffusivite(j,k))
-//#define nu_1(i) dv_diffusivite(i)
-//#define nu_2(i) dv_diffusivite(i)
-//#define f_heq(d0,i,d1,j) heq=1./(d0/nu_2(i) + d1/nu_2(j))
-//#define MULTD
-//#undef D_AXI
-//// FIN DES DEFINES
-//#include <Cal_std.h>
-//#include <Scal_corps_base.h>
-//#include <Vect_corps_base_inut.h>
-//
 
 #endif

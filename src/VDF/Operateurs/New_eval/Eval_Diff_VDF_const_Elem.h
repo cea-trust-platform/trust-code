@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Eval_Diff_VDF_const_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Eval_Diff_VDF_const_Elem_included
 #define Eval_Diff_VDF_const_Elem_included
@@ -31,20 +38,8 @@
 
 
 class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem>,
-                                 public Eval_Diff_VDF_const2
+  public Eval_Diff_VDF_const2
 {
 };
-
-//// DEBUT DES DEFINES
-//#define CLASSNAME Eval_Diff_VDF_const_Elem
-//#define nu_1(i) db_diffusivite
-//#define nu_2(i) db_diffusivite
-//#define f_heq(d0,i,d1,j) heq=db_diffusivite/(d0+d1)
-//#define MULTD
-//#undef D_AXI
-//// FIN DES DEFINES
-//#include <Cal_std.h>
-//#include <Scal_corps_base.h>
-//#include <Vect_corps_base_inut.h>
 
 #endif

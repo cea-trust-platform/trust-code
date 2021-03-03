@@ -45,7 +45,7 @@ public:
   int calculer_arete_symetrie_paroi() const;
   int calculer_arete_symetrie_fluide() const;
   void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int,
-                                          double&, double&) const
+                                  double&, double&) const
   {
     ;
   }
@@ -54,12 +54,12 @@ public:
     return 0.;
   }
   void flux_arete_symetrie_fluide(const DoubleTab&, int, int,
-                                          int, int, DoubleVect&, DoubleVect&) const
+                                  int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
   void flux_arete_symetrie_paroi(const DoubleTab&, int, int,
-                                         int, int, DoubleVect& ) const
+                                 int, int, DoubleVect& ) const
   {
     ;
   }
@@ -96,37 +96,37 @@ public:
     ;
   }
   void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&,
-                                       double& aii, double& ajj ) const
+                               double& aii, double& ajj ) const
   {
     ;
   }
   void coeffs_arete_interne(int, int, int, int,
-                                    double& aii, double& ajj) const
+                            double& aii, double& ajj) const
   {
     ;
   }
   void coeffs_arete_mixte(int, int, int, int,
-                                  double& aii, double& ajj) const
+                          double& aii, double& ajj) const
   {
     ;
   }
   void coeffs_arete_symetrie(int, int, int, int,
-                                     double& aii1_2, double& aii3_4, double& ajj1_2) const
+                             double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_paroi(int, int, int, int,
-                                  double& aii1_2, double& aii3_4, double& ajj1_2) const
+                          double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_fluide(int, int, int, int,
-                                   double& aii1_2, double& aii3_4, double& ajj1_2) const
+                           double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_paroi_fluide(int, int, int, int,
-                                         double& aii1_2, double& aii3_4, double& ajj1_2) const
+                                 double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
@@ -136,17 +136,17 @@ public:
     ;
   }
   void coeffs_arete_periodicite(int, int, int, int,
-                                        double& aii, double& ajj) const
+                                double& aii, double& ajj) const
   {
     ;
   }
   void coeffs_arete_symetrie_paroi(int, int, int, int,
-                                           double& aii1_2, double& aii3_4, double& ajj1_2) const
+                                   double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_symetrie_fluide(int, int, int, int,
-                                            double& aii1_2, double& aii3_4, double& ajj1_2) const
+                                    double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
@@ -215,32 +215,32 @@ public:
     ;
   }
   void coeffs_arete_interne(int, int, int, int,
-                                    DoubleVect& aii, DoubleVect& ajj) const
+                            DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
   void coeffs_arete_mixte(int, int, int, int,
-                                  DoubleVect& aii, DoubleVect& ajj) const
+                          DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
   void coeffs_arete_symetrie(int, int, int, int,
-                                     DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                             DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_paroi(int, int, int, int,
-                                  DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                          DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_fluide(int, int, int, int,
-                                   DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                           DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_paroi_fluide(int, int, int, int,
-                                         DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                                 DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
@@ -250,17 +250,17 @@ public:
     ;
   }
   void coeffs_arete_periodicite(int, int, int, int,
-                                        DoubleVect& aii, DoubleVect& ajj) const
+                                DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
   void coeffs_arete_symetrie_paroi(int, int, int, int,
-                                           DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                                   DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
   void coeffs_arete_symetrie_fluide(int, int, int, int,
-                                            DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                                    DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }

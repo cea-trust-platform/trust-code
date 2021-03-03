@@ -14,34 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF_Multi_inco_const_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     /main/12
+// File:        Op_Diff_VDF_var_Elem_aniso.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Op_Diff_VDF_var_Elem_aniso.h>
+
+// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.cpp
+
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso,"Op_Diff_VDFANISOTROPE_var_P0_VDF",Op_Diff_VDF_Elem_base2);
+
+implemente_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
 
 
-#ifndef Eval_Diff_VDF_Multi_inco_const_Elem_included
-#define Eval_Diff_VDF_Multi_inco_const_Elem_included
-
-#include <Eval_Diff_VDF_Multi_inco_const2.h>
-#include <Eval_Diff_VDF_Elem.h>
-
+//// printOn
 //
-// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const_Elem
-//
-// Evaluateur VDF pour la diffusion
-// Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
-// Il y a une diffusivite par inconnue
-// Le champ de diffusivite associe a chaque inconnue est constant.
 
-//
-// .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
-class Eval_Diff_VDF_Multi_inco_const_Elem :
-  public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem>,
-  public Eval_Diff_VDF_Multi_inco_const2
+Sortie& Op_Diff_VDF_var_Elem_aniso::printOn(Sortie& s ) const
 {
-};
+  return s << que_suis_je() ;
+}
 
-#endif
+
+//// readOn
+//
+
+Entree& Op_Diff_VDF_var_Elem_aniso::readOn(Entree& s )
+{
+  return s ;
+}
+
+//
+// Fonctions inline de la classe Op_Diff_VDF_var_Elem_aniso
+//
+// Description:
+// constructeur
+Op_Diff_VDF_var_Elem_aniso::Op_Diff_VDF_var_Elem_aniso() :
+  Op_Diff_VDF_Elem_base2(It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)())
+{
+}

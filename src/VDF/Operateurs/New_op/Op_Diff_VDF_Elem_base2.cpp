@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Elem_base2.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -125,8 +125,8 @@ double Op_Diff_VDF_Elem_base2::calculer_dt_stab() const
 // Description:
 // complete l'iterateur et l'evaluateur
 void Op_Diff_VDF_Elem_base2::associer(const Zone_dis& zone_dis,
-                                     const Zone_Cl_dis& zone_cl_dis,
-                                     const Champ_Inc& ch_diffuse)
+                                      const Zone_Cl_dis& zone_cl_dis,
+                                      const Champ_Inc& ch_diffuse)
 {
   const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());

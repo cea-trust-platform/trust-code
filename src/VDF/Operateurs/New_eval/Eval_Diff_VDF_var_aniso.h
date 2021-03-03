@@ -15,16 +15,15 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Diff_VDF_var_aniso.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/11
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Eval_Diff_VDF_var_aniso_included
 #define Eval_Diff_VDF_var_aniso_included
 
-#include <Eval_Diff_VDF.h>
+#include <Eval_Diff_VDF2.h>
 #include <Ref_Champ_base.h>
 #include <Champ_base.h>
 #include <Champ_Uniforme.h>
@@ -38,33 +37,47 @@
 
 //.SECTION voir aussi Evaluateur_VDF
 
-class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF
+class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF2
 {
 
 public:
 
-  inline Eval_Diff_VDF_var_aniso();
   inline void associer(const Champ_base& );
   inline void mettre_a_jour( );
-  inline const Champ_base& diffusivite() const;
-  inline const Champ_base& get_diffusivite() const;
+
+  inline const Champ_base& get_diffusivite() const
+  {
+    assert(diffusivite_.non_nul());
+    return diffusivite_.valeur();
+  }
+
+  // Methods used by the flux computation in template class:
+  inline double nu_1_impl(int i, int j) const
+  {
+    return dt_diffusivite(i,j);
+  }
+
+  inline double nu_2_impl(int i, int j) const
+  {
+    return dt_diffusivite(i,j);
+  }
+
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int k) const
+  {
+    return 1./(d0/dt_diffusivite(i,k) + d1/dt_diffusivite(j,k));
+  }
+
 
 protected:
 
   REF(Champ_base) diffusivite_;
   DoubleTab dt_diffusivite;
-  inline double dist_face(int, int, int) const;
-  inline double dist_face_period(int, int, int) const;
+
 };
 
 //
 //  Fonctions inline de la classe Eval_Diff_VDF_var_aniso
 //
-// Description:
-// constructeur par defaut
-inline Eval_Diff_VDF_var_aniso::Eval_Diff_VDF_var_aniso()
-{
-}
 
 // Description:
 // associe le champ de diffusivite
@@ -89,32 +102,5 @@ inline void Eval_Diff_VDF_var_aniso::mettre_a_jour( )
   (diffusivite_->valeurs().echange_espace_virtuel());
   dt_diffusivite.ref(diffusivite_->valeurs());
 }
-
-// Description:
-// renvoie la distance entre les faces fac1 et fac2 dans la direction k
-inline double Eval_Diff_VDF_var_aniso::dist_face(int fac1, int fac2, int k) const
-{
-  return la_zone->dist_face(fac1, fac2, k);
-}
-
-// Description:
-// renvoie la distance entre les faces fac1 et fac2 de part et d'autre
-// d'une condition aux limites de periodicite dans la direction k
-inline double Eval_Diff_VDF_var_aniso::dist_face_period(int fac1, int fac2, int k) const
-{
-  return la_zone->dist_face_period(fac1, fac2, k);
-}
-
-inline const Champ_base& Eval_Diff_VDF_var_aniso::diffusivite() const
-{
-  assert(diffusivite_.non_nul());
-  return diffusivite_.valeur();
-}
-
-inline const Champ_base&  Eval_Diff_VDF_var_aniso::get_diffusivite() const
-{
-  return diffusivite();
-}
-
 
 #endif

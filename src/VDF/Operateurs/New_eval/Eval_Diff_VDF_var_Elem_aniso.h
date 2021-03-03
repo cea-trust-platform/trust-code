@@ -14,44 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_var_Elem_aniso.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/13
+// File:        Eval_Diff_VDF_var_Elem_aniso.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_var_Elem_aniso.h>
+#ifndef Eval_Diff_VDF_var_Elem_aniso_included
+#define Eval_Diff_VDF_var_Elem_aniso_included
 
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.cpp
+#include <Eval_Diff_VDF_var_aniso.h>
+#include <Eval_Diff_VDF_Elem.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso,"Op_Diff_VDFANISOTROPE_var_P0_VDF",Op_Diff_VDF_Elem_base);
-
-implemente_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
-
-
-//// printOn
 //
+// .DESCRIPTION class Eval_Diff_VDF_var_Elem_aniso
+//
+// Evaluateur VDF pour la diffusion
+// Le champ diffuse est scalaire (Champ_P0_VDF)
+// Le champ de diffusivite n'est pas constant.
 
-Sortie& Op_Diff_VDF_var_Elem_aniso::printOn(Sortie& s ) const
+//
+// .SECTION voir aussi Eval_Diff_VDF_var_aniso
+
+class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>,
+  public Eval_Diff_VDF_var_aniso
 {
-  return s << que_suis_je() ;
-}
+};
 
-
-//// readOn
-//
-
-Entree& Op_Diff_VDF_var_Elem_aniso::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_var_Elem_aniso
-//
-// Description:
-// constructeur
-Op_Diff_VDF_var_Elem_aniso::Op_Diff_VDF_var_Elem_aniso() :
-  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)())
-{
-}
+#endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Diff_VDF_Multi_inco_var_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -37,20 +37,9 @@
 
 //.SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
 class Eval_Diff_VDF_Multi_inco_var_Elem :
-      public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>,
-      public Eval_Diff_VDF_Multi_inco_var2
+  public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>,
+  public Eval_Diff_VDF_Multi_inco_var2
 {
 };
-
-//// DEBUT DES DEFINES
-//#define CLASSNAME Eval_Diff_VDF_Multi_inco_var_Elem
-//#define nu_1(i,k) dt_diffusivite(i,k)
-//#define nu_2(i,k) dt_diffusivite(i,k)
-//#define f_heq(d0,i,d1,j,k) heq=1./(d0/nu_2(i,k) + d1/nu_2(j,k))
-//#undef D_AXI
-//// FIN DES DEFINES
-//#include <Cal_std.h>
-//#include <Scal_corps_base_inut.h>
-//#include <Vect_corps_base.h>
 
 #endif

@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_var_Elem_aniso.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@
 #ifndef Op_Diff_VDF_var_Elem_aniso_included
 #define Op_Diff_VDF_var_Elem_aniso_included
 
-#include <Op_Diff_VDF_Elem_base.h>
+#include <Op_Diff_VDF_Elem_base2.h>
 #include <ItVDFEl.h>
 #include <Eval_Diff_VDF_var_Elem_aniso.h>
 #include <Op_VDF_Elem.h>
@@ -57,7 +57,7 @@ declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_var_Elem_aniso : public Op_Diff_VDF_Elem_base
+class Op_Diff_VDF_var_Elem_aniso : public Op_Diff_VDF_Elem_base2
 {
 
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso);
@@ -67,19 +67,19 @@ public:
   Op_Diff_VDF_var_Elem_aniso();
   inline Op_Diff_VDF_var_Elem_aniso(const Iterateur_VDF_base&);
 protected:
-  inline Eval_VDF_Elem& get_eval_elem();
+  inline Eval_VDF_Elem2& get_eval_elem();
 };
 
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
 inline Op_Diff_VDF_var_Elem_aniso::Op_Diff_VDF_var_Elem_aniso(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
+  : Op_Diff_VDF_Elem_base2(iterateur)
 {
 }
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem& Op_Diff_VDF_var_Elem_aniso::get_eval_elem()
+inline Eval_VDF_Elem2& Op_Diff_VDF_var_Elem_aniso::get_eval_elem()
 {
   Eval_Diff_VDF_var_Elem_aniso& eval_diff = (Eval_Diff_VDF_var_Elem_aniso&) iter.evaluateur();
-  return (Eval_VDF_Elem&) eval_diff;
+  return (Eval_VDF_Elem2&) eval_diff;
 }
 #endif
