@@ -164,26 +164,6 @@ protected :
 
 };
 
-class Solv_Petsc_GPU : public Solv_Petsc
-{
-  Declare_instanciable_sans_constructeur(Solv_Petsc_GPU);
-public :
-  inline Solv_Petsc_GPU()
-  {
-    gpu_=true;
-  };
-};
-
-class Solv_Petsc_AMGX : public Solv_Petsc
-{
-  Declare_instanciable_sans_constructeur(Solv_Petsc_AMGX);
-public :
-  inline Solv_Petsc_AMGX()
-  {
-    amgx_=true;
-  };
-};
-
 #define NB_IT_MAX_DEFINED 10000
 
 inline Solv_Petsc::Solv_Petsc()

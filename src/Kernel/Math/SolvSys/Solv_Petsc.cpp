@@ -46,9 +46,6 @@
 #include <map>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
-Implemente_instanciable_sans_constructeur(Solv_Petsc_GPU,"Solv_Petsc_GPU",Solv_Petsc);
-Implemente_instanciable_sans_constructeur(Solv_Petsc_AMGX,"Solv_Petsc_AMGX",Solv_Petsc);
-
 
 // printOn
 Sortie& Solv_Petsc::printOn(Sortie& s ) const
@@ -59,34 +56,6 @@ Sortie& Solv_Petsc::printOn(Sortie& s ) const
 
 // readOn
 Entree& Solv_Petsc::readOn(Entree& is)
-{
-  create_solver(is);
-  return is;
-}
-
-// printOn
-Sortie& Solv_Petsc_GPU::printOn(Sortie& s ) const
-{
-  s << chaine_lue_;
-  return s;
-}
-
-// readOn
-Entree& Solv_Petsc_GPU::readOn(Entree& is)
-{
-  create_solver(is);
-  return is;
-}
-
-// printOn
-Sortie& Solv_Petsc_AMGX::printOn(Sortie& s ) const
-{
-  s << chaine_lue_;
-  return s;
-}
-
-// readOn
-Entree& Solv_Petsc_AMGX::readOn(Entree& is)
 {
   create_solver(is);
   return is;
@@ -1857,7 +1826,7 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   if (matrice_symetrique_ && type_pc_=="hypre")
     preconditionnement_non_symetrique_=1;
 
-  if (preconditionnement_non_symetrique_)
+  if (preconditionnement_non_symetrique_ && !amgx_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
 
   // Creation de la matrice Petsc si necessaire
