@@ -66,8 +66,8 @@ void Solv_Petsc_AMGX::Create_objects(const Matrice_Morse& mat, const DoubleVect&
 }
 int Solv_Petsc_AMGX::solve(ArrOfDouble& residu)
 {
+    int nbiter = -1;
 #ifdef PETSC_HAVE_CUDA
-  int nbiter = -1;
   SolveurAmgX_.solve(SolutionPetsc_, SecondMembrePetsc_);
   SolveurAmgX_.getIters(nbiter);
   if (limpr() > -1)
@@ -75,6 +75,6 @@ int Solv_Petsc_AMGX::solve(ArrOfDouble& residu)
       SolveurAmgX_.getResidual(0, residu(0));
       SolveurAmgX_.getResidual(nbiter - 1, residu(nbiter));
     }
-  return nbiter;
 #endif
+    return nbiter;
 }
