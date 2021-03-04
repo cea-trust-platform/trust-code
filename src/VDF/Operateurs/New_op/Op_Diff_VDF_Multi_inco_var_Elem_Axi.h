@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Multi_inco_Elem_Axi.h
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
+// File:        Op_Diff_VDF_Multi_inco_var_Elem_Axi.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Diff_VDF_Multi_inco_Elem_Axi_included
-#define Op_Diff_VDF_Multi_inco_Elem_Axi_included
+#ifndef Op_Diff_VDF_Multi_inco_var_Elem_Axi_included
+#define Op_Diff_VDF_Multi_inco_var_Elem_Axi_included
 
-#include <Op_Diff_VDF_Elem_base.h>
+#include <Op_Diff_VDF_Elem_base2.h>
 #include <ItVDFEl.h>
-#include <Eval_Diff_VDF_Multi_inco_const_Elem_Axi.h>
+#include <Eval_Diff_VDF_Multi_inco_var_Elem_Axi.h>
 #include <Op_VDF_Elem.h>
 
 //
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_Elem_Axi
+// .DESCRIPTION class Op_Diff_VDF_Multi_inco_var_Elem_Axi
 //
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  transport.
@@ -45,41 +45,38 @@
 //
 //
 
-
-// DO NOT EDIT  THIS FILE BUT  DiVDFmiElAxC.h.h
-//
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)
-
+declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem_Axi)
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Diff_VDF_Multi_inco_Elem_Axi
+// CLASS: Op_Diff_VDF_Multi_inco_var_Elem_Axi
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Multi_inco_Elem_Axi : public Op_Diff_VDF_Elem_base
+class Op_Diff_VDF_Multi_inco_var_Elem_Axi : public Op_Diff_VDF_Elem_base2
 {
 
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi);
+  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem_Axi);
 
 public:
 
-  Op_Diff_VDF_Multi_inco_Elem_Axi();
-  inline Op_Diff_VDF_Multi_inco_Elem_Axi(const Iterateur_VDF_base&);
+  Op_Diff_VDF_Multi_inco_var_Elem_Axi();
+  inline Op_Diff_VDF_Multi_inco_var_Elem_Axi(const Iterateur_VDF_base&);
 protected:
-  inline Eval_VDF_Elem& get_eval_elem();
+  inline Eval_VDF_Elem2& get_eval_elem();
 };
 
 // Ce constructeur permet de creer des classes filles des evalateurs
-// (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_Elem_Axi_temp_FTBM)
-inline Op_Diff_VDF_Multi_inco_Elem_Axi::Op_Diff_VDF_Multi_inco_Elem_Axi(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
+// (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_var_Elem_Axi_temp_FTBM)
+inline Op_Diff_VDF_Multi_inco_var_Elem_Axi::Op_Diff_VDF_Multi_inco_var_Elem_Axi(const Iterateur_VDF_base& iterateur)
+  : Op_Diff_VDF_Elem_base2(iterateur)
 {
 }
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem& Op_Diff_VDF_Multi_inco_Elem_Axi::get_eval_elem()
+inline Eval_VDF_Elem2& Op_Diff_VDF_Multi_inco_var_Elem_Axi::get_eval_elem()
 {
-  Eval_Diff_VDF_Multi_inco_const_Elem_Axi& eval_diff = (Eval_Diff_VDF_Multi_inco_const_Elem_Axi&) iter.evaluateur();
-  return (Eval_VDF_Elem&) eval_diff;
+  Eval_Diff_VDF_Multi_inco_var_Elem_Axi& eval_diff = dynamic_cast<Eval_Diff_VDF_Multi_inco_var_Elem_Axi&> (iter.evaluateur());
+  return eval_diff;
 }
-#endif
+
+#endif /* Op_Diff_VDF_Multi_inco_var_Elem_Axi_included */

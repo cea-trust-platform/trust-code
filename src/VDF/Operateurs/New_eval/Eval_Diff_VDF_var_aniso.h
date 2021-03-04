@@ -103,4 +103,4 @@ inline void Eval_Diff_VDF_var_aniso::mettre_a_jour( )
   dt_diffusivite.ref(diffusivite_->valeurs());
 }
 
-#endif
+#endif /* Eval_Diff_VDF_var_aniso_included */

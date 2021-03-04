@@ -45,11 +45,7 @@
 //
 //
 
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.h
-//
 declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -79,7 +75,8 @@ inline Op_Diff_VDF_var_Elem_aniso::Op_Diff_VDF_var_Elem_aniso(const Iterateur_VD
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
 inline Eval_VDF_Elem2& Op_Diff_VDF_var_Elem_aniso::get_eval_elem()
 {
-  Eval_Diff_VDF_var_Elem_aniso& eval_diff = (Eval_Diff_VDF_var_Elem_aniso&) iter.evaluateur();
-  return (Eval_VDF_Elem2&) eval_diff;
+  Eval_Diff_VDF_var_Elem_aniso& eval_diff = dynamic_cast<Eval_Diff_VDF_var_Elem_aniso&> (iter.evaluateur());
+  return eval_diff;
 }
-#endif
+
+#endif /* Op_Diff_VDF_var_Elem_aniso_included */

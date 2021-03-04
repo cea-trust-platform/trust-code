@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,12 +14,36 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF_var_Elem_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs/Evaluateurs
-// Version:     /main/3
+// File:        Eval_Diff_VDF_Multi_inco_const_Elem_Axi.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
+#ifndef Eval_Diff_VDF_Multi_inco_const_Elem_Axi_included
+#define Eval_Diff_VDF_Multi_inco_const_Elem_Axi_included
 
-// Toutes les methodes sont en ligne
+#include <Eval_Diff_VDF_Multi_inco_const2.h>
+#include <Eval_Diff_VDF_Elem.h>
+
+//
+// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const_Elem_Axi
+//
+// Evaluateur VDF pour la diffusion en coordonnees cylindriques
+// Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
+// Il y a une diffusivite par inconnue
+// Le champ de diffusivite associe a chaque inconnue est constant.
+
+// .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
+class Eval_Diff_VDF_Multi_inco_const_Elem_Axi :
+  public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem_Axi>,
+  public Eval_Diff_VDF_Multi_inco_const2
+{
+
+public:
+  static constexpr bool Is_Multd = false;
+  static constexpr bool Is_Axi = true;
+};
+
+#endif /* Eval_Diff_VDF_Multi_inco_const_Elem_Axi_included */

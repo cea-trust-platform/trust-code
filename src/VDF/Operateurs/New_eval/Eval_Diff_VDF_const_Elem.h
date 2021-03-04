@@ -42,4 +42,4 @@ class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_E
 {
 };
 
-#endif
+#endif /* Eval_Diff_VDF_const_Elem_included */

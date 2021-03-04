@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,9 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF_const.h
+// File:        Eval_Diff_VDF_const2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,10 +53,10 @@ public:
   inline void associer(const Champ_base& );
 
   inline const Champ_base& get_diffusivite() const
-   {
-     assert(diffusivite_.non_nul());
-     return diffusivite_.valeur();
-   }
+  {
+    assert(diffusivite_.non_nul());
+    return diffusivite_.valeur();
+  }
 
   inline void mettre_a_jour( );
 
@@ -96,5 +98,4 @@ inline void Eval_Diff_VDF_const2::mettre_a_jour( )
   db_diffusivite = diffusivite_.valeur()(0,0);
 }
 
-
-#endif
+#endif /* Eval_Diff_VDF_const2_included */

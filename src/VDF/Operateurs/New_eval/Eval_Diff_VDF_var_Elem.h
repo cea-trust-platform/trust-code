@@ -41,4 +41,4 @@ class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>
 {
 };
 
-#endif
+#endif /* Eval_Diff_VDF_var_Elem_included */

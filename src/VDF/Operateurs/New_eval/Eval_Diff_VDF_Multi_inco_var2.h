@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Diff_VDF_Multi_inco_var2.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -91,4 +91,5 @@ inline const Champ_base& Eval_Diff_VDF_Multi_inco_var2::get_diffusivite() const
 {
   return diffusivite_;
 }
-#endif
+
+#endif /* Eval_Diff_VDF_Multi_inco_var2_included */

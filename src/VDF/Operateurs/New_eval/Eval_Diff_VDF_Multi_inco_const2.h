@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Eval_Diff_VDF_Multi_inco_const2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef Eval_Diff_VDF_Multi_inco_const2_included
@@ -35,7 +42,6 @@ class Champ_base;
 //
 // .SECTION voir aussi Evaluateur_VDF
 //
-
 
 class Eval_Diff_VDF_Multi_inco_const2 : public Eval_Diff_VDF2
 {
@@ -79,4 +85,4 @@ inline const Champ_base& Eval_Diff_VDF_Multi_inco_const2::get_diffusivite() cons
   return diffusivite_;
 }
 
-#endif
+#endif /* Eval_Diff_VDF_Multi_inco_const2_included */

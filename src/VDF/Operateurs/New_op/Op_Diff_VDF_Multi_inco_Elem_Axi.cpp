@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,11 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF_Multi_inco_const_Elem_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs/Evaluateurs
-// Version:     /main/1
+// File:        Op_Diff_VDF_Multi_inco_Elem_Axi.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// Toutes les methodes sont en ligne
+#include <Op_Diff_VDF_Multi_inco_Elem_Axi.h>
 
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi,"Op_Diff_VDF_Multi_inco_const_P0_VDF_Axi",Op_Diff_VDF_Elem_base2);
+implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)
+
+Sortie& Op_Diff_VDF_Multi_inco_Elem_Axi::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}
+
+Entree& Op_Diff_VDF_Multi_inco_Elem_Axi::readOn(Entree& s )
+{
+  return s ;
+}
+
+//
+// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_Elem_Axi
+//
+// Description:
+// constructeur
+Op_Diff_VDF_Multi_inco_Elem_Axi::Op_Diff_VDF_Multi_inco_Elem_Axi() :
+  Op_Diff_VDF_Elem_base2(
+    It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)())
+{
+}

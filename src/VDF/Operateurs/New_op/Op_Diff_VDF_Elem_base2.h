@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Elem_base2.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -99,4 +99,4 @@ inline void Op_Diff_VDF_Elem_base2::modifier_pour_Cl(Matrice_Morse& matrice, Dou
   Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
 
-#endif
+#endif /* Op_Diff_VDF_Elem_base2_included */

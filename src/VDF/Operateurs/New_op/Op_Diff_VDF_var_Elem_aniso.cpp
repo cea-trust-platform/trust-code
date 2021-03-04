@@ -22,24 +22,13 @@
 
 #include <Op_Diff_VDF_var_Elem_aniso.h>
 
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElVr.h.cpp
-
 Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso,"Op_Diff_VDFANISOTROPE_var_P0_VDF",Op_Diff_VDF_Elem_base2);
-
 implemente_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
-
-
-//// printOn
-//
 
 Sortie& Op_Diff_VDF_var_Elem_aniso::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Op_Diff_VDF_var_Elem_aniso::readOn(Entree& s )
 {

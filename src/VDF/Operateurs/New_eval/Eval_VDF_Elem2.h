@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,9 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
+// File:        Eval_VDF_Elem2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -66,4 +69,5 @@ protected:
   REF(Champ_base) inconnue;
 
 };
-#endif
+
+#endif /* Eval_VDF_Elem2_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -45,11 +45,7 @@
 //
 //
 
-
-// DO NOT EDIT  THIS FILE BUT  OpDifVDFElCs.h.h
-//
 declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -82,4 +78,5 @@ inline Eval_VDF_Elem2& Op_Diff_VDF_Elem::get_eval_elem()
   Eval_Diff_VDF_const_Elem& eval_diff = dynamic_cast<Eval_Diff_VDF_const_Elem&>( iter.evaluateur());
   return eval_diff;
 }
-#endif
+
+#endif /* Op_Diff_VDF_Elem_included */

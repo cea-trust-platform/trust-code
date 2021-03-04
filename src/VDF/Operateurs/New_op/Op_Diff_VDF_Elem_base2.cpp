@@ -32,18 +32,10 @@
 Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base2,"Op_Diff_VDF_Elem_base2",Op_Diff_VDF_base);
 
 
-
-//// printOn
-//
-
 Sortie& Op_Diff_VDF_Elem_base2::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Op_Diff_VDF_Elem_base2::readOn(Entree& s )
 {

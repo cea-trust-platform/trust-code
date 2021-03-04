@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,44 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Elem_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
-// Version:     /main/11
+// File:        Eval_Diff_VDF_const_Elem_Axi.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Elem_Axi.h>
 
-// DO NOT EDIT  THIS FILE BUT  DifVDFElAxiC.h.cpp
+#ifndef Eval_Diff_VDF_const_Elem_Axi_included
+#define Eval_Diff_VDF_const_Elem_Axi_included
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi,"Op_Diff_VDF_const_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
+#include <Eval_Diff_VDF_const2.h>
+#include <Eval_Diff_VDF_Elem.h>
 
-implemente_It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)
-
-
-//// printOn
 //
+// .DESCRIPTION class Eval_Diff_VDF_const_Elem_Axi
+//
+// Evaluateur VDF pour la diffusion en coordonnees cylindriques
+// Le champ diffuse est scalaire (Champ_P0_VDF)
+// Le champ de diffusivite est constant.
 
-Sortie& Op_Diff_VDF_Elem_Axi::printOn(Sortie& s ) const
+//
+// .SECTION voir aussi Eval_Diff_VDF_const
+
+
+class Eval_Diff_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem_Axi>,
+  public Eval_Diff_VDF_const2
 {
-  return s << que_suis_je() ;
-}
+public:
+  static constexpr bool Is_Axi = true;
+};
 
-
-//// readOn
-//
-
-Entree& Op_Diff_VDF_Elem_Axi::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_Elem_Axi
-//
-// Description:
-// constructeur
-Op_Diff_VDF_Elem_Axi::Op_Diff_VDF_Elem_Axi() :
-  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)())
-{
-}
+#endif /* Eval_Diff_VDF_const_Elem_Axi_included */

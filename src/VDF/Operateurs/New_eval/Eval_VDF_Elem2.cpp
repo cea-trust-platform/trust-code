@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,10 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
+// File:        Eval_VDF_Elem2.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     1
+//
 //////////////////////////////////////////////////////////////////////////////
 #include <Champ_P0_VDF.h>
 #include <Eval_VDF_Elem2.h>
@@ -23,5 +27,3 @@ void Eval_VDF_Elem2::associer_inconnue(const Champ_base& inco)
   assert(sub_type(Champ_P0_VDF,inco));
   inconnue=inco;
 }
-
-
