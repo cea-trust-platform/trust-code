@@ -9,6 +9,7 @@ ROOT=`pwd`
    do
       [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
    done
+   [ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs # Ajout sur orcus
 log=$ROOT/perf_$LIB.log && rm -f $log
 rm -r -f $LIB
 if [ $LIB = AmgX ]
@@ -48,6 +49,9 @@ then
    BUILD=RELEASE
    CMAKE_CXX_FLAGS="" && [ "$PETSC_HAVE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
+   # On specifie CC et CXX car si HPC SDK, nvc et nvc++ pris a la place (orcus):
+   export CC=$TRUST_cc
+   export CXX=$TRUST_CC
    cmake $CMAKE_CXX_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit

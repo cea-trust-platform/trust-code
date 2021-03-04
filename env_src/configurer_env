@@ -350,13 +350,14 @@ check_nvidia_cuda()
    # -Drivers NVidia installed
    # -Cuda Compilateur nvcc found or installed
    # Plusieurs installations possibles:
-   # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
    # Runtime : CUDA_ROOT=/usr			$CUDA_ROOT/include/cuda/cuda.h !
+   # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
+   # SDK     : CUDA_ROOT=/opt/nvidia/hpc_sdk	$CUDA_ROOT/include
    [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
-   nvcc="`\ls $NVHPC/Linux_x86_64/*/compilers/bin/nvcc $CUDA_PATH/bin/nvcc $CUDA_ROOT/bin/nvcc /usr/bin/nvcc /bin/nvcc /usr/local/*/bin/nvcc 2>/dev/null | head -1`"
    ################
    # Detection nvcc
    ################
+   e="`cherche_file nvcc nvcc`";eval $e
    if [ "`$nvcc --version 2>/dev/null`" != "" ]
    then
       echo "Cuda compiler nvcc: $nvcc"
@@ -368,12 +369,12 @@ check_nvidia_cuda()
       echo "See more there: https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7"
       exit -1
    fi
-   ################
-   # Detection CUDA
-   ################
+   #########################
+   # Detection CUDA run time
+   #########################
    if [ "$NVHPC" != "" ]
    then
-      CUDA_LIB=`ls $NVHPC/Linux_x86_64/*/cuda/lib*/libcudart.so.*.* 2>/dev/null | head -1` # Orcus
+      CUDA_LIB=`ls $NVHPC/Linux_x86_64/*/cuda/lib*/libcudart.so.*.* 2>/dev/null | head -1` # Orcus Nvidia HPC SDK
    elif [ "$CUDA_PATH" != "" ]
    then
       CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null | head -1` # JeanZay

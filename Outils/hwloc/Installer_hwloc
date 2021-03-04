@@ -19,7 +19,7 @@ rm -f $package.tar
 install=$TRUST_ROOT/exec/hwloc
 cd $package
 unset MV # Car defini sur une certaine machine (kolmo)
-./configure --prefix=$install 1>hwloc.log 2>&1 || exit -1
+CC=$TRUST_cc_BASE ./configure --prefix=$install 1>hwloc.log 2>&1 || exit -1
 $TRUST_MAKE 1>>hwloc.log 2>&1 || exit -1 
 make install 1>>hwloc.log 2>&1 || exit -1
 cd ..

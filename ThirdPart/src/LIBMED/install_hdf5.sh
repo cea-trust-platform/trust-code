@@ -46,7 +46,7 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   echo "Configuring ..."
   # All of those options are already set with the following values by default, but just to be sure force them again ...:
   # -DHDF5_BUILD_CPP_LIB=OFF because parallel and c++ are mutually exclusive
-  options="-DCMAKE_C_COMPILER=$TRUST_cc -DHDF5_BUILD_CPP_LIB=OFF -DCMAKE_CXX_COMPILER=$TRUST_CC"
+  options="-DCMAKE_C_COMPILER=$TRUST_cc -DHDF5_BUILD_CPP_LIB=OFF -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_FC_COMPILER=$TRUST_F77"
   options="$options -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_HL_LIB=ON"
   TOOLS=OFF
   if [ "`h5dump -help 1>/dev/null 2>&1;echo $?`" != 0 ]; then

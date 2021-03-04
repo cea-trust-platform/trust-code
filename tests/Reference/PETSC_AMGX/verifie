@@ -1,12 +1,8 @@
-# On relance avec des options pour verifier que les bons solveurs ont ete choisis
+#!/bin/bash
+# Lancement lecture matrice generee
 jdd=`pwd`
 jdd=`basename $jdd`
-# On a choisi BICGSTAB/ILU pour l'implicite et CHOLESKY pour le solveur en pression
-solver=cholesky
-if [ "`trust $jdd -ksp_view 2>&1 | grep "type: $solver"`" != "" ]
-then
-   exit 0
-else
-   exit -1
-fi
-
+matrix=`ls -rt Matrix_*.petsc | tail -1`
+echo "Testing reading $matrix with petsc_matrix.sh..."
+./petsc_matrix.sh $matrix 1>petsc_matrix.log 2>&1
+exit $?

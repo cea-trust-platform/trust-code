@@ -21,7 +21,7 @@ mkdir -p $Build
 #mkdir -p $TRUST_ROOT/exec/lata2dx
 cd $Build
 # GF ajout de -DCMAKE_CXX_COMPILER pour bien prendre le compilo choisi par trio 
-cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig
+cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig
 make -j  $TRUST_NB_PROCS  install || exit -1
 cd ..
 rm -rf lata2dx

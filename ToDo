@@ -1,5 +1,6 @@
 Version	Qui				Tache
 
+1.8.3   pierre.ledac@cea.fr     Revenir en arriere sur single_hdf par défaut au delà de 5000 coeurs si HDF5 corrompu en cas de crash (faire un test)
 1.8.3   adrien.bruneton@cea.fr  Fix Canal_perio source term for energy equation in VEF.
 1.8.3   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.8.3   pierre.ledac@cea.fr     Supprimer le format LATA V1

@@ -18,7 +18,7 @@ bunzip2 -f -c $TRUST_ROOT/externalpackages/$name.tar.bz2 | tar -xf -
 cd $name
 # Hack pour compiler meme si librairies dev de X11 non installees
 # 16/07/13: --disable-selective-werror car Werror avec GNU 4.8.1
-env X_LIBS=NO_X11 X_CFLAGS=NO_X11 ./configure --disable-selective-werror --prefix=$cible || exit -1
+env X_LIBS=NO_X11 X_CFLAGS=NO_X11 CC=$TRUST_cc_BASE ./configure --disable-selective-werror --prefix=$cible || exit -1
 echo $ECHO_OPTS "1,$ s?#include <X11/Xos.h>?//#include <X11/Xos.h>?g\nw" | ed def.h 1>/dev/null 2>&1 || exit -1
 echo $ECHO_OPTS "1,$ s?#include <X11/Xfuncproto.h>?#include \"Xfuncproto.h\"?g\nw" | ed def.h 1>/dev/null 2>&1 || exit -1
 echo $ECHO_OPTS "1,$ s?_X_NORETURN??g\nw" | ed def.h 1>/dev/null 2>&1 || exit -1
