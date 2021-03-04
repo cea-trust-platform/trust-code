@@ -145,20 +145,6 @@ void Masse_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 
 }
 
-Matrice_Base& Masse_CoviMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
-{
-  Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
-  DoubleTrav secmem(equation().inconnue().valeurs()); //sera jete
-  ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat }}, secmem, dt, {}, 0);
-  return matrice;
-}
-
-DoubleTab& Masse_CoviMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
-{
-  ajouter_blocs({}, secmem, dt, {}, 0); //on ne resout pas en increments!
-  return secmem;
-}
-
 //
 void Masse_CoviMAC_Face::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <map>
 #include <set>
 #include <DoubleTab.h>
+#include <stdexcept>
 
 class Champ_Inc_base;
 class Matrice_Morse;
@@ -38,5 +39,4 @@ typedef std::map<std::string, Matrice_Morse *> matrices_t;
 typedef std::map<std::string, DoubleTab> tabs_t;
 //calcul d'un Champ_Inc a l'instant t, ainsi que de ses derivees et de ses valeurs aux bords
 typedef void (*fonc_calc_t)(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
-
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,11 +86,13 @@ void DP_Impose_CoviMAC_Face::remplir_num_faces(Entree& s)
   surf = mp_somme_vect(S);
 }
 
-DoubleTab& DP_Impose_CoviMAC_Face::ajouter(DoubleTab& resu) const
+void DP_Impose_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
   const DoubleVect& pf = zone_CoviMAC.porosite_face(), &fs = zone_CoviMAC.face_surfaces();
   const DoubleTab& vit = equation().inconnue().valeurs();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
   //valeurs du champ de DP
   DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
@@ -100,35 +102,16 @@ DoubleTab& DP_Impose_CoviMAC_Face::ajouter(DoubleTab& resu) const
   double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
 
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_CoviMAC.nb_faces())
-      resu(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
+      {
+        secmem(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
+        if (mat) (*mat)(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
+      }
 
   bilan().resize(4); //DP dDP/dQ Q Q0
   bilan()(0) = Process::mp_max(num_faces.size() ? DP(0, 0)       : -DBL_MAX);
   bilan()(1) = Process::mp_max(num_faces.size() ? DP(0, 1) / rho : -DBL_MAX);
   bilan()(3) = Process::mp_max(num_faces.size() ? DP(0, 2) * rho : -DBL_MAX);
   if (Process::me()) bilan() = 0; //pour eviter un sommage en sortie
-  return resu;
-}
-
-void DP_Impose_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat) const
-{
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const DoubleVect& pf = zone_CoviMAC.porosite_face(), &fs = zone_CoviMAC.face_surfaces();
-
-  //valeurs du champ de DP
-  DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
-  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_CoviMAC.xv()(num_faces(i), j);
-  DP_.valeur().valeur_aux(xvf, DP);
-
-  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_CoviMAC.nb_faces())
-      mat(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
-}
-
-DoubleTab& DP_Impose_CoviMAC_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
 }
 
 void DP_Impose_CoviMAC_Face::mettre_a_jour(double temps)

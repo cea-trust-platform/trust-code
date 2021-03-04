@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,8 +52,8 @@ class Source_base : public Champs_compris_interface, public MorEqn, public Objet
 
 public :
 
-  virtual DoubleTab& ajouter(DoubleTab& ) const=0;
-  virtual DoubleTab& calculer(DoubleTab& ) const=0;
+  virtual DoubleTab& ajouter(DoubleTab& ) const;
+  virtual DoubleTab& calculer(DoubleTab& ) const;
   virtual void mettre_a_jour(double temps);
   virtual void completer();
   virtual void dimensionner(Matrice_Morse&) const ;
@@ -69,7 +69,7 @@ public :
   virtual void contribuer_jacobienne(Matrice_Bloc& , int ) const {}
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { };
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
   //Methodes de l interface des champs postraitables

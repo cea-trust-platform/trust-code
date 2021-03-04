@@ -91,7 +91,7 @@ void Masse_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
-        /* nombre de composantes de la varaible : autant que le champ par defaut, mais peut etre different pour la pression */
+        /* nombre de composantes de la variable : autant que le champ par defaut, mais peut etre different pour la pression */
         int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
 
         IntTrav stencil(0, 2);

@@ -137,7 +137,6 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   converge = 1;
   if (nb_ite>1) return;
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
-  const bool isCoviMAC = (eqnNS.discretisation().que_suis_je() == "CoviMAC");
   if (eqnNS.discretisation().que_suis_je() == "PolyMAC")
     return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice);
   Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
@@ -205,12 +204,12 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   // </IBM>
 
 
-  if (isCoviMAC)
+  try //on essaie l'interface ajouter_blocs
     {
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
       matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
     }
-  else
+  catch (const std::runtime_error& e) //sinon, on passe par ajouter/contribuer
     {
       gradient.valeur().calculer(pression,gradP);
       resu -= gradP;

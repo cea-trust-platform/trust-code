@@ -56,7 +56,7 @@ void Terme_Boussinesq_CoviMAC_Face::associer_zones(const Zone_dis& zone_dis,
   la_zone_Cl_CoviMAC = ref_cast(Zone_Cl_CoviMAC, zone_Cl_dis.valeur());
 }
 
-DoubleTab& Terme_Boussinesq_CoviMAC_Face::ajouter(DoubleTab& resu) const
+void Terme_Boussinesq_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
@@ -80,7 +80,6 @@ DoubleTab& Terme_Boussinesq_CoviMAC_Face::ajouter(DoubleTab& resu) const
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
-        resu(f) += coeff * (i ? -1 : 1) * zone.dot(&xv(f, 0), g.addr(), &xp(e, 0)) * fs(f) * pf(f);
+        secmem(f) += coeff * (i ? -1 : 1) * zone.dot(&xv(f, 0), g.addr(), &xp(e, 0)) * fs(f) * pf(f);
       }
-  return resu;
 }

@@ -236,14 +236,12 @@ void Operateur_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
 
 void Operateur_base::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
-  Cerr << que_suis_je() << " : method dimensionner_blocs() not coded!" << finl;
-  Process::exit();
+  throw std::runtime_error(que_suis_je().getString() + " dimensionner_blocs not coded!");
 }
 
 void Operateur_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  Cerr << que_suis_je() << " : method ajouter_blocs() not coded!" << finl;
-  Process::exit();
+  throw std::runtime_error(que_suis_je().getString() + " ajouter_blocs not coded!");
 }
 
 // Description:

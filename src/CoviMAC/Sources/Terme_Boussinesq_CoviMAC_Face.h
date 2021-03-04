@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,8 @@ class Terme_Boussinesq_CoviMAC_Face : public Terme_Boussinesq_base
 
 public:
 
-  virtual DoubleTab& ajouter(DoubleTab& ) const ;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
 protected:
 

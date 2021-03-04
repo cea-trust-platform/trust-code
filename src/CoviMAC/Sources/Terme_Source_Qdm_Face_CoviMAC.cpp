@@ -74,7 +74,7 @@ void Terme_Source_Qdm_Face_CoviMAC::associer_zones(const Zone_dis& zone_dis,
 }
 
 
-DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
+void Terme_Source_Qdm_Face_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
@@ -95,7 +95,7 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
         if (1)
           {
             for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
-                  resu(f, n) += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+                  secmem(f, n) += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
           }
 
         if (0)
@@ -108,24 +108,16 @@ DoubleTab& Terme_Source_Qdm_Face_CoviMAC::ajouter(DoubleTab& resu) const
                   for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
                   int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
                   double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */ : 0;
-                  resu(f, n) += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                  secmem(f, n) += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
                   // Cerr << "f " << f << " i " << i << " n " << n << " a " << (*alp)(e, n) << " r " << rho(!cR * e, n) << " R " << R << finl;
                 }
           }
       }
     else if (ch.fcl(f, 0) < 2) for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
-          resu(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+          secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
-  for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        resu(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
-
-  return resu;
-}
-
-DoubleTab& Terme_Source_Qdm_Face_CoviMAC::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+        secmem(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
 }
 
 void Terme_Source_Qdm_Face_CoviMAC::mettre_a_jour(double temps)

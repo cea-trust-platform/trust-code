@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,6 @@ public:
   void completer();
   void dimensionner(Matrice_Morse&) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_blocs(const DoubleTab&, Matrice_Morse&, const std::map<std::string, Matrice_Morse *>&) const;
   //void contribuer_au_second_membre(DoubleTab& ) const ;
   virtual void associer_champ_rho(const Champ_base& champ_rho);
   virtual int a_pour_Champ_Fonc(const Motcle& mot,

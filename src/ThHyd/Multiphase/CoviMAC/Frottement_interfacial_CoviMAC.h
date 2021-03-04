@@ -44,16 +44,6 @@ public :
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void check_multiphase_compatibility() const {}; //of course
 
-  DoubleTab& ajouter(DoubleTab& sec) const
-  {
-    abort();
-    return sec;
-  }
-  DoubleTab& calculer(DoubleTab& sec) const
-  {
-    abort();
-    return sec;
-  }
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) { };
   void associer_pb(const Probleme_base& ) { };
   void mettre_a_jour(double temps) { };

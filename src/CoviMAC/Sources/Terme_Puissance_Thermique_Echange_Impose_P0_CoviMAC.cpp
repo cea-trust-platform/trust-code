@@ -90,8 +90,7 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC::associer_zones(const Z
   la_zone_Cl_CoviMAC = ref_cast(Zone_Cl_CoviMAC, zone_Cl_dis.valeur());
 }
 
-
-DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC::ajouter(DoubleTab& resu )  const
+void Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)  const
 {
   const Zone_VF&     zone               = la_zone_CoviMAC.valeur();
   const DoubleVect& volumes = zone.volumes();
@@ -99,25 +98,12 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC::ajouter(DoubleTa
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
   int nb_elem=la_zone_CoviMAC.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
   for (int e = 0; e < nb_elem; e++) for (n = 0; n < N; n++)
-      resu(e, n) -= volumes(e) * himp(!c_h * e, n) * (T(e, n) - Text(!c_T * e, n));
-
-  return resu;
-}
-DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  ajouter(resu);
-  return resu;
-}
-void Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  const Zone_VF&     zone               = la_zone_CoviMAC.valeur();
-  const DoubleVect& volumes = zone.volumes();
-  const DoubleTab& himp = himp_.valeur().valeurs();
-  int nb_elem=la_zone_CoviMAC.valeur().nb_elem(), c_h = himp.dimension(0) == 1, n, N = himp.line_size();
-
-  for (int e = 0; e < nb_elem; e++) for (n = 0; n < N; n++)
-      matrice(N * e + n, N * e + n) += volumes(e) * himp(!c_h * e, n);
+      {
+        secmem(e, n) -= volumes(e) * himp(!c_h * e, n) * (T(e, n) - Text(!c_T * e, n));
+        if (mat) (*mat)(N * e + n, N * e + n) += volumes(e) * himp(!c_h * e, n);
+      }
 }

@@ -187,6 +187,12 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
 {
   Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
   DoubleTrav diag(equation().inconnue().valeurs());
+  try
+    {
+      ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matmo }}, diag, dt, {}, 0); //on tente ajouter_blocs()
+      return matrice;
+    }
+  catch (const std::runtime_error& e) { } //sinon, implementation par defaut
   const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
   diag=1.;
   appliquer(diag); // M-1
@@ -226,6 +232,12 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
 // Add M*y/dt to x
 DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation) const
 {
+  try
+    {
+      ajouter_blocs({}, x, dt, {}, 0); //on tente ajouter_blocs()
+      return x;
+    }
+  catch (const std::runtime_error& e) {} //sinon, implementation par defaut
   int sz=y.size();
   DoubleTab diag;
   diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
@@ -287,7 +299,6 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, 
       else
         matmo(i,i)+=1./(diag.addr()[i]*dt_locaux[i]);
     }
-
   return matrice;
 }
 
@@ -399,6 +410,12 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
 // Le code est celui utilise dans la version Noyau de Equation_base::dimensionner_matrice()
 void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
 {
+  try
+    {
+      dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &matrix }}, {}); //on tente dimensionner_blocs
+      return;
+    }
+  catch (const std::runtime_error& e) { } //implementation par defaut
   const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
   int size = champ_inconnue.dimension_tot(0);
   if (champ_inconnue.nb_dim() == 2) size *= champ_inconnue.dimension(1);
@@ -413,16 +430,12 @@ void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
 
 void Solveur_Masse_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()], mat2;
-  if (!mat) return; //rien a faire
-  dimensionner(mat2);
-  mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+  throw std::runtime_error(que_suis_je().getString() + " dimensionner_blocs not coded!");
 }
 
 void Solveur_Masse_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  Cerr << que_suis_je() << " : method ajouter_blocs() not coded!" << finl;
-  Process::exit();
+  throw std::runtime_error(que_suis_je().getString() + " ajouter_blocs not coded!");
 }
 
 // Ajout d'une methode completer

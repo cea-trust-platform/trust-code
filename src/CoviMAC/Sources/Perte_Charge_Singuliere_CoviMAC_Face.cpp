@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,39 +83,21 @@ void Perte_Charge_Singuliere_CoviMAC_Face::remplir_num_faces(Entree& s)
     }
 }
 
-DoubleTab& Perte_Charge_Singuliere_CoviMAC_Face::ajouter(DoubleTab& resu) const
+void Perte_Charge_Singuliere_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
   //const DoubleVect& volumes_entrelaces = zone_CoviMAC.volumes_entrelaces();
   const DoubleVect& p_f = zone_CoviMAC.porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_CoviMAC.nb_faces())
       {
         double Ud = vit(f) * p_f(f),
                surf = direction_perte_charge() < 0 ? zone_CoviMAC.face_surfaces(f) : dabs(zone_CoviMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        resu(f) -= 0.5 * surf * p_f(f) * K() * Ud * dabs(Ud);
-      }
-  return resu;
-}
-
-DoubleTab& Perte_Charge_Singuliere_CoviMAC_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
-}
-
-void Perte_Charge_Singuliere_CoviMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  const Zone_CoviMAC& zone_CoviMAC = la_zone_CoviMAC.valeur();
-  const DoubleVect& p_f = zone_CoviMAC.porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
-
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_CoviMAC.nb_faces())
-      {
-        double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_CoviMAC.face_surfaces(f) : dabs(zone_CoviMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        matrice.coef(f, f) += surf * p_f(f) * K() * p_f(f) * dabs(Ud);
+        secmem(f) -= 0.5 * surf * p_f(f) * K() * Ud * dabs(Ud);
+        if (mat) (*mat)(f, f) += surf * p_f(f) * K() * p_f(f) * dabs(Ud);
       }
 }
 

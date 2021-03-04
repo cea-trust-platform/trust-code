@@ -267,12 +267,21 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
     }
   else
     {
-      eqn.assembler_avec_inertie(matrice,current,resu);
       solveur.valeur().reinit();
-      DoubleTrav resu_temp(current);
-      resu_temp = 0;
-      matrice.ajouter_multvect(current,resu_temp);
-      resu_temp -= resu;
+      DoubleTrav resu_temp(current); /* residu en increments */
+      try /* si assembler_blocs est disponible */
+        {
+          eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
+          resu = resu_temp;
+          matrice.ajouter_multvect(current, resu);
+        }
+      catch (const std::runtime_error& e) /* sinon */
+        {
+          eqn.assembler_avec_inertie(matrice,current,resu);
+          resu_temp = 0;
+          matrice.ajouter_multvect(current,resu_temp);
+          resu_temp -= resu;
+        }
       if (seuil_test_preliminaire_solveur>0)
         {
           double norme_b=mp_norme_vect(resu_temp);
