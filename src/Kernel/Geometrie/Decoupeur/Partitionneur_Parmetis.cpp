@@ -104,19 +104,6 @@ void Partitionneur_Parmetis::construire_partition(IntTab& elem_part, int& nb_par
       exit();
     }
 
-  IntTab les_elems = ref_domaine_.valeur().zone(0).les_elems();
-  const DoubleTab& les_coords = ref_domaine_.valeur().coord_sommets();
-  for(int el=0; el < les_elems.dimension(0); el++)
-    {
-      Cerr << "ELEMENT #" << el << " : " << finl;
-      for(int el_som=0; el_som<4; el_som++)
-        {
-          int sommet = les_elems(el, el_som);
-          double x= les_coords(sommet,0);
-          double y = les_coords(sommet, 1);
-          Cerr << "(" << x << "," << y << ")" << finl;
-        }
-    }
   // Cas particulier: si nb_parts == 1, METIS ne veut rien faire...
   //ToDo: I don't know is that's the case with ParMetis
   if (nb_parties_ == 1)
@@ -177,35 +164,12 @@ void Partitionneur_Parmetis::construire_partition(IntTab& elem_part, int& nb_par
 
   graph.free_memory();
 
-  const int n = ref_domaine_.valeur().zone(0).nb_elem();
-  const int n_tot = ref_domaine_.valeur().zone(0).nb_elem_tot();
-
-//  ArrOfInt offsets(Process::nproc());
-//  offsets = mppartial_sum(n);
-//  envoyer_all_to_all(offsets, offsets);
-//  const int my_offset = offsets[Process::me()];
   MD_Vector_tools::creer_tableau_distribue(ref_domaine_.valeur().zone(0).md_vector_elements(), elem_part);
-
-//  elem_part.resize_array(n_tot);
+  const int n = ref_domaine_.valeur().zone(0).nb_elem();
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
   elem_part.echange_espace_virtuel();
 
-
-//  for(int p=0; p<Process::nproc(); p++)
-//    {
-//      int offset = offsets[p];
-//      int nb_elem_on_proc_p;
-//      if(Process::me() == p)
-//        nb_elem_on_proc_p = n;
-//      envoyer_broadcast(nb_elem_on_proc_p, p);
-//      envoyer_broadcast_array(elem_part.addr() + offset, nb_elem_on_proc_p, p);
-//    }
-
-  Cerr << "elem part before periodic correction" << finl;
-  for(int i=0; i< n_tot; i++)
-    Cerr << "elem_part[" << i << "] = " << elem_part[i] << finl;
-  Cerr << finl;
 
   // Correction de la partition pour la periodicite. (***)
   if (graph_elements_perio.get_nb_lists() > 0)
@@ -219,19 +183,8 @@ void Partitionneur_Parmetis::construire_partition(IntTab& elem_part, int& nb_par
            << "  but it takes more memory)" << finl;
     }
 
-  Cerr << "elem part after periodic correction" << finl;
-  for(int i=0; i< n_tot; i++)
-    Cerr << "elem_part[" << i << "] = " << elem_part[i] << finl;
-  Cerr << finl;
-
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
-
-
-  Cerr << "elem part after correction on elem0 on proc 0" << finl;
-  for(int i=0; i< n_tot; i++)
-    Cerr << "elem_part[" << i << "] = " << elem_part[i] << finl;
-  Cerr << finl;
 
 
 #endif

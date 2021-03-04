@@ -486,7 +486,6 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   xadj[nb_elem] = edge_count;
   nedges = edge_count;
 
-  Cerr << "MY_OFFSET = " << my_offset << finl;
   std::map<int,int> global_to_local_index;
   int cnt=nb_elem;
   for(int e=0; e<nb_edges + nb_faces_bord; e++)
@@ -512,21 +511,6 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
 
         }
     }
-
-  Cerr << "XADJ:" << finl;
-  for(int i=0; i< nb_elem+1; i++)
-    Cerr << xadj[i] << " ";
-  Cerr << finl;
-
-  Cerr << "adjncy:" << finl;
-  for(int i=0; i< nb_edges + nb_faces_bord; i++)
-    Cerr << adjncy[i] << " ";
-  Cerr << finl;
-
-  Cerr << "edgegsttab:" << finl;
-  for(int i=0; i< nb_edges + nb_faces_bord; i++)
-    Cerr << edgegsttab[i] << " ";
-  Cerr << finl;
 
   if (error == 1)
     {
