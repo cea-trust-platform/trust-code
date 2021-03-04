@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ void Partitionneur_Tranche::set_param(Param& param)
 void Partitionneur_Tranche::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
-  nb_tranches_.resize_array(domaine.dimension);
+  nb_tranches_.resize(domaine.dimension);
   nb_tranches_ = -1;
 }
 
@@ -182,7 +182,7 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
     }
 }
 
-void Partitionneur_Tranche::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Tranche::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_.non_nul());
   assert(nb_tranches_[0] > 0);
@@ -318,7 +318,7 @@ void Partitionneur_Tranche::construire_partition(ArrOfInt& elem_part, int& nb_pa
     }
 
   // Partition initiale du domaine: au depart tout dans 0
-  elem_part.resize_array(nb_elem);
+  elem_part.resize(nb_elem);
   elem_part = 0;
   // Construction de elem_part
   const int nb_parts = nb_elem_part.size_array();
@@ -335,7 +335,7 @@ void Partitionneur_Tranche::construire_partition(ArrOfInt& elem_part, int& nb_pa
     }
 
   if (liste_bords_periodiques_.size() > 0)
-    corriger_bords_avec_liste(dom, liste_bords_periodiques_, elem_part);
+    corriger_bords_avec_liste(dom, liste_bords_periodiques_, 0, elem_part);
 
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);

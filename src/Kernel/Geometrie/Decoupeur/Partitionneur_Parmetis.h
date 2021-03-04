@@ -39,7 +39,7 @@ public:
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   void associer_domaine(const Domaine& domaine);
-  void construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntTab& elem_part, int& nb_parts_tot) const;
 
 private:
 

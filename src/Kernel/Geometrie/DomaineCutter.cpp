@@ -35,6 +35,7 @@
 #include <FichierHDF.h>
 #include <IntVect.h>
 #include <communications.h>
+#include <MD_Vector_tools.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
@@ -92,9 +93,13 @@ Entree& DomaineCutter::readOn(Entree& s)
 static void construire_liste_sommets_sousdomaine(const int nb_sommets,
                                                  const IntTab& les_elems,
                                                  const ArrOfInt& liste_elements,
+                                                 const MD_Vector& md_vector_sommets,
                                                  ArrOfInt& liste_sommets,
                                                  ArrOfInt& liste_inverse_sommets)
 {
+  Cerr << "construire_liste_sommets_sousdomaine" << finl;
+  Cerr << "liste_elements" << finl;
+  Cerr << liste_elements << finl;
   const int nb_elem_part = liste_elements.size_array();
   const int nb_sommets_par_element = les_elems.dimension(1);
 
@@ -129,6 +134,8 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
   // Remplissage de liste_sommets et liste_inverse_sommets
   liste_sommets.resize_array(0); // On oublie les valeurs precedentes
   liste_sommets.resize_array(nb_sommets_part);
+  //MD_Vector_tools::creer_tableau_distribue(md_vector_sommets, liste_inverse_sommets);
+
   liste_inverse_sommets.resize_array(0); // On oublie les valeurs precedentes
   liste_inverse_sommets.resize_array(nb_sommets,Array_base::NOCOPY_NOINIT);
   liste_inverse_sommets = -1;
@@ -143,6 +150,9 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
           n++;
         }
     }
+  //liste_inverse_sommets.echange_espace_virtuel();
+  Cerr << "liste_sommets:" << finl;
+  Cerr << liste_sommets << finl;
 }
 
 // Remplissage du tableau des coordonnees des sommets d'une partie
@@ -185,23 +195,33 @@ static void remplir_coordsommets_sous_domaine(const DoubleTab& sommets_glob,
 void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
                                    const ArrOfInt& liste_elements,
                                    const ArrOfInt& liste_inverse_sommets,
+                                   const MD_Vector& md_vector_elements,
                                    IntTab&    elems_zone_locale,
                                    ArrOfInt& liste_inverse_elements)
 {
-  const int nb_elem                = elems_zone_globale.dimension(0);
+  const int nb_elem_tot                = elems_zone_globale.dimension_tot(0);
   const int nb_sommets_par_element = elems_zone_globale.dimension(1);
 
-  liste_inverse_elements.resize_array(nb_elem,Array_base::NOCOPY_NOINIT);
+  Cerr << "construire_elems_sous_domaine " << finl;
+  liste_inverse_elements.resize(nb_elem_tot,Array_base::NOCOPY_NOINIT);
+  //MD_Vector_tools::creer_tableau_distribue(md_vector_elements, liste_inverse_elements);
   liste_inverse_elements = -1;
 
   // Premier passage: comptage du nombre d'elements de la partie
   const int nb_elem_part = liste_elements.size_array();
   elems_zone_locale.resize(nb_elem_part, nb_sommets_par_element);
 
+//  for(int i=0; i< liste_inverse_sommets.size_array(); i++)
+//    Cerr << "liste_inverse_sommets[" << i << "] = " << liste_inverse_sommets[i] << finl;
+//  Cerr << finl;
+
+//  Cerr << "nb_elem_part = " << nb_elem_part << finl;
   // Deuxieme passage: remplissage du tableau
   for (int i_elem = 0; i_elem < nb_elem_part; i_elem++)
     {
       int elem = liste_elements[i_elem];
+//      Cerr << " i_elem = " << i_elem << finl;
+//      Cerr << " elem = " << elem << finl;
       // Nouveau numero de l'element dans la partie
       liste_inverse_elements[elem] = i_elem;
       // Copie de l'element avec traduction du numero des sommets en
@@ -213,12 +233,14 @@ void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
             elems_zone_locale(i_elem, i) =sommet;
           else
             {
+              // Cerr << " sommet = " << sommet << finl;
               int new_num = liste_inverse_sommets[sommet];
               assert(new_num >= 0);
               elems_zone_locale(i_elem, i) = new_num;
             }
         }
     }
+// liste_inverse_elements.echange_espace_virtuel();
 }
 
 // Description:
@@ -235,7 +257,7 @@ void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
 //  a un element de la partie voisine". La condition "les sommets des faces sont
 //  des sommets de joint" n'est PAS suffisante.
 void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
-                                         const ArrOfInt& elem_part,
+                                         const IntTab& elem_part,
                                          const int     partie,
                                          const IntTab&    faces_sommets,
                                          const ArrOfInt& liste_inverse_sommets,
@@ -244,6 +266,7 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
   const int nb_faces = faces_sommets.dimension(0);
   const int nb_sommets_par_face = faces_sommets.dimension(1);
   int i;
+
   assert(elements_voisins.size_array() == nb_faces);
   // La liste des faces du tableau faces_sommets a inclure dans le sous-domaine
   ArrOfInt liste_faces;
@@ -360,6 +383,7 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
   CONST_LIST_CURSEUR(Faces_Interne/*difference*/) curseur(zone.faces_int()/*difference*/);
   int i_fr = zone.nb_bords()+zone.nb_raccords();
   ArrOfInt elements_voisins;
+
   for (; curseur; ++curseur)
     {
 
@@ -421,16 +445,21 @@ static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaiss
 //  Cette methode a ete codee pour construire_elements_distants_ssdom()
 static void parcourir_epaisseurs_elements(const IntTab& elements,
                                           const Static_Int_Lists& elem_som,
-                                          const ArrOfInt& elem_part,
+                                          const IntTab& elem_part,
                                           ArrOfInt liste_sommets_depart, /* par valeur car on va la modifier */
                                           const int partie_a_ignorer, /* ne pas parcourir les elems de cette partie */
                                           const int epaisseur,
                                           ArrOfInt& liste_elements_trouves)
 {
-  const int nb_sommets = elem_som.get_nb_lists();
-  const int nb_elements = elements.dimension(0);
-  const int nb_som_elem = elements.dimension(1);
+  Cerr << "parcourir_epaisseurs_elements" << finl;
+  Cerr << "epaisseur = " << epaisseur << finl;
+  Cerr << "liste_sommets_depart:" << finl;
+  Cerr << liste_sommets_depart << finl;
 
+  const int nb_sommets = elem_som.get_nb_lists();
+  const int nb_elements = elements.dimension_tot(0);
+  const int nb_som_elem = elements.dimension(1);
+  Cerr << "nb_elements = " << nb_elements << finl;
   liste_elements_trouves.set_smart_resize(1);
   liste_elements_trouves.resize_array(0);
 
@@ -468,6 +497,8 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
           for (int i_elem = 0; i_elem < nb_elems_voisins; i_elem++)
             {
               const int elem = elem_som(sommet, i_elem);
+              Cerr << "elem = " << elem << finl;
+//              Cerr << elements_parcourus << finl;
               if (elements_parcourus[elem])
                 continue; // Cet element a deja ete visite
               // Numero de zone de l'element voisin:
@@ -511,9 +542,15 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
 {
   const Zone& zone          = ref_domaine_.valeur().zone(0);
   const IntTab& elements    = zone.les_elems();
-  const ArrOfInt& elem_part = ref_elem_part_.valeur();
+  const IntTab& elem_part = ref_elem_part_.valeur();
 
   const int nb_som_elem = elements.dimension(1);
+
+//
+//  ArrOfInt offsets(Process::nproc());
+//  offsets = mppartial_sum(elements.dimension(0));
+//  envoyer_all_to_all(offsets, offsets);
+//  int my_offset = offsets[Process::me()];
 
   // Premiere etape: chercher les elements virtuels de la sous-partie
   // (elements des autres parties situes dans l'epaisseur de joint en partant
@@ -637,8 +674,14 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
   Joints& les_joints = zone_partie.faces_joint();
 
   const int parts = nb_parties_;
-  const ArrOfInt& elem_part = ref_elem_part_.valeur();
+  const IntTab& elem_part = ref_elem_part_.valeur();
   const Static_Int_Lists& som_elem = som_elem_;
+
+//
+//  ArrOfInt offsets(Process::nproc());
+//  offsets = mppartial_sum(nb_elem);
+//  envoyer_all_to_all(offsets, offsets);
+//  int my_offset = offsets[Process::me()];
 
   // Liste de sommets de joint (toutes parties confondues, un sommet peut
   // apparaitre plusieurs fois dans le tableau, une fois par pe voisin au maximum)
@@ -655,6 +698,9 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
   // les elements voisins du sommet, et, s'il y a un PE voisin different de "p",
   // on ajoute ce sommet aux joints avec ces PEs.
 
+  Cerr << "construire_sommets_joints_ssdom" << finl;
+  Cerr << "liste_sommets" << finl;
+  Cerr << liste_sommets << finl;
   const int nb_sommets = liste_sommets.size_array();
 
   int i_sommet;
@@ -663,6 +709,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
     {
       // Numero global du sommet
       int sommet = liste_sommets[i_sommet];
+      Cerr << " sommet #" << sommet << finl;
       // Boucle sur les elements voisins du sommet i
       int nb_elements_voisins = som_elem.get_list_size(sommet);
       int i;
@@ -670,6 +717,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
         {
           int elem = som_elem(sommet, i);
           int PEvoisin = elem_part[elem];
+          Cerr << " elem voisin:" << elem << " => part = " << PEvoisin << finl;
           // Faut-il ajouter ce sommet aux sommets du joint avec le PEvoisin ?
           if (PEvoisin != partie)
             joints_sommets[PEvoisin].append_array(sommet);
@@ -705,10 +753,19 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
             {
               const int indice_global = sommets[i];
               const int indice_local = liste_inverse_sommets[indice_global];
+              Cerr << "indice global sommet:" << indice_global << finl;
+              Cerr << "indice local sommet:" << indice_local << finl;
               assert(indice_local >= 0);
               sommets_locaux[i] = indice_local;
             }
         }
+    }
+
+  for (int i = 0; i < parts; i++)
+    {
+      Cerr << "PART#" << i << finl;
+      Cerr << joints_sommets[i] << finl;
+
     }
 }
 
@@ -726,6 +783,10 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   const ArrOfInt& liste_inverse_elements = correspondance.get_liste_inverse_elements();
   const Static_Int_Lists& som_elem = som_elem_;
 
+  Cerr << "construire_faces_joints_ssdom" << finl;
+  Cerr << "partie : " << partie << finl;
+  Cerr << "nb_sommets_ssdom : " << nb_sommets_ssdom << finl;
+  Cerr << "nb_elem_ssdom : " << nb_elem_ssdom << finl;
   // Premiere etape: reperage des "elements de joint" (elements de la "partie"
   //  possedant un sommet de joint), et marquage des sommets de joint
   ArrOfInt liste_elements_joint;
@@ -737,17 +798,28 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     drapeaux_sommets_joints = 0;
     liste_elements_joint.set_smart_resize(1);
 
+    //Cerr << "liste_inverse_elements:" << finl;
+//    for(int i=0; i< liste_inverse_elements.size_array(); i++)
+//      Cerr << "liste_inverse_elements[" << i << "] = " << liste_inverse_elements[i] << finl;
+//    Cerr << finl;
+//    Cerr << "som_elem:" << finl;
+//    som_elem.ecrire(Cerr);
+
     // Marqueurs: pour chaque element du sous-domaine, est-il deja dans la liste ?
     ArrOfBit drapeaux_elements(nb_elem_ssdom);
     drapeaux_elements = 0;
     // Boucle sur tous les sommets de joint
     const int nb_joints = joints_partie.size();
+    Cerr << "nb_joints" << nb_joints << finl;
     int i_joint;
     for (i_joint = 0; i_joint < nb_joints; i_joint++)
       {
         const Joint& joint = joints_partie[i_joint];
         const ArrOfInt& sommets_du_joint = joint.joint_item(Joint::SOMMET).items_communs();
+        Cerr << "joint vertices::" << finl;
+        Cerr << sommets_du_joint << finl;
         const int n = sommets_du_joint.size_array();
+        Cerr << "joint #" << i_joint << " ==> "  << n << " sommets"<< finl;
         int i;
         for (i = 0; i < n; i++)
           {
@@ -757,10 +829,15 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
             // Marquage du sommet de joint dans le sous-domaine
             drapeaux_sommets_joints.setbit(i_sommet_local);
             int j;
+            Cerr << "joint vertices::::" << i_sommet_global << " => " << nb_elem_voisins << "voisins"<<  finl;
             for (j = 0; j < nb_elem_voisins; j++)
               {
                 const int i_elem_global = som_elem(i_sommet_global, j);
+                Cerr << "  elem voisin: " << i_elem_global << finl;
+                //int i_elem_local = -1;
+                //if(my_offset <=i_elem_global && i_elem_global < 4 + my_offset)
                 const int i_elem_local = liste_inverse_elements[i_elem_global];
+                Cerr << "  elem voisin(loc): " << i_elem_local << finl;
                 // On ajoute l'element a la liste d'elements joint s'il est dans ma partie
                 // et s'il n'est pas encore dans la liste.
                 if (i_elem_local >= 0)
@@ -770,11 +847,15 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
           }
       }
   }
+  Cerr << "liste_elements_joint" <<finl;
+  Cerr << liste_elements_joint << finl;
 
   // Deuxieme etape: pour chaque element de joint, construction de ses
   // faces et on regarde si la face a un element voisin dans une autre partie.
   // Si oui, c'est une face de joint
 
+  Cerr << "SIZE OF drapeaux_sommets_joints = " << nb_sommets_ssdom << finl;
+  Cerr << drapeaux_sommets_joints << finl;
   // Tableau des indices des sommets de toutes les faces de joint
   //  (tous joints confondus, indices de sommets dans le sous-domaine)
   IntTab faces_joints;
@@ -803,10 +884,13 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     const int nb_sommets_par_face = faces_element_reference.dimension(1);
     faces_joints.resize(0, nb_sommets_par_face); // Voir *suite*
     const ArrOfInt& liste_inverse_sommets = correspondance.get_liste_inverse_sommets();
-    const ArrOfInt& elem_part = ref_elem_part_.valeur();
+    const IntTab& elem_part = ref_elem_part_.valeur();
     // Sommets des elements du maillage global
     const Domaine& domaine = ref_domaine_.valeur();
     const IntTab& elem_som = domaine.zone(0).les_elems();
+
+//    Cerr << "liste_inverse_sommets" << finl;
+//    Cerr << liste_inverse_sommets << finl;
 
     ArrOfInt une_face(nb_sommets_par_face);
     ArrOfInt elements_voisins;
@@ -849,10 +933,15 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
 
                     if (i_som>-1)
                       {
+                        // Cerr << "i_som = " << i_som << finl;
                         const int i_som_local = liste_inverse_sommets(i_som);
-                        // Le sommet est-il sur un joint ?
-                        if (drapeaux_sommets_joints[i_som_local] == 0)
-                          face_ok = 0; // Non => cette face n'est pas sur un joint
+                        // Cerr << "i_som_local = " << i_som_local << finl;
+                        if(i_som_local>0)
+                          {
+                            // Le sommet est-il sur un joint ?
+                            if (drapeaux_sommets_joints[i_som_local] == 0)
+                              face_ok = 0; // Non => cette face n'est pas sur un joint
+                          }
                       }
                   }
               }
@@ -884,6 +973,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
                         if (i_som_global>-1)
                           {
                             const int i_som_local = liste_inverse_sommets[i_som_global];
+                            //Cerr << "i_som_local == " << i_som_local << " i_som_global == " << i_som_global << finl;
                             faces_joints(n, i) = i_som_local;
                           }
                         else
@@ -895,6 +985,17 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
           }
       }
   }
+
+  Cerr << "FACES JOINTS:" << finl;
+  for(int i=0; i< faces_joints.dimension(0); i++)
+    {
+      Cerr << "FACE#" << i << finl;
+      for(int j=0; j<faces_joints.dimension(1); j++)
+        {
+          Cerr << faces_joints(i,j) << " ";
+        }
+      Cerr << finl;
+    }
 
   // Troisieme etape: ajout des faces dans les joints
   {
@@ -955,7 +1056,7 @@ void DomaineCutter::reset()
   som_elem_.reset();
 }
 
-void  calculer_listes_elements_sous_domaines(const ArrOfInt& elem_part,
+void  calculer_listes_elements_sous_domaines(const IntTab& elem_part,
                                              const int nb_parts,
                                              Static_Int_Lists& liste_elems_sous_domaines)
 {
@@ -981,7 +1082,7 @@ void  calculer_listes_elements_sous_domaines(const ArrOfInt& elem_part,
 
 void calculer_elements_voisins_bords(const Domaine& dom,
                                      const Static_Int_Lists& som_elem,
-                                     Static_Int_Lists& voisins,const ArrOfInt& elem_part, const int permissif, Noms& bords_a_pb_)
+                                     Static_Int_Lists& voisins,const IntTab& elem_part, const int permissif, Noms& bords_a_pb_)
 {
   const Zone& zone = dom.zone(0);
   const int nb_front = zone.nb_front_Cl();
@@ -1027,6 +1128,9 @@ void calculer_elements_voisins_bords(const Domaine& dom,
           voisins.set_value(i, j, elems_voisins[0]);
         }
     }
+
+  Cerr << "VOISINS" << finl;
+  voisins.ecrire(Cerr);
 }
 
 // Description: Prepare les structures de donnees pour la construction
@@ -1044,7 +1148,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
 // Parametre: les_faces
 // Parametre: epaisseur_joint
 void DomaineCutter::initialiser(const Domaine&   domaine_global,
-                                const ArrOfInt& elem_part,
+                                const IntTab& elem_part,
                                 const int     nb_parts,
                                 const int     epaisseur_joint,
                                 const Noms&      liste_bords_periodiques,
@@ -1052,7 +1156,7 @@ void DomaineCutter::initialiser(const Domaine&   domaine_global,
 {
   assert(nb_parts >= 0);
   assert(domaine_global.nb_zones() == 1);
-  assert(elem_part.size_array() == domaine_global.zone(0).nb_elem());
+  assert(elem_part.size_array() == domaine_global.zone(0).nb_elem_tot());
   assert(max_array(elem_part) < nb_parts);
   if (min_array(elem_part)<0)
     {
@@ -1070,10 +1174,21 @@ void DomaineCutter::initialiser(const Domaine&   domaine_global,
   epaisseur_joint_ = epaisseur_joint;
   liste_bords_periodiques_ = liste_bords_periodiques;
 
-  const int nb_som = domaine_global.nb_som();
   const IntTab& elems = domaine_global.zone(0).les_elems();
+  const int nb_som = domaine_global.nb_som_tot();
   construire_connectivite_som_elem(nb_som, elems, som_elem_,
-                                   0 /* ne pas inclure les elems virtuels */);
+                                   1 /* inclure les elems virtuels */);
+//  IntTab elem_virt_pe_num;
+//  domaine_global.zone(0).construire_elem_virt_pe_num(elem_virt_pe_num);
+//  ArrOfInt offsets(Process::nproc());
+//  offsets = mppartial_sum(elems.dimension(0));
+//  envoyer_all_to_all(offsets, offsets);
+//  construire_connectivite_real_som_virtual_elem(domaine_global.nb_som(),
+//                                                elems,
+//                                                som_elem_,
+//                                                elem_virt_pe_num,
+//                                                offsets);
+
   Cerr << "Search of neighboring elements of boundary faces" << finl;
   calculer_elements_voisins_bords(domaine_global, som_elem_, voisins_bords_,elem_part,permissif,bords_a_pb_);
   Cerr << "Construction of lists of elements per subdomain" << finl;
@@ -1126,9 +1241,16 @@ void DomaineCutter::construire_sous_domaine(const int part,
     zone_partie.type_elem() = zone.type_elem();
   zone_partie.type_elem().associer_zone(zone_partie);
 
-  construire_liste_sommets_sousdomaine(domaine.nb_som(),
+//  ArrOfInt offsets(Process::nproc());
+//  offsets = mppartial_sum(domaine.zone(0).nb_elem());
+//  envoyer_all_to_all(offsets, offsets);
+//  int my_offset = offsets[Process::me()];
+  Cerr << "construire_sous_domaine" << finl;
+  Cerr << "PARTIE " << part << finl;
+  construire_liste_sommets_sousdomaine(domaine.nb_som_tot(),
                                        zone.les_elems(),
                                        elements_sous_partie,
+                                       ref_domaine_.valeur().md_vector_sommets(),
                                        correspondance.liste_sommets_ /* write */,
                                        correspondance.liste_inverse_sommets_ /* write */);
 
@@ -1138,6 +1260,7 @@ void DomaineCutter::construire_sous_domaine(const int part,
   construire_elems_sous_domaine(zone.les_elems(),
                                 elements_sous_partie,
                                 correspondance.liste_inverse_sommets_,
+                                zone.md_vector_elements(),
                                 zone_partie.les_elems() /* write */,
                                 correspondance.liste_inverse_elements_ /* write */);
   {
@@ -1226,20 +1349,28 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 //  fichiers basename_000n.Zones pour 0 <= n < nb_parties_.
 //  Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
 //  on genere aussi un fichier par sous-zone.
-void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, ArrOfInt& elem_part, const int& reorder)
+void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntTab& elem_part, const int& reorder)
 {
   assert(nb_parties_ >= 0);
   const Domaine& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
 
+  Cerr << "ecrire_zones" << finl;
+  for(int i=0; i< elem_part.size_totale(); i++)
+    Cerr << "elem_part[" << i << "] = " << elem_part[i] << finl;
+  Cerr << finl;
+
   ArrOfInt myZones(nb_parties_);
   myZones = 0;
-  const int nbelem = elem_part.size_array();
+  const int nbelem = domaine.zone(0).nb_elem();
   for(int i=0; i < nbelem; i++)
     {
       const int part = elem_part[i];
       myZones[part] = 1;
     }
+
+  Cerr << "myZones" << finl;
+  Cerr << myZones << finl;
 
   //check to see if my Zones are shared with other procs
   VECT(ArrOfInt) otherProcZones(Process::nproc());

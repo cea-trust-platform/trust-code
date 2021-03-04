@@ -141,7 +141,7 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
 static void ecrire_sous_zones(const Nom& nom_zones_decoup,
                               const Decouper::ZonesFileOutputType format,
                               const Domaine& domaine,
-                              ArrOfInt& elem_part,
+                              IntTab& elem_part,
                               const int nb_parties,
                               const int epaisseur_joint,
                               const int reorder,
@@ -212,7 +212,8 @@ Entree& Decouper::interpreter(Entree& is)
 
   // On recupere le resultat: un tableau qui donne pour chaque element
   // le numero de la partie a laquelle il appartient.
-  ArrOfInt elem_part;
+  //ArrOfInt elem_part;
+  IntTab elem_part;
   partitionneur.declarer_bords_periodiques(liste_bords_periodiques);
   partitionneur.construire_partition(elem_part,nb_parts_tot);
 

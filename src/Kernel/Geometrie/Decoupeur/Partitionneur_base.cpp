@@ -147,6 +147,7 @@ static void chercher_elems_voisins_faces(const Static_Int_Lists& som_elem,
 int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
                                                                const Noms& liste_bords_periodiques,
                                                                const Static_Int_Lists& som_elem,
+                                                               const int my_offset,
                                                                Static_Int_Lists& graph)
 {
   const int nb_elem = zone.nb_elem();
@@ -157,11 +158,6 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
   // entre l'element voisin d'une face et l'element voisin de la face periodique opposee
   IntTab correspondances(0,2);
   correspondances.set_smart_resize(1);
-
-  ArrOfInt offsets(Process::nproc());
-  offsets = mppartial_sum(nb_elem);
-  envoyer_all_to_all(offsets, offsets);
-  int my_offset = offsets[Process::me()];
 
   // Premiere etape: remplissage de nb_faces_perio et correspondances
   // Parcours des bords periodiques
@@ -265,22 +261,23 @@ int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
                                               const Noms& liste_bords_perio,
                                               const ArrOfInt& renum_som_perio,
                                               const Static_Int_Lists& som_elem,
-                                              ArrOfInt& elem_part)
+                                              IntTab& elem_part)
 {
-  const int nb_som = domaine.nb_som();
+  const int nb_som_tot = domaine.nb_som_tot();
   const Zone& zone = domaine.zone(0);
-  const int nb_elem = zone.nb_elem();
+  const int nb_elem = zone.nb_elem_tot();
+  const int nb_elem_tot = zone.nb_elem_tot();
 
   // Premiere etape :
   // Marquage des sommets de bord :
-  ArrOfBit sommet_bord(nb_som);
-  ArrOfBit sommet_bord_perio(nb_som);
+  ArrOfBit sommet_bord(nb_som_tot);
+  ArrOfBit sommet_bord_perio(nb_som_tot);
   sommet_bord = 0;
   sommet_bord_perio = 0;
   // element_bord indique si l'element est adjacent a une face de bord
-  ArrOfBit element_bord(nb_elem);
+  ArrOfBit element_bord(nb_elem_tot);
   // element_bord_perio indique si l'element est adjacent a une face de bord periodique
-  ArrOfBit element_bord_perio(nb_elem);
+  ArrOfBit element_bord_perio(nb_elem_tot);
   element_bord = 0;
   element_bord_perio = 0;
 
@@ -423,7 +420,7 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                                                  const Noms& liste_bords_perio,
                                                  const ArrOfInt& renum_som_perio,
                                                  const Static_Int_Lists& som_elem,
-                                                 ArrOfInt& elem_part)
+                                                 IntTab& elem_part)
 {
   const int nb_som = domaine.nb_som();
   const Zone& zone = domaine.zone(0);
@@ -634,14 +631,14 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
                                                    const Static_Int_Lists& som_elem,
                                                    const Domaine& domaine,
                                                    const Noms& liste_bords_perio,
-                                                   ArrOfInt& elem_part)
+                                                   IntTab& elem_part)
 {
   // Algorithme: parcours de tous les elements dans l'ordre.
   //  Pour chaque element, associer aux autres elements lies la partie a laquelle appartient
   //  l'element courant. Comme le graphe est symetrique, si un element a deja ete traite,
   //  on ne change rien les fois suivantes. Donc un seul passage suffit.
-  const int n = elem_part.size_array();
-  assert(n == graph_elements_perio.get_nb_lists());
+  const int n = graph_elements_perio.get_nb_lists(); //elem_part.size_array();
+  //assert(n == graph_elements_perio.get_nb_lists());
   int count = 0;
   for (int i = 0; i < n; i++)
     {
@@ -672,6 +669,7 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
   if (liste_bords_perio.size() > 1)
     count += corriger_multiperiodique(domaine, liste_bords_perio, renum_som_perio, som_elem, elem_part);
   count += corriger_sommets_bord(domaine, liste_bords_perio, renum_som_perio, som_elem, elem_part);
+  elem_part.echange_espace_virtuel();
   return count;
 }
 
@@ -682,21 +680,23 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
 //   appeler directement corriger_periodique_avec_graphe)
 void Partitionneur_base::corriger_bords_avec_liste(const Domaine& dom,
                                                    const Noms& liste_bords_periodiques,
-                                                   ArrOfInt& elem_part)
+                                                   const int my_offset,
+                                                   IntTab& elem_part)
 {
   const Zone& zone = dom.zone(0);
   Cerr << "Correction of the splitting for the periodicity" << finl;
   Static_Int_Lists som_elem;
   Cerr << " Construction of the connectivity som_elem" << finl;
-  construire_connectivite_som_elem(dom.nb_som(),
+  construire_connectivite_som_elem(dom.nb_som_tot(),
                                    zone.les_elems(),
                                    som_elem,
-                                   0 /* ne pas inclure les elements virtuels */);
+                                   1 /* inclure les elements virtuels */);
   Cerr << " Construction of graph connectivity for periodic elements" << finl;
   Static_Int_Lists graph_elements_perio;
   calculer_graphe_connexions_periodiques(zone,
                                          liste_bords_periodiques,
                                          som_elem,
+                                         my_offset,
                                          graph_elements_perio);
   const int count = corriger_bords_avec_graphe(graph_elements_perio,
                                                som_elem,

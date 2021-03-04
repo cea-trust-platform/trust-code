@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ void Partitionneur_Fichier_Decoupage::initialiser(const char *filename)
 //  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
 // Precondition:
 //  domaine associe et filename initialise
-void Partitionneur_Fichier_Decoupage::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Fichier_Decoupage::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
 {
   if (! ref_domaine_.non_nul())
     {
@@ -115,6 +115,7 @@ void Partitionneur_Fichier_Decoupage::construire_partition(ArrOfInt& elem_part, 
       if (liste_bords_periodiques_.size() > 0)
         corriger_bords_avec_liste(ref_domaine_.valeur(),
                                   liste_bords_periodiques_,
+                                  0,
                                   elem_part);
       corriger_elem0_sur_proc0(elem_part);
     }

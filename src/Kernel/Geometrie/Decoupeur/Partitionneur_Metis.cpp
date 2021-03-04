@@ -133,7 +133,7 @@ void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
 //  et a equilibrer le nombre d'elements par partie.
 // Precondition:
 //  domaine associe et nombre de parties initialise
-void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Metis::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
 {
 #ifdef NO_METIS
   Cerr << "METIS is not compiled with this version. Use another partition tool like Tranche." << finl;
@@ -274,7 +274,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
   graph.free_memory();
 
   const int n = graph.nvtxs;
-  elem_part.resize_array(n);
+  elem_part.resize(n);
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
 
@@ -284,6 +284,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
       Cerr << "Correction of the partition for the periodicity" << finl;
       corriger_bords_avec_liste(ref_domaine_.valeur(),
                                 liste_bords_periodiques_,
+                                0,
                                 elem_part);
       Cerr << "  If this number is high, we can improve the splitting with the option use_weights\n"
            << "  but it takes more memory)" << finl;

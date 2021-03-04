@@ -31,6 +31,7 @@
 #include <Comm_Group_MPI.h>
 #include <communications.h>
 #include <Domain_Graph.h>
+#include <MD_Vector_tools.h>
 
 inline void not_implemented(const Nom& chaine)
 {
@@ -84,7 +85,7 @@ void Partitionneur_Ptscotch::associer_domaine(const Domaine& domaine)
 //  et a equilibrer le nombre d'elements par partie.
 // Precondition:
 //  domaine associe et nombre de parties initialise
-void Partitionneur_Ptscotch::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Ptscotch::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
 {
 #ifdef NO_METIS
   Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
@@ -171,13 +172,12 @@ void Partitionneur_Ptscotch::construire_partition(ArrOfInt& elem_part, int& nb_p
 
   graph.free_memory();
 
-  elem_part.resize_array(n);
+  MD_Vector_tools::creer_tableau_distribue(ref_domaine_.valeur().zone(0).md_vector_elements(), elem_part);
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
+  elem_part.echange_espace_virtuel();
 
   delete [] partition;
-  Cerr << "elem part before periodic correction" << finl;
-  Cerr << elem_part << finl;
 
   // Correction de la partition pour la periodicite. (***)
   if (graph_elements_perio.get_nb_lists() > 0)
@@ -185,13 +185,11 @@ void Partitionneur_Ptscotch::construire_partition(ArrOfInt& elem_part, int& nb_p
       Cerr << "Correction of the partition for the periodicity" << finl;
       corriger_bords_avec_liste(ref_domaine_.valeur(),
                                 liste_bords_periodiques_,
+                                0,
                                 elem_part);
       Cerr << "  If this number is high, we can improve the splitting with the option use_weights\n"
            << "  but it takes more memory)" << finl;
     }
-
-  Cerr << "elem part after periodic correction" << finl;
-  Cerr << elem_part << finl;
 
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);

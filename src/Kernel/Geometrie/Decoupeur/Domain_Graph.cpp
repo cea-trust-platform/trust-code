@@ -284,6 +284,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
       nb_connexions_perio = Partitionneur_base::calculer_graphe_connexions_periodiques(dom.zone(0),
                                                                                        liste_bords_periodiques,
                                                                                        som_elem,
+                                                                                       my_offset,
                                                                                        graph_elements_perio);
     }
 

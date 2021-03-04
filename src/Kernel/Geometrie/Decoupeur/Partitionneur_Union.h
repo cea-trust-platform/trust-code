@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ public:
   void set_param(Param& param) { };
   void associer_domaine(const Domaine& dom);
   void initialiser(const char *filename, const char *filename_ssz);
-  void construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntTab& elem_part, int& nb_parts_tot) const;
 
 protected:
   // Parametres du partitionneur
