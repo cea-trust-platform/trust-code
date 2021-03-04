@@ -62,6 +62,11 @@ Associate pb mon_schema
 Associate pb milieu
 Discretize pb ma_discretisation
 
+# We take a ring of the cylindre between z=-2 and z=-1 #
+Domaine ring
+Extraire_surface { Domaine ring Probleme pb Condition_faces (z+2)*(z+1)*(x^2+y^2-0.51)>0 avec_certains_bords 1 Cylindre }
+
+Domaine Entree
 Read pb
 {
 	Navier_Stokes_standard
@@ -90,20 +95,164 @@ Read pb
 
 	Post_processing
 	{
+		Definition_champs
+		{
+			# =================================== #
+			# Calculate viscous force on the ring #
+			# =================================== #
+			# new fashion since TRUST 183 #
+			FVx Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb viscous_force_x }
+				}
+			}
+			FVy Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb viscous_force_y }
+				}
+			}
+			FVz Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb viscous_force_z }
+				}
+			}
+			FV_vecteur Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb viscous_force }
+				}
+			}
+			# old fashion #
+			FVx_old_fashion Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Morceau_equation {
+						type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+					}
+				}
+			}
+			FVy_old_fashion Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Morceau_equation {
+						type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
+					}
+				}
+			}
+			FVz_old_fashion Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Morceau_equation {
+						type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
+					}
+				}
+			}
+			# ==================================== #
+			# Calculate pressure force on the ring #
+			# ==================================== #
+			# new fashion since TRUST 183 #
+			FPx Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb pressure_force_x }
+				}
+			}
+			FPy Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb pressure_force_y }
+				}
+			}
+			FPz Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb pressure_force_z }
+				}
+			}
+			FP_vecteur Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb pressure_force }
+				}
+			}
+			# Calculate pressure force on the cylinder (new feature, boundary domain are usable everywhere in the data file) #
+                               FPx_cylinder Reduction_0D {
+                                       methode sum source Interpolation {
+                                               domaine dom_boundaries_Cylindre localisation elem source Morceau_equation {
+                                                       type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+                                               }
+                                       }
+			}
+			# old fashion #
+			# Calculate pressure force on the ring #
+			FPx_old_fashion Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Morceau_equation {
+						type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+					}
+				}
+			}
+			FPy_old_fashion Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Morceau_equation {
+						type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
+					}
+				}
+			}
+			FPz_old_fashion Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Morceau_equation {
+						type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
+					}
+				}
+			}
+			# Calculate total force on the ring #
+			# new fashion #
+			FTx Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb total_force_x }
+				}
+			}
+			FTy Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb total_force_y }
+				}
+			}
+			FTz Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb total_force_z }
+				}
+			}
+			FT_vecteur Reduction_0D {
+				methode sum source Interpolation {
+					domaine ring localisation elem source Predefini { pb_champ pb total_force }
+				}
+			}
+		}
 		Probes
 		{
-	       	  sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
-		  sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
+			FVx FVx periode 0.005 numero_elem_sur_maitre 0
+			FVy FVy periode 0.005 numero_elem_sur_maitre 0
+			FVz FVz periode 0.005 numero_elem_sur_maitre 0
+			FPx FPx periode 0.005 numero_elem_sur_maitre 0
+			FPy FPy periode 0.005 numero_elem_sur_maitre 0
+			FPz FPz periode 0.005 numero_elem_sur_maitre 0
+			FVx_old_fashion FVx_old_fashion periode 0.005 numero_elem_sur_maitre 0
+			FVy_old_fashion FVy_old_fashion periode 0.005 numero_elem_sur_maitre 0
+			FVz_old_fashion FVz_old_fashion periode 0.005 numero_elem_sur_maitre 0
+			FPx_old_fashion FPx_old_fashion periode 0.005 numero_elem_sur_maitre 0
+			FPy_old_fashion FPy_old_fashion periode 0.005 numero_elem_sur_maitre 0
+			FPz_old_fashion FPz_old_fashion periode 0.005 numero_elem_sur_maitre 0
+			FTx FTx periode 0.005 numero_elem_sur_maitre 0
+			FTy FTy periode 0.005 numero_elem_sur_maitre 0
+			FTz FTz periode 0.005 numero_elem_sur_maitre 0
+			FV_vecteur FV_vecteur periode 0.005 numero_elem_sur_maitre 0
+			FP_vecteur FP_vecteur periode 0.005 numero_elem_sur_maitre 0
+			FT_vecteur FT_vecteur periode 0.005 numero_elem_sur_maitre 0
+			FPx_cylinder FPx_cylinder periode 0.005 numero_elem_sur_maitre 0
+			sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
+			sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
 		}
 		
 		Format lml
 		fields dt_post 1.
 		{ 
-		  pression_pa elem
-		  pression_pa som
-		  vitesse elem
+			pression_pa elem
+			pression_pa som
+			vitesse elem
 		}
-			
 	}
 	
 }
