@@ -1529,6 +1529,13 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       bool la_matrice_est_morse_non_symetrique = sub_type(Matrice_Morse, la_matrice) && !sub_type(Matrice_Morse_Sym, la_matrice);
       const Matrice_Morse& matrice_morse = la_matrice_est_morse_non_symetrique ? ref_cast(Matrice_Morse, la_matrice) : matrice_morse_intermediaire;
       Create_objects(matrice_morse, secmem);
+      if (limpr() == 1)
+        Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
+             << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
+             << " unknowns per PETSc process )" << finl;
+
+      // Build x and b during the first matrix creation
+      if (nb_matrices_creees_==1) Create_vectors(secmem);
     }
 
   // Assemblage du second membre et de la solution
@@ -1553,41 +1560,21 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   if (save_matrix_ && new_matrix)
     SaveObjectsToFile();
 
-  // Affichage par MyKSPMonitor
-  if (!solveur_direct_)
-    {
-      if (limpr()==1)
-        {
-          KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
-        }
-      else
-        KSPMonitorCancel(SolveurPetsc_);
-    }
-  // Historique du residu
-  int size_residu = nb_it_max_ + 1;
-  //DoubleTrav residu(size_residu); // bad_alloc sur gros cas, curie pourquoi ?
-  ArrOfDouble residu(size_residu);
-  KSPSetResidualHistory(SolveurPetsc_, residu.addr(), size_residu, PETSC_TRUE);
-
-  if( enable_ksp_view( ) )
-    {
-      KSPView( SolveurPetsc_, PETSC_VIEWER_STDOUT_WORLD );
-    }
-
   //////////////////////////
   // Solve the linear system
   //////////////////////////
   PetscLogStagePush(KSPSolve_Stage_);
-  if (amgx_)
+  int size_residu = nb_it_max_ + 1;
+  //DoubleTrav residu(size_residu); // bad_alloc sur gros cas, curie pourquoi ?
+  ArrOfDouble residu(size_residu);
+  int nbiter = solve(residu);
+  if (limpr()>-1)
     {
-#ifdef PETSC_HAVE_CUDA
-      SolveurAmgX_.solve(SolutionPetsc_, SecondMembrePetsc_);
-#endif
+      double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
+      Cout << finl << "Final residue: " << residu(nbiter) << " ( " << residu_relatif << " )"<<finl;
     }
-  else
-    KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
-  PetscLogStagePop();
 
+  // Recuperation de la solution
   if (different_partition_)
     {
       // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
@@ -1615,7 +1602,30 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           }
     }
   solution.echange_espace_virtuel();
+  return nbiter;
+#else
+  return -1;
+#endif
+}
 
+int Solv_Petsc::solve(ArrOfDouble& residu)
+{
+  // Affichage par MyKSPMonitor
+  if (!solveur_direct_)
+    {
+      if (limpr() == 1)
+        {
+          KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
+        }
+      else
+        KSPMonitorCancel(SolveurPetsc_);
+    }
+  // Historique du residu
+  KSPSetResidualHistory(SolveurPetsc_, residu.addr(), residu.size_array(), PETSC_TRUE);
+
+  if (enable_ksp_view())
+    KSPView(SolveurPetsc_, PETSC_VIEWER_STDOUT_WORLD);
+  KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
@@ -1645,58 +1655,31 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       else Cerr << (int)Reason << finl;
       if (Reason<0) exit();
     }
-  // Recuperation du nombre d'iterations
   int nbiter=-1;
-  if (amgx_)
-    {
-#ifdef PETSC_HAVE_CUDA
-      SolveurAmgX_.getIters(nbiter);
-#endif
-    }
-  else
-    KSPGetIterationNumber(SolveurPetsc_, &nbiter);
-
+  KSPGetIterationNumber(SolveurPetsc_, &nbiter);
   if (limpr()>-1)
     {
-      if (amgx_)
+      // MyKSPMonitor ne marche pas pour certains solveurs (residu(0) n'est pas calcule):
+      if (solveur_direct_ || type_ksp_ == KSPIBCGS)
         {
-#ifdef PETSC_HAVE_CUDA
-          SolveurAmgX_.getResidual(0, residu(0));
-          SolveurAmgX_.getResidual(nbiter-1, residu(nbiter));
-#endif
+          // Calcul de residu(0)=||B||
+          VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));
+          // On l'affiche pour les solveurs directs (pour les autres TRUST s'en occupe):
+          if (solveur_direct_) MyKSPMonitor(SolveurPetsc_, 0, residu(0), 0);
         }
-      else
+      // Idem: l'historique du residu est mal evalue pour certains solveurs:
+      // donc on le calcul a la derniere iteration:
+      if (residu(0) > 0 && (solveur_direct_ || type_ksp_ == KSPIBCGS))
         {
-          // MyKSPMonitor ne marche pas pour certains solveurs (residu(0) n'est pas calcule):
-          if (solveur_direct_ || type_ksp_==KSPIBCGS)
-            {
-              // Calcul de residu(0)=||B||
-              VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));
-              // On l'affiche pour les solveurs directs (pour les autres TRUST s'en occupe):
-              if (solveur_direct_) MyKSPMonitor(SolveurPetsc_, 0, residu(0), 0);
-            }
-          // Idem: l'historique du residu est mal evalue pour certains solveurs:
-          // donc on le calcul a la derniere iteration:
-          if (residu(0)>0 && (solveur_direct_ || type_ksp_==KSPIBCGS))
-            {
-              // Calcul de residu(nbiter)=||Ax-B||
-              VecScale(SecondMembrePetsc_, -1);
-              MatMultAdd(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_, SecondMembrePetsc_);
-              VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
-            }
+          // Calcul de residu(nbiter)=||Ax-B||
+          VecScale(SecondMembrePetsc_, -1);
+          MatMultAdd(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_, SecondMembrePetsc_);
+          VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
         }
-      // Affichage residu final absolu et (relatif)
-      double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
-      Cout << finl << "Final residue: " << residu(nbiter) << " ( " << residu_relatif << " )"<<finl;
     }
   return nbiter;
-#else
-  return -1;
-#endif
 }
-
 #ifdef PETSCKSP_H
-
 void Solv_Petsc::construit_renum(const DoubleVect& b)
 {
   // Initialisation du tableau items_to_keep_ si ce n'est pas deja fait
@@ -1817,24 +1800,22 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
     }
 }
 // Creation des objets PETSc
-int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
+void Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& secmem)
 {
   // Remplissage d'une matrice de preconditionnement non symetrique
   Mat MatricePrecondionnementPetsc;
   /* Semble plus vrai pour spai dans Petsc 3.10.0:
   if (matrice_symetrique_ && (type_pc_=="hypre" || type_pc_=="spai")) */
-  if (matrice_symetrique_ && type_pc_=="hypre")
-    preconditionnement_non_symetrique_=1;
+  if (matrice_symetrique_ && type_pc_ == "hypre")
+    preconditionnement_non_symetrique_ = 1;
 
-  if (preconditionnement_non_symetrique_ && !amgx_)
+  if (preconditionnement_non_symetrique_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
 
   // Creation de la matrice Petsc si necessaire
   if (!read_matrix_)
     Create_MatricePetsc(MatricePetsc_, mataij_, mat);
 
-  if (limpr()==1)
-    Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ " << (petsc_cpus_selection_?(int)(nb_rows_tot_/petsc_nb_cpus_):nb_rows_) << " unknowns per PETSc process )" << finl;
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
   Hope it will be better with GPU
@@ -1856,73 +1837,81 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
   /*****************************************************************************/
   if (matrice_symetrique_)
     {
-      MatSetOption(MatricePetsc_,MAT_SYMMETRIC,PETSC_TRUE); // Utile ?
-      if (type_pc_==PCLU)
+      MatSetOption(MatricePetsc_, MAT_SYMMETRIC, PETSC_TRUE); // Utile ?
+      if (type_pc_ == PCLU)
         {
           // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU, CHOLMOD
-          if (mataij_==0 || solveur_direct_==2 || solveur_direct_==6)
+          if (mataij_ == 0 || solveur_direct_ == 2 || solveur_direct_ == 6)
             PCSetType(PreconditionneurPetsc_, PCCHOLESKY); // Precond PCLU -> PCCHOLESKY
         }
-      else if (type_pc_==PCSOR)
+      else if (type_pc_ == PCSOR)
         PCSORSetSymmetric(PreconditionneurPetsc_, SOR_LOCAL_SYMMETRIC_SWEEP); // Precond SOR -> SSOR
     }
 
   /*******************************************/
   /* Choix du package pour le solveur direct */
   /*******************************************/
-  static int message_affi=1;
-  if (solveur_direct_==1)
+  static int message_affi = 1;
+  if (solveur_direct_ == 1)
     {
       // Message pour prevenir
       if (message_affi)
         {
           Cout << "The LU decomposition of a matrix with ";
           Cout << "Cholesky from MUMPS may take several minutes, please wait..." << finl;
-          Cout << "If the decomposition fails/crashes cause a lack of memory, then increase the number of CPUs for your calculation" << finl;
-          Cout << "or use Cholesky_out_of_core keyword to write the decomposition on the disk, thus saving memory but with an extra CPU cost during solve." << finl;
-          Cout << "To see the RAM required by the decomposition in the .out file, add impr option to the solver: petsc cholesky { impr }" << finl;
-          Cout << "If an error INFOG(1)=-8|-9|-11|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option." << finl;
-          message_affi=0;
+          Cout
+              << "If the decomposition fails/crashes cause a lack of memory, then increase the number of CPUs for your calculation"
+              << finl;
+          Cout
+              << "or use Cholesky_out_of_core keyword to write the decomposition on the disk, thus saving memory but with an extra CPU cost during solve."
+              << finl;
+          Cout
+              << "To see the RAM required by the decomposition in the .out file, add impr option to the solver: petsc cholesky { impr }"
+              << finl;
+          Cout
+              << "If an error INFOG(1)=-8|-9|-11|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option."
+              << finl;
+          message_affi = 0;
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERMUMPS);
     }
-  else if (solveur_direct_==2)
+  else if (solveur_direct_ == 2)
     {
-      if( message_affi )
+      if (message_affi)
         {
           Cout << "Cholesky from SUPERLU_DIST may take several minutes, please wait..." << finl;
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERSUPERLU_DIST);
     }
-  else if (solveur_direct_==3)
+  else if (solveur_direct_ == 3)
     {
-      if( message_affi )
+      if (message_affi)
         {
-          Cout << "Cholesky from PETSc may take several minutes, please wait..." ;
+          Cout << "Cholesky from PETSc may take several minutes, please wait...";
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPETSC);
     }
-  else if (solveur_direct_==4)
+  else if (solveur_direct_ == 4)
     {
-      if( message_affi )
+      if (message_affi)
         {
-          Cout << "Cholesky from UMFPACK may take several minutes, please wait..." ;
+          Cout << "Cholesky from UMFPACK may take several minutes, please wait...";
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERUMFPACK);
     }
-  else if (solveur_direct_==5)
+  else if (solveur_direct_ == 5)
     {
-      if( message_affi )
+      if (message_affi)
         {
-          Cout << "Cholesky from Pastix may take several minutes, please wait..." ;
+          Cout << "Cholesky from Pastix may take several minutes, please wait...";
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPASTIX);
     }
-  else if (solveur_direct_==6)
+  else if (solveur_direct_ == 6)
     {
-      if( message_affi )
+      if (message_affi)
         {
-          Cout << "Cholesky from Cholmod may take several minutes, please wait..." ;
+          Cout << "Cholesky from Cholmod may take several minutes, please wait...";
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERCHOLMOD);
     }
@@ -1933,47 +1922,23 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       exit();
     }
 
-  if( ( solveur_direct_ > 1 ) && ( message_affi ) )
+  if ((solveur_direct_ > 1) && (message_affi))
     {
-      Cout << " OK "<<finl;
+      Cout << " OK " << finl;
       message_affi = 0;
     }
 
   /****************************************/
   /* Association de la matrice au solveur */
   /****************************************/
-  if (amgx_)
+  if (preconditionnement_non_symetrique_)
     {
-#ifdef PETSC_HAVE_CUDA
-      if (!amgx_initialized())
-        {
-          Nom filename(Objet_U::nom_du_cas());
-          filename+=".amgx";
-          Nom AmgXmode="dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
-          /* Possible de jouer avec simple precision peut etre:
-          1. (lowercase) letter: whether the code will run on the host (h) or device (d).
-          2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
-          3. (uppercase) letter: whether the vector precision is float (F) or double (D).
-          4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
-          typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
-          Cerr << "Initializing Amgx and reading the " << filename << " file." << finl;
-          SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
-          amgx_initialized_=true;
-        }
-      SolveurAmgX_.setA(MatricePetsc_);
-#endif
+      KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePrecondionnementPetsc);
+      MatDestroy(&MatricePrecondionnementPetsc);
     }
   else
     {
-      if (preconditionnement_non_symetrique_)
-        {
-          KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePrecondionnementPetsc);
-          MatDestroy(&MatricePrecondionnementPetsc);
-        }
-      else
-        {
-          KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePetsc_);
-        }
+      KSPSetOperators(SolveurPetsc_, MatricePetsc_, MatricePetsc_);
     }
   /************************************/
   /* Factored matrix if direct solver */
@@ -1983,27 +1948,27 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       // Syntax: factored_matrix save|read|disk
       // disk means read the factored_matrix or compute it if not found then save it to disk
       Nom filename(Objet_U::nom_du_cas());
-      filename+="_Factored_Matrix.petsc";
-      if (factored_matrix_=="read" || factored_matrix_=="disk")
+      filename += "_Factored_Matrix.petsc";
+      if (factored_matrix_ == "read" || factored_matrix_ == "disk")
         {
-          int filename_found=0;
+          int filename_found = 0;
           // Advice: stat file from master and broadcast
           if (Process::je_suis_maitre())
             {
               struct stat f;
-              if (!stat(filename,&f)) filename_found=1;
+              if (!stat(filename, &f)) filename_found = 1;
             }
           envoyer_broadcast(filename_found, 0);
           if (filename_found)
             {
               // File found, we read it:
-              factored_matrix_="read";
+              factored_matrix_ = "read";
             }
           else
             {
               // File not found, two cases:
               Cerr << "File " << filename << " not found";
-              if (factored_matrix_=="read")
+              if (factored_matrix_ == "read")
                 {
                   Cerr << "!" << finl;
                   exit();
@@ -2012,17 +1977,17 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
                 {
                   Cerr << "." << finl;
                   Cerr << "So we will compute the factored matrix and we will save it to disk." << finl;
-                  factored_matrix_="save";
+                  factored_matrix_ = "save";
                 }
             }
         }
-      if (factored_matrix_=="read")
+      if (factored_matrix_ == "read")
         {
           PetscViewer viewer;
-          PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_READ,&viewer);
+          PetscViewerBinaryOpen(PETSC_COMM_WORLD, filename, FILE_MODE_READ, &viewer);
           PCFactorSetUpMatSolverType(PreconditionneurPetsc_);
           Mat FactoredMatrix;
-          PCFactorGetMatrix(PreconditionneurPetsc_,&FactoredMatrix);
+          PCFactorGetMatrix(PreconditionneurPetsc_, &FactoredMatrix);
 //	MatCreate(PETSC_COMM_WORLD,&FactoredMatrix);
 //	MatSetSizes(FactoredMatrix, nb_rows_, nb_rows_, PETSC_DECIDE, PETSC_DECIDE);
 //	MatSetType(FactoredMatrix,MATSEQAIJ);
@@ -2030,18 +1995,18 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
           MatLoad(FactoredMatrix, viewer);
           PetscViewerDestroy(&viewer);
         }
-      else if (factored_matrix_=="save")
+      else if (factored_matrix_ == "save")
         {
           Mat FactoredMatrix;
           // Compute the factored matrix:
           PCFactorSetUpMatSolverType(PreconditionneurPetsc_);
           PCSetUp(PreconditionneurPetsc_);
           // Get the factored matrix:
-          PCFactorGetMatrix(PreconditionneurPetsc_,&FactoredMatrix);
+          PCFactorGetMatrix(PreconditionneurPetsc_, &FactoredMatrix);
 //NO	MatConvert(FactoredMatrix,MATSEQDENSE,MAT_INITIAL_MATRIX,&FactoredMatrix);
 //	MatScalar *a;
 //	MatDenseGetArray(FactoredMatrix,&a);
-          if (nb_rows_<20)
+          if (nb_rows_ < 20)
             {
               Cerr << "A=" << finl;
               MatView(MatricePetsc_, PETSC_VIEWER_STDOUT_WORLD);
@@ -2053,7 +2018,7 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
           Cerr << "Not implemented yet." << finl;
           exit();
           PetscViewer viewer;
-          PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_WRITE,&viewer);
+          PetscViewerBinaryOpen(PETSC_COMM_WORLD, filename, FILE_MODE_WRITE, &viewer);
           MatView(FactoredMatrix, viewer);
           PetscViewerDestroy(&viewer);
 
@@ -2062,21 +2027,118 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
 //          MatLoad(FactoredMatrix, viewer2);
 //          PetscViewerDestroy(&viewer2);
         }
-      else if (factored_matrix_!="")
+      else if (factored_matrix_ != "")
         {
           Cerr << "Unknown option for factored_matrix option: " << factored_matrix_ << finl;
           Cerr << "Options are: read|save|disk" << finl;
           exit();
         }
     }
+  // Creation de Champs (fields) pour pouvoir utiliser des preconditionneurs PCFIELDSPLIT
+  Create_DM(secmem);
 
+  /*************************************/
+  /* Mise en place du preconditionneur */
+  /*************************************/
+  KSPSetUp(SolveurPetsc_);
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  if (matrice_symetrique_)
+    {
+      if (type_ksp_ == KSPCG || type_ksp_ == KSPPIPECG || type_ksp_ == KSPPIPECG2 || type_ksp_ == KSPGROPPCG ||
+          type_ksp_ == KSPRICHARDSON)
+        {
+          // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
+          KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+        }
+      else if (type_ksp_ == KSPPGMRES)
+        {
+          // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
+          // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
+          // -> on ne peut comparer la convergence avec le GMRES...
+          KSPSetPCSide(SolveurPetsc_, PC_LEFT);
+          // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
+        }
+      else
+        {
+          // Le preconditionnement a droite permet que le residu utilise pour la convergence
+          // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
+          // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
+          // les performances des solveurs (TRUST ou PETSC) entre eux
+          KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+          // Pour un certain nombre de solveurs, il faut preciser la facon dont la norme ||Ax-b||
+          // sera calculee:
+          if (type_ksp_ == KSPBCGS || type_ksp_ == KSPIBCGS || type_ksp_ == KSPGMRES)
+            {
+              KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+            }
+        }
+    }
+}
+
+void Solv_Petsc::Create_vectors(const DoubleVect& b)
+{
+  // Build x
+  VecCreate(PETSC_COMM_WORLD,&SecondMembrePetsc_);
+  // Set sizes:
+  if (petsc_decide_)
+    VecSetSizes(SecondMembrePetsc_, PETSC_DECIDE, nb_rows_tot_);
+  else if (petsc_cpus_selection_)
+    {
+      int nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
+      VecSetSizes(SecondMembrePetsc_, nb_rows_petsc, PETSC_DECIDE);
+    }
+  else
+    VecSetSizes(SecondMembrePetsc_, nb_rows_, PETSC_DECIDE);
+
+  // Set type:
+  if (Process::nproc()>1)
+    VecSetType(SecondMembrePetsc_, gpu_ ? VECMPICUDA : VECMPI);
+  else
+    VecSetType(SecondMembrePetsc_, gpu_ ? VECSEQCUDA : VECSEQ);
+  VecSetOptionsPrefix(SecondMembrePetsc_, option_prefix_);
+  VecSetFromOptions(SecondMembrePetsc_);
+  // Build b
+  VecDuplicate(SecondMembrePetsc_,&SolutionPetsc_);
+  // Initialize x to avoid a crash on GPU later with VecSetValues... (bug PETSc?)
+  if (gpu_) VecSet(SolutionPetsc_,0.0);
+
+  // Only in the case where TRUST and PETSc partitions are not the same
+  // VecGetValues can only get values on the same processor, so need to gather values from
+  // global vector SolutionPetsc_ to a local vector LocalSolutionPetsc_ before using VecGetValues
+  // It will add an extra MPI cost with this operation.
+  if (different_partition_)
+    {
+      // Create the local vector of length nb_rows_:
+      VecCreateSeq(PETSC_COMM_SELF, nb_rows_, &LocalSolutionPetsc_);
+      // Create the Scatter context to gather from the global solution to the local solution
+      ArrOfInt from(nb_rows_);
+      for (int i=0; i<nb_rows_; i++)
+        from(i)=decalage_local_global_+i; // Global indices in SolutionPetsc_
+      IS fromis;
+      ISCreateGeneral(PETSC_COMM_WORLD, from.size_array(), from.addr(), PETSC_COPY_VALUES, &fromis);
+      VecScatterCreate(SolutionPetsc_, fromis, LocalSolutionPetsc_, NULL, &VecScatter_);
+      ISDestroy(&fromis);
+      // Will permit later with VecScatterBegin/VecScatterEnd something like:
+      // LocalSolutionPetsc_[tois[i]]=SolutionPetsc_[fromis[i]]
+    }
+}
+
+void Solv_Petsc::Create_DM(const DoubleVect& b)
+{
   /* creation de champs Petsc si des MD_Vector_Composite sont trouves dans b, avec recursion! */
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()) && nb_matrices_creees_ == 1)
     {
       std::map<std::string, std::vector<int>> champ;
       //liste (MD_Vector_composite, offset de ses elements, multiplicateur (nb d'items du tableau par item du MD_Vector) prefixe des noms de ses champs)
       std::vector<std::tuple<const MD_Vector_composite *, int, int, std::string>>
-                                                                               mdc_list = { std::make_tuple(&ref_cast(MD_Vector_composite, b.get_md_vector().valeur()), 0, b.line_size(), std::string("b") ) };
+                                                                               mdc_list =
+      {
+        std::make_tuple(&ref_cast(MD_Vector_composite, b.get_md_vector().valeur()), 0, b.line_size(),
+        std::string("b"))
+      };
       while (mdc_list.size()) //remplissage recursif de champs_ -> (nom du champ, indices)
         {
           const MD_Vector_composite& mdc = *std::get<0>(mdc_list.back());
@@ -2088,7 +2150,8 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
               const MD_Vector_base& mdb = mdc.get_desc_part(i).valeur();
               int mult2 = mult * max(mdc.get_shape(i), 1), nb_seq = mdb.nb_items_seq_local() * mult2;
               if (sub_type(MD_Vector_composite, mdb)) //un autre MD_Vector_Composite! on le met dans la liste
-                mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, mult2, prefix + std::to_string((long long) i)));
+                mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, mult2,
+                                                   prefix + std::to_string((long long) i)));
               else
                 {
                   std::vector<int> indices;
@@ -2103,12 +2166,14 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       PetscSection sec;
       PetscSectionCreate(PETSC_COMM_WORLD, &sec);
       PetscSectionSetNumFields(sec, champ.size());
-      PetscSectionSetChart(sec, decalage_local_global_, decalage_local_global_ + b.line_size() * b.get_md_vector().valeur().nb_items_seq_local());
+      PetscSectionSetChart(sec, decalage_local_global_,
+                           decalage_local_global_ + b.line_size() * b.get_md_vector().valeur().nb_items_seq_local());
       int idx = 0;
-      for (auto && kv : champ)
+      for (auto &&kv : champ)
         {
           PetscSectionSetFieldName(sec, idx, kv.first.c_str());
-          for (int j = 0; j < (int) kv.second.size(); j++) PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
+          for (int j = 0; j < (int) kv.second.size(); j++)
+            PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
           idx++;
         }
       PetscSectionSetUp(sec);
@@ -2120,102 +2185,6 @@ int Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& b)
       PetscSectionDestroy(&sec);
     }
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur())) PCSetDM(PreconditionneurPetsc_, dm_);
-
-
-  if (!amgx_)
-    {
-      /*************************************/
-      /* Mise en place du preconditionneur */
-      /*************************************/
-      KSPSetUp(SolveurPetsc_);
-
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      if (matrice_symetrique_)
-        {
-          if (type_ksp_==KSPCG || type_ksp_==KSPPIPECG || type_ksp_==KSPPIPECG2 || type_ksp_==KSPGROPPCG || type_ksp_==KSPRICHARDSON)
-            {
-              // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
-              KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-            }
-          else if (type_ksp_==KSPPGMRES)
-            {
-              // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
-              // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
-              // -> on ne peut comparer la convergence avec le GMRES...
-              KSPSetPCSide(SolveurPetsc_, PC_LEFT);
-              // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
-            }
-          else
-            {
-              // Le preconditionnement a droite permet que le residu utilise pour la convergence
-              // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
-              // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
-              // les performances des solveurs (TRUST ou PETSC) entre eux
-              KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
-              // Pour un certain nombre de solveurs, il faut preciser la facon dont la norme ||Ax-b||
-              // sera calculee:
-              if (type_ksp_==KSPBCGS || type_ksp_==KSPIBCGS || type_ksp_==KSPGMRES)
-                {
-                  KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-                }
-            }
-        }
-    }
-  /**************************************************/
-  /* Build x and b during the first matrix creation */
-  /**************************************************/
-  // We suppose after that, if a new matrix is recreated onto the solver,
-  // the number of rows is the same...
-  if (nb_matrices_creees_==1)
-    {
-      // Build x
-      VecCreate(PETSC_COMM_WORLD,&SecondMembrePetsc_);
-      // Set sizes:
-      if (petsc_decide_)
-        VecSetSizes(SecondMembrePetsc_, PETSC_DECIDE, nb_rows_tot_);
-      else if (petsc_cpus_selection_)
-        {
-          int nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
-          VecSetSizes(SecondMembrePetsc_, nb_rows_petsc, PETSC_DECIDE);
-        }
-      else
-        VecSetSizes(SecondMembrePetsc_, nb_rows_, PETSC_DECIDE);
-
-      // Set type:
-      if (Process::nproc()>1)
-        VecSetType(SecondMembrePetsc_, gpu_ ? VECMPICUDA : VECMPI);
-      else
-        VecSetType(SecondMembrePetsc_, gpu_ ? VECSEQCUDA : VECSEQ);
-      VecSetOptionsPrefix(SecondMembrePetsc_, option_prefix_);
-      VecSetFromOptions(SecondMembrePetsc_);
-      // Build b
-      VecDuplicate(SecondMembrePetsc_,&SolutionPetsc_);
-      // Initialize x to avoid a crash on GPU later with VecSetValues... (bug PETSc?)
-      if (gpu_) VecSet(SolutionPetsc_,0.0);
-
-      // Only in the case where TRUST and PETSc partitions are not the same
-      // VecGetValues can only get values on the same processor, so need to gather values from
-      // global vector SolutionPetsc_ to a local vector LocalSolutionPetsc_ before using VecGetValues
-      // It will add an extra MPI cost with this operation.
-      if (different_partition_)
-        {
-          // Create the local vector of length nb_rows_:
-          VecCreateSeq(PETSC_COMM_SELF, nb_rows_, &LocalSolutionPetsc_);
-          // Create the Scatter context to gather from the global solution to the local solution
-          ArrOfInt from(nb_rows_);
-          for (int i=0; i<nb_rows_; i++)
-            from(i)=decalage_local_global_+i; // Global indices in SolutionPetsc_
-          IS fromis;
-          ISCreateGeneral(PETSC_COMM_WORLD, from.size_array(), from.addr(), PETSC_COPY_VALUES, &fromis);
-          VecScatterCreate(SolutionPetsc_, fromis, LocalSolutionPetsc_, NULL, &VecScatter_);
-          ISDestroy(&fromis);
-          // Will permit later with VecScatterBegin/VecScatterEnd something like:
-          // LocalSolutionPetsc_[tois[i]]=SolutionPetsc_[fromis[i]]
-        }
-    }
-  return 1;
 }
 
 int Solv_Petsc::compute_nb_rows_petsc(int nb_rows_tot)

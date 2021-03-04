@@ -35,11 +35,6 @@
 #include <petscdm.h>
 #endif
 
-#ifdef PETSC_HAVE_CUDA
-#include <AmgXSolver.hpp>
-#include <amgx_c.h>
-#endif
-
 class IntVect;
 class DoubleTab;
 class Matrice_Morse_Sym;
@@ -103,8 +98,12 @@ protected :
 #ifdef PETSCKSP_H
   void construit_renum(const DoubleVect&);
   void check_aij(const Matrice_Morse&);
-  int Create_objects(const Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc Matrice et SecondMembre
+  virtual void Create_objects(const Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc
+  void Create_vectors(const DoubleVect&); // Construit les vecteurs Petsc x et b
+  void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
   void Create_MatricePetsc(Mat&, int, const Matrice_Morse&);
+  virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
+  virtual void finalize() {};
   bool enable_ksp_view( void );
   int add_option(const Nom& option, const Nom& value, int cli = 0);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
@@ -158,10 +157,6 @@ protected :
   bool gpu_;                    // Utilisation des solveurs GPU de PETSc
   bool amgx_;			// Utilisation des solveurs GPU de AMGX
   bool amgx_initialized_;	// Amgx initialise
-#ifdef PETSC_HAVE_CUDA
-  AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
-#endif
-
 };
 
 #define NB_IT_MAX_DEFINED 10000
@@ -189,16 +184,7 @@ inline void Solv_Petsc::reset()
     {
       assert(solveur_cree_==1);
       KSPDestroy(&SolveurPetsc_);
-      if (amgx_)
-        {
-#ifdef PETSC_HAVE_CUDA
-          if (amgx_initialized_)
-            {
-              SolveurAmgX_.finalize();
-              amgx_initialized_ = false;
-            }
-#endif
-        }
+      finalize();
     }
   if (nb_matrices_creees_)
     {

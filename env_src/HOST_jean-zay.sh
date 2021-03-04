@@ -54,7 +54,7 @@ define_soumission_batch()
       gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible...
       qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_gpu-dev && cpu=120 
       #qos=qos_gpu-t4 && cpu=6000
-      [ "`id | grep ikp`" != "" ] && project="ikp@gpu"
+      [ "`id | grep eia`" != "" ] && project="eia@gpu"
    else
       queue=cpu_p1
       qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120 

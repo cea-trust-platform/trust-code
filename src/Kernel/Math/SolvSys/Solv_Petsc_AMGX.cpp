@@ -37,3 +37,44 @@ Entree& Solv_Petsc_AMGX::readOn(Entree& is)
   create_solver(is);
   return is;
 }
+
+// Creation des objets PETSc
+void Solv_Petsc_AMGX::Create_objects(const Matrice_Morse& mat, const DoubleVect&)
+{
+#ifdef PETSC_HAVE_CUDA
+  // Creation de la matrice Petsc si necessaire
+  if (!read_matrix_)
+    Create_MatricePetsc(MatricePetsc_, mataij_, mat);
+
+  if (!amgx_initialized())
+    {
+      Nom filename(Objet_U::nom_du_cas());
+      filename += ".amgx";
+      Nom AmgXmode = "dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
+      /* Possible de jouer avec simple precision peut etre:
+      1. (lowercase) letter: whether the code will run on the host (h) or device (d).
+      2. (uppercase) letter: whether the matrix precision is float (F) or double (D).
+      3. (uppercase) letter: whether the vector precision is float (F) or double (D).
+      4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
+      typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
+      Cerr << "Initializing Amgx and reading the " << filename << " file." << finl;
+      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
+      amgx_initialized_ = true;
+    }
+  SolveurAmgX_.setA(MatricePetsc_);
+#endif
+}
+int Solv_Petsc_AMGX::solve(ArrOfDouble& residu)
+{
+#ifdef PETSC_HAVE_CUDA
+  int nbiter = -1;
+  SolveurAmgX_.solve(SolutionPetsc_, SecondMembrePetsc_);
+  SolveurAmgX_.getIters(nbiter);
+  if (limpr() > -1)
+    {
+      SolveurAmgX_.getResidual(0, residu(0));
+      SolveurAmgX_.getResidual(nbiter - 1, residu(nbiter));
+    }
+  return nbiter;
+#endif
+}

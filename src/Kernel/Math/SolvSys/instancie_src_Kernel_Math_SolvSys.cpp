@@ -19,6 +19,8 @@
 #include <Solv_Gmres.h>
 #include <Solv_Optimal.h>
 #include <Solv_Petsc.h>
+#include <Solv_Petsc_AMGX.h>
+#include <Solv_Petsc_GPU.h>
 #include <SolveurSys.h>
 void instancie_src_Kernel_Math_SolvSys() {
 Cerr << "src_Kernel_Math_SolvSys" << finl;
@@ -39,7 +41,7 @@ Solv_Gmres inst14;verifie_pere(inst14);
 Solv_Optimal inst15;verifie_pere(inst15);
 Test_solveur inst16;verifie_pere(inst16);
 Solv_Petsc inst17;verifie_pere(inst17);
-Solv_Petsc_GPU inst18;verifie_pere(inst18);
-Solv_Petsc_AMGX inst19;verifie_pere(inst19);
+Solv_Petsc_AMGX inst18;verifie_pere(inst18);
+Solv_Petsc_GPU inst19;verifie_pere(inst19);
 SolveurSys inst20;verifie_pere(inst20);
 }

@@ -903,8 +903,8 @@
  solv_iteratif solv_iteratif solv_iteratif.h
  Solv_Optimal Solv_Optimal Solv_Optimal.h
  Solv_Petsc Solv_Petsc Solv_Petsc.h
- Solv_Petsc_AMGX Solv_Petsc_AMGX Solv_Petsc.h
- Solv_Petsc_GPU Solv_Petsc_GPU Solv_Petsc.h
+ Solv_Petsc_AMGX Solv_Petsc_AMGX Solv_Petsc_AMGX.h
+ Solv_Petsc_GPU Solv_Petsc_GPU Solv_Petsc_GPU.h
  Sonde Sonde Sonde.h
  Sondes_Int Sondes_Int Sondes_Int.h
  Sondes|Probes Sondes Sondes.h

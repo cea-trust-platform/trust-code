@@ -24,6 +24,10 @@
 #define Solv_Petsc_AMGX_included
 
 #include <Solv_Petsc.h>
+#ifdef PETSC_HAVE_CUDA
+#include <AmgXSolver.hpp>
+#include <amgx_c.h>
+#endif
 
 class Solv_Petsc_AMGX : public Solv_Petsc
 {
@@ -33,6 +37,23 @@ public :
   {
     amgx_=true;
   };
+protected :
+  virtual void Create_objects(const Matrice_Morse&, const DoubleVect&);
+  virtual int solve(ArrOfDouble& residual);
+  virtual void finalize()
+  {
+#ifdef PETSC_HAVE_CUDA
+    if (amgx_initialized_)
+      {
+        SolveurAmgX_.finalize();
+        amgx_initialized_ = false;
+      }
+#endif
+  }
+private:
+#ifdef PETSC_HAVE_CUDA
+  AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
+#endif
 };
 
 #endif
