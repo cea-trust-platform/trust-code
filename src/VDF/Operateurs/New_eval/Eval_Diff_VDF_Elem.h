@@ -105,16 +105,32 @@ public:
     return 0;
   }
 
+  //************************
+  // CAS SCALAIRE
+  //************************
+
+  /*
+   * XXX XXX XXX : VERY IMPORTANT
+   * Partial specialization is not supported in C++ (otherwise I miss some information)
+   * For example template<typename DERIVED_T>template<> will not compile due to
+   * invalid explicit specialization before '>' token
+   * Complete specialization works ie: template<>template<>
+   *
+   * So, we need to overload some functions for specific BC's outside the function template
+   */
+
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
   // Elles sont de type double et renvoient le flux
 
-  inline double flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int ) const;
+  // Generic return
+  template<typename BC>
+  inline double flux_face(const DoubleTab&, int , const BC&, int ) const
+  {
+    return 0;
+  }
+  // To overload
   inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Neumann_paroi&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Symetrie&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
   inline double flux_face(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Echange_global_impose&, int ) const;
@@ -123,33 +139,18 @@ public:
 
   inline double flux_faces_interne(const DoubleTab&, int ) const;
 
-  // Fonctions qui servent a calculer le flux de grandeurs vectorielles
-  // Elles sont de type void et remplissent le tableau flux
-  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&,      int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&,   int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Neumann_paroi&,             int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Neumann_sortie_libre&,  int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Symetrie&,              int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Periodique&,            int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Echange_global_impose&,     int, DoubleVect& flux) const;
 
-  inline void flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&,   int, DoubleVect& flux) const;
+  // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs scalaires.
 
-  inline void flux_faces_interne(const DoubleTab&, int ,
-                                 DoubleVect& flux) const;
-
-  // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
-  // scalaires.
-
-  inline void coeffs_face(int,int, const Dirichlet_paroi_fixe&, double& aii, double& ajj ) const;
+  // Generic return
+  template<typename BC>
+  inline void coeffs_face(int,int, const BC&, double& aii, double& ajj ) const
+  {
+    /* Do nothing */
+  }
+  // To overload
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const Dirichlet_paroi_defilante&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Neumann_paroi&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_paroi_adiabatique&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_sortie_libre&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const Symetrie&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Periodique&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Echange_global_impose&, double& aii, double& ajj ) const;
@@ -161,34 +162,73 @@ public:
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l"implicite pour les grandeurs scalaires.
 
-  inline double secmem_face(int, const Dirichlet_paroi_fixe&, int ) const;
+  // Generic return
+  template<typename BC>
+  inline double secmem_face(int, const BC&, int ) const
+  {
+    return 0;
+  }
+  // To overload
   inline double secmem_face(int, const Dirichlet_entree_fluide&, int ) const;
-  inline double secmem_face(int, const Dirichlet_paroi_defilante&, int ) const;
   inline double secmem_face(int, const Neumann_paroi&, int ) const;
-  inline double secmem_face(int, const Neumann_paroi_adiabatique&, int ) const;
-  inline double secmem_face(int, const Neumann_sortie_libre&, int ) const;
-  inline double secmem_face(int, const Symetrie&, int ) const;
-  inline double secmem_face(int, const Periodique&, int ) const;
-  inline double secmem_face(int, const NSCBC&, int ) const;
   inline double secmem_face(int, const Echange_global_impose&, int ) const;
 
   inline double secmem_face(int, int, int, const Echange_externe_impose&, int ) const;
 
   inline double secmem_faces_interne(int ) const;
 
+  //************************
+  // CAS VECTORIEL
+  //************************
+
+  /*
+   * XXX XXX XXX : VERY IMPORTANT
+   * Partial specialization is not supported in C++ (otherwise I miss some information)
+   * For example template<typename DERIVED_T>template<> will not compile due to
+   * invalid explicit specialization before '>' token
+   * Complete specialization works ie: template<>template<>
+   *
+   * So, we need to overload some functions for specific BC's outside the function template
+   */
+
+  // Fonctions qui servent a calculer le flux de grandeurs vectorielles
+  // Elles sont de type void et remplissent le tableau flux
+
+  // Generic return
+  template <typename BC>
+  inline void flux_face(const DoubleTab&,int , const BC&,int, DoubleVect& flux) const
+  {
+    /* Do nothing */
+  }
+  // To overload
+  inline void flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&,   int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&,      int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Echange_global_impose&,     int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Neumann_paroi&,             int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Neumann_sortie_libre&,  int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Periodique&,            int, DoubleVect& flux) const;
+
+  inline void flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&,   int, DoubleVect& flux) const;
+
+  inline void flux_faces_interne(const DoubleTab&, int ,
+                                 DoubleVect& flux) const;
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // vectorielles.
 
-  inline void coeffs_face(int, int,const Dirichlet_paroi_fixe&, DoubleVect& aii, DoubleVect& ajj ) const;
+  // Generic return
+  template <typename BC>
+  inline void coeffs_face(int, int,const BC&, DoubleVect& aii, DoubleVect& ajj ) const
+  {
+    /* Do nothing */
+  }
+  // To overload
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Dirichlet_paroi_defilante&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_paroi&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_paroi_adiabatique&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Symetrie&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Periodique&, DoubleVect& aii, DoubleVect& ajj ) const;
+  inline void coeffs_face(int, int,const Dirichlet_paroi_fixe&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Echange_global_impose&, DoubleVect& aii, DoubleVect& ajj ) const;
+  inline void coeffs_face(int,int, const Periodique&, DoubleVect& aii, DoubleVect& ajj ) const;
 
   inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, DoubleVect& aii, DoubleVect& ajj ) const;
 
@@ -197,15 +237,18 @@ public:
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l"implicite pour les grandeurs vectorielles.
 
-  inline void secmem_face(int, const Dirichlet_paroi_fixe&, int, DoubleVect& ) const;
+  // Generic return
+  template <typename BC>
+  inline void secmem_face(int, const BC&, int, DoubleVect& ) const
+  {
+    /* Do nothing */
+  }
+  // To overload
   inline void secmem_face(int, const Dirichlet_entree_fluide&, int, DoubleVect& ) const;
   inline void secmem_face(int, const Dirichlet_paroi_defilante&, int, DoubleVect& ) const;
-  inline void secmem_face(int, const Neumann_paroi&, int, DoubleVect& ) const;
-  inline void secmem_face(int, const Neumann_paroi_adiabatique&, int, DoubleVect& ) const;
-  inline void secmem_face(int, const Neumann_sortie_libre&, int, DoubleVect& ) const;
-  inline void secmem_face(int, const Symetrie&, int, DoubleVect& ) const;
-  inline void secmem_face(int, const Periodique&, int, DoubleVect& ) const;
+  inline void secmem_face(int, const Dirichlet_paroi_fixe&, int, DoubleVect& ) const;
   inline void secmem_face(int, const Echange_global_impose&, int, DoubleVect& ) const;
+  inline void secmem_face(int, const Neumann_paroi&, int, DoubleVect& ) const;
 
   inline void secmem_face(int, int, int, const Echange_externe_impose&, int, DoubleVect& ) const;
 
@@ -321,53 +364,12 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_norm_bord_externe_(int global_
   return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
 }
 
-/**************************************************
- * SCALAIRE
- *************************************************/
 
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab&, int ,
-                                                       const Dirichlet_paroi_defilante&, int ) const
-{
-  return 0;
-}
+//************************
+// CAS SCALAIRE
+//************************
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int , int,
-                                                       const Dirichlet_paroi_defilante&,
-                                                       double&, double& ) const
-{
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Dirichlet_paroi_defilante&,
-                                                         int ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab&, int ,
-                                                       const Dirichlet_paroi_fixe&,
-                                                       int ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int ,int,
-                                                       const Dirichlet_paroi_fixe&,
-                                                       double&, double& ) const
-{
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Dirichlet_paroi_fixe&,
-                                                         int ) const
-{
-  return 0;
-}
-
+/* Function templates specialization for BC Dirichlet_entree_fluide */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int face,
                                                        const Dirichlet_entree_fluide& la_cl,
@@ -394,6 +396,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   return flux;
 }
 
+/* Function templates specialization for BC Dirichlet_entree_fluide */
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int,
                                                        const Dirichlet_entree_fluide& la_cl,
@@ -414,6 +417,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int,
     }
 }
 
+/* Function templates specialization for BC Dirichlet_entree_fluide */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Dirichlet_entree_fluide& la_cl,
                                                          int num1) const
@@ -609,9 +613,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
   return flux;
 }
 
-
-
-
+/* Function templates specialization for BC Echange_global_impose */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int face ,
                                                        const Echange_global_impose& la_cl, int num1) const
@@ -628,6 +630,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   return flux;
 }
 
+/* Function templates specialization for BC Echange_global_impose */
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int num1,
                                                        const Echange_global_impose& la_cl,
@@ -648,6 +651,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int num1,
     }
 }
 
+/* Function templates specialization for BC Echange_global_impose */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Echange_global_impose& la_cl,
                                                          int num1) const
@@ -664,6 +668,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Echange
   return flux;
 }
 
+/* Function templates specialization for BC Neumann_paroi */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int face,
                                                        const Neumann_paroi& la_cl,
@@ -680,6 +685,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int fa
   return flux;
 }
 
+/* Function templates specialization for BC Neumann_paroi */
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int , int,
                                                        const Neumann_paroi& ,
@@ -688,6 +694,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int , int,
   aii = ajj = 0;
 }
 
+/* Function templates specialization for BC Neumann_paroi */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Neumann_paroi& la_cl,
                                                          int num1) const
@@ -703,65 +710,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Neumann
   return flux;
 }
 
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int ,
-                                                       const Neumann_paroi_adiabatique&, int ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int , int,
-                                                       const Neumann_paroi_adiabatique&,
-                                                       double&, double&) const
-{
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Neumann_paroi_adiabatique&,
-                                                         int ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int  ,
-                                                       const Neumann_sortie_libre& , int  ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int ,int,const Neumann_sortie_libre& ,
-                                                       double&, double&) const
-{
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Neumann_sortie_libre& ,
-                                                         int ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab&, int ,
-                                                       const Symetrie&, int ) const
-{
-  return 0;
-}
-
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int ,int, const Symetrie&, double&, double& ) const
-{
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Symetrie&, int ) const
-{
-  return 0;
-}
-
+/* Function templates specialization for BC Periodique */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int face,
                                                        const Periodique& la_cl, int ) const
@@ -776,6 +725,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   return flux;
 }
 
+/* Function templates specialization for BC Periodique */
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int,
                                                        const Periodique& la_cl,
@@ -789,13 +739,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int,
   aii = ajj = heq*surface(face)*porosite(face);
 }
 
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Periodique&,
-                                                         int ) const
-{
-  return 0;
-}
-
+/* Function templates specialization for BC NSCBC */
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco , int faceD ,
                                                        const NSCBC& la_cl , int ndeb ) const
@@ -831,6 +775,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco , i
   return flux;
 }
 
+/* Function templates specialization for BC NSCBC */
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int num1,const NSCBC& la_cl,
                                                        double& aii, double& ajj) const
@@ -839,15 +784,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int num1,const 
       Cerr<<"pour la condition NSCBC"<<finl;
       exit();*/
   aii = ajj = 0.;
-}
-
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const NSCBC& ,  int ) const
-{
-  /*  Cerr<<"Eval_Diff_VDF_var_Elem::coeffs_face n'est pas codee"<<finl;
-      Cerr<<"pour la condition NSCBC"<<finl;
-      exit();*/
-  return 0;
 }
 
 template <typename DERIVED_T>
@@ -884,9 +820,10 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_faces_interne( int ) const
   return 0;
 }
 
-/**************************************************
- * VECTORIEL
- *************************************************/
+//************************
+// CAS VECTORIEL
+//************************
+
 // Fonctions de calcul des flux pour une grandeur vectorielle
 
 //// flux_face avec Dirichlet_entree_fluide
@@ -1338,7 +1275,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Echange_g
       }
 }
 
-
 //// flux_face avec Neumann_paroi
 //
 template <typename DERIVED_T>
@@ -1350,16 +1286,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int face
     flux(k) = la_cl.flux_impose(face-num1,k)*surface(face);
 }
 
-//// coeffs_face avec Neumann_paroi
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int ,int,
-                                                       const Neumann_paroi& ,
-                                                       DoubleVect& , DoubleVect& ) const
-{
-  ;
-}
-
 //// secmem_face avec Neumann_paroi
 //
 template <typename DERIVED_T>
@@ -1368,36 +1294,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Neumann_p
 {
   for (int k=0; k<flux.size(); k++)
     flux(k) = la_cl.flux_impose(face-num1,k)*surface(face);
-}
-
-
-//// flux_face avec Neumann_paroi_adiabatique
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int ,
-                                                     const Neumann_paroi_adiabatique&,
-                                                     int ,DoubleVect& ) const
-{
-  ;
-}
-
-//// coeffs_face avec Neumann_paroi_adiabatique
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int ,int,
-                                                       const Neumann_paroi_adiabatique&,
-                                                       DoubleVect&, DoubleVect& ) const
-{
-  ;
-}
-
-//// secmem_face avec Neumann_paroi_adiabatique
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Neumann_paroi_adiabatique&,
-                                                       int, DoubleVect& ) const
-{
-  ;
 }
 
 //// flux_face avec Neumann_sortie_libre
@@ -1416,48 +1312,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int ,
         }
     }
 
-}
-
-//// coeffs_face avec Neumann_sortie_libre
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int,int, const Neumann_sortie_libre& ,
-                                                       DoubleVect&, DoubleVect&) const
-{
-  ;
-}
-
-//// secmem_face avec Neumann_sortie_libre
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Neumann_sortie_libre& ,
-                                                       int , DoubleVect& ) const
-{
-}
-
-//// flux_face avec Symetrie
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab&, int ,
-                                                     const Symetrie&,
-                                                     int ,DoubleVect& ) const
-{
-}
-
-//// coeffs_face avec Symetrie
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int, int,const Symetrie&,
-                                                       DoubleVect&, DoubleVect&) const
-{
-}
-
-//// secmem_face avec Symetrie
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Symetrie&,
-                                                       int, DoubleVect&) const
-{
 }
 
 //// flux_face avec Periodique
@@ -1520,16 +1374,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int, const Perio
       ajj(k)=  heq*surface(face)*porosite(face);
     }
 }
-
-
-//// secmem_face avec Periodique
-//
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int, const Periodique&,
-                                                       int, DoubleVect&) const
-{
-}
-
 
 //// flux_faces_interne
 //

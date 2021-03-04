@@ -45,8 +45,8 @@ class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var
 /* Class template specializations for the class Eval_Diff_VDF_var_Elem_aniso */
 /*****************************************************************************/
 
-/* Class template specialization for anisotrope Dirichlet_entree_fluide */
-template<>
+/* Class + function template specialization for anisotrope Dirichlet_entree_fluide */
+template<> template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco,
                                                                           int face,const Dirichlet_entree_fluide& la_cl,
                                                                           int num1) const
@@ -73,8 +73,8 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const 
   return flux;
 }
 
-/* Class template specialization for anisotrope Dirichlet_entree_fluide */
-template<>
+/* Class + function template specialization for anisotrope Dirichlet_entree_fluide */
+template<> template<>
 inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int face, int,
                                                                           const Dirichlet_entree_fluide& la_cl,
                                                                           double& aii, double& ajj) const
@@ -96,8 +96,8 @@ inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int fa
     }
 }
 
-/* Class template specialization for anisotrope Dirichlet_entree_fluide */
-template<>
+/* Class + function template specialization for anisotrope Dirichlet_entree_fluide */
+template<> template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::secmem_face(int face,
                                                                             const Dirichlet_entree_fluide& la_cl,
                                                                             int num1) const
@@ -356,8 +356,8 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::secmem_face(int 
   return flux;
 }
 
-/* Class template specialization for anisotrope Periodique */
-template<>
+/* Class + function template specialization for anisotrope Periodique */
+template<> template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco,
                                                                           int face,const Periodique& la_cl, int ) const
 {
@@ -372,8 +372,8 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const 
   return flux;
 }
 
-/* Class template specialization for anisotrope Periodique */
-template<>
+/* Class + function template specialization for anisotrope Periodique */
+template<> template<>
 inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int face,int,
                                                                           const Periodique& la_cl,
                                                                           double& aii, double& ajj) const
@@ -387,8 +387,8 @@ inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int fa
   aii = ajj = heq*surface(face)*porosite(face);
 }
 
-/* Class template specialization for anisotrope NSCBC */
-template<>
+/* Class + function template specialization for anisotrope NSCBC */
+template<> template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco ,
                                                                           int faceD, const NSCBC& la_cl , int ndeb ) const
 {
