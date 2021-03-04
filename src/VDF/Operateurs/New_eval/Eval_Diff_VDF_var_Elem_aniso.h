@@ -45,8 +45,8 @@ class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var
 /* Class template specializations for the class Eval_Diff_VDF_var_Elem_aniso */
 /*****************************************************************************/
 
-/* Class + function template specialization for anisotrope Dirichlet_entree_fluide */
-template<> template<>
+/* Overloaded class template specialization for anisotrope Dirichlet_entree_fluide */
+template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco,
                                                                           int face,const Dirichlet_entree_fluide& la_cl,
                                                                           int num1) const
@@ -73,8 +73,8 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const 
   return flux;
 }
 
-/* Class + function template specialization for anisotrope Dirichlet_entree_fluide */
-template<> template<>
+/* Overloaded class template specialization for anisotrope Dirichlet_entree_fluide */
+template<>
 inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int face, int,
                                                                           const Dirichlet_entree_fluide& la_cl,
                                                                           double& aii, double& ajj) const
@@ -96,8 +96,8 @@ inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int fa
     }
 }
 
-/* Class + function template specialization for anisotrope Dirichlet_entree_fluide */
-template<> template<>
+/* Overloaded class template specialization for anisotrope Dirichlet_entree_fluide */
+template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::secmem_face(int face,
                                                                             const Dirichlet_entree_fluide& la_cl,
                                                                             int num1) const
@@ -122,7 +122,7 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::secmem_face(int 
   return flux;
 }
 
-/* Class template specialization for anisotrope Echange_externe_impose */
+/* Overloaded class template specialization for anisotrope Echange_externe_impose */
 template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco,
                                                                           int boundary_index, int face, int local_face,
@@ -201,7 +201,7 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const 
 }
 
 
-/* Class template specialization for anisotrope Echange_externe_impose */
+/* Overloaded class template specialization for anisotrope Echange_externe_impose */
 template<>
 inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int boundary_index,
                                                                           int face, int local_face, int num1,
@@ -278,7 +278,7 @@ inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int bo
     }
 }
 
-/* Class template specialization for anisotrope Echange_externe_impose */
+/* Overloaded class template specialization for anisotrope Echange_externe_impose */
 template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::secmem_face(int boundary_index,
                                                                             int face, int local_face,
@@ -356,8 +356,8 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::secmem_face(int 
   return flux;
 }
 
-/* Class + function template specialization for anisotrope Periodique */
-template<> template<>
+/* Overloaded class template specialization for anisotrope Periodique */
+template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco,
                                                                           int face,const Periodique& la_cl, int ) const
 {
@@ -372,8 +372,8 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const 
   return flux;
 }
 
-/* Class + function template specialization for anisotrope Periodique */
-template<> template<>
+/* Overloaded class template specialization for anisotrope Periodique */
+template<>
 inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int face,int,
                                                                           const Periodique& la_cl,
                                                                           double& aii, double& ajj) const
@@ -387,8 +387,8 @@ inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_face(int fa
   aii = ajj = heq*surface(face)*porosite(face);
 }
 
-/* Class + function template specialization for anisotrope NSCBC */
-template<> template<>
+/* Overloaded class template specialization for anisotrope NSCBC */
+template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const DoubleTab& inco ,
                                                                           int faceD, const NSCBC& la_cl , int ndeb ) const
 {
@@ -423,7 +423,7 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_face(const 
   return flux;
 }
 
-/* Class template specialization for anisotrope flux_faces_interne */
+/* Overloaded class template specialization for anisotrope flux_faces_interne */
 template<>
 inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_faces_interne(const DoubleTab& inco,
                                                                                    int face) const
@@ -449,7 +449,7 @@ inline double Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::flux_faces_inter
   return flux;
 }
 
-/* Class template specialization for anisotrope coeffs_faces_interne */
+/* Overloaded class template specialization for anisotrope coeffs_faces_interne */
 template<>
 inline void Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>::coeffs_faces_interne(int face,
                                                                                    double& aii, double& ajj) const
