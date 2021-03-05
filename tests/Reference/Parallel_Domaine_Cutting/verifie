@@ -1,0 +1,24 @@
+(
+jdd=$1
+jdd=`basename $jdd`
+
+if [ -f PAR_$jdd.dt_ev ]
+then
+   # compare parmetis results with metis and trust
+   trust FIRST_DEC || exit -1
+   trust DEC_INTERM 2 || exit -1
+   trust READ_DEC 4 || exit -1
+   compare_lata READ_DEC.lml $jdd.lml		
+   compare_lata READ_DEC.lml PAR_$jdd.lml
+
+   # compare ptscotch results with metis and trust
+   sed -i "s?parmetis ?ptscotch ?g" DEC_INTERM.data
+   sed -i "s?DOM_PARMETIS?DOM_PTSCOTCH?g" DEC_INTERM.data
+   sed -i "s?DOM_PARMETIS?DOM_PTSCOTCH?g" READ_DEC.data
+   trust DEC_INTERM 2 || exit -1
+   trust READ_DEC 4 || exit -1
+   compare_lata READ_DEC.lml $jdd.lml		
+   compare_lata READ_DEC.lml PAR_$jdd.lml
+
+fi
+) 1>>verifie.log 2>&1

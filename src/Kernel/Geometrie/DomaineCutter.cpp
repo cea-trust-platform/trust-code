@@ -762,7 +762,6 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
       {
         const Joint& joint = joints_partie[i_joint];
         const ArrOfInt& sommets_du_joint = joint.joint_item(Joint::SOMMET).items_communs();
-        Cerr << sommets_du_joint << finl;
         const int n = sommets_du_joint.size_array();
         int i;
         for (i = 0; i < n; i++)

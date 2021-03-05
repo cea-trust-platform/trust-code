@@ -104,19 +104,6 @@ void Partitionneur_Ptscotch::construire_partition(IntTab& elem_part, int& nb_par
       exit();
     }
 
-  IntTab les_elems = ref_domaine_.valeur().zone(0).les_elems();
-  const DoubleTab& les_coords = ref_domaine_.valeur().coord_sommets();
-  for(int el=0; el < les_elems.dimension(0); el++)
-    {
-      Cerr << "ELEMENT #" << el << " : " << finl;
-      for(int el_som=0; el_som<4; el_som++)
-        {
-          int sommet = les_elems(el, el_som);
-          double x= les_coords(sommet,0);
-          double y = les_coords(sommet, 1);
-          Cerr << "(" << x << "," << y << ")" << finl;
-        }
-    }
   // Cas particulier: si nb_parts == 1, METIS ne veut rien faire...
   //ToDo: I don't know is that's the case with Ptscotch
   if (nb_parties_ == 1)
