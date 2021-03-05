@@ -389,6 +389,10 @@ check_nvidia_cuda()
    echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
    CUDA_ROOT=`dirname $CUDA_LIB 2>/dev/null`
    echo "Cuda CUDA_ROOT=$CUDA_ROOT"
+   for CUDA_INC_PATH in $CUDA_ROOT/include $CUDA_ROOT/include/cuda
+   do
+      [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
+   done
 }
 
 ########################################################
@@ -884,6 +888,8 @@ then
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
+   ecrit $m"|"$e"|"$env;eval $e
+   e="CUDA_INC_PATH=\"$CUDA_INC_PATH\" && export CUDA_INC_PATH";
    ecrit $m"|"$e"|"$env;eval $e
    [ "$CUDA_ROOT" != /usr ] && echo "ADD_PATH \$CUDA_ROOT/bin" >> $env # Ne pas ajouter /usr/bin au PATH car sinon python, conda pris sont ceux du systeme !
    echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT${CUDA_LIB#$CUDA_ROOT} " >> $env

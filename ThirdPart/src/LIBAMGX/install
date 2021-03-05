@@ -4,19 +4,22 @@
 AMGX_DIR=`dirname $1`
 LIB=`basename $1`
 ROOT=`pwd`
-   # cmake ne trouve pas toujours les include de CUDA...
-   for CUDA_INC_PATH in $CUDA_ROOT/include $CUDA_ROOT/include/cuda
-   do
-      [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
-   done
-   [ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs # Ajout sur orcus
+[ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs # Ajout sur orcus
 log=$ROOT/perf_$LIB.log && rm -f $log
 rm -r -f $LIB
 if [ $LIB = AmgX ]
 then
    # Build
    cd $ROOT
-   tar xfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"*.tar.gz
+   if [ "$TRUST_AMGX_LATEST" != "" ]
+   then
+      # Latest:
+      git clone https://github.com/NVIDIA/AMGX.git $LIB
+      cd $LIB && git checkout origin/v2.1.x && commit=`git rev-parse HEAD` && cd -
+      tar cfz $TRUST_ROOT/$LIB"_"$commit.tar.gz --exclude .git . && echo "Creation du package \$TRUST_ROOT/$LIB"_"$commit.tar.gz"
+   else
+      tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_6dba8067ca.tar.gz
+   fi
    cd $LIB && mkdir -p build && cd build
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
    cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
@@ -41,7 +44,15 @@ fi
 if [ $LIB = AmgXWrapper ]
 then
    cd $ROOT
-   tar xfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"*.tar.gz
+   if [ "$TRUST_AMGXWRAPPER_LATEST" != "" ]
+   then
+      # Latest:
+      git clone https://github.com/barbagroup/AmgXWrapper.git $LIB
+      cd $LIB && git checkout master && commit=`git rev-parse HEAD` && cd -
+      tar cfz $TRUST_ROOT/$LIB"_"$commit.tar.gz --exclude .git . && echo "Creation du package \$TRUST_ROOT/$LIB"_"$commit.tar.gz"
+   else
+      tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz
+   fi
    # Hack pour empecher le test des binaires qui ne marche pas cluster (un binaire PETSc compile avec CUDA plantera sur la frontale non gpu)
    sed -i "1,$ s?endif (\${\${runs}})??" AmgXWrapper/cmake-modules/FindPETSc.cmake
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
@@ -52,27 +63,31 @@ then
    # On specifie CC et CXX car si HPC SDK, nvc et nvc++ pris a la place (orcus):
    export CC=$TRUST_cc
    export CXX=$TRUST_CC
-   cmake $CMAKE_CXX_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX .. && $TRUST_MAKE
+   CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$TRUST_CC_BASE"
+   cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
    # Creation d'une librairie statique en plus de la dynamique libAmgXWrapper.so
    ar cru $AMGX_DIR/$LIB/lib64/libAmgXWrapper_static.a CMakeFiles/AmgXWrapper.dir/src/*.o || exit -1
    # Test
-   cd $AMGX_DIR/$LIB
+   cd $AMGX_DIR/$LIB 
    rm -r -f example && mkdir -p example && cd example
    tests="poisson solveFromFiles"
    for test in $tests
    do
       sed -i "1,$ s?# include <petsctime.h>??g" $ROOT/AmgXWrapper/example/$test/src/solve.cpp || exit -1
-      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake $CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
+      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake $CMAKE_FLAGS $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
    done
    cd $AMGX_DIR/$LIB/example/poisson
    # Test valgrind:
    [ "$TRUST_WITHOUT_HOST" = 1 ] && valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2 2>&1 | tee -a
    if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
    then
-      exec=bin/poisson trust -gpu dummy 4 -caseName PETSc_GAMG_100x100x100 -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
-      exec=bin/poisson trust -gpu dummy 4 -caseName   AmgX_AGG_100x100x100 -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 100 -Ny 100 -Nz 100 2>&1 | tee -a $log
+      N=100 && [ "`grep P400 $TRUST_ROOT/env/card.log 2>/dev/null`" != "" ] && N=85
+      name=$N"x"$N"x"$N
+      exec=bin/poisson trust -gpu dummy 4 -caseName   PETSc_GAMG_$name -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx $N -Ny $N -Nz $N 2>&1 | tee -a $log
+      exec=bin/poisson trust -gpu dummy 4 -caseName AmgX_GPU_AGG_$name -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 2>&1 | tee -a $log
+      exec=bin/poisson trust -gpu dummy 4 -caseName AmgX_CSR_AGG_$name -mode AmgX_CSR -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 2>&1 | tee -a $log
    fi
    # ---------------------------------------------------------------------------	  
    # Machine	NVidia		GFlops	Cuda	Driver	GNU	MPI		solve	GAMG	AmgX_AGG	 
