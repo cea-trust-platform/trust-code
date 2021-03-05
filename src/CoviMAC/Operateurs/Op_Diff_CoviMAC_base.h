@@ -75,7 +75,7 @@ public:
   {
     return 1;
   };
-  virtual void modifier_nu(DoubleTab& nu) const { };
+  virtual void modifier_nu(DoubleTab& ) const { };
 
   /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
   inline const DoubleTab& nu() const /* aux elements */
