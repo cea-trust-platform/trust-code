@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+xx/03/21 (TRUST)  New feature : Add predifined fields to post-process viscous forces, pressure forces and total forces in Definition_champs block
 08/02/21 (TRUST)  New feature : (VDF only) Add support for anistropic diffusion coefficient in conduction equation. For now only works with diagonal tensors.
 01/02/21 (TRUST)  Keyword     : Add PIPECG2 kewyord to enable a parallel optimized CG (single non-blocking allreduce per 2 iterations)
 01/02/21 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for AmgX GPU solvers and PETSc CPU/GPU solvers 
