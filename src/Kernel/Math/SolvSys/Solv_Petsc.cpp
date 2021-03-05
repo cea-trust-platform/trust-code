@@ -195,8 +195,17 @@ void Solv_Petsc::create_solver(Entree& entree)
           {
             while (motlu!=accolade_fermee)
               {
-                amgx_option+=motlu;
-                amgx_option+="\n";
+                // -config file.json
+                if (motlu == "-config")
+                  {
+                    is >> motlu;
+                    set_config(motlu);
+                  }
+                else
+                  {
+                    amgx_option += motlu;
+                    amgx_option += "\n";
+                  }
                 is >> motlu;
               }
           }
@@ -2355,6 +2364,9 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   /*****************************/
   // Genere une erreur si une case de la matrice est remplie sans allocation auparavant:
   MatSetOption(MatricePetsc, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_TRUE);
+  // Ne stocke pas les zeros si aij (sbaij n'est pas supporte, ToDo: nettoyer la matrice TRUST en amont...)
+  if (mataij_)
+    MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
 
   // ligne par ligne avec un tableau coeff et tab2 qui contiennent
   // les coefficients et les colonnes globales pour chaque ligne

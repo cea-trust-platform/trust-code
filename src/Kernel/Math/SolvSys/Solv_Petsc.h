@@ -104,6 +104,7 @@ protected :
   void Create_MatricePetsc(Mat&, int, const Matrice_Morse&);
   virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
   virtual void finalize() {};
+  virtual void set_config(const Nom&) {};
   bool enable_ksp_view( void );
   int add_option(const Nom& option, const Nom& value, int cli = 0);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);

@@ -33,9 +33,15 @@ class Solv_Petsc_AMGX : public Solv_Petsc
 {
   Declare_instanciable_sans_constructeur(Solv_Petsc_AMGX);
 public :
+  virtual void set_config(const Nom& filename)
+  {
+    this->config = filename;
+  }
   inline Solv_Petsc_AMGX()
   {
     amgx_=true;
+    config = Objet_U::nom_du_cas();
+    config += ".amgx";
   };
 protected :
   virtual void Create_objects(const Matrice_Morse&, const DoubleVect&);
@@ -53,6 +59,7 @@ protected :
 private:
 #ifdef PETSC_HAVE_CUDA
   AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
+  Nom config; // Fichier de configuration
 #endif
 };
 

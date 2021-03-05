@@ -48,8 +48,6 @@ void Solv_Petsc_AMGX::Create_objects(const Matrice_Morse& mat, const DoubleVect&
 
   if (!amgx_initialized())
     {
-      Nom filename(Objet_U::nom_du_cas());
-      filename += ".amgx";
       Nom AmgXmode = "dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
       /* Possible de jouer avec simple precision peut etre:
       1. (lowercase) letter: whether the code will run on the host (h) or device (d).
@@ -57,8 +55,8 @@ void Solv_Petsc_AMGX::Create_objects(const Matrice_Morse& mat, const DoubleVect&
       3. (uppercase) letter: whether the vector precision is float (F) or double (D).
       4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
       typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
-      Cerr << "Initializing Amgx and reading the " << filename << " file." << finl;
-      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), filename.getString());
+      Cerr << "Initializing Amgx and reading the " << config << " file." << finl;
+      SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), config.getString());
       amgx_initialized_ = true;
     }
   SolveurAmgX_.setA(MatricePetsc_);
