@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo()
 {
   // On applique compo a un vecteur
   Nature_du_champ nature_ch=ref_eq_.valeur().inconnue().valeur().nature_du_champ();
-  if (nature_ch != vectoriel)
+  if ((nature_ch != vectoriel) && (compo_ != -1 ))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
       Cerr<<"It isn't possible to get a component from a non vectoriel field " <<finl;
@@ -83,13 +83,14 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo()
     }
   // Verifier qu'on n'est pas en VDF
   const Zone_dis_base& zone_dis = ref_eq_.valeur().zone_dis().valeur();
-  if (zone_dis.que_suis_je().debute_par("Zone_VDF"))
+  if ((zone_dis.que_suis_je().debute_par("Zone_VDF")) && (compo_ != -1 ))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
       Cerr<<"The option compo is not available in case of VDF discretization"<<finl;
       exit();
     }
 }
+
 void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
 {
 
@@ -160,7 +161,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
       Cerr<<"Error in "<<que_suis_je()<<" unknown localisation"<<finl;
       exit();
     }
- verification_cas_compo();
+  verification_cas_compo();
 }
 
 const Champ_base& Champ_Post_Operateur_Eqn::get_champ_without_evaluation(Champ& espace_stockage) const
@@ -205,14 +206,10 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
 
   Champ_Fonc espace_stockage_fonc;
   Champ source_espace_stockage;
-  //const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
 
-  //  const Champ_Inc_base& ch_inc=ref_cast(Champ_Inc_base,source);
   double temps=0.;
   Nom directive;
-// directive=ref_eq_->inconnue().le_nom();
-  // bidouille EF
-  //if (directive=="enthalpie") directive="temperature";
+
   switch (localisation_inco_)
     {
     case ELEMENT:
@@ -229,20 +226,21 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
       exit();
 
     }
-  int nb_comp=1;
-  // LA TODO Je ne comprends pas pourquoi le fonction ci-doussous renvoie un tableau avec dimension(1)=2 alors qu'on precice nb_comp=1 ??
+  int nb_comp = 1;
   ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->zone_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
-  espace_stockage=espace_stockage_fonc;
+  espace_stockage = espace_stockage_fonc;
   espace_stockage.valeur().fixer_nature_du_champ(scalaire);
 
   return espace_stockage;
 }
+
 const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) const
 {
   // On commence par construire le champ vectoriel complet
   Champ espace_stockage_complet;
-  espace_stockage_complet=get_champ_without_evaluation(espace_stockage_complet);
-  DoubleTab& es =(espace_stockage_complet.valeurs());
+  espace_stockage_complet = get_champ_without_evaluation(espace_stockage_complet);
+  DoubleTab& es = (espace_stockage_complet.valeurs());
+
   //if (ref_eq_->schema_temps().temps_courant()!=0)
   {
     if (numero_op_!=-1)
@@ -258,25 +256,24 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
     {
       // on prepare l'espace de stockage pour une composante
       Champ espace_stockage_compo;
-      espace_stockage_compo=get_champ_compo_without_evaluation(espace_stockage_compo);
-      DoubleTab& es_compo =(espace_stockage_compo.valeurs());
-      int nb_pos=es.dimension(0);
+      espace_stockage_compo = get_champ_compo_without_evaluation(espace_stockage_compo);
+      DoubleTab& es_compo = (espace_stockage_compo.valeurs());
+      int nb_pos = es.dimension(0);
       for (int i=0; i<nb_pos; i++)
         {
           es_compo(i) = es(i,compo_);
         }
-      espace_stockage=espace_stockage_compo;
+      espace_stockage = espace_stockage_compo;
     }
   else
-    // espace_stockage.valeurs()=es;
-    espace_stockage=espace_stockage_complet;
+    espace_stockage = espace_stockage_complet;
+
   return espace_stockage.valeur();
 }
 
 const Noms Champ_Post_Operateur_Eqn::get_property(const Motcle& query) const
 {
 //Creation des composantes serait a faire de maniere dynamique (Eqn_...)
-// LA TODO J'ai commente mon dev car segmentation fault voir ce qui ne va pas
 
   Motcles motcles(2);
   motcles[0] = "composantes";
@@ -288,45 +285,46 @@ const Noms Champ_Post_Operateur_Eqn::get_property(const Motcle& query) const
     {
     case 0:
       {
-        //if (compo_==-1)
-        {
-          int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
-          Noms compo(nb_comp);
-          for (int i=0; i<nb_comp; i++)
-            {
-              Nom nume(i);
-              compo[i] = nom_post_+nume;
-            }
-          return compo;
-        }
-        /*else
+        if (compo_==-1)
+          {
+            int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
+            Noms compo(nb_comp);
+            for (int i=0; i<nb_comp; i++)
+              {
+                Nom nume(i);
+                compo[i] = nom_post_+nume;
+              }
+            return compo;
+          }
+        else
           {
             Noms compo(1);
-            compo[1] = nom_post_;
-          }*/
+            compo[0] = nom_post_;
+            return compo;
+          }
         break;
       }
 
     case 1:
       {
-        // if (compo_==-1)
-        {
-          int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
-          Noms unites(nb_comp);
-          //Noms source_unites = get_source(0).get_property("unites");
-          for (int i=0; i<nb_comp; i++)
-            {
-              unites[i] = "unit";
-            }
-          return unites;
-        }
-        /* else
-           {
-             // J'utilise un vecteur car la methode renvoie Noms
-             Noms unites(1);
-             unites[0] = "unit";
-             return unites;
-           } */
+        if (compo_==-1)
+          {
+            int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
+            Noms unites(nb_comp);
+            //Noms source_unites = get_source(0).get_property("unites");
+            for (int i=0; i<nb_comp; i++)
+              {
+                unites[i] = "unit";
+              }
+            return unites;
+          }
+        else
+          {
+            // J'utilise un vecteur car la methode renvoie Noms
+            Noms unites(1);
+            unites[0] = "unit";
+            return unites;
+          }
         break;
       }
 

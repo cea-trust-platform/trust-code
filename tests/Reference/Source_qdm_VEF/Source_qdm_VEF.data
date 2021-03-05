@@ -83,13 +83,39 @@ Read pb
 
 	Post_processing
 	{
+		Definition_champs {
+			# we post-process qdm sources on faces with probes, not possible in LML format #
+			source_qdmx Operateur_Eqn  { numero_source 0 compo 0 sources { refChamp { pb_champ pb vitesse } } }
+			source_qdmy Operateur_Eqn  { numero_source 0 compo 1 sources { refChamp { pb_champ pb vitesse } } }
+			source_qdmxy Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb vitesse } } }
+
+			# to post-process qdm sources in LML format, we should interpolate from faces to elements #
+			source_qdmx_elem Interpolation {
+				localisation elem
+				source Operateur_Eqn  { numero_source 0 compo 0 sources { refChamp { pb_champ pb vitesse } } }
+			}
+			source_qdmy_elem Interpolation {
+				localisation elem
+				source Operateur_Eqn  { numero_source 0 compo 1 sources { refChamp { pb_champ pb vitesse } } }
+			}
+			source_qdmxy_elem Interpolation {
+				localisation elem
+				source Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb vitesse } } }
+			}
+		}
 		Probes
 		{
-		sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-		sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+			source_qdmx source_qdmx periode 0.005 numero_elem_sur_maitre 0
+			source_qdmy source_qdmy periode 0.005 numero_elem_sur_maitre 0
+			source_qdmxy source_qdmxy periode 0.005 numero_elem_sur_maitre 0
 		}
 		fields dt_post 1.3
 		{
+			source_qdmx_elem elem
+			source_qdmy_elem elem
+			source_qdmxy_elem elem
 			pression elem
 			vitesse elem
 		}
