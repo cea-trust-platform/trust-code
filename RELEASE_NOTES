@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
-xx/03/21 (TRUST)  New feature : Add possibility to post-process Morceau_Eqn components in definition_champs block
+xx/03/21 (TRUST)  New feature : Possible to post-process a component of an equation operator/source (Operateur_Eqn option of Definition_champs block)
 02/03/21 (TRUST)  Bug fixed   : Correct the header of output files (.out) in the case where the solved problem contains periodic BC.
 23/02/21 (TRUST)  New Keyword : Keyword 'Merge_MED' allows to merge multiple MED files produced during a parallel computation.
 08/02/21 (TRUST)  New feature : (VDF only) Add support for anistropic diffusion coefficient in conduction equation. For now only works with diagonal tensors.
