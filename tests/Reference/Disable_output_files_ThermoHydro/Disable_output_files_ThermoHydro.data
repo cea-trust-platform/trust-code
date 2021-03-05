@@ -264,18 +264,12 @@ Read pb
                                 diffU_X Interpolation {
                                         domaine front
                                         localisation elem
-                                        source Morceau_Equation {
-                                                type operateur numero 0 option flux_bords compo 0
-                                                source refChamp { Pb_champ pb vitesse }
-                                        }
+                                        source Predefini { pb_champ pb viscous_force_x } 
                                 }
                                 diffU_Y Interpolation {
                                         domaine front
                                         localisation elem
-                                        source Morceau_Equation {
-                                                type operateur numero 0 option flux_bords compo 1
-                                                source refChamp { Pb_champ pb vitesse }
-                                        }
+                                        source  Predefini { pb_champ pb viscous_force_y } 
                                 }
                                 convU_X Interpolation {
                                         domaine front

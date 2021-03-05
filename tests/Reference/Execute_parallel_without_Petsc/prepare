@@ -1,5 +1,7 @@
 rm -f *VAHL*lml
+cp $TRUST_ROOT/tests/Reference/VAHL_DAVIS/VAHL_DAVIS.data .
 make_PAR.data VAHL_DAVIS
+cp $TRUST_ROOT/tests/Reference/VAHL_DAVIS_VEF/VAHL_DAVIS_VEF.data .
 make_PAR.data VAHL_DAVIS_VEF 3
 trust seq || exit -1
 [ ! -f VAHL_DAVIS.lml ] && exit 1
