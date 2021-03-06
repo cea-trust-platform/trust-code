@@ -18,7 +18,7 @@ check_dependancy()
          if [ "`echo $relative_path | grep /$module/ `" != "" ]
 	 then  
 	    # Si oui, a t'il une dependance vers un module autre que Kernel ou lui meme ?
-            dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -v "/src/Kernel[\/]" | grep -v "/$module[\/]" | grep -v include/backward | grep -v "/src/MAIN[\/]"`
+            dependances=`grep "\-I\\\$(TRUST_ROOT)/src" $file | grep -v "/src/Kernel[\/]" | grep -v "/$module[\/]" | grep -v include/backward | grep -v "/src/MAIN[\/]"`
             [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $module from these other TRUST modules: $dependances" && break
          fi
       done

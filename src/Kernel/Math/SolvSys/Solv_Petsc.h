@@ -98,13 +98,19 @@ protected :
 #ifdef PETSCKSP_H
   void construit_renum(const DoubleVect&);
   void check_aij(const Matrice_Morse&);
-  virtual void Create_objects(const Matrice_Morse&, const DoubleVect&); // Construit les objets Petsc
   void Create_vectors(const DoubleVect&); // Construit les vecteurs Petsc x et b
   void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
-  void Create_MatricePetsc(Mat&, int, const Matrice_Morse&);
+  void Create_MatricePetsc(Mat&, int, const Matrice_Morse&); // Construit et remplit une matrice Petsc depuis la matrice_morse
+  virtual void Create_objects(const Matrice_Morse&); // Construit differents objets PETSC dont matrice
+  virtual void Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse); // Fill the (previously allocated) PETSc matrix with mat_morse coefficients
   virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
   virtual void finalize() {};
   virtual void set_config(const Nom&) {};
+  int check_stencil(const Matrice_Morse&);
+  bool nouveau_stencil()
+  {
+    return nouveau_stencil_;
+  }; // ToDo: Remonter dans Solveur_Sys avec nouvelle_matrice
   bool enable_ksp_view( void );
   int add_option(const Nom& option, const Nom& value, int cli = 0);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
@@ -113,11 +119,11 @@ protected :
   int compute_nb_rows_petsc(int);
 
   // Attributes
-  int nb_matrices_creees_;
-  int solveur_cree_;
   double seuil_;
   double seuil_relatif_;
   double divtol_;
+  bool nouveau_stencil_;
+  IntVect previous_tab2_;
 
   // Objets Petsc
   Mat MatricePetsc_;
@@ -158,6 +164,11 @@ protected :
   bool gpu_;                    // Utilisation des solveurs GPU de PETSc
   bool amgx_;			// Utilisation des solveurs GPU de AMGX
   bool amgx_initialized_;	// Amgx initialise
+  // Options dev:
+  bool ignore_new_nonzero_;
+  bool rebuild_matrix_;
+  bool allow_realloc_;
+  bool clean_matrix_;
 };
 
 #define NB_IT_MAX_DEFINED 10000
@@ -181,13 +192,12 @@ inline Solv_Petsc::~Solv_Petsc()
 inline void Solv_Petsc::reset()
 {
 #ifdef PETSCKSP_H
-  if (solveur_cree_)
+  if (SolveurPetsc_!=NULL)
     {
-      assert(solveur_cree_==1);
       KSPDestroy(&SolveurPetsc_);
       finalize();
     }
-  if (nb_matrices_creees_)
+  if (MatricePetsc_!=NULL)
     {
       // Destruction des vecteurs
       VecDestroy(&SecondMembrePetsc_);
@@ -215,8 +225,7 @@ inline void Solv_Petsc::initialize()
   seuil_ = 1e-12;
   seuil_relatif_ = 0;
   divtol_ = 0;
-  nb_matrices_creees_ = 0;
-  solveur_cree_ = 0;
+  nouveau_stencil_ = true;
   petsc_cpus_selection_ = 0;	     // By default, 0 (no selection). 1 means: first petsc_nb_cpus_ CPUs is used, 2 means: every petsc_nb_cpus_ CPUs is used
   petsc_nb_cpus_ = Process::nproc(); // By default the number of processes
   different_partition_ = 0;          // By default, same matrix partition
@@ -234,6 +243,13 @@ inline void Solv_Petsc::initialize()
   block_size_=1;
   option_prefix_="??";
   dm_=NULL;
+  MatricePetsc_ = NULL;
+  SolveurPetsc_ = NULL;
+  // Dev:
+  ignore_new_nonzero_ = false;
+  rebuild_matrix_ = false;
+  allow_realloc_ = true;
+  clean_matrix_ = true;
   if (instance==-1)
     {
       // First initialization:
