@@ -26,10 +26,7 @@
 
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem2.h>
-
-//
-// .DESCRIPTION class Eval_Diff_VDF_Elem
-//
+#include <Zone_VDF.h>
 
 template <typename DERIVED_T>
 class Eval_Diff_VDF_Elem : public Eval_VDF_Elem2, public Evaluateur_VDF
@@ -85,7 +82,11 @@ public:
   inline double nu_1(int i, int compo=0) const;
   inline double nu_2(int i, int compo=0) const;
   inline double compute_heq(double, int, double, int, int compo=0) const;
+  inline int ind_Fluctu_Term() const;
+  inline double equivalent_distance (int boundary_index, int local_face) const;
 
+  // TODO : all these should have the same name with different attributes
+  // so that they become a function template
   inline int calculer_flux_faces_echange_externe_impose() const
   {
     return 1;
@@ -305,6 +306,19 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::compute_heq(double d0, int i0, doub
   return heq;
 }
 
+// See generic impl in the class Eval_Diff_VDF2. They will be overloaded for Dift ops
+template <typename DERIVED_T>
+inline int Eval_Diff_VDF_Elem<DERIVED_T>::ind_Fluctu_Term() const
+{
+  return static_cast<const DERIVED_T *>(this)->get_ind_Fluctu_Term();
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Elem<DERIVED_T>::equivalent_distance (int boundary_index, int local_face) const
+{
+  return static_cast<const DERIVED_T *>(this)->get_equivalent_distance(boundary_index,local_face);
+}
+
 //************************
 // Replaced the MACROS
 //************************
@@ -336,13 +350,10 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_face_elem1(int face, int n1) c
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_norm_bord_externe_VEC(int boundary_index, int global_face, int local_face) const
 {
-  // TODO : FIXME : to use later when Dift follows the template procedure...
-//	if (DERIVED_T::Is_Dequiv)
-//		return la_zone->equivalent_distance[boundary_index](local_face);
-//	else
-//		return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
-  assert (!DERIVED_T::Is_Dequiv);
-  return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
+  if (DERIVED_T::Is_Dequiv)
+    return equivalent_distance(boundary_index,local_face);
+  else
+    return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
 }
 
 template <typename DERIVED_T>
@@ -351,7 +362,6 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::Dist_norm_bord_externe_(int global_
   assert (!DERIVED_T::Is_Dequiv);
   return DERIVED_T::Is_Axi ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
 }
-
 
 //************************
 // CAS SCALAIRE
@@ -499,24 +509,18 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
 //  Dist_norm_bord_externe(boundary_index,face,local_face);
   if (DERIVED_T::Is_Modif_Deq)
     {
-      // TODO : FIXME : to implement when opp dift follow the procedure
-      Cerr << "Op_Dift are not templatized yet !" << finl;
-      Process::exit();
-//      if (ind_Fluctu_Term==1)
-//        e=Dist_norm_bord_externe_(face) ;
-//      else
-//        e=equivalent_distance[boundary_index](local_face);
-//      //e=d_equiv(face-la_zone->premiere_face_bord());
+      if (ind_Fluctu_Term()==1)
+        e=Dist_norm_bord_externe_(face) ;
+      else
+        e=equivalent_distance(boundary_index,local_face);
+      //e=d_equiv(face-la_zone->premiere_face_bord());
     }
   else
     {
       if (DERIVED_T::Is_Dequiv)
         {
-          // TODO : FIXME : to implement when opp dift follow the procedure
-          Cerr << "Op_Dift is not templatized yet !" << finl;
-          Process::exit();
-//          e=equivalent_distance[boundary_index](local_face);
-//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+          e=equivalent_distance(boundary_index,local_face);
+          // e=d_equiv(face-la_zone->premiere_face_bord());
         }
       else
         e=Dist_norm_bord_externe_(face);
@@ -595,24 +599,18 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
 
   if (DERIVED_T::Is_Modif_Deq)
     {
-      // TODO : FIXME : to implement when opp dift follow the procedure
-      Cerr << "Op_Dift are not templatized yet !" << finl;
-      Process::exit();
-//      if (ind_Fluctu_Term==1)
-//        e=Dist_norm_bord_externe_(face) ;
-//      else
-//        e=equivalent_distance[boundary_index](local_face);
-//      //e=d_equiv(face-la_zone->premiere_face_bord());
+      if (ind_Fluctu_Term()==1)
+        e=Dist_norm_bord_externe_(face) ;
+      else
+        e=equivalent_distance(boundary_index,local_face);
+      // e=d_equiv(face-la_zone->premiere_face_bord());
     }
   else
     {
       if (DERIVED_T::Is_Dequiv)
         {
-          // TODO : FIXME : to implement when opp dift follow the procedure
-          Cerr << "Op_Dift is not templatized yet !" << finl;
-          Process::exit();
-//          e=equivalent_distance[boundary_index](local_face);
-//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+          e=equivalent_distance(boundary_index,local_face);
+          // e=d_equiv(face-la_zone->premiere_face_bord());
         }
       else
         e=Dist_norm_bord_externe_(face);
@@ -693,24 +691,18 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
 
   if (DERIVED_T::Is_Modif_Deq)
     {
-      // TODO : FIXME : to implement when opp dift follow the procedure
-      Cerr << "Op_Dift are not templatized yet !" << finl;
-      Process::exit();
-//      if (ind_Fluctu_Term==1)
-//        e=Dist_norm_bord_externe_(face) ;
-//      else
-//        e=equivalent_distance[boundary_index](local_face);
-//      //e=d_equiv(face-la_zone->premiere_face_bord());
+      if (ind_Fluctu_Term()==1)
+        e=Dist_norm_bord_externe_(face) ;
+      else
+        e=equivalent_distance(boundary_index,local_face);
+      //e=d_equiv(face-la_zone->premiere_face_bord());
     }
   else
     {
       if (DERIVED_T::Is_Dequiv)
         {
-          // TODO : FIXME : to implement when opp dift follow the procedure
-          Cerr << "Op_Dift is not templatized yet !" << finl;
-          Process::exit();
-//          e=equivalent_distance[boundary_index](local_face);
-//          //  e=d_equiv(face-la_zone->premiere_face_bord());
+          e=equivalent_distance(boundary_index,local_face);
+          // e=d_equiv(face-la_zone->premiere_face_bord());
         }
       else
         e=Dist_norm_bord_externe_(face);

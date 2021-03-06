@@ -14,42 +14,59 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF2.h
+// File:        Eval_Dift_VDF_const_Elem.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     1
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Diff_VDF2_included
-#define Eval_Diff_VDF2_included
+#ifndef Eval_Dift_VDF_const_Elem_included
+#define Eval_Dift_VDF_const_Elem_included
 
-class Champ_base;
-class Champ_Don;
+#include <Eval_Dift_VDF_const2.h>
+#include <Eval_Diff_VDF_Elem.h>
+#include <Ref_Modele_turbulence_scal_base.h>
+#include <Ref_Turbulence_paroi_scal.h>
+#include <DoubleVects.h>
+class Turbulence_paroi_scal;
 
-class Eval_Diff_VDF2
+//
+// .DESCRIPTION class Eval_Dift_VDF_const_Elem
+// Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
+// Le champ diffuse est scalaire (Champ_P0_VDF)
+// Le champ de diffusivite est constant.
+//
+
+// .SECTION
+// voir aussi Eval_Dift_VDF_const2
+
+class Eval_Dift_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem>,
+  public Eval_Dift_VDF_const2
 {
-public:
-  inline virtual ~Eval_Diff_VDF2() {}
+public :
+  inline Eval_Dift_VDF_const_Elem() : ind_Fluctu_Term(1) {}
+  static constexpr bool Is_Modif_Deq = true;
 
-  virtual const Champ_base& get_diffusivite() const=0;
-  virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour()
-  {
-    return ;
-  };
-
-  // These methods will be overloaded in DIFT operators
-  // See Eval_Dift_VDF_const_Elem for example...
   inline int get_ind_Fluctu_Term() const
   {
-    return 0;
+    return ind_Fluctu_Term;
   }
 
   inline double get_equivalent_distance(int boundary_index,int local_face) const
   {
-    return 0;
+    return equivalent_distance[boundary_index](local_face);
   }
+
+  void associer_loipar(const Turbulence_paroi_scal& );
+  void associer_modele_turbulence(const Modele_turbulence_scal_base& );
+  void mettre_a_jour( );
+
+private:
+  REF(Modele_turbulence_scal_base) le_modele_turbulence;
+  REF(Turbulence_paroi_scal) loipar;
+  VECT(DoubleVect) equivalent_distance;
+  int ind_Fluctu_Term;
 
 };
 
-#endif /* Eval_Diff_VDF2_included */
+#endif /* Eval_Diff_VDF_const_Elem_included */

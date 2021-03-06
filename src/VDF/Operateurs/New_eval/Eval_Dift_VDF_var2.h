@@ -14,42 +14,72 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF2.h
+// File:        Eval_Dift_VDF_var2.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     1
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Diff_VDF2_included
-#define Eval_Diff_VDF2_included
+#ifndef Eval_Dift_VDF_var2_included
+#define Eval_Dift_VDF_var2_included
 
-class Champ_base;
-class Champ_Don;
+#include <Eval_Diff_VDF_var2.h>
+#include <Ref_Champ_Fonc.h>
+#include <Champ_Fonc.h>
+//
+// .DESCRIPTION class Eval_Dift_VDF_var2
+//
+// Cette classe represente un evaluateur de flux diffusif
+// total (diffusion laminaire et turbulente)
+// avec une diffusivite variable en espace.
 
-class Eval_Diff_VDF2
+//.SECTION
+// voir aussi Eval_Diff_VDF_var2
+
+class Eval_Dift_VDF_var2 : public Eval_Diff_VDF_var2
 {
+
 public:
-  inline virtual ~Eval_Diff_VDF2() {}
 
-  virtual const Champ_base& get_diffusivite() const=0;
-  virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour()
+  inline void associer_diff_turb(const Champ_Fonc& diff_turb)
   {
-    return ;
-  };
-
-  // These methods will be overloaded in DIFT operators
-  // See Eval_Dift_VDF_const_Elem for example...
-  inline int get_ind_Fluctu_Term() const
-  {
-    return 0;
+    diffusivite_turbulente_=diff_turb;
+    dv_diffusivite_turbulente.ref(diff_turb.valeurs());
   }
 
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
+  inline const Champ_Fonc& diffusivite_turbulente() const
   {
-    return 0;
+    return diffusivite_turbulente_.valeur();
   }
+
+  // Overloaded methods used by the flux computation in template class:
+  inline double nu_1_impl(int i, int compo) const
+  {
+    //nu_1(i) (dv_diffusivite(i)+dv_diffusivite_turbulente(i))
+    return get_diffusivite()(i)+dv_diffusivite_turbulente(i);
+  }
+
+  inline double nu_2_impl(int i, int compo) const
+  {
+    //nu_2(i) dv_diffusivite(i)
+    return get_diffusivite()(i);
+  }
+
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
+  {
+    //f_heq(d0,i,d1,j) heq=1./(d0/nu_2(i) + d1/nu_2(j))+
+    // 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
+    double heq_lam = 1./(d0/get_diffusivite()(i) + d1/get_diffusivite()(j));
+    double heq_turb= 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
+
+    return heq_lam + heq_turb;
+  }
+
+protected:
+
+  REF(Champ_Fonc) diffusivite_turbulente_;
+  DoubleVect dv_diffusivite_turbulente;
 
 };
 
-#endif /* Eval_Diff_VDF2_included */
+#endif /* Eval_Dift_VDF_var2_included */

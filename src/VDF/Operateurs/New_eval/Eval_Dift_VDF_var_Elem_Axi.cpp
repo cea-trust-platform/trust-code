@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,39 +14,27 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_var_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/13
+// File:        Eval_Dift_VDF_var_Elem_Axi.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_var_Elem.h>
+#include <Eval_Dift_VDF_var_Elem_Axi.h>
 #include <Turbulence_paroi_scal.h>
-void Eval_Dift_VDF_var_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+
+void Eval_Dift_VDF_var_Elem_Axi::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 {
   loipar = loi_paroi;
-  ind_Fluctu_Term = 0;
 }
 
-void Eval_Dift_VDF_var_Elem::associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
+void Eval_Dift_VDF_var_Elem_Axi::mettre_a_jour( )
 {
-  // On remplit la reference au modele de turbulence et le tableau k:
-  le_modele_turbulence = mod;
-  ind_Fluctu_Term = 0;
-  if (!loipar.non_nul())
-    ind_Fluctu_Term = 1;
-}
-
-void Eval_Dift_VDF_var_Elem::mettre_a_jour( )
-{
-  Eval_Dift_VDF_var::mettre_a_jour();
-  if (loipar.non_nul() || (ind_Fluctu_Term != 1))
+  int s=loipar->tab_equivalent_distance_size();
+  equivalent_distance.dimensionner(s);
+  for(int i=0; i<s; i++)
     {
-      int s=loipar->tab_equivalent_distance_size();
-      equivalent_distance.dimensionner(s);
-      for(int i=0; i<s; i++)
-        {
-          equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-        }
+      equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
     }
+
 }

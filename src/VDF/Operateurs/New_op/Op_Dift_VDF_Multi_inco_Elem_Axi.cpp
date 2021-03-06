@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,49 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_Multi_inco_var_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/19
+// File:        Op_Dift_VDF_Multi_inco_Elem_Axi.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Dift_VDF_Multi_inco_var_Elem.h>
+#include <Op_Dift_VDF_Multi_inco_Elem_Axi.h>
 #include <Champ_P0_VDF.h>
 #include <Modele_turbulence_scal_base.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem,"Op_Dift_VDF_Multi_inco_var_P0_VDF",Op_Dift_VDF_base);
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem_Axi,"Op_Dift_VDF_Multi_inco_P0_VDF_Axi",Op_Dift_VDF_base2);
+implemente_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem_Axi)
 
-
-implemente_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)
-
-//// printOn
-//
-
-
-Sortie& Op_Dift_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const
+Sortie& Op_Dift_VDF_Multi_inco_Elem_Axi::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
-
-
-Entree& Op_Dift_VDF_Multi_inco_var_Elem::readOn(Entree& s )
+Entree& Op_Dift_VDF_Multi_inco_Elem_Axi::readOn(Entree& s )
 {
   return s ;
 }
 
-
 ////////////////////////////////////////////////////////////////
 //
-//   Fonctions de la classe Op_Dift_VDF_Multi_inco_var_Elem
+//   Fonctions de la classe Op_Dift_VDF_Multi_inco_Elem_Axi
 //
 ////////////////////////////////////////////////////////////////
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Dift_VDF_Multi_inco_var_Elem::associer(const Zone_dis& zone_dis,
+void Op_Dift_VDF_Multi_inco_Elem_Axi::associer(const Zone_dis& zone_dis,
                                                const Zone_Cl_dis& zone_cl_dis,
                                                const Champ_Inc& ch_diffuse)
 {
@@ -65,8 +54,8 @@ void Op_Dift_VDF_Multi_inco_var_Elem::associer(const Zone_dis& zone_dis,
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
   iter.associer(zvdf, zclvdf, *this);
 
-  Eval_Dift_VDF_Multi_inco_var_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_var_Elem&) iter.evaluateur();
+  Eval_Dift_VDF_Multi_inco_const_Elem_Axi& eval_diff_turb =
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem_Axi&> (iter.evaluateur());
   eval_diff_turb.associer_zones(zvdf, zclvdf );
   eval_diff_turb.associer_inconnue(inco );
 }
@@ -74,42 +63,41 @@ void Op_Dift_VDF_Multi_inco_var_Elem::associer(const Zone_dis& zone_dis,
 
 // Description:
 // associe le champ de diffusivite a l'evaluateur
-void Op_Dift_VDF_Multi_inco_var_Elem::associer_diffusivite(const Champ_base& ch_diff)
+void Op_Dift_VDF_Multi_inco_Elem_Axi::associer_diffusivite(const Champ_base& ch_diff)
 {
-  Eval_Dift_VDF_Multi_inco_var_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_var_Elem&) iter.evaluateur();
-  eval_diff_turb.associer_diffusivite(ch_diff);
+  Eval_Dift_VDF_Multi_inco_const_Elem_Axi& eval_diff_turb =
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem_Axi&> (iter.evaluateur());
+  eval_diff_turb.associer(ch_diff);
 }
 
-const Champ_base& Op_Dift_VDF_Multi_inco_var_Elem::diffusivite() const
+const Champ_base& Op_Dift_VDF_Multi_inco_Elem_Axi::diffusivite() const
 {
-  const Eval_Dift_VDF_Multi_inco_var_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_var_Elem&) iter.evaluateur();
-  return eval_diff_turb.diffusivite();
+  const Eval_Dift_VDF_Multi_inco_const_Elem_Axi& eval_diff_turb =
+    dynamic_cast<const Eval_Dift_VDF_Multi_inco_const_Elem_Axi&> (iter.evaluateur());
+  return eval_diff_turb.get_diffusivite();
 }
 
-void Op_Dift_VDF_Multi_inco_var_Elem::associer_diffusivite_turbulente(const Champ_Fonc& diff_turb)
+void Op_Dift_VDF_Multi_inco_Elem_Axi::associer_diffusivite_turbulente(const Champ_Fonc& diff_turb)
 {
   Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb);
   Evaluateur_VDF& eval = iter.evaluateur();
-  Eval_Dift_VDF_Multi_inco_var_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_var_Elem&) eval;
+  Eval_Dift_VDF_Multi_inco_const_Elem_Axi& eval_diff_turb =
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem_Axi&> (eval);
   eval_diff_turb.associer_diff_turb(diff_turb);
 }
 
-
-void Op_Dift_VDF_Multi_inco_var_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+void Op_Dift_VDF_Multi_inco_Elem_Axi::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 {
   //loipar = loi_paroi;
   Evaluateur_VDF& eval = iter.evaluateur();
-  Eval_Dift_VDF_Multi_inco_var_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_var_Elem&) eval;
+  Eval_Dift_VDF_Multi_inco_const_Elem_Axi& eval_diff_turb =
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem_Axi&> (eval);
   eval_diff_turb.associer_loipar(loi_paroi);
 }
 
-void Op_Dift_VDF_Multi_inco_var_Elem::completer()
+void Op_Dift_VDF_Multi_inco_Elem_Axi::completer()
 {
-  Op_Dift_VDF_base::completer();
+  Op_Dift_VDF_base2::completer();
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
   const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
@@ -118,68 +106,77 @@ void Op_Dift_VDF_Multi_inco_var_Elem::completer()
   associer_loipar(loipar);
 }
 
-double Op_Dift_VDF_Multi_inco_var_Elem::calculer_dt_stab() const
+double Op_Dift_VDF_Multi_inco_Elem_Axi::calculer_dt_stab() const
 {
-  double coef = -1e10;
+  double dt_stab;
+  double coef;
   const Zone_VDF& zone_VDF = iter.zone();
   const IntTab& elem_faces = zone_VDF.elem_faces();
-  const DoubleTab& alpha = diffusivite_pour_pas_de_temps().valeurs();
+  const DoubleVect& alpha = diffusivite().valeurs();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
-  int is_QC = mon_equation->probleme().is_QC();
-  bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_fraction"));
 
   // Calcul du pas de temps de stabilite :
   //
   //
-  //  - La diffusivite laminaire est variable
+  //  - La diffusivite laminaire est uniforme
   //  - La diffusivite turbulente est variable
   //
-  //     dt_stab = Min (1/(2*(Max(diffu1(i),diffu2(i),....)+diff_turb(i))*coeff(elem))
+  //     dt_stab = Min (1/(2*(Max(diffu1,diffu2,....)+diff_turb(i))*coeff(elem))
   //
   //     avec :
-  //            diffu1(i),diffu2(i) ...: diffusivites des differents constituants
-  //                                     sur l'element
+  //            diffu1,diffu2 ...: diffusivites des differents constituants
   //            coeff =  1/(dx*dx) + 1/(dy*dy) + 1/(dz*dz)
   //
   //            i decrivant l'ensemble des elements du maillage
   //
 
-  ArrOfInt numfa(2*dimension);
-  for (int elem = 0; elem < zone_VDF.nb_elem(); elem++)
+  coef= -1.e10;
+  double alpha_local,h_x,h_y,h_z;
+  double alpha_lam =alpha(0);
+  assert(alpha.size_array() == 1);
+
+  if (dimension == 2)
     {
-      double alpha_lam = alpha(elem,0);
-      for (int k = 1; k < alpha.dimension(1); k++)
-        alpha_lam = max(alpha_lam, alpha(elem, k));
-
-      // choix du facteur
-      double rcp = 0.;
-      if (is_concentration) rcp = 1.;
-      else if (is_QC)
+      int numfa[4];
+      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
         {
-          const DoubleTab& tab_Cp = mon_equation->milieu().capacite_calorifique().valeurs();
-          rcp = mon_equation->milieu().masse_volumique()(elem) * ((tab_Cp.nb_dim()==2) ? tab_Cp(0,0) : tab_Cp(elem));
+          for (int i=0; i<4; i++)
+            numfa[i] = elem_faces(elem,i);
+          h_x = zone_VDF.dist_face_axi(numfa[0],numfa[2],0);
+          h_y = zone_VDF.dist_face_axi(numfa[1],numfa[3],1);
+          alpha_local = (alpha_lam + alpha_t(elem))
+                        *(1/(h_x*h_x) + 1/(h_y*h_y));
+          coef = max(coef,alpha_local);
         }
-      else rcp = mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
-
-      double moy = 0.;
-      for (int i = 0; i < 2 * dimension; i++) numfa[i] = elem_faces(elem, i);
-      for (int d = 0; d < dimension; d++) moy += 1. / (zone_VDF.dist_face(numfa[d], numfa[dimension + d], d));
-      const double alpha_local = (alpha_lam + alpha_t(elem)) / rcp * moy;
-      coef = max(coef, alpha_local);
     }
 
-  coef = Process::mp_max(coef);
-  double dt_stab = 1. / (2. * (coef + DMINFLOAT));
+  else if (dimension == 3)
+    {
+      int numfa[6];
+      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
+        {
+          for (int i=0; i<6; i++)
+            numfa[i] = elem_faces(elem,i);
+          h_x = zone_VDF.dist_face_axi(numfa[0],numfa[3],0);
+          h_y = zone_VDF.dist_face_axi(numfa[1],numfa[4],1);
+          h_z = zone_VDF.dist_face_axi(numfa[2],numfa[5],2);
+          alpha_local = (alpha_lam + alpha_t(elem))
+                        *(1/(h_x*h_x) + 1/(h_y*h_y) + 1/(h_z*h_z));
+          coef = max(coef,alpha_local);
+        }
+    }
+
+  dt_stab = 1/(2*(coef+DMINFLOAT));
 
   return dt_stab;
 }
 
 //
-// Fonctions inline de la classe Op_Dift_VDF_Multi_inco_var_Elem
+// Fonctions inline de la classe Op_Dift_VDF_Multi_inco_Elem_Axi
 //
-//// Op_Dift_VDF_Multi_inco_var_Elem
+//// Op_Dift_VDF_Multi_inco_Elem_Axi
 //
-Op_Dift_VDF_Multi_inco_var_Elem::Op_Dift_VDF_Multi_inco_var_Elem() :
-  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)())
+Op_Dift_VDF_Multi_inco_Elem_Axi::Op_Dift_VDF_Multi_inco_Elem_Axi() :
+  Op_Dift_VDF_base2(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem_Axi)())
 {
 }

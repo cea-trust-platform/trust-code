@@ -14,42 +14,61 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF2.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     1
+// File:        Op_Dift_VDF_Multi_inco_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Diff_VDF2_included
-#define Eval_Diff_VDF2_included
 
-class Champ_base;
-class Champ_Don;
+#ifndef Op_Dift_VDF_Multi_inco_Elem_included
+#define Op_Dift_VDF_Multi_inco_Elem_included
 
-class Eval_Diff_VDF2
+#include <Op_Dift_VDF_base2.h>
+#include <ItVDFEl.h>
+#include <Eval_Dift_VDF_Multi_inco_const_Elem.h>
+#include <Op_VDF_Elem.h>
+
+declare_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)
+
+class Champ_Fonc;
+class Turbulence_paroi_scal;
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Op_Dift_VDF_Multi_inco_Elem
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Op_Dift_VDF_Multi_inco_Elem : public Op_Dift_VDF_base2, public Op_VDF_Elem
 {
+
+  Declare_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem);
+
 public:
-  inline virtual ~Eval_Diff_VDF2() {}
 
-  virtual const Champ_base& get_diffusivite() const=0;
-  virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour()
-  {
-    return ;
-  };
-
-  // These methods will be overloaded in DIFT operators
-  // See Eval_Dift_VDF_const_Elem for example...
-  inline int get_ind_Fluctu_Term() const
-  {
-    return 0;
-  }
-
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
-  {
-    return 0;
-  }
-
+  Op_Dift_VDF_Multi_inco_Elem();
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
+  void associer_diffusivite(const Champ_base& );
+  void associer_diffusivite_turbulente(const Champ_Fonc& );
+  inline  void dimensionner(Matrice_Morse& ) const;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  void associer_loipar(const Turbulence_paroi_scal& );
+  void completer();
+  const Champ_base& diffusivite() const;
+  double calculer_dt_stab() const;
 };
 
-#endif /* Eval_Diff_VDF2_included */
+// Description:
+// on dimensionne notre matrice.
+inline  void Op_Dift_VDF_Multi_inco_Elem::dimensionner(Matrice_Morse& matrice) const
+{
+  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
+}
+
+inline void Op_Dift_VDF_Multi_inco_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
+{
+  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
+}
+
+#endif /* Op_Dift_VDF_Multi_inco_Elem_included */

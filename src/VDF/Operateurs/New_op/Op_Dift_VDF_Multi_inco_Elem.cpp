@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Dift_VDF_Multi_inco_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -24,21 +24,13 @@
 #include <Champ_P0_VDF.h>
 #include <Modele_turbulence_scal_base.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem,"Op_Dift_VDF_Multi_inco_P0_VDF",Op_Dift_VDF_base);
-
-
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem,"Op_Dift_VDF_Multi_inco_P0_VDF",Op_Dift_VDF_base2);
 implemente_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)
-
-//// printOn
-//
 
 Sortie& Op_Dift_VDF_Multi_inco_Elem::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Dift_VDF_Multi_inco_Elem::readOn(Entree& s )
 {
@@ -64,7 +56,7 @@ void Op_Dift_VDF_Multi_inco_Elem::associer(const Zone_dis& zone_dis,
   iter.associer(zvdf, zclvdf, *this);
 
   Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_const_Elem&) iter.evaluateur();
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
   eval_diff_turb.associer_zones(zvdf, zclvdf );
   eval_diff_turb.associer_inconnue(inco );
 }
@@ -75,15 +67,15 @@ void Op_Dift_VDF_Multi_inco_Elem::associer(const Zone_dis& zone_dis,
 void Op_Dift_VDF_Multi_inco_Elem::associer_diffusivite(const Champ_base& ch_diff)
 {
   Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_const_Elem&) iter.evaluateur();
-  eval_diff_turb.associer_diffusivite(ch_diff);
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
+  eval_diff_turb.associer(ch_diff);
 }
 
 const Champ_base& Op_Dift_VDF_Multi_inco_Elem::diffusivite() const
 {
   const Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_const_Elem&) iter.evaluateur();
-  return eval_diff_turb.diffusivite();
+    dynamic_cast<const Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
+  return eval_diff_turb.get_diffusivite();
 }
 
 void Op_Dift_VDF_Multi_inco_Elem::associer_diffusivite_turbulente(const Champ_Fonc& diff_turb)
@@ -91,7 +83,7 @@ void Op_Dift_VDF_Multi_inco_Elem::associer_diffusivite_turbulente(const Champ_Fo
   Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb);
   Evaluateur_VDF& eval = iter.evaluateur();
   Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_const_Elem&) eval;
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (eval);
   eval_diff_turb.associer_diff_turb(diff_turb);
 }
 
@@ -101,13 +93,13 @@ void Op_Dift_VDF_Multi_inco_Elem::associer_loipar(const Turbulence_paroi_scal& l
   //loipar = loi_paroi;
   Evaluateur_VDF& eval = iter.evaluateur();
   Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    (Eval_Dift_VDF_Multi_inco_const_Elem&) eval;
+    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (eval);
   eval_diff_turb.associer_loipar(loi_paroi);
 }
 
 void Op_Dift_VDF_Multi_inco_Elem::completer()
 {
-  Op_Dift_VDF_base::completer();
+  Op_Dift_VDF_base2::completer();
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
   const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
@@ -179,6 +171,6 @@ double Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab() const
 //// Op_Dift_VDF_Multi_inco_Elem
 //
 Op_Dift_VDF_Multi_inco_Elem::Op_Dift_VDF_Multi_inco_Elem() :
-  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)())
+  Op_Dift_VDF_base2(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)())
 {
 }

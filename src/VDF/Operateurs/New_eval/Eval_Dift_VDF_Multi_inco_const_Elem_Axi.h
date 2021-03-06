@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,30 +14,48 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_Multi_inco_var_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/9
+// File:        Eval_Dift_VDF_Multi_inco_const_Elem_Axi.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_Multi_inco_var_Elem.h>
-#include <Turbulence_paroi_scal.h>
 
-void Eval_Dift_VDF_Multi_inco_var_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
-{
-  loipar = loi_paroi;
-}
+#ifndef Eval_Dift_VDF_Multi_inco_const_Elem_Axi_included
+#define Eval_Dift_VDF_Multi_inco_const_Elem_Axi_included
 
-void Eval_Dift_VDF_Multi_inco_var_Elem::mettre_a_jour( )
+#include <Eval_Dift_VDF_Multi_inco_const2.h>
+#include <Eval_Diff_VDF_Elem.h>
+#include <Zone_VDF.h>
+#include <DoubleVects.h>
+#include <Ref_Turbulence_paroi_scal.h>
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Eval_Dift_VDF_Multi_inco_const_Elem_Axi
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem_Axi>,
+  public Eval_Dift_VDF_Multi_inco_const2
 {
-  Eval_Dift_VDF_Multi_inco_var::mettre_a_jour( );
-  if (loipar.non_nul())
-    {
-      int s=loipar->tab_equivalent_distance_size();
-      equivalent_distance.dimensionner(s);
-      for(int i=0; i<s; i++)
-        {
-          equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-        }
-    }
-}
+public:
+  static constexpr bool Is_Multd = false;
+  static constexpr bool Is_Dequiv = true;
+  static constexpr bool Is_Axi = true;
+
+  inline double get_equivalent_distance(int boundary_index,int local_face) const
+  {
+    return equivalent_distance[boundary_index](local_face);
+  }
+
+  void associer_loipar(const Turbulence_paroi_scal& );
+  void mettre_a_jour( ) ;
+
+private:
+  REF(Turbulence_paroi_scal) loipar;
+  VECT(DoubleVect) equivalent_distance;
+
+};
+
+#endif /* Eval_Dift_VDF_Multi_inco_const_Elem_Axi_included */

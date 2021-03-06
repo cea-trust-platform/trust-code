@@ -14,42 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF2.h
+// File:        Eval_Dift_VDF_Multi_inco_var_Elem_Axi.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     1
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Diff_VDF2_included
-#define Eval_Diff_VDF2_included
 
-class Champ_base;
-class Champ_Don;
+#ifndef Eval_Dift_VDF_Multi_inco_var_Elem_Axi_included
+#define Eval_Dift_VDF_Multi_inco_var_Elem_Axi_included
 
-class Eval_Diff_VDF2
+#include <Eval_Dift_VDF_Multi_inco_var2.h>
+#include <Eval_Diff_VDF_Elem.h>
+#include <DoubleVects.h>
+#include <Ref_Turbulence_paroi_scal.h>
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Eval_Dift_VDF_Multi_inco_var_Elem_Axi
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>,
+  public Eval_Dift_VDF_Multi_inco_var2
 {
 public:
-  inline virtual ~Eval_Diff_VDF2() {}
-
-  virtual const Champ_base& get_diffusivite() const=0;
-  virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour()
-  {
-    return ;
-  };
-
-  // These methods will be overloaded in DIFT operators
-  // See Eval_Dift_VDF_const_Elem for example...
-  inline int get_ind_Fluctu_Term() const
-  {
-    return 0;
-  }
+  static constexpr bool Is_Multd = false;
+  static constexpr bool Is_Dequiv = true;
+  static constexpr bool Is_Axi = true;
 
   inline double get_equivalent_distance(int boundary_index,int local_face) const
   {
-    return 0;
+    return equivalent_distance[boundary_index](local_face);
   }
+
+  void associer_loipar(const Turbulence_paroi_scal& );
+  void mettre_a_jour( ) ;
+
+private:
+  REF(Turbulence_paroi_scal) loipar;
+  VECT(DoubleVect) equivalent_distance;
 
 };
 
-#endif /* Eval_Diff_VDF2_included */
+#endif /* Eval_Dift_VDF_Multi_inco_var_Elem_Axi_included */

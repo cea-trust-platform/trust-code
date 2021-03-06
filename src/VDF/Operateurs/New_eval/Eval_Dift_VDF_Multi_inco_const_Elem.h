@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,28 +14,53 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_var_Elem_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs/Evaluateurs
-// Version:     /main/4
+// File:        Eval_Dift_VDF_Multi_inco_const_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_var_Elem_Axi.h>
-#include <Turbulence_paroi_scal.h>
 
-void Eval_Dift_VDF_var_Elem_Axi::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+#ifndef Eval_Dift_VDF_Multi_inco_const_Elem_included
+#define Eval_Dift_VDF_Multi_inco_const_Elem_included
+
+#include <Eval_Dift_VDF_Multi_inco_const2.h>
+#include <Eval_Diff_VDF_Elem.h>
+#include <Zone_VDF.h>
+#include <Ref_Turbulence_paroi_scal.h>
+#include <DoubleVects.h>
+class Turbulence_paroi_scal;
+
+//
+// .DESCRIPTION class Eval_Dift_VDF_Multi_inco_const_Elem
+//
+// Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
+// Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
+// Il y a une diffusivite par inconnue
+// Le champ de diffusivite laminaire associe a chaque inconnue est constant.
+
+//
+// .SECTION voir aussi Eval_Dift_VDF_Multi_inco_const2
+
+class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem>,
+  public Eval_Dift_VDF_Multi_inco_const2
 {
-  loipar = loi_paroi;
-}
+public:
+  static constexpr bool Is_Multd = false;
+  static constexpr bool Is_Dequiv = true;
 
+  inline double get_equivalent_distance(int boundary_index,int local_face) const
+  {
+    return equivalent_distance[boundary_index](local_face);
+  }
 
-void Eval_Dift_VDF_var_Elem_Axi::mettre_a_jour( )
-{
-  int s=loipar->tab_equivalent_distance_size();
-  equivalent_distance.dimensionner(s);
-  for(int i=0; i<s; i++)
-    {
-      equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-    }
+  void associer_loipar(const Turbulence_paroi_scal& );
+  void mettre_a_jour( ) ;
 
-}
+private:
+  REF(Turbulence_paroi_scal) loipar;
+  VECT(DoubleVect) equivalent_distance;
+
+};
+
+#endif /* Eval_Dift_VDF_Multi_inco_const_Elem_included */

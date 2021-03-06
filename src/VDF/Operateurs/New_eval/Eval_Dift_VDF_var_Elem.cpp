@@ -14,42 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF2.h
+// File:        Eval_Dift_VDF_var_Elem.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     1
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Diff_VDF2_included
-#define Eval_Diff_VDF2_included
+#include <Eval_Dift_VDF_var_Elem.h>
+#include <Turbulence_paroi_scal.h>
 
-class Champ_base;
-class Champ_Don;
-
-class Eval_Diff_VDF2
+void Eval_Dift_VDF_var_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 {
-public:
-  inline virtual ~Eval_Diff_VDF2() {}
+  loipar = loi_paroi;
+  ind_Fluctu_Term = 0;
+}
 
-  virtual const Champ_base& get_diffusivite() const=0;
-  virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour()
-  {
-    return ;
-  };
+void Eval_Dift_VDF_var_Elem::associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
+{
+  // On remplit la reference au modele de turbulence et le tableau k:
+  le_modele_turbulence = mod;
+  ind_Fluctu_Term = 0;
+  if (!loipar.non_nul())
+    ind_Fluctu_Term = 1;
+}
 
-  // These methods will be overloaded in DIFT operators
-  // See Eval_Dift_VDF_const_Elem for example...
-  inline int get_ind_Fluctu_Term() const
-  {
-    return 0;
-  }
-
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
-  {
-    return 0;
-  }
-
-};
-
-#endif /* Eval_Diff_VDF2_included */
+void Eval_Dift_VDF_var_Elem::mettre_a_jour( )
+{
+  Eval_Dift_VDF_var2::mettre_a_jour();
+  if (loipar.non_nul() || (ind_Fluctu_Term != 1))
+    {
+      int s=loipar->tab_equivalent_distance_size();
+      equivalent_distance.dimensionner(s);
+      for(int i=0; i<s; i++)
+        {
+          equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
+        }
+    }
+}

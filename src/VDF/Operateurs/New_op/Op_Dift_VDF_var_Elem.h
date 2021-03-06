@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,40 +14,62 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_const_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/16
+// File:        Op_Dift_VDF_var_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_const_Elem.h>
-//#include <Paroi_std_scal_hyd_VDF.h>
-#include <Turbulence_paroi_scal.h>
-void Eval_Dift_VDF_const_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+#ifndef Op_Dift_VDF_var_Elem_included
+#define Op_Dift_VDF_var_Elem_included
+
+#include <Op_Dift_VDF_base2.h>
+#include <ItVDFEl.h>
+#include <Eval_Dift_VDF_var_Elem.h>
+#include <Op_VDF_Elem.h>
+
+declare_It_VDF_Elem(Eval_Dift_VDF_var_Elem)
+
+class Champ_Fonc;
+class Champ_base;
+class Turbulence_paroi_scal;
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Op_Dift_VDF_var_Elem
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Op_Dift_VDF_var_Elem : public Op_Dift_VDF_base2, public Op_VDF_Elem
 {
-  loipar = loi_paroi;
-  ind_Fluctu_Term = 0;
+
+  Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem);
+
+public:
+
+  Op_Dift_VDF_var_Elem();
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,
+                const Champ_Inc& );
+  void associer_diffusivite(const Champ_base& );
+  void associer_diffusivite_turbulente(const Champ_Fonc& );
+  inline  void dimensionner(Matrice_Morse& ) const;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  void associer_loipar(const Turbulence_paroi_scal& );
+  void completer();
+  const Champ_base& diffusivite() const;
+  double calculer_dt_stab() const;
+};
+
+// Description:
+// on dimensionne notre matrice.
+inline  void Op_Dift_VDF_var_Elem::dimensionner(Matrice_Morse& matrice) const
+{
+  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
 }
 
-void Eval_Dift_VDF_const_Elem::associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
+inline void Op_Dift_VDF_var_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
-  // On remplit la reference au modele de turbulence et le tableau k:
-  le_modele_turbulence = mod;
-  ind_Fluctu_Term = 0;
-  if (!loipar.non_nul())
-    ind_Fluctu_Term = 1;
+  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
 
-void Eval_Dift_VDF_const_Elem::mettre_a_jour()
-{
-  Eval_Dift_VDF_const::mettre_a_jour();
-  if (loipar.non_nul() || (ind_Fluctu_Term != 1))
-    {
-      int s=loipar->tab_equivalent_distance_size();
-      equivalent_distance.dimensionner(s);
-      for(int i=0; i<s; i++)
-        {
-          equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-        }
-    }
-}
+#endif /* Op_Dift_VDF_var_Elem_included */

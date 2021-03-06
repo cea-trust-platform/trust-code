@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,65 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_var_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/9
+// File:        Eval_Dift_VDF_Multi_inco_var_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Dift_VDF_var_Elem_included
-#define Op_Dift_VDF_var_Elem_included
+#ifndef Eval_Dift_VDF_Multi_inco_var_Elem_included
+#define Eval_Dift_VDF_Multi_inco_var_Elem_included
 
-#include <Op_Dift_VDF_base.h>
-#include <ItVDFEl.h>
-#include <Eval_Dift_VDF_var_Elem.h>
-#include <Op_VDF_Elem.h>
-
-
-declare_It_VDF_Elem(Eval_Dift_VDF_var_Elem)
-
-class Champ_Fonc;
-class Champ_base;
-class Turbulence_paroi_scal;
-
-
-//////////////////////////////////////////////////////////////////////////////
+#include <Eval_Dift_VDF_Multi_inco_var2.h>
+#include <Eval_Diff_VDF_Elem.h>
+#include <Ref_Turbulence_paroi_scal.h>
+#include <DoubleVects.h>
 //
-// CLASS: Op_Dift_VDF_var_Elem
+// .DESCRIPTION class Eval_Dift_VDF_Multi_inco_var_Elem
 //
-//////////////////////////////////////////////////////////////////////////////
+// Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
+// Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
+// Il y a une diffusivite par inconnue
+// Le champ de diffusivite associe a chaque inconnue n'est pas constant.
 
-class Op_Dift_VDF_var_Elem : public Op_Dift_VDF_base, public Op_VDF_Elem
+//.SECTION voir aussi Eval_Dift_VDF_Multi_inco_var2
+
+class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>,
+  public Eval_Dift_VDF_Multi_inco_var2
 {
-
-  Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem);
 
 public:
+  static constexpr bool Is_Multd = false;
+  static constexpr bool Is_Dequiv = true;
 
-  Op_Dift_VDF_var_Elem();
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline  void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  inline double get_equivalent_distance(int boundary_index,int local_face) const
+  {
+    return equivalent_distance[boundary_index](local_face);
+  }
+
   void associer_loipar(const Turbulence_paroi_scal& );
-  void completer();
-  const Champ_base& diffusivite() const;
-  double calculer_dt_stab() const;
+  void mettre_a_jour( ) ;
+
+private:
+
+  REF(Turbulence_paroi_scal) loipar;
+  VECT(DoubleVect) equivalent_distance;
+
 };
 
-// Description:
-// on dimensionne notre matrice.
-inline  void Op_Dift_VDF_var_Elem::dimensionner(Matrice_Morse& matrice) const
-{
-  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
-}
-
-inline void Op_Dift_VDF_var_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
-
-#endif
+#endif /* Eval_Dift_VDF_Multi_inco_var_Elem_included */
