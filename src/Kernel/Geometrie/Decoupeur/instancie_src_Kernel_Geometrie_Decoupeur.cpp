@@ -4,6 +4,7 @@
 //
 #include <verifie_pere.h>
 #include <Decouper.h>
+#include <Decouper_multi.h>
 #include <Partitionneur_Fichier_Decoupage.h>
 #include <Partitionneur_Metis.h>
 #include <Partitionneur_Parmetis.h>

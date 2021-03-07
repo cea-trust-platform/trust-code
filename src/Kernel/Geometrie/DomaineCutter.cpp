@@ -91,6 +91,8 @@ Entree& DomaineCutter::readOn(Entree& s)
 static void construire_liste_sommets_sousdomaine(const int nb_sommets,
                                                  const IntTab& les_elems,
                                                  const ArrOfInt& liste_elements,
+                                                 const int i_part,
+                                                 const Static_Int_Lists *som_raccord,
                                                  ArrOfInt& liste_sommets,
                                                  ArrOfInt& liste_inverse_sommets)
 {
@@ -124,6 +126,11 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
             }
         }
     }
+  //sommets a ajouter a cause de som_raccord
+  if (som_raccord) for (int s = 0; s < som_raccord->get_nb_lists(); s++)
+      for (int i = 0; i < som_raccord->get_list_size(s); i++)
+        if ((*som_raccord)(s, i) == i_part && !drapeau_sommet.testsetbit(s)) //le sommet est demande par ce proc
+          nb_sommets_part++; //si on ne l'a pas deja, on le rajoute
 
   // Remplissage de liste_sommets et liste_inverse_sommets
   liste_sommets.resize_array(0); // On oublie les valeurs precedentes
@@ -636,6 +643,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
 void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets,
                                                     const ArrOfInt& liste_inverse_sommets,
                                                     const int partie,
+                                                    const Static_Int_Lists* som_raccord,
                                                     Zone& zone_partie) const
 {
   Joints& les_joints = zone_partie.faces_joint();
@@ -678,6 +686,9 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
           if (PEvoisin != partie)
             joints_sommets[PEvoisin].append_array(sommet);
         }
+      //boucle sur les procs connectes au sommet par un raccord
+      if (som_raccord) for (i = 0; i < som_raccord->get_list_size(sommet); i++)
+          if ((*som_raccord)(sommet, i) != partie) joints_sommets[(*som_raccord)(sommet, i)].append_array(sommet);
     }
 
   // Creation des joints : dans l'ordre croissant du PE voisin
@@ -1103,7 +1114,7 @@ void DomaineCutter::initialiser(const Domaine&   domaine_global,
 //  La methode initialiser doit avoir ete appelee avant
 void DomaineCutter::construire_sous_domaine(const int part,
                                             DomaineCutter_Correspondance& correspondance,
-                                            Domaine& sous_domaine) const
+                                            Domaine& sous_domaine, const Static_Int_Lists* som_raccord) const
 {
   // L'objet doit etre initialise:
   assert(nb_parties_ >= 0);
@@ -1141,6 +1152,8 @@ void DomaineCutter::construire_sous_domaine(const int part,
   construire_liste_sommets_sousdomaine(domaine.nb_som_tot(),
                                        zone.les_elems(),
                                        elements_sous_partie,
+                                       part,
+                                       som_raccord,
                                        correspondance.liste_sommets_ /* write */,
                                        correspondance.liste_inverse_sommets_ /* write */);
 
@@ -1158,7 +1171,7 @@ void DomaineCutter::construire_sous_domaine(const int part,
     construire_faces_bords_ssdom   (l_inv_som, part, zone_partie);
     construire_faces_raccords_ssdom(l_inv_som, part, zone_partie);
     construire_faces_internes_ssdom(l_inv_som, part, zone_partie);
-    construire_sommets_joints_ssdom(l_som, l_inv_som, part, zone_partie);
+    construire_sommets_joints_ssdom(l_som, l_inv_som, part, som_raccord, zone_partie);
   }
 
   construire_faces_joints_ssdom(part, correspondance, zone_partie);
@@ -1250,7 +1263,7 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 //  fichiers basename_000n.Zones pour 0 <= n < nb_parties_.
 //  Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
 //  on genere aussi un fichier par sous-zone.
-void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int& reorder)
+void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int& reorder, const Static_Int_Lists* som_raccord)
 {
   assert(nb_parties_ >= 0);
   const Domaine& domaine = ref_domaine_.valeur();
@@ -1435,7 +1448,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             Cerr << "This part is shared between multiple processors" << finl;
 
           Domaine sous_domaine;
-          construire_sous_domaine(i_part, dc_correspondance, sous_domaine);
+          construire_sous_domaine(i_part, dc_correspondance, sous_domaine, som_raccord);
           // On affiche quelques informations...
           {
             const Zone& zone = sous_domaine.zone(0);

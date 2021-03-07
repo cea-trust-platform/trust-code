@@ -14,61 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Decouper.h
+// File:        Decouper_multi.h
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Decoupeur
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Decouper_included
-#define Decouper_included
+#ifndef Decouper_multi_included
+#define Decouper_multi_included
 
+#include <Decouper.h>
+#include <Raccord_base.h>
 #include <Interprete.h>
-#include <Partitionneur_base.h>
-#include <vector>
-#include <map>
-#include <Ref_Domaine.h>
-
-class Domaine;
 
 // .DESCRIPTION
-//  Interprete Decouper. Aucun algorithme ici, uniquement lecture
-//  de parametres dans le fichier .data et execution du partitionneur
-//  et du decoupeur. Voir la methode interprete()
-
-class Decouper : public Interprete
+//  Interprete Decouper_multi. Decoupage simultane de plusieurs domaine
+//  avec renseignement des sommets connectes par des Raccords (pour extension
+//  des espaces virtuels)
+class Decouper_multi : public Interprete
 {
-  Declare_instanciable(Decouper);
-public:
-  enum ZonesFileOutputType { BINARY_MULTIPLE, HDF5_SINGLE };
+  Declare_instanciable(Decouper_multi);
 
+public:
   Entree& interpreter(Entree& is);
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
-  static int print_more_infos;
-
-  Entree& lire(Entree& is);                 //lecture des parametres
-  //ecriture d'une partition elem_part donnee
-  //som_raccord (optionnel) : som_raccord[s] -> process auxquels est raccorde le sommet
-  //                                            s par un raccord a un autre domaine
-  void ecrire(ArrOfInt& elem_part, const Static_Int_Lists *som_raccord = NULL);
-
-  Nom nom_domaine;
-  DERIV(Partitionneur_base) deriv_partitionneur;
-  REF(Domaine) ref_domaine;
-  int nb_parts_tot = -1;
-  Noms liste_bords_periodiques;
 
 private:
-  const Domaine& find_domain(const Nom& nom);
-  // Parametres du decoupage:
-
-  //parametres remplis par lire()
-  int epaisseur_joint = 1;
-  Nom nom_zones_decoup = "?";
-  Nom nom_fichier_decoupage = "?";
-  Nom nom_fichier_lata = "?";
-  int format_binaire = 1;
-  int format_hdf = 0;
-  int reorder = 0;
+  std::map<std::string, Decouper> decoupeurs; //decoupeurs de chaque domaine
+  std::vector<std::array<const Raccord_base *, 2>> racc_pairs; //liste de paires de raccords a connecter
+  double tolerance = 1e-8; //tolerance geometrique
 };
 
 #endif

@@ -92,7 +92,7 @@ static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
                                      const IntVect& elem_part,
                                      int& nb_parts_tot)
 {
-  Cerr << "Writing of the splitting array at the format ArrOfInt ascii\n"
+  Cerr << "Writing of the splitting array at the format IntVect ascii\n"
        << " in the file " << nom_fichier_decoupage
        << "\n(for each element, number of the destination processor)" << finl;
   SFichier file; // Fichier ascii
@@ -146,7 +146,8 @@ static void ecrire_sous_zones(const Nom& nom_zones_decoup,
                               const int nb_parties,
                               const int epaisseur_joint,
                               const int reorder,
-                              const Noms& bords_periodiques)
+                              const Noms& bords_periodiques,
+                              const Static_Int_Lists* som_raccord)
 {
   DomaineCutter cutter;
   cutter.initialiser(domaine, elem_part, nb_parties, epaisseur_joint,
@@ -156,7 +157,7 @@ static void ecrire_sous_zones(const Nom& nom_zones_decoup,
   // Donc apres renumerotation des PEs et donc de elem_part, il faudrait
   // reinitialiser ? Ou bien, tout renumeroter apres le calcul des joints...
   // Cela parait mieux...
-  cutter.ecrire_zones(nom_zones_decoup, format, elem_part, reorder);
+  cutter.ecrire_zones(nom_zones_decoup, format, elem_part, reorder, som_raccord);
 }
 
 // XD partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
@@ -177,8 +178,27 @@ int Decouper::print_more_infos = 0;
 Entree& Decouper::interpreter(Entree& is)
 {
   Cerr << "Decouper : Splitting of a domain" << finl;
+  //lecture des parametres
+  lire(is);
 
-  // Lecture du nom du domaine a decouper:
+  //generation de la partition
+  IntVect elem_part;
+  Partitionneur_base& partitionneur = deriv_partitionneur.valeur();
+  partitionneur.declarer_bords_periodiques(liste_bords_periodiques);
+  partitionneur.construire_partition(elem_part,nb_parts_tot);
+
+  //ecriture
+  ecrire(elem_part, {});
+
+  Cerr << "End of the interpreter Decouper" << finl;
+  return is;
+}
+
+
+Entree& Decouper::lire(Entree& is)
+{
+
+// Lecture du nom du domaine a decouper:
   int epaisseur_joint = 1;
   Nom nom_zones_decoup("?");
   Nom nom_fichier_decoupage("?");
@@ -191,9 +211,9 @@ Entree& Decouper::interpreter(Entree& is)
 
   is >> nom_domaine;
   Cerr << " Domain name to split : " << nom_domaine << finl;
-  const Domaine& domaine = find_domain(nom_domaine);
+  ref_domaine = find_domain(nom_domaine);
   // Avant de decouper on imprime des infos
-  domaine.imprimer();
+  ref_domaine->imprimer();
 
   Param param(que_suis_je());
   param.ajouter_non_std("partitionneur|partition_tool",(this),Param::REQUIRED);
@@ -208,15 +228,12 @@ Entree& Decouper::interpreter(Entree& is)
   param.ajouter("periodique",&liste_bords_periodiques);
   param.ajouter("print_more_infos",&Decouper::print_more_infos);
   param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-  Partitionneur_base& partitionneur = deriv_partitionneur.valeur();
 
-  // On recupere le resultat: un tableau qui donne pour chaque element
-  // le numero de la partie a laquelle il appartient.
-  IntVect elem_part;
-  partitionneur.declarer_bords_periodiques(liste_bords_periodiques);
-  partitionneur.construire_partition(elem_part,nb_parts_tot);
-
+void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
+{
   // Calcul du nombre de parties generees par le partitionneur
   int nb_parties = 0;
   if (elem_part.size_array() > 0)
@@ -250,12 +267,12 @@ Entree& Decouper::interpreter(Entree& is)
       if (format_binaire) typ = BINARY_MULTIPLE;
       if (format_hdf) typ = HDF5_SINGLE;
       ecrire_sous_zones(nom_zones_decoup, typ,
-                        domaine, elem_part, nb_parties, epaisseur_joint, reorder,
-                        liste_bords_periodiques);
+                        ref_domaine.valeur(), elem_part, nb_parties, epaisseur_joint, reorder,
+                        liste_bords_periodiques, som_raccord);
     }
 
   if (nom_fichier_lata != "?")
-    postraiter_decoupage(nom_fichier_lata, domaine, elem_part);
+    postraiter_decoupage(nom_fichier_lata, ref_domaine.valeur(), elem_part);
 
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
   int total_elem = Process::mp_sum(elem_part.size_reelle());
@@ -308,7 +325,6 @@ Entree& Decouper::interpreter(Entree& is)
       Cerr << "Performance tip: You could add \"reorder 1\" option to have less distance between communicating processes on the network." << finl;
       Cerr << "Add also \"Ecrire_lata filename\" to post-process the partition numeration and see the difference." << finl;
     }
-  return is;
 }
 
 int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
