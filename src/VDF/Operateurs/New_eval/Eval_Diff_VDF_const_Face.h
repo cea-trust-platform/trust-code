@@ -14,51 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Evaluateur_VDF.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/8
+// File:        Eval_Diff_VDF_const_Face.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Evaluateur_VDF.h>
 
-Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval)
-  :
-  la_zone(eval.la_zone),la_zcl(eval.la_zcl),dimension(eval.dimension),premiere_face_bord(eval.premiere_face_bord)
-{
-  surface.ref(eval.surface);
-  orientation.ref(eval.orientation);
-  elem_.ref(eval.elem_);
-  porosite.ref(eval.porosite);
-  volume_entrelaces.ref(eval.volume_entrelaces);
-  xv.ref(eval.xv);
 
-}
+#ifndef Eval_Diff_VDF_const_Face_included
+#define Eval_Diff_VDF_const_Face_included
 
-void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf,
-                                    const Zone_Cl_VDF& zone_cl_vdf)
-{
-  la_zone = zone_vdf;
-  la_zcl = zone_cl_vdf;
-  dimension = Objet_U::dimension;
-  premiere_face_bord = zone_vdf.premiere_face_bord();
-  surface.ref(zone_vdf.face_surfaces());
-  orientation.ref(zone_vdf.orientation());
-  elem_.ref(zone_vdf.face_voisins());
-  porosite.ref(zone_vdf.porosite_face());
-  volume_entrelaces.ref(zone_vdf.volumes_entrelaces());
-  xv.ref(zone_vdf.xv());
-}
+#include <Eval_Diff_VDF_const2.h>
+#include <Eval_Diff_VDF_Face.h>
 
-//void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)
-//{
-//  porosite.ref(poro);
-//}
-
-//// dist_norm_bord
 //
+// .DESCRIPTION class Eval_Diff_VDF_const_Face
+//
+// Evaluateur VDF pour la diffusion
+// Le champ diffuse est un Champ_Face
+// Le champ de diffusivite est constant.
 
-double Evaluateur_VDF::dist_norm_bord(int face) const
+//
+// .SECTION voir aussi Eval_Diff_VDF_const
+
+class Eval_Diff_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_const_Face>,
+  public Eval_Diff_VDF_const2
 {
-  return la_zone->dist_norm_bord(face);
-}
+};
+
+#endif /* Eval_Diff_VDF_const_Face_included */

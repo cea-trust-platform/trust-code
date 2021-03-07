@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 #include <DoubleTab.h>
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
-
+#include <Zone_VDF.h>
 //
 // .DESCRIPTION class Evaluateur_VDF
 //
@@ -72,6 +72,16 @@ protected:
 
   double dist_norm_bord(int) const;
 
+  inline double dist_face(int fac1, int fac2, int k) const
+  {
+    return xv(fac2,k) - xv(fac1,k);
+    //return la_zone->dist_face(fac1, fac2, k);
+  }
+
+  inline double dist_face_period(int fac1, int fac2, int k) const
+  {
+    return la_zone->dist_face_period(fac1,fac2,k);
+  }
 };
 
 //

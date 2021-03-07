@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,39 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/17
+// File:        Eval_VDF_Face2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Face.h>
-#include <Fluide_Incompressible.h>
-#include <Champ_Inc.h>
-#include <SFichier.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Face,"Op_Diff_VDF_const_Face",Op_Diff_VDF_Face_base);
+#ifndef Eval_VDF_Face2_included
+#define Eval_VDF_Face2_included
 
-implemente_It_VDF_Face(Eval_Diff_VDF_const_Face)
+#include <Champ_Face.h>
+#include <Ref_Champ_base.h>
 
-
-//// printOn
 //
-Sortie& Op_Diff_VDF_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
+// .DESCRIPTION class Eval_VDF_Face2
 //
-Entree& Op_Diff_VDF_Face::readOn(Entree& s )
-{
-  return s ;
-}
+// Cette classe represente le prototype fonctionnel des evaluateurs
+// de flux associes aux equations de conservation integrees
+// sur les volumes entrelaces
 
-// Description:
-// constructeur
-Op_Diff_VDF_Face::Op_Diff_VDF_Face():Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_const_Face)())
+class Eval_VDF_Face2
 {
-}
+
+public:
+
+  inline Eval_VDF_Face2() {}
+  inline virtual ~Eval_VDF_Face2() {}
+  virtual int calculer_arete_bord() const
+  {
+    return 1;
+  }
+
+  inline void associer_inconnue(const Champ_base& inco)
+  {
+    assert(sub_type(Champ_Face,inco));
+    inconnue=ref_cast(Champ_Face,inco);
+  }
+protected:
+
+  REF(Champ_base) inconnue;
+
+};
+
+#endif /* Eval_VDF_Face2_included */

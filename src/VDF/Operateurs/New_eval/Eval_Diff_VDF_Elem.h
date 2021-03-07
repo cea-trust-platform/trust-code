@@ -26,7 +26,6 @@
 
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem2.h>
-#include <Zone_VDF.h>
 
 template <typename DERIVED_T>
 class Eval_Diff_VDF_Elem : public Eval_VDF_Elem2, public Evaluateur_VDF

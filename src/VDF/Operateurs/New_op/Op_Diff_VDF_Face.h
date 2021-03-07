@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Face.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@
 #ifndef Op_Diff_VDF_Face_included
 #define Op_Diff_VDF_Face_included
 
-#include <Op_Diff_VDF_Face_base.h>
+#include <Op_Diff_VDF_Face_base2.h>
 #include <Eval_Diff_VDF_const_Face.h>
 class Champ_Inc;
 //
@@ -50,13 +50,13 @@ declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base
+class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base2
 {
 
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
 
 public:
-  inline Eval_VDF_Face& get_eval_face();
+  inline Eval_VDF_Face2& get_eval_face();
   Op_Diff_VDF_Face();
 };
 
@@ -64,11 +64,12 @@ public:
 // Fonctions inline de la classe Op_Diff_VDF_Face
 //
 
-
 // Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
-inline Eval_VDF_Face& Op_Diff_VDF_Face::get_eval_face()
+inline Eval_VDF_Face2& Op_Diff_VDF_Face::get_eval_face()
 {
-  Eval_Diff_VDF_const_Face& eval_diff = (Eval_Diff_VDF_const_Face&) iter.evaluateur();
-  return (Eval_VDF_Face&) eval_diff;
+  Eval_Diff_VDF_const_Face& eval_diff =
+    dynamic_cast<Eval_Diff_VDF_const_Face&> (iter.evaluateur());
+  return  eval_diff;
 }
-#endif
+
+#endif /* Op_Diff_VDF_Face_included */

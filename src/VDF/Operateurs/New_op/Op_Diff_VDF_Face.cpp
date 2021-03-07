@@ -14,51 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Evaluateur_VDF.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/8
+// File:        Op_Diff_VDF_Face.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Evaluateur_VDF.h>
+#include <Op_Diff_VDF_Face.h>
+#include <Fluide_Incompressible.h>
+#include <Champ_Inc.h>
+#include <SFichier.h>
 
-Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval)
-  :
-  la_zone(eval.la_zone),la_zcl(eval.la_zcl),dimension(eval.dimension),premiere_face_bord(eval.premiere_face_bord)
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Face,"Op_Diff_VDF_const_Face",Op_Diff_VDF_Face_base2);
+implemente_It_VDF_Face(Eval_Diff_VDF_const_Face)
+
+Sortie& Op_Diff_VDF_Face::printOn(Sortie& s ) const
 {
-  surface.ref(eval.surface);
-  orientation.ref(eval.orientation);
-  elem_.ref(eval.elem_);
-  porosite.ref(eval.porosite);
-  volume_entrelaces.ref(eval.volume_entrelaces);
-  xv.ref(eval.xv);
-
+  return s << que_suis_je() ;
 }
 
-void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf,
-                                    const Zone_Cl_VDF& zone_cl_vdf)
+Entree& Op_Diff_VDF_Face::readOn(Entree& s )
 {
-  la_zone = zone_vdf;
-  la_zcl = zone_cl_vdf;
-  dimension = Objet_U::dimension;
-  premiere_face_bord = zone_vdf.premiere_face_bord();
-  surface.ref(zone_vdf.face_surfaces());
-  orientation.ref(zone_vdf.orientation());
-  elem_.ref(zone_vdf.face_voisins());
-  porosite.ref(zone_vdf.porosite_face());
-  volume_entrelaces.ref(zone_vdf.volumes_entrelaces());
-  xv.ref(zone_vdf.xv());
+  return s ;
 }
 
-//void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)
-//{
-//  porosite.ref(poro);
-//}
-
-//// dist_norm_bord
-//
-
-double Evaluateur_VDF::dist_norm_bord(int face) const
+// Description:
+// constructeur
+Op_Diff_VDF_Face::Op_Diff_VDF_Face() :
+  Op_Diff_VDF_Face_base2(It_VDF_Face(Eval_Diff_VDF_const_Face)())
 {
-  return la_zone->dist_norm_bord(face);
 }
