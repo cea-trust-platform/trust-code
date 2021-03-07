@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Face_Axi.h
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@
 #ifndef Op_Diff_VDF_Face_Axi_included
 #define Op_Diff_VDF_Face_Axi_included
 
-#include <Op_Diff_VDF_Face_base.h>
+#include <Op_Diff_VDF_Face_base2.h>
 
 //
 // .DESCRIPTION class Op_Diff_VDF_Face_Axi
@@ -51,15 +51,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Face_Axi : public Op_Diff_VDF_Face_base
+class Op_Diff_VDF_Face_Axi : public Op_Diff_VDF_Face_base2
 {
 
   Declare_instanciable(Op_Diff_VDF_Face_Axi);
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   void associer_diffusivite(const Champ_base& );
   const Champ_base& diffusivite() const;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
