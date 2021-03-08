@@ -40,7 +40,7 @@ class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var
   public Eval_Diff_VDF_var_aniso
 {
 public:
-  static constexpr bool Is_Aniso= true;
+  static constexpr bool IS_ANISO= true;
 };
 
 #endif /* Eval_Diff_VDF_var_Elem_aniso_included */

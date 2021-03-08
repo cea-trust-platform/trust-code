@@ -41,7 +41,7 @@ class Eval_Diff_VDF_Multi_inco_var_Elem :
   public Eval_Diff_VDF_Multi_inco_var2
 {
 public:
-  static constexpr bool Is_Multd = false;
+  static constexpr bool IS_MULTD = false;
 };
 
 #endif /* Eval_Diff_VDF_Multi_inco_var_Elem_included */

@@ -37,9 +37,9 @@ class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dif
   public Eval_Dift_VDF_Multi_inco_var2
 {
 public:
-  static constexpr bool Is_Multd = false;
-  static constexpr bool Is_Dequiv = true;
-  static constexpr bool Is_Axi = true;
+  static constexpr bool IS_MULTD = false;
+  static constexpr bool IS_DEQUIV = true;
+  static constexpr bool IS_AXI = true;
 };
 
 #endif /* Eval_Dift_VDF_Multi_inco_var_Elem_Axi_included */

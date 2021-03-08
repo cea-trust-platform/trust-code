@@ -42,7 +42,7 @@ class Eval_Diff_VDF_var_Elem_Axi :public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_El
 {
 
 public:
-  static constexpr bool Is_Axi = true;
+  static constexpr bool IS_AXI = true;
 };
 
 #endif /* Eval_Diff_VDF_var_Elem_Axi_included */

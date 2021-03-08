@@ -43,8 +43,8 @@ class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_
   public Eval_Dift_VDF_Multi_inco_const2
 {
 public:
-  static constexpr bool Is_Multd = false;
-  static constexpr bool Is_Dequiv = true;
+  static constexpr bool IS_MULTD = false;
+  static constexpr bool IS_DEQUIV = true;
 };
 
 #endif /* Eval_Dift_VDF_Multi_inco_const_Elem_included */

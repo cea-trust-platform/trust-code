@@ -45,7 +45,7 @@ class Eval_Dift_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_E
 {
 public :
   inline Eval_Dift_VDF_const_Elem() : ind_Fluctu_Term(1) {}
-  static constexpr bool Is_Modif_Deq = true;
+  static constexpr bool IS_MODIF_DEQ = true;
 
   inline int get_ind_Fluctu_Term() const
   {
