@@ -2301,19 +2301,13 @@ void Equation_base::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
   les_sources.dimensionner(matrice);
 }
 
-void Equation_base::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items)
-{
-  for(int i = 0; i < nombre_d_operateurs(); i++)
-    operateur(i).l_op_base().get_items_croises(autre_pb, extra_items);
-}
-
-void Equation_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc)
+void Equation_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc)
 {
   matrice.dimensionner(nl, nc, 0);
   for(int i = 0; i < nombre_d_operateurs(); i++)
     {
       Matrice_Morse mat2;
-      operateur(i).l_op_base().dimensionner_termes_croises(mat2, autre_pb, extra_items, nl, nc);
+      operateur(i).l_op_base().dimensionner_termes_croises(mat2, autre_pb, nl, nc);
       if (mat2.nb_colonnes()) matrice += mat2;
     }
 }

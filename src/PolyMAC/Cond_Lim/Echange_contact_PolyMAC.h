@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,14 +68,10 @@ public :
     return nom_autre_pb_;
   };
   //item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
-  //initialiement non rempli si l'item n'est pas accessible (parallelisme) : extra_items permet de le completer
   mutable IntTab item;
   //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
   //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
   mutable DoubleTab coeff, delta_int, delta;
-  //extra_item[ numero de proc, numero d'item ] = (indices (i, j) dans item ayant besoin de cet item)
-  //-> infos pour rendre les items manquants de remote_item accessibles
-  std::map<std::array<int, 2>, std::vector<std::array<int, 2>>> extra_items;
   int monolithic; //1 si on resout la thermique en monolithique
 protected :
   int stab_; //1 si on utilise la stabilisation de Le Potier

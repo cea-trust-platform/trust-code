@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -354,11 +354,7 @@ int Echange_contact_VDF::initialiser(double temps)
           {
             if (o_zone.virt_e_map.count({{ (int) proc(i), (int) l_item(i) }}))   //item local (virtuel)
             item(i) = o_zone.virt_e_map.at({{ (int) proc(i),  (int) l_item(i) }});
-            else
-              {
-                extra_items[ {{ (int) proc(i), (int) l_item(i) }}].push_back(i);
-                item(i) = -2; //item manquant
-              }
+            else Process::exit(Nom("Echange_contact_VDF : missing element opposite face ") + Nom(fvf.num_face(i)) + " in " + fvf.le_nom() + " ! Have you used Decouper_multi?");
           }
       }
   return 1;

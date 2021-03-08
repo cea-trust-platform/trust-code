@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,7 +87,7 @@ protected :
   void calculer_correction_en_vitesse(const DoubleTrav& correction_en_pression, DoubleTrav& gradP, DoubleTrav& correction_en_vitesse,const Matrice_Morse& matrice, const Operateur_Grad& gradient );
 
   /* memoization de iterer_eqs */
-  std::map<std::vector<intptr_t>, std::pair<Matrice_Bloc, MD_Vector>> mat_mdv;
+  std::map<std::vector<intptr_t>, Matrice_Bloc> mbloc;
 };
 
 void diviser_par_rho_np1_face(Equation_base& eqn, DoubleTab& tab);

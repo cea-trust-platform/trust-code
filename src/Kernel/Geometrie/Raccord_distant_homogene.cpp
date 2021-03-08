@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -203,13 +203,13 @@ void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab&
     {
       const int pe_dest = send_data(i, 0);
       const int face  = num_premiere_face() + send_data(i, 1);
-      for (n = 0; n < N; n++) schema.send_buffer(pe_dest) << y(face, n);
+      for (n = 0; n < N; n++) schema.send_buffer(pe_dest) << y.addr()[N * face + n];
     }
   schema.echange_taille_et_messages();
   for (int i = 0; i < n2; i++)
     {
       const int pe_source = recv_data[i];
-      for (n = 0; n < N; n++) schema.recv_buffer(pe_source) >> x(i, n);
+      for (n = 0; n < N; n++) schema.recv_buffer(pe_source) >> x.addr()[N * i + n];
     }
   schema.end_comm();
 }

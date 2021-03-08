@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,7 +133,7 @@ int Echange_contact_PolyMAC::initialiser(double temps)
           {
             item(i, j) = o_zone.virt_ef_map.at({{ (int) proc(i, j),  (int) l_item(i, j) }});
           }
-          else extra_items[ {{ (int) proc(i, j), (int) l_item(i, j) }}].push_back({{ i, j }}), item(i, j) = -2; //item manquant
+          else Process::exit(Nom("Echange_contact_PolyMAC: missing item opposite face ") + Nom(fvf.num_face(i)) + " on " + fvf.le_nom() + " ! Have you used Decouper_multi?");
         }
 
   //coeff : 1 coeff de plus que item -> celui de la face elle-meme (mis au debut)

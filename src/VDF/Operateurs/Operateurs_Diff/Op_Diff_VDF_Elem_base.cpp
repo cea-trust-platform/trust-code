@@ -148,17 +148,6 @@ const Champ_base& Op_Diff_VDF_Elem_base::diffusivite() const
   return eval_diff.get_diffusivite();
 }
 
-void Op_Diff_VDF_Elem_base::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const
-{
-  const Conds_lim& cls = iter.zone_Cl().les_conditions_limites();
-  for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_VDF, cls[i].valeur()))
-      {
-        const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, cls[i].valeur());
-        if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
-        for (auto && kv : cl.extra_items) extra_items[kv.first] = -1; //on ajoute les items dont la CL a besoin
-      }
-}
-
 void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
   const Zone_VDF& zone = iter.zone();
@@ -187,7 +176,7 @@ void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, con
     }
 }
 
-void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const
+void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
   const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
   const Zone_VDF& zone = iter.zone();
@@ -201,8 +190,6 @@ void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, 
       {
         const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, cls[i].valeur());
         if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
-        /* mise a jour de item a l'aide de extra_items */
-        for (auto &&kv : cl.extra_items) for (auto &k : kv.second) cl.item(k) = extra_items.at(kv.first);
 
         /* stencil */
         const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());

@@ -363,9 +363,8 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   std::vector<intptr_t> key(eqs.size());
   for (i = 0; i < eqs.size(); i++) key[i] = (intptr_t) &eqs[i].valeur();
 
-  int init = !mat_mdv.count(key); //premier passage
-  Matrice_Bloc& Mglob = mat_mdv[key].first;
-  MD_Vector& mdv = mat_mdv[key].second;
+  int init = !mbloc.count(key); //premier passage
+  Matrice_Bloc& Mglob = mbloc[key];
 
   if (init) for (Mglob.dimensionner(eqs.size(), eqs.size()), i = 0; i < eqs.size(); i++)
       for (j = 0; j < eqs.size(); j++) Mglob.get_bloc(i, j).typer("Matrice_Morse");
@@ -376,28 +375,19 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
       mats[i][j == i ? nom_inco : nom_inco + "_" + eqs[j]->probleme().le_nom().getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
 
+  //MD_Vector global
+  MD_Vector_composite mdc; //version composite
+  for (i = 0; i < eqs.size(); i++)
+    mdc.add_part(eqs[i]->inconnue().valeurs().get_md_vector(), eqs[i]->inconnue().valeurs().line_size());
+  MD_Vector mdv;
+  mdv.copy(mdc);
+
   if (init) //1er passage -> dimensionnement des MD_Vector et des matrices
     {
-      //extra_items[i] : items du probleme i dont on a besoin sur le processeur courant
-      //format: extra_items[indice de probleme][proc, item local] = item distant sur Process::me()
-      std::vector<extra_item_t> extra_items(eqs.size());
-      for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-          eqs[i]->get_items_croises(eqs[j]->probleme(), extra_items[j]);
-
-      //MD_Vector enrichi pour contenir les extra_items
-      MD_Vector_composite mdc; //MD_Vector_composite global
-      for (i = 0; i < eqs.size(); i++)
-        mdc.add_part(MD_Vector_tools::extend(eqs[i]->inconnue().valeurs().get_md_vector(), extra_items[i]), eqs[i]->inconnue().valeurs().line_size());
-      mdv.copy(mdc);
-
       /* dimensionnement de la matrice globale */
       try /* on tente dimensioner_blocs */
         {
           for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
-          for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-              Matrix_tools::extend_matrix(ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()),
-                                          mdc.get_desc_part(i).valeur().get_nb_items_tot(),
-                                          mdc.get_desc_part(j).valeur().get_nb_items_tot());
         }
       catch (const std::runtime_error& e) /* methode classique */
         {
@@ -405,8 +395,8 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
               {
                 Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
                 int nl = mdc.get_desc_part(i).valeur().get_nb_items_tot(), nc = mdc.get_desc_part(j).valeur().get_nb_items_tot();
-                if (i == j) eqs[i]->dimensionner_matrice(mat), Matrix_tools::extend_matrix(mat, nl, nc);
-                eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), extra_items[j], nl, nc);
+                if (i == j) eqs[i]->dimensionner_matrice(mat);
+                eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), nl, nc);
                 if (i == j) mat += mat2;
               }
         }
@@ -424,10 +414,9 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   MD_Vector_tools::creer_tableau_distribue(mdv, dudt);
   DoubleTab_parts residu_parts(residus), inconnues_parts(inconnues), dudt_parts(dudt);
 
-  //remplissage des inconnues (memcpy car inconnues_parts[i] a ete agrandi), puis echange
-  for(i = 0; i < eqs.size(); i++)
-    memcpy(inconnues_parts[i].addr(), eqs[i]->inconnue().valeurs().addr(), eqs[i]->inconnue().valeurs().size_totale() * sizeof(double));
-  inconnues.echange_espace_virtuel(), dudt = inconnues;
+  //remplissage des inconnues
+  for(i = 0; i < eqs.size(); i++) inconnues_parts[i] = eqs[i]->inconnue().valeurs();
+  dudt = inconnues;
 
   //remplissage des matrices
   try //on essaie ajouter_blocs
@@ -451,6 +440,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   // resolution
   solveur.valeur().reinit();
   solveur.resoudre_systeme(Mglob, residus, inconnues);
+  inconnues.echange_espace_virtuel();
 
   // mise a jour
   bool converge = true;
@@ -458,7 +448,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
     {
       dudt_parts[i] -= inconnues_parts[i];
       double dudt_norme = mp_norme_vect(dudt_parts[i]);
-      memcpy(eqs[i]->inconnue().valeurs().addr(), inconnues_parts[i].addr(), eqs[i]->inconnue().valeurs().size_totale() * sizeof(double));
+      eqs[i]->inconnue().valeurs() = inconnues_parts[i];
 
       if (test_convergence)
         {

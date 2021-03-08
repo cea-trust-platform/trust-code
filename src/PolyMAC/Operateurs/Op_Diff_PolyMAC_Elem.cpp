@@ -209,18 +209,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
   Matrix_tools::allocate_morse_matrix(N * (ne_tot + nf_tot), N * (ne_tot + nf_tot), stencil, mat);
 }
 
-void Op_Diff_PolyMAC_Elem::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const
-{
-  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
-      {
-        const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
-        if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
-        for (auto && kv : cl.extra_items) extra_items[kv.first] = -1; //on ajoute les items dont la CL a besoin
-      }
-}
-
-void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const
+void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
@@ -233,8 +222,6 @@ void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, c
       {
         const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
         if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
-        /* mise a jour de item a l'aide de extra_items */
-        for (auto &&kv : cl.extra_items) for (auto &ij : kv.second) cl.item(ij[0], ij[1]) = extra_items.at(kv.first);
 
         /* stencil */
         const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
