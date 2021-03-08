@@ -1,0 +1,9 @@
+
+nb_col_qdmX=`tail -1 Source_qdm_VEF_SOURCE_QDMX.son | awk '{print NF}'`
+nb_col_qdmY=`tail -1 Source_qdm_VEF_SOURCE_QDMY.son | awk '{print NF}'`
+nb_col_qdmXY=`tail -1 Source_qdm_VEF_SOURCE_QDMXY.son | awk '{print NF}'`
+
+[ "$nb_col_qdmX" != "2"  ] || [ "$nb_col_qdmY" != "2"  ] && echo "Something wrong with probes of qdm source components" && exit -1
+[ "$nb_col_qdmXY" != "3"  ] && echo "Something wrong with the probe of qdm source" && exit -1
+
+exit 0 # sinon il exit 1 car le test [ "$nb_col_qdmXY" != "3"  ] a echoue

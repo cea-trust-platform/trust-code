@@ -130,6 +130,7 @@ champ_post_operateur_eqn champ_post_de_champs_post operateur_eqn 1 not_set
   attr numero_op entier numero_op 1 not_set
   attr numero_source entier numero_source 1 not_set
   attr sans_solveur_masse rien sans_solveur_masse 1 not_set
+  attr compo entier compo 1 If you want to post-process only one component of a vector field, you can specify the number of the component after compo keyword. By default, it is set to -1 which means that all the components will be post-processed. This feature is not available in VDF disretization.
 transformation champ_post_de_champs_post transformation -1 To create a field with a transformation.
   attr methode chaine(into=["produit_scalaire","norme","vecteur","formule","composante"]) methode 0 methode norme : will calculate the norm of a vector given by a source field NL2 methode produit_scalaire : will calculate the dot product of two vectors given by two sources fields NL2 methode composante numero integer : will create a field by extracting the integer component of a field given by a source field NL2 methode formule expression 1 : will create a scalar field located to elements using expressions with x,y,z,t parameters and field names given by a source field or several sources fields. NL2 methode vecteur expression N f1(x,y,z,t) fN(x,y,z,t) : will create a vector field located to elements by defining its N components with N expressions with x,y,z,t parameters and field names given by a source field or several sources fields.
   attr expression listchaine expression 1 see methodes formule and vecteur

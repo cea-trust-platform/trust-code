@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,13 +65,15 @@ public:
   void nommer_source();
   //virtual Entree &   lire(const Motcle & motcle, Entree & is);
   void set_param(Param& param);
-
+  void verification_cas_compo();
+  const Champ_base&  get_champ_compo_without_evaluation(Champ& espace_stockage) const;
 
 protected:
   int numero_source_,numero_op_;
   REF(Equation_base) ref_eq_;
   int sans_solveur_masse_;
   Entity localisation_inco_;
+  int compo_;                            //Pour identifier la composante a recuperer
 };
 
 #endif
