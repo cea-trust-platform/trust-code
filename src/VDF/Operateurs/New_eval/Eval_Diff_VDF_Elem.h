@@ -380,33 +380,17 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   // Pierre dit que :
   double dist = Dist_norm_bord(face);
   double flux;
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
 
-  if(DERIVED_T::Is_Aniso)
+  if (n0 != -1)
     {
-      int ori= orientation(face);
-      if (n0 != -1)
-        {
-          flux = (T_imp-inco[n0])*surface(face)/dist;
-          flux *= (porosite(face)*nu_1(n0,ori));
-        }
-      else   // n1 != -1
-        {
-          flux = (inco[n1]-T_imp)*surface(face)/dist;
-          flux*= (porosite(face)*nu_1(n1,ori));
-        }
+      flux = (T_imp-inco[n0])*surface(face)/dist;
+      flux *= (porosite(face)*nu_1(n0,ori));
     }
-  else
+  else   // n1 != -1
     {
-      if (n0 != -1)
-        {
-          flux = (T_imp-inco[n0])*surface(face)/dist;
-          flux *= (porosite(face)*nu_1(n0));
-        }
-      else   // n1 != -1
-        {
-          flux = (inco[n1]-T_imp)*surface(face)/dist;
-          flux*= (porosite(face)*nu_1(n1));
-        }
+      flux = (inco[n1]-T_imp)*surface(face)/dist;
+      flux*= (porosite(face)*nu_1(n1,ori));
     }
   return flux;
 }
@@ -420,32 +404,17 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int,
   int i = elem_(face,0);
   //  int j = elem(face,1);
   double dist = Dist_norm_bord(face);
-  if(DERIVED_T::Is_Aniso)
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
+
+  if (i != -1)
     {
-      int ori= orientation(face);
-      if (i != -1)
-        {
-          aii =  porosite(face)*nu_1(i,ori)*surface(face)/dist;
-          ajj = 0;
-        }
-      else   // j != -1
-        {
-          ajj =  porosite(face)*nu_1(elem_(face,1),ori)*surface(face)/dist;
-          aii = 0;
-        }
+      aii =  porosite(face)*nu_1(i,ori)*surface(face)/dist;
+      ajj = 0;
     }
-  else
+  else   // j != -1
     {
-      if (i != -1)
-        {
-          aii =  porosite(face)*nu_1(i)*surface(face)/dist;
-          ajj = 0;
-        }
-      else   // j != -1
-        {
-          ajj =  porosite(face)*nu_1(elem_(face,1))*surface(face)/dist;
-          aii = 0;
-        }
+      ajj =  porosite(face)*nu_1(elem_(face,1),ori)*surface(face)/dist;
+      aii = 0;
     }
 }
 
@@ -459,33 +428,17 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int face, const Dirichl
   //  int j = elem(face,1);
   double dist = Dist_norm_bord(face);
   double flux;
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
 
-  if(DERIVED_T::Is_Aniso)
+  if (i != -1)
     {
-      int ori= orientation(face);
-      if (i != -1)
-        {
-          flux = T_imp*surface(face)/dist;
-          flux *= porosite(face)*nu_1(i,ori);
-        }
-      else   // j != -1
-        {
-          flux = -T_imp*surface(face)/dist;
-          flux *= (porosite(face)*nu_1(elem_(face,1),ori));
-        }
+      flux = T_imp*surface(face)/dist;
+      flux *= porosite(face)*nu_1(i,ori);
     }
-  else
+  else   // j != -1
     {
-      if (i != -1)
-        {
-          flux = T_imp*surface(face)/dist;
-          flux *= porosite(face)*nu_1(i);
-        }
-      else   // j != -1
-        {
-          flux = -T_imp*surface(face)/dist;
-          flux *= (porosite(face)*nu_1(elem_(face,1)));
-        }
+      flux = -T_imp*surface(face)/dist;
+      flux *= (porosite(face)*nu_1(elem_(face,1),ori));
     }
 
   return flux;
@@ -508,74 +461,48 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
 //  Dist_norm_bord_externe(boundary_index,face,local_face);
   if (DERIVED_T::Is_Modif_Deq)
     {
-      if (ind_Fluctu_Term()==1)
-        e=Dist_norm_bord_externe_(face) ;
-      else
-        e=equivalent_distance(boundary_index,local_face);
-      //e=d_equiv(face-la_zone->premiere_face_bord());
+      e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) :
+          equivalent_distance(boundary_index,local_face);
     }
   else
     {
-      if (DERIVED_T::Is_Dequiv)
-        {
-          e=equivalent_distance(boundary_index,local_face);
-          // e=d_equiv(face-la_zone->premiere_face_bord());
-        }
-      else
-        e=Dist_norm_bord_externe_(face);
+      e = DERIVED_T::Is_Dequiv ? equivalent_distance(boundary_index,local_face) :
+          Dist_norm_bord_externe_(face);
     }
 
-  double flux;
+  double flux, heq;
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
 
-  if(DERIVED_T::Is_Aniso)
+  // XXX : E. Saikali 08/03/2021
+  // The test of a zero diffusion was not done before. I think it should be like that
+  // See always when we use int ori = DERIVED_T::Is_Aniso....
+  if (n0 != -1)
     {
-      double heq;
-      int ori = orientation(face);
-      if (n0 != -1)
+      //e = la_zone->xv(face,ori) - la_zone->xp(n0,ori);
+      if (nu_1(n0,ori) == 0.0)
         {
-          //e = la_zone->xv(face,ori) - la_zone->xp(n0,ori);
-          if (nu_1(n0,ori) == 0.0)
-            {
-              heq = h_imp; // Should be 0 ??
-            }
-          else
-            {
-              h_total_inv = 1.0/h_imp + e/nu_1(n0,ori);
-              heq = 1.0 / h_total_inv;
-            }
-
-          flux = heq*(T_ext - inco[n0])*surface(face);
+          heq = h_imp; // Should be 0 ??
         }
       else
         {
-          //e = la_zone->xp(n1,ori) - la_zone->xv(face,ori);
-          if (nu_1(n1,ori) == 0.0)
-            {
-              heq = h_imp; // Should be 0 ??
-            }
-          else
-            {
-              h_total_inv = 1.0/h_imp + e/nu_1(n1,ori);
-              heq = 1.0 / h_total_inv;
-            }
-
-          flux = heq*(inco[n1] - T_ext)*surface(face);
+          h_total_inv = 1.0/h_imp + e/nu_1(n0,ori);
+          heq = 1.0 / h_total_inv;
         }
+      flux = heq*(T_ext - inco[n0])*surface(face);
     }
   else
     {
-      if (n0 != -1)
+      //e = la_zone->xp(n1,ori) - la_zone->xv(face,ori);
+      if (nu_1(n1,ori) == 0.0)
         {
-          //e = la_zone->xv(face,ori) - la_zone->xp(n0,ori);
-          h_total_inv = 1/h_imp + e/nu_2(n0);
-          flux = (T_ext - inco[n0])*surface(face)/h_total_inv;
+          heq = h_imp; // Should be 0 ??
         }
       else
         {
-          //e = la_zone->xp(n1,ori) - la_zone->xv(face,ori);
-          h_total_inv = 1/h_imp + e/nu_2(n1);
-          flux = (inco[n1] - T_ext)*surface(face)/h_total_inv;
+          h_total_inv = 1.0/h_imp + e/nu_1(n1,ori);
+          heq = 1.0 / h_total_inv;
         }
+      flux = heq*(inco[n1] - T_ext)*surface(face);
     }
   return flux;
 }
@@ -598,77 +525,51 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
 
   if (DERIVED_T::Is_Modif_Deq)
     {
-      if (ind_Fluctu_Term()==1)
-        e=Dist_norm_bord_externe_(face) ;
-      else
-        e=equivalent_distance(boundary_index,local_face);
-      // e=d_equiv(face-la_zone->premiere_face_bord());
+      e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) :
+          equivalent_distance(boundary_index,local_face);
     }
   else
     {
-      if (DERIVED_T::Is_Dequiv)
-        {
-          e=equivalent_distance(boundary_index,local_face);
-          // e=d_equiv(face-la_zone->premiere_face_bord());
-        }
-      else
-        e=Dist_norm_bord_externe_(face);
+      e = DERIVED_T::Is_Dequiv ? equivalent_distance(boundary_index,local_face) :
+          Dist_norm_bord_externe_(face);
     }
 
-  if(DERIVED_T::Is_Aniso)
-    {
-      double heq;
-      int ori = orientation(face);
-      if (i != -1)
-        {
-          // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-          if (nu_1(i,ori) == 0.0)
-            {
-              heq = h_imp; // Should be 0 ??
-            }
-          else
-            {
-              h_total_inv =  1.0/h_imp + e/nu_1(i,ori);
-              heq = 1.0 / h_total_inv;
-            }
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
+  double heq;
 
-          aii = heq*surface(face);
-          ajj = 0;
+  if (i != -1)
+    {
+      // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
+      if (nu_1(i,ori) == 0.0)
+        {
+          heq = h_imp; // Should be 0 ??
         }
       else
         {
-          // e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-          if (nu_1(elem_(face,1),ori) == 0.0)
-            {
-              heq = h_imp; // Should be 0 ??
-            }
-          else
-            {
-              h_total_inv =  1.0/h_imp + e/nu_1(elem_(face,1),ori);
-              heq = 1.0 / h_total_inv;
-            }
-
-          ajj = heq*surface(face);
-          aii = 0;
+          h_total_inv =  1.0/h_imp + e/nu_1(i,ori);
+          heq = 1.0 / h_total_inv;
         }
+
+      aii = heq*surface(face);
+      ajj = 0;
     }
   else
     {
-      if (i != -1)
+      // e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
+      if (nu_1(elem_(face,1),ori) == 0.0)
         {
-          // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-          h_total_inv =  1/h_imp + e/nu_2(i);
-          aii = surface(face)/h_total_inv;
-          ajj = 0;
+          heq = h_imp; // Should be 0 ??
         }
       else
         {
-          // e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-          h_total_inv =  1/h_imp + e/nu_2(elem_(face,1));
-          ajj = surface(face)/h_total_inv;
-          aii = 0;
+          h_total_inv =  1.0/h_imp + e/nu_1(elem_(face,1),ori);
+          heq = 1.0 / h_total_inv;
         }
+
+      ajj = heq*surface(face);
+      aii = 0;
     }
+
 }
 
 template <typename DERIVED_T>
@@ -690,75 +591,47 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
 
   if (DERIVED_T::Is_Modif_Deq)
     {
-      if (ind_Fluctu_Term()==1)
-        e=Dist_norm_bord_externe_(face) ;
-      else
-        e=equivalent_distance(boundary_index,local_face);
-      //e=d_equiv(face-la_zone->premiere_face_bord());
+      e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) :
+          equivalent_distance(boundary_index,local_face);
     }
   else
     {
-      if (DERIVED_T::Is_Dequiv)
-        {
-          e=equivalent_distance(boundary_index,local_face);
-          // e=d_equiv(face-la_zone->premiere_face_bord());
-        }
-      else
-        e=Dist_norm_bord_externe_(face);
+      e = DERIVED_T::Is_Dequiv ? equivalent_distance(boundary_index,local_face) :
+          Dist_norm_bord_externe_(face);
     }
 
-  double flux;
+  double flux, heq;
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
 
-  if(DERIVED_T::Is_Aniso)
+  if (i != -1)
     {
-      double heq;
-      int ori = orientation(face);
-
-      if (i != -1)
+      //e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
+      if (nu_1(i,ori) == 0.0)
         {
-          //e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-          if (nu_1(i,ori) == 0.0)
-            {
-              heq = h_imp; // Should be 0 ??
-            }
-          else
-            {
-              h_total_inv = 1.0/h_imp + e/nu_1(i,ori);
-              heq = 1.0 / h_total_inv;
-            }
-
-          flux = heq*T_ext*surface(face);
+          heq = h_imp; // Should be 0 ??
         }
       else
         {
-          //e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-          if (nu_1(elem_(face,1),ori) == 0.0)
-            {
-              heq = h_imp; // Should be 0 ??
-            }
-          else
-            {
-              h_total_inv = 1.0/h_imp + e/nu_1(elem_(face,1),ori);
-              heq = 1.0 / h_total_inv;
-            }
-
-          flux = - heq*T_ext*surface(face);
+          h_total_inv = 1.0/h_imp + e/nu_1(i,ori);
+          heq = 1.0 / h_total_inv;
         }
+
+      flux = heq*T_ext*surface(face);
     }
   else
     {
-      if (i != -1)
+      //e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
+      if (nu_1(elem_(face,1),ori) == 0.0)
         {
-          //e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-          h_total_inv = 1/h_imp + e/nu_2(i);
-          flux = T_ext*surface(face)/h_total_inv;
+          heq = h_imp; // Should be 0 ??
         }
       else
         {
-          //e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-          h_total_inv = 1/h_imp + e/nu_2(elem_(face,1));
-          flux = - T_ext*surface(face)/h_total_inv;
+          h_total_inv = 1.0/h_imp + e/nu_1(elem_(face,1),ori);
+          heq = 1.0 / h_total_inv;
         }
+
+      flux = - heq*T_ext*surface(face);
     }
   return flux;
 }
@@ -872,16 +745,8 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   double d1 = la_zone->dist_face_elem1_period(face,n1,la_cl.distance());
   double heq;
 
-  if(DERIVED_T::Is_Aniso)
-    {
-      int ori = orientation(face);
-      heq=  compute_heq(d0,n0,d1,n1,ori);
-    }
-  else
-    {
-      heq = compute_heq(d0,n0,d1,n1);
-    }
-
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
+  heq = compute_heq(d0,n0,d1,n1,ori);
   flux = heq*(inco[n1] - inco[n0])*surface(face)*porosite(face);
   return flux;
 }
@@ -897,16 +762,9 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int,
   double d0 = la_zone->dist_face_elem0_period(face,i,la_cl.distance());
   double d1 = la_zone->dist_face_elem1_period(face,j,la_cl.distance());
   double heq;
-  if(DERIVED_T::Is_Aniso)
-    {
-      int ori = orientation(face);
-      heq=  compute_heq(d0,i,d1,j,ori);
-    }
-  else
-    {
-      heq = compute_heq(d0,i,d1,j);
-    }
 
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
+  heq=  compute_heq(d0,i,d1,j,ori);
   aii = ajj = heq*surface(face)*porosite(face);
 }
 
@@ -942,13 +800,9 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco , i
   double d0 = zvdf.xp(elem0,orientation(faceD)) - zvdf.xp(elem3,orientation(faceD));
   double heq;
 
-  if(DERIVED_T::Is_Aniso)
-    heq = (nu_1(elem0,oriD)/d0);
-  else
-    heq = (nu_1(elem0)/d0);
-
+  int ori = DERIVED_T::Is_Aniso ? oriD : 0;
+  heq = (nu_1(elem0,ori)/d0);
   double flux = heq*(inco(elem0) - inco(elem3))*surface(faceD)*porosite(faceD);
-
   return flux;
 }
 
@@ -971,28 +825,17 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab&
   int n1 = elem_(face,1);
   double d0 = Dist_face_elem0(face,n0);
   double d1 = Dist_face_elem1(face,n1);
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
 
-  if(DERIVED_T::Is_Aniso)
+  if (nu_1(n0,ori)==0.0 && nu_1(n1,ori)==0.0)
     {
-      int ori = orientation(face);
-
-      if (nu_1(n0,ori)==0.0 && nu_1(n1,ori)==0.0)
-        {
-          heq = 0.;
-        }
-      else
-        {
-          assert(nu_1(n0,ori)!=0.0);
-          assert(nu_1(n1,ori)!=0.0);
-          heq = compute_heq(d0,n0,d1,n1,ori);
-        }
+      heq = 0.;
     }
   else
     {
-      // TODO XXX : check if we should do as before ? what if D=0 ?
-      assert(nu_1(n0)!=0.0);
-      assert(nu_1(n1)!=0.0);
-      heq = compute_heq(d0,n0,d1,n1);
+      assert(nu_1(n0,ori)!=0.0);
+      assert(nu_1(n1,ori)!=0.0);
+      heq = compute_heq(d0,n0,d1,n1,ori);
     }
   flux = heq*(inco[n1] - inco[n0])*surface(face)*porosite(face);
   return flux;
@@ -1006,27 +849,17 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(int face, double
   double d0 = Dist_face_elem0(face,i);
   double d1 = Dist_face_elem1(face,j);
   double heq;
+  int ori = DERIVED_T::Is_Aniso ? orientation(face) : 0;
 
-  if(DERIVED_T::Is_Aniso)
+  if (nu_1(i,ori)==0.0 && nu_2(j,ori)==0.0)
     {
-      int ori = orientation(face);
-
-      if (nu_1(i,ori)==0.0 && nu_2(j,ori)==0.0)
-        {
-          heq = 0.;
-        }
-      else
-        {
-          assert(nu_1(i,ori)!=0.0);
-          assert(nu_2(j,ori)!=0.0);
-          heq = compute_heq(d0,i,d1,j,ori);
-        }
+      heq = 0.;
     }
   else
     {
-      assert(nu_1(i)!=0.0);
-      assert(nu_1(j)!=0.0);
-      heq = compute_heq(d0,i,d1,j);
+      assert(nu_1(i,ori)!=0.0);
+      assert(nu_2(j,ori)!=0.0);
+      heq = compute_heq(d0,i,d1,j,ori);
     }
   aii = ajj = heq*surface(face)*porosite(face);
 }
