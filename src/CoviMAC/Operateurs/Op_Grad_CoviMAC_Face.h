@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,10 @@ public:
   void completer();
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 

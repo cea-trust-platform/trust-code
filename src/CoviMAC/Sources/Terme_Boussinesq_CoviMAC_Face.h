@@ -39,7 +39,10 @@ class Terme_Boussinesq_CoviMAC_Face : public Terme_Boussinesq_base
   Declare_instanciable(Terme_Boussinesq_CoviMAC_Face);
 
 public:
-
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 

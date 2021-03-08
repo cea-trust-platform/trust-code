@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,6 +116,11 @@ int QDM_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   if (mot=="evanescence") is >> evanescence;
   else return Navier_Stokes_std::lire_motcle_non_standard(mot, is);
   return 1;
+}
+
+int QDM_Multiphase::has_interface_blocs() const
+{
+  return Navier_Stokes_std::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
 }
 
 /* l'evanescence passe en dernier */

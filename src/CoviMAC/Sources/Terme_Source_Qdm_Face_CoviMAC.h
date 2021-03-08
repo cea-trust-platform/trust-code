@@ -47,6 +47,10 @@ class Terme_Source_Qdm_Face_CoviMAC : public Source_base, public Terme_Source_Qd
 public:
 
   void associer_pb(const Probleme_base& );
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void mettre_a_jour(double );

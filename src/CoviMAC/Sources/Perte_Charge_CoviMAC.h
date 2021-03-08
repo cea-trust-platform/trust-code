@@ -47,6 +47,10 @@ class Perte_Charge_CoviMAC : public Source_base, public Terme_Source_Qdm
   Declare_base(Perte_Charge_CoviMAC);
 
 public:
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void associer_pb(const Probleme_base&);  //!< associe le_fluide et la_vitesse

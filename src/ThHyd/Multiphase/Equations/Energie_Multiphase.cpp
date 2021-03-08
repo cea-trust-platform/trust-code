@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -326,6 +326,11 @@ const Motcle& Energie_Multiphase::domaine_application() const
 void Energie_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 {
   le_fluide = un_fluide;
+}
+
+int Energie_Multiphase::has_interface_blocs() const
+{
+  return Convection_Diffusion_std::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
 }
 
 /* l'evanescence passe en dernier */

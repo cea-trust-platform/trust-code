@@ -254,32 +254,18 @@ int Source_base::impr(Sortie& os) const
 //    Par defaut ne fait rien.
 void Source_base::dimensionner(Matrice_Morse& mat) const
 {
-  try
-    {
-      dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
-    }
-  catch (const std::runtime_error& e) { }
+  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
 }
 
 void Source_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
 {
-  try
-    {
-      dimensionner_blocs({{ "vitesse", &mat }});
-    }
-  catch (const std::runtime_error& e) { }
+  if (has_interface_blocs()) dimensionner_blocs({{ "vitesse", &mat }});
 }
 
 DoubleTab& Source_base::ajouter(DoubleTab& secmem) const
 {
-  try
-    {
-      ajouter_blocs({}, secmem, {});
-    }
-  catch (const std::runtime_error& e)
-    {
-      Process::exit(que_suis_je() + " : ajouter() or ajouter_blocs() must be coded!");
-    }
+  if (has_interface_blocs()) ajouter_blocs({}, secmem, {});
+  else Process::exit(que_suis_je() + " : ajouter() not coded!");
   return secmem;
 }
 
@@ -294,12 +280,9 @@ DoubleTab& Source_base::calculer(DoubleTab& secmem) const
 // par defaut pas de contribution
 void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse& mat) const
 {
+  if (!has_interface_blocs()) return;
   DoubleTrav secmem(equation().inconnue().valeurs()); //sera jete
-  try
-    {
-      ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat}}, secmem, {});
-    }
-  catch (const std::runtime_error& e) { }
+  ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat}}, secmem, {});
 }
 
 // Description:
@@ -315,11 +298,11 @@ void Source_base::contribuer_au_second_membre(DoubleTab& ) const
 /* par defaut erreur */
 void Source_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  throw std::runtime_error(que_suis_je().getString() + " dimensionner_blocs not coded!");
+  Process::exit(que_suis_je() + " : dimensionner_blocs() not coded!");
 }
 void Source_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  throw std::runtime_error(que_suis_je().getString() + " ajouter_blocs not coded!");
+  Process::exit(que_suis_je() + " : ajouter_blocs() not coded!");
 }
 
 // Description:

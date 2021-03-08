@@ -50,6 +50,10 @@ public:
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
 
   /* interface ajouter_blocs */
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
 

@@ -70,21 +70,26 @@ Entree& Operateur_Grad_base::readOn(Entree& is)
 void Operateur_Grad_base::dimensionner(Matrice_Morse& mat) const
 {
   /* on tente dimensionner_blocs(), mais en pression! */
-  dimensionner_blocs({{ "pression", &mat }});
+  if (has_interface_blocs()) dimensionner_blocs({{ "pression", &mat }});
+  else Process::exit(que_suis_je() + " : dimensionner() not coded!");
 }
 
 DoubleTab& Operateur_Grad_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
 {
-  /* on tente ajouter_blocs */
-  secmem *= -1, ajouter_blocs({}, secmem, {{ "pression", inco }}), secmem *= -1; /* pour avoir le bon signe */
+  if (has_interface_blocs())
+    secmem *= -1, ajouter_blocs({}, secmem, {{ "pression", inco }}), secmem *= -1; /* pour avoir le bon signe */
+  else Process::exit(que_suis_je() + " : ajouter() not coded!");
   return secmem;
 }
 
 void Operateur_Grad_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  /* on tente ajouter_blocs() */
-  DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
-  matrice.get_set_coeff() *= -1, ajouter_blocs({{ "pression", &matrice }}, secmem), matrice.get_set_coeff() *= -1; /* pour avoir le bon signe */
+  if (has_interface_blocs())
+    {
+      DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
+      matrice.get_set_coeff() *= -1, ajouter_blocs({{ "pression", &matrice }}, secmem), matrice.get_set_coeff() *= -1; /* pour avoir le bon signe */
+    }
+  else Process::exit(que_suis_je() + " : contribuer_a_avec() not coded!");
 }
 
 // Description: Calcul sans les conditions aux limites ?

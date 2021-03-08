@@ -2398,6 +2398,17 @@ void Equation_base::assembler_avec_inertie( Matrice_Morse& mat_morse,const Doubl
   statistiques().end_count(assemblage_sys_counter_);
 }
 
+/* verifie que tous les termes sont compatibles */
+int Equation_base::has_interface_blocs() const
+{
+  int ok = 1;
+  /* operateurs, masse, sources */
+  for (int op = 0; op < nombre_d_operateurs(); op++) ok &= operateur(op).l_op_base().has_interface_blocs();
+  ok &= solv_masse().valeur().has_interface_blocs();
+  for (int i = 0; i < les_sources.size(); i++) ok &= les_sources(i).valeur().has_interface_blocs();
+  return ok;
+}
+
 /* comme dimmensionner_matrice(), mais sans memoization */
 void Equation_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {

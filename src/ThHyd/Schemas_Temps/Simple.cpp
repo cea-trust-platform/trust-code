@@ -269,13 +269,13 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
     {
       solveur.valeur().reinit();
       DoubleTrav resu_temp(current); /* residu en increments */
-      try /* si assembler_blocs est disponible */
+      if (eqn.has_interface_blocs()) /* si assembler_blocs est disponible */
         {
           eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
           resu = resu_temp;
           matrice.ajouter_multvect(current, resu);
         }
-      catch (const std::runtime_error& e) /* sinon */
+      else
         {
           eqn.assembler_avec_inertie(matrice,current,resu);
           resu_temp = 0;
@@ -369,7 +369,9 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   if (init) for (Mglob.dimensionner(eqs.size(), eqs.size()), i = 0; i < eqs.size(); i++)
       for (j = 0; j < eqs.size(); j++) Mglob.get_bloc(i, j).typer("Matrice_Morse");
 
-  /* pour interface_blocs */
+  /* pour interface_blocs : si toutes les equations ont cette interface, on l'utilise */
+  int interface_blocs_ok = 1;
+  for (i = 0; i < eqs.size(); i++) interface_blocs_ok &= eqs[i]->has_interface_blocs();
   std::vector<matrices_t> mats(eqs.size()); //ligne de matrices de l'equation i
   const std::string& nom_inco = eqs[0]->inconnue().le_nom().getString();
   for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
@@ -385,21 +387,15 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   if (init) //1er passage -> dimensionnement des MD_Vector et des matrices
     {
       /* dimensionnement de la matrice globale */
-      try /* on tente dimensioner_blocs */
-        {
-          for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
-        }
-      catch (const std::runtime_error& e) /* methode classique */
-        {
-          for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-              {
-                Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
-                int nl = mdc.get_desc_part(i).valeur().get_nb_items_tot(), nc = mdc.get_desc_part(j).valeur().get_nb_items_tot();
-                if (i == j) eqs[i]->dimensionner_matrice(mat);
-                eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), nl, nc);
-                if (i == j) mat += mat2;
-              }
-        }
+      if (interface_blocs_ok) for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
+      else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+            {
+              Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
+              int nl = mdc.get_desc_part(i).valeur().get_nb_items_tot(), nc = mdc.get_desc_part(j).valeur().get_nb_items_tot();
+              if (i == j) eqs[i]->dimensionner_matrice(mat);
+              eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), nl, nc);
+              if (i == j) mat += mat2;
+            }
     }
   else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) //passages suivantes -> il suffit de reallouer les tableaux coeff()
         {
@@ -419,23 +415,20 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   dudt = inconnues;
 
   //remplissage des matrices
-  try //on essaie ajouter_blocs
+  if (interface_blocs_ok)
     {
       for (i = 0; i < eqs.size(); i++) eqs[i]->assembler_blocs_avec_inertie(mats[i], residu_parts[i], {});
       Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
     }
-  catch (const std::runtime_error& e) /* methode classique */
-    {
-      for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-          {
-            Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
-            eqs[i]->ajouter_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], residu_parts[i]);
-            eqs[i]->contribuer_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], mat);
-            /* si i == j, alors assembler_avec_inertie() se charge du produit matrice/vecteur : sinon, on doit le faire a la main */
-            if (i == j) eqs[i]->assembler_avec_inertie(mat, inconnues_parts[i], residu_parts[i]);
-            else mat.ajouter_multvect(inconnues_parts[j], residu_parts[i]);
-          }
-    }
+  else for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+        {
+          Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+          eqs[i]->ajouter_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], residu_parts[i]);
+          eqs[i]->contribuer_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], mat);
+          /* si i == j, alors assembler_avec_inertie() se charge du produit matrice/vecteur : sinon, on doit le faire a la main */
+          if (i == j) eqs[i]->assembler_avec_inertie(mat, inconnues_parts[i], residu_parts[i]);
+          else mat.ajouter_multvect(inconnues_parts[j], residu_parts[i]);
+        }
 
   // resolution
   solveur.valeur().reinit();

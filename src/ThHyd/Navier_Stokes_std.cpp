@@ -2021,6 +2021,11 @@ void Navier_Stokes_std::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
     gradient.valeur().dimensionner_blocs({{ "vitesse", &matrice }});
 }
 
+int Navier_Stokes_std::has_interface_blocs() const
+{
+  return Equation_base::has_interface_blocs() && gradient.valeur().has_interface_blocs();
+}
+
 /* le gradient passe en dernier */
 void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {

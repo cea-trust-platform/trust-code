@@ -40,6 +40,10 @@ class Frottement_interfacial_CoviMAC: public Source_base
 {
   Declare_instanciable(Frottement_interfacial_CoviMAC);
 public :
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void check_multiphase_compatibility() const {}; //of course

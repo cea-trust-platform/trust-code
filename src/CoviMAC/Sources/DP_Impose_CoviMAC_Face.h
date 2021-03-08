@@ -46,7 +46,10 @@ class DP_Impose_CoviMAC_Face : public Perte_Charge_CoviMAC_Face,
   Declare_instanciable(DP_Impose_CoviMAC_Face);
 
 public:
-
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void remplir_num_faces(Entree& );

@@ -81,12 +81,16 @@ public :
   void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  virtual int has_interface_blocs() const
+  {
+    return 0;
+  };
   virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
-  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const { };
-  virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const { };
-  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const { };
+  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const;
+  virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const;
+  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const;
 
   virtual double calculer_dt_stab() const;
   virtual void calculer_dt_local(DoubleTab&) const;//Local time step calculation

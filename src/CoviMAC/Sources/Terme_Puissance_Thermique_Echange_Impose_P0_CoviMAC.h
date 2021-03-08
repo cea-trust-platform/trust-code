@@ -49,7 +49,10 @@ class Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC :  public Source_base
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC);
 
 public:
-
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void associer_pb(const Probleme_base& ) { };

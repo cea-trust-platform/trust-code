@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,6 +97,11 @@ Operateur& Masse_Multiphase::operateur(int i)
 {
   if (i) Cerr << "Masse_Multiphase : wrong operator number " << i << finl, Process::exit();
   return terme_convectif;
+}
+
+int Masse_Multiphase::has_interface_blocs() const
+{
+  return Equation_base::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
 }
 
 /* l'evanescence passe en dernier */

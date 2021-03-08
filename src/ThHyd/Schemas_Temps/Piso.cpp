@@ -204,12 +204,12 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   // </IBM>
 
 
-  try //on essaie l'interface ajouter_blocs
+  if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
     {
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
       matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
     }
-  catch (const std::runtime_error& e) //sinon, on passe par ajouter/contribuer
+  else //sinon, on passe par ajouter/contribuer
     {
       gradient.valeur().calculer(pression,gradP);
       resu -= gradP;

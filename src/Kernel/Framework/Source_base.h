@@ -69,6 +69,10 @@ public :
   virtual void contribuer_jacobienne(Matrice_Bloc& , int ) const {}
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  virtual int has_interface_blocs() const
+  {
+    return 0;
+  };
   virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
