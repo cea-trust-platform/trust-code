@@ -56,24 +56,20 @@ public:
   // Overloaded methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const
   {
-    //nu_1(i) (dv_diffusivite(i)+dv_diffusivite_turbulente(i))
-    return get_diffusivite()(i)+dv_diffusivite_turbulente(i);
+    const double nu_lam = Eval_Diff_VDF_var2::nu_1_impl(i,compo);
+    const double nu_turb = dv_diffusivite_turbulente(i);
+    return nu_lam+nu_turb;
   }
 
   inline double nu_2_impl(int i, int compo) const
   {
-    //nu_2(i) dv_diffusivite(i)
-    return get_diffusivite()(i);
+    return  Eval_Diff_VDF_var2::nu_2_impl(i,compo);
   }
 
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
-    //f_heq(d0,i,d1,j) heq=1./(d0/nu_2(i) + d1/nu_2(j))+
-    // 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
-    double heq_lam = Eval_Diff_VDF_var2::compute_heq_impl(d0, i, d1, j, compo);
-//    double heq_lam = 1./(d0/get_diffusivite()(i) + d1/get_diffusivite()(j));
-    double heq_turb= 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
-
+    const double heq_lam = Eval_Diff_VDF_var2::compute_heq_impl(d0, i, d1, j, compo);
+    const double heq_turb= 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
     return heq_lam + heq_turb;
   }
 
