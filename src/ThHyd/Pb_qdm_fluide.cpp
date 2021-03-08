@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,90 @@ int Pb_qdm_fluide::expression_predefini(const Motcle& motlu, Nom& expression)
       expression = "predefini { pb_champ ";
       expression += le_nom();
       expression += " energie_cinetique_elem } ";
+      return 1;
+    }
+  else if (motlu=="VISCOUS_FORCE_X")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " viscous_force_X } ";
+      return 1;
+    }
+  else if (motlu=="VISCOUS_FORCE_Y")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " viscous_force_y } ";
+      return 1;
+    }
+  else if (motlu=="VISCOUS_FORCE_Z")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " viscous_force_z } ";
+      return 1;
+    }
+  else if (motlu=="VISCOUS_FORCE")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " viscous_force } ";
+      return 1;
+    }
+  else if (motlu=="PRESSURE_FORCE_X")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " pressure_force_x } ";
+      return 1;
+    }
+  else if (motlu=="PRESSURE_FORCE_Y")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " pressure_force_y } ";
+      return 1;
+    }
+  else if (motlu=="PRESSURE_FORCE_Z")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " pressure_force_z } ";
+      return 1;
+    }
+  else if (motlu=="PRESSURE_FORCE")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " pressure_force } ";
+      return 1;
+    }
+  else if (motlu=="TOTAL_FORCE_X")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " total_force_x } ";
+      return 1;
+    }
+  else if (motlu=="TOTAL_FORCE_Y")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " total_force_y } ";
+      return 1;
+    }
+  else if (motlu=="TOTAL_FORCE_Z")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " total_force_z } ";
+      return 1;
+    }
+  else if (motlu=="TOTAL_FORCE")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " total_force } ";
       return 1;
     }
   else

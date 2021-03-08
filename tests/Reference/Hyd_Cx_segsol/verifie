@@ -1,0 +1,40 @@
+# check if new syntaxe of pressure and viscous forces matches the old syntaxe that uses the Morceau_equation
+compare_sonde Hyd_Cx_segsol_FVX.son Hyd_Cx_segsol_FVX_OLD_FASHION.son &>/dev/null || exit -1
+compare_sonde Hyd_Cx_segsol_FVY.son Hyd_Cx_segsol_FVY_OLD_FASHION.son &>/dev/null || exit -1
+compare_sonde Hyd_Cx_segsol_FVZ.son Hyd_Cx_segsol_FVZ_OLD_FASHION.son &>/dev/null || exit -1
+compare_sonde Hyd_Cx_segsol_FPX.son Hyd_Cx_segsol_FPX_OLD_FASHION.son &>/dev/null || exit -1
+compare_sonde Hyd_Cx_segsol_FPY.son Hyd_Cx_segsol_FPY_OLD_FASHION.son &>/dev/null || exit -1
+compare_sonde Hyd_Cx_segsol_FPZ.son Hyd_Cx_segsol_FPZ_OLD_FASHION.son &>/dev/null || exit -1
+
+# check FV_VECTEUR
+fv_vect=`tail -1 Hyd_Cx_segsol_FV_VECTEUR.son | cut -f2-4 -d' '`
+fvx=`tail -1 Hyd_Cx_segsol_FVX.son | cut -f2 -d' '`
+fvy=`tail -1 Hyd_Cx_segsol_FVY.son | cut -f2 -d' '`
+fvz=`tail -1 Hyd_Cx_segsol_FVZ.son | cut -f2 -d' '`
+[ "$fv_vect" != "$fvx $fvy $fvz" ] && exit -1
+
+# check FP_VECTEUR
+fp_vect=`tail -1 Hyd_Cx_segsol_FP_VECTEUR.son | cut -f2-4 -d' '`
+time=`tail -1 Hyd_Cx_segsol_FPX.son | cut -f1 -d' '`
+fpx=`tail -1 Hyd_Cx_segsol_FPX.son | cut -f2 -d' '`
+fpy=`tail -1 Hyd_Cx_segsol_FPY.son | cut -f2 -d' '`
+fpz=`tail -1 Hyd_Cx_segsol_FPZ.son | cut -f2 -d' '`
+[ "$fp_vect" != "$fpx $fpy $fpz" ] && exit -1
+
+# verify total force by summing FP and FV values using compare_sonde :
+# we create a .son file
+ftx=`python -c "a=$fpx + $fvx; print(a)"`
+fty=`python -c "a=$fpy + $fvy; print(a)"`
+ftz=`python -c "a=$fpz + $fvz; print(a)"`
+head -5 Hyd_Cx_segsol_FT_VECTEUR.son > Hyd_Cx_segsol_FT_VECTEUR_constructed.son
+echo "$time $ftx $fty $ftz" >> Hyd_Cx_segsol_FT_VECTEUR_constructed.son
+
+compare_sonde Hyd_Cx_segsol_FT_VECTEUR_constructed.son Hyd_Cx_segsol_FT_VECTEUR.son &>/dev/null || exit -1
+
+
+# check if total force is identical in sequential and parallel
+if [ -f PAR_Hyd_Cx_segsol_FT_VECTEUR.son ]
+then
+   compare_sonde Hyd_Cx_segsol_FT_VECTEUR.son PAR_Hyd_Cx_segsol_FT_VECTEUR.son &>/dev/null || exit -1
+fi
+
