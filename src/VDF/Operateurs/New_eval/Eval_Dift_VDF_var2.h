@@ -24,6 +24,7 @@
 #define Eval_Dift_VDF_var2_included
 
 #include <Eval_Diff_VDF_var2.h>
+#include <Eval_Turbulence.h>
 #include <Ref_Champ_Fonc.h>
 #include <Champ_Fonc.h>
 //
@@ -36,7 +37,7 @@
 //.SECTION
 // voir aussi Eval_Diff_VDF_var2
 
-class Eval_Dift_VDF_var2 : public Eval_Diff_VDF_var2
+class Eval_Dift_VDF_var2 : public Eval_Diff_VDF_var2, public Eval_Turbulence
 {
 
 public:
@@ -69,10 +70,22 @@ public:
   {
     //f_heq(d0,i,d1,j) heq=1./(d0/nu_2(i) + d1/nu_2(j))+
     // 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
-    double heq_lam = 1./(d0/get_diffusivite()(i) + d1/get_diffusivite()(j));
+    double heq_lam = Eval_Diff_VDF_var2::compute_heq_impl(d0, i, d1, j, compo);
+//    double heq_lam = 1./(d0/get_diffusivite()(i) + d1/get_diffusivite()(j));
     double heq_turb= 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
 
     return heq_lam + heq_turb;
+  }
+
+  inline virtual double get_equivalent_distance(int boundary_index,int local_face) const
+  {
+    return equivalent_distance[boundary_index](local_face);
+  }
+
+  inline void mettre_a_jour()
+  {
+    Eval_Diff_VDF_var2::mettre_a_jour();
+    update_equivalent_distance();  // from Eval_Turbulence
   }
 
 protected:

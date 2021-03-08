@@ -25,6 +25,7 @@
 #define Eval_Dift_VDF_Multi_inco_const2_included
 
 #include <Eval_Diff_VDF_Multi_inco_const2.h>
+#include <Eval_Turbulence.h>
 #include <Ref_Champ_Fonc.h>
 #include <Champ_Fonc.h>
 
@@ -42,7 +43,7 @@
 //
 
 
-class Eval_Dift_VDF_Multi_inco_const2 : public Eval_Diff_VDF_Multi_inco_const2
+class Eval_Dift_VDF_Multi_inco_const2 : public Eval_Diff_VDF_Multi_inco_const2, public Eval_Turbulence
 {
 public:
 
@@ -79,8 +80,18 @@ public:
     return heq;
   }
 
-protected:
+  inline virtual double get_equivalent_distance(int boundary_index,int local_face) const
+  {
+    return equivalent_distance[boundary_index](local_face);
+  }
 
+  inline void mettre_a_jour()
+  {
+    Eval_Diff_VDF_Multi_inco_const2::mettre_a_jour();
+    update_equivalent_distance();  // from Eval_Turbulence
+  }
+
+protected:
   REF(Champ_Fonc) diffusivite_turbulente_;
   DoubleVect dv_diffusivite_turbulente;
 

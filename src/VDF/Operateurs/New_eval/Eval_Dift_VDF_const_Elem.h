@@ -26,9 +26,9 @@
 #include <Eval_Dift_VDF_const2.h>
 #include <Eval_Diff_VDF_Elem.h>
 #include <Ref_Modele_turbulence_scal_base.h>
+#include <Turbulence_paroi_scal.h>
 #include <Ref_Turbulence_paroi_scal.h>
 #include <DoubleVects.h>
-class Turbulence_paroi_scal;
 
 //
 // .DESCRIPTION class Eval_Dift_VDF_const_Elem
@@ -52,19 +52,37 @@ public :
     return ind_Fluctu_Term;
   }
 
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
+  inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
   {
-    return equivalent_distance[boundary_index](local_face);
+    Eval_Dift_VDF_const2::associer_loipar(loi_paroi);
+    ind_Fluctu_Term = 0;
   }
 
-  void associer_loipar(const Turbulence_paroi_scal& );
-  void associer_modele_turbulence(const Modele_turbulence_scal_base& );
-  void mettre_a_jour( );
+  void associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
+  {
+    // On remplit la reference au modele de turbulence et le tableau k:
+    le_modele_turbulence = mod;
+    ind_Fluctu_Term = 0;
+    if (!loipar.non_nul())
+      ind_Fluctu_Term = 1;
+  }
+
+  //void Eval_Dift_VDF_const_Elem::mettre_a_jour()
+  //{
+  //  Eval_Dift_VDF_const2::mettre_a_jour();
+  //  if (loipar.non_nul() || (ind_Fluctu_Term != 1))
+  //    {
+  //      int s=loipar->tab_equivalent_distance_size();
+  //      equivalent_distance.dimensionner(s);
+  //      for(int i=0; i<s; i++)
+  //        {
+  //          equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
+  //        }
+  //    }
+  //}
 
 private:
   REF(Modele_turbulence_scal_base) le_modele_turbulence;
-  REF(Turbulence_paroi_scal) loipar;
-  VECT(DoubleVect) equivalent_distance;
   int ind_Fluctu_Term;
 
 };

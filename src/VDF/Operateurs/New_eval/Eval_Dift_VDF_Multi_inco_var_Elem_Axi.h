@@ -26,8 +26,6 @@
 
 #include <Eval_Dift_VDF_Multi_inco_var2.h>
 #include <Eval_Diff_VDF_Elem.h>
-#include <DoubleVects.h>
-#include <Ref_Turbulence_paroi_scal.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,19 +40,6 @@ public:
   static constexpr bool Is_Multd = false;
   static constexpr bool Is_Dequiv = true;
   static constexpr bool Is_Axi = true;
-
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
-  {
-    return equivalent_distance[boundary_index](local_face);
-  }
-
-  void associer_loipar(const Turbulence_paroi_scal& );
-  void mettre_a_jour( ) ;
-
-private:
-  REF(Turbulence_paroi_scal) loipar;
-  VECT(DoubleVect) equivalent_distance;
-
 };
 
 #endif /* Eval_Dift_VDF_Multi_inco_var_Elem_Axi_included */

@@ -45,7 +45,7 @@ public:
     return 0;
   }
 
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
+  inline virtual double get_equivalent_distance(int boundary_index,int local_face) const
   {
     return 0;
   }

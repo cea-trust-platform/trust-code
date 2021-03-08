@@ -46,19 +46,6 @@ class Eval_Dift_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_con
 public:
   static constexpr bool Is_Dequiv = true;
   static constexpr bool Is_Axi = true;
-
-  inline double get_equivalent_distance(int boundary_index,int local_face) const
-  {
-    return equivalent_distance[boundary_index](local_face);
-  }
-
-  void associer_loipar(const Turbulence_paroi_scal& );
-  void mettre_a_jour( );
-
-private:
-  REF(Turbulence_paroi_scal) loipar;
-  VECT(DoubleVect) equivalent_distance;
-
 };
 
 #endif /* Eval_Dift_VDF_const_Elem_Axi_included */

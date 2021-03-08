@@ -12,25 +12,40 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Dift_VDF_Multi_inco_const_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_Multi_inco_const_Elem.h>
+#ifndef Eval_Turbulence_included
+#define Eval_Turbulence_included
+
+#include <DoubleVects.h>
 #include <Turbulence_paroi_scal.h>
+#include <Ref_Turbulence_paroi_scal.h>
 
-void Eval_Dift_VDF_Multi_inco_const_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
-{
-  loipar = loi_paroi;
-}
 
-void Eval_Dift_VDF_Multi_inco_const_Elem::mettre_a_jour( )
+//
+// .DESCRIPTION class Eval_Turbulence
+//
+// Implements all stuff related to turbulence for VDF evaluators.
+
+class Eval_Turbulence
 {
-  Eval_Dift_VDF_Multi_inco_const2::mettre_a_jour( );
+
+public:
+  virtual ~Eval_Turbulence() {}
+
+  inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+  {
+    loipar = loi_paroi;
+  }
+
+  inline void update_equivalent_distance( ) ;
+
+protected:
+  REF(Turbulence_paroi_scal) loipar;
+  VECT(DoubleVect) equivalent_distance;
+};
+
+inline void Eval_Turbulence::update_equivalent_distance( )
+{
   if (loipar.non_nul())
     {
       int s=loipar->tab_equivalent_distance_size();
@@ -41,3 +56,5 @@ void Eval_Dift_VDF_Multi_inco_const_Elem::mettre_a_jour( )
         }
     }
 }
+
+#endif

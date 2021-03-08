@@ -50,7 +50,7 @@ public:
   inline void associer(const Champ_base& );
   inline const Champ_base& get_diffusivite() const;
 
-  inline void mettre_a_jour() {}
+  virtual inline void mettre_a_jour() {}
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const
