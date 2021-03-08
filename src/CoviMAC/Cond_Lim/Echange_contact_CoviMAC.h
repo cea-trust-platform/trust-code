@@ -66,7 +66,7 @@ public :
   }
 
   /* positions et poids des points harmoniques : appele par Zone_CoviMAC::harmonic_points */
-  void harmonic_points(DoubleTab& xh, DoubleTab& wh) const;
+  void harmonic_points(DoubleTab& xh, DoubleTab& wh, DoubleTab& whm) const;
 
   /* remplissage de nu.grad T aux faces reelles de la CL : appele par Zone_CoviMAC::fgrad */
   void fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab& phif_pe, DoubleTab& phif_pc) const;

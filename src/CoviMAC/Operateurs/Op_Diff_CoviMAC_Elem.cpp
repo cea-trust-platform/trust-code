@@ -134,6 +134,8 @@ void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
   Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
   for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem()) //stencil a l'element e
         {
+          if (phif_d(f, 0) == phif_d(f + 1, 0) && phif_d(f, 1) == phif_d(f + 1, 1))
+            Process::exit(Nom("Op_Diff_CoviMAC_Elem: missing flux detected for face") + Nom(f) + " in " + zone.zone().domaine().le_nom() + " !");
           for (j = phif_d(f, 0); j < phif_d(f + 1, 0); j++) if ((e_s = phif_e(j)) < zone.nb_elem_tot()) //partie "simple" (phif_e / phif_c) : ne melange pas les composantes
               for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * e + n, N[0] * e_s + n), tpfa(f, n) &= (e_s == f_e(f, 0) || e_s == f_e(f, 1));
           for (j = phif_d(f, 1); j < phif_d(f + 1, 1); j++) //partie "complexe" (phif_pe / phif_pc) : melange les composantes et les problemes

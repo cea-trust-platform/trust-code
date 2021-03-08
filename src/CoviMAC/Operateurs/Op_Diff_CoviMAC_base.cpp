@@ -102,7 +102,7 @@ void Op_Diff_CoviMAC_base::init_op_ext() const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  int i, M, N = equation().inconnue().valeurs().line_size(), n_mono;
+  int i, j, fb, M, N = equation().inconnue().valeurs().line_size(), n_mono, idx;
 
   op_ext = { this };//le premier op_ext est l'operateur local
   pe_ext.resize(0, 3), zone.creer_tableau_faces_bord(pe_ext);
@@ -114,8 +114,8 @@ void Op_Diff_CoviMAC_base::init_op_ext() const
         M = max(M, o_diff->equation().inconnue().valeurs().line_size()); //M -> nb de composantes maximal
         const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
         const IntTab& fe_dist = cl.fe_dist();
-        for (int j = 0, idx = std::find(op_ext.begin(), op_ext.end(), o_diff) - op_ext.begin(); j < fvf.nb_faces_tot(); j++, n_mono++)
-          pe_ext(fvf.num_face(j), 0) = idx, pe_ext(fvf.num_face(j), 1) = fe_dist(j, 1), pe_ext(fvf.num_face(j), 2) = n_mono;
+        for (j = 0, idx = std::find(op_ext.begin(), op_ext.end(), o_diff) - op_ext.begin(); j < fvf.nb_faces_tot(); j++, n_mono++)
+          fb = zone.fbord(fvf.num_face(j)), pe_ext(fb, 0) = idx, pe_ext(fb, 1) = fe_dist(j, 1), pe_ext(fb, 2) = n_mono;
       }
   whm_.resize(n_mono, N, M, 2);
 }

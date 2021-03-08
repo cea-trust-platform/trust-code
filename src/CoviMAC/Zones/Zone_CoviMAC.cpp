@@ -766,7 +766,7 @@ void Zone_CoviMAC::harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, 
   /* faces de bord : on delegue les CLs monolithique a Echange_contact_CoviMAC et on traite les autres */
   wh = -1; //valeur par defaut : a la fin, wh = -1 que les faces au bord des joints
   for (i = 0; i < cls.size(); i++)
-    if (sub_type(Echange_contact_CoviMAC, cls[i].valeur())) ref_cast(Echange_contact_CoviMAC, cls[i].valeur()).harmonic_points(xh, *whm);
+    if (sub_type(Echange_contact_CoviMAC, cls[i].valeur())) ref_cast(Echange_contact_CoviMAC, cls[i].valeur()).harmonic_points(xh, wh, *whm);
     else /* vraie face de bord */
       {
         const Cond_lim_base& cl = cls[i].valeur();
@@ -908,8 +908,8 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
                 k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(f_e(f_s, j) >= 0 ? 0 : (*pe_ext)(f_sb, 0), e_s)) - p_e.begin();//position dans le stencil
                 if (f_sb < 0 || !pe_ext || (*pe_ext)(f_sb, 0) < 0) for (n = 0; n < N; n++) for (l = 0; l < nrhs; l++) //point harmonique standard -> composantes separees
                       phi(k, n, n, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l) * (j ? 1 - wh(f_s, n) : wh(f_s, n));
-                else for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < 2; l++) //pt harmonique a une Echange_contact -> melange des composantes
-                        phi(k, n, m, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l) * (*whm)((*pe_ext)(f_sb, 2), n, m, l);
+                else for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < nrhs; l++) //pt harmonique a une Echange_contact -> melange des composantes
+                        phi(k, n, m, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l) * (*whm)((*pe_ext)(f_sb, 2), n, m, j);
               }
             else for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), n = 0; n < N; n++) //face de bord -> dependance en la CL
                 for (l = 0; l < nrhs; l++) phi(k, n, n, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l)

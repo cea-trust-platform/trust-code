@@ -74,9 +74,6 @@ int Echange_contact_CoviMAC::initialiser(double temps)
   diff = ref_cast(Op_Diff_CoviMAC_base, eqn.operateur(i_op).l_op_base());
   o_diff = ref_cast(Op_Diff_CoviMAC_base, o_eqn.operateur(o_i_op).l_op_base());
 
-  //controle du nombre de faces
-  int nf_tot = fvf->nb_faces_tot(), diff_nf = Process::mp_max(abs(nf_tot - o_fvf->nb_faces_tot()));
-  if (diff_nf) Process::exit(le_nom() + " : inconsistent face count with " + o_fvf->le_nom() + " (max " + Nom(diff_nf) + " )!");
   fe_init_ = 0;
   return 1;
 }
@@ -89,27 +86,35 @@ void Echange_contact_CoviMAC::init_fe_dist() const
   const IntTab& o_f_e = o_zone.face_voisins();
   const DoubleTab& xv = zone.xv(), &o_xv = o_zone.xv();
 
-  int i, f, nf_tot = o_fvf->nb_faces_tot(), d, D = dimension;
+  int i, f, o_f, nf_tot = fvf->nb_faces_tot(), o_nf_tot = o_fvf->nb_faces_tot(), d, D = dimension;
   fe_dist_.resize(nf_tot, 2);
 
-  DoubleTrav xyz(nf_tot, D), o_xyz(nf_tot, D); //positions locales/distantes -> pour calcul de correspondance
-  for (i = 0; i < nf_tot; i++) for (d = 0; d < D; d++)   xyz(i, d) =   xv(  fvf->num_face(i), d);
-  for (i = 0; i < nf_tot; i++) for (d = 0; d < D; d++) o_xyz(i, d) = o_xv(o_fvf->num_face(i), d);
+  DoubleTrav xyz(nf_tot, D), o_xyz(o_nf_tot, D); //positions locales/distantes -> pour calcul de correspondance
+  for (i = 0; i <   nf_tot; i++) for (d = 0; d < D; d++)   xyz(i, d) =   xv(  fvf->num_face(i), d);
+  for (i = 0; i < o_nf_tot; i++) for (d = 0; d < D; d++) o_xyz(i, d) = o_xv(o_fvf->num_face(i), d);
 #ifdef MEDCOUPLING_
   MCAuto<DataArrayDouble> dad(DataArrayDouble::New()), o_dad(DataArrayDouble::New());
-  dad->useExternalArrayWithRWAccess(xyz.addr(), nf_tot, D), o_dad->useExternalArrayWithRWAccess(o_xyz.addr(), nf_tot, D);
+  dad->useExternalArrayWithRWAccess(xyz.addr(), nf_tot, D), o_dad->useExternalArrayWithRWAccess(o_xyz.addr(), o_nf_tot, D);
   //point de o_xyz le plus proche de chaque point de xyz
   MCAuto<DataArrayInt> idx(o_dad->findClosestTupleId(dad));
 
-  for (i = 0; i < nf_tot; i++) //remplissage : (face distante, elem distant)
-    f = o_fvf->num_face(idx->getIJ(i, 0)), fe_dist_(i, 0) = f, fe_dist_(i, 1) = o_f_e(f, 0);
+  for (i = 0; i < nf_tot; i++) //remplissage : (face distante, elem distant) si coincidence, -1 sinon
+    {
+      f = fvf->num_face(i), o_f = o_fvf->num_face(idx->getIJ(i, 0));
+      double d2 = zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0));
+      if (d2 < 1e-12) fe_dist_(i, 0) = o_f, fe_dist_(i, 1) = o_f_e(o_f, 0);
+      else fe_dist_(i, 0) = fe_dist_(i, 1) = -1;
+      if (i < fvf->nb_faces() && d2 >= 1e-12)
+        Process::exit(Nom("Echange_contact_CoviMAC: missing opposite faces detected between ") + fvf->le_nom() + " and " + o_fvf->le_nom()
+                      + " ! Have you used Decouper_multi?");
+    }
 #else
   Process::exit("Echange_contact_CoviMAC : MEDCoupling is required!");
 #endif
   fe_init_ = 1;
 }
 
-void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& whm) const
+void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& wh, DoubleTab& whm) const
 {
   int i, f, o_f, fb, o_fb, e, o_e, nf_tot = fvf->nb_faces_tot(), d, D = dimension, i_mono, n, m,
                                    N = diff->equation().inconnue().valeurs().line_size(),
@@ -151,6 +156,7 @@ void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& whm) con
             for (m = 0; m <  N; m++) whm(i_mono, n, m, 0) = (def(0) * wh_c(0, m) + (m == n) * invh(fb, n) * lambda(0, n)) / (def(0) + invh(fb, n) * lambda(0, n));
             for (m = 0; m < oN; m++) whm(i_mono, n, m, 1) = def(0) * wh_c(1, m) / (def(0) + invh(fb, n) * lambda(0, n));
           }
+        for (n = 0; n < N; n++) wh(f, n) = 0; //pour indiquer que la face a ete traitee
       }
 }
 
@@ -193,7 +199,8 @@ void Echange_contact_CoviMAC::fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& p
       /* verification qu'on dispose de tous les points harmoniques dont on a besoin */
       for (i = 0; i <   n_f; i++) ok &= (  wh(  fa[i], 0) >= 0);
       for (i = 0; i < o_n_f; i++) ok &= (o_wh(o_fa[i], 0) >= 0);
-      if (!ok) continue;
+      if (!ok) Process::exit(Nom("Echange_contact_CoviMAC: missing face neighborhood detected between ") + fvf->le_nom() + " and " + o_fvf->le_nom()
+                               + " ! Have you used Decouper_multi?");
 
       double h_max[2] = { 0, }, h_tot[2] = { 0, }, dist[2] = { zone.dist_norm_bord(f), o_zone.dist_norm_bord(o_f) }; //coeff d'echange max de chaque cote, distances
       B.resize(nrhs, nc), A.resize(nc, nl);
@@ -272,7 +279,7 @@ void Echange_contact_CoviMAC::fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& p
               if (f_sb < 0 || pe_ext(f_sb, 0) < 0) for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < 2; l++) //pt harmonique normal : dependance diagonale
                       tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - wh(f_s, m) : wh(f_s, m));
               else for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (m_s = 0; m_s < whm.dimension(2); m_s++) for (l = 0; l < 2; l++) //pt harmonique d'Echange_contact : melange...
-                        tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * whm(pe_ext(f_s, 2), m, m_s, j);
+                        tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * whm(pe_ext(f_sb, 2), m, m_s, j);
             }
           else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), n = 0; n < N; n++) //pas d'elem source -> dependance en la CL
               for (m = 0; m < M; m++) for (l = 0; l < 2; l++)
@@ -287,7 +294,7 @@ void Echange_contact_CoviMAC::fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& p
               if (f_sb < 0 || o_pe_ext(f_sb, 0) < 0) for (n = 0; n < oN; n++) for (m = 0; m < M; m++) for (l = 0; l < 2; l++) //pt harmonique normal : dependance diagonale
                       tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - o_wh(f_s, m) : o_wh(f_s, m));
               else for (n = 0; n < oN; n++) for (m = 0; m < M; m++) for (m_s = 0; m_s < o_whm.dimension(2); m_s++) for (l = 0; l < 2; l++) //pt harmonique d'Echange_contact : melange...
-                        tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * o_whm(o_pe_ext(f_s, 2), m, m_s, j);
+                        tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * o_whm(o_pe_ext(f_sb, 2), m, m_s, j);
             }
           else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(trad[0], o_ne_tot + f_s)) - p_e.begin(), n = 0; n < oN; n++) //pas d'elem source -> dependance en la CL
               for (m = 0; m < M; m++) for (l = 0; l < 2; l++)
