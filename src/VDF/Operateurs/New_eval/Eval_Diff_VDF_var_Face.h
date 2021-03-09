@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,59 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_var_Face.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/12
+// File:        Eval_Diff_VDF_var_Face.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_eval
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Diff_VDF_var_Face_included
-#define Op_Diff_VDF_var_Face_included
+#ifndef Eval_Diff_VDF_var_Face_included
+#define Eval_Diff_VDF_var_Face_included
 
-#include <Op_Diff_VDF_Face_base.h>
-#include <Eval_Diff_VDF_var_Face.h>
-
-//
-// .DESCRIPTION class Op_Diff_VDF_var_Face
-//
-//  Cette classe represente l'operateur de diffusion associe a une equation de
-//  la quantite de mouvement.
-//  La discretisation est VDF
-//  Le champ diffuse est un Champ_Face
-//  Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Face
-//  L'evaluateur associe est de type Eval_Diff_VDF_var_Face
+#include <Eval_Diff_VDF_var2.h>
+#include <Eval_Diff_VDF_Face.h>
 
 //
-// .SECTION voir aussi
+// .DESCRIPTION class Eval_Diff_VDF_var_Face
+//
+// Evaluateur VDF pour la diffusion
+// Le champ diffuse est un Champ_Face
+// Le champ de diffusivite n"est pas constant.
+// Dans le cas de la methode IMPLICITE les evaluateurs calculent la quantite qui figure
+// dans le premier membre de l'equation, nous ne prenons pas par consequent l'oppose en
+// ce qui concerne les termes pour la matrice, par contre pour le second membre nous
+// procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
+// par les conditions limites.
 //
 //
+// .SECTION voir aussi Eval_Diff_VDF_var
 
-declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_var_Face
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base
+class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_var_Face>,
+  public Eval_Diff_VDF_var2
 {
-
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Face);
-
 public:
-  inline Eval_VDF_Face& get_eval_face();
-  Op_Diff_VDF_var_Face();
+  static constexpr bool IS_VAR = true;
 };
 
-// Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
-inline Eval_VDF_Face& Op_Diff_VDF_var_Face::get_eval_face()
-{
-  Eval_Diff_VDF_var_Face& eval_diff = (Eval_Diff_VDF_var_Face&) iter.evaluateur();
-  return (Eval_VDF_Face&) eval_diff;
-}
-#endif
+#endif /* Eval_Diff_VDF_var_Face_included */

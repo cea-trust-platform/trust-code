@@ -70,6 +70,16 @@ public:
     return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
   }
 
+  inline double nu_1_impl_face(int i, int j) const
+  {
+    return 0.5*(dv_diffusivite(i)+dv_diffusivite(j));
+  }
+
+  inline double nu_2_impl_face(int i, int j, int k, int l) const
+  {
+    return 0.25*(dv_diffusivite(i)+dv_diffusivite(j)+dv_diffusivite(k)+dv_diffusivite(l));
+  }
+
 protected:
 
   REF(Champ_base) diffusivite_;

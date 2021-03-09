@@ -76,6 +76,15 @@ public:
     return db_diffusivite/(d0+d1);
   }
 
+  inline double nu_1_impl_face(int i, int j) const
+  {
+    return db_diffusivite;
+  }
+
+  inline double nu_2_impl_face(int i, int j, int k, int l) const
+  {
+    return db_diffusivite;
+  }
 
 protected:
 

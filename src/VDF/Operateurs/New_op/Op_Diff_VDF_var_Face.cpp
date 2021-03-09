@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_var_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/16
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -25,20 +25,13 @@
 #include <Champ_Inc.h>
 #include <SFichier.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Face,"Op_Diff_VDF_var_Face",Op_Diff_VDF_Face_base);
-
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Face,"Op_Diff_VDF_var_Face",Op_Diff_VDF_Face_base2);
 implemente_It_VDF_Face(Eval_Diff_VDF_var_Face)
-
-//// printOn
-//
 
 Sortie& Op_Diff_VDF_var_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Diff_VDF_var_Face::readOn(Entree& s )
 {
@@ -51,7 +44,7 @@ Entree& Op_Diff_VDF_var_Face::readOn(Entree& s )
 //// Op_Diff_VDF_var_Face
 //
 Op_Diff_VDF_var_Face::Op_Diff_VDF_var_Face() :
-  Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_var_Face)())
+  Op_Diff_VDF_Face_base2(It_VDF_Face(Eval_Diff_VDF_var_Face)())
 {
   declare_support_masse_volumique(1);
 }

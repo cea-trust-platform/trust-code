@@ -44,9 +44,16 @@ class Eval_Diff_VDF_Face : public Eval_VDF_Face2, public Evaluateur_VDF
 
 public:
 
+  static constexpr bool IS_VAR = false;
+
+  inline double surface_(int i,int j) const;
+  inline double porosity_(int i,int j) const;
+
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
-  inline double nu_1(int i=0, int compo=0) const;
+  inline double nu_1(int i=0, int j=0) const;
+  inline double nu_2(int i, int j, int k, int l) const;
+  inline double nu_3(int i, int j=0) const;
 
   inline int calculer_fa7_sortie_libre() const ;
   inline int calculer_arete_fluide() const ;
@@ -172,11 +179,48 @@ public:
 // CRTP pattern
 //************************
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_1(int i, int compo) const
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_1(int i, int j) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_1_impl(i, compo);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_1_impl_face(i, j);
   return nu;
 }
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_2(int i, int j, int k, int l) const
+{
+  double nu = static_cast<const DERIVED_T *>(this)->nu_2_impl_face(i, j, k, l);
+  return nu;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_3(int i, int j) const
+{
+  double nu = static_cast<const DERIVED_T *>(this)->nu_1_impl(i,j);
+  return nu;
+}
+
+//************************
+// Internal methods
+//************************
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::surface_(int i,int j) const
+{
+  const double surf = DERIVED_T::IS_VAR ? 0.5*(surface(i)+surface(j)) :
+                      0.5*(surface(i)*porosite(i)+surface(j)*porosite(j));
+  return surf;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::porosity_(int i,int j) const
+{
+  const double poros = DERIVED_T::IS_VAR ? 0.5*(porosite(i)+porosite(j)) : 1.0;
+  return poros;
+}
+
+//********************************
+// Class templates specializations
+//********************************
 
 //// calculer_fa7_sortie_libre
 //
@@ -193,7 +237,6 @@ inline int Eval_Diff_VDF_Face<DERIVED_T>::calculer_arete_fluide() const
 {
   return 1;
 }
-
 
 //// calculer_arete_paroi
 //
@@ -276,28 +319,22 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& in
   int rang1 = (fac1-premiere_face_bord);
   int rang2 = (fac2-premiere_face_bord);
   int k= orientation(fac3);
+  double diffus=nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
 
   // Calcul de flux3
-
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
-  /* Cout << " Dans Eval_Diff_VDF_Face<DERIVED_T>::paroi fluide inconnue = " << inconnue.valeur() << finl;
-     Cout << " Dans Eval_Diff_VDF_Face<DERIVED_T>::paroi fluide vit imp = " << vit_imp << finl;
-  */
+
   dist = dist_norm_bord(fac1);
   tau = signe * (vit_imp - inco[fac3])/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  flux3 = tau*surf*nu_1();
+  flux3 = tau*surf*poros*diffus;
 
   // Calcul de flux1_2
-
   dist = dist_face(fac1,fac2,k);
   tau = (inco(fac2) - inco(fac1))/dist;
-  /* Cout << " Dans Eval_Diff_VDF_Face<DERIVED_T>::paroi fluide tau = " << tau << finl;
-   */
-  flux1_2 = tau*nu_1()*porosite(fac3)*surface(fac3);
-  // Cout << " Dans Eval_Diff_VDF_Face diffu = " << db_diffusivite << finl;
+  flux1_2 = tau*diffus*porosite(fac3)*surface(fac3);
 }
 
 //// coeffs_arete_fluide
@@ -309,17 +346,17 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac
 {
   double dist;
   int k= orientation(fac3);
+  double diffus=nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
   // Calcul de aii3_4
 
   dist = dist_norm_bord(fac1);
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  aii3_4 = (signe*surf*nu_1())/dist;
+  aii3_4 = signe*surf*diffus*poros/dist;
 
   // Calcul de aii1_2 et ajj1_2
-
   dist = dist_face(fac1,fac2,k);
-  aii1_2 = ajj1_2  = (nu_1()*porosite(fac3)*surface(fac3))/dist;
+  aii1_2 = ajj1_2  = (diffus*porosite(fac3)*surface(fac3))/dist;
 }
 
 //// secmem_arete_fluide
@@ -334,14 +371,17 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_fluide(int fac1, int fac
   int k= orientation(fac3);
 
   // Calcul de flux3
-
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
+
   dist = dist_norm_bord(fac1);
   tau = signe * vit_imp/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  flux3 = tau*surf*nu_1();
+
+  double diffus=nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
+
+  flux3 = tau*surf*diffus*poros;
   flux1_2 = 0;
 }
 
@@ -354,10 +394,14 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab&
   //Cout << " Dans Eval_Diff_VDF_Face " << porosite(fac1) << " " << porosite(fac2) << finl;
   double flux;
   int ori=orientation(fac1);
+  double diffus=nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
+  flux = diffus*surf*poros*(inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
 
-  //Cout << " Dans Eval_Diff_VDF_Face " << dist_face(fac3,fac4,ori) << finl;
-  flux = 0.5 * (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori) *
-         (surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1();
+//
+//  flux = 0.5 * (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori) *
+//         (surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1();
   return flux;
 }
 
@@ -368,7 +412,12 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fa
                                                                 double& aii, double& ajj) const
 {
   int ori=orientation(fac1);
-  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face(fac3,fac4,ori);
+  double diffus=nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
+
+  aii = ajj = diffus*surf*poros/dist_face(fac3,fac4,ori);
+//  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face(fac3,fac4,ori);
 }
 
 //// secmem_arete_interne
@@ -388,13 +437,44 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& i
   double flux=0;
   //if (inco[fac4]*inco[fac3] != 0) {
   //il faudrait reflechir pour mieux traiter les arete mixte...
-  if (inco[fac4]*inco[fac3] != 0)
+
+  // TODO : FIXME
+  // This should be factorized
+  if (DERIVED_T::IS_VAR)
     {
-      int ori=orientation(fac1);
-      double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
-      flux = 0.5*tau*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*
-             nu_1();
+      if (inco[fac4]*inco[fac3] != 0)
+        {
+          double diffus=0;
+          int element;
+
+          if ((element=elem_(fac3,0)) != -1)
+            diffus+=nu_3(element);
+          if ((element=elem_(fac3,1)) != -1)
+            diffus+=nu_3(element);
+          if ((element=elem_(fac4,0)) != -1)
+            diffus+=nu_3(element);
+          if ((element=elem_(fac4,1)) != -1)
+            diffus+=nu_3(element);
+
+          diffus/=3.0;
+
+          int ori=orientation(fac1);
+          double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
+          flux = 0.25*tau*(surface(fac1)+surface(fac2))*
+                 diffus*(porosite(fac1)+porosite(fac2));
+        }
     }
+  else
+    {
+      if (inco[fac4]*inco[fac3] != 0)
+        {
+          int ori=orientation(fac1);
+          double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
+          flux = 0.5*tau*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*
+                 nu_1();
+        }
+    }
+
   return flux;
 }
 
@@ -407,8 +487,32 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2
 {
   if (inconnue->valeurs()[fac4]*inconnue->valeurs()[fac3] != 0)
     {
+      // TODO : FIXME
+      // This should be factorized
       int ori=orientation(fac1);
-      aii = ajj= 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face(fac3,fac4,ori);
+      if (DERIVED_T::IS_VAR)
+        {
+          double diffus=0;
+          int element;
+
+          if ((element=elem_(fac3,0)) != -1)
+            diffus+=nu_3(element);
+          if ((element=elem_(fac3,1)) != -1)
+            diffus+=nu_3(element);
+          if ((element=elem_(fac4,0)) != -1)
+            diffus+=nu_3(element);
+          if ((element=elem_(fac4,1)) != -1)
+            diffus+=nu_3(element);
+
+          diffus/=3.0;
+
+          aii = ajj= 0.25*(surface(fac1)+surface(fac2))*diffus*
+                     (porosite(fac1)+porosite(fac2))/dist_face(fac3,fac4,ori);
+        }
+      else
+        {
+          aii = ajj= 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face(fac3,fac4,ori);
+        }
     }
   else
     {
@@ -435,15 +539,24 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi(const DoubleTab& i
   int rang2 = (fac2-premiere_face_bord);
   int k= orientation(fac3);
 
+  int elem1 = elem_(fac3,0);
+  int elem2 = elem_(fac3,1);
+  if (elem1==-1)
+    elem1 = elem2;
+  else if (elem2==-1)
+    elem2 = elem1;
+
+  double diffus= nu_1(elem1,elem2); //0.5*(dv_diffusivite(elem1)+dv_diffusivite(elem2));
+
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
 
 
   double dist = dist_norm_bord(fac1);
   double tau  = signe * (vit_imp - inco[fac3])/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-
-  flux = tau*surf*nu_1();
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double surf = surface_(fac1,fac2);
+  flux = tau*surf*diffus;
   return flux;
 }
 
@@ -454,8 +567,10 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi(int fac1, int fac2
                                                               double& ajj1_2) const
 {
   double dist = dist_norm_bord(fac1);
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  aii3_4 = signe*surf*nu_1()/dist;
+  double surf = surface_(fac1,fac2);
+  double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  aii3_4 = signe*surf*diffus/dist;
   aii1_2 = 0;
   ajj1_2 = 0;
 }
@@ -475,8 +590,10 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi(int fac1, int fa
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   double dist = dist_norm_bord(fac1);
   double tau  = signe * vit_imp/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  flux = tau*surf*nu_1();
+  double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  flux = tau*surf*diffus;
   return flux;
 }
 
@@ -502,15 +619,19 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
 
   dist = dist_norm_bord(fac1);
   tau = signe * (vit_imp - inco[fac3])/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1, fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  flux3 = tau*surf*nu_1();
+  flux3 = tau*surf*diffus*poros;
 
   // Calcul de flux1_2
 
   dist = dist_face(fac1,fac2,k);
   tau = (inco[fac2] - inco[fac1])/dist;
-  flux1_2 = tau*nu_1()*porosite(fac3)*surface(fac3);
+//  flux1_2 = tau*nu_1()*porosite(fac3)*surface(fac3);
+  flux1_2 = tau*diffus*porosite(fac3)*surface(fac3);
 }
 
 //// coeffs_arete_paroi_fluide
@@ -527,13 +648,17 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, i
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
 
   dist = dist_norm_bord(fac1);
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1, fac2);
+
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  aii3_4 = signe*surf*nu_1()/dist;
+  aii3_4 = signe*surf*diffus*poros/dist;
   // Calcul des aii et ajj 1_2
 
   dist = dist_face(fac1,fac2,k);
-  aii1_2 = ajj1_2 = nu_1()*porosite(fac3)*surface(fac3)/dist;
+  aii1_2 = ajj1_2 = diffus*porosite(fac3)*surface(fac3)/dist;
 }
 
 
@@ -558,9 +683,14 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
 
   dist = dist_norm_bord(fac1);
   tau = signe*vit_imp/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+
+  double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1, fac2);
+
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  flux3 = tau*surf*nu_1();
+  flux3 = tau*surf*diffus*poros;
   flux1_2 = 0;
 }
 
@@ -571,16 +701,27 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
                                                                   int fac1, int fac2, int fac3, int fac4,
                                                                   double& flux3_4, double& flux1_2) const
 {
-  double flux;
+  double flux, diffus,surf,poros;
   int ori;
+  ori =orientation(fac1);
 
-  ori=orientation(fac1);
-  flux = 0.5 * (inco[fac4]-inco[fac3])*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face_period(fac3,fac4,ori);
+  diffus= nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
+  surf = surface_(fac1,fac2);
+  poros = porosity_(fac1, fac2);
+
+  flux = diffus*surf*poros*(inco[fac4]-inco[fac3])/dist_face_period(fac3,fac4,ori);
+
+//  flux = 0.5 * (inco[fac4]-inco[fac3])*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face_period(fac3,fac4,ori);
   flux3_4 = flux;
 
   ori=orientation(fac3);
-  flux = 0.5 * (inco[fac2]-inco[fac1])*(surface(fac3)*porosite(fac3)+surface(fac4)*porosite(fac4))*nu_1()
-         /dist_face_period(fac1,fac2,ori) ;
+  diffus= nu_2(elem_(fac1,0),elem_(fac1,1),elem_(fac2,0),elem_(fac2,1));
+  surf = surface_(fac3,fac4);
+  poros = porosity_(fac3, fac4);
+  flux = diffus*surf*poros*(inco[fac2]-inco[fac1])/dist_face_period(fac1,fac2,ori);
+
+//  flux = 0.5 * (inco[fac2]-inco[fac1])*(surface(fac3)*porosite(fac3)+surface(fac4)*porosite(fac4))*nu_1()
+//         /dist_face_period(fac1,fac2,ori) ;
   flux1_2 = flux;
 
 }
@@ -591,10 +732,13 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, int fac2, int fac3, int fac4,
                                                                     double& aii, double& ajj) const
 {
-  int ori;
-  ori=orientation(fac1);
-  aii = ajj = 0.5 * (surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/
-              dist_face_period(fac3,fac4,ori);
+  int ori=orientation(fac1);
+  double diffus= nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1, fac2);
+  aii = ajj =diffus*surf*poros /dist_face_period(fac3,fac4,ori);
+//  aii = ajj = 0.5 * (surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/
+//              dist_face_period(fac3,fac4,ori);
 }
 
 
@@ -604,7 +748,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_periodicite(int fac1, int fac2, int fac3, int fac4,
                                                                     double& flux3_4, double& flux1_2) const
 {
-  ;
+  /* Do nothing */
 }
 
 //// flux_arete_symetrie
@@ -621,7 +765,7 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie(const DoubleTab
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie(int, int, int, int, double&, double&, double&) const
 {
-  ;
+  /* Do nothing */
 }
 
 //// secmem_arete_symetrie
@@ -635,25 +779,17 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie(int, int, int
 //// flux_fa7_elem
 //
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco, int ,
+inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco, int element,
                                                            int fac1, int fac2) const
 {
   double flux;
   int ori=orientation(fac1);
-  //Cout << " Dans Eval_Diff_VDF_Face:flux_fa7_elem visco = " << db_diffusivite << finl;
-  //Cout << " Dans Eval_Diff_VDF_Face:flux_fa7_elem dist = " << dist_face(fac1,fac2,ori) << finl;
-  //Cout << " Dans Eval_Diff_VDF_Face:flux_fa7_elem S1 S2 = " << surface(fac1) << surface(fac2) << finl;
-  flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * nu_1() *
+  double diffus = nu_3(element,0);
+  flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * diffus *
          (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
 
-  //  flux = 0.5 * (surface(fac1)+surface(fac2)) * db_diffusivite *
-  //    (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
-
-  //Cout << " Dans Eval_Diff_VDF_Face:flux_fa7_elem visco = " << db_diffusivite << finl;
-  //Cout << " Dans Eval_Diff_VDF_Face:flux_fa7_elem dist = " << dist_face(fac1,fac2,ori) << finl;
-  //Cout << " Dans Eval_Diff_VDF_Face:flux_fa7_elem S1 S2 = " << surface(fac1) << surface(fac2) << finl;
-  //  flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * db_diffusivite *
-  //    (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
+// flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * nu_1() *
+//         (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
 
 
   return flux;
@@ -662,11 +798,15 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco
 //// coeffs_fa7_elem
 //
 template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int ,int fac1, int fac2, double& aii, double& ajj) const
+inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int element,int fac1,
+                                                           int fac2, double& aii, double& ajj) const
 {
-  //Cout << " Dans Eval_Diff_VDF_Face:coeff_fa7_elem  " << finl;
   int ori=orientation(fac1);
-  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * nu_1()/dist_face(fac1,fac2,ori);
+  double diffus = nu_3(element,0);
+  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) *
+              diffus/dist_face(fac1,fac2,ori);
+
+//  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * nu_1()/dist_face(fac1,fac2,ori);
 }
 
 
@@ -722,25 +862,23 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
 
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,k,la_zcl));
-  /*
-  double vit2 = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang1,k,la_zcl)+
-  	     Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang2,k,la_zcl));
-  if (vit_imp!=vit2)
-    {
-      Cerr<<"yyyyyyyyy "<< vit_imp<< " " <<vit2<<" "<<inco[fac3]<<finl;
-    }
-  */
+
   dist = dist_norm_bord(fac1);
   tau = signe * (vit_imp - inco[fac3])/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
+
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  flux3 = tau*surf*nu_1();
+  flux3 = tau*surf*diffus*poros;
 
   // Calcul de flux1_2
 
   dist = dist_face(fac1,fac2,k);
   tau = (inco(fac2) - inco(fac1))/dist;
-  flux1_2 = tau*nu_1()*porosite(fac3)*surface(fac3);
+  flux1_2 =  DERIVED_T::IS_VAR ? 0.5*tau*diffus*porosite(fac3)*surface(fac3) :
+             tau*diffus*porosite(fac3)*surface(fac3);
 }
 
 //// coeffs_arete_symetrie_fluide
@@ -756,14 +894,18 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1
   // Calcul de aii3_4
 
   dist = dist_norm_bord(fac1);
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  aii3_4 = (signe*surf*nu_1())/dist;
+  aii3_4 = (signe*surf*diffus*poros)/dist;
 
   // Calcul de aii1_2 et ajj1_2
 
   dist = dist_face(fac1,fac2,k);
-  aii1_2 = ajj1_2  = (nu_1()*porosite(fac3)*surface(fac3))/dist;
+  aii1_2 = ajj1_2  = DERIVED_T::IS_VAR ? (0.5*diffus*porosite(fac3)*surface(fac3))/dist :
+                     (diffus*porosite(fac3)*surface(fac3))/dist;
 }
 
 //// secmem_arete_symetrie_fluide
@@ -784,9 +926,12 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   dist = dist_norm_bord(fac1);
   tau = signe * vit_imp/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+  double poros = porosity_(fac1,fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
-  flux3 = tau*surf*nu_1();
+  flux3 = tau*surf*diffus*poros;
   flux1_2 = 0;
 }
 
@@ -807,9 +952,11 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_paroi(const Dou
 
   double dist = dist_norm_bord(fac1);
   double tau  = signe * (vit_imp - inco[fac3])/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
 
-  flux = tau*surf*nu_1();
+  flux = tau*surf*diffus;
   return flux;
 }
 
@@ -821,9 +968,15 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_paroi(int fac1,
                                                                        double& aii3_4, double& ajj1_2) const
 {
   double dist = dist_norm_bord(fac1);
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  aii3_4 = signe*surf*nu_1()/dist;
+  double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  aii3_4 = signe*surf*diffus/dist;
   ajj1_2 = 0;
+
+  // XXX XXX XXX : what the hell ?
+  if (DERIVED_T::IS_VAR)
+    aii1_2 = 0;
 }
 
 
@@ -842,8 +995,10 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_paroi(int fac
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   double dist = dist_norm_bord(fac1);
   double tau  = signe * vit_imp/dist;
-  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  flux = tau*surf*nu_1();
+  double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
+  double surf = surface_(fac1,fac2);
+//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
+  flux = tau*surf*diffus;
   return flux;
 }
 
@@ -860,7 +1015,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& , 
                                                              int , int ,
                                                              DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_fluide
@@ -869,7 +1024,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int ,int ,
                                                                int , int , DoubleVect&, DoubleVect&, DoubleVect&) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_fluide
@@ -878,7 +1033,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_fluide(int ,int ,int , int ,
                                                                DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// flux_arete_interne
@@ -888,7 +1043,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab& ,
                                                               int , int , int ,
                                                               DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_interne
@@ -897,7 +1052,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_interne(int , int , int , int ,
                                                                 DoubleVect&, DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_interne
@@ -907,7 +1062,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_interne(int ,
                                                                 int , int , int ,
                                                                 DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// flux_arete_mixte
@@ -917,7 +1072,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& , i
                                                             int , int , int ,
                                                             DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_mixte
@@ -926,7 +1081,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int , int , int , int ,
                                                               DoubleVect& , DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_mixte
@@ -935,7 +1090,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_mixte(int, int , int , int ,
                                                               DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// flux_arete_paroi
@@ -945,7 +1100,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi(const DoubleTab& , i
                                                             int , int , int ,
                                                             DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_paroi
@@ -954,7 +1109,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi(int , int , int , int ,
                                                               DoubleVect&, DoubleVect&, DoubleVect&) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_paroi
@@ -963,7 +1118,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi(int, int , int , int ,
                                                               DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// flux_arete_paroi_fluide
@@ -973,7 +1128,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
                                                                    int , int , int ,
                                                                    DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 
@@ -983,7 +1138,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int, int , int , int ,
                                                                      DoubleVect&, DoubleVect&, DoubleVect&) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 
@@ -993,7 +1148,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int, int , int , int ,
                                                                      DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// flux_arete_periodicite
@@ -1003,7 +1158,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
                                                                   int , int , int ,
                                                                   DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_periodicite
@@ -1012,7 +1167,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int , int , int , int ,
                                                                     DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_periodicite
@@ -1021,7 +1176,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_periodicite(int , int , int , int ,
                                                                     DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// flux_arete_symetrie
@@ -1030,7 +1185,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie(const DoubleTab&, int, int,
                                                                int, int, DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_symetrie
@@ -1038,7 +1193,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie(const DoubleTab&,
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie(int, int, int, int, DoubleVect&, DoubleVect&, DoubleVect&) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_symetrie
@@ -1047,7 +1202,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie(int, int,
                                                                  int, int, DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// flux_fa7_elem
@@ -1056,7 +1211,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& , int , int ,
                                                          int , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// coeffs_fa7_elem
@@ -1064,7 +1219,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& , int 
 template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int , int ,int , DoubleVect&, DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// secmem_fa7_elem
@@ -1073,7 +1228,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_fa7_elem(int , int ,
                                                            int , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 ////flux_fa7_sortie_libre
@@ -1083,7 +1238,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_sortie_libre(const DoubleTab
                                                                  const Neumann_sortie_libre&,
                                                                  int, DoubleVect&  ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 ////coeffs_fa7_sortie_libre
@@ -1092,7 +1247,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&,
                                                                    DoubleVect&, DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 ////secmem_fa7_sortie_libre
@@ -1101,7 +1256,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&,
                                                                    int, DoubleVect&  ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// flux_arete_symetrie_fluide
@@ -1111,7 +1266,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
                                                                       int , int ,
                                                                       DoubleVect& , DoubleVect& ) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_symetrie_fluide
@@ -1120,7 +1275,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int, int, int, int,
                                                                         DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// secmen_arete_symetrie_fluide
@@ -1129,7 +1284,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int, int, int, int,
                                                                         DoubleVect&, DoubleVect&) const
 {
-  // A Coder!
+  /* Do nothing */
 }
 
 //// flux_arete_symetrie_paroi
@@ -1139,7 +1294,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_paroi(const Doubl
                                                                      int , int , int ,
                                                                      DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// coeffs_arete_symetrie_paroi
@@ -1148,7 +1303,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_paroi(int , int , int , int ,
                                                                        DoubleVect&, DoubleVect&, DoubleVect&) const
 {
-  // A coder!
+  /* Do nothing */
 }
 
 //// secmem_arete_symetrie_paroi
@@ -1157,9 +1312,7 @@ template <typename DERIVED_T>
 inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_paroi(int, int , int , int ,
                                                                        DoubleVect& ) const
 {
-  // A coder!
+  /* Do nothing */
 }
-
-
 
 #endif /* Eval_Diff_VDF_Face_included */

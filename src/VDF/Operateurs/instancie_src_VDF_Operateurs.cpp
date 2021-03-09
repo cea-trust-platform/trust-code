@@ -11,7 +11,6 @@
 #include <Op_Conv_centre4_VDF_Elem.h>
 #include <Op_Conv_centre4_VDF_Face.h>
 #include <Op_Conv_centre_VDF_Elem.h>
-#include <Op_Diff_VDF_var_Face.h>
 #include <Op_Dift_VDF_Face.h>
 #include <Op_Dift_VDF_var_Face.h>
 #include <Op_Div_VDF_Elem.h>
@@ -27,10 +26,9 @@ Op_Conv_Quick_VDF_Face inst5;verifie_pere(inst5);
 Op_Conv_centre4_VDF_Elem inst6;verifie_pere(inst6);
 Op_Conv_centre4_VDF_Face inst7;verifie_pere(inst7);
 Op_Conv_centre_VDF_Elem inst8;verifie_pere(inst8);
-Op_Diff_VDF_var_Face inst9;verifie_pere(inst9);
-Op_Dift_VDF_Face inst10;verifie_pere(inst10);
-Op_Dift_VDF_var_Face inst11;verifie_pere(inst11);
-Op_Div_VDF_Elem inst12;verifie_pere(inst12);
-Op_Grad_P0_to_Face inst13;verifie_pere(inst13);
-Op_Grad_VDF_Face inst14;verifie_pere(inst14);
+Op_Dift_VDF_Face inst9;verifie_pere(inst9);
+Op_Dift_VDF_var_Face inst10;verifie_pere(inst10);
+Op_Div_VDF_Elem inst11;verifie_pere(inst11);
+Op_Grad_P0_to_Face inst12;verifie_pere(inst12);
+Op_Grad_VDF_Face inst13;verifie_pere(inst13);
 }

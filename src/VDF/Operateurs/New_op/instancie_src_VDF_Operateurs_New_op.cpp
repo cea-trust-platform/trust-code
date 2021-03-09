@@ -14,6 +14,7 @@
 #include <Op_Diff_VDF_var_Elem.h>
 #include <Op_Diff_VDF_var_Elem_Axi.h>
 #include <Op_Diff_VDF_var_Elem_aniso.h>
+#include <Op_Diff_VDF_var_Face.h>
 #include <Op_Dift_VDF_Elem.h>
 #include <Op_Dift_VDF_Elem_Axi.h>
 #include <Op_Dift_VDF_Multi_inco_Elem.h>
@@ -35,12 +36,13 @@ Op_Diff_VDF_Multi_inco_var_Elem_Axi inst8;verifie_pere(inst8);
 Op_Diff_VDF_var_Elem inst9;verifie_pere(inst9);
 Op_Diff_VDF_var_Elem_Axi inst10;verifie_pere(inst10);
 Op_Diff_VDF_var_Elem_aniso inst11;verifie_pere(inst11);
-Op_Dift_VDF_Elem inst12;verifie_pere(inst12);
-Op_Dift_VDF_Elem_Axi inst13;verifie_pere(inst13);
-Op_Dift_VDF_Multi_inco_Elem inst14;verifie_pere(inst14);
-Op_Dift_VDF_Multi_inco_Elem_Axi inst15;verifie_pere(inst15);
-Op_Dift_VDF_Multi_inco_var_Elem inst16;verifie_pere(inst16);
-Op_Dift_VDF_Multi_inco_var_Elem_Axi inst17;verifie_pere(inst17);
-Op_Dift_VDF_var_Elem inst18;verifie_pere(inst18);
-Op_Dift_VDF_var_Elem_Axi inst19;verifie_pere(inst19);
+Op_Diff_VDF_var_Face inst12;verifie_pere(inst12);
+Op_Dift_VDF_Elem inst13;verifie_pere(inst13);
+Op_Dift_VDF_Elem_Axi inst14;verifie_pere(inst14);
+Op_Dift_VDF_Multi_inco_Elem inst15;verifie_pere(inst15);
+Op_Dift_VDF_Multi_inco_Elem_Axi inst16;verifie_pere(inst16);
+Op_Dift_VDF_Multi_inco_var_Elem inst17;verifie_pere(inst17);
+Op_Dift_VDF_Multi_inco_var_Elem_Axi inst18;verifie_pere(inst18);
+Op_Dift_VDF_var_Elem inst19;verifie_pere(inst19);
+Op_Dift_VDF_var_Elem_Axi inst20;verifie_pere(inst20);
 }
