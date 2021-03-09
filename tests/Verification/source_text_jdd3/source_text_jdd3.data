@@ -45,6 +45,7 @@ Scheme_euler_implicit sch
 Read sch
 {
     tinit 0.
+	nb_pas_dt_max 3
     tmax 300.
     dt_min 0.001
     dt_max 10.
@@ -53,7 +54,7 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-__dis__  dis
+VDF  dis
 
 Fluide_Incompressible fluide
 Read fluide
@@ -122,7 +123,7 @@ Read pb
             sonde_tflu temperature periode 1. points 1 0.55 0.55
             sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
         }
-        format lata
+        format lml
         fields dt_post 10.
         {
             pression elem
