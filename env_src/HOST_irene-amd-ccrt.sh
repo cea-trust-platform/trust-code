@@ -36,7 +36,8 @@ define_modules_config()
       # openmpi="mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering"
       # Recommendations CCRT debut 2021 (bcp de coeurs) a la place de la ligne precedente:
       intel="intel/20.0.4"
-      openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5"
+      # openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5" # Retour a openmpi 4.0.2 (car regression perf + chargement Cuda dans opempi 4.0.5)
+      openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.2"
       sw="feature/hcoll/multicast/disable"
       romio_hints="feature/openmpi/io/collective_buffering"
       module="$intel $openmpi $romio_hints"
