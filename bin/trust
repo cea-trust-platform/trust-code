@@ -650,7 +650,8 @@ then
 fi
 if [ "$PERF" = 1 ]
 then
-   exec="perf record -o $NOM.perf $binary"
+   #exec="perf record -o $NOM.perf $binary"
+   exec="perf record --call-graph dwarf -o $NOM.perf $binary" # Plus complet 
 fi
 ###############################################
 # Utilisation de Petsc dans le jeu de donnees ?
