@@ -478,28 +478,27 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
   // See always when we use int ori = DERIVED_T::IS_ANISO....
   if (n0 != -1)
     {
-      //e = la_zone->xv(face,ori) - la_zone->xp(n0,ori);
-      if (nu_1(n0,ori) == 0.0)
+      // XXX : Attention for DIFT OPERATORS : nu_2 and not nu_1 (only laminar part)
+      if (nu_2(n0,ori) == 0.0)
         {
           heq = h_imp; // Should be 0 ??
         }
       else
         {
-          h_total_inv = 1.0/h_imp + e/nu_1(n0,ori);
+          h_total_inv = 1.0/h_imp + e/nu_2(n0,ori);
           heq = 1.0 / h_total_inv;
         }
       flux = heq*(T_ext - inco[n0])*surface(face);
     }
   else
     {
-      //e = la_zone->xp(n1,ori) - la_zone->xv(face,ori);
-      if (nu_1(n1,ori) == 0.0)
+      if (nu_2(n1,ori) == 0.0)
         {
           heq = h_imp; // Should be 0 ??
         }
       else
         {
-          h_total_inv = 1.0/h_imp + e/nu_1(n1,ori);
+          h_total_inv = 1.0/h_imp + e/nu_2(n1,ori);
           heq = 1.0 / h_total_inv;
         }
       flux = heq*(inco[n1] - T_ext)*surface(face);
@@ -520,8 +519,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
   double e;
   int i = elem_(face,0);
   //  int j = elem(face,1);
-  //  int ori = orientation(face);
-//  Dist_norm_bord_externe(boundary_index,face,local_face);
 
   if (DERIVED_T::IS_MODIF_DEQ)
     {
@@ -539,14 +536,13 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
 
   if (i != -1)
     {
-      // e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-      if (nu_1(i,ori) == 0.0)
+      if (nu_2(i,ori) == 0.0)
         {
           heq = h_imp; // Should be 0 ??
         }
       else
         {
-          h_total_inv =  1.0/h_imp + e/nu_1(i,ori);
+          h_total_inv =  1.0/h_imp + e/nu_2(i,ori);
           heq = 1.0 / h_total_inv;
         }
 
@@ -555,21 +551,19 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
     }
   else
     {
-      // e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-      if (nu_1(elem_(face,1),ori) == 0.0)
+      if (nu_2(elem_(face,1),ori) == 0.0)
         {
           heq = h_imp; // Should be 0 ??
         }
       else
         {
-          h_total_inv =  1.0/h_imp + e/nu_1(elem_(face,1),ori);
+          h_total_inv =  1.0/h_imp + e/nu_2(elem_(face,1),ori);
           heq = 1.0 / h_total_inv;
         }
 
       ajj = heq*surface(face);
       aii = 0;
     }
-
 }
 
 template <typename DERIVED_T>
@@ -586,8 +580,6 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
   double e;
   int i = elem_(face,0);
   //  int j = elem(face,1);
-  //  int ori = orientation(face);
-//  Dist_norm_bord_externe(boundary_index,face,local_face);
 
   if (DERIVED_T::IS_MODIF_DEQ)
     {
@@ -605,14 +597,13 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
 
   if (i != -1)
     {
-      //e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
-      if (nu_1(i,ori) == 0.0)
+      if (nu_2(i,ori) == 0.0)
         {
           heq = h_imp; // Should be 0 ??
         }
       else
         {
-          h_total_inv = 1.0/h_imp + e/nu_1(i,ori);
+          h_total_inv = 1.0/h_imp + e/nu_2(i,ori);
           heq = 1.0 / h_total_inv;
         }
 
@@ -620,14 +611,13 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index,int 
     }
   else
     {
-      //e = la_zone->xp(j,ori) - la_zone->xv(face,ori);
-      if (nu_1(elem_(face,1),ori) == 0.0)
+      if (nu_2(elem_(face,1),ori) == 0.0)
         {
           heq = h_imp; // Should be 0 ??
         }
       else
         {
-          h_total_inv = 1.0/h_imp + e/nu_1(elem_(face,1),ori);
+          h_total_inv = 1.0/h_imp + e/nu_2(elem_(face,1),ori);
           heq = 1.0 / h_total_inv;
         }
 
