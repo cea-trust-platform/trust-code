@@ -3,7 +3,7 @@ Parameters {
     Author "A. Gerschenfeld, Y. Gorsse"
     description "Comparaison des resultats obtenus en VDF  et PolyMAC sur un couplage ThHyd/ThSol selon differents algos de couplage :  couplage sequentiel (avec et sans iteration), resolution monolithique (avec et sans iteration). On s'attend a avoir des resultats identique entre sequentiel avec iteration, et monolithique avec ou sans iteration."
     Prerequis ./Curve.sh
-#Pforeach _dis_ ( VDF PolyMAC )
+#Pforeach _dis_ ( VDF PolyMAC CoviMAC )
 #Pforeach _reso_ ( mono seq )
 #Pforeach _wwo_ ( avec sans )
     TestCase _dis_ _reso___wwo__iteration
@@ -24,7 +24,7 @@ Chapter
 
         Include_Description_Curves 0
         legend bottom
-#Pforeach _dis_ ( VDF PolyMAC )
+#Pforeach _dis_ ( VDF PolyMAC CoviMAC )
 #Pforeach _reso_ ( mono seq )
 #Pforeach _wwo_ ( avec sans )
         Curve
@@ -47,7 +47,7 @@ Chapter
 
         Include_Description_Curves 0
         legend bottom
-#Pforeach _dis_ ( VDF PolyMAC )
+#Pforeach _dis_ ( VDF PolyMAC CoviMAC )
 #Pforeach _reso_ ( mono seq )
 #Pforeach _wwo_ ( avec sans )
         Curve

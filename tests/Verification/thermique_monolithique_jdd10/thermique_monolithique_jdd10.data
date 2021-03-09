@@ -99,7 +99,7 @@ Read sch
     solveur implicite { solveur petsc cholesky { } seuil_convergence_implicite 1e30 }
 }
 
-VDF dis
+CoviMAC dis
 
 Fluide_Incompressible fluide
 Read fluide

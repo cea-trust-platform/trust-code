@@ -11,6 +11,10 @@ Parameters {
     TestCase PolyMAC mono_sans_iteration
     TestCase PolyMAC seq_avec_iteration
     TestCase PolyMAC seq_sans_iteration
+    TestCase CoviMAC mono_avec_iteration
+    TestCase CoviMAC mono_sans_iteration
+    TestCase CoviMAC seq_avec_iteration
+    TestCase CoviMAC seq_sans_iteration
 }
 Chapter
 {
@@ -81,6 +85,34 @@ Chapter
             legend PolyMAC - seq - sans iteration
             style linespoints
         }
+        Curve
+        {
+            file CoviMAC/mono_avec_iteration_pb1pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend CoviMAC - mono - avec iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/mono_sans_iteration_pb1pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend CoviMAC - mono - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/seq_avec_iteration_pb1pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend CoviMAC - seq - avec iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/seq_sans_iteration_pb1pb2_Diffusion_chaleur.out
+            columns 1 ($7+$15)
+            legend CoviMAC - seq - sans iteration
+            style linespoints
+        }
     }
     Figure
     {
@@ -137,6 +169,30 @@ Chapter
         {
             file PolyMAC/seq_sans_iteration.txt
             legend PolyMAC - seq - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/mono_avec_iteration.txt
+            legend CoviMAC - mono - avec iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/mono_sans_iteration.txt
+            legend CoviMAC - mono - sans iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/seq_avec_iteration.txt
+            legend CoviMAC - seq - avec iteration
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/seq_sans_iteration.txt
+            legend CoviMAC - seq - sans iteration
             style linespoints
         }
     }

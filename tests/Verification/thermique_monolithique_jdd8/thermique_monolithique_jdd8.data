@@ -52,26 +52,31 @@ Mailler dom_fluide
         Bord Droit2    X = 1.0  0.7 <= Y <= 1.0
     }
 }
-/* DEBUTPolyMAC */
-trianguler dom_fluide
-trianguler dom_solide
-/* FINPolyMAC */
+
 # END MESH #
 
 # BEGIN PARTITION
-Partition dom_solide
+partition_multi
 {
-    Partition_tool tranche { tranches 2 1 }
-    Larg_joint 1
-    zones_name DOM1
+    domaine dom_solide
+    {
+        Partition_tool tranche { tranches 2 1 }
+        Larg_joint 2
+        zones_name DOM1
+    }
+    domaine dom_fluide
+    {
+        Partition_tool tranche { tranches 2 1 }
+        Larg_joint 2
+        zones_name DOM2
+    }
+    raccords
+    {
+        dom_solide Droit1 dom_fluide Droit1
+        dom_solide Haut2 dom_fluide Haut2
+    }
 }
-Partition dom_fluide
-{
-    Partition_tool tranche { tranches 2 1 }
-    Larg_joint 2
-    zones_name DOM2
-}
-End
+Fin
 END PARTITION #
 
 # BEGIN SCATTER

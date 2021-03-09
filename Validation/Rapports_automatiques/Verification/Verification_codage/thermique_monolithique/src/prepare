@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for dis in "VDF" "PolyMAC"
+for dis in "VDF" "PolyMAC" "CoviMAC"
 do
     mkdir -p $dis
     sed "s~FIN$dis~/* FIN$dis~;s~DEBUT$dis~DEBUT$dis */~;s~__dis__~${dis}~;s~__tm__~0~;s~__cv__~1e30~" base.data > ${dis}/seq_sans_iteration.data
