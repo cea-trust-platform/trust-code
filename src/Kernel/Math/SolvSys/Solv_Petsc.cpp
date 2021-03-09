@@ -1608,6 +1608,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 #endif
 }
 
+#ifdef PETSCKSP_H
 int Solv_Petsc::solve(ArrOfDouble& residu)
 {
   // Affichage par MyKSPMonitor
@@ -1679,6 +1680,8 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
     }
   return nbiter;
 }
+#endif
+
 #ifdef PETSCKSP_H
 void Solv_Petsc::construit_renum(const DoubleVect& b)
 {
