@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+09/03/21 (TRUST)  Keyword     : Terme_puissance_thermique_echange_impose to set a thermal source term P=h(T-Text) now available in VDF
 08/03/21 (TRUST)  New feature : Possible to post-process a component of an equation operator/source (Operateur_Eqn option of Definition_champs block)
 08/03/21 (TRUST)  New feature : Add predifined fields to post-process viscous forces, pressure forces and total forces in Definition_champs block
 02/03/21 (TRUST)  Bug fixed   : Correct the header of output files (.out) in the case where the solved problem contains periodic BC.
