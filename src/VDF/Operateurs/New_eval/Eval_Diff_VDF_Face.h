@@ -434,14 +434,12 @@ template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& inco, int fac1,
                                                               int fac2, int fac3, int fac4) const
 {
-  double flux=0;
-  // TODO : FIXME
-  // This should be factorized
-  if (DERIVED_T::IS_VAR)
+  double flux=0, diffus=0;
+
+  if (inco[fac4]*inco[fac3] != 0)
     {
-      if (inco[fac4]*inco[fac3] != 0)
+      if (DERIVED_T::IS_VAR)
         {
-          double diffus=0;
           int element;
 
           if ((element=elem_(fac3,0)) != -1)
@@ -454,24 +452,18 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& i
             diffus+=nu_3(element);
 
           diffus/=3.0;
-
-          int ori=orientation(fac1);
-          double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
-          flux = 0.25*tau*(surface(fac1)+surface(fac2))*
-                 diffus*(porosite(fac1)+porosite(fac2));
         }
-    }
-  else
-    {
-      if (inco[fac4]*inco[fac3] != 0)
+      else
         {
-          int ori=orientation(fac1);
-          double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
-          flux = 0.5*tau*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*
-                 nu_1();
+          diffus=nu_1();
         }
-    }
 
+      int ori=orientation(fac1);
+      double surf = surface_(fac1,fac2);
+      double poros = porosity_(fac1,fac2);
+      double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
+      flux = tau*diffus*surf*poros;
+    }
   return flux;
 }
 
@@ -484,12 +476,10 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2
 {
   if (inconnue->valeurs()[fac4]*inconnue->valeurs()[fac3] != 0)
     {
-      // TODO : FIXME
-      // This should be factorized
       int ori=orientation(fac1);
+      double diffus=0;
       if (DERIVED_T::IS_VAR)
         {
-          double diffus=0;
           int element;
 
           if ((element=elem_(fac3,0)) != -1)
@@ -502,14 +492,14 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2
             diffus+=nu_3(element);
 
           diffus/=3.0;
-
-          aii = ajj= 0.25*(surface(fac1)+surface(fac2))*diffus*
-                     (porosite(fac1)+porosite(fac2))/dist_face(fac3,fac4,ori);
         }
       else
         {
-          aii = ajj= 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face(fac3,fac4,ori);
+          diffus=nu_1();
         }
+      double surf = surface_(fac1,fac2);
+      double poros = porosity_(fac1,fac2);
+      aii = ajj= surf*diffus*poros/dist_face(fac3,fac4,ori);
     }
   else
     {
