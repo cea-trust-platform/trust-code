@@ -67,16 +67,6 @@ public:
     return 1./(d0/dt_diffusivite(i,compo) + d1/dt_diffusivite(j,compo));
   }
 
-  inline double nu_1_impl_face(int i, int j) const
-  {
-    return dt_diffusivite(i,j);
-  }
-
-  inline double nu_2_impl_face(int i, int j, int k, int l) const
-  {
-    return dt_diffusivite(i,j);
-  }
-
 protected:
 
   REF(Champ_base) diffusivite_;

@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Eval_Dift_VDF_const2_included
 #define Eval_Dift_VDF_const2_included
 
@@ -40,9 +39,7 @@
 
 class Eval_Dift_VDF_const2 : public Eval_Diff_VDF_const2, public Eval_Turbulence
 {
-
 public:
-
   inline void associer_diff_turb(const Champ_Fonc& diff_turb)
   {
     diffusivite_turbulente_ = diff_turb;
@@ -67,6 +64,32 @@ public:
     return Eval_Diff_VDF_const2::nu_2_impl(i,compo);
   }
 
+  inline double nu_1_impl_face(int i, int j) const
+  {
+    return 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j));
+  }
+
+  inline double nu_2_impl_face(int i, int j, int k, int l) const
+  {
+    return 0.25*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j)+
+                 dv_diffusivite_turbulente(k)+dv_diffusivite_turbulente(l));
+  }
+
+  inline double nu_lam_impl_face(int i, int j, int k, int l) const
+  {
+    return Eval_Diff_VDF_const2::nu_2_impl_face(i,j,k,l);
+  }
+
+  inline double nu_lam_impl_face2(int i, int j) const
+  {
+    return Eval_Diff_VDF_const2::nu_1_impl_face(i,j);
+  }
+
+  inline double nu_t_impl(int i, int j) const
+  {
+    return dv_diffusivite_turbulente(i);
+  }
+
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
     const double heq_lam = Eval_Diff_VDF_const2::compute_heq_impl(d0, i, d1, j, compo);
@@ -86,10 +109,8 @@ public:
   }
 
 protected:
-
   REF(Champ_Fonc) diffusivite_turbulente_;
   DoubleVect dv_diffusivite_turbulente;
-
 };
 
 #endif /* Eval_Dift_VDF_const2_included */

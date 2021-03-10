@@ -25,6 +25,8 @@
 #define Op_Diff_VDF_Face_Axi_included
 
 #include <Op_Diff_VDF_Face_base2.h>
+#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Uniforme.h>
 
 //
 // .DESCRIPTION class Op_Diff_VDF_Face_Axi
@@ -41,9 +43,6 @@
 // .SECTION voir aussi
 //  Operateur_Diff_base
 //
-
-#include <Ref_Champ_Face.h>
-#include <Ref_Champ_Uniforme.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,51 +14,61 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_Face.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/13
+// File:        Op_Dift_VDF_Face_base2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Op_Dift_VDF_Face_base2_included
+#define Op_Dift_VDF_Face_base2_included
 
-#ifndef Op_Dift_VDF_Face_included
-#define Op_Dift_VDF_Face_included
+#include <Op_Dift_VDF_base2.h>
+#include <ItVDFFa.h>
+#include <Op_VDF_Face.h>
 
-#include <Op_Dift_VDF_Face_base.h>
-#include <Eval_Dift_VDF_const_Face.h>
-
-
-declare_It_VDF_Face(Eval_Dift_VDF_const_Face)
-
-
+class Eval_VDF_Face2;
 class Champ_Fonc;
 class Mod_turb_hyd_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Dift_VDF_Face
+// CLASS: Op_Dift_VDF_Face_base2
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base
+class Op_Dift_VDF_Face_base2 : public Op_Dift_VDF_base2, public Op_VDF_Face
 {
-
-  Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
+  Declare_base(Op_Dift_VDF_Face_base2);
 
 public:
-
-  Op_Dift_VDF_Face();
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  void completer();
-  inline Eval_VDF_Face& get_eval_face();
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  void associer_diffusivite(const Champ_base& );
+  void dimensionner(Matrice_Morse& ) const;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  void associer_loipar(const Turbulence_paroi& );
+  const Champ_base& diffusivite() const;
+  double calculer_dt_stab() const;
+  double calculer_dt_stab(const Zone_VDF&) const;
+  void calculer_borne_locale(DoubleVect& ,double , double ) const;
+  inline Op_Dift_VDF_Face_base2(const Iterateur_VDF_base& );
+  inline virtual Eval_VDF_Face2& get_eval_face();
 };
 
-// Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
-inline Eval_VDF_Face& Op_Dift_VDF_Face::get_eval_face()
+inline Eval_VDF_Face2& Op_Dift_VDF_Face_base2::get_eval_face()
 {
-  Eval_Dift_VDF_const_Face& eval_diff = (Eval_Dift_VDF_const_Face&) iter.evaluateur();
-  return (Eval_VDF_Face&) eval_diff;
+  Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
+  exit();
+  return (Eval_VDF_Face2&) iter.evaluateur();
 }
 
+inline void Op_Dift_VDF_Face_base2::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
+{
+  Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
+}
 
-#endif
+inline Op_Dift_VDF_Face_base2::Op_Dift_VDF_Face_base2(const Iterateur_VDF_base& iter_base)
+  : Op_Dift_VDF_base2(iter_base)
+{}
+
+#endif /* Op_Dift_VDF_Face_base2_included */

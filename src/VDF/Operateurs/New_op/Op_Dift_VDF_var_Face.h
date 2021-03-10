@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,72 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_var_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/18
+// File:        Op_Dift_VDF_var_Face.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Dift_VDF_var_Face.h>
-#include <Mod_turb_hyd_base.h>
-#include <SFichier.h>
+#ifndef Op_Dift_VDF_var_Face_included
+#define Op_Dift_VDF_var_Face_included
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Face,"Op_Dift_VDF_var_Face",Op_Dift_VDF_Face_base);
+#include <Op_Dift_VDF_Face_base2.h>
+#include <Eval_Dift_VDF_var_Face.h>
 
-implemente_It_VDF_Face(Eval_Dift_VDF_var_Face)
+declare_It_VDF_Face(Eval_Dift_VDF_var_Face)
 
-//// printOn
+class Champ_Fonc;
+class Mod_turb_hyd_base;
+
+//////////////////////////////////////////////////////////////////////////////
 //
-
-Op_Dift_VDF_var_Face::Op_Dift_VDF_var_Face()
-  : Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_var_Face)())
-{
-  declare_support_masse_volumique(1);
-}
-
-
-Sortie& Op_Dift_VDF_var_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
+// CLASS: Op_Dift_VDF_var_Face
 //
+//////////////////////////////////////////////////////////////////////////////
 
-
-Entree& Op_Dift_VDF_var_Face::readOn(Entree& s )
+class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base2
 {
-  return s ;
-}
+  Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Face);
 
+public:
+  Op_Dift_VDF_var_Face();
+  void associer_diffusivite_turbulente(const Champ_Fonc& );
+  virtual void completer();
+  inline Eval_VDF_Face2& get_eval_face();
+};
 
-/////////////////////////////////////////////////////////
+//// Op_Dift_VDF_var_Face
 //
-// Fonctions de la classe Op_Dift_VDF_var_Face
-//
-////////////////////////////////////////////////////////
-
-
-void Op_Dift_VDF_var_Face::associer_diffusivite_turbulente(const Champ_Fonc& visc_turb)
+inline Eval_VDF_Face2& Op_Dift_VDF_var_Face::get_eval_face()
 {
-  Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);
-  Evaluateur_VDF& eval = iter.evaluateur();
-  Eval_Dift_VDF_var_Face& eval_diff_turb = (Eval_Dift_VDF_var_Face&) eval;
-  eval_diff_turb.associer_diff_turb(visc_turb);
+  Eval_Dift_VDF_var_Face& eval_diff = dynamic_cast<Eval_Dift_VDF_var_Face&> (iter.evaluateur());
+  return eval_diff;
 }
 
-
-void Op_Dift_VDF_var_Face::completer()
-{
-  // Cerr << "Op_Dift_VDF_var_Face::completer() " << finl;
-  Op_Dift_VDF_base::completer();
-  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
-  const Champ_Fonc& visc_turb = mod_turb.viscosite_turbulente();
-  associer_diffusivite_turbulente(visc_turb);
-  Evaluateur_VDF& eval = iter.evaluateur();
-  Eval_Dift_VDF_var_Face& eval_diff_turb = (Eval_Dift_VDF_var_Face&) eval;
-  eval_diff_turb.associer_modele_turbulence(mod_turb);
-}
-
-
+#endif /* Op_Dift_VDF_var_Face_included */

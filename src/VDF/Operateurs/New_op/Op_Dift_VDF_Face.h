@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,40 +14,45 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_var_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/16
+// File:        Op_Dift_VDF_Face.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_var_Face.h>
-#include <Turbulence_paroi_base.h>
-#include <Mod_turb_hyd_base.h>
+#ifndef Op_Dift_VDF_Face_included
+#define Op_Dift_VDF_Face_included
 
+#include <Op_Dift_VDF_Face_base2.h>
+#include <Eval_Dift_VDF_const_Face.h>
 
-void Eval_Dift_VDF_var_Face::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
-{
-  le_modele_turbulence    = mod;
-}
+declare_It_VDF_Face(Eval_Dift_VDF_const_Face)
 
-//// mettre_a_jour
+class Champ_Fonc;
+class Mod_turb_hyd_base;
+
+//////////////////////////////////////////////////////////////////////////////
 //
+// CLASS: Op_Dift_VDF_Face
+//
+//////////////////////////////////////////////////////////////////////////////
 
-void Eval_Dift_VDF_var_Face::mettre_a_jour( )
+class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base2
 {
-  Eval_Dift_VDF_var::mettre_a_jour();
-  /*
-  if (sub_type(Mod_turb_hyd_RANS,le_modele_turbulence.valeur()))
-    {
-      const Mod_turb_hyd_RANS& mod_K_eps = ref_cast(Mod_turb_hyd_RANS,le_modele_turbulence.valeur());
-      k_.ref(mod_K_eps.eqn_transp_K_Eps().inconnue().valeurs());
-  } */
-  if (le_modele_turbulence->loi_paroi().non_nul())
-    {
-      // Modif E. Saikali : on fait le ref seulement si le tableau a ete initialise, sinon pointeur nulle
-      const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
-      if (tab.size_array() > 0)
-        tau_tan_.ref(tab);
-      //tau_tan_.ref(loipar->Cisaillement_paroi());
-    }
+  Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
+
+public:
+  Op_Dift_VDF_Face();
+  void associer_diffusivite_turbulente(const Champ_Fonc& );
+  void completer();
+  inline Eval_VDF_Face2& get_eval_face();
+};
+
+// Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
+inline Eval_VDF_Face2& Op_Dift_VDF_Face::get_eval_face()
+{
+  Eval_Dift_VDF_const_Face& eval_diff = dynamic_cast<Eval_Dift_VDF_const_Face&> (iter.evaluateur());
+  return eval_diff;
 }
+
+#endif /* Op_Dift_VDF_Face_included */

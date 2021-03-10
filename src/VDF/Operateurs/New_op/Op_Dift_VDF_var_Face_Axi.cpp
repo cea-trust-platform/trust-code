@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Dift_VDF_var_Face_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/29
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -25,27 +25,17 @@
 #include <Champ_base.h>
 #include <SFichier.h>
 
-Implemente_instanciable(Op_Dift_VDF_var_Face_Axi,"Op_Dift_VDF_var_Face_Axi",Op_Dift_VDF_Face_base);
-
-
-//// printOn
-//
+Implemente_instanciable(Op_Dift_VDF_var_Face_Axi,"Op_Dift_VDF_var_Face_Axi",Op_Dift_VDF_Face_base2);
 
 Sortie& Op_Dift_VDF_var_Face_Axi::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
-
 Entree& Op_Dift_VDF_var_Face_Axi::readOn(Entree& s )
 {
   return s ;
 }
-
-//// associer
-//
 
 void Op_Dift_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis,
                                         const Zone_Cl_dis& zone_cl_dis,
@@ -73,7 +63,7 @@ void Op_Dift_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis,
 
 void Op_Dift_VDF_var_Face_Axi::completer()
 {
-  Op_Dift_VDF_base::completer();
+  Op_Dift_VDF_base2::completer();
   Equation_base& eqn_hydr = equation();
   Champ_Face& vitesse = ref_cast(Champ_Face,eqn_hydr.inconnue().valeur());
   vitesse.dimensionner_tenseur_Grad();
@@ -119,8 +109,6 @@ void Op_Dift_VDF_var_Face_Axi::mettre_a_jour(double )
       tau_tan.ref(le_modele_turbulence->loi_paroi()->Cisaillement_paroi());
     }
 }
-
-
 
 DoubleTab& Op_Dift_VDF_var_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
@@ -1370,8 +1358,9 @@ void Op_Dift_VDF_var_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) cons
         }
     }
 }
+
 double Op_Dift_VDF_var_Face_Axi::calculer_dt_stab() const
 {
-  return Op_Dift_VDF_Face_base::calculer_dt_stab(la_zone_vdf.valeur()) ;
+  return Op_Dift_VDF_Face_base2::calculer_dt_stab(la_zone_vdf.valeur()) ;
 }
 

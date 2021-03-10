@@ -43,7 +43,6 @@ class Eval_Diff_VDF_Face : public Eval_VDF_Face2, public Evaluateur_VDF
 {
 
 public:
-
   static constexpr bool IS_VAR = false;
 
   inline double surface_(int i,int j) const;
@@ -54,6 +53,11 @@ public:
   inline double nu_1(int i=0, int j=0) const;
   inline double nu_2(int i, int j, int k, int l) const;
   inline double nu_3(int i, int j=0) const;
+  inline double nu_4(int i, int j, int k, int l) const;
+  inline double nu_5(int i, int j) const;
+  inline double nu_t(int i, int j=0) const;
+  inline double tau_tan(int,int) const;
+  inline bool uses_wall_law() const;
 
   inline int calculer_fa7_sortie_libre() const ;
   inline int calculer_arete_fluide() const ;
@@ -196,8 +200,43 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_2(int i, int j, int k, int l) co
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_3(int i, int j) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_1_impl(i,j);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_2_impl(i,j); // Attention nu_2_impl and not nu_1_impl for Dift ...
   return nu;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_4(int i, int j, int k, int l) const
+{
+  double nu = static_cast<const DERIVED_T *>(this)->nu_lam_impl_face(i,j,k,l); // Attention nu_2_impl and not nu_1_impl for Dift ...
+  return nu;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_5(int i, int j) const
+{
+  double nu = static_cast<const DERIVED_T *>(this)->nu_lam_impl_face2(i,j); // Attention nu_2_impl and not nu_1_impl for Dift ...
+  return nu;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_t(int i, int j) const
+{
+  double nu = static_cast<const DERIVED_T *>(this)->nu_t_impl(i,j);
+  return nu;
+}
+
+template <typename DERIVED_T>
+inline double Eval_Diff_VDF_Face<DERIVED_T>::tau_tan(int i, int j) const
+{
+  double tt = static_cast<const DERIVED_T *>(this)->tau_tan_impl(i,j);
+  return tt;
+}
+
+template <typename DERIVED_T>
+inline bool Eval_Diff_VDF_Face<DERIVED_T>::uses_wall_law() const
+{
+  bool wl = static_cast<const DERIVED_T *>(this)->uses_wall();
+  return wl;
 }
 
 //************************
@@ -247,7 +286,6 @@ inline int Eval_Diff_VDF_Face<DERIVED_T>::calculer_arete_paroi() const
   return 1;
 }
 
-
 //// calculer_arete_paroi_fluide
 //
 template <typename DERIVED_T>
@@ -263,7 +301,6 @@ inline int Eval_Diff_VDF_Face<DERIVED_T>::calculer_arete_periodicite() const
 {
   return 1;
 }
-
 
 //// calculer_arete_symetrie
 //

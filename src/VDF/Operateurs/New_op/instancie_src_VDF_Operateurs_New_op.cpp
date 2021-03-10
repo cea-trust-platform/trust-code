@@ -15,14 +15,19 @@
 #include <Op_Diff_VDF_var_Elem_Axi.h>
 #include <Op_Diff_VDF_var_Elem_aniso.h>
 #include <Op_Diff_VDF_var_Face.h>
+#include <Op_Diff_VDF_var_Face_Axi.h>
 #include <Op_Dift_VDF_Elem.h>
 #include <Op_Dift_VDF_Elem_Axi.h>
+#include <Op_Dift_VDF_Face.h>
+#include <Op_Dift_VDF_Face_Axi.h>
 #include <Op_Dift_VDF_Multi_inco_Elem.h>
 #include <Op_Dift_VDF_Multi_inco_Elem_Axi.h>
 #include <Op_Dift_VDF_Multi_inco_var_Elem.h>
 #include <Op_Dift_VDF_Multi_inco_var_Elem_Axi.h>
 #include <Op_Dift_VDF_var_Elem.h>
 #include <Op_Dift_VDF_var_Elem_Axi.h>
+#include <Op_Dift_VDF_var_Face.h>
+#include <Op_Dift_VDF_var_Face_Axi.h>
 void instancie_src_VDF_Operateurs_New_op() {
 Cerr << "src_VDF_Operateurs_New_op" << finl;
 Op_Diff_VDF_Elem inst1;verifie_pere(inst1);
@@ -37,12 +42,17 @@ Op_Diff_VDF_var_Elem inst9;verifie_pere(inst9);
 Op_Diff_VDF_var_Elem_Axi inst10;verifie_pere(inst10);
 Op_Diff_VDF_var_Elem_aniso inst11;verifie_pere(inst11);
 Op_Diff_VDF_var_Face inst12;verifie_pere(inst12);
-Op_Dift_VDF_Elem inst13;verifie_pere(inst13);
-Op_Dift_VDF_Elem_Axi inst14;verifie_pere(inst14);
-Op_Dift_VDF_Multi_inco_Elem inst15;verifie_pere(inst15);
-Op_Dift_VDF_Multi_inco_Elem_Axi inst16;verifie_pere(inst16);
-Op_Dift_VDF_Multi_inco_var_Elem inst17;verifie_pere(inst17);
-Op_Dift_VDF_Multi_inco_var_Elem_Axi inst18;verifie_pere(inst18);
-Op_Dift_VDF_var_Elem inst19;verifie_pere(inst19);
-Op_Dift_VDF_var_Elem_Axi inst20;verifie_pere(inst20);
+Op_Diff_VDF_var_Face_Axi inst13;verifie_pere(inst13);
+Op_Dift_VDF_Elem inst14;verifie_pere(inst14);
+Op_Dift_VDF_Elem_Axi inst15;verifie_pere(inst15);
+Op_Dift_VDF_Face inst16;verifie_pere(inst16);
+Op_Dift_VDF_Face_Axi inst17;verifie_pere(inst17);
+Op_Dift_VDF_Multi_inco_Elem inst18;verifie_pere(inst18);
+Op_Dift_VDF_Multi_inco_Elem_Axi inst19;verifie_pere(inst19);
+Op_Dift_VDF_Multi_inco_var_Elem inst20;verifie_pere(inst20);
+Op_Dift_VDF_Multi_inco_var_Elem_Axi inst21;verifie_pere(inst21);
+Op_Dift_VDF_var_Elem inst22;verifie_pere(inst22);
+Op_Dift_VDF_var_Elem_Axi inst23;verifie_pere(inst23);
+Op_Dift_VDF_var_Face inst24;verifie_pere(inst24);
+Op_Dift_VDF_var_Face_Axi inst25;verifie_pere(inst25);
 }

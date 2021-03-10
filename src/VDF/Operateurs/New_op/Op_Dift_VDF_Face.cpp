@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,27 +14,56 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Dift_VDF_const_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/16
+// File:        Op_Dift_VDF_Face.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Eval_Dift_VDF_const_Face.h>
+#include <Op_Dift_VDF_Face.h>
+#include <Mod_turb_hyd_base.h>
+#include <SFichier.h>
 
-void Eval_Dift_VDF_const_Face::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Face,"Op_Dift_VDF_Face",Op_Dift_VDF_Face_base2);
+implemente_It_VDF_Face(Eval_Dift_VDF_const_Face)
+
+Sortie& Op_Dift_VDF_Face::printOn(Sortie& s ) const
 {
-  le_modele_turbulence    = mod;
+  return s << que_suis_je() ;
 }
 
-//// mettre_a_jour
-//
-
-void Eval_Dift_VDF_const_Face::mettre_a_jour( )
+Entree& Op_Dift_VDF_Face::readOn(Entree& s )
 {
-  Eval_Dift_VDF_const::mettre_a_jour( ) ;
-  if (le_modele_turbulence->loi_paroi().non_nul())
-    {
-      tau_tan_.ref(le_modele_turbulence->loi_paroi()->Cisaillement_paroi());
-    }
+  return s ;
+}
+
+void Op_Dift_VDF_Face::associer_diffusivite_turbulente(const Champ_Fonc& visc_turb)
+{
+  Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);
+  Evaluateur_VDF& eval = iter.evaluateur();
+  Eval_Dift_VDF_const_Face& eval_diff_turb = dynamic_cast<Eval_Dift_VDF_const_Face&> (eval);
+  eval_diff_turb.associer_diff_turb(visc_turb);
+}
+
+void Op_Dift_VDF_Face::completer()
+{
+  // Cerr << "Op_Dift_VDF_Face::completer() " << finl;
+  Op_Dift_VDF_base2::completer();
+  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
+  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+  const Champ_Fonc& visc_turb = mod_turb.viscosite_turbulente();
+  associer_diffusivite_turbulente(visc_turb);
+  Evaluateur_VDF& eval = iter.evaluateur();
+  Eval_Dift_VDF_const_Face& eval_diff_turb = dynamic_cast<Eval_Dift_VDF_const_Face&> (eval);
+  eval_diff_turb.associer_modele_turbulence(mod_turb);
+}
+
+//
+// Fonctions inline de la classe Op_Dift_VDF_Face
+//
+//// Op_Dift_VDF_Face
+//
+Op_Dift_VDF_Face::Op_Dift_VDF_Face() :
+  Op_Dift_VDF_Face_base2(It_VDF_Face(Eval_Dift_VDF_const_Face)())
+{
 }

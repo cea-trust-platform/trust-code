@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,61 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_var_Face_Axi.h
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
-// Version:     /main/13
+// File:        Op_Diff_VDF_var_Face_Axi.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Op_Diff_VDF_var_Face_Axi_included
+#define Op_Diff_VDF_var_Face_Axi_included
 
-#ifndef Op_Dift_VDF_var_Face_Axi_included
-#define Op_Dift_VDF_var_Face_Axi_included
-
-
+#include <Op_Diff_VDF_Face_base2.h>
+#include <Ref_Champ_Face.h>
 
 //
-// .DESCRIPTION class Op_Dift_VDF_var_Face_Axi
+// .DESCRIPTION class Op_Diff_VDF_var_Face_Axi
 //
-//  Cette classe represente l'operateur de diffusion global (diffusions
-//  laminaire et turbulente) associe aux equations de quantite de mouvement
-//  en coordonnees cylindriques.
+//  Cette classe represente l'operateur de diffusion associe aux
+//  equations de quantite de mouvement en coordonnees cylindriques.
 //  La discretisation est VDF
 //  Le champ diffuse est un Champ_Face
-//  Le champ de diffusivite laminaire est variable
+//  Le champ de diffusivite n'est pas uniforme
 //  Cette classe n'utilise ni iterateur ni evaluateur (il y avait
 //  trop de termes supplementaires dus aux coordonnees cylindriques)
 
 //
 // .SECTION voir aussi
-//  Op_Diff_Turbulent_base
+//  Operateur_Diff_base
 //
-
-#include <Ref_Champ_Face.h>
-#include <Mod_turb_hyd_base.h>
-#include <Op_Dift_VDF_Face_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Dift_VDF_var_Face_Axi
+// CLASS: Op_Diff_VDF_var_Face_Axi
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Dift_VDF_var_Face_Axi : public Op_Dift_VDF_Face_base
+class Op_Diff_VDF_var_Face_Axi : public Op_Diff_VDF_Face_base2
 {
 
-  Declare_instanciable(Op_Dift_VDF_var_Face_Axi);
+  Declare_instanciable(Op_Diff_VDF_var_Face_Axi);
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
-  void completer();
-  void associer_modele_turbulence(const Mod_turb_hyd_base& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   void associer_diffusivite(const Champ_base& );
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  void associer_loipar(const Turbulence_paroi& );
   const Champ_base& diffusivite() const;
-  void mettre_a_jour(double );
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   double calculer_dt_stab() const;
@@ -81,17 +70,15 @@ public:
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   void contribue_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
-
+  inline void mettre_a_jour(double temps) {}
 
 protected:
 
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Champ_Face) inconnue;
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
   REF(Champ_base) diffusivite_;
 
-  DoubleTab tau_tan;
   DoubleVect surface;
   DoubleVect volumes_entrelaces;
   IntVect orientation;
@@ -102,17 +89,16 @@ protected:
   IntTab face_voisins;
   IntTab elem_faces;
   IntVect type_arete_bord;
-
 };
 
 // Description:
 // on dimensionne notre matrice.
 
-inline void Op_Dift_VDF_var_Face_Axi::dimensionner(Matrice_Morse& matrice) const
+inline void Op_Diff_VDF_var_Face_Axi::dimensionner(Matrice_Morse& matrice) const
 {
   Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice);
 }
-inline void Op_Dift_VDF_var_Face_Axi::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
+inline void Op_Diff_VDF_var_Face_Axi::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
   Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem);
 }
@@ -120,7 +106,7 @@ inline void Op_Dift_VDF_var_Face_Axi::modifier_pour_Cl(Matrice_Morse& matrice, D
 //Description:
 //on assemble la matrice.
 
-inline void Op_Dift_VDF_var_Face_Axi::contribuer_a_avec(const DoubleTab& inco,
+inline void Op_Diff_VDF_var_Face_Axi::contribuer_a_avec(const DoubleTab& inco,
                                                         Matrice_Morse& matrice) const
 {
   ajouter_contribution(inco, matrice);
@@ -129,11 +115,9 @@ inline void Op_Dift_VDF_var_Face_Axi::contribuer_a_avec(const DoubleTab& inco,
 //Description:
 //on ajoute la contribution du second membre.
 
-inline void Op_Dift_VDF_var_Face_Axi::contribuer_au_second_membre(DoubleTab& resu) const
+inline void Op_Diff_VDF_var_Face_Axi::contribuer_au_second_membre(DoubleTab& resu) const
 {
   contribue_au_second_membre(resu);
 }
 
-
-
-#endif
+#endif /* Op_Diff_VDF_var_Face_Axi_included */

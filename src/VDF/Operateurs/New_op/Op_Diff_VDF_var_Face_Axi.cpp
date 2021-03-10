@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_var_Face_Axi.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/New_op
 // Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -26,27 +26,17 @@
 #include <Champ_Inc.h>
 #include <SFichier.h>
 
-Implemente_instanciable(Op_Diff_VDF_var_Face_Axi,"Op_Diff_VDF_var_Face_Axi",Op_Diff_VDF_Face_base);
-
-
-//// printOn
-//
+Implemente_instanciable(Op_Diff_VDF_var_Face_Axi,"Op_Diff_VDF_var_Face_Axi",Op_Diff_VDF_Face_base2);
 
 Sortie& Op_Diff_VDF_var_Face_Axi::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
-
 Entree& Op_Diff_VDF_var_Face_Axi::readOn(Entree& s )
 {
   return s ;
 }
-
-//// associer
-//
 
 void Op_Diff_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis,
                                         const Zone_Cl_dis& zone_cl_dis,
@@ -72,8 +62,6 @@ void Op_Diff_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis,
 
 }
 
-// Description:
-// associe le champ de diffusivite
 void Op_Diff_VDF_var_Face_Axi::associer_diffusivite(const Champ_base& diffu)
 {
   diffusivite_ = diffu;
@@ -472,22 +460,17 @@ DoubleTab& Op_Diff_VDF_var_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& 
   return resu;
 }
 
-
-
 double Op_Diff_VDF_var_Face_Axi::calculer_dt_stab() const
 {
-  return Op_Diff_VDF_Face_base::calculer_dt_stab(la_zone_vdf.valeur()) ;
+  return Op_Diff_VDF_Face_base2::calculer_dt_stab(la_zone_vdf.valeur()) ;
 
 }
-
-
 
 DoubleTab& Op_Diff_VDF_var_Face_Axi::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   resu=0;
   return ajouter(inco,resu);
 }
-
 
 /////////////////////////////////////////
 // Methode pour l'implicite
@@ -1173,7 +1156,4 @@ void Op_Diff_VDF_var_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) cons
     }
 
 }
-
-
-
 
