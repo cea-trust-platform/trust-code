@@ -178,6 +178,7 @@ public:
 //************************
 // CRTP pattern
 //************************
+
 template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_1(int i, int j) const
 {
@@ -349,8 +350,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac
   double diffus=nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
-  // Calcul de aii3_4
 
+  // Calcul de aii3_4
   dist = dist_norm_bord(fac1);
   aii3_4 = signe*surf*diffus*poros/dist;
 
@@ -391,17 +392,18 @@ template <typename DERIVED_T>
 inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab& inco, int fac1,
                                                                 int fac2, int fac3, int fac4) const
 {
-  //Cout << " Dans Eval_Diff_VDF_Face " << porosite(fac1) << " " << porosite(fac2) << finl;
   double flux;
   int ori=orientation(fac1);
   double diffus=nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
-  flux = diffus*surf*poros*(inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
 
-//
-//  flux = 0.5 * (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori) *
-//         (surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1();
+  flux = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori) * poros  * surf * diffus;
+  // XXX XXX XXX : can any one explain the difference with these expressions ...
+  // test case Champ_fonc_reprise_singlehdf was broken because of this !!!!!
+//  flux = poros  * surf  * diffus * (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori) ;
+//  flux = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori) * diffus * surf  * poros;
+
   return flux;
 }
 
@@ -415,9 +417,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fa
   double diffus=nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
-
   aii = ajj = diffus*surf*poros/dist_face(fac3,fac4,ori);
-//  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face(fac3,fac4,ori);
 }
 
 //// secmem_arete_interne
@@ -435,9 +435,6 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& i
                                                               int fac2, int fac3, int fac4) const
 {
   double flux=0;
-  //if (inco[fac4]*inco[fac3] != 0) {
-  //il faudrait reflechir pour mieux traiter les arete mixte...
-
   // TODO : FIXME
   // This should be factorized
   if (DERIVED_T::IS_VAR)
@@ -551,12 +548,11 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi(const DoubleTab& i
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
 
-
   double dist = dist_norm_bord(fac1);
   double tau  = signe * (vit_imp - inco[fac3])/dist;
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   double surf = surface_(fac1,fac2);
   flux = tau*surf*diffus;
+
   return flux;
 }
 
@@ -569,7 +565,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi(int fac1, int fac2
   double dist = dist_norm_bord(fac1);
   double surf = surface_(fac1,fac2);
   double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   aii3_4 = signe*surf*diffus/dist;
   aii1_2 = 0;
   ajj1_2 = 0;
@@ -592,7 +587,6 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi(int fac1, int fa
   double tau  = signe * vit_imp/dist;
   double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   flux = tau*surf*diffus;
   return flux;
 }
@@ -611,7 +605,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
 
   // Calcul de flux
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
-
   if (est_egal(inco[fac1],0)) // fac1 est la face de paroi
     vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl);
   else  // fac2 est la face de paroi
@@ -622,15 +615,11 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
   double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
   flux3 = tau*surf*diffus*poros;
 
   // Calcul de flux1_2
-
   dist = dist_face(fac1,fac2,k);
   tau = (inco[fac2] - inco[fac1])/dist;
-//  flux1_2 = tau*nu_1()*porosite(fac3)*surface(fac3);
   flux1_2 = tau*diffus*porosite(fac3)*surface(fac3);
 }
 
@@ -646,17 +635,13 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, i
 
   //Calcul des aii et ajj 3_4
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
-
   dist = dist_norm_bord(fac1);
   double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
-
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
   aii3_4 = signe*surf*diffus*poros/dist;
-  // Calcul des aii et ajj 1_2
 
+  // Calcul des aii et ajj 1_2
   dist = dist_face(fac1,fac2,k);
   aii1_2 = ajj1_2 = diffus*porosite(fac3)*surface(fac3)/dist;
 }
@@ -675,7 +660,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
 
   // Calcul de flux
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
-
   if (est_egal(inconnue->valeurs()[fac1],0)) // fac1 est la face de paroi
     vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl);
   else  // fac2 est la face de paroi
@@ -687,9 +671,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
   double diffus= nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
-
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
   flux3 = tau*surf*diffus*poros;
   flux1_2 = 0;
 }
@@ -708,10 +689,7 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
   diffus= nu_2(elem_(fac3,0),elem_(fac3,1),elem_(fac4,0),elem_(fac4,1));
   surf = surface_(fac1,fac2);
   poros = porosity_(fac1, fac2);
-
   flux = diffus*surf*poros*(inco[fac4]-inco[fac3])/dist_face_period(fac3,fac4,ori);
-
-//  flux = 0.5 * (inco[fac4]-inco[fac3])*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/dist_face_period(fac3,fac4,ori);
   flux3_4 = flux;
 
   ori=orientation(fac3);
@@ -719,9 +697,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
   surf = surface_(fac3,fac4);
   poros = porosity_(fac3, fac4);
   flux = diffus*surf*poros*(inco[fac2]-inco[fac1])/dist_face_period(fac1,fac2,ori);
-
-//  flux = 0.5 * (inco[fac2]-inco[fac1])*(surface(fac3)*porosite(fac3)+surface(fac4)*porosite(fac4))*nu_1()
-//         /dist_face_period(fac1,fac2,ori) ;
   flux1_2 = flux;
 
 }
@@ -737,8 +712,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, in
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
   aii = ajj =diffus*surf*poros /dist_face_period(fac3,fac4,ori);
-//  aii = ajj = 0.5 * (surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2))*nu_1()/
-//              dist_face_period(fac3,fac4,ori);
 }
 
 
@@ -788,10 +761,6 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco
   flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * diffus *
          (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
 
-// flux = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * nu_1() *
-//         (inco[fac2]-inco[fac1])/dist_face(fac1,fac2,ori);
-
-
   return flux;
 }
 
@@ -805,8 +774,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int element,int fac1,
   double diffus = nu_3(element,0);
   aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) *
               diffus/dist_face(fac1,fac2,ori);
-
-//  aii = ajj = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)) * nu_1()/dist_face(fac1,fac2,ori);
 }
 
 
@@ -859,7 +826,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
   int k= orientation(fac3);
 
   // Calcul de flux3
-
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,k,la_zcl));
 
@@ -868,13 +834,9 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
   double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
-
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
   flux3 = tau*surf*diffus*poros;
 
   // Calcul de flux1_2
-
   dist = dist_face(fac1,fac2,k);
   tau = (inco(fac2) - inco(fac1))/dist;
   flux1_2 =  DERIVED_T::IS_VAR ? 0.5*tau*diffus*porosite(fac3)*surface(fac3) :
@@ -891,18 +853,15 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1
 {
   double dist;
   int k= orientation(fac3);
-  // Calcul de aii3_4
 
+  // Calcul de aii3_4
   dist = dist_norm_bord(fac1);
   double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
   aii3_4 = (signe*surf*diffus*poros)/dist;
 
   // Calcul de aii1_2 et ajj1_2
-
   dist = dist_face(fac1,fac2,k);
   aii1_2 = ajj1_2  = DERIVED_T::IS_VAR ? (0.5*diffus*porosite(fac3)*surface(fac3))/dist :
                      (diffus*porosite(fac3)*surface(fac3))/dist;
@@ -921,7 +880,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1
   int k= orientation(fac3);
 
   // Calcul de flux3
-
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   dist = dist_norm_bord(fac1);
@@ -929,8 +887,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1
   double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-  //  double poros = 0.5*(porosite(fac1)+porosite(fac2));
   flux3 = tau*surf*diffus*poros;
   flux1_2 = 0;
 }
@@ -949,13 +905,10 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_paroi(const Dou
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,k,la_zcl)+
                         Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,k,la_zcl));
 
-
   double dist = dist_norm_bord(fac1);
   double tau  = signe * (vit_imp - inco[fac3])/dist;
   double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
-
   flux = tau*surf*diffus;
   return flux;
 }
@@ -970,7 +923,6 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_paroi(int fac1,
   double dist = dist_norm_bord(fac1);
   double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   aii3_4 = signe*surf*diffus/dist;
   ajj1_2 = 0;
 
@@ -997,11 +949,9 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_paroi(int fac
   double tau  = signe * vit_imp/dist;
   double diffus = nu_1(elem_(fac3,0),elem_(fac3,1));
   double surf = surface_(fac1,fac2);
-//  double surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2));
   flux = tau*surf*diffus;
   return flux;
 }
-
 
 /////////////////////////////////////////////////////////////////////
 // Fonctions de calcul des flux pour une inconnue vectorielle
