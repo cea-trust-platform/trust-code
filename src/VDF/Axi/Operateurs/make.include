@@ -17,8 +17,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Axi/Operateurs/Evaluateurs\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs\
-	-I$(TRUST_ROOT)/src/VDF/Operateurs/New_op\
-	-I$(TRUST_ROOT)/src/VDF/Operateurs/New_eval\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs_Diff\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Operateurs_Diff\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Iterateurs\
 	-I$(TRUST_ROOT)/src/VDF/Zones\

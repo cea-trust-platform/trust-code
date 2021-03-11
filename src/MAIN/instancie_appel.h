@@ -65,7 +65,7 @@ void instancie_src_VDF_Cond_Lim();
 void instancie_src_VDF_Elements();
 void instancie_src_VDF_Operateurs();
 void instancie_src_VDF_Operateurs_Iterateurs();
-void instancie_src_VDF_Operateurs_New_op();
+void instancie_src_VDF_Operateurs_Operateurs_Diff();
 void instancie_src_VDF_Solveurs();
 void instancie_src_VDF_Sources();
 void instancie_src_VDF_Sources_Iterateurs();
