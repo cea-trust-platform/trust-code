@@ -72,7 +72,7 @@ public :
   virtual void get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
   virtual void get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
 
-  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
+  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const;
   void set_name_of_coefficient_temporel(const Nom&);
   int has_coefficient_temporel() const
   {

@@ -77,12 +77,13 @@ public :
   static void assembler(const std::string inco_p, const std::vector<std::string> extra_eq, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
                         const std::map<std::string, matrices_t>& mats, const tabs_t& sec, const DoubleTab& inco_a, Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
 
-  int iteration;  //numero de l'iteration en cours (pour les oeprateurs d'evanescence)
+  int iteration;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
   int p_degen;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
+  int sets_;      // 1 si on fait l'etape de prediction des vitesses
 
 protected :
 
-  int sets_;      // 1 si on fait l'etape de prediction des vitesses
+  int iter_min_ = 1, iter_max_ = 10; //nombre d'iterations min/max de l'etape non-lineaire
   int first_call_;//au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
 
   /* criteres de convergences par inconnue (en norme Linf), modifiables par le mot-cle "criteres_convergence" */

@@ -336,13 +336,12 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
             {
               /* FIXME: ne marche que pour les flux lineaires */
               f = fvf.num_face(j), e = f_e(f, 0), fb = zone.fbord(f);
-              double Dh = zone.diametre_hydraulique_elem().dimension(0) ? zone.diametre_hydraulique_elem()(e) : zone.dist_norm_bord(f);
               for (nv = 0, d = 0, k = nf_tot + D * e; d < D; d++, k++) for (n = 0; n < N; n++) nv(n) += std::pow(vit(k, n), 2);
               for (n = 0; n < N; n++) nv(n) = sqrt(nv(n));
-              flux.flux_chaleur(N, Dh, Dh, &alpha(e, 0), &temp(e, 0), press(e, 0), nv.addr(), 0,
+              flux.flux_chaleur(N, zone.dist_norm_bord(f), zone.dist_norm_bord(f), &alpha(e, 0), &temp(e, 0), press(e, 0), nv.addr(), 0,
                                 &lambda(!c_lambda * e, 0), &mu(!c_mu * e, 0), &rho(!c_rho * e, 0), &Cp(!c_Cp * e, 0),
                                 NULL, NULL, NULL, NULL, NULL, &invh_(fb, 0)); //stocke le coefficient d'echange dans invh_
-              for (n = 0; n < N; n++) invh_(fb, n) = invh_(fb, n) > 1. / max(invh_(fb, n), 1e-10); //pour eviter invh_ = +inf
+              for (n = 0; n < N; n++) invh_(fb, n) = 1. / max(invh_(fb, n), 1e-10); //pour eviter invh_ = +inf
             }
         }
     }

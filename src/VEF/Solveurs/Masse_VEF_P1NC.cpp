@@ -261,3 +261,10 @@ DoubleTab& Masse_VEF_P1NC::ajouter_masse(double dt, DoubleTab& x, const DoubleTa
   inco.fixer_nature_du_champ(vectoriel);
   return x;
 }
+
+DoubleTab& Masse_VEF_P1NC::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
+{
+  //  assert(penalisation_==1);
+
+  return Solveur_Masse_base::corriger_solution( x,  y, incr) ;
+}

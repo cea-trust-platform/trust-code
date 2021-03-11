@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -99,10 +99,10 @@ Entree& List_Equations_Scalaires_Passifs::readOn(Entree& is)
   return is ;
 }
 
-void List_Equations_Scalaires_Passifs::associer_milieu_equation(int owner)
+void List_Equations_Scalaires_Passifs::associer_milieu_equation()
 {
   for (int i = 0; i < nb_equation(); i++)
-    equation(i).associer_milieu_equation(owner ? (i == 0) : 0);
+    equation(i).associer_milieu_equation();
 }
 
 // Description:

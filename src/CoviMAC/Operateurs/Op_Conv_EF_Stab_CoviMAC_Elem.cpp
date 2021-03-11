@@ -42,6 +42,7 @@
 
 #include <Param.h>
 #include <cmath>
+#include <cfloat>
 #include <vector>
 
 Implemente_instanciable( Op_Conv_EF_Stab_CoviMAC_Elem, "Op_Conv_EF_Stab_CoviMAC_Elem_CoviMAC", Op_Conv_CoviMAC_base ) ;
@@ -168,7 +169,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
       {
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
             {
-              double fac = pf(f) * fs(f) * (1. + (vit(f, n) * (i ? -1 : 1) > 0 ? 1. : vit(f, n) ? -1 : 0) * alpha) / 2;
+              double v = vit(f, n) ? vit(f, n) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha) / 2;
               dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
               dc_flux(i, n) = e >= 0 ? fac * vit(f, n) : 0;
             }

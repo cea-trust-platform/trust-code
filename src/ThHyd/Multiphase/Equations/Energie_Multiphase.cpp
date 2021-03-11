@@ -328,6 +328,12 @@ void Energie_Multiphase::associer_fluide(const Fluide_base& un_fluide)
   le_fluide = un_fluide;
 }
 
+void Energie_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
+{
+  Convection_Diffusion_std::dimensionner_matrice_sans_mem(matrice);
+  evanescence.valeur().dimensionner(matrice);
+}
+
 int Energie_Multiphase::has_interface_blocs() const
 {
   return Convection_Diffusion_std::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
@@ -347,24 +353,25 @@ void Energie_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, Doubl
 }
 
 
-void Energie_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
+void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
-  const Champ_base& ch_rho = ch.equation().milieu().masse_volumique();
-  const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, ch.equation().probleme()).eq_masse.inconnue(),
-                        &ch_en = ref_cast(Champ_Inc_base, ref_cast(Fluide_base, ch.equation().milieu()).energie_interne()), //toujours un Champ_Inc
+  const Equation_base& eqn = ref_cast(Equation_base, obj);
+  const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
+  const Champ_base& ch_rho = fl.masse_volumique();
+  const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.inconnue(),
+                        &ch_en = ref_cast(Champ_Inc_base, fl.energie_interne()), //toujours un Champ_Inc
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc
-  const DoubleTab& alpha = ch_alpha.valeurs(t), &rho = ch_rho.valeurs(t), &en = ch_en.valeurs(t);
+  const DoubleTab& alpha = ch_alpha.valeurs(), &rho = ch_rho.valeurs(), &en = ch_en.valeurs();
 
   /* valeurs du champ */
   int i, n, N = val.line_size(), Nl = val.dimension_tot(0), cR = sub_type(Champ_Uniforme, ch_rho);
   for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
-  if (val_only) return;
 
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, ch.zone_dis_base()).xv_bord(), b_rho);
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
 
   DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * en
@@ -380,46 +387,47 @@ void Energie_Multiphase::calculer_champ_conserve(const Champ_Inc_base& ch, doubl
     {
       const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *de = d_en.count(var) ? &d_en.at(var) : NULL;
       DoubleTab& d_v = deriv[var];
-      for (d_v = alpha, i = 0; i < Nl; i++) for (n = 0; n < N; n++)
-          d_v(i, n) *= (dr ? (*dr)(i, n) * en(i, n) : 0) + (de ? rho(!cR * i, n) * (*de)(i, n) : 0);
+      for (d_v.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++)
+          d_v(i, n) = alpha(i, n) * ((dr ? (*dr)(i, n) * en(i, n) : 0) + (de ? rho(!cR * i, n) * (*de)(i, n) : 0));
     }
 }
 
-void Energie_Multiphase::calculer_champ_convecte(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
+void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
-  const Champ_base& ch_rho = ch.equation().milieu().masse_volumique();
-  const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, ch.equation().probleme()).eq_masse.inconnue(),
-                        &ch_en = ref_cast(Champ_Inc_base, ref_cast(Fluide_base, ch.equation().milieu()).enthalpie()), //toujours un Champ_Inc
+  const Equation_base& eqn = ref_cast(Equation_base, obj);
+  const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
+  const Champ_base& ch_rho = fl.masse_volumique();
+  const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.inconnue(),
+                        &ch_h = ref_cast(Champ_Inc_base, fl.enthalpie()), //toujours un Champ_Inc
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc
-  const DoubleTab& alpha = ch_alpha.valeurs(t), &rho = ch_rho.valeurs(t), &en = ch_en.valeurs(t);
+  const DoubleTab& alpha = ch_alpha.valeurs(), &rho = ch_rho.valeurs(), &h = ch_h.valeurs();
 
   /* valeurs du champ */
   int i, n, N = val.line_size(), Nl = val.dimension_tot(0), cR = sub_type(Champ_Uniforme, ch_rho);
-  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
-  if (val_only) return;
+  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * h(i, n);
 
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
-  DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
+  DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_h = ch_h.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, ch.zone_dis_base()).xv_bord(), b_rho);
-  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis()).xv_bord(), b_rho);
+  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);
 
-  DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * en
-  for (d_a.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * en(i, n);
+  DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * h
+  for (d_a.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * h(i, n);
 
   /* derivees a travers rho et en */
-  const tabs_t d_vide = {}, &d_rho = pch_rho ? pch_rho->derivees() : d_vide, &d_en = ch_en.derivees();
+  const tabs_t d_vide = {}, &d_rho = pch_rho ? pch_rho->derivees() : d_vide, &d_h = ch_h.derivees();
   std::set<std::string> vars; //liste de toutes les derivees possibles
   for (auto && d_c : d_rho) vars.insert(d_c.first);
-  for (auto && d_c : d_en) vars.insert(d_c.first);
+  for (auto && d_c : d_h) vars.insert(d_c.first);
 
   for (auto && var : vars)
     {
-      const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *de = d_en.count(var) ? &d_en.at(var) : NULL;
+      const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *dh = d_h.count(var) ? &d_h.at(var) : NULL;
       DoubleTab& d_v = deriv[var];
-      for (d_v = alpha, i = 0; i < Nl; i++) for (n = 0; n < N; n++)
-          d_v(i, n) *= (dr ? (*dr)(i, n) * en(i, n) : 0) + (de ? rho(!cR * i, n) * (*de)(i, n) : 0);
+      for (d_v.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++)
+          d_v(i, n) = alpha(i, n) * ((dr ? (*dr)(i, n) * h(i, n) : 0) + (dh ? rho(!cR * i, n) * (*dh)(i, n) : 0));
     }
 }
 
@@ -431,10 +439,12 @@ void Energie_Multiphase::init_champ_convecte() const
   discretisation().creer_champ(champ_convecte_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
-  champ_convecte_->nommer(nom_fonc.first.c_str()), champ_convecte_->init_champ_calcule(nom_fonc.second);
+  champ_convecte_->nommer(nom_fonc.first.c_str()), champ_convecte_->init_champ_calcule(*this, nom_fonc.second);
 }
 
 int Energie_Multiphase::equation_non_resolue() const
 {
-  return 1;
+  const Schema_Implicite_base *sch = sub_type(Schema_Implicite_base, schema_temps()) ? &ref_cast(Schema_Implicite_base, schema_temps()) : NULL;
+  const SETS *sets = sch && sub_type(SETS, sch->solveur().valeur()) ? &ref_cast(SETS, sch->solveur().valeur()) : NULL;
+  return sets ? !sets->sets_ : 1;
 }

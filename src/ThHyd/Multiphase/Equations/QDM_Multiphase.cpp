@@ -118,6 +118,12 @@ int QDM_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return 1;
 }
 
+void QDM_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
+{
+  Navier_Stokes_std::dimensionner_matrice_sans_mem(matrice);
+  evanescence.valeur().dimensionner(matrice);
+}
+
 int QDM_Multiphase::has_interface_blocs() const
 {
   return Navier_Stokes_std::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
@@ -138,8 +144,9 @@ void QDM_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab
 
 void QDM_Multiphase::mettre_a_jour(double temps)
 {
-  la_pression.mettre_a_jour(temps);
   Equation_base::mettre_a_jour(temps);  //on saute celui de Navier_Stokes_std
+  pression().mettre_a_jour(temps);
+  pression_pa().mettre_a_jour(temps);
 
   int i, j, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases(), d, D = dimension;
   for (n = 0; n < N; n++) if (vit_phases_[n].non_nul())
@@ -167,6 +174,8 @@ bool QDM_Multiphase::initTimeStep(double dt)
       // Mise a jour du temps dans la pression
       pression()->changer_temps_futur(sch.temps_futur(i),i);
       pression()->futur(i)=pression()->valeurs();
+      pression_pa()->changer_temps_futur(sch.temps_futur(i),i);
+      pression_pa()->futur(i)=pression()->valeurs();
     }
   return Equation_base::initTimeStep(dt);
 }

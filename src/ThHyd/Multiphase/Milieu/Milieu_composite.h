@@ -51,22 +51,19 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);
   virtual void associer_equation(const Equation_base* eqn) const;
-  const Champ_base& masse_volumique_fonc() const;
-  const Champ_base& energie_interne_fonc() const;
-  const Champ_base& enthalpie_fonc() const;
   bool has_saturation(int k, int l) const;
   Saturation_base& get_saturation(int k, int l) const;
   virtual void abortTimeStep();
   virtual bool initTimeStep(double dt);
 
+  LIST(Fluide_base) fluides;
+
 protected :
-  Champ_Fonc rho_fonc, ei_fonc, h_fonc;
   Champ_Fonc rho_m, h_m;
   void mettre_a_jour_tabs();
-  LIST(Fluide_base) fluides;
-  static void calculer_masse_volumique(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
-  static void calculer_energie_interne(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
-  static void calculer_enthalpie(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  static void calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  static void calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   std::pair<std::string, int> check_fluid_name(const Nom& name);
   std::vector<std::vector<Saturation_base *>> tab_saturation;
   std::map<std::string, std::set<int>> phases_melange;

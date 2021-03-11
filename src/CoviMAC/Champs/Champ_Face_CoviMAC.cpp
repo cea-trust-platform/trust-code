@@ -254,7 +254,7 @@ void Champ_Face_CoviMAC::init_ve2() const
 }
 
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
-void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
+void Champ_Face_CoviMAC::update_ve2(DoubleTab& val, int incr) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
@@ -267,9 +267,9 @@ void Champ_Face_CoviMAC::update_ve2(DoubleTab& val) const
           for (val(i, n) = 0, j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
             val(i, n) += ve2c(j) * val(ve2j(j), n);
 
-          /* partie "faces de bord" (Dirichlet seulement) */
-          for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
-            val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
+          /* partie "faces de bord de Dirichlet" (sauf si on fait des increments) */
+          if (!incr) for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
+              val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
         }
 
   val.echange_espace_virtuel();

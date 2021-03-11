@@ -42,7 +42,7 @@ public:
 
 protected:
   virtual void initialiser_coefficient(const Champ_Inc_base& inco, double temps);
-  REF(DoubleTab) rho_;
+  DoubleTab rho_;
 };
 
 #endif

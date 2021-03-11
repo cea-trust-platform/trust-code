@@ -157,9 +157,9 @@ void Masse_CoviMAC_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zo
 }
 
 //sert a remettre en coherence la partie aux elements avec la partie aux faces
-DoubleTab& Masse_CoviMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& y) const
+DoubleTab& Masse_CoviMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  Option_CoviMAC::interp_ve1 ? ch.update_ve(x) : ch.update_ve2(x);
+  Option_CoviMAC::interp_ve1 ? ch.update_ve(x) : ch.update_ve2(x, incr);
   return x;
 }

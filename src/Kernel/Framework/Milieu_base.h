@@ -82,10 +82,6 @@ public:
   virtual void associer_gravite(const Champ_Don_base& );
   virtual const Champ_base& masse_volumique() const;
   virtual Champ_base&       masse_volumique();
-  virtual const Champ_Don& dT_masse_volumique() const;
-  virtual Champ_Don&       dT_masse_volumique();
-  virtual const Champ_Don& dP_masse_volumique() const;
-  virtual Champ_Don&       dP_masse_volumique();
   virtual const Champ_Don& diffusivite() const;
   virtual Champ_Don&       diffusivite();
   virtual const Champ_Don& conductivite() const;
@@ -112,8 +108,11 @@ public:
 
   // equations associees au milieu
   virtual void associer_equation(const Equation_base* eqn) const;
+  virtual const Equation_base& equation(const std::string& nom_inc) const;
+
   void set_id_composite(const int i);
-  const DoubleTab& masse_volumique_bord() const;
+
+  int id_composite = -1;
 
 protected:
 
@@ -123,8 +122,6 @@ protected:
   Champ_Don Cp;
   Champ_Don beta_th;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
-  Champ_Don dT_rho, dP_rho;
-  DoubleTab rho_bord;
   Nom nom_;
   REF(Champ_Don_base) g;
 
@@ -141,10 +138,9 @@ protected:
 
   Champs_compris champs_compris_;
 
-  mutable std::map<std::string, const Equation_base *> equation;
+  mutable std::map<std::string, const Equation_base *> equation_;
 
   void creer_derivee_rho();
-  int id_composite = -1;
 };
 
 

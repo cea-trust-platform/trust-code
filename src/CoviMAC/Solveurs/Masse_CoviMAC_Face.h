@@ -47,7 +47,7 @@ public:
 
   DoubleTab& appliquer_impl(DoubleTab& ) const;
 
-  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
+  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const;
 
   /* interface ajouter_blocs */
   int has_interface_blocs() const

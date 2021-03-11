@@ -133,7 +133,7 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   std::map<int, std::set<int>> dpb_v, dgp_pb; //dependances vitesses -(dpb_v)-> pressions au bord -(dgp_pb)-> gradient
   if (mat_v) for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
           for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f))
-              for (dpb_v[N * f + n].insert(N * i + n), j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * (i + 1) + n) - 1; j++)
+              for (dpb_v[N * f + n].insert(N * i + n), j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * i + n + 1) - 1; j++)
                 dpb_v[N * f + n].insert(mat_v->get_tab2()(j) - 1);
 
   /* aux faces : gradient aux faces + remplissage de dgp_pb */
@@ -197,7 +197,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
                 {
                   gb(f, n) += fac * nf(f, d) * secmem(i, n); //partie constante -> directement dans pfb
-                  if (dv) for (j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * (i + 1) + n) - 1; j++) //partie lineaire -> dans dgb_v
+                  if (dv) for (j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * i + n + 1) - 1; j++) //partie lineaire -> dans dgb_v
                       if (mat_v->get_coeff()(j)) (*dv)[mat_v->get_tab2()(j) - 1] -= fac * nf(f, d) * mat_v->get_coeff()(j);
                 }
           }

@@ -134,6 +134,7 @@ bool Probleme_base::initTimeStep(double dt)
 
   bool ok=schema_temps().initTimeStep(dt);
   domaine().set_dt(dt);
+  milieu().initTimeStep(dt);
   for(int i=0; i<nombre_d_equations(); i++)
     ok = ok && equation(i).initTimeStep(dt);
 
@@ -928,7 +929,7 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
       equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
       equation(i).discretiser();
       //remontee de l'inconnue vers le milieu
-      equation(i).associer_milieu_equation(i == 0);//la premiere equation "possede" le milieu
+      equation(i).associer_milieu_equation();
     }
   // Discretisation du milieu:
   //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux
@@ -1802,12 +1803,12 @@ void Probleme_base::mettre_a_jour(double temps)
   // Update the name of the problem being debugged
   Debog::set_nom_pb_actuel(le_nom());
 
+  // Update the media:
+  milieu().mettre_a_jour(temps);
+
   // Update the equations:
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).mettre_a_jour(temps);
-
-  // Update the media:
-  milieu().mettre_a_jour(temps);
 
   // Update the post-processing:
   les_postraitements.mettre_a_jour(temps);

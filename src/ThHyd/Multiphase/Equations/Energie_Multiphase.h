@@ -62,6 +62,8 @@ public :
   const Champ_Don& diffusivite_pour_transport();
   const Champ_base& diffusivite_pour_pas_de_temps();
 
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte l'evanescence (en dernier)
@@ -73,16 +75,16 @@ public :
   virtual const Motcle& domaine_application() const;
 
   /* champ convecte : alpha * rho * e */
-  static void calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  static void calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
   {
-    return { "alpha_rho_e", calculer_champ_conserve };
+    return { "alpha_rho_e", calculer_alpha_rho_e };
   }
 
-  static void calculer_champ_convecte(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  static void calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_convecte() const
   {
-    return { "alpha_rho_h", calculer_champ_convecte };
+    return { "alpha_rho_h", calculer_alpha_rho_h };
   }
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -179,6 +179,10 @@ public :
 
   inline const ArrOfInt& ind_faces_virt_bord() const;
   inline int est_une_face_virt_bord(int) const;
+  inline int fbord(int f) const //renvoie l'indice de face de bord de f si f est de bord, -1 sinon
+  {
+    return f < premiere_face_int() ? f : f < nb_faces() ? -1 : ind_faces_virt_bord()[f - nb_faces()];
+  }
 
   void construire_face_virt_pe_num();
   const IntTab& face_virt_pe_num() const;

@@ -167,32 +167,8 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       dis.nommer_completer_champ_physique(zone_dis,"dilatabilite_solutale",".",beta_co.valeur(),pb);
       champs_compris_.ajoute_champ(beta_co.valeur());
     }
-  if (id_composite != -1)
-    {
-      // champs aux elements
-      Champ_Fonc ei_fonc, h_fonc;
-      dis.discretiser_champ("champ_elem", zone_dis, "energie_interne",    "J/m^3", 1, temps, ei_fonc);
-      dis.discretiser_champ("champ_elem", zone_dis,      "enethalpie",    "J/m^3", 1, temps,  h_fonc);
-      dis.discretiser_champ("champ_elem", zone_dis,    "DP_enthalpie", "J/m^3/Pa", 1, temps,    dP_h);
-      e_int = ei_fonc, h = h_fonc;
-      // valeurs au bord
-      const DoubleTab& xv_bord = ref_cast(Zone_VF, zone_dis).xv_bord();
-      e_int_bord.resize(xv_bord.dimension_tot(0), 1);
-      h_bord.resize(xv_bord.dimension_tot(0), 1);
-      // derivees
-      dT_e_int = Cp, dT_h = Cp;
-      dT_e_int->nommer("DT_energie_interne"), dT_h->nommer("DT_enthalpie");
-
-      Nom n_ch("champ_uniforme ");
-      n_ch += Nom(Cp.nb_comp());
-      n_ch += " 0";
-      EChaine ech1(n_ch);
-      ech1 >> dP_e_int;
-      dP_e_int->nommer("DP_energie_interne");
-    }
 
   Milieu_base::discretiser(pb,dis);
-
 }
 // Description:
 //    Verifie que les champs lus l'ont ete correctement.
@@ -368,34 +344,16 @@ void Fluide_base::calculer_nu()
   for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) tabnu.addr()[j] = tabmu.addr()[cMu ? n : j] / tabrho.addr()[cRho ? n : j];
 }
 
-void Fluide_base::update_ei_h(double t)
+
+bool Fluide_base::initTimeStep(double dt)
 {
-  const Equation_base& eqn = *equation.at("temperature");
-  const Champ_base& ch_T = eqn.probleme().get_champ("Temperature");
-  const DoubleTab& temp = ch_T.valeurs(t), &temp_b = ch_T.valeur_aux_bords();
-
-  const int Nl = e_int.valeurs().dimension_tot(0), N = Cp.valeurs().line_size(), cCp = sub_type(Champ_Uniforme, Cp.valeur());
-  if ((N > 1 && id_composite != -1) || id_composite == -1) Process::exit("energie_interne should be used only with Milieu_composite -> the fluids should have only one component each");
-  DoubleTab bCp;
-  if (Cp.valeur().a_une_zone_dis_base()) bCp = Cp.valeur().valeur_aux_bords();
-  else bCp.resize(temp_b.dimension_tot(0), N), Cp.valeur().valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bCp);
-
-  DoubleTab& tab_ei = e_int.valeurs(), &tab_h = h.valeurs(), &tab_DP_h = dP_h.valeurs();
-  const DoubleTab& tab_Cp = Cp.valeurs();
-  dT_e_int.valeurs() = tab_Cp;
-  for (int i = 0; i < Nl; i++)
-    {
-      tab_ei(i, 0) = e0_ + tab_Cp(!cCp * i, 0) * (temp(i, id_composite) - T0_);
-      tab_h(i, 0) = tab_ei(i, 0);
-      tab_DP_h(i, 0) = 0;
-    }
-  for (int i = 0; i < e_int_bord.dimension_tot(0); i++)
-    {
-      e_int_bord(i, 0) = e0_ + bCp(i, 0) * (temp_b(i, id_composite) - T0_);
-      h_bord(i, 0) = e_int_bord(i, 0);
-    }
+  if (!equation_.size() || !e_int_auto_) return true; //pas d'equation associee ou pas de e_int a gerer
+  const Schema_Temps_base& sch = equation_.begin()->second->schema_temps(); //on recupere le schema en temps par la 1ere equation
+  Champ_Inc_base& ch = ref_cast(Champ_Inc_base, e_int.valeur());
+  for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
+    ch.changer_temps_futur(sch.temps_futur(i), i), ch.futur(i) = ch.valeurs();
+  return true;
 }
-
 
 // Description:
 //    Effectue une mise a jour en temps du milieu,
@@ -418,18 +376,13 @@ void Fluide_base::update_ei_h(double t)
 void Fluide_base::mettre_a_jour(double temps)
 {
   Milieu_base::mettre_a_jour(temps);
-  if (e_int.non_nul())
-    {
-      if (id_composite != -1) update_ei_h(temps);
-      e_int.mettre_a_jour(temps);
-      h.mettre_a_jour(temps);
-    }
   if (beta_co.non_nul())
     beta_co.mettre_a_jour(temps);
   mu.mettre_a_jour(temps);
   calculer_nu();
   nu.valeur().changer_temps(temps);
   nu->valeurs().echange_espace_virtuel();
+  if (e_int_auto_) e_int.mettre_a_jour(temps);
 
   // Mise a jour des proprietes radiatives du fluide incompressible
   // (Pour un fluide incompressible semi transparent).
@@ -479,11 +432,6 @@ int Fluide_base::initialiser(const double& temps)
   Milieu_base::initialiser(temps);
   mu.initialiser(temps);
 
-  if (e_int.non_nul())
-    {
-      update_ei_h(temps);
-      e_int.mettre_a_jour(temps);
-    }
   if (beta_co.non_nul())
     beta_co.initialiser(temps);
   calculer_nu();
@@ -547,75 +495,59 @@ int Fluide_base::longueur_rayo_is_discretised()
 void Fluide_base::set_h0_T0(double h0, double T0)
 {
   T0_ = T0;
-  e0_ = h0;
+  h0_ = h0;
+}
+
+void Fluide_base::creer_e_int() const
+{
+  Champ_Inc e_int_inc;
+  const Equation_base& eq = equation("temperature");
+  eq.discretisation().discretiser_champ("champ_elem", eq.zone_dis(), "energie_interne", "J/kg", 1,
+                                        eq.inconnue()->nb_valeurs_temporelles(), eq.inconnue()->temps(), e_int_inc);
+  e_int_inc.associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
+  e_int = e_int_inc;
+  e_int_auto_ = 1;
+}
+
+void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
+{
+  const Fluide_base& fl = ref_cast(Fluide_base, obj);
+  const Champ_base& ch_T = fl.equation("temperature").inconnue().valeur(), &ch_Cp = fl.capacite_calorifique();
+  const DoubleTab& T = ch_T.valeurs(), &Cp = ch_Cp.valeurs();
+  int i, Ni = T.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = fl.id_composite >= 0 ? 1 : Cp.dimension(1),
+         n0 = max(fl.id_composite, 0), cCp = Cp.dimension_tot(0) == 1;
+
+  for (i = 0; i < Ni; i++) for (n = 0; n < N; n++) val(i, n) = fl.h0_ + Cp(!cCp * i, n) * (T(i, n0 + n) - fl.T0_);
+  DoubleTab bT = ch_T.valeur_aux_bords(), bCp;
+  if (ch_Cp.a_une_zone_dis_base()) bCp = ch_Cp.valeur_aux_bords();
+  else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Zone_VF, ch_T.zone_dis_base()).xv_bord() , bCp);
+  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = fl.h0_ + bCp(i, n) * (bT(i, n0 + n) - fl.T0_);
+
+  DoubleTab& der_T = deriv[ch_T.le_nom().getString()];
+  for (der_T.resize(Ni, N), i = 0; i < Ni; i++) for (n = 0; n < N; n++) der_T(i, n) = Cp(!cCp * i, n);
 }
 
 const Champ_base& Fluide_base::energie_interne() const
 {
+  if (!e_int.non_nul()) creer_e_int();
   return e_int;
 }
 
 Champ_base& Fluide_base::energie_interne()
 {
+  if (!e_int.non_nul()) creer_e_int();
   return e_int;
 }
 
-const Champ_Don& Fluide_base::dT_energie_interne() const
-{
-  return dT_e_int;
-}
-
-Champ_Don& Fluide_base::dT_energie_interne()
-{
-  return dT_e_int;
-}
-
-const Champ_Don& Fluide_base::dP_energie_interne() const
-{
-  return dP_e_int;
-}
-
-Champ_Don& Fluide_base::dP_energie_interne()
-{
-  return dP_e_int;
-}
-
-const DoubleTab& Fluide_base::energie_interne_bord() const
-{
-  return e_int_bord;
-}
 
 const Champ_base& Fluide_base::enthalpie() const
 {
-  return h;
+  if (!h.non_nul() && !e_int.non_nul()) creer_e_int();
+  return h.non_nul() ? h : e_int;
 }
 
 Champ_base& Fluide_base::enthalpie()
 {
-  return h;
-}
-
-const Champ_Don& Fluide_base::dT_enthalpie() const
-{
-  return dT_h;
-}
-
-Champ_Don& Fluide_base::dT_enthalpie()
-{
-  return dT_h;
-}
-
-const Champ_Don& Fluide_base::dP_enthalpie() const
-{
-  return dP_h;
-}
-
-Champ_Don& Fluide_base::dP_enthalpie()
-{
-  return dP_h;
-}
-
-const DoubleTab& Fluide_base::enthalpie_bord() const
-{
-  return h_bord;
+  if (!h.non_nul() && !e_int.non_nul()) creer_e_int();
+  return h.non_nul() ? h : e_int;
 }

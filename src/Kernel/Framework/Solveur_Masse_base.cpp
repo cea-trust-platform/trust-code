@@ -385,8 +385,7 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 
 }
 
-// Pour appliquer les CLs de Dirichlet sur la solution (M=0)
-DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y) const
+DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
   int sz = y.size();
   DoubleTrav diag(equation().inconnue().valeurs());

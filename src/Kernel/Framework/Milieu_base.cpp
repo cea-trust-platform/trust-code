@@ -193,8 +193,6 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   if  (rho.non_nul())
     {
       dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho,pb);
-      if (dT_rho.non_nul()) dis.nommer_completer_champ_physique(zone_dis, "dT_masse_volumique",  "kg/m^3/K", dT_rho, pb);
-      if (dP_rho.non_nul()) dis.nommer_completer_champ_physique(zone_dis, "dP_masse_volumique", "kg/m^3/Pa", dP_rho, pb);
 
       if (sub_type(Champ_Tabule_Morceaux,rho))
         {
@@ -288,25 +286,8 @@ void Milieu_base::preparer_calcul()
 
 void Milieu_base::creer_champs_non_lus()
 {
-  if (rho.non_nul())
-    {
-      creer_derivee_rho();
-      if (lambda.non_nul() && Cp.non_nul()) creer_alpha();
-    }
-}
-
-void Milieu_base::creer_derivee_rho()
-{
-  Nom n_ch("champ_uniforme ");
-  n_ch += Nom(rho.nb_comp());
-  n_ch += " 0";
-  EChaine ech1(n_ch), ech2(n_ch);
-  ech1 >> dT_rho, ech2 >> dP_rho;
-
-  rho_bord.resize(1, rho.nb_comp());
-  if (rho.valeurs().dimension(0)) for (int n = 0; n < rho.nb_comp(); ++n)
-      rho_bord(0, n) = rho.valeurs()(0, n);
-
+  if (rho.non_nul() && lambda.non_nul() && Cp.non_nul())
+    creer_alpha();
 }
 
 // Description:
@@ -605,26 +586,6 @@ Champ_base& Milieu_base::masse_volumique()
   return rho;
 }
 
-const Champ_Don& Milieu_base::dT_masse_volumique() const
-{
-  return dT_rho;
-}
-
-Champ_Don& Milieu_base::dT_masse_volumique()
-{
-  return dT_rho;
-}
-
-const Champ_Don& Milieu_base::dP_masse_volumique() const
-{
-  return dP_rho;
-}
-
-Champ_Don& Milieu_base::dP_masse_volumique()
-{
-  return dP_rho;
-}
-
 // Description:
 //    Renvoie la diffusivite du milieu.
 //    (version const)
@@ -857,19 +818,19 @@ int Milieu_base::est_deja_associe()
 void Milieu_base::associer_equation(const Equation_base *eqn) const
 {
   std::string nom_inco(eqn->inconnue().le_nom().getString());
-  if (equation.count(nom_inco))
+  if (equation_.count(nom_inco))
     Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl, Process::exit();
-  equation[nom_inco] = eqn;
+  equation_[nom_inco] = eqn;
+}
+
+const Equation_base& Milieu_base::equation(const std::string& inco) const
+{
+  return *equation_.at(inco);
 }
 
 void Milieu_base::set_id_composite(const int i)
 {
   id_composite = i;
-}
-
-const DoubleTab& Milieu_base::masse_volumique_bord() const
-{
-  return rho_bord;
 }
 
 void Milieu_base::nommer(const Nom& nom)

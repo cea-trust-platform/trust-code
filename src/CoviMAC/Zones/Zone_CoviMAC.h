@@ -139,11 +139,6 @@ public :
 
   void detecter_faces_non_planes() const;
 
-  inline int fbord(int f) const //renvoie l'indice de face de bord de f si f est de bord, -1 sinon
-  {
-    return f < premiere_face_int() ? f : f < nb_faces() ? -1 : ind_faces_virt_bord()[f - nb_faces()];
-  }
-
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
   //faces "equivalentes" : equiv(f, 0/1, i) = face equivalente a e_f(f_e(f, 0/1), i) de l'autre cote, -1 si il n'y en a pas

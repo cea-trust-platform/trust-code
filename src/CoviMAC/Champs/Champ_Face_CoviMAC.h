@@ -100,7 +100,7 @@ public :
   void init_ve2() const; //ordre 2 -> avec une matrice
   mutable IntTab ve2d, ve2j, ve2bj;
   mutable DoubleTab ve2c, ve2bc;
-  void update_ve2(DoubleTab& val) const;
+  void update_ve2(DoubleTab& val, int incr = 0) const;
 
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 

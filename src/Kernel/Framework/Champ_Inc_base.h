@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 #include <MorEqn.h>
 #include <Ref_Zone_Cl_dis.h>
 #include <Interface_blocs.h>
+#include <Ref_Objet_U.h>
 
 class DoubleTab;
 class Frontiere_dis_base;
@@ -149,7 +150,7 @@ public:
   }
 
   //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
-  void init_champ_calcule(fonc_calc_t fonc);
+  void init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc);
 
   //utilise les conditions aux limites (au lieu de valeur_aux() dans Champ_base)
   //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)
@@ -167,6 +168,7 @@ protected:
 
   /* pour les champs dependant d'autres Champ_Inc */
   fonc_calc_t fonc_calc_; //fonction de calcul
+  REF(Objet_U) obj_calc_; //un objet a passer en argument
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
 };

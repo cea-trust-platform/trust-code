@@ -49,6 +49,8 @@ public:
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const;
   virtual DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const;
 
+  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const;
+
 private:
 
   REF(Zone_VEF) la_zone_VEF;

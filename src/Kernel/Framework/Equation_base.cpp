@@ -1088,10 +1088,9 @@ void Equation_base::discretiser()
       champs_compris_.ajoute_champ(derivee_en_temps());
     }
 }
-void Equation_base::associer_milieu_equation(int owner)
+void Equation_base::associer_milieu_equation()
 {
   milieu().associer_equation(this);
-  medium_owner_ = owner;
 }
 
 // Description:
@@ -1206,15 +1205,10 @@ void Equation_base::mettre_a_jour(double temps)
   inconnue().mettre_a_jour(temps);
   if (calculate_time_derivative()) derivee_en_temps().mettre_a_jour(temps);
 
-  // mise a jour du milieu : seulement si l'equation en est responsable
-  if (medium_owner_) milieu().mettre_a_jour(temps);
-
-  //avancement / mise a jour de champ_conserve
-  if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
-  if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
-
   les_sources.mettre_a_jour(temps);
 
+  if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
+  if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
 
   // On tourne la roue des CLs
   // Update the boundary condition:
@@ -1246,7 +1240,6 @@ void Equation_base::abortTimeStep()
   inconnue()->abortTimeStep();
   if (champ_conserve_.non_nul()) champ_conserve_->abortTimeStep();
   if (champ_convecte_.non_nul()) champ_convecte_->abortTimeStep();
-  if (medium_owner_) milieu().abortTimeStep();
 }
 
 // Description :
@@ -1358,8 +1351,6 @@ bool Equation_base::initTimeStep(double dt)
   if (solveur_masse.non_nul())
     solveur_masse.mettre_a_jour(temps_present);
 
-  if (medium_owner_) milieu().initTimeStep(dt); //pour les Champ_Inc du milieu
-
   return true;
 }
 
@@ -1375,8 +1366,6 @@ bool Equation_base::updateGivenFields()
       double tps=sch.temps_futur(i);
       // Calcul des CLs a ce temps.
       zone_Cl_dis().mettre_a_jour(tps);
-
-
     }
   // Calcul du taux d'accroissement des CLs entre les temps present et futur.
   zone_Cl_dis()->Gpoint(temps_present,temps_futur);
@@ -2451,19 +2440,18 @@ void Equation_base::init_champ_conserve() const
   discretisation().creer_champ(champ_conserve_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_conserve();
-  champ_conserve_->nommer(nom_fonc.first.c_str()), champ_conserve_->init_champ_calcule(nom_fonc.second);
+  champ_conserve_->nommer(nom_fonc.first.c_str()), champ_conserve_->init_champ_calcule(*this, nom_fonc.second);
 }
 
 /* methode de calcul par defaut de champ_conserve : produit coefficient_temporel * inconnue */
-void Equation_base::calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only)
+void Equation_base::calculer_champ_conserve(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
-  const Equation_base& eqn = ch.equation();
+  const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Champ_base *coeff = eqn.solv_masse().valeur().has_coefficient_temporel() ? &eqn.get_champ(eqn.solv_masse().valeur().get_name_of_coefficient_temporel()) : NULL; //coeff temporel
   const Champ_Inc_base& inco = eqn.inconnue();
   //valeur du champ lui-meme
-  val = inco.valeurs(t);
+  val = inco.valeurs();
   if (coeff) tab_multiply_any_shape(val, coeff->valeurs());
-  if (val_only) return;
 
   bval = inco.valeur_aux_bords();
   if (coeff) tab_multiply_any_shape(bval, coeff->valeur_aux_bords());

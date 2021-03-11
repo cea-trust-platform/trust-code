@@ -430,6 +430,7 @@ void Navier_Stokes_std::completer()
   gradient_P.associer_eqn(*this);
   la_pression_en_pa.associer_eqn(*this);
   la_pression_en_pa->completer(la_zone_Cl_dis.valeur());
+  la_pression_en_pa->associer_zone_cl_dis(la_zone_Cl_dis);
   divergence.completer();
   gradient.completer();
   assembleur_pression_.associer_zone_cl_dis_base(zone_Cl_dis().valeur());
@@ -1481,6 +1482,16 @@ bool Navier_Stokes_std::initTimeStep(double dt)
 
   // <IBM> Immersed Boundary Method
   double ddt = Equation_base::initTimeStep(dt);
+
+  for (int i=1; i<=sch_tps.nb_valeurs_futures(); i++)
+    {
+      double tps=sch_tps.temps_futur(i);
+      // Mise a jour du temps dans les champs de pression
+      pression()->changer_temps_futur(tps,i);
+      pression_pa()->changer_temps_futur(tps,i);
+      pression()->futur(i)=inconnue()->valeurs();
+      pression_pa()->futur(i)=inconnue()->valeurs();
+    }
 
   if (i_source_pdf_ != -1)
     {

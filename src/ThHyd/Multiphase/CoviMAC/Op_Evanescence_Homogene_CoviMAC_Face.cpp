@@ -156,6 +156,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
         for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (n = 0; n < N; n++) if (coeff(f, n, 0))
                 for (k = maj(f), i = mat.get_tab1()(N * f + n) - 1, j = mat.get_tab1()(N * f + k) - 1; i < mat.get_tab1()(N * f + n + 1) - 1; i++, j++)
                   {
+                    assert(mat.get_tab2()(i) == mat.get_tab2()(j));
                     int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
                     mat.get_set_coeff()(j) +=  coeff(f, n, 0) * mat.get_set_coeff()(i) - coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
                     mat.get_set_coeff()(i) += -coeff(f, n, 0) * mat.get_set_coeff()(i) + coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
@@ -164,6 +165,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
         for (e = 0, l = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, l++) for (n = 0; n < N; n++) if (coeff(l, n, 0))
                 for (k = maj(l), i = mat.get_tab1()(N * l + n) - 1, j = mat.get_tab1()(N * l + k) - 1; i < mat.get_tab1()(N * l + n + 1) - 1; i++, j++)
                   {
+                    assert(mat.get_tab2()(i) == mat.get_tab2()(j));
                     int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
                     mat.get_set_coeff()(j) +=  coeff(l, n, 0) * mat.get_set_coeff()(i) - coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
                     mat.get_set_coeff()(i) += -coeff(l, n, 0) * mat.get_set_coeff()(i) + coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));

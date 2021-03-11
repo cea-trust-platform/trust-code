@@ -94,6 +94,8 @@ Entree& SETS::lire(const Motcle& mot, Entree& is)
           crit_conv[nom.getString()] = val;
         }
     }
+  else if (mot == "iter_min") is >> iter_min_;
+  else if (mot == "iter_max") is >> iter_max_;
   else return Simpler::lire(mot, is); //la classe mere connait-elle ce mot cle?
   return is;
 }
@@ -136,10 +138,11 @@ static inline int corriger_alpha(DoubleTab& alpha)
 void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
                      double dt,Matrice_Morse& matrice_unused,double seuil_resol,DoubleTrav& secmem_unused,int nb_ite,int& converge)
 {
-  int i, j, &it = iteration, it_max = 10, cv;
+  int i, j, &it = iteration, cv;
   Pb_Multiphase& pb = *(Pb_Multiphase *) &ref_cast(Pb_Multiphase, eqn.probleme());
   QDM_Multiphase& eq_qdm = ref_cast(QDM_Multiphase, eqn);
   double t = eqn.schema_temps().temps_courant();
+  pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
 
   Equation_base *eq_list[3] = { &pb.eq_masse, &pb.eq_energie, &eq_qdm }; //ordre des 3 equations
   std::map<std::string, Equation_base *> eqs; //eqs[inconnue] = equation
@@ -151,9 +154,9 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   tabs_t semi_impl;
   for (auto &&n_eq : eqs) if (n_eq.second != &eq_qdm)
       {
-        semi_impl[n_eq.first].ref(n_eq.second->inconnue().passe());
-        semi_impl[n_eq.second->champ_conserve().le_nom().getString()].ref(n_eq.second->champ_conserve().passe());
-        semi_impl[n_eq.second->champ_convecte().le_nom().getString()].ref(n_eq.second->champ_convecte().passe());
+        semi_impl[n_eq.first] = n_eq.second->inconnue().passe();
+        semi_impl[n_eq.second->champ_conserve().le_nom().getString()] = n_eq.second->champ_conserve().passe();
+        semi_impl[n_eq.second->champ_convecte().le_nom().getString()]  =n_eq.second->champ_convecte().passe();
       }
   //en SETS, on remplace la valeur passee de v par celle donnee par une etape de prediction
   if (sets_ && !first_call_)
@@ -170,7 +173,9 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       solv_qdm.resoudre_systeme(mat_pred["vitesse"], secmem, current);
       semi_impl["vitesse"] = current;
     }
-  else semi_impl["vitesse"].ref(eq_qdm.inconnue().passe());
+  else semi_impl["vitesse"] = eq_qdm.inconnue().passe();
+  eqn.solv_masse().corriger_solution(current, current, 0); //pour CoviMAC : vf -> ve
+
   first_call_ = 0;
 
   //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
@@ -201,7 +206,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       fprintf(stderr, "\n");
     }
 
-  for (it = 0, cv = 0; (!cv && it < it_max) || it < 2; it++)
+  for (it = 0, cv = 0; it < iter_min_ || (!cv && it < iter_max_); it++)
     {
       /* remplissage par assembler_blocs */
       for (auto &&n_eq : eqs) n_eq.second->assembler_blocs_avec_inertie(mats[n_eq.first], sec[n_eq.first], semi_impl);
@@ -216,19 +221,21 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* assemblage du systeme en pression */
       DoubleTrav secmem_pression;
       assembler("pression", {}, A_p, b_p, mats, sec, val["alpha"], matrice_pression, secmem_pression, p_degen);
-      cv = it && mp_max_abs_vect(secmem_pression) < 1e-6; //si l'erreur sur alpha est tres faible, alors peut sortir sans resoudre
-      // if (cv) continue;
 
       /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
-      SolveurSys& solv_p = eq_qdm.solveur_pression();
-      solv_p.valeur().reinit();
-      matrice_pression.ajouter_multvect(val["pression"], secmem_pression); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-      solv_p.resoudre_systeme(matrice_pression, secmem_pression, incr["pression"]);
-      incr["pression"] -= val["pression"];
+      if (mp_max_abs_vect(secmem_pression) > 1e-6)
+        {
+          SolveurSys& solv_p = eq_qdm.solveur_pression();
+          solv_p.valeur().reinit();
+          matrice_pression.ajouter_multvect(val["pression"], secmem_pression); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
+          solv_p.resoudre_systeme(matrice_pression, secmem_pression, incr["pression"]);
+          incr["pression"] -= val["pression"];
+        }
+      else incr["pression"] = 0;
 
       //increments des autres variables
       for (auto &&n_v : b_p) incr[n_v.first] = n_v.second, A_p[n_v.first].ajouter_multvect(incr["pression"], incr[n_v.first]);
-      eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"]); //pour CoviMAC : sert a corriger ve
+      eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour CoviMAC : sert a corriger ve
 
       /* convergence? */
       cv = 1;
@@ -244,38 +251,10 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_v : val) n_v.second += incr[n_v.first];
+      eq_qdm.pression_pa().valeurs() = val["pression"]; //en multiphase, la pression est deja en Pa
       cv &= corriger_alpha(val["alpha"]);
-      eqn.solv_masse().corriger_solution(val["vitesse"], val["vitesse"]); //pour CoviMAC : sert a corriger ve
 
-      eq_qdm.milieu().mettre_a_jour(t); //partage par toutes les equations
-      for (auto &&n_eq : eqs) if (n_eq.second->has_champ_conserve()) n_eq.second->champ_conserve().mettre_a_jour(t);
-      for (auto &&n_eq : eqs) if (n_eq.second->has_champ_convecte()) n_eq.second->champ_convecte().mettre_a_jour(t);
-      for (auto &&n_eq : eqs) n_eq.second->sources().mettre_a_jour(t);
-    }
-
-  eqn.solv_masse().corriger_solution(val["vitesse"], val["vitesse"]); //pour CoviMAC : sert a corriger ve
-  eq_qdm.pression_pa().valeurs().ref(eq_qdm.pression().valeurs()); //en multiphase, la pression est deja en Pa
-
-  if (sets_) //en SETS, etape implicite sur les autres variables
-    {
-      std::map<std::string, DoubleTab> val_pred;
-      for (auto &&n_eq : eqs) if (n_eq.second != &eq_qdm && n_eq.first != "alpha")
-          {
-            DoubleTrav secmem(val[n_eq.first]);
-            val_pred[n_eq.first] = secmem;
-            /* assemblage "implicite, variable seule" */
-            if (!mat_pred.count(n_eq.first)) n_eq.second->dimensionner_blocs({{ n_eq.first, &mat_pred[n_eq.first] }}); //premier passage : dimensionnement
-            n_eq.second->assembler_blocs_avec_inertie({{ n_eq.first, &mat_pred[n_eq.first] }}, secmem);
-
-            /* resolution et stockage de la vitesse pedite dans current */
-            SolveurSys& solv = get_and_set_parametre_implicite(*n_eq.second).solveur();
-            solv.valeur().reinit();
-            mat_pred[n_eq.first].ajouter_multvect(val[n_eq.first], secmem); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-            solv.resoudre_systeme(mat_pred[n_eq.first], secmem, val_pred[n_eq.first]);
-          }
-      /* mises a jour */
-      for (auto &&n_v : val_pred) val[n_v.first] = n_v.second;
-      for (auto &&n_eq : eqs) n_eq.second->mettre_a_jour(t); //fait milieu -> champ conserve -> sources
+      pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
   return;

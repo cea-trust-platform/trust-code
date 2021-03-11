@@ -163,6 +163,7 @@ void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& wh, Doub
 void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab& phif_pe, DoubleTab& phif_pc) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, fvf->zone_dis()), &o_zone = ref_cast(Zone_CoviMAC, o_fvf->zone_dis());
+  o_zone.init_stencils();
   int i_f, i, il, ic, j, k, l, f, o_f, fb, o_fb, e, o_e, e_s, f_s, f_sb, m, m_s, n, n_max, on_max, nw, infoo = 0;
   int d, D = dimension, ne_tot = zone.nb_elem_tot(), o_ne_tot = o_zone.nb_elem_tot();
   int N = phif_w.dimension(1), oN = o_diff->equation().inconnue().valeurs().line_size(), M = max(N, oN);
@@ -241,7 +242,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
           for (i = 0, ic = 0; i <= n_f; i++) for (n = 0; n < N; n++, ic++) for (il = 0; il <= ng; il++) //cote interne
                 A(ic, il) = il < ng ? zone.dot(&xh(i < n_f ? fa[i] : f, n, 0), &base(il, 0, n, 0), &xv(f, 0))
                             + (invh(fb, n) + invh_paroi_ / 2) * zone.nu_dot(&nu, e, n, &nf(f, 0), &base(il, 0, n, 0)) / fs(f) : 1;
-          for (i = 0; i <= n_f; i++) for (n = 0; n < oN; n++, ic++) for (il = 0; il <= ng; il++) //cote externe
+          for (i = 0; i <= o_n_f; i++) for (n = 0; n < oN; n++, ic++) for (il = 0; il <= ng; il++) //cote externe
                 A(ic, il) = il < ng ? zone.dot(&o_xh(i < o_n_f ? o_fa[i] : o_f, n, 0), &base(il, 0, n, 0), &xv(f, 0))
                             - (o_invh(o_fb, n) + invh_paroi_ / 2) * zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &base(il, 0, n, 0)) / fs(f) : 1;
 

@@ -117,7 +117,7 @@ public :
   int limpr() const;
   virtual void imprimer(Sortie& os) const;
   virtual int impr(Sortie& os) const;
-  virtual void associer_milieu_equation(int owner);
+  virtual void associer_milieu_equation();
 
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
   virtual DoubleTab& derivee_en_temps_inco_transport(DoubleTab& derivee)
@@ -211,7 +211,7 @@ public :
 
   void init_champ_conserve() const; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_conserve_
   /* fonction de calcul par defaut de champ_conserve */
-  static void calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  static void calculer_champ_conserve(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   /* renvoit le nom du champ conserve et la fonction pour le calculer -> a surcharger  */
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
   {
@@ -335,7 +335,6 @@ private :
   IntVect nb_bords_post_xyz;
   int nombre_champ_xyz;
   int ecrit_champ_xyz_bin;
-  int medium_owner_; //1 si l'equation est "responsable" du milieu
 
   //!SC: passage en protected (surcharge de get_champ dans Equation_Diphasique_base)
 //  Champs_Fonc list_champ_combi;

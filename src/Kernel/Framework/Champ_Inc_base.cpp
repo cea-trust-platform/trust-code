@@ -31,6 +31,7 @@
 #include <Dirichlet.h>
 #include <Neumann_val_ext.h>
 #include <DoubleTrav.h>
+#include <Champ_Inc_P0_base.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
@@ -495,7 +496,6 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
 {
   // Champ a plusieurs valeurs temporelle :
   // On avance a la bonne valeur temporelle.
-  int courant = mon_equation_non_nul() && (un_temps == equation().schema_temps().temps_courant());
   if (les_valeurs->nb_cases()>1)
     {
       for(int i=0; i<les_valeurs->nb_cases(); i++)
@@ -506,7 +506,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
               temps_=un_temps;
               //Inutile:
               //valeurs().echange_espace_virtuel();
-              if (fonc_calc_) fonc_calc_(*this, un_temps, valeurs(), val_bord_, deriv_, !courant);
+              if (fonc_calc_) fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
               return;
             }
         }
@@ -522,7 +522,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
   else
     {
       changer_temps(un_temps);
-      if (fonc_calc_) fonc_calc_(*this, un_temps, valeurs(), val_bord_, deriv_, !courant);
+      if (fonc_calc_) fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
       //Inutile:
       //valeurs().echange_espace_virtuel();
     }
@@ -1136,14 +1136,12 @@ Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
   return ma_zone_cl_dis.valeur();
 }
 
-void Champ_Inc_base::init_champ_calcule(fonc_calc_t fonc)
+void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)
 {
-  fonc_calc_ = fonc;
+  obj_calc_ = obj, fonc_calc_ = fonc;
   val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
-  /* calcul de toutes les cases */
-  double t, tc = equation().schema_temps().temps_courant();
-  for(int i=0; i<les_valeurs->nb_cases(); i++)
-    t = les_valeurs[i].temps(), fonc_calc_(*this, t, les_valeurs[i].valeurs(), val_bord_, deriv_, t != tc);
+  fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
+  for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs(); /* copie dans toutes les cases */
 }
 
 
@@ -1157,23 +1155,24 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
       return result;
     }
   //sinon, calcul a partir des CLs
-  DoubleTrav result(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
-  // on initialise avec valeur_aux pour avoir des valeurs non nulles aux bords sans dirichlet ou neumann_val_ext
-  (*this).valeur_aux(ref_cast(Zone_VF, zone_dis_base()).xv_bord(), result);
-  if (le_nom() == "pression" || le_nom() == "pressure") return result; // inversion dirichlet neumann...
+  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis_base());
+  const IntTab& f_e = zone.face_voisins();
+  DoubleTrav result(zone.xv_bord().dimension_tot(0), valeurs().line_size());
 
   const Conds_lim& cls = zone_Cl_dis().valeur().les_conditions_limites();
-  const ArrOfInt& i_bord = ref_cast(Zone_VF, zone_dis_base()).ind_faces_virt_bord(); //correspondance face -> face de bord
-  int i, j, k, f, n, N = result.line_size(), nf = ref_cast(Zone_VF, zone_dis_base()).nb_faces();
+  int i, j, f, fb, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure"));
   for (i = 0; i < cls.size(); i++)
     {
       const Front_VF& fr = ref_cast(Front_VF, cls[i].valeur().frontiere_dis());
-      if (sub_type(Dirichlet, cls[i].valeur())) //Dirichlet -> val_imp
-        for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), k = f < nf ? f : i_bord[f - nf], n = 0; n < N; n++)
-            result(k, n) = ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
-      else if (sub_type(Neumann_val_ext, cls[i].valeur()))
-        for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), k = f < nf ? f : i_bord[f - nf], n = 0; n < N; n++)
-            result(k, n) = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
+      if (is_p ? sub_type(Neumann, cls[i].valeur()) : sub_type(Dirichlet, cls[i].valeur())) //valeur au bord imposee
+        for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+            result(fb, n) = is_p ? ref_cast(Neumann, cls[i].valeur()).flux_impose(j, n) : ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
+      else if (sub_type(Neumann_val_ext, cls[i].valeur())) //valeur externe imposee
+        for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+            result(fb, n) = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
+      else if (sub_type(Champ_Inc_P0_base, *this)) for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P0 : on peut prendre la valeur en l'element
+          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++) result(fb, n) = valeurs()(f_e(f, 0), n);
+      else Process::exit("Champ_Inc_base::valeur_aux_bords() : mus code something!");
     }
   return result;
 }

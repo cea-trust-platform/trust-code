@@ -65,6 +65,8 @@ public :
   const Operateur& operateur(int) const;
   Operateur& operateur(int);
 
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte l'evanescence (en dernier)
@@ -74,10 +76,10 @@ public :
   virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 
   /* champ convecte : alpha * rho */
-  static void calculer_champ_conserve(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+  static void calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
   {
-    return { "alpha_rho", calculer_champ_conserve };
+    return { "alpha_rho", calculer_alpha_rho };
   }
 
   /* cette equation n'est jamais resolue directement, mais traitee lors de la resolution de QDM_Multiphase */

@@ -345,7 +345,9 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       else
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
-  eqn.mettre_a_jour(eqn.schema_temps().temps_courant());
+  eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  // eqn.milieu().mettre_a_jour(eqn.schema_temps().temps_courant());
+  // eqn.mettre_a_jour(eqn.schema_temps().temps_courant());
 
   solveur->reinit();
   return (converge==1);
@@ -462,7 +464,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
       eqs[i]->inconnue().valeurs() = eqs[i]->inconnue().futur();
       eqs[i]->inconnue().valeur().Champ_base::changer_temps(t);
     }
-  for(i = 0; i < eqs.size(); i++) eqs[i]->mettre_a_jour(eqs[i]->schema_temps().temps_courant());
+  for(i = 0; i < eqs.size(); i++) eqs[i]->probleme().mettre_a_jour(eqs[i]->schema_temps().temps_courant());
 
   //on desalloue les tableaux de coeffs
   for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()).get_set_coeff().reset();

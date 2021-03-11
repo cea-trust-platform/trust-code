@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ public :
   virtual void typer();
   inline Matrice_Base& ajouter_masse(double , Matrice_Base&, int penalisation=1) const;
   inline DoubleTab& ajouter_masse(double, DoubleTab& , const DoubleTab& y, int penalisation=1) const;
-  inline DoubleTab& corriger_solution( DoubleTab& x, const DoubleTab& y) const;
+  inline DoubleTab& corriger_solution( DoubleTab& x, const DoubleTab& y, int incr = 0) const;
   inline Matrice_Base& ajouter_masse_dt_local(DoubleVect& , Matrice_Base&, int penalisation=1) const;
   inline DoubleTab& ajouter_masse_dt_local(DoubleVect&, DoubleTab& , const DoubleTab& y, int penalisation=1) const;
   inline void get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
@@ -177,9 +177,9 @@ inline void Solveur_Masse::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux,
 {
   valeur().get_masse_divide_by_local_dt(m_dt_locaux,dt_locaux,penalisation);
 }
-inline DoubleTab& Solveur_Masse::corriger_solution( DoubleTab& x, const DoubleTab& y) const
+inline DoubleTab& Solveur_Masse::corriger_solution( DoubleTab& x, const DoubleTab& y, int incr) const
 {
-  return valeur().corriger_solution(x,y);
+  return valeur().corriger_solution(x,y, incr);
 }
 
 #endif

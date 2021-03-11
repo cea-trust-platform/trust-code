@@ -48,11 +48,16 @@ class Fluide_reel_base: public Fluide_base
 public :
 
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  virtual void abortTimeStep();
+  virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);
   virtual void set_param(Param& param);
-  virtual void set_h0_T0(double h0, double T0);
 protected :
+
+  static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  static void calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  static void calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
 
   // densite
   virtual double     rho_(const double T, const double P) const = 0;
@@ -68,9 +73,6 @@ protected :
   virtual double      mu_(const double T) const = 0;
   virtual double  lambda_(const double T) const = 0;
 
-  void mettre_a_jour_tabs(const double t);
-
-  int isotherme_ = 0;
   double T_ref_ = -1;
   double P_ref_ = -1;
 };

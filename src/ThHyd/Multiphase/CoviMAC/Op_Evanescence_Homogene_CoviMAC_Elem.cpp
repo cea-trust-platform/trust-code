@@ -43,6 +43,7 @@ Entree& Op_Evanescence_Homogene_CoviMAC_Elem::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("alpha_res", &alpha_res_, Param::REQUIRED);
+  param.ajouter("alpha_res_min", &alpha_res_min_);
   param.lire_avec_accolades_depuis(is);
   return is;
 }
@@ -92,7 +93,7 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
                      /* iter = sch ? sch->iteration : 0,*/ p_degen = alp && sch ? sch->p_degen : 0;
   if (N == 1 || p_degen) return; //pas d'evanescence en simple phase ou si p est degenere
 
-  double a_eps = alpha_res_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
+  double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
 
   /* recherche de phases evanescentes et traitement des seconds membres */
   IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
@@ -109,7 +110,7 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
       for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
           {
             const double val = milc.has_saturation(n, k) ? milc.get_saturation(n, k).Tsat(p[e]) : inco(e, k);
-            coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * (coeff(e, n, 0) = min(max(1 - a_m / a_eps, 0.), 1.) / (p_degen ? rho(!cR * e, n) : 1));
+            coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * (coeff(e, n, 0) = min(max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.) / (p_degen ? rho(!cR * e, n) : 1));
             double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - !alp * val);
             secmem(e, k) += (p_degen ? rho(!cR * e, k) : 1) * flux, secmem(e, n) -= (p_degen ? rho(!cR * e, n) : 1) * flux;
           }
@@ -123,6 +124,7 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
         for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) if (coeff(e, n, 0))
               for (k = maj(e), i = mat.get_tab1()(N * e + n) - 1, j = mat.get_tab1()(N * e + k) - 1; i < mat.get_tab1()(N * e + n + 1) - 1; i++, j++)
                 {
+                  assert(mat.get_tab2()(j) == mat.get_tab2()(i));
                   int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
                   mat.get_set_coeff()(j) += (p_degen ? rho(!cR * e, k) : 1) * ( coeff(e, n, 0) * mat.get_set_coeff()(i) - coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));
                   mat.get_set_coeff()(i) += (p_degen ? rho(!cR * e, n) : 1) * (-coeff(e, n, 0) * mat.get_set_coeff()(i) + coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));

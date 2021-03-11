@@ -64,6 +64,8 @@ public :
   }
   bool initTimeStep(double dt);
 
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte l'evanescence (en dernier)

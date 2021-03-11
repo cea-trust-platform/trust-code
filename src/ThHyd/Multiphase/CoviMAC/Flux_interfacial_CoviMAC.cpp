@@ -52,23 +52,22 @@ void Flux_interfacial_CoviMAC::dimensionner_blocs(matrices_t matrices, const tab
   const DoubleTab& inco = ch.valeurs();
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  const int N = inco.line_size();//, Np = ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size();;
+  int ne_tot = zone.nb_elem_tot(), N = inco.line_size(), Np = ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size();;
 
   /* elements */
   for (std::string var :
-       { "temperature", "alpha"//, "pression"
+       { "temperature", "alpha", "pression"
        }) if (matrices.count(var))
       {
         Matrice_Morse& mat = *matrices[var], mat2;
         IntTrav stencil(0, 2);
         stencil.set_smart_resize(1);
-        // int M = (var == "pression" ? Np : N);
+        int M = var == "pression" ? Np : N;
 
-        // if (semi) for (k = 0; k < N; k++) for (l = 0; l < M; l++) stencil.append_line(N * ji[1] + k, M * ji[1] + l);
-        for (int e = 0; e < zone.nb_elem(); e++) for (int k = 0; k < N; k++) for (int l = 0; l < N; l++)
-              stencil.append_line(N * e + k, N * e + l);
+        for (int e = 0; e < zone.nb_elem(); e++) for (int k = 0; k < N; k++) for (int l = 0; l < M; l++)
+              stencil.append_line(N * e + k, M * e + l);
 
-        Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
+        Matrix_tools::allocate_morse_matrix(N * ne_tot, M * ne_tot, stencil, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
       }
 }
@@ -81,13 +80,14 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
+  const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const DoubleTab& inco = ch.valeurs(),
                    &alpha = pbm.eq_masse.inconnue().valeurs(),
                     &press = pbm.eq_qdm.pression().valeurs(),
                      &temp  = pbm.eq_energie.inconnue().valeurs(),
                       &h = milc.enthalpie().valeurs(),
-                       &dP_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees().at("pression"),
-                        &dT_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees().at("temperature");
+                       *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL,
+                        *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL;
   Matrice_Morse //*Ma = matrices.count("alpha")       ? matrices.at("alpha")       : NULL,
   *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
    *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL;
@@ -108,8 +108,8 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                          hls = milc.get_saturation(l, g).Hls(p), hgs = milc.get_saturation(l, g).Hvs(p),
                          dP_hls = milc.get_saturation(l, g).dP_Hls(p), dP_hgs = milc.get_saturation(l, g).dP_Hvs(p),
                          al = alpha(e, l), ag = alpha(e, g), hl = h(e, l),
-                         hg = h(e, g), dP_hl = dP_h(e, l), dP_hg = dP_h(e, g),
-                         dT_hl = dT_h(e, l), dT_hg = dT_h(e, g);
+                         hg = h(e, g), dP_hl = dP_h ? (*dP_h)(e, l) : 0, dP_hg = dP_h ? (*dP_h)(e, g) : 0,
+                         dT_hl = dT_h ? (*dT_h)(e, l) : 0, dT_hg = dT_h ? (*dT_h)(e, g) : 0;
 
             const bool vap = (Tl > Ts) && (al > 0), cond = (Tg < Ts) && ag > 0;
 

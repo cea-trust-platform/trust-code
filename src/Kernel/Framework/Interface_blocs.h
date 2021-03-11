@@ -28,7 +28,6 @@
 #include <DoubleTab.h>
 #include <stdexcept>
 
-class Champ_Inc_base;
 class Matrice_Morse;
 
 //types de l'interface {dimensionner,ajouter}_blocs
@@ -37,6 +36,6 @@ class Matrice_Morse;
 typedef std::map<std::string, Matrice_Morse *> matrices_t;
 //dictionnaires de DoubleTabs
 typedef std::map<std::string, DoubleTab> tabs_t;
-//calcul d'un Champ_Inc a l'instant t, ainsi que de ses derivees et de ses valeurs aux bords
-typedef void (*fonc_calc_t)(const Champ_Inc_base& ch, double t, DoubleTab& val, DoubleTab& bval, tabs_t& deriv, int val_only);
+//calcul d'un Champ_Inc ainsi que de ses derivees et de ses valeurs aux bords
+typedef void (*fonc_calc_t)(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
 #endif
