@@ -112,7 +112,7 @@ void Op_Diff_CoviMAC_Elem::completer()
 
 void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  update_phif(); //calcul de (nf.nu.grad T)
+  update_phif(!nu_constant_); //calcul de (nf.nu.grad T) : si nu variable, stencil complet
   const std::string nom_inco = equation().inconnue().le_nom().getString();
   if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
@@ -179,7 +179,8 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       zone[i] = &ref_cast(Zone_CoviMAC, op_ext[i]->equation().zone_dis().valeur());
       cls[i] = &op_ext[i]->equation().zone_Cl_dis().les_conditions_limites();
       const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, op_ext[i]->equation().inconnue().valeur());
-      fcl[i] = &ch.fcl(), inco[i] = &ch.valeurs(), N[i] = inco[i]->line_size();
+      inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &ch.valeurs();
+      N[i] = inco[i]->line_size(), fcl[i] = &ch.fcl();
     }
   const IntTab& e_f = zone[0]->elem_faces(), &f_e = zone[0]->face_voisins();
   const DoubleVect& fs = zone[0]->face_surfaces();

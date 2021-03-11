@@ -183,12 +183,13 @@ public :
   //          xh, wh, whm   : donnees sur les points harmoniques retournees par harmonic_points()
   //          pe_ext        : donnees sur les CL Echange_contact retournees par Op_Diff_CoviMAC_base
   //          nu_grad       : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+  //          full_stencil  : 1 si on veut le stencil complet (pour dimensionner())
   //Sorties : phif_w(f, n)                         : poids de l'amont dans la compo n du flux
   //          phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
   //          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
   //          phif_pe(i, 0/1), phif_pc(i, n, m, c) : indices (pb, elem) /coefficients distants et/ou non diagonaux
   void fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const DoubleTab *invh,
-             const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad,
+             const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad, int full_stencil,
              DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab *phif_pe, DoubleTab *phif_pc) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)

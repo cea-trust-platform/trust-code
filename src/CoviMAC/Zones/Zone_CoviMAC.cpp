@@ -823,12 +823,13 @@ void Zone_CoviMAC::harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, 
 //          xh, wh, whm   : donnees sur les points harmoniques retournees par harmonic_points()
 //          pe_ext        : donnees sur les CL Echange_contact retournees par Op_Diff_CoviMAC_base
 //          nu_grad       : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+//          full_stencil  : 1 si on veut le stencil complet (pour dimensionner())
 //Sorties : phif_w(f, n)                         : poids de l'amont dans la compo n du flux
 //          phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
 //          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
 //          phif_pe(i, 0/1), phif_pc(i, n, m, c) : indices (pb, elem) /coefficients distants et/ou non diagonaux
 void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const DoubleTab *invh,
-                         const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad,
+                         const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad, int full_stencil,
                          DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab *phif_pe, DoubleTab *phif_pc) const
 {
   const IntTab& f_e = face_voisins();
@@ -849,7 +850,7 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
   for (f = 0; f < f_max; (phif_pe ? phif_d.append_line(phif_e.size(), phif_pe->dimension(0)) : phif_d.append_line(phif_e.size())), f++)
     if (fcl(f, 0) >= 0 && sub_type(Echange_contact_CoviMAC, cls[fcl(f, 1)].valeur())) //Echange_contact -> delegation
       {
-        ref_cast(Echange_contact_CoviMAC, cls[fcl(f, 1)].valeur()).fgrad(phif_w, phif_d, phif_e, phif_c, *phif_pe, *phif_pc); //remplit toutes les faces de la CL
+        ref_cast(Echange_contact_CoviMAC, cls[fcl(f, 1)].valeur()).fgrad(full_stencil, phif_w, phif_d, phif_e, phif_c, *phif_pe, *phif_pc); //remplit toutes les faces de la CL
         phif_d.resize(phif_d.dimension(0) - 1, 2), f = phif_d.dimension(0) - 1; //pour que f et phif_d soient bons a la prochaine iteration de la boucle
       }
     else if (wh(f, 0) >= 0) //faces internes ou de bord "normales" -> il faut etre assez loin du joint pour que tous les ooints harmoniques soient definis
@@ -887,7 +888,7 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
                 nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 /* correction de interp (avec ecretage) */
-                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += full_stencil || dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
               }
           }
 
@@ -922,7 +923,7 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
         for (i = 0; i < (int) p_e.size(); i++)
           {
             for (nnz = 0, hdiag = 0, n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < nrhs; l++) if (phi(i, n, m, l) != 0) nnz++, hdiag |= (m != n);
-            if (!nnz) continue; //on peut sauter ce point
+            if (!nnz && !full_stencil) continue; //on peut sauter ce point
             if (p_e[i].first == 0 && !hdiag) //contrib diagonale d'un elem local -> dans phif_e/c
               for (phif_e.append_line(p_e[i].second), k = phif_c.dimension(0), phif_c.resize(k + 1, N, 2), n = 0; n < N; n++)
                 for (l = 0; l < 2; l++) phif_c(k, n, l) = phi(i, n, n, l);

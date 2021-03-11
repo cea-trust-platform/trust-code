@@ -62,8 +62,8 @@ public:
 
   int impr(Sortie& os) const;
 
-  /* poids de l'amont/aval dans les equations a chaque face */
-  const DoubleTab& mu_f() const;
+  /* poids de l'amont/aval dans les equations a chaque face : l'appel provoque le calcul du gradient */
+  const DoubleTab& mu_f(int full_stencil = 0) const;
 
   /* public pour utilisation par Assembleur_P_CoviMAC : [grad p]_f */
   mutable IntTab fgrad_d, fgrad_e;

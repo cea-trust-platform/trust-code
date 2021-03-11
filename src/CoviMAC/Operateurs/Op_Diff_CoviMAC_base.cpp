@@ -45,6 +45,7 @@
 #include <Op_Diff_CoviMAC_Face.h>
 #include <Pb_Multiphase.h>
 #include <Echange_contact_CoviMAC.h>
+#include <Flux_parietal_base.h>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);
 Implemente_ref(Op_Diff_CoviMAC_base);
@@ -88,9 +89,8 @@ void Op_Diff_CoviMAC_base::completer()
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
   invh_.resize(0, N), zone.creer_tableau_faces_bord(invh_);
-
-  xh_.resize(0, N, D), zone.creer_tableau_faces(xh_); //position des poids harmoniques
-  wh_.resize(0, N), zone.creer_tableau_faces(wh_); //poids de l'amont
+  xh_.resize(zone.nb_faces_tot(), N, dimension); //position des points harmoniques, poids de l'amont
+  wh_.resize(zone.nb_faces_tot(), N);
 
   int f_max = sub_type(Op_Diff_CoviMAC_Face, *this) ? zone.nb_faces_tot() : zone.nb_faces(); //en Op_.._Face, on doit aussi faire les faces virtuelles
   phif_w.resize(f_max, N); //tableaux phif_* statiques
@@ -286,8 +286,8 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const DoubleTab& nu_src = diffusivite().valeurs(), &nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
-  int e, i, j, f, fb, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(),
-                         c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
+  int e, i, j, k, f, fb, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(),
+                            c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension, nf_tot = zone.nb_faces_tot();
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
@@ -317,7 +317,36 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
   const RefObjU* modele_turbulence = has_diffusivite_turbulente() ? &equation().get_modele(TURBULENCE) : NULL;
   const Turbulence_paroi_scal_base *loi_par = modele_turbulence && modele_turbulence->non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence->valeur()) ?
                                               &ref_cast(Modele_turbulence_scal_base,modele_turbulence->valeur()).loi_paroi().valeur() : NULL;
-  if (loi_par && loi_par->use_equivalent_distance()) for (i = 0; i < cls.size(); i++)
+
+  /* si Pb_Multiphase et correlation de flux parietal -> invh par la correlation */
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  if (pbm && sub_type(Energie_Multiphase, equation()) && ref_cast(Pb_Multiphase, equation().probleme()).has_correlation("flux_parietal"))
+    {
+      const Flux_parietal_base& flux = ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, equation().probleme()).get_correlation("flux_parietal").valeur());
+      const Fluide_base& mil = ref_cast(Fluide_base, equation().milieu());
+      const DoubleTab& temp = equation().inconnue().valeurs(), &press = pbm->eq_qdm.pression().valeurs(), &alpha = pbm->eq_masse.inconnue().valeurs(),
+                       &vit = pbm->eq_qdm.inconnue().valeurs(), &lambda = mil.conductivite().valeurs(),
+                        &mu = mil.viscosite_dynamique().valeurs(), &rho = mil.masse_volumique().valeurs(), &Cp = mil.capacite_calorifique().valeurs();
+      int c_lambda = lambda.dimension(0) == 1, c_mu = mu.dimension(0) == 1, c_rho = rho.dimension(0) == 1, c_Cp = Cp.dimension(0) == 1;
+      DoubleTrav nv(N); //normes des vitesses
+      for (i = 0; i < cls.size(); i++)
+        {
+          const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
+          for (j = 0; j < fvf.nb_faces_tot(); j++)
+            {
+              /* FIXME: ne marche que pour les flux lineaires */
+              f = fvf.num_face(j), e = f_e(f, 0), fb = zone.fbord(f);
+              double Dh = zone.diametre_hydraulique_elem().dimension(0) ? zone.diametre_hydraulique_elem()(e) : zone.dist_norm_bord(f);
+              for (nv = 0, d = 0, k = nf_tot + D * e; d < D; d++, k++) for (n = 0; n < N; n++) nv(n) += std::pow(vit(k, n), 2);
+              for (n = 0; n < N; n++) nv(n) = sqrt(nv(n));
+              flux.flux_chaleur(N, Dh, Dh, &alpha(e, 0), &temp(e, 0), press(e, 0), nv.addr(), 0,
+                                &lambda(!c_lambda * e, 0), &mu(!c_mu * e, 0), &rho(!c_rho * e, 0), &Cp(!c_Cp * e, 0),
+                                NULL, NULL, NULL, NULL, NULL, &invh_(fb, 0)); //stocke le coefficient d'echange dans invh_
+              for (n = 0; n < N; n++) invh_(fb, n) = invh_(fb, n) > 1. / max(invh_(fb, n), 1e-10); //pour eviter invh_ = +inf
+            }
+        }
+    }
+  else if (loi_par && loi_par->use_equivalent_distance()) for (i = 0; i < cls.size(); i++) /* si loi de paroi : invh par equivalent_distance */
       {
         const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
         for (j = 0; j < fvf.nb_faces_tot(); j++) for (f = fvf.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
@@ -335,12 +364,12 @@ void Op_Diff_CoviMAC_base::update_xwh() const
   xwh_a_jour_ = 1;
 }
 
-void Op_Diff_CoviMAC_base::update_phif() const
+void Op_Diff_CoviMAC_base::update_phif(int full_stencil) const
 {
   if (phif_a_jour_) return; //deja fait
   const Champ_Inc_base& ch = equation().inconnue().valeur();
   const IntTab& fcl = sub_type(Champ_Face_CoviMAC, ch) ? ref_cast(Champ_Face_CoviMAC, ch).fcl() : ref_cast(Champ_P0_CoviMAC, ch).fcl();
   la_zone_poly_->fgrad(la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &invh(), xh(), wh(), &whm(),
-                       &pe_ext, 1, phif_w, phif_d, phif_e, phif_c, &phif_pe, &phif_pc);
+                       &pe_ext, 1, full_stencil, phif_w, phif_d, phif_e, phif_c, &phif_pe, &phif_pc);
   phif_a_jour_ = 1;
 }

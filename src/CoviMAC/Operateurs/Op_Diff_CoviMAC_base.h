@@ -107,7 +107,7 @@ public:
   }
 
   /* flux aux faces : cf. Zone_CoviMAC::fgrad */
-  void update_phif() const;
+  void update_phif(int full_stencil = 0) const;
   //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[), (i_op, elem distant) dans phif_e([phif_d(f), phif_d(f + 1)[)
   mutable IntTab phif_d, phif_e, phif_pe; //stencils
   mutable DoubleTab phif_w, phif_c, phif_pc; //ponderation amont/aval, ponderation, coefficients

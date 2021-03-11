@@ -98,7 +98,7 @@ void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 
   /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) de la zone sinon */
   Cerr << "Op_Diff_CoviMAC_Face::dimensionner() : ";
-  update_phif();
+  update_phif(!nu_constant_); //si nu variable, stencil complet
 
   for (f = 0; f < nf_tot; f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = phif_d(f, 0); j < phif_d(f + 1, 0); j++) //flux a travers la face f
         {

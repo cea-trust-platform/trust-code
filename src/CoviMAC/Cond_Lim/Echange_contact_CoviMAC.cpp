@@ -160,7 +160,7 @@ void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& wh, Doub
       }
 }
 
-void Echange_contact_CoviMAC::fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab& phif_pe, DoubleTab& phif_pc) const
+void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab& phif_pe, DoubleTab& phif_pc) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, fvf->zone_dis()), &o_zone = ref_cast(Zone_CoviMAC, o_fvf->zone_dis());
   int i_f, i, il, ic, j, k, l, f, o_f, fb, o_fb, e, o_e, e_s, f_s, f_sb, m, m_s, n, n_max, on_max, nw, infoo = 0;
@@ -251,7 +251,7 @@ void Echange_contact_CoviMAC::fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& p
 
           /* correction de interp (avec ecretage) */
           for (i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0, il = 0; k < n_tf; k++)
-                for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
+                for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += full_stencil || dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
         }
 
       /* stencil aux elements */
@@ -306,7 +306,7 @@ void Echange_contact_CoviMAC::fgrad(DoubleTab& phif_w, IntTab& phif_d, IntTab& p
       for (i = 0; i < (int) p_e.size(); i++)
         {
           for (nnz = 0, hdiag = 0, n = 0; n < N; n++) for (m = 0; m < M; m++) for (j = 0; j < 2; j++) if (h(0, n) / h_tot[0] * tphi(i, m, j) != 0) nnz++, hdiag += (n != m);
-          if (!nnz) continue; //on peut sauter cette dependance
+          if (!nnz && !full_stencil) continue; //on peut sauter cette dependance
           if (p_e[i].first == 0 && hdiag == 0) //coeffs diagonaux et probleme local -> phif_e / phif_c
             for (phif_e.append_line(p_e[i].second), phif_c.resize((k = phif_c.dimension(0)) + 1, N, 2), n = 0; n < N; n++) for (j = 0; j < 2; j++)
                 phif_c(k, n, j) = h(0, n) / h_tot[0] * tphi(i, n, j);

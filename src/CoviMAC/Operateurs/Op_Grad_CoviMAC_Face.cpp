@@ -85,30 +85,31 @@ void Op_Grad_CoviMAC_Face::completer()
   last_gradp_ = -DBL_MAX;
 }
 
-const DoubleTab& Op_Grad_CoviMAC_Face::mu_f() const
+const DoubleTab& Op_Grad_CoviMAC_Face::mu_f(int full_stencil) const
 {
   const Zone_CoviMAC& zone = ref_zone.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &rho = equation().milieu().masse_volumique().passe(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   int i, e, f, n, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), N = ch.valeurs().line_size(), m, M = press.line_size(), cR = rho.dimension_tot(0) == 1, D = dimension;
-  if (last_gradp_ >= equation().inconnue().valeur().recuperer_temps_passe() || (cR && last_gradp_ > -DBL_MAX)) return mu_f_; //rien a faire
+  double t_past = equation().inconnue().valeur().recuperer_temps_passe();
+  if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return mu_f_; //deja calcule a ce temps -> rien a faire
 
 
-  DoubleTrav nu(ne_tot, M), xh(nf_tot, M, D), wh(nf_tot, M), fgrad_w(nf_tot, M); /* diffusivite, donnees des points harmoniques, poids de l'amont */
-  /* diffusivite : 1 / rho_m en 6 equations, 1 / (alpha_k rho_k) en 7 equations */
-  if (M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho(!cR * e, m);
-  else if (M == 1) for (e = 0; e < ne_tot; nu(e, 0) = 1. / nu(e, 0), e++)
+  DoubleTrav nu(alp ? ne_tot : 0, M), xh(nf_tot, M, D), wh(nf_tot, M), fgrad_w(nf_tot, M); /* diffusivite, donnees des points harmoniques, poids de l'amont */
+  /* diffusivite : rien hors Pb_Mutliphase, 1 / rho_m en 6 equations, 1 / (alpha_k rho_k) en 7 equations */
+  if (alp && M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho(!cR * e, m);
+  else if (alp && M == 1) for (e = 0; e < ne_tot; nu(e, 0) = 1. / nu(e, 0), e++)
       for (n = 0; n < N; n++) nu(e, 0) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
   /* points harmoniques, puis gradient */
-  zone.harmonic_points(ref_zcl->les_conditions_limites(), 1, 0, &nu, NULL, xh, wh, NULL);
-  zone.fgrad(ref_zcl->les_conditions_limites(), ch.fcl(), &nu, NULL, xh, wh, NULL, NULL, 0, fgrad_w, fgrad_d, fgrad_e, fgrad_c, NULL, NULL);
+  zone.harmonic_points(ref_zcl->les_conditions_limites(), 1, 0, alp ? &nu : NULL, NULL, xh, wh, NULL);
+  zone.fgrad(ref_zcl->les_conditions_limites(), ch.fcl(), alp ? &nu : NULL, NULL, xh, wh, NULL, NULL, 0, full_stencil, fgrad_w, fgrad_d, fgrad_e, fgrad_c, NULL, NULL);
 
   /* mu_f_ : fgrad_w etendu a N composantes et separe en amont/aval */
   for (mu_f_.resize(nf_tot, N, 2), f = 0; f < nf_tot; f++) for (n = 0, m = 0; n < N; n++, m += (M > 1))
       for (i = 0; i < 2; i++) mu_f_(f, n, i) = i ? 1 - fgrad_w(f, m) : fgrad_w(f, m);
 
-  last_gradp_ = equation().inconnue().valeur().recuperer_temps_passe();
+  last_gradp_ = t_past;
 
   return mu_f_;
 }
@@ -122,7 +123,7 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
   int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size(),
                       m, M = ref_cast(Navier_Stokes_std, equation()).pression().valeurs().line_size();
-  zone.init_ve(), mu_f(); //provoque le calcul du gradient
+  zone.init_ve(), mu_f(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
   IntTrav sten_p(0, 2), sten_v(0, 2); //stencils (NS, pression), (NS, vitesse)
   sten_p.set_smart_resize(1), sten_v.set_smart_resize(1);
