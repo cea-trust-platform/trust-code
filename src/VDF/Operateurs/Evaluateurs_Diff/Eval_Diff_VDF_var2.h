@@ -77,7 +77,7 @@ public:
     return 0.25*(dv_diffusivite(i)+dv_diffusivite(j)+dv_diffusivite(k)+dv_diffusivite(l));
   }
 
-  inline double nu_t_impl(int i, int j) const
+  inline double nu_t_impl(int i) const
   {
     return 0.;
   }

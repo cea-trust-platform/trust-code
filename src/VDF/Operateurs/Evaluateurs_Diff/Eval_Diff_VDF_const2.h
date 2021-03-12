@@ -95,7 +95,7 @@ public:
     return nu_1_impl_face(i,j);
   }
 
-  inline double nu_t_impl(int i, int j) const
+  inline double nu_t_impl(int i) const
   {
     return 0.;
   }

@@ -86,7 +86,7 @@ public:
     return Eval_Diff_VDF_var2::nu_1_impl_face(i,j);
   }
 
-  inline double nu_t_impl(int i, int j) const
+  inline double nu_t_impl(int i) const
   {
     return dv_diffusivite_turbulente(i);
   }
