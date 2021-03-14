@@ -1,0 +1,108 @@
+# Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #
+# PARALLEL OK #
+
+dimension 3
+
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom cylindre.geom
+VerifierCoin dom { }
+Dilate dom 1000
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool metis { Nb_parts 2 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B ma_discretisation
+
+Scheme_euler_implicit mon_schema
+Read mon_schema
+{
+	nb_pas_dt_max 4
+	tinit 0
+	tmax 100.
+	dt_min 1.e-6
+	dt_max 100.
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-3
+	facsec 50
+	facsec_max 300
+	max_iter_implicite 50	
+	Solveur 
+           Implicite
+	  {
+		solveur amgx gmres { precond diag { } seuil 1.e-8 impr clean_matrix 0 }
+	   }
+}
+
+Fluide_Incompressible milieu
+Read milieu
+{
+	mu  Champ_Uniforme 1 0.04
+	rho Champ_Uniforme 1 2.
+}
+
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-6 quiet
+		}
+		convection { muscl }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+			}
+		boundary_conditions {
+			Cylindre paroi_fixe
+			Surfanz symetrie
+			Surfa  symetrie
+		      	Bas  symetrie
+			Haut symetrie
+			Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 1. 0. 0.
+		}
+
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+	       	  sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
+		  sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
+		}
+		
+		Format lml
+		fields dt_post 10
+		{ 
+		  vitesse elem
+		}
+			
+	}
+	
+}
+
+Solve pb
+End
