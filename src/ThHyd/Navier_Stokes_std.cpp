@@ -1489,8 +1489,8 @@ bool Navier_Stokes_std::initTimeStep(double dt)
       // Mise a jour du temps dans les champs de pression
       pression()->changer_temps_futur(tps,i);
       pression_pa()->changer_temps_futur(tps,i);
-      pression()->futur(i)=inconnue()->valeurs();
-      pression_pa()->futur(i)=inconnue()->valeurs();
+      pression()->futur(i)=pression()->valeurs();
+      pression_pa()->futur(i)=pression()->valeurs();
     }
 
   if (i_source_pdf_ != -1)

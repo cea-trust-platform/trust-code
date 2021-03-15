@@ -124,7 +124,7 @@ static inline int corriger_alpha(DoubleTab& alpha)
           alpha(i, n) = max(alpha(i, n), 0.);
           a_sum += alpha(i, n);
         }
-      for (n = 0; n < N; n++) alpha(i, n) /= a_sum;
+      // for (n = 0; n < N; n++) alpha(i, n) = a_sum ? alpha(i, n) / a_sum : 1. / N;
     }
   return ok;
 }

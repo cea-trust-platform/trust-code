@@ -262,7 +262,7 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
       {
         Champ_Don src;
         is >> src, verifie_ch_init_nb_comp(la_pression, src.nb_comp());
-        la_pression->affecter(src), press_lu = 1;
+        la_pression->affecter(src), la_pression_en_pa->affecter(src), press_lu = 1;
       }
     else Cerr << que_suis_je() << ": expected vitesse|velocity|pression|pressure instead of " << nom << finl, Process::exit();
 
