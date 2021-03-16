@@ -191,7 +191,7 @@ CEA Saclay \\ % Your institution for the title page
 \item Load TRUST environment:\\
 \vspace{0.2cm}
 \begin{itemize}
-\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.1):\\
+\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.2):\\
 %\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 %\vspace{0.5cm}
@@ -239,9 +239,9 @@ Replace "format lml" by "format lata" in the data file\\
 \begin{exampleblock}{Download Eclipse}
 \begin{itemize}
 \item Visit the Eclipse Foundation website: \url{http://www.eclipse.org/downloads/eclipse-packages/}
-\item Click on \textbf{Eclipse Neon (4.6)} on the menu \textbf{More downloads}.
+\item Click on the last version  \textbf{Eclipse 2020-12 (4.18)}.
 \item Select \textbf{Eclipse IDE for C/C++ Developers} $\rightarrow$ \textbf{Linux 64-bits}
-\item Download the \textbf{eclipse-cpp-neon-3-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
+\item Download the \textbf{eclipse-cpp-2020-12-R-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
 \item For OS older than CentOs7, Ubuntu16.04 and Fedora22, download \textbf{Eclipse Mars} version: \textbf{eclipse-cpp-mars-2-linux-gtk-x86\_64.tar.gz}
 \end{itemize}
 \end{exampleblock}
@@ -257,13 +257,14 @@ Replace "format lml" by "format lata" in the data file\\
 \begin{frame}
 \frametitle{Configure Eclipse}
 
-\begin{exampleblock}{For Ubuntu16.04, Fedora22, CentOs 7 and recents OS}
-Edit the \textit{eclipse.ini} file by deleting the last 2 lines (Xms and Xmx) and adding the following lines:\\
-\textbf{Xms512m} \\
-\textbf{Xmx2048m}
-\end{exampleblock}
+%\begin{exampleblock}{For Ubuntu16.04, Fedora22, CentOs 7 and recents OS}
+%Edit the \textit{eclipse.ini} an replace the line:\\
+%\textbf{Xms256m} \\
+%by \\
+%\textbf{Xms512m}
+%\end{exampleblock}
 
-\begin{exampleblock}{For older OS}
+\begin{exampleblock}{If you downloaded \textbf{Eclipse Mars} version:}
 Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following ones: \\
 \textbf{Xmn256m} \\
 \textbf{Xss2m}\\
@@ -315,8 +316,8 @@ Load TRUST environment and copy "upwind" test case as described on p.\ref{initTr
 
 \begin{exampleblock}{Create the project}
 \begin{itemize}
-\item File $\rightarrow$ New  $\rightarrow$  C++ Project \\
- $\Rightarrow$ Project name: TRUST-X.Y.Z (e.g.: TRUST-1.8.1) \\
+\item File $\rightarrow$ New $\rightarrow$ C/C++ Project $\rightarrow$ C++ Managed Build \\
+ $\Rightarrow$ Project name: TRUST-X.Y.Z (e.g.: TRUST-1.8.2) \\
  $\Rightarrow$ Project type: "Executable"  $\rightarrow$  "Empty Project" \\
  $\Rightarrow$ Toolchains: "Linux GCC" \\
  $\Rightarrow$ Finish
@@ -344,11 +345,11 @@ Load TRUST environment and copy "upwind" test case as described on p.\ref{initTr
 \begin{exampleblock}{Configure the project and launch a computation}
 \begin{itemize}
 \item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ Properties \\
-  $\Rightarrow$ Builders: uncheck "CDT Builder" $\rightarrow$ OK $\rightarrow$ OK 
+  $\Rightarrow$ Builders: uncheck "CDT Builder" $\rightarrow$ OK $\rightarrow$ apply and close
   \vspace{0.1cm}
 \item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..."\\
   \vspace{0.1cm}
-  $\Rightarrow$ Right click on "C/C++ Application" $\rightarrow$ New 
+  $\Rightarrow$ Right click on "C/C++ Application" $\rightarrow$ New configuration
   \vspace{0.1cm}
   \begin{itemize}
   \item In the "Main" tab (tell Eclipse which binary will be used): \\
@@ -638,7 +639,7 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
 
 \begin{exampleblock}{Create the project}
 \begin{itemize}
-\item File $\rightarrow$ New $\rightarrow$ "Makefile Project with Existing Code" \\
+\item File $\rightarrow$ New $\rightarrow$ Project $\rightarrow$ C/C++ $\rightarrow$ "Makefile Project with Existing Code" \\
   $\Rightarrow$ Project name: MY\_BALTIK \\
   $\Rightarrow$ Existing Code Location: copy string matching \texttt{\$project\_directory/src} \\
   $\Rightarrow$ Toolchain for Indexer Settings: "Linux GCC" \\
@@ -661,7 +662,7 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
   \item Builder Settings: Build directory: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../} or copy the string matching \texttt{\$project\_directory/} \\
   \item Behavior: check "Build (Incremental build)": debug optim (instead of all) 
   \end{itemize}
-  $\Rightarrow$ Project References: check TRUST-X.Y.Z $\rightarrow$ OK
+  $\Rightarrow$ Project References: check TRUST-X.Y.Z $\rightarrow$ Apply and Close
 \end{itemize}
 \end{exampleblock}
   
@@ -679,7 +680,7 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
 \begin{exampleblock}{Launch a computation}
 \begin{itemize}
 \item From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..." \\
-  $\Rightarrow$ C/C++ Application $\rightarrow$ New 
+  $\Rightarrow$ C/C++ Application $\rightarrow$ New configuration
   \begin{itemize}
   \item In the "Main" tab:\\
   $\Rightarrow$ Project: MY\_BALTIK \\
