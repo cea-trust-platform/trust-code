@@ -11,6 +11,7 @@
 #include <Schema_Backward_Differentiation_order_3.h>
 #include <Simple.h>
 #include <Simpler.h>
+#include <Solveur_U_P.h>
 void instancie_src_ThHyd_Schemas_Temps() {
 Cerr << "src_ThHyd_Schemas_Temps" << finl;
 Multi_Sch_ThHyd inst1;verifie_pere(inst1);
@@ -22,4 +23,5 @@ Schema_Backward_Differentiation_order_2 inst6;verifie_pere(inst6);
 Schema_Backward_Differentiation_order_3 inst7;verifie_pere(inst7);
 Simple inst8;verifie_pere(inst8);
 Simpler inst9;verifie_pere(inst9);
+Solveur_U_P inst10;verifie_pere(inst10);
 }

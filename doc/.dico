@@ -912,7 +912,6 @@
  Solveur_Masse Solveur_Masse Solveur_Masse.h
  Solveur_Masse_base Solveur_Masse_base Solveur_Masse_base.h
  Solveur_non_lineaire Solveur_non_lineaire Solveur_non_lineaire.h
- Solveur_UP Solveur_UP Solveur_UP.h
  Solveur_U_P Solveur_U_P Solveur_U_P.h
  Solv_AMGX Solv_AMGX Solv_AMGX.h
  Solv_Cholesky Solv_Cholesky Solv_Cholesky.h

@@ -786,8 +786,10 @@ void Zone_CoviMAC::harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, 
             if (is_p ? (neu || neu_h) : (dir || dir_h || echg)) for (n = 0; n < N; n++) //Dirichlet / Echange_impose_base : pt harmonique avec def(1) -> 0
                 {
                   double r = (invh ? (*invh)(fb, n) : 0) + (echg ? 1. / ref_cast(Echange_impose_base, cl).h_imp(j, n) : 0); //resistance thermique totale
+                  double scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (fs(f) * (nu_grad ? lambda(0, n) : 1));
                   for (wh(f, n) = 1 - 1. / (1 + r * lambda(0, n) / def(0)), d = 0; d < D; d++) //poids de l'amont
-                    xh(f, n, d) = (def(0) * xef(1, d) + r * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + r * lambda(0, n)); //position
+                    // xh(f, n, d) = (def(0) * xef(1, d) + r * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + r * lambda(0, n)); //position
+                    xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu, e, n, &nf(f, 0), i3[d]) : nf(f, d)) / fs(f);
                 }
             else if (is_p ? (dir || dir_h || sym) : (neu || neu_h || sym)) for (n = 0; n < N; n++) //Neumann : projection sur la face selon nu.nf
                 {

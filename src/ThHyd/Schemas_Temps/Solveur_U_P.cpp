@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Solveur_U_P.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Solveur_U_P
+// Directory:   $TRUST_ROOT/src/ThHyd/Schemas_Temps
 // Version:     /main/48
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -56,9 +56,6 @@ Entree& Solveur_U_P::readOn(Entree& is )
 {
   return Simple::readOn(is);
 }
-
-
-
 
 // ToDo: methode identique dans Solveur_UP.cpp
 inline void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_base& la_zone,
@@ -279,9 +276,6 @@ inline void modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(const Zone_dis_ba
     }
 }
 
-
-
-
 //Entree : Uk-1 ; Pk-1
 //Sortie Uk ; Pk
 //k designe une iteration
@@ -300,23 +294,15 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
 
-  DoubleTab_parts ppart(pression); //pression contient (p, v) -> on doit ignorer la 2e partie...
+  DoubleTab_parts ppart(pression); //dans PolyMAC, pression contient (p, v) -> on doit ignorer la 2e partie...
   MD_Vector md_UP;
   {
     MD_Vector_composite mds;
-    mds.add_part(current.get_md_vector());
-    mds.add_part(ppart[0].get_md_vector());
+    mds.add_part(current.get_md_vector(), current.line_size());
+    mds.add_part(ppart[0].get_md_vector(), ppart[0].line_size());
     md_UP.copy(mds);
   }
-  /*
-    MD_Vector md_PU;
-    {
-      MD_Vector_composite mds;
-      mds.add_part(pression.get_md_vector());
-      mds.add_part(current.get_md_vector());
-      md_PU.copy(mds);
-    }
-  */
+
   DoubleTab Inconnues,residu;
   MD_Vector_tools::creer_tableau_distribue(md_UP, Inconnues);
 
@@ -329,25 +315,42 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   Inconnues_parts[0]=current;
   Inconnues_parts[1]=ppart[0];
 
-  //DoubleTrav gradP(current);
-  //DoubleTrav correction_en_pression(pression);
-  //DoubleTrav correction_en_vitesse(current);
-  //DoubleTrav resu(current);
-
-  Operateur_Grad& gradient = eqnNS.operateur_gradient();
-  Operateur_Div& divergence = eqnNS.operateur_divergence();
   Matrice_Bloc Matrice_global(2,2) ; //  Div 0 puis 1/dt+A   +grapdP
 
+  /* ligne Navier-Stokes : blocs N-S, bloc gradient */
+  Matrice_global.get_bloc(0,0).typer("Matrice_Morse");
+  Matrice_Morse& matrice=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,0).valeur());
+  Matrice_global.get_bloc(0,1).typer("Matrice_Morse");
+  Matrice_Morse& mat_grad=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,1).valeur());
+
+  if (eqnNS.has_interface_blocs()) /* si interface_blocs : on peut remplir les deux d'un coup */
+    {
+      eqnNS.dimensionner_blocs({{ "vitesse", &matrice }, { "pression", &mat_grad }});
+      eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }, { "pression", &mat_grad }}, residu_parts[0]);
+    }
+  else /* sinon : moins elegant */
+    {
+      Operateur_Grad& gradient = eqnNS.operateur_gradient();
+
+      eqnNS.dimensionner_matrice(matrice);
+      eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
+      gradient.valeur().dimensionner( mat_grad);
+      gradient.valeur().contribuer_a_avec(pression, mat_grad);
+      mat_grad.get_set_coeff()*=-1;
+      /* pour repasser en increments */
+      residu_parts[0]*=-1;
+      matrice.ajouter_multvect(current, residu_parts[0]);
+      gradient.valeur().ajouter(pression,residu_parts[0]);
+      residu_parts[0]*=-1;
+    }
+
+  /* ligne de masse : (div, 0) */
+  Operateur_Div& divergence = eqnNS.operateur_divergence();
   Matrice_global.get_bloc(1,0).typer("Matrice_Morse");
   Matrice_Morse& mat_div=ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,0).valeur());
   divergence.valeur().dimensionner(mat_div);
   divergence.valeur().contribuer_a_avec( current,mat_div);
-
-  Matrice_global.get_bloc(0,1).typer("Matrice_Morse");
-  Matrice_Morse& mat_grad=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,1).valeur());
-  gradient.valeur().dimensionner( mat_grad);
-  gradient.valeur().contribuer_a_avec(pression, mat_grad);
-  mat_grad.get_set_coeff()*=-1;
+  divergence.calculer(current, residu_parts[1]);
 
   Matrice_global.get_bloc(1,1).typer("Matrice_Diagonale");
   Matrice_Diagonale& mat_diag = ref_cast(Matrice_Diagonale,Matrice_global.get_bloc(1,1).valeur());
@@ -359,37 +362,21 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   if (!has_P_ref && !Process::me()) mat_diag.coeff(0, 0) = 1; //revient a imposer P(0) = 0
 
 
-  Matrice_global.get_bloc(0,0).typer("Matrice_Morse");
-  Matrice_Morse& matrice=ref_cast(Matrice_Morse, Matrice_global.get_bloc(0,0).valeur());
-  eqnNS.dimensionner_matrice(matrice);
-  eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
-
-  //on doit ajouter des lignes vides a grad et des colonnes vides a div
+  //en PolyMAC, on doit ajouter des lignes vides a grad et des colonnes vides a div
   int n = matrice.get_tab1().size(), i;
   for (i = mat_grad.get_tab1().size(), mat_grad.get_set_tab1().resize(n); i < n; i++)
     mat_grad.get_set_tab1()(i) = mat_grad.get_tab1()(i - 1);
   mat_div.set_nb_columns(n - 1);
 
-  residu_parts[0]*=-1;
-  matrice.ajouter_multvect(current, residu_parts[0]);
-  gradient.valeur().ajouter(pression,residu_parts[0]);
-  residu_parts[0]*=-1;
-  divergence.calculer(current, residu_parts[1]);
-  modifier_pour_Cl_je_ne_sais_pas_ou_factoriser_cela(eqnNS.zone_dis().valeur(),
-                                                     eqnNS.zone_Cl_dis(),
-                                                     matrice, current, residu_parts[0]) ;
-  /* int nb_f=current.dimension(0);
-  int nnz=matrice.tab1_[nb_f]-1;
-  matrice.dimensionner(nb_f,matrice.nb_colonnes(),nnz);
-  */
   le_solveur_.valeur().reinit();
   le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
 
   //Calcul de Uk = U*_k + U'k
-  ppart[0] += Inconnues_parts[1];
   current  += Inconnues_parts[0];
+  ppart[0] += Inconnues_parts[1];
   //current.echange_espace_virtuel();
   Debog::verifier("Solveur_U_P::iterer_NS current",current);
+  eqn.solv_masse().corriger_solution(current, current);    //CoviMAC : mise en coherence de ve avec vf
   eqnNS.assembleur_pression().modifier_solution(pression);
 
   if (1)
@@ -400,4 +387,3 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
     }
 
 }
-

@@ -105,8 +105,6 @@ void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const
 
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
-  if (matrices.size() > 1 && !semi_impl.count("alpha_rho")) //implicite complet -> non code
-    Cerr << que_suis_je() << " : non-velocity derivatives not coded yet!" << finl, Process::exit();
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
   int i, j, k, e, eb, f, fb, fc, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
