@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.3_beta : Changes since version 1.8.2 :
 -------------------------------------------------------------
+22/03/21 (TRUST)  Add ld_flags tag into Baltik project.cfg configuration file to add linker flags to TRUST ones (eg: -llib) 
 -------------------------------------------------------------
 Developer notes version 1.8.2 : Changes since version 1.8.1 :
 -------------------------------------------------------------

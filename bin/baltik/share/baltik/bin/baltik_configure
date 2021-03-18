@@ -290,6 +290,20 @@ kernel_name=`extract_field "$project_description" kernel`
 cpp_flags_name=`extract_field "$project_description" cpp_flags`
 [ "$cpp_flags_name" != ""  ] && cmake_flags=$cmake_flags"  SET(cpp_flags $cpp_flags_name) %%add_definitions(\${cpp_flags}) %% message(\"\${cpp_flags} added to CPP_FLAGS \")"
 
+# extraction des ld_flags
+ld_flags_name=`extract_field "$project_description" ld_flags`
+if [ "$ld_flags_name" != ""  ]
+then
+   for lib0 in $ld_flags_name
+   do
+      lib=`echo $lib0| sed "s?-l??"`
+      libs="lib${lib}.a" # Force l'utilisation de librairie statique pour les prerequis
+      cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} )"
+      cmake_flags="$cmake_flags %% if (${lib} STREQUAL ${lib}-NOTFOUND)%% find_library( ${lib} NAMES ${libs} ${lib} ) %% endif()"
+      cmake_flags="$cmake_flags  %% set(libdeps  \${libdeps} \${${lib}} )"
+   done
+fi
+
 if [ "$1" != "-noprerequis" ]
 then  
 total_path=""
@@ -316,6 +330,7 @@ do
 	    echo "Error in definiton of prerequisite$number"
 	    exit 1
     fi
+
     libraires_flag=`extract_field "$prerequis_description" librairies_flag`
     configure_flag=`extract_field "$prerequis_description" configure_flag`
     export configure_flag
@@ -324,10 +339,10 @@ do
     export includes_add
     export librairies_add
     cmake_flags="$cmake_flags %% include_directories(${project_directory}/local/${prerequis_name}/include) "
-    for lib0 in  $libraires_flag
+    for lib0 in $libraires_flag
     do
        lib=`echo $lib0| sed "s?-l??"`
-       libs="lib${lib}.a"
+       libs="lib${lib}.a" # Force l'utilisation de librairie statique pour les prerequis
        [ "$lib" = "dl" ] && libs=""
 
        cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} PATHS ${project_directory}/local/${prerequis_name}/lib NO_DEFAULT_PATH)"
