@@ -50,7 +50,7 @@ new=1
 # Ajouter les OS uniquement si l'ancienne procedure avec VisIt 2.12.1 ne marche pas:
 [ "`grep 'Debian GNU/Linux [7-8]'  				/etc/issue.net 2>/dev/null`" != "" ]		&& new=0
 [ "`grep 'Ubuntu 1[4-7]' 					/etc/issue 2>/dev/null`" != "" ]		&& new=0
-[ "`grep 'Fedora release 2[0-6]' 				/etc/fedora-release 2>/dev/null`" != "" ]	&& new=0
+[ "`grep 'Fedora release 2[0-5]' 				/etc/fedora-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'CentOS Linux release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'CentOS release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'Red Hat Enterprise Linux Server release [6-7]' 	/etc/redhat-release 2>/dev/null`" != "" ]	&& new=0
