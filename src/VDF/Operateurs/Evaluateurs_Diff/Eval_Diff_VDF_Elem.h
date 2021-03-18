@@ -86,50 +86,17 @@ public:
 
   // TODO : all these should have the same name with different attributes
   // so that they become a function template
-  inline int calculer_flux_faces_echange_externe_impose() const
-  {
-    return 1;
-  }
-  inline int calculer_flux_faces_echange_global_impose() const
-  {
-    return 1;
-  }
-  inline int calculer_flux_faces_entree_fluide() const
-  {
-    return 1;
-  }
-  inline int calculer_flux_faces_paroi() const
-  {
-    return 1;
-  }
-  inline int calculer_flux_faces_paroi_adiabatique() const
-  {
-    return 0;
-  }
-  inline int calculer_flux_faces_paroi_defilante() const
-  {
-    return 0;
-  }
-  inline int calculer_flux_faces_paroi_fixe() const
-  {
-    return 1;
-  }
-  inline int calculer_flux_faces_sortie_libre() const
-  {
-    return 0;
-  }
-  inline int calculer_flux_faces_symetrie() const
-  {
-    return 0;
-  }
-  inline int calculer_flux_faces_periodique() const
-  {
-    return 1;
-  }
-  inline int calculer_flux_faces_NSCBC() const
-  {
-    return 0;
-  }
+  inline int calculer_flux_faces_echange_externe_impose() const { return 1; }
+  inline int calculer_flux_faces_echange_global_impose() const { return 1; }
+  inline int calculer_flux_faces_entree_fluide() const { return 1; }
+  inline int calculer_flux_faces_paroi() const { return 1; }
+  inline int calculer_flux_faces_paroi_adiabatique() const { return 0; }
+  inline int calculer_flux_faces_paroi_defilante() const { return 0; }
+  inline int calculer_flux_faces_paroi_fixe() const { return 1; }
+  inline int calculer_flux_faces_sortie_libre() const { return 0; }
+  inline int calculer_flux_faces_symetrie() const { return 0; }
+  inline int calculer_flux_faces_periodique() const { return 1; }
+  inline int calculer_flux_faces_NSCBC() const { return 0; }
 
   //************************
   // CAS SCALAIRE
@@ -150,39 +117,30 @@ public:
 
   // Generic return
   template<typename BC>
-  inline double flux_face(const DoubleTab&, int , const BC&, int ) const
-  {
-    return 0;
-  }
+  inline double flux_face(const DoubleTab&, int , const BC&, int ) const { return 0; }
+
   // To overload
   inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Neumann_paroi&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
   inline double flux_face(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Echange_global_impose&, int ) const;
-
   inline double flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const;
-
   inline double flux_faces_interne(const DoubleTab&, int ) const;
-
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs scalaires.
 
   // Generic return
   template<typename BC>
-  inline void coeffs_face(int,int, const BC&, double& aii, double& ajj ) const
-  {
-    /* Do nothing */
-  }
+  inline void coeffs_face(int,int, const BC&, double& aii, double& ajj ) const { /* Do nothing */ }
+
   // To overload
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Neumann_paroi&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Periodique&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Echange_global_impose&, double& aii, double& ajj ) const;
-
   inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, double& aii, double& ajj ) const;
-
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
@@ -190,17 +148,13 @@ public:
 
   // Generic return
   template<typename BC>
-  inline double secmem_face(int, const BC&, int ) const
-  {
-    return 0;
-  }
+  inline double secmem_face(int, const BC&, int ) const { return 0; }
+
   // To overload
   inline double secmem_face(int, const Dirichlet_entree_fluide&, int ) const;
   inline double secmem_face(int, const Neumann_paroi&, int ) const;
   inline double secmem_face(int, const Echange_global_impose&, int ) const;
-
   inline double secmem_face(int, int, int, const Echange_externe_impose&, int ) const;
-
   inline double secmem_faces_interne(int ) const;
 
   //************************
@@ -222,11 +176,9 @@ public:
 
   // Generic return
   template <typename BC>
-  inline void flux_face(const DoubleTab&,int , const BC&,int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
+  inline void flux_face(const DoubleTab&,int , const BC&,int, DoubleVect& flux) const { /* Do nothing */ }
   // To overload
+
   inline void flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&,   int, DoubleVect& flux) const;
   inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int, DoubleVect& flux) const;
   inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&,      int, DoubleVect& flux) const;
@@ -234,30 +186,23 @@ public:
   inline void flux_face(const DoubleTab&, int , const Neumann_paroi&,             int, DoubleVect& flux) const;
   inline void flux_face(const DoubleTab&, int , const Neumann_sortie_libre&,  int, DoubleVect& flux) const;
   inline void flux_face(const DoubleTab&, int , const Periodique&,            int, DoubleVect& flux) const;
-
   inline void flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&,   int, DoubleVect& flux) const;
-
-  inline void flux_faces_interne(const DoubleTab&, int ,
-                                 DoubleVect& flux) const;
+  inline void flux_faces_interne(const DoubleTab&, int , DoubleVect& flux) const;
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // vectorielles.
 
   // Generic return
   template <typename BC>
-  inline void coeffs_face(int, int,const BC&, DoubleVect& aii, DoubleVect& ajj ) const
-  {
-    /* Do nothing */
-  }
+  inline void coeffs_face(int, int,const BC&, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
+
   // To overload
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Dirichlet_paroi_defilante&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int, int,const Dirichlet_paroi_fixe&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Echange_global_impose&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Periodique&, DoubleVect& aii, DoubleVect& ajj ) const;
-
   inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, DoubleVect& aii, DoubleVect& ajj ) const;
-
   inline void coeffs_faces_interne(int, DoubleVect& aii, DoubleVect& ajj ) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
@@ -265,19 +210,15 @@ public:
 
   // Generic return
   template <typename BC>
-  inline void secmem_face(int, const BC&, int, DoubleVect& ) const
-  {
-    /* Do nothing */
-  }
+  inline void secmem_face(int, const BC&, int, DoubleVect& ) const { /* Do nothing */ }
+
   // To overload
   inline void secmem_face(int, const Dirichlet_entree_fluide&, int, DoubleVect& ) const;
   inline void secmem_face(int, const Dirichlet_paroi_defilante&, int, DoubleVect& ) const;
   inline void secmem_face(int, const Dirichlet_paroi_fixe&, int, DoubleVect& ) const;
   inline void secmem_face(int, const Echange_global_impose&, int, DoubleVect& ) const;
   inline void secmem_face(int, const Neumann_paroi&, int, DoubleVect& ) const;
-
   inline void secmem_face(int, int, int, const Echange_externe_impose&, int, DoubleVect& ) const;
-
   inline void secmem_faces_interne(int, DoubleVect& ) const;
 };
 

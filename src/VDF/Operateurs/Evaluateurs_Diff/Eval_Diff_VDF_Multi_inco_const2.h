@@ -46,43 +46,26 @@ class Champ_base;
 class Eval_Diff_VDF_Multi_inco_const2 : public Eval_Diff_VDF2
 {
 public:
-
-  inline void associer(const Champ_base& );
-  inline const Champ_base& get_diffusivite() const;
-
   virtual inline void mettre_a_jour() {}
+  inline const Champ_base& get_diffusivite() const { return diffusivite_; }
+
+  inline void associer(const Champ_base& diffu)
+  {
+    diffusivite_ = ref_cast(Champ_Uniforme, diffu);
+    dv_diffusivite.ref(diffu.valeurs());
+  }
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const
-  {
-    return dv_diffusivite(compo);
-  }
-
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return dv_diffusivite(compo);
-  }
-
+  inline double nu_1_impl(int i, int compo) const { return dv_diffusivite(compo); }
+  inline double nu_2_impl(int i, int compo) const { return dv_diffusivite(compo); }
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
     return dv_diffusivite(compo)/(d0+d1);
   }
 
 protected:
-
   REF(Champ_Uniforme) diffusivite_;
   DoubleVect dv_diffusivite;  // nb of components = nb of multi-inco
-
 };
-
-inline void Eval_Diff_VDF_Multi_inco_const2::associer(const Champ_base& diffu)
-{
-  diffusivite_ = ref_cast(Champ_Uniforme, diffu);
-  dv_diffusivite.ref(diffu.valeurs());
-}
-inline const Champ_base& Eval_Diff_VDF_Multi_inco_const2::get_diffusivite() const
-{
-  return diffusivite_;
-}
 
 #endif /* Eval_Diff_VDF_Multi_inco_const2_included */

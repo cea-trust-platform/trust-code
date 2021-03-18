@@ -46,50 +46,27 @@ class Eval_Diff_VDF_Multi_inco_var2 : public Eval_Diff_VDF2
 {
 
 public:
+  inline void mettre_a_jour() { }
+  inline const Champ_base& get_diffusivite() const { return diffusivite_ ; }
 
-  inline void associer(const Champ_base& );
-  inline const Champ_base& get_diffusivite() const;
-  inline void mettre_a_jour()  { }
+  inline void associer(const Champ_base& diffu)
+  {
+    diffusivite_ = ref_cast(Champ_base,diffu);
+    dt_diffusivite.ref(diffu.valeurs());
+  }
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const
-  {
-    return dt_diffusivite(i, compo);
-  }
-
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return dt_diffusivite(i, compo);
-  }
-
+  inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i, compo); }
+  inline double nu_2_impl(int i, int compo) const { return dt_diffusivite(i, compo); }
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
     return 1./(d0/dt_diffusivite(i,compo) + d1/dt_diffusivite(j,compo));
   }
 
 protected:
-
   REF(Champ_base) diffusivite_;
   DoubleTab dt_diffusivite;
   inline double dist_face(int, int, int) const;
-
 };
-
-//
-//  Fonctions inline de la classe Eval_Diff_VDF_Multi_inco_var2
-//
-
-// Description:
-// associe le champ de diffusivite
-inline void Eval_Diff_VDF_Multi_inco_var2::associer(const Champ_base& diffu)
-{
-  diffusivite_ = ref_cast(Champ_base,diffu);
-  dt_diffusivite.ref(diffu.valeurs());
-}
-
-inline const Champ_base& Eval_Diff_VDF_Multi_inco_var2::get_diffusivite() const
-{
-  return diffusivite_;
-}
 
 #endif /* Eval_Diff_VDF_Multi_inco_var2_included */

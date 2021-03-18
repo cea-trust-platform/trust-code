@@ -42,8 +42,17 @@
 class Eval_Diff_VDF_var2 : public Eval_Diff_VDF2
 {
 public:
-  inline void associer(const Champ_base& );
-  inline void mettre_a_jour( );
+  inline void associer(const Champ_base& diffu)
+  {
+    diffusivite_ = diffu;
+    dv_diffusivite.ref(diffu.valeurs());
+  }
+
+  inline void mettre_a_jour( )
+  {
+    (diffusivite_->valeurs().echange_espace_virtuel());
+    dv_diffusivite.ref(diffusivite_->valeurs());
+  }
 
   inline const Champ_base& get_diffusivite() const
   {
@@ -52,15 +61,13 @@ public:
   }
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const
-  {
-    return dv_diffusivite(i);
-  }
-
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return dv_diffusivite(i);
-  }
+  inline double nu_1_impl(int i, int compo) const { return dv_diffusivite(i); }
+  inline double nu_2_impl(int i, int compo) const { return dv_diffusivite(i); }
+  inline double nu_t_impl(int i) const { return 0.; }
+  inline double nu_lam_impl_face(int i, int j, int k, int l) const { return nu_2_impl_face(i,j,k,l); }
+  inline double nu_lam_impl_face2(int i, int j) const { return nu_1_impl_face(i,j); }
+  inline double tau_tan_impl(int i, int j) const { return 0.; }
+  inline bool uses_wall() const { return false; }
 
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
@@ -77,54 +84,9 @@ public:
     return 0.25*(dv_diffusivite(i)+dv_diffusivite(j)+dv_diffusivite(k)+dv_diffusivite(l));
   }
 
-  inline double nu_t_impl(int i) const
-  {
-    return 0.;
-  }
-
-  inline double nu_lam_impl_face(int i, int j, int k, int l) const
-  {
-    return nu_2_impl_face(i,j,k,l);
-  }
-
-  inline double nu_lam_impl_face2(int i, int j) const
-  {
-    return nu_1_impl_face(i,j);
-  }
-
-  inline double tau_tan_impl(int i, int j) const
-  {
-    return 0.;
-  }
-
-  inline bool uses_wall() const
-  {
-    return false;
-  }
-
 protected:
   REF(Champ_base) diffusivite_;
   DoubleVect dv_diffusivite;
 };
-
-//
-//  Fonctions inline de la classe Eval_Diff_VDF_var
-//
-
-// Description:
-// associe le champ de diffusivite
-void Eval_Diff_VDF_var2::associer(const Champ_base& diffu)
-{
-  diffusivite_ = diffu;
-  dv_diffusivite.ref(diffu.valeurs());
-}
-
-// Description:
-// mise a jour de DoubleVect diffusivite
-inline void Eval_Diff_VDF_var2::mettre_a_jour( )
-{
-  (diffusivite_->valeurs().echange_espace_virtuel());
-  dv_diffusivite.ref(diffusivite_->valeurs());
-}
 
 #endif /* Eval_Diff_VDF_var2_included */

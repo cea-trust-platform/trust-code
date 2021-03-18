@@ -59,283 +59,106 @@ public:
   inline double tau_tan(int,int) const;
   inline bool uses_wall_law() const;
 
-  inline int calculer_fa7_sortie_libre() const
-  {
-    return DERIVED_T::IS_TURB ? 1 : 0;
-  }
-  inline int calculer_arete_fluide() const
-  {
-    return 1;
-  }
-  inline int calculer_arete_paroi() const
-  {
-    return 1;
-  }
-  inline int calculer_arete_paroi_fluide() const
-  {
-    return DERIVED_T::IS_TURB ? 0 : 1;
-  }
-  inline int calculer_arete_symetrie() const
-  {
-    return 0;
-  }
-  inline int calculer_arete_interne() const
-  {
-    return 1;
-  }
-  inline int calculer_arete_mixte() const
-  {
-    return 1;
-  }
-  inline int calculer_arete_periodicite() const
-  {
-    return 1;
-  }
-  inline int calculer_arete_symetrie_paroi() const
-  {
-    return 1;
-  }
-  inline int calculer_arete_symetrie_fluide() const
-  {
-    return 1;
-  }
+  inline int calculer_fa7_sortie_libre() const { return DERIVED_T::IS_TURB ? 1 : 0; }
+  inline int calculer_arete_fluide() const { return 1; }
+  inline int calculer_arete_paroi() const { return 1; }
+  inline int calculer_arete_paroi_fluide() const { return DERIVED_T::IS_TURB ? 0 : 1; }
+  inline int calculer_arete_symetrie() const { return 0; }
+  inline int calculer_arete_interne() const { return 1; }
+  inline int calculer_arete_mixte() const { return 1; }
+  inline int calculer_arete_periodicite() const { return 1; }
+  inline int calculer_arete_symetrie_paroi() const { return 1; }
+  inline int calculer_arete_symetrie_fluide() const { return 1; }
 
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
   // Elles renvoient le flux calcule
 
-  inline double flux_fa7_sortie_libre(const DoubleTab&, int ,
-                                      const Neumann_sortie_libre&, int ) const
-  {
-    return 0;
-  }
-
+  inline double flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const { return 0; }
+  inline double flux_arete_symetrie(const DoubleTab&, int, int, int, int) const { return 0; }
   inline double flux_fa7_elem(const DoubleTab&, int, int, int) const ;
   inline double flux_arete_paroi(const DoubleTab&, int, int, int, int) const ;
-  inline double flux_arete_symetrie(const DoubleTab&, int, int, int, int) const
-  {
-    return 0;
-  }
   inline double flux_arete_interne(const DoubleTab&, int, int, int, int) const ;
   inline double flux_arete_mixte(const DoubleTab&, int, int, int, int) const ;
-  inline void flux_arete_fluide(const DoubleTab&, int, int, int, int,
-                                double&, double&) const;
-  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int,
-                                      double&, double&) const;
+  inline void flux_arete_fluide(const DoubleTab&, int, int, int, int, double&, double&) const;
+  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int, double&, double&) const;
   inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const ;
 
-
   // Fonctions qui servent a calculer le flux de grandeurs vectorielles
   // Elles sont de type void et remplissent le tableau flux
 
-  inline void flux_fa7_elem(const DoubleTab&, int, int, int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&,
-                                    int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_interne(const DoubleTab&, int, int, int,
-                                 int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_mixte(const DoubleTab&, int, int, int,
-                               int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_symetrie(const DoubleTab&, int, int, int,
-                                  int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_paroi(const DoubleTab&, int, int, int,
-                               int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_fluide(const DoubleTab&, int, int, int,
-                                int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int,
-                                      int, int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_periodicite(const DoubleTab&, int, int,
-                                     int, int, DoubleVect&, DoubleVect& ) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int,
-                                         int, int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void flux_arete_symetrie_paroi(const DoubleTab&, int, int, int,
-                                        int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
+  inline void flux_fa7_elem(const DoubleTab&, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void flux_arete_interne(const DoubleTab&, int, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void flux_arete_mixte(const DoubleTab&, int, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void flux_arete_symetrie(const DoubleTab&, int, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void flux_arete_paroi(const DoubleTab&, int, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void flux_arete_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const { /* Do nothing */ }
+  inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int, DoubleVect& flux) const  { /* Do nothing */ }
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
 
   inline void coeffs_fa7_elem(int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&, double& aii, double& ajj ) const
-  {
-    aii = ajj = 0;
-  }
+  inline void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&, double& aii, double& ajj ) const { aii = ajj = 0; }
   inline void coeffs_arete_interne(int, int, int, int, double& aii, double& ajj) const;
   inline void coeffs_arete_mixte(int, int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_arete_symetrie(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const
-  {
-    /* Do nothing */
-  }
+  inline void coeffs_arete_symetrie(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const { /* Do nothing */ }
   inline void coeffs_arete_paroi(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_paroi_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_periodicite(int, int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_arete_symetrie_fluide(int, int, int, int,
-                                           double& aii1_2, double& aii3_4, double& ajj1_2) const;
-  inline void coeffs_arete_symetrie_paroi(int, int, int, int, double& aii1_2,
-                                          double& aii3_4, double& ajj1_2) const;
+  inline void coeffs_arete_symetrie_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
+  inline void coeffs_arete_symetrie_paroi(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas scalaire.
 
-  inline double secmem_fa7_elem( int, int, int) const
-  {
-    return 0;
-  }
-  inline double secmem_fa7_sortie_libre(int, const Neumann_sortie_libre&, int ) const
-  {
-    return 0;
-  }
-  inline double secmem_arete_interne(int, int, int, int) const
-  {
-    return 0;
-  }
-  inline double secmem_arete_mixte(int, int, int, int) const
-  {
-    return 0;
-  }
-  inline double secmem_arete_symetrie(int, int, int, int) const
-  {
-    return 0;
-  }
+  inline double secmem_fa7_elem( int, int, int) const { return 0; }
+  inline double secmem_fa7_sortie_libre(int, const Neumann_sortie_libre&, int ) const { return 0; }
+  inline double secmem_arete_interne(int, int, int, int) const { return 0; }
+  inline double secmem_arete_mixte(int, int, int, int) const { return 0; }
+  inline double secmem_arete_symetrie(int, int, int, int) const { return 0; }
   inline double secmem_arete_paroi(int, int, int, int ) const;
+  inline void secmem_arete_periodicite(int, int, int, int, double&, double&) const { /* Do nothing */ }
   inline void secmem_arete_fluide(int, int, int, int, double&, double&) const;
   inline void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const;
-  inline void secmem_arete_periodicite(int, int, int, int, double&, double&) const
-  {
-    /* Do nothing */
-  }
   inline void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const;
   inline double secmem_arete_symetrie_paroi(int, int, int, int ) const;
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // vectorielles.
 
-  inline void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_interne(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_mixte(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_symetrie(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_paroi_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_periodicite(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_symetrie_fluide(int, int, int, int,
-                                           DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    /* Do nothing */
-  }
-  inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    /* Do nothing */
-  }
+  inline void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const { /* Do nothing */ }
+  inline void coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj) const { /* Do nothing */ }
+  inline void coeffs_arete_interne(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const { /* Do nothing */ }
+  inline void coeffs_arete_mixte(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const { /* Do nothing */ }
+  inline void coeffs_arete_symetrie(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+  inline void coeffs_arete_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+  inline void coeffs_arete_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+  inline void coeffs_arete_paroi_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+  inline void coeffs_arete_periodicite(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const { /* Do nothing */ }
+  inline void coeffs_arete_symetrie_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+  inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
 
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas vectoriel.
 
-  inline void secmem_fa7_elem(int, int, int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&, int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_interne(int, int, int, int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_mixte(int, int, int, int, DoubleVect& flux) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_symetrie(int, int, int, int, DoubleVect& ) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_paroi(int, int, int, int, DoubleVect& ) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
-  {
-    /* Do nothing */
-  }
-  inline void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const
-  {
-    /* Do nothing */
-  }
+  inline void secmem_fa7_elem(int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void secmem_arete_interne(int, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void secmem_arete_mixte(int, int, int, int, DoubleVect& flux) const { /* Do nothing */ }
+  inline void secmem_arete_symetrie(int, int, int, int, DoubleVect& ) const { /* Do nothing */ }
+  inline void secmem_arete_paroi(int, int, int, int, DoubleVect& ) const { /* Do nothing */ }
+  inline void secmem_arete_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+  inline void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const { /* Do nothing */ }
 };
 
 //************************

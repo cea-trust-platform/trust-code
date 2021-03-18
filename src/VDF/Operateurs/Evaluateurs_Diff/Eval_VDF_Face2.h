@@ -36,25 +36,19 @@
 
 class Eval_VDF_Face2
 {
-
 public:
-
   inline Eval_VDF_Face2() {}
   inline virtual ~Eval_VDF_Face2() {}
-  virtual int calculer_arete_bord() const
-  {
-    return 1;
-  }
+  virtual int calculer_arete_bord() const { return 1; }
 
   inline void associer_inconnue(const Champ_base& inco)
   {
     assert(sub_type(Champ_Face,inco));
     inconnue=ref_cast(Champ_Face,inco);
   }
+
 protected:
-
   REF(Champ_base) inconnue;
-
 };
 
 #endif /* Eval_VDF_Face2_included */

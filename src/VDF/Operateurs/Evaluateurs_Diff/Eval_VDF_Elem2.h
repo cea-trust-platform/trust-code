@@ -52,22 +52,13 @@ public:
 
   // contribution de la derivee en vitesse d'une equation scalaire
   template <typename BC_TYPE>
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const
-  {
-    return 0.;
-  }
-  double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const
-  {
-    return 0.;
-  }
+  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const { return 0.; }
+
+  double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
+  double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const { return 0.; }
 
 protected:
   REF(Champ_base) inconnue;
-
 };
 
 #endif /* Eval_VDF_Elem2_included */

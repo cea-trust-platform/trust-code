@@ -39,11 +39,13 @@
 
 class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF2
 {
-
 public:
-
   inline void associer(const Champ_base& );
-  inline void mettre_a_jour( );
+  inline void mettre_a_jour( )
+  {
+    (diffusivite_->valeurs().echange_espace_virtuel());
+    dt_diffusivite.ref(diffusivite_->valeurs());
+  }
 
   inline const Champ_base& get_diffusivite() const
   {
@@ -52,26 +54,16 @@ public:
   }
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int j) const
-  {
-    return dt_diffusivite(i,j);
-  }
-
-  inline double nu_2_impl(int i, int j) const
-  {
-    return dt_diffusivite(i,j);
-  }
-
+  inline double nu_1_impl(int i, int j) const { return dt_diffusivite(i,j); }
+  inline double nu_2_impl(int i, int j) const { return dt_diffusivite(i,j); }
   inline double compute_heq_impl(double d0, int i, double d1, int j, int k) const
   {
     return 1./(d0/dt_diffusivite(i,k) + d1/dt_diffusivite(j,k));
   }
 
 protected:
-
   REF(Champ_base) diffusivite_;
   DoubleTab dt_diffusivite;
-
 };
 
 //
@@ -92,14 +84,6 @@ inline void Eval_Diff_VDF_var_aniso::associer(const Champ_base& diffu)
 
   diffusivite_ = diffu;
   dt_diffusivite.ref(diffu.valeurs());
-}
-
-// Description:
-// mise a jour de DoubleVect diffusivite
-inline void Eval_Diff_VDF_var_aniso::mettre_a_jour( )
-{
-  (diffusivite_->valeurs().echange_espace_virtuel());
-  dt_diffusivite.ref(diffusivite_->valeurs());
 }
 
 #endif /* Eval_Diff_VDF_var_aniso_included */
