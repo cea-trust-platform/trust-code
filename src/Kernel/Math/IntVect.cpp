@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -639,11 +639,7 @@ int local_imin_vect(const IntVect& vx, Mp_vect_options opt)
       for (; count; count--)
         {
           const int x = *x_ptr;
-          if (x < min_val)
-            {
-              i_min = x_ptr - x_base;
-              min_val = x;
-            }
+          if (x < min_val) { i_min = x_ptr - x_base; min_val = x; }
           x_ptr++;
         }
     }
@@ -756,11 +752,7 @@ int local_imax_vect(const IntVect& vx, Mp_vect_options opt)
       for (; count; count--)
         {
           const int x = *x_ptr;
-          if (x > max_val)
-            {
-              i_max = x_ptr - x_base;
-              max_val = x;
-            }
+          if (x > max_val) { i_max = x_ptr - x_base; max_val = x; }
           x_ptr++;
         }
     }
@@ -1571,11 +1563,7 @@ void operator_divide(IntVect& resu, const int x, Mp_vect_options opt)
       for (; count; count--)
         {
           int& p_resu = *(resu_ptr++);
-          if(x==0.)
-            {
-              Cerr << "Error: divide by 0 in operator_divide." << finl;
-              Process::exit();
-            };
+          if(x==0.) { Cerr << "Error: divide by 0 in operator_divide." << finl; Process::exit();};
           p_resu /= x;
         }
     }
