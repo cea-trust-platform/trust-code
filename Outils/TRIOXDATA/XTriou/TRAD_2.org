@@ -1228,17 +1228,6 @@ perte_charge_reguliere source_base perte_charge_reguliere 0 Source term modellin
   attr spec spec_pdcr_base spec 0 Description of longitudinale or transversale type.
   attr zone_name chaine name_of_zone 0 Name of the sub-area occupied by the tube bundle. A Sous_Zone (Sub-area) type object called zone_name should have been previously created.
 pb_post Pb_base nul -1 not_set
-format_lata_to_med objet_lecture nul 0 not_set
-  attr mot chaine(into=["format_post_sup"]) mot 0 not_set
-  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
-lata_to_med interprete lata_to_med -1 To convert results file written with LATA format to MED file. Warning: Fields located on faces are not supported yet.
-  attr format format_lata_to_med format 1 generated file post_med.data use format (MED or LATA or LML keyword).
-  attr file chaine file 0 LATA file to convert to the new format.
-  attr file_med chaine file_med 0 Name of the MED file.
-lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to MED or LML format. Warning: Fields located at faces are not supported yet.
-  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
-  attr file chaine file 0 LATA file to convert to the new format.
-  attr file_post chaine file_post 0 Name of file post.
 info_med objet_lecture nul 0 not_set
   attr file_med chaine file_med 0 Name of the MED file.
   attr domaine chaine domaine 0 Name of domain.
