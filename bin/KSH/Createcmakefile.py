@@ -175,7 +175,7 @@ IF(NOT VISUAL)
  set (CMAKE_Fortran_COMPILER $ENV{TRUST_F77})
 ENDIF(NOT VISUAL)
 
-project(Trio)
+project(TRUST)
 
 
 
