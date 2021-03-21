@@ -45,13 +45,13 @@ Entree& Champ_front_debit_massique::readOn(Entree& is)
 
 void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco, double temps)
 {
-  int i, fb, n, N = coeff_.line_size();
   Champ_front_debit::initialiser_coefficient(inco, temps);
+  int i, fb, n, N = coeff_.line_size();
   const Champ_base& masse_volumique = inco.equation().milieu().masse_volumique();
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   const Zone_VF& zone = ref_cast(Zone_VF, inco.equation().zone_dis().valeur());
   DoubleTab rho_bord = masse_volumique.valeur_aux_bords(); /* valeur a toutes les faces de bord */
-  for(rho_.resize(le_bord.nb_faces_tot(), N), i = 0; i < le_bord.nb_faces(); i++)
+  for(rho_.resize(le_bord.nb_faces_tot(), N), i = 0; i < le_bord.nb_faces_tot(); i++)
     for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
       rho_(i, n) = rho_bord(fb, n);
 
@@ -65,6 +65,6 @@ void Champ_front_debit_massique::update_coeff(double temps)
 {
   int i, N = coeff_.line_size();
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
-  for(i = 0; i < le_bord.nb_faces(); i++) for (int n = 0; n < N; ++n)
+  for(i = 0; i < le_bord.nb_faces_tot(); i++) for (int n = 0; n < N; ++n)
       coeff_(i, n) = 1. / rho_(i, n);
 }

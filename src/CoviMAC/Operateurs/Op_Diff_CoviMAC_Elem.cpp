@@ -117,7 +117,7 @@ void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
   if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, e_s, p_s, f, fb, m, n, n_sten = 0;
+  int i, j, k, e, e_s, p_s, f, fb, m, n, n_sten = 0;
   std::vector<Matrice_Morse *> mat(op_ext.size());
   for (i = 0; i < (int) op_ext.size(); i++) //une matrice potentielle a remplir par operateur de op_ext
     mat[i] = matrices.count(i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco) ?
@@ -137,13 +137,18 @@ void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
           if (phif_d(f, 0) == phif_d(f + 1, 0) && phif_d(f, 1) == phif_d(f + 1, 1))
             Process::exit(Nom("Op_Diff_CoviMAC_Elem: missing flux detected for face") + Nom(f) + " in " + zone.zone().domaine().le_nom() + " !");
           for (j = phif_d(f, 0); j < phif_d(f + 1, 0); j++) if ((e_s = phif_e(j)) < zone.nb_elem_tot()) //partie "simple" (phif_e / phif_c) : ne melange pas les composantes
-              for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * e + n, N[0] * e_s + n), tpfa(f, n) &= (e_s == f_e(f, 0) || e_s == f_e(f, 1));
+              for (n = 0; n < N[0]; n++)
+                {
+                  stencil[0].append_line(N[0] * e + n, N[0] * e_s + n);
+                  if (e_s == f_e(f, 0) || e_s == f_e(f, 1)) continue;
+                  for (k = 0; k < 2; k++) tpfa(f, n) &= phif_c(j, n, k) == 0;
+                }
           for (j = phif_d(f, 1); j < phif_d(f + 1, 1); j++) //partie "complexe" (phif_pe / phif_pc) : melange les composantes et les problemes
             if (mat[p_s = phif_pe(j, 0)] && (e_s = phif_pe(j, 1)) < op_ext[p_s]->equation().zone_dis()->nb_elem_tot()) for (n = 0; n < N[0]; n++)
                 {
-                  tpfa(f, n) &= (p_s == 0 && (e_s == f_e(f, 0) || e_s == f_e(f, 1))) //amont/aval
-                                || ((fb = zone.fbord(f)) >= 0 && p_s == pe_ext(fb, 0) && e_s == pe_ext(fb, 1)); //aval si Echange_contact
-                  for (m = 0; m < N[p_s]; m++) stencil[p_s].append_line(N[0] * e + n, N[i] * e_s + m);
+                  for (m = 0; m < N[p_s]; m++) stencil[p_s].append_line(N[0] * e + n, N[p_s] * e_s + m);
+                  if ((p_s == 0 && (e_s == f_e(f, 0) || e_s == f_e(f, 1))) || ((fb = zone.fbord(f)) >= 0 && p_s == pe_ext(fb, 0) && e_s == pe_ext(fb, 1))) continue;
+                  for (m = 0; m < N[p_s]; m++) for (k = 0; k < 2; k++) tpfa(f, n) &= phif_pc(j, n, m, k) == 0;  //si pt hors du flux a deux points, on regarde si les coeffs sont nuls
                 }
         }
 

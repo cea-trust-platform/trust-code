@@ -99,8 +99,9 @@ void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bo
   const int N = flow_rate_.valeur().valeurs().line_size();
   const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
 
-  for(int i = 0, f = le_bord.num_premiere_face(); i < le_bord.nb_faces(); i++, f++)
+  for(int i = 0; i < le_bord.nb_faces_tot(); i++)
     {
+      int f = le_bord.num_face(i);
       const double dS = zone_VF.face_surfaces(f);
       for (int n = 0; n < N; ++n)
         {
@@ -110,7 +111,7 @@ void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bo
               normal_vectors_(i, j) = -zone_VF.normalized_boundaries_outward_vector(f, 1.)(j); // inward normal
               u_scal_n += normal_vectors_(i, j) * (velocity_user.size() ? velocity_user(velocity_user.size() > dimension ? i : 0, j) : normal_vectors_(i, j));
             }
-          integrale_(n) += dS * u_scal_n / coeff_(i, n) * zone_VF.porosite_face(f);
+          if (i < le_bord.nb_faces()) integrale_(n) += dS * u_scal_n / coeff_(i, n) * zone_VF.porosite_face(f); //real faces only
         }
     }
   for (int n = 0; n < N; ++n)
@@ -120,7 +121,7 @@ void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bo
 void Champ_front_xyz_debit::initialiser_coefficient(const Champ_Inc_base& inco, double tps)
 {
   const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
-  coeff_.resize(le_bord.nb_faces(), flow_rate_.nb_comp());
+  coeff_.resize(le_bord.nb_faces_tot(), flow_rate_.nb_comp());
   coeff_ = 1.;
 }
 
@@ -128,7 +129,7 @@ void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, Doub
 {
   const int N = flow_rate_.nb_comp();
 
-  for(int i = 0; i < le_bord.nb_faces(); i++) for (int n = 0; n < N; ++n) for(int j = 0; j < dimension; j++)
+  for(int i = 0; i < le_bord.nb_faces_tot(); i++) for (int n = 0; n < N; ++n) for(int j = 0; j < dimension; j++)
         {
           double v_mult = flow_rate_.valeur().valeurs_au_temps(temps)(0, n) / integrale_(n) ; //the profile/normals must be multiplied by this to get the correct inward flow
           double n_mult = flow_rate_alone_ ? normal_vectors_(i,j) : (velocity_user(velocity_user.size() > dimension ? i : 0, j));

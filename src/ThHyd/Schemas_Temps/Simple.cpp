@@ -346,8 +346,6 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
   eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
-  // eqn.milieu().mettre_a_jour(eqn.schema_temps().temps_courant());
-  // eqn.mettre_a_jour(eqn.schema_temps().temps_courant());
 
   solveur->reinit();
   return (converge==1);
@@ -393,7 +391,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
       else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
             {
               Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
-              int nl = mdc.get_desc_part(i).valeur().get_nb_items_tot(), nc = mdc.get_desc_part(j).valeur().get_nb_items_tot();
+              int nl = eqs[i]->inconnue().valeurs().size_totale(), nc = eqs[j]->inconnue().valeurs().size_totale();
               if (i == j) eqs[i]->dimensionner_matrice(mat);
               eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), nl, nc);
               if (i == j) mat += mat2;

@@ -150,17 +150,18 @@ void Fluide_reel_base::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
                         &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression_pa().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
+         incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
   double rho0 = incomp ? fl.rho_(fl.T_ref_, fl.P_ref_) : -1;
-  for (i = 0; i < Ni; i++) val(i) = rhoc(T(i, n), p(i, n));
+  for (i = 0; i < Ni; i++) val(i) = rhoc(T(i, n), p(i, m));
 
   const DoubleTab& bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
-  for (i = 0; i < Nb; i++) bval(i) = rhoc(bT(i, n), bp(i, n));
+  for (i = 0; i < Nb; i++) bval(i) = rhoc(bT(i, n), bp(i, m));
 
   if (incomp) return; //pas de derivees en incompressible
   DoubleTab& dp_rho = deriv["pression"], &dT_rho = deriv["temperature"];
-  for (dp_rho.resize(Ni, 1), i = 0; i < Ni; i++) dp_rho(i) = fl.dP_rho_(T(i, n), p(i, n));
-  for (dT_rho.resize(Ni, 1), i = 0; i < Ni; i++) dT_rho(i) = fl.dT_rho_(T(i, n), p(i, n));
+  for (dp_rho.resize(Ni, 1), i = 0; i < Ni; i++) dp_rho(i) = fl.dP_rho_(T(i, n), p(i, m));
+  for (dT_rho.resize(Ni, 1), i = 0; i < Ni; i++) dT_rho(i) = fl.dT_rho_(T(i, n), p(i, m));
 }
 
 #define hc(T, p) (incomp ? h0 + Cp0 * ((T) - fl.T_ref_) : fl.h_((T), (p)))
@@ -171,17 +172,18 @@ void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
                         &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression_pa().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
+         incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
   double h0 = incomp ? fl.h_(fl.T_ref_, fl.P_ref_) : -1, Cp0 = incomp ? fl.dT_h_(fl.T_ref_, fl.P_ref_) : -1;
 
-  for (i = 0; i < Ni; i++) val(i) = hc(T(i, n), p(i, n));
+  for (i = 0; i < Ni; i++) val(i) = hc(T(i, n), p(i, m));
 
   const DoubleTab& bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
-  for (i = 0; i < Nb; i++) bval(i) = hc(bT(i, n), bp(i, n));
+  for (i = 0; i < Nb; i++) bval(i) = hc(bT(i, n), bp(i, m));
 
   DoubleTab  *dp_h = incomp ? NULL : &deriv["pression"], &dT_h = deriv["temperature"];//une seule derivee en incompressible
-  if (dp_h) for (dp_h->resize(Ni, 1), i = 0; i < Ni; i++) (*dp_h)(i) = fl.dP_h_(T(i, n), p(i, n));
-  for (dT_h.resize(Ni, 1), i = 0; i < Ni; i++) dT_h(i) = incomp ? Cp0 : fl.dT_h_(T(i, n), p(i, n));
+  if (dp_h) for (dp_h->resize(Ni, 1), i = 0; i < Ni; i++) (*dp_h)(i) = fl.dP_h_(T(i, n), p(i, m));
+  for (dT_h.resize(Ni, 1), i = 0; i < Ni; i++) dT_h(i) = incomp ? Cp0 : fl.dT_h_(T(i, n), p(i, m));
 }
 
 void Fluide_reel_base::calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
@@ -190,15 +192,16 @@ void Fluide_reel_base::calculer_energie_interne(const Objet_U& obj, DoubleTab& v
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
                         &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression_pa().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
+         incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
   if (incomp) return calculer_enthalpie(obj, val, bval, deriv); //en incompressible, on prend e_int = h
 
-  for (i = 0; i < Ni; i++) val(i) = fl.h_(T(i, n), p(i, n)) - p(i, n) / fl.rho_(T(i, n), p(i, n));
+  for (i = 0; i < Ni; i++) val(i) = fl.h_(T(i, n), p(i, m)) - p(i, m) / fl.rho_(T(i, n), p(i, m));
 
   const DoubleTab& bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
-  for (i = 0; i < Nb; i++) bval(i) = fl.h_(bT(i, n), bp(i, n)) - bp(i, n) / fl.rho_(bT(i, n), bp(i, n));
+  for (i = 0; i < Nb; i++) bval(i) = fl.h_(bT(i, n), bp(i, m)) - bp(i, m) / fl.rho_(bT(i, n), bp(i, m));
 
   DoubleTab& dp_e = deriv["pression"], &dT_e = deriv["temperature"];
-  for (dp_e.resize(Ni, 1), i = 0; i < Ni; i++) dp_e(i) = fl.dP_h_(T(i, n), p(i, n)) - 1. / fl.rho_(T(i, n), p(i, n)) + p(i, n) * fl.dP_rho_(T(i, n), p(i, n)) / std::pow(fl.rho_(T(i, n), p(i, n)), 2);
-  for (dT_e.resize(Ni, 1), i = 0; i < Ni; i++) dT_e(i) = fl.dT_h_(T(i, n), p(i, n)) + p(i, n) * fl.dT_rho_(T(i, n), p(i, n)) / std::pow(fl.rho_(T(i, n), p(i, n)), 2);
+  for (dp_e.resize(Ni, 1), i = 0; i < Ni; i++) dp_e(i) = fl.dP_h_(T(i, n), p(i, m)) - 1. / fl.rho_(T(i, n), p(i, m)) + p(i, m) * fl.dP_rho_(T(i, n), p(i, m)) / std::pow(fl.rho_(T(i, n), p(i, m)), 2);
+  for (dT_e.resize(Ni, 1), i = 0; i < Ni; i++) dT_e(i) = fl.dT_h_(T(i, n), p(i, m)) + p(i, m) * fl.dT_rho_(T(i, n), p(i, m)) / std::pow(fl.rho_(T(i, n), p(i, m)), 2);
 }

@@ -157,7 +157,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
   int i, j, e, eb, f, n, N = vcc.line_size(), M = sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
 
-  Matrice_Morse *m_vit = mats["vitesse"];
+  Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
   std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
   if (!semi_impl.count(nom_cc)) for (auto &i_m : mats) if (cc.derivees().count(i_m.first))
         d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, i_m.first == "pression" ? M : N));

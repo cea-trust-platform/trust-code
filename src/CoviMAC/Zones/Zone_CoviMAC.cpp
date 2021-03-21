@@ -570,8 +570,13 @@ void Zone_CoviMAC::calculer_h_carre()
 
 void disp_dt(const DoubleTab& A)
 {
-  int i, j, k;
-  if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
+  int i, j, k, l;
+  if (A.nb_dim() == 4) for (i = 0; i < A.dimension_tot(0); i++)
+      for (j = 0, fprintf(stderr, i ? "}}},{" : "{{"); j < A.dimension(1); j++)
+        for (k = 0, fprintf(stderr, j ? "}},{" : "{"); k < A.dimension(2); k++)
+          for (l = 0, fprintf(stderr, k ? "},{" : "{"); l < A.dimension(3); l++)
+            fprintf(stderr, "%.10E%s ", A.addr()[A.dimension(3) * (A.dimension(2) * (i * A.dimension(1) + j) + k) + l], l + 1 < A.dimension(3) ? "," : "");
+  else if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "},{" : "{"); k < A.dimension(2); k++)
           fprintf(stderr, "%.10E%s ", A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
@@ -580,7 +585,7 @@ void disp_dt(const DoubleTab& A)
         fprintf(stderr, "%.10E%s ", A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
   else for (i = 0, fprintf(stderr, "{"); i < A.dimension_tot(0); i++)
       fprintf(stderr, "%.10E%s ", A.addr()[i], i + 1 < A.dimension_tot(0) ? "," : "");
-  fprintf(stderr, A.nb_dim() == 3 ? "}}}\n" : (A.nb_dim() == 2 ? "}}\n" : "}\n"));
+  fprintf(stderr, A.nb_dim() == 4 ? "}}}}\n" : A.nb_dim() == 3 ? "}}}\n" : A.nb_dim() == 2 ? "}}\n" : "}\n");
 }
 
 void disp_da(const ArrOfDouble& A)
@@ -659,8 +664,8 @@ void Zone_CoviMAC::init_equiv() const
   if (is_init["equiv"]) return;
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
   const DoubleTab& nf = face_normales();
-  const DoubleVect& fs = face_surfaces();
-  int i, j, e1, e2, f, f1, f2;
+  const DoubleVect& fs = face_surfaces();//, &vf = volumes_entrelaces();
+  int i, j, e1, e2, f, f1, f2, d, D = dimension, ok;
 
   IntTrav ntot, nequiv;
   creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
@@ -670,10 +675,9 @@ void Zone_CoviMAC::init_equiv() const
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
-            if (dabs(dabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales non colineaires
-            if (dot(&xv_(f1, 0), &xv_(f2, 0), &xp_(e1, 0), &xp_(e2, 0)) < 0) continue; //vecteurs (xp - xv) opposes
-            auto v = cross(dimension, dimension, &xv_(f1, 0), &xv_(f2, 0), &xp_(e1, 0), &xp_(e2, 0));
-            if ((dimension < 3 ? v[2] * v[2] : dot(&v[0], &v[0])) > 1e-12 * fs(f) * fs(f)) continue; //vecteurs (xp - xv) non colineaires
+            if (dabs(dabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
+            for (ok = 1, d = 0; d < D; d++) ok &= dabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
+            if (!ok) continue;
             equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }
   Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de faces equivalentes!" << finl;
@@ -786,10 +790,10 @@ void Zone_CoviMAC::harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, 
             if (is_p ? (neu || neu_h) : (dir || dir_h || echg)) for (n = 0; n < N; n++) //Dirichlet / Echange_impose_base : pt harmonique avec def(1) -> 0
                 {
                   double r = (invh ? (*invh)(fb, n) : 0) + (echg ? 1. / ref_cast(Echange_impose_base, cl).h_imp(j, n) : 0); //resistance thermique totale
-                  double scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (fs(f) * (nu_grad ? lambda(0, n) : 1));
+                  // double scal = dot(&xv_(f, 0), &nf(f, 0), &xp_(e, 0)) / (fs(f) * (nu_grad ? lambda(0, n) : 1));
                   for (wh(f, n) = 1 - 1. / (1 + r * lambda(0, n) / def(0)), d = 0; d < D; d++) //poids de l'amont
-                    // xh(f, n, d) = (def(0) * xef(1, d) + r * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + r * lambda(0, n)); //position
-                    xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu, e, n, &nf(f, 0), i3[d]) : nf(f, d)) / fs(f);
+                    xh(f, n, d) = (def(0) * xef(1, d) + r * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + r * lambda(0, n)); //position
+                  // xh(f, n, d) = xp_(e, d) + scal * (nu_grad ? nu_dot(nu, e, n, &nf(f, 0), i3[d]) : nf(f, d)) / fs(f);
                 }
             else if (is_p ? (dir || dir_h || sym) : (neu || neu_h || sym)) for (n = 0; n < N; n++) //Neumann : projection sur la face selon nu.nf
                 {
@@ -890,7 +894,7 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
                 nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 /* correction de interp (avec ecretage) */
-                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += full_stencil || dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
               }
           }
 

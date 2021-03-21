@@ -234,7 +234,12 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       else incr["pression"] = 0;
 
       //increments des autres variables
-      for (auto &&n_v : b_p) incr[n_v.first] = n_v.second, A_p[n_v.first].ajouter_multvect(incr["pression"], incr[n_v.first]);
+      for (auto &&n_v : b_p)
+        {
+          incr[n_v.first] = n_v.second; //partie constante
+          A_p[n_v.first].ajouter_multvect(incr["pression"], incr[n_v.first]); //dependance en les increments de pression
+          incr[n_v.first].echange_espace_virtuel();
+        }
       eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour CoviMAC : sert a corriger ve
 
       /* convergence? */

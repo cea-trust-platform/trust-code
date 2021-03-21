@@ -91,28 +91,43 @@ void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, k, e, eb, f, fb, fc, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension;
+  int i, j, k, i_f, e, e_s, f, fb, fc, f_s, n, N = ch.valeurs().line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, c;
 
   IntTrav stencil(0, 2), tpfa(0, N);
-  stencil.set_smart_resize(1), zone.creer_tableau_faces(tpfa), tpfa = 1;
+  stencil.set_smart_resize(1), zone.creer_tableau_faces(tpfa);
 
   /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) de la zone sinon */
   Cerr << "Op_Diff_CoviMAC_Face::dimensionner() : ";
   update_phif(!nu_constant_); //si nu variable, stencil complet
 
-  for (f = 0; f < nf_tot; f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = phif_d(f, 0); j < phif_d(f + 1, 0); j++) //flux a travers la face f
+  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) /* op. aux faces : contrib de l'elem e */
         {
-          for (eb = phif_e(j), k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && fcl(fb, 0) < 2) //equation a la face fb
-              {
-                if (phif_d(f + 1, 0) == phif_d(f, 0) + 2 && (fc = zone.equiv(f, i, k)) >= 0 && fcl(fc, 0) < 2) for (n = 0; n < N; n++) //equivalence avec la face fc
-                    stencil.append_line(N * fb + n, N * (eb == e ? fb : fc) + n);
-                else if (eb < ne_tot) for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) //pas d'equivalence -> elem/face
-                        stencil.append_line(N * fb + n, N * (nf_tot + D * eb + d) + n);
-              }
-          if (eb < ne_tot) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //equation a l'element e
-                stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n);
-          for (n = 0; n < N; n++) if (phif_d(f, 0) + 2 < phif_d(f + 1, 0)) tpfa(f, n) = 0;
+          //recherche de i_f : indice de f dans l'element e
+          for (i_f = -1, j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j;
+          //contribution de la diffusion a la face fb
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            {
+              for (c = (e != f_e(fb, 0)), k = phif_d(fb, 0); k < phif_d(fb + 1, 0); k++)
+                {
+                  if ((e_s = phif_e(k)) >= ne_tot) continue; //bord -> pas de terme de matrice
+                  if ((fc = zone.equiv(fb, c, i_f)) >= 0 && fcl(f_s = e_s == e ? f : fc, 0) < 2) /* amont/aval si equivalence : operateur entre faces */
+                    for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f_s + n);
+                  /* sinon : elem -> face, avec un traitement particulier de e_s == e pour eviter les modes en echiquier dans la diffusion */
+                  for (d = 0; d < D; d++) if (dabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
+                        stencil.append_line(N * f + n, N * (nf_tot + D * e_s + d) + n);
+                  if (e_s == e) for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f + n);
+                }
+
+            }
         }
+
+  for (e = 0; e < ne_tot; e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* aux elements : on doit traiter aussi les elems virtuels */
+      for (j = phif_d(f, 0); j < phif_d(f + 1, 0); j++) if ((e_s = phif_e(j)) < ne_tot) //contrib d'un element
+          for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n);
+
+  for (tpfa = 1, f = 0; f < zone.nb_faces(); f++) for (i = phif_d(f, 0); i < phif_d(f + 1, 0); i++)
+      if ((e_s = phif_e(i)) < ne_tot && e_s != f_e(f, 0) && e_s != f_e(f, 1)) for (n = 0; n < N; n++) for (j = 0; j < 2; j++)
+            if (phif_c(i, n, j)) tpfa(f, n) = 0;
 
   tableau_trier_retirer_doublons(stencil);
   Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * (nf_tot + D * ne_tot))
@@ -123,7 +138,7 @@ void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 
 // ajoute la contribution de la convection au second membre resu
 // renvoie resu
-void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
+void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : NULL; //facultatif
@@ -133,46 +148,63 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, c
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;
-  const DoubleTab& nf = zone.face_normales(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
-  int i, j, k, e, eb, feb, f, fb, fc, fd, n, N = inco.line_size(), d, D = dimension, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
-  double mult, f_eps;
+  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
+                   &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
+  int i, j, i_f, c, e_s, f_s, k, e, f, fb, fc, n, N = inco.line_size(), d, D = dimension, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), sgn;
 
   update_phif();
 
-  DoubleTrav coeff(N);
-  for (f = 0; f < nf_tot; f++) for (f_eps = min(vf(f) / fs(f), eps), i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = phif_d(f, 0); j < phif_d(f + 1, 0); j++)
+  DoubleTrav coeff(N), fac(N);
+  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) /* op. aux faces : contrib de l'elem e */
         {
-          for (n = 0; n < N; n++) coeff(n) = (i ? 1 : -1) * fs(f) * (phif_w(f, n) * phif_c(j, n, 0) + (1 - phif_w(f, n)) * phif_c(j, n, 1)); //|f|[nu grad v]_f
-          for (eb = phif_e(j), feb = eb - ne_tot, k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && fcl(fb, 0) < 2) //equations a la face fb
-              {
-                if (phif_d(f + 1, 0) == phif_d(f, 0) + 2 && (fc = zone.equiv(f, i, k)) >= 0) //equivalence : face-face
-                  for (fd = (eb == e ? fb : fc), mult = pf(fd) / pe(f_e(f, eb == e ? i : !i)) * (zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1), n = 0; n < N; n++)
+          //recherche de i_f : indice de f dans l'element e
+          for (i_f = -1, j = 0; i_f < 0 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j;
+          //contribution de la diffusion a la face fb
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            {
+              int tpfa = 1;
+              for (k = phif_d(fb, 0); k < phif_d(fb + 1, 0); k++) if ((e_s = phif_e(k)) < ne_tot && e_s != f_e(fb, 0) && e_s != f_e(fb, 1)) tpfa = 0;
+              double df_sur_d = tpfa && fcl(fb, 0) ? max(dabs(zone.dot(&xv(fb, 0), &nf(fb, 0), &xv(f, 0)) / zone.dot(&xv(fb, 0), &nf(fb, 0), &xp(e, 0))) , 1.) : 1;
+              for (c = (e != f_e(fb, 0)), n = 0; n < N; n++) coeff(n) = mu_f(f, n, i) * vf(f) / ve(e) * fs(fb) * (c ? 1 : -1) / df_sur_d; /* prefacteur diff elem -> diff face */
+              for (k = phif_d(fb, 0); k < phif_d(fb + 1, 0); k++)
+                {
+                  for (n = 0; n < N; n++) fac(n) = coeff(n) * (phif_w(fb, n) * phif_c(k, n, 0) + (1 - phif_w(fb, n)) * phif_c(k, n, 1));
+                  if ((e_s = phif_e(k)) >= ne_tot) /* contrib. d'un bord : seul Dirichlet fait quelque chose */
                     {
-                      double fac = mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * mult * coeff(n);
-                      resu(fb, n) -= fac * inco(fd, n);
-                      if (mat && fcl(fd, 0) < 2) (*mat)(N * fb + n, N * fd + n) += fac;
+                      if (fcl(f_s = e_s - ne_tot, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                            secmem(f, n) -= fac(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n) * nf(f, d) / fs(f);
                     }
-                else
-                  {
-                    for (d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) //pas d'equivalence: elem -> face
-                          {
-                            double fac = mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * nf(fb, d) / fs(fb) * coeff(n) * (eb == e ? 1 - f_eps : 1);
-                            resu(fb, n) -= fac * (feb < 0 ? inco(nf_tot + D * eb + d, n) : fcl(feb, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(feb, 1)].valeur()).val_imp(fcl(feb, 2), N * d + n) : 0);
-                            if (mat && feb < 0) (*mat)(N * fb + n, N * (nf_tot + D * eb + d) + n) += fac;
-                          }
-                    if (eb == e) for (n = 0; n < N; n++)
-                        {
-                          double fac = mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) / ve(e) * coeff(n) * f_eps;
-                          resu(fb, n) -= fac * inco(fb, n);
-                          if (mat) (*mat)(N * fb + n, N * fb + n) += fac;
-                        }
-                  }
-              }
+                  else if (tpfa && (fc = zone.equiv(fb, c, i_f)) >= 0) /* amont/aval si equivalence : operateur entre faces */
+                    {
+                      f_s = e_s == e ? f : fc, sgn = zone.dot(&nf(f_s, 0), &nf(f, 0)) > 0 ? 1 : -1; //sgn = 1 si f et f_s ont la meme orientation par rapport a e / e_s
+                      for (n = 0; n < N; n++) secmem(f, n) -= fac(n) * sgn * pf(f_s) / pe(e_s) * inco(f_s, n);
+                      if (mat && fcl(f_s, 0) < 2) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f_s + n) += fac(n) * sgn * pf(f_s) / pe(e_s);
+                    }
+                  else /* sinon : elem -> face, avec un traitement particulier de e_s == e pour eviter les modes en echiquier dans la diffusion */
+                    {
+                      double f_eps = e_s != e ? 0 : tpfa && fcl(fb, 0) ? 1 : min(eps, 1000 * std::pow(vf(f) / fs(f), 2));
+                      for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                          secmem(f, n) -= fac(n) * (1 - f_eps) * inco(nf_tot + D * e_s + d, n) * nf(f, d) / fs(f);
+                      if (mat) for (d = 0; d < D; d++) if (dabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
+                              (*mat)(N * f + n, N * (nf_tot + D * e_s + d) + n) += fac(n) * (1 - f_eps) * nf(f, d) / fs(f);
+                      if (!f_eps) continue;
+                      for (n = 0; n < N; n++) secmem(f, n) -= fac(n) * f_eps * inco(f, n);
+                      if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac(n) * f_eps;
+                    }
+                }
+            }
+        }
 
-          for (d = 0; d < D; d++) for (n = 0; n < N; n++) //equations a l'element e
-              {
-                resu(nf_tot + D * e + d, n) -= coeff(n) * (feb < 0 ? inco(nf_tot + D * eb + d, n) : fcl(feb, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(feb, 1)].valeur()).val_imp(fcl(feb, 2), N * d + n) : 0);
-                if (mat && feb < 0) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + n) += coeff(n);
-              }
+  for (e = 0; e < ne_tot; e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* aux elements : on doit traiter aussi les elems virtuels */
+      for (c = (e != f_e(f, 0)), j = phif_d(f, 0); j < phif_d(f + 1, 0); j++)
+        {
+          for (n = 0; n < N; n++) coeff(n) = fs(f) * (c ? 1 : -1) * (phif_w(f, n) * phif_c(j, n, 0) + (1 - phif_w(f, n)) * phif_c(j, n, 1));
+          if ((e_s = phif_e(j)) < ne_tot) //contrib d'un element
+            {
+              for (d = 0; d < D; d++) for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * inco(nf_tot + D * e_s + d, n);
+              if (mat) for (d = 0; d < D; d++) for (n = 0; n < N; n++) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n) += coeff(n);
+            }
+          else if (fcl(f_s = e_s - ne_tot, 0) == 3) //contrib d'un bord : seul Dirichlet contribue
+            for (d = 0; d < D; d++) for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n);
         }
 }

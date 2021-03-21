@@ -286,8 +286,8 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const DoubleTab& nu_src = diffusivite().valeurs(), &nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
-  int e, i, j, k, f, fb, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(),
-                            c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension, nf_tot = zone.nb_faces_tot();
+  int e, i, j, k, f, fb, m, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N,
+                               c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension, nf_tot = zone.nb_faces_tot();
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
@@ -309,6 +309,11 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
             for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) += (d == db) * nut_src(!c_nut * e, N_nut_src == N ? n : D * n + d);
       else abort();
     }
+
+  /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (m = 0; m < mult; m++, i++)
+        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */
   modifier_nu(nu_);
@@ -365,7 +370,7 @@ void Op_Diff_CoviMAC_base::update_xwh() const
 
 void Op_Diff_CoviMAC_base::update_phif(int full_stencil) const
 {
-  if (phif_a_jour_) return; //deja fait
+  if (!full_stencil && phif_a_jour_) return; //deja fait, sauf si on demande tout le stencil
   const Champ_Inc_base& ch = equation().inconnue().valeur();
   const IntTab& fcl = sub_type(Champ_Face_CoviMAC, ch) ? ref_cast(Champ_Face_CoviMAC, ch).fcl() : ref_cast(Champ_P0_CoviMAC, ch).fcl();
   la_zone_poly_->fgrad(la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &invh(), xh(), wh(), &whm(),

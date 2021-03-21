@@ -153,12 +153,10 @@ Entree& Decouper_multi::interpreter(Entree& is)
       for (i = 0; i < (int) racc_som[0].size(); i++)
         {
           for (d = 0; d < D; d++) dmax = max(dmax, dabs(racc_coord[0]->getIJ(i, d) - racc_coord[1]->getIJ(corr->getIJ(i, 0), d)));
-          for (j = 0; j < 2; j++) //boucle sur les cotes
-            {
-              int s_l = racc_som[j][i], s_d = racc_som[!j][i]; //sommet local, sommet distant
-              for (k = 0; k < som_elem[!j]->get_list_size(s_d); k++) //elements connectes au sommet distant
-                (*som_raccord[j])[s_l].insert((*elem_part[!j])[(*som_elem[!j])(s_d, k)]); //on ajoute le proc possedant cet element cote distant a la liste de s_l
-            }
+          int s[2] = { racc_som[0][i], racc_som[1][corr->getIJ(i, 0)] }; //sommets du cote 0/1
+          //boucle sur les cotes : pour j = 0, on regarde du cote 1 pour ajouter des procs demandant le sommet du cote 0
+          for (j = 0; j < 2; j++) for (k = 0; k < som_elem[!j]->get_list_size(s[!j]); k++)
+              (*som_raccord[j])[s[j]].insert((*elem_part[!j])[(*som_elem[!j])(s[!j], k)]); //on ajoute le proc possedant cet element cote distant a la liste de s_l
         }
       if (dmax > tolerance) Process::exit(Nom("Decouper_multi : non-coincident vertices found between ") + dom[0]->le_nom() + "/" + racc_pair[0]->le_nom()
                                             + " and " + dom[1]->le_nom() + "/" + racc_pair[1]->le_nom() + "! dmax = " + Nom(dmax) + " tol = " + Nom(tolerance));

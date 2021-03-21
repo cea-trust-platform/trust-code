@@ -52,7 +52,7 @@ protected :
   DoubleVect porosite_e;
   DoubleVect porosite_f;
 private:
-  double eps = 0.1; //suppression des modes en echiquier
+  double eps = 0.2; //suppression des modes en echiquier
 };
 
 #endif /* Op_Diff_CoviMAC_Face_included */

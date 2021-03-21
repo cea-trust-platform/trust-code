@@ -187,7 +187,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
   assert(phif_d.dimension(0) == fvf->num_face(0) + 1 && phif_w.dimension(0) == zone.nb_faces());
 
   std::vector<std::pair<int, int>> p_e; //stencil aux elemens : { { pb, elem/bord }, ... }
-  DoubleTrav base, A , B, lambda(2, M), r_int(2, M), h(2, M), xef(2, N, D), interp, tphi, W(1); //base de champs possibles, systeme A.x = B,
+  DoubleTrav base, A , B, lambda(2, M), r_int(2, M), h(2, M), xef(2, M, D), interp, tphi, W(1); //base de champs possibles, systeme A.x = B,
   base.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), interp.set_smart_resize(1), tphi.set_smart_resize(1), W.set_smart_resize(1);
   for (i_f = 0; i_f < fvf->nb_faces(); i_f++, phif_d.append_line(phif_e.dimension(0), phif_pe.dimension(0)))
     {
@@ -243,8 +243,8 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
                 A(ic, il) = il < ng ? zone.dot(&xh(i < n_f ? fa[i] : f, n, 0), &base(il, 0, n, 0), &xv(f, 0))
                             + (invh(fb, n) + invh_paroi_ / 2) * zone.nu_dot(&nu, e, n, &nf(f, 0), &base(il, 0, n, 0)) / fs(f) : 1;
           for (i = 0; i <= o_n_f; i++) for (n = 0; n < oN; n++, ic++) for (il = 0; il <= ng; il++) //cote externe
-                A(ic, il) = il < ng ? zone.dot(&o_xh(i < o_n_f ? o_fa[i] : o_f, n, 0), &base(il, 0, n, 0), &xv(f, 0))
-                            - (o_invh(o_fb, n) + invh_paroi_ / 2) * zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &base(il, 0, n, 0)) / fs(f) : 1;
+                A(ic, il) = il < ng ? zone.dot(&o_xh(i < o_n_f ? o_fa[i] : o_f, n, 0), &base(il, 1, n, 0), &xv(f, 0))
+                            - (o_invh(o_fb, n) + invh_paroi_ / 2) * zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &base(il, 1, n, 0)) / fs(f) : 1;
 
           /* resolution */
           nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
@@ -252,7 +252,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
 
           /* correction de interp (avec ecretage) */
           for (i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0, il = 0; k < n_tf; k++)
-                for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += full_stencil || dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
+                for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
         }
 
       /* stencil aux elements */
@@ -269,7 +269,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
       /* tphi : parties amont/aval du flux total */
       tphi.resize(p_e.size(), M, 2), tphi = 0;
       //dependances points amont/aval
-      for (i = 0; i < 2; i++) for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(i ? trad[0] : 0, i ? o_e : e)) - p_e.begin(), n = 0; n < N; n++)
+      for (i = 0; i < 2; i++) for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(i ? trad[0] : 0, i ? o_e : e)) - p_e.begin(), n = 0; n < (i ? oN : N); n++)
           tphi(k, n, i) += (i ? 1 : -1) / r_int(i, n);
 
       //dependances cote local
@@ -277,13 +277,13 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
           if ((e_s = f_e(f_s, j) >= 0 ? f_e(f_s, j) : f_sb >= 0 && pe_ext(f_sb, 0) >= 0 ? pe_ext(f_sb, 1) : -1) >= 0) //il existe un element source
             {
               k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(f_e(f_s, j) >= 0 ? 0 : pe_ext(f_sb, 0), e_s)) - p_e.begin();
-              if (f_sb < 0 || pe_ext(f_sb, 0) < 0) for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < 2; l++) //pt harmonique normal : dependance diagonale
+              if (f_sb < 0 || pe_ext(f_sb, 0) < 0) for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < wh.dimension(1); m++) //pt harmonique normal : dependance diagonale
                       tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - wh(f_s, m) : wh(f_s, m));
-              else for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (m_s = 0; m_s < whm.dimension(2); m_s++) for (l = 0; l < 2; l++) //pt harmonique d'Echange_contact : melange...
+              else for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < whm.dimension(1); m++) for (m_s = 0; m_s < whm.dimension(2); m_s++) //pt harmonique d'Echange_contact : melange...
                         tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * whm(pe_ext(f_sb, 2), m, m_s, j);
             }
-          else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), n = 0; n < N; n++) //pas d'elem source -> dependance en la CL
-              for (m = 0; m < M; m++) for (l = 0; l < 2; l++)
+          else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), l = 0; l < 2; l++) //pas d'elem source -> dependance en la CL
+              for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < wh.dimension(1); m++)
                   tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
                                    * (wh(f_s, m) < 1 ? 1 - wh(f_s, m) : - zone.dist_norm_bord(f_s) * fs(f_s) * fs(f_s) / zone.nu_dot(&nu, f_e(f_s, 0), m, &nf(f_s, 0), &nf(f_s, 0)));
 
@@ -292,13 +292,13 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
           if ((e_s = o_f_e(f_s, j) >= 0 ? o_f_e(f_s, j) : f_sb >= 0 && o_pe_ext(f_sb, 0) >= 0 ? o_pe_ext(f_sb, 1) : -1) >= 0) //il existe un element source
             {
               k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(trad[o_f_e(f_s, j) >= 0 ? 0 : o_pe_ext(f_sb, 0)], e_s)) - p_e.begin();
-              if (f_sb < 0 || o_pe_ext(f_sb, 0) < 0) for (n = 0; n < oN; n++) for (m = 0; m < M; m++) for (l = 0; l < 2; l++) //pt harmonique normal : dependance diagonale
+              if (f_sb < 0 || o_pe_ext(f_sb, 0) < 0) for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < o_wh.dimension(1); m++) //pt harmonique normal : dependance diagonale
                       tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - o_wh(f_s, m) : o_wh(f_s, m));
-              else for (n = 0; n < oN; n++) for (m = 0; m < M; m++) for (m_s = 0; m_s < o_whm.dimension(2); m_s++) for (l = 0; l < 2; l++) //pt harmonique d'Echange_contact : melange...
+              else for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < o_whm.dimension(1); m++) for (m_s = 0; m_s < o_whm.dimension(2); m_s++) //pt harmonique d'Echange_contact : melange...
                         tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * o_whm(o_pe_ext(f_sb, 2), m, m_s, j);
             }
-          else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(trad[0], o_ne_tot + f_s)) - p_e.begin(), n = 0; n < oN; n++) //pas d'elem source -> dependance en la CL
-              for (m = 0; m < M; m++) for (l = 0; l < 2; l++)
+          else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(trad[0], o_ne_tot + f_s)) - p_e.begin(), l = 0; l < 2; l++) //pas d'elem source -> dependance en la CL
+              for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < o_wh.dimension(1); m++)
                   tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
                                    * (o_wh(f_s, m) < 1 ? 1 - o_wh(f_s, m) : - o_zone.dist_norm_bord(f_s) * o_fs(f_s) * o_fs(f_s) / o_zone.nu_dot(&o_nu, o_f_e(f_s, 0), m, &o_nf(f_s, 0), &o_nf(f_s, 0)));
 
