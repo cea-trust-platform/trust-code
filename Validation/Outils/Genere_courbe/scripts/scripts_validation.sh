@@ -259,7 +259,7 @@ compare_new_rap_old_rap()
 }
 
 
-echo def genere_new_rap_old_rap  [ -perf ] [-data]  newarchives oldarchives
+echo def genere_new_rap_old_rap  [ -perf ] [-data] [-dt_ev]  newarchives oldarchives
 gen_fiche()
 {
     cd preserve
@@ -273,14 +273,16 @@ gen_fiche()
 # Generate old and new 'fiche', potentially removing performance data and other stuff.
 # This uses the raw information found in the .tgz file.
 # Arguments 
-#   gen_rap_fiche [-perf] [-data] fiche new_archive_dir reference_dir 
+#   gen_rap_fiche [-perf] [-data] [-dt_ev] fiche new_archive_dir reference_dir
 #
 gen_rap_fiche()
 {
     perf=""
     data=""    
+    dt_ev=""
     [ "$1" = "-perf" ] && perf=$1 && shift
     [ "$1" = "-data" ] && data=$1 && shift
+    [ "$1" = "-dt_ev" ] && dt_ev=$1 && shift
     fiche=$1
     new=`realpath $2`
     ref=`realpath $3`
@@ -351,6 +353,17 @@ gen_rap_fiche()
       tar xvf ../new/data.tar
       cd ..
     fi
+
+    if [ "$dt_ev" != "" ]
+    then
+      cd new
+      tar cvf dt_ev.tar `find . -name '*'.dt_ev` temps_total
+      cd ../preserve
+      tar cvf dt_ev.tar `find . -name '*'.dt_ev` temps_total
+      tar xvf ../new/dt_ev.tar
+      cd ..
+    fi
+
     gen_fiche
     if [ "$?" != "0" ]; then cd ..; echo "gen_fiche FAILED!!!"; exit 1; fi
     mv -f preserve/rapport.pdf ../old_rap/$pdf
@@ -366,8 +379,10 @@ genere_new_rap_old_rap()
 {
     perf=""
     data=""
+    dt_ev=""
     [ "$1" = "-perf" ] && perf=$1 && shift
     [ "$1" = "-data" ] && data=$1 && shift
+    [ "$1" = "-dt_ev" ] && dt_ev=$1 && shift
     NEW=$1
     REF=$2
     [ "$NEW" = "" ] && exit
@@ -376,7 +391,7 @@ genere_new_rap_old_rap()
 
     for fiche in $fiches
       do
-      gen_rap_fiche $perf $data $fiche $NEW $REF
+      gen_rap_fiche $perf $data $dt_ev $fiche $NEW $REF
     done
 }
 
