@@ -281,6 +281,7 @@ echo "Verify prerequies"
 [ "$includes_add" = "" ] && includes_add=""
 [ "$librairies_add" = "" ] && librairies_add=""
 cmake_flags="SET(libdeps \"\") %%"
+cmake_flags="$cmake_flags %% set(OLD_CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}) %% list(APPEND CMAKE_LIBRARY_PATH \$ENV{TRUST_ROOT}/exec/python/lib) %% %%"
 
 # extraction de la dependance kernel
 kernel_name=`extract_field "$project_description" kernel`
@@ -299,10 +300,13 @@ then
       lib=`echo $lib0| sed "s?-l??"`
       libs="lib${lib}.a" # Force l'utilisation de librairie statique pour les prerequis
       cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} )"
+      cmake_flags="$cmake_flags %% message(STATUS \"Library '${lib}' found there: \${${lib}}\")"
       cmake_flags="$cmake_flags %% if (${lib} STREQUAL ${lib}-NOTFOUND)%% find_library( ${lib} NAMES ${libs} ${lib} ) %% endif()"
       cmake_flags="$cmake_flags  %% set(libdeps  \${libdeps} \${${lib}} )"
    done
 fi
+
+cmake_flags="$cmake_flags %% %% set(CMAKE_LIBRARY_PATH ${OLD_CMAKE_LIBRARY_PATH}) %%"
 
 if [ "$1" != "-noprerequis" ]
 then  
