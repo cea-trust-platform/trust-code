@@ -89,7 +89,7 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
   const SETS *sch = sub_type(Schema_Implicite_base, pb.eq_qdm.schema_temps()) && sub_type(SETS, ref_cast(Schema_Implicite_base, pb.eq_qdm.schema_temps()).solveur().valeur())
                     ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.eq_qdm.schema_temps()).solveur().valeur()) : NULL;
 
-  int e, i, j, k, n, N = inco.line_size(), alp = ch.le_nom() == "alpha", cR = (rho.dimension_tot(0) == 1),
+  int e, i, j, k, n, N = inco.line_size(), m, M = p.line_size(), alp = ch.le_nom() == "alpha", cR = (rho.dimension_tot(0) == 1),
                      /* iter = sch ? sch->iteration : 0,*/ p_degen = alp && sch ? sch->p_degen : 0;
   if (N == 1 || p_degen) return; //pas d'evanescence en simple phase ou si p est degenere
 
@@ -107,11 +107,11 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
       else abort();
 
       /* coeff d'evanescence, second membre */
-      for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
+      for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (n != k && (a_m = alpha(e, n)) < a_eps)
           {
-            const double val = milc.has_saturation(n, k) ? milc.get_saturation(n, k).Tsat(p[e]) : inco(e, k);
+            const double val = milc.has_saturation(n, k) ? milc.get_saturation(n, k).Tsat(p(e, m)) : alp ? 0 : inco(e, k); //valeur a laquelle on veut ramener inco(e, n)
             coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * (coeff(e, n, 0) = min(max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.) / (p_degen ? rho(!cR * e, n) : 1));
-            double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - !alp * val);
+            double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - val);
             secmem(e, k) += (p_degen ? rho(!cR * e, k) : 1) * flux, secmem(e, n) -= (p_degen ? rho(!cR * e, n) : 1) * flux;
           }
     }
@@ -119,15 +119,20 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
   /* lignes de matrices */
   for (auto &&n_m : matrices) if (n_m.second->nb_colonnes())
       {
-        int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
+        int diag = (n_m.first == ch.le_nom().getString()), press = (n_m.first == "pression"); //est-on sur le bloc diagonal, sur le bloc pression?
         Matrice_Morse& mat = *n_m.second;
-        for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) if (coeff(e, n, 0))
-              for (k = maj(e), i = mat.get_tab1()(N * e + n) - 1, j = mat.get_tab1()(N * e + k) - 1; i < mat.get_tab1()(N * e + n + 1) - 1; i++, j++)
-                {
-                  assert(mat.get_tab2()(j) == mat.get_tab2()(i));
-                  int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
-                  mat.get_set_coeff()(j) += (p_degen ? rho(!cR * e, k) : 1) * ( coeff(e, n, 0) * mat.get_set_coeff()(i) - coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));
-                  mat.get_set_coeff()(i) += (p_degen ? rho(!cR * e, n) : 1) * (-coeff(e, n, 0) * mat.get_set_coeff()(i) + coeff(e, n, 1) * ((c == N * e + n) - !alp * (c == N * e + k)));
-                }
+        for (e = 0; e < zone.nb_elem(); e++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (coeff(e, n, 0))
+              {
+                k = maj(e); //phase majoritaire
+                double dval = milc.has_saturation(n, k) ? (press ? milc.get_saturation(n, k).dP_Tsat(p(e, m)) : 0) : alp ? 0 : diag; //derivee de val (nulle si on n'est pas sur le bon bloc)
+                int cval = dval == 0 ? -1 : milc.has_saturation(n, k) ? M * e + m : N * e + k; //indice de colonne associee a cette derivee
+                for (i = mat.get_tab1()(N * e + n) - 1, j = mat.get_tab1()(N * e + k) - 1; i < mat.get_tab1()(N * e + n + 1) - 1; i++, j++)
+                  {
+                    assert(mat.get_tab2()(j) == mat.get_tab2()(i));
+                    int c = mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
+                    mat.get_set_coeff()(j) += (p_degen ? rho(!cR * e, k) : 1) * ( coeff(e, n, 0) * mat.get_set_coeff()(i) - coeff(e, n, 1) * (diag * (c == N * e + n) - dval * (c == cval)));
+                    mat.get_set_coeff()(i) += (p_degen ? rho(!cR * e, n) : 1) * (-coeff(e, n, 0) * mat.get_set_coeff()(i) + coeff(e, n, 1) * (diag * (c == N * e + n) - dval * (c == cval)));
+                  }
+              }
       }
 }
