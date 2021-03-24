@@ -75,7 +75,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::dimensionner_blocs(matrices_t matrice
             for (n = 0, i = N * f; n < N; n++, i++) sten.append_line(i, i);
 
         /* equations aux elements */
-        for (e = 0, l = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, l++, idx.clear())
+        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++, l++, idx.clear())
             {
               for (i = N * l, n = 0; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                   idx.insert(mat.get_tab2()(j) - 1);
@@ -131,7 +131,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
 
       }
 
-  for (e = 0; e < zone.nb_elem(); e++) /* elements : a faire D fois par element */
+  for (e = 0; e < zone.nb_elem_tot(); e++) /* elements : a faire D fois par element */
     {
       /* phase majoritaire : directement dans l'element */
       for (a_max = 0, k = -1, n = 0; n < N; n++) if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
@@ -162,7 +162,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
                     mat.get_set_coeff()(i) += -coeff(f, n, 0) * mat.get_set_coeff()(i) + coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
                   }
         /* elements : l est l'indice de ligne */
-        for (e = 0, l = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, l++) for (n = 0; n < N; n++) if (coeff(l, n, 0))
+        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++, l++) for (n = 0; n < N; n++) if (coeff(l, n, 0))
                 for (k = maj(l), i = mat.get_tab1()(N * l + n) - 1, j = mat.get_tab1()(N * l + k) - 1; i < mat.get_tab1()(N * l + n + 1) - 1; i++, j++)
                   {
                     assert(mat.get_tab2()(i) == mat.get_tab2()(j));
