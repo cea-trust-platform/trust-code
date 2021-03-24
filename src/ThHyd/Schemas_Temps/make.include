@@ -39,6 +39,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/ThHyd\
 	
 

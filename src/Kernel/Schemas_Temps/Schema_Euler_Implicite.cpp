@@ -269,22 +269,9 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
       if ((!convergence_pb)&&(compteur==nb_ite_max))
         {
           Cout<<"!!! Schema_Euler_Implicite has not converged at t="<< temps_courant_ << " with dt =" << dt_<< " !!!" << finl;
-          double rap=sqrt(2.);
-          facsec_/=rap;
-          dt_/=rap;
-          Cout << "!!! It restarts with dt_ =" << dt_ << " !!!" << finl;
-          ok=0;
-          prob.abortTimeStep();
-          prob.initTimeStep(dt_);
-          // PL pour corriger plantage danbs U_in_var_impl
-          const int nb_eqn=prob.nombre_d_equations();
-          for(int ii=0; ii<nb_eqn; ii++)
-            {
-              Equation_base& eqn=prob.equation(ii);
-              eqn.inconnue().mettre_a_jour(temps_courant_+dt_);
-            }
-          // Fin
-          recommencer_pb(prob);
+          converged = false;
+          dt_failed_ = dt_; //pour proposer un pas de temps plus bas au prochain essai
+          return false;
         }
       else
         {

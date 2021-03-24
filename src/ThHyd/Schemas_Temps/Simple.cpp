@@ -38,6 +38,7 @@
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
 #include <ConstDoubleTab_parts.h>
+#include <SETS.h>
 
 Implemente_instanciable_sans_constructeur(Simple,"Simple",Simpler_Base);
 
@@ -329,7 +330,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   // Pas applique pour l inconnue de N_S avec alorithme PISO et Implicite
   ///////////////////////////////////////////////////////////////////////
 
-  if(!converge)
+  if(!converge && !sub_type(SETS, *this))
     {
       // permet de controler ce qui se passe
       // en particulier la positivite de K et de eps

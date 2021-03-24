@@ -180,6 +180,13 @@ bool QDM_Multiphase::initTimeStep(double dt)
   return Equation_base::initTimeStep(dt);
 }
 
+void QDM_Multiphase::abortTimeStep()
+{
+  pression()->valeurs() = pression()->passe();
+  pression_pa()->valeurs() = pression_pa()->passe();
+  Equation_base::abortTimeStep();
+}
+
 void QDM_Multiphase::discretiser_vitesse()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());

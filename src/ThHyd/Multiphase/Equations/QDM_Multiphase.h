@@ -63,6 +63,7 @@ public :
     return Equation_base::impr(os); //idem
   }
   bool initTimeStep(double dt);
+  void abortTimeStep();
 
   void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
 

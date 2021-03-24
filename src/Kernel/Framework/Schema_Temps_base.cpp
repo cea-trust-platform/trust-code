@@ -34,6 +34,7 @@
 #include <DoubleTab.h>
 #include <Matrice_Morse.h> // necessaire pour visual
 #include <stat_counters.h>
+#include <cfloat>
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
@@ -92,6 +93,7 @@ void Schema_Temps_base::initialize()
       dt_=dt_stab_;
     }
   dt_stab_=dt_;
+  dt_failed_ = DBL_MAX;
 }
 
 double Schema_Temps_base::computeTimeStep(bool& is_stop) const
@@ -108,6 +110,10 @@ double Schema_Temps_base::computeTimeStep(bool& is_stop) const
   double dt = dt_stab_;
   if (!corriger_dt_calcule(dt)) // Change le contenu de dt
     is_stop=true;
+  dt = min(dt, dt_failed_ / sqrt(2)); //pour provoquer une baisse de dt en cas d'echec a la resolution precedente
+  if (temps_courant_ > temps_precedent_)
+    dt = min(dt, (temps_courant_ - temps_precedent_) * sqrt(1.2)); //pour ne pas remonter dt trop vite (comme facsec)
+
   // Mise a jour immediate de l'attribut dt_ afin que pas_de_temps()
   // soit a jour tout le temps (en particulier au moment du postraitement)
   // Ce n'etait pas le cas pour les versions <= 1.6.3 et les champs dependant
@@ -274,6 +280,7 @@ void Schema_Temps_base::validateTimeStep()
   // Update time scheme:
   mettre_a_jour();
   statistiques().end_count(mettre_a_jour_counter_);
+  dt_failed_ = DBL_MAX;
 }
 void Schema_Temps_base::terminate()
 {

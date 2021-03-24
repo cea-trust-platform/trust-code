@@ -367,6 +367,7 @@ protected :
 
   double temps_courant_;
   double temps_precedent_;
+  double dt_failed_;  //si on a rate un pas de temps, sa valeur
   double tinit_;
   double tmax_;
   double tcpumax_;
