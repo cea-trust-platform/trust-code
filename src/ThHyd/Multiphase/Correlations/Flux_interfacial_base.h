@@ -54,7 +54,7 @@ class Flux_interfacial_base : public Correlation_base
   Declare_base(Flux_interfacial_base);
 public:
   virtual void flux(const double al, const double ag, const double Tl, const double Tg, const double Ti, const double dP_Ti,
-                    double& Fl, double& Fg, double& dTl_Fl, double& dTg_Fg, double& dP_Fl, double& dP_Fg) const = 0;
+                    double& Fl, double& Fg, double& dal_fl, double& dag_fl, double& dal_fg, double& dag_fg, double& dTl_Fl, double& dTg_Fg, double& dP_Fl, double& dP_Fg) const = 0;
 };
 
 #endif

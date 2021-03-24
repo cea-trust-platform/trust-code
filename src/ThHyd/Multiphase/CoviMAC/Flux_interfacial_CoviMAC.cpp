@@ -88,9 +88,9 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                       &h = milc.enthalpie().valeurs(),
                        *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL,
                         *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL;
-  Matrice_Morse //*Ma = matrices.count("alpha")       ? matrices.at("alpha")       : NULL,
-  *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
-   *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL;
+  Matrice_Morse *Ma = matrices.count("alpha")       ? matrices.at("alpha")       : NULL,
+                 *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
+                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL;
   int N = inco.line_size();
   const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur().valeur());
 
@@ -116,8 +116,8 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
             /* calcul du flux */
             if (vap || cond)
               {
-                double fl = 0, fg = 0, dTl_fl = 0, dTg_fg = 0, dP_fl = 0, dP_fg = 0, dTl_fg = 0, dTg_fl = 0;
-                correlation_fi.flux(al, ag, Tl, Tg, Ts, dP_Ts, fl, fg, dTl_fl, dTg_fg, dP_fl, dP_fg);
+                double fl = 0, fg = 0, dal_fl = 0, dag_fl = 0, dal_fg = 0, dag_fg = 0, dTl_fl = 0, dTg_fg = 0, dP_fl = 0, dP_fg = 0, dTl_fg = 0, dTg_fl = 0;
+                correlation_fi.flux(al, ag, Tl, Tg, Ts, dP_Ts, fl, fg, dal_fl, dag_fl, dal_fg, dag_fg, dTl_fl, dTg_fg, dP_fl, dP_fg);
 
                 /* secmem */
                 const bool gpos = (fl + fg) < 0;
@@ -131,6 +131,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                              dTl_L = dTl_hg_t - dTl_hl_t, dTg_L = dTg_hg_t - dTg_hl_t,
                              gamma = -(fl + fg) / L, fac = pe(e) * ve(e),
                              dP_gamma = -(L * (dP_fl + dP_fg) - (fl + fg) * dP_L) / L / L,
+                             dal_gamma = - (dal_fl + dag_fl) / L, dag_gamma = -(dag_fl + dag_fg) / L,
                              dTl_gamma = -(L * (dTl_fl + dTl_fg) - (fl + fg) * dTl_L) / L / L,
                              dTg_gamma = -(L * (dTg_fl + dTg_fg) - (fl + fg) * dTg_L) / L / L;
 
@@ -138,6 +139,13 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   {
                     secmem(e, l) -= fac * gamma;
                     secmem(e, g) += fac * gamma;
+                    if (Ma)
+                      {
+                        (*Ma)(N * e + l, N * e + l) += fac * dal_gamma;
+                        (*Ma)(N * e + l, N * e + g) += fac * dag_gamma;
+                        (*Ma)(N * e + g, N * e + l) -= fac * dal_gamma;
+                        (*Ma)(N * e + g, N * e + g) -= fac * dag_gamma;
+                      }
                     if (Mt)
                       {
                         (*Mt)(N * e + l, N * e + l) += fac * dTl_gamma;
@@ -155,7 +163,13 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   {
                     secmem(e, l) += fac * (fl - (gamma * hl_t));
                     secmem(e, g) += fac * (fg + (gamma * hg_t));
-
+                    if (Ma)
+                      {
+                        (*Ma)(N * e + l, N * e + l) -= fac * (dal_fl - dal_gamma * hl_t);
+                        (*Ma)(N * e + l, N * e + g) -= fac * (dag_fl - dag_gamma * hl_t);
+                        (*Ma)(N * e + g, N * e + l) -= fac * (dal_fg + dal_gamma * hg_t);
+                        (*Ma)(N * e + g, N * e + g) -= fac * (dag_fg + dag_gamma * hg_t);
+                      }
                     if (Mt)
                       {
                         (*Mt)(N * e + l, N * e + l) -= fac * (dTl_fl - (dTl_gamma * hl_t + gamma * dTl_hl_t));
