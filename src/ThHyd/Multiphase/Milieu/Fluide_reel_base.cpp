@@ -95,6 +95,7 @@ int Fluide_reel_base::initialiser(const double& temps)
 
 void Fluide_reel_base::mettre_a_jour(double t)
 {
+  double tp = ref_cast(Champ_Inc_base, rho.valeur()).temps(); //pour savoir si on va tourner la roue
   rho.mettre_a_jour(t);
   e_int.mettre_a_jour(t);
   h.mettre_a_jour(t);
@@ -111,15 +112,16 @@ void Fluide_reel_base::mettre_a_jour(double t)
   int i, Ni = mu.valeurs().dimension_tot(0);
   DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs();
   const DoubleTab& tab_rho = masse_volumique().valeurs();
-  for (i = 0; i < Ni; i++)
-    {
-      const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
-      tab_Cp(i) = cp_(T, P);
-      tab_mu(i) = mu_(T);
-      tab_lambda(i) = lambda_(T);
-      tab_nu(i) = tab_mu(i) / tab_rho(i);
-      tab_alpha(i) = tab_lambda(i) / tab_rho(i) / tab_Cp(i);
-    }
+  if (t > tp || first_maj_) for (i = 0; i < Ni; i++) /* maj uniquement en fin de pas de temps */
+      {
+        const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
+        tab_Cp(i) = cp_(T, P);
+        tab_mu(i) = mu_(T);
+        tab_lambda(i) = lambda_(T);
+        tab_nu(i) = tab_mu(i) / tab_rho(i);
+        tab_alpha(i) = tab_lambda(i) / tab_rho(i) / tab_Cp(i);
+      }
+  first_maj_ = 0;
 }
 
 void Fluide_reel_base::abortTimeStep()

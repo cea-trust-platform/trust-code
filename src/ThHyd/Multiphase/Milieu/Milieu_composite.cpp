@@ -186,7 +186,7 @@ void Milieu_composite::mettre_a_jour(double temps)
   if (rho_m.non_nul()) rho_m.mettre_a_jour(temps);
   if (h_m.non_nul()) h_m.mettre_a_jour(temps);
   mettre_a_jour_tabs();
-  Fluide_base::mettre_a_jour(temps);
+  // Fluide_base::mettre_a_jour(temps);
 }
 
 void Milieu_composite::mettre_a_jour_tabs()

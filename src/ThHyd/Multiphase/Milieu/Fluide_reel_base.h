@@ -75,6 +75,7 @@ protected :
 
   double T_ref_ = -1;
   double P_ref_ = -1;
+  int first_maj_ = 1;
 };
 
 #endif
