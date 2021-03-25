@@ -12,7 +12,7 @@
 #ifdef ICOCO_VERSION
 #error "ICOCO_VERSION already defined!! Are you including twice two versions of the ICoCo section ??"
 #else
-#define ICOCO_VERSION 2
+#define ICOCO_VERSION "2.0"
 #endif
 
 #include <string>
@@ -72,6 +72,11 @@ class Problem
    * The release of the resources allocated by the code should not be performed here, but rather in terminate().
    */
   virtual ~Problem();
+
+  int getICoCoMajorVersion() const
+  {
+    return 2;
+  }
 
   /*! @brief Provides the relative path of a data file to be used by the code.
    *
@@ -183,7 +188,7 @@ class Problem
    * @param[in] stationary true if the code should compute a stationary solution.
    * @throws ICoCo::WrongContext exception if called before initialize().
    */
-  virtual void setStationaryMode(bool stationary);
+  virtual void setStationaryMode(bool stationaryMode);
 
   /*! @brief Return whether the solution is constant on the computation time step.
    *
@@ -317,6 +322,10 @@ class Problem
    * @sa getValueType()
    */
   virtual ValueType getFieldType(const std::string& name) const;
+
+  virtual std::string getMeshUnit() const;
+
+  virtual std::string getFieldUnit(const std::string& fieldName) const;
 
   // ******************************************************
   //     subsection TrioField fields I/O
@@ -516,6 +525,8 @@ class Problem
    * @sa getFieldType()
    */
   virtual ValueType getValueType(const std::string& name) const;
+
+  virtual std::string getValueUnit(const std::string& varName) const;
 
   /*! @brief Provides the code with a scalar double data.
    *

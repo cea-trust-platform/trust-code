@@ -38,7 +38,6 @@ void Problem::setMPIComm(void* mpicomm)
 bool Problem::initialize()
 {
   throw NotImplemented("type_of_Problem_not_set", "initialize");
-  return false;
 }
 
 void Problem::terminate()
@@ -85,7 +84,6 @@ void Problem::setStationaryMode(bool stationary)
 bool Problem::isStationary() const
 {
   throw NotImplemented("type_of_Problem_not_set", "isStationary");
-  return false;
 }
 
 void Problem::abortTimeStep()
@@ -141,6 +139,16 @@ std::vector<std::string> Problem::getOutputFieldsNames() const
 ValueType Problem::getFieldType(const std::string& name) const
 {
   throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
+}
+
+std::string Problem::getMeshUnit() const
+{
+  throw NotImplemented("type_of_Problem_not_set", "getMeshUnit");
+}
+
+std::string Problem::getFieldUnit(const std::string& fieldName) const
+{
+  throw NotImplemented("type_of_Problem_not_set", "getFieldUnit");
 }
 
 void Problem::getOutputField(const std::string& name, TrioField& afield) const
@@ -247,7 +255,12 @@ std::vector<std::string> Problem::getOutputValuesNames() const
 
 ValueType Problem::getValueType(const std::string& name) const
 {
-  throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
+  throw NotImplemented("type_of_Problem_not_set", "getOutputValueType");
+}
+
+std::string Problem::getValueUnit(const std::string& varName) const
+{
+  throw NotImplemented("type_of_Problem_not_set", "getOutputValueUnit");
 }
 
 double Problem::getOutputDoubleValue(const std::string& name) const
