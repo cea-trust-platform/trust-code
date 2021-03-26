@@ -30,14 +30,8 @@
 %include "std_vector.i"
 %template(VecString) std::vector<std::string>;
 
-// Propagate C++ exceptions as Python exceptions
-%exception {
-  try {
-    $action
-  } catch (const std::exception& e) {
-    SWIG_exception(SWIG_RuntimeError, e.what());
-  } 
-}
+// Manage exceptions properly:
+%include "icocoexceptions.i"
 
 // Map boolean [out] parameters to Python output (i.e. left hand side of the equal sign).
 // Used for computeTimeStep() and iterateTimeStep().

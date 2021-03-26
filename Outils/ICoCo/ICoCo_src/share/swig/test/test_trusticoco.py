@@ -21,6 +21,21 @@ class trusticoco_test(unittest.TestCase):
         ti.ICoCoValueType.Int
         ti.ICoCoValueType.String
 
+    def test_exceptions(self):
+        import trusticoco as ti
+
+        pbT = ti.ProblemTrio()
+        self.assertRaises(ti.ICoCoNotImplemented, pbT.getFieldUnit, "XXX")
+#         pbT.setDataFile("test_conduc.data")
+#         pbT.initialize()
+#         dt, stop = pbT.computeTimeStep()
+#         pbT.initTimeStep(dt)
+#         self.assertRaises(ti.ICoCoWrongArgument, pbT.getFieldType, "XXXX")
+#         self.assertRaises(ti.ICoCoWrongContext, pbT.terminate)
+#         pbT.solveTimeStep()
+#         pbT.validateTimeStep()
+#         pbT.terminate()
+
     def test_small_run(self):
         """ Execute a small run """
         import trusticoco as ti
@@ -41,10 +56,12 @@ class trusticoco_test(unittest.TestCase):
                     return
                 pb.initTimeStep(dt)
                 # List of available fields:
-                print("out",pb.getOutputFieldsNames())
-                print("in",pb.getInputFieldsNames())
+                expected_outs = ('FLUX_DROIT', 'TMAX', 'TEMPERATURE_SOM_dom', 'TEMPERATURE_ELEM_dom', 'PVOL_ELEM_dom')
+                expected_ins = ('Tdroit', 'pvol')
+                self.assertEqual(pb.getOutputFieldsNames(), expected_outs)
+                self.assertEqual(pb.getInputFieldsNames(), expected_ins)
                 self.assertEqual(ti.ICoCoValueType.Double, pb.getFieldType("PVOL_ELEM_dom"))
-                self.assertRaises(RuntimeError, pbT.getFieldType, "XXXX")
+                self.assertRaises(ti.ICoCoWrongArgument, pb.getFieldType, "XXXX")
 
                 #
                 # Play with fields typed as MEDDoubleField:
@@ -62,12 +79,12 @@ class trusticoco_test(unittest.TestCase):
                 #
                 # Play with fields typed directly as MEDCouplingFieldDouble (nicer in Python ...)
                 #
-                fl_asmc = pb.getOutputMEDField("PVOL_ELEM_dom")  # WARNING : no "MEDDouble" here!!
+                fl_asmc = pb.getOutputMEDField("PVOL_ELEM_dom")  # WARNING : no "MEDFieldDouble" here!!
                 print(fl_asmc.getName())
-                totomc2 = pb.getInputMEDFieldTemplate("pvol")    # WARNING : no "MEDDouble" here!!
+                totomc2 = pb.getInputMEDFieldTemplate("pvol")    # WARNING : no "MEDFieldDouble" here!!
                 print(totomc2)
                 totomc2 += 1
-                pb.setInputMEDField("pvol",totomc2)              # WARNING : no "MEDDouble" here!!
+                pb.setInputMEDField("pvol",totomc2)              # WARNING : no "MEDFieldDouble" here!!
 
                 # Main time loop:
                 ok = pb.solveTimeStep()

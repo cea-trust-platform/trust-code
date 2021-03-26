@@ -22,8 +22,8 @@ WrongContext::WrongContext(const std::string& aprob, const std::string& amethod,
 const char* WrongContext::what() const throw()
 {
   std::ostringstream s;
-  s << "WrongContext in Problem instance with name: " << prob << std::endl;
-  s << " in method " << method << " : " << precondition << std::endl;
+  s << "WrongContext in Problem instance with name: '" << prob << "'" << std::endl;
+  s << " in method '" << method << "' : " << precondition << std::endl;
   return strdup(s.str().c_str());
 }
 
@@ -39,8 +39,8 @@ WrongArgument::WrongArgument(const std::string& aprob, const std::string& ametho
 const char* WrongArgument::what() const throw()
 {
   std::ostringstream s;
-  s << "WrongArgument in Problem instance with name: " << prob << std::endl;
-  s << " in method " << method << ", argument " << arg << " : " << condition << std::endl;
+  s << "WrongArgument in Problem instance with name: '" << prob << "'" << std::endl;
+  s << " in method '" << method << "', argument '" << arg << "' : " << condition << std::endl;
   return strdup(s.str().c_str());
 }
 
@@ -53,8 +53,8 @@ NotImplemented::NotImplemented(const std::string& aprob, const std::string& amet
 const char* NotImplemented::what() const throw()
 {
   std::ostringstream s;
-  s << "NotImplemented in Problem instance with name: " << prob << std::endl;
-  s << ", method " << method << std::endl;
+  s << "NotImplemented in Problem instance with name: '" << prob << "'";
+  s << ", method '" << method << "'" << std::endl;
   return strdup(s.str().c_str());
 }
 
