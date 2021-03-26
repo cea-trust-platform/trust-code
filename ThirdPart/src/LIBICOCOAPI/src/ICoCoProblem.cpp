@@ -12,285 +12,293 @@
 
 namespace ICoCo
 {
-///////////////////////////
-//                       //
-//   section Problem   //
-//                       //
-///////////////////////////
-Problem::Problem()
-{
-}
-Problem::~Problem()
-{
-}
+  ///////////////////////////
+  //                       //
+  //   section Problem   //
+  //                       //
+  ///////////////////////////
+  Problem::Problem()
+  {
+  }
 
-void Problem::setDataFile(const std::string& datafile)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setDataFile");
-}
+  Problem::~Problem()
+  {
+  }
 
-void Problem::setMPIComm(void* mpicomm)
-{
-  if (mpicomm != 0)
-    throw NotImplemented("type_of_Problem_not_set", "setMPIComm with comm<>0");
-}
+  void Problem::setDataFile(const std::string& datafile)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setDataFile");
+  }
 
-bool Problem::initialize()
-{
-  throw NotImplemented("type_of_Problem_not_set", "initialize");
-}
+  void Problem::setMPIComm(void* mpicomm)
+  {
+    if (mpicomm != 0)
+      throw NotImplemented("type_of_Problem_not_set", "setMPIComm with comm<>0");
+  }
 
-void Problem::terminate()
-{
-  throw NotImplemented("type_of_Problem_not_set", "terminate");
-}
+  bool Problem::initialize()
+  {
+    throw NotImplemented("type_of_Problem_not_set", "initialize");
+  }
 
-///////////////////////////////////
-//                               //
-//   section UnsteadyProblem   //
-//                               //
-///////////////////////////////////
+  void Problem::terminate()
+  {
+    throw NotImplemented("type_of_Problem_not_set", "terminate");
+  }
 
-double Problem::presentTime() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "presentTime");
-}
+  ///////////////////////////////////
+  //                               //
+  //   section UnsteadyProblem   //
+  //                               //
+  ///////////////////////////////////
 
-double Problem::computeTimeStep(bool& stop) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "computeTimeStep");
-}
+  double Problem::presentTime() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "presentTime");
+  }
 
-bool Problem::initTimeStep(double dt)
-{
-  throw NotImplemented("type_of_Problem_not_set", "initTimeStep");
-}
+  double Problem::computeTimeStep(bool& stop) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "computeTimeStep");
+  }
 
-bool Problem::solveTimeStep()
-{
-  throw NotImplemented("type_of_Problem_not_set", "solveTimeStep");
-}
+  bool Problem::initTimeStep(double dt)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "initTimeStep");
+  }
 
-void Problem::validateTimeStep()
-{
-  throw NotImplemented("type_of_Problem_not_set", "terminate");
-}
+  bool Problem::solveTimeStep()
+  {
+    throw NotImplemented("type_of_Problem_not_set", "solveTimeStep");
+  }
 
-void Problem::setStationaryMode(bool stationary)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setStationaryMode");
-}
+  void Problem::validateTimeStep()
+  {
+    throw NotImplemented("type_of_Problem_not_set", "terminate");
+  }
 
-bool Problem::isStationary() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "isStationary");
-}
+  void Problem::setStationaryMode(bool stationary)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setStationaryMode");
+  }
 
-void Problem::abortTimeStep()
-{
-  throw NotImplemented("type_of_Problem_not_set", "abortTimeStep");
-}
+  bool Problem::isStationary() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "isStationary");
+  }
 
-bool Problem::iterateTimeStep(bool& converged)
-{
-  throw NotImplemented("type_of_Problem_not_set", "iterateTimeStep");
-}
+  void Problem::abortTimeStep()
+  {
+    throw NotImplemented("type_of_Problem_not_set", "abortTimeStep");
+  }
 
-void Problem::resetTime(double time)
-{
-  throw NotImplemented("type_of_Problem_not_set", "resetTimeStep");
-}
+  bool Problem::iterateTimeStep(bool& converged)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "iterateTimeStep");
+  }
 
-void Problem::save(int label, const std::string& method) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "save");
-}
+  void Problem::resetTime(double time)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "resetTimeStep");
+  }
 
-void Problem::restore(int label, const std::string& method)
-{
-  throw NotImplemented("type_of_Problem_not_set", "restore");
-}
+  void Problem::save(int label, const std::string& method) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "save");
+  }
 
-void Problem::forget(int label, const std::string& method) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "forget");
-}
+  void Problem::restore(int label, const std::string& method)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "restore");
+  }
 
-std::vector<std::string> Problem::getInputFieldsNames() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getInputFieldsNames");
-}
+  void Problem::forget(int label, const std::string& method) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "forget");
+  }
 
-void Problem::getInputFieldTemplate(const std::string& name, TrioField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getInputFieldTemplate");
-}
+  std::string Problem::getMeshUnit() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getMeshUnit");
+  }
 
-void Problem::setInputField(const std::string& name, const TrioField& afield)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setInputField");
-}
+  std::string Problem::getFieldUnit(const std::string& fieldName) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getFieldUnit");
+  }
 
-std::vector<std::string> Problem::getOutputFieldsNames() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputFieldsNames");
-}
+  std::vector<std::string> Problem::getInputFieldsNames() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getInputFieldsNames");
+  }
 
-ValueType Problem::getFieldType(const std::string& name) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
-}
+  void Problem::getInputFieldTemplate(const std::string& name, TrioField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getInputFieldTemplate");
+  }
 
-std::string Problem::getMeshUnit() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getMeshUnit");
-}
+  ///////////////////////////////////
+  //                               //
+  //   section MED fields I/O   //
+  //                               //
+  ///////////////////////////////////
 
-std::string Problem::getFieldUnit(const std::string& fieldName) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getFieldUnit");
-}
+  void Problem::getInputMEDDoubleFieldTemplate(const std::string& name, MEDDoubleField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getInputMEDDoubleFieldTemplate");
+  }
 
-void Problem::getOutputField(const std::string& name, TrioField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputField");
-}
+  void Problem::setInputMEDDoubleField(const std::string& name, const MEDDoubleField& afield)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setInputMEDDoubleField");
+  }
 
-void Problem::updateOutputField(const std::string& name, TrioField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "updateOutputField");
-}
+  void Problem::getOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputMEDDoubleField");
+  }
 
-///////////////////////////////////
-//                               //
-//   section MED fields I/O   //
-//                               //
-///////////////////////////////////
+  void Problem::updateOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "updateOutputMEDDoubleField");
+  }
 
-void Problem::getInputMEDDoubleFieldTemplate(const std::string& name, MEDDoubleField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getInputMEDDoubleFieldTemplate");
-}
+  void Problem::getInputMEDIntFieldTemplate(const std::string& name, MEDIntField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getInputMEDIntFieldTemplate");
+  }
 
-void Problem::setInputMEDDoubleField(const std::string& name, const MEDDoubleField& afield)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setInputMEDDoubleField");
-}
+  void Problem::setInputMEDIntField(const std::string& name, const MEDIntField& afield)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setInputMEDIntField");
+  }
 
-void Problem::getOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputMEDDoubleField");
-}
+  void Problem::getOutputMEDIntField(const std::string& name, MEDIntField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputMEDIntField");
+  }
 
-void Problem::updateOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "updateOutputMEDDoubleField");
-}
+  void Problem::updateOutputMEDIntField(const std::string& name, MEDIntField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "updateOutputMEDIntField");
+  }
 
-void Problem::getInputMEDIntFieldTemplate(const std::string& name, MEDIntField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getInputMEDIntFieldTemplate");
-}
+  void Problem::getInputMEDStringFieldTemplate(const std::string& name, MEDStringField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputMEDStringFieldTemplate");
+  }
 
-void Problem::setInputMEDIntField(const std::string& name, const MEDIntField& afield)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setInputMEDIntField");
-}
+  void Problem::setInputMEDStringField(const std::string& name, const MEDStringField& afield)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setInputMEDStringField");
+  }
 
-void Problem::getOutputMEDIntField(const std::string& name, MEDIntField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputMEDIntField");
-}
+  void Problem::getOutputMEDStringField(const std::string& name, MEDStringField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputMEDStringField");
+  }
 
-void Problem::updateOutputMEDIntField(const std::string& name, MEDIntField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "updateOutputMEDIntField");
-}
+  void Problem::updateOutputMEDStringField(const std::string& name, MEDStringField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "updateOutputMEDStringField");
+  }
 
-void Problem::getInputMEDStringFieldTemplate(const std::string& name, MEDStringField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputMEDStringFieldTemplate");
-}
+  int Problem::getMEDCouplingMajorVersion() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getMEDCouplingMajorVersion");
+  }
 
-void Problem::setInputMEDStringField(const std::string& name, const MEDStringField& afield)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setInputMEDStringField");
-}
+  bool Problem::isMEDCoupling64Bits() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "isMEDCoupling64Bits");
+  }
 
-void Problem::getOutputMEDStringField(const std::string& name, MEDStringField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputMEDStringField");
-}
+  ///////////////////////////////////
+  //                               //
+  //   section TrioField fields I/O   //
+  //                               //
+  ///////////////////////////////////
 
-void Problem::updateOutputMEDStringField(const std::string& name, MEDStringField& afield) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "updateOutputMEDStringField");
-}
+  void Problem::setInputField(const std::string& name, const TrioField& afield)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setInputField");
+  }
 
-int Problem::getMEDCouplingMajorVersion() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getMEDCouplingMajorVersion");
-}
+  std::vector<std::string> Problem::getOutputFieldsNames() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputFieldsNames");
+  }
 
-bool Problem::isMEDCoupling64Bits() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "isMEDCoupling64Bits");
-}
+  ValueType Problem::getFieldType(const std::string& name) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
+  }
 
-///////////////////////////////////
-//                               //
-//   section Scalar values I/O   //
-//                               //
-///////////////////////////////////
+  void Problem::getOutputField(const std::string& name, TrioField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputField");
+  }
 
-std::vector<std::string> Problem::getInputValuesNames() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getInputValuesNames");
-}
+  void Problem::updateOutputField(const std::string& name, TrioField& afield) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "updateOutputField");
+  }
 
-std::vector<std::string> Problem::getOutputValuesNames() const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
-}
 
-ValueType Problem::getValueType(const std::string& name) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputValueType");
-}
+  ///////////////////////////////////
+  //                               //
+  //   section Scalar values I/O   //
+  //                               //
+  ///////////////////////////////////
 
-std::string Problem::getValueUnit(const std::string& varName) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputValueUnit");
-}
+  std::vector<std::string> Problem::getInputValuesNames() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getInputValuesNames");
+  }
 
-double Problem::getOutputDoubleValue(const std::string& name) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputDoubleValue");
-}
+  std::vector<std::string> Problem::getOutputValuesNames() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
+  }
 
-void Problem::setIntputDoubleValue(const std::string& name, const double& val)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setIntputDoubleValue");
-}
+  ValueType Problem::getValueType(const std::string& name) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputValuesNames");
+  }
 
-int Problem::getOutputIntValue(const std::string& name) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputIntValue");
-}
+  std::string Problem::getValueUnit(const std::string& varName) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getValueUnit");
+  }
 
-void Problem::setIntputIntValue(const std::string& name, const int& val)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setIntputIntValue");
-}
+  double Problem::getOutputDoubleValue(const std::string& name) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputDoubleValue");
+  }
 
-std::string Problem::getOutputStringValue(const std::string& name) const
-{
-  throw NotImplemented("type_of_Problem_not_set", "getOutputStringValue");
-}
+  void Problem::setIntputDoubleValue(const std::string& name, const double& val)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setIntputDoubleValue");
+  }
 
-void Problem::setIntputStringValue(const std::string& name, const std::string& val)
-{
-  throw NotImplemented("type_of_Problem_not_set", "setIntputStringValue");
-}
+  int Problem::getOutputIntValue(const std::string& name) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputIntValue");
+  }
+
+  void Problem::setIntputIntValue(const std::string& name, const int& val)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setIntputIntValue");
+  }
+
+  std::string Problem::getOutputStringValue(const std::string& name) const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getOutputStringValue");
+  }
+
+  void Problem::setIntputStringValue(const std::string& name, const std::string& val)
+  {
+    throw NotImplemented("type_of_Problem_not_set", "setIntputStringValue");
+  }
 
 }  // end namespace ICoCo

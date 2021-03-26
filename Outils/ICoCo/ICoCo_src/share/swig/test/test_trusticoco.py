@@ -4,8 +4,10 @@ class trusticoco_test(unittest.TestCase):
 
     def test_simple(self):
         """ Test import of modules and one function in each """
+
         import medcoupling as mc
         import trusticoco as ti
+        print (ti.ICOCO_VERSION)
         pbT = ti.ProblemTrio()
         pbT.setDataFile("test_conduc.data")
 
