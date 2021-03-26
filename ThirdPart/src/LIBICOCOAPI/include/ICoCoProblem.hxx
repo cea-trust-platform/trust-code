@@ -2,9 +2,9 @@
 // Version 2 -- 02/2021
 //
 // WARNING: this file is part of the official ICoCo API and should not be modified.
-// The official version can be found in the TRUST repository:
+// The official version can be found at the following URL:
 //
-//    https://sourceforge.net/projects/trust/
+//    https://github.com/cea-trust-platform/icoco-coupling
 
 #ifndef ICoCoProblem_included
 #define ICoCoProblem_included
@@ -13,6 +13,8 @@
 #   error "ICOCO_VERSION already defined!! Are you including twice two versions of the ICoCo interface?"
 #else
 #   define ICOCO_VERSION "2.0"
+#   define ICOCO_MAJOR_VERSION 2
+#   define ICOCO_MINOR_VERSION 0
 #endif
 
 #include <vector>
@@ -59,9 +61,10 @@ namespace ICoCo
    * Within the computation of a time step (so within TIME_STEP_DEFINED), the temporal semantic of the fields (and
    * scalar values) is not imposed by the norm. Said differently, it does not require the fields to be defined at the
    * start/middle/end of the current time step, this semantic must be agreed on between the codes being coupled.
-   * However, those values are invalidated when moving to the next time step.
-   * Outside this context (before the first time step for example, or after the resolution of the last time step), the values
-   * are permanent.
+   * Fields and scalar values that are set within the TIME_STEP_DEFINED context are invalidated after a call to
+   * validateTimeStep() (or abortTimeStep()). They need to be set at each time step. However, fields and scalar values that are
+   * set outside of this context (before the first time step for example, or after the resolution of the last time step) are
+   * permanent.
    *
    * Finally, the ICoCo interface may be wrapped in Python using SWIG or PyBind11. For an example of the former see the
    * TRUST implementation of ICoCo. Notably the old methods returning directly MEDCoupling::MEDCouplingFieldDouble objects
@@ -71,6 +74,11 @@ namespace ICoCo
   {
 
   public :
+
+    /*! @brief Return ICoCo interface major version number.
+     * @return ICoCo interface major version number (2 at present)
+     */
+    static int GetICoCoMajorVersion() { return ICOCO_MAJOR_VERSION; }
 
     // ******************************************************
     // section Problem
@@ -87,11 +95,6 @@ namespace ICoCo
      * The release of the resources allocated by the code should not be performed here, but rather in terminate().
      */
     virtual ~Problem();
-
-    /*! @brief Return ICoCo interface major version number.
-     * @return ICoCo interface major version number (2 at present)
-     */
-    int getICoCoMajorVersion() const { return 2; }
 
     /*! @brief (Optional) Provide the relative path of a data file to be used by the code.
      *
@@ -138,11 +141,12 @@ namespace ICoCo
      */
     virtual void terminate();
 
+
     // ******************************************************
     // section TimeStepManagement
     // ******************************************************
 
-    /*! @brief (Optional) Return the current time of the simulation.
+    /*! @brief (Mandatory) Return the current time of the simulation.
      *
      * Can be called any time between initialize() and terminate().
      * The current time can only change during a call to validateTimeStep().
@@ -162,7 +166,8 @@ namespace ICoCo
      *
      * Can be called whenever the code is outside the TIME_STEP_DEFINED context (see Problem documentation).
      *
-     * @param[out] stop set to true if the code wants to stop.
+     * @param[out] stop set to true if the code wants to stop. It can be used for example to indicate that, according to
+     * a certain criterion, the end of the transient computation is reached from the code point of view.
      * @return the preferred time step for this code (only valid if stop is false).
      * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation).
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
@@ -178,6 +183,7 @@ namespace ICoCo
      * @return false means that given time step is not compatible with the code time scheme.
      *
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
+     * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation).
      * @throws ICoCo::WrongContext exception if called several times without resolution.
      * @throws ICoCo::WrongArgument exception if dt is invalid (dt <= 0.0).
      */
@@ -200,7 +206,7 @@ namespace ICoCo
      * - the computation time step is undefined (the code leaves the TIME_STEP_DEFINED context).
      *
      * @throws ICoCo::WrongContext exception if called outside the TIME_STEP_DEFINED context (see Problem documentation).
-     * @throws ICoCo::WrongContext exception if called several times within the same time step computation.
+     * @throws ICoCo::WrongContext exception if called before the solveTimeStep() method.
      * @sa abortTimeStep()
      */
     virtual void validateTimeStep();
@@ -268,7 +274,7 @@ namespace ICoCo
      * Can be called (potentially several times) inside the TIME_STEP_DEFINED context (see Problem documentation).
      *
      * @param[out] converged set to true if the solution is not evolving any more.
-     * @return false if the computation fails;
+     * @return false if the computation failed.
      * @throws ICoCo::WrongContext exception if called outside the TIME_STEP_DEFINED context (see Problem documentation)
      * @sa solveTimeStep()
      */
@@ -289,7 +295,7 @@ namespace ICoCo
      * @param[in] method a string specifying which method is used to save the state of the code. A code can provide
      * different methods (for example in memory, on disk, etc.).
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
-     * @throws ICoCo::WrongContext exception if called outside the TIME_STEP_DEFINED context (see Problem documentation),
+     * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation),
      * meaning we shouldn't save a previous time step while the computation of a new time step is in progress.
      * @throws ICoCo::WrongArgument exception if the method or label argument is invalid.
      */
@@ -306,7 +312,7 @@ namespace ICoCo
      * @param[in] method a string specifying which method is used to restore the state of the code. A code can provide
      * different methods (for example in memory, on disk, etc.).
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
-     * @throws ICoCo::WrongContext exception if called outside the TIME_STEP_DEFINED context (see Problem documentation),
+     * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation),
      * meaning we shouldn't restore while the computation of a new time step is in progress.
      * @throws ICoCo::WrongArgument exception if the method or label argument is invalid.
      */
@@ -327,6 +333,7 @@ namespace ICoCo
      * @throws ICoCo::WrongArgument exception if the method or label argument is invalid.
      */
     virtual void forget(int label, const std::string& method) const;
+
 
     // ******************************************************
     // section Field I/O. Reminder: all methods are **optional** not all of them need to be implemented!
@@ -410,7 +417,6 @@ namespace ICoCo
      * @param[in] afield field object (in MEDDoubleField format) containing the input data to be read by the code. The name
      * of the field set on this instance (with the Field::setName() method) should not be checked. However its time value
      * should be to ensure it is within the proper time interval ]t, t+dt].
-     * Any previous information in this object will be discarded.
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      * @throws ICoCo::WrongArgument exception if the field name ('name' parameter) is invalid.
      * @throws ICoCo::WrongArgument exception if the time property of 'afield' does not belong to the currently computed
@@ -439,7 +445,7 @@ namespace ICoCo
      *
      * (New in version 2) This methods allows the code to implement a more efficient update of a given output field,
      * thus avoiding the caller to invoke getOutputField() each time.
-     * A previous call to getOutputField() with the same name must have been done prior to this call.
+     * A previous call to getOutputMEDDoubleField() with the same name must have been done prior to this call.
      * The code should check the consistency of the field object with the requested data (same support mesh,
      * discretization -- on nodes, on elements, etc.).
      *
@@ -543,6 +549,7 @@ namespace ICoCo
      */
     virtual void updateOutputField(const std::string& name, TrioField& afield) const;
 
+
     // ******************************************************
     // section Scalar values I/O
     // ******************************************************
@@ -621,7 +628,6 @@ namespace ICoCo
      */
     virtual std::string getOutputStringValue(const std::string& name) const;
   };
-
 }
 
 /*! @brief (Mandatory) Retrieve an instance of the class defined by the code (and inheriting Problem).

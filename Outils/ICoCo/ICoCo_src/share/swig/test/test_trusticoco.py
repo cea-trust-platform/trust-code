@@ -51,7 +51,7 @@ class trusticoco_test(unittest.TestCase):
                 #
                 fl_asmf = mc.ICoCoMEDDoubleField()
                 pb.getOutputMEDDoubleField("PVOL_ELEM_dom", fl_asmf)
-                print(fl_asmf.getName())
+                print("@@@ NAME:", fl_asmf.getName())
                 toto_asmf = mc.ICoCoMEDDoubleField()
                 pb.getInputMEDDoubleFieldTemplate("pvol", toto_asmf)
                 totomc1 = toto_asmf.getMCField()
