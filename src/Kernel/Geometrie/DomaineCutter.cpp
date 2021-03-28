@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1150,7 +1150,7 @@ void DomaineCutter::construire_sous_domaine(const int part,
 
   construire_faces_joints_ssdom(part, correspondance, zone_partie);
 
-  int compute_items_distants=1; // To print NbElemDist informations
+  int compute_items_distants = Decouper::print_more_infos; // To print NbElemDist informations
   if (compute_items_distants)
     {
       // Cet algorithme sequentiel n'est pas utilise en temps normal, sauf si
@@ -1292,9 +1292,13 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                 nbelemdist_total+=nbelemdist;
                 // Beurk: sprintf pas beau et dangereux, mais c'est plus simple...
                 assert(sizeof(int)==sizeof(int));
-                Cerr<< "  Joint "<<i<<" PeVoisin "<<pe<<" NbSommets "<<nbsom<<" NbFaces "<<nbfaces<<" NbElemDist "<<nbelemdist<<finl;
+                Cerr<< "  Joint "<<i<<" PeVoisin "<<pe<<" NbSommets "<<nbsom<<" NbFaces "<<nbfaces;
+                if (Decouper::print_more_infos) Cerr <<" NbElemDist "<<nbelemdist;
+                Cerr<<finl;
               }
-            Cerr<<"               Total:    NbSommets "<<nbsom_total<<" NbFaces "<<nbfaces_total<<" NbElemDist "<<nbelemdist_total<<finl;
+            Cerr<<"               Total:    NbSommets "<<nbsom_total<<" NbFaces "<<nbfaces_total;
+            if (Decouper::print_more_infos) Cerr<<" NbElemDist "<<nbelemdist_total;
+            Cerr<<finl;
 
           }
           if (reorder && loop==0)
