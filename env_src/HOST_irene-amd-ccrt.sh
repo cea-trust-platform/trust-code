@@ -30,17 +30,11 @@ define_modules_config()
       cuda_version=10.2.89
       module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/$cuda_version"
    else
-      intel="intel/19.0.5.281"
-      # module="$intel mpi/intelmpi/2019.0.5.281"
-      # car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI
-      # openmpi="mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering"
-      # Recommendations CCRT debut 2021 (bcp de coeurs) a la place de la ligne precedente:
-      intel="intel/20.0.4"
-      # openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5" # Retour a openmpi 4.0.2 (car regression perf + chargement Cuda dans opempi 4.0.5)
-      openmpi="feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.2"
-      sw="feature/hcoll/multicast/disable"
-      romio_hints="feature/openmpi/io/collective_buffering"
-      module="$intel $openmpi $romio_hints"
+      # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 
+      # module="intel/19.0.5.281 mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # openmpi/io/collective_buffering recommendation CCRT pour IO paralleles
+      # module="intel/20.0.4 feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5 feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # Recommendations CCRT debut 2021 (bcp de coeurs)
+      # sw="feature/hcoll/multicast/disable" # Pour supprimer un warning aleatoire au demarrage de GAMELAN (ne gene pas ensuite)
+      module="intel/20.0.4 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
