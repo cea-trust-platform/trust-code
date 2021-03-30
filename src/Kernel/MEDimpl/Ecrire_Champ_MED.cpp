@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,6 +88,10 @@ Entree& Ecrire_Champ_MED::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
+// XD ecrire_champ_med interprete ecrire_champ_med -1 Keyword to write a field to MED format into a file. Useful with Homard.
+// XD attr nom_dom ref_domaine nom_dom 0 domain name
+// XD attr nom_chp ref_field_base nom_chp 0 field name
+// XD attr file chaine file 0 file name
 Entree& Ecrire_Champ_MED::interpreter(Entree& is)
 {
   Nom nom_domaine, nom_champ,nom_fic;

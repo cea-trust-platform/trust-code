@@ -155,7 +155,7 @@ Entree& Scatter::interpreter(Entree& is)
       Motcle n(nomentree);
       if (n != ";" && n != "unlock;")
         {
-          Cerr << "Sequential calculation: Scatter can only be used with\n Scatter ; DOMAIN_NAME or Scatter unlock; DOMAIN_NAME" << finl;
+          Cerr << "Error ! You ran a sequential calculation and can't use Scatter keyword here. Run a parallel calculation or remove this keyword." << finl;
           exit();
         }
       Cerr << "Scatter: preparing domain structure\n"

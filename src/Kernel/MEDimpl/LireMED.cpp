@@ -118,6 +118,14 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
   med_non_installe();
 }
 #else
+// XD Read_MED interprete lire_med -1 Keyword to read MED mesh files where domain_name corresponds to the domain name, filename.med corresponds to the file (written in format MED) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading filename.med, TRUST will detect boundaries between domain (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in filename.med will be considered by TRUST as a boundary named wall between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
+// XD attr vef chaine(into=["vef"]) vef 1 Option vef is obsolete and is kept for backward compatibility.
+// XD attr convertAllToPoly chaine(into=["convertAllToPoly"]) convertAllToPoly 1 Option to convert mesh with mixed cells into polyhedras/polygons cells
+// XD attr family_names_from_group_names chaine(into=["family_names_from_group_names"]) family_names_from_group_names 1 The option family_names_from_group_names uses the group names instead of the family names to detect the boundaries into a MED mesh (useful when trying to read a MED mesh file from Gmsh tool which can now read and write MED meshes).
+// XD attr short_family_names chaine(into=["short_family_names"]) short_family_names 1 The option short_family_names is useful to suppress FAM_-*_ from the boundary names of the MED meshes.
+// XD attr nom_dom ref_domaine nom_dom 0 corresponds to the domain name
+// XD attr nom_dom_med chaine nom_dom_med 0 name of the mesh in med file
+// XD attr file chaine file 0 corresponds to the file (written in format MED) containing the mesh
 Entree& LireMED::interpreter_(Entree& is)
 {
   Cerr << "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
