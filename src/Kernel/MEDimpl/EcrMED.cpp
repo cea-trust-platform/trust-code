@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,7 +100,9 @@ Entree& EcrMED::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
-
+// XD writemed interprete ecrire_med -1 Write a domain to MED format into a file.
+// XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
+// XD attr file chaine file 0 Name of file.
 Entree& EcrMED::interpreter(Entree& is)
 {
   Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
