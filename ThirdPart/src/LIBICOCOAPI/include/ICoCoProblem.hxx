@@ -149,7 +149,7 @@ namespace ICoCo
     /*! @brief (Mandatory) Return the current time of the simulation.
      *
      * Can be called any time between initialize() and terminate().
-     * The current time can only change during a call to validateTimeStep().
+     * The current time can only change during a call to validateTimeStep() or to resetTime().
      *
      * @return the current (physical) time of the simulation
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
@@ -444,7 +444,7 @@ namespace ICoCo
     /*! @brief (Optional) Update a previously retrieved output field.
      *
      * (New in version 2) This methods allows the code to implement a more efficient update of a given output field,
-     * thus avoiding the caller to invoke getOutputField() each time.
+     * thus avoiding the caller to invoke getOutputMEDDoubleField() each time.
      * A previous call to getOutputMEDDoubleField() with the same name must have been done prior to this call.
      * The code should check the consistency of the field object with the requested data (same support mesh,
      * discretization -- on nodes, on elements, etc.).

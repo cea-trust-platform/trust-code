@@ -2,6 +2,8 @@
 
 **WARNING: This API should not be changed!!**
 
+See https://github.com/cea-trust-platform/icoco-coupling for full reference.
+
 ICoCo stands for **Interface for Code Coupling**. This is a norm that a code may choose
 to implement to facilitate its coupling with other ICoCo-compliant codes.
 
