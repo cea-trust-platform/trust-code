@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ public:
     ;
   }
 
-#ifndef _INLINE_EVALUATEURS_
+//#ifndef _INLINE_EVALUATEURS_
 
   virtual int calculer_fa7_sortie_libre() const =0;
   virtual int calculer_arete_interne() const =0;
@@ -76,6 +76,13 @@ public:
   virtual int calculer_arete_fluide() const =0;
   virtual int calculer_arete_paroi() const =0;
   virtual int calculer_arete_paroi_fluide() const =0;
+  virtual int calculer_arete_coin_fluide() const
+  {
+    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
+    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
+    Process::exit();
+    return 1;
+  }
   virtual int calculer_arete_periodicite() const =0;
 
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
@@ -92,6 +99,13 @@ public:
                                  double&, double&) const =0;
   virtual void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int,
                                        double&, double&) const =0;
+  virtual void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int,
+                                      double&, double&) const
+  {
+    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
+    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
+    Process::exit();
+  }
   virtual void flux_arete_periodicite(const DoubleTab&, int, int, int, int,
                                       double&, double&) const =0;
 
@@ -114,11 +128,18 @@ public:
                                  int, DoubleVect&, DoubleVect&) const =0;
   virtual void flux_arete_paroi_fluide(const DoubleTab&, int, int,
                                        int, int, DoubleVect&, DoubleVect&) const =0;
+  virtual void flux_arete_coin_fluide(const DoubleTab&, int, int,
+                                      int, int, DoubleVect&, DoubleVect&) const
+  {
+    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
+    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
+    Process::exit();
+  };
   virtual void flux_arete_periodicite(const DoubleTab&, int, int,
                                       int, int, DoubleVect&, DoubleVect&) const =0;
 
 
-#endif
+//#endif
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
 
@@ -158,6 +179,11 @@ public:
   }
   virtual void coeffs_arete_paroi_fluide(int, int, int, int,
                                          double& aii1_2, double& aii3_4, double& ajj1_2) const
+  {
+    ;
+  }
+  virtual void coeffs_arete_coin_fluide(int, int, int, int,
+                                        double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
@@ -209,6 +235,10 @@ public:
     ;
   }
   virtual void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const
+  {
+    ;
+  }
+  virtual void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const
   {
     ;
   }
@@ -266,6 +296,11 @@ public:
   {
     ;
   }
+  virtual void coeffs_arete_coin_fluide(int, int, int, int,
+                                        DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  {
+    ;
+  }
   virtual void coeffs_arete_periodicite(int, int, int, int,
                                         DoubleVect& aii, DoubleVect& ajj) const
   {
@@ -313,6 +348,10 @@ public:
     ;
   }
   virtual void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
+  {
+    ;
+  }
+  virtual void secmem_arete_coin_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,11 @@ Sortie& Corriger_frontiere_periodique::printOn(Sortie& os) const
 //     [ direction DIMENSION dx dy [ dz ] ]
 //     [ fichier_post BASENAME ]
 //  }
+// XD corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 The Corriger_frontiere_periodique keyword is mandatory to first define the periodic boundaries, to reorder the faces and eventually fix unaligned nodes of these boundaries. Faces on one side of the periodic domain are put first, then the faces on the opposite side, in the same order. It must be run in sequential before mesh splitting.
+// XD attr domaine chaine domaine 0 Name of domain.
+// XD attr bord chaine bord 0 the name of the boundary (which must contain two opposite sides of the domain)
+// XD attr direction list direction 1 defines the periodicity direction vector (a vector that points from one node on one side to the opposite node on the other side). This vector must be given if the automatic algorithm fails, that is:NL2 - when the node coordinates are not perfectly periodic NL2 - when the periodic direction is not aligned with the normal vector of the boundary faces
+// XD attr fichier_post chaine fichier_post 1 .
 Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
 {
   if (nproc() > 1)

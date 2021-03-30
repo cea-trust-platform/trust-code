@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@
 #include <LataFilter.h>
 #include <LmlReader.h>
 #include  <Format_Post.h>
+#include <list>
 
 Implemente_instanciable(LataToMED,"Lata_To_MED",Interprete);
 Implemente_instanciable(latatoother,"lata_to_other",Interprete);
@@ -179,12 +180,28 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
 
 }
 
+// XD format_lata_to_med objet_lecture nul 0 not_set
+// XD attr mot chaine(into=["format_post_sup"]) mot 0 not_set
+// XD attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
+
+// XD lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to MED or LML format. Warning: Fields located at faces are not supported yet.
+// XD attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
+// XD attr file chaine file 0 LATA file to convert to the new format.
+// XD attr file_post chaine file_post 0 Name of file post.
 Entree& latatoother::interpreter(Entree& is)
 {
   Cerr<<"syntax  Latatoother::interpreter format_post_supp [nom_lata||NOM_DU_CAS] [nom_fichier_sortie||NOM_DU_CAS]   "<<finl;
   Nom nom_dom, nom_lata,nom_fic;
   Nom format_post_supp;
   is >>format_post_supp>> nom_lata>>nom_fic ;
+
+  std::set<std::string> formats( { "LML", "LATA", "LATA_V1", "LATA_V2", "MED" });
+  Nom tmp = format_post_supp;
+  if(formats.count(tmp.majuscule().getString())==0)
+    {
+      Cerr << "Error, format " << format_post_supp << " is not supported!" << finl;
+      Process::exit();
+    }
 
   // Creation d'un sous-groupe contenant uniquement le processeur maitre
   ArrOfInt liste_pe(1);
@@ -196,7 +213,6 @@ Entree& latatoother::interpreter(Entree& is)
 
   if (PE_Groups::enter_group(group.valeur()))
     {
-
       if (nom_lata=="NOM_DU_CAS")
         nom_lata=nom_du_cas()+".lata";
       if (nom_fic=="NOM_DU_CAS")
@@ -404,6 +420,10 @@ Sortie& latatoother::printOn(Sortie& is) const
   return is;
 }
 
+// XD lata_to_med interprete lata_to_med -1 To convert results file written with LATA format to MED file. Warning: Fields located on faces are not supported yet.
+// XD attr format format_lata_to_med format 1 generated file post_med.data use format (MED or LATA or LML keyword).
+// XD attr file chaine file 0 LATA file to convert to the new format.
+// XD attr file_med chaine file_med 0 Name of the MED file.
 Entree& LataToMED::interpreter(Entree& is)
 {
   Cerr<<"Syntax Latatomed::interpreter nom_lata||NOM_DU_CAS nom_fichier_sortie||NOM_DU_CAS   "<<finl;

@@ -37,33 +37,19 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # qstat inexistente sur les dernieres machines du CCRT/TGCC
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
-   # modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
-   #   "echo "# For $HOST cluster:
-   # module () {
-   #   eval \`tclsh $modulecmd sh \$*\`
-   # }" >> $env
-   #
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       cuda_version=10.2.89
       module="gnu/7.3.0 mpi/openmpi/2.0.4 cuda/$cuda_version"
    else
-      module="intel/18.0.3.222 mpi/intelmpi/2018.0.3.222"
+      # module="intel/18.0.3.222 mpi/intelmpi/2018.0.3.222" # Blocages/lenteurs a grand nombre de procs
+      module="intel/18.0.3.222 mpi/openmpi/4.0.2" # Validation sur les calculs PE a 7800 coeurs
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
-   #
-   # If libccc_user module found, load it (this module helps to know the CPU)
-   # module=libccc_user
-   # if [ "`tclsh $modulecmd sh show $module 2>&1`" != "" ]
-   # then
-   #    echo "Module $module detected and loaded on $HOST."
-   #    module load $module  >> $env
-   # fi
-   #
    . $env
 }
 

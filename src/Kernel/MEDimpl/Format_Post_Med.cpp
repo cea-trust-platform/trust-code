@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <EcrFicPartage.h>
 #include <EFichier.h>
 #include <Param.h>
+#include <med++.h>
 
 Implemente_instanciable_sans_constructeur(Format_Post_Med,"Format_Post_Med",Format_Post_base);
 
@@ -119,15 +120,10 @@ int Format_Post_Med::ecrire_entete(double temps_courant,int reprise,const int& e
 
 int Format_Post_Med::finir(int& est_le_dernier_post)
 {
-  return 1;
-  Nom nom_fich(med_basename_);
-  nom_fich +=".";
-  Nom format="med";
-  nom_fich += format;
-  nom_fich += ".index";
-
-  finir_med(nom_fich,est_le_dernier_post);
-
+  Nom nom_fic_base(med_basename_);
+  nom_fic_base += ".med";
+  Nom nom_fic=nom_fic_base.nom_me(Process::me());
+  Cerr << "MED file " << nom_fic << " closed. See .index file for more infos." << finl;
   return 1;
 }
 
@@ -290,25 +286,13 @@ int Format_Post_Med::ecrire_item_int(const Nom&     id_item,
 int Format_Post_Med::ecrire_entete_med(Nom& nom_fich,const int& est_le_premier_post)
 {
 
-  if (est_le_premier_post)
+  if (est_le_premier_post && Process::je_suis_maitre())
     {
-
-      EcrFicPartage s;
-
-      s.ouvrir(nom_fich);
-
-      if (Process::je_suis_maitre())
-        {
-          s << "Trio_U" << " " << "Version "  << "1" << finl;
-          s << nom_du_cas() << finl;
-          s << "Trio_U" << finl;
-        }
-
-      s.flush();
-      s.syncfile();
-
+      SFichier s(nom_fich);
+      s << "Trio_U" << " " << "Version "  << "1" << finl;
+      s << nom_du_cas() << finl;
+      s << "Trio_U" << finl;
     }
-
   return 1;
 }
 
@@ -354,17 +338,12 @@ int Format_Post_Med::finir_med(Nom& nom_fich,int& est_le_dernier_post)
 
         }
 
-      EcrFicPartage s;
-      s.ouvrir(nom_fich,ios::app);
-
       if (Process::je_suis_maitre())
         {
+          SFichier s;
+          s.ouvrir(nom_fich,ios::app);
           s << "FIN" << finl;
         }
-
-      s.flush();
-      s.syncfile();
-
     }
 
   return 1;
@@ -429,44 +408,35 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
 
 int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich)
 {
-
-  //Cerr<<"We want to postprocess with MED "<<est_le_premier_post<<finl;
   EcrMED ecr_med(getEcrMED());
-
-  // Cerr<<"We want to postprocess with MED in domain"<<nom_fic<<finl;
-  // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<finl;
-
-  EcrFicPartage s;
-  s.ouvrir(nom_fich,ios::app);
-
   int dim = domaine.les_sommets().dimension(1);
-
   int mode=-1;
   if (est_le_premier_post==0)  mode=0;
-  s<<"dimension: "<<dim<<finl;
-  s<<"domaine: "<<domaine.le_nom()<<finl;
-  s<<"nb_proc: "<<Process::nproc()<<finl;
+  if (je_suis_maitre())
+    {
+      SFichier s;
+      s.ouvrir(nom_fich, ios::app);
+      s << "format MED: " << ecr_med.version() << finl;
+      s << "dimension: " << dim << finl;
+      s << "domaine: " << domaine.le_nom() << finl;
+      s << "nb_proc: " << Process::nproc() << finl;
+      Cerr << "Opening MED file " << nom_fic << " with " << ecr_med.version() << " format. ";
+      if (!ecr_med.getMajorMode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
+      Cerr << finl;
+    }
   ecr_med.ecrire_domaine_dis(nom_fic,domaine,zone_dis_base,domaine.le_nom(),mode);
-  // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<"end"<<finl;
-
-  s.flush();
-  s.syncfile();
-
   return 1;
 
 }
 
 int Format_Post_Med::ecrire_temps_med(const double temps,Nom& nom_fich)
 {
-  EcrFicPartage s;
-  s.ouvrir(nom_fich,ios::app);
-
   if (je_suis_maitre())
-    s << "TEMPS " << temps << finl;
-
-  s.flush();
-  s.syncfile();
-
+    {
+      SFichier s;
+      s.ouvrir(nom_fich,ios::app);
+      s << "TEMPS " << temps << finl;
+    }
   return 1;
 }
 
@@ -479,10 +449,6 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
 {
   //compteur est declare en variable locale car toujours fixe a 1
   int compteur;
-  //Ouverture du fichier
-
-  EcrFicPartage os;
-  os.ouvrir(nom_fich, ios::app);
 
   Nom fic = nom_pdb.nom_me(me());
 
@@ -528,8 +494,13 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
 #endif
     }
   if (je_suis_maitre())
-    os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
-  os.syncfile();
+    {
+      //Ouverture du fichier
+      SFichier os;
+      os.ouvrir(nom_fich, ios::app);
+      os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
+    }
+
   EcrMED ecr_med(getEcrMED());
   Nom type_elem = dom.zone(0).type_elem()->que_suis_je();
 
@@ -549,7 +520,6 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
            << " with the keyword " << loc_post << finl;
       return -1;
     }
-  os.syncfile();
   return 1;
 }
 

@@ -5,55 +5,55 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0.
-                Nombre_de_Noeuds 4  4 
-                Longueurs 1. 1.
-        }
-        {
-                Bord sym      X = 0.  0. <= Y <= 1.  
-                Bord sym      X = 1.  0. <= Y <= 1.  
-                Bord bas      Y = 0.  0. <= X <= 1.  
-                Bord haut     Y = 1.  0. <= X <= 1.  
- 
-                }
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4  4
+        Longueurs 1. 1.
+    }
+    {
+        Bord sym      X = 0.  0. <= Y <= 1.
+        Bord sym      X = 1.  0. <= Y <= 1.
+        Bord bas      Y = 0.  0. <= X <= 1.
+        Bord haut     Y = 1.  0. <= X <= 1.
+
+    }
+}
 
 trianguler_fin dom
 
 Sous_zone zone_tout
 Associate zone_tout dom
 Read zone_tout {
-          Rectangle
-          Origine  -5.  -5.
-          Cotes   10. 10. 
-          }
+    Rectangle
+    Origine  -5.  -5.
+    Cotes   10. 10.
+}
 
 
 VEFPreP1b dis
 
 Scheme_euler_explicit sch
 
-Read sch 
+Read sch
 {
-        tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-        tmax 100.
-        dt_min 1.e-7
-        dt_max 1.e-1
-	dt_start dt_calc
-        dt_impr 0.001
-        dt_sauv 20.
-        seuil_statio 1.e-8  
-        facsec 0.5
+    tmax 100.
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.001
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 4.
-	rho Champ_Uniforme 1 5.
+    mu Champ_Uniforme 1 4.
+    rho Champ_Uniforme 1 5.
 }
 
 Associate pb dom
@@ -63,31 +63,36 @@ Associate pb fluide
 Discretize pb dis
 
 Read pb
-	{
-	Navier_Stokes_Standard
-		{
-                solveur_pression Gcp { precond ssor { omega 1.5 }
-                                        seuil 1.e-08
-                                        }
-                convection { negligeable }
-                diffusion  { negligeable }
-        	sources { Perte_charge_reguliere Longitudinale Y 2. A 1. B 1.  zone_tout }
-		initial_conditions { vitesse Champ_fonc_xyz dom 2  0. 1.95 }
-		boundary_conditions
-			{
-			sym    symetrie
-            		haut   frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 1.
-            		bas    frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 2.
-			}
- 	}
-	Post_processing
-        	{       
-                Probes
-                {
-                 vit vitesse periode 0.5 point 1 0.5 0.5
-                }
-		}
-	}
+{
+    Navier_Stokes_Standard
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-08
+        }
+        convection { negligeable }
+        diffusion  { negligeable }
+        sources { Perte_charge_reguliere Longitudinale Y 2. A 1. B 1.  zone_tout }
+        initial_conditions { vitesse Champ_fonc_xyz dom 2  0. 1.95 }
+        boundary_conditions
+        {
+            sym    symetrie
+            haut   frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 1.
+            bas    frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 2.
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            vit vitesse periode 0.5 point 1 0.5 0.5
+        }
+        fields dt_post 1.
+        {
+            pression elem
+        }
+    }
+}
 
 Solve pb
 End

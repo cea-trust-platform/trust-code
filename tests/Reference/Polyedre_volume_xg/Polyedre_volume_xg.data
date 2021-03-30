@@ -1,30 +1,19 @@
-# Hydraulique 2D laminaire avec "trou" dans le maillage #
-# PARALLEL NOT #
+# PARALLEL OK #
 # decoupeur ne marche pas #
 dimension 3
 Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-
 Lire_med family_names_from_group_names dom FluidMesh_1 NC_hexaedrons_fluidmesh_polyhedra.med
-
-
 ecrire_fichier_formatte dom dom.geom
 # END MESH #
 
 # BEGIN PARTITION
-
-Partition dom
-{
-    Partition_tool tranche { tranches  2 1 1 }
-    Larg_joint 1
-    zones_name DOMF
-}
 Partition dom
 {
     Partition_tool metis { nb_parts  2  }
-    Larg_joint 1
+    Larg_joint 2
     zones_name DOM
 }
 End
@@ -35,20 +24,22 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC  dis
+PolyMAC dis
 
 
-Scheme_euler_explicit sch
+Scheme_euler_implicit sch
 Read sch
 {
     tinit   0
-	nb_pas_dt_max 0	
     tmax    2.5
     dt_min  5e-3
     dt_max  5e-3
     dt_impr 1e-10
     dt_sauv 1
     seuil_statio 1.e-12
+    solveur implicite {
+        solveur petsc gmres { precond diag { } rtol 1.e-6 }
+    }
 }
 
 Fluide_Incompressible eau
@@ -67,42 +58,36 @@ Read pb
 {
     Navier_Stokes_standard
     {
-        solveur_pression GCP
-        { 
-            precond_nul
-            seuil 1.e+8 impr
-        }
-        convection { negligeable }
-        diffusion  { negligeable }
+        solveur_pression petsc cholesky { }
+        convection { centre }
+        diffusion  { }
         initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
         boundary_conditions
         {
             Bottom paroi_fixe
             Top paroi_fixe
             External frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5
-           
+
         }
     }
-    
+
     Post_processing
     {
 
-	Definition_champs {
-	pos transformation { methode vecteur  expression 3 x y z
-	sources { refchamp { pb_champ pb pression }  }
-	}	
-}	
+        Definition_champs {
+            pos transformation {
+                methode vecteur  expression 3 x y z
+                sources { refchamp { pb_champ pb pression }  }
+            }
+        }
         probes
         {
-         
-	  p0 grav pression periode 1e-6 points 1 -0.025 0 0.5
+
+            p0 grav pression periode 1e-6 points 1 -0.025 0 0.5
         }
-        
-       	 
         fields dt_post 1.3
         {
-        volume_maille elem
-	pos 
+            pression elem
         }
     }
 }

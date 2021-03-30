@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -651,11 +651,7 @@ int local_imin_vect(const DoubleVect& vx, Mp_vect_options opt)
       for (; count; count--)
         {
           const double x = *x_ptr;
-          if (x < min_val)
-            {
-              i_min = x_ptr - x_base;
-              min_val = x;
-            }
+          if (x < min_val) { i_min = x_ptr - x_base; min_val = x; }
           x_ptr++;
         }
     }
@@ -768,11 +764,7 @@ int local_imax_vect(const DoubleVect& vx, Mp_vect_options opt)
       for (; count; count--)
         {
           const double x = *x_ptr;
-          if (x > max_val)
-            {
-              i_max = x_ptr - x_base;
-              max_val = x;
-            }
+          if (x > max_val) { i_max = x_ptr - x_base; max_val = x; }
           x_ptr++;
         }
     }
@@ -1896,11 +1888,7 @@ void operator_divide(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt
         {
           const double x = *x_ptr;
           double& p_resu = *(resu_ptr++);
-          if (x==0)
-            {
-              Cerr << "Divide by 0 in DoubleVect::operator_divide()" << finl;
-              Process::exit();
-            };
+          if (x==0) { Cerr << "Divide by 0 in DoubleVect::operator_divide()" << finl; Process::exit();};
           p_resu /= x;
           x_ptr++;
         }
@@ -1958,11 +1946,7 @@ void operator_inverse(DoubleVect& resu, Mp_vect_options opt)
       for (; count; count--)
         {
           double& p_resu = *(resu_ptr++);
-          if (p_resu==0)
-            {
-              Cerr << "Divide by 0 in DoubleVect::operateur_inverse()" << finl;
-              Process::exit();
-            };
+          if (p_resu==0) { Cerr << "Divide by 0 in DoubleVect::operateur_inverse()" << finl; Process::exit();};
           p_resu = 1. / p_resu;
         }
     }
@@ -2101,11 +2085,7 @@ static void tab_divide_any_shape_(DoubleVect& resu, const DoubleVect& vx, Mp_vec
           for(int count2 = delta_line_size; count2; count2--)
             {
               double& p_resu = *(resu_ptr++);
-              if (x==0)
-                {
-                  Cerr << "Divide by 0 in DoubleVect::tab_divide_any_shape_()" << finl;
-                  Process::exit();
-                };
+              if (x==0) { Cerr << "Divide by 0 in DoubleVect::tab_divide_any_shape_()" << finl; Process::exit();};
               p_resu *= (1. / x);
             }
           x_ptr++;
@@ -2215,11 +2195,7 @@ void operator_divide(DoubleVect& resu, const double x, Mp_vect_options opt)
       for (; count; count--)
         {
           double& p_resu = *(resu_ptr++);
-          if(x==0.)
-            {
-              Cerr << "Error: divide by 0 in operator_divide." << finl;
-              Process::exit();
-            };
+          if(x==0.) { Cerr << "Error: divide by 0 in operator_divide." << finl; Process::exit();};
           p_resu /= x;
         }
     }

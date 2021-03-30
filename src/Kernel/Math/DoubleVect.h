@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,10 +98,7 @@ public:
 
   virtual void echange_espace_virtuel();
 
-  virtual const MD_Vector& get_md_vector() const
-  {
-    return md_vector_;
-  }
+  virtual const MD_Vector& get_md_vector() const { return md_vector_; }
   virtual void              set_md_vector(const MD_Vector&);
   virtual void jump(Entree&);
   virtual void lit(Entree&, int resize_and_read=1);

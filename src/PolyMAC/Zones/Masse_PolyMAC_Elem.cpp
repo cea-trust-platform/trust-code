@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@
 #include <Op_Diff_negligeable.h>
 #include <Echange_impose_base.h>
 #include <ConstDoubleTab_parts.h>
+#include <Schema_Euler_Implicite.h>
 
 Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem",Solveur_Masse_base);
 
@@ -64,6 +65,13 @@ void Masse_PolyMAC_Elem::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zo
 
 void Masse_PolyMAC_Elem::completer()
 {
+  if (!sub_type(Schema_Implicite_base, equation().schema_temps()))
+    {
+      Cerr << "===================================================================================" << finl;
+      Cerr << "Error when using " << equation().schema_temps().que_suis_je() << " scheme:" << finl;
+      Cerr << "You can only use implicit schemes with the PolyMAC discretization (for mass solver)." << finl;
+      Process::exit();
+    }
   no_diff_ = true;
   for(int i = 0; i < equation().nombre_d_operateurs(); i++)
     if (sub_type(Operateur_Diff_base, equation().operateur(i).l_op_base()))

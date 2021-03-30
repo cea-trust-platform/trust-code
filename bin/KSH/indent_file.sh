@@ -13,7 +13,7 @@ do
          # Source TRUST (en tete reconnu):
 	 tmp=`mktemp_`
 	 cp $file $tmp
-	 $TRUST_ROOT/exec/astyle/bin/astyle --style=gnu --indent=spaces=2 --indent-cases --align-reference=type --max-instatement-indent=120 $tmp 1>/dev/null
+	 $TRUST_ROOT/exec/astyle/bin/astyle --keep-one-line-blocks --style=gnu --indent=spaces=2 --indent-cases --align-reference=type --max-instatement-indent=120 $tmp 1>/dev/null
 	 rm -f $tmp.orig
 	 if [ "`diff $file $tmp`" != "" ]
 	 then

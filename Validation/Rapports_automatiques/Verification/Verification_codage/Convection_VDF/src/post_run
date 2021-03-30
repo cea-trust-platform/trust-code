@@ -1,0 +1,5 @@
+#!/bin/bash
+rm -f $1.conv
+resp=`tail -1 $1_ERREUR_NORM.son | awk '{print $2}'`
+nup=`grep "Total number of elements" $1.err | awk '{print $6}'`
+echo $resp $nup > $1.conv

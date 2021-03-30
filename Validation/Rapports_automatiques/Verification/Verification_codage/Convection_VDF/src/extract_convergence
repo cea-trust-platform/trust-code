@@ -1,0 +1,3 @@
+#!/bin/bash
+cat *.conv | awk '{print $2,$1}' | sort -n > conv_glob
+

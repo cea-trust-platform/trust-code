@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,6 +58,7 @@ public:
   inline int calculer_arete_fluide() const ;
   inline int calculer_arete_paroi() const ;
   inline int calculer_arete_paroi_fluide() const ;
+  inline int calculer_arete_coin_fluide() const ;
   inline int calculer_arete_symetrie() const ;
   inline int calculer_arete_interne() const ;
   inline int calculer_arete_mixte() const ;
@@ -78,6 +79,7 @@ public:
   inline double flux_arete_symetrie(const DoubleTab&, int, int, int, int ) const;
   inline void flux_arete_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
+  inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const ;
@@ -100,6 +102,7 @@ public:
                                 int, DoubleVect&, DoubleVect& ) const;
   inline void flux_arete_paroi_fluide(const DoubleTab&, int, int,
                                       int, int, DoubleVect&, DoubleVect& ) const ;
+  inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const ;
   inline void flux_arete_periodicite(const DoubleTab&, int, int,
                                      int, int, DoubleVect&, DoubleVect& ) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int,
@@ -118,6 +121,7 @@ public:
   inline void coeffs_arete_paroi(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_paroi_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
+  inline void coeffs_arete_coin_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_periodicite(int, int, int, int, double& aii, double& ajj) const;
   inline void coeffs_arete_symetrie_fluide(int, int, int, int,
                                            double& aii1_2, double& aii3_4, double& ajj1_2) const;
@@ -135,6 +139,7 @@ public:
   inline double secmem_arete_paroi(int, int, int, int ) const;
   inline void secmem_arete_fluide(int, int, int, int, double&, double&) const;
   inline void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const;
+  inline void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const;
   inline void secmem_arete_periodicite(int, int, int, int, double&, double&) const;
   inline void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const;
   inline double secmem_arete_symetrie_paroi(int, int, int, int ) const;
@@ -150,6 +155,7 @@ public:
   inline void coeffs_arete_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
   inline void coeffs_arete_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
   inline void coeffs_arete_paroi_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
+  inline void coeffs_arete_coin_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
   inline void coeffs_arete_periodicite(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
   inline  void coeffs_arete_symetrie_fluide(int, int, int, int,
                                             DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
@@ -166,6 +172,7 @@ public:
   inline void secmem_arete_paroi(int, int, int, int, DoubleVect& ) const;
   inline void secmem_arete_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
   inline void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
+  inline void secmem_arete_coin_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
   inline void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const;
   inline void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
   inline void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const;
@@ -201,6 +208,14 @@ inline int Eval_Amont_VDF_Face::calculer_arete_paroi() const
 //
 
 inline int Eval_Amont_VDF_Face::calculer_arete_paroi_fluide() const
+{
+  return 1;
+}
+
+//// calculer_arete_coin_fluide
+//
+
+inline int Eval_Amont_VDF_Face::calculer_arete_coin_fluide() const
 {
   return 1;
 }
@@ -305,6 +320,42 @@ inline void Eval_Amont_VDF_Face::flux_arete_fluide(const DoubleTab& inco,
   flux1_2 = -flux;
 }
 
+inline void Eval_Amont_VDF_Face::flux_arete_coin_fluide(const DoubleTab& inco,
+                                                        int fac1, int ,
+                                                        int fac3, int signe,
+                                                        double& flux3, double& flux1_2) const
+{
+  double flux, psc;
+
+  // Calcul de flux3:
+
+  psc = 0.5 * dt_vitesse[fac1] * porosite[fac1] * surface(fac1);
+
+  if ((psc * signe) > 0)
+    flux = inco[fac3] * psc;
+  else
+    {
+      int rang1 = (fac1 - premiere_face_bord);
+      int ori = orientation(fac3);
+      flux = Champ_Face_get_val_imp_face_bord(inconnue->temps(), rang1, ori, la_zcl) * psc;
+    }
+
+  flux3 = -flux;
+
+  // Calcul de flux1_2:
+
+  psc = 0.5 * dt_vitesse(fac3) * surface(fac3) * porosite(fac3);
+  if (psc > 0)
+    flux = psc * inco[fac1];
+  else
+    {
+      int rang3 = (fac3 - premiere_face_bord);
+      int ori = orientation(fac1);
+      flux = psc * Champ_Face_get_val_imp_face_bord(inconnue->temps(), rang3, ori, la_zcl);
+    }
+  flux1_2 = -flux;
+}
+
 //// coeffs_arete_fluide
 //
 
@@ -320,6 +371,38 @@ inline void Eval_Amont_VDF_Face::coeffs_arete_fluide(int fac1, int fac2,
   psc = 0.25 * ((dt_vitesse[fac1]*porosite[fac1]    +
                  dt_vitesse[fac2]*porosite[fac2] )  *
                 (surface(fac1) + surface(fac2))  );
+
+  if ((psc*signe)>0)
+    aii3_4 = psc ;
+  else
+    aii3_4 = 0;
+
+  // Calcul de flux1_2:
+
+  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+
+  if (psc>0)
+    {
+      aii1_2 = psc;
+      ajj1_2 = 0;
+    }
+  else
+    {
+      ajj1_2 = -psc;
+      aii1_2 = 0;
+    }
+}
+
+inline void Eval_Amont_VDF_Face::coeffs_arete_coin_fluide(int fac1, int,
+                                                          int fac3, int signe,
+                                                          double& aii1_2, double& aii3_4,
+                                                          double& ajj1_2) const
+{
+  double psc;
+
+  // Calcul de flux3:
+
+  psc = 0.5*dt_vitesse[fac1]*porosite[fac1]*surface(fac1);
 
   if ((psc*signe)>0)
     aii3_4 = psc ;
@@ -372,7 +455,29 @@ inline void Eval_Amont_VDF_Face::secmem_arete_fluide(int fac1, int fac2,
 
   flux1_2 = 0;
 }
+inline void Eval_Amont_VDF_Face::secmem_arete_coin_fluide(int fac1, int ,
+                                                          int fac3, int signe,
+                                                          double& flux3, double& flux1_2) const
+{
+  double psc;
 
+  // Calcul de flux3:
+
+  psc = 0.5*dt_vitesse[fac1]*porosite[fac1]*surface(fac1);
+
+  if ((psc*signe)<0)
+    {
+      int rang1 = (fac1-premiere_face_bord);
+      int ori = orientation(fac3);
+      flux3 = - Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl) * psc ;
+    }
+  else
+    {
+      flux3 = 0;
+    }
+
+  flux1_2 = 0;
+}
 //// flux_arete_interne
 //
 
@@ -996,6 +1101,14 @@ inline void Eval_Amont_VDF_Face::flux_arete_fluide(const DoubleTab& inco,int fac
 
 }
 
+inline void Eval_Amont_VDF_Face::flux_arete_coin_fluide(const DoubleTab& inco,int fac1,
+                                                        int fac2, int fac3, int signe,
+                                                        DoubleVect& flux3, DoubleVect& flux1_2) const
+{
+  Cerr << "ToDo: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide for a scalar inco" << finl;
+  Process::exit();
+}
+
 //// coeffs_arete_fluide
 //
 
@@ -1031,7 +1144,12 @@ inline void Eval_Amont_VDF_Face::coeffs_arete_fluide(int fac1, int fac2, int fac
         ajj1_2(k) = -psc;
     }
 }
-
+inline void Eval_Amont_VDF_Face::coeffs_arete_coin_fluide(int fac1, int , int fac3, int signe,
+                                                          DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+{
+  Cerr << "ToDo: code like Eval_Amont_VDF_Face::coeffs_arete_coin_fluide for a scalar inco" << finl;
+  Process::exit();
+}
 
 //// secmem_arete_fluide
 //
@@ -1065,7 +1183,13 @@ inline void Eval_Amont_VDF_Face::secmem_arete_fluide(int fac1,
   for (k=0; k<flux1_2.size(); k++)
     flux1_2(k) = 0;
 }
-
+inline void Eval_Amont_VDF_Face::secmem_arete_coin_fluide(int fac1,
+                                                          int, int fac3, int signe,
+                                                          DoubleVect& flux3, DoubleVect& flux1_2) const
+{
+  Cerr << "ToDo: code like Eval_Amont_VDF_Face::secmem_arete_coin_fluide for a scalar inco" <<finl;
+  Process::exit();
+}
 //// flux_arete_interne
 //
 

@@ -287,9 +287,13 @@ Entree& Scatter::interpreter(Entree& is)
   int total_nb_elem = Process::mp_sum(dom.zone(0).nb_elem());
   Cerr << "\nTotal number of elements = " << total_nb_elem << finl;
   Cerr << "Number of Zones : " << Process::nproc() << finl;
+  double min_element_zone = mp_min(dom.zone(0).nb_elem());
   double max_element_zone = mp_max(dom.zone(0).nb_elem());
+  double mean_element_zone = total_nb_elem / Process::nproc();
+  Cerr << "Min number of elements on a Zone = " << min_element_zone << finl;
   Cerr << "Max number of elements on a Zone = " << max_element_zone << finl;
-  double load_imbalance = max_element_zone * Process::nproc() / total_nb_elem;
+  Cerr << "Mean number of elements per Zone = " << (int)(mean_element_zone) << finl;
+  double load_imbalance = max_element_zone / mean_element_zone;
   Cerr << "Load imbalance = " << load_imbalance << "\n" << finl;
 
   Elem_geom_base& elem=dom.zone(0).type_elem().valeur();

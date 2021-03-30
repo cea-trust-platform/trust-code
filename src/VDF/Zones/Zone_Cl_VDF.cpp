@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -359,8 +359,11 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
                 }
               else if (les_faces_Cl[rang2] == 1) // face sortie libre ou entree de fluide
                 {
-                  // On ne change rien. De toute facon, ce type d'arete ne necessite pas de traitement particulier
-                  type_arete_coin_[num_arete_] = TypeAreteCoinVDF::VIDE;
+                  if (Option_VDF::traitement_coins)
+                    type_arete_coin_[num_arete_] = TypeAreteCoinVDF::FLUIDE_FLUIDE;
+                  else
+                    // On ne change rien. De toute facon, ce type d'arete ne necessite pas de traitement particulier
+                    type_arete_coin_[num_arete_] = TypeAreteCoinVDF::VIDE;
                 }
               // Modif AC : 27/02/03
               else if (les_faces_Cl[rang2] == 3) // face periodique

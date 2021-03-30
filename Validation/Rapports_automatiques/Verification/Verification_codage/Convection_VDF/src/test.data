@@ -1,0 +1,104 @@
+# PARALLEL NOT #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# DEBUT MAILLAGE #
+Mailler dom
+{
+    Pave Entree
+    {
+        Origine -1.0 0.0
+        Nombre_de_Noeuds 11 11
+        Longueurs 2.0 2.0
+    }
+
+    {
+        bord Xbas  X = -1.0   0.0 <= Y <= 2.0
+        bord Xhaut X = 1.0  0.0 <= Y <= 2.0
+        bord Ybas  Y = 0.0   -1.0 <= X <= 1.0
+        bord Yhaut Y = 2.0  -1.0 <= X <= 1.0
+    }
+}
+
+# trianguler_h dom VEFPreP1B dis #
+VDF dis
+OPTION_VDF { traitement_coins oui p_imposee_aux_faces oui }
+
+# Raffiner_isotrope dom #
+Fluide_incompressible fluide
+Lire fluide
+{
+    rho champ_uniforme 1 1.0
+    mu	champ_uniforme 1 1.0
+}
+Schema_Euler_Implicite sch
+Lire sch
+{
+    tinit 0.0
+    nb_pas_dt_max 500000
+    tmax 300.
+    dt_min 1.e-6
+    dt_max 1.e-0
+    facsec 0.5
+    seuil_statio 1.e-7
+    Solveur implicite { solveur petsc cli { } }
+}
+
+Associer pb dom
+Associer pb fluide
+Associer pb sch
+Discretiser pb dis
+
+Lire pb
+{
+
+    Navier_Stokes_standard
+    {
+        convection { amont }
+        diffusion { negligeable }
+        conditions_initiales { vitesse champ_fonc_xyz dom 2 exp(x-y) exp(x-y) }
+        conditions_limites
+        {
+            Xbas 	frontiere_ouverte_vitesse_imposee 	Champ_Front_fonc_txyz 2 exp(x-y) exp(x-y)
+            Ybas 	frontiere_ouverte_vitesse_imposee    	Champ_Front_fonc_txyz 2 exp(x-y) exp(x-y)
+# Amelioration en mettant la CL Dirichlet partout
+            Xhaut 	frontiere_ouverte_vitesse_imposee 	Champ_Front_fonc_txyz 2 exp(x-y) exp(x-y)
+            Yhaut 	frontiere_ouverte_vitesse_imposee    	Champ_Front_fonc_txyz 2 exp(x-y) exp(x-y) #
+            Xhaut  	frontiere_ouverte_pression_imposee 	Champ_Front_Uniforme 1 155.0e+05
+            Yhaut 	frontiere_ouverte_pression_imposee 	Champ_Front_Uniforme 1 155.0e+05 
+        }
+	solveur_pression petsc cholesky { }
+    }
+    Postraitement
+    {
+        format lml
+        Definition_champs
+        {
+            vx transformation { methode composante numero 0 localisation elem source refchamp { pb_champ pb vitesse } }
+            vy transformation { methode composante numero 1 localisation elem source refchamp { pb_champ pb vitesse } }
+            erreur_vx transformation { methode formule expression 1 vx-exp(x-y) sources_reference { vx } }
+            erreur_vy transformation { methode formule expression 1 vy-exp(x-y) sources_reference { vy } }
+	    erreur transformation { methode vecteur expression 2 erreur_vx erreur_vy sources_reference { erreur_vx , erreur_vy } }
+	    solution transformation { methode vecteur expression 2 exp(x-y) exp(x-y) sources_reference { erreur_vx } }
+	    erreur_norm reduction_0d { methode max sources_reference { erreur_vy } }
+        }
+        format lata
+        Sondes
+        {
+            V grav vitesse periode 0.01 		point 1 0 1
+	    erreur_norm grav erreur_norm periode 0.01 	point 1 0 1
+	    VX grav vitesse periode 0.01 		segment 30 -1 0 1 0
+	    VY grav vitesse periode 0.01 		segment 30 -1 0 1 0
+        }
+        champs dt_post 1
+        {
+            erreur_vx elem
+            erreur_vy elem
+	    erreur elem
+            pression elem
+            vitesse elem
+	    solution elem
+        }
+    }
+}
+Resoudre pb

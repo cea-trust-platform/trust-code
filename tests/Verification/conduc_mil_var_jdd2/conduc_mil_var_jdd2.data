@@ -93,9 +93,12 @@ Read pb
 		{
 			sonde_point temperature periode 5. points 1 0.45 0.45
 			sonde_horiz temperature periode 5. segment 10 0.05 0.45 0.95 0.45 
-  		sonde_vert  temperature periode 5. segment 10 0.45 0.05 0.45 0.95 
+  			sonde_vert  temperature periode 5. segment 10 0.45 0.05 0.45 0.95 
 		}
-				
+		fields dt_post 1.e10
+		{
+			temperature
+		}	
 	}
 }
 

@@ -310,6 +310,7 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB & lataDB,
     elements_ -= decal_nodes;
   }
   if (domain_has_faces) {
+    //cerr << "Domain has faces..." << endl;
     set_lata_block_offset(LataField_base::FACES, decal_faces);
     lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "FACES", "*"), faces_, decal_faces, nbfaces);
     if (decal_nodes > 0)

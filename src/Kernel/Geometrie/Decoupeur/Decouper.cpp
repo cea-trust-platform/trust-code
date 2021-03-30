@@ -158,14 +158,21 @@ static void ecrire_sous_zones(const Nom& nom_zones_decoup,
   cutter.ecrire_zones(nom_zones_decoup, format, elem_part, reorder);
 }
 
-// Description:
-//  Syntaxe du jeu de donnees :
-//
-//  Decouper NOMDOMAINE
-//  {
-//      [ options du partitionneur ]
-//  }
-// Voir la doc utilisateur TRUST.
+// XD partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
+// XD attr domaine ref_domaine domaine 0 Name of the domain to be cut.
+// XD attr bloc_decouper bloc_decouper bloc_decouper 0 Description how to cut a domain.
+// XD bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
+// XD attr partitionneur|Partition_tool partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
+// XD attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost zone (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
+// XD attr nom_zones|zones_name chaine nom_zones 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
+// XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
+// XD attr ecrire_lata chaine ecrire_lata 1 not_set
+// XD attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Zone files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty zones from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
+// XD attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
+// XD attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
+// XD attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned zones in a single file in hdf5 format.
+// XD attr print_more_infos entier print_more_infos 1 If this option is set to 1 (0 by default), print infos about number of remote elements (ghosts). Warning, it slows wodn the cutting operations.
+int Decouper::print_more_infos = 0;
 Entree& Decouper::interpreter(Entree& is)
 {
   Cerr << "Decouper : Splitting of a domain" << finl;
@@ -198,6 +205,7 @@ Entree& Decouper::interpreter(Entree& is)
   param.ajouter("reorder",&reorder);
   param.ajouter_flag("single_hdf",&format_hdf);
   param.ajouter("periodique",&liste_bords_periodiques);
+  param.ajouter("print_more_infos",&Decouper::print_more_infos);
   param.lire_avec_accolades_depuis(is);
 
   Partitionneur_base& partitionneur = deriv_partitionneur.valeur();
@@ -234,9 +242,6 @@ Entree& Decouper::interpreter(Entree& is)
   if (nom_fichier_decoupage != "?")
     ecrire_fichier_decoupage(nom_fichier_decoupage, elem_part, nb_parts_tot);
 
-  if (nom_fichier_lata != "?")
-    postraiter_decoupage(nom_fichier_lata, domaine, elem_part);
-
   if (nom_zones_decoup != "?")
     {
       Decouper::ZonesFileOutputType typ;
@@ -247,6 +252,9 @@ Entree& Decouper::interpreter(Entree& is)
                         liste_bords_periodiques);
     }
 
+  if (nom_fichier_lata != "?")
+    postraiter_decoupage(nom_fichier_lata, domaine, elem_part);
+
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
   Cout << "\nTotal number of elements = " << elem_part.size_array() << finl;
 
@@ -255,15 +263,19 @@ Entree& Decouper::interpreter(Entree& is)
     A(elem_part[i]) = A(elem_part[i]) + 1;
 
   Cout << "Number of Zones : " << A.size_array() << finl;
-  Cout << "Max number of elements by Zones = " << local_max_vect(A) << finl;
-
-  double load_imbalance = double(local_max_vect(A));
-  load_imbalance *= nb_parties;
-  load_imbalance /= elem_part.size_array();
-
+  Cout << "Min number of elements on a Zone = " << local_min_vect(A) << finl;
+  Cout << "Max number of elements on a Zone = " << local_max_vect(A) << finl;
+  double mean_element_zone = elem_part.size_array()/nb_parties;
+  Cout << "Mean number of elements per Zone = " << (int)(mean_element_zone) << finl;
+  double load_imbalance = double(local_max_vect(A)/mean_element_zone);
   Cout << "Load imbalance = " << load_imbalance << "\n" << finl;
 
   Cerr << "End of the interpreter Decouper" << finl;
+  if (reorder==0 && nb_parties>128)
+    {
+      Cerr << "Performance tip: You could add \"reorder 1\" option to have less distance between communicating processes on the network." << finl;
+      Cerr << "Add also \"Ecrire_lata filename\" to post-process the partition numeration and see the difference." << finl;
+    }
   return is;
 }
 

@@ -300,7 +300,7 @@ then
    cd $version
    done
    else
-       filedeps=`Cherchefileatelier.py $(ls $rep_dev/*.{h,c,cpp} 2>/dev/null)`
+       filedeps=`python ${TRUST_ROOT}/bin/KSH/Cherchefileatelier.py $(ls $rep_dev/*.{h,c,cpp} 2>/dev/null)`
        for file in `echo $filedeps|sed "s/;/ /g"`
 	 do
 	 ln -sf $file $rep_exec/

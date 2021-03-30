@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,13 +59,13 @@ void Postraitement::postraiter(int forcer)
   if (forcer)
     {
       if (sondes_demande_)   postraiter_sondes();
-      if ((champs_demande_) || (stat_demande_) || (stat_demande_definition_champs_))   postraiter_champs();
+      if (besoin_postraiter_champs())   postraiter_champs();
       if (tableaux_demande_) postraiter_tableaux();
     }
   else
     {
       if (sondes_demande_)   traiter_sondes();
-      if ((champs_demande_) || (stat_demande_) || (stat_demande_definition_champs_))   traiter_champs();
+      if (besoin_postraiter_champs())   traiter_champs();
       if (tableaux_demande_) traiter_tableaux();
     }
   dernier_temps=mon_probleme->schema_temps().temps_courant();
@@ -1117,13 +1117,15 @@ void Postraitement::init()
 
   const Domaine& dom=le_domaine.valeur();
   const Nom& nom_du_domaine = dom.le_nom();
-  int reprise = mon_probleme->reprise_effectuee();
   Nom name=nom_fich().prefix(format);
   name.prefix(".");
-  format_post->modify_file_basename(name,reprise && est_le_premier_postraitement_pour_nom_fich_,tinit);
-  format_post->ecrire_entete(temps_courant,reprise,est_le_premier_postraitement_pour_nom_fich_);
-  format_post->preparer_post(nom_du_domaine,est_le_premier_postraitement_pour_nom_fich_,reprise,tinit);
-
+  if (besoin_postraiter_champs())
+    {
+      int reprise = mon_probleme->reprise_effectuee();
+      format_post->modify_file_basename(name, reprise && est_le_premier_postraitement_pour_nom_fich_, tinit);
+      format_post->ecrire_entete(temps_courant, reprise, est_le_premier_postraitement_pour_nom_fich_);
+      format_post->preparer_post(nom_du_domaine, est_le_premier_postraitement_pour_nom_fich_, reprise, tinit);
+    }
   ////////////////////////////////////////////////////////////////////////
 
   // S'il existe un champ a postraiter aux faces, on stocke ici une ref a la zone dis base du champ
@@ -1217,7 +1219,8 @@ void Postraitement::init()
   ////////////////////////////////////////////////////////////////////
   // If domain is not time dependant, we write it in the ::init() method
   // else we write it at each postraiter_champs() call
-  if(!dom.deformable())
+  // PL: On ecrit le domaine que si le postraitement des champs est demande
+  if(!dom.deformable() && besoin_postraiter_champs())
     {
       format_post->ecrire_domaine_dis(dom,zone_dis_pour_faces,est_le_premier_postraitement_pour_nom_fich_);
       // zone_dis_pour_faces non_nul() si on demande un postraitement d'un champ aux faces:
@@ -1269,8 +1272,8 @@ void Postraitement::init()
 // Postcondition:
 void Postraitement::finir()
 {
-  // Fermeture du fichier
-  if (est_le_dernier_postraitement_pour_nom_fich_)
+  // Fermeture du fichier si le postraitement des champs etait demande
+  if (est_le_dernier_postraitement_pour_nom_fich_ && besoin_postraiter_champs())
     {
       format_post->finir(est_le_dernier_postraitement_pour_nom_fich_);
       Nom name=nom_fich().prefix(format);
@@ -1304,8 +1307,8 @@ int Postraitement::postraiter_champs()
       if (est_le_premier_postraitement_pour_nom_fich_)
         format_post->ecrire_temps(temps_courant);
     }
-  // We write the time dependant domain here
-  if (dom.deformable())
+  // We write the time dependant domain here. PL: we write only if fields list is not empty
+  if (dom.deformable() && besoin_postraiter_champs())
     {
       format_post->ecrire_domaine_dis(dom,zone_dis_pour_faces,est_le_premier_postraitement_pour_nom_fich_);
 

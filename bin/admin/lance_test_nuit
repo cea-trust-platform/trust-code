@@ -4116,6 +4116,9 @@ tar xf externalpackages-$new.tar;
 ./configure \$OPTIONS;
 make
 
+Warning: Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster.
+The command mpicxx should be found into the bin directory of the MPI version you plan to use, to check that, run:
+type mpicxx
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------

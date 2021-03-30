@@ -1104,24 +1104,6 @@ partitionneur_partition partitionneur_deriv partition -1 This algorithm re-use t
 partitionneur_fichier_decoupage partitionneur_deriv fichier_decoupage -1 This algorithm reads an array of integer values on the disc, one value for each mesh element. Each value is interpreted as the target part number n>=0 for this element. The number of parts created is the highest value in the array plus one. Empty parts can be created if some values are not present in the array. NL2 The file format is ASCII, and contains space, tab or carriage-return separated integer values. The first value is the number nb_elem of elements in the domain, followed by nb_elem integer values (positive or zero). NL2 This algorithm has been designed to work together with the \'ecrire_decoupage\' option. You can generate a partition with any other algorithm, write it to disc, modify it, and read it again to generate the .Zone files. NL2 Contrary to other partitioning algorithms, no correction is applied by default to the partition (eg. element 0 on processor 0 and corrections for periodic boundaries). If \'corriger_partition\' is specified, these corrections are applied.
   attr fichier chaine fichier 0 FILENAME
   attr corriger_partition rien corriger_partition 1 not_set
-bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
-  attr partitionneur|Partition_tool partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
-  attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost zone (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
-  attr nom_zones|zones_name chaine nom_zones 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
-  attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
-  attr ecrire_lata chaine ecrire_lata 1 not_set
-  attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Zone files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty zones from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
-  attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
-  attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
-  attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned zones in a single file in hdf5 format.
-partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
-  attr domaine ref_domaine domaine 0 Name of the domain to be cut.
-  attr bloc_decouper bloc_decouper bloc_decouper 0 Description how to cut a domain.
-corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 The Corriger_frontiere_periodique keyword is mandatory to first define the periodic boundaries, to reorder the faces and eventually fix unaligned nodes of these boundaries. Faces on one side of the periodic domain are put first, then the faces on the opposite side, in the same order. It must be run in sequential before mesh splitting.
-  attr domaine chaine domaine 0 Name of domain.
-  attr bord chaine bord 0 the name of the boundary (which must contain two opposite sides of the domain)
-  attr direction list direction 1 defines the periodicity direction vector (a vector that points from one node on one side to the opposite node on the other side). This vector must be given if the automatic algorithm fails, that is:NL2 - when the node coordinates are not perfectly periodic NL2 - when the periodic direction is not aligned with the normal vector of the boundary faces
-  attr fichier_post chaine fichier_post 1 .
 distance_paroi interprete distance_paroi 0 Class to generate external file Wall_length.xyz devoted for instance, for mixing length modelling. In this file, are saved the coordinates of each element (center of gravity) of dom domain and minimum distance between this point and boundaries (specified bords) that user specifies in data file (typically, those associated to walls). A field Distance_paroi is available to post process the distance to the wall.
   attr dom ref_domaine dom 0 Name of domain.
   attr bords listchaine bords 0 Boundaries.
@@ -1228,17 +1210,6 @@ perte_charge_reguliere source_base perte_charge_reguliere 0 Source term modellin
   attr spec spec_pdcr_base spec 0 Description of longitudinale or transversale type.
   attr zone_name chaine name_of_zone 0 Name of the sub-area occupied by the tube bundle. A Sous_Zone (Sub-area) type object called zone_name should have been previously created.
 pb_post Pb_base nul -1 not_set
-format_lata_to_med objet_lecture nul 0 not_set
-  attr mot chaine(into=["format_post_sup"]) mot 0 not_set
-  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
-lata_to_med interprete lata_to_med -1 To convert results file written with LATA format to MED file. Warning: Fields located on faces are not supported yet.
-  attr format format_lata_to_med format 1 generated file post_med.data use format (MED or LATA or LML keyword).
-  attr file chaine file 0 LATA file to convert to the new format.
-  attr file_med chaine file_med 0 Name of the MED file.
-lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to MED or LML format. Warning: Fields located at faces are not supported yet.
-  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
-  attr file chaine file 0 LATA file to convert to the new format.
-  attr file_post chaine file_post 0 Name of file post.
 info_med objet_lecture nul 0 not_set
   attr file_med chaine file_med 0 Name of the MED file.
   attr domaine chaine domaine 0 Name of domain.
