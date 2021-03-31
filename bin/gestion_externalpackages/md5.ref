@@ -68,8 +68,8 @@ b7339cc0a2e4df93a6043a3d8b4cc79f  Miniconda/local_channel/linux-64/tornado-6.0.3
 58a898b1a4a13e8c0cfd0d4b1a999ba9  Miniconda/local_channel/noarch/python-dateutil-2.8.1-py_0.tar.bz2
 d65fd5cd636e65a731b82e9678c6f40c  Miniconda/local_channel/noarch/pytz-2019.3-py_0.tar.bz2
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
-6a4a21d33fe8d7bf0f46d7debd65d339  SALOME/configuration-9.5.0.tar.gz
-eed4ec683dc1e8692055b7ff5ece0d17  SALOME/medcoupling-9.5.0.tar.gz
+abd3f9f6d98d71ce9d82bc792ca67a78  SALOME/configuration-9.7.0.tar.gz
+485e9bae3f7c1cd3b7d5f51b4362e202  SALOME/medcoupling-9.7.0.tar.gz
 dae2b952c7ef8591e8322284ea244e73  SALOME/xdata-9.6.0.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
 642c81285e1bb833b14ab3f439964086  VisIt/Cython-0.25.2.tar.gz

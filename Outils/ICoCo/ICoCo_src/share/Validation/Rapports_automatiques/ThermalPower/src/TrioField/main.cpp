@@ -1,4 +1,4 @@
-#include <Problem.h>
+#include <ICoCoProblem.h>
 #include "CommInterface.hxx"
 #include "ProcessorGroup.hxx"
 #include "MPIProcessorGroup.hxx"
@@ -9,8 +9,8 @@
 
 #undef MM 
 #ifdef MM
-#include <ICoCoMEDField.hxx>
-#include <Problem_V2.h>
+#include <ICoCoMEDDoubleField.hxx>
+#include <ICoCoProblem.h>
 #else
 #include <ICoCoTrioField.h>
 #endif
@@ -91,13 +91,8 @@ int main(int argc,char **argv) {
       throw 0;
 
     // Instanciation of Trio_U
-#ifdef MM
-    Problem_V2 *T;
-    T=getProblem_V2(); // new ProblemTrio;
-#else
     Problem* T;
     T=getProblem(); // new ProblemTrio;
-#endif
 
     T->setDataFile(data_file);
     T->setMPIComm((void*)mpicomm);
@@ -118,7 +113,7 @@ int main(int argc,char **argv) {
 
     // Field transferred
 #ifdef MM
-    MEDField field_power;
+    MEDDoubleField field_power;
 #else
     TrioField field_power;
 #endif
@@ -158,7 +153,11 @@ int main(int argc,char **argv) {
 
           cout << "Getting Input Field Templates" << endl;
           if (dom_group.containsMyRank()) {
+#ifdef MM
+            T->getInputMEDDoubleFieldTemplate("POWERDENSITY_CORE",field_power);     // cf. "Boundary_Conditions" block in dom.data // + ICoCo couplage
+#else
             T->getInputFieldTemplate("POWERDENSITY_CORE",field_power);     // cf. "Boundary_Conditions" block in dom.data // + ICoCo couplage
+#endif
           }
 
           ////////////////////////////////////////////////////////////////////////
@@ -167,19 +166,20 @@ int main(int argc,char **argv) {
           cout << "Setting Input Fields" << endl;
           if (dom_group.containsMyRank() ) {
 #ifdef MM
-            //int nbcase=field_power.getField()->getArray()->getNumberOfTuples();
+            //int nbcase=field_power.getMCField()->getArray()->getNumberOfTuples();
             //for(int i=0;i<nbcase;i++) {
-            //    field_power.getField()->getArray()->setIJ(i,0,25.);
+            //    field_power.getMCField()->getArray()->setIJ(i,0,25.);
             //}
-            field_power.getField()->getArray()->fillWithValue(25.);
+            field_power.getMCField()->getArray()->fillWithValue(25.);
+            T->setInputMEDDoubleField("POWERDENSITY_CORE",field_power);           // cf. "Boundary_Conditions" block in dom.data // + ICoCo couplage
 #else
             field_power.set_standalone();
             int nbcase=field_power.nb_values()*field_power._nb_field_components;
             for(int i=0;i<nbcase;i++) {
                 field_power._field[i]=25.;
             }
-#endif
             T->setInputField("POWERDENSITY_CORE",field_power);           // cf. "Boundary_Conditions" block in dom.data // + ICoCo couplage
+#endif
           }
           cout << "######################" << endl;
 

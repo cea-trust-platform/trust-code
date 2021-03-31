@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #include <Convert_ICoCoTrioField.h>
 #include <ICoCoTrioField.h>
 
-#include <ICoCoMEDField.hxx>
+#include <ICoCoMEDDoubleField.hxx>
 #include <Domaine.h>
 #include <Champ_Generique_base.h>
 #include <Zone_VF.h>
@@ -134,7 +134,7 @@ ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
 #include <iomanip>
 
 using ICoCo::TrioField;
-using ICoCo::MEDField;
+using ICoCo::MEDDoubleField;
 using std::vector;
 
 
@@ -142,7 +142,7 @@ using std::vector;
  * This method is non const only due to this->_field that can be modified (to point to the same zone than returned object).
  * So \b warning, to access to \a this->_field only when the returned object is alive.
  */
-MEDField build_medfield(TrioField& triofield)
+MEDDoubleField build_medfield(TrioField& triofield)
 {
   MEDCoupling::MCAuto<MEDCoupling::MEDCouplingUMesh> mesh(MEDCoupling::MEDCouplingUMesh::New("",triofield._mesh_dim));
   MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> coo(MEDCoupling::DataArrayDouble::New());
@@ -294,9 +294,9 @@ MEDField build_medfield(TrioField& triofield)
         triofield._field[i]=0.0;
     }
   field->setArray(fieldArr);
-  return MEDField(field);
+  return MEDDoubleField(field);
 }
-MEDField build_medfield(const Champ_Generique_base& ch)
+MEDDoubleField build_medfield(const Champ_Generique_base& ch)
 {
   TrioField fl =  build_triofield(ch);
   return build_medfield(fl);
@@ -306,17 +306,17 @@ MEDField build_medfield(const Champ_Generique_base& ch)
 #else
 namespace ICoCo
 {
-class MEDField
+class MEDDoubleField
 {
 };
 }
-ICoCo::MEDField build_medfield(ICoCo::TrioField& ch)
+ICoCo::MEDDoubleField build_medfield(ICoCo::TrioField& ch)
 {
   Cerr<<"Version compiled without MEDCoupling"<<finl;
   Process::exit();
   throw;
 }
-ICoCo::MEDField build_medfield(const Champ_Generique_base& ch)
+ICoCo::MEDDoubleField build_medfield(const Champ_Generique_base& ch)
 {
   Cerr<<"Version compiled without MEDCoupling"<<finl;
   Process::exit();

@@ -9,16 +9,15 @@ include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
 MALIB=$(TRUST_ICOCOAPI)/lib/libicocoapi.a
 
 OBJS= \
-	src/Exceptions.o \
+	src/ICoCoExceptions.o \
 	src/ICoCoTrioField.o \
-	src/Problem.o \
-	src/Problem_V2.o \
+	src/ICoCoProblem.o \
 	src/ICoCoField.o
 install: $(MALIB) ./install_include.sh
 	@./install_include.sh
 all: $(MALIB)
 
-$(MALIB) : makefile include/Exceptions.h include/ICoCoTrioField.h include/ICoCoField.h include/Problem.h include/Problem_V2.h $(SRCS)
+$(MALIB) : makefile include/ICoCoExceptions.h include/ICoCoTrioField.h include/ICoCoField.h include/ICoCoProblem.h $(SRCS)
 	@make clean 
 	@make $(OBJS)
 	@mkdir -p $(TRUST_ICOCOAPI)/lib
@@ -29,9 +28,8 @@ clean:
 	@rm -rf $(MALIB) $(OBJS) $(TRUST_LIB)/src/LIBICOCOAPI
 	
 SRCS= \
-	src/Exceptions.cpp \
+	src/ICoCoExceptions.cpp \
 	src/ICoCoTrioField.cpp \
-	src/Problem.cpp \
-	src/Problem_V2.cpp \
+	src/ICoCoProblem.cpp \
 	src/ICoCoField.cpp
 	

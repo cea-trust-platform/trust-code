@@ -1,4 +1,4 @@
-#include <Problem.h>
+#include <ICoCoProblem.h>
 #include "CommInterface.hxx"
 #include "ProcessorGroup.hxx"
 #include "MPIProcessorGroup.hxx"
@@ -9,8 +9,7 @@
 
 #define MM 
 #ifdef MM
-#include <ICoCoMEDField.hxx>
-#include <Problem_V2.h>
+#include <ICoCoMEDDoubleField.hxx>
 #else
 #include <ICoCoTrioField.h>
 #endif
@@ -81,11 +80,7 @@ int main(int argc,char **argv) {
     MPIProcessorGroup canal_group(comm,canal_ids);
 
     // Instanciation of Trio_U
-#ifdef MM
-    Problem_V2 *T = getProblem_V2(); // new ProblemTrio;
-#else
     Problem *T = getProblem(); // new ProblemTrio;
-#endif
 
     // Initialisation of Trio_U
     std::string data_file;
@@ -127,7 +122,7 @@ int main(int argc,char **argv) {
 #endif
 
 #ifdef MM
-    MEDField vitesse;
+    MEDDoubleField vitesse;
 #else
 #ifndef testvector
     TrioField vitesse;
@@ -171,8 +166,10 @@ int main(int argc,char **argv) {
 
 #ifdef MM
                   cout <<" medcouplindfielddouble"<<endl;
-#endif
+                  T->getInputMEDDoubleFieldTemplate("vitesse_entree",vitesse);
+#else
                   T->getInputFieldTemplate("vitesse_entree",vitesse);
+#endif
                   dec.attachLocalField( &vitesse);
                   // Compute intersections if necessary
                   if (init) {
@@ -182,7 +179,11 @@ int main(int argc,char **argv) {
 
                   // Receive field from boite
                   dec.recvData();
+#ifdef MM
+                  T->setInputMEDDoubleField("vitesse_entree",vitesse);
+#else
                   T->setInputField("vitesse_entree",vitesse);
+#endif
               }
 
               // Sender side
@@ -192,8 +193,10 @@ int main(int argc,char **argv) {
 
 #ifdef MM
                   cout <<" medcouplindfielddouble"<<endl;
-#endif
+                  T->getOutputMEDDoubleField("VITESSE_ELEM_boite_boundaries_perio",vitesse);
+#else
                   T->getOutputField("VITESSE_ELEM_boite_boundaries_perio",vitesse);
+#endif
                   dec.attachLocalField( &vitesse);
                   // Compute intersections if necessary
                   if (init) {

@@ -1,5 +1,5 @@
-archive_mc=$(TRUST_ROOT)/externalpackages/SALOME/medcoupling-9.5.0.tar.gz
-archive_conf=$(TRUST_ROOT)/externalpackages/SALOME/configuration-9.5.0.tar.gz
+archive_mc=$(TRUST_ROOT)/externalpackages/SALOME/medcoupling-9.7.0.tar.gz
+archive_conf=$(TRUST_ROOT)/externalpackages/SALOME/configuration-9.7.0.tar.gz
 
 all : $(TRUST_MEDCOUPLING_ROOT)/env.sh
 

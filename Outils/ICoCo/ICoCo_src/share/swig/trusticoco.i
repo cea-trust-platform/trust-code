@@ -1,72 +1,100 @@
 %module trusticoco
 
+// Include necessary files for C++ compilation:
 %{
 #define SWIG_FILE_WITH_INIT
-#include <iostream>
-#include "ICoCoTrioField.h"
+#include "ICoCoTrioField.hxx"
 #include "ProblemTrio.h"
-#include "Exceptions.h"
+#include "ICoCoExceptions.hxx"
 %}
 
-#if defined(MEDCOUPLING) && defined(OLD_MEDCOUPLING)
+#ifdef MEDCOUPLING
 %{
-   #include "ICoCoMEDField.hxx"
+  #include "ICoCoMEDDoubleField.hxx"
 %}
-#endif
+#endif 
 
-
+// Deacrivate  SWIGWARN_TYPE_UNDEFINED_CLASS (because of Problem.h, which we actually don't want to SwIG)
 #pragma SWIG nowarn=401
 
+// Load usual SWIG typemaps for std::string, std::exception and others
 %include "typemaps.i"
 %include "std_string.i"
 %include "exception.i"
-
-#if defined(MEDCOUPLING) && defined(OLD_MEDCOUPLING)
-  %include "MEDCoupling.i"
-#else
-  %include "std_vector.i"
-  %template(VecString) std::vector<std::string>;
+#ifdef MEDCOUPLING
+   // Load SWIG definitions for ICoCo::MEDDoubleField and ICoCo::MEDIntField
+   %include "ICoCoMEDField.i"
 #endif
 
-%exception {
-  try {
-    $action
-  } catch (const std::exception& e) {
-    SWIG_exception(SWIG_RuntimeError, e.what());
-  } 
-}
+// Turn vector of strings into Python list of strings
+%include "std_vector.i"
+%template(VecString) std::vector<std::string>;
 
-// Map certain input parameters to output:
+// Manage exceptions properly:
+%include "icocoexceptions.i"
+
+// Map boolean [out] parameters to Python output (i.e. left hand side of the equal sign).
+// Used for computeTimeStep() and iterateTimeStep().
 %apply bool &OUTPUT { bool& stop };
 %apply bool &OUTPUT { bool& converged };
-%apply bool &OUTPUT { bool& converged };
 
-// Wrap MED and TrioField:
-%include "ICoCoField.hxx"
-#if defined(MEDCOUPLING) && defined(OLD_MEDCOUPLING)
-%include "ICoCoMEDField.hxx"
+// Wrap TrioField!
+%include ICoCoField.hxx
+#ifdef MEDCOUPLING
+  %include "ICoCoMEDDoubleField.hxx"
 #endif
-%include "ICoCoTrioField.h"
+// Wrap MEDDoubleField and MEDIntField! Warning those are renamed into ICoCoMEDDoubleField and ICoCoMEDIntField
+%include ICoCoTrioField.hxx
 
-// Wrap ProblemTrio:
-// Certain functions are only supported in the old version of MEDCoupling:
-#if defined(MEDCOUPLING) && defined(OLD_MEDCOUPLING)
-%ignore setInputMEDField();
-%ignore getInputMEDFieldTemplate();
-%ignore getOutputMEDField();
-#endif
-
+//
+// Main part of the wrapping:
+//
+%include "ICoCoProblem.hxx"
 %include "ProblemTrio.h"
-%include "Problem.h"
 
-%typemap(out) ICoCo::TrioField* {
-  $result = $1;
- }
+// In Python, define extra functions: 
+//   - getInputMEDFieldTemplate()
+//   - getOutputMEDField()
+//   - setInputMEDField()
+// so that they behave like the old version of the ICoCo interface (the one using MEDCouplingFieldDouble return values)
+// but relying internally on the new "*MEDDoubleField*" functions. 
+// Rationale: users who already had wrapped the old ICoCo API in Python won't have to change their scripts.
+//
+#ifdef MEDCOUPLING
+  // Functions that will be creating new object which memory is to be managed by Python:
+  %newobject ICoCo::ProblemTrio::getInputMEDFieldTemplate;
+  %newobject ICoCo::ProblemTrio::getOutputMEDField;
+#endif
 
 %extend ICoCo::ProblemTrio {
-  ICoCo::TrioField * getOutputField(const std::string& name) {
-    ICoCo::TrioField *f = new ICoCo::TrioField;
-    self->getOutputField(name, *f);
-    return f;
+
+  MEDCoupling::MEDCouplingFieldDouble* getInputMEDFieldTemplate(const std::string& name) const
+  {
+    ICoCo::MEDDoubleField *f = new ICoCo::MEDDoubleField();
+    self->getInputMEDDoubleFieldTemplate(name, *f);
+    return f->getMCField();
   }
- }
+
+  void setInputMEDField(const std::string& name, MEDCoupling::MEDCouplingFieldDouble* field)
+  {
+    ICoCo::MEDDoubleField *f = new ICoCo::MEDDoubleField();
+    f->setMCField(field);
+    self->setInputMEDDoubleField(name, *f);
+  }
+
+  MEDCoupling::MEDCouplingFieldDouble* getOutputMEDField(const std::string& name) const
+  {
+    ICoCo::MEDDoubleField *f = new ICoCo::MEDDoubleField();
+    self->getOutputMEDDoubleField(name, *f);
+    return f->getMCField();
+  }
+}
+
+// Renaming ValueType enum into ICoCoValueType because Python wrapping discards the namespace "ICoCo"
+// Also handle the funny wrapping of SWIG with "_" (this does not happen in PyBind11)
+%pythoncode {
+class ICoCoValueType(object):
+    Double = ValueType_Double
+    Int = ValueType_Int
+    String = ValueType_String
+}

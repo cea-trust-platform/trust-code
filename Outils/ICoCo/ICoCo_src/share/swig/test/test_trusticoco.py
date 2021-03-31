@@ -4,18 +4,42 @@ class trusticoco_test(unittest.TestCase):
 
     def test_simple(self):
         """ Test import of modules and one function in each """
+
+        import medcoupling as mc
         import trusticoco as ti
+        print (ti.ICOCO_VERSION)
         pbT = ti.ProblemTrio()
         pbT.setDataFile("test_conduc.data")
 
-        f = ti.TrioField()
+        f = mc.ICoCoMEDDoubleField()
         f.setName("toto")
         self.assertEqual(f.getName(), "toto")
 
+    def test_enum(self):
+        import trusticoco as ti
+        ti.ICoCoValueType.Double
+        ti.ICoCoValueType.Int
+        ti.ICoCoValueType.String
+
+    def test_exceptions(self):
+        import trusticoco as ti
+
+        pbT = ti.ProblemTrio()
+        self.assertRaises(ti.ICoCoNotImplemented, pbT.getFieldUnit, "XXX")
+#         pbT.setDataFile("test_conduc.data")
+#         pbT.initialize()
+#         dt, stop = pbT.computeTimeStep()
+#         pbT.initTimeStep(dt)
+#         self.assertRaises(ti.ICoCoWrongArgument, pbT.getFieldType, "XXXX")
+#         self.assertRaises(ti.ICoCoWrongContext, pbT.terminate)
+#         pbT.solveTimeStep()
+#         pbT.validateTimeStep()
+#         pbT.terminate()
+
     def test_small_run(self):
-        return
         """ Execute a small run """
         import trusticoco as ti
+        import medcoupling as mc
 
         pbT = ti.ProblemTrio()
         pbT.name = "TRUST"
@@ -32,17 +56,35 @@ class trusticoco_test(unittest.TestCase):
                     return
                 pb.initTimeStep(dt)
                 # List of available fields:
-                print("out",pb.getOutputFieldsNames())
-                print("in",pb.getInputFieldsNames())
+                expected_outs = ('FLUX_DROIT', 'TMAX', 'TEMPERATURE_SOM_dom', 'TEMPERATURE_ELEM_dom', 'PVOL_ELEM_dom')
+                expected_ins = ('Tdroit', 'pvol')
+                self.assertEqual(pb.getOutputFieldsNames(), expected_outs)
+                self.assertEqual(pb.getInputFieldsNames(), expected_ins)
+                self.assertEqual(ti.ICoCoValueType.Double, pb.getFieldType("PVOL_ELEM_dom"))
+                self.assertRaises(ti.ICoCoWrongArgument, pb.getFieldType, "XXXX")
 
                 #
-                # Play with fields typed as TrioField:
+                # Play with fields typed as MEDDoubleField:
                 #
-                fl_astf = pb.getOutputField("PVOL_ELEM_dom")
-                print(fl_astf.getName())
-                fl2_astf = ti.TrioField()
-                pb.getInputFieldTemplate("pvol", fl2_astf)
-                pb.setInputField("pvol",fl2_astf)
+                fl_asmf = mc.ICoCoMEDDoubleField()
+                pb.getOutputMEDDoubleField("PVOL_ELEM_dom", fl_asmf)
+                print("@@@ NAME:", fl_asmf.getName())
+                toto_asmf = mc.ICoCoMEDDoubleField()
+                pb.getInputMEDDoubleFieldTemplate("pvol", toto_asmf)
+                totomc1 = toto_asmf.getMCField()
+                print(totomc1, toto_asmf.getMCField())
+                totomc1 += 1    # From MEDCoupling
+                pb.setInputMEDDoubleField("pvol",toto_asmf)
+
+                #
+                # Play with fields typed directly as MEDCouplingFieldDouble (nicer in Python ...)
+                #
+                fl_asmc = pb.getOutputMEDField("PVOL_ELEM_dom")  # WARNING : no "MEDFieldDouble" here!!
+                print(fl_asmc.getName())
+                totomc2 = pb.getInputMEDFieldTemplate("pvol")    # WARNING : no "MEDFieldDouble" here!!
+                print(totomc2)
+                totomc2 += 1
+                pb.setInputMEDField("pvol",totomc2)              # WARNING : no "MEDFieldDouble" here!!
 
                 # Main time loop:
                 ok = pb.solveTimeStep()

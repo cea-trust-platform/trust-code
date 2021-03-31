@@ -1,24 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        ICoCoField.cpp
-// Directory:   $TRUST_ROOT/Kernel/ICoCo
-// Version:     /main/4
-//
-//////////////////////////////////////////////////////////////////////////////
-
 // ICoCo file common to several codes
-// ICoCoField.cpp
-// version 1.2 10/05/2010
+// Version 2 -- 02/2021
+//
+// WARNING: this file is part of the official ICoCo API and should not be modified.
+// The official version can be found in the TRUST repository:
+//
+//    https://sourceforge.net/projects/trust/
 
-#include <ICoCoField.h>
+#include "ICoCoField.hxx"
+
 #include <string>
 
-using namespace ICoCo;
-using std::string;
-
+namespace ICoCo
+{
 Field::Field()
 {
-  _name=new string;
+  _name = new std::string;
 }
 
 Field::~Field()
@@ -26,12 +22,12 @@ Field::~Field()
   delete _name;
 }
 
-void Field::setName(const string& name)
+void Field::setName(const std::string& name)
 {
-  *_name=name;
+  *_name = name;
 }
 
-const string& Field::getName() const
+const std::string& Field::getName() const
 {
   return *_name;
 }
@@ -41,3 +37,4 @@ const char* Field::getCharName() const
   return _name->c_str();
 }
 
+}  // end namespace ICoCo

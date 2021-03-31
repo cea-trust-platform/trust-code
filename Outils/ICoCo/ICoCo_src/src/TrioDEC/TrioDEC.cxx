@@ -4,7 +4,7 @@
 
 #include <TrioDEC.hxx>
 
-#include <ICoCoMEDField.hxx>
+#include <ICoCoMEDDoubleField.hxx>
 #include <ICoCoTrioField.h>
 #include <Convert_ICoCoTrioField.h>
 
@@ -27,7 +27,7 @@ void TrioDEC::attachLocalField(ICoCo::Field *field)
     attachLocalField(triofield); 
   else
     {
-      ICoCo::MEDField * medfield=dynamic_cast<ICoCo::MEDField *>(field);
+      ICoCo::MEDDoubleField * medfield=dynamic_cast<ICoCo::MEDDoubleField *>(field);
       if (medfield)
 	DisjointDEC::attachLocalField(medfield);
       else
@@ -55,7 +55,7 @@ void TrioDEC::attachLocalField(ICoCo::TrioField *field)
   if(!field)
     throw INTERP_KERNEL::Exception("TrioDEC::attachLocalField : The input trio Field is NULL !");
   releaseInternalPointer(); 
-  _my_traduced_field=new MEDField(build_medfield(*field));
+  _my_traduced_field=new MEDDoubleField(build_medfield(*field));
   DisjointDEC::attachLocalField(_my_traduced_field);
 }
 
