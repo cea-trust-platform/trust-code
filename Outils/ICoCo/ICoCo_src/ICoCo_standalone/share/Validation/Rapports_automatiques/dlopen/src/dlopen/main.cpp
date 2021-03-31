@@ -1,4 +1,4 @@
-#include <Problem.h>
+#include <ICoCoProblem.hxx>
 #include <ICoCoTrioField.h>
 #include <dlfcn.h>
 #include <iostream>
