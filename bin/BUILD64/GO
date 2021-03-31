@@ -38,6 +38,8 @@ sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* af
 sed -i "s/long \*pf = p + afield._nodes_per_elem; \/\/fin de la ligne/int *pf = p + afield._nodes_per_elem; \/\/fin de la ligne/" src/Kernel/Champs/Champ_input_P0.cpp
 
 sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
+sed -i "s/long getMEDCouplingMajorVersion/int getMEDCouplingMajorVersion/" src/Kernel/ICoCo/ProblemTrio.h
+sed -i "s/long ProblemTrio::getMEDCouplingMajorVersion/int ProblemTrio::getMEDCouplingMajorVersion/" src/Kernel/ICoCo/ProblemTrio.cpp
 
 sed -i "s/Cerr << \"Detecting a \" << mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/Cerr << \"Detecting a \" << (long)mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/" src/Kernel/MEDimpl/LireMED.cpp
 
