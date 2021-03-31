@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -317,7 +317,7 @@ Objet_U& liste::operator[](const Nom& nom)
     else ++curseur;
   if(!curseur)
     {
-      Cerr << "We not found an object with name " << nom << finl;
+      Cerr << "We have not found an object with name " << nom << finl;
       Cerr << "The known names are : " << finl;
       liste_curseur curseur2(*this);
 
@@ -354,7 +354,7 @@ const Objet_U& liste::operator[](const Nom& nom) const
     else ++curseur;
   if(!curseur)
     {
-      Cerr << "We not found an object with name " << nom << finl;
+      Cerr << "We have not found an object with name " << nom << finl;
       Cerr << "The known names are : ";
       liste_curseur curseur2(*this);
 
@@ -551,7 +551,7 @@ liste& liste::search(const Objet_U& obj) const
         return curseur.list();
       ++curseur;
     }
-  Cerr << "We not found an object "<< obj <<" !" << finl;
+  Cerr << "We have not found an object "<< obj <<" !" << finl;
   exit();
   return *suivant_;
 }
@@ -581,7 +581,7 @@ liste& liste::search(const char* const ch) const
         return curseur.list();
       ++curseur;
     }
-  Cerr << "We not found an object with name "<< nom <<" !" << finl;
+  Cerr << "We have not found an object with name "<< nom <<" !" << finl;
   exit();
   return *suivant_;
 }
@@ -751,7 +751,7 @@ void liste::suppr(const Objet_U& obj)
       ++curseur_pre;
     }
   Cerr << "WARNING while deleting in a list " << finl;
-  Cerr << "We not found an object == : " << obj << finl;
+  Cerr << "We have not found an object == : " << obj << finl;
 }
 
 // Description:
@@ -809,7 +809,7 @@ void liste::suppr(const char* const ch )
       ++curseur_pre;
     }
   Cerr << "WARNING while deleting in a list " << finl;
-  Cerr << "We not found an object with name : " << ch << finl;
+  Cerr << "We have not found an object with name : " << ch << finl;
 }
 
 // Description:

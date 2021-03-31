@@ -479,7 +479,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
             }
           else
             {
-              Cerr << "Error in EcritureLectureSpecial: Some items were not found: epsilon too small (or changed the mesh ?)" << finl;
+              Cerr << "Error in EcritureLectureSpecial: Some items were not found: epsilon too small (or the mesh has changed?)" << finl;
             }
         }
       Process::barrier();
