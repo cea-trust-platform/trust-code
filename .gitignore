@@ -15,6 +15,8 @@ convert_jdd
 hierarchie.dump
 liste_cas
 md5.check
+__pycache__
+.toto
 
 # XDATA stuff
 

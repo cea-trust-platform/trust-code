@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# last time is considered
+cp Moyennes_spatiales_vitesse_rho_mu_1.0* Moyennes_spatiales_vitesse_rho_mu_fin
