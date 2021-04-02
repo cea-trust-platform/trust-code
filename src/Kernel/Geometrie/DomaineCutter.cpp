@@ -1468,17 +1468,25 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   for (int i_part=0; i_part<nb_parties_; i_part++)
     total_edge_cut+=EdgeCut(i_part);
   Cout << "Total number of edge-cut (faces shared by processes) : " << total_edge_cut << finl;
-  double mean_edgecut_zone = total_edge_cut/nb_parties_;
-  double load_imbalance = double(local_max_vect(EdgeCut)/mean_edgecut_zone);
-  Cout << "Number of edge-cut per Zone (min/mean/max) : " << local_min_vect(EdgeCut) << " / " << (int)(mean_edgecut_zone) << " / " << local_max_vect(EdgeCut) << " Load imbalance: " <<  load_imbalance << "\n" << finl;
-
+  if (total_edge_cut>0)
+    {
+      double mean_edgecut_zone = total_edge_cut / nb_parties_;
+      double load_imbalance = double(local_max_vect(EdgeCut) / mean_edgecut_zone);
+      Cout << "Number of edge-cut per Zone (min/mean/max) : " << local_min_vect(EdgeCut) << " / "
+           << (int) (mean_edgecut_zone) << " / " << local_max_vect(EdgeCut) << " Load imbalance: " << load_imbalance
+           << "\n" << finl;
+    }
   int mean_neighbours = 0;
   for (int i_part = 0; i_part < nb_parties_; i_part++)
     mean_neighbours += Neighbours(i_part);
   mean_neighbours/=nb_parties_;
-  load_imbalance = double(local_max_vect(Neighbours)/mean_neighbours);
-  Cout << "Number of neighbours per Zone (min/mean/max) : " << local_min_vect(Neighbours) << " / " << (int)(mean_neighbours) << " / " << local_max_vect(Neighbours) << " Load imbalance: " <<  load_imbalance << "\n" << finl;
-
+  if (mean_neighbours>0)
+    {
+      double load_imbalance = double(local_max_vect(Neighbours) / mean_neighbours);
+      Cout << "Number of neighbours per Zone (min/mean/max) : " << local_min_vect(Neighbours) << " / "
+           << (int) (mean_neighbours) << " / " << local_max_vect(Neighbours) << " Load imbalance: " << load_imbalance
+           << "\n" << finl;
+    }
   if (format == Decouper::HDF5_SINGLE)
     {
       fic_hdf.close();

@@ -264,8 +264,12 @@ Entree& Decouper::interpreter(Entree& is)
 
   Cout << "Number of Zones : " << A.size_array() << finl;
   double mean_element_zone = elem_part.size_array()/nb_parties;
-  double load_imbalance = double(local_max_vect(A)/mean_element_zone);
-  Cout << "Number of cells per Zone (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_zone << " / " << local_max_vect(A) << " Load imbalance: " <<  load_imbalance << "\n" << finl;
+  if (mean_element_zone>0)
+    {
+      double load_imbalance = double(local_max_vect(A) / mean_element_zone);
+      Cout << "Number of cells per Zone (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_zone << " / "
+           << local_max_vect(A) << " Load imbalance: " << load_imbalance << "\n" << finl;
+    }
   Cerr << "End of the interpreter Decouper" << finl;
   if (reorder==0 && nb_parties>128)
     {
