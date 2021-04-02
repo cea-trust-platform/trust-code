@@ -170,6 +170,7 @@ class DirScanWidget(QDockWidget):
         """
         print("*fg* DirScanWidget.onStopButton ---")
         import os
+
         if self._currDir == "":
             return
         stopFile = os.path.join(self._currDir, self._caseName + ".stop")
@@ -399,11 +400,9 @@ class DirScanWidget(QDockWidget):
             if self._caseName != "":
                 statusFile = os.path.join(self._currDir, self._caseName + ".progress")
                 with open(statusFile, "r") as f:
-                    l = f.readlines()
-                    if len(l):
-                        arr = l[0].split(" ")
-                        if len(arr):
-                            val = min(max(float(arr[0]), 0.0), 100.0)
+                    val = f.readlines()[-1]
+                if len(val):
+                    val = min(max(float(val), 0.0), 100.0)
         except IOError:
             val = None
 
