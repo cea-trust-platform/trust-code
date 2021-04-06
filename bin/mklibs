@@ -197,7 +197,7 @@ do
    LIBS_MEDC=""
    LISTP=""
    [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 
-   for ll in medloader medcouplingremapper medcoupling $LISTP  interpkernel
+   for ll in medloader medcouplingremapper medcoupling medicoco $LISTP  interpkernel
     do
     LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
    done

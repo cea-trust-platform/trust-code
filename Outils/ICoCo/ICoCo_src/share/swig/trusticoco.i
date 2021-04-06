@@ -39,11 +39,6 @@
 %apply bool &OUTPUT { bool& converged };
 
 // Wrap TrioField!
-%include ICoCoField.hxx
-#ifdef MEDCOUPLING
-  %include "ICoCoMEDDoubleField.hxx"
-#endif
-// Wrap MEDDoubleField and MEDIntField! Warning those are renamed into ICoCoMEDDoubleField and ICoCoMEDIntField
 %include ICoCoTrioField.hxx
 
 //
