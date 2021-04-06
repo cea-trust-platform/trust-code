@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1060,7 +1060,7 @@ int Zone::rang_frontiere(const Nom& un_nom) const
         ++i;
       }
   }
-  Cerr << "Zone::rang_frontiere(): We not found boundary with name " << un_nom << finl;
+  Cerr << "Zone::rang_frontiere(): We have not found a boundary with name " << un_nom << finl;
   exit();
   return -1;
 }
