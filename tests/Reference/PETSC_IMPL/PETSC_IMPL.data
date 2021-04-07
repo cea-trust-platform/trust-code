@@ -45,7 +45,7 @@ Read mon_schema
 	Solveur 
            Implicite
 	  {
-		solveur amgx gmres { precond diag { } seuil 1.e-8 impr clean_matrix 0 }
+		solveur petsc gmres { precond diag { } seuil 1.e-8 impr }
 	   }
 }
 
