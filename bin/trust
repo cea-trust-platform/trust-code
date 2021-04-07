@@ -304,6 +304,8 @@ do
       [ "`echo $TRUST_ROOT | grep tmptrust`" != "" ] || [ "`echo $TRUST_ROOT | grep trust_trio`" != "" ] && project_name=$project_name"_Network"
       eclipseconfigpath=`pwd`"/eclipse-config"
       sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g" eclipse-config/.project
+      sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g" eclipse-config/TRUST_debug_in_Eclipse.launch
+      mv eclipse-config/TRUST_debug_in_Eclipse.launch eclipse-config/$project_name"_Debug.launch"
       sed -i "s?eclipse-config?$eclipseconfigpath?g; s?project_name?$project_name?g" $eclipseconfigpath/README
       echo "Eclipse project $project_name successfully configured (with CDT builder disabled) under $eclipseconfigpath"
       echo "You shoud run Eclipse and import this project."
