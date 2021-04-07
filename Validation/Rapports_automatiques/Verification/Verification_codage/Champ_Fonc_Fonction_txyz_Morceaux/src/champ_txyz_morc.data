@@ -1,5 +1,5 @@
 # Hydraulique 2D laminaire avec "trou" dans le maillage #
-# PARALLEL OK 8 #
+# PARALLEL OK 4 #
 dimension 2
 Pb_conduction pb
 Domaine dom

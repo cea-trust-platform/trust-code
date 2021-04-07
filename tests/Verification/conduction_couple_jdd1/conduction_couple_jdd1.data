@@ -1,5 +1,5 @@
 # Thermohydraulique 2D VDF couplee a conduction 2D avec  paroi fictive #
-# PARALLEL OK 4 #
+# PARALLEL OK 2 #
 dimension 2    
 
 Scheme_euler_implicit sch 

@@ -1,5 +1,5 @@
 # Conduction 2D : Diverses conditions limites thermiques #
-# PARALLEL OK 8 #
+# PARALLEL OK 2 #
 dimension 2
 
 Pb_conduction pb

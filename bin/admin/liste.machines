@@ -6,7 +6,7 @@ linux	rsync_ssh	tache	is242981-gpu.intra.cea.fr			-TrioCFD -FLICA5 -IJK-FT 			-c
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD 					-clang 		-force_provided_openmpi -without-pdflatex								# Fedora 32	Bat 451 LGLS	bureau Pierre Ledac
 linux	rsync_ssh	tache	is223196.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3	 		-force_provided_mpich -force_even_unsupported -without-visit					# CentOS 6.4	Bat 451 LMEC	bureau TMA GENEPI2
 linux	rsync_ssh	cible	is210376.intra.cea.fr		     	-MPCube -TrioCFD -FLICA5 -IJK-FT -GENEPI3 -SIDES -SCORPIO -PEMFC  -force_provided_mpich 							# Fedora 32	Bat 454
-linux	rsync_ssh	cible	is212957.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC	-gcov		-force_provided_mpich								# Ubuntu 16	Bat 451 LMEC	bureau TMA TRUST
+linux	rsync_ssh	cible	is212957.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -TrioMC	-gcov		-force_provided_mpich								# Ubuntu 16	Bat 451 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT						-build_64_bit -without-doc						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
