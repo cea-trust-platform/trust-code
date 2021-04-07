@@ -1,0 +1,7 @@
+How to create new eclipse projet "project_name" well configured (with CDT builder disabled) :
+- Launch eclipse (if not available, download it as described on the Developer Tutorial)
+- File -> Import -> General -> Existing Projects into Workspace -> Next >
+- "Select root directory" and "Browse" the path to the folder:
+  eclipse-config
+- Check "Copy projects into workspace"
+- Finish

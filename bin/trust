@@ -115,6 +115,7 @@ help()
    echo "-xcheck                       : Check the datafile's keywords with xdata."
    echo "-partition                    : Partition the mesh to prepare a parallel calculation (Creation of the .Zones files)."
    echo "-mesh                         : Visualize the mesh(es) contained in the data file."
+   echo "-eclipse                      : Generate Eclipse configuration files to import TRUST sources."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                       : Monitor the TRUST calculation only."
    echo "-evol                         : Monitor the TRUST calculation (GUI)."
@@ -296,6 +297,19 @@ do
    elif [ "$1" = "-mesh" ]
    then
       mesh=1
+   elif [ "$1" = "-eclipse" ]
+   then
+      cp -r $TRUST_ROOT/Outils/eclipse eclipse-config
+      project_name="TRUST-$TRUST_VERSION"
+      [ "`echo $TRUST_ROOT | grep tmptrust`" != "" ] || [ "`echo $TRUST_ROOT | grep trust_trio`" != "" ] && project_name=$project_name"_Network"
+      eclipseconfigpath=`pwd`"/eclipse-config"
+      sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g" eclipse-config/.project
+      sed -i "s?eclipse-config?$eclipseconfigpath?g; s?project_name?$project_name?g" $eclipseconfigpath/README
+      echo "Eclipse project $project_name successfully configured (with CDT builder disabled) under $eclipseconfigpath"
+      echo "You shoud run Eclipse and import this project."
+      cat $eclipseconfigpath/README
+      echo "When this is done, the directory $eclipseconfigpath can be removed."
+      exit 0
    elif [ "$1" = "-c" ]
    then
       shift && cpus_per_task=$1
