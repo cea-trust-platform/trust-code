@@ -865,7 +865,7 @@ then
       ./conda install $local_channel $pkg -y 1>>$TRUST_ROOT/exec/conda_python.log 2>&1
       [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda3 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
-    cd -
+    cd - 1>/dev/null 2>&1
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 fi
@@ -881,6 +881,26 @@ echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chemin vers python2.6
 
+##############################################################
+# Intallation des packages supplementaires avec pip de conda #
+##############################################################
+pkgs="mpi4py"
+InstallPipPkgs=0
+for pkg in $pkgs
+do
+  [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && InstallPipPkgs=1
+done
+if [ "$InstallPipPkgs" = 1 ]
+then
+   for pkg in $pkgs
+   do
+     echo "Installing $pkg ..."
+     $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/MPI/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+     [ $? != 0 ] && echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+   done
+fi
+# If a package has not been correctly installed, we exit with an error
+[ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip ' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 ####################
 # Compilateurs C/C++
 ####################
