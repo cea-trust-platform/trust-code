@@ -299,18 +299,28 @@ do
       mesh=1
    elif [ "$1" = "-eclipse" ]
    then
+      [ -d eclipse-config ] && echo "Error: eclipse-config folder already available. Please rename or remove this folder before typing trust -eclipse." && exit -1
       cp -r $TRUST_ROOT/Outils/eclipse eclipse-config
       project_name="TRUST-$TRUST_VERSION"
       [ "`echo $TRUST_ROOT | grep tmptrust`" != "" ] || [ "`echo $TRUST_ROOT | grep trust_trio`" != "" ] && project_name=$project_name"_Network"
       eclipseconfigpath=`pwd`"/eclipse-config"
-      sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g" eclipse-config/.project
-      sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g" eclipse-config/TRUST_debug_in_Eclipse.launch
+      sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g" $eclipseconfigpath/.project
+      sed -i "s/TRUSTV/$project_name/; s?TRUSTROOT?$TRUST_ROOT?g; s?eclipse-config?$eclipseconfigpath/..?g" $eclipseconfigpath/TRUST_debug_in_Eclipse.launch
       mv eclipse-config/TRUST_debug_in_Eclipse.launch eclipse-config/$project_name"_Debug.launch"
       sed -i "s?eclipse-config?$eclipseconfigpath?g; s?project_name?$project_name?g" $eclipseconfigpath/README
       echo "Eclipse project $project_name successfully configured (with CDT builder disabled) under $eclipseconfigpath"
       echo "You shoud run Eclipse and import this project."
       cat $eclipseconfigpath/README
+      [ ! -d upwind ] && copie_cas_test upwind && sed -i "s/Format lml/Format lata/g" upwind/upwind.data
       echo "When this is done, the directory $eclipseconfigpath can be removed."
+      if [ ! -f $exec_debug ]
+      then
+         echo "*************************************************************************************"
+         echo "Warning : TRUST debug executable \$exec_debug not available. You can generate it by:"
+         echo "cd $TRUST_ROOT"
+         echo "make debug"
+         echo "*************************************************************************************"
+      fi
       exit 0
    elif [ "$1" = "-c" ]
    then

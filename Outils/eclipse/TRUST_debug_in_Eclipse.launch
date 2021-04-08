@@ -18,12 +18,12 @@
     <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
     <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="true"/>
     <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
-    <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value=""/>
+    <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="upwind"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="TRUSTROOT/exec/TRUST_mpi"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="TRUSTV"/>
     <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
-    <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value=""/>
+    <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="eclipse-config/upwind"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
         <listEntry value="TRUSTV"/>
     </listAttribute>
