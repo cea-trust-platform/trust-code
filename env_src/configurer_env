@@ -884,23 +884,26 @@ echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chem
 ##############################################################
 # Intallation des packages supplementaires avec pip de conda #
 ##############################################################
-pkgs="mpi4py"
-InstallPipPkgs=0
-for pkg in $pkgs
-do
-  [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && InstallPipPkgs=1
-done
-if [ "$InstallPipPkgs" = 1 ]
+if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
+   pkgs="mpi4py"
+   InstallPipPkgs=0
    for pkg in $pkgs
    do
-     echo "Installing $pkg ..."
-     $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/MPI/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
-     [ $? != 0 ] && echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+     [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && InstallPipPkgs=1
    done
+   if [ "$InstallPipPkgs" = 1 ]
+   then
+      for pkg in $pkgs
+      do
+        echo "Installing $pkg ..."
+        $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/MPI/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+        [ $? != 0 ] && echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+      done
+   fi
+   # If a package has not been correctly installed, we exit with an error
+   [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip ' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 fi
-# If a package has not been correctly installed, we exit with an error
-[ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip ' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 ####################
 # Compilateurs C/C++
 ####################
