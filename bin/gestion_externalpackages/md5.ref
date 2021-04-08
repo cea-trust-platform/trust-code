@@ -5,7 +5,6 @@ e85017defd5a03ae82e634311db87bbf  Gmsh/fltk-1.3.5-source.tar.gz
 d45ed589f7aeb6898f9ef50f021857de  Gmsh/gmsh-4.4.1-source.tgz
 8fb659d9206dfd85fc1980f6db104087  MED/hdf5-1.10.3.tar.gz
 399cdfaf2eb7faeecaa935aa3464f904  MED/med-4.1.0.tar.gz
-bd1e284ae6bcb07fa862763ec924af89  MPI/mpi4py-3.0.3.tar.gz
 f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
 e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
@@ -122,6 +121,7 @@ fe535e221293e72c7813e3bc2a60640a  petsc/MUMPS_5.3.3-p2.tar.gz
 b721c134f138620824347930f0333ceb  petsc/superlu-5.2.1.tar.gz
 cfa3a57cadd5b6df544bbb88942015b3  petsc/superlu_dist-6.3.0.tar.gz
 5ddaf8169771ad50cd2f4a0b4ee8730d  petsc/viennacl-dc552a8.tar.gz
+bd1e284ae6bcb07fa862763ec924af89  pip/mpi4py-3.0.3.tar.gz
 fa3a9bf9b2d6ed2431f1baa46f4058b8  tcl_tk/tcl8.5.13-src.tar.gz
 1fc7dbb7495160756dbc805224afa360  tcl_tk/tk8.5.13-src.tar.gz
 d44b5dddebd8a7a7309aea6c36fda117  utils/bc-1.06.tar.gz
