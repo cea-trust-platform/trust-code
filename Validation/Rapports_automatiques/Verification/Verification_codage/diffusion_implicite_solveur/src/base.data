@@ -1,0 +1,97 @@
+# PARALLEL OK #
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom cylindre.geom
+VerifierCoin dom { }
+Dilate dom 1000
+RegroupeBord dom Box { Surfanz Bas Haut Surfa }
+OrienteFacesBord dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 2 }
+    Larg_joint 2
+    ecrire_lata mesh
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B ma_discretisation
+
+Scheme_euler_explicit mon_schema
+Read mon_schema
+{
+    nb_pas_dt_max 10
+    tinit 0
+    tmax 5.0
+    diffusion_implicite 1
+    impr_diffusion_implicite 1
+}
+
+Fluide_Incompressible milieu
+Read milieu
+{
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
+}
+
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        parametre_equation parametre_diffusion_implicite { }
+        solveur_pression Petsc Cholesky { }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
+        }
+        boundary_conditions {
+            Cylindre 	paroi_fixe
+            Box  		symetrie
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        parametre_equation parametre_diffusion_implicite { }
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Box 		symetrie
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 20. }
+    }
+    Postraitement
+    {
+        fields dt_post 1.
+        {
+            pression_pa elem
+            pression_pa som
+        }
+    }
+}
+Solve pb

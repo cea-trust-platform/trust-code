@@ -1,0 +1,5 @@
+#!/bin/bash
+out=${1%.data}.out 
+# Premiere convergence seulement
+ncomp=1
+awk -v ncomp=$ncomp -v res=${1%.data}.res -f res.awk $out 
