@@ -80,6 +80,8 @@ genere_fiche()
       cp -rL $dir/ BUILD
       chmod -R +w  BUILD/$cas
       cd BUILD/$cas
+      # if the file KO has been created in a previous test, delete it for the current test
+      rm -f KO*
       touch Running$OPTIONS_PRM
       echo "@@@ About to execute Run script ..."
       ${GENERE_COURBE}/Run $prm $opt  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
