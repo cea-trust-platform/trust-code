@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+XX/XX/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
 XX/XX/21 (TRUST)  Performance : Faster partitioning by disabling printing of remote (ghosts) elements (add a print_more_info option to enable it). 
 XX/XX/21 (TRUST)  Warning     : Detect in VDF a (rare case) with cells near two fluid faces corner where a missing contribution is not computed yet for several schemes except upwind scheme
 XX/01/21 (TRUST)  Bug fixed   : Useless write of a result file (containing mesh only) with no fields post_processing block

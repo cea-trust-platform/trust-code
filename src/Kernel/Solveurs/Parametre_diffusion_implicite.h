@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,8 @@
 
 
 #include <Parametre_equation_base.h>
+#include <SolveurSys.h>
+#include <Matrice_Morse.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -40,27 +42,31 @@ class Parametre_diffusion_implicite : public Parametre_equation_base
 {
   Declare_instanciable(Parametre_diffusion_implicite);
 public:
-
-  inline  const double& seuil_diffusion_implicite() const
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  inline const double& seuil_diffusion_implicite() const
   {
-    return  seuil_diffusion_implicite_ ;
+    return seuil_diffusion_implicite_ ;
   };
-  inline  const int& nb_it_max() const
+  inline const int& nb_it_max() const
   {
-    return  nb_it_max_ ;
+    return nb_it_max_ ;
   };
-  inline  const int& crank() const
+  inline const int& crank() const
   {
-    return  crank_ ;
+    return crank_ ;
   };
-  inline  const int& precoditionnement_diag() const
+  inline const int& precoditionnement_diag() const
   {
     return  preconditionnement_diag_ ;
   };
+  inline SolveurSys& solveur() { return solveur_; }
+  inline Matrice_Morse& matrice() { return matrice_; }
 protected:
   int preconditionnement_diag_ ;
   int crank_;
   int nb_it_max_;
   double seuil_diffusion_implicite_;
+  SolveurSys solveur_;  // Solveur utilise pour la resolution diffusion implicite
+  Matrice_Morse matrice_; // Matrice pour  la resolution diffusion implicite
 };
 #endif

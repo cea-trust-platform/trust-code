@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,7 @@
 #include <Statistiques.h>
 #include <Param.h>
 #include <Source_dep_inco_base.h>
+#include <SolveurSys.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
@@ -1814,304 +1815,352 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
     }
 }
 
-
-
 // Description:
-// Solve: (1/dt + M-1*A)*dI = M-1 * secmem
-// with a Conjugate Gradient algorithm
-// A is the diffusion matrix
-// M is the mass matrix
+// Solve: (1/dt + M-1*L)*dI = M-1 * secmem
+// with a Conjugate Gradient matrix-free algorithm by default
+// L is the diffusion
+// M is the mass
 // In : solution=I(n)
 // Out: solution=dI/dt
 void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& terme_mul)
 {
-  statistiques().begin_count(diffusion_implicite_counter_);
-  int marq_tot=0;
-  int size_s=sources().size();
+  if (le_schema_en_temps->impr_diffusion_implicite())
+    Cout << "Implicited diffusion algorithm applied on " << que_suis_je() << " equation:" << finl;
+  int marq_tot = 0;
+  int size_s = sources().size();
   ArrOfInt marq(size_s);
-  for (int i =0; i<size_s; i++)
-    if (sub_type(Source_dep_inco_base,sources()(i).valeur()))
-      {
-        marq(i)=1;
-        marq_tot=1;
-      }
-  // on retire les sources depnendant de l ino ; on les rajoutera apres
-  if (marq_tot)
+  for (int i = 0; i < size_s; i++)
     {
-      DoubleTrav toto(secmem);
-      statistiques().end_count(diffusion_implicite_counter_);
-      for (int i=0; i<size_s; i++)
-        if (marq(i))
-          sources()(i).ajouter(toto);
-      statistiques().begin_count(diffusion_implicite_counter_);
-      solv_masse().appliquer(toto);
-
-      secmem.ajoute(-1.,toto) ; // ,VECT_REAL_ITEMS);
-    }
-  int  n = secmem.size_totale();
-  if (solution.size_totale()!= n)
-    {
-      Cerr << "the size of the solution and the second member does not match";
-      exit();
-    }
-
-  // Le nombre maximal d'iteration peut etre desormais borne par niter_max_diff_impl
-  int nmax=le_schema_en_temps->niter_max_diffusion_implicite();
-
-  DoubleTab p(solution);
-  p=0;
-  DoubleTab phiB(p); // la partie Bord de l'operateur.
-  DoubleTab resu(p);
-  DoubleTab merk(solution);
-  double aCKN =1 ; // Crank - Nicholson -> 0.5
-
-  // Calcul de la matrice Diagonale
-
-  int precond_diag=0;
-  // On preconditionne par la diagonale si on penalise
-  // car sinon residu initial trop grand
-  if (size_terme_mul) precond_diag=1;
-
-  double seuil_diffusion_implicite = le_schema_en_temps->seuil_diffusion_implicite();
-  // Recuperation eventuelle d'options de Parametre_diffusion_implicite
-  if (parametre_equation().non_nul()&&(sub_type(Parametre_diffusion_implicite,parametre_equation().valeur())))
-    {
-      const Parametre_diffusion_implicite& param=ref_cast(Parametre_diffusion_implicite,parametre_equation().valeur());
-      if (param.crank())
-        aCKN=0.5;
-      precond_diag=param.precoditionnement_diag();
-      // Bug fixed : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
-      //if (precond_diag==1 && Process::nproc()>1)
-      //  {
-      //    Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << finl;
-      //    Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << finl;
-      //    Cerr << "The CG used to solve the implicitation of the equation diffusion operator can not preconditioned." << finl;
-      //    Cerr << "So edit your .data file with preconditionnement_diag = 0 and run your case." << finl;
-      //    exit();
-      //  }
-      if (param.seuil_diffusion_implicite()>0)
-        seuil_diffusion_implicite=param.seuil_diffusion_implicite();
-      if (param.nb_it_max()>0)
-        nmax=param.nb_it_max();
-    }
-
-  /////////////////////
-  // Preconditionnement
-  /////////////////////
-  double dt = le_schema_en_temps->pas_de_temps();
-  Matrice_Morse_Diag diag;
-  if (precond_diag)
-    {
-      statistiques().begin_count(assemblage_sys_counter_);
-      const int nb_case = inconnue().valeurs().dimension_tot(0);
-      const int nbdim1 = (inconnue().valeurs().nb_dim() == 1);
-      const int nb_comp = (nbdim1 ? 1 : inconnue().valeurs().dimension(1));
-      if (nb_comp*nb_case != n)
+      if (sub_type(Source_dep_inco_base, sources()(i).valeur()))
         {
-          Cerr << "the size of the unknown and the second member does not match" << finl;
-          Cerr << "dimension_tot nbdim1 nb_comp = " << nb_case << " " << nbdim1 << " " << nb_comp << finl;
-          Cerr << "size_totale = " << n << finl ;
+          marq(i) = 1;
+          marq_tot = 1;
+        }
+    }
+  SolveurSys solveur;
+  if (parametre_equation().non_nul() &&  sub_type(Parametre_diffusion_implicite, parametre_equation().valeur()))
+    solveur = ref_cast(Parametre_diffusion_implicite, parametre_equation().valeur()).solveur();
+
+  if (solveur.non_nul())
+    {
+      // PL: Solve (M/dt + L)*dI = Secmem(sans diffusion) with a matrix build to use more solvers
+      if (marq_tot)
+        {
+          Cerr << "solveur_dffusion_implicite can't be used yet with source terms depending from the unknowns. " << finl;
+          Process::exit();
+        }
+      if (size_terme_mul)
+        {
+          Cerr << "solveur_dffusion_implicite can't be used yet with penalization. " << finl;
+          Process::exit();
+        }
+      DoubleTab present(solution); // I(n)
+      // On multiplie secmem par M (qui etait divise par M avant l'appel...)
+      DoubleTab copie(secmem);
+      secmem = 0;
+      solveur_masse.ajouter_masse(1, secmem, copie);
+      // Build matrix A:
+      Matrice_Morse& matrice = ref_cast(Parametre_diffusion_implicite, parametre_equation().valeur()).matrice();
+      if (matrice.ordre()==0) dimensionner_matrice(matrice);
+      matrice.clean(); // A=0
+      // Add diffusion matrix L into matrix
+      operateur(0).l_op_base().contribuer_a_avec(present, matrice); // A=L
+      // Add M/dt into matrix
+      schema_temps().ajouter_inertie(matrice,secmem,(*this)); // A=M/dt+L
+      modifier_pour_Cl(matrice,secmem);
+      // Solve to get I(n+1):
+      solveur.resoudre_systeme(matrice, secmem, solution);
+      // CHD 230501 : Call to diffusive operator to update flux_bords (boundary fluxes): ToDo utile ?
+      operateur(0).ajouter(inconnue(), secmem);
+
+      solution-=present; // dI=I(n+1)-I(n)
+      solution/=schema_temps().pas_de_temps(); // dI/dt
+    }
+  else
+    {
+      statistiques().begin_count(diffusion_implicite_counter_);
+      // on retire les sources dependantes de l inco ; on les rajoutera apres
+      if (marq_tot)
+        {
+          DoubleTrav toto(secmem);
+          statistiques().end_count(diffusion_implicite_counter_);
+          for (int i = 0; i < size_s; i++)
+            if (marq(i))
+              sources()(i).ajouter(toto);
+          statistiques().begin_count(diffusion_implicite_counter_);
+          solv_masse().appliquer(toto);
+          secmem.ajoute(-1., toto); // ,VECT_REAL_ITEMS);
+        }
+      int n = secmem.size_totale();
+      if (solution.size_totale() != n)
+        {
+          Cerr << "the size of the solution and the second member does not match";
           exit();
         }
-      diag.dimensionne_diag(n);
-      operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(),diag);
-      for (int i=0; i<size_s; i++)
-        if (marq(i))
-          sources()(i).valeur().contribuer_a_avec(inconnue().valeurs(),diag);
-      // La diagonale est proportionnelle au volume de controle....
-      // Il faut appliquer le solveur_masse
-      DoubleTab tempo(inconnue().valeurs());
-      for (int ca=0; ca<nb_case; ca++)
+
+      // Le nombre maximal d'iteration peut etre desormais borne par niter_max_diff_impl
+      int nmax = le_schema_en_temps->niter_max_diffusion_implicite();
+
+      DoubleTab p(solution);
+      p = 0;
+      DoubleTab phiB(p); // la partie Bord de l'operateur.
+      DoubleTab resu(p);
+      DoubleTab merk(solution);
+      double aCKN = 1; // Crank - Nicholson -> 0.5
+
+      // Calcul de la matrice Diagonale
+
+      int precond_diag = 0;
+      // On preconditionne par la diagonale si on penalise
+      // car sinon residu initial trop grand
+      if (size_terme_mul) precond_diag = 1;
+
+      double seuil_diffusion_implicite = le_schema_en_temps->seuil_diffusion_implicite();
+      // Recuperation eventuelle d'options de Parametre_diffusion_implicite
+      if (parametre_equation().non_nul() && (sub_type(Parametre_diffusion_implicite, parametre_equation().valeur())))
         {
-          if (nbdim1)
-            {
-              tempo(ca) = diag(ca,ca);
-            }
-          else
-            {
-              for (int ncp=0; ncp<nb_comp; ncp++)
-                tempo(ca,ncp) = diag(ca*nb_comp+ncp,ca*nb_comp+ncp);
-            }
+          const Parametre_diffusion_implicite& param = ref_cast(Parametre_diffusion_implicite,
+                                                                parametre_equation().valeur());
+          if (param.crank())
+            aCKN = 0.5;
+          precond_diag = param.precoditionnement_diag();
+          // Bug fixed : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
+          //if (precond_diag==1 && Process::nproc()>1)
+          //  {
+          //    Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << finl;
+          //    Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << finl;
+          //    Cerr << "The CG used to solve the implicitation of the equation diffusion operator can not preconditioned." << finl;
+          //    Cerr << "So edit your .data file with preconditionnement_diag = 0 and run your case." << finl;
+          //    exit();
+          //  }
+          if (param.seuil_diffusion_implicite() > 0)
+            seuil_diffusion_implicite = param.seuil_diffusion_implicite();
+          if (param.nb_it_max() > 0)
+            nmax = param.nb_it_max();
         }
-      solveur_masse.appliquer(tempo);
-      tempo.echange_espace_virtuel();
-      // On inverse... // Crank - Nicholson
-      // La matrice correspond a - la jacobienne (pour avoir un plus justement, GF)
-      for (int ca=0; ca<nb_case; ca++)
+
+      /////////////////////
+      // Preconditionnement
+      /////////////////////
+      double dt = le_schema_en_temps->pas_de_temps();
+      Matrice_Morse_Diag diag;
+      if (precond_diag)
         {
-          double tmp = (size_terme_mul ? terme_mul(ca) : 1) / dt;
-          if (nbdim1)
-            diag(ca,ca) = 1./ ( tmp + tempo(ca)*aCKN );
-          else
-            for (int ncpa=0; ncpa<nb_comp; ncpa++)
-              diag(ca*nb_comp+ncpa,ca*nb_comp+ncpa) = 1./ ( tmp + tempo(ca,ncpa)*aCKN );
+          statistiques().begin_count(assemblage_sys_counter_);
+          const int nb_case = inconnue().valeurs().dimension_tot(0);
+          const int nbdim1 = (inconnue().valeurs().nb_dim() == 1);
+          const int nb_comp = (nbdim1 ? 1 : inconnue().valeurs().dimension(1));
+          if (nb_comp * nb_case != n)
+            {
+              Cerr << "the size of the unknown and the second member does not match" << finl;
+              Cerr << "dimension_tot nbdim1 nb_comp = " << nb_case << " " << nbdim1 << " " << nb_comp << finl;
+              Cerr << "size_totale = " << n << finl;
+              exit();
+            }
+          diag.dimensionne_diag(n);
+          operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(), diag);
+          for (int i = 0; i < size_s; i++)
+            if (marq(i))
+              sources()(i).valeur().contribuer_a_avec(inconnue().valeurs(), diag);
+          // La diagonale est proportionnelle au volume de controle....
+          // Il faut appliquer le solveur_masse
+          DoubleTab tempo(inconnue().valeurs());
+          for (int ca = 0; ca < nb_case; ca++)
+            {
+              if (nbdim1)
+                {
+                  tempo(ca) = diag(ca, ca);
+                }
+              else
+                {
+                  for (int ncp = 0; ncp < nb_comp; ncp++)
+                    tempo(ca, ncp) = diag(ca * nb_comp + ncp, ca * nb_comp + ncp);
+                }
+            }
+          solveur_masse.appliquer(tempo);
+          tempo.echange_espace_virtuel();
+          // On inverse... // Crank - Nicholson
+          // La matrice correspond a - la jacobienne (pour avoir un plus justement, GF)
+          for (int ca = 0; ca < nb_case; ca++)
+            {
+              double tmp = (size_terme_mul ? terme_mul(ca) : 1) / dt;
+              if (nbdim1)
+                diag(ca, ca) = 1. / (tmp + tempo(ca) * aCKN);
+              else
+                for (int ncpa = 0; ncpa < nb_comp; ncpa++)
+                  diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
+            }
+          statistiques().end_count(assemblage_sys_counter_);
         }
-      statistiques().end_count(assemblage_sys_counter_);
-    }
-  // On utilise p pour calculer phiB :
-  statistiques().end_count(diffusion_implicite_counter_);
-  operateur(0).ajouter(p, phiB);
-  if (marq_tot)
-    {
-      for (int i=0; i<size_s; i++)
-        if (marq(i))
-          ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(p, phiB);
-    }
-  statistiques().begin_count(diffusion_implicite_counter_);
-  solveur_masse.appliquer(phiB);
-  // phiB *= aCKN;  // Crank - Nicholson
-  // fait maintenant avant l'appel
-  //solveur_masse.appliquer(secmem);
+      // On utilise p pour calculer phiB :
+      statistiques().end_count(diffusion_implicite_counter_);
+      operateur(0).ajouter(p, phiB);
+      if (marq_tot)
+        {
+          for (int i = 0; i < size_s; i++)
+            if (marq(i))
+              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, phiB);
+        }
+      statistiques().begin_count(diffusion_implicite_counter_);
+      solveur_masse.appliquer(phiB);
+      // phiB *= aCKN;  // Crank - Nicholson
+      // fait maintenant avant l'appel
+      //solveur_masse.appliquer(secmem);
 
-  DoubleTab sol;
-  if (size_terme_mul)
-    {
-      sol = solution;
-      for( int i=0 ; i<size_terme_mul ; i++ )
-        sol(i) *= terme_mul(i) ;
-    }
-  else
-    sol.ref(solution);
+      DoubleTab sol;
+      if (size_terme_mul)
+        {
+          sol = solution;
+          for (int i = 0; i < size_terme_mul; i++)
+            sol(i) *= terme_mul(i);
+        }
+      else
+        sol.ref(solution);
 
-  secmem.ajoute(1./dt, sol, VECT_REAL_ITEMS) ;
+      secmem.ajoute(1. / dt, sol, VECT_REAL_ITEMS);
 
-  // Stop the counter because operator diffusion is also counted
-  statistiques().end_count(diffusion_implicite_counter_,0,0);
-  operateur(0).ajouter(solution, resu);
-  if (marq_tot)
-    {
-      for (int i=0; i<size_s; i++)
-        if (marq(i))
-          ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(solution, resu);
-    }
-  statistiques().begin_count(diffusion_implicite_counter_);
-  solveur_masse.appliquer(resu);
-  resu.echange_espace_virtuel();
-  resu *= -1. ;
-  resu.ajoute(1./dt, sol, VECT_REAL_ITEMS) ;
+      // Stop the counter because operator diffusion is also counted
+      statistiques().end_count(diffusion_implicite_counter_, 0, 0);
+      operateur(0).ajouter(solution, resu);
+      if (marq_tot)
+        {
+          for (int i = 0; i < size_s; i++)
+            if (marq(i))
+              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(solution, resu);
+        }
+      statistiques().begin_count(diffusion_implicite_counter_);
+      solveur_masse.appliquer(resu);
+      resu.echange_espace_virtuel();
+      resu *= -1.;
+      resu.ajoute(1. / dt, sol, VECT_REAL_ITEMS);
 
-  DoubleTab residu(resu); // residu = Ax
-  residu -= secmem ;      // residu = Ax-B
-  DoubleTab z;
-  if (precond_diag)
-    {
-      z=residu;
-      diag.multvect(residu, z) ; // z = D-1(Ax-B)
-    }
-  else
-    z.ref(residu); // z = Ax-B
-  p -= z ;
+      DoubleTab residu(resu); // residu = Ax
+      residu -= secmem;      // residu = Ax-B
+      DoubleTab z;
+      if (precond_diag)
+        {
+          z = residu;
+          diag.multvect(residu, z); // z = D-1(Ax-B)
+        }
+      else
+        z.ref(residu); // z = Ax-B
+      p -= z;
 
-  double initial_residual = mp_carre_norme_vect(z) ; // =||Ax(0)-B|| ou ||D-1.(Ax(0)-B)||
-  /* Calcul different de initial_residual:
-     DoubleTab tmp(secmem);
-     if (precond_diag)
-     diag.multvect(secmem, tmp);
-     else
-     tmp.ref(secmem);
-     double initial_residual = mp_carre_norme_vect(tmp) ; // =||B|| ou ||D-1.B|| */
+      double initial_residual = mp_carre_norme_vect(z); // =||Ax(0)-B|| ou ||D-1.(Ax(0)-B)||
+      /* Calcul different de initial_residual:
+         DoubleTab tmp(secmem);
+         if (precond_diag)
+         diag.multvect(secmem, tmp);
+         else
+         tmp.ref(secmem);
+         double initial_residual = mp_carre_norme_vect(tmp) ; // =||B|| ou ||D-1.B|| */
 
-  if (le_schema_en_temps->impr_diffusion_implicite())
-    {
-      Cout << "Implicited diffusion algorithm applied on " << que_suis_je() << " equation:" << finl;
-      Cout << "Residu(0)=" << initial_residual << finl;
-    }
-  double seuil = seuil_diffusion_implicite * seuil_diffusion_implicite;
-  // On calcule un seuil relatif (PL: 18/07/12, j'ai l'impression qu'il y'a une erreur, c'est seuil*=initial_residual;
-  // En outre, il serait bon de faire residual = sqrt(mp_carre_norme_vect(tmp)) a plusieurs endroits...
-  if(initial_residual>seuil)
-    seuil = seuil_diffusion_implicite * initial_residual ;
+      if (le_schema_en_temps->impr_diffusion_implicite()) Cout << "Residu(0)=" << initial_residual << finl;
+      double seuil = seuil_diffusion_implicite * seuil_diffusion_implicite;
+      // On calcule un seuil relatif (PL: 18/07/12, j'ai l'impression qu'il y'a une erreur, c'est seuil*=initial_residual;
+      // En outre, il serait bon de faire residual = sqrt(mp_carre_norme_vect(tmp)) a plusieurs endroits...
+      if (initial_residual > seuil)
+        seuil = seuil_diffusion_implicite * initial_residual;
 
-  double residual = seuil; // Il est mieux d'utiliser cette valeur pour entrer dans la boucle car seuil peut etre tres grand si le calcul diverge avant
-  double prodrz_old = mp_prodscal(residu, z);
-  DoubleTrav pp(p);
-  int niter = 0 ;
-  if (initial_residual != 0)
-    while ( ( residual >= seuil ) && (niter++ <= nmax) )
-      {
-        resu = 0. ;
-
-        p.echange_espace_virtuel();
-
-        // Stop the counter during diffusive operator:
-        statistiques().end_count(diffusion_implicite_counter_,0,0);
-        operateur(0).ajouter(p, resu);
-
-        if (marq_tot)
+      double residual = seuil; // Il est mieux d'utiliser cette valeur pour entrer dans la boucle car seuil peut etre tres grand si le calcul diverge avant
+      double prodrz_old = mp_prodscal(residu, z);
+      DoubleTrav pp(p);
+      int niter = 0;
+      if (initial_residual != 0)
+        while ((residual >= seuil) && (niter++ <= nmax))
           {
-            for (int i=0; i<size_s; i++)
-              if (marq(i))
-                ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(p, resu);
+            resu = 0.;
+
+            p.echange_espace_virtuel();
+
+            // Stop the counter during diffusive operator:
+            statistiques().end_count(diffusion_implicite_counter_, 0, 0);
+            operateur(0).ajouter(p, resu);
+
+            if (marq_tot)
+              {
+                for (int i = 0; i < size_s; i++)
+                  if (marq(i))
+                    ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, resu);
+              }
+            statistiques().begin_count(diffusion_implicite_counter_);
+            solveur_masse.appliquer(resu);
+            //resu *= aCKN ;  // Crank - Nicholson
+            resu.echange_espace_virtuel();
+
+            resu -= phiB;// On retire la contribution des bords.
+            resu *= -aCKN;
+            if (size_terme_mul)
+              {
+                for (int i = 0; i < size_terme_mul; i++)
+                  pp(i) = p(i) * terme_mul(i);
+                resu.ajoute(1. / dt, pp, VECT_REAL_ITEMS);
+              }
+            else
+              resu.ajoute(1. / dt, p, VECT_REAL_ITEMS);
+            double alfa = prodrz_old / mp_prodscal(resu, p);
+            // Inutile de faire un echange espace virtuel:
+            solution.ajoute(alfa, p, VECT_REAL_ITEMS);
+            residu.ajoute(alfa, resu, VECT_REAL_ITEMS);
+
+            if (precond_diag)
+              diag.multvect(residu, z); // preconditionnement par diag^(-1)
+            // sinon z=residu
+
+            residual = mp_carre_norme_vect(z);
+            if (le_schema_en_temps->impr_diffusion_implicite())
+              Cout << "Iteration n=" << niter << " Residu(n)/Residu(0)=" << residual / initial_residual << finl;
+
+            double prodrz_new = mp_prodscal(residu, z);
+            p *= (prodrz_new / prodrz_old);
+            p -= z;
+            prodrz_old = prodrz_new;
+            // On previent si convergence anormalement longue sur de tres gros cas
+            if (niter == 100)
+              {
+                Cout
+                    << "Already 100 iterations of the conjugate gradient solver used for diffusion implicited algorithm."
+                    << finl;
+                Cout
+                    << "The calculation is diverging, may be because of incorrect initial and/or boundary conditions for the equation "
+                    << que_suis_je() << finl;
+                Cout
+                    << "You may also try to stop the calculation and rerun it with a lower facsec, say 0.9 or may be less: 0.5."
+                    << finl;
+              }
           }
-        statistiques().begin_count(diffusion_implicite_counter_);
-        solveur_masse.appliquer(resu);
-        //resu *= aCKN ;  // Crank - Nicholson
-        resu.echange_espace_virtuel();
+      if ((le_schema_en_temps->no_error_if_not_converged_diffusion_implicite() == 0) && (niter > nmax))
+        {
+          Cerr << "No convergence of the implicited diffusion algorithm for the equation " << que_suis_je() << " in "
+               << nmax << " iterations." << finl;
+          Cerr << "Residue : " << residual << " Threshold : " << seuil << finl;
+          Cerr << "The problem " << probleme().le_nom() << " has been saved." << finl;
+          probleme().sauver();
+          Cerr << "The problem is post processed to help you to see where the non convergence is located." << finl;
+          probleme().postraiter(1);
+          exit();
+        }
+      else
+        Cout << "Diffusion operator implicited for the equation " << que_suis_je()
+             << " : Conjugate gradient converged in " << niter << " iterations." << finl;
+      solution -= merk;
+      solution.echange_espace_virtuel();
 
-        resu -= phiB;// On retire la contribution des bords.
-        resu *= -aCKN ;
-        if (size_terme_mul)
-          {
-            for(int i=0 ; i<size_terme_mul ; i++ )
-              pp(i) = p(i) * terme_mul(i) ;
-            resu.ajoute(1./dt, pp, VECT_REAL_ITEMS);
-          }
-        else
-          resu.ajoute(1./dt, p, VECT_REAL_ITEMS);
-        double alfa = prodrz_old / mp_prodscal(resu, p);
-        // Inutile de faire un echange espace virtuel:
-        solution.ajoute(alfa, p, VECT_REAL_ITEMS);
-        residu.ajoute(alfa, resu, VECT_REAL_ITEMS);
+      // End the counter
+      statistiques().end_count(diffusion_implicite_counter_);
 
-        if (precond_diag)
-          diag.multvect(residu, z); // preconditionnement par diag^(-1)
-        // sinon z=residu
-
-        residual = mp_carre_norme_vect(z);
-        if (le_schema_en_temps->impr_diffusion_implicite()) Cout << "Iteration n=" << niter << " Residu(n)/Residu(0)=" << residual/initial_residual << finl;
-
-        double prodrz_new = mp_prodscal(residu, z);
-        p *= (prodrz_new/prodrz_old);
-        p -= z;
-        prodrz_old = prodrz_new;
-        // On previent si convergence anormalement longue sur de tres gros cas
-        if (niter==100)
-          {
-            Cout << "Already 100 iterations of the conjugate gradient solver used for diffusion implicited algorithm." << finl;
-            Cout << "The calculation is diverging, may be because of incorrect initial and/or boundary conditions for the equation " << que_suis_je() << finl;
-            Cout << "You may also try to stop the calculation and rerun it with a lower facsec, say 0.9 or may be less: 0.5." << finl;
-          }
-      }
-  if ((le_schema_en_temps->no_error_if_not_converged_diffusion_implicite()==0)&&( niter > nmax ))
-    {
-      Cerr << "No convergence of the implicited diffusion algorithm for the equation " << que_suis_je() << " in " << nmax << " iterations." << finl;
-      Cerr << "Residue : "<< residual << " Threshold : " << seuil << finl;
-      Cerr << "The problem " << probleme().le_nom() << " has been saved." << finl;
-      probleme().sauver();
-      Cerr << "The problem is post processed to help you to see where the non convergence is located." << finl;
-      probleme().postraiter(1);
-      exit();
+      // CHD 230501 : Call to diffusive operator to update flux_bords (boundary fluxes):
+      resu = 0.;
+      operateur(0).ajouter(inconnue(), resu);
+      if (marq_tot)
+        {
+          for (int i = 0; i < size_s; i++)
+            if (marq(i))
+              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(inconnue(), resu);
+        }
+      // Since 1.6.8 returns dI/dt:
+      solution/=dt;
     }
-  else
-    Cout << "Diffusion operator implicited for the equation " << que_suis_je() << " : Conjugate gradient converged in " << niter << " iterations." << finl ;
-  solution -= merk ;
-  solution.echange_espace_virtuel();
-
-  // End the counter
-  statistiques().end_count(diffusion_implicite_counter_);
-
-  // CHD 230501 : Call to diffusive operator to update flux_bords (boundary fluxes):
-  resu = 0. ;
-  operateur(0).ajouter(inconnue(), resu);
-  if (marq_tot)
-    {
-      for (int i=0; i<size_s; i++)
-        if (marq(i))
-          ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(inconnue(), resu);
-    }
-
-  // Since 1.6.8 returns dI/dt:
-  solution/=dt;
 }
 
 DoubleTab& Equation_base::corriger_derivee_expl(DoubleTab& d)
