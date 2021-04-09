@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,6 @@ public:
 
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const;
   virtual DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const;
-
-  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
 
 private:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -765,7 +765,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
       if (!afficher_message && VerifierCoin::expert_only==0)
         {
           afficher_message = 1;
-          Cerr << finl << "Probleme with the mesh used for the VEF P1Bulle discretization." << finl;
+          Cerr << finl << "Problem with the mesh used for the VEF P1Bulle discretization." << finl;
           journal << "List of nodes with no degrees of freedom :" << finl;
         }
       const double x = dom.coord(sommet, 0);

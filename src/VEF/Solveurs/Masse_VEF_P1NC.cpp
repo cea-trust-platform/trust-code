@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -260,11 +260,4 @@ DoubleTab& Masse_VEF_P1NC::ajouter_masse(double dt, DoubleTab& x, const DoubleTa
   Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
   inco.fixer_nature_du_champ(vectoriel);
   return x;
-}
-
-DoubleTab& Masse_VEF_P1NC::corriger_solution(DoubleTab& x, const DoubleTab& y) const
-{
-  //  assert(penalisation_==1);
-
-  return Solveur_Masse_base::corriger_solution( x,  y) ;
 }
