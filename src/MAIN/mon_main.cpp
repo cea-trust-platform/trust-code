@@ -295,14 +295,24 @@ void mon_main::dowork(const Nom& nom_du_cas)
       Cerr<<"Fin chargement des modules "<<finl;
     }
 
-  Cout<<"-------------------------------------------------------------------" << finl;
-  Cout<<" " << finl;
-  Cout<<"                          TRUST" << finl;
-  Cout<<"                      version : 1.8.3_beta "  << finl;
-  Cout<<"                          CEA - DES" << finl;
-  Cout<<" " << finl;
+  Cout<< " " << finl;
+  Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * *     " << finl;
+  Cout<< " *  _________  _______             _______  _________  *     " << finl;
+  Cout<< " *  \\__   __/ (  ____ ) |\\     /| (  ____ \\ \\__   __/  * " << finl;
+  Cout<< " *     ) (    | (    )| | )   ( | | (    \\/    ) (     *    " << finl;
+  Cout<< " *     | |    | (____)| | |   | | | (_____     | |     *     " << finl;
+  Cout<< " *     | |    |     __) | |   | | (_____  )    | |     *     " << finl;
+  Cout<< " *     | |    | (\\ (    | |   | |       ) |    | |     *    " << finl;
+  Cout<< " *     | |    | ) \\ \\__ | (___) | /\\____) |    | |     *  " << finl;
+  Cout<< " *     )_(    |/   \\__/ (_______) \\_______)    )_(     *   " << finl;
+  Cout<< " *                                                     *     " << finl;
+  Cout<< " *                  version : 1.8.3_beta               *     "  << finl;
+  Cout<< " *                       CEA - DES                     *     " << finl;
+  Cout<< " *                                                     *     " << finl;
+  Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * * " << finl;
+  Cout<< " " << finl;
+
   info_atelier(Cout);
-  Cout<<" ------------------------------------------------------------------" << finl;
   Cout<<" " << finl;
   Cout<<"  Vous traitez le cas " << Objet_U::nom_du_cas() << "\n";
   Cout<<" " << finl;
