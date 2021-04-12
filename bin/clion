@@ -22,6 +22,8 @@ then
 else
    baltik=0
    BUILD_ROOTS="$TRUST_ROOT/MonoDir_mpi/src $TRUST_ROOT/MonoDir_mpi_opt/src"
+   sed -i "1,$ s?cmake-build-debug?../MonoDir_mpi/src?g"        $TRUST_ROOT/src/.idea/workspace.xml
+   sed -i "1,$ s?cmake-build-release?../MonoDir_mpi_opt/src?g"  $TRUST_ROOT/src/.idea/workspace.xml
 fi
 for BUILD_ROOT in $BUILD_ROOTS
 do
@@ -48,3 +50,4 @@ echo "ctrl+F12          : liste des methodes de la classe"
 echo "alt+haut|bas      : naviguer d'une methode a l'autre"
 echo "ctrl+E            : derniers fichiers ouverts"
 $clion $CMakeLists 1>/dev/null 2>&1
+
