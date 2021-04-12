@@ -865,7 +865,7 @@ then
       ./conda install $local_channel $pkg -y 1>>$TRUST_ROOT/exec/conda_python.log 2>&1
       [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda3 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
-    cd -
+    cd - 1>/dev/null 2>&1
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 fi
@@ -1330,6 +1330,28 @@ fi
 [ "$TRUST_CC" = "" ]  && m="# Path to C++ compiler" && e="TRUST_CC=\"$TRUST_CC_BASE\"   && export TRUST_CC"  && ecrit $m"|"$e"|"$env && eval $e
 [ "$TRUST_cc" = "" ]  && m="# Path to C compiler"   && e="TRUST_cc=\"$TRUST_cc_BASE\"   && export TRUST_cc"  && ecrit $m"|"$e"|"$env && eval $e
 [ "$TRUST_F77" = "" ] && m="# Path to F77 compiler" && e="TRUST_F77=\"$TRUST_F77_BASE\" && export TRUST_F77" && ecrit $m"|"$e"|"$env && eval $e
+
+##############################################################
+# Intallation des packages supplementaires avec pip de conda #
+##############################################################
+pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
+[ "$TRUST_DISABLE_MPI" != 1 ] && pkgs="mpi4py "$pkgs
+InstallPipPkgs=0
+for pkg in $pkgs
+do
+  [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && InstallPipPkgs=1
+done
+if [ "$InstallPipPkgs" = 1 ]
+then
+   for pkg in $pkgs
+   do
+     echo "Installing $pkg ..."
+     env MPICC=$TRUST_cc $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/pip/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+     [ $? != 0 ] && echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+   done
+fi
+# If a package has not been correctly installed, we exit with an error
+[ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 
 ################################################
 # Checking the size of type 'long' for BUILD64 #
