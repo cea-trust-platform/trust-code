@@ -1,0 +1,13 @@
+#!/bin/bash
+# Si AMGX active dans PETSc, on peut faire une comparaison CPU - GPU:
+rep=`pwd`
+rep=`basename $rep`
+NPROCS=1 && jdd=$rep && [ -f PAR_$rep.TU ] && jdd=PAR_$jdd && NPROCS=`ls *.Zones | wc -l`
+if [ "$TRUST_USE_CUDA" = 1 ]
+then
+   # Then check several GPU solvers
+   Check_solver.sh -all -amgx_only
+else
+   echo "PETSc not configured for CUDA on $HOST so no check between CPU and GPU performances."
+   exit 0
+fi

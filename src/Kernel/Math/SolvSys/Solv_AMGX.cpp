@@ -23,6 +23,7 @@
 #include <Solv_AMGX.h>
 #include <Matrice_Morse.h>
 #include <ctime>
+#include <communications.h>
 
 Implemente_instanciable_sans_constructeur(Solv_AMGX,"Solv_AMGX",Solv_Petsc);
 // printOn
@@ -88,7 +89,7 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets.addr(), colIndices.addr(), mat.get_coeff().addr(), nullptr);
   */
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
-  Cout << "[AmgX] Time to copy matrix on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
 void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat)
@@ -102,12 +103,26 @@ void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat)
   start = std::clock();
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);
   //SolveurAmgX_.updateA(nRowsLocal, nNz, mat.get_coeff().addr());
-  Cout << "[AmgX] Time to update matrix on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
+  {
+    // Crash d'AmgX (non reproduit sur les cas poisson d'AmgXWrapper), peut etre a cause d'une creation differente
+    // des vecteurs PETSc (via DM) par rapport a la notre (VecCreate), si deja converge (nbiter=0)
+    // Contournement en calculant le residu avant le solve et on ne resout pas si inferieur au seuil:
+    Vec ResidualPetsc_;
+    VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
+    MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
+    VecNorm(ResidualPetsc_, NORM_2, &residu(0));
+    if (residu(0) < seuil_)
+      {
+        Cout << "[AmgX] Not solved on GPU to avoid a (ToDo: fix) crash as it's already converged: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
+        return 0;
+      }
+  }
   std::clock_t start = std::clock();
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
   Cout << "[AmgX] Time to solve on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
@@ -118,6 +133,8 @@ int Solv_AMGX::nbiter(ArrOfDouble& residu)
 {
   int nbiter = -1;
   SolveurAmgX_.getIters(nbiter);
+  // Bug AmgX, seul le process 0 renvoie correctement nbiter...
+  envoyer_broadcast(nbiter, 0);
   if (limpr() > -1)
     {
       SolveurAmgX_.getResidual(0, residu(0));

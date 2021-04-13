@@ -11,3 +11,8 @@ compare_lata $jdd.lml ref.lml || exit -1
 make_PAR.data $jdd
 trust PAR_$jdd $? 1>PAR_$jdd.out_err 2>&1 || exit -1
 compare_lata PAR_$jdd.lml ref.lml || exit -1
+
+# Crash avec AmgX si seuil tres eleve (residu nul)
+echo "Checking AmgX solve if already solved..."
+sed -i "1,$ s?seuil 1.e-12?seuil 1.e+12?g" $jdd.data
+trust $jdd 1>$jdd.out_err 2>&1 || exit -1
