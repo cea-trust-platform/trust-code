@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Solv_Petsc_AMGX.h
+// File:        Solv_AMGX.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math/SolvSys
 // Version:     /main/47
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Solv_Petsc_AMGX_included
-#define Solv_Petsc_AMGX_included
+#ifndef Solv_AMGX_included
+#define Solv_AMGX_included
 
 #include <Solv_Petsc.h>
 #include <cstring>
@@ -30,9 +30,9 @@
 #include <amgx_c.h>
 #endif
 
-class Solv_Petsc_AMGX : public Solv_Petsc
+class Solv_AMGX : public Solv_Petsc
 {
-  Declare_instanciable_sans_constructeur(Solv_Petsc_AMGX);
+  Declare_instanciable_sans_constructeur(Solv_AMGX);
 #ifdef PETSCKSP_H
 #ifdef PETSC_HAVE_CUDA
 public :
@@ -40,7 +40,7 @@ public :
   {
     this->config = filename;
   }
-  inline Solv_Petsc_AMGX()
+  inline Solv_AMGX()
   {
     amgx_=true;
     config = Objet_U::nom_du_cas();
@@ -63,21 +63,6 @@ protected :
 protected:
   Nom config; // Fichier de configuration
   AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
-#endif
-#endif
-};
-
-class Solv_AMGX : public Solv_Petsc_AMGX
-{
-  Declare_instanciable_sans_constructeur(Solv_AMGX);
-#ifdef PETSCKSP_H
-#ifdef PETSC_HAVE_CUDA
-public :
-protected :
-  virtual void Create_objects(const Matrice_Morse&);
-  virtual void Update_matrix(Mat&, const Matrice_Morse&);
-  virtual int solve(ArrOfDouble& residual);
-private:
   /*
   int nRowsLocal, nRowsGlobal, nNz;
   //const int *colIndices = nullptr, *rowOffsets = nullptr;

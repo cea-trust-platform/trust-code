@@ -14,25 +14,25 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Solv_Petsc_AMGX.cpp
+// File:        Solv_AMGX.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math/SolvSys
 // Version:     /main/95
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Solv_Petsc_AMGX.h>
+#include <Solv_AMGX.h>
 #include <Matrice_Morse.h>
 #include <ctime>
 
-Implemente_instanciable_sans_constructeur(Solv_Petsc_AMGX,"Solv_Petsc_AMGX",Solv_Petsc);
+Implemente_instanciable_sans_constructeur(Solv_AMGX,"Solv_AMGX",Solv_Petsc);
 // printOn
-Sortie& Solv_Petsc_AMGX::printOn(Sortie& s ) const
+Sortie& Solv_AMGX::printOn(Sortie& s ) const
 {
   s << chaine_lue_;
   return s;
 }
 // readOn
-Entree& Solv_Petsc_AMGX::readOn(Entree& is)
+Entree& Solv_AMGX::readOn(Entree& is)
 {
   create_solver(is);
   return is;
@@ -40,7 +40,7 @@ Entree& Solv_Petsc_AMGX::readOn(Entree& is)
 
 #ifdef PETSCKSP_H
 #ifdef PETSC_HAVE_CUDA
-void Solv_Petsc_AMGX::initialize()
+void Solv_AMGX::initialize()
 {
   if (amgx_initialized()) return;
   Nom AmgXmode = "dDDI"; // dDDI:GPU hDDI:CPU (not supported yet by AmgXWrapper)
@@ -59,73 +59,14 @@ void Solv_Petsc_AMGX::initialize()
 }
 
 // Creation des objets
-void Solv_Petsc_AMGX::Create_objects(const Matrice_Morse& mat)
-{
-  initialize();
-  // Creation de la matrice Petsc si necessaire
-  if (!read_matrix_)
-    {
-      std::clock_t start = std::clock();
-      Create_MatricePetsc(MatricePetsc_, mataij_, mat);
-      Cout << "[Petsc] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-    }
-  std::clock_t start = std::clock();
-  SolveurAmgX_.setA(MatricePetsc_);
-  Cout << "[AmgX] Time to copy matrix on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
-}
-
-void Solv_Petsc_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat)
-{
-  std::clock_t start = std::clock();
-  Solv_Petsc::Update_matrix(MatricePetsc, mat);
-  Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-  start = std::clock();
-  SolveurAmgX_.setA(MatricePetsc); // Pas optimal recopie a chaque fois CPU->GPU (Mieux: Solv_AMGX)
-  Cout << "[AmgX] Time to copy matrix on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-}
-
-// Resolution
-int Solv_Petsc_AMGX::solve(ArrOfDouble& residu)
-{
-  std::clock_t start = std::clock();
-  SolveurAmgX_.solve(SolutionPetsc_, SecondMembrePetsc_);
-  Cout << "[AmgX] Time to solve on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
-  return nbiter(residu);
-}
-
-int Solv_Petsc_AMGX::nbiter(ArrOfDouble& residu)
-{
-  int nbiter = -1;
-  SolveurAmgX_.getIters(nbiter);
-  if (limpr() > -1)
-    {
-      SolveurAmgX_.getResidual(0, residu(0));
-      SolveurAmgX_.getResidual(nbiter - 1, residu(nbiter));
-    }
-  return nbiter;
-}
-#endif
-#endif
-
-Implemente_instanciable_sans_constructeur(Solv_AMGX,"Solv_AMGX",Solv_Petsc_AMGX);
-// printOn
-Sortie& Solv_AMGX::printOn(Sortie& s ) const
-{
-  s << chaine_lue_;
-  return s;
-}
-// readOn
-Entree& Solv_AMGX::readOn(Entree& is)
-{
-  create_solver(is);
-  return is;
-}
-
-#ifdef PETSCKSP_H
-#ifdef PETSC_HAVE_CUDA
 void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
 {
   initialize();
+  if (read_matrix_)
+    {
+      Cerr << "Read matrix not supported on GPU yet." << finl;
+      Process::exit();
+    }
   // Creation de la matrice Petsc si necessaire
   std::clock_t start = std::clock();
   clean_matrix_ = false; // ToDo : on ne peut pas enlever les 0 de la matrice PETSc car le stencil de la matrice PETSc (CPU) et le stencil de la matrice GPU doivent etre identiques pour updateA...
@@ -133,6 +74,7 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
   Cout << "[Petsc] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   /*
+   // ToDo essayer de s'affranchir avec la nouvelle API de la matrice/vec PETSc, encore un pb en parallele en VEF (items communs?)
       nRowsGlobal = nb_rows_tot_;
       nRowsLocal = nb_rows_;
       // Numerotation archaique (Fortran) de Matrice_morse qui fait suer:
@@ -170,6 +112,18 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
   Cout << "[AmgX] Time to solve on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
   return nbiter(residu);
+}
+
+int Solv_AMGX::nbiter(ArrOfDouble& residu)
+{
+  int nbiter = -1;
+  SolveurAmgX_.getIters(nbiter);
+  if (limpr() > -1)
+    {
+      SolveurAmgX_.getResidual(0, residu(0));
+      SolveurAmgX_.getResidual(nbiter - 1, residu(nbiter));
+    }
+  return nbiter;
 }
 #endif
 #endif

@@ -23,7 +23,7 @@ do
       mv PAR_GAMELAN.data GAMELAN.data
    fi
    # Utilisation d'un solveur GPU AmgX:
-   [ "$GPU" != "" ] &&  sed -i "1,$ s?Petsc?Petsc_amgx?" GAMELAN.data
+   [ "$GPU" != "" ] &&  sed -i "1,$ s?Petsc?amgx?" GAMELAN.data
    # Lancement calcul
    trust -gpu GAMELAN $CPU 1>GAMELAN.out 2>GAMELAN.err
    cd -

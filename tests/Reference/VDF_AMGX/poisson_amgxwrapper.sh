@@ -33,7 +33,12 @@ then
 else
    valgrind="" && [ "$VALGRIND" != "" ] && VALGRIND=1
    N=10
-   trust -gpu dummy -caseName AmgX_$N"x"$N"x"$N -mode AmgX_GPU -cfgFileName $1 -Nx $N -Ny $N -Nz $N
+   for mode in AmgX_CSR AmgX_GPU
+   do
+      cas=$mode"_"$N"x"$N"x"$N
+      echo "Mode $mode: See $cas.log"
+      trust -gpu dummy -caseName $cas -mode $mode -cfgFileName $1 -Nx $N -Ny $N -Nz $N 1>$cas.log 2>&1
+   done   
 fi
 
 # Comment sont geres les communications CPU<->GPU ?
