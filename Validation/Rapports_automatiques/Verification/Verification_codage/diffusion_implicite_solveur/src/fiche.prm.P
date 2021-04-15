@@ -1,0 +1,45 @@
+Parameters {
+	Title "Solveur option pour le schema Euler explicite avec diffusion implicite"
+	Author "Pierre LEDAC"
+    VersionTrio_U 1.8.3
+#Pforeach _cas_ ( _liste_cas_ )   
+ 	TestCase . _cas_.data _cpu_
+#Pendforeach(_cas_) 
+}
+Chapter {
+	Title "Geometry" 
+	visu {
+		width 8cm
+		title "Partitioned mesh (4 MPI)"
+        mesh mesh_00000.lata dom
+        pseudocolor mesh_00000.lata dom PARTITION ELEM
+        Normal3d -0.75 -0.38  0.53
+        Up3D     -0.25 -0.57 -0.77
+	}
+}
+Chapter {
+	Title "Convergence with current free-matrix method and new matrix solver method" 
+    figure { 
+        description "Residual NormL2(Ax-b) during the fist time step where convergence may be slow on some mesh:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Iteration"
+        labelY "Residual"
+        
+        logy 
+#Pforeach _cas_ ( _liste_cas_ )
+        curve {
+			file _cas_.res
+			columns ($1) ($2)
+			legende "_cas_"
+			style linespoints
+		}
+#Pendforeach(_cas_)
+}
+}
+
+Chapter {
+	Title "Computer performance"
+	tableau_performance {
+	}
+}

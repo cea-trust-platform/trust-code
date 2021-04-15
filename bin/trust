@@ -113,6 +113,7 @@ help()
    echo "-edit                         : Edit datafile."
 #   echo "-xedit                        : Edit datafile with xdata."
    echo "-xcheck                       : Check the datafile's keywords with xdata."
+   echo "-xdata			       : Check and run the datafile's keywords with xdata."
    echo "-partition                    : Partition the mesh to prepare a parallel calculation (Creation of the .Zones files)."
    echo "-mesh                         : Visualize the mesh(es) contained in the data file."
    echo "-eclipse                      : Generate Eclipse configuration files to import TRUST sources."
@@ -152,6 +153,7 @@ me=`whoami`
 edit=""
 xedit=""
 xcheck=""
+xdata=""
 partition=""
 mesh=""
 monitor=""
@@ -291,6 +293,9 @@ do
    elif [ "$1" = "-xcheck" ]
    then
       xcheck=1
+   elif [ "$1" = "-xdata" ]
+   then
+      xdata=1
    elif [ "$1" = "-partition" ]
    then
       partition=1
@@ -567,6 +572,15 @@ fi
 if [ "$xcheck" = 1 ]
 then
    $TRUST_ROOT/bin/VerifData $NOM".data"
+   exit $?
+fi
+
+##########################
+# Verify data with xdata #
+##########################
+if [ "$xdata" = 1 ]
+then
+   cd $TRUST_ROOT/Outils/TRIOXDATA && source ./XDATA.sh && cd test_complet && ./fait_lance_test && echo $NOM | ./lance_test_modif
    exit $?
 fi
 

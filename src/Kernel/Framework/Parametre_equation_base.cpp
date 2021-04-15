@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,50 +20,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #include <Parametre_equation_base.h>
 
 Implemente_base(Parametre_equation_base,"Parametre_equation_base",Objet_U);
+// XD parametre_equation_base objet_lecture parametre_equation_base -1 Basic class for parametre_equation
 
-
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Parametre_equation_base::printOn(Sortie& os) const
 {
   return os;
 }
 
-
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lecture d'un terme source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
 Entree& Parametre_equation_base::readOn(Entree& is)
 {
   return is;

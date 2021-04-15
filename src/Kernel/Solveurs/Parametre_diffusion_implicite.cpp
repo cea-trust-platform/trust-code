@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,11 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #include <Parametre_diffusion_implicite.h>
 #include <Param.h>
-
-
 
 Implemente_instanciable_sans_constructeur(Parametre_diffusion_implicite,"Parametre_diffusion_implicite",Parametre_equation_base);
 
@@ -38,54 +35,40 @@ Parametre_diffusion_implicite::Parametre_diffusion_implicite()
 
 }
 
-
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Parametre_diffusion_implicite::printOn(Sortie& os) const
 {
   return os;
 }
-
-
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lecture d'un terme source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+// XD parametre_diffusion_implicite parametre_equation_base parametre_diffusion_implicite -1 To specify additional parameters for the equation when using impliciting diffusion
+// XD attr crank entier(into=[0,1]) crank 1 Use (1) or not (0, default) a Crank Nicholson method for the diffusion implicitation algorithm. Setting crank to 1 increases the order of the algorithm from 1 to 2.
+// XD attr preconditionnement_diag entier(into=[0,1]) preconditionnement_diag 1 The CG used to solve the implicitation of the equation diffusion operator is not preconditioned by default. If this option is set to 1, a diagonal preconditionning is used. Warning: this option is not necessarily more efficient, depending on the treated case.
+// XD attr niter_max_diffusion_implicite entier niter_max_diffusion_implicite 1 Change the maximum number of iterations for the CG (Conjugate Gradient) algorithm when solving the diffusion implicitation of the equation.
+// XD attr seuil_diffusion_implicite floattant seuil_diffusion_implicite 1 Change the threshold convergence value used by default for the CG resolution for the diffusion implicitation of this equation.
+// XD attr solveur solveur_sys_base solveur 1 Method (different from the default one, Conjugate Gradient) to solve the linear system.
 Entree& Parametre_diffusion_implicite::readOn(Entree& is)
 {
-
   Param param(que_suis_je());
-  param.ajouter( "crank",&crank_);
-  param.ajouter( "niter_max_diffusion_implicite",&nb_it_max_);
-  param.ajouter( "preconditionnement_diag",&preconditionnement_diag_);
-  param.ajouter( "seuil_diffusion_implicite",&seuil_diffusion_implicite_);
+  param.ajouter("crank",&crank_);
+  param.ajouter("niter_max_diffusion_implicite",&nb_it_max_);
+  param.ajouter("preconditionnement_diag",&preconditionnement_diag_);
+  param.ajouter("seuil_diffusion_implicite",&seuil_diffusion_implicite_);
+  param.ajouter_non_std("solveur",(this));
   param.lire_avec_accolades_depuis(is);
   return is;
 }
 
+int Parametre_diffusion_implicite::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  Motcle motlu;
+  if (mot=="solveur")
+    {
+      is >> solveur_;
+      solveur_.nommer("solveur_diffusion_implicite");
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+  return -1;
+}

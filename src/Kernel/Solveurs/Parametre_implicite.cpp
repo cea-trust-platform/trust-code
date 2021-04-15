@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,11 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #include <Parametre_implicite.h>
 #include <Param.h>
-
-
 
 Implemente_instanciable_sans_constructeur(Parametre_implicite,"Parametre_implicite",Parametre_equation_base);
 
@@ -47,45 +44,18 @@ Parametre_implicite::Parametre_implicite()
   equation_frequence_resolue_.parseString();
 }
 
-
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Parametre_implicite::printOn(Sortie& os) const
 {
   return os;
 }
 
-
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lecture d'un terme source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+// XD parametre_implicite parametre_equation_base parametre_implicite -1 Keyword to change for this equation only the parameter of the implicit scheme used to solve the problem.
+// XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Keyword to change for this equation only the value of seuil_convergence_implicite used in the implicit scheme.
+// XD attr seuil_convergence_solveur floattant seuil_convergence_solveur 1 Keyword to change for this equation only the value of seuil_convergence_solveur used in the implicit scheme
+// XD attr solveur solveur_sys_base solveur 1 Keyword to change for this equation only the solver used in the implicit scheme
+// XD attr resolution_explicite rien resolution_explicite 1 To solve explicitly the equation whereas the scheme is an implicit scheme.
+// XD attr equation_non_resolue rien equation_non_resolue 1 Keyword to specify that the equation is not solved.
+// XD attr equation_frequence_resolue chaine equation_frequence_resolue 1 Keyword to specify that the equation is solved only every n time steps (n is an integer or given by a time-dependent function f(t)).
 Entree& Parametre_implicite::readOn(Entree& is)
 {
   Nom eq_freq_resolue="0";
@@ -114,6 +84,7 @@ Entree& Parametre_implicite::readOn(Entree& is)
   le_solveur_.nommer("solveur_implicite");
   return is;
 }
+
 // Description: permet de mettre les seuils equivalents a ceux de la 161
 // pour l'instant warning ensuite ereur.
 void  Parametre_implicite::set_seuil_solveur_avec_seuil_convergence_solveur(double seuil_convergence_solveur)
@@ -148,6 +119,5 @@ void  Parametre_implicite::set_seuil_solveur_avec_seuil_convergence_solveur(doub
       Cerr<< "You can not use seuil_test_preliminaire_solveur and seuil_convergence_solveur in the same block" <<finl;
       exit();
     }
-
 }
 

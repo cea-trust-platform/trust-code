@@ -1,0 +1,21 @@
+#!/bin/bash
+gunzip -c $TRUST_ROOT/tests/Reference/Cx/cylindre.geom.gz > cylindre.geom
+cpu=2
+make_PAR.data base.data $cpu
+liste_cas="matrix_free_gc matrix_free_gcp_diag matrix_petsc_gcp_ilu0"
+rtol=1.e-13
+option[1]="seuil_diffusion_implicite $rtol"
+option[2]="seuil_diffusion_implicite $rtol preconditionnement_diag 1"
+option[3]="solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol $rtol impr }"
+i=0
+for cas in $liste_cas
+do
+   let i=i+1
+   jdd=$cas.data
+   cp PAR_base.data $jdd 
+   sed -i "1,$ s?parametre_diffusion_implicite { }?parametre_diffusion_implicite { ${option[$i]} }?" $jdd
+done
+sed -i "1,$ s?_cpu_?$cpu?g" fiche.prm.P
+sed -i "1,$ s?_liste_cas_?$liste_cas?g" fiche.prm.P
+python $TRUST_ROOT/bin/KSH/preprocessor.py fiche.prm.P fiche.prm
+exit 0

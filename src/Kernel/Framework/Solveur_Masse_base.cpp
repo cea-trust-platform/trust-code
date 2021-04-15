@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -144,6 +144,7 @@ void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
 // Description: renvoie appliquer_impl(x/coeffient_temporelle)
 // si on a un coefficient temporelle
 // sinon renvoie appliquer_impl(x)
+// Return M-1.x
 DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
 {
   if (has_coefficient_temporel_)
@@ -175,16 +176,17 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
       tab_divide_any_shape(x, values, VECT_REAL_ITEMS);
     }
 
-  return appliquer_impl(x);
+  return appliquer_impl(x); // M-1.x
 }
 
+// Add M/dt into matrix
 Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
   Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
   DoubleTrav diag(equation().inconnue().valeurs());
   const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
   diag=1.;
-  appliquer(diag);
+  appliquer(diag); // M-1
   int prems=0;
   if(penalisation)
     {
@@ -213,18 +215,19 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
           matmo(i,i)+=penalisation_/dt;
         }
       else
-        matmo(i,i)+=1./(diag.addr()[i]*dt);
+        matmo(i,i)+=1./(diag.addr()[i]*dt); // M/dt
     }
   return matrice;
 }
 
+// Add M*y/dt to x
 DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation) const
 {
   int sz=y.size();
   DoubleTab diag;
   diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
   diag=1.;
-  appliquer(diag);
+  appliquer(diag); // M-1
   if (penalisation)
     {
       if (penalisation_==0)
@@ -243,13 +246,14 @@ DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const Doub
   //x.echange_espace_virtuel();Debog::verifier("Solveur_Masse::ajouter_masse",x);
   return x;
 }
+
 Matrice_Base& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, Matrice_Base& matrice, int penalisation) const
 {
   Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
   int sz=matmo.nb_lignes();;
   DoubleTrav diag(equation().inconnue().valeurs());
   diag=1.;
-  appliquer(diag);
+  appliquer(diag); // M-1
   int prems=0;
   if(penalisation)
     {
@@ -369,12 +373,13 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 
 }
 
+// Pour appliquer les CLs de Dirichlet sur la solution (M=0)
 DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y) const
 {
   int sz = y.size();
   DoubleTrav diag(equation().inconnue().valeurs());
   diag=1.;
-  appliquer(diag);
+  appliquer(diag); // M-1
   for(int i=0; i<sz; i++)
     {
       if (diag.addr()[i]<1.e-12)
@@ -384,9 +389,6 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
     }
   return x;
 }
-
-
-
 
 // Ajout d'une methode dimensionner()
 // qui dimensionne la matrice a la diagonale quand
