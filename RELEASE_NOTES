@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
-xx/04/21 (TRUST)  New feature : mpi4py Python package now provided by default in the TRUST Python environment when compiling with MPI.
+12/04/21 (TRUST)  New feature : mpi4py Python package now provided by default in the TRUST Python environment when compiling with MPI.
 31/03/21 (TRUST)  New feature : ICoCo (Interface for Code Coupling) version 2! See https://github.com/cea-trust-platform/icoco-coupling for full reference.
 30/03/21 (TRUST)  Performance : Faster partitioning by disabling printing of remote (ghosts) elements (add a print_more_info option to enable it). 
 30/03/21 (TRUST)  Warning     : Detect in VDF a (rare case) with cells near two fluid faces corner where a missing contribution is not computed yet for several schemes except upwind scheme
