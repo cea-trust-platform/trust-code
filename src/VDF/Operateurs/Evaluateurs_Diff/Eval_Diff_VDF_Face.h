@@ -69,6 +69,13 @@ public:
   inline int calculer_arete_periodicite() const { return 1; }
   inline int calculer_arete_symetrie_paroi() const { return 1; }
   inline int calculer_arete_symetrie_fluide() const { return 1; }
+  inline int calculer_arete_coin_fluide() const
+  {
+    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
+    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
+    Process::exit();
+    return 1;
+  }
 
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
   // Elles renvoient le flux calcule
@@ -84,6 +91,12 @@ public:
   inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const ;
+  inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, double&, double&) const
+  {
+    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
+    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
+    Process::exit();
+  }
 
   // Fonctions qui servent a calculer le flux de grandeurs vectorielles
   // Elles sont de type void et remplissent le tableau flux
@@ -99,6 +112,12 @@ public:
   inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const { /* Do nothing */ }
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
   inline void flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int, DoubleVect& flux) const  { /* Do nothing */ }
+  inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const
+  {
+    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
+    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
+    Process::exit();
+  };
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
@@ -114,6 +133,7 @@ public:
   inline void coeffs_arete_periodicite(int, int, int, int, double& aii, double& ajj) const;
   inline void coeffs_arete_symetrie_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
   inline void coeffs_arete_symetrie_paroi(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
+  inline void coeffs_arete_coin_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const { /* Do nothing */ }
 
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas scalaire.
@@ -129,6 +149,7 @@ public:
   inline void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const;
   inline void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const;
   inline double secmem_arete_symetrie_paroi(int, int, int, int ) const;
+  inline void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const { /* Do nothing */ }
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // vectorielles.
@@ -144,6 +165,8 @@ public:
   inline void coeffs_arete_periodicite(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const { /* Do nothing */ }
   inline void coeffs_arete_symetrie_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
   inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+  inline void coeffs_arete_coin_fluide(int, int, int, int,DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* Do nothing */ }
+
 
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas vectoriel.
@@ -159,6 +182,8 @@ public:
   inline void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
   inline void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
   inline void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const { /* Do nothing */ }
+  inline void secmem_arete_coin_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const { /* Do nothing */ }
+
 };
 
 //************************

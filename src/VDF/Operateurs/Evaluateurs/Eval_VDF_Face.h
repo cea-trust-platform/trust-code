@@ -73,21 +73,21 @@ public:
   }
 
   void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int,
-                                      double&, double&) const
+                              double&, double&) const
   {
     Cerr << "arete_coin_fluide not coded for this scheme." << finl;
     Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
     Process::exit();
   }
-  
+
   void flux_arete_coin_fluide(const DoubleTab&, int, int,
-                                      int, int, DoubleVect&, DoubleVect&) const
+                              int, int, DoubleVect&, DoubleVect&) const
   {
     Cerr << "arete_coin_fluide not coded for this scheme." << finl;
     Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
     Process::exit();
   };
-  
+
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
 
@@ -131,7 +131,7 @@ public:
     ;
   }
   void coeffs_arete_coin_fluide(int, int, int, int,
-                                        double& aii1_2, double& aii3_4, double& ajj1_2) const
+                                double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
@@ -245,7 +245,7 @@ public:
     ;
   }
   void coeffs_arete_coin_fluide(int, int, int, int,
-                                        DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+                                DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
