@@ -56,3 +56,4 @@ linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-
 linux	rsync_ssh	tache	is242979.intra.cea.fr				-TrioCFD -SIDES -SCORPIO 								-prof -force_provided_mpich 								# Ubuntu 20	Elie Bat 451 LGLS Bureau PL
 linux   rsync_ssh	tache	is241478.intra.cea.fr 		-all		-TrioCFD -MPCube -FLICA5  					-g 		-force_provided_mpich 								# CentOS 7.9 salle de formation
 linux   rsync_ssh   tache   is233822.intra.cea.fr 			  					            -Semi_opt_gcov      	-force_provided_mpich 								# Fedora 26	pour Cath3D
+linux   rsync_ssh   tache   is229955.intra.cea.fr 			  					                                  	-force_provided_mpich 								# CentOS 7.9 de Nikos
