@@ -105,7 +105,6 @@ protected :
   virtual void Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse); // Fill the (previously allocated) PETSc matrix with mat_morse coefficients
   virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
   virtual void finalize() {};
-  virtual void set_config(const Nom&) {};
   int check_stencil(const Matrice_Morse&);
   bool nouveau_stencil()
   {
@@ -247,7 +246,7 @@ inline void Solv_Petsc::initialize()
   SolveurPetsc_ = NULL;
   // Dev:
   ignore_new_nonzero_ = false;
-  rebuild_matrix_ = false;
+  rebuild_matrix_ = true;
   allow_realloc_ = true;
   clean_matrix_ = true;
   if (instance==-1)

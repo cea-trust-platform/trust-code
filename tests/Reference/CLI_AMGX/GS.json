@@ -1,0 +1,11 @@
+config_version=2
+solver(s)=PCG
+s:convergence=ABSOLUTE
+s:tolerance=1.000000e-08
+s:preconditioner(p)=GS
+s:store_res_history=1
+s:monitor_residual=1
+s:print_solve_stats=1
+s:obtain_timings=1
+s:max_iters=10000
+

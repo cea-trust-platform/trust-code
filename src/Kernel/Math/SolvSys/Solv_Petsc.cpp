@@ -45,6 +45,7 @@
 #include <vector>
 #include <map>
 #include <ctime>
+#include <EFichier.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 
@@ -196,10 +197,23 @@ void Solv_Petsc::create_solver(Entree& entree)
             while (motlu!=accolade_fermee)
               {
                 // -config file.json
-                if (motlu == "-config")
+                if (motlu == "-file")
                   {
                     is >> motlu;
-                    set_config(motlu);
+                    if (Process::je_suis_maitre())
+                      {
+                        EFichier config(motlu);
+                        std::string line;
+                        while (!config.eof())
+                          {
+                            std::getline(config.get_ifstream(), line);
+                            if (line.find("#") && line.find("config_version"))
+                              {
+                                amgx_option+=line.c_str();
+                                amgx_option+="\n";
+                              }
+                          }
+                      }
                   }
                 else
                   {
@@ -255,7 +269,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         // But It requires two extra work vectors than the conventional implementation in PETSc.
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=PCG\n";
+        if (amgx_) amgx_option+="solver(s)=PCG\n"; // CG avec preconditionnement
+        //if (amgx_) amgx_option+="solver(s)=PCGF\n"; // Flexible CG avec preconditionnement
         break;
       }
     case 10:
@@ -273,7 +288,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPGMRES);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=FGMRES\n";
+        //if (amgx_) amgx_option+="solver(s)=GMRES\n"; // GMRES
+        if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // Flexible GMRES
         break;
       }
     case 8:
@@ -324,7 +340,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPBCGS);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=BICGSTAB\n";
+        //if (amgx_) amgx_option+="solver(s)=BICGSTAB\n"; // BICGSTAB sans preconditionnement
+        if (amgx_) amgx_option+="solver(s)=PBICGSTAB\n"; // BICGSTAB avec precondtionnement
         break;
       }
     case 6:
@@ -1208,7 +1225,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
 
-  // Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
+// Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
   if (amgx_ && Process::je_suis_maitre())
     {
       Nom filename(Objet_U::nom_du_cas());
@@ -1216,6 +1233,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       SFichier s(filename);
       // Syntax: See https://github.com/NVIDIA/AMGX/raw/master/doc/AMGX_Reference.pdf
       s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option;
+      if (!amgx_option.contient("s:print_config"))     s << "s:print_config=1" << finl;
       if (!amgx_option.contient("s:store_res_history")) s << "s:store_res_history=1" << finl;
       if (!amgx_option.contient("s:monitor_residual"))  s << "s:monitor_residual=1" << finl;
       if (!amgx_option.contient("s:print_solve_stats")) s << "s:print_solve_stats=1" << finl;
@@ -2503,12 +2521,12 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
 int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
 {
   // Verification de nnz et avertissement
-  ArrOfInt nnz(2);
+  ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
   nnz(0)=0;
   nnz(1)=matrice_morse.nb_coeff();
   for (int i=0; i<nnz(1); i++)
     if (matrice_morse.get_coeff()(i)!=0)
-      nnz(0)++;
+      nnz(0)+=1;
   mp_sum_for_each_item(nnz);
 
   // Est ce un nouveau stencil ? Verification limitee aux colonnes...
