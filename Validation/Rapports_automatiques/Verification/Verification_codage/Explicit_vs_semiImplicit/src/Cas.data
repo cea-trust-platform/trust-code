@@ -1,0 +1,132 @@
+# 3D canal periodique laminaire #
+# PARALLEL NOT #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 32 35 16
+		Longueurs  0.093764 0.029846 0.046882
+		ytanh_taille_premiere_maille 15.38e-5
+	}
+	{
+		Bord periox   X = 0.          0. <= Y <= 0.029846     0. <= Z <= 0.046882
+		Bord periox   X = 0.093764    0. <= Y <= 0.029846     0. <= Z <= 0.046882
+		Bord perioz   Z = 0.          0. <= X <= 0.093764     0. <= Y <= 0.029846
+		Bord perioz   Z = 0.046882    0. <= X <= 0.093764     0. <= Y <= 0.029846
+		Bord bas      Y = 0.          0. <= X <= 0.093764     0. <= Z <= 0.046882
+		Bord haut     Y = 0.029846    0. <= X <= 0.093764     0. <= Z <= 0.046882
+	}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 6 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+/* We test these schemes :
+
+schema_euler_explicite
+Runge_Kutta_Rationnel_ordre_2
+runge_kutta_ordre_3
+schema_adams_bashforth_order_2 */
+
+schema_euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1.
+	dt_min 1.e-9
+	dt_max 1.e-2
+	dt_impr 1e-5
+	dt_sauv 0.1
+	diffusion_implicite 0
+	seuil_statio 1.e-10
+	facsec 1.0
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.81e-5
+	rho Champ_Uniforme	1 1.19
+}
+
+Pb_Hydraulique pb
+
+Associer pb dom
+Associer pb sch
+Associer pb fluide
+
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-9 impr }
+		convection { centre }
+		diffusion { }
+		Sources { Canal_perio { bord periox } }
+
+		conditions_initiales
+		{
+			vitesse champ_init_canal_sinal 3
+			{
+				Ucent 10.06
+				h 0.014923
+				ampli_sin 0.5
+				omega 134.02127271
+				ampli_bruit 0.1
+				dir_wall 1
+				dir_flow 0
+			}
+		}
+		conditions_limites
+		{
+			periox periodique
+			haut paroi_fixe
+			bas paroi_fixe
+			perioz periodique
+		}
+		Traitement_particulier
+		{
+			Canal
+			{
+				dt_impr_moy_spat 0.025
+				dt_impr_moy_temp 0.025
+				debut_stat 0.
+				fin_stat 50.
+				# reprise val_moy_temp_10.751089.sauv #
+			}
+		}
+	}
+
+	Postraitement
+	{
+		format lata
+		fields dt_post 1.
+		{
+			pression
+			vitesse
+		}
+
+	}
+}
+Resoudre pb
+Fin

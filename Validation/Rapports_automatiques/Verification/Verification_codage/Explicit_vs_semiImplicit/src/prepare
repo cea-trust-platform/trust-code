@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# E Saikali
+# prepare files 
+
+LISTE_CAS="RRK2 RRK2_impl RRK2_2 RRK2_impl_2 RK3 RK3_impl RK3_2 RK3_impl_2 AB2 AB2_impl AB2_2 AB2_impl_2"
+
+for CAS in $LISTE_CAS; do
+  SRCDATA=Cas.data
+  POSTRUN=post_run
+  REP=./$CAS
+  mkdir $REP
+  DESTDATA=$REP/$SRCDATA
+  
+  cp $POSTRUN $REP/$POSTRUN
+  
+  ## RRK2
+  if test "$CAS" = "RRK2"; then
+  
+    sed "s~schema_euler_explicite sch~Runge_Kutta_Rationnel_ordre_2 sch~;
+         s~facsec 1.0~facsec 1.4~" $SRCDATA > $DESTDATA
+  
+  elif test "$CAS" = "RRK2_impl"; then
+  
+    sed "s~schema_euler_explicite sch~Runge_Kutta_Rationnel_ordre_2 sch~;
+         s~diffusion_implicite 0~diffusion_implicite 1~;
+         s~facsec 1.0~facsec 1.4~" $SRCDATA > $DESTDATA
+         
+  elif test "$CAS" = "RRK2_2"; then
+  
+    sed "s~schema_euler_explicite sch~Runge_Kutta_Rationnel_ordre_2 sch~;
+         s~facsec 1.0~facsec 0.7~" $SRCDATA > $DESTDATA
+  
+  elif test "$CAS" = "RRK2_impl_2"; then
+  
+    sed "s~schema_euler_explicite sch~Runge_Kutta_Rationnel_ordre_2 sch~;
+         s~diffusion_implicite 0~diffusion_implicite 1~;
+         s~facsec 1.0~facsec 0.7~" $SRCDATA > $DESTDATA
+
+  ## RK3
+  elif test "$CAS" = "RK3"; then
+
+    sed "s~schema_euler_explicite sch~runge_kutta_ordre_3 sch~;
+         s~facsec 1.0~facsec 1.8~" $SRCDATA > $DESTDATA
+
+  elif test "$CAS" = "RK3_impl"; then
+
+    sed "s~schema_euler_explicite sch~runge_kutta_ordre_3 sch~;
+         s~diffusion_implicite 0~diffusion_implicite 1~;
+         s~facsec 1.0~facsec 1.8~" $SRCDATA > $DESTDATA
+         
+  elif test "$CAS" = "RK3_2"; then
+
+    sed "s~schema_euler_explicite sch~runge_kutta_ordre_3 sch~;
+         s~facsec 1.0~facsec 0.9~" $SRCDATA > $DESTDATA
+
+  elif test "$CAS" = "RK3_impl_2"; then
+
+    sed "s~schema_euler_explicite sch~runge_kutta_ordre_3 sch~;
+         s~diffusion_implicite 0~diffusion_implicite 1~;
+         s~facsec 1.0~facsec 0.9~" $SRCDATA > $DESTDATA
+
+  ## AB2
+  elif test "$CAS" = "AB2"; then
+
+    sed "s~schema_euler_explicite sch~schema_adams_bashforth_order_2 sch~;
+         s~facsec 1.0~facsec 0.8~" $SRCDATA > $DESTDATA
+         
+  elif test "$CAS" = "AB2_impl"; then
+  
+    sed "s~schema_euler_explicite sch~schema_adams_bashforth_order_2 sch~;
+         s~diffusion_implicite 0~diffusion_implicite 1~;
+         s~facsec 1.0~facsec 0.8~" $SRCDATA > $DESTDATA
+         
+   elif test "$CAS" = "AB2_2"; then
+
+    sed "s~schema_euler_explicite sch~schema_adams_bashforth_order_2 sch~;
+         s~facsec 1.0~facsec 0.4~" $SRCDATA > $DESTDATA
+         
+  elif test "$CAS" = "AB2_impl_2"; then
+  
+    sed "s~schema_euler_explicite sch~schema_adams_bashforth_order_2 sch~;
+         s~diffusion_implicite 0~diffusion_implicite 1~;
+         s~facsec 1.0~facsec 0.4~" $SRCDATA > $DESTDATA
+        
+  fi
+done
+

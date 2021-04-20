@@ -38,7 +38,7 @@ else
    # Initialize the TRUST environment
    ###################################
    source $TRUST_ROOT/env/TRUST.env
-
+   
    ############
    # Completion
    ############
