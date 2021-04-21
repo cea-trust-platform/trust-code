@@ -1,819 +1,459 @@
+-------------------------------------------------------------
 Developer notes version 1.8.3_beta : Changes since version 1.8.2 :
 -------------------------------------------------------------
-
 15/04/21 (TRUST)  Add -xdata option to trust wrapper to quickly run a XData changed data file
-
 09/04/21 (TRUST)  Add trust -eclipse option that helps to configure easly Eclipse project with TRUST sources.
-
 30/03/21 (TRUST)  Add a validation sheet (Convection_VDF) to check VDF upwind scheme with analytical solution
-
 22/03/21 (TRUST)  Add ld_flags tag into Baltik project.cfg configuration file to add linker flags to TRUST ones (eg: -llib)
-
+-------------------------------------------------------------
 Developer notes version 1.8.2 : Changes since version 1.8.1 :
 -------------------------------------------------------------
-
 03/12/20 (TRUST)  Add check_project_modularity target to check the sub-projects modularity
-
 19/11/20 (TRUST)  New method Champs_compris::has_champ(). Similar to get_champ() but do not raise exception.
-
 17/11/20 (TRUST)  Add a Matrice_Petsc class to build directly Petsc based matrix for PETSc solvers
-
 16/11/20 (TRUST)  Calls backtrace displayed in Journal when SIGABRT or SIGFPE raised (in debug mode only, to use it in optim mode: enable TRUST_ENABLE_ERROR_HANDLERS environment variable)
-
 29/10/20 (TRUST)  Diffusive operators coding turbulent shear stress come back from TrioCFD to TRUST
-
 19/10/20 (TRUST)  Add gui and check_gui targets into the Trust Makefile to build and check XDATA
-
+-------------------------------------------------------------
 Developer notes version 1.8.1 : Changes since version 1.8.0 :
 -------------------------------------------------------------
-
 08/06/20 (TRUST)  Rewrite some Matrix/Array classes to avoid append_line|append_array methods when possible (Parex+ performance issues)
-
 30/04/20 (TRUST)  Add sympy module in Conda environment
-
 03/04/20 (TRUST)  Add -massif option to trust wrapper in order to heap profile with valgrind tool
-
 13/03/20 (TRUST)  New methods contribuer_vitesse() for operators (VDF/PolyMAC) for scalar equations to contribute with velocity derivative into Jacobian matrix  
-
 25/02/20 (TRUST)  Add ctest targets into the Trust and Baltik makefiles to use ctest for testing purpose
-
 20/01/20 (TRUST)  Memory leak debugging with "trust -gdb -valgrind datafile.data" fixed with valgrind versions using gdbserver
-
+------------------------------------------------------------------
 Developer notes version 1.8.0 : Changes since version 1.7.9 :
 ------------------------------------------------------------------
-
 31/10/19 (TRUST)  First version of a Python module (SWIG) for the ICoCo interface.
-
 30/10/19 (TRUST)  Convert_ICoCoTrioField: disable MEDCoupling butterfly check (crashes with polyhedra) 
-
 25/10/19 (TRUST)  Turbulence features (turbulent problems, wall laws, turbulence models and associated boundary conditions) are moved from TRUST to TrioCFD baltik.Base classes remain in TRUST.
-
 23/10/19 (TRUST)  Improved naming of components in MED format output. 
-
 16/10/19 (TRUST)  Re-factoring common methods between Champ_front_base and Champ_base into Field_base
-
 15/10/19 (TRUST)  New matrix operations for Matrice_Morse (multiplication with diag matrices, sub-block extraction)
-
 15/10/19 (TRUST)  GMRES solver exiting when too many iterations
-
 15/10/19 (TRUST)  Various fixes/optimisations from FLICA5 (upper case test in Nom only done in Debug, optimisation in Champs_compris, improvement of Segment::contient() algo) 
-
 30/09/19 (TRUST)  Add -openmp configure option to build TRUST with OpenMP support (use of threaded OpenBLAS or MKL BLAS in PETSc libraries like MUMPS)
-
+-------------------------------------------------------------
 Developer notes version 1.7.9 : Changes since version 1.7.8 :
 -------------------------------------------------------------
-
 27/06/19 (TRUST)  Rewrote Sjob/Sserver: see full documentation in bin/Sjob/README
-
 26/06/19 (TRUST)  Fixes on PolyMAC solver for Flica5 project
-
 24/06/19 (TRUST)  Several fixes/improvements for PolyMAC discretization (regular and singular pressure loss sources, face interpolation, polyedra visualization with Lata format for VisIt, diffusive operator with null heat exchange coefficient ...)
-
 05/03/19 (TRUST)  Eight validation sheets about PolyMAC available under $TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
-
 05/03/19 (TRUST)  New PolyMAC discretization (Marker And Cell method for Polyedras) available under $TRUST_ROOT/src/PolyMAC allowing non conform and/or hybrid meshes with polyhedral cells
-
 29/03/19 (TRUST)  Add a strict check of PETSc CLI options to check misspelled or obsolete one
-
 08/03/19 (TRUST)  Face surfaces are new stored in Zone_VF class (access: Zone_VF::face_surfaces() const). All childs have only a calculer_face_surfaces() method 
-
 23/01/19 (Tools)  Replace "make distrib_clearcase" by "make distrib_git" command for building archives from git versioned Baltik 
-
+-------------------------------------------------------------
 Developer notes version 1.7.8 : Changes since version 1.7.7 :
 -------------------------------------------------------------
-
 16/11/18 (Tools)  New option gnuplot_command for Figure keyword useful to fine tune the gnuplot curves in prm reports
-
 19/09/18 (TRUST)  Slightly reduce the number of MPI allreduces for parallel calculation
-
 14/09/18 (TRUST)  Adding use of porosity in flux_fa7_elem and coeffs_fa7_elem methods
-
 14/09/18 (TRUST)  Fix XData tools to help during XD syntaxing
-
+-------------------------------------------------------------
 Developer notes version 1.7.7 : Changes since version 1.7.6 :
 -------------------------------------------------------------
-
 14/06/18 (TRUST)  New functionality (Conduction_Milieu_variable), material with variable physical properties (rho, lambda, Cp) in VDF and EF and associated Conduction equation.
-
 01/06/18 (TRUST)  MEDCoupling API used in several classes (EcrMED, LireMED, Champ_Fonc_MED) by default instead of MEDfile API
-
 18/05/18 (TRUST)  New parallel validation functionalities for baltiks
-
 16/05/18 (TRUST)  Switching VDF iterators to template version. Leaving macro mode available for 1.7.7, will be removed in 1.7.8.
-
 08/03/18 (TRUST)  Compilers GNU 7.3.0 supported
-
 07/12/17 (Tools)  OpenMPI 2.0.4 is the lastest downloaded version tested
-
 28/11/17 (TRUST)  Compilers GNU 7.2.0 supported
-
+-------------------------------------------------------------
 Developer notes version 1.7.6 : Changes since version 1.7.5 :
 -------------------------------------------------------------
-
 29/09/17 (Tools)  New option to skip VisIt generation: option '-no_visit' for Run_fiche or env variable 'export PRM_NO_VISIT=1'
-
 27/09/17 (Tools)  Ability to skip a PRM when executing validation
-
 22/08/17 (TRUST)  Fixed environment problem on Ubuntu when OS of machine has changed
-
 02/08/17 (TRUST)  Compilers GNU 7.1.1 and clang 4.4.0 supported
-
 01/08/17 (Tools)  Updating the README_ECLIPSE file
-
 24/07/17 (Tools)  Allowing Lata_to_med.py to deal with CMesh. Also added option to only extract mesh.
-
 03/07/17 (TRUST)  Add exec_avx in baltik_configure
-
+-------------------------------------------------------------
 Developer notes version 1.7.5 : Changes since version 1.7.4 :
 -------------------------------------------------------------
-
 30/05/17 (TRUST)  GNU compilers 7.1.0 supported
-
 29/05/17 (TRUST)  Corrections Champ_Generique get_champ_without_evaluation
-
 29/05/17 (TRUST)  Minor improvements on some error messages of Champ Transformation
-
 15/05/17 (TRUST)  New methods for calculation of local time
-
 09/05/17 (TRUST)  Modification API of Deriv: Removing the method that implicitly constructs a Deriv_ from a _base class
-
 21/04/17 (Tools)  Using MEDField in ICoCo
-
 05/04/17 (TRUST)  GNU compilers 6.3.0 supported
-
 31/03/17 (TRUST)  Changing the interface of VECT::add (see MacVect.h)
-
 30/03/17 (TRUST)  Add Param::lire_sans_accolade
-
 30/03/17 (TRUST)  Add Loi_Fermeture_base
-
 16/03/17 (TRUST)  Bug fixed on storage of boundary flux in case with cells having 2 Dirichlet BC (coupling problem)
-
 22/02/17 (TRUST)  New List with Motcle
-
 22/02/17 (TRUST)  Bug fixed on output reynolds_maille field with mu variable
-
 16/02/17 (Tools)  OpenMPI 2.0.2 is the lastest downloaded version tested
-
+-------------------------------------------------------------
 Developer notes version 1.7.4 : Changes since version 1.7.3 :
 -------------------------------------------------------------
-
 01/09/16 (TRUST)  tab1_, tab2_, coeff_ of Matrice_Morse no more public 
-
 01/08/16 (TRUST)  #include <Les_Cl.h> removed from src files
-
 18/07/16 (Kernel) Remove optional value in Tabs constructors: Modification DoubleTab
-
 29/06/16 (Tools)  VisIt now install in exec
-
+-------------------------------------------------------------
 Developer notes version 1.7.3 : Changes since version 1.7.2 :
 -------------------------------------------------------------
-
 31/05/16 (Kernel) Change API of frontiere::trace_elem frontiere::trace_face
-
 26/05/16 (Kernel) Fix optimisation Champ_Generique_Interpolation
-
 06/04/16 (TRUST)  Adapting sources for int 64 bits
-
 21/03/16 (Tools)  Add Python_modules
-
 03/02/16 (TRUST)  Portability: cygwin OS supported
-
+-------------------------------------------------------------
 Developer notes version 1.7.2 : Changes since version 1.7.1 :
 -------------------------------------------------------------
-
 20/11/15 (Tools)  Connectivity ICoCoField = connectivity TRUST
-
 13/11/15 (Kernel) Modifications TRUST from CoreComponent (Discretisation_base)
-
 13/11/15 (Kernel) Implementation of getOutputField in Probleme_U
-
 13/11/15 (Kernel) Upadte HDF (1.8.13 vers 1.8.14) and MED (3.0.7 vers 3.1.0)
-
 13/11/15 (TRUST)  Released version of cmake upgrated to 3.0.2
-
 04/11/15 (TRUST)  New check full in baltik and new option --cible and --clean-after-if-ok in portability_baltik
-
 04/11/15 (Tools)  New option -valmin to compare_lata and compare_sonde
-
 13/10/15 (Kernel) EcritureLectureSpecial: disable MPIIO in sequential mode (new static function: get_Output)
-
 03/10/15 (Tools)  Update Genere_courbe: ability to strings in table of prm
-
 02/10/15 (TRUST)  Adding chsom for champ_fonc_p1nc
-
 01/10/15 (Tools)  Released version of Gnuplot is upgraded to 4.6.6
-
 18/06/15 (TRUST)  Trio_U code becomes TRUST platform + TrioCFD baltilk
-
+-------------------------------------------------------------
 Developer notes version 1.7.1 : Changes since version 1.7.0 :
 -------------------------------------------------------------
-
 11/06/15 (Tools)  bin/Init_TRUST.in renamed to env_src/env_TRUST.sh.in
-
 04/06/15 (TRUST)  new option (-disable_ieee) in MAIN.cpp to disable the detection of NaNs
-
 03/06/15 (Tools)  ICoCo baltik moved from Composants to TRUST/Outils
-
 21/05/15 (Kernel) Add class Matrice_Dense: specialization of Matrice_Base, handle dense matrices. 
-
 15/05/14 (Kernel) Implementation of Vect, via a class vect innstead of macro 
-
 15/05/14 (TRUST)  Optionnal Template Version of Operateur and Sources in VDF
-
 24/04/15 (Kernel) Minor change: PETSc updated from 3.5.2 to 3.5.3
-
 23/04/15 (Tools)  Gmsh and VisIT moved from TRUST to TRUST/Outils
-
 17/04/15 (Tools)  The search of non-regression tests by 'ls tests/Reference/*/*.lml.gz' is replaced by 'find tests/Reference/ -name *.lml.gz'
-
 13/03/15 (Tools)  gnuplot and valgrind compilation moved from configure to building tools
-
 04/03/15 (Tools)  Bug fixed for portability_baltik script
-
 09/02/15 (Tools)  New build : move lib -> ThirdPart
-
 30/01/15 (Tools)  New build : compilation with cmake by default - Move of env in env_src to not have generated files in env_src and bin
-
 08/12/14 (Tools)  Add a specific (OpenMPI 1.2.9) suppression file for valgrind
-
 05/12/14 (Tools)  Suppress include files in /export/home/triou/git/Livraison/TRUST/include/backward
-
+-------------------------------------------------------------
 Developer notes version 1.7.0 : Changes since version 1.6.9 :
 -------------------------------------------------------------
-
 24/11/14 (TRUST)  Add coverage test to Resume_last_time supported with xyz format
-
 21/11/14 (TRUST)  Add a new method trace_face(const DoubleTab& y, DoubleTab& x) in Frontiere and Raccord_distant_homogene classes and rewrite a lot of Champ_*::trace(...) methods
-
 21/11/14 (TRUST)  Reduce the code dependency to the Raccord_distant_homogene class
-
 21/11/14 (Tools)  Add a script nedit.git to Nedit all the sources files which are currently modified under git
-
 27/10/14 (Kernel) LecFicDiffuseBin class is used instead of EFichierBin for reading xyz files
-
 27/10/14 (Kernel) LecFicPartage/LecFicPartageBin classes (badly implemented) are suppressed and should be replaced, if still used, by EFichier/EFichierBin
-
 15/10/14 (TRUST)  Fix git hooks if TRUST_ROOT was not initialized: "git commit" command was doing nothing in this case
-
 06/10/14 (TRUST)  TRUST_TMP variable was the same for several Git workdirs, it is now different
-
 01/10/14 (Tools)  Bug fixed in compare_sonde tool
-
 23/09/14 (TRUST)  Homogenization VEF/VDF for access to equivalent distance tab, now a VECT(DoubleVect) is used in VDF. Also include only base files of turbulence
-
 23/09/14 (TRUST)  New methods Turbulence_paroi_base::use_shear() and Turbulence_paroi_scal_base::use_equivalent_distance() to detect if shear stress or equivalent distance should be used 
-
 23/09/14 (TRUST)  New directory src/ThHyd/Modele_turbulence_base to receive turbulence base classes (models and laws of the wall). Now, Kernel depends only on base classes of turbulence
-
 02/09/14 (Kernel) cmake tool updated to 3.0.1
-
 19/08/14 (Kernel) The resize() of a distributed array is now detected and forbidden. Use reset() to reinitialize as a non-distributed array then resize() if needed. 
-
 24/07/14 (Kernel) Probleme_base::impr(Sortie&) useless method is suppressed and should be replaced by call to Probleme_base::imprimer(Sortie&)
-
+-------------------------------------------------------------
 Developer notes version 1.6.9 : Changes since version 1.6.8 :
 -------------------------------------------------------------
-
 02/07/14 (TRUST)  #include <ItSouVDFFa.h> should be replaced by #include <Iterateur_Source_VDF.h>
-
 02/07/14 (TRUST)  acceleration_QC_VDF_Face.* and acceleration_QC_VEF_Face.* files are renamed Source_QC_VDF_Face.* and Source_QC_VEF_P1NC.*
-
 17/06/14 (TRUST)  To add the shared TRUST git repo, you will run: git remote add shared git://is223196/shared/trio_u
-
 17/06/14 (TRUST)  To clone the official TRUST git repo, you will run: git clone git://is223196/official/trio_u
-
 17/06/14 (TRUST)  TRUST git repos have been moved: use "git remote set-url origin git://is223196/official/trio_u" (and "git remote set-url shared git://is223196/shared/trio_u") to rename origin (and shared) repos
-
 06/06/14 (TRUST)  Bug fixed in tools baltik_gen_class and triou_gen_class if recent Python was not found
-
 06/06/14 (TRUST)  Add a tutorial how to build a new transport equation as a Baltik project under $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion
-
 05/06/14 (TRUST)  Activate the Git pre-commit & post-commit hooks under each TRUST git repository and add several checks (indentation, alerts,...). Comment the line in the .git/hooks files to deactivate the hooks
-
 16/05/14 (Kernel) Update hwloc to 1.9 version and move it from $TRUST_ROOT/lib/src/LIBMPI to $TRUST_ROOT/Outils/hwloc (tool to see the detailed machine topology and bind processes or threads on cores)
-
 13/05/14 (Kernel) Methods ::sauvegarder(...) should return now the number of bytes written on the disc instead of value 1 as previously
-
 05/05/14 (Kernel) Comparing option/keyword in french or english is possible with the improved Motcle::operator== method. eg: if (mot=="OptionFrancaise|EnglishOption") { ... }
-
 05/05/14 (Kernel) Adding english translation for option keywords is now also possible thanks to the param object. eg: param.ajouter_non_std("OptionFrancaise|EnglishOption",(this),Param::REQUIRED); 
-
 05/05/14 (Kernel) Adding english translation for keywords is now also possible with Implemente_instanciable macros. eg: Implemente_instanciable(Class,"MotcleFrancais|EnglishKeyword",ParentClass);
-
 05/05/14 (Kernel) Type_info::nom() and Type_info::name_() are renamed Type_info::name()
-
 20/04/14 (TRUST)  Adding Vampir tracing tool support in TRUST build
-
 11/04/14 (Kernel) Attribute SolveurSys_base::limpr_ becomes private and now limpr() and fixer_limpr(int) get/set methods should be used
-
 09/04/14 (TRUST)  Add -ipm option to triou script on CCRT clusters to use IPM (a light-weight profiling tool that profiles the mpi calls and memory usage) during a TRUST parallel calculation
-
 04/04/14 (TRUST)  Option -info trace PETSc messages as before but trace also now the TRUST calls to methods profiled by statistiques()::begin_count(id_counter_)
-
 04/04/14 (TRUST)  Tags files added also in the MonoDir build directories
-
 18/03/14 (Kernel) Several classes are supressed: I_couple, I_Tab, LecFicDirect, Entree_Parser, EcrFicDirect
-
 18/03/14 (Kernel) IO classes (SFichier/EFichier,LecFicDistribue/EcrFicCollecte,LecFicPartage/EcrFicPartage) now inherit indirectly from Objet_U class 
-
 26/02/14 (Tools)  Add a new tool (triou_gen_class) to create a TRUST class. Moreover baltik_gen_class has been improved.
-
 13/02/14 (Tools)  In lance_test tool, lance_test_seq_par program is replaced by improved/faster compare_lata program which could produce some different messages
-
 12/02/14 (Tools)  Baltik tool can now overide (into the project.cfg file) the default build options (cpp_flags provided by the TRUST/Kernel environment)
-
 12/02/14 (TRUST)  Option -Wshadow is added to the TRUST/Kernel build options
-
 12/02/14 (TRUST)  src directory created under $TRUST_ROOT where Kernel and TRUST directories are moved inside
-
 10/01/14 (Kernel) Add -force_petsc_have_cuda option to the configure script to install petsc-dev and try to activate the CUDA support
-
 19/12/13 (Tools)  Python released with TRUST/Kernel package is upgraded from 2.7.3 to 2.7.5
-
+-------------------------------------------------------------
 Developer notes version 1.6.8 : Changes since version 1.6.7 :
 -------------------------------------------------------------
-
 09/12/13 (Kernel) Options -valgrind -gdb added to $TRUST_ROOT/bin/mpirun to launch gdb when a valgrind is detected during a parallel calculation
-
 09/12/13 (Kernel) NaN are again detected 
-
 06/12/13 (Kernel) The List::readOn method do not call vide() anymore
-
 06/12/13 (Kernel) affecter methods in P0 and P1 fields do not initialize the field to 0 anymore
-
 29/11/13 (Kernel) Implementation of Nom with string instead of char*, method Nom::sub_str is renamed Nom::sub_str_old
-
 12/11/13 (Kernel) makedepend updated to 1.0.5 to fix slowness when generating makefiles (on Ubuntu 13.x for instance)
-
 08/11/13 (Kernel) ICoCo API is moved from Kernel/ICoCo to lib/src/LIBICOCOAPI directory
-
 07/11/13 (TRUST)  Add a completer() method to the classes Turbulence_paroi_base and Turbulence_paroi_scal_base which could permit to initialize sooner (before preparer_calcul()) the attributes of the law of the walls in TRUST
-
 04/11/13 (Kernel) Released Valgrind version updated to 3.9.0
-
 25/10/13 (Kernel) New Matrix_tools class with methods used by several matrix classes. Now, possible to compute C=alpha*A+beta*B with add_scaled_matrices method (A,B,C are matrix and alpha,beta are double)
-
 25/10/13 (Kernel) Matrice_Bloc::operator()(int i,int j) is suppressed and Matrice_Bloc::get_bloc(int i, int j) should be used now
-
 25/10/13 (Tools)  make_Doxyfile tool to build HTML documentation with Doxygen has been improved: the documentation of TRUST, Kernel, Baltik projects are splitted and rebuilt faster if necessary.
-
 23/10/13 (Kernel) gmake 3.82 upgraded to gmake 4.0 to avoid a freeze during PETSc install on a Debian 6.0
-
 22/10/13 (TRUST)  The deprecated classes std::ostrstream and std::istrstream have been replaced by std::ostringstream and std::istringstream and the -Wno-deprecated has been removed from the build options 
-
 14/10/13 (Kernel) Method Zone::calculer_volumes(DoubleVect& volumes) has a 2nd argument and becomes: Zone::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) 
-
 10/10/13 (Kernel) 4 new optimized (cause actually inlined) functions coord_barycentrique_P1_triangle|rectangle|tetraedre|hexaedre added to replace calls to the non-inlined functions coord_barycentrique_P1
-
 26/09/13 (Kernel) Class String renamed String2
-
 18/09/13 (TRUST)  Added -check all|testcase|function|class|method::class option to triou script to run all tests, single one, or tests covering a function, a class or a class method 
-
 13/09/13 (Tools)  Added _opt_avx option for Baltik compilation
-
 12/09/13 (TRUST)  New TRUST coding rule: An header file should be named as the first class defined in it
-
 12/09/13 (TRUST)  New TRUST coding rule: The include guard in header file should be name #ifndef firstclass_included
-
 12/09/13 (TRUST)  ~1600 TRUST files have been renamed to respect the previous rules. Use "check_file.sh -update" to fix automatically your Baltik project files (backup it carefully before)
-
 21/08/13 (TRUST)  Added bin/GIT/check_sources.sh to add checks when building TRUST under Git. bin/CLEARCASE/check.sh and bin/CLEARCASE/check_std.sh moved to bin/CLEARCASE/check_sources.sh and bin/KSH/check_sources.sh
-
 07/08/13 (Kernel) Cerr_global has been suppressed and should be replaced by either Cerr or cerr. Besides mp_Cout|mp_Cerr have been suppressed and should be replaced by Cout|Cerr
-
 06/07/13 (Kernel) Parser has been CPU optimized when created by thousands 
-
 05/08/13 (Kernel) Sous_Zone::nb_poly() is renamed Sous_Zone::nb_elem_tot()
-
 21/06/13 (Tools)  Fix a strange error during an optimized Baltik build when the executable line in the project.cfg file contained tabulations
-
 21/06/13 (TRUST)  All ::derivee_en_temps_inco_diff_impl(DoubleTab&) methods have been suppressed and ::derivee_en_temps_inco(DoubleTab&) should be called now instead
-
-11/06/13 (TRUST)  Method "int Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& ,DoubleTab& derivee,double)" becomes "void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav&,DoubleTab& derivee)" and derivee returns now dI/dt instead of dI as previously
-
+11/06/13 (TRUST)  Method "int Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& ,DoubleTab& derivee,double)" becomes "void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav&,DoubleTab& derivee)" and derivee returns now dI/dt instead of
+dI as previously
 10/06/13 (TRUST)  Several methods to implement diffusive operator implicitation has been suppressed and/or factorized (Check Navier_Stokes_std and Equation_base classes)
-
 31/05/13 (TRUST)  Option -fbounds-check deactivated on debug mode on Fedora Linux
-
 31/05/13 (TRUST)  Changes and new available options to the baltik_gen_class script 
-
 23/05/13 (TRUST)  French accents is not supported anymore in source files
-
 02/05/13 (TRUST)  entier type is obsoleted and int type should be used instead. Some methods XXX_entier() are renamed XXX_int()
-
 02/05/13 (Kernel) "make validation" command on Baltik project failed on Fedora 18
-
+-------------------------------------------------------------
 Developer notes version 1.6.7_beta : Changes since version 1.6.6 :
 -------------------------------------------------------------
-
 11/04/13 (TRUST)  tags/TAGS files added and updated in the $TRUST_ROOT directory for Nedit tags/Emacs etags
-
 10/04/13 (Tools)  Baltik README.BALTIK file has been updated under $TRUST_ROOT/bin/baltik/doc
-
 08/04/13 (TRUST)  Add missing directories in the coverage report $TRUST_ROOT/doc/Coverage/html/index.html
-
 03/04/13 (TRUST)  New document $TRUST_ROOT/doc/TRUST/Developer_TRUST_presentation.pdf
-
 22/03/13 (TRUST)  Indenting style has changed and indenting tool also (emacs -> astyle)
-
 20/03/13 (Kernel) -disable-mpi option of configure previously disabled METIS, now it enables METIS
-
 12/03/13 (Tools)  ClearCase commands based scripts fusion.ct, fusion_label.ct and CHECKIN_ALL now work also from the top of the VOBs
-
 12/03/13 (Kernel) New method ajouter_param to Param class for Genepi+ (param after a keyword)
-
 12/03/13 (Kernel) MacVect class improved with faster add() method 
-
 12/03/13 (Tools)  Baltik now uses cmake to build the project binaries
-
 07/03/13 (Kernel) Tcl/Tk updated to 8.5.13 version
-
 22/02/13 (Kernel) Macros declare_XXX(YYY) and implemente_XXX(YYY) are suppressed. Use now Declare_XXX(YYY); and Implemente_XXX(YYY);
-
 19/02/13 (TRUST)  master and patch_XYZ branches in the reference Git repo (git://dibona/trio_u) are now tracking the main and patch_XYZ ClearCase branches
-
 19/02/13 (TRUST)  A second Git repository is installed on dibona.intra.cea.fr to push and share TRUST/Kernel developments. Add this remote read/write repo to your local Git repo, with: git remote add shared git://dibona/shared/trio_u
-
 19/02/13 (TRUST)  New script baltik_gen_class to facilitate the class creation in a Baltik project (available options given by: baltik_gen_class -help)
-
 31/01/13 (Kernel) Add a performance test tool to benchmark MPI when porting on a new cluster ($TRUST_ROOT/lib/src/LIBMPI/run_mpi_bench) based on osu-micro-benchmarks-3.8
-
 10/01/13 (Kernel) Python 2.7.3 is now released with TRUST/Kernel package
-
 21/12/12 (TRUST)  New organization of validation and verification forms (resp. test cases) into directories Validant & Verification (resp. $TRUST_TESTS/Validation & $TRUST_TESTS/Verification)
-
 07/01/13 (TRUST)  A Git server is installed on dibona.intra.cea.fr. To clone the TRUST project: git clone git://dibona/trio_u
-
 03/01/13 (TRUST)  All the TRUST scripts are now using bash shell for a better support of Ubuntu Linux
-
 18/12/12 (TRUST)  Quick build of a TRUST versions with specific option improved when using: OPT="...";monodir
-
 18/12/12 (TRUST)  configure script has new options: -cxxflags, -cflags, and -fflags to add C++, C, Fortran compiler flags to the default TRUST ones
-
 13/12/12 (Kernel) Use of makedepend 1.0.4 and several changes to speed up the creation of dependecies in TRUST makefiles
-
 29/11/12 (Kernel) The environment variable $MPI_INCLUDE replaces $MPI_ROOT/include
-
+-------------------------------------------------------------
 Developer notes version 1.6.6 : Changes since version 1.6.5 :
 -------------------------------------------------------------
-
 21/11/12 (Kernel) L'environnement Python n'est plus ajoute al'environnement TRUST: il est charge uniquement si necessaire (installation VisIt,PETSc ou utilisation Run_fiche)
-
 05/11/12 (Kernel) La classe Solv_Petsc herite de SolveurSys_base et non plus de solv_iteratif
-
 31/10/12 (Tools)  Les plugins pouvant etre developpes pour VisIt sous $TRUST_ROOT/VisIt/plugins sont desormais integres lors de la construction/compilation de VisIt en local
-
 15/10/12 (TRUST)  Introduction des synonymes pour le nom d'un champ (voir exemple dans $TRUST_ROOT/ThHyd/N_S.cpp avec la methode add_synonymous)
-
 09/10/12 (Kernel) Remise dans le sens logique des Vect lors de la lecture/ecriture. Attention aux anciens developpements.
-
 09/10/12 (Kernel) Introduction des CONST_LIST_CURSEUR en plus des LIST_CURSEUR
-
 09/10/12 (Kernel) Modification de Param_lecture, on ne peut plus donner 2 fois le meme nom a un parametre, on peut desormais retirer un parametre ou une condition 
-
 24/09/12 (Kernel) Lapack 3.4.1 et OpenBlas 0.2.3 desormais livres avec le code
-
 19/09/12 (Tools)  Valgrind 3.8.1 est desormais livre avec le code
-
 06/09/12 (Tools)  Valgrind 3.8.0 est desormais livre avec le code
-
 30/05/12 (Kernel) Factorisation des Declare_instanciable et des Declare_base
-
 30/05/12 (Kernel) Suppression de la methode et appels a SolveurSys::completer(Equation_base&)
-
 30/05/12 (Kernel) Suppression des methodes et appels a SolveurSys::resoudre_systeme() passant un Champ_Inc_base inutile comme parametre
-
+-------------------------------------------------------------
 Developer notes version 1.6.5 : Changes since version 1.6.4 :
 -------------------------------------------------------------
-
 06/04/12 (Kernel) Changement de la signature de la methode Discretisation_base::modifier_champ_tabule(...,const Champ_Inc&) en (...,const Champ_base&)
-
 04/04/12 (Kernel) Les champs vitesse (resp. diffusivite) des classes de Convection (resp de Diffusion) deviennent des Champ_base
-
 04/04/12 (TRUST)  Les options -Wextra -Wno-unused-parameter sont ajoutees pour la compilation de TRUST
-
 01/02/12 (Kernel) Activation de la construction de PETSc 3.2 avec cmake et corrections pour utilisation complete de la compilation parallele
-
 22/12/11 (TRUST)  Ajout de la compilation en parallele de plusieurs outils/librairies tiers (METIS, MED, Valgrind) pour accelerer la construction du code complet
-
 23/11/11 (TRUST)  Les methodes ::readOn(Entree&) des equations du code ont ete reecrites en utilisant les methodes standard de lecture des parametres
-
 07/11/11 (Tools)  Valgrind 3.7.0 est desormais livre avec le code
-
 07/11/11 (Kernel) La methode de la classe Milieu_base (et des ses classes filles) void initialiser() devient int initialiser(const double& temps)
-
 13/10/11 (Kernel) Les methodes DoubleTab Operateur_Statistique_tps_base::calculer_valeurs() se substituent a void Operateur_Statistique_tps_base::calculer() et void Operateur_Statistique_tps_base::integrer()
-
 04/10/11 (Tools)  Doxygen passe a la version 1.7.4. Correction d'une regression de la documentation HTML des classes de la version 1.6.3, les macros n'etaient pas traitees correctement
-
 03/10/11 (Tools)  Bug corrige dans l'outil Baltik et l'outil de creation d'un atelier Makeatelier.sccs qui produisaient des binaires corrompus si un fichier include utilise dans la librairie LATAFILTER etait modifie
-
+-------------------------------------------------------------
 Developer notes version 1.6.4 : Changes since version 1.6.3 :
 -------------------------------------------------------------
-
 08/09/11 (Tools)  Changements/ameliorations du script atelier_fusion_label.ct pour mettre a jour un atelier par rapport a la version $TRUST_ROOT
-
 07/09/11 (Tools)  Meilleure detection de la coherence d'un atelier/projet Baltik par rapport a la version standard
-
 24/08/11 (Kernel) Installation de cmake 2.8.5 si cmake est plus ancien que la version 2.8 necessaire pour compiler Metis 5.0
-
 18/08/11 (Kernel) La version de gmake livree passe de 3.80 a 3.82 car Metis 5.0 necessite gmake 3.81 pour l'installation
-
 17/08/11 (Kernel) Changement de la facon de construire les packages externes PETSc (incluant Metis 4.0 via ParMetis 3.1), Metis (5.0 pour le decoupage), Lapack 3.3.1 (au lieu de 3.1.1)
-
 20/07/11 (Tools)  cmake passe de 2.8.2 a 2.8.5 a cause de problemes de compilation sur GNU 4.5.1. Installe desormais lors du configure
-
 01/06/11 (Tools)  Bug corrige dans le script monodir : il n'y avait pas de verification si les liens vers les sources etaient corrects ou non
-
 20/05/11 (Kernel) Plusieurs methodes ::readOn(Entree&) de base ont ete modifiees dont Milieu_base
-
 20/05/11 (TRUST)  Suppression de nombreuses methodes ::lire(const Motcle&, Entree&) et remplacement par les methodes set_param(Param&) de definition des mots cles 
-
 28/04/11 (TRUST)  Reduction des dependances des modules du code aux modeles de turbulence
-
 15/04/11 (Kernel) Le repertoire Kernel/Zoom est deplace dans Zoom/Kernel
-
 11/04/11 (Kernel) Mise a jour de HDF (1.6.4 vers 1.6.9) et MED (2.3.5 vers 2.3.6)
-
 22/03/11 (Kernel) PETSc passe de 3.1_p7 a 3.1_p8
-
 10/03/11 (Tools)  Utilisation de distcc 3.1 pour ameliorer les performances de la compilation parallele sur les PC du LDAL
-
 10/03/11 (Tools)  Makeatelier.sccs tool supports OPT="_semi_opt" option
-
 10/03/11 (TRUST)  TRUST build in a ClearCase view with compile command will take OPT="_semi_opt" option by default (-g -O3 -D_INLINE_EVALUATEURS_ and assert checked)
-
 10/03/11 (Tools)  clearmake (ClearCase make) is not supported anymore
-
 10/03/11 (Tools)  Valgrind 3.6.1 est livre avec le code
-
 10/03/11 (Kernel) PETSc passe de 3.1_p3 a 3.1_p7
-
 10/03/11 (Tools)  Utilisation de ccache optimisee (cache commun a plusieurs installations TRUST, utilisation de ccache hors LDAL, utilisation sur VisIt,...)
-
 10/03/11 (Tools)  ccache passe de la version 2.4 a 3.1.4 ameliorant fortement les performances de ce cache de compilateur 
-
+-------------------------------------------------------------
 Developer notes version 1.6.3 : Changes since version 1.6.2 :
 -------------------------------------------------------------
-
 03/02/11 (TRUST)  Nouvelle option de compilation possible avec la commande monodir, OPT="_semi_opt" pour avoir une version optimisee mais avec les assert actifs
-
 31/01/11 (Tools)  Ameliorations diverses apportees a l'outil Baltik
-
 31/01/11 (Tools)  Utilisation possible de valgrind dans le script triou (VALGRIND=1;triou jdd [nb_procs])
-
 31/01/11 (Tools)  Debut de l'utilisation possible de cmake dans le process de compilation de TRUST (compile monodir_cmake)
-
 27/01/11 (Tools)  La procedure de tests de non regression lance_test a ete optimisee pour tourner plus vite
-
 27/01/11 (Tools)  Correction et optimisation de l'outil de comparaison lance_test_seq_par utilise pour les tests de non regression
-
 25/01/11 (TRUST)  Suppression de l'arret du code compile en mode debug lorsque des valeurs de KEps sont detectees negatives et corrigees
-
 12/01/11 (Tools)  Python 2.7.1 est livre avec le code
-
 24/11/10 (TRUST)  Ajout d'une variable d'environnement TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS (0 ou 1, 0 par defaut) pour creer ou non des cas tests depuis les fiches de validation avec lance_test
-
 10/11/10 (TRUST)  Sous ClearCase, lors de chaque checkin, une indentation automatique est desormais faite sur tout le code C++
-
 22/10/10 (Tools)  Valgrind 3.6.0 est livre avec le code
-
 19/10/10 (Tools)  Ajout de l'outil cmake sous $TRUST_ROOT/Outils/cmake
-
 12/10/10 (Kernel) Le parametre des methodes associer_vitesse des operateurs de diffusion ou convection devient un Champ_base (anciennement Champ_Inc)
-
+-------------------------------------------------------------
 Developer notes version 1.6.2_beta : Changes since version 1.6.1 :
 -------------------------------------------------------------
-
 16/07/10 (TRUST)  Suppression des methodes impr_pas_temps_operateur de chaque equation (fait dans la classe Equation_base desormais)
-
 09/07/10 (Kernel) L'API Icoco passe a la version 1.2
-
 09/07/10 (Tools)  Une version atelier de TRUST construite avec Makeatelier.sccs affiche desormais les fichiers modifies dans le .err
-
 25/05/10 (Tools)  Modification de Makeatelier.sccs pour beneficier d'eventuels processeurs/coeurs supplementaires sur la machine pour compiler plus vite
-
 29/04/10 (TRUST)  Nouvelle macro Add_synonym(class,"english_keyword_to_instanciate_the_class") pour specifier des mots cles en anglais
-
 19/04/10 (Kernel) Messages en anglais desormais dans le Kernel. Un trigger sous ClearCase empeche d'ecrire des messages en francais
-
 22/03/10 (Kernel) Methode Zone_VF::get_num_fac_loc(face,voisin) qui renvoie le numero local d'une face connaissant le numero local d'un element.
                   Methode plus rapide que Zone_VF::numero_face_local(face,elem) ou l'on ne connait l'element que par son numero global 
-                  
 12/03/10 (Kernel) Ajout de plus d'informations dans les fichiers .TU de performance (temps CPU par pas de temps pour chaque operateur, terme source, etc...)
-
 01/03/10 (Kernel) Probleme corrige dans lance_test: si le cas test genere un fichier .lml, ce dernier doit etre compare a une reference .lml.gz non nulle
-
 12/02/10 (Kernel) make all_clean et make dist_clean disparaissent et sont remplaces par configure clean pour effacer les programmes installes par le configure
-
 09/02/10 (Kernel) Numerical Platon supprime. Les appels se font directement par l'API PETSc desormais
-
+-------------------------------------------------------------
 Developer notes version 1.6.1 : Changes since version 1.6.0 :
 -------------------------------------------------------------
-
 26/01/10 (Kernel) pARMS 3.0 retire de l'installation de Petsc. pARMS 2.2 toujours accessible via Numerical Platon.
-
 12/01/10 (TRUST)  Nettoyage dans les fichiers sources .cpp d'includes inutiles
-
 11/01/10 (Tools)  Possibilite dans le menu TRUST de ClearCase de lister les elements de sa vue non fusionnes dans la branche main
-
-11/01/10 (Kernel) Fichiers supprimes .cpp et .h car non testes: Algo_MG Champ_Var Restriction_elemF_faceG_1 Prolongement_elem_face_FMG FonctionsXYZ FonctionXYZ Agglo Agglo1 Agglo2 Agglo3 AggloAlg AggloMS 
-Agglo_base Champ_Q4 Ch_front_calc_temperature_paroi Champs_Inc DoubleTabss Filtrer_jdd1 Frac_Poly Gauss_Seidel Grille Grilles AUTRES_ILU Jacobi Joint_Im Lire_porosites Lisseur Lisseur_base MG_NIC MG_V MG_W MG_base MaillerParallel Mat_Bande Mat_Bande_Sym Milieu MoyenneMG Post_from_sauv RTabDouble Rest_Prol Rest_Prol_base SOR SolvElem_GC SolvElem_Gmres SolvDiag SolvGCPRen SolvGS SolvGSNonSym SolvMGVEF SolvNPParms SolvSSOR Solvmg SolveurNull SousZones Statistiques_Post VRTabInt Chfrinst Champ_Post Champs_Post Probleme
-
+11/01/10 (Kernel) Fichiers supprimes .cpp et .h car non testes: Algo_MG Champ_Var Restriction_elemF_faceG_1 Prolongement_elem_face_FMG FonctionsXYZ FonctionXYZ Agglo Agglo1 Agglo2 Agglo3 AggloAlg AggloMS Agglo_base Champ_Q4 Ch_front_calc_temperature_paroi Champs_Inc DoubleTabss Filtrer_jdd1 Frac_Poly Gauss_Seidel Grille Grilles AUTRES_ILU Jacobi Joint_Im Lire_porosites Lisseur Lisseur_base MG_NIC MG_V MG_W MG_base MaillerParallel Mat_Bande Mat_Bande_Sym Milieu MoyenneMG Post_from_sauv RTabDouble Rest_Prol Rest_Prol_base SOR SolvElem_GC SolvElem_Gmres SolvDiag SolvGCPRen SolvGS SolvGSNonSym SolvMGVEF SolvNPParms SolvSSOR Solvmg SolveurNull SousZones Statistiques_Post VRTabInt Chfrinst Champ_Post Champs_Post Probleme
 07/01/10 (Kernel) Ajout d'une methode exit(const Nom&,i) qui sort en affichant un message
-
+-------------------------------------------------------------
 Developer notes version 1.6.0 : Changes since version 1.5.7 :
 -------------------------------------------------------------
-
 05/10/09 (Kernel) Les methodes coef(int,int) des classes Matrice_Morse et Matrice_Morse_Sym redondantes avec les methodes operator()(int,int) sont supprimees
-
 25/09/09 (Kernel) Nouveau systeme de generation de fichiers sources .cpp et .h a partir de templates .cpp.P et .h.P et d'un script $TRUST_ROOT/bin/KSH/process_generated_source.sh
-
 15/09/09 (Kernel) Sous ClearCase, lors de chaque checkin, une indentation automatique est appliquee sur les fichiers sources
-
 04/08/09 (TRUST)  La syntaxe des macros declare_XXX(YYY) et implemente_XXX(YYY) va devenir obsolete. Utiliser desormais: Declare_XXX(YYY); et Implemente_XXX(YYY);
-
 26/08/09 (Kernel) Dans les interpretes qui modifient le domaine, faire un appel avant a Scatter::uninit_sequential_domain(domaine()) et apres a Scatter::init_sequential_domain(domaine());
-
 26/08/09 (Kernel) Ainsi, par exemple: La creation d'un vecteur distribue A avec Scatter::creer_tableau_distribue(zone().domaine(),Joint::TYPE,A); se fait maintenant avec zone().creer_tableau_TYPE(A);
-
 26/09/09 (Kernel) Ainsi, par exemple: Si A et B sont deux DoubleVect, faire A.ajoute(alpha,B); au lieu de A+=alpha*B;
-
 26/08/09 (Kernel) Ainsi, par exemple: Faire DoubleTab A; A.resize(n,m); A.inject_array(B); au lieu de DoubleTab A(B);A.resize(n,m); qui plantera.
-
 26/08/09 (Kernel) Ainsi, par exemple: Faire vect.reset(); au lieu de vect.resize(0); qui plantera.
-
 26/08/09 (Kernel) Ainsi, par exemple: DoubleVect::min() est propose en DoubleVect::mp_min_vect() ou DoubleVect::local_min_vect() 
-
 26/08/09 (Kernel) Reecriture/optimisation des vecteurs distribues. Voir le fichier (pas forcement a jour) $TRUST_ROOT/doc/Kernel/modifs_vecteurs_distribues.txt
-
 21/08/09 (Tools)  La librairie Silo est mise a jour (4.6.2)
-
 20/08/09 (Tools)  Valgrind 3.5.0 est livre avec le code
-
+-------------------------------------------------------------
 Developer notes version 1.5.7 : Changes since version 1.5.6 :
 -------------------------------------------------------------
 15/07/09 (Kernel) Le nom du repertoire temporaire TRUST_TMP peut contenir le nom de la machine (ex: $HOME/.tmp_TRUST_mars)
-
 09/07/09 (Kernel) Ajout d'une methode find aux classes Nom et Motcle
-
 06/07/09 (Tools)  Ajout de nouvelles commandes pour Baltik: make validation, make module
-
 06/07/09 (Tools)  lance_test accepte desormais un cas test qui ne passera qu'en parallele s'il contient la balise # PARALLEL ONLY NB_PROCS #
-
 06/07/09 (TRUST)  modifier_flux() nouvelle methode a appeler dans chaque nouvel operateur pour modifier les flux aux bords (sinon message d'erreur)
-
 06/07/09 (Kernel) Implemente_TYPE(...); et Declare_TYPE(...); a utiliser au lieu de implemente_TYPE(...) et declare_TYPE()
-
 06/07/09 (Kernel) Creation de classes Champ_Fonc_P0/P1/Q1_base, Champ_Inc_P0/P1/Q1_base, Champ_implementation_P0/P1, Champ_implementation_sommet_base
-
 06/07/09 (Kernel) Les fichiers Champ_P0_impl.* et Champ_P1_impl.* renommes en Champ_implementation_P0.* et Champ_implementation_P1.*
-
 06/07/09 (Kernel) Les classes Champ_P0_implementation et Champ_P1_implementation renommees Champ_implementation_P0 et Champ_implementation_P1
-
 10/06/09 (Kernel) Mise a jour de HDF de la version 1.6.3 a 1.6.4 et MED de la version 2.3.1 a 2.3.5
-
 29/04/09 (Tools)  Analyseur statique C++ cppcheck livre avec le code mais pas encore execute de facon bloquante dans le processus de construction d'une version
-
 03/03/09 (Tools)  Valgrind 3.4.1 est livre avec le code
-
 02/03/09 (Kernel) Installation de MED configurable grace aux variables USE_MED_VERSION,USE_EXTERNAL_HDF,HDF5HOME,USE_EXTERNAL_MED,MED2HOME (Voir $TRUST_ROOT/lib/src/LIBMED/README.txt)
-
 26/02/09 (TRUST)  Plusieurs includes renommes car n'existent plus depuis GCC 4.3: fstream.h->fstream, ostream.h->ostream, new.h->new
-
+-------------------------------------------------------------
 Developer notes version 1.5.6 : Changes since version 1.5.5 :
 -------------------------------------------------------------
-
 05/01/09 (Tools)  Valgrind 3.4.0 est livre avec le code
-
 18/12/08 (TRUST)  lance_test execute en plus des cas tests de non regression bases sur les fiches de validation
-
 12/12/08 (Kernel) mktemp_ est a utiliser pour creer des fichiers ou des repertoires temporaires (mktemp_ -d) dans les scripts du Kernel
-
 24/11/08 (Kernel) Implementation de getInputFieldTemplate et setInputField de l'API ICoCo. Voir doc/Kernel/README_ICOCO
-
 04/07/08 (Kernel) Le tableau renum_som_perio est desormais initialise au niveau de la discretisation (Domaine_dis)
-
 04/07/08 (Tools)  Le script cherche.ksh ne fonctionnait pas pour la recherche de cas tests avec des mots cles incomplets
-
 01/07/08 (Kernel) Suppression de la methode coef_opt de la classe Matrice_Morse. matrice.coef_opt(i,j) doit etre ecrit matrice(i,j) desormais.
-
+-------------------------------------------------------------
 Developer notes version 1.5.5 : Changes since version 1.5.4 :
 -------------------------------------------------------------
-
 24/06/08 (Kernel) Mise a jour de SPARSKIT : Version 2 du 8 mars 2005
-
 19/06/08 (Kernel) Detection du nombre de processeurs disponibles sur les machines Linux afin d'accelerer les compilations TRUST sans distcc/ccache 
-
 09/06/08 (Kernel) L'element geometrique Polyedre est ajoute
-
 09/06/08 (TRUST)  Le frottement en paroi est desormais bien invariant par rotation en VEF
-
 05/06/08 (Kernel) La nouvelle API pour le postraitement est decrite dans le document $ROOT/doc/Kernel/Note_technique_postraitement.pdf
-
 29/04/08 (Kernel) Numerical Platon mis a jour (version 3.1)
-
 31/03/08 (TRUST)  L'assembleur et les operateurs gradient et divergence sont entierement recodes en VEF
-
+-------------------------------------------------------------
 Developer notes version 1.5.4 : Changes since version 1.5.3 :
 -------------------------------------------------------------
-
 15/02/08 Tous les fichiers sources C++ de TRUST ont une balise // Version indiquant leur numero de version sous ClearCase
-
 14/01/08 Valgrind mis a jour (3.3.0) pour portabilite sur Mandriva 2008
-
 21/12/07 La methode Interprete::objet(...) remplace interprete().objet(...). Les objets lus dans le jeu de donnees ne sont plus geres par la classe Interprete mais par la classe Interprete_bloc
-
+-------------------------------------------------------------
 Developer notes version 1.5.3 : Changes since version 1.5.2 :
 -------------------------------------------------------------
-
 18/09/07 lance_test possede un timeout pour eviter qu'un calcul parallele bloque la procedure
-
 14/08/07 lance_test execute a posteriori un script verifie s'il est trouve dans un repertoire de cas test de non regression. Si le script retourne un code erreur, lance_test affiche FALSE pour le resultat du cas test
-
 18/07/07 Plusieurs variables d'environnement ont ete renommees: CC->TRUST_CC,cc->TRUST_cc,F77->TRUST_F77,TRUST_ROOT/tests->TRUST_TESTS,ARCH->TRUST_ARCH,ARCH_CC->TRUST_ARCH_CC,Reference_dir->TRUST_TESTS
-
 27/06/07 OpenMPI 1.1.5 pour essayer d'eviter quelques rares blocages de OpenMPI 1.1.4
-
 25/06/07 L'environnement BALTIK (Building Applications using Trio-U Kernel) disponible sous $TRUST_ROOT/bin/baltik est supporte
-
-19/06/07 Les methodes Pb_base::a_pour_Champ_Inc(const Motcle&, REF(Champ_base)&) et Pb_base::a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) sont supprimees et sont remplacees par la methode 
-Pb_base::get_champ(const Motcle&) qui renvoie la reference au Champ_base et qui gere le message d'erreur si le probleme n'a pas le champ dont le nom est passe en argument
-
+19/06/07 Les methodes Pb_base::a_pour_Champ_Inc(const Motcle&, REF(Champ_base)&) et Pb_base::a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) sont supprimees et sont remplacees par la methode Pb_base::get_champ(const Motcle&) qui renvoie la reference au Champ_base et qui gere le message d'erreur si le probleme n'a pas le champ dont le nom est passe en argument
 13/06/07 La distribution OpenMPI 1.1.4 remplace MPICH 1.2.7 comme librairie de communication MPI dans TRUST sous Linux
-
 11/06/07 La methode contient(obj) de VECT est remplace par la methode rang. Une methode contient_ renvoie desormais 1 si le vecteur contient obj, 0 sinon
-
 25/05/07 Le script Qui permet de connaitre la liste des cas tests couvrant une classe ou une methode
-
 21/05/07 Le joint contient desormais une liste complete et ordonnee des sommets communs avec le processeur voisin (ordre identique sur le processeur voisin) 
-
 21/05/07 Le decoupeur ecrit desormais la liste des bords periodiques dans le fichier .Zones a la fin (on en a besoin pour le calcul des espaces distants) 
-
 21/05/07 L'algorithme de calcul des espaces distants trouve les joints d'epaisseur 1,2,3... quelconque. Il a ete corrige. Du coup, attention, il y a des joints contenant des elements virtuels mais ni sommet commun ni face de joint. 
-
 27/04/07 La methode periodique::face_associee_virt() est supprimee. Utiliser periodique::face_associee() qui a ete generalisee aux faces virtuelles 
-
 27/04/07 La methode Zone_VF::faces_virt_bord est supprimee. Utiliser Front_VF::nb_faces_tot() et Front_VF::num_face() a la place pour boucler sur les faces reelles et virtuelles d'un bord
-
+-------------------------------------------------------------
 Developer notes version 1.5.2 : Changes since version 1.5.1 : 
 -------------------------------------------------------------
-
 27/02/07 Valgrind mis a jour (3.2.3) pour verification de TRUST sur PC Linux x86_64
-
 14/02/07 Il est FORTEMENT recommande de lire les documents sous $TRUST_ROOT/doc/TRUST concernant la nouvelle API: conseils.1.5.2.pdf et APIProblem.pdf  
-
 12/02/07 Le script configure accepte des options (faire ./configure -help). On peut desormais forcer un compilateur ou ajouter des repertoires de recherche
-
 07/02/07 Bug fixed: Maxfic_makedepend value reduced to fix "/usr/bin/X11/makedepend: error:  out of space: increase MAXFILES"
-
+-----------------------------------------------------------
 Developer notes version 1.5.1 : Changes since version 1.5 : 
 -----------------------------------------------------------
-
 15/01/07 Toutes les lois de paroi ont ete legerement modifiees en remplacant la valeur 3.33 par 1/sqrt(Cmu)
-
 05/01/07 Rappel: Cerr << tableau << finl; n'imprime que la partie reelle du tableau alors que tableau.ecrit(Cerr); imprime parties reelles et virtuelles 
-
 05/01/07 Valgrind tool updated to 3.2.1 version
-
 23/11/06 Suppression des classes Joint_VF, Joints_VF, Zone_J_VF et Zones_J_VF. L'acces aux joints se fait par la zone.
-
-29/09/06 Factorisation pour les modeles de turbulence notamment methodes mettre_a_jour(), calculer_energie_cinetique_turb() ..., procedure de lissage de la longueur de filtre. Optimisation d'algorithme de relecture de Champs (Champ_Don_lu, Champ_front_lu).
- 
+29/09/06 Factorisation pour les modeles de turbulence notamment methodes mettre_a_jour(), calculer_energie_cinetique_turb() ..., procedure de lissage de la longueur de filtre. Optimisation d'algorithme de relecture de Champs (Champ_Don_lu, Champ_front_lu). 
 07/09/06 NewReadOn: Utilisation dans le readOn d'un objet "param" qui contient les donnees a lire (entier, double, Objet_U) fixees par set_param() et qui permet la lecture de ces donnees par lire_avec_accolades_depuis().
-
 07/09/06 Le coefficient de diffusion a utiliser pour calculer le pas de temps de stabilite est associe a l'operateur au moment de la lecture du terme de diffusion. La methode calculer_dt_stab() est factorisee dans les classes de base. 
-
 18/05/06 La methode Zone_VF::faces_doubles renvoie un tableau de nb_faces entiers qui vaut 1 si la face est "double" c'est a dire sur une frontiere periodique ou sur une face de joint et 0 sinon
-
 18/05/06 Ne plus utiliser num_premiere_face() (qui retourne desormais -1 pour un joint) et nb_faces() pour parcourir les faces d'un joint car celles ci ne sont pas numerotees de facon continue (elles sont reordonnees) et utiliser le tableau joint.joint_item(Joint::FACE).renum_items_communs()
-
 05/05/06 La macro ref_cast renvoie desormais un type constante identique a l'objet caste. Si celui est de type const, le type renvoye sera de type const. D'ou l'apparition d'une macro ref_cast_non_const pour renvoyer systematiquement un type non const
-
 05/05/06 Controle severe des casts: les casts en dur sont detectes et interdits par ClearCase. Utiliser les macros ref_cast ou ref_cast_non_const a la place
-
 24/04/06 Avec le nouveau Scatter, la convention change legerement au niveau du tableau face_voisins. Avant face_voisins(face_bord,1)=-1. Desormais cette propriete n'est plus forcement vraie si face_bord est sur un joint.
-
 24/04/06 Scatter::creer_tableau_distribue permet de creer des espaces distants sur des tableaux (voir exemple d'utilisation dans Champ_Face::creer_espace_distant())
-
 24/04/06 Methode Elem_geom_base::get_tab_faces_sommets_locaux qui remplit un tableau faces_som_local(i,j) donnant le numero local sur l'element du sommet j de la face i
-
 24/04/06 Class Faces_builder: Classe outil pour creer des faces
-
 24/04/06 Methode check_espace_virtuel_vect(const DoubleVect & v) pour verifier qu'un vecteur v a son espace virtuel a jour
-
 24/04/06 Methode invalide_espace_virtuel(DoubleVect & v) pour mettre des valeurs tres grandes dans la partie virtuelle de v afin d'invalider une utilisation de cette partie virtuelle
-
 10/03/06 cree_lml.gz.ct is a script to create (or update the reference of ) a test cas under $TRUST_ROOT/tests/Reference
-
 08/03/06 Change in the inheritance of the convective schemes in VEF discretization (Generic class Op_Conv_VEF_Face)
-
+-----------------------------------------------------------
 Developer notes version 1.5 : Changes since version 1.4.9 : 
 -----------------------------------------------------------
-
 03/02/06 Option -pedantic -Wno-long-long added to g++ options on Linux (detects extraneous semicolons,...)
-
 24/10/05 Farm of several PC Linux available for LMDL developers thanks to -distant option of lance_test tool
-
 28/07/05 TRUST sources tree changed (separate Kernel) and instantiation files automatically build during "make depend" command

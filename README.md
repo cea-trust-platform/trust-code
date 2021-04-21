@@ -89,5 +89,5 @@ To clean also the third party libraries:
 
 > - **index.html** => Index description
 
-> - **license.md** => TRUST and third party licences
+> - **license** => TRUST and third party licences
 

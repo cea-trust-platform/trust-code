@@ -1,0 +1,192 @@
+Copyrights of other applications delivered in the TRUST package should be approved :
+
+LAPACK: Library of Fortran 77 subroutines (BLAS, SPARSKIT,...). http://www.netlib.org/lapack/ 
+-------
+LAPACK is a freely-available software package. It is available from netlib via anonymous ftp and the World Wide Web.
+Thus, it can be included in commercial software packages. Proper credit be given to the authors.
+Like all software, it is copyrighted. It is not trademarked, but it is asked the following:
+If you modify the source for these routines it is asked that you change the name of the routine and comment
+the changes made to the original. It will gladly be answered any questions regarding the software. If a modification
+is done, however, it is the responsibility of the person who modified the routine to provide support.
+
+HYPRE: Library for solving large, sparse linear systemns of equations on massively parallel computers.
+------
+Commercialization of this product is prohibited without notifying the Department of Energy (DOE) or Lawrence Livermore
+National Laboratory (LLNL).
+
+METIS: Serial graph partitioning tool. http://www-users.cs.umn.edu/~karypis/metis/
+------
+Policy regarding the distribution of METIS with third-party applications is as follows: 
+Non-commercial applications
+	METIS can be freely distributed provided that: 
+	Proper references are included. 
+	The original documentation and copyright notice is included. 
+Commercial applications
+	METIS can be freely distributed provided that: 
+	Proper references are included. 
+	The original documentation and copyright notice is included. 
+	METIS is a relatively small portion of the overall application. 
+
+In either case, permission to distribute/include METIS with
+your application must be obtained by sending email to metis@cs.umn.edu.
+
+MFFT: Fast Fourier Transform routines. http://www.crc.dk/chem/mnmr/mfft.html
+-----
+The MFFT program is the main program in the MNMR package. It reads a file (either a file containing FID's,
+ or a file created previously with the MNMR package), and processes the slice in one dimension.
+
+VISIT: Visit Visualization Tool http://www.llnl.gov/VisIt/home.html
+------
+Copyright (c) 2000 - 2007.
+The Regents of the University of California.
+Produced at the Lawrence Livermore National Laboratory.
+Written by Sean Ahern, Kathleen Bonnell, Eric Brugger, Hank Childs, Jeremy Meredith, Mark Miller, and Brad Whitlock.
+UCRL-CODE-220908
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the disclaimer below.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the disclaimer (as noted below) in the documentation and/or materials provided with the distribution.
+    * Neither the name of the UC/LLNL nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OF THE UNIVERSITY OF CALIFORNIA, THE U.S. DEPARTMENT OF ENERGY OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Additional BSD Notice
+
+1. This notice is required to be provided under our contract with the U.S. Department of Energy (DOE). This work was produced at the University of California, Lawrence Livermore National Laboratory under Contract No. W-7405-ENG-48 with the DOE.
+
+2. Neither the United States Government nor the University of California nor any of their employees, makes any warranty, express or implied, or assumes any liability or responsibility for the accuracy, completeness, or usefulness of any information, apparatus, product, or process disclosed, or represents that its use would not infringe privately-owned rights.
+
+3. Also, reference herein to any specific commercial products, process, or services by trade name, trademark, manufacturer or otherwise does not necessarily constitute or imply its endorsement, recommendation, or favoring by the United States Government or the University of California. The views and opinions of authors expressed herein do not necessarily state or reflect those of the United States Government or the University of California, and shall not be used for advertising or product endorsement purposes. 
+
+GNUPLOT: Scientific Plotting tool. http://www.gnuplot.org/
+--------
+The FSF has decided to distribute gnuplot as part of
+the GNU system, because it is useful, redistributable software.
+
+MED: Modelisation et Echange de Donnees
+----
+/*************************************************************************
+* COPYRIGHT (C) 1999 - 2002  EDF R&D
+* THIS LIBRARY IS FREE SOFTWARE; YOU CAN REDISTRIBUTE IT AND/OR MODIFY
+* IT UNDER THE TERMS OF THE GNU LESSER GENERAL PUBLIC LICENSE
+* AS PUBLISHED BY THE FREE SOFTWARE FOUNDATION;
+* EITHER VERSION 2.1 OF THE LICENSE, OR (AT YOUR OPTION) ANY LATER VERSION.
+*
+* THIS LIBRARY IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT
+* WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+* MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE GNU
+* LESSER GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+*
+* YOU SHOULD HAVE RECEIVED A COPY OF THE GNU LESSER GENERAL PUBLIC LICENSE
+* ALONG WITH THIS LIBRARY; IF NOT, WRITE TO THE FREE SOFTWARE FOUNDATION,
+* INC., 59 TEMPLE PLACE, SUITE 330, BOSTON, MA 02111-1307 USA
+*************************************************************************/
+
+NCSA HDF5 (Hierarchical Data Format 5):
+---------
+Copyright:
+Redistribution and use in source and binary forms, with or without
+modification, are permitted for any purpose (including commercial purposes)
+provided that the following conditions are met:
+
+1.  Redistributions of source code must retain the above copyright notice,
+    this list of conditions, and the following disclaimer.
+
+2.  Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions, and the following disclaimer in the documentation
+    and/or materials provided with the distribution.
+
+3.  In addition, redistributions of modified forms of the source or binary
+    code must carry prominent notices stating that the original code was
+    changed and the date of the change.
+
+4.  All publications or advertising materials mentioning features or use of
+    this software are asked, but not required, to acknowledge that it was
+    developed by the National Center for Supercomputing Applications at the
+    University of Illinois at Urbana-Champaign and to credit the contributors.
+
+5.  Neither the name of the University nor the names of the Contributors may
+    be used to endorse or promote products derived from this software without
+    specific prior written permission from the University or the Contributors,
+    as appropriate for the name(s) to be used.
+
+6.  THIS SOFTWARE IS PROVIDED BY THE UNIVERSITY AND THE CONTRIBUTORS "AS IS"
+    WITH NO WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED.  In no event
+    shall the University or the Contributors be liable for any damages
+    suffered by the users arising out of the use of this software, even if
+    advised of the possibility of such damage.
+
+PETSc:
+-----
+Copyright:
+
+For version 3.0.0 and earlier of PETSc If you modify PETSc source code and wish to distributed only binary versions of your changed code (which you can) you must config/configure.py PETSc with the additional flag --with-gnu-copyright-code=0 to prevent violating the GNU copyright which covers a tiny percentage of the code in the PETSc distribution. For versions later than 3.0.0 this issue does not exist. 
+COPYRIGHT NOTIFICATION 
+(C) COPYRIGHT 1995-2004 UNIVERSITY OF CHICAGO 
+This program discloses material protectable under copyright laws of the United States. Permission to copy and modify this software and its documentation is hereby granted, provided that this notice is retained thereon and on all copies or modifications. The University of Chicago makes no representations as to the suitability and operability of this software for any purpose. It is provided "as is" without express or implied warranty. Permission is hereby granted to use, reproduce, prepare derivative works, and to redistribute to others, so long as this original copyright notice is retained. 
+Software authors
+Mathematics and Computer Science Division
+Argonne National Laboratory, 
+Argonne IL 60439 FAX: (630) 252-5986 
+Any questions or comments on the software may be directed to petsc-maint@mcs.anl.gov.
+Argonne National Laboratory with facilities in the state of Illinois, is owned by The United States Government, and operated by the University of Chicago under provision of a contract with the Department of Energy.
+
+OpenMPI:
+--------
+Copyright:
+
+Most files in this release are marked with the copyrights of the
+organizations who have edited them.  The copyrights below generally
+reflect members of the Open MPI core team who have contributed code to
+this release.  The copyrights for code used under license from other
+parties are included in the corresponding files.
+
+Copyright (c) 2004-2007 The Trustees of Indiana University and Indiana
+                        University Research and Technology
+                        Corporation.  All rights reserved.
+Copyright (c) 2004-2007 The University of Tennessee and The University
+                        of Tennessee Research Foundation.  All rights
+                        reserved.
+Copyright (c) 2004-2006 High Performance Computing Center Stuttgart,
+                        University of Stuttgart.  All rights reserved.
+Copyright (c) 2004-2006 The Regents of the University of California.
+                        All rights reserved.
+Copyright (c) 2006-2007 Los Alamos National Security, LLC.  All rights
+                        reserved.
+Copyright (c) 2006-2007 Cisco Systems, Inc.  All rights reserved.
+Copyright (c) 2006-2007 Voltaire, Inc. All rights reserved.
+Copyright (c) 2006      Sandia National Laboratories. All rights reserved.
+Copyright (c) 2006-2007 Sun Microsystems, Inc.  All rights reserved.
+                        Use is subject to license terms.
+Copyright (c) 2006-2007 The University of Houston. All rights reserved.
+Copyright (c) 2006      Myricom, Inc.  All rights reserved.
+$COPYRIGHT$
+
+Additional copyrights may follow
+
+$HEADER$
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+- Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer listed
+  in this license in the documentation and/or other materials
+  provided with the distribution.
+
+- Neither the name of the copyright holders nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+The copyright holders provide no reassurances that the source code
+provided does not infringe any patent, copyright, or any other
+intellectual property rights of third parties.  The copyright holders
+disclaim any liability to any recipient for claims brought against
+recipient by any third party for infringement of that parties
+intellectual property rights.
