@@ -67,11 +67,11 @@ public:
   inline double nu_1_impl(int i, int compo) const { return db_diffusivite; }
   inline double nu_2_impl(int i, int compo) const { return db_diffusivite; }
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const { return db_diffusivite/(d0+d1); }
-  inline double nu_1_impl_face(int i, int j) const { return db_diffusivite; }
-  inline double nu_2_impl_face(int i, int j, int k, int l) const { return db_diffusivite; }
-  inline double nu_lam_impl_face(int i, int j, int k, int l) const { return nu_2_impl_face(i,j,k,l); }
-  inline double nu_lam_impl_face2(int i, int j) const { return nu_1_impl_face(i,j); }
-  inline double nu_t_impl(int i) const { return 0.; }
+  inline double nu_1_impl_face(int i, int j, int compo) const { return db_diffusivite; }
+  inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const { return db_diffusivite; }
+  inline double nu_lam_impl_face(int i, int j, int k, int l, int compo) const { return nu_2_impl_face(i,j,k,l,compo); }
+  inline double nu_lam_impl_face2(int i, int j, int compo) const { return nu_1_impl_face(i,j,compo); }
+  inline double nu_t_impl(int i, int compo) const { return 0.; }
   inline double tau_tan_impl(int i, int j) const { return 0.; }
   inline bool uses_wall() const { return false; }
 

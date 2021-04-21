@@ -50,12 +50,12 @@ public:
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
-  inline double nu_mean_2pts(int i=0, int j=0) const;
-  inline double nu_mean_4pts(int i, int j, int k, int l) const;
+  inline double nu_mean_2pts(int i=0, int j=0, int compo=0) const;
+  inline double nu_mean_4pts(int i, int j, int k, int l, int compo=0) const;
   inline double nu_lam(int i, int j=0) const;
-  inline double nu_lam_mean_4pts(int i, int j, int k, int l) const;
-  inline double nu_lam_mean_2pts(int i, int j) const;
-  inline double nu_turb(int i) const;
+  inline double nu_lam_mean_4pts(int i, int j, int k, int l, int compo=0) const;
+  inline double nu_lam_mean_2pts(int i, int j, int compo=0) const;
+  inline double nu_turb(int i, int compo=0) const;
   inline double tau_tan(int,int) const;
   inline bool uses_wall_law() const;
 
@@ -191,16 +191,16 @@ public:
 //************************
 
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_mean_2pts(int i, int j) const
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_mean_2pts(int i, int j,int compo) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_1_impl_face(i, j);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_1_impl_face(i, j, compo);
   return nu;
 }
 
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_mean_4pts(int i, int j, int k, int l) const
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_mean_4pts(int i, int j, int k, int l,int compo) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_2_impl_face(i, j, k, l);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_2_impl_face(i, j, k, l,compo);
   return nu;
 }
 
@@ -212,23 +212,23 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_lam(int i, int j) const
 }
 
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_lam_mean_4pts(int i, int j, int k, int l) const
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_lam_mean_4pts(int i, int j, int k, int l,int compo) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_lam_impl_face(i,j,k,l);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_lam_impl_face(i,j,k,l,compo);
   return nu;
 }
 
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_lam_mean_2pts(int i, int j) const
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_lam_mean_2pts(int i, int j,int compo) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_lam_impl_face2(i,j);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_lam_impl_face2(i,j,compo);
   return nu;
 }
 
 template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_turb(int i) const
+inline double Eval_Diff_VDF_Face<DERIVED_T>::nu_turb(int i,int compo) const
 {
-  double nu = static_cast<const DERIVED_T *>(this)->nu_t_impl(i);
+  double nu = static_cast<const DERIVED_T *>(this)->nu_t_impl(i,compo);
   return nu;
 }
 

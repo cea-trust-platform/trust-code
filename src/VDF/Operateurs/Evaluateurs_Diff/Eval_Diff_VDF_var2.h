@@ -63,9 +63,9 @@ public:
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return dv_diffusivite(i); }
   inline double nu_2_impl(int i, int compo) const { return dv_diffusivite(i); }
-  inline double nu_t_impl(int i) const { return 0.; }
-  inline double nu_lam_impl_face(int i, int j, int k, int l) const { return nu_2_impl_face(i,j,k,l); }
-  inline double nu_lam_impl_face2(int i, int j) const { return nu_1_impl_face(i,j); }
+  inline double nu_t_impl(int i, int compo) const { return 0.; }
+  inline double nu_lam_impl_face(int i, int j, int k, int l, int compo) const { return nu_2_impl_face(i,j,k,l,compo); }
+  inline double nu_lam_impl_face2(int i, int j, int compo) const { return nu_1_impl_face(i,j,compo); }
   inline double tau_tan_impl(int i, int j) const { return 0.; }
   inline bool uses_wall() const { return false; }
 
@@ -74,12 +74,12 @@ public:
     return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
   }
 
-  inline double nu_1_impl_face(int i, int j) const
+  inline double nu_1_impl_face(int i, int j, int compo) const
   {
     return 0.5*(dv_diffusivite(i)+dv_diffusivite(j));
   }
 
-  inline double nu_2_impl_face(int i, int j, int k, int l) const
+  inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const
   {
     return 0.25*(dv_diffusivite(i)+dv_diffusivite(j)+dv_diffusivite(k)+dv_diffusivite(l));
   }

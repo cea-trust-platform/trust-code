@@ -54,11 +54,23 @@ public:
   }
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int j) const { return dt_diffusivite(i,j); }
-  inline double nu_2_impl(int i, int j) const { return dt_diffusivite(i,j); }
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int k) const
+  inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i,compo); }
+  inline double nu_2_impl(int i, int compo) const { return dt_diffusivite(i,compo); }
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
-    return 1./(d0/dt_diffusivite(i,k) + d1/dt_diffusivite(j,k));
+    return 1./(d0/dt_diffusivite(i,compo) + d1/dt_diffusivite(j,compo));
+  }
+
+  // Methods used in F5 (var face aniso)
+  inline double nu_1_impl_face(int i, int j, int compo) const
+  {
+    return 0.5*(dt_diffusivite(i,compo)+dt_diffusivite(j,compo));
+  }
+
+  inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const
+  {
+    return 0.25*(dt_diffusivite(i,compo)+dt_diffusivite(j,compo)+
+                 dt_diffusivite(k,compo)+dt_diffusivite(l,compo));
   }
 
 protected:
@@ -74,6 +86,8 @@ protected:
 // associe le champ de diffusivite
 inline void Eval_Diff_VDF_var_aniso::associer(const Champ_base& diffu)
 {
+  // ONLY AVAILABLE FOR TRUST : conduction problem
+  // TODO : generalize ME
   if (diffu.le_nom() == "conductivite" && diffu.nb_comp() != Objet_U::dimension)
     {
       Cerr << "Error in Eval_Diff_VDF_var_aniso::associer (anisotropic diffusion VDF operator) !" << finl;
