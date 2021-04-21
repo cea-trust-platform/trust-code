@@ -625,7 +625,7 @@ echo "Call to "$TRUST_ROOT"/configure"
 echo "  See $config_log"
 echo "TRUST configuration on $HOST the `date` ...">$config_log
 echo>>$config_log
-./configure 1>>$config_log || exit -1
+./configure -force_provided_mpich 1>>$config_log || exit -1
 #grep -i error $config_log
 grep KO $config_log
 tail -n9 $config_log | head -n1
@@ -1090,7 +1090,7 @@ echo "###############################################"
 	   #fi
 	fi
 	echo "Call to configure $vue version in `pwd`"
-	./configure 1>/dev/null 2>&1
+	./configure -force_provided_mpich 1>/dev/null 2>&1
         source env_TRUST.sh 1>/dev/null 2>&1
 	echo "TRUST_ROOT=$TRUST_ROOT"
 	echo "TRUST_VERSION=$TRUST_VERSION"
@@ -2974,7 +2974,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=79.45 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=79.61 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
