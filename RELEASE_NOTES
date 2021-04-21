@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+23/04/21 (TRUST)  Bug fixed   : Champ_fonc_reprise didn't read correctly the PolyMAC fields
 15/04/21 (TRUST)  Portability : GNU compilers 10.3.0 supported
 15/04/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
 12/04/21 (TRUST)  New feature : mpi4py Python package now provided by default in the TRUST Python environment when compiling with MPI.

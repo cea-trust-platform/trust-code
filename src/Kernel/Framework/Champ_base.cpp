@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -473,7 +473,10 @@ void Champ_base::abortTimeStep()
 // Postcondition:
 Champ_base& Champ_base::affecter(const Champ_base& ch)
 {
-  affecter_(ch);
+  if (valeurs().get_md_vector()==ch.valeurs().get_md_vector() && valeurs().nb_dim()==ch.valeurs().nb_dim())
+    valeurs() = ch.valeurs();
+  else
+    affecter_(ch);
   valeurs().echange_espace_virtuel();
   return *this;
 }

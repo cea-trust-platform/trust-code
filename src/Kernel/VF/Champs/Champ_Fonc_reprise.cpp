@@ -299,15 +299,14 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
 
   associer_zone_dis_base(pb.domaine_dis().zone_dis(0));
   // on cree un champ comme le ch_ref;
-  vrai_champ_.typer(ref_ch.valeur().que_suis_je());
   const Champ_Inc_base& ch_inc=ref_cast(Champ_Inc_base,ref_ch.valeur());
-  Champ_Inc_base& v_champ=vrai_champ_.valeur();
-  le_champ().associer_zone_dis_base(pb.domaine_dis().zone_dis(0));
-
-  v_champ.fixer_nb_valeurs_temporelles(2);
-  v_champ.nommer(ch_inc.le_nom());
-  v_champ.fixer_nb_comp(ch_inc.nb_comp());
-  v_champ.fixer_nb_valeurs_nodales(ch_inc.nb_valeurs_nodales());
+  vrai_champ_.typer(ch_inc.que_suis_je());
+  vrai_champ_->associer_zone_dis_base(pb.domaine_dis().zone_dis(0));
+  //vrai_champ_->fixer_nb_valeurs_temporelles(2);
+  vrai_champ_->nommer(ch_inc.le_nom());
+  vrai_champ_->fixer_nb_comp(ch_inc.nb_comp());
+  //vrai_champ_->fixer_nb_valeurs_nodales(ch_inc.nb_valeurs_nodales());
+  vrai_champ_->valeurs() = ch_inc.valeurs();
 
   nb_compo_ = ch_inc.nb_comp();
   if (ch=="FONCTION")

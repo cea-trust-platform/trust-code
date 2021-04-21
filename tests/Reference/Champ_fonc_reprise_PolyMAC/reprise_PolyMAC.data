@@ -1,0 +1,91 @@
+# Champ_fonc_reprise d'un champ vitesse PolyMAC #  
+dimension  2
+domaine    dom_fluide
+
+
+mailler  dom_fluide
+{
+    pave  carre
+    {
+        origine  0.0  0.0
+        nombre_de_noeuds  21  21
+        longueurs  2.0  2.0
+    }
+    {
+        bord  bord_bas     Y = 0.0  0.0 <= X <= 2.0
+        bord  bord_haut    Y = 2.0  0.0 <= X <= 2.0
+        bord  bord_gauche  X = 0.0  0.0 <= Y <= 2.0
+        bord  bord_droit   X = 2.0  0.0 <= Y <= 2.0
+    }
+}
+
+
+fluide_incompressible  mil_fluide
+lire  mil_fluide
+{
+    mu       champ_uniforme  1  50.0
+    rho      champ_uniforme  1  2000.0
+}
+
+
+pb_hydraulique  pb_fluide
+associate  pb_fluide  dom_fluide
+associate  pb_fluide  mil_fluide
+
+
+schema_euler_implicite  sch
+lire  sch
+{
+    tmax          10000.0
+    dt_max        2e-1
+    facsec        1e8
+    dt_impr       1e-8
+    seuil_statio  1e-5
+    solveur  implicite
+    {
+        solveur  petsc  cholesky { }
+        seuil_convergence_implicite  1e20
+    }
+}
+associate  pb_fluide  sch
+
+
+PolyMAC  dis
+discretize  pb_fluide  dis
+
+
+read  pb_fluide
+{
+
+    navier_stokes_standard
+    {
+        solveur_pression  petsc  cholesky  { }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions   { vitesse champ_uniforme 2 0 0  }
+        boundary_conditions
+        {
+            bord_bas     paroi_fixe
+            bord_gauche  paroi_fixe
+            bord_droit   paroi_fixe
+            bord_haut    paroi_defilante  champ_front_uniforme  2  0.5  0.0
+        }
+        equation_non_resolue  1
+    }
+
+    postraitement
+    {
+
+        fields  dt_post  1e20
+        {
+            vitesse      elem
+        }
+    }
+    resume_last_time binaire velocity_PolyMAC.sauv
+}
+
+
+solve  pb_fluide
+
+
+end
