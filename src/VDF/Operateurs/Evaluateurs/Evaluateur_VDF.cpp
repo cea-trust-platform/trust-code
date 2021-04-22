@@ -50,10 +50,10 @@ void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf,
   xv.ref(zone_vdf.xv());
 }
 
-//void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)
-//{
-//  porosite.ref(poro);
-//}
+void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)
+{
+  porosite.ref(poro);
+}
 
 //// dist_norm_bord
 //
