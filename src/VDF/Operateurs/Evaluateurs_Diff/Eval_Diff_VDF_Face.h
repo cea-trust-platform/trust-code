@@ -58,6 +58,8 @@ public:
   inline double nu_turb(int i, int compo=0) const;
   inline double tau_tan(int,int) const;
   inline bool uses_wall_law() const;
+  inline bool uses_mod_turb() const;
+  inline DoubleTab k_elem() const;
 
   inline int calculer_fa7_sortie_libre() const { return DERIVED_T::IS_TURB ? 1 : 0; }
   inline int calculer_arete_fluide() const { return 1; }
@@ -246,6 +248,20 @@ inline bool Eval_Diff_VDF_Face<DERIVED_T>::uses_wall_law() const
   return wl;
 }
 
+template <typename DERIVED_T>
+inline bool Eval_Diff_VDF_Face<DERIVED_T>::uses_mod_turb() const
+{
+  bool nm = static_cast<const DERIVED_T *>(this)->uses_mod();
+  return nm;
+}
+
+template <typename DERIVED_T>
+inline DoubleTab Eval_Diff_VDF_Face<DERIVED_T>::k_elem() const
+{
+  DoubleTab k = static_cast<const DERIVED_T *>(this)->get_k_elem();
+  return k;
+}
+
 //************************
 // Internal methods
 //************************
@@ -281,8 +297,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& in
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
   int ori= orientation(fac3);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
   double surfporos = surface(fac3)*porosite(fac3);
@@ -319,8 +335,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
   int ori= orientation(fac3);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
   double surfporos = surface(fac3)*porosite(fac3);
@@ -353,8 +369,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_fluide(int fac1, int fac
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
   int ori= orientation(fac3);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
   double dist = dist_norm_bord(fac1);
@@ -387,8 +403,8 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab&
   int elem2 = elem_(fac3,1);
   int elem3 = elem_(fac4,0);
   int elem4 = elem_(fac4,1);
-  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4);
-  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4);
+  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4,ori3);
+  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4,ori3);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
 
@@ -416,8 +432,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fa
   int elem2 = elem_(fac3,1);
   int elem3 = elem_(fac4,0);
   int elem4 = elem_(fac4,1);
-  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4);
-  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4);
+  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4,ori3);
+  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4,ori3);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
 
@@ -550,8 +566,8 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi(const DoubleTab& i
       else if (elem2==-1)
         elem2 = elem1;
 
-      double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-      double visc_turb = nu_mean_2pts(elem1,elem2);
+      double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+      double visc_turb = nu_mean_2pts(elem1,elem2,ori);
       double dist = dist_norm_bord(fac1);
       double tau  = signe*(vit_imp - inco[fac3])/dist;
       double surf = surface_(fac1,fac2);
@@ -595,8 +611,9 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi(int fac1, int fac2
       else if (elem2==-1)
         elem2 = elem1;
 
-      double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-      double visc_turb = nu_mean_2pts(elem1,elem2);
+      int ori = orientation(fac3);
+      double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+      double visc_turb = nu_mean_2pts(elem1,elem2,ori);
       double dist = dist_norm_bord(fac1);
       double surf = surface_(fac1,fac2);
 
@@ -631,8 +648,8 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi(int fac1, int fa
   double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
                         Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
 
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
 
   if ( !uses_wall_law() )
     {
@@ -675,8 +692,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
   int ori= orientation(fac3);
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double vit_imp;
 
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
@@ -717,8 +734,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, i
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
   int ori= orientation(fac3);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
   double surfporos = surface(fac3)*porosite(fac3);
@@ -752,8 +769,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
   int ori= orientation(fac3);
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
   double dist = dist_norm_bord(fac1);
@@ -796,8 +813,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
   double poros1_2 = porosity_(fac1, fac2);
   double surf3_4 = surface_(fac3,fac4);
   double poros3_4 = porosity_(fac3, fac4);
-  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4);
-  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4);
+  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4,ori3);
+  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4,ori3);
 
   double tau = (inco[fac4]-inco[fac3])/dist3_4;
   double tau_tr = (inco[fac2]-inco[fac1])/dist1_2;
@@ -829,8 +846,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, in
   int elem4 = elem_(fac4,1);
   double dist3_4 = dist_face_period(fac3,fac4,ori1);
   double dist1_2 = dist_face_period(fac1,fac2,ori3);
-  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4);
-  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4);
+  double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4,ori3);
+  double visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4,ori3);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1, fac2);
 
@@ -901,8 +918,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
   int ori= orientation(fac3);
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double dist1 = dist_norm_bord(fac1);
   double dist2 = dist_face(fac1,fac2,ori);
   double surf = surface_(fac1,fac2);
@@ -939,8 +956,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
   int ori= orientation(fac3);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double dist1 = dist_norm_bord(fac1);
   double dist2 = dist_face(fac1,fac2,ori);
   double surf = surface_(fac1,fac2);
@@ -975,8 +992,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1
   int elem1 = elem_(fac3,0);
   int elem2 = elem_(fac3,1);
   int ori= orientation(fac3);
-  double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-  double visc_turb = nu_mean_2pts(elem1,elem2);
+  double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+  double visc_turb = nu_mean_2pts(elem1,elem2,ori);
   double dist = dist_norm_bord(fac1);
   double surf = surface_(fac1,fac2);
   double poros = porosity_(fac1,fac2);
@@ -1006,8 +1023,8 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::flux_arete_symetrie_paroi(const Dou
     {
       int elem1 = elem_(fac3,0);
       int elem2 = elem_(fac3,1);
-      double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-      double visc_turb = nu_mean_2pts(elem1,elem2);
+      double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+      double visc_turb = nu_mean_2pts(elem1,elem2,ori);
       double surf =  surface_(fac1,fac2);
       double dist = dist_norm_bord(fac1);
 
@@ -1041,8 +1058,9 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_paroi(int fac1,
     {
       int elem1 = elem_(fac3,0);
       int elem2 = elem_(fac3,1);
-      double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-      double visc_turb = nu_mean_2pts(elem1,elem2);
+      int ori = orientation(fac3);
+      double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+      double visc_turb = nu_mean_2pts(elem1,elem2,ori);
       double dist = dist_norm_bord(fac1);
       double surf = surface_(fac1,fac2);
 
@@ -1070,8 +1088,8 @@ inline double Eval_Diff_VDF_Face<DERIVED_T>::secmem_arete_symetrie_paroi(int fac
       int elem1 = elem_(fac3,0);
       int elem2 = elem_(fac3,1);
       double dist = dist_norm_bord(fac1);
-      double visc_lam = nu_lam_mean_2pts(elem1,elem2);
-      double visc_turb = nu_mean_2pts(elem1,elem2);
+      double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori);
+      double visc_turb = nu_mean_2pts(elem1,elem2,ori);
       double surf = surface_(fac1,fac2);
       const DoubleTab& inco = inconnue->valeurs();
 

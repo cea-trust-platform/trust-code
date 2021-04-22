@@ -74,6 +74,8 @@ public:
   inline double nu_t_impl(int i, int compo) const { return 0.; }
   inline double tau_tan_impl(int i, int j) const { return 0.; }
   inline bool uses_wall() const { return false; }
+  inline bool uses_mod() const { return false; }
+  inline DoubleTab get_k_elem() const { return 0.; }
 
 protected:
   REF(Champ_Uniforme) diffusivite_;

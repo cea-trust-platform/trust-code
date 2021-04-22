@@ -68,6 +68,8 @@ public:
   inline double nu_lam_impl_face2(int i, int j, int compo) const { return nu_1_impl_face(i,j,compo); }
   inline double tau_tan_impl(int i, int j) const { return 0.; }
   inline bool uses_wall() const { return false; }
+  inline bool uses_mod() const { return false; }
+  inline DoubleTab get_k_elem() const { return 0.; }
 
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
