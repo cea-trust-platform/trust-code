@@ -53,6 +53,15 @@ public :
   virtual void mettre_a_jour(double temps);
   virtual int initialiser(const double& temps);
   virtual void set_param(Param& param);
+
+  //verifie que chaque inconnue "inco" est entre val_min[inco] et val_max[inco]
+  virtual int check_unknown_range() const;
+  //gamme range[inco] = { min, max} : par defaut, rien a controler
+  virtual std::map<std::string, std::array<double, 2>> unknown_range() const
+  {
+    return {};
+  }
+
 protected :
 
   static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
@@ -76,6 +85,7 @@ protected :
   double T_ref_ = -1;
   double P_ref_ = -1;
   int first_maj_ = 1;
+
 };
 
 #endif

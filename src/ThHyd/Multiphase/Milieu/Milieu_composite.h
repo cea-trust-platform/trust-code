@@ -56,6 +56,8 @@ public :
   virtual void abortTimeStep();
   virtual bool initTimeStep(double dt);
 
+  virtual int check_unknown_range() const;
+
   LIST(Fluide_base) fluides;
 
 protected :

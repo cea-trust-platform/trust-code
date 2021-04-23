@@ -61,17 +61,17 @@ double Saturation_sodium::dP_Lvap_(const double P) const
 }
 double Saturation_sodium::Hls_(const double P) const
 {
-  return HL(Tsat_Na(P), P);
+  return Hsat(P);
 }
 double Saturation_sodium::dP_Hls_(const double P) const
 {
-  return DPHL(Tsat_Na(P), P);
+  return DHsat(P);
 }
 double Saturation_sodium::Hvs_(const double P) const
 {
-  return HV(Tsat_Na(P), P);
+  return Hsat(P) + Lvap_Na(P);
 }
 double Saturation_sodium::dP_Hvs_(const double P) const
 {
-  return DPHV(Tsat_Na(P), P);
+  return DHsat(P) + DLvap_Na(P);
 }

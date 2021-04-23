@@ -36,6 +36,11 @@ class Fluide_sodium_liquide: public Fluide_reel_base
 {
   Declare_instanciable(Fluide_sodium_liquide);
 
+  virtual std::map<std::string, std::array<double, 2>> unknown_range() const
+  {
+    return { { "temperature", { 371 - 273.15, 2503.7 - 273.15 } } }; //de la temperature de solidification au pt tricritique
+  }
+
 protected :
   // densite
   virtual double     rho_(const double T, const double P) const;

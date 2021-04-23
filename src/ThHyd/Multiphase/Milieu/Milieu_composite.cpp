@@ -281,6 +281,13 @@ void Milieu_composite::associer_equation(const Equation_base *eqn) const
     fluides[i].associer_equation(eqn);
 }
 
+int Milieu_composite::check_unknown_range() const
+{
+  int ok = 1;
+  for (int i = 0; ok && i < fluides.size(); i++) ok &= fluides[i].check_unknown_range(); //chaque fluide controle
+  return ok;
+}
+
 void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Milieu_composite& mil = ref_cast(Milieu_composite, obj);

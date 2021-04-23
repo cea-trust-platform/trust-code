@@ -28,6 +28,7 @@
 #include <EChaine.h>
 #include <Zone_VF.h>
 #include <Pb_Multiphase.h>
+#include <cfloat>
 
 Implemente_base(Fluide_reel_base, "Fluide_reel_base", Fluide_base);
 
@@ -106,7 +107,7 @@ void Fluide_reel_base::mettre_a_jour(double t)
   nu.mettre_a_jour(t);
   alpha.mettre_a_jour(t);
 
-  const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression_pa().valeur();
+  const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
   const DoubleTab& temp = ch_T.valeurs(), &pres = ch_p.valeurs();
 
   int i, Ni = mu.valeurs().dimension_tot(0);
@@ -122,6 +123,20 @@ void Fluide_reel_base::mettre_a_jour(double t)
         tab_alpha(i) = tab_lambda(i) / tab_rho(i) / tab_Cp(i);
       }
   first_maj_ = 0;
+}
+
+int Fluide_reel_base::check_unknown_range() const
+{
+  int ok = 1;
+  for (auto &&i_r : unknown_range())
+    {
+      const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeurs() : equation(i_r.first).inconnue().valeurs();
+      double vmin = DBL_MAX, vmax = -DBL_MAX;
+      for (int i = 0, j = min(max(id_composite, 0), vals.dimension(1) - 1); i < vals.dimension(0); i++)
+        vmin = min(vmin, vals(i, j)), vmax = max(vmax, vals(i, j));
+      ok &= Process::mp_min(vmin) >= i_r.second[0] && Process::mp_max(vmax) <= i_r.second[1];
+    }
+  return ok;
 }
 
 void Fluide_reel_base::abortTimeStep()
@@ -150,7 +165,7 @@ void Fluide_reel_base::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
 {
   const Fluide_reel_base& fl = ref_cast(Fluide_reel_base, obj);
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression_pa().valeur();
+                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
          incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
@@ -172,7 +187,7 @@ void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
 {
   const Fluide_reel_base& fl = ref_cast(Fluide_reel_base, obj);
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression_pa().valeur();
+                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
          incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
@@ -192,7 +207,7 @@ void Fluide_reel_base::calculer_energie_interne(const Objet_U& obj, DoubleTab& v
 {
   const Fluide_reel_base& fl = ref_cast(Fluide_reel_base, obj);
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression_pa().valeur();
+                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
          incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;

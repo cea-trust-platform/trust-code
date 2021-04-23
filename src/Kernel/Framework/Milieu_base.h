@@ -110,6 +110,13 @@ public:
   virtual void associer_equation(const Equation_base* eqn) const;
   virtual const Equation_base& equation(const std::string& nom_inc) const;
 
+  //controle du domaine de validite des inconnues des equations associees au milieu
+  //par defaut renvoie 1 (OK)
+  virtual int check_unknown_range() const
+  {
+    return 1;
+  }
+
   void set_id_composite(const int i);
 
   int id_composite = -1;
