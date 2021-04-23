@@ -94,14 +94,17 @@ Entree& Champ_Fonc_Morceaux::readOn(Entree& is)
   le_domaine.creer_tableau_elements(parser_idx);
   le_domaine.creer_tableau_elements(valeurs_);
 
-  /* 3. probleme et champ variable */
+  /* 3. probleme et champ variable (optionnel) */
   is >> nom;
-  ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
-  is >> nom_champ_parametre_;
+  if (nom != "{")
+    {
+      ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
+      is >> nom_champ_parametre_;
+      is >> nom;
+    }
 
   /* 4. morceaux : ligne "defaut" */
-  is >> motlu;
-  if(motlu != Motcle("{") )
+  if(nom != "{")
     {
       Cerr << "Error while reading a " << que_suis_je() << finl;
       Cerr << "We expected a { instead of " << nom << finl;
@@ -123,7 +126,8 @@ Entree& Champ_Fonc_Morceaux::readOn(Entree& is)
       is >> tmp;
       psr.setNbVar(5);
       psr.setString(tmp);
-      psr.addVar("val"), psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
+      psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
+      if (ref_pb.non_nul()) psr.addVar("val");
       psr.parseString();
       for (poly=0; poly<le_domaine.zone(0).nb_elem_tot(); poly++) parser_idx(poly, k) = parser.size();
       parser.add(psr);
@@ -141,7 +145,8 @@ Entree& Champ_Fonc_Morceaux::readOn(Entree& is)
           is >> tmp;
           psr.setNbVar(5);
           psr.setString(tmp);
-          psr.addVar("val"), psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
+          psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
+          if (ref_pb.non_nul()) psr.addVar("val");
           psr.parseString();
           for (poly=0; poly < ssz.nb_elem_tot(); poly++) parser_idx(ssz(poly), k) = parser.size();
           parser.add(psr);
@@ -561,7 +566,7 @@ void Champ_Fonc_Morceaux::mettre_a_jour(double time)
   const IntTab& les_elems=le_domaine.zone(0).les_elems();
   const int nb_som_elem = le_domaine.zone(0).nb_som_elem();
 
-  const Champ_base& ch=ref_pb.valeur().get_champ(nom_champ_parametre_);
+  const Champ_base* ch= ref_pb.non_nul() ? &ref_pb->get_champ(nom_champ_parametre_) : NULL;
 
   DoubleTab& tab = valeurs();
 
@@ -575,7 +580,7 @@ void Champ_Fonc_Morceaux::mettre_a_jour(double time)
       for (r = 0; r < dimension; r++) xs[r] /= nb_som;
 
       /* calcul de chaque composante */
-      double val = ch.valeurs().nb_dim() > 1 ? ch.valeurs()(i, 0): ch.valeurs()(i);
+      double val = ch ? ch->valeurs()(i, 0) : 0;
       for (int k = 0; k < tab.dimension(1); k++)
         {
           Parser_U& psr = parser(parser_idx(i, k));
@@ -583,7 +588,7 @@ void Champ_Fonc_Morceaux::mettre_a_jour(double time)
           psr.setVar("y", xs[1]);
           psr.setVar("z", xs[2]);
           psr.setVar("t", time);
-          psr.setVar("val", val);
+          if (ref_pb.non_nul()) psr.setVar("val", val);
           tab(i, k) = psr.eval();
         }
     }
