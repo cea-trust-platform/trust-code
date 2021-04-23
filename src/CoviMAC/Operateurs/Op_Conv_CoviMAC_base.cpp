@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,83 +57,6 @@ Entree& Op_Conv_CoviMAC_base::readOn(Entree& s )
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
-double Op_Conv_CoviMAC_base::calculer_dt_stab() const
-{
-  return 1e8;
-  /*
-    const Zone_VDF& zone_VDF = iter.zone();
-    const Zone_Cl_VDF& zone_Cl_VDF = iter.zone_Cl();
-    const IntTab& face_voisins = zone_VDF.face_voisins();
-    const DoubleVect& volumes = zone_VDF.volumes();
-    const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
-    const DoubleVect& vit_associe = vitesse().valeurs();
-    const DoubleVect& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
-    DoubleTab fluent;
-    // fluent est initialise a zero par defaut:
-    zone_VDF.zone().creer_tableau_elements(fluent);
-
-    // Remplissage du tableau fluent
-    double psc;
-    int num1,num2,face;
-    int elem1;
-
-    // On traite les bords
-    for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
-      {
-
-        const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
-
-        if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur())
-             || sub_type(Neumann_sortie_libre,la_cl.valeur())  )
-
-          {
-            const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-            num1 = le_bord.num_premiere_face();
-            num2 = num1 + le_bord.nb_faces();
-            for (face=num1; face<num2; face++)
-              {
-                psc = vit[face]*face_surfaces(face);
-                if ( (elem1 = face_voisins(face,0)) != -1)
-                  {
-                    if (psc < 0)
-                      fluent[elem1] -= psc;
-                  }
-                else // (elem2 != -1)
-                  if (psc > 0)
-                    fluent[face_voisins(face,1)] += psc;
-              }
-          }
-      }
-
-    // Boucle sur les faces internes pour remplir fluent
-    int zone_VDF_nb_faces=zone_VDF.nb_faces();
-    int premiere_face=zone_VDF.premiere_face_int();
-    for (face=premiere_face; face<zone_VDF_nb_faces; face++)
-      {
-        psc = vit[face]*face_surfaces(face);
-        eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),fluent);
-      }
-
-    // Calcul du pas de temps de stabilite a partir du tableau fluent
-    if (vitesse().le_nom()=="rho_u")
-      diviser_par_rho_si_qc(fluent,equation().milieu());
-    double dt_stab = 1.e30;
-    int zone_VDF_nb_elem=zone_VDF.nb_elem();
-    // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
-    for (int num_poly=0; num_poly<zone_VDF_nb_elem; num_poly++)
-      {
-        double dt_elem = volumes(num_poly)/(fluent[num_poly]+DMINFLOAT);
-        if (dt_elem<dt_stab)
-          dt_stab = dt_elem;
-      }
-    dt_stab = Process::mp_min(dt_stab);
-
-    // astuce pour contourner le type const de la methode
-    Op_Conv_CoviMAC_base& op =ref_cast_non_const(Op_Conv_CoviMAC_base, *this);
-    op.fixer_dt_stab_conv(dt_stab);
-    return dt_stab;
-  */
-}
 /*
 // cf Op_Conv_CoviMAC_base::calculer_dt_stab() pour choix de calcul de dt_stab
 void Op_Conv_CoviMAC_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const

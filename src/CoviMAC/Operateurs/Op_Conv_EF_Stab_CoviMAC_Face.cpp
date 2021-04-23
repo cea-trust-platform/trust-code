@@ -96,6 +96,31 @@ void Op_Conv_EF_Stab_CoviMAC_Face::completer()
   porosite_e.ref(zone.porosite_elem());
 }
 
+double Op_Conv_EF_Stab_CoviMAC_Face::calculer_dt_stab() const
+{
+  double dt = 1e10;
+  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces();
+  const DoubleTab& vit = vitesse_->valeurs(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
+  int i, e, f, n, N = vit.line_size();
+  DoubleTrav flux(N), vol(N); //somme des flux pf * |f| * vf, volume minimal des mailles d'elements/faces affectes par ce flux
+
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+          {
+            flux(n) += pf(f) * fs(f) * dabs(vit(f, n));
+            if (fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //prise en compte de la contribution aux faces
+          }
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, vol(n) / flux(n));
+    }
+
+  return Process::mp_min(dt);
+}
+
 void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();

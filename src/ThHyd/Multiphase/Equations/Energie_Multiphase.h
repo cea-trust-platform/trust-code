@@ -84,7 +84,7 @@ public :
   static void calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_convecte() const
   {
-    return { "alpha_rho_h", calculer_alpha_rho_h };
+    return { "alpha_rho_e_conv", calculer_alpha_rho_e };
   }
 
 

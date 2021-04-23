@@ -110,6 +110,30 @@ void Op_Diff_CoviMAC_Elem::completer()
     }
 }
 
+double Op_Diff_CoviMAC_Elem::calculer_dt_stab() const
+{
+  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const IntTab& e_f = zone.elem_faces();
+  const DoubleTab& nf = zone.face_normales(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
+                    &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
+  const DoubleVect& pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  update_nu_invh();
+
+  int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
+  double dt = 1e10;
+  DoubleTrav flux(N);
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+          flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
+          dt = min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
+      if (dt < 0) abort();
+    }
+  return Process::mp_min(dt);
+}
+
 void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   update_phif(!nu_constant_); //calcul de (nf.nu.grad T) : si nu variable, stencil complet

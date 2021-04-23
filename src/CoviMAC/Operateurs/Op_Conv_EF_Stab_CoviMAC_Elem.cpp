@@ -119,6 +119,28 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::preparer_calcul()
     Cerr << "Op_Conv_EF_Stab_CoviMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
 }
 
+double Op_Conv_EF_Stab_CoviMAC_Elem::calculer_dt_stab() const
+{
+  double dt = 1e10;
+  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem();
+  const DoubleTab& vit = vitesse_->valeurs(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const IntTab& e_f = zone.elem_faces();
+  int i, e, f, n, N = vit.line_size();
+  DoubleTrav flux(N); //somme des flux pf * |f| * vf
+
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+          flux(n) += pf(f) * fs(f) * dabs(vit(f, n));
+
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, pe(e) * ve(e) / flux(n));
+    }
+
+  return Process::mp_min(dt);
+}
+
 void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();

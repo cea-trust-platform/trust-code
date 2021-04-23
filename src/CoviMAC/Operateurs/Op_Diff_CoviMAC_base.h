@@ -63,8 +63,6 @@ public:
   void associer_diffusivite(const Champ_base& );
   void completer();
 
-  //liste d'Op_Diff de problemes resolus simultanement (thermique monolithique)
-  mutable std::vector<const Op_Diff_CoviMAC_base *> op_ext;
   mutable IntTab pe_ext; // tableau aux faces de bord : (indice dans op_ext, indice d'element) pour les faces de type Echange_contact
 
   const Champ_base& diffusivite() const;

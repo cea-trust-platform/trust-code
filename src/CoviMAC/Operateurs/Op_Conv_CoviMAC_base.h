@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,6 @@ class Op_Conv_CoviMAC_base : public Operateur_Conv_base
 public:
 
   void completer();
-  double calculer_dt_stab() const;
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const;
 
   //void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;

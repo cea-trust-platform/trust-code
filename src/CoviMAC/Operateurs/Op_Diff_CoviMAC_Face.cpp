@@ -79,6 +79,33 @@ void Op_Diff_CoviMAC_Face::completer()
     }
 }
 
+double Op_Diff_CoviMAC_Face::calculer_dt_stab() const
+{
+  const Zone_CoviMAC& zone = la_zone_poly_.valeur();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur()).fcl();
+  const DoubleTab& nf = zone.face_normales(),
+                   &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(), /* poids amont/aval aux faces */
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
+                     *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL; /* produit alpha * rho */
+  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  update_nu_invh();
+
+  int i, e, f, n, N = equation().inconnue().valeurs().line_size();
+  double dt = 1e10;
+  DoubleTrav flux(N), vol(N);
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+          {
+            flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+            if (fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //cf. Op_Conv_EF_Stab_CoviMAC_Face.cpp
+          }
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
+          dt = min(dt, vol(n) * (a_r ? (*a_r)(e, n) : 1) / flux(n));
+    }
+  return Process::mp_min(dt);
+}
+
 void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());

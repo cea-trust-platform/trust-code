@@ -14,63 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Conv_EF_Stab_CoviMAC_Face.h
-// Directory:   $TRUST_ROOT/src/CoviMAC/Operateurs
-// Version:     1
+// File:        Travail_pression_CoviMAC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/CoviMAC
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Conv_EF_Stab_CoviMAC_Face_included
-#define Op_Conv_EF_Stab_CoviMAC_Face_included
+#ifndef Travail_pression_CoviMAC_included
+#define Travail_pression_CoviMAC_included
 
-#include <Op_Conv_CoviMAC_base.h>
-#include <Matrice_Morse.h>
+#include <Source_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION : class Op_Conv_EF_Stab_CoviMAC_Face
-//
-// <Description of class Op_Conv_EF_Stab_CoviMAC_Face>
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class Op_Conv_EF_Stab_CoviMAC_Face : public Op_Conv_CoviMAC_base
+// .DESCRIPTION
+//    Classe Travail_pression_CoviMAC
+//    Cette classe implemente dans CoviMAC le travail de la pression
+//    - p (d alpha_k / dt + div(alpha_k v_k) )
+//    dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
+// .SECTION voir aussi
+//    Operateur_CoviMAC_base Operateur_base
+//////////////////////////////////////////////////////////////////////////////
+class Travail_pression_CoviMAC: public Source_base
 {
-
-  Declare_instanciable( Op_Conv_EF_Stab_CoviMAC_Face ) ;
-
+  Declare_instanciable(Travail_pression_CoviMAC);
 public :
-  void completer();
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
-  double calculer_dt_stab() const;
-
-  /* interface ajouter_blocs */
   int has_interface_blocs() const
   {
     return 1;
-  };
+  }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void check_multiphase_compatibility() const {}; //of course
 
-  void check_multiphase_compatibility() const { }; //of course
-  void set_incompressible(const int flag)
-  {
-    incompressible_ = flag;
-  }
-
-protected :
-  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f, porosite_e; //pour F5
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) { };
+  void associer_pb(const Probleme_base& ) { };
+  void mettre_a_jour(double temps) { };
 };
 
-class Op_Conv_Amont_CoviMAC_Face : public Op_Conv_EF_Stab_CoviMAC_Face
-{
-  Declare_instanciable( Op_Conv_Amont_CoviMAC_Face ) ;
-};
-
-class Op_Conv_Centre_CoviMAC_Face : public Op_Conv_EF_Stab_CoviMAC_Face
-{
-  Declare_instanciable( Op_Conv_Centre_CoviMAC_Face ) ;
-};
-
-#endif /* Op_Conv_EF_Stab_CoviMAC_Face_included */
+#endif

@@ -49,6 +49,7 @@ public :
   {
     return 1;
   };
+  double calculer_dt_stab() const;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
 

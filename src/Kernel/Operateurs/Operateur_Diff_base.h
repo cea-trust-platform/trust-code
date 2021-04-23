@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,10 @@ public:
   virtual void associer_diffusivite_pour_pas_de_temps(const Champ_base&);
   virtual const Champ_base& diffusivite() const=0;
   inline virtual void calculer_borne_locale(DoubleVect& ,double,double ) const {};
+
+  //liste d'Op_Diff de problemes resolus simultanement (thermique monolithique)
+  mutable std::vector<const Operateur_Diff_base *> op_ext;
+
 protected:
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
 

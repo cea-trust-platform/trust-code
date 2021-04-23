@@ -42,6 +42,7 @@ class Op_Conv_EF_Stab_CoviMAC_Elem : public Op_Conv_CoviMAC_base
 public :
   void preparer_calcul();
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
+  double calculer_dt_stab() const;
 
   /* interface ajouter_blocs */
   int has_interface_blocs() const
@@ -57,8 +58,8 @@ public :
 
   void mettre_a_jour(double temps);
 
-protected :
   double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+protected :
 
   /* si operateur de convection de Masse_Multiphase */
   std::vector<Champ_Inc> cc_phases_; //flux massiques (kg/m2/s)
