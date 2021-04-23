@@ -50,6 +50,7 @@ public:
   {
     return 1;
   };
+  void check_multiphase_compatibility() const { };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void remplir_num_faces(Entree& );

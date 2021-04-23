@@ -30,7 +30,7 @@
 #include <Ref_Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
-#include <Ref_Fluide_Incompressible.h>
+#include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
 
 
@@ -63,7 +63,7 @@ protected:
   REF(Champ_Inc_base) la_vitesse;
   REF(Zone_CoviMAC) la_zone_CoviMAC;
   REF(Zone_Cl_CoviMAC) la_zone_Cl_CoviMAC;
-  REF(Fluide_Incompressible) le_fluide;
+  REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );

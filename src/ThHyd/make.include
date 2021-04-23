@@ -16,6 +16,10 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/ThHyd/Quasi_Compressible\
-	
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
+
 
 Lib = $(TRUST_LIB)/libthhyd

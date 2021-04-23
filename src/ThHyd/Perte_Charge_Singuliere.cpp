@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@
 #include <Schema_Temps_base.h>
 #include <Discretisation_base.h>
 #include <EChaine.h>
+#include <Pb_Multiphase.h>
 
 extern void convert_to(const char *s, double& ob);
 
@@ -186,13 +187,13 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
           Cerr << "The section specified " << direction << " is not coherent with the coefficient pressure loss direction indicated by " << dir << finl;
           Cerr << "Here the section to specify is " << sect << "." << finl;
           Process::exit();
+
         }
       is >> egal >> position;
       is >> nom_ss_zone;
       Cerr << " position " << direction << " " << position << finl;
       identifiant_ = nom_ss_zone + "_" + direction + "=" + Nom(position);
     }
-
   else if (method=="Surface")
     {
       /* Surface algorithm */
@@ -217,7 +218,6 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       Cerr << " surface " << nom_surface << finl;
       identifiant_ = nom_surface;
     }
-
   else
     {
       Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
@@ -381,19 +381,22 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
 
 double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const
 {
-  const DoubleTab& vit = eqn.inconnue().futur();
   const Zone_VF& zvf = ref_cast(Zone_VF, eqn.zone_dis().valeur());
-  const DoubleTab& rho = eqn.milieu().masse_volumique().valeurs();
+  const DoubleTab& vit = eqn.inconnue().valeurs(),
+                   &fac = sub_type(Pb_Multiphase, eqn.probleme()) ? ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.champ_conserve().passe()
+                          : eqn.milieu().masse_volumique().valeurs();
+  const DoubleVect& pf = zvf.porosite_face(), &fs = zvf.face_surfaces();
+  const IntTab& f_e = zvf.face_voisins();
+  int cF = fac.dimension_tot(0) == 1, i, n, N = fac.line_size(), d, D = Objet_U::dimension;
 
   DoubleTrav deb_vect;
   zvf.creer_tableau_faces(deb_vect); //pour bien sommer les debits en parallele
-  for (int i = 0; i < num_faces.size(); i++)
+  for (i = 0; i < num_faces.size(); i++)
     {
-      int f = num_faces(i), sgn_loc = sgn.size() ? sgn(i) : 1;
-      if (vit.nb_dim() == 2) for (int j = 0; j < vit.dimension(1); j++) deb_vect(f) += sgn_loc * zvf.face_normales(f, j) * vit(f, j);
-      else deb_vect(f) = zvf.face_surfaces(f) * sgn_loc * vit(f);
-      //on passe du produit "vitesse normale * surface" au debit a travers la face (signe si l'orientation est definie, non signe sinon)
-      deb_vect(f) = zvf.porosite_face(f) * (sgn.size() ? deb_vect(f) : dabs(deb_vect(f))) * rho.addr()[rho.dimension(0) > 1 ? zvf.face_voisins(f, deb_vect(f) > 0) : 0];
+      int f = num_faces(i), e = f_e(f, f_e(f, 0) < 0); //todo : evaluer fac du bon cote
+      if (vit.line_size() > N) for (d = 0; d < D; d++) for (n = 0; n < N; n++) deb_vect(f) += zvf.face_normales(f, d) * vit(f, N * d + n) * fac(!cF * e, n); //vecteur complet : v . nf
+      else for (n = 0; n < N; n++) deb_vect(f) += fs(f) * vit(f, n) * fac(!cF * e, n); //normale aux faces seule
+      deb_vect(f) *= pf(f) * (sgn.size() ? sgn(i) : deb_vect(f) > 0 ? 1 : -1) ; //produit par la porosite + orientation (si elle n'est pas definie, on compte tout en positif)
     }
   return mp_somme_vect(deb_vect);
 }
