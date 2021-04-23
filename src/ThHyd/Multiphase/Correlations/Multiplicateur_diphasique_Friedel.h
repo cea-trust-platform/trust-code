@@ -14,44 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique_base.h
+// File:        Multiplicateur_diphasique_Friedel.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Multiplicateur_diphasique_base_included
-#define Multiplicateur_diphasique_base_included
-#include <DoubleTab.h>
-#include <Correlation_base.h>
+#ifndef Multiplicateur_diphasique_Friedel_included
+#define Multiplicateur_diphasique_Friedel_included
+#include <Multiplicateur_diphasique_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Multiplicateur_diphasique_base
-//      correlations de multiplicateurs diphasiques de la forme
-//      F_{kp} = - C_{kp} F_{p, k seul} - C'_{kp} F_{p,melange}
-//    entrees :
-//      alpha : taux de presence
-//      rho   : masses volumique
-//        v   : vitesses (pour calcul du titre)
-//        f   : facteurs de Darcy qu'aurait l'ecoulement si tout le debit etait dans la phase k
-//       mu   : viscosites cinematiques
-//       Dh   : diametre hydraulique
-//    gamma   : tension superficielle
-//      F_k   : F_{p, k seul}
-//      F_m   : F_{p, melange}
-//    sortie :
-//        coeff(k, 0/1) -> coefficients C_{kp} et C'_{kp}
+//    classe Multiplicateur_diphasique_Friedel
+//    multiplicateur diphasique par la correlation de Friedel :
+//    - applique a la phase liquide pour alpha < alpha_min
+//    - applique a la phase vapeur pour alpha > alpha_max
 //////////////////////////////////////////////////////////////////////////////
 
-class Multiplicateur_diphasique_base : public Correlation_base
+class Multiplicateur_diphasique_Friedel : public Multiplicateur_diphasique_base
 {
-  Declare_base(Multiplicateur_diphasique_base);
+  Declare_instanciable(Multiplicateur_diphasique_Friedel);
 public:
   virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
                            const double *mu, const double Dh, const double gamma, const double *Fk,
-                           const double Fm, DoubleTab& coeff) const  = 0;
+                           const double Fm, DoubleTab& coeff) const;
+protected:
+  double alpha_min_ = 0.95, alpha_max_ = 0.99;
+  int n_l = -1, n_g = -1; //indices des phases frottantes : liquide, gaz
 };
 
 #endif

@@ -28,22 +28,21 @@
 //
 // .DESCRIPTION
 //    classe Multiplicateur_diphasique_Lottes_Flinn
-//      coefficients de frottement interfacial d'un ecoulement a Lottes_Flinn
-//      la phase 0 (liquide) est la seule a frotter jusqu'a alpha_min
-//      puis bascule vers la phase gaz sur [alpha_min, alpha_max]
-//      a partir de alpha_max, seule
+//      correlation de multiplicateur diphasique de Lottes-Flinn :
+//        alpha < alpha_min -> seule la phase liquide frotte avec phi = 1 / (1-alpha)^2
+//        alpha > alpha_max -> seule la vapeur frotte
 //      parametres :
 //       - alpha_min -> debut de la transition
-//       - alpha_fin -> debut de la transition
+//       - alpha_fin -> fin de la transition
 //////////////////////////////////////////////////////////////////////////////
 
 class Multiplicateur_diphasique_Lottes_Flinn : public Multiplicateur_diphasique_base
 {
   Declare_instanciable(Multiplicateur_diphasique_Lottes_Flinn);
 public:
-  void completer();
-  virtual void coefficient(const double *alpha, const DoubleTab& Fk, double Fm,
-                           DoubleTab& coeff) const;
+  virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
+                           const double *mu, const double Dh, const double gamma, const double *Fk,
+                           const double Fm, DoubleTab& coeff) const;
 protected:
   double alpha_min_, alpha_max_;
   int n_l, n_g; //indices des phases frottantes : liquide, gaz

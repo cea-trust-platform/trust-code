@@ -14,25 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique_Lottes_Flinn.cpp
+// File:        Multiplicateur_diphasique_Friedel.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Multiplicateur_diphasique_Lottes_Flinn.h>
+#include <Multiplicateur_diphasique_Friedel.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Multiplicateur_diphasique_Lottes_Flinn, "Multiplicateur_diphasique_Lottes_Flinn", Multiplicateur_diphasique_base);
+Implemente_instanciable(Multiplicateur_diphasique_Friedel, "Multiplicateur_diphasique_Friedel", Multiplicateur_diphasique_base);
 
-Sortie& Multiplicateur_diphasique_Lottes_Flinn::printOn(Sortie& os) const
+Sortie& Multiplicateur_diphasique_Friedel::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Multiplicateur_diphasique_Lottes_Flinn::readOn(Entree& is)
+Entree& Multiplicateur_diphasique_Friedel::readOn(Entree& is)
 {
-  alpha_min_ = 0.9, alpha_max_ = 0.95, n_l = -1, n_g = -1;
   Param param(que_suis_je());
   param.ajouter("alpha_min", &alpha_min_);
   param.ajouter("alpha_max", &alpha_max_);
@@ -50,14 +49,21 @@ Entree& Multiplicateur_diphasique_Lottes_Flinn::readOn(Entree& is)
   return is;
 }
 
-void Multiplicateur_diphasique_Lottes_Flinn::coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                                                         const double *mu, const double Dh, const double gamma, const double *Fk,
-                                                         const double Fm, DoubleTab& coeff) const
+void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const double *rho, const double *v, const double *f,
+                                                    const double *mu, const double Dh, const double gamma, const double *Fk,
+                                                    const double Fm, DoubleTab& coeff) const
 {
-  double a_tot = alpha[n_l] + (n_g >= 0 ? alpha[n_g] : 0), a_l = alpha[n_l] / a_tot, a_g = n_g >= 0 ? alpha[n_g] / a_tot : 0,
-         a_m = alpha_min_, b_m = 1 - a_m, a_M = alpha_max_, b_M = 1 - a_M;
-
+  double G = alpha[n_l] * rho[n_l] * dabs(v[n_l]) + alpha[n_g] * rho[n_g] * dabs(v[n_g]), //debit total
+         x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
+         E = (1 - x) * (1 - x) + x * x * (rho[n_l] * f[n_g] / rho[n_g] * f[n_l]),
+         F = std::pow(x, 0.78) * std::pow(1 - x, 0.224),
+         H = std::pow(rho[n_l] / rho[n_g], 0.91) * std::pow(mu[n_l] / mu[n_g], 0.19) * std::pow(1 - mu[n_g] / mu[n_l], 0.7),
+         rho_m = alpha[n_l] * rho[n_l] + alpha[n_g] * rho[n_g], //masse volumlque du melange
+         Fr = G * G / (9.81 * Dh * rho_m), We = G * G * Dh / (gamma * rho_m), //Froude, Weber,
+         Phi2 = E + 3.24 * F * H * std::pow(Fr, -0.045) * std::pow(We, -0.035), //le multiplicateur!
+         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), //fraction appliquee a la vapeur
+         frac_l = 1 - frac_g; //fraction appliquee au liquide
   coeff = 0;
-  coeff(n_l, 0) = a_l < b_m ? max(a_l - b_M, 0.) / (b_m * b_m) : 1. / (a_l * a_l);
-  if (n_g >= 0) coeff(n_g, 0) = min(max((a_g - a_m) / (a_M - a_m), 0.), 1.);
+  coeff(n_l, 1) = frac_l * Phi2;
+  coeff(n_g, 1) = frac_g * Phi2; //transition vers le frottement monophasique vapeur
 }
