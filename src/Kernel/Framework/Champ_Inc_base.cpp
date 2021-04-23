@@ -507,6 +507,9 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
               //Inutile:
               //valeurs().echange_espace_virtuel();
               if (fonc_calc_) fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
+              /* premier calcul d'un Champ_Fonc_Calc -> on copie les valeurs calculees dans toutes les cases */
+              if (fonc_calc_ && !fonc_calc_init_) for (int j = 1; j < les_valeurs->nb_cases(); j++, fonc_calc_init_ = 1)
+                  les_valeurs[j].valeurs() = valeurs();
               return;
             }
         }
@@ -1143,8 +1146,6 @@ void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)
 {
   obj_calc_ = obj, fonc_calc_ = fonc;
   val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
-  fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
-  for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs(); /* copie dans toutes les cases */
 }
 
 

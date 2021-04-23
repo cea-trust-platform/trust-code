@@ -112,6 +112,9 @@ Champ_base& Champ_Face_CoviMAC::affecter_(const Champ_base& ch)
   for (f = 0; f < zone.nb_faces_tot(); f++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
         val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
   update_ve(val);
+  //copie dans toutes les cases
+  valeurs().echange_espace_virtuel();
+  for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
   return *this;
 }
 

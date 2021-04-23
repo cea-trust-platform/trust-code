@@ -167,7 +167,8 @@ protected:
   REF(Zone_Cl_dis) ma_zone_cl_dis;
 
   /* pour les champs dependant d'autres Champ_Inc */
-  fonc_calc_t fonc_calc_; //fonction de calcul
+  fonc_calc_t fonc_calc_;  //fonction de calcul
+  int fonc_calc_init_ = 0; //1 une fois qu'on a calcule le champ au moins une fois
   REF(Objet_U) obj_calc_; //un objet a passer en argument
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
