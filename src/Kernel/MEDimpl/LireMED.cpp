@@ -213,20 +213,14 @@ void test_version(Nom& nom)
 {
   // on regarde si le fichier est d'une version differente, si oui
   // on cree un fichier au format MED majeur courant, et on change le nom du fichier
-  med_int majeur,mineur,release;
-  med_idt fid;   // NOT THE SAME AS med_int!!!!
-  fid = MEDfileOpen(nom,MED_ACC_RDONLY);
-  if (fid<0)
+  med_bool med_ok, hdf_ok;
+  if (MEDfileCompatibility(nom, &med_ok, &hdf_ok))
     {
       Cerr<<"Problem when trying to open the file "<<nom<<finl;
       Process::exit();
     }
-  MEDfileNumVersionRd(fid,&majeur,&mineur,&release);
-  MEDfileClose(fid);
-  if (majeur == MED_MAJOR_NUM)  // defined in med.h
-    {
-      return ;
-    }
+
+  if (hdf_ok && med_ok) return; //pas besoin de convertir
 
   // On serialise pour eviter que le fichier soit cree plusieurs fois en //
 
@@ -1301,10 +1295,10 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   Cerr << "Trying to read the domain " << nom_dom << " into the file " << nom_fic << " in order to affect to domain "
        << nom_dom_trio << "..." << finl;
   Elem_geom type_ele;
-  Cerr << "-> Using MEDCoupling API... If it fails, please contact Trust support and give a try to the MEDFile API with Lire_MEDFile keyword." << finl;
 #ifdef MEDCOUPLING_
   if (use_medcoupling_)
     {
+      Cerr << "-> Using MEDCoupling API... If it fails, please contact Trust support and give a try to the MEDFile API with Lire_MEDFile keyword." << finl;
       // MEDCoupling
       std::string fileName = nom_fic.getString();
       std::string meshName = nom_dom.getString();
