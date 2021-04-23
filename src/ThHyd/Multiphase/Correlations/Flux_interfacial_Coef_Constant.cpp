@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Flux_interfacial_Coef_Constant.h>
+#include <Pb_Multiphase.h>
+
 Implemente_instanciable(Flux_interfacial_Coef_Constant, "Flux_interfacial_Coef_Constant", Flux_interfacial_base);
 
 Sortie& Flux_interfacial_Coef_Constant::printOn(Sortie& os) const
@@ -30,10 +32,12 @@ Sortie& Flux_interfacial_Coef_Constant::printOn(Sortie& os) const
 
 Entree& Flux_interfacial_Coef_Constant::readOn(Entree& is)
 {
-  hl = 1e4, hv = 1e3;
   Param param(que_suis_je());
-  param.ajouter("hl", &hl);
-  param.ajouter("hv", &hv);
+  //un parametre par phase du probleme
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
+  h_phase.resize(pbm.nb_phases());
+  for (int n = 0; n < pbm.nb_phases(); n++)
+    param.ajouter(pbm.nom_phase(n), &h_phase(n), Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   return is;
 }

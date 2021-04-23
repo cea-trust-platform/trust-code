@@ -31,7 +31,6 @@ class Correlation_base : public Objet_U
 public:
   virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
   void associer_pb(const Probleme_base& pb);
-  virtual void completer() { }; // par defaut ne fait rien
 
 protected:
   REF(Probleme_base) pb_;

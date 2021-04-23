@@ -37,12 +37,7 @@ Entree& Multiplicateur_diphasique_Lottes_Flinn::readOn(Entree& is)
   param.ajouter("alpha_min", &alpha_min_);
   param.ajouter("alpha_max", &alpha_max_);
   param.lire_avec_accolades_depuis(is);
-  return is;
-}
 
-void Multiplicateur_diphasique_Lottes_Flinn::completer()
-{
-  if (!pb_.non_nul()) Process::exit(que_suis_je() + " : associer_pb not called!");
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
 
   if (!pbm || pbm->nb_phases() == 1) n_l = 0, n_g = -1; //pas un Pb_Multiphase -> monophasique liquide
@@ -51,6 +46,8 @@ void Multiplicateur_diphasique_Lottes_Flinn::completer()
       else if (pbm->nom_phase(n).debute_par("gaz") && (n_g < 0 || pbm->nom_phase(n).finit_par("continu"))) n_g = n;
 
   if (n_l < 0) Process::exit(que_suis_je() + " : main phase not found!");
+
+  return is;
 }
 
 void Multiplicateur_diphasique_Lottes_Flinn::coefficient(const double *alpha, const DoubleTab& Fk, double Fm, DoubleTab& coeff) const

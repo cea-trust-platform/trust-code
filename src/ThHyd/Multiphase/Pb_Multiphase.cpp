@@ -90,31 +90,20 @@ Entree& Pb_Multiphase::lire_equations(Entree& is)
 
 Entree& Pb_Multiphase::lire_correlations(Entree& is)
 {
-  // en majuscule car on va utiliser des Motcle pour eviter les soucis de casse
-  std::set<std::string> authorized_correlations = {"FLUX_PARIETAL", "FLUX_INTERFACIAL", "MULTIPLICATEUR_DIPHASIQUE", "FROTTEMENT_INTERFACIAL"};
   Motcle mot;
   is >> mot;
   if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
 
-  for (is >> mot; mot != "}"; is >> mot) if (authorized_correlations.count(mot.getString()))
+  for (is >> mot; mot != "}"; is >> mot) if (!correlations.count(mot.getString()))
       {
         Correlation c;
-        c.set_type_prefix(mot);
-        is >> c;
-        c.associer_pb(*this);
+        c.typer_lire(*this, mot, is);
         correlations[mot.getString()] = c;
       }
-    else Cerr << "correlations : " << mot << " unknown!" << finl, Process::exit();
+    else Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
 
   return is;
 }
-
-void Pb_Multiphase::completer()
-{
-  for (auto &&kv : correlations) kv.second.valeur().completer();
-  return Pb_qdm_fluide::completer();
-}
-
 
 void Pb_Multiphase::discretiser(const Discretisation_base& disc)
 {

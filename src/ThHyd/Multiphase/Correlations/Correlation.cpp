@@ -25,29 +25,25 @@
 Implemente_deriv(Correlation_base);
 Implemente_instanciable(Correlation,"Correlation0",DERIV(Correlation_base));
 
+
+Entree& Correlation::readOn(Entree& is)
+{
+  return DERIV(Correlation_base)::readOn(is);
+}
+
 Sortie& Correlation::printOn(Sortie& os) const
 {
   return DERIV(Correlation_base)::printOn(os);
 }
 
-void Correlation::set_type_prefix(const Nom& nom)
+void Correlation::typer_lire(const Probleme_base& pb, const Nom& type, Entree& is)
 {
-  type_prefix_ = nom;
-}
-
-Entree& Correlation::readOn(Entree& is)
-{
-  /* le premier mot sert a typer la correlation*/
+  /* on lit le nom de la correlation : si "type" est renseigne, alors */
   Nom nom;
   is >> nom;
-  DERIV(Correlation_base)::typer(type_prefix_ != "??" ? type_prefix_ + "_" + nom : nom);
-  /* le reste lui est passe en parametre */
-  return valeur().lire(is);
-}
-
-void Correlation::associer_pb(const Probleme_base& pb)
-{
+  DERIV(Correlation_base)::typer(type != "??" ? type + "_" + nom : nom);
   valeur().associer_pb(pb);
+  valeur().lire(is);
 }
 
 Declare_ref(Correlation_base);

@@ -56,7 +56,7 @@ public:
   virtual void flux(const double al, const double ag, const double Tl, const double Tg, const double Ti, const double dP_Ti,
                     double& Fl, double& Fg, double& dal_fl, double& dag_fl, double& dal_fg, double& dag_fg, double& dTl_Fl, double& dTg_Fg, double& dP_Fl, double& dP_Fg) const;
 protected:
-  double hl, hv;
+  DoubleTab h_phase;
 };
 
 #endif

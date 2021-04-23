@@ -46,11 +46,7 @@ class Correlation : public DERIV(Correlation_base)
   Declare_instanciable(Correlation);
 
 public:
-  void set_type_prefix(const Nom &nom); //determine le type de correlation que l'on va creer lors du readOn
-  void associer_pb(const Probleme_base& pb);
-
-private:
-  Nom type_prefix_;
+  void typer_lire(const Probleme_base &pb, const Nom& type, Entree& is);
 };
 
 #endif

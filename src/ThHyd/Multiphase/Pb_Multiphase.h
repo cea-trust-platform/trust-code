@@ -65,7 +65,6 @@ public:
   int verifier();
   virtual Entree& lire_equations(Entree& is);
   virtual Entree& lire_correlations(Entree& is);
-  virtual void completer();
 
   /* nombre de phases du probleme */
   int nb_phases() const
