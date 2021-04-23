@@ -30,31 +30,30 @@
 // .DESCRIPTION
 //    classe Flux_interfacial_base
 //      correlations de flux de chaleur interfacial de la forme
-//      Phi_k = F(alpha_l, T_l, p, Ti, v_l, D_h, D_h)
+//      Phi_{kl} = h_{kl}(T_k - T_l)
 //      cette classe definit une fonction flux avec :
 //    entrees :
-//        N : nombre de phases
 //        D_h       -> diametre hyd
 //        alpha[n]  -> taux de presence de la phase n
 //        T[n]      -> temperature de la phase n
 //        p         -> pression
-//        v[n]      -> norme de la vitesse de la phase n
-//        Ti        -> temperature de l'interface
-//        lambda[n], mu[n], rho[n], rho_Cp[n] -> diverses proprietes physiques de la phase n
+//        nv[n]     -> norme de la vitesse de la phase n
+//        lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
 //
 //    sorties :
-//        F[n]           -> flux de chaleur vers la phase n
-//       dFa[N * n + m]  -> derivee par rapport a alpha_m
-//       dFp[n]          -> derivee par rapport a p
-//       dFtf[N * n + m] -> derivee par rapport a T[m]
+//       hi(k, l)    -> coeff d'echange entre la phase k et l'interface avec la phase l (hi(l, k) != hi(k, l) !)
+//    dT_hi(k, l, n) -> derivee de hi(k, l) en T[n]
+//    da_hi(k, l, n) -> derivee de hi(k, l) en a[n]
+//    dp_hi(k, l)    -> derivee de hi(k, l) en p
 //////////////////////////////////////////////////////////////////////////////
 
 class Flux_interfacial_base : public Correlation_base
 {
   Declare_base(Flux_interfacial_base);
 public:
-  virtual void flux(const double al, const double ag, const double Tl, const double Tg, const double Ti, const double dP_Ti,
-                    double& Fl, double& Fg, double& dal_fl, double& dag_fl, double& dal_fg, double& dag_fg, double& dTl_Fl, double& dTg_Fg, double& dP_Fl, double& dP_Fg) const = 0;
+  virtual void coeffs(const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+                      const double *lambda, const double *mu, const double *rho, const double *Cp,
+                      DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const = 0;
 };
 
 #endif

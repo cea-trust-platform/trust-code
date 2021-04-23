@@ -48,33 +48,11 @@ public :
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   void check_multiphase_compatibility() const {}; //of course
 
-  // DoubleTab& ajouter(DoubleTab& sec) const
-  // {
-  //   abort();
-  //   return sec;
-  // }
-  // DoubleTab& calculer(DoubleTab& sec) const
-  // {
-  //   abort();
-  //   return sec;
-  // }
-
-  DoubleTab& ajouter(DoubleTab& secmem) const
-  {
-    ajouter_blocs({}, secmem, {});
-    return secmem;
-  }
-
-  DoubleTab& calculer(DoubleTab& secmem) const
-  {
-    secmem = 0;
-    return ajouter(secmem);
-  }
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) { };
   void associer_pb(const Probleme_base& ) { };
   void mettre_a_jour(double temps) { };
 private:
-  REF(Correlation) correlation_; //correlation donnant le coeff de frottement interfacial
+  REF(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
 };
 
 #endif

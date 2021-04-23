@@ -47,29 +47,33 @@ Entree& Flux_interfacial_CoviMAC::readOn(Entree& is)
 void Flux_interfacial_CoviMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, equation().inconnue().valeur());
-  if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
 
-  /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  int ne_tot = zone.nb_elem_tot(), N = inco.line_size(), Np = ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size();;
-
-  /* elements */
-  for (std::string var :
-       { "temperature", "alpha", "pression"
-       }) if (matrices.count(var))
+  /* on doit pouvoir ajouter / soustraire les equations entre composantes */
+  int i, j, e, n, N = inco.line_size();
+  if (N == 1) return;
+  std::set<int> idx;
+  for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
       {
-        Matrice_Morse& mat = *matrices[var], mat2;
-        IntTrav stencil(0, 2);
-        stencil.set_smart_resize(1);
-        int M = var == "pression" ? Np : N;
-
-        for (int e = 0; e < zone.nb_elem(); e++) for (int k = 0; k < N; k++) for (int l = 0; l < M; l++)
-              stencil.append_line(N * e + k, M * e + l);
-
-        Matrix_tools::allocate_morse_matrix(N * ne_tot, M * ne_tot, stencil, mat2);
+        Matrice_Morse& mat = *n_m.second, mat2;
+        const DoubleTab& dep = equation().probleme().get_champ(n_m.first.c_str()).valeurs();
+        int m, nc = dep.dimension_tot(0), M = dep.line_size();
+        IntTrav sten(0, 2);
+        sten.set_smart_resize(1);
+        if (n_m.first == "temperature" || n_m.first == "pression") /* temperature/pression: dependance locale */
+          for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) for (m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
+        else if (mat.nb_colonnes()) for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
+            {
+              for (idx.clear(), n = 0, i = N * e; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+                  idx.insert(mat.get_tab2()(j) - 1); //idx : ensemble des colonnes dont depend au moins une ligne des N composantes en e
+              for (n = 0, i = N * e; n < N; n++, i++) for (auto &&x : idx) sten.append_line(i, x); //ajout de cette depedance a toutes les lignes
+            }
+        else continue;
+        Matrix_tools::allocate_morse_matrix(N * zone.nb_elem_tot(), M * nc, sten, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
       }
+
 }
 
 void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
@@ -81,110 +85,146 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
-  const DoubleTab& inco = ch.valeurs(),
-                   &alpha = pbm.eq_masse.inconnue().valeurs(),
-                    &press = pbm.eq_qdm.pression().valeurs(),
-                     &temp  = pbm.eq_energie.inconnue().valeurs(),
-                      &h = milc.enthalpie().valeurs(),
-                       *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL,
-                        *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL;
-  Matrice_Morse *Ma = matrices.count("alpha")       ? matrices.at("alpha")       : NULL,
-                 *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
-                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL;
-  int N = inco.line_size();
+  const Champ_Inc_base& ch_alpha = pbm.eq_masse.inconnue().valeur(), &ch_a_r = pbm.eq_masse.champ_conserve(), &ch_vit = pbm.eq_qdm.inconnue().valeur(),
+                        &ch_temp = pbm.eq_energie.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur();
+  const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
+                   &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
+                    &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
+                     &p_ar = ch_a_r.passe();
+  Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
+                 *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
+                  *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL;
+  int i, j, c, e, d, D = dimension, k, l, n, N = inco.line_size(), nf_tot = zone.nb_faces_tot(),
+                     cL = lambda.dimension_tot(0) == 1, cM = mu.dimension_tot(0) == 1, cR = rho.dimension_tot(0) == 1, cCp = Cp.dimension_tot(0) == 1;
   const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur().valeur());
+  double dt = equation().schema_temps().pas_de_temps();
+
+  /* limiteur de changement de phase : on limite gamma pour eviter d'avoir alpha_k < 0 dans une phase */
+  /* pour cela, on assemble l'equation de masse sans changement de phase */
+  DoubleTrav sec_m(alpha); //residus
+  std::map<std::string, Matrice_Morse> mat_m_stockees;
+  matrices_t mat_m; //derivees
+  for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
+      {
+        Matrice_Morse& dst = mat_m_stockees[n_m.first], &src = *n_m.second;
+        dst.get_set_tab1().ref_array(src.get_set_tab1()); // memes stencils que celui de l'equation courante
+        dst.get_set_tab2().ref_array(src.get_set_tab2());
+        dst.set_nb_columns(src.nb_colonnes());
+        dst.get_set_coeff().resize(src.get_set_coeff().size()); //coeffs nuls
+        mat_m[n_m.first] = &dst;
+      }
+  const Masse_Multiphase& eq_m = pbm.eq_masse;
+  for (i = 0; i < eq_m.nombre_d_operateurs(); i++) /* tous les operateurs */
+    eq_m.operateur(i).l_op_base().ajouter_blocs(mat_m, sec_m, semi_impl);
+  for (i = 0; i < eq_m.sources().size(); i++) if (!sub_type(Flux_interfacial_CoviMAC, eq_m.sources()(i).valeur())) /* toutes les sources sauf le flux interfacial */
+      eq_m.sources()(i).valeur().ajouter_blocs(mat_m, sec_m, semi_impl);
+  std::vector<std::array<Matrice_Morse *, 2>> vec_m; //vecteur "matrice source, matrice de destination"
+  for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos && mat_m[n_m.first]->get_tab1().size() > 1) vec_m.push_back({{ mat_m[n_m.first], n_m.second }});
 
   /* elements */
-  for (int e = 0; e < zone.nb_elem(); e++)
-    for (int n = 0; n < N; n++) for (int k = n + 1; k < N; k++)
-        if (milc.has_saturation(n, k))
-          {
-            int l, g; // indices liquide et gaz
-            if (pbm.nom_phase(n).debute_par("liquide")) l = n, g = k;
-            else                                        l = k, g = n;
+  //coefficients et plein de derivees...
+  DoubleTrav hi(N, N), dT_hi(N, N, N), da_hi(N, N, N), dP_hi(N, N), dT_phi(N), da_phi(N), dT_G(N), da_G(N), nv(N), dT_X(N), dT_A(N), da_X(N), da_A(N);
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      double vol = pe(e) * ve(e), x, dv_min = 0.1; //prefacteur de tout
+      for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) nv(n) += std::pow(pvit(nf_tot + D * e + d, n), 2);
+      for (n = 0; n < N; n++) nv(n) = max(sqrt(nv(n)), dv_min);
+      //coeffs d'echange vers l'interface (explicites)
+      correlation_fi.coeffs(zone.diametre_hydraulique_elem()(e, 0), &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0),
+                            &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), hi, dT_hi, da_hi, dP_hi);
 
-            const double p = press[e], Tl = temp(e, l), Tg = temp(e, g),
-                         Ts = milc.get_saturation(l, g).Tsat(p), dP_Ts = milc.get_saturation(l, g).dP_Tsat(p),
-                         hls = milc.get_saturation(l, g).Hls(p), hgs = milc.get_saturation(l, g).Hvs(p),
-                         dP_hls = milc.get_saturation(l, g).dP_Hls(p), dP_hgs = milc.get_saturation(l, g).dP_Hvs(p),
-                         al = alpha(e, l), ag = alpha(e, g), hl = h(e, l),
-                         hg = h(e, g), dP_hl = dP_h ? (*dP_h)(e, l) : 0, dP_hg = dP_h ? (*dP_h)(e, g) : 0,
-                         dT_hl = dT_h ? (*dT_h)(e, l) : 0, dT_hg = dT_h ? (*dT_h)(e, g) : 0;
+      for (k = 0; k < N; k++) for (l = k + 1; l < N; l++) if (milc.has_saturation(k, l)) //flux phase k <-> phase l si saturation
+            {
+              Saturation_base& sat = milc.get_saturation(k, l);
+              /* flux vers l'interface (Phi), enthalpie du fluide entrant / sortant de l'interface selon phi, chaleur latente (L), transfert de masse k->l (G) */
+              double Tk = temp(e, k), Tl = temp(e, l), p = press(e, 0), Ts = sat.Tsat(p), dP_Ts = sat.dP_Tsat(p), //temperature de chaque cote + Tsat + derivees
+                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts),
+                     dP_phi = dP_hi(k, l) * (Tk - Ts) + dP_hi(l, k) * (Tl - Ts) - (hi(k, l) + hi(l, k)) * dP_Ts,
+                     hk = phi > 0 ? h(e, k) : sat.Hls(p), dTk_hk = phi > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = phi > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : sat.dP_Hls(p),
+                       hl = phi < 0 ? h(e, l) : sat.Hvs(p), dTl_hl = phi < 0 && dT_h ? (*dT_h)(e, l) : 0, dP_hl = phi < 0 ? (dP_h ? (*dP_h)(e, l) : 0) : sat.dP_Hvs(p),
+                       L = hl - hk, dTk_L = -dTk_hk, dTl_L = dTl_hl, dP_L = dP_hl - dP_hk,
+                       G = phi / L, dP_G = (dP_phi - G * dP_L) / L;
+              for (n = 0; n < N; n++) dT_phi(n) = hi(k, l) * (n == k) + dT_hi(k, l, n) * (Tk - Ts) + hi(l, k) * (n == l) + dT_hi(l, k, n) * (Tl - Ts);
+              for (n = 0; n < N; n++) dT_G(n) = (dT_phi(n) - G * ((n == k) * dTk_L + (n == l) * dTl_L)) / L;
+              for (n = 0; n < N; n++) da_phi(n) = da_hi(k, l, n) * (Tk - Ts) + da_hi(l, k, n) * (Tl - Ts), da_G(n) = da_phi(n) / L;
 
-            const bool vap = (Tl > Ts) && (al > 0), cond = (Tg < Ts) && ag > 0;
+              /* G est-il limite par l'evanescence cote k ou l ? */
+              int n_lim = G > 0 ? k : l; //phase sortante
+              double Glim = sec_m(e, n_lim) / vol + p_ar(e, n_lim) / dt; //changement de phase max acceptable par cette phase
+              if (dabs(G) < Glim) n_lim = -2;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
+              else if (Glim < 0) G = 0, n_lim = -1; //la phase serait evanescente meme sans G -> on le met a 0 (n_lim = -1)
+              else G = (G > 0 ? 1 : -1) * Glim;//la phase serait evanescente a cause de G -> on le bloque a G_lim (n_lim = k / l)
 
-            /* calcul du flux */
-            if (vap || cond)
+              if (L < 0) continue;
+
+              if (n_lim == -2) //pas de limitation : Ti = Tsat, G tel que calcule ci-dessus
               {
-                double fl = 0, fg = 0, dal_fl = 0, dag_fl = 0, dal_fg = 0, dag_fg = 0, dTl_fl = 0, dTg_fg = 0, dP_fl = 0, dP_fg = 0, dTl_fg = 0, dTg_fl = 0;
-                correlation_fi.flux(al, ag, Tl, Tg, Ts, dP_Ts, fl, fg, dal_fl, dag_fl, dal_fg, dag_fg, dTl_fl, dTg_fg, dP_fl, dP_fg);
+                  if (sub_type(Masse_Multiphase, equation())) //eq de masse -> changement de phase
+                    {
+                      for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * G;
+                      if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++)  //derivees en alpha
+                            (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * da_G(n);
+                      if (Mt) for (i = 0; i < 2; i++) for (n = 0; n < N; n++)  //derivees en T
+                            (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * dT_G(n);
+                      if (Mp) for (i = 0; i < 2; i++) //derivees en p
+                          (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * dP_G;
+                    }
+                  else if (sub_type(Energie_Multiphase, equation())) //eq d'energie -> flux interfacial + transport par gamma
+                    {
+                      for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (hi(k, l) * (Tk - Ts) + G * hk);
+                      if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en alpha
+                            (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (da_hi(k, l, n) * (Tk - Ts) + da_G(n) * hk);
+                      if (Mt) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en T
+                            (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (dT_hi(k, l, n) * (Tk - Ts) + hi(k, l) * (n == k) + dT_G(n) * hk + G * dTk_hk * (n == k));
+                      if (Mp) for (i = 0; i < 2; i++) //derivees en p
+                          (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (dP_hi(k, l) * (Tk - Ts) - hi(k, l) * dP_Ts + dP_G * hk + G * dP_hk);
+                    }
+                  else abort();
+                }
+              else if (n_lim >= 0) //regime limite : rien a faire si G fixe a 0, complexe sinon
+                {
+                  int sgn = n_lim == l ? -1 : 1; //signe a appliquer si on est limite par la phase l plutot que par la phase k
+                  if (sub_type(Masse_Multiphase, equation())) //eq de masse -> changement de phase
+                    {
+                      for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * G;
+                      for (auto &s_d : vec_m) for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
+                          for (c = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
+                            (*s_d[1])(N * e + (i ? l : k), c) += (i ? -1 : 1) * sgn * x;
+                    }
+                  else if (sub_type(Energie_Multiphase, equation())) //eq d'energie -> transfert de chaleur avec Ti != Tsat + transport par gamma
+                    {
+                      /* flux sortant de la phase k : hi(k, l) * (Tk - Ts) + hk * G = G * A, avec A = X / phi un facteur multiplicatif */
+                      double X = hl * hi(k, l) * (Tk - Ts) + hk * hi(l, k) * (Tl - Ts),
+                             dP_X = hi(k, l) * (dP_hl * (Tk - Ts) - hl * dP_Ts) + dP_hi(k, l) * hl * (Tk - Ts) + hi(l, k) * (dP_hk * (Tl - Ts) - hk * dP_Ts) + dP_hi(l, k) * hk * (Tl - Ts),
+                             A = X / phi, dP_A = (dP_X - A * dP_phi) / phi;
+                      for (n = 0; n < N; n++) dT_X(n) = (n == l) * dTl_hl * hi(k, l) * (Tk - Ts) + hl * dT_hi(k, l, n) * (Tk - Ts) + hl * hi(k, l) * (n == k)
+                                                          + (n == k) * dTk_hk * hi(l, k) * (Tl - Ts) + hk * dT_hi(l, k, n) * (Tl - Ts) + hk * hi(l, k) * (n == l);
+                      for (n = 0; n < N; n++) da_X(n) = hl * da_hi(k, l, n) * (Tk - Ts) + hk * da_hi(l, k, n) * (Tl - Ts);
+                      for (n = 0; n < N; n++) dT_A(n) = (dT_X(n) - A * dT_phi(n)) / phi, da_A(n) = (da_X(n) - A * da_phi(n)) / phi;
 
-                /* secmem */
-                const bool gpos = (fl + fg) < 0;
-                // gamma > 0 => du   liquide a hl se vaporise en vapeur  a saturation (hl --> hvsat)
-                // gamma < 0 => de la vapeur a hv se condense en liquide a saturation (hv --> hlsat)
-                const double hl_t = gpos ? hl : hls, hg_t = gpos ? hgs : hg,
-                             dP_hl_t  = gpos ? dP_hl : dP_hls,  dP_hg_t = gpos ? dP_hgs :  dP_hg,
-                             dTl_hl_t = gpos ? dT_hl : 0, dTl_hg_t = 0,
-                             dTg_hl_t = 0, dTg_hg_t = gpos ? 0 : dT_hg,
-                             L = hg_t - hl_t, dP_L = dP_hg_t - dP_hl_t,
-                             dTl_L = dTl_hg_t - dTl_hl_t, dTg_L = dTg_hg_t - dTg_hl_t,
-                             gamma = -(fl + fg) / L, fac = pe(e) * ve(e),
-                             dP_gamma = -(L * (dP_fl + dP_fg) - (fl + fg) * dP_L) / L / L,
-                             dal_gamma = - (dal_fl + dag_fl) / L, dag_gamma = -(dag_fl + dag_fg) / L,
-                             dTl_gamma = -(L * (dTl_fl + dTl_fg) - (fl + fg) * dTl_L) / L / L,
-                             dTg_gamma = -(L * (dTg_fl + dTg_fg) - (fl + fg) * dTg_L) / L / L;
-
-                if (equation().que_suis_je().debute_par("Masse"))
+                      for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * A * G;
+                      if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en alpha (hors G)
+                            (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * da_A(n) * G;
+                      if (Mt) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en T (hors G)
+                            (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * dT_A(n) * G;
+                      if (Mp) for (i = 0; i < 2; i++) (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * dP_A * G; //derivees en p (hors G)
+                      /* derivees a travers G : seulement si celui-ci n'est pas fixe a 0 */
+                      for (auto &s_d : vec_m) for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
+                          for (c = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
+                            (*s_d[1])(N * e + (i ? l : k), c) += (i ? -1 : 1) * A * sgn * x;
+                    }
+                }
+            }
+          else if (sub_type(Energie_Multiphase, equation())) /* pas de saturation : echanges d'energie seulement */
+            {
+              //flux sortant de la phase k : hm * (Tk - Tl)
+              double hm = 1. / (1. / hi(k, l) + 1. / hi(l, k)), Tk = temp(e, k), Tl = temp(e, l);
+              for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * hm * (Tk - Tl);
+              if (Mt) for (i = 0; i < 2; i++) //juste des derivees en T
                   {
-                    secmem(e, l) -= fac * gamma;
-                    secmem(e, g) += fac * gamma;
-                    if (Ma)
-                      {
-                        (*Ma)(N * e + l, N * e + l) += fac * dal_gamma;
-                        (*Ma)(N * e + l, N * e + g) += fac * dag_gamma;
-                        (*Ma)(N * e + g, N * e + l) -= fac * dal_gamma;
-                        (*Ma)(N * e + g, N * e + g) -= fac * dag_gamma;
-                      }
-                    if (Mt)
-                      {
-                        (*Mt)(N * e + l, N * e + l) += fac * dTl_gamma;
-                        (*Mt)(N * e + l, N * e + g) += fac * dTg_gamma;
-                        (*Mt)(N * e + g, N * e + g) -= fac * dTg_gamma;
-                        (*Mt)(N * e + g, N * e + l) -= fac * dTl_gamma;
-                      }
-                    if (Mp)
-                      {
-                        (*Mp)(N * e + l, e) += fac * dP_gamma;
-                        (*Mp)(N * e + g, e) -= fac * dP_gamma;
-                      }
+                    (*Mt)(N * e + (i ? l : k), N * e + k) += vol * (i ? -1 : 1) * hm;
+                    (*Mt)(N * e + (i ? l : k), N * e + l) += vol * (i ? 1 : -1) * hm;
                   }
-                else if (equation().que_suis_je().debute_par("Energie"))
-                  {
-                    secmem(e, l) += fac * (fl - (gamma * hl_t));
-                    secmem(e, g) += fac * (fg + (gamma * hg_t));
-                    if (Ma)
-                      {
-                        (*Ma)(N * e + l, N * e + l) -= fac * (dal_fl - dal_gamma * hl_t);
-                        (*Ma)(N * e + l, N * e + g) -= fac * (dag_fl - dag_gamma * hl_t);
-                        (*Ma)(N * e + g, N * e + l) -= fac * (dal_fg + dal_gamma * hg_t);
-                        (*Ma)(N * e + g, N * e + g) -= fac * (dag_fg + dag_gamma * hg_t);
-                      }
-                    if (Mt)
-                      {
-                        (*Mt)(N * e + l, N * e + l) -= fac * (dTl_fl - (dTl_gamma * hl_t + gamma * dTl_hl_t));
-                        (*Mt)(N * e + l, N * e + g) -= fac * (       - (dTg_gamma * hl_t + gamma * dTg_hl_t));
-                        (*Mt)(N * e + g, N * e + g) -= fac * (dTg_fg + (dTg_gamma * hg_t + gamma * dTg_hg_t));
-                        (*Mt)(N * e + g, N * e + l) -= fac * (         (dTl_gamma * hg_t + gamma * dTl_hg_t));
-                      }
-                    if (Mp)
-                      {
-                        (*Mp)(N * e + l, e) -= fac * (-dP_gamma * hl_t - dP_hl_t * gamma);
-                        (*Mp)(N * e + g, e) -= fac * ( dP_gamma * hg_t + dP_hg_t * gamma);
-                      }
-                  }
-                else Process::exit("Flux_interfacial_CoviMAC : wrong equation!");
-              }
-          }
-        else Process::exit("flux sans saturation non code");
+            }
+    }
 }
