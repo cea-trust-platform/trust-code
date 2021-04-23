@@ -104,7 +104,7 @@ void Discret_Thyd::pression(const Schema_Temps_base& sch,
                             Champ_Inc& ch) const
 {
   Cerr << "Pressure discretization" << finl;
-  discretiser_champ("pression",z.valeur(),"pression","Pa.m3/kg",1,1,
+  discretiser_champ("pression",z.valeur(),"pression","Pa.m3/kg",1,sch.nb_valeurs_temporelles(),
                     sch.temps_courant(),ch);
 
 }
@@ -113,7 +113,7 @@ void Discret_Thyd::pression_en_pa(const Schema_Temps_base& sch,
                                   Champ_Inc& ch) const
 {
   Cerr << "Pressure pa discretization" << finl;
-  discretiser_champ("pression",z.valeur(),"pression_pa","Pa",1,1,
+  discretiser_champ("pression",z.valeur(),"pression_pa","Pa",1,sch.nb_valeurs_temporelles(),
                     sch.temps_courant(),ch);
 
 }

@@ -82,12 +82,6 @@ public :
     return { "alpha_rho", calculer_alpha_rho };
   }
 
-  /* cette equation n'est jamais resolue directement, mais traitee lors de la resolution de QDM_Multiphase */
-  int equation_non_resolue() const
-  {
-    return 1;
-  }
-
   /////////////////////////////////////////////////////
   virtual const Motcle& domaine_application() const;
 

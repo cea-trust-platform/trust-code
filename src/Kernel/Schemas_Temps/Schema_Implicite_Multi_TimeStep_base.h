@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ public :
   virtual const DoubleTab&  coefficients()                                                                                const = 0;
 
 
-  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&);
+  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&, int& ok);
 
   bool   iterateTimeStep(bool& converged);
   int faire_un_pas_de_temps_eqn_base(Equation_base&);

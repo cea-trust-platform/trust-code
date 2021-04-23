@@ -177,7 +177,7 @@ void iterer_eqn_expl_diffusion_implicite(Equation_base& eqn,int nb_iter,double d
 }
 
 bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& current,
-                        double dt,int nb_iter)
+                        double dt,int nb_iter, int& ok)
 {
   DoubleTab dudt(current);
   Parametre_implicite& param = get_and_set_parametre_implicite(eqn);
@@ -251,7 +251,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
 
   dudt = current; // pour pouvoir tester la convergence.
   Matrice_Morse matrice;
-  if (!sub_type(Navier_Stokes_std,eqn) || (que_suis_je() != "SETS" && que_suis_je() != "ICE")) //SETS et ICE gerent eux-memes leurs matrices
+  if (!(sub_type(Navier_Stokes_std,eqn) && sub_type(SETS, *this))) //SETS et ICE gerent eux-memes leurs matrices
     {
       eqn.dimensionner_matrice(matrice);
       matrice.get_set_coeff() = 0;
@@ -264,7 +264,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       DoubleTab& pression = eqnNS.pression().valeurs();
       DoubleTrav secmem(pression);
       pression.echange_espace_virtuel();
-      iterer_NS(eqnNS,current,pression,dt,matrice,seuil_verification_solveur,secmem,nb_iter,converge);
+      iterer_NS(eqnNS,current,pression,dt,matrice,seuil_verification_solveur,secmem,nb_iter,converge, ok);
     }
   else
     {
@@ -303,8 +303,9 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
             {
               con = 1;
               solveur.resoudre_systeme(matrice,resu,current);
+              ok = eqn.milieu().check_unknown_range(); //verification que l'inconnue est dans les bornes du milieu
 
-              if (1)
+              if (ok)
                 {
                   resu_temp = 0;
                   matrice.ajouter_multvect(current,resu_temp);
@@ -320,6 +321,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
                       con = 0;
                     }
                 }
+              else current = eqn.inconnue().passe(); //si ok == 0, on restaure la valeur passee de inco
             }
           converge = 0;
         }
@@ -330,7 +332,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   // Pas applique pour l inconnue de N_S avec alorithme PISO et Implicite
   ///////////////////////////////////////////////////////////////////////
 
-  if(!converge && !sub_type(SETS, *this))
+  if(!converge && ok)
     {
       // permet de controler ce qui se passe
       // en particulier la positivite de K et de eps
@@ -346,13 +348,13 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       else
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
-  if (eqn.has_interface_blocs()) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  if (ok && eqn.has_interface_blocs()) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
 
   solveur->reinit();
-  return (converge==1);
+  return (ok && converge==1);
 }
 
-bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_convergence)
+bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_convergence, int& ok)
 {
   // on recupere le solveur de systeme lineaire
   Parametre_implicite& param = get_and_set_parametre_implicite(eqs[0]);
@@ -515,7 +517,7 @@ void Simple::calculer_correction_en_vitesse(const DoubleTrav& correction_en_pres
 //k designe une iteration
 
 void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
-                       double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
+                       double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge, int& ok)
 {
   Parametre_implicite& param = get_and_set_parametre_implicite(eqn);
   SolveurSys& solveur = param.solveur();

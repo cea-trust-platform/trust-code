@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,9 +60,9 @@ public :
 
   void Initialiser_Champs(Probleme_base&);
   void test_stationnaire(Probleme_base&);
-  int Iterer_Pb(Probleme_base&,int ite);
+  int Iterer_Pb(Probleme_base&,int ite, int& ok);
   virtual bool iterateTimeStep(bool& converged);
-  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&);
+  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&, int& ok);
   virtual int faire_un_pas_de_temps_eqn_base(Equation_base&);
   inline const double& residu_old() const
   {

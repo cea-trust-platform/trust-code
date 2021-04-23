@@ -34,7 +34,7 @@ class Solveur_U_P : public Simple
   Declare_instanciable(Solveur_U_P);
 
 public :
-  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge);
+  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok);
 
 
 

@@ -168,7 +168,7 @@ int Schema_Implicite_Multi_TimeStep_base::mettre_a_jour()
 
 int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
 {
-  int  i               = 0;
+  int  i               = 0, ok = 1;
   int  ii              = 0;
   bool convergence_pb  = true;
   bool convergence_eqn = false;
@@ -197,7 +197,7 @@ int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
       const DoubleTab& inut=futur;
 
       store_equation_parameters(eqn,stored_parameters);
-      convergence_eqn = le_solveur.valeur().iterer_eqn(eqn,inut, present, dt_,ite);
+      convergence_eqn = le_solveur.valeur().iterer_eqn(eqn,inut, present, dt_,ite, ok);
       modify_equation_parameters(eqn,stored_parameters);
 
       convergence_pb  = convergence_pb&&convergence_eqn;
@@ -320,7 +320,7 @@ bool Schema_Implicite_Multi_TimeStep_base::iterateTimeStep(bool& converged)
   return true;
 }
 
-int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc)
+int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc, int& ok)
 {
   // Modif B.M. : Si on fait la sauvegarde entre derivee en temps inco et mettre a jour,
   //  un calcul avec reprise n'est pas equivalent au calcul ininterrompu
@@ -337,7 +337,6 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_pb_couple(Proble
     Initialiser_Champs(ref_cast(Probleme_base,pbc.probleme(i)));
 
 
-  int ok=0;
   int compteur;
 
   while (!ok)
@@ -435,7 +434,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
   DoubleTab& passe           = eqn.inconnue().passe();
   DoubleTab& present         = eqn.inconnue().valeurs();
   DoubleTab& futur           = eqn.inconnue().futur();
-  int        compteur        = 0;
+  int        compteur        = 0, ok = 1;
   int        i               = 0;
   bool       convergence_eqn = false;
 
@@ -466,7 +465,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
 
       const DoubleTab& inut=futur;
       store_equation_parameters(eqn,stored_parameters);
-      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       modify_equation_parameters(eqn,stored_parameters);
       futur=present;
       eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());

@@ -87,10 +87,6 @@ public :
     return { "alpha_rho_e_conv", calculer_alpha_rho_e };
   }
 
-
-  /* cette equation n'est pas resolue directement dans le schema ICE */
-  int equation_non_resolue() const;
-
   virtual Champ_Inc_base& champ_convecte() const //par defaut le champ conserve
   {
     return champ_convecte_.valeur();

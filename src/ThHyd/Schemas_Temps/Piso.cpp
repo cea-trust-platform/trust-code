@@ -132,13 +132,13 @@ void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * m
 //n designe une etape temporelle
 
 void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
-                     double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
+                     double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge, int& ok)
 {
   converge = 1;
   if (nb_ite>1) return;
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
   if (eqnNS.discretisation().que_suis_je() == "PolyMAC")
-    return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice);
+    return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice, ok);
   Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
   SolveurSys& le_solveur_ = param_eqn.solveur();
 
@@ -443,7 +443,7 @@ void Implicite::second_special_treatment(Equation_base& eqn,DoubleTab& current, 
 }
 
 //version PolyMAC de la fonction ci-dessus
-void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab& pression, double dt, Matrice_Morse& matrice)
+void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab& pression, double dt, Matrice_Morse& matrice, int& ok)
 {
   Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
   SolveurSys& le_solveur_ = param_eqn.solveur();

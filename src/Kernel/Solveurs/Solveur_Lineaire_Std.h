@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Solveur_Lineaire_Std : public  Solveur_lineaire
   Declare_instanciable(Solveur_Lineaire_Std);
 
 public :
-  virtual bool iterer_eqn(Equation_base& equation,const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration);
+  virtual bool iterer_eqn(Equation_base& equation,const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok);
 
 public :
   inline SolveurSys& solveur_sys(void);

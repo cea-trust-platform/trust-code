@@ -154,7 +154,7 @@ int inverser_par_diagonale(const Matrice_Morse& matrice,const DoubleTrav& resu,c
 //Sortie Uk ; Pk
 //k designe une iteration
 
-void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
+void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge, int& ok)
 {
   if (eqn.probleme().is_dilatable())
     {

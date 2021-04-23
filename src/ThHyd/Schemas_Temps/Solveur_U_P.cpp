@@ -58,7 +58,7 @@ Entree& Solveur_U_P::readOn(Entree& is )
 //Entree : Uk-1 ; Pk-1
 //Sortie Uk ; Pk
 //k designe une iteration
-void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice_inut,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
+void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice_inut,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge, int& ok)
 {
   if (eqn.probleme().is_dilatable())
     {

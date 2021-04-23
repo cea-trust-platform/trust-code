@@ -112,7 +112,7 @@ double Schema_Temps_base::computeTimeStep(bool& is_stop) const
     is_stop=true;
   dt = min(dt, dt_failed_ / sqrt(2)); //pour provoquer une baisse de dt en cas d'echec a la resolution precedente
   if (temps_courant_ > temps_precedent_)
-    dt = min(dt, (temps_courant_ - temps_precedent_) * sqrt(1.2)); //pour ne pas remonter dt trop vite (comme facsec)
+    dt = min(dt, (temps_courant_ - temps_precedent_) * 1.2); //pour ne pas remonter dt trop vite (comme facsec)
 
   // Mise a jour immediate de l'attribut dt_ afin que pas_de_temps()
   // soit a jour tout le temps (en particulier au moment du postraitement)

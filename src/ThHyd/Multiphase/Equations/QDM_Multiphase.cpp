@@ -121,25 +121,27 @@ int QDM_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 void QDM_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Navier_Stokes_std::dimensionner_matrice_sans_mem(matrice);
-  evanescence.valeur().dimensionner(matrice);
+  if (evanescence.non_nul()) evanescence.valeur().dimensionner(matrice);
 }
 
 int QDM_Multiphase::has_interface_blocs() const
 {
-  return Navier_Stokes_std::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
+  int ok = Navier_Stokes_std::has_interface_blocs();
+  if (evanescence.non_nul()) ok &= evanescence.valeur().has_interface_blocs();
+  return ok;
 }
 
 /* l'evanescence passe en dernier */
 void QDM_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Navier_Stokes_std::dimensionner_blocs(matrices, semi_impl);
-  evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence.non_nul()) evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
 }
 
 void QDM_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Navier_Stokes_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence.non_nul()) evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 void QDM_Multiphase::mettre_a_jour(double temps)
@@ -182,8 +184,6 @@ bool QDM_Multiphase::initTimeStep(double dt)
 
 void QDM_Multiphase::abortTimeStep()
 {
-  pression()->valeurs() = pression()->passe();
-  pression_pa()->valeurs() = pression_pa()->passe();
   Equation_base::abortTimeStep();
 }
 
@@ -264,12 +264,15 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
         is >> src;
         verifie_ch_init_nb_comp(la_vitesse, src.nb_comp());
         la_vitesse->affecter(src), vit_lu = 1;
+        la_vitesse->passe() = la_vitesse->valeurs();
       }
     else if (nom == "pression" || nom == "pressure")
       {
         Champ_Don src;
         is >> src, verifie_ch_init_nb_comp(la_pression, src.nb_comp());
-        la_pression->affecter(src), la_pression_en_pa->affecter(src), press_lu = 1;
+        la_pression->affecter(src);
+        la_pression_en_pa->passe() = la_pression_en_pa->valeurs() = la_pression->passe() = la_pression->valeurs();
+        press_lu = 1;
       }
     else Cerr << que_suis_je() << ": expected vitesse|velocity|pression|pressure instead of " << nom << finl, Process::exit();
 

@@ -25,7 +25,6 @@
 #define SETS_included
 
 #include <Simpler.h>
-#include <QDM_Multiphase.h>
 #include <Interface_blocs.h>
 #include <utility>
 #include <set>
@@ -45,7 +44,8 @@ public :
   SETS();
   virtual Entree& lire(const Motcle&, Entree&); /* mot-cle "criteres_convergence" */
 
-  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge);
+  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok);
+  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok);
 
 
   /* elimination par blocs d'un systeme lineaire */
@@ -108,6 +108,12 @@ protected :
 class ICE : public SETS
 {
   Declare_instanciable(ICE);
+public:
+  virtual bool est_compatible_avec_th_mono() const /* ce solveur est-il  compatible avec une resolution monolithique de la thermique ? */
+  {
+    return 0; /* non: ICE est explicite en la thermique */
+  }
+
 };
 
 #endif

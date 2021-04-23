@@ -57,6 +57,8 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
            << "Solveur solver_name [ solver parameters ] " << finl;
       exit();
     }
+  if (thermique_monolithique_ && !le_solveur->est_compatible_avec_th_mono())
+    Cerr << que_suis_je() << " : deactivating thermique_monolithique for the implicit solver " << le_solveur->que_suis_je() << finl, thermique_monolithique_ = 0;
   if (diffusion_implicite())
     {
       Cerr << "diffusion_implicite option cannot be used with an implicit time scheme." << finl;
@@ -175,7 +177,7 @@ int Schema_Euler_Implicite::mettre_a_jour()
   return Schema_Temps_base::mettre_a_jour();
 }
 
-int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur)
+int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
 {
   int ii;
   bool convergence_pb = true;
@@ -200,7 +202,8 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur)
       eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
       const DoubleTab& inut=futur;
-      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+      if (!ok) return false; //echec total -> on sort sans traiter les equations suivantes
       convergence_pb = convergence_pb&&convergence_eqn;
       futur=present;
       eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
@@ -252,9 +255,9 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
   int convergence_pb = 0;
   Initialiser_Champs(prob);
 
-  int ok=0;
+  int ok=1;
   int compteur;
-  while (!ok)
+  while (!convergence_pb)
     {
       compteur=0;
       Cout<<" "<<finl;
@@ -263,10 +266,10 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
         {
           compteur++;
           prob.updateGivenFields();
-          convergence_pb = Iterer_Pb(prob,compteur);
+          convergence_pb = Iterer_Pb(prob,compteur, ok);
           Cout<<" "<<finl;;
         }
-      if ((!convergence_pb)&&(compteur==nb_ite_max))
+      if (!ok || (!convergence_pb && compteur == nb_ite_max))
         {
           Cout<<"!!! Schema_Euler_Implicite has not converged at t="<< temps_courant_ << " with dt =" << dt_<< " !!!" << finl;
           converged = false;
@@ -276,9 +279,7 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
       else
         {
           Cout<<"The "<<prob.que_suis_je()<<" problem " << prob.le_nom() << " has converged after "<<compteur<<" implicit iterations."<<finl;
-          ok=1;
         }
-
     }
   //modification : prise en compte de la possibilite de modification du dt dans Itere_Pb
   //cas du solveur pour compressible : division du pas de temps par 2
@@ -286,12 +287,10 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
   //  double temps = dt_ + temps_courant_;
   test_stationnaire(prob);
 
-  converged=true;
-
-  return true;
+  return ok;
 }
 
-int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc)
+int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc, int& ok)
 {
   // Modif B.M. : Si on fait la sauvegarde entre derivee en temps inco et mettre a jour,
   //  un calcul avec reprise n'est pas equivalent au calcul ininterrompu
@@ -307,7 +306,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
     Initialiser_Champs(ref_cast(Probleme_base,pbc.probleme(i)));
 
 
-  int ok=0;
+  int cv = 0;
   int compteur;
   // structure pour ranger les equations par domaine d'application
   // -> les hydrauliques, les thermiques, et les autres
@@ -322,7 +321,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
   //ordre de resolution des domaines d'application
   std::vector<std::string> dom_app = {"HYDRAULIQUE", "THERMIQUE", "AUTRES"};
 
-  while (!ok)
+  while (!cv)
     {
       compteur=0;
 
@@ -361,7 +360,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                             eqs.add(eq);
                           }
                         Cout << " } are solved by assembling a single matrix." << finl;
-                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2);
+                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2, ok);
                         convergence_pbc = convergence_pbc && convergence_eqs;
                       }
                     else
@@ -378,7 +377,8 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
                           Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
                           const DoubleTab& inut=futur;
-                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+                          if (!ok) break;
                           convergence_pbc = convergence_pbc && convergence_eqn;
                           futur = present;
                           eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
@@ -391,32 +391,25 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
             }
           else
             {
-              for(i=0; i<pbc.nb_problemes(); i++)
+              for(i=0; ok && i<pbc.nb_problemes(); i++)
                 {
                   pbc.probleme(i).updateGivenFields();
-                  int convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur);
+                  int convergence_pb = Iterer_Pb(ref_cast(Probleme_base,pbc.probleme(i)),compteur, ok);
                   convergence_pbc = convergence_pbc * convergence_pb ;
                 }
 
             }
         }
-      if ((!convergence_pbc)&&(compteur==nb_ite_max))
+      if (!ok || (!convergence_pbc && compteur==nb_ite_max))
         {
-          Cout<<"The process is restarted. " <<finl;
-          facsec_/=2;
-          dt_/=2;
-          ok=0;
-          for(int i2=0; i2<pbc.nb_problemes(); i2++)
-            {
-              ref_cast(Probleme_base,pbc.probleme(i2)).abortTimeStep();
-              ref_cast(Probleme_base,pbc.probleme(i2)).initTimeStep(dt_);
-              recommencer_pb(ref_cast(Probleme_base,pbc.probleme(i2)));
-            }
+          Cout << pbc.le_nom() << (ok ? " : failure" : " : non-convergence") << " at t = "<< temps_courant_ << " with dt = " << dt_<< " !!!" << finl;
+          dt_failed_ = dt_; //pour proposer un pas de temps plus bas au prochain essai
+          return 0;
         }
       else
         {
           Cout<<"The "<<pbc.que_suis_je()<<" problem " << pbc.le_nom() << " has converged after "<<compteur<<" implicit iterations."<<finl;
-          ok=1;
+          cv=1;
         }
     }
 
@@ -436,7 +429,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   DoubleTab& passe = eqn.inconnue().passe();
   DoubleTab& present = eqn.inconnue().valeurs();
   DoubleTab& futur = eqn.inconnue().futur();
-  int compteur = 0;
+  int compteur = 0, ok = 1;
   bool convergence_eqn = false;
   passe = present;
   // futur=present;
@@ -453,7 +446,8 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
       Cout<<"Schema_Euler_Implicite: Implicit iteration " << compteur << " on the "<<eqn.que_suis_je() << " equation of the problem "<< eqn.probleme().le_nom()<< " :" <<finl;
       Cout<<"==================================================================================" << finl;
       const DoubleTab& inut=futur;
-      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur);
+      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+      if (!ok) return 0; //si echec total
       futur=present;
       eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;

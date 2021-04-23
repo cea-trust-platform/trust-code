@@ -85,6 +85,12 @@ Entree& Energie_Multiphase::readOn(Entree& is)
   assert(le_fluide.non_nul());
   evanescence.associer_eqn(*this);
   Convection_Diffusion_std::readOn(is);
+
+  if (!evanescence.non_nul())
+    {
+      EChaine eva("{ homogene { alpha_res 1e-6 } }");
+      eva >> evanescence;
+    }
   //Nom unite;
   //if (dimension+bidim_axi==2) unite="[W/m]";
   //else unite="[W]";
@@ -93,12 +99,6 @@ Entree& Energie_Multiphase::readOn(Entree& is)
   terme_diffusif.set_fichier("Diffusion_chaleur");
   //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
   terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
-
-  if (!evanescence.non_nul())
-    {
-      EChaine eva("{ homogene { alpha_res 1e-6 } }");
-      eva >> evanescence;
-    }
 
   return is;
 }
@@ -331,25 +331,27 @@ void Energie_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 void Energie_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Convection_Diffusion_std::dimensionner_matrice_sans_mem(matrice);
-  evanescence.valeur().dimensionner(matrice);
+  if (evanescence.non_nul()) evanescence.valeur().dimensionner(matrice);
 }
 
 int Energie_Multiphase::has_interface_blocs() const
 {
-  return Convection_Diffusion_std::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
+  int ok = Convection_Diffusion_std::has_interface_blocs();
+  if (evanescence.non_nul()) ok &= evanescence.valeur().has_interface_blocs();
+  return ok;
 }
 
 /* l'evanescence passe en dernier */
 void Energie_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Convection_Diffusion_std::dimensionner_blocs(matrices, semi_impl);
-  evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence.non_nul()) evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
 }
 
 void Energie_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Convection_Diffusion_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence.non_nul()) evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 
@@ -440,11 +442,4 @@ void Energie_Multiphase::init_champ_convecte() const
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
   champ_convecte_->nommer(nom_fonc.first.c_str()), champ_convecte_->init_champ_calcule(*this, nom_fonc.second);
-}
-
-int Energie_Multiphase::equation_non_resolue() const
-{
-  const Schema_Implicite_base *sch = sub_type(Schema_Implicite_base, schema_temps()) ? &ref_cast(Schema_Implicite_base, schema_temps()) : NULL;
-  const SETS *sets = sch && sub_type(SETS, sch->solveur().valeur()) ? &ref_cast(SETS, sch->solveur().valeur()) : NULL;
-  return sets ? !sets->sets_ : 1;
 }

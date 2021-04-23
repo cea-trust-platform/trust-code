@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,8 +41,12 @@ class Solveur_Implicite_Base : public  Objet_U
   Declare_base(Solveur_Implicite_Base);
 
 public :
-  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration) =0;
-  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence);
+  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) =0;
+  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence, int& ok);
+  virtual bool est_compatible_avec_th_mono() const /* ce solveur est-il  compatible avec une resolution monolithique de la thermique ? */
+  {
+    return 1; /* par defaut oui */
+  }
 
 protected :
 

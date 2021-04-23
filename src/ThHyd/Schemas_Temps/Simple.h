@@ -73,9 +73,9 @@ class Simple : public Simpler_Base
 public :
 
   Simple();
-  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration);
-  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge);
-  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, bool test_convergence);
+  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok);
+  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok);
+  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, bool test_convergence, int& ok);
 
 protected :
 

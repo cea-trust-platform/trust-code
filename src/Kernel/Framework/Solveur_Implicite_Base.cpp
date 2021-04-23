@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ Entree& Solveur_Implicite_Base::readOn(Entree& is )
   return is;
 }
 
-bool Solveur_Implicite_Base::iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence)
+bool Solveur_Implicite_Base::iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence, int& ok)
 {
   Cerr << "iterer_eqs non code" << finl;
   Process::exit();

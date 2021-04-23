@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,7 +81,9 @@ bool Probleme_Couple::solveTimeStep()
     if (sub_type(Schema_Euler_Implicite,schema_temps()))
       {
         Schema_Euler_Implicite& sch_eul_imp=ref_cast(Schema_Euler_Implicite,schema_temps());
-        bool ok= sch_eul_imp.faire_un_pas_de_temps_pb_couple(*this);
+        int ok = 1, cv;
+        cv = sch_eul_imp.faire_un_pas_de_temps_pb_couple(*this, ok);
+        if (!ok) return false;
         // on propage un certain nombre de choses vers les clones
         for (int i=1; i<sch_clones.size(); i++)
           {
@@ -89,7 +91,7 @@ bool Probleme_Couple::solveTimeStep()
             sch_clones[i]->set_stationnaire_atteint()=schema_temps().stationnaire_atteint();
             sch_clones[i]->residu()=schema_temps().residu();
           }
-        return ok;
+        return cv;
       }
 
   bool ok=Couplage_U::solveTimeStep();
@@ -108,7 +110,7 @@ bool Probleme_Couple::iterateTimeStep(bool& converged)
   int debut_gr=0;
   int fin_gr=0;
   int gr=0;
-  while(fin_gr<nb_problemes())
+  while(ok && fin_gr<nb_problemes())
     {
 
       if (gr<groupes.size_array())
@@ -116,13 +118,13 @@ bool Probleme_Couple::iterateTimeStep(bool& converged)
       else
         fin_gr=nb_problemes();
 
-      for(int i=debut_gr; i<fin_gr; i++)
-        ok = ok && probleme(i).updateGivenFields();
+      for(int i=debut_gr; ok && i<fin_gr; i++)
+        ok &= probleme(i).updateGivenFields();
 
-      for(int i=debut_gr; i<fin_gr; i++)
+      for(int i=debut_gr; ok && i<fin_gr; i++)
         {
           bool cv;
-          ok = ok && probleme(i).iterateTimeStep(cv);
+          ok &= probleme(i).iterateTimeStep(cv);
           converged = converged && cv;
         }
 

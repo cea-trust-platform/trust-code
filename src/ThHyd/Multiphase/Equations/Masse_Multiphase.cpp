@@ -63,11 +63,6 @@ Entree& Masse_Multiphase::readOn(Entree& is)
 
   Equation_base::readOn(is);
 
-  if (!evanescence.non_nul())
-    {
-      EChaine eva("{ homogene { alpha_res 0 } }");
-      eva >> evanescence;
-    }
   champs_compris_.ajoute_champ(l_inco_ch);
   return is;
 }
@@ -107,20 +102,22 @@ void Masse_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 
 int Masse_Multiphase::has_interface_blocs() const
 {
-  return Equation_base::has_interface_blocs() && evanescence.valeur().has_interface_blocs();
+  int ok = Convection_Diffusion_std::has_interface_blocs();
+  if (evanescence.non_nul()) ok &= evanescence.valeur().has_interface_blocs();
+  return ok;
 }
 
 /* l'evanescence passe en dernier */
 void Masse_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Equation_base::dimensionner_blocs(matrices, semi_impl);
-  evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence.non_nul()) evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
 }
 
 void Masse_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Equation_base::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence.non_nul()) evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 // Description:
