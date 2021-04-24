@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+XX/XX/21 (TRUST)  Portability : Fedora 34 and GNU compilers 11.0.1 are supported with ./configure -force_latest_mpich and after doing: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
 23/04/21 (TRUST)  Bug fixed   : Champ_fonc_reprise didn't read correctly the PolyMAC fields
 15/04/21 (TRUST)  Portability : GNU compilers 10.3.0 supported
 15/04/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
@@ -40,7 +41,7 @@ Release notes version 1.8.2 : Enhancements, modifications and corrected bugs sin
 17/11/20 (TRUST)  Bug fixed   : read_matrix pressure solver option fixed in VEF (pressure matrix was rebuilt uselessly before being read from a file) 
 13/11/20 (TRUST)  New feature : Immersed Boundary Method (IBM) using PDF (Penalized Direct Forcing) formulation. Only for EF.
 12/11/20 (TRUST)  New feature : Anisotropic diffusion (VEF) is available for laminar flow or solid conduction (see new validation sheet diffusion_anisotrope_VEF for examples)
-09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dns install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
+09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dnf install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
 05/11/20 (TRUST)  New feature : Equation residuals can now be post-processed
 04/11/20 (TRUST)  Bug fixed   : In VDF, advanced fields using flux_bords wasn't correct near corners of the domain
 03/11/20 (TRUST)  Portability : Support of AOCC compilers and HPC-X MPI for AMD processors on orcus cluster

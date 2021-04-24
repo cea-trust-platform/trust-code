@@ -40,7 +40,8 @@ make_()
       if [ "$package_name" = "Tcl/Tk" ] ; then
          echo "=> You may have to first install libX11-dev" >> $TRUST_ROOT/NON_INSTALLED
       elif [ "$package_name" = "mpich" ] && [ "$TRUST_DISABLE_CCACHE" != 1 ] ; then
-         echo "=> Adding the option -disable-ccache in the configure step may fix this problem." >> $TRUST_ROOT/NON_INSTALLED
+         #echo "=> Adding the option -disable-ccache in the configure step may fix this problem." >> $TRUST_ROOT/NON_INSTALLED
+         echo "=> Try using another MPI package, for instance -force_latest_mpich in the configure step, to fix this problem." >> $TRUST_ROOT/NON_INSTALLED
       fi
       echo "---" >> $TRUST_ROOT/NON_INSTALLED
    fi
@@ -1718,7 +1719,7 @@ case $TRUST_ARCH_CC in
    # 19/07/19 : passage a 9.0.1 pour Fedora 30
    # 01/04/20 : passage a 9.2.0 sur test GNU
         TRUST_VERSION_GNU=`print_GNU_VERSION`
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="10.3.0" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="11.0.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux

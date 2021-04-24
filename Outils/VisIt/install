@@ -192,7 +192,7 @@ then
             [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian10 && version=3_1_2 && version_visit=v3.1.2
             [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
             [ "`grep 'Fedora release 2[7-9]' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
-            [ "`grep 'Fedora release 3[0-3]' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
+            [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
             [ "`grep 'Red' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7
             [ "$os" = "" ] && echo "OS not detected." && exit -1
 	    ARCH=linux-x86_64-$os

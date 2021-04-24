@@ -11,8 +11,7 @@ done
 if [ ! -f /usr/include/X11/Xlib.h ]
 then
    echo "X includes not found." 
-   echo "Install it. May be with:"
-   echo "sudo apt-get install libx11-dev"
+   echo "Please, install libX11-devel package."
    exit -1
 fi
 packages="tcl$2-src.tar.gz tk$2-src.tar.gz"

@@ -30,13 +30,16 @@ then
        export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
     fi
 fi
+# Command patch
+patch -version 1>/dev/null 2>&1
+[ $? != 0 ] && echo "Command patch non available, you should install it." | tee -a $TRUST_ROOT/NON_INSTALLED
 
 # The previous test checks if 'ed' and 'bc' commands exist. if it doesn't, we add its binary to path. Is it still necessay to keep both in list_prerequis?
-list_prerequis="bc ed sed awk unzip patch"
-
+list_prerequis="bc ed sed awk unzip"
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
 do
+echo $p
   pp=""
   opt="--help"
   [ "$p" = "awk" ] && opt="'BEGIN { print "ok" }'"

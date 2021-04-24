@@ -240,10 +240,11 @@ echo "[-cxxflags=<flags>]               Add C++ compiler options."
 echo "[-cflags=<flags>]                 Add C compiler options."
 echo "[-fflags=<flags>]                 Add Fortran compiler options."
 echo "[-native]                         Add compiler optimizations relative to native architecture. Warning: binary is not portable and segfault are possible..."
-echo "[-force_provided_mpich]           Use the provided MPICH `awk '/version=/ {gsub("version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_mpich` version (default if a native and valid MPI is not found)."
-echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk '/default_version=/ {gsub("default_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
-echo "[-force_old_openmpi]              Download and use the OpenMPI `awk '/old_version=/ {gsub("old_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version (valgrind free)."
-echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk '/latest_version=/ {gsub("latest_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
+echo "[-force_provided_mpich]           Use the provided MPICH `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version (default if a native and valid MPI is not found)."
+echo "[-force_latest_mpich]             Download and use the MPICH `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version."
+echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
+echo "[-force_old_openmpi]              Download and use the OpenMPI `awk -F= '/old_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version (valgrind free)."
+echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental). It activates OpenMP support."
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
@@ -402,6 +403,10 @@ do
    elif [ "${1#-force_old_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_OLD_OPENMPI=1
+
+   elif [ "${1#-force_latest_mpich}" != "$1" ]
+   then
+      export TRUST_FORCE_LATEST_MPICH=1
 
    elif [ "${1#-force_latest_openmpi}" != "$1" ]
    then
@@ -646,6 +651,7 @@ then
      echo "  3. texlive-fonts-recommended" >> NON_INSTALLED
      echo "  4. texlive-latex-extra" >> NON_INSTALLED
      echo " NOTE1: The names of these packages may differ if your OS is not one of Debian/Ubuntu/Mint" >> NON_INSTALLED
+     echo " For instance on Fedora, you can try: sudo dnf install texlive-scheme-full" >> NON_INSTALLED
      echo " NOTE2: In the case you DO NOT WANT to install it, run: " >> NON_INSTALLED
      Num_opts_configure=`tail -1 configure.log | awk '{print NF-1}'`
      opts_configure=`tail -1 configure.log | cut -d ' ' -f 1-$Num_opts_configure`
