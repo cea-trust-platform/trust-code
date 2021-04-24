@@ -32,8 +32,8 @@
 #include <Sparskit.h>
 #include <Poly_geom_base.h>
 #include <Sortie_Brute.h>
-#include <FichierHDF.h>
 #include <IntVect.h>
+#include <FichierHDFPar.h>
 #include <communications.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
@@ -555,6 +555,8 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
                                   epaisseur_joint_,
                                   elements_virtuels);
   }
+  Cerr <<"DomaineCutter::construire_elements_distants_ssdom:: elements virtuels" << finl;
+  Cerr << elements_virtuels << finl;
   const int nb_elements_virtuels = elements_virtuels.size_array();
   // Construire la liste des numeros de zones voisines et ajouter les joints manquants:
   ArrOfInt parties_voisines;
@@ -564,11 +566,14 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
       {
         const int elem = elements_virtuels[i];
         const int part = elem_part[elem];
+        //if(part != partie)
         parties_voisines.append_array(part);
       }
     array_trier_retirer_doublons(parties_voisines);
     ajouter_joints(zone_partie, parties_voisines, epaisseur_joint_);
   }
+  Cerr << "parties voisines" << finl;
+  Cerr << parties_voisines << finl;
 
   // Pour chaque partie voisine, chercher les elements distants:
   const int nb_parties_voisines = parties_voisines.size_array();
@@ -591,6 +596,8 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
                 }
             }
         }
+      Cerr << "sommets_depart:" << finl;
+      Cerr << sommets_depart << finl;
       // Recherche des elements voisins de cette liste:
       ArrOfInt elements_distants;
       parcourir_epaisseurs_elements(elements, som_elem_, elem_part,
@@ -606,7 +613,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
         for (int i = 0; i < n; i++)
           {
             const int elem = elements_distants[i];
-            if (elem_part[elem] == partie)
+            if (elem_part[elem] == partie && elem < elements.dimension(0) )
               elements_distants[count++] = elem;
           }
         elements_distants.resize_array(count);
@@ -978,12 +985,13 @@ void DomaineCutter::reset()
 
 void  calculer_listes_elements_sous_domaines(const IntTab& elem_part,
                                              const int nb_parts,
+                                             const int nbelem,
                                              Static_Int_Lists& liste_elems_sous_domaines)
 {
   ArrOfInt sizes(nb_parts);
   // Premier passage : comptage
   int i;
-  const int nbelem = elem_part.size_array();
+  //const int nbelem = elem_part.size_array();
   for (i = 0; i < nbelem; i++)
     {
       const int part = elem_part[i];
@@ -1099,7 +1107,9 @@ void DomaineCutter::initialiser(const Domaine&   domaine_global,
   Cerr << "Search of neighboring elements of boundary faces" << finl;
   calculer_elements_voisins_bords(domaine_global, som_elem_, voisins_bords_,elem_part,permissif,bords_a_pb_);
   Cerr << "Construction of lists of elements per subdomain" << finl;
-  calculer_listes_elements_sous_domaines(elem_part, nb_parts, liste_elems_sous_domaines_);
+  calculer_listes_elements_sous_domaines(elem_part, nb_parts, elems.dimension(0), liste_elems_sous_domaines_);
+  //calculer_listes_elements_sous_domaines(elem_part, nb_parts, liste_elems_sous_domaines_);
+
 }
 
 // Description:
@@ -1129,6 +1139,9 @@ void DomaineCutter::construire_sous_domaine(const int part,
 
   ArrOfInt elements_sous_partie;
   liste_elems_sous_domaines_.copy_list_to_array(part, elements_sous_partie);
+  Cerr << "part " << part << finl;
+  Cerr << "ELEMENTS8SOUS8PARTIE" << finl;
+  Cerr << elements_sous_partie << finl;
 
   // Preparation du sous_domaine
   // sous_domaine.reset(); /* reset n'existe pas encore... */
@@ -1206,6 +1219,7 @@ void DomaineCutter::construire_sous_domaine(const int part,
 //          DOM_0001.Zones
 static void construire_nom_fichier_sous_domaine(const Nom& basename,
                                                 const int partie, const int nb_parties_,
+                                                const int original_proc,
                                                 Nom& fichier)
 {
   fichier = basename;
@@ -1229,9 +1243,19 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
   else
     {
       if (nb_parties_ > 10000)
-        sprintf(s, "_%05d.Zones", (True_int)partie);
+        {
+          if(original_proc < 0)
+            sprintf(s, "_%05d.Zones", (True_int)partie);
+          else
+            sprintf(s, "_%05d_%d.Zones", (True_int)partie, (True_int)original_proc);
+        }
       else
-        sprintf(s, "_%04d.Zones",(True_int) partie);
+        {
+          if(original_proc < 0)
+            sprintf(s, "_%04d.Zones", (True_int)partie);
+          else
+            sprintf(s, "_%04d_%d.Zones", (True_int)partie, (True_int)original_proc);
+        }
     }
   fichier += Nom(s);
 }
@@ -1265,8 +1289,19 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
       myZones[part] = 1;
     }
 
+  Cerr << "ELEM_PART (dimension = " << elem_part.dimension(0) << ")\n";
+  for(int i=0; i< elem_part.dimension_tot(0); i++)
+    Cerr << "elem_part[" << i << "]= " << elem_part[i] << finl;
+
   //check to see if my Zones are shared with other procs
   VECT(ArrOfInt) otherProcZones(Process::nproc());
+
+  //if some zones are splitted between multiple procs,
+  //we assign consecutive indices to the subzones
+  //(reading the .Zones files during Scatter will be more efficient)
+  VECT(ArrOfInt) zones_indices(Process::nproc());
+  ArrOfInt zones_index(nb_parties_);
+  zones_index = -1;
   for(int p=0; p<Process::nproc(); p++)
     {
       if(p==0)
@@ -1279,27 +1314,54 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
     }
   if(Process::je_suis_maitre())
     {
-      for(int p=1; p<Process::nproc(); p++)
-        recevoir(otherProcZones[p], p, 0, p);
+      for(int p=0; p<Process::nproc(); p++)
+        {
+          zones_indices[p].resize_array(nb_parties_);
+          if(p!=0)
+            recevoir(otherProcZones[p], p, 0, p+2001);
+        }
 
       for(int part=0; part<nb_parties_; part++)
         {
           int s = 0;
           for(int proc=0; proc < Process::nproc(); proc++)
-            s += otherProcZones[proc][part];
-
-          if(s>1)
             {
-              Cerr << "A zone is dispatched on several processors... This case is not coded yet" << finl;
-              Process::exit();
+              if(otherProcZones[proc][part])
+                zones_indices[proc][part] = s++;
+
             }
+          if(s==1)
+            for(int proc=0; proc < Process::nproc(); proc++)
+              zones_indices[proc][part] = -1;
+
+        }
+
+      for(int p=0; p<Process::nproc(); p++)
+        {
+          if(p==0)
+            zones_index = zones_indices[p];
+          else
+            envoyer(zones_indices[p], 0, p, p+2002);
         }
     }
   else
-    envoyer(myZones, Process::me(), 0, Process::me());
+    {
+      envoyer(myZones, Process::me(), 0, Process::me()+2001);
+      recevoir(zones_index, 0, Process::me(), Process::me()+2002);
+    }
+
+  //envoyer_broadcast(sharedZones,0);
+  Cerr << "MYZONES" << finl;
+  Cerr << myZones << finl;
+
+  Cerr << "ZONES_INDEX" << finl;
+  Cerr << zones_index << finl;
 
   // Needed for HDF5 Zones output:
-  FichierHDF fic_hdf;
+  FichierHDFPar fic_write;
+  Nom nom_fichier_hdf5(basename);
+  nom_fichier_hdf5+=Nom(".Zones");
+  nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
 
   // Build temp arrays to eventually reorder the partition numbering
   ArrOfInt ia(nb_parties_+1);
@@ -1325,17 +1387,62 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       if (format == Decouper::HDF5_SINGLE && loop == 0)  // create HDF5 file only once!
         {
-          Nom nom_fichier_hdf5(basename);
-          nom_fichier_hdf5+=Nom(".Zones");
-          nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
           //construire_nom_fichier_sous_domaine(basename, -1, nb_parties_, nom_fichier_hdf5);
-          fic_hdf.create(nom_fichier_hdf5);
-          //fic_hdf.open(nom_fichier_hdf5, false);
+          //fic_hdf.close();
+          // FichierHDFPar fic_hdf;
+          // fic_hdf.create(nom_fichier_hdf5);
+          // fic_hdf.close();
+
+
+          fic_write.create(nom_fichier_hdf5);
+          fic_write.close();
+
+          if(Process::je_suis_maitre())
+            {
+              Noms dataset_names;
+              for(int part=0; part<nb_parties_; part++)
+                {
+                  if(zones_index[part] == -1)
+                    {
+                      std::string dname = "/zone_"  + std::to_string(part);
+                      Nom dataset_name(dname.c_str());
+                      dataset_names.add(dataset_name);
+                    }
+                  else
+                    {
+                      for(int proc=0; proc < Process::nproc(); proc++)
+                        {
+                          if(zones_indices[proc][part] != -1)
+                            {
+                              std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
+                              Nom dataset_name(dname.c_str());
+                              dataset_names.add(dataset_name);
+                            }
+                        }
+
+                    }
+
+                }
+
+              Cerr << "Dataset names" << finl;
+              Cerr << dataset_names << finl;
+              FichierHDF fic;
+              fic.open(nom_fichier_hdf5, false);
+              fic.create_datasets(dataset_names);
+              fic.close();
+
+            }
+
+          fic_write.open(nom_fichier_hdf5, false);
+
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
           if( !myZones[i_part] ) continue;
           Cerr << " Construction of part number " << i_part << finl;
+          if(zones_index[i_part] != -1)
+            Cerr << "This part is shared between multiple processors" << finl;
+
           Domaine sous_domaine;
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine);
           // On affiche quelques informations...
@@ -1400,7 +1507,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   Nom nom_fichier(basename);
                   nom_fichier+=Nom(".Zones");
                   //nom_fichier = nom_fichier.nom_me(i_part);
-                  construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_,nom_fichier);
+                  construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_, zones_index[i_part], nom_fichier);
                   Cerr << "Writing part " << i_part << " into the "
                        << (format == Decouper::BINARY_MULTIPLE ? "binary" : "ascii")
                        << " file " << nom_fichier << finl;
@@ -1420,7 +1527,12 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   Sortie_Brute os_hdf;
                   writeData(sous_domaine, os_hdf);
 
-                  fic_hdf.create_and_fill_dataset_SW("/zone", i_part, os_hdf);
+                  std::string dname = "/zone_" + std::to_string(i_part);;
+                  if(zones_index[i_part] != -1)
+                    dname += "_" + std::to_string(zones_index[i_part]);
+
+                  Nom dataset_name(dname.c_str());
+                  fic_write.fill_dataset(dataset_name, os_hdf);
                 }
               else
                 {
@@ -1505,30 +1617,32 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
 
           // Rebuild the liste_elems_sous_domaines_
           liste_elems_sous_domaines_.reset();
-          calculer_listes_elements_sous_domaines(elem_part, nb_parties_, liste_elems_sous_domaines_);
+          calculer_listes_elements_sous_domaines(elem_part, nb_parties_, nbelem, liste_elems_sous_domaines_);
+          //calculer_listes_elements_sous_domaines(elem_part, nb_parties_, liste_elems_sous_domaines_);
         }
       /*
-         // Print statistics exactly as Fluent:
-         // http://combust.hit.edu.cn:8080/fluent/Fluent60_help/html/ug/node984.htm
-         Cerr << ">> Partitions:" << finl;
-         Cerr << "P   Cells I-Cells Cell Ratio  Faces I-Faces Face Ratio Neighbors" << finl;
+      // Print statistics exactly as Fluent:
+      // http://combust.hit.edu.cn:8080/fluent/Fluent60_help/html/ug/node984.htm
+      Cerr << ">> Partitions:" << finl;
+      Cerr << "
+               P   Cells I-Cells Cell Ratio  Faces I-Faces Face Ratio Neighbors" << finl;
 
-      0     134      10      0.075    217      10      0.046         1
-      1     137      19      0.139    222      19      0.086         2
-      2     134      19      0.142    218      19      0.087         2
-      3     137      10      0.073    223      10      0.045         1
-        Cerr << "------" << finl;
-        Cerr << "Partition count             = " << nb_parties_ << finl;
-        Cerr << "Cell variation              = (134 - 138)
-        Cerr << "Mean cell variation         = (  -1.1% -    1.1%)
-        Cerr << "Intercell variation         = (10 - 19)
-        Cerr << "Intercell ratio variation   = (   7.3% -   14.2%);
-        Cerr << "Global intercell ratio      =   10.7%
-        Cerr << "Face variation              = (217 - 223)
-        Cerr << "Interface variation         = (10 - 19)
-        Cerr << "Interface ratio variation   = (   4.5% -    8.7%)
-        Cerr << "Global interface ratio      =    3.4%
-        Cerr << "Neighbor variation          = (1 - 2) */
+               0     134      10      0.075    217      10      0.046         1
+               1     137      19      0.139    222      19      0.086         2
+               2     134      19      0.142    218      19      0.087         2
+               3     137      10      0.073    223      10      0.045         1
+      Cerr << "------" << finl;
+      Cerr << "Partition count             = " << nb_parties_ << finl;
+      Cerr << "Cell variation              = (134 - 138)
+      Cerr << "Mean cell variation         = (  -1.1% -    1.1%)
+      Cerr << "Intercell variation         = (10 - 19)
+      Cerr << "Intercell ratio variation   = (   7.3% -   14.2%);
+      Cerr << "Global intercell ratio      =   10.7%
+      Cerr << "Face variation              = (217 - 223)
+      Cerr << "Interface variation         = (10 - 19)
+      Cerr << "Interface ratio variation   = (   4.5% -    8.7%)
+      Cerr << "Global interface ratio      =    3.4%
+      Cerr << "Neighbor variation          = (1 - 2) */
     }
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
   int total_edge_cut = 0;
@@ -1555,7 +1669,5 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
            << "\n" << finl;
     }
   if (format == Decouper::HDF5_SINGLE)
-    {
-      fic_hdf.close();
-    }
+    fic_write.close();
 }

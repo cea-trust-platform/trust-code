@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -302,15 +302,21 @@ void Frontiere::add(const Frontiere& front)
   const Faces& a_ajouter=front.faces();
   int nbf1=les_faces.nb_faces();
   int nbf2=a_ajouter.nb_faces();
-  int nbs=les_faces.nb_som_faces();
+  //max to treat the case where my front is empty
+  int nbs=max(les_faces.nb_som_faces(), a_ajouter.nb_som_faces());
   int face;
   les_faces.les_sommets().resize(nbf1+nbf2, nbs);
   for(face=0; face<nbf2; face++)
     for(int som=0; som<nbs; som++)
       les_faces.sommet(nbf1+face, som)=a_ajouter.sommet(face, som);
-  les_faces.voisins().resize(nbf1+nbf2, 2);
+
+  if(a_ajouter.voisins().nb_dim() == 1)
+    return;
+
+  int nb_voisins = a_ajouter.voisins().dimension(1);
+  les_faces.voisins().resize(nbf1+nbf2, nb_voisins);
   for(face=0; face<nbf2; face++)
-    for(int voisin=0; voisin<2; voisin++)
+    for(int voisin=0; voisin<nb_voisins; voisin++)
       les_faces.voisin(nbf1+face, voisin)=a_ajouter.voisin(face, voisin);
 }
 

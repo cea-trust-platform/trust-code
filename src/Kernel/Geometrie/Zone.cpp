@@ -94,7 +94,8 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 {
   int typ = faces.type_face();
   const int pe = (faces.type_face() == Faces::vide_0D) ? Process::nproc()-1 : Process::me();
-  const int min_pe = ::mp_min(pe);
+  Cerr << "my_pe = " << pe << finl;
+  const int min_pe = Process::mp_min(pe);
   // Le processeur min_pe envoie son type a tous les autres
   int typ_commun = typ;
   envoyer_broadcast(typ_commun, min_pe);
@@ -132,6 +133,14 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 // Postcondition:
 Entree& Zone::readOn(Entree& s)
 {
+  read_zone(s);
+  check_zone();
+  return s ;
+}
+
+
+void Zone::read_zone(Entree& s)
+{
   s >> nom ;
   Cerr << " Reading zone " << le_nom() << finl;
   s >> elem;
@@ -140,13 +149,18 @@ Entree& Zone::readOn(Entree& s)
   s >> mes_faces_joint;
   s >> mes_faces_raccord;
   s >> mes_faces_int;
+}
 
+void Zone::check_zone()
+{
   // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
   {
     int i;
     int n = nb_front_Cl();
     for (i = 0; i < n; i++)
-      corriger_type(frontiere(i).faces(),type_elem().valeur());
+      {
+        corriger_type(frontiere(i).faces(),type_elem().valeur());
+      }
   }
 
   if (mes_faces_bord.size()==0 && mes_faces_raccord.size()==0 && Process::nproc()==1)
@@ -154,6 +168,7 @@ Entree& Zone::readOn(Entree& s)
       Cerr << "Warning, the reread zone " << nom
            << " has no defined boundaries (none boundary or connector)." << finl;
     }
+
   mes_faces_bord.associer_zone(*this);
   mes_faces_joint.associer_zone(*this);
   mes_faces_raccord.associer_zone(*this);
@@ -163,13 +178,13 @@ Entree& Zone::readOn(Entree& s)
 
   const int nbelem = mp_sum(mes_elems.dimension(0));
   Cerr << "  Number of elements: " << nbelem << finl;
+
   // Verifications sanitaires:
   // On doit avoir le meme nombre de frontieres et les memes noms sur tous les procs
   check_frontiere(mes_faces_bord, "(Bord)");
   check_frontiere(mes_faces_raccord, "(Raccord)");
   check_frontiere(mes_faces_int, "(Face_Interne)");
 
-  return s ;
 }
 
 Entree& Zone::Lire_Bords_a_imprimer(Entree& is)
@@ -631,9 +646,11 @@ void Zone::renum(const IntVect& Les_Nums)
 {
   int dim0 = mes_elems.dimension(0);
   int dim1 = mes_elems.dimension(1);
+
   for(int i=0; i<dim0; i++)
     for(int j=0; j<dim1; j++)
       mes_elems(i,j)=Les_Nums[mes_elems(i,j)];
+
   for(int i=0; i<nb_bords(); i++)
     mes_faces_bord(i).renum(Les_Nums);
   for(int i=0; i<nb_joints(); i++)
@@ -688,6 +705,36 @@ int Zone::face_interne_conjuguee(int face) const
   return -1;
 }
 
+
+//concatenation des joints
+int Zone::comprimer_joints()
+{
+  LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
+  while(curseur)
+    {
+      Frontiere& front=curseur.valeur();
+      LIST_CURSEUR(Joint) curseur2(curseur.list());;;
+      while(!curseur2.list().est_dernier())
+        {
+          Frontiere& front2=curseur2.list().suivant().valeur();
+          if(front.le_nom() == front2.le_nom())
+            {
+              if(front.faces().type_face() == Faces::vide_0D)
+                front.faces().typer(front2.faces().type_face());
+
+              front.add(front2);
+              curseur2.list().supprimer();
+            }
+          else
+            ++curseur2;
+        }
+      ++curseur;
+    }
+  return 1;
+}
+
+
+
 // Description:
 //    Concatene les bords de meme nom et ceci pour:
 //    les bords, les bords periodiques et les faces internes.
@@ -714,6 +761,7 @@ int Zone::comprimer()
         Frontiere& front=curseur.valeur();
         // Au cas ou la zone de la frontiere n'est pas la bonne zone
         front.associer_zone(*this);
+
         LIST_CURSEUR(Bord) curseur2(curseur.list());;;
         Journal() << "Zone::comprimer() bord : " << front.le_nom() << finl;
         while(!curseur2.list().est_dernier())
@@ -1089,6 +1137,7 @@ void Zone::fixer_premieres_faces_frontiere()
         compteur+=curseur->nb_faces();
         Journal() << "Le bord " << curseur->le_nom() << " commence a la face : "
                   << curseur->num_premiere_face() << finl;
+        Journal() << "Border contains " << curseur->nb_faces() << " faces" << finl;
         ++curseur;
       }
   }

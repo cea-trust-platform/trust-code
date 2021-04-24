@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Entree_Brute.h>
 #include <Sortie_Brute.h>
 #include <Nom.h>
+#include <Noms.h>
 #include <SChaine.h>
 
 #include <med.h>
@@ -71,6 +72,9 @@ public:
   // Method to write the dataset owned by proc #proc_rank in the given file
   // (to use when a single proc writes all the datasets for example)
   virtual void create_and_fill_dataset_SW(Nom dataset_basename, int proc_rank, Sortie_Brute& sortie);
+
+  virtual void create_datasets(Noms dataset_names);
+  virtual void fill_dataset(Nom dataset_name, Sortie_Brute& sortie);
 
   // Method to read the dataset owned by proc #proc_rank in the given file
   virtual void read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute& entree);

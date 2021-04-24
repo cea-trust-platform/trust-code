@@ -152,6 +152,7 @@ public:
   inline void reordonner();
   int face_interne_conjuguee(int) const;
   int comprimer() ;
+  int comprimer_joints();
   void ecrire_noms_bords(Sortie& ) const;
   double epsilon() const;
   inline void associer_Bords_a_imprimer(LIST(Nom));
@@ -196,7 +197,6 @@ public:
   const OctreeRoot& construit_octree(int&) const;
   //int postraiter_ijk(Sortie&) const;
   inline const ArrOfInt& ind_faces_virt_bord() const;
-
   void construire_elem_virt_pe_num();
   void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num) const;
   const IntTab& elem_virt_pe_num() const;
@@ -207,6 +207,11 @@ public:
   static int identifie_item_unique(IntList& item_possible,
                                    DoubleTab& coord_possible,
                                    const DoubleVect& coord_ref);
+
+  //use for the readOn
+  void read_zone(Entree& s);
+  void check_zone();
+
 protected:
   Nom nom;
   REF(Domaine) le_domaine;

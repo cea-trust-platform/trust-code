@@ -164,6 +164,8 @@ public :
     return axi1d;
   }
 
+  void read_vertices(Entree& s);
+
 protected :
 
   LIST(REF(Domaine)) domaines_frontieres_;

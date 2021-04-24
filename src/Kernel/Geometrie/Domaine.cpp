@@ -127,6 +127,27 @@ Entree& Domaine::readOn(Entree& s)
 }
 
 
+void Domaine::read_vertices(Entree& s)
+{
+  // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
+  sommets.reset();
+  renum_som_perio.reset();
+
+  Nom tmp;
+  s >> tmp;
+  // Si le domaine n'est pas nomme, on prend celui lu
+  if (nom_=="??") nom_=tmp;
+  Cerr << "Reading domain " << le_nom() << finl;
+  s >> sommets;
+  Cerr << "sommets:" << finl;
+  Cerr << sommets << finl;
+
+  // // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
+  // int nbsom = mp_sum(sommets.dimension(0));
+  // Cerr << " Number of nodes: " << nbsom << finl;
+
+}
+
 // Description:
 //    Constructeur par defaut d'un objet Domaine.
 //    Ne fait rien sauf fixer la valeur d'epsilon

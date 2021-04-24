@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -176,7 +176,7 @@ void Zones::comprimer()
                       Cerr << "agglomeration of Zones "<< nom1
                            << " and " << nom2 << finl;;
                       fait(rang2)=1;
-                      if( (nom1.longueur()+nom2.longueur()) < 20)
+                      if( (nom1.longueur()+nom2.longueur()) < 20 )
                         {
                           nom+="_";
                           nom+=nom2;
@@ -227,3 +227,56 @@ void Zones::comprimer()
 
 }
 
+
+// Description:
+//    Merge all the zones in 1
+//    is not tested when the zones are dispatched on multiple procesors!
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Zones::merge()
+{
+  LIST_CURSEUR(Zone) curseur(*this);;;
+  Zone& zone1=curseur.valeur();
+
+  LIST_CURSEUR(Zone) curseur2(curseur.list());;;
+  while(!curseur2.list().est_dernier())
+    {
+      Zone& zone2=curseur2.list().suivant().valeur();
+      assert(zone1.le_nom() == zone2.le_nom());
+      int sz1=zone1.les_elems().dimension(0);
+      int sz2=zone2.les_elems().dimension(0);
+      int nb_coord=zone1.les_elems().dimension(1);
+      IntTab& elems1=zone1.les_elems();
+      IntTab& elems2=zone2.les_elems();
+      elems1.resize(sz1+sz2, nb_coord);
+      for(int i=0; i<sz2; i++)
+        for(int j=0; j<nb_coord; j++)
+          elems1(sz1+i,j)=elems2(i,j);
+      zone2.faces_bord().associer_zone(zone1);
+      zone1.faces_bord().add(zone2.faces_bord());
+      zone2.faces_joint().associer_zone(zone1);
+      zone1.faces_joint().add(zone2.faces_joint());
+      zone2.faces_raccord().associer_zone(zone1);
+      zone1.faces_raccord().add(zone2.faces_raccord());
+      zone2.faces_int().associer_zone(zone1);
+      zone1.faces_int().add(zone2.faces_int());
+      elems2.resize(0);
+      zone1.comprimer();
+      zone1.comprimer_joints();
+      curseur2.list().supprimer();
+
+    }
+
+  (*this).valeur().invalide_octree();
+
+}
