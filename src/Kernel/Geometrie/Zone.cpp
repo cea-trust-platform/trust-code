@@ -94,8 +94,7 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 {
   int typ = faces.type_face();
   const int pe = (faces.type_face() == Faces::vide_0D) ? Process::nproc()-1 : Process::me();
-  Cerr << "my_pe = " << pe << finl;
-  const int min_pe = Process::mp_min(pe);
+  const int min_pe = ::mp_min(pe);
   // Le processeur min_pe envoie son type a tous les autres
   int typ_commun = typ;
   envoyer_broadcast(typ_commun, min_pe);
@@ -1137,7 +1136,6 @@ void Zone::fixer_premieres_faces_frontiere()
         compteur+=curseur->nb_faces();
         Journal() << "Le bord " << curseur->le_nom() << " commence a la face : "
                   << curseur->num_premiere_face() << finl;
-        Journal() << "Border contains " << curseur->nb_faces() << " faces" << finl;
         ++curseur;
       }
   }

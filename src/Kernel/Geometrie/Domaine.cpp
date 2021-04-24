@@ -139,12 +139,6 @@ void Domaine::read_vertices(Entree& s)
   if (nom_=="??") nom_=tmp;
   Cerr << "Reading domain " << le_nom() << finl;
   s >> sommets;
-  Cerr << "sommets:" << finl;
-  Cerr << sommets << finl;
-
-  // // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
-  // int nbsom = mp_sum(sommets.dimension(0));
-  // Cerr << " Number of nodes: " << nbsom << finl;
 
 }
 

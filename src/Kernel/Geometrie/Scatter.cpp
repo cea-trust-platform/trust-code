@@ -624,8 +624,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   check_consistancy_remote_items( dom, mergedZones );
   dom.zone(0).check_zone();
 
-  Cerr << "MY ZONE AFTER" << finl;
-  Cerr << dom.zone(0) << finl;
+  // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
+  int nbsom = mp_sum(dom.les_sommets().dimension(0));
+  Cerr << " Number of nodes: " << nbsom << finl;
 
   init_sequential_domain(dom);
 
