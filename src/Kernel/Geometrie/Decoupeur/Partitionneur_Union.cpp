@@ -83,7 +83,7 @@ void Partitionneur_Union::construire_partition(IntTab& elem_part, int& nb_parts_
       const Sous_Zone& ssz = ref_cast(Sous_Zone, Interprete::objet(kv.first.c_str()));
       EFichier file;
       file.ouvrir(kv.second.c_str());
-      ArrOfInt dec_ssz;
+      IntTab dec_ssz;
       file >> dec_ssz;
       file.close();
       //... et on remplit un morceau de elem_part avec

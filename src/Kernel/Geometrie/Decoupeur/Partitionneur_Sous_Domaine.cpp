@@ -91,7 +91,7 @@ void Partitionneur_Sous_Domaine::construire_partition(IntTab& elem_part, int& nb
       Cerr << " Failed to open file " << filename_ << finl;
       exit();
     }
-  ArrOfInt elem_part_glob;
+  IntTab elem_part_glob;
   file >> elem_part_glob;
   file >> nb_parts_tot;
   file.close();

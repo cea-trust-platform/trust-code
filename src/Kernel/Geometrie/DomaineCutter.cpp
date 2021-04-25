@@ -88,11 +88,9 @@ Entree& DomaineCutter::readOn(Entree& s)
 // Signification: en sortie : on lui donne la taille nb_sommets et on l'initialise.
 //                liste_inverse_sommet[i] est l'indice du sommet dans le sous-domaine
 //                ou -1 si le sommet i n'est pas dans le sous-domaine)
-
 static void construire_liste_sommets_sousdomaine(const int nb_sommets,
                                                  const IntTab& les_elems,
                                                  const ArrOfInt& liste_elements,
-                                                 const MD_Vector& md_vector_sommets,
                                                  ArrOfInt& liste_sommets,
                                                  ArrOfInt& liste_inverse_sommets)
 {
@@ -130,7 +128,6 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
   // Remplissage de liste_sommets et liste_inverse_sommets
   liste_sommets.resize_array(0); // On oublie les valeurs precedentes
   liste_sommets.resize_array(nb_sommets_part);
-  //MD_Vector_tools::creer_tableau_distribue(md_vector_sommets, liste_inverse_sommets);
 
   liste_inverse_sommets.resize_array(0); // On oublie les valeurs precedentes
   liste_inverse_sommets.resize_array(nb_sommets,Array_base::NOCOPY_NOINIT);
@@ -188,7 +185,6 @@ static void remplir_coordsommets_sous_domaine(const DoubleTab& sommets_glob,
 void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
                                    const ArrOfInt& liste_elements,
                                    const ArrOfInt& liste_inverse_sommets,
-                                   const MD_Vector& md_vector_elements,
                                    IntTab&    elems_zone_locale,
                                    ArrOfInt& liste_inverse_elements)
 {
@@ -569,7 +565,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
     array_trier_retirer_doublons(parties_voisines);
     ajouter_joints(zone_partie, parties_voisines, epaisseur_joint_);
   }
- 
+
   // Pour chaque partie voisine, chercher les elements distants:
   const int nb_parties_voisines = parties_voisines.size_array();
   ArrOfInt sommets_depart;
@@ -1129,7 +1125,7 @@ void DomaineCutter::construire_sous_domaine(const int part,
 
   ArrOfInt elements_sous_partie;
   liste_elems_sous_domaines_.copy_list_to_array(part, elements_sous_partie);
- 
+
   // Preparation du sous_domaine
   // sous_domaine.reset(); /* reset n'existe pas encore... */
   sous_domaine.nommer(domaine.le_nom());
@@ -1151,7 +1147,6 @@ void DomaineCutter::construire_sous_domaine(const int part,
   construire_liste_sommets_sousdomaine(domaine.nb_som_tot(),
                                        zone.les_elems(),
                                        elements_sous_partie,
-                                       ref_domaine_.valeur().md_vector_sommets(),
                                        correspondance.liste_sommets_ /* write */,
                                        correspondance.liste_inverse_sommets_ /* write */);
 
@@ -1161,7 +1156,6 @@ void DomaineCutter::construire_sous_domaine(const int part,
   construire_elems_sous_domaine(zone.les_elems(),
                                 elements_sous_partie,
                                 correspondance.liste_inverse_sommets_,
-                                zone.md_vector_elements(),
                                 zone_partie.les_elems() /* write */,
                                 correspondance.liste_inverse_elements_ /* write */);
   {

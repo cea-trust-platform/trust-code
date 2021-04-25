@@ -88,7 +88,7 @@ static void lire_partitionneur(DERIV(Partitionneur_base) & d_part,
 }
 
 static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
-                                     const ArrOfInt& elem_part,
+                                     const IntTab& elem_part,
                                      int& nb_parts_tot)
 {
   Cerr << "Writing of the splitting array at the format ArrOfInt ascii\n"
@@ -106,7 +106,7 @@ static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
 
 static void postraiter_decoupage(const Nom& nom_fichier_lata,
                                  const Domaine& domaine,
-                                 const ArrOfInt& elem_part)
+                                 const IntTab& elem_part)
 {
   Cerr << "Postprocessing of the splitting at the lata format: " << nom_fichier_lata << finl;
   Postraitement_lata::Format format = Postraitement_lata::BINAIRE;
@@ -212,7 +212,6 @@ Entree& Decouper::interpreter(Entree& is)
 
   // On recupere le resultat: un tableau qui donne pour chaque element
   // le numero de la partie a laquelle il appartient.
-  //ArrOfInt elem_part;
   IntTab elem_part;
   partitionneur.declarer_bords_periodiques(liste_bords_periodiques);
   partitionneur.construire_partition(elem_part,nb_parts_tot);
