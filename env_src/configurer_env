@@ -612,134 +612,32 @@ fi
 #######################
 arch=`uname -s`
 case $arch in
-   HP-UX)
-        # Nouveau HP 11, on privilegie la recherche de f90 par rapport a f77
-        if [ "`uname -r | grep 11.`" != "" ]
-        then
-           TRUST_ARCH=HPPA_11
-           TRUST_F77_BASE="f90 f77"
-        else
-           TRUST_ARCH=HPPA
-           TRUST_F77_BASE="f77 f90"
-        fi
-	TRUST_EDITOR="nedit softedit xedit dtpad"
-	TRUST_CC_BASE="aCC CC g++"
-	TRUST_cc_BASE="cc"
-	Dtterm="hpterm dtterm xterm"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
-        ;;
-   IRIX*) TRUST_ARCH=SGI
-	TRUST_EDITOR="nedit xedit jot dtpad"
-	TRUST_CC_BASE="CC g++"
-	TRUST_F77_BASE="f77"
-	TRUST_cc_BASE="cc"
-        # winterm supprime car incompatible avec -sb....
-	# Dtterm="dtterm winterm xterm"
-        Dtterm="dtterm xterm"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
-	;;
-   SunOS) TRUST_ARCH=sun5
-	TRUST_EDITOR="nedit textedit xedit dtpad"
-	TRUST_CC_BASE="g++ CC"				# TRUST plante avec CC natif sur SUN
-	TRUST_F77_BASE="g77 f77"			# Vaut mieux chercher g77 en premier
-	TRUST_cc_BASE="cc"
-	Dtterm="dtterm xterm"
-	#IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
-        ;;
-   AIX) TRUST_ARCH=RS6000
-	# mpCC_r, mpxlf_r, mpcc_r compilateurs de zahir a l'IDRIS
-	TRUST_EDITOR="nedit xedit dtpad"
-	TRUST_CC_BASE="mpCC_r xlC g++"
-	SLD="makeC++SharedLib"
-	TRUST_F77_BASE="mpxlf_r xlf f77 xlf90"
-	TRUST_cc_BASE="mpcc_r cc"
-	Dtterm="xterm dtterm"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
-	;;
-   OSF1) TRUST_ARCH=DECalpha
-	TRUST_EDITOR="nedit xedit dtpad"
-	TRUST_CC_BASE="cxx g++"
-	TRUST_F77_BASE="f77"
-	TRUST_cc_BASE="cc"
-	Dtterm="xterm dtterm"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
-	;;
    Linux) TRUST_ARCH=linux
 	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
-	# Compilos Intel plus performants sont desormais en priorite sur archi 64 bits (exx)
-	# Sur 32 bits on laisse Gnu prioritaires par rapport a Intel (ixx)
-	# pgCC en dernier car +50% sur Opteron par rapport a gcc
-	# f90 Absoft trouve sur une machine (bach.lasef.ist.utl.pt)
-	# 24/11/04 Rajout de ifort : Compilateur Intel 8.x qui remplace ifc (7.x)
-	# 14/09/05 f90 place devant f77 car f77 Absoft trouve sur bach est tres exigeant: bcp de modifs a faire dans les .f
-	# 09/12/05 gfortran (ne remplace pas encore g77) c'est plutot un f95
-	# 21/02/07 Sur ia64 on place en priorite Intel par rapport a GNU (beaucoup plus performant 22s/37s, raisons?)
-	# En outre, il semble que icc=ecc,ifort=efc,...
-	# 1.5.3: on place gfortran devant g77 si GCC>=4.x
-	#fortran_gnu="g77 gfortran" && [ "`/usr/bin/gcc --version 2>/dev/null | head -1 | awk '/ 4\./ {print 1}'`" = 1 ] && fortran_gnu="gfortran g77"
-	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum
-        fortran_gnu="gfortran g77"
-	# On met icpc en 1er/GNU car sur titane (icpc 10% plus rapide que gcc sur le cas cpu_3D...)
-	# si une version recente (>=v10) d'icpc existe car sur ecrins la 8.x ne marche pas bien...
-	# 1.6.9: On interdit strictement Intel 12.x qui fait crasher/bloquer MUMPS (voir MC1520)
-	if [ "`icpc -v 2>&1 | awk 'BEGIN {ok=0} /Version/ && ($2>10) {ok=1} /version/ && (($3>10 && $3<12) || $3>=13) {ok=1} END {print ok}'`" = 1 ]
-	then
-	   TRUST_CC_BASE="icpc icc ecc g++"
-	   TRUST_F77_BASE="ifort ifc efc $fortran_gnu"
-	   TRUST_cc_BASE="icc ecc gcc"
-	else
-           # 1.8.3: Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU:
-           cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-"
-	   TRUST_CC_BASE=$cuda"g++ armclang++ g++ icpc icc ecc"
-	   TRUST_F77_BASE=$cuda"gfortran armflang $fortran_gnu ifort ifc efc"
-	   TRUST_cc_BASE=$cuda"gcc armclang gcc icc ecc"
-	fi
+	# On met Intel en 1er/GNU car plus rapide que GNU
+	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
+	TRUST_CC_BASE=" icpc  "$cuda"g++      armclang++ g++"
+	TRUST_F77_BASE="ifort "$cuda"gfortran armflang   gfortran"
+	TRUST_cc_BASE=" icc   "$cuda"gcc      armclang   gcc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
 	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
-	# Tentative de support du nouveau compilateur Intel DPC++ (clang en compilateur C)
-	# Trop de problemes (MPICH/PETSc/MED) donc on switche sur clang++ pour profiter de MKl
-	[ "`dpcpp --version 2>&1 | grep oneAPI`" != "" ] && TRUST_CC_BASE="clang++ "$TRUST_CC_BASE && TRUST_cc_BASE="clang "$TRUST_cc_BASE
-
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
    CYGWIN*) TRUST_ARCH=cygwin
 	TRUST_EDITOR="nedit kedit xemacs xedit emacs"
-        fortran_gnu="gfortran g77"
-	   TRUST_CC_BASE="g++ icpc icc ecc"
-	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
-	   TRUST_cc_BASE="gcc icc ecc"
+	TRUST_CC_BASE="g++ icpc icc ecc"
+	TRUST_F77_BASE="gfortran ifort ifc efc"
+	TRUST_cc_BASE="gcc icc ecc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
 	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
-
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
-   Darwin) TRUST_ARCH=linux	# Portage en cours de la v1.4.5 sur Power MacIntosh G5
-	TRUST_EDITOR="nedit xedit emacs dtpad"
-	TRUST_CC_BASE="g++ gcc"
-	TRUST_F77_BASE="g77 f77"
-	TRUST_cc_BASE="gcc cc"
-	Dtterm="xterm dtterm nxterm"
-	;;
-   cobea) TRUST_ARCH=CRAY
-        TRUST_EDITOR="nedit xemacs emacs xedit dtpad"
-        TRUST_CC_BASE="CC g++"
-	TRUST_F77_BASE="fort77"
-	TRUST_cc_BASE="cc"
-        Dtterm="xterm"
-        ;;
-   UNIX_System_V) TRUST_ARCH=F5000
-        TRUST_EDITOR="nedit xedit"
-        TRUST_CC_BASE="CC g++"
-        TRUST_F77_BASE="frt f77"
-	TRUST_cc_BASE="cc"
-        Dtterm="xterm"
-        ;;
    *) TRUST_ARCH=autre
 	TRUST_EDITOR="nedit xedit dtpad xemacs"
 	TRUST_CC_BASE="g++ CC"
@@ -941,18 +839,6 @@ echo "Compilation of makedepend"
 make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
 fi
 
-# Mal fait : a ameliorer
-# Pour toutes les arch SLD=$TRUST_CC sauf RS6000 et sun prendre ld ?
-if [ $TRUST_ARCH = RS6000 ]
-then
-   m="# Path to the share libs linker";e="`cherche_file SLD $SLD`";ecrit $m"|"$e"|"$env
-   # Portage sur zahir (IDRIS): la variable OBJECT_MODE est egale a 64 par defaut.
-   # NB: -q64 fonctionne mais il faut aussi donner des options par ar donc OBJECT_MODE mieux
-   if [ "`ls -lart /unix | grep 64`" != "" ]
-   then
-      m="# Force 64 bits architecture";e="OBJECT_MODE=64 && export OBJECT_MODE";ecrit $m"|"$e"|"$env;eval $e
-   fi
-fi
 m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
 [ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. "
@@ -1124,7 +1010,7 @@ else
 	    m="# Compiler for mpif90" && e="MPICH_F90=\"\$TRUST_F77_BASE\" && export MPICH_F90" && ecrit $m"|"$e"|"$env;eval $e
             # Bizarrerie pour ioulia, il faut specifier le linker en fortran sinon NP ne compile pas:
             m="# Linker pour mpif77"      && e="MPICH_FLINKER=\"\$TRUST_F77_BASE\" && export MPICH_FLINKER" && ecrit $m"|"$e"|"$env;eval $e
-	 elif [ "`$mpiCC -show | grep mpi | grep intel`" != "" ]
+	 elif [ "`$mpiCC -show | grep mpi | grep intel`" != "" ] || [ "`$mpiCC -help | grep I_MPI_CXX`" != "" ]
 	 then
 	    m="# Compiler for mpiCC"  && e="I_MPI_CXX=\"\$TRUST_CC_BASE\"  && export I_MPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	    m="# Compiler for mpicc"  && e="I_MPI_CC=\"\$TRUST_cc_BASE\"  && export I_MPI_CC"   && ecrit $m"|"$e"|"$env;eval $e
@@ -1242,9 +1128,6 @@ else
       fi
    fi
    [ "$err" != 1 ] && rm -r -f $rep_test_mpi
-   # MPI sur IBM (Idris) cas special, trop complique pour le moment a faire rentrer
-   # dans le moule mpiCC, mpicc, mpixlf avec mpCC_r, mpCC_r, mpxlf_r...
-   [ $TRUST_ARCH_CC = RS6000_mpCC_r ] && mpi_detecte=1 && export MPI_ROOT=/usr/lpp/ppe.poe && export Mpirun=$MPI_ROOT/bin/poe
 
    if [ $mpi_detecte = 0 ]
    then
@@ -1442,24 +1325,6 @@ fi
 
 # Shares libs possibles ?
 SHARE_LIBS=1
-# Cas provisoire special pour certaines TRUST_ARCH, compilation avec lib statique :
-# Car compilation en share-libs plante a l'execution vers Cout=cout(process.cpp)
-# Plante pour IBM immediatement (Memory fault)
-# Sur Sun s'arrete au bout d'un moment
-# Sur CRAY pas de share libs
-# Sur fujitsu, plante sur certains fortrans (relocation type 54)
-if [ $TRUST_ARCH = CRAY ] || [ $TRUST_ARCH = sun5 ] || [ $TRUST_ARCH = RS6000 ] || [ $TRUST_ARCH = F5000 ]
-then
-   SHARE_LIBS=0
-fi
-# Nouveau depuis la v1.2, ne marchent plus en share libs :
-# DECalpha : coredump des le debut (sauf ixia)
-# HPPA_g++ : coredump un peu plus loin
-# SGI_g++ : ne trouve pas certaines libs pour mallinfo
-if [ $TRUST_ARCH = DECalpha ] || [ $TRUST_ARCH_CC = HPPA_g++ ] || [ $TRUST_ARCH_CC = SGI_g++ ]
-then
-   SHARE_LIBS=0
-fi
 # Detect an software configuration management tool -> means a developer version
 if [ -d $TRUST_ROOT/.git ]
 then
@@ -1537,190 +1402,10 @@ SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
-   HPPA_11_aCC) TRUST_SUPPORTED=0
-   	Defines="-D_COMPILE_AVEC_aCC_"
-	# +DA2.0 pour optimiser sur PA8000 2.0
-	# +O2 au lieu de +03 car pb de maxdsiz sur jungfrau
-	F77Flags="+O3 +DA2.0W +Z"
-	CppFlags="+O2 +DA2.0W +Z -Aa -Wl,+s"
-	ccFLAGS="+O3 +DA2.0W +Z -Aa -Ae"
-	# On rajoute le +DA2.0W dans SYSLIBS pour le link...
-	# et -L/opt/fortran90/lib/pa20_64 car pb sur montets
-	SYSLIBS="+DA2.0W -lnsl -L/opt/fortran90/lib/pa20_64 -lF90"
-	ShLibFlag="\$(TRUST_CC) -b"
-        ;;
-   HPPA_aCC) TRUST_SUPPORTED=0
-	Defines="-D_COMPILE_AVEC_aCC_"
-	# Option +Z obligatoire pour share libs !
-	# Option -Wl,+s obligatoire pour share libs portables !
-	CppFlags="+O3 +DAportable +Z -Aa -Wl,+s"
-	SYSLIBS="-L/opt/fortran/lib -lm -lU77"
-	F77Flags="+O3 +DAportable +Z"
-	ccFLAGS="+O3 +DAportable -Aa -Ae"
-	ShLibFlag="\$(TRUST_CC) -b"
-        ;;
-   HPPA_CC) TRUST_SUPPORTED=0
-	# Option +Z obligatoire pour share libs !
-	# Option -Wl,+s obligatoire pour share libs portables !
-	CppFlags="+O3 +DAportable +Z -Aa -Wl,+s -Wp,-H30000"
-	SYSLIBS="-L/opt/fortran/lib -lm -lU77"
-	F77Flags="+O3 +DAportable +Z"
-	ccFLAGS="+O3 +DAportable -Aa -Ae"
-	ShLibFlag="\$(TRUST_CC) -b"
-        ;;
-   HPPA_g++*) TRUST_SUPPORTED=0
-	CppFlags="-O2 -fPIC -Wp,-H30000"
-	#SYSLIBS="-lcl -lf -lg2c"
-	SYSLIBS="-lg2c -ldce"
-	F77Flags="-O2 -fPIC"
-	ccFLAGS="+O2 -Aa -Ae"
-	ShLibFlag="ld -b"
-	;;
-   SGI_CC) TRUST_SUPPORTED=0
-	SYSINC="-I/usr/include/CC"
-	# G8 car sinon marche pas sur picasso
-	CppFlags="-O3 -n32 -mips4 -G8 -OPT:Olimit=11000 -OPT:alias=restrict -LANG:ansi-for-init-scope=ON"
-	#-n32 pour 32 bits, -64 pour 64 bits (pas teste)
-	# -lmalloc pour la reference a mallinfo
-	SYSLIBS="-lftn -lm -lmalloc"
-	F77Flags="-O3 -n32 -mips4"
-	ccFLAGS="-O3 -n32 -mips4"
-	ShLibFlag="\$(TRUST_CC) -shared"
-	LINK_MALIB="-all \$(MALIB) -none"
-	;;
-   SGI_g++*) TRUST_SUPPORTED=0
-	# -n32 pas accepte pour g++
-	CppFlags="-O3"
-	SYSLIBS="-lg2c"
-	F77Flags="-O3"
-	ccFLAGS="-O3"
-	ShLibFlag="ld -shared"
-	LINK_MALIB="-all \$(MALIB) -none"
-   	;;
-   sun5_g++*) TRUST_SUPPORTED=0
-	CppFlags="-O3 -w"
-	# SYSLIBS="-lsocket -lnsl -lg2c si TRUST_F77_BASE=g77 sinon TRUST_F77_BASE=f77 :
-	# -lrt suite passage mpich 1.2.1 a 1.2.4
-	if [ "`basename $TRUST_F77_BASE`" = f77 ]
-	then
-	   SYSLIBS="-L/product/SUNWspro/lib -lF77 -lsunmath -lsocket -lnsl -lmapmalloc -lrt"
-	elif [ "`basename $TRUST_F77_BASE`" = g77 ]
-	then
-	   SYSLIBS="-lg2c -lsocket -lnsl -lmapmalloc -lrt"
-	fi
-	F77Flags="-O3"
-	# Le nouveau cc de Sun n'accepte pas -O2 mais -O ou -xO2
-	ccFLAGS="-O"
-	# Attention g++ -shared ne marche pas meme si g++ !!!
-	ShLibFlag="ld -G"
-   	;;
-   sun5_CC) TRUST_SUPPORTED=0
-	# DO NOT USE CC Sun !!!
-	# Option pour CC Sun en Share libs (-PIC important)
-	# compat=4 pour SC4.x sur SC5.0
-	CppFlags="-O3 -PIC -w -noex -compat=4"
-	#SYSLIBS="-L/product/SUNWspro/SC5.0/lib -lF77 -lsunmath -lsocket -lnsl"
-	SYSLIBS="-L/opt/SUNWspro/SC4.0/lib -lF77 -lsunmath -lsocket -lnsl"
-	F77Flags="-O3 -PIC"
-	# Le nouveau cc de Sun n'accepte pas -O2 mais -O ou -xO2
-	ccFLAGS="-O"
-	ShLibFlag="ld -G"
-        ;;
-   RS6000_xlC | RS6000_mpCC_r) TRUST_SUPPORTED=0
-	SYSINC="-I/usr/ibmcxx/include"
-	#CppFlags="-O2 -qtune=pwr2 -qarch=pwr2"
-	# Passage en O3 lors du portage sur zahir (rajout de -qstrict)
-	CppFlags="-Wl,-bbigtoc -qstrict -O3"
-	# -bmaxdata pour allouer la RAM disponible 0x80000000 2Go (32bits) sinon 4Go en 64bits ?
-	bmaxdata=" -bmaxdata:0x80000000" && [ "$OBJECT_MODE" = 64 ] && bmaxdata=" -bmaxdata:0x160000000"
-	SYSLIBS="-Wl,-bbigtoc -lm -lxlf -lxlf90 -lpthread"$bmaxdata
-	#F77Flags="-O2 -qtune=pwr2 -qarch=pwr2"
-	F77Flags="-qstrict -O3"
-	ccFLAGS="-qstrict -O3"
-	# Attention xlC ne marche pas pour AIX 4.1 :(xlC -G pour AIX > 4.1)
-	# Remarque : l'ordre -berok est important pour supprimer unsatisfied symbols
-	# Remarque : -p 2000 est important car sinon
-	# Remarque : makeC++SharedLib peut se trouver dans /usr/lpp/xlC/bin
-	# On arrive toujours pas a faire un exec share libs qui marche :
-	# ar ruv *.so *.a puis link ok mais plante a l'execution
-	ShLibFlag="\$(SLD) -berok -p 2000"
-	LINK_MALIB="\$(MALIB)"
-	;;
-   RS6000_g++*) TRUST_SUPPORTED=0
-	#CppFlags="-O3 -qtune=pwr2 -qarch=pwr2"
-	CppFlags="-O3 -fPIC -w -mminimal-toc"
-	SYSLIBS="-lg2c"
-	#F77Flags="-O3 -qtune=pwr2 -qarch=pwr2"
-	F77Flags="-O3 -mminimal-toc"
-	ccFLAGS="-O3 -mminimal-toc"
-	# Attention xlC ne marche pas pour AIX 4.1 :(xlC -G pour AIX > 4.1)
-	# Remarque : l'ordre -berok est important pour supprimer unsatisfied symbols
-	# Remarque : -p 2000 est important car sinon
-	# Remarque : makeC++SharedLib peut se trouver dans /usr/lpp/xlC/bin
-	# On arrive toujours pas a faire un exec share libs qui marche :
-	# ar ruv *.so *.a puis link ok mais plante a l'execution
-	# Probleme aussi avec gnu : toujours pas trouve le bon
-	# g++ -shared ne marche pas (undefined...)
-	# gld -i donne quelque chose mais est ce une share lib ?
-	ShLibFlag="gld -i"
-	;;
-   RS6000_KCC) TRUST_SUPPORTED=0
-	#CppFlags="-O3 -qtune=pwr2 -qarch=pwr2"
-	CppFlags="-O3"
-	SYSLIBS="-lm -lxlf -lxlf90"
-	#F77Flags="-O3 -qtune=pwr2 -qarch=pwr2"
-	F77Flags="-O3"
-	ccFLAGS="-03"
-	ShLibFlag="/usr/lpp/xlC/bin/makeC++SharedLib -berok -p 2000"
-        ;;
-   DECalpha_cxx) TRUST_SUPPORTED=0
-	Defines="-D__STDC__"
-	SYSINC="-I/usr/include/cxx"
-	#CppFlags="-O3 -Aa"
-	CppFlags="-O3 -Aa"
-	# Options perfs pour Compaq alpha
-	# CppFlags="-O3 -Aa -fast -arch ev6 -tune ev6"
-	# -lelan pour _pi !
-	# SYSLIBS="-lm -lUfor -lFutil -lfor -lelan
-	# Pour linker en statique (pratique si libmpi.so pas installee)
-	# Il semble qu'il faille rajouter avant -lmach :  -lots3 -lpthread -lnuma -lpset pour avoir Numerical Platon
-	# 090904: On supprime -non_shared pour avoir un binaire semi-statique et augmenter la portabilite en // au detriment de celle en sequentiel
-	SYSLIBS="-lm -lUfor -lfor -lFutil"
-	# Suite probleme installation v1.4.9 sur DEC sans libelan:
-	[ -f /usr/lib/libelan.a ] && SYSLIBS=$SYSLIBS" -lelan -lelan3 -lmld -lrmscall -lots3 -lpthread -lnuma -lpset -lmach"
-	# Suite probleme installation v1.4.5 sur imhotep (undefined references sur elan_...):
-	[ -f /usr/lib/libelanctrl.a ] && SYSLIBS=$SYSLIBS" -lelanctrl"
-	F77Flags="-O3"
-	ccFLAGS="-O3"
-	ShLibFlag="\$(TRUST_CC) -shared"
-	;;
-   DECalpha_KCC) TRUST_SUPPORTED=0
-	Defines="-D__STDC__"
-	CppFlags="-O3"
-	# Options perfs pour Compaq alpha
-	# CppFlags="-O3 -fast -arch ev6 -tune ev6"
-	# -lelan pour _pi !
-	SYSLIBS="-lm -lUfor -lFutil -lfor -lelan"
-	F77Flags="-O3"
-	ccFLAGS="-O3"
-	ShLibFlag="\$(TRUST_CC) -shared"
-   	;;
    linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
-        # Les quotes autour de X.Y sont importants car sinon dependant des variables telles que LC_NUMERIC,....
-   # 08/06/15 : pour portabilite sur Fedora22, passage de v5.1.1 a v5.1.2 sur test GNU
-   # 27/06/16 : pour portabilite sur Ubuntu16, passage de v5.1.2 a v5.3.2 sur test GNU
-   # 29/06/16 : pour portabilite sur Fedora24, passage de v5.3.2 a v6.1.1 sur test GNU
-   # 16/09/16 : passage de v6.1.1 a v6.2.0 sur test GNU
-   # 04/04/17 : passage de v6.2.0 a v6.3.0 sur test GNU
-   # 30/05/17 : passage de v6.3.0 a v7.1.0 sur test GNU
-   # 26/07/17 : pour portabilite sur Fedora26, passage de v7.1.0 a v7.1.1 sur test GNU
-   # 28/11/17 : passage de v7.1.0 a v7.2.0 sur test GNU
-   # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
-   # 19/07/19 : passage a 9.0.1 pour Fedora 30
-   # 01/04/20 : passage a 9.2.0 sur test GNU
-        TRUST_VERSION_GNU=`print_GNU_VERSION`
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="11.0.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
-   	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
+	TRUST_VERSION_GNU=`print_GNU_VERSION`
+	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="11.0.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
@@ -1762,7 +1447,7 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
-linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
+    linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
         [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -mcpu=native" # To add optimized machine-specific library
         [ "`$TRUST_CC_BASE -version 2>&1 | grep aocc`" != "" ] && AoccFlags="-march=znver1 -mfma -fvectorize -mfma -mavx2 -m3dnow -floop-unswitch-aggressive -fuse-ld=lld"
    	Defines="-D_COMPILE_AVEC_CLANG"
@@ -1804,32 +1489,10 @@ linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
 	ccFLAGS="-O3 -fPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	;;
-   linux_icpc|linux_dpcpp) TRUST_SUPPORTED=1
-   	# Par defaut O3, mais cas test CN_iteratif_VEF ne marche pas sauf si on empeche l'inline (voir methode Champ_Inc_base::avancer) !
-	# Intel 13.x semblerait OK
-        Cpp_flag_optim="-O3"
-	if [ "`$TRUST_CC_BASE --version 2>&1 | grep '12\.'`" != "" ]
-	then
-	   echo "Warning! Intel 12.x detected... Possible too agressive inlining bug."
-	   Cpp_flag_optim="-O3 -inline-level=0"
-	   echo "C++ flags changed to $Cpp_flag_optim"
-        fi
-	# Options de compilation aggressives mais alors tres lentes a la compilation
-	# En outre -ipo genere des .il (Versioned Intermediate Files) a effacer ?
-	# Voir aussi xild pour linker ?
-	# 16/01/07 ecc passe en 5.5, pas mal de changements...
-   	Defines="-D_COMPILE_AVEC_INTEL"
-	#SYSINC="-I\$(IA32ROOT)/include"
-	# CppFlags="-O3 -ansi -unroll -tpp2 -ipo -ipo_obj"
-	# -Werror supprime pour Intel 12.1 car warning sur les accents dans les chaines de caracteres...
-	#CppFlags="-O3 -fPIC -ansi -unroll -Wno-deprecated -Werror"
-	# -std=c++11 -ansi : conflit et probleme de compilation sur irene
-	#CppFlags="$Cpp_flag_optim -fPIC -ansi -unroll"
+   linux_icpc) TRUST_SUPPORTED=1
+	Cpp_flag_optim="-O3" && [ "$VT_ROOT" != "" ] && Cpp_flag_optim="-g -O3" # -g pour Itac, traceanalyzer
+	Defines="-D_COMPILE_AVEC_INTEL"
 	CppFlags="$Cpp_flag_optim -std=c++11 -fPIC -unroll"
-	#SYSLIBS="-lF90 -lc -limf -lcxa -lCEPCF90"
-	#SYSLIBS="-lF90 -lCEPCF90"
-	# -lguide pour OpenMP sur argent (et -lkitcompat -lnuma en plus sur mercure)
-	# -lguide -lpthread pour OpenMP sur jade
 	LIB_INTEL=`dirname $TRUST_F77_BASE`
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib
@@ -1843,45 +1506,6 @@ linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
-   FreeBSD_g++*) TRUST_SUPPORTED=0
-	SYSINC="-I/usr/include/g++"
-	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
-	CppFlags="-O2 -Wall"
-	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
-	SYSLIBS="-lf2c"
-	F77Flags="-O2"
-	ccFLAGS="-O2"
-	ShLibFlag="\$(TRUST_CC) -shared"
-   	;;
-   CRAY_CC) TRUST_SUPPORTED=0
-	Defines="-D_T3E_"
-	SYSINC="-I/opt/ctl/CC/3.0.2.0/include"
-	CppFlags="-O3 -Aa -h msglevel_4 -h exceptions"
-	# CppFlags="-Aa -h msglevel_4 -O2"
-	SYSLIBS=""
-	F77Flags="-O3"
-	ccFLAGS="-O3 -Aa"
-	ShLibFlag="\$(TRUST_CC) -b"
-        ;;
-   F5000_CC) TRUST_SUPPORTED=0
-	Defines=""
-	CppFlags="-Kvp -O3 -w"
-	# Les options -Wl,-dy -Wg,-f sont placees pour que socket et nsl soit recupere en .so !!
-	# SYSLIBS="-Wl,-dy -Wg,-f -lmp -llapackvp -lfj95 -lfj95f -lfj95fv -lvfl -lm -lnsl -lsocket"
-	SYSLIBS="-Wl,-dy -Wg,-f -lsocket -lnsl -lblasvp"
-	F77Flags="-O3 -Ss"
-	ccFLAGS="-O3 -w"
-	# ShLibFlag="$(TRUST_CC) -G" ne marche pas ! message _main() not found
-	ShLibFlag="ld -G"
-        ;;
-   F300_CC) TRUST_SUPPORTED=0
-	CppFlags="-O3"
-	SYSLIBS="-lfj90 -lfj90f -lfj90fv -lvfl -lm"
-	F77Flags="-O3"
-	ccFLAGS="-O3"
-	# ShLibFlag="$(TRUST_CC) -G" ne marche pas ! message _main() not found
-	ShLibFlag="ld -G"
-        ;;
    *) TRUST_SUPPORTED=0
         [ "$TRUST_CC_BASE" = "" ] && echo "Pas de compilateur C++ trouve!"
 	echo "TRUST_ARCH_CC=$TRUST_ARCH_CC non reconnu. Modifier $0 pour faire reconnaitre"
