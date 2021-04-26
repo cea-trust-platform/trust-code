@@ -65,7 +65,7 @@ public:
   void nommer_source();
   //virtual Entree &   lire(const Motcle & motcle, Entree & is);
   void set_param(Param& param);
-  void verification_cas_compo();
+  void verification_cas_compo() const;
   const Champ_base&  get_champ_compo_without_evaluation(Champ& espace_stockage) const;
 
 protected:

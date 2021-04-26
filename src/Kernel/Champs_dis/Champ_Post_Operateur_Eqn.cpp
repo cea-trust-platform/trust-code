@@ -62,10 +62,10 @@ Entree& Champ_Post_Operateur_Eqn::readOn(Entree& s )
   return s ;
 }
 
-void Champ_Post_Operateur_Eqn::verification_cas_compo()
+void Champ_Post_Operateur_Eqn::verification_cas_compo() const
 {
   // On applique compo a un vecteur
-  Nature_du_champ nature_ch=ref_eq_.valeur().inconnue().valeur().nature_du_champ();
+  const Nature_du_champ& nature_ch=ref_eq_.valeur().inconnue().valeur().nature_du_champ();
   if ((nature_ch != vectoriel) && (compo_ != -1 ))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
@@ -74,7 +74,7 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo()
     }
 
   // Verification de compo
-  int nb_compo= ref_eq_.valeur().inconnue().valeur().nb_comp();
+  const int& nb_compo= ref_eq_.valeur().inconnue().valeur().nb_comp();
   if ((compo_<-1)||(compo_>nb_compo-1))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
