@@ -110,7 +110,6 @@ bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 0475638eb40a3920d0d3f14482c924a4  makedepend-1.0.5.tar.bz2
-015526f7328f746407f10a0a211f0c0a  nvc_get_devices.tgz
 9be6e048224797bf531f94b7a8aaa99d  osqp-0.6.0.tar.gz
 fe535e221293e72c7813e3bc2a60640a  petsc/MUMPS_5.3.3-p2.tar.gz
 0ddc62ed2636720be74be2e27e1fef6e  petsc/SuiteSparse-5.7.1.tar.gz
