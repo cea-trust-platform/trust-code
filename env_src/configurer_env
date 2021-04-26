@@ -818,14 +818,14 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 # check the previous install of conda and conda packages if it exists
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
-pkgs="pyqt=5.6 nomkl numpy matplotlib swig=3.0.12 cmake=3.14 scipy xorg-libsm sympy libgd"
+pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig=4.0.2 cmake=3.14 scipy xorg-libsm sympy libgd"
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd"
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
    # check of python version
-   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==373||v==376?1:0)}'`
+   PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==379||v==376?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda

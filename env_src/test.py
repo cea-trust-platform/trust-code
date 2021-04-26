@@ -10,4 +10,8 @@ import numpy
 print((numpy.__file__))
 import scipy
 print((scipy.__file__))
+import sympy
+print((sympy.__file__))
+import pandas
+print((pandas.__file__))
 print("Python is OK")
