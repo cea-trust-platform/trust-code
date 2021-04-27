@@ -298,7 +298,7 @@ then
    for lib0 in $ld_flags_name
    do
       lib=`echo $lib0| sed "s?-l??"`
-      libs="lib${lib}.a" # Force l'utilisation de librairie statique pour les prerequis
+      libs="lib${lib}.so lib${lib}.a"
       cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} )"
       cmake_flags="$cmake_flags %% message(STATUS \"Library '${lib}' found there: \${${lib}}\")"
       cmake_flags="$cmake_flags %% if (${lib} STREQUAL ${lib}-NOTFOUND)%% find_library( ${lib} NAMES ${libs} ${lib} ) %% endif()"
