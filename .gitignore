@@ -70,3 +70,8 @@ doc/TRUST/Tutorial/ICoCo_tutorial.pdf
 doc/TRUST/Tutorial/TRUST_tutorial.pdf
 doc/TRUST/Tutorial/Baltik_tutorial.pdf
 
+# Eclipse
+.cproject
+.project
+.settings/
+
