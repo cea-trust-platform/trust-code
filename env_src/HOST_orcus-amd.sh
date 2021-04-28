@@ -55,14 +55,13 @@ define_soumission_batch()
    [ "$gpu"  = 1 ] && soumission=1
    # sinfo :
    # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
-   # amdq         up   infinite     34  alloc n[002-035]
-   # amdq         up   infinite      2   idle n[001,036]
+   # amdq*         up   infinite     34  alloc n[002-035]
    # intelq*      up   infinite      4  alloc n[101-104]
    # intelq*      up   infinite     11   idle n[105-115]
    # gpuq         up   infinite      1   idle gpu01
 
    # On se base sur la frontale pour selectionner la queue par defaut:
-   queue=amdq && [ "$gpu" = 1 ] && queue=gpuq_5118 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpuq_5218
+   queue=amdq_naples && [ "$gpu" = 1 ] && queue=gpuq_5118 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpuq_5218
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
