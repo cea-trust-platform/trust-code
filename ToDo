@@ -10,7 +10,7 @@ Version	Qui				Tache
 1.8.3   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
 1.8.3   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
 1.8.3   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
-1.8.3   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI 188128)
+1.8.3   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 184" (cf DI 188128)
 1.8.3   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
 1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
 1.8.3   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
@@ -19,7 +19,6 @@ Version	Qui				Tache
 1.8.3   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.3   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
 1.8.3   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
-1.8.3   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon et vefprep1b
 1.8.3   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
 1.8.3   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
 1.8.3   trust@cea.fr            LDC: verifier le dossier extra de 1.8.3 sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
@@ -37,7 +36,7 @@ Version	Qui				Tache
 1.8.x   adrien.bruneton@cea.fr  LDC: ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
 1.8.x   adrien.bruneton@cea.fr  LDC: Nettoyer le vieux code med fichier
 1.8.x   adrien.bruneton@cea.fr  LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 182" (cf DI 188128)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
@@ -46,7 +45,6 @@ Version	Qui				Tache
 1.8.x   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.x   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
 1.8.x   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
-1.8.x   trust@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon et vefprep1b
 1.8.x   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
 1.8.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
 1.8.x   trust@cea.fr            LDC: verifier le dossier extra de 1.8.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
