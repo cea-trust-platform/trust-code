@@ -194,8 +194,8 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : 0), n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
             if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
             //contribution a dfac
-            for (e = f_e(f, i), n = 0; n < N; n++) for (m = 0; m < N; m++)
-                dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * masse(n, m)
+            for (e = f_e(f, i), eb = f_e(f, comp ? !i : i), n = 0; n < N; n++) for (m = 0; m < N; m++)
+                dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * pe(eb >= 0 ? eb : f_e(f, 0)) * masse(n, m)
                                                       * (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.) * alpha) / 2;
           }
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
@@ -205,10 +205,10 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                   if ((fc = zone.equiv(f, i, k)) >= 0 || f_e(f, 1) < 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                       {
                         eb = f_e(f, j), fd = (j == i ? fb : fc); //element/face sources
-                        mult = (fd < 0 || zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1); //multiplicateur pour passer de vf a ve
+                        mult = (fd < 0 || zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
                         for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
                               {
-                                double fac = pf(fb) * (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n, m) / ve(e);
+                                double fac = (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n, m) / ve(e);
                                 if (fd >= 0) secmem(fb, n) -= fac * mult * inco(fd, m); //autre face calculee
                                 else for (d = 0; d < D; d++)  //CL de Dirichlet
                                     secmem(fb, n) -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
@@ -221,7 +221,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                   else for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
                                 {
                                   //pas d'equivalence : mu_f * n_f * operateur aux elements
-                                  double fac = pf(fb) * (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n, m) / ve(e) * nf(fb, d) / fs(fb);
+                                  double fac = (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n, m) / ve(e) * nf(fb, d) / fs(fb);
                                   secmem(fb, n) -= fac * inco(nf_tot + D * eb + d, m);
                                   if (comp) secmem(fb, n) += fac * inco(nf_tot + D * e + d, m);
                                   if (!mat || !fac) continue;
@@ -231,7 +231,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                 }
             for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m)) //partie "elem"
                       {
-                        double fac = pe(e) * (i ? -1 : 1) * dfac(j, n, m);
+                        double fac = (i ? -1 : 1) * dfac(j, n, m);
                         secmem(nf_tot + D * e + d, n) -= fac * (eb >= 0 ? inco(nf_tot + D * eb + d, m)
                                                                 : ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m));
                         if (comp) secmem(nf_tot + D * e + d, n) += fac * inco(nf_tot + D * e + d, m); //partie v div(alpha rho v)

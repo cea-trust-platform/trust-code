@@ -114,6 +114,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::preparer_calcul()
   /* au cas ou... */
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   zone.init_equiv(), equation().init_champ_convecte();
+  flux_bords_.resize(zone.premiere_face_int(), equation().inconnue().valeurs().line_size());
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_CoviMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
@@ -232,13 +233,22 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
   const Champ_Inc_base& cc = equation().champ_convecte();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = equation().champ_convecte().valeurs(), bcc = cc.valeur_aux_bords(), &alp = equation().inconnue().valeurs();
   DoubleTab balp;
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
 
   int i, e, f, d, D = dimension, n, N = vcc.line_size(), nf_tot = zone.nb_faces_tot();
+  DoubleTrav cc_f(N); //valeur du champ convecte aux faces
+  /* flux aux bords */
+  for (f = 0; f < zone.premiere_face_int(); f++)
+    {
+      for (cc_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
+          cc_f(n) +=  (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
+      for (n = 0; n < N; n++) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, n) * cc_f(n);
+    }
+
   if (cc_phases_.size()) for (n = 0; n < N; n++) if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
         {
           Champ_Face_CoviMAC& c_ph = ref_cast(Champ_Face_CoviMAC, cc_phases_[n].valeur());

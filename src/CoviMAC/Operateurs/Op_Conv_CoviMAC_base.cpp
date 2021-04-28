@@ -29,7 +29,10 @@
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-
+#include <SFichier.h>
+#include <EcrFicPartage.h>
+#include <Probleme_base.h>
+#include <Schema_Temps_base.h>
 
 Implemente_base(Op_Conv_CoviMAC_base,"Op_Conv_CoviMAC_base",Operateur_Conv_base);
 
@@ -164,10 +167,80 @@ void Op_Conv_CoviMAC_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis&
 }
 int Op_Conv_CoviMAC_base::impr(Sortie& os) const
 {
-  return 0;
+  if (flux_bords_.nb_dim() != 2) return 0;
+  const int impr_bord=(la_zone_poly_->zone().Bords_a_imprimer().est_vide() ? 0:1);
+  SFichier Flux_div;
+  ouvrir_fichier(Flux_div,"",je_suis_maitre());
+  EcrFicPartage Flux_face;
+  ouvrir_fichier_partage(Flux_face,"",impr_bord);
+  const Schema_Temps_base& sch = equation().probleme().schema_temps();
+  double temps = sch.temps_courant();
+  if (je_suis_maitre()) Flux_div.add_col(temps);
+
+  int nb_compo=flux_bords_.dimension(1);
+  // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
+  DoubleVect flux_bord(nb_compo);
+  DoubleVect bilan(nb_compo);
+  bilan = 0;
+  for (int num_cl=0; num_cl<la_zone_poly_->nb_front_Cl(); num_cl++)
+    {
+      flux_bord=0;
+      const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = frontiere_dis.num_premiere_face();
+      int nfin = ndeb + frontiere_dis.nb_faces();
+      for (int face=ndeb; face<nfin; face++)
+        for(int k=0; k<nb_compo; k++)
+          flux_bord(k)+=flux_bords_(face, k);
+      for(int k=0; k<nb_compo; k++)
+        flux_bord(k)=Process::mp_sum(flux_bord(k));
+
+      if(je_suis_maitre())
+        {
+          for(int k=0; k<nb_compo; k++)
+            {
+              //Ajout pour impression sur fichiers separes
+              Flux_div.add_col(flux_bord(k));
+              bilan(k)+=flux_bord(k);
+            }
+        }
+    }
+
+  if(je_suis_maitre())
+    {
+      for(int k=0; k<nb_compo; k++)
+        {
+          Flux_div.add_col(bilan(k));
+        }
+      Flux_div << finl;
+    }
+
+  for (int num_cl=0; num_cl<la_zone_poly_->nb_front_Cl(); num_cl++)
+    {
+      const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl).frontiere_dis();
+      const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = frontiere_dis.num_premiere_face();
+      int nfin = ndeb + frontiere_dis.nb_faces();
+      if (la_zone_poly_->zone().Bords_a_imprimer().contient(la_fr.le_nom()))
+        {
+          Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
+          for (int face=ndeb; face<nfin; face++)
+            {
+              if (dimension==2)
+                Flux_face << "# Face a x= " << la_zone_poly_->xv(face,0) << " y= " << la_zone_poly_->xv(face,1) << " flux=" ;
+              else if (dimension==3)
+                Flux_face << "# Face a x= " << la_zone_poly_->xv(face,0) << " y= " << la_zone_poly_->xv(face,1) << " z= " << la_zone_poly_->xv(face,2) << " flux=" ;
+              for(int k=0; k<nb_compo; k++)
+                Flux_face << " " << flux_bords_(face, k);
+              Flux_face << finl;
+            }
+          Flux_face.syncfile();
+        }
+    }
+
+  return 1;
 }
-
-
 
 void Op_Conv_CoviMAC_base::associer_vitesse(const Champ_base& ch )
 {
