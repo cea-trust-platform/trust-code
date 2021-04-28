@@ -57,11 +57,11 @@ Entree& Masse_Multiphase::readOn(Entree& is)
   assert(l_inco_ch.non_nul());
   assert(le_fluide.non_nul());
   terme_convectif.associer_eqn(*this), evanescence.associer_eqn(*this);
-  // const Pb_Multiphase &pb = ref_cast(Pb_Multiphase, probleme());
-  // for (int i = 0; i < pb.nb_phases(); i++)
-  //   champs_compris_.ajoute_nom_compris(Nom("alpha_") + pb.nom_phase(i));
 
   Equation_base::readOn(is);
+
+  terme_convectif.set_fichier("Debit");
+  terme_convectif.set_description((Nom)"Mass flow rate=Integral(-alpha*rho*u*ndS) [kg/s] if SI units used");
 
   champs_compris_.ajoute_champ(l_inco_ch);
   return is;

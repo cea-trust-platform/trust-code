@@ -1848,7 +1848,6 @@ void Probleme_base::mettre_a_jour(double temps)
 void Probleme_base::preparer_calcul()
 {
   const double temps = schema_temps().temps_courant();
-  milieu().initialiser(temps);
   // Modification du tableau Qdm porte par la zone_dis() dans le cas
   // ou il y a des conditions aux limites periodiques.
   // Rq : Si l'une des equations porte la condition a la limite periodique
@@ -1856,6 +1855,7 @@ void Probleme_base::preparer_calcul()
   equation(0).zone_dis()->modifier_pour_Cl(equation(0).zone_Cl_dis().les_conditions_limites());
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).preparer_calcul();
+  milieu().initialiser(temps);
   milieu().preparer_calcul();
 
   if(schema_temps().file_allocation() && EcritureLectureSpecial::Active)

@@ -50,7 +50,6 @@ class Echange_contact_CoviMAC  : public Echange_externe_impose
 {
   Declare_instanciable(Echange_contact_CoviMAC);
 public :
-  virtual void completer() { }; //non utilise
   virtual int initialiser(double temps);
   virtual void mettre_a_jour(double temps) { }; //non utilise
   virtual void verifie_ch_init_nb_comp() { }; //pas de contrainte sur les composantes de chaque cote

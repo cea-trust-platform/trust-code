@@ -265,7 +265,7 @@ void Echange_impose_base::mettre_a_jour(double temps)
 int Echange_impose_base::initialiser(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().initialiser(temps,zone_Cl_dis().equation().inconnue());
+    h_imp_.valeur().initialiser(temps,zone_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
   return Cond_lim_base::initialiser(temps);
 }
 

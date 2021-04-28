@@ -252,24 +252,24 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
 {
   Probleme_base& prob=pb_base();
 
-  int convergence_pb = 0;
+  converged = false;
   Initialiser_Champs(prob);
 
   int ok=1;
   int compteur;
-  while (!convergence_pb)
+  while (!converged)
     {
       compteur=0;
       Cout<<" "<<finl;
       //Cout<<"Schema_Euler_Implicite : solving of problem "<<prob.que_suis_je()<<finl;
-      while ((!convergence_pb)&&(compteur<nb_ite_max))
+      while ((!converged)&&(compteur<nb_ite_max))
         {
           compteur++;
           prob.updateGivenFields();
-          convergence_pb = Iterer_Pb(prob,compteur, ok);
+          converged = Iterer_Pb(prob,compteur, ok);
           Cout<<" "<<finl;;
         }
-      if (!ok || (!convergence_pb && compteur == nb_ite_max))
+      if (!ok || (!converged && compteur == nb_ite_max))
         {
           Cout<<"!!! Schema_Euler_Implicite has not converged at t="<< temps_courant_ << " with dt =" << dt_<< " !!!" << finl;
           converged = false;

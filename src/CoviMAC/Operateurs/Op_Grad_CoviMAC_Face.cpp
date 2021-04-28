@@ -214,7 +214,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         for (e = fgrad_e(i), fb = e - ne_tot, n = 0, m = 0; n < N; n++, m += (M > 1)) for (j = 0; j < 2; j++)
             {
               double fac = mu(f, n, j) * fgrad_c(i, m, j);
-              gf(n, j) += fac * (e < ne_tot ? press(e, m) : fcl(fb, 0) == 1 ? ref_cast(Neumann, cls[fcl(fb, 1)].valeur()).flux_impose(fcl(fb, 2), m) : gb(e - ne_tot, n));
+              gf(n, j) += fac * (e < ne_tot ? press(e, m) : fcl(fb, 0) == 1 ? ref_cast(Neumann, cls[fcl(fb, 1)].valeur()).flux_impose(fcl(fb, 2), m) : gb(e - ne_tot, m));
               if (mat_p && e < ne_tot) dgf_pe[n][j][e] += fac;
               if (mat_v && fb >= 0 && dgb_v.count(M * fb + m)) dgf_gb[n][j][M * fb + m] += fac;
             }

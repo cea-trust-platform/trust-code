@@ -114,7 +114,7 @@ double Op_Conv_EF_Stab_CoviMAC_Face::calculer_dt_stab() const
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
           {
             flux(n) += pf(f) * fs(f) * dabs(vit(f, n));
-            if (fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //prise en compte de la contribution aux faces
+            if (0 && fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //prise en compte de la contribution aux faces
           }
       for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, vol(n) / flux(n));
     }
@@ -194,7 +194,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : 0), n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
             if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
             //contribution a dfac
-            for (e = f_e(f, i), eb = f_e(f, comp ? !i : i), n = 0; n < N; n++) for (m = 0; m < N; m++)
+            for (e = f_e(f, i), eb = f_e(f, i), n = 0; n < N; n++) for (m = 0; m < N; m++)
                 dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * pe(eb >= 0 ? eb : f_e(f, 0)) * masse(n, m)
                                                       * (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.) * alpha) / 2;
           }

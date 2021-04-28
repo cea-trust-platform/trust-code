@@ -150,10 +150,10 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
       return cv;
     }
 
-  /* cas restant : equation thermique d'un Pb_conduction relie a un Pb_Multiphase -> on regle semi_impl si necessaire, puis on resout */
+  /* cas restant : equation thermique d'un Pb_Multi ou d'un Pb_conduction -> on regle semi_impl si necessaire, puis on resout */
   const std::string& nom_inco = eqn.inconnue().le_nom().getString();
   tabs_t semi_impl; /* en ICE, les temperatures de tous les problemes sont explicites */
-  const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, ref_cast(Conduction, eqn).operateur(0).l_op_base());
+  const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
   if (!sets_) for (auto &&op_ext : op_diff.op_ext)
       semi_impl[nom_inco + (op_ext != &op_diff ? "_" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue().passe();
 

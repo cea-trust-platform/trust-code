@@ -57,7 +57,7 @@ Entree& Echange_contact_CoviMAC::readOn(Entree& s )
 
 int Echange_contact_CoviMAC::initialiser(double temps)
 {
-  Echange_externe_impose::completer();
+  Echange_externe_impose::initialiser(temps);
   Champ_front_calc ch;
   ch.creer(nom_autre_pb_, nom_bord_, nom_champ_);
   fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis()); //frontieres
