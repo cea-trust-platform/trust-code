@@ -1166,7 +1166,184 @@ You can visualize this report by:\\
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{{\bf{ICoCo and TrioCFD}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\tableofcontents[currentsection, currentsubsection]
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Why using TrioCFD in ICoCo?}
+\begin{block}{Why using TrioCFD?}
+Using TrioCFD allows you to get access to
+    \begin{itemize}
+    \item [$\circ$] Turbulence models since its models are in TrioCFD since the version 1.8.0
+    \item [$\circ$] Access to other physics based models,
+    \item [$\circ$] Etc...
+    \end{itemize}
+\end{block}
 
+\begin{block}{}
+You can couple your code (with an ICoCo interface) with TrioCFD instead of TRUST.\\
+\end{block}
+
+\begin{block}{}
+The procedure is described in this exercice. However, it depends on the TrioCFD version you are using:
+\begin{itemize}
+\item if you are using your own version, you can modify it by adding ICoCo
+\item if you are using a network version, you can create a baltik that depends on both: TrioCFD and ICoCo
+\end{itemize}
+\textbf{In both cases, you should load the environment of your baltik.}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{What if you are using you own TrioCFD version?}
+
+\begin{block}{If you want to use you own TrioCFD version?}
+
+a) Edit the project.cfg of TrioCFD:\\
+    > cd PathToTrioCFD \\
+    > source env\_TrioCFD.sh \\
+    > echo "MEDICoCo : \$TRUST\_ROOT/Outils/ICoCo/ICoCo\_src" >> project.cfg
+\end{block}
+
+\begin{block}{}
+b) Configure and compile TrioCFD:\\
+> ./configure \\
+> make optim debug \\
+> make module\_optim module\_debug
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{What if you are using a network version of TrioCFD?}
+
+\begin{block}{If using a network version of TrioCFD?}
+
+a) Create a baltik project with dependency to TrioCFD:\\
+    > source env\_TrioCFD.sh \\
+    > cd PathWhereYouWantToCreateYourBaltik\\
+    > triocfd -baltik BaltikName \\
+\end{block}
+
+\begin{block}{}
+b) Add ICoCo as a dependency of your baltik project:\\
+    > cd BaltikName \\
+    > echo "MEDICoCo : \$TRUST\_ROOT/Outils/ICoCo/ICoCo\_src" >> project.cfg
+\end{block}
+
+\begin{block}{}
+c) Configure and compile your baltik project:\\
+> ./configure \\
+> source env\_*.sh \\
+> make optim debug \\
+> make module\_optim module\_debug
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Create a test case and run it with TrioCFD}
+
+\begin{block}{Copy a turbulent TrioCFD test case}
+
+    > source \$project\_directory/full\_env\_*.sh \\
+    > trust -copy ThHyd\_keps\_VEF \\
+    > cp -r ThHyd\_keps\_VEF ThHyd\_keps\_VEF\_ICoCo \\
+    > mv ThHyd\_keps\_VEF ThHyd\_keps\_VEF\_TrioCFD \\
+\end{block}
+
+\begin{block}{Run the test case using TrioCFD executable}
+    > cd ThHyd\_keps\_VEF\_TrioCFD \\
+    Edit ThHyd\_keps\_VEF.data and:
+    \begin{itemize}
+    \item Remove lata block in the post-processings part.
+    \item Replace lml by lata in the same block
+    \item add "\textit{format\ lata}" in the new lata block after the  "\textit{Definition\_champs}" block\\
+    \end{itemize}
+
+    > trust ThHyd\_keps\_VEF.data\\
+    > cd ..\\
+    Now you have reference lata results given by TrioCFD executable. We will compare it with the lata results issued from the run using ICoCo.
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Prepare the test for ICoCo run}
+
+\begin{block}{Prepare the testcase for ICoCo run without exchange}
+> cd ThHyd\_keps\_VEF\_ICoCo \\
+Edit ThHyd\_keps\_VEF.data and:
+\begin{itemize}
+\item Remove the lata block in the post-processings part
+\item replace lml by lata
+\item add "\textit{format\ lata}" in the new lata block after the  "\textit{Definition\_champs}" block\\
+\item Add the following line after the "\textit{dimension}" definition:\\
+Nom ICoCoProblemName Lire ICoCoProblemName pb
+\item Comment the "\textit{solve pb}" instruction at the end of the datafile.
+\end{itemize}
+
+> folder="\$TRUST\_ROOT/doc/TRUST/exercices/ICoCo"\\
+> cp \$folder/main\_ThHyd\_keps\_VEF\_ICoCo.cpp main.cpp
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Run the test case with ICoCo}
+
+
+\begin{block}{Run the test case using ICoCo without any exchange}
+> sh \$MEDICoCo\_project\_directory/share/bin/create\_Makefile\\
+> make \\
+> ./couplage
+\end{block}
+
+\begin{block}{If you get, during the make step, an error similar to:}
+
+\textbf{g++: error: \$project\_directory/build/src/exec\_opt/\_TRUSTModule\_opt.so: No such file or directory} \\
+
+be sure that you forget a step during the compilation of your baltik (or TrioCFD) project. You can do:\\
+> cd \$project\_directory\\
+> make module\_optim module\_debug \\
+and then come back to the the folder where you have your ICoCo problem and re-run: \\
+> make \\
+> ./couplage
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Check results}
+
+\begin{block}{Compare TrioCFD results with ICoCo results}
+> cd ThHyd\_keps\_VEF\_ICoCo \\
+> compare\_lata ThHyd\_keps\_VEF.lata ../ThHyd\_keps\_VEF\_TrioCFD/ThHyd\_keps\_VEF.data \\
+Results are identical!!!
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{{\bf{Conclusions and further simulations!}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\tableofcontents[currentsection, currentsubsection]
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Conclusions and further simulations!}
+
+\begin{block}{Conclusion}
+This tutorial gave you an idea on how to run TRUST test cases with:
+\begin{itemize}
+\item no exchange by ICoCo
+\item imposing values from ICoCo as boundary conditions in TRUST datafile
+\item exchanging values between two datafiles where coupling is realised with ICoCo
+\end{itemize}
+and on how to run TrioCFD cases with ICoCo without any exchange, but we beleive you are able to perform exchange in ICoCo with TrioCFD datafiles easily.
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
