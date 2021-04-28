@@ -1,0 +1,5 @@
+Nom ok
+
+Read_file ok is_ok
+ecrire ok
+system "cp docond_VEF_3D_dom2.lml docond_VEF_3D_ICoCo_py.lml"

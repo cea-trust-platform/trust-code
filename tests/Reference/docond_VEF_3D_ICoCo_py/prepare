@@ -1,0 +1,26 @@
+#!/bin/bash
+# Elie Saikali & Adrien Bruneton
+# Avril 2021
+
+
+### Decoupage
+trust docond_VEF_3D_mesh1.data 1>docond_VEF_3D_mesh1.out 2>docond_VEF_3D_mesh1.err
+trust docond_VEF_3D_mesh2.data 1>docond_VEF_3D_mesh2.out 2>docond_VEF_3D_mesh2.err
+
+### Run ICoCo
+# Only if MPI is installed
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+    source $TRUST_MEDCOUPLING_ROOT/env.sh
+    source $TRUST_ROOT/Outils/ICoCo/ICoCo_src/share/swig/env.sh
+    mpirun -np 4 python main.py > main.out
+
+    if [ $? -eq 0 ]
+    then
+      echo OK > is_ok
+    else
+      rm -f is_ok
+    fi
+else # NO MPI
+    echo OK > is_ok
+fi
