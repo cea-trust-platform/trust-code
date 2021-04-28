@@ -263,7 +263,7 @@ void Loi_Etat_base::calculer_lambda()
               tab_lambda[i] = mu0 * tab_Cp[i] / Pr_;
             }
         }
-      else if (sub_type(Champ_Don_base,mu.valeur()) && tab_mu.nb_dim() > 1 )
+      else if (tab_mu.nb_dim() > 1)
         {
           for (i=0 ; i<n ; i++)
             {
@@ -317,7 +317,7 @@ void Loi_Etat_base::calculer_nu()
               tab_nu[i] = mu0 / tab_rho[i];
             }
         }
-      else if (sub_type(Champ_Don_base,mu.valeur()) && tab_mu.nb_dim() > 1 )
+      else if (tab_mu.nb_dim() > 1)
         {
           for (i=0 ; i<n ; i++)
             {
@@ -349,7 +349,7 @@ void Loi_Etat_base::calculer_nu()
               tab_nu[i] = mu0 /rhoelem;
             }
         }
-      else if (sub_type(Champ_Don_base,mu.valeur()) && tab_mu.nb_dim() > 1 )
+      else if (tab_mu.nb_dim() > 1)
         {
           for (i=0 ; i<n ; i++)
             {

@@ -1,0 +1,91 @@
+#!/bin/bash
+
+mu='2+_M_*cos(2*pi*x)*cos(2*pi*y)'
+rho='1/(2+sin(2*pi*x)*sin(2*pi*y))'
+vitesse='2+sin(2*pi*x)*sin(2*pi*y) 0'
+pression='cos(2*pi*x)*cos(2*pi*y)'
+debitx='1'
+debity='0'
+REF_u='sqrt(17)/2'
+REF_p='1/4'
+source1='(8*_BETA_*pi^2+16*pi^2-16/3*_GAMMA_*pi^2+(8*_BETA_*_M_*pi^2+16*_M_*pi^2-16/3*_GAMMA_*_M_*pi^2)*cos(2*pi*x)*cos(2*pi*y))*sin(2*pi*x)*sin(2*pi*y)-2*pi*sin(2*pi*x)*cos(2*pi*y)+2*_ALPHA_*pi*cos(2*pi*x)*sin(2*pi*y)'
+source2='4*_BETA_*_M_*pi^2*sin(2*pi*x)^2*cos(2*pi*y)^2+(-2*pi-8/3*_GAMMA_*_M_*pi^2*cos(2*pi*x)*sin(2*pi*y))*cos(2*pi*x)*sin(2*pi*y)+(-8*_BETA_*pi^2+16/3*_GAMMA_*pi^2+(-4*_BETA_*_M_*pi^2+8/3*_GAMMA_*_M_*pi^2)*cos(2*pi*x)*cos(2*pi*y))*cos(2*pi*x)*cos(2*pi*y)'
+
+# liste_dis = discretisations considerees
+# liste_calculs_VDF = valeurs de (m,alpha,beta,gamma) + schema de convection en VDF
+# points_VDF = nombre de points de maillage le long d'un cote du carre en VDF
+
+liste_dis=(VDF)
+liste_calculs_VDF="1000_amont 1000_quick 1000_centre 1100_amont 1100_quick 1100_centre"
+points_VDF=(3 5 9 17 33 65 129 257)
+
+
+dernier_calcul=VDF_maillage_8_1100_centre
+
+schema_temps='sch_impl'
+schema_diff=''
+
+# Boucles sur tous les cas
+#-------------------------
+
+for j in `seq 1 ${#liste_dis[@]}`
+do
+	dis=`echo ${liste_dis[$j-1]}`
+
+	if [ "$dis" = "VDF" ]
+		then	type='VDF'
+			trianguler=''
+			loc='elem'
+			nb_maillages=${#points_VDF[@]}
+			liste_calculs=$liste_calculs_VDF
+	fi
+
+	for k in $liste_calculs
+	do
+		nom=$k
+		cas_conv=`echo $nom | cut -c 6-`
+
+		if [ "$cas_conv" = "amont" ] || [ "$cas_conv" = "quick" ] || [ "$cas_conv" = "centre" ]
+			then	schema_conv=$cas_conv
+		fi
+
+		m=${nom:0:1}
+		alpha=${nom:1:1}
+		beta=${nom:2:1}
+		gamma=${nom:3:1}
+
+		for i in `seq 1 $nb_maillages`
+		do
+			if [ "$dis" = "VDF" ]
+				then	N=`echo ${points_VDF[$i-1]}`
+			fi
+			
+			mkdir -p ${dis}_maillage_${i}_${nom}
+			cp extrait_coupe.sh ${dis}_maillage_${i}_${nom}
+
+			sed --expression "s@_RHO_@$rho@"		_Cas.data > ${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_MU_@$mu@" 		${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_VITESSE_@$vitesse@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_PRESSION_@$pression@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_REFU_@$REF_u@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_REFP_@$REF_p@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_SOURCE1_@$source1@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_SOURCE2_@$source2@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_CONV_@$schema_conv@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_DIFF_@$schema_diff@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_SCH_@$schema_temps@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_TRI_@$trianguler@"	${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_LOC_@$loc@"		${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i --expression "s@_TYPE_@$type@"		${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_M_/'$m'/g'				${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_ALPHA_/'$alpha'/g'			${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_BETA_/'$beta'/g'			${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_GAMMA_/'$gamma'/g'			${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_N_/'$N'/g'				${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_DEBITX_/'$debitx'/g'		${dis}_maillage_${i}_${nom}/Cas.data
+			sed -i 's/_DEBITY_/'$debity'/g'		${dis}_maillage_${i}_${nom}/Cas.data
+		done
+	done
+done
+
+cp post_run $dernier_calcul
