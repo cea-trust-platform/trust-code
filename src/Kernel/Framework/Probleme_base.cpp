@@ -1539,7 +1539,12 @@ const Equation_base& Probleme_base::equation(const Nom& type) const
       if(Type_eqn==Type)
         return equation(i);
     }
-  Cerr << que_suis_je() << "does not contain any equation of type : " << type;
+  Cerr << que_suis_je() << "does not contain any equation of type: " << type << finl;
+  Cerr << "Here is the list of possible equations for a " << que_suis_je() << " problem: " << finl;
+  for(int i=0; i<nombre_d_equations(); i++)
+    {
+      Cerr << "\t- " << equation(i).que_suis_je() << finl;
+    }
   exit();
   // Pour les compilos;
   return equation(0);
@@ -1591,7 +1596,12 @@ Equation_base& Probleme_base::equation(const Nom& type)
       if(Type_eqn==Type)
         return equation(i);
     }
-  Cerr << que_suis_je() << "does not contain any equation of type : " << type;
+  Cerr << que_suis_je() << "does not contain any equation of type: " << type << finl;
+  Cerr << "Here is the list of possible equations for a " << que_suis_je() << " problem: " << finl;
+  for(int i=0; i<nombre_d_equations(); i++)
+    {
+      Cerr << "\t- " << equation(i).que_suis_je() << finl;
+    }
   exit();
   // Pour les compilos;
   return equation(0);
