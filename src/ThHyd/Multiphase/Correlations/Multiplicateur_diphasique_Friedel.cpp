@@ -61,9 +61,8 @@ void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const d
          rho_m = alpha[n_l] * rho[n_l] + alpha[n_g] * rho[n_g], //masse volumlque du melange
          Fr = G * G / (9.81 * Dh * rho_m), We = G * G * Dh / (gamma * rho_m), //Froude, Weber,
          Phi2 = E + 3.24 * F * H * std::pow(Fr, -0.045) * std::pow(We, -0.035), //le multiplicateur!
-         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), //fraction appliquee a la vapeur
-         frac_l = 1 - frac_g; //fraction appliquee au liquide
+         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g; //fraction appliquee a la vapeur
   coeff = 0;
   coeff(n_l, 1) = frac_l * Phi2;
-  coeff(n_g, 1) = frac_g * Phi2; //transition vers le frottement monophasique vapeur
+  coeff(n_g, 0) = frac_g; //basculement vers le frottement "vapeur seule"
 }

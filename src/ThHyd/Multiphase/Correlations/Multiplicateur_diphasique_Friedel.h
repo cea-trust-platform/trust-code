@@ -41,7 +41,7 @@ public:
                            const double *mu, const double Dh, const double gamma, const double *Fk,
                            const double Fm, DoubleTab& coeff) const;
 protected:
-  double alpha_min_ = 0.95, alpha_max_ = 0.99;
+  double alpha_min_ = 0.98, alpha_max_ = 1;
   int n_l = -1, n_g = -1; //indices des phases frottantes : liquide, gaz
 };
 
