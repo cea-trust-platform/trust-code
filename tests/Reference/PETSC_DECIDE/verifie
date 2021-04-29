@@ -1,0 +1,14 @@
+#!/bin/bash
+# Comparaison en parallel
+ref=PAR_PETSC_DECIDE
+if [ -f $ref.lata ]
+then
+   jdd=NON_PETSC_DECIDE
+   cp $ref.data $jdd.data
+   sed -i "1,$ s?petsc_decide 1?petsc_decide 0?" $jdd.data
+   trust $jdd.data 2 1>$jdd.out 2>$jdd.err || exit -1 
+   compare_lata $ref.lata $jdd.lata || exit -1 
+   echo "PETSC_DECIDE 1 vs 0:"
+   sdiff $ref.TU $jdd.TU  | grep "Secondes / solveur"
+fi
+exit 0
