@@ -13,39 +13,29 @@
 #
 #*****************************************************************************
 
-#classe decrivant un chapitre
-
-import sys, os
-
 from Figure import Figure
 from Tableau import Tableau,Tableau_performance
 from Visu import Visu
+from GenericSection import GenericSection
 from lib import GestionMessages
 from lib import getNomFonction
 from lib import extraireMotcleValeur,print_description
-from lib import chaine2Ascii
 from lib import _accoladeF,verifie_accolade_suivante
 
-class Chapitre:
+class Chapitre(GenericSection):
     '''Classe decrivant un chapitre tel qu il devra apparaitre dans le rapport de validation de TRUST.'''
 
-    #constructeur
-    def __init__(self, verbose=0, output=''):
+    def __init__(self, verbose=0, output='',namePart=None):
         '''Constructeur.'''
-        if output=='':
-            self.gestMsg = GestionMessages(verbose,'log')
-        else:
-            self.gestMsg = output
-        self.verbose = verbose
-        #initialisations
+        if namePart is None:       # Handle Sous chapitre possibility
+            namePart = "Chapitre"
+        super().__init__(verbose=verbose, output=output, namePart=namePart)
         self.titre       = 'Undefined'
-        self.description = []
-        self.listeFigures = []
         # on stovke tout dans listeFigures afin d'avoir les tables au milieu des courbes...
         #self.listeTabs= []
 
-    #lecture des parametres du chapitre dans le fichier de parametres
     def printFichierParametres(self,indice):
+        """ Override of base method """
         print("Chapitre {")
         dec='\t'
         if self.titre != 'Undefined' : print(dec,"titre" ,self.titre)
@@ -59,6 +49,7 @@ class Chapitre:
             pass
         print("}")
         return indice
+
     def lireParametres(self, fichier,casTest):
         '''Lecture des parametres du chapitre.'''
         self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
@@ -105,25 +96,7 @@ class Chapitre:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR,'Chapter', dico,motcle_lu,fichier=fichier)
                 if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
-    #generation des graphiques correspondant aux figures du chapitre
-    def genererGraphes(self, dest, indice,debug_figure,novisit):
-        '''Generation des graphiques correspondant au chapitre.'''
-        from Visu import Visu as vis
-        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
-        for figure in self.listeFigures:
-            if not isinstance(figure, vis) or novisit==False:
-                figure.genererGraphe(dest, indice,debug_figure)
-                indice += 1
-        return indice
-
-
-    # Methodes d'affichage des infos
     def afficherParametres(self):
-        '''Affichage des parametres du chapitre.'''
+        ''' Override: affichage des parametres du chapitre avec en tete le titre.'''
         self.gestMsg.ecrire(GestionMessages._INFO, '\tTitre=  %s' % self.titre)
-        self.gestMsg.ecrire(GestionMessages._INFO, '\tDesc =  %s' % self.description)
-        for figure in self.listeFigures:
-            figure.afficherParametres()
-            pass
-        pass
-    pass
+        super().afficherParametres()

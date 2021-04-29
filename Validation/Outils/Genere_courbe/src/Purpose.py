@@ -13,47 +13,21 @@
 #
 #*****************************************************************************
 
-#classe decrivant le paragraphe Purpose
-
-import sys, os
-
 from Figure import Figure
 from Visu import Visu
 from lib import GestionMessages
+from GenericSection import GenericSection
 from lib import getNomFonction
-from lib import extraireMotcleValeur,print_description
-from lib import chaine2Ascii
+from lib import extraireMotcleValeur
 from lib import _accoladeF,verifie_accolade_suivante
 
-class Purpose:
+class Purpose(GenericSection):
     '''Classe decrivant la partie PURPOSE telle qu elle devra apparaitre dans le rapport de validation de TRUST.'''
 
-    #constructeur
     def __init__(self, verbose=0, output=''):
         '''Constructeur.'''
-        if output=='':
-            self.gestMsg = GestionMessages(verbose,'log')
-        else:
-            self.gestMsg = output
-        self.verbose = verbose
-        #initialisations
-        self.description = []
-        self.listeFigures = []
+        super().__init__(verbose=verbose, output=output, namePart="Purpose")
 
-    #lecture des parametres de la partie Purpose dans le fichier de parametres
-    def printFichierParametres(self,indice):
-        print("Purpose {")
-        dec='\t'
-
-        print_description(self.description,dec)
-
-        for fig in self.listeFigures :
-            print(dec,"# definition figure %d"%(indice))
-            fig.printFichierParametres()
-            indice += 1
-            pass
-        print("}")
-        return indice
     def lireParametres(self, fichier,casTest):
         '''Lecture des parametres du paragraphe Purpose.'''
         self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
@@ -86,24 +60,3 @@ class Purpose:
                     self.gestMsg.ecrire_usage(GestionMessages._ERR,'Purpose', dico,motcle_lu,fichier=fichier)
                 if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0
 
-    #generation des graphiques correspondant aux figures de la partie purpose
-    def genererGraphes(self, dest, indice,debug_figure,novisit):
-        '''Generation des graphiques correspondant a la partie purpose.'''
-        from Visu import Visu as vis
-        self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
-        for figure in self.listeFigures:
-            if not isinstance(figure, vis) or novisit==False:
-                figure.genererGraphe(dest, indice,debug_figure)
-                indice += 1
-        return indice
-
-
-    # Methodes d'affichage des infos
-    def afficherParametres(self):
-        '''Affichage des parametres du paragraphe Purpose.'''
-        self.gestMsg.ecrire(GestionMessages._INFO, '\tDesc =  %s' % self.description)
-        for figure in self.listeFigures:
-            figure.afficherParametres()
-            pass
-        pass
-    pass
