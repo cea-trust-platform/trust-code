@@ -62,11 +62,7 @@ if [ "`grep -i superlu $TRUST_ENV/make.liba`" != "" ]
 then
    i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
 fi
-#if [ $exec = $exec_opt ] # Pastix crashes in debug...
-#then
-# Crash also in optimized when feenableexcept activated
-#   let i=$i+1;solver[$i]="Petsc Cholesky_Pastix { impr }"							;sym[$i]=1 
-#fi
+let i=$i+1;solver[$i]="Petsc Cholesky_Cholmod { impr }"                               		;par[$i]=0      ;sym[$i]=1 
 let i=$i+1;solver[$i]="Petsc Cholesky_Umfpack { impr }"						;par[$i]=0	;sym[$i]=1 
 let i=$i+1;solver[$i]="Petsc Cholesky_Lapack { impr }"						;par[$i]=0	;sym[$i]=1 
 

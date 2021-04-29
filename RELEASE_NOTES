@@ -22,7 +22,7 @@ XX/XX/21 (TRUST)  Performance : PETSc matrix optimizations (update coefficients 
 01/02/21 (TRUST)  Keyword     : Add PIPECG2 kewyord to enable a parallel optimized CG (single non-blocking allreduce per 2 iterations)
 01/02/21 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for AmgX GPU solvers and PETSc CPU/GPU solvers
 01/02/21 (TRUST)  Keyword     : Add parallel LU/Cholesky factorization on GPU with SuperLU: petsc_gpu cholesky_superlu { }
-01/02/21 (TRUST)  Keyword     : Add sequential Cholesky (not LU) factorization on GPU with Cholmod: petsc_gpu cholesky_cholmod { }
+01/02/21 (TRUST)  Keyword     : Add fast sequential Cholesky (not LU) factorization with Cholmod: petsc cholesky_cholmod { }
 01/02/21 (TRUST)  Performance : Introduce GPU support (./configure -cuda) for solvers with keywords: amgx (using AmgX library) or petsc_gpu (using PETSc library)
 01/02/21 (TRUST)  Library     : Update PETSc to 3.14.1
 29/01/21 (TRUST)  Keyword     : Old syntax of Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, Champ_Fonc_Tabule, Champ_Fonc_Fonction_txyz_Morceaux is now obsolete. The depending field name should be before the number of components
