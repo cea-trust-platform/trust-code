@@ -141,7 +141,7 @@ void declare_stat_counters()
   assemblage_sys_counter_ = statistiques().new_counter(1, "Assembleur::assembler", 0);
   update_vars_counter_ = statistiques().new_counter(1, "Schema_Implicite_4eqs::update_vars", 0);
   update_fields_counter_ = statistiques().new_counter(1, "Probleme_Diphasique_base::updateGivenFields", 0);
-  mettre_a_jour_counter_  = statistiques().new_counter(1, "Schema_Temps_base::mettre_a_jour", 0);
+  mettre_a_jour_counter_  = statistiques().new_counter(1, "::mettre_a_jour", 0);
 
   // Divers
   divers_counter_ = statistiques().new_counter(1, "Divers", 0);
