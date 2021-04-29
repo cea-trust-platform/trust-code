@@ -1,0 +1,84 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL NOT #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Read_file upwind.geo ;
+Transformer dom x*0.5 y
+# END MESH #
+# BEGIN PARTITION
+Postraiter_domaine
+{
+   fichier mesh.lata
+   format lata
+   domaine dom
+}
+
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+polymac dis
+
+Schema_euler_implicite sch
+Read sch
+{
+	nb_pas_dt_max 10
+	tinit 0
+	tmax 2.5
+	dt_min 0.001
+	dt_max 0.001
+	facsec 1
+	facsec_max 1
+	solveur implicite { seuil_convergence_solveur 1.e-12 }
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { } 
+		convection { amont }
+		diffusion {  }
+		initial_conditions {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Obstacle paroi_fixe
+			Symetrie symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			     Champ_front_Uniforme 2  1. 0.
+		}
+	}
+	postraitement
+	{
+		champs dt_post 1e8 { pression }
+	}
+}
+Solve pb
+End
