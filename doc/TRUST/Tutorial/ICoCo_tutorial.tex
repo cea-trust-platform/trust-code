@@ -1084,7 +1084,7 @@ Paroi\_echange1 paroi\_temperature\_imposee ch\_front\_input \{ \\ nb\_comp 1 no
 \item In the docond\_VEF\_3D\_dom1.data datafile, add a "Definition\_champs" block in the post-processings:\\
 \texttt{ \hspace{0.2cm} FLUX\_SURFACIQUE\_OUT\_DOM1 Interpolation \{             } \\
 \texttt{ \hspace{0.5cm}    localisation elem                                     } \\
-\texttt{ \hspace{0.5cm}    domaine dom\_fluide\_boundaries\_Paroi\_echange1      } \\
+\texttt{ \hspace{0.5cm}    domaine dom\_solide\_boundaries\_Paroi\_echange1      } \\
 \texttt{ \hspace{0.5cm}    source Morceau\_equation \{                           } \\
 \texttt{ \hspace{0.7cm}        type operateur numero 0 option flux\_surfacique\_bords } \\
 \texttt{ \hspace{0.7cm}        source refChamp \{ Pb\_Champ pb temperature \} } \\
@@ -1320,7 +1320,7 @@ and then come back to the the folder where you have your ICoCo problem and re-ru
 
 \begin{block}{Compare TrioCFD results with ICoCo results}
 > cd ThHyd\_keps\_VEF\_ICoCo \\
-> compare\_lata ThHyd\_keps\_VEF.lata ../ThHyd\_keps\_VEF\_TrioCFD/ThHyd\_keps\_VEF.data \\
+> compare\_lata ThHyd\_keps\_VEF.lata ../ThHyd\_keps\_VEF\_TrioCFD/ThHyd\_keps\_VEF.lata \\
 Results are identical!!!
 \end{block}
 \end{frame}
