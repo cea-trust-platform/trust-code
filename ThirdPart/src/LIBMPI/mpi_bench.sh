@@ -1,14 +1,22 @@
 #!/bin/bash
-NB_PROCS=$1
-shift
-modules=$*
-for mpi in $modules
+# Utilisation des micro benchs OSU
+echo "Usage: $0 nb_proc"
+nb_proc=$1 && [ "$nb_proc" = "" ] && exit 0
+if [ ! -f osu-micro-benchmarks-5.7/mpi/collective/osu_allreduce ]
+then
+   wget http://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-5.7.tar.gz
+   tar xfz osu-micro-benchmarks-5.7.tar.gz
+   cd osu-micro-benchmarks-5.7
+   ./configure CC=`which $TRUST_cc` CXX=`which $TRUST_CC` || exit -1
+   $TRUST_MAKE || exit -1
+else
+   cd osu-micro-benchmarks-5.7/mpi/collective
+fi
+exec="`pwd`/osu_allreduce -m 8:8 -i 100 -f"
+# Bench de mp_sum(double):
+n=2
+while [ $n -lt $nb_proc ]
 do
-   module unload $modules
-   module load $mpi
-   exec=osu-$mpi/libexec/osu-micro-benchmarks/mpi/collective/osu_allreduce
-   if [ -f $exec ]
-   then
-      mpirun -np $NB_PROCS $exec 1>`basename $exec`-$mpi.out 2>&1
-   fi
-done   
+   trust dummy $n
+   n=`echo 2*$n | bc -l`
+done

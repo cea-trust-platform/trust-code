@@ -1,14 +1,17 @@
 #!/bin/bash
 # Run IDE CLion and configure as best as possible on Trust or Baltik project
+
+# Detect Clion:
 clion=`which clion.sh`
 [ "$clion" = "" ] && echo "IDE Clion not found. Check clion.sh is into your PATH." && exit -1
 
-# Detect Trust or Baltik environnement
-env=`ls env* ../env* 2>/dev/null`
+# Load Trust or Baltik environnement:
+env=`ls env_*.sh ../env_*.sh ../../env_*.sh ../../../env_*.sh 2>/dev/null`
 [ "$env" = "" ] && echo "No project found. Go under Baltik or Trust and retry..." && exit 1
 
 # Load environment
 source $env
+
 # Look for CMakeLists.txt
 CMakeLists=`ls build/src/CMakeLists.txt ../build/src/CMakeLists.txt src/CMakeLists.txt ../src/CMakeLists.txt 2>/dev/null`
 [ "$CMakeLists" = "" ] && echo "No CMakeLists.txt found." && exit 1
@@ -44,6 +47,8 @@ do
    echo "Creating a link $PROJECT_ROOT/$rep -> $BUILD_ROOT"
    ln -s -f $BUILD_ROOT $rep
 done
+
+# Run Clion
 echo "Running Clion on $CMakeLists project..."
 echo "Raccourcis:"
 echo "ctrl+F12          : liste des methodes de la classe"

@@ -39,7 +39,6 @@ list_prerequis="bc ed sed awk unzip"
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
 do
-echo $p
   pp=""
   opt="--help"
   [ "$p" = "awk" ] && opt="'BEGIN { print "ok" }'"
