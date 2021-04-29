@@ -91,12 +91,12 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
-                     &p_ar = ch_a_r.passe();
+                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs();
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
                   *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL;
-  int i, j, c, e, d, D = dimension, k, l, n, N = inco.line_size(), nf_tot = zone.nb_faces_tot(),
-                     cL = lambda.dimension_tot(0) == 1, cM = mu.dimension_tot(0) == 1, cR = rho.dimension_tot(0) == 1, cCp = Cp.dimension_tot(0) == 1, is_therm;
+  int i, j, col, e, d, D = dimension, k, l, n, N = inco.line_size(), nf_tot = zone.nb_faces_tot(),
+                       cL = lambda.dimension_tot(0) == 1, cM = mu.dimension_tot(0) == 1, cR = rho.dimension_tot(0) == 1, cCp = Cp.dimension_tot(0) == 1, is_therm;
   const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur().valeur());
   const Changement_phase_base *correlation_G = pbm.has_correlation("changement_phase") ? &ref_cast(Changement_phase_base, pbm.get_correlation("changement_phase").valeur()) : NULL;
   double dt = equation().schema_temps().pas_de_temps();
@@ -146,9 +146,16 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                      phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts), L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
               if ((is_therm = !correlation_G || dabs(G) > dabs(phi / L))) G = phi / L;
               /* enthalpies des phases (dans le sens correspondant au mode choisi pour G) */
-              double dTk_hk = G > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = G > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : sat.dP_Hls(p),
+
+              /* G est-il limite par l'evanescence cote k ou l ? */
+              int n_lim = G > 0 ? k : l, sgn = G > 0 ? 1 : -1; //phase sortante
+              double Glim = sec_m(e, n_lim) / vol + p_ar(e, n_lim) / dt; //changement de phase max acceptable par cette phase
+              if (dabs(G) < Glim) n_lim = -1;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
+              else G = (G > 0 ? 1 : -1) * Glim;//la phase serait evanescente a cause de G -> on le bloque a G_lim (n_lim = k / l)
+
+              double hk = G > 0 ? h(e, k) : sat.Hls(p), dTk_hk = G > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = G > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : sat.dP_Hls(p),
                        hl = G < 0 ? h(e, l) : sat.Hvs(p), dTl_hl = G < 0 && dT_h ? (*dT_h)(e, l) : 0, dP_hl = G < 0 ? (dP_h ? (*dP_h)(e, l) : 0) : sat.dP_Hvs(p);
-              if (is_therm) /* derivees de G en limite thermique */
+              if (n_lim < 0 && is_therm) /* derivees de G en limite thermique */
               {
                   double dP_phi = dP_hi(k, l) * (Tk - Ts) + dP_hi(l, k) * (Tl - Ts) - (hi(k, l) + hi(l, k)) * dP_Ts, dTk_L = -dTk_hk, dTl_L = dTl_hl, dP_L = dP_hl - dP_hk;
                   dP_G = (dP_phi - G * dP_L) / L;
@@ -156,17 +163,11 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   for (n = 0; n < N; n++) da_G(n) = (da_hi(k, l, n) * (Tk - Ts) + da_hi(l, k, n) * (Tl - Ts)) / L;
                 }
 
-              /* G est-il limite par l'evanescence cote k ou l ? */
-              int n_lim = G > 0 ? k : l, sgn = G > 0 ? 1 : -1; //phase sortante
-              double Glim = sec_m(e, n_lim) / vol + p_ar(e, n_lim) / dt; //changement de phase max acceptable par cette phase
-              if (dabs(G) < Glim) n_lim = -2;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
-              else if (Glim < 0) G = 0, n_lim = -1; //la phase serait evanescente meme sans G -> on le met a 0 (n_lim = -1)
-              else G = (G > 0 ? 1 : -1) * Glim;//la phase serait evanescente a cause de G -> on le bloque a G_lim (n_lim = k / l)
 
               if (sub_type(Masse_Multiphase, equation())) //eq de masse -> changement de phase
                 {
                   for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * G;
-                  if (n_lim < -1) /* G par limite thermique */
+                  if (n_lim < 0) /* G par limite thermique */
                     {
                       if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++)  //derivees en alpha
                             (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * da_G(n);
@@ -175,26 +176,28 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                       if (Mp) for (i = 0; i < 2; i++) //derivees en p
                           (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * dP_G;
                     }
-                  else if (n_lim >= 0) for (auto &s_d : vec_m) /* G par evanescence */
+                  else for (auto &s_d : vec_m) /* G par evanescence */
                       for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
-                        for (c = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
-                          (*s_d[1])(N * e + (i ? l : k), c) += (i ? -1 : 1) * sgn * x;
+                        for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
+                          (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * sgn * x;
                 }
               else if (sub_type(Energie_Multiphase, equation())) //eq d'energie -> transfert de chaleur
                 {
-                  //on suppose que la limite thermique s'applique toujours cote vapeur
-                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? 1 : -1) * (hi(l, k) * (Tl - Ts) - G * hl);
+                  //on suppose que la limite thermique s'applique d'un cote : c (=0,1) / n_c (=k,l) / signe du flux sortant de la phase k : s_c (=1,-1)
+                  int c = (a_r(e, k) > a_r(e, l)), n_c = c ? l : k, n_d = c ? k : l, s_c = c ? -1 : 1;
+                  double Tc = c ? Tl : Tk, hc = c ? hl : hk, dT_hc = c ? dTl_hl : dTk_hk, dP_hc = c ? dP_hl : dP_hk;
+                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + G * hc);
                   /* derivees (y compris celles en G, sauf dans le cas limite)*/
                   if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en alpha
-                        (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? 1 : -1) * (da_hi(l, k, n) * (Tl - Ts) - (n_lim < -1) * da_G(n) * hl);
+                        (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * da_hi(n_c, n_d, n) * (Tc - Ts) + (n_lim < 0) * da_G(n) * hc);
                   if (Mt) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en T
-                        (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? 1 : -1) * (dT_hi(l, k, n) * (Tl - Ts) + (n == l) * (hi(l, k) - G * dTl_hl) - (n_lim < -1) * dT_G(n) * hl);
+                        (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * (dT_hi(n_c, n_d, n) * (Tc - Ts) + (n == n_c) * hi(n_c, n_d)) + (n_lim < 0) * dT_G(n) * hc + G * (n == n_c) * dT_hc);
                   if (Mp) for (i = 0; i < 2; i++) //derivees en p
-                      (*Mp)(N * e + (i ? l : k), e) += vol * (i ? 1 : -1) * (dP_hi(l, k) * (Tl - Ts) - hi(l, k) * dP_Ts - G * dP_hl - (n_lim < -1) * dP_G * hl);
+                      (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d) * (Tc - Ts) - hi(n_c, n_d) * dP_Ts) + (n_lim < 0) * dP_G * hc + G * dP_hc);
                   if (n_lim >= 0) for (auto &s_d : vec_m) /* derivees de G dans le cas evanexcent */
                       for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
-                        for (c = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
-                          (*s_d[1])(N * e + (i ? l : k), c) += (i ? -1 : 1) * hl * sgn * x;
+                        for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
+                          (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * hc * sgn * x;
                 }
             }
           else if (sub_type(Energie_Multiphase, equation())) /* pas de saturation : echanges d'energie seulement */

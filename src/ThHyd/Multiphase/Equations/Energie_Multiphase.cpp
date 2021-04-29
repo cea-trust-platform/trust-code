@@ -86,11 +86,11 @@ Entree& Energie_Multiphase::readOn(Entree& is)
   evanescence.associer_eqn(*this);
   Convection_Diffusion_std::readOn(is);
 
-  if (!evanescence.non_nul())
-    {
-      EChaine eva("{ homogene { alpha_res 1e-6 } }");
-      eva >> evanescence;
-    }
+  // if (!evanescence.non_nul())
+  //   {
+  //     EChaine eva("{ homogene { alpha_res 1e-6 } }");
+  //     eva >> evanescence;
+  //   }
   //Nom unite;
   //if (dimension+bidim_axi==2) unite="[W/m]";
   //else unite="[W]";
