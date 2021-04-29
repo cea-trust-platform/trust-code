@@ -11,6 +11,7 @@
 #include <Masse_ajoutee_Coef_Constant.h>
 #include <Multiplicateur_diphasique_Friedel.h>
 #include <Multiplicateur_diphasique_Lottes_Flinn.h>
+#include <Multiplicateur_diphasique_homogene.h>
 void instancie_src_ThHyd_Multiphase_Correlations() {
 Cerr << "src_ThHyd_Multiphase_Correlations" << finl;
 Changement_phase_Silver_Simpson inst1;verifie_pere(inst1);
@@ -21,4 +22,5 @@ Frottement_interfacial_bulles inst5;verifie_pere(inst5);
 Masse_ajoutee_Coef_Constant inst6;verifie_pere(inst6);
 Multiplicateur_diphasique_Friedel inst7;verifie_pere(inst7);
 Multiplicateur_diphasique_Lottes_Flinn inst8;verifie_pere(inst8);
+Multiplicateur_diphasique_homogene inst9;verifie_pere(inst9);
 }
