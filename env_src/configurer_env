@@ -803,18 +803,6 @@ if [ "$compiler_found" = 0 ] ; then
   exit -1
 fi
 
-# Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.6.0.26 sur Fedora30 pour libstdc++.so.6.0.25), on vire:
-# Le pb se produit au niveau de MEDCoupling
-stdcpp_conda=`cd $TRUST_ROOT/exec/python/lib;ls libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
-if [ "$stdcpp_conda" != "" ]
-then
-    root_gnu=`dirname $TRUST_F77_BASE` && root_gnu=`dirname $root_gnu`
-    stdcpp_sys=`ls $root_gnu/lib64/libstdc++.so.6.0.* /usr/lib*/libstdc++.so.6.0.* /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null | head -1 | $TRUST_Awk -F/ '{print $NF}' | cut -d'.' -f3-6`
-    remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
-    #[ $remove_stdcpp_conda -eq 1 ] && echo "we remove libstdc++.so* from conda" && rm -f $TRUST_ROOT/exec/python/lib/libstdc++.so*
-    [ $remove_stdcpp_conda -eq 1 ] && conda install -y -c conda-forge libstdcxx-ng=9.3.0 # ToDo mettre a jour conda
-fi
-
 ######################################################################
 # On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
 # Update to 3.0.1 to fix recursive cmake
@@ -897,7 +885,7 @@ then
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
    ecrit $m"|"$e"|"$env;eval $e
-   echo "ADD_PATH \$CUDA_ROOT/bin" >> $env
+   [ "$CUDA_ROOT" != /usr ] && echo "ADD_PATH \$CUDA_ROOT/bin" >> $env # Ne pas ajouter /usr/bin au PATH car sinon python, conda pris sont ceux du systeme !
    echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT${CUDA_LIB#$CUDA_ROOT} " >> $env
 else
    TRUST_USE_CUDA=0
