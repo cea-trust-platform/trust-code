@@ -1,0 +1,54 @@
+dimension 2
+Domaine dom
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 101 101
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
+}
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 25 }
+    Larg_joint 2
+    zones_name metis
+    ecrire_lata metis
+    reorder 0
+    single_hdf
+}
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 25 }
+    Larg_joint 2
+    zones_name metis_reorder
+    ecrire_lata metis_reorder
+    reorder 1
+    single_hdf
+}
+Partition dom
+{
+    Partition_tool tranche { tranches 5 5 }
+    Larg_joint 2
+    zones_name tranche
+    ecrire_lata tranche
+    reorder 0
+    single_hdf
+}
+Partition dom
+{
+    Partition_tool tranche { tranches 5 5 }
+    Larg_joint 2
+    zones_name tranche_reorder
+    ecrire_lata tranche_reorder
+    reorder 1
+    single_hdf
+}
+
