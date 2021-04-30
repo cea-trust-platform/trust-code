@@ -1216,6 +1216,8 @@ fi
 ##############################################################
 pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
 [ "$TRUST_DISABLE_MPI" != 1 ] && pkgs="mpi4py "$pkgs
+# ld from conda does not recognize openmpi configuration on TGCC
+[ "${HOST#irene}" != $HOST ] || [ "${HOST#cobalt}" != $HOST ] && rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on TGCC..."
 InstallPipPkgs=0
 for pkg in $pkgs
 do
