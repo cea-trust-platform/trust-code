@@ -58,7 +58,7 @@ print()
 }
 print_init()
 {
-    echo $ECHO_OPTS "cpu\tcpu0\tits\tres\tram[Mo]\tMatMult[MFlops]\tEtat\tSolveur" | tee -a rank
+    echo $ECHO_OPTS "cpu\tcpu0\tits\trtol\tram[Mo]\tMatMult[MFlops]\tEtat\tSolveur" | tee -a rank
 }
 
 # On regarde si le solveur est operationnel en retournant run=0 ou 1

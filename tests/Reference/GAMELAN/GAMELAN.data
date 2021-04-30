@@ -13,9 +13,11 @@ lire_fichier dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool Metis { Nb_parts 8 }
+    Partition_tool Tranche { tranches 2 2 2 }
     Larg_joint 2
     zones_name dom
+    ecrire_lata dom
+    reorder 1
     single_hdf
 }
 End

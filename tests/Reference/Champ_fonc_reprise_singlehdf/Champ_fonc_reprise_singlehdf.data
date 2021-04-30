@@ -1,5 +1,6 @@
 # ThemoHydraulique 2D avec Champ_Fonc_Reprise depuis un probleme hydraulique #
 # PARALLEL ONLY 2 #
+# lance_test 50 ecarts #
 dimension 2
 
 Pb_conduction pb_conduction

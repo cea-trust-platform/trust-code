@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+30/04/21 (TRUST)  Portability : Fedora 34 and GNU compilers 11.0.1 are supported with ./configure -force_latest_mpich and after doing: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
+30/04/21 (TRUST)  Performance : PETSc matrix optimizations (update coefficients instead of matrix rebuild, suppress zeros by allowing memory reallocation)
 23/04/21 (TRUST)  Bug fixed   : Champ_fonc_reprise didn't read correctly the PolyMAC fields
 15/04/21 (TRUST)  Portability : GNU compilers 10.3.0 supported
 15/04/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
@@ -20,8 +22,8 @@ Release notes version 1.8.3_beta : Enhancements, modifications and corrected bug
 01/02/21 (TRUST)  Keyword     : Add PIPECG2 kewyord to enable a parallel optimized CG (single non-blocking allreduce per 2 iterations)
 01/02/21 (TRUST)  Keyword     : Add C-AMG and SA-AMG for classical and smoothed aggregated algebric multigrid preconditionners available for AmgX GPU solvers and PETSc CPU/GPU solvers
 01/02/21 (TRUST)  Keyword     : Add parallel LU/Cholesky factorization on GPU with SuperLU: petsc_gpu cholesky_superlu { }
-01/02/21 (TRUST)  Keyword     : Add sequential Cholesky (not LU) factorization on GPU with Cholmod: petsc_gpu cholesky_cholmod { }
-01/02/21 (TRUST)  Performance : Introduce GPU support (./configure -cuda) for solvers with keywords: petsc_amgx (using AmgX library) or petsc_gpu (using PETSc library)
+01/02/21 (TRUST)  Keyword     : Add fast sequential Cholesky (not LU) factorization with Cholmod: petsc cholesky_cholmod { }
+01/02/21 (TRUST)  Performance : Introduce GPU support (./configure -cuda) for solvers with keywords: amgx (using AmgX library) or petsc_gpu (using PETSc library)
 01/02/21 (TRUST)  Library     : Update PETSc to 3.14.1
 29/01/21 (TRUST)  Keyword     : Old syntax of Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, Champ_Fonc_Tabule, Champ_Fonc_Fonction_txyz_Morceaux is now obsolete. The depending field name should be before the number of components
 28/01/21 (TRUST)  Keyword     : Add single_hdf option for Champ_Fonc_Reprise keyword (restart parallel calculation with a single .sauv file)
@@ -40,7 +42,7 @@ Release notes version 1.8.2 : Enhancements, modifications and corrected bugs sin
 17/11/20 (TRUST)  Bug fixed   : read_matrix pressure solver option fixed in VEF (pressure matrix was rebuilt uselessly before being read from a file) 
 13/11/20 (TRUST)  New feature : Immersed Boundary Method (IBM) using PDF (Penalized Direct Forcing) formulation. Only for EF.
 12/11/20 (TRUST)  New feature : Anisotropic diffusion (VEF) is available for laminar flow or solid conduction (see new validation sheet diffusion_anisotrope_VEF for examples)
-09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dns install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
+09/11/20 (TRUST)  Portability : GNU compilers 10.2.1 supported and Fedora 33 too (after doing: sudo dnf install make patch g++ gfortran libX11-devel mesa-libGLU-devel)
 05/11/20 (TRUST)  New feature : Equation residuals can now be post-processed
 04/11/20 (TRUST)  Bug fixed   : In VDF, advanced fields using flux_bords wasn't correct near corners of the domain
 03/11/20 (TRUST)  Portability : Support of AOCC compilers and HPC-X MPI for AMD processors on orcus cluster

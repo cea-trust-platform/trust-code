@@ -1,0 +1,3 @@
+#!/bin/bash
+# Memoire GPU
+awk '/Maximum Memory Usage:/ {mem=$0} END {print "GPU:" mem}' ${1%.data}.out

@@ -38,7 +38,7 @@ linux	rsync_ssh	non	is154709.intra.cea.fr		-all		-GENEPI3 							-disable-mpi -w
 linux	rsync_ssh	non	is154710.intra.cea.fr		-all		-TrioMC -FLICA5 -GENEPI3					-disable-petsc	-without-pdflatex						# CentOS 7.9	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non	is154711.intra.cea.fr				-TrioCFD -TrioMC -FLICA5 			-g		-download-visit	-without-pdflatex						# CentOS 7.9	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non	is154712.intra.cea.fr		-all		-GENEPI3 							-disable-optionals								# CentOS 7.9	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non	is154713.intra.cea.fr		-all		-MPCube -MATHYS	-IJK-FT							-without-pdflatex -force_provided_openmpi -without-visit			# CentOS 7.9	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non	is154713.intra.cea.fr		-all		-MPCube -MATHYS	-IJK-FT							-without-pdflatex -force_latest_mpich -without-visit  			# CentOS 7.9	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non	is154726.intra.cea.fr				-TRUST -MPCube -GENEPI3 			-g 		-enable-petsc-debug -download-salome	-without-pdflatex			# CentOS 7.9	Bat 451	LGLS	salle de formation5
 linux	rsync_ssh	tache   is241482.intra.cea.fr				        	                     -check-valgrind -without-pdflatex -force_provided_mpich 				# CentOS 7.9 Salle de formation
 linux	rsync_ssh	tache	is241480.intra.cea.fr				-TrioCFD   						-platform -force_latest_openmpi	-without-pdflatex				# CentOS 7.9	Bat 451	LMSF	Salle de formation

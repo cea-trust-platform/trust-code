@@ -1,5 +1,5 @@
 Version	Qui				Tache
-
+1.8.3   pierre.ledac@cea.fr	Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
 1.8.3   pierre.ledac@cea.fr     Revenir en arriere sur single_hdf par defaut au dela de 5000 coeurs si HDF5 corrompu en cas de crash (faire un test)
 1.8.3   adrien.bruneton@cea.fr  Fix Canal_perio source term for energy equation in VEF.
 1.8.3   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp

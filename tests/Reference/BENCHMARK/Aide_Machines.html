@@ -25,6 +25,11 @@ v1.1.4 : 119Mo (HP)
 v1.1.3 : 116Mo (HP)
 
 Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
+<HR><h1>Performances TRUST sur differents GPU</h1><HR>
+Comparaison temps calcul (donne par la balise clock: Total execution) sur test gpu_3D (125000 mailles):
+-------------------------------------------------------------------------------------------------------
+Arch  Model  PhysicalCores@frequency     GPU/Cuda     	Processor Model	CPU     Machine                 (Compiler version)      SpeedUp(n=2)    TestCase version
+Linux x86_64     1*8@3.0-4.7Ghz         P400/11.0      	Xeon i7-9700    50.4s	is242981.intra.cea.fr   (g++ 10.0.1, OpenMPI 4.1.0)     1.20    gpu_3D   v1.8.3
 
 <HR><h1>Performances TRUST sur differentes machines</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			

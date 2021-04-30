@@ -151,7 +151,7 @@ case $Mpirun in
                    #[ $MPI = "MPICH" ]   && TRUST_MPIRUN_OPTIONS=$TRUST_MPIRUN_OPTIONS"--binding cpu:sockets"
 		   #[ $MPI = "OPENMPI" ] && TRUST_MPIRUN_OPTIONS=$TRUST_MPIRUN_OPTIONS"--bysocket --bind-to-socket --report-bindings"
 		   command="$Mpirun $TRUST_MPIRUN_OPTIONS $machinefile $*"		   
-		   echo $command
+		   #echo $command
 		   eval $command
    		   err=$?
    		   # Essaie de relancer le calcul si plantage MPI aleatoire (vieilles versions d'OpenMPI)

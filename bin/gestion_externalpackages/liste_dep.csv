@@ -61,8 +61,8 @@ petsc,petsc-3.14.1.tar.gz,,"PL",BSD,http://www.mcs.anl.gov/research/projects/pet
 petsc,MUMPS_5.3.3-p2.tar.gz,,GF,CeCILL-C,http://mumps.enseeiht.fr/index.php?page=home,https://bitbucket.org/petsc/pkg-mumps/get/v5.3.3-p2.tar.gz,
 petsc,scalapack-2.1.0-p2.tgz,,PL,"BSD modified",http://www.netlib.org/scalapack/,http://www.netlib.org/scalapack/scalapack-2.1.0.tgz,
 petsc,metis-5.1.0-p10.tar.gz,,PL,Apache,http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,https://bitbucket.org/petsc/pkg-metis/get/v5.1.0-p10.tar.gz,
-AmgX,AmgXWrapper_1a93865fe88.tar.gz,,
-AmgX,AmgX_6dba8067ca.tar.gz,,,
+AmgX,AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz,,PL,MIT,https://github.com/barbagroup/AmgXWrapper
+AmgX,AmgX_6dba8067ca.tar.gz,,PL,BSD 3,https://github.com/NVIDIA/AMGX
 AmgX,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
 SALOME,medcoupling-9.7.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,https://downloads.sourceforge.net/project/trust-platform/1.8.3/extra/medcoupling-9.7.0.tar.gz,

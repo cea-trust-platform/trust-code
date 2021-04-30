@@ -62,11 +62,7 @@ if [ "`grep -i superlu $TRUST_ENV/make.liba`" != "" ]
 then
    i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
 fi
-#if [ $exec = $exec_opt ] # Pastix crashes in debug...
-#then
-# Crash also in optimized when feenableexcept activated
-#   let i=$i+1;solver[$i]="Petsc Cholesky_Pastix { impr }"							;sym[$i]=1 
-#fi
+let i=$i+1;solver[$i]="Petsc Cholesky_Cholmod { impr }"                               		;par[$i]=0      ;sym[$i]=1 
 let i=$i+1;solver[$i]="Petsc Cholesky_Umfpack { impr }"						;par[$i]=0	;sym[$i]=1 
 let i=$i+1;solver[$i]="Petsc Cholesky_Lapack { impr }"						;par[$i]=0	;sym[$i]=1 
 
@@ -121,29 +117,34 @@ let i=$i+1;solver[$i]="Petsc_GPU BICGSTAB { seuil $seuil precond DIAG { } impr }
 let i=$i+1;solver[$i]="Petsc     Cholesky         { impr }"							;gpu[$i]=1	
 let i=$i+1;solver[$i]="Petsc_GPU Cholesky_cholmod { impr }"							;gpu[$i]=1	;sym[$i]=1	;par[$i]=0 # ToDo non parallele et limite a sbaij
 [ "$PETSC_HAVE_OPENMP" = 1 ] && let i=$i+1 && solver[$i]="Petsc_GPU Cholesky_superlu { impr }"			;gpu[$i]=1			# Parallele et supporte aij (LU)	
-let i=$i+1;solver[$i]="Petsc_AMGX GCP { seuil $seuil precond C-AMG { } impr }" 					;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="AMGX GCP { seuil $seuil precond C-AMG { } impr }" 					;gpu[$i]=1	;sym[$i]=1
 
 ###############################
 # AMGX solveurs tested on GPU #
 ###############################
-let i=$i+1;solver[$i]="Petsc      GCP      { seuil $seuil precond DIAG { } impr }"				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc      GCP      { seuil $seuil precond SSOR { omega 1.6 } impr }"			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc      GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc      GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond SSOR { omega 1.6 } impr }" 			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 		;amgx[$i]=1	;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond BLOCK_JACOBI_ILU { level 1 } impr }" 		;amgx[$i]=1	;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond ILU  { level 0 } impr }" 			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond ILU  { level 1 } impr }" 			;amgx[$i]=1	;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc_AMGX GMRES    { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX CLI      { solver(s)=PCG s:preconditioner(p)=MULTICOLOR_GS s:tolerance=$seuil }";amgx[$i]=1	;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc_AMGX GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond DIAG { } impr }"				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.6 } impr }"			;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond SSOR { omega 1.6 } impr }" 			;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 		;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond BLOCK_JACOBI_ILU { level 1 } impr }" 		;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond ILU  { level 0 } impr }" 			;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond ILU  { level 1 } impr }" 			;amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="AMGX  CLI      { solver(s)=PCG s:preconditioner(p)=MULTICOLOR_GS s:tolerance=$seuil }";amgx[$i]=1	;sym[$i]=1 
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
 
-let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type saviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }"	   ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
-let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type rowscalingviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }" ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
-let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type chowiluviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }"	   ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
-let i=$i+1;solver[$i]="Petsc_GPU GCP       { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="      GMRES    { seuil $seuil DIAG controle_residu 1 impr }" 		 	;amgx[$i]=1	;sym[$i]=0
+let i=$i+1;solver[$i]="PETSC GMRES    { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	
+let i=$i+1;solver[$i]="AMGX  GMRES    { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	
+let i=$i+1;solver[$i]="AMGX  GMRES    { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1
+let i=$i+1;solver[$i]="AMGX  GMRES    { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 	;amgx[$i]=1	
+
+#let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type saviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }"	   ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
+#let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type rowscalingviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }" ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
+#let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type chowiluviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }"	   ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
+#let i=$i+1;solver[$i]="Petsc_GPU GCP       { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
 
 

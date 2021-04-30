@@ -1,0 +1,24 @@
+Differentes options sur cas 40000 mailles:
+
+#1 MPI
+0.124 	rebuild_matrix
+0.090	rebuild_matrix clean_matrix
+0.081	update_matrix  clean_matrix allow_realloc
+0.056	update_matrix
+0.050	update_matrix  clean_matrix ignore_new_nonzero (ecarts!)
+
+#2 MPI
+0.065	rebuild_matrix
+0.050	rebuild_matrix clean_matrix
+0.045	update_matrix  clean_matrix allow_realloc
+0.036	update_matrix
+KO	update_matrix  clean_matrix ignore_new_nonzero
+
+Conclusions:
+ignore_new_nonzero
+	Trop risque...
+update_matrix
+	Tres rapide
+	Mais matrice plus grande avec zeros inutiles
+update_matrix + clean_matrix + allow_realloc
+	Assez rapide malgre reallocations ponctuelles, matrice compact. Meilleur choix sur CPU (Flica5, FrontTracking, Implicite...

@@ -309,6 +309,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_openmpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_latest_openmpi"
 # MPICH
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_mpich" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_provided_mpich"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_mpich" | grep ^$HOST"\."`" != "" ]           && option_configure=$option_configure" -force_latest_mpich"
 # OpenMPI ancien sur la machine ou l'on construit le binaire sinon ne trouve pas un fichier en local
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable

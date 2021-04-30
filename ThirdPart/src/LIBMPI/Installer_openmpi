@@ -23,15 +23,7 @@ fi
 # On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a
 options="--enable-static --disable-shared --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
 # Ajout CUDA:
-if [ "$TRUST_USE_CUDA" = 1 ]
-then
-  # ToDo remonter ce CUDA_INC_PATH au niveau du configure de TRUST car fait aussi dans le install de LIBAMGX
-  for CUDA_INC_PATH in $CUDA_ROOT/include $CUDA_ROOT/include/cuda
-  do
-     [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
-  done
-  options=$options" --with-cuda=$CUDA_INC_PATH"
-fi
+[ "$TRUST_USE_CUDA" = 1 ] && options=$options" --with-cuda=$CUDA_INC_PATH"
 
 # Telechargement du package
 package=openmpi-$version.tar.gz

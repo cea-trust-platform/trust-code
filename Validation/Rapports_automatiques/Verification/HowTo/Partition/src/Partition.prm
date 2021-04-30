@@ -1,0 +1,40 @@
+Parameters {
+	Title "Partition tests"
+	Author "Pierre LEDAC"
+	VersionTrio_U 1.8.3
+ 	TestCase . dec.data
+ 	Description "Testing Metis and Tranche partitioner tools with/without reordering (order option set to 0 or 1).
+ 	Description "NB: TRUST has a strong hypothesis: cell 0 should be on master (process 0)."
+ 	Description "Order option reduces the distance between neighbours."
+}
+
+Chapter {
+	Title "Partition with Metis" 
+	visu {
+        Description "No reordering"
+        nb_img_without_newline 2
+        width 5cm
+		pseudocolor metis_00000.lata dom PARTITION ELEM
+	}
+	visu {
+        Description "Reordering"
+        nb_img_without_newline 2
+        width 5cm
+		pseudocolor metis_reorder_00000.lata dom PARTITION ELEM
+	}
+}
+Chapter {
+	Title "Partition with Tranche" 	
+	visu {
+	    Description "No reordering"
+        nb_img_without_newline 2
+        width 5cm
+		pseudocolor tranche_00000.lata dom PARTITION ELEM
+	}
+	visu {
+        Description "Reordering"
+        nb_img_without_newline 2
+        width 5cm
+		pseudocolor tranche_reorder_00000.lata dom PARTITION ELEM
+	}
+}

@@ -44,6 +44,8 @@
 #include <MD_Vector_composite.h>
 #include <vector>
 #include <map>
+#include <ctime>
+#include <EFichier.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 
@@ -104,7 +106,6 @@ void Solv_Petsc::create_solver(Entree& entree)
     }
 
   // Creation du solveur et association avec le preconditionneur
-  solveur_cree_++;
   if (option_prefix_=="??") // Prefix non fixe
     {
       numero_solveur++;
@@ -195,8 +196,30 @@ void Solv_Petsc::create_solver(Entree& entree)
           {
             while (motlu!=accolade_fermee)
               {
-                amgx_option+=motlu;
-                amgx_option+="\n";
+                // -config file.json
+                if (motlu == "-file")
+                  {
+                    is >> motlu;
+                    if (Process::je_suis_maitre())
+                      {
+                        EFichier config(motlu);
+                        std::string line;
+                        while (!config.eof())
+                          {
+                            std::getline(config.get_ifstream(), line);
+                            if (line.find("#") && line.find("config_version"))
+                              {
+                                amgx_option+=line.c_str();
+                                amgx_option+="\n";
+                              }
+                          }
+                      }
+                  }
+                else
+                  {
+                    amgx_option += motlu;
+                    amgx_option += "\n";
+                  }
                 is >> motlu;
               }
           }
@@ -246,7 +269,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         // But It requires two extra work vectors than the conventional implementation in PETSc.
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=PCG\n";
+        if (amgx_) amgx_option+="solver(s)=PCG\n"; // CG avec preconditionnement
+        //if (amgx_) amgx_option+="solver(s)=PCGF\n"; // Flexible CG avec preconditionnement
         break;
       }
     case 10:
@@ -264,7 +288,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPGMRES);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=FGMRES\n";
+        //if (amgx_) amgx_option+="solver(s)=GMRES\n"; // GMRES
+        if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // Flexible GMRES
         break;
       }
     case 8:
@@ -315,7 +340,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPBCGS);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=BICGSTAB\n";
+        //if (amgx_) amgx_option+="solver(s)=BICGSTAB\n"; // BICGSTAB sans preconditionnement
+        if (amgx_) amgx_option+="solver(s)=PBICGSTAB\n"; // BICGSTAB avec precondtionnement
         break;
       }
     case 6:
@@ -407,7 +433,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 #ifdef PETSC_HAVE_CUDA
       Cerr << "GPU capabilities of AmgX will be used." << finl;
 #else
-      Cerr << "You can not use petsc_amgx keyword cause GPU" << finl;
+      Cerr << "You can not use amgx keyword cause GPU" << finl;
       Cerr << "capabilities will not work on your workstation with AmgX." << finl;
       Cerr << "Check if you have a NVidia video card and its driver up to date." << finl;
       Cerr << "Check petsc.log file under $TRUST_ROOT/lib/src/LIBPETSC for more details." << finl;
@@ -425,7 +451,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(22);
+      Motcles les_parametres_solveur(26);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
@@ -449,6 +475,10 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[19] = "dropping_parameter";
         les_parametres_solveur[20] = "rtol"; // Seuil relatif
         les_parametres_solveur[21] = "atol"; // Seuil absolu <=> seuil
+        les_parametres_solveur[22] = "ignore_new_nonzero";
+        les_parametres_solveur[23] = "rebuild_matrix";
+        les_parametres_solveur[24] = "allow_realloc";
+        les_parametres_solveur[25] = "clean_matrix";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -802,6 +832,23 @@ void Solv_Petsc::create_solver(Entree& entree)
                   }
                 break;
               }
+            case 22:
+              int flag;
+              is >> flag;
+              ignore_new_nonzero_ = (bool)flag;
+              break;
+            case 23:
+              is >> flag;
+              rebuild_matrix_ = (bool)flag;
+              break;
+            case 24:
+              is >> flag;
+              allow_realloc_ = (bool)flag;
+              break;
+            case 25:
+              is >> flag;
+              clean_matrix_ = (bool)flag;
+              break;
             default:
               {
                 Cerr << motlu << " : unrecognized option from those available in the Petsc solver:" << finl;
@@ -1178,7 +1225,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
 
-  // Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
+// Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
   if (amgx_ && Process::je_suis_maitre())
     {
       Nom filename(Objet_U::nom_du_cas());
@@ -1186,12 +1233,14 @@ void Solv_Petsc::create_solver(Entree& entree)
       SFichier s(filename);
       // Syntax: See https://github.com/NVIDIA/AMGX/raw/master/doc/AMGX_Reference.pdf
       s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option;
+      if (!amgx_option.contient("s:print_config"))     s << "s:print_config=1" << finl;
       if (!amgx_option.contient("s:store_res_history")) s << "s:store_res_history=1" << finl;
       if (!amgx_option.contient("s:monitor_residual"))  s << "s:monitor_residual=1" << finl;
       if (!amgx_option.contient("s:print_solve_stats")) s << "s:print_solve_stats=1" << finl;
       if (!amgx_option.contient("s:obtain_timings"))    s << "s:obtain_timings=1" << finl;
       if (!amgx_option.contient("s:max_iters"))         s << "s:max_iters=10000" << finl; // 100 par defaut trop bas...
       s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
+      s << "# communicator=MPI_DIRECT" << finl; // MPI_CUDA aware
       Cerr << "Writing the AmgX config file: " << filename << finl;
     }
 #else
@@ -1405,7 +1454,7 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
     }
   else
     {
-      Cerr << "Option Petsc: " << option << " " << value << " not taken cause " << option << " already defined to " << actual_value << finl;
+      //Cerr << "Option Petsc: " << option << " " << value << " not taken cause " << option << " already defined to " << actual_value << finl;
       return 0;
     }
 }
@@ -1442,17 +1491,10 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Si on utilise un solver petsc on le signale pour les stats finales
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
-  int new_matrix = nouvelle_matrice();
-  if (new_matrix)
+  if (nouvelle_matrice())
     {
-      matrice_symetrique_=1;      // On suppose que la matrice est symetrique
-      fixer_nouvelle_matrice(0);
-      if (nb_matrices_creees_>0)
-        {
-          // On detruit la precedente matrice Petsc
-          MatDestroy(&MatricePetsc_);
-        }
-      nb_matrices_creees_ += 1;
+      std::clock_t start = std::clock();
+      matrice_symetrique_ = 1;      // On suppose que la matrice est symetrique
 
       // Construction de la numerotation globale:
       construit_renum(secmem);
@@ -1464,9 +1506,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           // New in 1.6.9, it is possible to read the matrix
           // Read the PETSc matrix
           RestoreMatrixFromFile();
-          int nb_local_rows,nb_local_cols;
-          MatGetLocalSize(MatricePetsc_,&nb_local_rows,&nb_local_cols);
-          if (nb_local_rows!=nb_items_to_keep_)
+          int nb_local_rows, nb_local_cols;
+          MatGetLocalSize(MatricePetsc_, &nb_local_rows, &nb_local_cols);
+          if (nb_local_rows != nb_items_to_keep_)
             {
               Cerr << "The matrix read has " << nb_local_rows << " local columns whereas" << finl;
               Cerr << "the RHS/Solution vectors have a size of " << nb_items_to_keep_ << "." << finl;
@@ -1480,62 +1522,81 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           MatricePetsc_ = ref_cast(Matrice_Petsc, la_matrice).getMat();
           read_matrix_ = 1; // flag reutilise comme si on avait lu la matrice
         }
-      else if(sub_type(Matrice_Morse_Sym,la_matrice))
+      else if (sub_type(Matrice_Morse_Sym, la_matrice))
         {
           // Exemple: matrice de pression en VEFPreP1B
-          const Matrice_Morse_Sym& matrice_morse_sym = ref_cast(Matrice_Morse_Sym,la_matrice);
+          const Matrice_Morse_Sym& matrice_morse_sym = ref_cast(Matrice_Morse_Sym, la_matrice);
           assert(matrice_morse_sym.get_est_definie());
           MorseSymToMorse(matrice_morse_sym, matrice_morse_intermediaire);
         }
-      else if(sub_type(Matrice_Bloc_Sym,la_matrice))
+      else if (sub_type(Matrice_Bloc_Sym, la_matrice))
         {
           // Exemple : matrice de pression en VEF P0+P1+Pa
-          const Matrice_Bloc_Sym& matrice = ref_cast(Matrice_Bloc_Sym,la_matrice);
+          const Matrice_Bloc_Sym& matrice = ref_cast(Matrice_Bloc_Sym, la_matrice);
           // Conversion de la matrice Matrice_Bloc_Sym au format Matrice_Morse_Sym
           Matrice_Morse_Sym matrice_morse_sym;
           matrice.BlocSymToMatMorseSym(matrice_morse_sym);
           MorseSymToMorse(matrice_morse_sym, matrice_morse_intermediaire);
-          matrice_morse_sym.dimensionner(0,0); // Destruction de la matrice morse sym desormais inutile
+          matrice_morse_sym.dimensionner(0, 0); // Destruction de la matrice morse sym desormais inutile
         }
-      else if(sub_type(Matrice_Morse,la_matrice))
+      else if (sub_type(Matrice_Morse, la_matrice))
         {
           // Exemple : matrice implicite
-          matrice_symetrique_=0;
+          matrice_symetrique_ = 0;
         }
-      else if(sub_type(Matrice_Bloc,la_matrice))
+      else if (sub_type(Matrice_Bloc, la_matrice))
         {
           // Exemple : matrice de pression en VDF
-          const Matrice_Bloc& matrice_bloc = ref_cast(Matrice_Bloc,la_matrice);
-          if (!sub_type(Matrice_Morse_Sym,matrice_bloc.get_bloc(0,0).valeur()))
-            matrice_symetrique_=0;
+          const Matrice_Bloc& matrice_bloc = ref_cast(Matrice_Bloc, la_matrice);
+          if (!sub_type(Matrice_Morse_Sym, matrice_bloc.get_bloc(0, 0).valeur()))
+            matrice_symetrique_ = 0;
           else
             {
               // Pour un solveur direct, operation si la matrice n'est pas definie (en incompressible VDF, rien n'etait fait...)
-              Matrice_Morse_Sym& mat00 = ref_cast_non_const(Matrice_Morse_Sym,matrice_bloc.get_bloc(0,0).valeur());
-              if (solveur_direct_ && mat00.get_est_definie()==0 && Process::je_suis_maitre())
-                mat00(0,0)*=2;
+              Matrice_Morse_Sym& mat00 = ref_cast_non_const(Matrice_Morse_Sym, matrice_bloc.get_bloc(0, 0).valeur());
+              if (solveur_direct_ && mat00.get_est_definie() == 0 && Process::je_suis_maitre())
+                mat00(0, 0) *= 2;
             }
           matrice_bloc.BlocToMatMorse(matrice_morse_intermediaire);
         }
       else
         {
-          Cerr<<"Solv_Petsc : Warning, we do not know yet treat a matrix of type " << la_matrice.que_suis_je() <<finl;
+          Cerr << "Solv_Petsc : Warning, we do not know yet treat a matrix of type " << la_matrice.que_suis_je()
+               << finl;
           exit();
         }
+      Cout << "[Petsc] Time to convert matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+
       // Verification stockage de la matrice
       check_aij(matrice_morse_intermediaire);
 
-      // Construit les objets PETSc:
-      bool la_matrice_est_morse_non_symetrique = sub_type(Matrice_Morse, la_matrice) && !sub_type(Matrice_Morse_Sym, la_matrice);
-      const Matrice_Morse& matrice_morse = la_matrice_est_morse_non_symetrique ? ref_cast(Matrice_Morse, la_matrice) : matrice_morse_intermediaire;
-      Create_objects(matrice_morse, secmem);
-      if (limpr() == 1)
-        Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
-             << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
-             << " unknowns per PETSc process )" << finl;
+      bool la_matrice_est_morse_non_symetrique =
+        sub_type(Matrice_Morse, la_matrice) && !sub_type(Matrice_Morse_Sym, la_matrice);
+      const Matrice_Morse& matrice_morse = la_matrice_est_morse_non_symetrique ? ref_cast(Matrice_Morse, la_matrice)
+                                           : matrice_morse_intermediaire;
 
-      // Build x and b during the first matrix creation
-      if (nb_matrices_creees_==1) Create_vectors(secmem);
+      // Verification stencil de la matrice
+      nouveau_stencil_ = check_stencil(matrice_morse);
+
+      // Construit ou update la matrice
+      start = std::clock();
+      if (nouveau_stencil_)
+        {
+          // Build x and b during the first matrix creation
+          Create_vectors(secmem);
+
+          // Creation de Champs (fields) pour pouvoir utiliser des preconditionneurs PCFIELDSPLIT
+          Create_DM(secmem);
+
+          // Create objects
+          Create_objects(matrice_morse);
+          if (!amgx_) Cout << "[Petsc] Time to build matrix and others: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+        }
+      else
+        {
+          Update_matrix(MatricePetsc_, matrice_morse);
+          if (!amgx_) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+        }
     }
 
   // Assemblage du second membre et de la solution
@@ -1557,7 +1618,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 
   // Save the matrix and the RHS
   // if the matrix has changed...
-  if (save_matrix_ && new_matrix)
+  if (save_matrix_ && nouvelle_matrice())
     SaveObjectsToFile();
 
   //////////////////////////
@@ -1602,6 +1663,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           }
     }
   solution.echange_espace_virtuel();
+  fixer_nouvelle_matrice(0);
   return nbiter;
 #else
   return -1;
@@ -1698,7 +1760,7 @@ void Solv_Petsc::construit_renum(const DoubleVect& b)
   /**********************/
   /* Build renum_ array */
   /**********************/
-  if (nb_matrices_creees_==1)
+  if (MatricePetsc_==NULL)
     {
       const MD_Vector& md = b.get_md_vector();
       renum_.reset();
@@ -1803,7 +1865,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
     }
 }
 // Creation des objets PETSc
-void Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& secmem)
+void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
 {
   // Remplissage d'une matrice de preconditionnement non symetrique
   Mat MatricePrecondionnementPetsc;
@@ -1817,7 +1879,10 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& secm
 
   // Creation de la matrice Petsc si necessaire
   if (!read_matrix_)
-    Create_MatricePetsc(MatricePetsc_, mataij_, mat);
+    {
+      if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
+      Create_MatricePetsc(MatricePetsc_, mataij_, mat);
+    }
 
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
@@ -2037,8 +2102,6 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, const DoubleVect& secm
           exit();
         }
     }
-  // Creation de Champs (fields) pour pouvoir utiliser des preconditionneurs PCFIELDSPLIT
-  Create_DM(secmem);
 
   /*************************************/
   /* Mise en place du preconditionneur */
@@ -2132,7 +2195,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
 void Solv_Petsc::Create_DM(const DoubleVect& b)
 {
   /* creation de champs Petsc si des MD_Vector_Composite sont trouves dans b, avec recursion! */
-  if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()) && nb_matrices_creees_ == 1)
+  if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()))
     {
       std::map<std::string, std::vector<int>> champ;
       //liste (MD_Vector_composite, offset de ses elements, multiplicateur (nb d'items du tableau par item du MD_Vector) prefixe des noms de ses champs)
@@ -2350,17 +2413,50 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
                                     (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), o_nnz.addr());
         }
     }
+
+  // ToDo: nettoyer la matrice TRUST en amont... Car le nnz des matrices peut varier (ex: implicite, Hyd_Cx_impl ou PolyMAC)
+  // et si on supprime les zeros de la matrice, lors d'un update on peut avoir une allocation -> erreur
+  if (mataij_ && clean_matrix_)
+    {
+      Cout << "Cleaning zero coefficients into PETSc matrix..." << finl;
+      MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); // Ne stocke pas les zeros
+    }
+  // Genere une erreur (ou pas) si une case de la matrice est remplie sans allocation auparavant:
+  MatSetOption(MatricePetsc, MAT_NEW_NONZERO_ALLOCATION_ERR, allow_realloc_ ? PETSC_FALSE : PETSC_TRUE);
+
+  // Hash table (Faster MatAssembly after the first one)
+  if (ignore_new_nonzero_)
+    MatSetOption(MatricePetsc, MAT_USE_HASH_TABLE, PETSC_TRUE);
+
+  // Fill the matrix
+  Solv_Petsc::Update_matrix(MatricePetsc, mat_morse);
+}
+
+void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
+{
+  bool journal = nb_rows_tot_ < 20 ? true : false;
+  journal = false;
+
   /*****************************/
   /* Remplissage de la matrice */
   /*****************************/
-  // Genere une erreur si une case de la matrice est remplie sans allocation auparavant:
-  MatSetOption(MatricePetsc, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_TRUE);
-
   // ligne par ligne avec un tableau coeff et tab2 qui contiennent
   // les coefficients et les colonnes globales pour chaque ligne
   // On dimensionne ces tableaux a la taille la plus grande possible
-  int size = (nb_rows_ == 0 ? 0 : max_array(
-                nnz)); // Test sur nb_rows si nul (cas proc vide) car sinon max_array plante
+  // ToDo : recalcul de nnz utile ?
+  ArrOfInt nnz(nb_rows_);
+  nnz = 0;
+  ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
+  const ArrOfInt& tab1 = mat_morse.get_tab1();
+  const ArrOfInt& tab2 = mat_morse.get_tab2();
+  int cpt = 0;
+  for (int i = 0; i < tab1.size_array() - 1; i++)
+    if (items_to_keep_[i])
+      {
+        nnz(cpt) = tab1(i + 1) - tab1(i); // Nombre d'elements non nuls sur la ligne i
+        cpt++;
+      }
+  int size = (nb_rows_ == 0 ? 0 : max_array(nnz)); // Test sur nb_rows si nul (cas proc vide) car sinon max_array plante
   ArrOfDouble coeff_(size);
   ArrOfInt tab2_(size);
   const ArrOfDouble& coeff = mat_morse.get_coeff();
@@ -2384,7 +2480,20 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
               for (int j = 0; j < ncol; j++) Journal() << coeff_[j] << " ";
               Journal() << finl;
             }
-          MatSetValues(MatricePetsc, 1, &ligne_globale, ncol, tab2_.addr(), coeff_.addr(), INSERT_VALUES);
+          try
+            {
+              MatSetValues(MatricePetsc, 1, &ligne_globale, ncol, tab2_.addr(), coeff_.addr(), INSERT_VALUES);
+            }
+          catch(...)
+            {
+              Cerr << "We detect that the PETSc matrix coefficients are changed without pre-allocation." << finl;
+              Cerr << "Try one of the following option:" << finl;
+              Cerr << "- Rebuild the matrix each time instead of updating the coefficients (slower)." << finl;
+              Cerr << "enable_allocation : Enable re-allocation of coefficients (slow)." << finl;
+              Cerr << "- Discard new coefficients (risk!)" << finl;
+              Cerr << "Try the two options and select the costly one." << finl;
+              Process::exit();
+            }
           cpt++;
         }
     }
@@ -2394,6 +2503,11 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   /****************************/
   MatAssemblyBegin(MatricePetsc, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(MatricePetsc, MAT_FINAL_ASSEMBLY);
+
+  // Ignore les coefficients ajoutes:
+  if (!nouveau_stencil_ && ignore_new_nonzero_)
+    MatSetOption(MatricePetsc, MAT_NEW_NONZERO_LOCATIONS, PETSC_FALSE);
+
   // Recuperation de la memoire max
   /*
   if (limpr()==1)
@@ -2404,4 +2518,51 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
     }*/
 }
 
+int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
+{
+  // Verification de nnz et avertissement
+  ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
+  nnz(0)=0;
+  nnz(1)=matrice_morse.nb_coeff();
+  for (int i=0; i<nnz(1); i++)
+    if (matrice_morse.get_coeff()(i)!=0)
+      nnz(0)+=1;
+  mp_sum_for_each_item(nnz);
+
+  // Est ce un nouveau stencil ? Verification limitee aux colonnes...
+  int new_stencil;
+  if (rebuild_matrix_ || read_matrix_)
+    new_stencil = 1;
+  else
+    {
+      new_stencil = 0;
+      if (previous_tab2_.size() != matrice_morse.get_tab2().size())
+        new_stencil = 1;
+      else
+        for (int i = 0; i < previous_tab2_.size(); i++)
+          if (previous_tab2_(i) != matrice_morse.get_tab2()(i))
+            {
+              new_stencil = 1;
+              break;
+            }
+      new_stencil = mp_max(new_stencil) != 0;
+      if (new_stencil)
+        previous_tab2_ = matrice_morse.get_tab2();
+    }
+  if (limpr() == 1)
+    {
+      Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
+           << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
+           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
+      if (nnz[1]>0)
+        {
+          Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
+          double ratio = 1-(double)nnz(0) / (double)nnz(1);
+          if (ratio > 0.2)
+            Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "%" << finl;
+        }
+      else Cout << finl;
+    }
+  return new_stencil != 0;
+}
 #endif
