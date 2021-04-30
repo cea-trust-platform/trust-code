@@ -14,4 +14,4 @@ check:
 	./install check
 
 clean:
-	rm -r -f $(PETSC_ROOT)/../build/* $(PETSC_ROOT)/*/lib/*
+	rm -r -f $(PETSC_ROOT)/../build $(PETSC_ROOT)

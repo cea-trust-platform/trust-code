@@ -20,15 +20,14 @@ install_OpenBlas()
    then
       cp $lib ..
       cd ..
-      # On efface les sources
-      rm -r -f *-OpenBLAS-*
       # On fait des liens
       ln -sf $lib libblas.a
       ln -sf $lib liblapack.a
    else
       cd ..
-      rm -r -f *-OpenBLAS-*
    fi  
+   # On efface les sources
+   rm -r -f OpenBLAS*
 }
 install_NetLib()
 {

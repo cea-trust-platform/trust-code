@@ -218,7 +218,7 @@ with_packages=""
 ################
 # GPU support? #
 ################
-if [ $TRUST_USE_CUDA = 1 ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
    echo "****************************************"
    echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
@@ -400,8 +400,8 @@ if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
    # SUPERLU_DIST: Attention avec OpenMPI natif...
    # SuperLU_dist sur GPU necessite OpenMP ! Argh...
-   #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ $TRUST_USE_CUDA = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
-   [ $minimal_mumps = 0 ] && [ $TRUST_USE_CUDA = 1 ] && [ $PETSC_HAVE_OPENMP = 1 ] && add_package superlu_dist
+   #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ "$TRUST_USE_CUDA" = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
+   [ "$minimal_mumps" = 0 ] && [ "$TRUST_USE_CUDA" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ] && add_package superlu_dist
 
    # New (SuiteSparse/Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse # Version GPU (Cholesky pas LU)
@@ -552,8 +552,8 @@ do
       if [ "$TRUST_USE_CUDA" != 1 ]
       then
          # Tests with TRUST_USE_CUDA=1 are done below
-        #  bloque de temps en temps make test
-        echo No running make test
+         #  bloque de temps en temps make test
+         echo No running make test
 	 err=$?
       fi
       if [ $err = 0 ]
@@ -570,10 +570,15 @@ do
 	    # Copie des fichiers include pour PETSc sequentiel:
 	    [ "$TRUST_DISABLE_MPI" = 1 ] && cp $PETSC_ROOT/$PETSC_ARCH/include/petsc/mpiuni/*.h $PETSC_ROOT/$PETSC_ARCH/include/
 	    # Copie de la doc
-	    [ -d docs ] && cp -r docs $PETSC_ROOT/$PETSC_ARCH/.
+	    #[ -d docs ] && cp -r docs $PETSC_ROOT/$PETSC_ARCH/.
 	    # Copie des exemples
-	    [ -d src ] && cp -r src $PETSC_ROOT/$PETSC_ARCH/.
+	    #[ -d src ] && cp -r src $PETSC_ROOT/$PETSC_ARCH/.
             cd ..
+	    echo "make install done"
+	    # On allege encore l'installation:
+	    rm -r -f $PETSC_ROOT/../build
+	    find $PETSC_ROOT -name '*'.html | xargs rm -f  
+	    [ "$TRUST_WITHOUT_HOST" = 0 ] && find $PETSC_ROOT -name '*'.out | xargs rm -f 
 	 else
 	    echo "make install failed." && exit -1
 	 fi
@@ -610,7 +615,7 @@ fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
 cp $package/configure.log .
-[ "$liste_debug" = "0" ] && rm -r -f $package
+[ "$liste_debug" = "0" ] && echo "Deleting `pwd`/$package..." && rm -r -f $package
 echo "Leaving install PETSc, it seems OK."
 
 # On supprime la doc et autres dossiers de petsc si trust a ete configure avec l'option -without-doc
