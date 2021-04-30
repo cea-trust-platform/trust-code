@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -228,13 +228,15 @@ protected :
   LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
 
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
-  mutable Sortie_Brute* osauv_hdf_;
 
   int reprise_effectuee_;
   int reprise_version_;
   Nom nom_fich;
   Nom format_sauv;
   int restart_file;
+
+  //flag to check if the file was created during this computation
+  mutable bool hdf5_file_created_;
 
   // Flags used to control the calling order and raise exceptions
   bool initialized;  // true if initialize was called

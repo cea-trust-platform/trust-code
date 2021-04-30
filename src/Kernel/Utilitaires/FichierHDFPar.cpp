@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #endif
 
 FichierHDFPar::FichierHDFPar() :
-  FichierHDF(), collective_op_(false)
+  FichierHDF(), collective_op_(false), collective_metadata_op_(false)
 {
 #ifndef MPI_
   Cerr << "FichierHDFPar needs MPI to be used!" << finl;
@@ -46,31 +46,35 @@ void FichierHDFPar::prepare_file_props()
   MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
 
 #ifdef MED_
-  H5Pset_fapl_mpio( file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos);
+
+  hdf5_error<herr_t>(H5Pset_fapl_mpio(file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos));
 
   //on cluster, type lfs getstripe . to see the default striping of the current repository
   hsize_t stripe_size = 1048576; //1572864;
-  H5Pset_alignment(file_access_plst_, 0, stripe_size);
+  hdf5_error<herr_t>(H5Pset_alignment(file_access_plst_, 0, stripe_size));
+
+  if(collective_metadata_op_)
+    hdf5_error<herr_t>(H5Pset_all_coll_metadata_ops(file_access_plst_, 1));
+
 #endif
 
   MPI_Info_free(&infos);
 #endif
 }
 
-void FichierHDFPar::prepare_dataset_props()
-{
-  FichierHDF::prepare_dataset_props();
 #ifdef MED_
+void FichierHDFPar::prepare_dataset_props(int dcpl, hsize_t chunk_size, bool is_bin)
+{
+  FichierHDF::prepare_dataset_props(dcpl, chunk_size, is_bin);
+
 #ifdef MPI_
   if(collective_op_)
-    H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE);
+    hdf5_error<herr_t>(H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE));
 #endif
-#endif
-
   // int rank = Process::me();
 
   // //Build expected dataset name for the current proc (with the trailing _000x stuff)
   // Nom dataset_full_name = dataset_name;
   // dataset_full_name.nom_me(rank);
 }
-
+#endif

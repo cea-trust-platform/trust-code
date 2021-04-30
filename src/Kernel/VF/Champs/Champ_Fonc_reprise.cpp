@@ -155,6 +155,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
 #ifdef MPI_
   Entree_Brute input_data;
   FichierHDFPar fic_hdf; //FichierHDF fic_hdf;
+  //fic_hdf.set_collective_metadata_op(true);
 #endif
 
   if (format_rep == "xyz")
@@ -178,9 +179,12 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
               Process::exit();
             }
           fic_hdf.open(nom_fic, true);
-          fic_hdf.read_dataset("/sauv", Process::me(),input_data);
+          std::string dname = "/sauv_" + std::to_string(Process::me());
+          Nom dataset_name = dname.c_str();
+          fic_hdf.read_dataset(dataset_name, input_data);
 #endif
         }
+
       else
         fic_rep.typer("LecFicDistribue");
       Cerr << "Opening file " << nom_fic << " (LecFicDistribueBin)" << finl;
@@ -211,7 +215,9 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
         {
 #ifdef MPI_
           un_temps = get_last_time(input_data);
-          fic_hdf.read_dataset("/sauv", Process::me(), input_data);
+          std::string dname = "/sauv_" + std::to_string(Process::me());
+          Nom dataset_name = dname.c_str();
+          fic_hdf.read_dataset(dataset_name, input_data);
 #endif
         }
       else

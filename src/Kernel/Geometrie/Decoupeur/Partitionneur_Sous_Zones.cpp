@@ -96,8 +96,8 @@ void Partitionneur_Sous_Zones::construire_partition(IntTab& elem_part, int& nb_p
   assert(ref_domaine_.non_nul());
   const Domaine& dom = ref_domaine_.valeur();
   const Zone& zone = dom.zone(0);
-  const int nb_elem = zone.nb_elem();
-  elem_part.resize_array(nb_elem);
+  const int nb_elem = zone.nb_elem_tot();
+  elem_part.resize(nb_elem);
   elem_part = -1;
   if (noms_domaines_.size()!=0 && noms_sous_zones_.size())
     {

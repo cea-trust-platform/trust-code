@@ -1328,7 +1328,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
     }
 
   // Needed for HDF5 Zones output:
-  FichierHDFPar fic_write;
+  FichierHDFPar fic_hdf;
   Nom nom_fichier_hdf5(basename);
   nom_fichier_hdf5+=Nom(".Zones");
   nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
@@ -1357,15 +1357,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       if (format == Decouper::HDF5_SINGLE && loop == 0)  // create HDF5 file only once!
         {
-          //construire_nom_fichier_sous_domaine(basename, -1, nb_parties_, nom_fichier_hdf5);
-          //fic_hdf.close();
-          // FichierHDFPar fic_hdf;
-          // fic_hdf.create(nom_fichier_hdf5);
-          // fic_hdf.close();
-
-
-          fic_write.create(nom_fichier_hdf5);
-          fic_write.close();
+          fic_hdf.create(nom_fichier_hdf5);
+          fic_hdf.close();
 
           if(Process::je_suis_maitre())
             {
@@ -1389,19 +1382,19 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                               dataset_names.add(dataset_name);
                             }
                         }
-
                     }
-
                 }
-              FichierHDF fic;
-              fic.open(nom_fichier_hdf5, false);
-              fic.create_datasets(dataset_names);
-              fic.close();
 
+              Sortie_Brute os_hdf;
+              writeData(domaine, os_hdf); //just to have an idea of the datasets length
+
+              FichierHDF fic_master;
+              fic_master.open(nom_fichier_hdf5, false);
+              fic_master.create_datasets(dataset_names, os_hdf.get_size());
+              fic_master.close();
             }
 
-          fic_write.open(nom_fichier_hdf5, false);
-
+          fic_hdf.open(nom_fichier_hdf5, false);
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
@@ -1499,7 +1492,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                     dname += "_" + std::to_string(zones_index[i_part]);
 
                   Nom dataset_name(dname.c_str());
-                  fic_write.fill_dataset(dataset_name, os_hdf);
+                  fic_hdf.fill_dataset(dataset_name, os_hdf, false);
                 }
               else
                 {
@@ -1636,5 +1629,6 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
            << "\n" << finl;
     }
   if (format == Decouper::HDF5_SINGLE)
-    fic_write.close();
+    fic_hdf.close();
+
 }

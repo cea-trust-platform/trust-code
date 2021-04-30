@@ -108,8 +108,15 @@ void Partitionneur_Sous_Domaine::construire_partition(IntTab& elem_part, int& nb
   file >> elem_ssz;
   file.close();
 
+  Cerr << "elem_part_glob" << finl;
+  Cerr << elem_part_glob << finl;
   /* remplissage de elem_part */
   elem_part.resize(elem_ssz.size_array());
   for (int i = 0; i < elem_ssz.size_array(); i++)
-    nb_parts_tot = max(nb_parts_tot, 1 + (elem_part[i] = elem_part_glob[elem_ssz[i]]));
+    {
+      Cerr << "elem_part[" << i << "] = " << elem_part[i] << finl;
+      Cerr << "elem_ssz[" << i << "] = " << elem_ssz[i] << finl;
+      Cerr << "elem_part_glob[" << elem_ssz[i] << "] = " << elem_part_glob[elem_ssz[i]] << finl;
+      nb_parts_tot = max(nb_parts_tot, 1 + (elem_part[i] = elem_part_glob[elem_ssz[i]]));
+    }
 }

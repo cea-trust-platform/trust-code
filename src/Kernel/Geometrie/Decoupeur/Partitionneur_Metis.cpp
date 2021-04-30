@@ -156,10 +156,10 @@ void Partitionneur_Metis::construire_partition(IntTab& elem_part, int& nb_parts_
   if (nb_parties_ == 1)
     {
 
-      int nb_elem = ref_domaine_.valeur().zone(0).nb_elem();
+      int nb_elem = ref_domaine_.valeur().zone(0).nb_elem_tot();
       if (use_segment_to_build_connectivite_elem_elem_==1)
         nb_elem = ref_domaine_.valeur().nb_som();
-      elem_part.resize_array(nb_elem);
+      elem_part.resize(nb_elem);
       elem_part = 0;
       return;
     }

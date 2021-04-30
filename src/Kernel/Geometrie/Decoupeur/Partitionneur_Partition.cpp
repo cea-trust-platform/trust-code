@@ -88,7 +88,7 @@ void Partitionneur_Partition::construire_partition(IntTab& elem_part, int& nb_pa
       exit();
     }
   const Zone& zone_interpol = dom_interpol.zone(0);
-  const int nb_elem_interpol = zone_interpol.nb_elem();
+  const int nb_elem_interpol = zone_interpol.nb_elem_tot();
   const int dim_interpol = dom_interpol.dimension;
 
   // Domaine dom_calcul
@@ -102,7 +102,7 @@ void Partitionneur_Partition::construire_partition(IntTab& elem_part, int& nb_pa
   const int nb_elem_calcul = zone_calcul.nb_elem();
   const int dim_calcul = dom_calcul.dimension;
 
-  ArrOfInt elem_part_calcul;
+  IntTab elem_part_calcul;
   int nb_parts_tot_calcul;
   EFichier file;
   Nom nom_fichier;
@@ -145,7 +145,7 @@ void Partitionneur_Partition::construire_partition(IntTab& elem_part, int& nb_pa
   assert(coord_g_calcul.dimension(0) == nb_elem_calcul);
   assert(coord_g_calcul.dimension(1) == dim_calcul);
 
-  elem_part.resize_array(nb_elem_interpol);
+  elem_part.resize(nb_elem_interpol);
   elem_part = 0;
   // Recherche des centres de gravite les plus proche les uns des autres
   {

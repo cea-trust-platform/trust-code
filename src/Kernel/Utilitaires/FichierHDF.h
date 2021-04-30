@@ -28,6 +28,7 @@
 #include <Nom.h>
 #include <Noms.h>
 #include <SChaine.h>
+#include <map>
 
 #include <med.h>
 #ifdef MED_H
@@ -64,36 +65,38 @@ public:
   virtual void open(Nom filename, bool readOnly);
   virtual void close();
 
-  // Multiple Writer methods:
-  // every processor writes their own dataset into the file
-  virtual void create_and_fill_dataset_MW(Nom dataset_basename, Sortie_Brute& sortie);
-  virtual void create_and_fill_dataset_MW(Nom dataset_basename, SChaine& sortie);
+  virtual void fill_dataset(Nom dataset_name, const Sortie_Brute& sortie, bool append);
+  virtual void fill_dataset(Nom dataset_name, const SChaine& sortie, bool append);
 
-  // Method to write the dataset owned by proc #proc_rank in the given file
-  // (to use when a single proc writes all the datasets for example)
-  virtual void create_and_fill_dataset_SW(Nom dataset_basename, int proc_rank, Sortie_Brute& sortie);
+#ifdef MED_
+  virtual void extend_datasets(Noms dataset_names, hsize_t extent_sz);
+  virtual void create_datasets(Noms dataset_names, hsize_t datasets_length, bool extendible = false, bool is_bin = true);
+#endif
 
-  virtual void create_datasets(Noms dataset_names);
-  virtual void fill_dataset(Nom dataset_name, Sortie_Brute& sortie);
-
-  // Method to read the dataset owned by proc #proc_rank in the given file
-  virtual void read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute& entree);
+  // Method to read the dataset named dataset_name in the given file
+  virtual void read_dataset(Nom dataset_name, Entree_Brute& entree);
 
   // checks if a dataset named dataset_name exists in the file
   virtual bool exists(const char* dataset_name);
-  //check if the file file_name is in the HDF5 format
+  // check if the file file_name is in the HDF5 format
   static bool is_hdf5(const char *file_name);
 
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_dataset_props();
 #ifdef MED_
-
-  void create_and_fill_dataset_MW(Nom dataset_basename, const char* data, hsize_t lenData, hid_t datatype);
+  virtual void prepare_dataset_props(int dcpl = 0, hsize_t chunk_size = 0, bool is_bin=true);
+  virtual void fill_dataset(Nom dataset_name, hid_t datatype, hsize_t data_length, const char *data, bool append);
+  virtual hsize_t computeChunkSize(hsize_t datasets_length);
 
   hid_t file_id_;
   hid_t file_access_plst_;
   hid_t dataset_transfer_plst_;
+  hid_t dataset_creation_plst_;
+
+  // returns the current size of the data written in the dataset
+  // (the size of the dataset is probably longer than what is really written)
+  static std::map<std::string, hsize_t> current_size;
+
 #endif
 
 private:
@@ -102,4 +105,15 @@ private:
   FichierHDF(const FichierHDF&);
 
 };
+
+
+template<typename T> inline void hdf5_error(T status)
+{
+  if (status <0)
+    {
+      Cerr << "HDF5 error occured - exiting" << finl;
+      Process::exit();
+    }
+}
+
 #endif

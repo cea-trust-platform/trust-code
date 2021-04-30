@@ -133,6 +133,8 @@ void Domaine::read_vertices(Entree& s)
   sommets.reset();
   renum_som_perio.reset();
 
+  les_zones.vide();
+
   Nom tmp;
   s >> tmp;
   // Si le domaine n'est pas nomme, on prend celui lu

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,15 +41,26 @@ public:
     collective_op_ = b;
   }
 
+  inline void set_collective_metadata_op(bool b)
+  {
+    collective_metadata_op_ = b;
+  }
+
 protected:
   virtual void prepare_file_props();
-  virtual void prepare_dataset_props();
-
+#ifdef MED_
+  virtual void prepare_dataset_props(int dcpl = 0, hsize_t chunk_size = 0, bool is_bin=true);
+#endif
 private:
   // Forbid copy:
   FichierHDFPar& operator=(const FichierHDFPar&);
   FichierHDFPar(const FichierHDFPar&);
 
   bool collective_op_; //flag to enable collective data transfering
+  //this option is useful if many processors are reading/writing inside the same dataset
+
+  bool collective_metadata_op_; //flag to enable collective metadata reads
+  // metadata reads include opening a dataset, datatype, or group; reading an attribute etc
+  // WARNING: undefined behavior will occur if any function is called that triggers an independent metadata read while this flag is set to true
 };
 #endif

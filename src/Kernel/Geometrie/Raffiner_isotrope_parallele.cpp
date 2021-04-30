@@ -241,8 +241,9 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       org = copy;
       fic_hdf.open(org, true);
       Entree_Brute data;
-
-      fic_hdf.read_dataset("/zone", Process::me(), data);
+      std::string dname = "/zone_" + std::to_string(Process::me());
+      Nom dataset_name = dname.c_str();
+      fic_hdf.read_dataset(dataset_name, data);
 
       // Feed TRUST objects:
       data >> dom_org;
@@ -342,7 +343,27 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
                 FichierHDFPar fic_hdf;
                 newd = newd.nom_me(Process::nproc(), "p", 1);
                 fic_hdf.create(newd);
-                fic_hdf.create_and_fill_dataset_MW("/zone", os_hdf);
+                fic_hdf.close();
+                if(Process::je_suis_maitre())
+                  {
+                    Noms dataset_names;
+                    for(int proc=0; proc<Process::nproc(); proc++)
+                      {
+                        std::string dname = "/zone_"  + std::to_string(proc);
+                        Nom dataset_name(dname.c_str());
+                        dataset_names.add(dataset_name);
+                      }
+
+                    FichierHDF fic_master;
+                    fic_master.open(newd, false);
+                    fic_master.create_datasets(dataset_names, os_hdf.get_size());
+                    fic_master.close();
+                  }
+
+                std::string my_dname = "/zone_"  + std::to_string(Process::me());
+                Nom my_dataset_name(my_dname.c_str());
+                fic_hdf.open(newd, false);
+                fic_hdf.fill_dataset(my_dataset_name, os_hdf, false);
                 fic_hdf.close();
               }
           }
