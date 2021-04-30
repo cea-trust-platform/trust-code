@@ -703,7 +703,7 @@ liste_sonde_tble listobj nul 0 sonde_tble 0 not_set
 Paroi condlim_base Paroi 0 Impermeability condition at a wall called bord (edge) (standard flux zero). This condition must be associated with a wall type hydraulic condition.
 precond_base objet_u precond_base -1 Basic class for preconditioning.
 ssor precond_base ssor 1 Symmetric successive over-relaxation algorithm.
-  attr omega floattant omega 0 Over-relaxation facteur (between 1 and 2, optimal value around 1.5-1.6).
+  attr omega floattant omega 1 Over-relaxation facteur (between 1 and 2, default value 1.6).
 ssor_bloc precond_base ssor_bloc -1 not_set
   attr alpha_0 floattant alpha_0 1 not_set
   attr precond0 precond_base precond0 1 not_set
@@ -745,7 +745,10 @@ gen solveur_sys_base gen -1 not_set
   attr quiet rien quiet 1 To not displaying any outputs of the solver.
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the GEN solver.
   attr force rien force 1 Keyword to set ipar[5]=-1 in the GEN solver. This is helpful if you notice that the solver does not perform more than 100 iterations. If this keyword is specified in the datafile, you should provide nb_it_max.
-petsc solveur_sys_base petsc 0 Solveur via Petsc API NL2 \input{{solvpetsc}}
+petsc solveur_sys_base petsc 0 Solver via Petsc API NL2 \input{{solvpetsc}}
+  attr solveur chaine solveur 0 not_set
+  attr option_solveur bloc_lecture option_solveur 0 not_set
+amgx petsc amgx 0 Solver via AmgX API
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set
 solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
