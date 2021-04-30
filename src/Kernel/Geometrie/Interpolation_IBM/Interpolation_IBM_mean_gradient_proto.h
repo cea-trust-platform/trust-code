@@ -14,48 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Interpolation_IBM_hybrid.cpp
+// File:        Interpolation_IBM_mean_gradient_proto.h
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Interpolation_IBM_hybrid.h>
-#include <Param.h>
-#include <DoubleTab.h>
-#include <IntTab.h>
+#ifndef Interpolation_IBM_mean_gradient_proto_included
+#define Interpolation_IBM_mean_gradient_proto_included
 
-Implemente_instanciable( Interpolation_IBM_hybrid, "Interpolation_IBM_hybride|IBM_hybride", Interpolation_IBM_elem_fluid ) ;
-// XD interpolation_ibm_hybride interpolation_ibm_elem_fluid ibm_hybride 1 Immersed Boundary Method (IBM): hybrid (fluid/mean gradient) interpolation.
+#include <Zone_dis_base.h>
+#include <IntLists.h>
+#include <Champ_Don.h>
 
-Sortie& Interpolation_IBM_hybrid::printOn( Sortie& os ) const
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Interpolation_IBM_mean_gradient_proto
+//
+// Pure C++ class to allow multiple inheritance in Interpolation_IBM_hybrid
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Interpolation_IBM_mean_gradient_proto
 {
-  Objet_U::printOn( os );
-  return os;
-}
 
-Entree& Interpolation_IBM_hybrid::readOn( Entree& is )
-{
-  //Interpolation_IBM_elem_fluid::readOn(is);
-  Param param(que_suis_je());
-  Interpolation_IBM_elem_fluid::set_param(param);
-  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P field_base Node field of booleans indicating whether the node belong to an element where the interface is
-  param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Node field giving the element number containing the solid point
-  param.lire_avec_accolades_depuis(is);
-  return is;
-}
+public :
+  inline IntList& getSommetsVoisinsOf(int i)
+  {
+    return sommets_voisins_[i];
+  };
 
-void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Zone_dis_base& la_zone_EF)
-{
-  Cerr << "(IBM) Warning! Interpolation IBM_hybrid has no validation test case." << finl;
+protected :
+  void computeSommetsVoisins(Zone_dis_base& la_zone_EF, const Champ_Don& solid_points, const Champ_Don& corresp_elems);
 
-  Interpolation_IBM_elem_fluid::discretise(dis,la_zone_EF);
+  Champ_Don is_dirichlet_lu_;
+  Champ_Don is_dirichlet_;
 
-  dis.discretiser_champ("champ_sommets",la_zone_EF,"solid_elems","none",1,0., solid_elems_);
-  solid_elems_.valeur().affecter(solid_elems_lu_);
-  dis.discretiser_champ("champ_sommets",la_zone_EF,"is_dirichlet","none",1,0., is_dirichlet_);
-  is_dirichlet_.valeur().affecter(is_dirichlet_lu_);
+  Champ_Don solid_elems_lu_;
+  Champ_Don solid_elems_;
 
-  computeSommetsVoisins(la_zone_EF, solid_points_, corresp_elems_);
-}
+  IntLists sommets_voisins_;
+};
 
+#endif /* Interpolation_IBM_mean_gradient_proto_included */

@@ -24,6 +24,7 @@
 #define Interpolation_IBM_mean_gradient_included
 
 #include <Interpolation_IBM_base.h>
+#include <Interpolation_IBM_mean_gradient_proto.h>
 #include <IntLists.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,29 +35,16 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base
+class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base, public Interpolation_IBM_mean_gradient_proto
 {
 
   Declare_instanciable( Interpolation_IBM_mean_gradient ) ;
 
 public :
   virtual void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
-  inline IntList& getSommetsVoisinsOf(int i)
-  {
-    return sommets_voisins_[i];
-  };
 
 protected :
-  void computeSommetsVoisins(Zone_dis_base&);
-  Champ_Don is_dirichlet_lu_;
-  Champ_Don is_dirichlet_;
-
-  Champ_Don solid_elems_lu_;
-  Champ_Don solid_elems_;
-
-  IntLists sommets_voisins_;
   friend class Source_PDF_EF;
-  friend class Interpolation_IBM_hybrid;
 };
 
 #endif /* Interpolation_IBM_mean_gradient_included */

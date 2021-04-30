@@ -44,7 +44,7 @@ public :
   virtual void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
 
 protected :
-  void computeFluidElems(Zone_dis_base&);
+  virtual void computeFluidElems(Zone_dis_base&);
   void set_param(Param&);
 
   Champ_Don fluid_points_lu_;
