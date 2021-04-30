@@ -823,7 +823,7 @@ then
         # Discard GPU test case 
         if [ "$TRUST_USE_CUDA" != 1 ]
         then
-           if ([ "`grep -i amgx $REP/* 2>/dev/null`" != "" ] || [ "`grep -i petsc_gpu $REP/* 2>/dev/null`" != "" ])
+           if [ "`grep -i -e amgx -e petsc_gpu $REP/* 2>/dev/null | grep -v hierarchie.dump`" != "" ]
            then
               echo "Test $i skipped (no cuda)"
               liste_skipped=$liste_skipped" $i"
