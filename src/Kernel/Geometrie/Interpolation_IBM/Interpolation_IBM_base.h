@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,8 @@
 #include <Objet_U.h>
 #include <Discretisation_base.h>
 #include <Zone_dis_base.h>
+#include <Champ_Don.h>
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -40,10 +42,15 @@ class Interpolation_IBM_base : public Objet_U
 
   Declare_base( Interpolation_IBM_base ) ;
 
-public :
+public:
   virtual void discretise(const Discretisation_base&, Zone_dis_base&);
-protected :
 
+protected:
+  Champ_Don solid_points_lu_;
+  Champ_Don solid_points_;
+
+  Champ_Don corresp_elems_lu_;
+  Champ_Don corresp_elems_;
 };
 
 #endif /* Interpolation_IBM_base_included */

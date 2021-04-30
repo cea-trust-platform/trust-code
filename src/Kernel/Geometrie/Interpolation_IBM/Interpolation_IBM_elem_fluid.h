@@ -25,8 +25,6 @@
 #define Interpolation_IBM_elem_fluid_included
 
 #include <Interpolation_IBM_base.h>
-#include <Champ_Don.h>
-#include <Zone.h>
 #include <Param.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -43,18 +41,18 @@ class Interpolation_IBM_elem_fluid : public Interpolation_IBM_base
   Declare_instanciable( Interpolation_IBM_elem_fluid ) ;
 
 public :
-  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
+  virtual void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
+
 protected :
   void computeFluidElems(Zone_dis_base&);
   void set_param(Param&);
-  Champ_Don solid_points_lu_;
+
   Champ_Don fluid_points_lu_;
-  Champ_Don fluid_elems_lu_;
-  Champ_Don corresp_elems_lu_;
-  Champ_Don solid_points_;
   Champ_Don fluid_points_;
+
+  Champ_Don fluid_elems_lu_;
   Champ_Don fluid_elems_;
-  Champ_Don corresp_elems_;
+
   friend class Source_PDF_EF;
 };
 

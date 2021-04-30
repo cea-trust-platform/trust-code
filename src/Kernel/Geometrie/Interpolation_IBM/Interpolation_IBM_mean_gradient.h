@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,9 +24,7 @@
 #define Interpolation_IBM_mean_gradient_included
 
 #include <Interpolation_IBM_base.h>
-#include <Champ_Don.h>
 #include <IntLists.h>
-#include <Zone.h>
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -42,22 +40,21 @@ class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base
   Declare_instanciable( Interpolation_IBM_mean_gradient ) ;
 
 public :
-  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
+  virtual void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
   inline IntList& getSommetsVoisinsOf(int i)
   {
     return sommets_voisins_[i];
   };
+
 protected :
   void computeSommetsVoisins(Zone_dis_base&);
-  Champ_Don solid_points_lu_;
-  Champ_Don solid_points_;
   Champ_Don is_dirichlet_lu_;
-  Champ_Don solid_elems_lu_;
-  Champ_Don corresp_elems_lu_;
   Champ_Don is_dirichlet_;
-  IntLists sommets_voisins_;
-  Champ_Don corresp_elems_;
+
+  Champ_Don solid_elems_lu_;
   Champ_Don solid_elems_;
+
+  IntLists sommets_voisins_;
   friend class Source_PDF_EF;
   friend class Interpolation_IBM_hybrid;
 };
