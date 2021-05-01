@@ -148,14 +148,14 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       if (motlu!="MU0")
         {
           Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          exit();
+          Process::exit();
         }
       is>>mu0;
       is>>motlu;
       if (motlu!="T0")
         {
           Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          exit();
+          Process::exit();
         }
       is>>T0;
       is>>motlu;
@@ -167,7 +167,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       if (motlu!="C")
         {
           Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          exit();
+          Process::exit();
         }
       is>>C;
 
@@ -212,7 +212,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
         {
           Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
           Cerr<< "One of the following options was expected : " << les_options << finl;
-          exit();
+          Process::exit();
         }
       return 1;
     }
@@ -230,7 +230,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
         {
           Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
           Cerr<< "One of the following options was expected : " << les_options << finl;
-          exit();
+          Process::exit();
         }
       return 1;
     }
@@ -238,7 +238,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
     {
       Cerr<<"The keyword "<<mot<<" has not to be read for a "<<que_suis_je()<<" type medium."<<finl;
       Cerr<<"Please remove it from your data set."<<finl;
-      exit();
+      Process::exit();
       return -1;
     }
   else
@@ -269,8 +269,19 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
       Process::exit();
     }
 
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" && traitement_PTh != 2)
+    {
+      Cerr << "Currently, the Pb_Hydraulique_Melange_Binaire_QC is only available with an isobar assumption !" << finl;
+      Cerr << "Set **traitement_pth constant** in the Fluide_Quasi_Compressible bloc definition." << finl;
+      Process::exit();
+    }
+
   Cerr<<"Fluide_Quasi_Compressible::completer Pth="<<Pth_<<finl;
   inco_chaleur_ = pb.equation(1).inconnue();
+
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+    assert(inco_chaleur_.le_nom()=="fraction_massique");
+
 
   vitesse_ = pb.equation(0).inconnue();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
@@ -281,23 +292,35 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
     {
       /* ToDo: generalize mass fraction to VEF
       if (pb.que_suis_je().finit_par("QC_fraction_massique"))
-        {
-          Cerr << "\nQuasi-compressible calculation with mass fraction are not allowed for VEF discretization!" << finl;
-          exit();
-        }*/
+      {
+      Cerr << "\nQuasi-compressible calculation with mass fraction are not allowed for VEF discretization!" << finl;
+      exit();
+      }*/
       typ = "VEF";
     }
   typ += "_";
-  typ += loi_etat_->type_fluide();
-  //typ+="Gaz_Parfait";
+
+  // Pb_Hydraulique_Melange_Binaire_QC is currently an isobar problem
+  // The EDO_pth is not solved (traitement_pth constant)
+  // However, we need a typer because we will need to access calculer_rho_face in calculer_masse_volumique (loi_etat)
+  // EDO_Pression_th_VDF/VEF_Melange_Binaire not implemented yet
+  // just typer Gaz_Parfait instead...
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+    typ +="Gaz_Parfait";
+  else
+    typ += loi_etat_->type_fluide();
+
+  // TODO : XXX
+  // All this is not good... EDO_Pth_ should only be used if traitement_PTh = 0
+  // I think we can do better ...
+
   EDO_Pth_.typer(typ);
   EDO_Pth_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
   EDO_Pth_->associer_fluide(*this);
-
   EDO_Pth_->mettre_a_jour_CL(Pth_);
 
-
   initialiser_inco_ch();
+
   EDO_Pth_->mettre_a_jour(0.);
   //calculer_masse_volumique();
   loi_etat_->initialiser();
@@ -413,17 +436,31 @@ void Fluide_Quasi_Compressible::abortTimeStep()
 
 void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  Motcle nom_var("temperature");
+  Motcle nom_var;
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+    nom_var="fraction_massique"; // because we do not even have a temperature variable
+  else
+    nom_var="temperature";
+
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
   double temps=pb.schema_temps().temps_courant();
   //
   Cerr<<"Fluide_Quasi_Compressible::discretiser"<<finl;
   // les champs seront nommes par le milieu_base
   dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,rho);
+
+  // NOTE : ch_temperature() is the temperature field
+  // unless for a Pb_Hydraulique_Melange_Binaire_QC where it denotes the species Y1 (mass fraction)
   Champ_Don& ch_TK = ch_temperature();
-  dis.discretiser_champ("temperature",zone_dis,"temperature","K",1,temps,ch_TK);
+
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+    dis.discretiser_champ("temperature",zone_dis,"fraction_massique","neant",1,temps,ch_TK);
+  else
+    dis.discretiser_champ("temperature",zone_dis,"temperature","K",1,temps,ch_TK);
+
   if (type_fluide()!="Gaz_Parfait")
     loi_etat().valeur().champs_compris().ajoute_champ(ch_TK);
+
   Champ_Don& cp = capacite_calorifique();
   if (!cp.non_nul() || !sub_type(Champ_Uniforme,cp.valeur()))    //ie Cp non constant : gaz reels
     {
@@ -443,6 +480,10 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   // mu_sur_Schmidt
   dis.discretiser_champ("champ_elem",zone_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
   champs_compris_.ajoute_champ(mu_sur_Sc);
+
+  // nu_sur_Schmidt
+  dis.discretiser_champ("champ_elem",zone_dis,"nu_sur_Schmidt","m2/s",1,temps,nu_sur_Sc);
+  champs_compris_.ajoute_champ(nu_sur_Sc);
 
   // pression_tot
   //  pas comme la pression !!!
@@ -545,7 +586,7 @@ void Fluide_Quasi_Compressible::creer_champs_non_lus()
                         Cerr.precision(20);
                         Cerr << "mu/(lambda*Cp)=" << loi_etat_->Prandt()*(lo/lold) << " and Prandtl=" << loi_etat_->Prandt() << finl;
                         Cerr<<"Please modify your data set by specifying for instance Prandtl = "<<loi_etat_->Prandt()*(lo/lold)<<finl;
-                        exit();
+                        Process::exit();
                       }
                   }
               }
@@ -559,7 +600,7 @@ void Fluide_Quasi_Compressible::creer_champs_non_lus()
                 {
                   Cerr << "A sutherland law cannot be requested for the conductivity "<<finl;
                   Cerr << "by indicating Slambda if the heat capacity (Cp) is not uniform."<<finl;
-                  exit();
+                  Process::exit();
                 }
               Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
               const double& mu0 = mu_suth.get_A();
@@ -593,6 +634,9 @@ void Fluide_Quasi_Compressible::creer_champs_non_lus()
 void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
 {
   rho.mettre_a_jour(temps);
+
+  // NOTE : ch_temperature() is the temperature field
+  // unless for a Pb_Hydraulique_Melange_Binaire_QC where it denotes the species Y1 (mass fraction)
   ch_temperature().mettre_a_jour(temps);
   rho->changer_temps(temps);
   ch_temperature()->changer_temps(temps);
@@ -794,7 +838,7 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
           Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
           Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
         }
-      exit();
+      Process::exit();
     }
   if (!pression_imposee && traitement_PTh!=1)
     {
@@ -803,6 +847,6 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
           Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
           Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
         }
-      exit();
+      Process::exit();
     }
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ public :
   void calculer_nu();
   virtual void calculer_alpha();
   virtual void calculer_mu_sur_Sc();
-
+  virtual void calculer_nu_sur_Sc();
 
   virtual void calculer_masse_volumique();
   virtual double calculer_masse_volumique(double,double) const =0;
