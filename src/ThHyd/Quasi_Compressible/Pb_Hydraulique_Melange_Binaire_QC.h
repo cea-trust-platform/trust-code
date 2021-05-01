@@ -39,7 +39,7 @@
 //      - Equation de conv/diff fraction massique
 //        en regime laminaire pour un fluide quasi compressible
 // .SECTION voir aussi
-//     Probleme_base Navier_Stokes_QC Convection_Diffusion_fraction_massique_QC
+//     Probleme_base Navier_Stokes_QC Convection_Diffusion_fraction_massique_MB_QC
 //////////////////////////////////////////////////////////////////////////////
 class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC_base
 {

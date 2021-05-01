@@ -168,12 +168,10 @@ Equation_base& Pb_Hydraulique_Melange_Binaire_QC::equation(int i)
 // Postcondition:
 int Pb_Hydraulique_Melange_Binaire_QC::verifier()
 {
-  // TODO : FIXME
-//  const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();
-//  const Zone_Cl_dis& zone_Cl_conc = eq_frac_mass.zone_Cl_dis();
-//
-//  return tester_compatibilite_hydr_concentration(zone_Cl_hydr,zone_Cl_conc);
-  return 1;
+  const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();
+  const Zone_Cl_dis& zone_Cl_fm = eq_frac_mass.zone_Cl_dis();
+
+  return tester_compatibilite_hydr_fraction_massique(zone_Cl_hydr,zone_Cl_fm);
 }
 
 

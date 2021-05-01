@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s ) const
 // Description:
 //    Type le_champ_front en "Champ_front_uniforme".
 //    Lit les valeurs du champ exterieur si les conditions
-//    aux limites sont specifiees: "T_ext", "C_ext" ou "K_Eps_ext"
+//    aux limites sont specifiees: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
 //    Produit une erreur sinon.
 // Precondition:
 // Parametre: Entree& s
@@ -61,7 +61,7 @@ Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s ) const
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception: type de champ exterieur non reconnu,
-//            les types reconnus sont: "T_ext", "C_ext" ou "K_Eps_ext"
+//            les types reconnus sont: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
 // Effets de bord:
 // Postcondition:
 Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
@@ -70,12 +70,13 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
   le_champ_Text.typer("Champ_front_uniforme");
   le_champ_hext.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(4);
+  Motcles les_motcles(5);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
     les_motcles[2] = "K_Eps_ext";
     les_motcles[3] = "H_ext";
+    les_motcles[4] = "Y_ext";
   }
 
   Motcle accfermee="}";
@@ -101,6 +102,7 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
         case 1:
         case 2:
         case 3:
+        case 4:
           {
             s >> le_champ_hext;
             break;

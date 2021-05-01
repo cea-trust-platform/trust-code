@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ Sortie& Neumann_sortie_libre_Temp_H::printOn(Sortie& s ) const
 // Description:
 //    Type le_champ_front en "Champ_front_uniforme".
 //    Lit les valeurs du champ exterieur si les conditions
-//    aux limites sont specifiees: "T_ext", "C_ext" ou "K_Eps_ext"
+//    aux limites sont specifiees: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
 //    Produit une erreur sinon.
 // Precondition:
 // Parametre: Entree& s
@@ -61,7 +61,7 @@ Sortie& Neumann_sortie_libre_Temp_H::printOn(Sortie& s ) const
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception: type de champ exterieur non reconnu,
-//            les types reconnus sont: "T_ext", "C_ext" ou "K_Eps_ext"
+//            les types reconnus sont: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
 // Effets de bord:
 // Postcondition:
 Entree& Neumann_sortie_libre_Temp_H::readOn(Entree& s )
