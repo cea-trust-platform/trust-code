@@ -53,19 +53,27 @@ tar zxf $archive_conf
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
 
-USE_MPI=ON
-[ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
-
+OPTIONS=""
+USE_MPI=ON && [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
+# NO_CXX1 pour cygwin
+OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
+USE_PYTHON=ON # API Python
+# Warnings selon compilateurs:
+if [ "`basename $TRUST_CC_BASE`" = nvc++ ]
+then
+   # Pour nvc++, suppression de 2 flags non supportes:
+   find $build_root -name CMakeLists.txt | xargs sed -i "1,$ s?-Wsign-compare -Wconversion??g"
+   USE_PYTHON=OFF # Crash sur JeanZay lors du build de l'API Python
+   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-D__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=1" # Sur JeanZay error sinon
+else
+   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-Wno-narrowing" # Error->Warning pour ARM
+fi
 # We use now python and SWIG from conda so:
-OPTIONS="-DMEDCOUPLING_USE_MPI=$USE_MPI -DSALOME_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc "
+OPTIONS="$OPTIONS -DMEDCOUPLING_USE_MPI=$USE_MPI -DSALOME_USE_MPI=$USE_MPI -DMPI_ROOT_DIR=$MPI_ROOT -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc "
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig "
-OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON"
-# NO_CXX1 pour cygwin
-OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
-# Error->Warning pour ARM:
-OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-Wno-narrowing"
+OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=$USE_PYTHON"
 #INT64
 if [ "$TRUST_INT64" = "1" ]
 then
@@ -103,18 +111,21 @@ echo "@@@@@@@@@@@@ Testing install ..."
 if [ $status -eq 0 ]  # install was successful
 then
   ##
-  ## Test de fonctionnement
+  ## Test de fonctionnement de l'API Python
   ##
-  source $MC_ENV_FILE_tmp
-  python -c "import medcoupling"  # also provides MEDLoader functionalities
-  if [ $? -eq 0 ]
+  if [ "$USE_PYTHON" = ON ]
   then
-    echo "medcoupling library OK"
+     source $MC_ENV_FILE_tmp
+     python -c "import medcoupling"  # also provides MEDLoader functionalities
+     if [ $? -eq 0 ]
+     then
+        echo "medcoupling library OK"
     # Clean build folder
     cd .. ; rm -rf configuration* medcoupling*
-  else
-    echo "medcoupling library KO"
-    exit -1
+     else
+        echo "medcoupling library KO"
+        exit -1
+     fi
   fi
 fi
 

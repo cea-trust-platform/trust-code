@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -163,6 +163,11 @@ void Champ_Face_CoviMAC::update_ve(DoubleTab& val) const
 
 void Champ_Face_CoviMAC::init_ve2() const
 {
+#ifdef _COMPILE_AVEC_PGCC
+  // PL ToDo: rewrite code
+  Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
+  Process::exit();
+#else
   if (ve2d.dimension(0)) return; //deja initialise
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
@@ -243,6 +248,7 @@ void Champ_Face_CoviMAC::init_ve2() const
             }
     }
   CRIMP(ve2d), CRIMP(ve2j), CRIMP(ve2bj), CRIMP(ve2c), CRIMP(ve2bc);
+#endif
 }
 
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */

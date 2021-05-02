@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.4_beta : Changes since version 1.8.3 :
 -------------------------------------------------------------
+05/07/21 (TRUST)  OpenACC compilers (nvc++/nvc/nvfortran) for GPU porting with NVidia HPC SDK (20.7) are supported 
 -------------------------------------------------------------
 Developer notes version 1.8.3 : Changes since version 1.8.2 :
 -------------------------------------------------------------

@@ -350,19 +350,14 @@ check_nvidia_cuda()
    # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
    # -Drivers NVidia installed
    # -Cuda Compilateur nvcc found or installed
-   # Plusieurs installations possibles:
-   # Runtime : CUDA_ROOT=/usr			$CUDA_ROOT/include/cuda/cuda.h !
-   # Toolkit : CUDA_ROOT=/usr/local/cuda-X.Y.Z 	$CUDA_ROOT/include/cuda.h
    # SDK     : CUDA_ROOT=/opt/nvidia/hpc_sdk	$CUDA_ROOT/include
    [ "$NVIDIA_VERSION" != "" ] && echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
    ################
    # Detection nvcc
    ################
-   e="`cherche_file nvcc nvcc`";eval $e
-   if [ "`$nvcc --version 2>/dev/null`" != "" ]
+   m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";ecrit $m"|"$e"|"$env;eval $e
+   if [ "`$CUDA_NVCC --version 2>/dev/null`" = "" ]
    then
-      echo "Cuda compiler nvcc: $nvcc"
-   else
       echo "Error, no nvcc cuda compiler found."
       echo "On Fedora, for instance you will install CUDA runtime with:" 
       echo "dnf config-manager --add-repo=https://negativo17.org/repos/fedora-nvidia.repo"
@@ -373,22 +368,17 @@ check_nvidia_cuda()
    #########################
    # Detection CUDA run time
    #########################
-   if [ "$NVHPC" != "" ]
-   then
-      CUDA_LIB=`ls $NVHPC/Linux_x86_64/*/cuda/lib*/libcudart.so.*.* 2>/dev/null | head -1` # Orcus Nvidia HPC SDK
-   elif [ "$CUDA_PATH" != "" ]
-   then
-      CUDA_LIB=`ls $CUDA_PATH/lib*/libcudart.so.*.* 2>/dev/null | head -1` # JeanZay
-   elif [ "$CUDA_LIB" = "" ]
-   then
-      CUDA_LIB="`ls /usr/lib*/libcudart.so.*.* /usr/local/*/libcudart.so.*.* /usr/local/*/lib*/libcudart.so.*.* 2>/dev/null | head -1`" # PCs
-   else
-      echo "Cuda lib libcudart.so not found!" && exit -1
-   fi
+   # On se base sur nvcc pour trouver les librairies
+   # CUDA Toolkit:		NVIDIA HPC SDK:
+   # ROOT/bin/nvcc		ROOT/compilers/bin/nvcc 		
+   # ROOT/lib64 		ROOT/cuda/lib64
+   ROOT=${CUDA_NVCC%/bin/nvcc}
+   ROOT=${ROOT%/compilers}
+   CUDA_LIB=`ls $ROOT/lib64/libcudart.so.*.* $ROOT/cuda/lib64/libcudart.so.*.* 2>/dev/null | head -1`
+   [ "$CUDA_LIB" = "" ] && echo "Cuda lib libcudart.so not found!" && exit -1
    CUDA_LIB=`dirname $CUDA_LIB 2>/dev/null`
    echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
    CUDA_ROOT=`dirname $CUDA_LIB 2>/dev/null`
-   echo "Cuda CUDA_ROOT=$CUDA_ROOT"
    for CUDA_INC_PATH in $CUDA_ROOT/include $CUDA_ROOT/include/cuda
    do
       [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
@@ -630,9 +620,9 @@ case $arch in
 	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" icpc  "$cuda"g++      armclang++ g++"
-	TRUST_F77_BASE="ifort "$cuda"gfortran armflang   gfortran"
-	TRUST_cc_BASE=" icc   "$cuda"gcc      armclang   gcc"
+	TRUST_CC_BASE=" nvc++	  icpc  "$cuda"g++      armclang++ g++"
+	TRUST_F77_BASE="nvfortran ifort "$cuda"gfortran armflang   gfortran"
+	TRUST_cc_BASE=" nvc	  icc   "$cuda"gcc      armclang   gcc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -1281,9 +1271,12 @@ fi
 # Intallation des packages supplementaires avec pip de conda #
 ##############################################################
 pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
-[ "$TRUST_DISABLE_MPI" != 1 ] && pkgs="mpi4py "$pkgs
+if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ]
+then
+   pkgs="mpi4py "$pkgs
+fi
 # ld from conda does not recognize openmpi configuration on TGCC
-if [ "${HOST#irene}" != $HOST ] || [ "${HOST#cobalt}" != $HOST ] || [ "${HOST#topaze}" != $HOST ]
+if [ "${HOST#irene}" != $HOST ] || [ "${HOST#cobalt}" != $HOST ]
 then
    rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on TGCC..."
 fi
@@ -1546,10 +1539,11 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
 	;;
-   linux_pgCC) TRUST_SUPPORTED=1
+   linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
+        m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
    	Defines="-D_COMPILE_AVEC_PGCC"
 	CppFlags="-O3 -fPIC"
-	SYSLIBS="-lpgftnrtl -lrt" && [ "`basename $TRUST_F77_BASE`" = pgf90 ] && SYSLIBS="-lpgf90 -lpgf90rtl -lpghpf_mpi -lpghpf2 "$SYSLIBS
+	#SYSLIBS="-lpgftnrtl -lrt" && [ "`basename $TRUST_F77_BASE`" = pgf90 ] && SYSLIBS="-lpgf90 -lpgf90rtl -lpghpf_mpi -lpghpf2 "$SYSLIBS
 	F77Flags="-O3 -fPIC"
 	ccFLAGS="-O3 -fPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"
