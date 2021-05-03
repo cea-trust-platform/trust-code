@@ -518,12 +518,6 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
 
   const int nb_som_elem = elements.dimension(1);
 
-//
-//  ArrOfInt offsets(Process::nproc());
-//  offsets = mppartial_sum(elements.dimension(0));
-//  envoyer_all_to_all(offsets, offsets);
-//  int my_offset = offsets[Process::me()];
-
   // Premiere etape: chercher les elements virtuels de la sous-partie
   // (elements des autres parties situes dans l'epaisseur de joint en partant
   //  des sommets de joint).
@@ -1261,6 +1255,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   const Domaine& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
 
+  //To detect my parts (when running in parallel)
   ArrOfInt myZones(nb_parties_);
   myZones = 0;
   const int nbelem = domaine.zone(0).nb_elem();
@@ -1269,6 +1264,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
       const int part = elem_part[i];
       myZones[part] = 1;
     }
+
+  //to detect empty parts (sometimes parmetis can also generate empty parts)
+  ArrOfInt emptyZones(nb_parties_);
+  emptyZones = 0;
 
   //check to see if my Zones are shared with other procs
   VECT(ArrOfInt) otherProcZones(Process::nproc());
@@ -1294,6 +1293,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
       for(int p=0; p<Process::nproc(); p++)
         {
           zones_indices[p].resize_array(nb_parties_);
+          zones_indices[p] = -1;
           if(p!=0)
             recevoir(otherProcZones[p], p, 0, p+2001);
         }
@@ -1305,8 +1305,13 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             {
               if(otherProcZones[proc][part])
                 zones_indices[proc][part] = s++;
-
             }
+
+          //empty part
+          if(s==0)
+            emptyZones[part] = 1;
+
+          //part is detained by a single proc
           if(s==1)
             for(int proc=0; proc < Process::nproc(); proc++)
               zones_indices[proc][part] = -1;
@@ -1398,7 +1403,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
-          if( !myZones[i_part] ) continue;
+          if( !myZones[i_part] && !emptyZones[i_part]) continue;
           Cerr << " Construction of part number " << i_part << finl;
           if(zones_index[i_part] != -1)
             Cerr << "This part is shared between multiple processors" << finl;

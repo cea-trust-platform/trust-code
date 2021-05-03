@@ -1069,10 +1069,11 @@ void Probleme_base::sauver() const
   // Si le fichier de sauvegarde n'a pas ete ouvert alors on cree le fichier de sauvegarde:
   Sortie_Brute osauv_hdf;
 
+  bool binary_file_not_created = Motcle(format_sauv) != "single_hdf" && !ficsauv_.non_nul();
   //in case of simple backup,
-  //a new file will be created for each backup, thus overwriting the preivous one
-  bool ok = !hdf5_file_created_ && restart_file != 1;;
-  if (!ficsauv_.non_nul() && ok)
+  //a new file will be created for each backup, thus overwriting the previous one
+  bool hdf_file_not_created = Motcle(format_sauv) == "single_hdf" && !hdf5_file_created_ && restart_file != 1;
+  if (binary_file_not_created || hdf_file_not_created)
     {
       if (Motcle(format_sauv) == "formatte")
         {
