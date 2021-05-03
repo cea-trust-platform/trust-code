@@ -1,0 +1,131 @@
+# Pb_Hydraulique_Melange_Binaire_QC 3D GAMELAN #
+# PARALLEL OK 4 #
+dimension 3
+precisiongeom 1.e-6
+Pb_Hydraulique_Melange_Binaire_QC pb1
+
+Domaine dom
+# BEGIN MESH #
+lire_fichier dom dom.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+  Partition_tool Tranche { tranches 2 2 2 }
+  Larg_joint 2
+  zones_name dom
+  ecrire_lata dom
+  reorder 1
+  single_hdf
+}
+End
+END PARTITION #
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_Rationnel_ordre_2 sch
+
+Lire sch
+{
+  tinit 0.
+  dt_start dt_calc
+  tmax 2.
+  dt_min 1.e-7
+  dt_max 6.e-3
+  nb_pas_dt_max 20
+  seuil_statio 1.e-14
+  facsec 1
+  diffusion_implicite 1
+  seuil_diffusion_implicite 1.e-10
+}
+
+Fluide_Quasi_Compressible air
+Lire air
+{
+  pression   100000.
+  traitement_pth constant
+
+  loi_etat melange_binaire
+  {
+    temperature 284.15
+    diffusion_coeff 7.72e-5
+
+    # H2 #
+    molar_mass1 0.0020159
+    mu1 0.86269e-5
+
+    # air #
+    molar_mass2 0.02897
+    mu2 1.792e-5
+  }
+
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0. -9.81
+
+Associer air gravite
+
+Associer pb1 dom
+Associer pb1 air
+Associer pb1 sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb1 dis
+
+# debog pb1 seq faces 1.e-5 0 #
+Lire pb1
+{
+  Navier_Stokes_QC
+  {
+    solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }
+    convection { centre }
+    diffusion { }
+    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+    conditions_limites
+    {
+      w_w_w_w paroi_fixe
+      c_c_c_c_c_c_c%0 paroi_fixe
+      p paroi_fixe
+      in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.  0.0264513805222214
+      o_o_o_o    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+      f    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+      g  Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*z
+    }
+  }
+
+  Convection_Diffusion_fraction_massique_MB_QC
+  {
+    convection  { quick }
+    diffusion { }
+    conditions_initiales { fraction_massique Champ_uniforme  1  0.0 }
+    conditions_limites
+    {
+      w_w_w_w paroi
+      c_c_c_c_c_c_c%0 paroi
+      p  paroi
+      in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 1.0
+      o_o_o_o  frontiere_ouverte C_ext Champ_front_Uniforme 1 0.0
+      f  frontiere_ouverte C_ext Champ_front_Uniforme 1 0.0
+      g   frontiere_ouverte C_ext Champ_front_Uniforme 1 0.0
+    }
+  }
+
+  Postraitement
+  {
+    format lml
+    Champs dt_post 0.05
+    {
+    vitesse	som
+    fraction_massique som
+    masse_volumique som
+    }
+  }
+
+}
+
+Resoudre pb1
+Fin

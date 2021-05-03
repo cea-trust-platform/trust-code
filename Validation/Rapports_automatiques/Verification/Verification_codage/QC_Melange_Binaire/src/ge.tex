@@ -1,0 +1,63 @@
+\subsection{Binary mixture LMN flow}
+
+In general, the dimensional system of governing equations reads under the LMN approximation as
+\begin{align}
+&\frac{\partial {\rho}}{\partial t}+\frac{\partial }{\partial x_i} \bigg({\rho} {u}_i\bigg) = 0, \label{mass}\\
+&\frac{\partial {\rho}{ u}_j }{\partial t}+ \frac{\partial }{\partial x_i} \bigg({\rho} {u}_j {u}_i \bigg) =-\frac{\partial{ P}}{\partial x_j} + \frac{\partial{\tau}_{ij}}{\partial x_i}+{\rho} g_j, \label{mom}\\
+&  \frac{\partial{\rho}{ Y}_1}{\partial t}+ \frac{\partial }{\partial x_i} \bigg({\rho} {u}_i {Y}_1\bigg)=\frac{\partial }{\partial x_i}\bigg( {\rho} \  D \frac{\partial {Y }_1}{\partial x_i}\bigg),\label{spec}\\
+&{\rho}={M}_{mix}\frac{p}{RT}, \label{state}
+\end{align}
+where ${\rho}$ is the mixture's density and ${u}_i$ the mass average component of the velocity vector ${\textbf{u}}=({u}_1,{u}_2,{u}_3)$ and $g_j=(0,0,-g)$ the gravity vector. ${Y}_1$ and ${Y}_2$  are respectively the mass fractions of species 1 ans species 2 satisfying ${Y}_1+{Y}_2=1$.
+
+$D$ corresponds to the mixture diffusion coefficient of both species,  $R= 8.314$ J.K$^{-1}$.mol$^{-1}$ the specific gas constant and $M_{mix}=\displaystyle\left(\sum_{i=1}^2  \frac{{Y}_i}{M_i}\right)^{-1}$ the mixing molar mass where  $M_1=M_{in}$ and $M_2 =M_{am}$, the injection and ambient molar mass respectively.
+
+ ${\tau}_{ij}= 2\mu{e}_{ij}$ is the viscous stress tensor for Newtonian fluids with
+$${e}_{ij}= \frac{1}{2}\left(\frac{\partial  u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}\right) -\frac{1}{3}\delta_{ij}\frac{\partial u_k}{\partial x_k},$$
+and $\delta_{ij}$ the Kronecker symbol.  $\mu$ denotes the mixture's dynamic viscosity calculated as a function of the mass fractions and fluids physical properties using the Wilke's formulation as follows
+\begin{equation}\label{wilke}
+        \mu = \frac{Y_1\mu_1}{Y_1\phi_{11}+Y_2\phi_{12}}+\frac{Y_2\mu_2}{Y_1\phi_{21}+Y_2\phi_{22}},
+\end{equation}
+        where $\phi_{ij}$ is a set of dimensionless constants calculated as
+\begin{equation}
+        \phi_{ij}= \displaystyle\frac{\displaystyle\frac{\textrm{M}_i}{\textrm{M}_j}\left[ 1+\left(\displaystyle\frac{\mu_i}{\mu_j} \right)^{1/2} \left( \displaystyle\frac{\textrm{M}_j}{\textrm{M}_i} \right)^{1/4}\right]^2}{ \left[ 8\left(1+\displaystyle\frac{\textrm{M}_i}{\textrm{M}_j} \right) \right]^{1/2}}\quad : \quad i,j=\{1,2\}.
+\end{equation}
+
+In this study, we consider identical species (inj = amb) with
+\begin{enumerate}
+  \item $D = 7.72\times 10^{-5}$ m$^{2}$.s$^{-1}$,
+  \item $p = 100000$ Pa,
+  \item $T= 284.15$ K,
+  \item $M_1=M_2=0.02897$ kg.mol$^{-1}$,
+  \item $\mu_1=\mu_2=1.792\times 10^{-5}$ kg.m$^{-1}$.s$^{-1}$.
+\end{enumerate}
+
+\subsection{Non-compressible thermo-hydraulic flow}
+
+The dimensional system of governing equations of a non-compressible thermo-hydraulic flow (without a source term) is expressed as
+
+\begin{equation}\label{ns1}
+\frac{\partial { u}_j }{\partial t}+ {u}_j\frac{\partial {u}_i }{\partial x_j}=-\frac{\partial{ P^{\ast}}}{\partial x_j} + \frac{\partial}{\partial x_i} \bigg( \nu \frac{\partial  u_i}{\partial x_j}\bigg),
+\end{equation}
+\begin{equation}\label{ns2}
+\frac{\partial T}{\partial t}+  {u}_i\frac{\partial T}{\partial x_i}=\frac{\partial }{\partial x_i}\bigg( {\rho} \frac{\lambda}{\rho c_p} \frac{\partial T}{\partial x_i}\bigg),
+\end{equation}
+where $\nu=\mu/\rho$ is the kinematic viscosity, $P^{\ast}$ the reduced pressure expressed as a function of the pressure $P$,
+the density $\rho$ and the gravity vector $\textbf{g}$ as
+$$P^{\ast}=P/\rho + \textbf{g}.$$
+
+The physical properties are considered in this case in accordance to the LMN problem, and described as follows
+\begin{enumerate}
+  \item $\lambda = 9.466369670132119\times 10^{-5}$ m$^{2}$.s$^{-1}$,
+  \item $c_p=1$ J.kg$^{-1}$.K$^{-1}$
+  \item $\rho=1.226213687840948$ kg.m$^{-3}$,
+  \item $\mu=1.792\times 10^{-5}$ kg.m$^{-1}$.s$^{-1}$.
+\end{enumerate}
+
+\subsection{Post processing integral quantities}
+
+To validate the implementation of the binary mixture LMN flow problem, comparisons are provided by comparing two integral quantities
+\begin{enumerate}
+  \item $I_1 =\displaystyle\int_V \rho Y_1 dV$,
+  \item $I_2 =\displaystyle\int_V \rho c_p T dV$,
+\end{enumerate}
+which denote respectively the total mass of the injected species and the total energy.

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Elie Saikali
+# Mai 2021
+# script to prepare files
+
+LISTE_CAS="MB_exp MB_semi_impl TH_exp TH_semi_impl"
+
+for CAS in $LISTE_CAS; do
+  SRCDATA_MB=Pb_Melange_Binaire.data
+  SRCDATA_TH=Pb_Thermo_Hydraulique.data
+  REP=./$CAS
+  mkdir $REP
+  DESTDATA_MB=$REP/$SRCDATA_MB
+  DESTDATA_TH=$REP/$SRCDATA_TH
+
+  ## MB
+  if test "$CAS" = "MB_exp"; then
+
+    cp $SRCDATA_MB $DESTDATA_MB
+
+  elif test "$CAS" = "MB_semi_impl"; then
+
+    sed "s~/\* diffusion_implicite~diffusion_implicite~;
+         s~1.e-10 \*/~1.e-10~" $SRCDATA_MB > $DESTDATA_MB
+
+  elif test "$CAS" = "TH_exp"; then
+
+    cp $SRCDATA_TH $DESTDATA_TH
+
+  else # TH_semi_impl
+
+    sed "s~/\* diffusion_implicite~diffusion_implicite~;
+         s~1.e-10 \*/~1.e-10~" $SRCDATA_TH > $DESTDATA_TH
+
+  fi
+done
