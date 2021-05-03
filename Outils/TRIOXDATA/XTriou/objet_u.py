@@ -27,7 +27,7 @@ def mySave(self,fileName):
         pass
     st+=']\n'
     #print str
-    stream = open(fileName, "aw")
+    stream = open(fileName, "a")
     stream.write(st)
     stream.close()
     pass
