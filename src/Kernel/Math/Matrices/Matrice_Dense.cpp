@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Matrice_Dense.h>
 #include <fstream>
 #include <iostream>
+#include <Lapack.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Dense,"Matrice_Dense",Matrice_Base);
 
@@ -182,13 +183,6 @@ void Matrice_Dense::convert_to_morse_matrix( Matrice_Morse& morse_matrix ) const
     }
 }
 
-//access operators
-double Matrice_Dense::operator( )( const int& line , const int& col ) const
-{
-  assert( line < nb_lignes( ) );
-  assert( col < nb_colonnes( ) );
-  return Matrix_( line , col );
-}
 
 void Matrice_Dense::dimensionner( const int& nb_lines , const int& nb_cols )
 {
@@ -380,3 +374,50 @@ DoubleTab& Matrice_Dense::ajouter_multTab_( const DoubleTab& x , DoubleTab& resu
   return resu;
 }
 
+void Matrice_Dense::inverse()
+{
+  // This method compute the inverse of the matrix.
+  // It uses the LAPACK library.
+  const int nbLines = nb_lignes();
+  const int nbCols = nb_colonnes();
+  int info = 0;
+  ArrOfInt ipiv(nbLines);
+  ArrOfDouble work(nbLines);
+
+  if (nbLines != nbCols)
+    {
+      Cerr << "Error in Matrice_Dense::inverse" << finl;
+      Cerr << "The matrix is not a square matrix !" << finl;
+      Process::abort( );
+    }
+
+  F77NAME(DGETRF)(&nbLines, &nbLines, Matrix_.addr(), &nbLines, ipiv.addr(), &info);
+  assert(info == 0);
+  F77NAME(DGETRI)(&nbLines, Matrix_.addr(), &nbLines, ipiv.addr(), work.addr(), &nbLines, &info);
+  assert(info == 0);
+
+  return;
+}
+
+void Matrice_Dense::multiplyToRight(const Matrice_Dense& B, Matrice_Dense& RES) const
+{
+  // This method allows to perform the multiplication of two matrix.
+  // It is the "right" multiplication : (*this) * B = RES
+
+  assert(nb_colonnes() == B.nb_lignes());
+  assert(nb_lignes() == RES.nb_lignes());
+  assert(B.nb_colonnes() == RES.nb_colonnes());
+
+  for (int i = 0; i < nb_lignes(); ++i)
+    {
+      for (int j = 0; j < B.nb_colonnes(); ++j)
+        {
+          RES.set_coefficient(i, j, 0.0);
+          for (int k = 0; k < nb_colonnes(); ++k)
+            {
+              RES.set_coefficient(i, j, RES(i, j) + Matrix_(i, k) * B(k, j));
+            }
+        }
+    }
+  return;
+}
