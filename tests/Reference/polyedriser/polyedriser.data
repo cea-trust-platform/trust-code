@@ -128,6 +128,19 @@ Read pb
 
 	Post_processing
 	{
+		definition_champs
+		{
+			opconv_qdm Operateur_eqn { numero_op 0 source refChamp { Pb_champ pb vitesse } }
+			source_qdm Operateur_eqn { numero_source 0 source refChamp { Pb_champ pb vitesse } }
+			sum_source Reduction_0D { methode weighted_sum sources_reference { source_qdm } }
+		}
+		probes
+		{
+			probe_vit  vitesse     periode 1.e-2  segment 4  0.5 0.5 0.0  0.5 0.5 1.0
+			probe_opc  opconv_qdm  periode 1.e-2  position_like probe_vit
+			probe_src  source_qdm  periode 1.e-2  position_like probe_vit
+			sourceQDM  sum_source  periode 1.e-2  numero_elem_sur_maitre 0
+		}
 		format lml
 		fields dt_post 0.1
 		{

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -236,9 +236,10 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
           if (nb_dim!=nb_comp) //Cas des Champ_Face
             {
               size_vect=0;
-              const IntVect& ori = zvf.orientation();
+              //const IntVect& ori = zvf.orientation();
               for (int i=0; i<valeurs_source.dimension(0); i++)
-                if (ori(i)==comp)
+                //if (ori(i)==comp)
+                if (zvf.orientation(i)==comp)
                   ++size_vect;
             }
 
@@ -274,9 +275,10 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
           else
             {
               int k=0;
-              const IntVect& ori = zvf.orientation();
+              //const IntVect& ori = zvf.orientation();
               for (int i=0; i<valeurs_source.dimension(0); i++)
-                if (ori(i)==comp)
+                //if (ori(i)==comp)
+                if (zvf.orientation(i)==comp)
                   {
                     if (methode_=="somme" || methode_=="moyenne" || methode_=="sum" || methode_=="average")
                       vect_source(i) = valeurs_source(i);
@@ -297,9 +299,10 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
             }
           else
             {
-              const IntVect& ori = zvf.orientation();
+              //const IntVect& ori = zvf.orientation();
               for (int i=0; i<valeurs_source.dimension(0); i++)
-                if (ori(i)==comp)
+                //if (ori(i)==comp)
+                if (zvf.orientation(i)==comp)
                   espace_valeurs(i) = val_extraite;
             }
         }
@@ -549,10 +552,11 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             }
           if (composante_VDF>=0)
             {
-              const IntVect& ori = zvf.orientation();
+              //const IntVect& ori = zvf.orientation();
               int k=0;
               for (int i=0; i<nb_face; i++)
-                if (ori(i)==composante_VDF)
+                //if (ori(i)==composante_VDF)
+                if (zvf.orientation(i)==composante_VDF)
                   {
                     sum+=val_source(k)*volume_controle_(i);
                     volume+=volume_controle_(i);
