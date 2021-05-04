@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1401,8 +1401,10 @@ void Equation_base::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(volume_maille);
         }
     }
-
-  Nom inco (inconnue()->le_nom());
+// pour recuperer une equation const !!!!!
+  const Equation_base& me_const =(*this);
+  const Nom& nom_inco=me_const.inconnue()->le_nom();
+  Nom inco(nom_inco);
   inco += "_residu";
   if (motlu == Motcle(inco))
     {
