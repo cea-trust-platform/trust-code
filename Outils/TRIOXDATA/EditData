@@ -39,7 +39,6 @@ fi
 # utilisation des nouvelles options 0.5.39
 xdatagui --module=TRIOU --with-splitter=no --without-menus=Preferences,Window,Modules,Tools,View $filepy
 
-
 time python -c "from __sa__$filebase import *;from triou import write_file_data,read_file_data;write_file_data('$file3',list_instance);list=read_file_data('$file3')" 1>/dev/null; status=$?
 echo $status
 if [ $status -ne 0 ]
