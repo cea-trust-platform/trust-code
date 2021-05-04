@@ -248,7 +248,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
     else
       ref_eq_->sources()(numero_source_).calculer(es);
     if (!sans_solveur_masse_)
-      ref_eq_->solv_masse().appliquer(es);
+      ref_eq_->solv_masse().valeur().appliquer_impl(es);
   }
   es.echange_espace_virtuel();
   // apres je recupere juste la composante si elle est demandee
