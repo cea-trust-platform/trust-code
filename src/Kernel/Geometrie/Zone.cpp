@@ -1193,7 +1193,7 @@ void Zone::construire_elem_virt_pe_num()
     }
 }
 
-void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num) const
+void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const
 {
   IntTab tableau_echange(mes_elems);
   assert(tableau_echange.dimension(1) >= 2);
@@ -1208,11 +1208,11 @@ void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num) const
     }
   tableau_echange.echange_espace_virtuel();
 
-  elem_virt_pe_num.resize(n_virt, 2);
+  elem_virt_pe_num_cpy.resize(n_virt, 2);
   for (i = 0; i < n_virt; i++)
     {
-      elem_virt_pe_num(i, 0) = tableau_echange(n + i, 0);
-      elem_virt_pe_num(i, 1) = tableau_echange(n + i, 1);
+      elem_virt_pe_num_cpy(i, 0) = tableau_echange(n + i, 0);
+      elem_virt_pe_num_cpy(i, 1) = tableau_echange(n + i, 1);
     }
 }
 

@@ -198,7 +198,7 @@ public:
   //int postraiter_ijk(Sortie&) const;
   inline const ArrOfInt& ind_faces_virt_bord() const;
   void construire_elem_virt_pe_num();
-  void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num) const;
+  void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const;
   const IntTab& elem_virt_pe_num() const;
 
   virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
