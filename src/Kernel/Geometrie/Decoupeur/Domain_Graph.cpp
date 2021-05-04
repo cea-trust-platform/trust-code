@@ -374,11 +374,9 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
                   }
               }
           }
-          //Cerr << "\tFACE#" << i_face << finl;
           // Recherche des elements voisins de cette face:
           // (indices des elements contenant les sommets de la face)
           find_adjacent_elements(som_elem, une_face, voisins);
-          //Cerr << voisins << finl;
 
           const int nb_voisins = voisins.size_array();
           int elem_voisin = -1;

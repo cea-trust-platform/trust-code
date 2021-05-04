@@ -78,16 +78,12 @@ void Partitionneur_Ptscotch::associer_domaine(const Domaine& domaine)
 }
 
 // Description:
-//  Calcule le graphe de connectivite pour Metis, appelle le partitionneur
+//  Calcule le graphe de connectivite, appelle le partitionneur
 //  et remplit elem_part (pour chaque element, numero de la partie qui lui
 //  est attribuee).
-//  Les parties sont equilibrees de facon a minimiser le nombre de faces de joint
-//  et a equilibrer le nombre d'elements par partie.
-// Precondition:
-//  domaine associe et nombre de parties initialise
 void Partitionneur_Ptscotch::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
 {
-#ifdef NO_METIS
+#ifndef PETSCKSP_H
   Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else

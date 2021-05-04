@@ -78,16 +78,12 @@ void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
 }
 
 // Description:
-//  Calcule le graphe de connectivite pour Metis, appelle le partitionneur
+//  Calcule le graphe de connectivite pour parmetis, appelle le partitionneur
 //  et remplit elem_part (pour chaque element, numero de la partie qui lui
 //  est attribuee).
-//  Les parties sont equilibrees de facon a minimiser le nombre de faces de joint
-//  et a equilibrer le nombre d'elements par partie.
-// Precondition:
-//  domaine associe et nombre de parties initialise
 void Partitionneur_Parmetis::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
 {
-#ifdef NO_METIS
+#ifndef PETSCKSP_H
   Cerr << "PARMETIS is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
@@ -129,10 +125,9 @@ void Partitionneur_Parmetis::construire_partition(IntTab& elem_part, int& nb_par
 
 
   std::vector<idx_t> partition(graph.nvtxs);
-#ifdef METIS
+
   idx_t int_parts = nb_parties_;
-#endif
-  idx_t edgecut = 0; // valeur renvoyee par metis (nombre total de faces de joint)
+  idx_t edgecut = 0; // valeur renvoyee par parmetis (nombre total de faces de joint)
   Cerr << " Call for PARMETIS" << finl;
   idx_t options[3];
   options[0] = 1; //personnalized options
@@ -151,7 +146,7 @@ void Partitionneur_Parmetis::construire_partition(IntTab& elem_part, int& nb_par
   if (status != METIS_OK)
     {
       Cerr << "Call to PARMETIS failed." << finl;
-      if (status == METIS_ERROR)        Cerr << "It seems there is a METIS internal error." << finl;
+      if (status == METIS_ERROR)        Cerr << "It seems there is a PARMETIS internal error." << finl;
       Cerr << "Contact TRUST support." << finl;
       exit();
     }

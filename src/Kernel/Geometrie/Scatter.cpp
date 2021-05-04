@@ -316,7 +316,6 @@ Entree& Scatter::interpreter(Entree& is)
 
 void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& mergedZones)
 {
-  Cerr << "CHECKING CONSISTANCY OF REMOTE ITEMS" << finl;
   const Joints& joints     = dom.zone(0).faces_joint();
   const int nb_joints = joints.size();
 
@@ -463,7 +462,6 @@ void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
   zone.renum(nums);
   zone.associer_domaine(dom);
 
-  Cerr << "NUMBER OF ZONES =" << dom.zones().size() << finl;
   if(dom.zones().size() > 1)
     {
       int old_nb_elems = dom.zone(0).les_elems().dimension(0);
@@ -483,9 +481,6 @@ void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
           items_communs.array_trier_retirer_doublons();
 
           const ArrOfInt& elements_to_add = joint.joint_item(Joint::ELEMENT).items_distants();
-          Cerr << "DISTANT ELEMENTS OF PART DOM" << finl;
-          Cerr << elements_to_add << finl;
-
           ArrOfInt& items_distants = dom.zone(0).faces_joint()[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
           items_distants.set_smart_resize(1);
           for(int index=0; index<elements_to_add.size_array(); index++)
@@ -624,8 +619,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   check_consistancy_remote_items( dom, mergedZones );
   dom.zone(0).check_zone();
 
-  // Cerr << "MY ZONE::" << finl;
-  // Cerr << dom.zone(0) << finl;
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
   int nbsom = mp_sum(dom.les_sommets().dimension(0));
   Cerr << " Number of nodes: " << nbsom << finl;

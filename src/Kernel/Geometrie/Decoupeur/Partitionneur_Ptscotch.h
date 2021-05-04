@@ -41,18 +41,11 @@ public:
   void construire_partition(IntTab& elem_part, int& nb_parts_tot) const;
 
 private:
-
   // Parametres du partitionneur
   REF(Domaine) ref_domaine_;
   int nb_parties_;
 
   // Drapeau: utiliser ou pas la ponderation des edges dans metis.
-  //  C'est mieux de l'utiliser s'il y a des bords periodiques, le
-  //  graphe est mieux equilibre. En revanche, metis utilisera plus
-  //  de memoire (peut poser probleme sur les gros maillages).
-  //  Cette option n'est pas indispensable: le maillage genere est
-  //  valide dans avec ou sans l'option car on verifie de toutes facons
-  //  la partition generee par metis (voir (***))
   int use_weights_;
 
 };
