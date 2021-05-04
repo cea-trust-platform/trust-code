@@ -14,35 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Elem_base2.cpp
+// File:        Op_Diff_VDF_Elem_base.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Elem_base2.h>
+#include <Op_Diff_VDF_Elem_base.h>
 #include <Champ_P0_VDF.h>
 
-#include <Eval_Diff_VDF2.h>
+#include <Eval_Diff_VDF.h>
 #include <Eval_VDF_Elem2.h>
 #include <Echange_contact_VDF.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 
-Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base2,"Op_Diff_VDF_Elem_base2",Op_Diff_VDF_base);
+Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base,"Op_Diff_VDF_Elem_base",Op_Diff_VDF_base);
 
 
-Sortie& Op_Diff_VDF_Elem_base2::printOn(Sortie& s ) const
+Sortie& Op_Diff_VDF_Elem_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-Entree& Op_Diff_VDF_Elem_base2::readOn(Entree& s )
+Entree& Op_Diff_VDF_Elem_base::readOn(Entree& s )
 {
   return s ;
 }
 
-double Op_Diff_VDF_Elem_base2::calculer_dt_stab() const
+double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 {
   // Calcul du pas de temps de stabilite :
   //
@@ -116,9 +116,9 @@ double Op_Diff_VDF_Elem_base2::calculer_dt_stab() const
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Diff_VDF_Elem_base2::associer(const Zone_dis& zone_dis,
-                                      const Zone_Cl_dis& zone_cl_dis,
-                                      const Champ_Inc& ch_diffuse)
+void Op_Diff_VDF_Elem_base::associer(const Zone_dis& zone_dis,
+                                     const Zone_Cl_dis& zone_cl_dis,
+                                     const Champ_Inc& ch_diffuse)
 {
   const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
@@ -136,19 +136,19 @@ void Op_Diff_VDF_Elem_base2::associer(const Zone_dis& zone_dis,
 
 // Description:
 // associe le champ de diffusivite a l'evaluateur
-void Op_Diff_VDF_Elem_base2::associer_diffusivite(const Champ_base& ch_diff)
+void Op_Diff_VDF_Elem_base::associer_diffusivite(const Champ_base& ch_diff)
 {
-  Eval_Diff_VDF2& eval_diff = dynamic_cast<Eval_Diff_VDF2&>( iter.evaluateur() );
+  Eval_Diff_VDF& eval_diff = dynamic_cast<Eval_Diff_VDF&>( iter.evaluateur() );
   eval_diff.associer(ch_diff);
 }
 
-const Champ_base& Op_Diff_VDF_Elem_base2::diffusivite() const
+const Champ_base& Op_Diff_VDF_Elem_base::diffusivite() const
 {
-  const Eval_Diff_VDF2& eval_diff = dynamic_cast<const Eval_Diff_VDF2&>(iter.evaluateur());
+  const Eval_Diff_VDF& eval_diff = dynamic_cast<const Eval_Diff_VDF&>(iter.evaluateur());
   return eval_diff.get_diffusivite();
 }
 
-void Op_Diff_VDF_Elem_base2::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const
+void Op_Diff_VDF_Elem_base::get_items_croises(const Probleme_base& autre_pb, extra_item_t& extra_items) const
 {
   const Conds_lim& cls = iter.zone_Cl().les_conditions_limites();
   for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_VDF, cls[i].valeur()))
@@ -159,7 +159,7 @@ void Op_Diff_VDF_Elem_base2::get_items_croises(const Probleme_base& autre_pb, ex
       }
 }
 
-void Op_Diff_VDF_Elem_base2::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
+void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
   const Zone_VDF& zone = iter.zone();
   const IntTab& f_e = zone.face_voisins();
@@ -187,7 +187,7 @@ void Op_Diff_VDF_Elem_base2::contribuer_termes_croises(const DoubleTab& inco, co
     }
 }
 
-void Op_Diff_VDF_Elem_base2::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const
+void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, const extra_item_t& extra_items, int nl, int nc) const
 {
   const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
   const Zone_VDF& zone = iter.zone();

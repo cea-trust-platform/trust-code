@@ -26,7 +26,7 @@
 #include <Ref_Champ_Face.h>
 #include <Ref_Champ_Uniforme.h>
 #include <Ref_Mod_turb_hyd_base.h>
-#include <Op_Dift_VDF_Face_base2.h>
+#include <Op_Dift_VDF_Face_base.h>
 
 //
 // .DESCRIPTION class Op_Dift_VDF_Face_Axi
@@ -51,7 +51,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Dift_VDF_Face_Axi : public Op_Dift_VDF_Face_base2
+class Op_Dift_VDF_Face_Axi : public Op_Dift_VDF_Face_base
 {
   Declare_instanciable(Op_Dift_VDF_Face_Axi);
 

@@ -24,11 +24,11 @@
 #define Eval_Diff_VDF_leaves_included
 
 #include <Eval_Diff_VDF_Elem.h>
-#include <Eval_Diff_VDF_const2.h>
-#include <Eval_Diff_VDF_var2.h>
+#include <Eval_Diff_VDF_const.h>
+#include <Eval_Diff_VDF_var.h>
 #include <Eval_Diff_VDF_var_aniso.h>
-#include <Eval_Diff_VDF_Multi_inco_const2.h>
-#include <Eval_Diff_VDF_Multi_inco_var2.h>
+#include <Eval_Diff_VDF_Multi_inco_const.h>
+#include <Eval_Diff_VDF_Multi_inco_var.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*
@@ -38,7 +38,7 @@
  * OTHERWISE DO NOT COMPILE
  */
 class Eval_Diff_VDF_leaves: public Eval_Diff_VDF_Elem<Eval_Diff_VDF_leaves>,
-  public Eval_Diff_VDF_const2 {};
+  public Eval_Diff_VDF_const {};
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /*
@@ -59,7 +59,7 @@ class Eval_Diff_VDF_leaves: public Eval_Diff_VDF_Elem<Eval_Diff_VDF_leaves>,
 
 
 class Eval_Diff_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem_Axi>,
-  public Eval_Diff_VDF_const2
+  public Eval_Diff_VDF_const
 {
 public:
   static constexpr bool IS_AXI = true;
@@ -77,7 +77,7 @@ public:
 
 
 class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem>,
-  public Eval_Diff_VDF_const2 {};
+  public Eval_Diff_VDF_const {};
 
 
 //
@@ -91,7 +91,7 @@ class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_E
 // .SECTION voir aussi Eval_Diff_VDF_var
 
 class Eval_Diff_VDF_var_Elem_Axi :public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_Axi>,
-  public Eval_Diff_VDF_var2
+  public Eval_Diff_VDF_var
 {
 public:
   static constexpr bool IS_AXI = true;
@@ -108,7 +108,7 @@ public:
 // .SECTION voir aussi Eval_Diff_VDF_var
 
 class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>,
-  public Eval_Diff_VDF_var2 {};
+  public Eval_Diff_VDF_var {};
 
 
 //
@@ -146,7 +146,7 @@ public:
 // .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
 class Eval_Diff_VDF_Multi_inco_const_Elem_Axi :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem_Axi>,
-  public Eval_Diff_VDF_Multi_inco_const2
+  public Eval_Diff_VDF_Multi_inco_const
 {
 public:
   static constexpr bool IS_MULTD = false;
@@ -164,7 +164,7 @@ public:
 // .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
 class Eval_Diff_VDF_Multi_inco_const_Elem :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem>,
-  public Eval_Diff_VDF_Multi_inco_const2
+  public Eval_Diff_VDF_Multi_inco_const
 {
 public:
   static constexpr bool IS_MULTD = false;
@@ -181,7 +181,7 @@ public:
 //.SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
 class Eval_Diff_VDF_Multi_inco_var_Elem_Axi :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem_Axi>,
-  public Eval_Diff_VDF_Multi_inco_var2
+  public Eval_Diff_VDF_Multi_inco_var
 {
 public:
   static constexpr bool IS_MULTD = false;
@@ -199,7 +199,7 @@ public:
 //.SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
 class Eval_Diff_VDF_Multi_inco_var_Elem :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>,
-  public Eval_Diff_VDF_Multi_inco_var2
+  public Eval_Diff_VDF_Multi_inco_var
 {
 public:
   static constexpr bool IS_MULTD = false;

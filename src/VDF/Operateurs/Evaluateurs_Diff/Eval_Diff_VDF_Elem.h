@@ -246,7 +246,7 @@ inline double Eval_Diff_VDF_Elem<DERIVED_T>::compute_heq(double d0, int i0, doub
   return heq;
 }
 
-// See generic impl in the class Eval_Diff_VDF2. They will be overloaded for Dift ops
+// See generic impl in the class Eval_Diff_VDF. They will be overloaded for Dift ops
 template <typename DERIVED_T>
 inline int Eval_Diff_VDF_Elem<DERIVED_T>::ind_Fluctu_Term() const
 {

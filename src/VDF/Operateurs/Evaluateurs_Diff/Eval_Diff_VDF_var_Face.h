@@ -24,7 +24,7 @@
 #ifndef Eval_Diff_VDF_var_Face_included
 #define Eval_Diff_VDF_var_Face_included
 
-#include <Eval_Diff_VDF_var2.h>
+#include <Eval_Diff_VDF_var.h>
 #include <Eval_Diff_VDF_Face.h>
 
 //
@@ -43,7 +43,7 @@
 // .SECTION voir aussi Eval_Diff_VDF_var
 
 class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_var_Face>,
-  public Eval_Diff_VDF_var2
+  public Eval_Diff_VDF_var
 {
 public:
   static constexpr bool IS_VAR = true;

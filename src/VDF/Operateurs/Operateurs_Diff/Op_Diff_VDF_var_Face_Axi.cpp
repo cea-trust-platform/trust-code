@@ -26,7 +26,7 @@
 #include <Champ_Inc.h>
 #include <SFichier.h>
 
-Implemente_instanciable(Op_Diff_VDF_var_Face_Axi,"Op_Diff_VDF_var_Face_Axi",Op_Diff_VDF_Face_base2);
+Implemente_instanciable(Op_Diff_VDF_var_Face_Axi,"Op_Diff_VDF_var_Face_Axi",Op_Diff_VDF_Face_base);
 
 Sortie& Op_Diff_VDF_var_Face_Axi::printOn(Sortie& s ) const
 {
@@ -462,7 +462,7 @@ DoubleTab& Op_Diff_VDF_var_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& 
 
 double Op_Diff_VDF_var_Face_Axi::calculer_dt_stab() const
 {
-  return Op_Diff_VDF_Face_base2::calculer_dt_stab(la_zone_vdf.valeur()) ;
+  return Op_Diff_VDF_Face_base::calculer_dt_stab(la_zone_vdf.valeur()) ;
 
 }
 

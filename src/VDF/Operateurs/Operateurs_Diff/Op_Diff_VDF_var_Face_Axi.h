@@ -23,7 +23,7 @@
 #ifndef Op_Diff_VDF_var_Face_Axi_included
 #define Op_Diff_VDF_var_Face_Axi_included
 
-#include <Op_Diff_VDF_Face_base2.h>
+#include <Op_Diff_VDF_Face_base.h>
 #include <Ref_Champ_Face.h>
 
 //
@@ -48,7 +48,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_var_Face_Axi : public Op_Diff_VDF_Face_base2
+class Op_Diff_VDF_var_Face_Axi : public Op_Diff_VDF_Face_base
 {
 
   Declare_instanciable(Op_Diff_VDF_var_Face_Axi);

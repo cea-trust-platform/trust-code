@@ -25,7 +25,7 @@
 #ifndef Eval_Diff_VDF_const_Face_included
 #define Eval_Diff_VDF_const_Face_included
 
-#include <Eval_Diff_VDF_const2.h>
+#include <Eval_Diff_VDF_const.h>
 #include <Eval_Diff_VDF_Face.h>
 
 //
@@ -39,7 +39,7 @@
 // .SECTION voir aussi Eval_Diff_VDF_const
 
 class Eval_Diff_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_const_Face>,
-  public Eval_Diff_VDF_const2
+  public Eval_Diff_VDF_const
 {
 };
 

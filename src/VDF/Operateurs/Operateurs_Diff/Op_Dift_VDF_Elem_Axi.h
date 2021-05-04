@@ -23,7 +23,7 @@
 #ifndef Op_Dift_VDF_Elem_Axi_included
 #define Op_Dift_VDF_Elem_Axi_included
 
-#include <Op_Dift_VDF_base2.h>
+#include <Op_Dift_VDF_base.h>
 #include <ItVDFEl.h>
 #include <Eval_Dift_VDF_leaves.h>
 #include <Op_VDF_Elem.h>
@@ -40,7 +40,7 @@ class Turbulence_paroi_scal;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Dift_VDF_Elem_Axi : public Op_Dift_VDF_base2, public Op_VDF_Elem
+class Op_Dift_VDF_Elem_Axi : public Op_Dift_VDF_base, public Op_VDF_Elem
 {
 
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Elem_Axi);

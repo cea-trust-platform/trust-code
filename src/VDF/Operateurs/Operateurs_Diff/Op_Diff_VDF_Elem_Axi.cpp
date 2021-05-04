@@ -22,7 +22,7 @@
 
 #include <Op_Diff_VDF_Elem_Axi.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi,"Op_Diff_VDF_const_P0_VDF_Axi",Op_Diff_VDF_Elem_base2);
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi,"Op_Diff_VDF_const_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
 implemente_It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)
 
 Sortie& Op_Diff_VDF_Elem_Axi::printOn(Sortie& s ) const
@@ -41,6 +41,6 @@ Entree& Op_Diff_VDF_Elem_Axi::readOn(Entree& s )
 // Description:
 // constructeur
 Op_Diff_VDF_Elem_Axi::Op_Diff_VDF_Elem_Axi() :
-  Op_Diff_VDF_Elem_base2(It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)())
+  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)())
 {
 }

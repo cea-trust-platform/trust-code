@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,29 +15,30 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Eval_Diff_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/8
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef Eval_Diff_VDF_included
 #define Eval_Diff_VDF_included
 
-#include <Evaluateur_VDF.h>
-
 class Champ_base;
 class Champ_Don;
-class Eval_Diff_VDF : public Evaluateur_VDF
+
+class Eval_Diff_VDF
 {
 public:
+  inline virtual ~Eval_Diff_VDF() {}
   virtual const Champ_base& get_diffusivite() const=0;
   virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour()
-  {
-    return ;
-  };
+  virtual void mettre_a_jour() { }
+
+  // These methods will be overloaded in DIFT operators
+  // See Eval_Dift_VDF_const_Elem for example...
+  inline int get_ind_Fluctu_Term() const { return 0; }
+  inline virtual double get_equivalent_distance(int boundary_index,int local_face) const { return 0; }
+
 };
 
-#endif
+#endif /* Eval_Diff_VDF_included */

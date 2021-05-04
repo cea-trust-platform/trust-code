@@ -14,37 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Face_base2.cpp
+// File:        Op_Diff_VDF_Face_base.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Face_base2.h>
+#include <Op_Diff_VDF_Face_base.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Inc.h>
-#include <Eval_Diff_VDF2.h>
+#include <Eval_Diff_VDF.h>
 #include <Eval_VDF_Face2.h>
 #include <SFichier.h>
 
-Implemente_base(Op_Diff_VDF_Face_base2,"Op_Diff_VDF_Face_base2",Op_Diff_VDF_base);
+Implemente_base(Op_Diff_VDF_Face_base,"Op_Diff_VDF_Face_base",Op_Diff_VDF_base);
 
-Sortie& Op_Diff_VDF_Face_base2::printOn(Sortie& s ) const
+Sortie& Op_Diff_VDF_Face_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-Entree& Op_Diff_VDF_Face_base2::readOn(Entree& s )
+Entree& Op_Diff_VDF_Face_base::readOn(Entree& s )
 {
   return s ;
 }
 
-double Op_Diff_VDF_Face_base2::calculer_dt_stab() const
+double Op_Diff_VDF_Face_base::calculer_dt_stab() const
 {
-  return Op_Diff_VDF_Face_base2::calculer_dt_stab(iter.zone());
+  return Op_Diff_VDF_Face_base::calculer_dt_stab(iter.zone());
 }
 
-double Op_Diff_VDF_Face_base2::calculer_dt_stab(const Zone_VDF& zone_VDF) const
+double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 {
   // Calcul du pas de temps de stabilite :
   //
@@ -105,9 +105,9 @@ double Op_Diff_VDF_Face_base2::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Diff_VDF_Face_base2::associer(const Zone_dis& zone_dis,
-                                      const Zone_Cl_dis& zone_cl_dis,
-                                      const Champ_Inc& ch_transporte)
+void Op_Diff_VDF_Face_base::associer(const Zone_dis& zone_dis,
+                                     const Zone_Cl_dis& zone_cl_dis,
+                                     const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
@@ -123,21 +123,21 @@ void Op_Diff_VDF_Face_base2::associer(const Zone_dis& zone_dis,
 
 // Description:
 // associe le champ de diffusivite a l'evaluateur
-void Op_Diff_VDF_Face_base2::associer_diffusivite(const Champ_base& ch_diff)
+void Op_Diff_VDF_Face_base::associer_diffusivite(const Champ_base& ch_diff)
 {
-  Eval_Diff_VDF2& eval_diff = dynamic_cast<Eval_Diff_VDF2&> (iter.evaluateur());
+  Eval_Diff_VDF& eval_diff = dynamic_cast<Eval_Diff_VDF&> (iter.evaluateur());
   eval_diff.associer(ch_diff);          // Eval_Diff_VDF::associer
 }
 
-const Champ_base& Op_Diff_VDF_Face_base2::diffusivite() const
+const Champ_base& Op_Diff_VDF_Face_base::diffusivite() const
 {
-  const Eval_Diff_VDF2& eval_diff =
-    dynamic_cast<const Eval_Diff_VDF2&> (iter.evaluateur());
+  const Eval_Diff_VDF& eval_diff =
+    dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
   return eval_diff.get_diffusivite();
 }
 
-void Op_Diff_VDF_Face_base2::mettre_a_jour(double temps)
+void Op_Diff_VDF_Face_base::mettre_a_jour(double temps)
 {
-  Eval_Diff_VDF2& eval_diff = dynamic_cast<Eval_Diff_VDF2&> (iter.evaluateur());
+  Eval_Diff_VDF& eval_diff = dynamic_cast<Eval_Diff_VDF&> (iter.evaluateur());
   eval_diff.mettre_a_jour();
 }

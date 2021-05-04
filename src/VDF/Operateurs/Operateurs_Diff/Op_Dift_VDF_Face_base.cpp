@@ -14,34 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_Face_base2.cpp
+// File:        Op_Dift_VDF_Face_base.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
 // Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Dift_VDF_Face_base2.h>
+#include <Op_Dift_VDF_Face_base.h>
 #include <Eval_VDF_Face2.h>
-#include <Eval_Diff_VDF2.h>
+#include <Eval_Diff_VDF.h>
 #include <SFichier.h>
 
-Implemente_base(Op_Dift_VDF_Face_base2,"Op_Dift_VDF_Face_base2",Op_Dift_VDF_base2);
+Implemente_base(Op_Dift_VDF_Face_base,"Op_Dift_VDF_Face_base",Op_Dift_VDF_base);
 
-Sortie& Op_Dift_VDF_Face_base2::printOn(Sortie& s ) const
+Sortie& Op_Dift_VDF_Face_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-Entree& Op_Dift_VDF_Face_base2::readOn(Entree& s )
+Entree& Op_Dift_VDF_Face_base::readOn(Entree& s )
 {
   return s ;
 }
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Dift_VDF_Face_base2::associer(const Zone_dis& zone_dis,
-                                      const Zone_Cl_dis& zone_cl_dis,
-                                      const Champ_Inc& ch_diffuse)
+void Op_Dift_VDF_Face_base::associer(const Zone_dis& zone_dis,
+                                     const Zone_Cl_dis& zone_cl_dis,
+                                     const Champ_Inc& ch_diffuse)
 {
   const Champ_Face& inco = ref_cast(Champ_Face,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
@@ -57,33 +57,33 @@ void Op_Dift_VDF_Face_base2::associer(const Zone_dis& zone_dis,
 
 // Description:
 // associe le champ de diffusivite a l'evaluateur
-void Op_Dift_VDF_Face_base2::associer_diffusivite(const Champ_base& ch_diff)
+void Op_Dift_VDF_Face_base::associer_diffusivite(const Champ_base& ch_diff)
 {
-  Eval_Diff_VDF2& eval_diff_turb = dynamic_cast<Eval_Diff_VDF2&> (iter.evaluateur());
+  Eval_Diff_VDF& eval_diff_turb = dynamic_cast<Eval_Diff_VDF&> (iter.evaluateur());
   eval_diff_turb.associer(ch_diff);
 }
 
-const Champ_base& Op_Dift_VDF_Face_base2::diffusivite() const
+const Champ_base& Op_Dift_VDF_Face_base::diffusivite() const
 {
-  const Eval_Diff_VDF2& eval_diff_turb =
-    dynamic_cast<const Eval_Diff_VDF2&> (iter.evaluateur());
+  const Eval_Diff_VDF& eval_diff_turb =
+    dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
   return eval_diff_turb.get_diffusivite();
 }
 
 
-void Op_Dift_VDF_Face_base2::associer_loipar(const Turbulence_paroi& loi_paroi)
+void Op_Dift_VDF_Face_base::associer_loipar(const Turbulence_paroi& loi_paroi)
 {
   //loipar = loi_paroi;
 }
 
 
-double Op_Dift_VDF_Face_base2::calculer_dt_stab() const
+double Op_Dift_VDF_Face_base::calculer_dt_stab() const
 {
 
   const Zone_VDF& zone_VDF = iter.zone();
   return calculer_dt_stab(zone_VDF);
 }
-double Op_Dift_VDF_Face_base2::calculer_dt_stab(const Zone_VDF& zone_VDF) const
+double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 {
   double dt_stab;
   double coef;
@@ -209,7 +209,7 @@ double Op_Dift_VDF_Face_base2::calculer_dt_stab(const Zone_VDF& zone_VDF) const
   return dt_stab;
 }
 
-void Op_Dift_VDF_Face_base2::calculer_borne_locale(DoubleVect& borne_visco_turb,double dt,double dt_diff_sur_dt_conv) const
+void Op_Dift_VDF_Face_base::calculer_borne_locale(DoubleVect& borne_visco_turb,double dt,double dt_diff_sur_dt_conv) const
 {
   const Zone_VDF& zone_VDF = iter.zone();
   const Champ_base& champ_diffu = diffusivite();
@@ -235,7 +235,7 @@ void Op_Dift_VDF_Face_base2::calculer_borne_locale(DoubleVect& borne_visco_turb,
 
 // Description:
 // on dimensionne notre matrice.
-void Op_Dift_VDF_Face_base2::dimensionner(Matrice_Morse& matrice) const
+void Op_Dift_VDF_Face_base::dimensionner(Matrice_Morse& matrice) const
 {
   /* GF Si avec les solveurs implicite et simple
      if (sub_type(Schema_Euler_Implicite,equation().schema_temps()))

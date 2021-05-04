@@ -26,7 +26,7 @@
 #include <SFichier.h>
 #include <Mod_turb_hyd_base.h>
 
-Implemente_instanciable(Op_Dift_VDF_Face_Axi,"Op_Dift_VDF_Face_Axi",Op_Dift_VDF_Face_base2);
+Implemente_instanciable(Op_Dift_VDF_Face_Axi,"Op_Dift_VDF_Face_Axi",Op_Dift_VDF_Face_base);
 
 Sortie& Op_Dift_VDF_Face_Axi::printOn(Sortie& s ) const
 {
@@ -63,7 +63,7 @@ void Op_Dift_VDF_Face_Axi::associer(const Zone_dis& zone_dis,
 
 void Op_Dift_VDF_Face_Axi::completer()
 {
-  Op_Dift_VDF_base2::completer();
+  Op_Dift_VDF_base::completer();
   Equation_base& eqn_hydr = equation();
   Champ_Face& vitesse = ref_cast(Champ_Face,eqn_hydr.inconnue().valeur());
   vitesse.dimensionner_tenseur_Grad();
@@ -1282,6 +1282,6 @@ void Op_Dift_VDF_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) const
 }
 double Op_Dift_VDF_Face_Axi::calculer_dt_stab() const
 {
-  return Op_Dift_VDF_Face_base2::calculer_dt_stab(la_zone_vdf.valeur()) ;
+  return Op_Dift_VDF_Face_base::calculer_dt_stab(la_zone_vdf.valeur()) ;
 }
 

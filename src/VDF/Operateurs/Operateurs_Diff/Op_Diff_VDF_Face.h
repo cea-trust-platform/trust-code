@@ -24,7 +24,7 @@
 #ifndef Op_Diff_VDF_Face_included
 #define Op_Diff_VDF_Face_included
 
-#include <Op_Diff_VDF_Face_base2.h>
+#include <Op_Diff_VDF_Face_base.h>
 #include <Eval_Diff_VDF_const_Face.h>
 class Champ_Inc;
 //
@@ -50,7 +50,7 @@ declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base2
+class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base
 {
 
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);

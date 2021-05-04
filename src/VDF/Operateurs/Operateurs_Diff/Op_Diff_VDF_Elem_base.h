@@ -14,22 +14,22 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Elem_base2.h
+// File:        Op_Diff_VDF_Elem_base.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Diff_VDF_Elem_base2_included
-#define Op_Diff_VDF_Elem_base2_included
+#ifndef Op_Diff_VDF_Elem_base_included
+#define Op_Diff_VDF_Elem_base_included
 
 #include <Op_Diff_VDF_base.h>
 #include <ItVDFEl.h>
 #include <Op_VDF_Elem.h>
 class Eval_VDF_Elem2;
 //
-// .DESCRIPTION class Op_Diff_VDF_Elem_base2
+// .DESCRIPTION class Op_Diff_VDF_Elem_base
 //
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  transport.
@@ -46,17 +46,17 @@ class Eval_VDF_Elem2;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Diff_VDF_Elem_base2
+// CLASS: Op_Diff_VDF_Elem_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Elem_base2 : public Op_Diff_VDF_base, public Op_VDF_Elem
+class Op_Diff_VDF_Elem_base : public Op_Diff_VDF_base, public Op_VDF_Elem
 {
 
-  Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base2);
+  Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base);
 
 public:
-  inline Op_Diff_VDF_Elem_base2(const Iterateur_VDF_base& iterateur);
+  inline Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur);
 
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
@@ -76,27 +76,27 @@ protected:
 
 
 //
-// Fonctions inline de la classe Op_Diff_VDF_Elem_base2
+// Fonctions inline de la classe Op_Diff_VDF_Elem_base
 //
 
 
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
-inline Op_Diff_VDF_Elem_base2::Op_Diff_VDF_Elem_base2(const Iterateur_VDF_base& iterateur)
+inline Op_Diff_VDF_Elem_base::Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur)
   : Op_Diff_VDF_base(iterateur)
 {
   declare_support_masse_volumique(1);
 }
 // Description:
 // on dimensionne notre matrice.
-inline  void Op_Diff_VDF_Elem_base2::dimensionner(Matrice_Morse& matrice) const
+inline  void Op_Diff_VDF_Elem_base::dimensionner(Matrice_Morse& matrice) const
 {
   Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
 }
 
-inline void Op_Diff_VDF_Elem_base2::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
+inline void Op_Diff_VDF_Elem_base::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
   Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
 
-#endif /* Op_Diff_VDF_Elem_base2_included */
+#endif /* Op_Diff_VDF_Elem_base_included */

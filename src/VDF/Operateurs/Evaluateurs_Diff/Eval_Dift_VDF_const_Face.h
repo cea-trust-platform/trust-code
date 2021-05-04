@@ -23,7 +23,7 @@
 #ifndef Eval_Dift_VDF_const_Face_included
 #define Eval_Dift_VDF_const_Face_included
 
-#include <Eval_Dift_VDF_const2.h>
+#include <Eval_Dift_VDF_const.h>
 #include <Eval_Diff_VDF_Face.h>
 #include <Ref_Turbulence_paroi_base.h>
 #include <Mod_turb_hyd_base.h>
@@ -38,7 +38,7 @@
 // .SECTION voir aussi Eval_Dift_VDF_const
 
 class Eval_Dift_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_const_Face>,
-  public Eval_Dift_VDF_const2
+  public Eval_Dift_VDF_const
 {
 
 public:
@@ -51,14 +51,14 @@ public:
 
   inline void mettre_a_jour()
   {
-    Eval_Dift_VDF_const2::mettre_a_jour( ) ;
+    Eval_Dift_VDF_const::mettre_a_jour( ) ;
     if (le_modele_turbulence->loi_paroi().non_nul())
       {
         tau_tan_.ref(le_modele_turbulence->loi_paroi()->Cisaillement_paroi());
       }
   }
 
-  // overload methods (see implementations in Eval_Diff_VDF_const2)
+  // overload methods (see implementations in Eval_Diff_VDF_const)
   inline double tau_tan_impl(int face,int k) const;
   inline bool uses_wall() const
   {

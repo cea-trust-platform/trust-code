@@ -23,7 +23,7 @@
 #ifndef Eval_DiffF22_VDF_const_Elem_included
 #define Eval_DiffF22_VDF_const_Elem_included
 
-#include <Eval_Diff_VDF_const2.h>
+#include <Eval_Diff_VDF_const.h>
 #include <Champ_Inc.h>
 #include <Ref_Champ_Inc.h>
 #include <Eval_Diff_VDF_Elem.h>
@@ -40,7 +40,7 @@
 
 
 class Eval_DiffF22_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>,
-  public Eval_Diff_VDF_const2
+  public Eval_Diff_VDF_const
 {
 public:
   inline void associer_keps(const Champ_Inc& keps, const Champ_Inc& champv2)

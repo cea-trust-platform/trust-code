@@ -25,17 +25,7 @@
 #define Eval_VDF_Elem2_included
 
 #include <Ref_Champ_base.h>
-#include <Periodique.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
-#include <Dirichlet_entree_fluide.h>
-#include <Neumann_paroi.h>
-#include <Neumann_paroi_adiabatique.h>
-#include <Symetrie.h>
-#include <Echange_global_impose.h>
-#include <Echange_externe_impose.h>
-#include <Neumann_sortie_libre.h>
-#include <NSCBC.h>
+#include <Champ_P0_VDF.h>
 
 //
 // .DESCRIPTION class Eval_VDF_Elem
@@ -48,7 +38,11 @@
 class Eval_VDF_Elem2
 {
 public:
-  void associer_inconnue(const Champ_base& );
+  inline void associer_inconnue(const Champ_base& inco)
+  {
+    assert(sub_type(Champ_P0_VDF,inco));
+    inconnue=inco;
+  }
 
   // contribution de la derivee en vitesse d'une equation scalaire
   template <typename BC_TYPE>

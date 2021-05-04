@@ -23,7 +23,7 @@
 #ifndef Eval_Diff_VDF_var_aniso_included
 #define Eval_Diff_VDF_var_aniso_included
 
-#include <Eval_Diff_VDF2.h>
+#include <Eval_Diff_VDF.h>
 #include <Ref_Champ_base.h>
 #include <Champ_base.h>
 #include <Champ_Uniforme.h>
@@ -37,7 +37,7 @@
 
 //.SECTION voir aussi Evaluateur_VDF
 
-class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF2
+class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF
 {
 public:
   inline void associer(const Champ_base& );

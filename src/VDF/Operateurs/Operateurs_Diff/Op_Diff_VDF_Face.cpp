@@ -25,7 +25,7 @@
 #include <Champ_Inc.h>
 #include <SFichier.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Face,"Op_Diff_VDF_const_Face",Op_Diff_VDF_Face_base2);
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Face,"Op_Diff_VDF_const_Face",Op_Diff_VDF_Face_base);
 implemente_It_VDF_Face(Eval_Diff_VDF_const_Face)
 
 Sortie& Op_Diff_VDF_Face::printOn(Sortie& s ) const
@@ -41,6 +41,6 @@ Entree& Op_Diff_VDF_Face::readOn(Entree& s )
 // Description:
 // constructeur
 Op_Diff_VDF_Face::Op_Diff_VDF_Face() :
-  Op_Diff_VDF_Face_base2(It_VDF_Face(Eval_Diff_VDF_const_Face)())
+  Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_const_Face)())
 {
 }

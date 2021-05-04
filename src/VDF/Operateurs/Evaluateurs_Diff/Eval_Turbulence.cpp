@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,108 +14,11 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Cal_std.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/5
+// File:        Eval_Turbulence.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <Eval_Turbulence.h>
 
-
-//// calculer_flux_faces_echange_externe_impose
-//
-
-inline int CLASSNAME::calculer_flux_faces_echange_externe_impose() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_echange_global_impose
-//
-
-inline int CLASSNAME::calculer_flux_faces_echange_global_impose() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_entree_fluide
-//
-
-inline int CLASSNAME::calculer_flux_faces_entree_fluide() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_paroi
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_paroi_adiabatique
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi_adiabatique() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_paroi_defilante
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi_defilante() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_paroi_fixe
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi_fixe() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_sortie_libre
-//
-
-inline int CLASSNAME::calculer_flux_faces_sortie_libre() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_symetrie
-//
-
-inline int CLASSNAME::calculer_flux_faces_symetrie() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_periodique
-//
-
-inline int CLASSNAME::calculer_flux_faces_periodique() const
-{
-  return 1;
-}
-
-//// calculer_flux_faces_NSCBC
-//
-
-inline int CLASSNAME::calculer_flux_faces_NSCBC() const
-{
-  return 0;
-}
-
-
+// Remove me later

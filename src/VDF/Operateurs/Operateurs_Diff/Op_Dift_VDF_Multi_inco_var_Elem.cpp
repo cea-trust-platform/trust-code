@@ -24,7 +24,7 @@
 #include <Champ_P0_VDF.h>
 #include <Modele_turbulence_scal_base.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem,"Op_Dift_VDF_Multi_inco_var_P0_VDF",Op_Dift_VDF_base2);
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem,"Op_Dift_VDF_Multi_inco_var_P0_VDF",Op_Dift_VDF_base);
 implemente_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)
 
 Sortie& Op_Dift_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const
@@ -98,7 +98,7 @@ void Op_Dift_VDF_Multi_inco_var_Elem::associer_loipar(const Turbulence_paroi_sca
 
 void Op_Dift_VDF_Multi_inco_var_Elem::completer()
 {
-  Op_Dift_VDF_base2::completer();
+  Op_Dift_VDF_base::completer();
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
   const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
@@ -169,6 +169,6 @@ double Op_Dift_VDF_Multi_inco_var_Elem::calculer_dt_stab() const
 //// Op_Dift_VDF_Multi_inco_var_Elem
 //
 Op_Dift_VDF_Multi_inco_var_Elem::Op_Dift_VDF_Multi_inco_var_Elem() :
-  Op_Dift_VDF_base2(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)())
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)())
 {
 }

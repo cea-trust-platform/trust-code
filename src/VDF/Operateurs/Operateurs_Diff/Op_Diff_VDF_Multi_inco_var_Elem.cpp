@@ -22,7 +22,7 @@
 
 #include <Op_Diff_VDF_Multi_inco_var_Elem.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem,"Op_Diff_VDF_Multi_inco_var_P0_VDF",Op_Diff_VDF_Elem_base2);
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem,"Op_Diff_VDF_Multi_inco_var_P0_VDF",Op_Diff_VDF_Elem_base);
 implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)
 
 Sortie& Op_Diff_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const
@@ -41,6 +41,6 @@ Entree& Op_Diff_VDF_Multi_inco_var_Elem::readOn(Entree& s )
 // Description:
 // constructeur
 Op_Diff_VDF_Multi_inco_var_Elem::Op_Diff_VDF_Multi_inco_var_Elem() :
-  Op_Diff_VDF_Elem_base2(It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)())
+  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)())
 {
 }

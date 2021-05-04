@@ -24,7 +24,7 @@
 #include <Mod_turb_hyd_base.h>
 #include <SFichier.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Face,"Op_Dift_VDF_Face",Op_Dift_VDF_Face_base2);
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Face,"Op_Dift_VDF_Face",Op_Dift_VDF_Face_base);
 implemente_It_VDF_Face(Eval_Dift_VDF_const_Face)
 
 Sortie& Op_Dift_VDF_Face::printOn(Sortie& s ) const
@@ -48,7 +48,7 @@ void Op_Dift_VDF_Face::associer_diffusivite_turbulente(const Champ_Fonc& visc_tu
 void Op_Dift_VDF_Face::completer()
 {
   // Cerr << "Op_Dift_VDF_Face::completer() " << finl;
-  Op_Dift_VDF_base2::completer();
+  Op_Dift_VDF_base::completer();
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
   const Champ_Fonc& visc_turb = mod_turb.viscosite_turbulente();
@@ -64,6 +64,6 @@ void Op_Dift_VDF_Face::completer()
 //// Op_Dift_VDF_Face
 //
 Op_Dift_VDF_Face::Op_Dift_VDF_Face() :
-  Op_Dift_VDF_Face_base2(It_VDF_Face(Eval_Dift_VDF_const_Face)())
+  Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)())
 {
 }

@@ -14,31 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF2.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
-// Version:     1
+// File:        Op_Dift_VDF_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Diff_VDF2_included
-#define Eval_Diff_VDF2_included
+#ifndef Op_Dift_VDF_base_included
+#define Op_Dift_VDF_base_included
 
-class Champ_base;
-class Champ_Don;
+#include <Op_Diff_VDF_base.h>
+#include <Op_Diff_Turbulent_base.h>
 
-class Eval_Diff_VDF2
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION class  Op_Dift_VDF_base
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Op_Dift_VDF_base : public Op_Diff_VDF_base, public Op_Diff_Turbulent_base
 {
+
+  Declare_base(Op_Dift_VDF_base);
+
 public:
-  inline virtual ~Eval_Diff_VDF2() {}
-  virtual const Champ_base& get_diffusivite() const=0;
-  virtual void associer(const Champ_base&) =0;
-  virtual void mettre_a_jour() { }
 
-  // These methods will be overloaded in DIFT operators
-  // See Eval_Dift_VDF_const_Elem for example...
-  inline int get_ind_Fluctu_Term() const { return 0; }
-  inline virtual double get_equivalent_distance(int boundary_index,int local_face) const { return 0; }
-
+  inline Op_Dift_VDF_base(const Iterateur_VDF_base& );
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void contribuer_au_second_membre(DoubleTab& ) const;
 };
 
-#endif /* Eval_Diff_VDF2_included */
+inline Op_Dift_VDF_base::Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base)
+  : Op_Diff_VDF_base(iter_base)
+{}
+
+#endif /* Op_Dift_VDF_base_included */

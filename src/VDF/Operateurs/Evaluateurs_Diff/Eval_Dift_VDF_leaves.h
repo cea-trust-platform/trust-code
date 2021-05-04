@@ -24,10 +24,10 @@
 #define Eval_Dift_VDF_leaves_included
 
 #include <Eval_Diff_VDF_Elem.h>
-#include <Eval_Dift_VDF_const2.h>
-#include <Eval_Dift_VDF_var2.h>
-#include <Eval_Dift_VDF_Multi_inco_const2.h>
-#include <Eval_Dift_VDF_Multi_inco_var2.h>
+#include <Eval_Dift_VDF_const.h>
+#include <Eval_Dift_VDF_var.h>
+#include <Eval_Dift_VDF_Multi_inco_const.h>
+#include <Eval_Dift_VDF_Multi_inco_var.h>
 #include <Ref_Modele_turbulence_scal_base.h>
 #include <Turbulence_paroi_scal.h>
 #include <Ref_Turbulence_paroi_scal.h>
@@ -41,7 +41,7 @@
  * OTHERWISE DO NOT COMPILE
  */
 class Eval_Dift_VDF_leaves : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_leaves>,
-  public Eval_Dift_VDF_const2 {};
+  public Eval_Dift_VDF_const {};
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /*
@@ -59,10 +59,10 @@ class Eval_Dift_VDF_leaves : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_leaves>,
 //
 
 // .SECTION
-// voir aussi Eval_Dift_VDF_const2
+// voir aussi Eval_Dift_VDF_const
 
 class Eval_Dift_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem_Axi>,
-  public Eval_Dift_VDF_const2
+  public Eval_Dift_VDF_const
 {
 public:
   static constexpr bool IS_DEQUIV = true;
@@ -77,10 +77,10 @@ public:
 //
 
 // .SECTION
-// voir aussi Eval_Dift_VDF_const2
+// voir aussi Eval_Dift_VDF_const
 
 class Eval_Dift_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem>,
-  public Eval_Dift_VDF_const2
+  public Eval_Dift_VDF_const
 {
 public :
   inline Eval_Dift_VDF_const_Elem() : ind_Fluctu_Term(1) {}
@@ -93,7 +93,7 @@ public :
 
   inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
   {
-    Eval_Dift_VDF_const2::associer_loipar(loi_paroi);
+    Eval_Dift_VDF_const::associer_loipar(loi_paroi);
     ind_Fluctu_Term = 0;
   }
 
@@ -120,10 +120,10 @@ private:
 //
 
 // .SECTION
-// voir aussi Eval_Dift_VDF_var2
+// voir aussi Eval_Dift_VDF_var
 
 class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem_Axi>,
-  public Eval_Dift_VDF_var2
+  public Eval_Dift_VDF_var
 {
 public:
   static constexpr bool IS_DEQUIV = true;
@@ -137,10 +137,10 @@ public:
 // Le champ de diffusivite n'est pas constant.
 
 // .SECTION
-// voir aussi Eval_Dift_VDF_var2
+// voir aussi Eval_Dift_VDF_var
 
 class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem>,
-  public Eval_Dift_VDF_var2
+  public Eval_Dift_VDF_var
 {
 
 public:
@@ -163,7 +163,7 @@ public:
 
   inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
   {
-    Eval_Dift_VDF_var2::associer_loipar(loi_paroi);
+    Eval_Dift_VDF_var::associer_loipar(loi_paroi);
     ind_Fluctu_Term = 0;
   }
 
@@ -188,7 +188,7 @@ private:
 
 // .SECTION voir aussi Eval_Dift_VDF_Multi_inco_const_Elem
 class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem_Axi>,
-  public Eval_Dift_VDF_Multi_inco_const2
+  public Eval_Dift_VDF_Multi_inco_const
 {
 public:
   static constexpr bool IS_MULTD = false;
@@ -205,10 +205,10 @@ public:
 // Le champ de diffusivite laminaire associe a chaque inconnue est constant.
 
 //
-// .SECTION voir aussi Eval_Dift_VDF_Multi_inco_const2
+// .SECTION voir aussi Eval_Dift_VDF_Multi_inco_const
 
 class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem>,
-  public Eval_Dift_VDF_Multi_inco_const2
+  public Eval_Dift_VDF_Multi_inco_const
 {
 public:
   static constexpr bool IS_MULTD = false;
@@ -216,7 +216,7 @@ public:
 };
 
 class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>,
-  public Eval_Dift_VDF_Multi_inco_var2
+  public Eval_Dift_VDF_Multi_inco_var
 {
 public:
   static constexpr bool IS_MULTD = false;
@@ -232,10 +232,10 @@ public:
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue n'est pas constant.
 
-//.SECTION voir aussi Eval_Dift_VDF_Multi_inco_var2
+//.SECTION voir aussi Eval_Dift_VDF_Multi_inco_var
 
 class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>,
-  public Eval_Dift_VDF_Multi_inco_var2
+  public Eval_Dift_VDF_Multi_inco_var
 {
 
 public:

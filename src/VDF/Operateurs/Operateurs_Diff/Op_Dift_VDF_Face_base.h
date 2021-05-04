@@ -14,16 +14,16 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_Face_base2.h
+// File:        Op_Dift_VDF_Face_base.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_Face_base2_included
-#define Op_Dift_VDF_Face_base2_included
+#ifndef Op_Dift_VDF_Face_base_included
+#define Op_Dift_VDF_Face_base_included
 
-#include <Op_Dift_VDF_base2.h>
+#include <Op_Dift_VDF_base.h>
 #include <ItVDFFa.h>
 #include <Op_VDF_Face.h>
 
@@ -33,13 +33,13 @@ class Mod_turb_hyd_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Op_Dift_VDF_Face_base2
+// CLASS: Op_Dift_VDF_Face_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Dift_VDF_Face_base2 : public Op_Dift_VDF_base2, public Op_VDF_Face
+class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
 {
-  Declare_base(Op_Dift_VDF_Face_base2);
+  Declare_base(Op_Dift_VDF_Face_base);
 
 public:
   void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
@@ -51,24 +51,24 @@ public:
   double calculer_dt_stab() const;
   double calculer_dt_stab(const Zone_VDF&) const;
   void calculer_borne_locale(DoubleVect& ,double , double ) const;
-  inline Op_Dift_VDF_Face_base2(const Iterateur_VDF_base& );
+  inline Op_Dift_VDF_Face_base(const Iterateur_VDF_base& );
   inline virtual Eval_VDF_Face2& get_eval_face();
 };
 
-inline Eval_VDF_Face2& Op_Dift_VDF_Face_base2::get_eval_face()
+inline Eval_VDF_Face2& Op_Dift_VDF_Face_base::get_eval_face()
 {
   Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
   exit();
   return (Eval_VDF_Face2&) iter.evaluateur();
 }
 
-inline void Op_Dift_VDF_Face_base2::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
+inline void Op_Dift_VDF_Face_base::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
   Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
 
-inline Op_Dift_VDF_Face_base2::Op_Dift_VDF_Face_base2(const Iterateur_VDF_base& iter_base)
-  : Op_Dift_VDF_base2(iter_base)
+inline Op_Dift_VDF_Face_base::Op_Dift_VDF_Face_base(const Iterateur_VDF_base& iter_base)
+  : Op_Dift_VDF_base(iter_base)
 {}
 
-#endif /* Op_Dift_VDF_Face_base2_included */
+#endif /* Op_Dift_VDF_Face_base_included */

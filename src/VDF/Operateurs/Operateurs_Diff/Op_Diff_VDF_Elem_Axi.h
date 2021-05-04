@@ -24,7 +24,7 @@
 #ifndef Op_Diff_VDF_Elem_Axi_included
 #define Op_Diff_VDF_Elem_Axi_included
 
-#include <Op_Diff_VDF_Elem_base2.h>
+#include <Op_Diff_VDF_Elem_base.h>
 #include <ItVDFEl.h>
 #include <Op_VDF_Elem.h>
 #include <Eval_Diff_VDF_leaves.h>
@@ -53,7 +53,7 @@ declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_VDF_Elem_Axi : public Op_Diff_VDF_Elem_base2
+class Op_Diff_VDF_Elem_Axi : public Op_Diff_VDF_Elem_base
 {
 
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi);
@@ -69,7 +69,7 @@ protected:
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_Elem_Axi_temp_FTBM)
 inline Op_Diff_VDF_Elem_Axi::Op_Diff_VDF_Elem_Axi(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base2(iterateur)
+  : Op_Diff_VDF_Elem_base(iterateur)
 {
 }
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement

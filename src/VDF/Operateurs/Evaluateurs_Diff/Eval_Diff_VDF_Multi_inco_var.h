@@ -14,16 +14,59 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_VDF_Elem2.cpp
+// File:        Eval_Diff_VDF_Multi_inco_var.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
-// Version:     1
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <Champ_P0_VDF.h>
-#include <Eval_VDF_Elem2.h>
 
-void Eval_VDF_Elem2::associer_inconnue(const Champ_base& inco)
+
+#ifndef Eval_Diff_VDF_Multi_inco_var_included
+#define Eval_Diff_VDF_Multi_inco_var_included
+
+#include <Eval_Diff_VDF.h>
+#include <Zone_VDF.h>
+#include <Ref_Champ_base.h>
+#include <Champ_base.h>
+class Champ_base;
+//
+// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_var
+//
+// Cette classe represente un evaluateur de flux diffusif
+// pour un vecteur d'inconnues avec une diffusivite par
+// inconnue. Le champ de diffusivite associe a chaque inconnue
+// n'est pas constant.
+
+//
+// .SECTION voir aussi Evaluateur_VDF
+//
+
+
+class Eval_Diff_VDF_Multi_inco_var : public Eval_Diff_VDF
 {
-  assert(sub_type(Champ_P0_VDF,inco));
-  inconnue=inco;
-}
+
+public:
+  inline void mettre_a_jour() { }
+  inline const Champ_base& get_diffusivite() const { return diffusivite_ ; }
+
+  inline void associer(const Champ_base& diffu)
+  {
+    diffusivite_ = ref_cast(Champ_base,diffu);
+    dt_diffusivite.ref(diffu.valeurs());
+  }
+
+  // Methods used by the flux computation in template class:
+  inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i, compo); }
+  inline double nu_2_impl(int i, int compo) const { return dt_diffusivite(i, compo); }
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
+  {
+    return 1./(d0/dt_diffusivite(i,compo) + d1/dt_diffusivite(j,compo));
+  }
+
+protected:
+  REF(Champ_base) diffusivite_;
+  DoubleTab dt_diffusivite;
+  inline double dist_face(int, int, int) const;
+};
+
+#endif /* Eval_Diff_VDF_Multi_inco_var_included */
