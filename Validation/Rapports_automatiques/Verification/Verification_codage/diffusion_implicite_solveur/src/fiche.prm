@@ -1,6 +1,7 @@
 Parameters {
 	Title "Solveur option pour le schema Euler explicite avec diffusion implicite"
 	Author "Pierre LEDAC"
+  	InclureData 1
     VersionTrio_U 1.8.3
    
  	TestCase . matrix_free_gc.data 2
@@ -14,11 +15,11 @@ Chapter {
 	Title "Geometry" 
 	visu {
 		width 8cm
-		title "Partitioned mesh (4 MPI)"
-        mesh mesh_00000.lata dom
-        pseudocolor mesh_00000.lata dom PARTITION ELEM
-        Normal3d -0.75 -0.38  0.53
-        Up3D     -0.25 -0.57 -0.77
+		title "Partitioned mesh (2 MPI)"
+		mesh mesh_00000.lata dom
+		pseudocolor mesh_00000.lata dom PARTITION ELEM
+		Normal3d -0.75 -0.38  0.53
+		Up3D     -0.25 -0.57 -0.77
 	}
 }
 Chapter {
@@ -28,30 +29,56 @@ Chapter {
 		Width 12cm
 		include_description_curves 0
 		labelX "Iteration"
-        labelY "Residual"
-        
-        logy 
-        curve {
+		labelY "Residual"	
+		logy 
+        	curve {
 			file matrix_free_gc.res
 			columns ($1) ($2)
 			legende "matrix_free_gc"
 			style linespoints
 		}
-        curve {
+        	curve {
 			file matrix_free_gcp_diag.res
 			columns ($1) ($2)
 			legende "matrix_free_gcp_diag"
 			style linespoints
 		}
-        curve {
+        	curve {
 			file matrix_petsc_gcp_ilu0.res
 			columns ($1) ($2)
 			legende "matrix_petsc_gcp_ilu0"
 			style linespoints
 		}
+	}
 }
+Chapter {
+	Title "Result with current free-matrix method and new matrix solver method" 
+    figure { 
+        description "Temperature probe:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time"
+		labelY "Temperature"	
+        	curve {
+			file matrix_free_gc_TEMPERATURE.son
+			columns ($1) ($2)
+			legende "matrix_free_gc"
+			style linespoints
+		}
+        	curve {
+			file matrix_free_gcp_diag_TEMPERATURE.son
+			columns ($1) ($2)
+			legende "matrix_free_gcp_diag"
+			style linespoints
+		}
+        	curve {
+			file matrix_petsc_gcp_ilu0_TEMPERATURE.son
+			columns ($1) ($2)
+			legende "matrix_petsc_gcp_ilu0"
+			style linespoints
+		}
+	}
 }
-
 Chapter {
 	Title "Computer performance"
 	tableau_performance {

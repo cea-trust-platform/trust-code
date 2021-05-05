@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+07/05/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
 30/04/21 (TRUST)  Portability : Fedora 34 and GNU compilers 11.0.1 are supported with ./configure -force_latest_mpich and after doing: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
 30/04/21 (TRUST)  Performance : PETSc matrix optimizations (update coefficients instead of matrix rebuild, suppress zeros by allowing memory reallocation)
 23/04/21 (TRUST)  Bug fixed   : Champ_fonc_reprise didn't read correctly the PolyMAC fields
 15/04/21 (TRUST)  Portability : GNU compilers 10.3.0 supported
-15/04/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
 12/04/21 (TRUST)  New feature : mpi4py Python package now provided by default in the TRUST Python environment when compiling with MPI.
 31/03/21 (TRUST)  New feature : ICoCo (Interface for Code Coupling) version 2! See https://github.com/cea-trust-platform/icoco-coupling for full reference.
 30/03/21 (TRUST)  Performance : Faster partitioning by disabling printing of remote (ghosts) elements (add a print_more_info option to enable it). 

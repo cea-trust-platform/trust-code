@@ -65,7 +65,7 @@ Read pb
             vitesse Champ_Uniforme 3 1. 0. 0.
         }
         boundary_conditions {
-            Cylindre 	paroi_fixe
+            Cylindre 		paroi_fixe
             Box  		symetrie
             Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
             Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
@@ -78,7 +78,7 @@ Read pb
         convection { muscl }
         boundary_conditions
         {
-            Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Cylindre 		paroi_temperature_imposee Champ_front_Uniforme 1 30.
             Box 		symetrie
             Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
             Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
@@ -87,10 +87,13 @@ Read pb
     }
     Postraitement
     {
+        Sondes 
+        {
+            temperature temperature periode 1.e-8 point 1 0.476872 0.357113 -1
+        }
         fields dt_post 1.
         {
-            pression_pa elem
-            pression_pa som
+            temperature elem
         }
     }
 }

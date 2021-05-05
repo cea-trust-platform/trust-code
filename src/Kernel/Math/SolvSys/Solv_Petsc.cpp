@@ -1565,7 +1565,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << finl;
           exit();
         }
-      Cout << "[Petsc] Time to convert matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+      if (amgx_) Cout << "[Petsc] Time to convert matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 
       // Verification stockage de la matrice
       check_aij(matrice_morse_intermediaire);
@@ -1590,12 +1590,16 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 
           // Create objects
           Create_objects(matrice_morse);
+#ifdef PETSC_HAVE_CUDA
           if (!amgx_) Cout << "[Petsc] Time to build matrix and others: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+#endif
         }
       else
         {
           Update_matrix(MatricePetsc_, matrice_morse);
+#ifdef PETSC_HAVE_CUDA
           if (!amgx_) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+#endif
         }
     }
 

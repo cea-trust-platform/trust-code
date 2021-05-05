@@ -1,0 +1,10 @@
+#!/bin/bash
+# Comparaison des resultats avec l'algo actuel
+jdd=diffusion_implicite_solveur
+if [ ! -f PAR_$jdd.dt_ev ]
+then
+   cp $jdd.data actuel.data
+   sed -i "1,$ s?solveur petsc gcp { precond diag { } rtol 1.e-10 impr }?preconditionnement_diag 1?g" actuel.data || exit -1
+   trust actuel 1>actuel.out 2>actuel.err || exit -1
+   compare_lata $jdd.lml actuel.lml 1>/dev/null 2>&1 || exit -1
+fi

@@ -1,0 +1,150 @@
+# Utilisation du mot cle solveur diffusion implicite #
+# PARALLEL OK #
+dimension 2
+
+pb_thermohydraulique pb_fluide
+
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_fluide
+{
+    Pave Cavite1
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 23 101
+        Longueurs 0.9144  1.6764
+        Facteurs 0.8 1
+    }
+    {
+        Bord axis	X = 0.              0. <= Y <= 1.6764
+        Bord wallheat   X = 0.9144          0. <= Y <= 1.2192
+        Bord wall       X = 0.9144      1.2191 <= Y <= 1.6764
+        Bord haut  	Y = 1.6764          0. <= X <= 0.9144
+    } ,
+
+    Pave Cavite2
+    {
+        Origine 0. -0.0508
+        Nombre_de_Noeuds 23 3
+        Longueurs 0.9144  0.0508
+        Facteurs 0.8 1
+    }
+    {
+        Bord axis	X = 0.              -0.0508 <= Y <= 0.0
+        Bord wall       X = 0.9144          -0.0508 <= Y <= 0.0
+        bord bas        Y = -0.0508          0.     <= X <= 0.9144
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+
+Partition dom_fluide
+{
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0
+    tmax 100
+    nb_pas_dt_max 10
+    dt_min 0.000001
+    dt_max 0.00025
+    dt_start dt_fixe 0.0001
+    dt_impr 1.e-5
+    dt_sauv 1.e+5
+    seuil_statio 1.e-18
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-10
+    impr_diffusion_implicite 1
+    Facsec 1
+}
+
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1  0.00089
+    rho Champ_Uniforme 1 997.05
+    lambda Champ_Uniforme 1 0.6071
+    Cp Champ_Uniforme 1 4181.6
+    beta_th Champ_Uniforme 1 0.000257
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 2  0. -9.81
+
+Associate fluide gravite
+
+Associate pb_fluide dom_fluide
+Associate pb_fluide fluide
+
+Associate  pb_fluide sch
+Discretize pb_fluide dis
+
+
+Read pb_fluide
+{
+    Navier_Stokes_Standard
+    {
+        parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond diag { } rtol 1.e-10 impr } }
+        solveur_pression petsc Cholesky { }
+        convection { amont }
+        diffusion { }
+        initial_conditions { vitesse champ_uniforme 2 0 0 }
+        boundary_conditions
+        {
+            axis paroi_fixe
+            haut symetrie
+            bas  paroi_fixe
+            wall paroi_fixe
+            wallheat paroi_fixe
+        }
+        sources { Boussinesq_temperature { T0 24 verif_boussinesq 0 } }
+    }
+
+    Convection_Diffusion_Temperature
+    {
+        parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond diag { } rtol 1.e-10 impr } }
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            axis Paroi_temperature_imposee champ_front_uniforme 1 24
+            haut symetrie
+            bas  Paroi_temperature_imposee champ_front_uniforme 1 24
+            wall Paroi_temperature_imposee champ_front_uniforme 1 24
+            wallheat Paroi_flux_impose champ_front_uniforme 1 19760.35
+        }
+        initial_conditions { temperature champ_uniforme 1 24 }
+    }
+
+    Post_processing
+    {
+        format lml
+        Champs dt_post 2
+        {
+            temperature elem
+        }
+        Sondes 
+        {
+            temperature temperature periode 1.e-8 point 1 0.91439 -0.050768
+        }
+    }
+}
+Solve pb_fluide
+

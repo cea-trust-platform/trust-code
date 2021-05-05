@@ -1838,7 +1838,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
         }
     }
   SolveurSys solveur;
-  if (parametre_equation().non_nul() &&  sub_type(Parametre_diffusion_implicite, parametre_equation().valeur()))
+  if (parametre_equation().non_nul() && sub_type(Parametre_diffusion_implicite, parametre_equation().valeur()))
     solveur = ref_cast(Parametre_diffusion_implicite, parametre_equation().valeur()).solveur();
 
   if (solveur.non_nul())
@@ -1865,11 +1865,15 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       matrice.clean(); // A=0
       // Add diffusion matrix L into matrix
       operateur(0).l_op_base().contribuer_a_avec(present, matrice); // A=L
+      operateur(0).ajouter(present, secmem);
+      matrice.ajouter_multvect(present, secmem);
       // Add M/dt into matrix
       schema_temps().ajouter_inertie(matrice,secmem,(*this)); // A=M/dt+L
       modifier_pour_Cl(matrice,secmem);
       // Solve to get I(n+1):
-      solveur.resoudre_systeme(matrice, secmem, solution);
+      int niter = solveur.resoudre_systeme(matrice, secmem, solution);
+      Cout << "Diffusion operator implicited for the equation " << que_suis_je()
+           << " : Conjugate gradient converged in " << niter << " iterations." << finl;
       // CHD 230501 : Call to diffusive operator to update flux_bords (boundary fluxes): ToDo utile ?
       operateur(0).ajouter(inconnue(), secmem);
 

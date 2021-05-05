@@ -1,6 +1,7 @@
 # Diffusion implicite (residu relatif)
 
 # Implicited diffusion algorithm applied on Navier_Stokes_standard equation:
+# ...
 # Norm of the residue: 1.90398 (1)
 # 0.00123019 5.42438e-06 1.42766e-08
 # Final residue: 1.42766e-08 ( 7.49829e-09 )
@@ -15,6 +16,7 @@
 /Implicited diffusion algorithm/ { ns++;
     getline;
     if (ns == ncomp) {
+        while ($1 != "Norm" && substr($1,0,6) != "Residu") getline;
         if ($1 == "Norm")
         {
             res0=$5
