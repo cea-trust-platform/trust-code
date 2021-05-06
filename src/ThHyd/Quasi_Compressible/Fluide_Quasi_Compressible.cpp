@@ -269,9 +269,11 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
       Process::exit();
     }
 
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" && traitement_PTh != 2)
+
+  if ((pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
+      && traitement_PTh != 2)
     {
-      Cerr << "Currently, the Pb_Hydraulique_Melange_Binaire_QC is only available with an isobar assumption !" << finl;
+      Cerr << "Currently, the " << pb.que_suis_je() << " problem is only available with an isobar assumption !" << finl;
       Cerr << "Set **traitement_pth constant** in the Fluide_Quasi_Compressible bloc definition." << finl;
       Process::exit();
     }
@@ -279,7 +281,7 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   Cerr<<"Fluide_Quasi_Compressible::completer Pth="<<Pth_<<finl;
   inco_chaleur_ = pb.equation(1).inconnue();
 
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
     assert(inco_chaleur_.le_nom()=="fraction_massique");
 
 
@@ -300,12 +302,12 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
     }
   typ += "_";
 
-  // Pb_Hydraulique_Melange_Binaire_QC is currently an isobar problem
+  // Pb_Hydraulique_Melange_Binaire_QC/Pb_Hydraulique_Melange_Binaire_Turbulent_QC is currently an isobar problem
   // The EDO_pth is not solved (traitement_pth constant)
   // However, we need a typer because we will need to access calculer_rho_face in calculer_masse_volumique (loi_etat)
   // EDO_Pression_th_VDF/VEF_Melange_Binaire not implemented yet
   // just typer Gaz_Parfait instead...
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
     typ +="Gaz_Parfait";
   else
     typ += loi_etat_->type_fluide();
@@ -437,7 +439,7 @@ void Fluide_Quasi_Compressible::abortTimeStep()
 void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   Motcle nom_var;
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
     nom_var="fraction_massique"; // because we do not even have a temperature variable
   else
     nom_var="temperature";
@@ -450,10 +452,11 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,rho);
 
   // NOTE : ch_temperature() is the temperature field
-  // unless for a Pb_Hydraulique_Melange_Binaire_QC where it denotes the species Y1 (mass fraction)
+  // unless for a Pb_Hydraulique_Melange_Binaire_QC & Pb_Hydraulique_Melange_Binaire_Turbulent_QC
+  // where it denotes the species Y1 (mass fraction)
   Champ_Don& ch_TK = ch_temperature();
 
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC")
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
     dis.discretiser_champ("temperature",zone_dis,"fraction_massique","neant",1,temps,ch_TK);
   else
     dis.discretiser_champ("temperature",zone_dis,"temperature","K",1,temps,ch_TK);
@@ -636,7 +639,8 @@ void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
   rho.mettre_a_jour(temps);
 
   // NOTE : ch_temperature() is the temperature field
-  // unless for a Pb_Hydraulique_Melange_Binaire_QC where it denotes the species Y1 (mass fraction)
+  // unless for a Pb_Hydraulique_Melange_Binaire_QC/Pb_Hydraulique_Melange_Binaire_Turbulent_QC
+  // where it denotes the species Y1 (mass fraction)
   ch_temperature().mettre_a_jour(temps);
   rho->changer_temps(temps);
   ch_temperature()->changer_temps(temps);
