@@ -271,10 +271,10 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 
 
   if ((pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-      && traitement_PTh != 2)
+      && traitement_PTh == 0)
     {
       Cerr << "Currently, the " << pb.que_suis_je() << " problem is only available with an isobar assumption !" << finl;
-      Cerr << "Set **traitement_pth constant** in the Fluide_Quasi_Compressible bloc definition." << finl;
+      Cerr << "Set **traitement_pth** constant or conservation_masse in the Fluide_Quasi_Compressible bloc definition." << finl;
       Process::exit();
     }
 
