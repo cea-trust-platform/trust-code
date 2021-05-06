@@ -74,42 +74,13 @@ Entree& Loi_Etat_Melange_Binaire::readOn(Entree& is)
   Cerr<<"Lecture de la loi d'etat Melange Binaire"<<finl;
 
   Param param(que_suis_je());
-  param.ajouter("molar_mass1",&massmol1_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 1.
-  param.ajouter("molar_mass2",&massmol2_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 2.
-  param.ajouter("mu1",&mu1_,Param::REQUIRED); // XD_ADD_P double Dynamic viscosity of species 1.
-  param.ajouter("mu2",&mu2_,Param::REQUIRED); // XD_ADD_P double Dynamic viscosity of species 2.
-  param.ajouter("temperature",&tempr_,Param::REQUIRED); // XD_ADD_P double Temperature in Kelvin which will be constant during the simulation since this state law only works for iso-thermal conditions.
-  param.ajouter("diffusion_coeff",&diff_coeff_,Param::REQUIRED); // XD_ADD_P double Diffusion coefficient assumed the same for both species.
-
+  param.ajouter("molar_mass1",&massmol1_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 1 (in kg/mol).
+  param.ajouter("molar_mass2",&massmol2_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 2 (in kg/mol).
+  param.ajouter("mu1",&mu1_,Param::REQUIRED); // XD_ADD_P double Dynamic viscosity of species 1 (in kg/m.s).
+  param.ajouter("mu2",&mu2_,Param::REQUIRED); // XD_ADD_P double Dynamic viscosity of species 2 (in kg/m.s).
+  param.ajouter("temperature",&tempr_,Param::REQUIRED); // XD_ADD_P double Temperature (in Kelvin) which will be constant during the simulation since this state law only works for iso-thermal conditions.
+  param.ajouter("diffusion_coeff",&diff_coeff_,Param::REQUIRED); // XD_ADD_P double Diffusion coefficient assumed the same for both species (in m2/s).
   param.lire_avec_accolades_depuis(is);
-
-  if (massmol1_==-1 || massmol2_==-1)
-    {
-      Cerr << "Error in Loi_Etat_Melange_Binaire::readOn !" << finl;
-      Cerr << "You should specify the molar mass for both species !" << finl;
-      abort();
-    }
-
-  if (mu1_==-1 || mu2_==-1)
-    {
-      Cerr << "Error in Loi_Etat_Melange_Binaire::readOn !" << finl;
-      Cerr << "You should specify the dynamic viscosity for both species !" << finl;
-      abort();
-    }
-
-  if (tempr_ == -1)
-    {
-      Cerr << "Error in Loi_Etat_Melange_Binaire::readOn !" << finl;
-      Cerr << "You should specify the temperature (in Kelvin) !" << finl;
-      abort();
-    }
-
-  if (diff_coeff_ == -1)
-    {
-      Cerr << "Error in Loi_Etat_Melange_Binaire::readOn !" << finl;
-      Cerr << "You should specify the diffusion coefficient !" << finl;
-      abort();
-    }
 
   return is;
 }
@@ -411,7 +382,7 @@ double Loi_Etat_Melange_Binaire::calculer_masse_volumique(double P, double Y1) c
    * See https://doi.org/10.1016/j.ijheatmasstransfer.2020.120470
   */
   const double PM2 = P*massmol2_;
-  const double RT = R()*tempr_;
+  const double RT = R_GAS*tempr_;
   const double mix = 1.0+Y1*(massmol2_/massmol1_-1.0);
   const double rh = PM2/(RT*mix);
 
@@ -436,7 +407,7 @@ double Loi_Etat_Melange_Binaire::inverser_Pth(double Y1, double rho)
 {
   /*
   // THIS IS OK, but we dont want to enter here !
-  double RToM2 = R()*tempr_/massmol2_;
+  double RToM2 = R_GAS*tempr_/massmol2_;
   double mix = 1.0+Y1*(massmol2_/massmol1_-1.0);
   double p_t = rho * RToM2 * mix ;
 

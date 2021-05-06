@@ -79,7 +79,7 @@ Entree& Loi_Etat::readOn(Entree& is)
   }
   int rang_loi = les_mots_loi.search(motlu);
   switch(rang_loi)
-  {
+    {
     case 0 :
       {
         type += "Gaz_Parfait";
@@ -116,7 +116,7 @@ Entree& Loi_Etat::readOn(Entree& is)
         Cerr<<les_mots_loi<<finl;
         abort();
       }
-  }
+    }
   typer(type);
 
   is >> valeur();

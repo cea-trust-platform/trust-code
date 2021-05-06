@@ -44,7 +44,6 @@ class Loi_Etat_Melange_Binaire : public Loi_Etat_GP
   Declare_instanciable_sans_constructeur(Loi_Etat_Melange_Binaire);
 
 public :
-
   Loi_Etat_Melange_Binaire();
   const Nom type_fluide() const;
   void associer_fluide(const Fluide_Quasi_Compressible& fl);
@@ -58,14 +57,9 @@ public :
   void calculer_masse_volumique();
   double calculer_masse_volumique(double P,double Y1) const;
   double inverser_Pth(double,double);
-
-  inline double R() const
-  {
-    return 8.314472;
-  }
+  static constexpr double R_GAS = 8.314472;
 
 protected :
-
   double massmol1_;
   double massmol2_;
   double mu1_;

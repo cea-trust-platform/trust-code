@@ -1,0 +1,158 @@
+Parametres
+{
+	Titre "Test of the conservation of the mass of a binary mixture"
+	Description "Mixing of binary species without chemical reactions"
+	Auteur "Ulrich Bieder and Elie Saikali"
+	CasTest . NoFlow  /* data file in appendix */
+	VersionTrio_U "1.8.3"
+}
+
+Chapitre
+{
+	Titre "Iniitial conditions"
+
+	visu
+	{
+		Titre "Mass fraction specie 1 at initial state"
+		Description "Dimensions : x=1m, y=1m, z=1m "
+		Description "Upper half: mass fraction specie 1 = 0.2 mass fraction specie 2 = 0.8"
+		Description "Lower half: mass fraction specie 1 = 0.7 mass fraction specie 2 = 0.3"
+		Description " molar mass specie 1 = 0.01"
+		Description " molar mass specie 2 = 10"
+		cycles 0
+		up3d         0.0 +0.0 0.0
+		normal3D     0.60 0.60 0.60
+		zoom3D       0.01 0.01 0.8
+		pseudocolor NoFlow.lata dom FRACTION_MASSIQUE ELEM
+	}
+
+	visu
+	{
+		Titre "Mass fraction specie 2 at initial state"
+		cycles 0
+		up3d         0.0 +0.0 0.0
+		normal3D     0.60 0.60 0.60
+		zoom3D       0.01 0.01 0.8
+		pseudocolor NoFlow.lata dom FRACTION_MASSIQUE1 ELEM
+	}
+}
+
+Chapitre
+{
+	Titre "Final conditions"
+
+	Description " analytical solution mass fraction specie 1 = 0.311"
+	Description " analytical solution mass fraction specie 2 = 0.688"
+	Description " analytical solution density of the mixture = 1.193"
+
+	Figure
+	{
+		Titre "Temporal variation of the mass fraction species 1"
+		Dimension 2
+		Description "Variation of the masss fraction in the center of the cavity"
+		LabelX "Time ( in s )"
+		LabelY "Mass fraction ( - )"
+		Courbe
+		{
+			Legende "mass fraction species 1"
+			Origine "TrioCFD"
+			file ./NoFlow_FRACTION_MASSIQUE0.son
+			Style lines
+			columns 1 2
+		}
+		Courbe
+		{
+			Legende "Analytical solution"
+			Origine "TrioCFD"
+			file ./exact.d
+			Style lines
+			columns 1 2
+		}
+	}
+
+	Figure
+	{
+		Titre "Temporal variation of the mass fraction species 2"
+		Dimension 2
+		Description "Variation of the masss fraction in the center of the cavity"
+		LabelX "Time ( in s )"
+		LabelY "Mass fraction ( - )"
+		Courbe
+		{
+			Legende "mass fraction species 2"
+			Origine "TrioCFD"
+			file ./NoFlow_FRACTION_MASSIQUE1.son
+			Style lines
+			columns 1 2
+		}
+		Courbe
+		{
+			Legende "Analytical solution"
+			Origine "TrioCFD"
+			file ./exact.d
+			Style lines
+			columns 1 3
+		}
+	}
+
+	Figure
+	{
+		Titre "Temporal variation of the mixture's density"
+		Dimension 2
+		Description "Variation of the mixture's density in the center of the cavity"
+		LabelX "Time ( in s )"
+		LabelY "Density ( kg/m3 )"
+		Courbe
+		{
+			Legende "Density"
+			Origine "TrioCFD"
+			file ./NoFlow_MASSE_VOLUMIQUE.son
+			Style lines
+			columns 1 2
+		}
+		Courbe
+		{
+			Legende "Analytical solution"
+			Origine "TrioCFD"
+			file ./exact.d
+			Style lines
+			columns 1 4
+		}
+	}
+	visu
+	{
+		Titre "Mass fractions specie 1 at final state"
+		cycles 10
+		up3d         0.0 +0.0 0.0
+		normal3D     0.60 0.60 0.60
+		zoom3D       0.01 0.01 0.8
+		pseudocolor NoFlow.lata dom FRACTION_MASSIQUE ELEM
+	}
+
+	visu
+	{
+		Titre "Mass fractions specie 2 at final state"
+		cycles 10
+		up3d         0.0 +0.0 0.0
+		normal3D     0.60 0.60 0.60
+		zoom3D       0.01 0.01 0.8
+		pseudocolor NoFlow.lata dom FRACTION_MASSIQUE1 ELEM
+	}
+
+	visu
+	{
+		Titre "Density at final state"
+		cycles 10
+		up3d         0.0 +0.0 0.0
+		normal3D     0.60 0.60 0.60
+		zoom3D       0.01 0.01 0.8
+		pseudocolor NoFlow.lata dom MASSE_VOLUMIQUE ELEM
+	}
+}
+
+Chapter
+{
+  Title "Computer performance"
+  tableau_performance {
+  }
+}

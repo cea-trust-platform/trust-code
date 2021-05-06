@@ -262,18 +262,11 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 // void Fluide_Quasi_Compressible::completer(const Pb_Thermohydraulique& pb)
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
-  if (loi_etat_->que_suis_je() == "Loi_Etat_Rho_T" && traitement_PTh == 0)
-    {
-      Cerr << "The option Traitement_PTh EDO is not allowed with the state law " << loi_etat_->que_suis_je() << finl;
-      Cerr << "You should either use Traitement_PTh with conservation_masse or with constant option ! " << finl;
-      Process::exit();
-    }
 
-
-  if ((pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
+  if ((loi_etat_->que_suis_je() == "Loi_Etat_Rho_T" || loi_etat_->que_suis_je() == "Loi_Etat_Melange_Binaire" )
       && traitement_PTh == 0)
     {
-      Cerr << "Currently, the " << pb.que_suis_je() << " problem is only available with an isobar assumption !" << finl;
+      Cerr << "The option Traitement_PTh EDO is not allowed with the state law " << loi_etat_->que_suis_je() << finl;
       Cerr << "Set **traitement_pth** constant or conservation_masse in the Fluide_Quasi_Compressible bloc definition." << finl;
       Process::exit();
     }
@@ -292,12 +285,6 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   Nom typ = pb.equation(0).discretisation().que_suis_je();
   if (typ=="VEFPreP1B")
     {
-      /* ToDo: generalize mass fraction to VEF
-      if (pb.que_suis_je().finit_par("QC_fraction_massique"))
-      {
-      Cerr << "\nQuasi-compressible calculation with mass fraction are not allowed for VEF discretization!" << finl;
-      exit();
-      }*/
       typ = "VEF";
     }
   typ += "_";
