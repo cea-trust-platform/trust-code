@@ -50,6 +50,7 @@
 <TR><TD><SMALL><A HREF="#CANAL_QC_Timposees_dt293K_VDF_impl">CANAL_QC_Timposees_dt293K_VDF_impl</A></TD><TD><SMALL># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #</TD></TR>
 <TR><TD><SMALL><A HREF="#CANAL_QC_Timposees_dt293K_VDF_segsol">CANAL_QC_Timposees_dt293K_VDF_segsol</A></TD><TD><SMALL># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#CANAL_QC_Timposees_dt293K_VEF_impl">CANAL_QC_Timposees_dt293K_VEF_impl</A></TD><TD><SMALL># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #</TD></TR>
+<TR><TD><SMALL><A HREF="#CLI_AMGX">CLI_AMGX</A></TD><TD><SMALL># Thermohydraulique 3D et Boussinesq #</TD></TR>
 <TR><TD><SMALL><A HREF="#CN_iteratif_VDF">CN_iteratif_VDF</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#CN_iteratif_VDF_fluide">CN_iteratif_VDF_fluide</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#CN_iteratif_VEF">CN_iteratif_VEF</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
@@ -165,6 +166,7 @@
 <TR><TD><SMALL><A HREF="#Flux_paroi_contact_inclinee">Flux_paroi_contact_inclinee</A></TD><TD><SMALL># Egalite des flux sur paroi_contact inclinee #</TD></TR>
 <TR><TD><SMALL><A HREF="#GAMELAN">GAMELAN</A></TD><TD><SMALL># Warning: Degraded data file of GAMELAN simulation. Do not use except for non regression testing ! #</TD></TR>
 <TR><TD><SMALL><A HREF="#Himp_var">Himp_var</A></TD><TD><SMALL># Thermohydraulique 2D : Conditions limites instationnaires #</TD></TR>
+<TR><TD><SMALL><A HREF="#Hyd_2D_PolyMAC">Hyd_2D_PolyMAC</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi">Hyd_Axi</A></TD><TD><SMALL># Hydraulique 2D Axi #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi_RZ">Hyd_Axi_RZ</A></TD><TD><SMALL># Hydraulique 2D axisymetrique R,Z laminaire schema amont #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi_RZ_non_reg">Hyd_Axi_RZ_non_reg</A></TD><TD><SMALL># Hydraulique 2D axisymetrique R,Z laminaire schema amont #</TD></TR>
@@ -175,6 +177,7 @@
 <TR><TD><SMALL><A HREF="#IBM_aucune">IBM_aucune</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
 <TR><TD><SMALL><A HREF="#IBM_gradient_moyen">IBM_gradient_moyen</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
 <TR><TD><SMALL><A HREF="#IBM_hybrid">IBM_hybrid</A></TD><TD><SMALL># Hydraulique 2D laminaire POISEUILLE </TD></TR>
+<TR><TD><SMALL><A HREF="#IMPL_AMGX">IMPL_AMGX</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#Import_MED">Import_MED</A></TD><TD><SMALL># differents tests de lecture de champ MED #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel">Kernel</A></TD><TD><SMALL># Cas test simple pour tester le Kernel et les commentaires #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Create_domain_from_sous_zone">Kernel_Create_domain_from_sous_zone</A></TD><TD><SMALL># Creation de domaines a partir de sous_zone #</TD></TR>
@@ -263,9 +266,11 @@
 <TR><TD><SMALL><A HREF="#PETSC_AMGX">PETSC_AMGX</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_CUDA">PETSC_CUDA</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_Canal_perio_VEF_3D">PETSC_Canal_perio_VEF_3D</A></TD><TD><SMALL># SIMULATION D UN CANAL 3D #</TD></TR>
+<TR><TD><SMALL><A HREF="#PETSC_DECIDE">PETSC_DECIDE</A></TD><TD><SMALL># Exemple d'un partitionnement desequilibre. La matrice est neanmoins equilibree sur chaque processeur avec l'option petsc_decide #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP">PETSC_GCP</A></TD><TD><SMALL># Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP_ILU_P0P1">PETSC_GCP_ILU_P0P1</A></TD><TD><SMALL># Hydraulique 3D VEF P1NCP1P0Pa #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP_SPAI_P0P1Pa">PETSC_GCP_SPAI_P0P1Pa</A></TD><TD><SMALL># Hydraulique 3D VEF P1NCP1P0Pa #</TD></TR>
+<TR><TD><SMALL><A HREF="#PETSC_IMPL">PETSC_IMPL</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_MAT_TYPE">PETSC_MAT_TYPE</A></TD><TD><SMALL># Test matrix type in PETSc. sbaij is the less memory expensive but slower than aij, and optimized aijmkl or aijsell (slice Ellpack), most memory expensive one #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_OPENMP">PETSC_OPENMP</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_ThHyd_2D_VEF_Ostwald">PETSC_ThHyd_2D_VEF_Ostwald</A></TD><TD><SMALL># Thermohydraulique 2D VEF avec modele non newtonien Ostwald #</TD></TR>
@@ -311,6 +316,7 @@
 <TR><TD><SMALL><A HREF="#Post_Eclate">Post_Eclate</A></TD><TD><SMALL># Hydraulique 2D laminaire : schema upwind #</TD></TR>
 <TR><TD><SMALL><A HREF="#Post_Eclate_Binaire">Post_Eclate_Binaire</A></TD><TD><SMALL># Hydraulique 3D laminaire #</TD></TR>
 <TR><TD><SMALL><A HREF="#Post_Meshtv">Post_Meshtv</A></TD><TD><SMALL># Hydraulique 2D laminaire : schema upwind #</TD></TR>
+<TR><TD><SMALL><A HREF="#Post_Source">Post_Source</A></TD><TD><SMALL># Postprocess source term #</TD></TR>
 <TR><TD><SMALL><A HREF="#Post_Stat">Post_Stat</A></TD><TD><SMALL># ThermoHydraulique 2D : Calculs statistiques et postraitment aux faces #</TD></TR>
 <TR><TD><SMALL><A HREF="#Post_T_PAROI">Post_T_PAROI</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#Post_multi">Post_multi</A></TD><TD><SMALL># Thermohydraulique 2D : Couplage Boussinesq et schema quick #</TD></TR>
@@ -439,6 +445,7 @@
 <TR><TD><SMALL><A HREF="#defilante">defilante</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
 <TR><TD><SMALL><A HREF="#defilante_P1NC_diff_impl">defilante_P1NC_diff_impl</A></TD><TD><SMALL># Hydraulique 2D VEF diffusion implicite : Paroi defilante #</TD></TR>
 <TR><TD><SMALL><A HREF="#diagonale">diagonale</A></TD><TD><SMALL># Hydraulique 2D avec transport constituant #</TD></TR>
+<TR><TD><SMALL><A HREF="#diffusion_implicite_solveur">diffusion_implicite_solveur</A></TD><TD><SMALL># Utilisation du mot cle solveur diffusion implicite #</TD></TR>
 <TR><TD><SMALL><A HREF="#docond">docond</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#docond_3D">docond_3D</A></TD><TD><SMALL># Thermohydraulique 3D couplage solide-fluide #</TD></TR>
 <TR><TD><SMALL><A HREF="#docond_QC">docond_QC</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D avec modele QC #</TD></TR>
@@ -449,6 +456,7 @@
 <TR><TD><SMALL><A HREF="#docond_diff_impl">docond_diff_impl</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#docond_impl">docond_impl</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#docond_segsol">docond_segsol</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D #</TD></TR>
+<TR><TD><SMALL><A HREF="#gpu_3D">gpu_3D</A></TD><TD><SMALL># Cas adapte pour tourner au maximum sur le GPU (94% sur P400) #</TD></TR>
 <TR><TD><SMALL><A HREF="#gradient_temperature">gradient_temperature</A></TD><TD><SMALL># Test temperature_gradient in VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#gradp">gradp</A></TD><TD><SMALL># Hydraulique 2D : Condition de sortie libre gradP=0 #</TD></TR>
 <TR><TD><SMALL><A HREF="#gradp_VEFPreP1B">gradp_VEFPreP1B</A></TD><TD><SMALL># Hydraulique 2D : Condition limite de gradient pression impose pour la version VEFPreP1B #</TD></TR>
@@ -646,6 +654,10 @@
 <CENTER># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/CANAL_QC_Timposees_dt293K_VEF_impl/CANAL_QC_Timposees_dt293K_VEF_impl.data>Edit</a> CANAL_QC_Timposees_dt293K_VEF_impl.data </CENTER>
+<HR><CENTER><B><A NAME=CLI_AMGX>CLI_AMGX</A></B></CENTER>
+<CENTER># Thermohydraulique 3D et Boussinesq #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/CLI_AMGX/CLI_AMGX.data>Edit</a> CLI_AMGX.data </CENTER>
 <HR><CENTER><B><A NAME=CN_iteratif_VDF>CN_iteratif_VDF</A></B></CENTER>
 <CENTER># Thermohydraulique 2D couplee a conduction 2D #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1135,6 +1147,11 @@
 <CENTER># Thermohydraulique 2D : Conditions limites instationnaires #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Himp_var/Himp_var.data>Edit</a> Himp_var.data </CENTER>
+<HR><CENTER><B><A NAME=Hyd_2D_PolyMAC>Hyd_2D_PolyMAC</A></B></CENTER>
+<CENTER># Hydraulique 2D laminaire avec "trou" dans le maillage #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Hyd_2D_PolyMAC/Hyd_2D_PolyMAC.data>Edit</a> Hyd_2D_PolyMAC.data </CENTER>
+<CENTER><a href=../tests/Reference/Hyd_2D_PolyMAC/upwind.geo>Edit</a> upwind.geo </CENTER>
 <HR><CENTER><B><A NAME=Hyd_Axi>Hyd_Axi</A></B></CENTER>
 <CENTER># Hydraulique 2D Axi #</CENTER>
 <CENTER><a href=../tests/Reference/Hyd_Axi/Hyd_Axi.lml.gif><img src=../tests/Reference/Hyd_Axi/Hyd_Axi.lml.gif.fin></a></CENTER>
@@ -1179,6 +1196,10 @@
 <CENTER># Hydraulique 2D laminaire POISEUILLE </CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/IBM_hybrid/IBM_hybrid.data>Edit</a> IBM_hybrid.data </CENTER>
+<HR><CENTER><B><A NAME=IMPL_AMGX>IMPL_AMGX</A></B></CENTER>
+<CENTER># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/IMPL_AMGX/IMPL_AMGX.data>Edit</a> IMPL_AMGX.data </CENTER>
 <HR><CENTER><B><A NAME=Import_MED>Import_MED</A></B></CENTER>
 <CENTER># differents tests de lecture de champ MED #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1564,6 +1585,11 @@
 <CENTER># SIMULATION D UN CANAL 3D #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/PETSC_Canal_perio_VEF_3D/PETSC_Canal_perio_VEF_3D.data>Edit</a> PETSC_Canal_perio_VEF_3D.data </CENTER>
+<HR><CENTER><B><A NAME=PETSC_DECIDE>PETSC_DECIDE</A></B></CENTER>
+<CENTER># Exemple d'un partitionnement desequilibre. La matrice est neanmoins equilibree sur chaque processeur avec l'option petsc_decide #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/PETSC_DECIDE/PETSC_DECIDE.data>Edit</a> PETSC_DECIDE.data </CENTER>
+<CENTER><a href=../tests/Reference/PETSC_DECIDE/dom.geom>Edit</a> dom.geom </CENTER>
 <HR><CENTER><B><A NAME=PETSC_GCP>PETSC_GCP</A></B></CENTER>
 <CENTER># Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1577,6 +1603,11 @@
 <CENTER># Hydraulique 3D VEF P1NCP1P0Pa #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/PETSC_GCP_SPAI_P0P1Pa/PETSC_GCP_SPAI_P0P1Pa.data>Edit</a> PETSC_GCP_SPAI_P0P1Pa.data </CENTER>
+<HR><CENTER><B><A NAME=PETSC_IMPL>PETSC_IMPL</A></B></CENTER>
+<CENTER># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/PETSC_IMPL/PETSC_IMPL.data>Edit</a> PETSC_IMPL.data </CENTER>
+<CENTER><a href=../tests/Reference/PETSC_IMPL/cylindre.geom>Edit</a> cylindre.geom </CENTER>
 <HR><CENTER><B><A NAME=PETSC_MAT_TYPE>PETSC_MAT_TYPE</A></B></CENTER>
 <CENTER># Test matrix type in PETSc. sbaij is the less memory expensive but slower than aij, and optimized aijmkl or aijsell (slice Ellpack), most memory expensive one #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1766,6 +1797,10 @@
 <CENTER><a href=../tests/Reference/Post_Meshtv/Pb1.geom>Edit</a> Pb1.geom </CENTER>
 <CENTER><a href=../tests/Reference/Post_Meshtv/Pb2.geom>Edit</a> Pb2.geom </CENTER>
 <CENTER><a href=../tests/Reference/Post_Meshtv/Post_Meshtv.data>Edit</a> Post_Meshtv.data </CENTER>
+<HR><CENTER><B><A NAME=Post_Source>Post_Source</A></B></CENTER>
+<CENTER># Postprocess source term #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Post_Source/Post_Source.data>Edit</a> Post_Source.data </CENTER>
 <HR><CENTER><B><A NAME=Post_Stat>Post_Stat</A></B></CENTER>
 <CENTER># ThermoHydraulique 2D : Calculs statistiques et postraitment aux faces #</CENTER>
 <CENTER><a href=../tests/Reference/Post_Stat/Post_Stat.lml.gif><img src=../tests/Reference/Post_Stat/Post_Stat.lml.gif.fin></a></CENTER>
@@ -2305,6 +2340,10 @@
 <CENTER># Hydraulique 2D avec transport constituant #</CENTER>
 <CENTER><a href=../tests/Reference/diagonale/diagonale.lml.gif><img src=../tests/Reference/diagonale/diagonale.lml.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/diagonale/diagonale.data>Edit</a> diagonale.data </CENTER>
+<HR><CENTER><B><A NAME=diffusion_implicite_solveur>diffusion_implicite_solveur</A></B></CENTER>
+<CENTER># Utilisation du mot cle solveur diffusion implicite #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/diffusion_implicite_solveur/diffusion_implicite_solveur.data>Edit</a> diffusion_implicite_solveur.data </CENTER>
 <HR><CENTER><B><A NAME=docond>docond</A></B></CENTER>
 <CENTER># Thermohydraulique 2D couplee a conduction 2D #</CENTER>
 <CENTER><a href=../tests/Reference/docond/docond.lml.gif><img src=../tests/Reference/docond/docond.lml.gif.fin></a></CENTER>
@@ -2347,6 +2386,10 @@
 <CENTER># Thermohydraulique 2D couplee a conduction 2D #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/docond_segsol/docond_segsol.data>Edit</a> docond_segsol.data </CENTER>
+<HR><CENTER><B><A NAME=gpu_3D>gpu_3D</A></B></CENTER>
+<CENTER># Cas adapte pour tourner au maximum sur le GPU (94% sur P400) #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/gpu_3D/gpu_3D.data>Edit</a> gpu_3D.data </CENTER>
 <HR><CENTER><B><A NAME=gradient_temperature>gradient_temperature</A></B></CENTER>
 <CENTER># Test temperature_gradient in VDF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
