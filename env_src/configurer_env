@@ -973,7 +973,7 @@ else
    COMM="_mpi";export COMM
    COMFLAGS=" -DMPI_"
    mpi_detecte=0
-   if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_OLD_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
+   if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_OLD_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
    then
       ############################################
       # Detection de MPI par le wrapper C++ trouve
