@@ -1577,17 +1577,17 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 
       // Verification stencil de la matrice
       nouveau_stencil_ = check_stencil(matrice_morse);
-
-      // Construit ou update la matrice
       start = std::clock();
-      if (nouveau_stencil_)
+      if (MatricePetsc_ == NULL)
         {
           // Build x and b during the first matrix creation
           Create_vectors(secmem);
-
           // Creation de Champs (fields) pour pouvoir utiliser des preconditionneurs PCFIELDSPLIT
           Create_DM(secmem);
-
+        }
+      // Construit ou update la matrice
+      if (nouveau_stencil_)
+        {
           // Create objects
           Create_objects(matrice_morse);
 #ifdef PETSC_HAVE_CUDA
