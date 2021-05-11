@@ -1,0 +1,118 @@
+# Thermohydraulique 3D couplee a conduction 3D #
+# PARALLEL_ONLY 2 #
+dimension 3
+Nom ICoCoProblemName Lire ICoCoProblemName pb
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.
+	tmax 5.
+	dt_min 1.e-6
+	dt_max 1.e-1
+	dt_impr 1.
+	dt_sauv 20.
+	seuil_statio 1.e-8
+	nb_pas_dt_max 50000
+}
+
+Pb_Thermohydraulique pb
+Domaine dom_fluide
+
+# BEGIN SCATTER #
+Scatter DOM2.Zones dom_fluide
+# END SCATTER #
+
+VEFPreP1b dis
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 0.0018
+	rho Champ_Uniforme 1  10400
+	lambda Champ_Uniforme 1 10.09
+	Cp Champ_Uniforme 1 146.5
+	beta_th Champ_Uniforme 1 0.
+}
+
+
+Champ_Uniforme gravite
+Read gravite 3 0 0 -9.81
+Associate fluide gravite
+
+Associate pb dom_fluide
+Associate pb fluide
+
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-12
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		sources { boussinesq_temperature { T0 30. } }
+		initial_conditions {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+			Entree frontiere_ouverte_vitesse_imposee
+				Champ_front_Uniforme 3 0. -0.01 0.
+			Sortie frontiere_ouverte_vitesse_imposee
+				Champ_front_Uniforme 3 0.01 0. 0.
+			Paroi	paroi_fixe
+			Paroi_echange2 paroi_fixe
+			Devant3 paroi_fixe
+			Derriere3 paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		sources { Puissance_Thermique champ_uniforme 1 100 }
+		boundary_conditions 
+		{
+			Entree frontiere_ouverte_temperature_imposee
+				Champ_front_Uniforme 1 20.
+			Sortie frontiere_ouverte_temperature_imposee
+				Champ_front_Uniforme 1 20.
+			Paroi_echange2 paroi_flux_impose ch_front_input { nb_comp 1 nom FLUX_SURFACIQUE_IN_DOM2 probleme pb }
+			Paroi paroi_temperature_imposee 
+                               Champ_Front_Uniforme 1 20.
+
+			Devant3 Paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+			Derriere3 Paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+		}
+		initial_conditions { Temperature Champ_Uniforme 1 30. }
+	}
+	Post_processing
+	{
+		Definition_champs 
+		{
+
+		TEMPERATURE_OUT_DOM2 Interpolation {
+					localisation elem
+					domaine dom_fluide_boundaries_Paroi_echange2
+					source refChamp { Pb_Champ pb temperature }
+					}
+		 		
+							   
+		}
+		
+		Format lml
+		fields dt_post 20.
+		{
+			pression
+			vitesse
+			temperature
+		}
+	}
+}
+
+End
+

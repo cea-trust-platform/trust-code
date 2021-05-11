@@ -1,0 +1,91 @@
+# Thermohydraulique 3D couplee a conduction 3D #
+# PARALLEL_ONLY 2 #
+dimension 3
+Nom ICoCoProblemName Lire ICoCoProblemName pb
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.
+	tmax 5.
+	dt_min 1.e-6
+	dt_max 1.e-1
+	dt_impr 1.
+	dt_sauv 20.
+	seuil_statio 1.e-8
+	nb_pas_dt_max 50000
+}
+
+Pb_conduction pb
+Domaine dom_solide
+
+# BEGIN SCATTER #
+Scatter DOM1.Zones dom_solide
+
+# END SCATTER #
+
+VEFPreP1b dis
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 7800.
+	lambda Champ_Uniforme 1 28.8
+	Cp Champ_Uniforme 1 562.69
+}
+
+Champ_Uniforme gravite
+Read gravite 3 0 0 -9.81
+Associate sol gravite
+
+Associate pb dom_solide
+Associate pb sol
+
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+	Conduction
+	{
+		diffusion { }
+		sources { Puissance_Thermique champ_uniforme 1 1000 }
+		initial_conditions {
+			temperature Champ_Uniforme 1 30.
+			}
+		boundary_conditions {
+			paroi_a_40 paroi_temperature_imposee 
+                               	Champ_Front_Uniforme 1 40.
+			paroi_a_20 paroi_temperature_imposee 
+                               	Champ_Front_Uniforme 1 20.
+		 	Paroi_echange1 paroi_temperature_imposee ch_front_input { nb_comp 1 nom TEMPERATURE_IN_DOM1 probleme pb }
+			Devant1 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Derriere1 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Devant2 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Derriere2 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+		}
+	}
+	Post_processing
+	{
+		Definition_champs
+		{
+			FLUX_SURFACIQUE_OUT_DOM1 Interpolation {
+			localisation elem
+			domaine dom_solide_boundaries_Paroi_echange1
+			source Morceau_equation {
+			type operateur numero 0 option flux_surfacique_bords
+			source refChamp { Pb_Champ pb temperature }
+				}
+			}
+		}
+		
+		
+		fields dt_post 20.
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+End
+
