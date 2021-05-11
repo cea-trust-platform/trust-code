@@ -1133,8 +1133,7 @@ void Probleme_base::finir()
   Debog::set_nom_pb_actuel(le_nom());
 
   les_postraitements.finir();
-  if (lsauv())
-    sauver();
+  sauver();
 
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
