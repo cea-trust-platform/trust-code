@@ -112,5 +112,5 @@ void Partitionneur_Sous_Domaine::construire_partition(IntTab& elem_part, int& nb
   elem_part.resize(elem_ssz.size_array());
   for (int i = 0; i < elem_ssz.size_array(); i++)
     nb_parts_tot = max(nb_parts_tot, 1 + (elem_part[i] = elem_part_glob[elem_ssz[i]]));
-  
+
 }

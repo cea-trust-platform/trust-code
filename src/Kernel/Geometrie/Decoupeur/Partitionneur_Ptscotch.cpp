@@ -32,6 +32,7 @@
 #include <communications.h>
 #include <Domain_Graph.h>
 #include <MD_Vector_tools.h>
+#include <petsc_for_kernel.h>
 
 inline void not_implemented(const Nom& chaine)
 {

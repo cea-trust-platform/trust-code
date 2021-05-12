@@ -1204,7 +1204,7 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
       Cerr << "Error while generating filename: nb_parties_ too large" << finl;
       Process::exit();
     }
-  char s[20];
+  char s[30];
   // single file name for all procs (HDF5)
   // the number of parts is still included in the file name
   // (make_PAR.data needs to know how many zones there are)
