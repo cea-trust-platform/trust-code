@@ -11,16 +11,16 @@ Mailler dom
 {
 	Pave Cavite
 	{
-		Origine 0 0
-		Nombre_de_noeuds 3 3
-		Longueurs 1 1
-		}
-		{
-		Bord periox	X = 0	0 <= Y <= 1
-		Bord periox	X = 1	0 <= Y <= 1
-		Bord perioy	Y = 0	0 <= X <= 1
-		Bord perioy	Y = 1	0 <= X <= 1
-		}
+	Origine 0 0
+	Nombre_de_noeuds 5 5
+	Longueurs 1 1
+	}
+	{
+	Bord periox	X = 0	0 <= Y <= 1
+	Bord periox	X = 1	0 <= Y <= 1
+	Bord perioy	Y = 0	0 <= X <= 1
+	Bord perioy	Y = 1	0 <= X <= 1
+	}
 }
 
 
@@ -31,9 +31,9 @@ Corriger_frontiere_periodique { domaine dom bord perioy }
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool tranche { tranches 2 2 }
-        Larg_joint 2
-        zones_name DOM
+	Partition_tool tranche { tranches 2 2 }
+	Larg_joint 2
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -70,9 +70,9 @@ Lire fluide
 {
 	mu		champ_fonc_xyz dom 1 2+1*cos(2*pi*x)*cos(2*pi*y)
 	lambda		champ_fonc_xyz dom 1 1
- 	pression	1
- 	loi_etat	rho_T { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 1/(2+sin(2*pi*x)*sin(2*pi*y)) }
- 	traitement_pth conservation_masse
+	pression	1
+	loi_etat	rho_T { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 1/(2+sin(2*pi*x)*sin(2*pi*y)) }
+	traitement_pth conservation_masse
 }
 
 Associer pb dom
@@ -90,17 +90,19 @@ Lire pb
 		Convection		{ centre }
 		Diffusion		{  }
 		Conditions_initiales	{ vitesse champ_fonc_xyz dom 2 2+sin(2*pi*x)*sin(2*pi*y) 0 }
-		Conditions_limites	{
-					periox periodique
-					perioy periodique
-					}
-		Sources			{
-					source_qdm champ_fonc_xyz dom 2
-					((8*0*pi^2+16*pi^2-16/3*0*pi^2+(8*0*1*pi^2+16*1*pi^2-16/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*sin(2*pi*x)*sin(2*pi*y)-2*pi*sin(2*pi*x)*cos(2*pi*y)+2*0*pi*cos(2*pi*x)*sin(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y)))
-					(4*0*1*pi^2*sin(2*pi*x)^2*cos(2*pi*y)^2+(-2*pi-8/3*0*1*pi^2*cos(2*pi*x)*sin(2*pi*y))*cos(2*pi*x)*sin(2*pi*y)+(-8*0*pi^2+16/3*0*pi^2+(-4*0*1*pi^2+8/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*cos(2*pi*x)*cos(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y))) ,
-					canal_perio { bord periox debit_impose 1 } ,
-					canal_perio { bord perioy debit_impose 0 }
-					}
+		Conditions_limites
+		{
+		periox periodique
+		perioy periodique
+		}
+		Sources
+		{
+		source_qdm champ_fonc_xyz dom 2
+		((8*0*pi^2+16*pi^2-16/3*0*pi^2+(8*0*1*pi^2+16*1*pi^2-16/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*sin(2*pi*x)*sin(2*pi*y)-2*pi*sin(2*pi*x)*cos(2*pi*y)+2*0*pi*cos(2*pi*x)*sin(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y)))
+		(4*0*1*pi^2*sin(2*pi*x)^2*cos(2*pi*y)^2+(-2*pi-8/3*0*1*pi^2*cos(2*pi*x)*sin(2*pi*y))*cos(2*pi*x)*sin(2*pi*y)+(-8*0*pi^2+16/3*0*pi^2+(-4*0*1*pi^2+8/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*cos(2*pi*x)*cos(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y))) ,
+		canal_perio { bord periox debit_impose 1 } ,
+		canal_perio { bord perioy debit_impose 0 }
+		}
 	}
 
 	# bloc necessaire pour un probleme de type QC mais n'intervient pas ici dans la resolution, sert uniquement a definir rho #
@@ -110,88 +112,97 @@ Lire pb
 		Convection		{ negligeable }
 		Diffusion		{ negligeable }
 		Conditions_initiales	{ temperature champ_fonc_xyz dom 1 1/(2+sin(2*pi*x)*sin(2*pi*y)) }
-		Conditions_limites	{
-					periox periodique
-					perioy periodique
-					}
+		Conditions_limites
+		{
+		periox periodique
+		perioy periodique
+		}
 	}
 
 	Postraitement
 	{
-		Definition_champs	{
-					erru	reduction_0D	{
-								methode L2_norm
-								sources	{
-									transformation	{
-											# norme de u-uex #
-											methode norme
-											localisation elem
-											sources	{
-												# u-uex #
-												transformation	{
-														methode formule expression 1 (u-uex)/(sqrt(17)/2)
-														nom_source u_uex
-														localisation elem
-														sources	{
-															refChamp { Pb_champ pb vitesse nom_source u } ,
-															# expression de uex #
-															transformation	{
-																	localisation elem
-																	methode vecteur
-																	expression 2 2+sin(2*pi*x)*sin(2*pi*y) 0
-																	nom_source uex
-																	}
-															}
-														}
-												}
-											}
-									}
-								}
-					errp	reduction_0D	{
-								methode L2_norm
-								source transformation	{
-											methode formule expression 1 (p-pmoy-pex)/(1/4)
-											localisation elem
-											sources	{
-												interpolation	{
-														localisation elem
-														nom_source p
-														sources { refChamp { Pb_champ pb pression } }
-														} ,
-												# integrale de p #
-												reduction_0D	{
-														methode moyenne
-														nom_source pmoy
-														source interpolation	{
-																	localisation elem
-																	source refChamp { Pb_champ pb pression }
-																	}
-														} ,
-												# expression de pex #
-												transformation	{
-														localisation elem
-														methode formule
-														expression 1 cos(2*pi*x)*cos(2*pi*y)
-														nom_source pex
-														}
-												}
-											}
-								}
+		Definition_champs
+		{
+			erru	reduction_0D
+			{
+				methode L2_norm
+				sources
+				{
+					transformation
+					{
+						# norme de u-uex #
+						methode norme
+						localisation elem
+						sources	{
+						# u-uex #
+						transformation	{
+						methode formule expression 1 (u-uex)/(sqrt(17)/2)
+						nom_source u_uex
+						localisation elem
+						sources	{
+						refChamp { Pb_champ pb vitesse nom_source u } ,
+						# expression de uex #
+						transformation	{
+						localisation elem
+						methode vecteur
+						expression 2 2+sin(2*pi*x)*sin(2*pi*y) 0
+						nom_source uex
+						}
+						}
+						}
+						}
 					}
-		Sondes			{
-					erru		erru		periode 1e+6 numero_elem_sur_maitre 0
-					errp		errp		periode 1e+6 numero_elem_sur_maitre 0
-					vitesse		vitesse		periode 1e-6 segment 100 0 0.1 1 0.1
-					pression	pression	periode 1e-6 segment 100 0 0.1 1 0.1
+				}
+			}
+			errp	reduction_0D
+			{
+				methode L2_norm
+				source transformation
+				{
+					methode formule expression 1 (p-pmoy-pex)/(1/4)
+					localisation elem
+					sources
+					{
+						interpolation	{
+						localisation elem
+						nom_source p
+						sources { refChamp { Pb_champ pb pression } }
+						} ,
+						# integrale de p #
+						reduction_0D	{
+						methode moyenne
+						nom_source pmoy
+						source interpolation	{
+						localisation elem
+						source refChamp { Pb_champ pb pression }
+						}
+						} ,
+						# expression de pex #
+						transformation	{
+						localisation elem
+						methode formule
+						expression 1 cos(2*pi*x)*cos(2*pi*y)
+						nom_source pex
+						}
 					}
+				}
+			}
+		}
+		Sondes
+		{
+			erru		erru		periode 1e+6 numero_elem_sur_maitre 0
+			errp		errp		periode 1e+6 numero_elem_sur_maitre 0
+			vitesse		vitesse		periode 1e-6 segment 100 0 0.1 1 0.1
+			pression	pression	periode 1e-6 segment 100 0 0.1 1 0.1
+		}
 		Format lml
 		Champs binaire dt_post 1e+6
-					{
-					pression elem
-					vitesse elem
-					}
+		{
+		pression elem
+		/* vitesse elem */
+		}
 	}
-	sauvegarde formatte Cas.sauv
+	/* sauvegarde formatte Cas.sauv */
 }
 
 Resoudre pb

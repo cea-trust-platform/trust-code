@@ -8,7 +8,6 @@ Parametres {
 	Castest VDF_maillage_5_1000_amont Cas
 	Castest VDF_maillage_6_1000_amont Cas
 	Castest VDF_maillage_7_1000_amont Cas
-	Castest VDF_maillage_8_1000_amont Cas
 
 	Castest VDF_maillage_1_1000_quick Cas
 	Castest VDF_maillage_2_1000_quick Cas
@@ -17,7 +16,6 @@ Parametres {
 	Castest VDF_maillage_5_1000_quick Cas
 	Castest VDF_maillage_6_1000_quick Cas
 	Castest VDF_maillage_7_1000_quick Cas
-	Castest VDF_maillage_8_1000_quick Cas
 
 	Castest VDF_maillage_1_1000_centre Cas
 	Castest VDF_maillage_2_1000_centre Cas
@@ -26,7 +24,6 @@ Parametres {
 	Castest VDF_maillage_5_1000_centre Cas
 	Castest VDF_maillage_6_1000_centre Cas
 	Castest VDF_maillage_7_1000_centre Cas
-	Castest VDF_maillage_8_1000_centre Cas
 
 	Castest VDF_maillage_1_1100_amont Cas
 	Castest VDF_maillage_2_1100_amont Cas
@@ -35,7 +32,6 @@ Parametres {
 	Castest VDF_maillage_5_1100_amont Cas
 	Castest VDF_maillage_6_1100_amont Cas
 	Castest VDF_maillage_7_1100_amont Cas
-	Castest VDF_maillage_8_1100_amont Cas
 
 	Castest VDF_maillage_1_1100_quick Cas
 	Castest VDF_maillage_2_1100_quick Cas
@@ -44,7 +40,6 @@ Parametres {
 	Castest VDF_maillage_5_1100_quick Cas
 	Castest VDF_maillage_6_1100_quick Cas
 	Castest VDF_maillage_7_1100_quick Cas
-	Castest VDF_maillage_8_1100_quick Cas
 
 	Castest VDF_maillage_1_1100_centre Cas
 	Castest VDF_maillage_2_1100_centre Cas
@@ -53,7 +48,6 @@ Parametres {
 	Castest VDF_maillage_5_1100_centre Cas
 	Castest VDF_maillage_6_1100_centre Cas
 	Castest VDF_maillage_7_1100_centre Cas
-	Castest VDF_maillage_8_1100_centre Cas
 
 	Auteur "Pierre-Emmanuel Angeli \& Elie Saikali"
 	VersionTrio_U 1.8.3
@@ -109,6 +103,7 @@ Chapitre {
 	Description "$\bullet$ We use periodic boundary conditions along with source terms of type \latex_( \texttt{canal\_perio} \latex_) in order to prescribe the mass flow rate in each direction (otherwise the simulation can't reach a steady-state, because the solution is not unique)."
 	Description "\smallskip"
 	Description "$\bullet$ We use \latex_($\gamma = 0$\latex_), because the third diffusive term is not available yet. We use \latex_($\alpha$\latex_) and \latex_($\beta$\latex_) equal to 0 or 1. "
+	Description "$\bullet$ In what follows, we reffer to the cases as \latex_($m$ ,$\alpha$ ,$\beta$ and $\gamma$ (for example the case 1100 means $m=1$, $\alpha=1$, $\beta=0$ and $\gamma=0$).  \latex_)   "
 }
 
 Chapitre {
