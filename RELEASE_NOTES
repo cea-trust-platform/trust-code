@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+12/05/21 (TRUST)  New feature : Add a new state equation Rho_T which defines the density as a function of the temperature field in a QC problem; i.e. rho=f(T) (independent of the thermo-dynamic pressure)
 10/05/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet
 30/04/21 (TRUST)  Portability : Fedora 34 and GNU compilers 11.0.1 are supported with ./configure -force_latest_mpich and after doing: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
 30/04/21 (TRUST)  Performance : PETSc matrix optimizations (update coefficients instead of matrix rebuild, suppress zeros by allowing memory reallocation)

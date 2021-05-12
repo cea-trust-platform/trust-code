@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -262,6 +262,13 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 // void Fluide_Quasi_Compressible::completer(const Pb_Thermohydraulique& pb)
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
+  if (loi_etat_->que_suis_je() == "Loi_Etat_Rho_T" && traitement_PTh == 0)
+    {
+      Cerr << "The option Traitement_PTh EDO is not allowed with the state law " << loi_etat_->que_suis_je() << finl;
+      Cerr << "You should either use Traitement_PTh with conservation_masse or with constant option ! " << finl;
+      Process::exit();
+    }
+
   Cerr<<"Fluide_Quasi_Compressible::completer Pth="<<Pth_<<finl;
   inco_chaleur_ = pb.equation(1).inconnue();
 

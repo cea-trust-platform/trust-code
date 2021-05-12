@@ -1,0 +1,87 @@
+#!/bin/bash
+
+dim=2
+rep='../'
+
+rm -f */*.dat
+rm -f *.dat
+
+# liste_dis = discretisations considerees
+# liste_calculs_VDF = valeurs de (m,alpha,beta,gamma) + schema de convection en VDF
+# points_VDF = nombre de points de maillage le long d'un cote du carre en VDF
+
+liste_dis=(VDF)
+liste_calculs_VDF="1000_amont 1000_quick 1000_centre 1100_amont 1100_quick 1100_centre"
+
+points_VDF=(3 5 9 17 33 65 129 257)
+
+
+# Boucles sur tous les cas
+#-------------------------
+
+cd $rep
+
+for j in `seq 1 ${#liste_dis[@]}`
+do
+	dis=`echo ${liste_dis[$j-1]}`
+
+	if [ "$dis" = "VDF" ]
+		then	nb_maillages=${#points_VDF[@]}
+			liste_calculs=$liste_calculs_VDF
+	fi
+
+	for k in $liste_calculs
+	do
+		nom=$k
+
+		for i in `seq 1 $nb_maillages`
+		do
+			cd ${dis}_maillage_${i}_${nom}
+			./extrait_coupe.sh 1>extrait_coupe.out
+
+			cd $rep
+
+			if [ $i = 1 ]
+			then
+				faces=`grep "Total number of faces" ${dis}_maillage_${i}_${nom}/Cas.err | awk '{print $6}'`
+				elem=`grep "Total number of elements" ${dis}_maillage_${i}_${nom}/Cas.err | awk '{print $6}'`
+				som=`grep "Total number of nodes" ${dis}_maillage_${i}_${nom}/Cas.err | awk '{print $6}'`
+				nuu=`echo "$faces*$dim" | bc`
+
+				if [ "$dis" = "VDF" ]
+					then	npu=`echo "$elem" | bc`
+					else	npu=`echo "$elem+$som" | bc`
+				fi
+				
+				erru=`cat ${dis}_maillage_${i}_${nom}/Cas_ERRU.son | tail -1 | awk '{printf "%.30f", $2}'`
+				errp=`cat ${dis}_maillage_${i}_${nom}/Cas_ERRP.son | tail -1 | awk '{printf "%.30f", $2}'`
+				echo -e $nuu" "$erru >> ${dis}_erru_${nom}.dat
+				echo -e $npu" "$errp >> ${dis}_errp_${nom}.dat
+			else
+				j=$(($i-1))
+				rep1=${dis}_maillage_${j}_${nom}
+				rep2=${dis}_maillage_${i}_${nom}
+				faces1=`grep "Total number of faces" $rep1/Cas.err | awk '{print $6}'`
+				elem1=`grep "Total number of elements" $rep1/Cas.err | awk '{print $6}'`
+				som1=`grep "Total number of nodes" $rep1/Cas.err | awk '{print $6}'`
+				faces2=`grep "Total number of faces" $rep2/Cas.err | awk '{print $6}'`
+				elem2=`grep "Total number of elements" $rep2/Cas.err | awk '{print $6}'`
+				som2=`grep "Total number of nodes" $rep2/Cas.err | awk '{print $6}'`
+				nuu1=`echo "$faces1*$dim" | bc`
+				nuu2=`echo "$faces2*$dim" | bc`
+
+				if [ "$dis" = "VDF" ]
+					then	npu1=`echo "$elem1" | bc`
+						npu2=`echo "$elem2" | bc`
+				fi
+
+				erru1=`cat $rep1/Cas_ERRU.son | tail -1 | awk '{printf "%.30f", $2}'`
+				erru2=`cat $rep2/Cas_ERRU.son | tail -1 | awk '{printf "%.30f", $2}'`
+				errp1=`cat $rep1/Cas_ERRP.son | tail -1 | awk '{printf "%.30f", $2}'`
+				errp2=`cat $rep2/Cas_ERRP.son | tail -1 | awk '{printf "%.30f", $2}'`
+				echo -e $nuu2" "$erru2 >> ${dis}_erru_${nom}.dat
+				echo -e $npu2" "$errp2 >> ${dis}_errp_${nom}.dat
+			fi
+		done
+	done
+done

@@ -457,6 +457,7 @@
  Loi_Etat_Gaz_Parfait Loi_Etat_GP Loi_Etat_GP.h
  Loi_Etat_Gaz_Reel_rhoT Loi_Etat_GR_rhoT Loi_Etat_GR_rhoT.h
  Loi_Etat_Melange_Gaz_Parfait Loi_Etat_Melange_GP Loi_Etat_Melange_GP.h
+ Loi_Etat_Rho_T Loi_Etat_Rho_T Loi_Etat_Rho_T.h
  Loi_Fermeture_base Loi_Fermeture_base Loi_Fermeture_base.h
  Loi_Fermeture_Test Loi_Fermeture_Test Loi_Fermeture_Test.h
  Loi_horaire Loi_horaire Loi_horaire.h

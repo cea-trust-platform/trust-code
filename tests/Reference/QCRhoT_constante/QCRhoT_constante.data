@@ -1,0 +1,126 @@
+# PARALLEL OK 4 #
+
+Dimension 2
+pb_thermohydraulique_QC pb
+
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite
+	{
+		Origine 0 0
+		Nombre_de_noeuds 11 11  
+		Longueurs 1. 1.
+		}
+		{
+		Bord periox	X = 0.	0. <= Y <= 1.
+		Bord periox	X = 1.	0. <= Y <= 1.
+		Bord perioy	Y = 0.	0. <= X <= 1.
+		Bord perioy	Y = 1.	0. <= X <= 1.
+		}
+}
+Trianguler_fin dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partition_tool tranche { tranches 2 2 }
+        Larg_joint 2 
+        zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+VEFPreP1b dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+	tinit 0
+	dt_impr 1e-6
+	facsec 100
+ 	nb_pas_dt_max 50
+	facsec_max 100
+	solveur implicite { solveur gmres { diag nb_it_max 3 seuil 1e-12 impr } }
+	seuil_statio 1e-10
+}
+
+Fluide_quasi_compressible fluide
+Lire fluide
+{
+	mu		champ_fonc_xyz dom 1  1/(sin(2*Pi*x)*sin(2*Pi*y)+2)
+	/* mu		champ_fonc_fonction temperature 1 1 */
+	lambda		champ_fonc_fonction temperature 1 1
+ 	pression	1
+ 	loi_etat	rho_T
+	{
+		Prandtl 1
+		Cp 1
+		rho_xyz champ_fonc_xyz dom 1  1/(sin(2*Pi*x)*sin(2*Pi*y)+2) 
+	}
+
+	/* Closed domain => Should be used */
+	traitement_pth conservation_masse
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb fluide
+
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_QC
+	{
+		Projection_initiale	0
+		Solveur_pression	PETSC Cholesky { }
+		Convection		{ amont }
+		Diffusion		{ }
+		Conditions_initiales	{ vitesse champ_fonc_xyz dom 2 sin(2*Pi*x)*sin(2*Pi*y)+2 0 }
+		Conditions_limites	{
+					periox paroi_fixe 
+					perioy paroi_fixe
+					}
+	}
+
+	Convection_diffusion_chaleur_QC
+	{
+		Equation_non_resolue	(t>0)
+		Convection		{ negligeable }
+		Diffusion		{ negligeable }
+		Conditions_initiales	{ temperature champ_fonc_xyz dom 1 1/(sin(2*pi*x)*sin(2*pi*y)+2) }
+		Conditions_limites	{
+					periox paroi_adiabatique  
+					perioy paroi_adiabatique
+					}
+
+	}
+
+		Postraitement
+	{
+			Format lml
+		Champs binaire dt_post 1e+6
+					{
+					masse_volumique elem
+					conductivite elem
+					viscosite_dynamique elem
+					pression elem
+					vitesse elem
+					temperature elem
+					}
+	}
+	sauvegarde formatte Cas.sauv
+}
+
+Resoudre pb
+
+Fin
