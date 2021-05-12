@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -336,6 +336,13 @@ void Loi_Etat_GP::calculer_lambda()
           for (i=0 ; i<n ; i++)
             {
               tab_lambda[i] = mu0 * Cp_ / Pr_;
+            }
+        }
+      else if (tab_mu.nb_dim() > 1)
+        {
+          for (i=0 ; i<n ; i++)
+            {
+              tab_lambda[i] = tab_mu(i,0) * Cp_ / Pr_;
             }
         }
       else
