@@ -91,7 +91,7 @@ Read sch
 
 Fluide_Quasi_Compressible fluide
 
-# water 50 bar between 50°C and 263°C #
+# water 50 bar between 50 degree C and 263 degree C #
 Read fluide
 {
         pression 5.e6

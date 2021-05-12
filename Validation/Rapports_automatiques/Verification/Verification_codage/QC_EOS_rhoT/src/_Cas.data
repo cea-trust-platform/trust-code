@@ -156,7 +156,7 @@ Lire pb
 														nom_source p
 														sources { refChamp { Pb_champ pb pression } }
 														} ,
-												# intégrale de p #
+												# integrale de p #
 												reduction_0D	{
 														methode moyenne
 														nom_source pmoy
