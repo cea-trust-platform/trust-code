@@ -12,8 +12,8 @@ define_modules_config()
    # Initialisation de l environnement module $MODULE_PATH 
    echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
-   module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de façon bizarre sur cette machine...
-   module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3"
+   module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de facon bizarre sur cette machine...
+   module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020"
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env   
    echo "module load $module 1>/dev/null" >> $env
