@@ -1578,7 +1578,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       // Verification stencil de la matrice
       nouveau_stencil_ = check_stencil(matrice_morse);
       start = std::clock();
-      if (MatricePetsc_ == NULL)
+      if (SecondMembrePetsc_ == NULL)
         {
           // Build x and b during the first matrix creation
           Create_vectors(secmem);

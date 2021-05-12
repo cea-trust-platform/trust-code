@@ -243,6 +243,8 @@ inline void Solv_Petsc::initialize()
   option_prefix_="??";
   dm_=NULL;
   MatricePetsc_ = NULL;
+  SecondMembrePetsc_ = NULL;
+  SolutionPetsc_ = NULL;
   SolveurPetsc_ = NULL;
   // Dev:
   ignore_new_nonzero_ = false;
