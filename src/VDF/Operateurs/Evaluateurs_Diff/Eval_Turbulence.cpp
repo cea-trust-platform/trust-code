@@ -21,4 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Eval_Turbulence.h>
 
-// Remove me later
+// TODO : XXX
+// Remove this file later
+// We are obliged to have at least one cpp file in the folder Evaluateurs_Diff
+// This is because of TRUST check_source and make include.
+// If CMakeLists and make include are removed, TRUST compile ... but not its baltiks that include Eval* headears ...

@@ -33,12 +33,14 @@
 #include <Ref_Turbulence_paroi_scal.h>
 #include <DoubleVects.h>
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef DOXYGEN_SHOULD_SKIP_THIS
 /*
  * xxx xxx
- * THIS IS ONLY SPECIFIC TO TRUST 5CHECK_SOURCE :
+ * THIS IS ONLY SPECIFIC TO TRUST CHECK_SOURCE :
  * WE ARE OBLIGED TO HAVE THE 1ST CLASS WITH THE SAME NAME AS THE FILE
  * OTHERWISE DO NOT COMPILE
+ *
+ * We use DOXYGEN_SHOULD_SKIP_THIS macro to skip this class in the doxygen documentation
  */
 class Eval_Dift_VDF_leaves : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_leaves>,
   public Eval_Dift_VDF_const {};
