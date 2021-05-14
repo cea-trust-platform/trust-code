@@ -784,6 +784,25 @@ echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "ADD_PATH \$PYTHONLIBS_ROOT_DIR/bin" >> $env
 echo "unset PYTHONPATH" >> $env # Pour la CentOS6.5, PYTHONPATH contient le chemin vers python2.6
 
+# Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.6.0.29 sur Fedora34 pour libstdc++.so.6.0.28 dans conda avec libstdcxx-ng=9.3.0), on vire:
+# Le pb se produit au niveau du test Python de l'import MEDCoupling ou d'un editeur comme gedit: GLIBCXX_X.Y.Z not found
+stdcpp_conda=`cd $TRUST_ROOT/exec/python/lib;ls libstdc++.so.6.0.* 2>/dev/null | cut -d'.' -f3-6`
+if [ "$stdcpp_conda" != "" ]
+then
+    root_gnu=`dirname $TRUST_F77_BASE` && root_gnu=`dirname $root_gnu`
+    libstd_sys=`ls $root_gnu/lib64/libstdc++.so.6.0.* /usr/lib*/libstdc++.so.6.0.* /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null | head -1`
+    stdcpp_sys=`echo $libstd_sys | $TRUST_Awk -F/ '{print $NF}' | cut -d'.' -f3-6`
+    remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
+    if [ $remove_stdcpp_conda -eq 1 ]
+    then
+       echo "Warning! Look for a newer conda package than libstdcxx-ng=9.3.0 to avoid this hack:" 
+       for file in `ls $TRUST_ROOT/exec/python/lib/libstdc++.so* 2>/dev/null`
+       do
+          echo "Creating a link: ln -s -f `dirname $libstd_sys`/`basename $file` $file"
+          ln -s -f `dirname $libstd_sys`/`basename $file` $file
+       done
+    fi
+fi
 ####################
 # Compilateurs C/C++
 ####################
