@@ -138,6 +138,8 @@ Entree& Zone::readOn(Entree& s)
 }
 
 
+// Description:
+// read zone from the input stream
 void Zone::read_zone(Entree& s)
 {
   s >> nom ;
@@ -150,6 +152,9 @@ void Zone::read_zone(Entree& s)
   s >> mes_faces_int;
 }
 
+// Description:
+// associate the read objects to the zone
+// and check that the reading objects are coherent
 void Zone::check_zone()
 {
   // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
@@ -661,6 +666,37 @@ void Zone::renum(const IntVect& Les_Nums)
 }
 
 // Description:
+//    Renumerotation des noeuds et des elements presents dans les items communs des joints
+//      Le noeud de numero k devient le noeud de numero Les_Nums[k]
+//      l'element de numero e devient l'element de numero e+elem_offset
+// Precondition:
+// Parametre: IntVect& Les_Nums
+//    Signification: le vecteur contenant la nouvelle numerotation
+//                   Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: les items communs ont une nouvelle numerotation
+void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int& elem_offset)
+{
+  for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
+    {
+      ArrOfInt& sommets_communs = mes_faces_joint[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
+      for(int index=0; index<sommets_communs.size_array(); index++)
+        sommets_communs[index] = Les_Nums[sommets_communs[index]];
+
+      ArrOfInt& elements_distants = mes_faces_joint[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
+      elements_distants+= elem_offset;
+    }
+}
+
+
+// Description:
 //    Renvoie -1 si face n'est pas une face interne
 //    Renvoie le numero de la face dupliquee sinon.
 // Precondition:
@@ -705,7 +741,137 @@ int Zone::face_interne_conjuguee(int face) const
 }
 
 
-//concatenation des joints
+// Description:
+// Correcting type of borders if they were empty before merge (ie equal to vide_0D)
+// difference with corriger_type is that we don't want to delete faces inside borders afterwards
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Zone::correct_type_of_borders_after_merge()
+{
+  {
+    // Les Bords
+    LIST_CURSEUR(Bord) curseur(mes_faces_bord);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Bord) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+
+  {
+    // Les Faces Internes :
+    LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Faces_Interne) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+  {
+    // Les Raccords
+    LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Raccord) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+  {
+    //Les joints
+    LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Joint) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+}
+
+// Description:
+//    Concatene les joints de meme nom
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: les joints qui portent le meme nom sont
+//                regroupes dans un seul
 int Zone::comprimer_joints()
 {
   LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
@@ -718,9 +884,6 @@ int Zone::comprimer_joints()
           Frontiere& front2=curseur2.list().suivant().valeur();
           if(front.le_nom() == front2.le_nom())
             {
-              if(front.faces().type_face() == Faces::vide_0D)
-                front.faces().typer(front2.faces().type_face());
-
               front.add(front2);
               curseur2.list().supprimer();
             }

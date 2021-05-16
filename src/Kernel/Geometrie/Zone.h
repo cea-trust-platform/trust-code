@@ -149,6 +149,7 @@ public:
   inline const Faces_Internes& faces_int() const;
   inline Faces_Internes& faces_int();
   void renum(const IntVect&);
+  void renum_joint_common_items(const IntVect& Les_Nums, const int& elem_offset);
   inline void reordonner();
   int face_interne_conjuguee(int) const;
   int comprimer() ;
@@ -208,9 +209,11 @@ public:
                                    DoubleTab& coord_possible,
                                    const DoubleVect& coord_ref);
 
-  //use for the readOn
+  //used for the readOn
   void read_zone(Entree& s);
   void check_zone();
+
+  void correct_type_of_borders_after_merge();
 
 protected:
   Nom nom;

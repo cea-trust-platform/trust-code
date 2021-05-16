@@ -229,8 +229,8 @@ void Zones::comprimer()
 
 
 // Description:
-//    Merge all the zones in 1
-//    is not tested when the zones are dispatched on multiple procesors!
+//    Merge all the zones of my processor in a single one
+//    is not tested when the zones are dispatched on multiple processors!
 // Precondition:
 // Parametre:
 //    Signification:
@@ -271,6 +271,7 @@ void Zones::merge()
       zone2.faces_int().associer_zone(zone1);
       zone1.faces_int().add(zone2.faces_int());
       elems2.resize(0);
+      zone1.correct_type_of_borders_after_merge();
       zone1.comprimer();
       zone1.comprimer_joints();
       curseur2.list().supprimer();
