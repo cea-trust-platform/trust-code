@@ -127,12 +127,13 @@ Entree& Domaine::readOn(Entree& s)
 }
 
 
+// Description:
+// only read vertices from the stream s
 void Domaine::read_vertices(Entree& s)
 {
   // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
   sommets.reset();
   renum_som_perio.reset();
-
   les_zones.vide();
 
   Nom tmp;
@@ -143,6 +144,7 @@ void Domaine::read_vertices(Entree& s)
   s >> sommets;
 
 }
+
 
 // Description:
 //    Constructeur par defaut d'un objet Domaine.
