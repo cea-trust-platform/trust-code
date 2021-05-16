@@ -1360,6 +1360,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             Cerr << "SECOND PASS, after reordering the partition:" << finl;
           Cerr << "====================================" << finl;
         }
+
       if (format == Decouper::HDF5_SINGLE && loop == 0)  // create HDF5 file only once!
         {
           fic_hdf.create(nom_fichier_hdf5);
@@ -1390,12 +1391,13 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                     }
                 }
 
-              Sortie_Brute os_hdf;
-              writeData(domaine, os_hdf); //just to have an idea of the datasets length
-
+              // estimation of an upper bound of the datasets' size
+              unsigned sz = domaine.nb_som()*dimension*sizeof(double)
+                            + domaine.zone(0).nb_elem()*domaine.zone(0).nb_som_elem()*sizeof(int)
+                            + (domaine.zone(0).nb_faces_frontiere()+domaine.zone(0).nb_faces_joint())*(domaine.zone(0).type_elem().valeur().nb_som_face()+2)*sizeof(int);
               FichierHDF fic_master;
               fic_master.open(nom_fichier_hdf5, false);
-              fic_master.create_datasets(dataset_names, os_hdf.get_size());
+              fic_master.create_datasets(dataset_names, sz);
               fic_master.close();
             }
 
@@ -1585,6 +1587,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           calculer_listes_elements_sous_domaines(elem_part, nb_parties_, nbelem, liste_elems_sous_domaines_);
           //calculer_listes_elements_sous_domaines(elem_part, nb_parties_, liste_elems_sous_domaines_);
         }
+
       /*
       // Print statistics exactly as Fluent:
       // http://combust.hit.edu.cn:8080/fluent/Fluent60_help/html/ug/node984.htm

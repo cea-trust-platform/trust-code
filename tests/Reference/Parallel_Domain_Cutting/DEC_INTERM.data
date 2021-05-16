@@ -10,10 +10,11 @@ VDF dis
 postraiter_domaine { domaine dom fichier domaine.lata format lata }
 Decouper dom
 { 
-	partitionneur parmetis { nb_parts 4 use_weights } 
+	partitionneur parmetis { nb_parts 4 } 
 	Larg_joint 1
 	Nom_Zones DOM_PARMETIS
 	periodique 2 periox perioz
+	single_hdf
 }
 End
 # END SCATTER #
