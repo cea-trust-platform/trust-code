@@ -5,7 +5,8 @@ echo "Usage: $0 [-n NP] [-cn] matrix.petsc [petsc_options]"
 exec=`pwd`/ex10
 if [ ! -f $exec ]
 then
-   cp $PETSC_ROOT/linux_opt/src/ksp/ksp/tutorials/ex10.c $PETSC_ROOT/linux_opt/src/ksp/ksp/tutorials/makefile .
+   dir=$PETSC_ROOT/linux_opt/share/petsc/examples/src/ksp/ksp/tutorials
+   cp $dir/ex10.c $dir/makefile .
    make ex10
 fi
 if [ "$1" != "" ]
