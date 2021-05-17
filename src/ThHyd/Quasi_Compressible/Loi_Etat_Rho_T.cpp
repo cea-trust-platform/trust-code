@@ -31,7 +31,7 @@
 #include <Table.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_Rho_T, "Loi_Etat_Rho_T", Loi_Etat_GP ) ;
-// XD state_law_rho_T loi_etat_base state_law_rho_T -1 Defining a state equation of form rho = f(T).
+// XD rho_T loi_etat_base rho_T -1 Defining a state equation of form rho = f(T).
 
 Loi_Etat_Rho_T::Loi_Etat_Rho_T() : is_exp_(false)
 {}
@@ -77,7 +77,7 @@ Entree& Loi_Etat_Rho_T::readOn( Entree& is )
   Param param(que_suis_je());
   param.ajouter("Cp",&Cp_,Param::REQUIRED);// XD_ADD_P double Specific heat at constant pressure of the gas Cp.
   param.ajouter("Prandtl",&Pr_); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
-  param.ajouter("rho_xyz",&rho_xyz_); // XD_ADD_P chaine Defined with a Champ_Fonc_xyz to define a constant rho with time (space dependent)
+  param.ajouter("rho_xyz",&rho_xyz_); // XD_ADD_P field_base Defined with a Champ_Fonc_xyz to define a constant rho with time (space dependent)
   param.ajouter("rho_t",&expression_); // XD_ADD_P chaine Expression of T used to calculate rho. This can lead to a variable rho, both in space and in time.
   param.ajouter("rho_constant_pour_debug",&rho_constant_pour_debug_); // XD_ADD_P flag To debug use this flag.
   param.lire_avec_accolades(is);
