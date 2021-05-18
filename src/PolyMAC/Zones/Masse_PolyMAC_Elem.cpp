@@ -84,9 +84,6 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
   const DoubleVect& volumes = zone_PolyMAC.volumes();
   const DoubleVect& porosite_elem = zone_PolyMAC.porosite_elem();
-  DoubleVect coef(zone_PolyMAC.porosite_elem());
-  coef = 1.;
-  if (has_coefficient_temporel_) appliquer_coef(coef);
 
   int nb_elem = zone_PolyMAC.nb_elem();
   if(nb_elem==0)
@@ -100,12 +97,12 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
 
   if (nb_dim == 1)
     for (int num_elem=0; num_elem<nb_elem; num_elem++)
-      sm(num_elem) *= coef(num_elem) / (volumes(num_elem)*porosite_elem(num_elem));
+      sm(num_elem) /= (volumes(num_elem)*porosite_elem(num_elem));
   else if (nb_dim == 2)
     {
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<nb_comp; k++)
-          sm(num_elem,k) *= coef(num_elem) / (volumes(num_elem)*porosite_elem(num_elem));
+          sm(num_elem,k) /= (volumes(num_elem)*porosite_elem(num_elem));
     }
   else if (sm.nb_dim() == 3)
     {
@@ -115,7 +112,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<d1; k++)
           for (int d=0; d<d2; d++)
-            sm(num_elem,k,d) *= coef(num_elem) / (volumes(num_elem)*porosite_elem(num_elem));
+            sm(num_elem,k,d) /= (volumes(num_elem)*porosite_elem(num_elem));
     }
   else
     {
