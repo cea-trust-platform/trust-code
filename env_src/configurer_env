@@ -912,6 +912,7 @@ then
    ecrit $m"|"$e"|"$env;eval $e
    [ "$CUDA_ROOT" != /usr ] && echo "ADD_PATH \$CUDA_ROOT/bin" >> $env # Ne pas ajouter /usr/bin au PATH car sinon python, conda pris sont ceux du systeme !
    echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT${CUDA_LIB#$CUDA_ROOT} " >> $env
+   echo "ADD_LD_LIBRARY_PATH \$TRUST_ROOT/lib/src/LIBAMGX/AmgX/lib" >> $env
 else
    TRUST_USE_CUDA=0
 fi
