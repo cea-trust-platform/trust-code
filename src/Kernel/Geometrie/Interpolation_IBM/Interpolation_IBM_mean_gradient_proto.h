@@ -14,28 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Interpolation_IBM_base.cpp
+// File:        Interpolation_IBM_mean_gradient_proto.h
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Interpolation_IBM_base.h>
+#ifndef Interpolation_IBM_mean_gradient_proto_included
+#define Interpolation_IBM_mean_gradient_proto_included
 
-Implemente_base(Interpolation_IBM_base, "Interpolation_IBM_base", Objet_U);
-// XD interpolation_ibm_base objet_u interpolation_ibm_base 0 Base class for all the interpolation methods available in the Immersed Boundary Method (IBM).
+#include <Zone_dis_base.h>
+#include <IntLists.h>
+#include <Champ_Don.h>
 
-Sortie& Interpolation_IBM_base::printOn( Sortie& os ) const
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Interpolation_IBM_mean_gradient_proto
+//
+// Pure C++ class to allow multiple inheritance in Interpolation_IBM_hybrid
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Interpolation_IBM_mean_gradient_proto
 {
-  return os;
-}
 
-Entree& Interpolation_IBM_base::readOn( Entree& is )
-{
-  return is;
-}
+public :
+  inline IntList& getSommetsVoisinsOf(int i)
+  {
+    return sommets_voisins_[i];
+  };
 
-void Interpolation_IBM_base::discretise(const Discretisation_base&, Zone_dis_base&)
-{
-}
+protected :
+  void computeSommetsVoisins(Zone_dis_base& la_zone_EF, const Champ_Don& solid_points, const Champ_Don& corresp_elems);
 
+  Champ_Don is_dirichlet_lu_;
+  Champ_Don is_dirichlet_;
+
+  Champ_Don solid_elems_lu_;
+  Champ_Don solid_elems_;
+
+  IntLists sommets_voisins_;
+};
+
+#endif /* Interpolation_IBM_mean_gradient_proto_included */

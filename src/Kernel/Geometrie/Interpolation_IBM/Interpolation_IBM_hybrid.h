@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Interpolation_IBM_hybrid_included
 
 #include <Interpolation_IBM_elem_fluid.h>
-#include <Interpolation_IBM_mean_gradient.h>
+#include <Interpolation_IBM_mean_gradient_proto.h>
 #include <IntLists.h>
 #include <memory>
 
@@ -36,26 +36,15 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid
+class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_mean_gradient_proto
 {
-
   Declare_instanciable( Interpolation_IBM_hybrid ) ;
 
 public :
   void discretise(const Discretisation_base&, Zone_dis_base&);
-  inline IntList& getSommetsVoisinsOf(int i)
-  {
-    return sommets_voisins_[i];
-  };
-protected :
-  void computeFluidElems(Zone_dis_base&);
-  void computeSommetsVoisins(Zone_dis_base&);
-  Champ_Don is_dirichlet_lu_;
-  Champ_Don solid_elems_lu_;
-  IntLists sommets_voisins_;
-  friend class Source_PDF_EF;
-  std::shared_ptr<Interpolation_IBM_mean_gradient> my_mean_gradient;
 
+protected :
+  friend class Source_PDF_EF;
 };
 
 #endif /* Interpolation_IBM_hybrid_included */

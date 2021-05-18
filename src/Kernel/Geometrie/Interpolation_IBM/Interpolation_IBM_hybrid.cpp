@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,28 +47,15 @@ Entree& Interpolation_IBM_hybrid::readOn( Entree& is )
 
 void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Zone_dis_base& la_zone_EF)
 {
+  Cerr << "(IBM) Warning! Interpolation IBM_hybrid has no validation test case." << finl;
+
   Interpolation_IBM_elem_fluid::discretise(dis,la_zone_EF);
 
-  my_mean_gradient = std::make_shared<Interpolation_IBM_mean_gradient>();
-  dis.discretiser_champ("champ_sommets",la_zone_EF,"solid_elems","none",1,0., my_mean_gradient->solid_elems_);
-  my_mean_gradient->solid_elems_.valeur().affecter(solid_elems_lu_);
-  dis.discretiser_champ("champ_sommets",la_zone_EF,"is_dirichlet","none",1,0., my_mean_gradient->is_dirichlet_);
-  my_mean_gradient->is_dirichlet_.valeur().affecter(is_dirichlet_lu_);
+  dis.discretiser_champ("champ_sommets",la_zone_EF,"solid_elems","none",1,0., solid_elems_);
+  solid_elems_.valeur().affecter(solid_elems_lu_);
+  dis.discretiser_champ("champ_sommets",la_zone_EF,"is_dirichlet","none",1,0., is_dirichlet_);
+  is_dirichlet_.valeur().affecter(is_dirichlet_lu_);
 
-  computeSommetsVoisins(la_zone_EF);
+  computeSommetsVoisins(la_zone_EF, solid_points_, corresp_elems_);
 }
 
-void Interpolation_IBM_hybrid::computeFluidElems(Zone_dis_base& la_zone_EF)
-{
-  Cerr << "(IBM) Warning! Interpolation IBM_hybrid has no validation test case." << finl;
-  Interpolation_IBM_elem_fluid::computeFluidElems(la_zone_EF);
-}
-
-void Interpolation_IBM_hybrid::computeSommetsVoisins(Zone_dis_base& la_zone_EF)
-{
-  my_mean_gradient->solid_points_ = solid_points_;
-  my_mean_gradient->corresp_elems_ = corresp_elems_;
-
-  my_mean_gradient->computeSommetsVoisins(la_zone_EF);
-  sommets_voisins_ = my_mean_gradient->sommets_voisins_;
-}
