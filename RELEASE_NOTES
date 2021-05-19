@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+20/05/21 (TRUST)  Output      : Improvements for HDF5 (appending to datasets is now possible and metadata are only handled by the master process)
+20/05/21 (TRUST)  New feature : Parallel partitionning (with ParMetis or Pt-Scotch libraries) thanks to parmetis or ptscotch option with partitionneur keyword
 30/04/21 (TRUST)  Portability : Fedora 34 and GNU compilers 11.0.1 are supported with ./configure -force_latest_mpich and after doing: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
 30/04/21 (TRUST)  Performance : PETSc matrix optimizations (update coefficients instead of matrix rebuild, suppress zeros by allowing memory reallocation)
 23/04/21 (TRUST)  Bug fixed   : Champ_fonc_reprise didn't read correctly the PolyMAC fields
