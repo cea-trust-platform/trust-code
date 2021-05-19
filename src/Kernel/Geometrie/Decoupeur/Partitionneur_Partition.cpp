@@ -75,7 +75,7 @@ void Partitionneur_Partition::initialiser()
   assert(ref_domaine_interpol_.non_nul());
 }
 
-void Partitionneur_Partition::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
+void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_interpol_.non_nul());
   assert(ref_domaine_calcul_.non_nul());
@@ -102,7 +102,7 @@ void Partitionneur_Partition::construire_partition(IntTab& elem_part, int& nb_pa
   const int nb_elem_calcul = zone_calcul.nb_elem();
   const int dim_calcul = dom_calcul.dimension;
 
-  IntTab elem_part_calcul;
+  IntVect elem_part_calcul;
   int nb_parts_tot_calcul;
   EFichier file;
   Nom nom_fichier;

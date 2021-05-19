@@ -67,7 +67,7 @@ void Partitionneur_Sous_Domaine::set_param(Param& param)
 //  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
 // Precondition:
 //  domaine associe et filename initialise
-void Partitionneur_Sous_Domaine::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
+void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   if (filename_ == "")
     {
@@ -91,7 +91,7 @@ void Partitionneur_Sous_Domaine::construire_partition(IntTab& elem_part, int& nb
       Cerr << " Failed to open file " << filename_ << finl;
       exit();
     }
-  IntTab elem_part_glob;
+  IntVect elem_part_glob;
   file >> elem_part_glob;
   file >> nb_parts_tot;
   file.close();

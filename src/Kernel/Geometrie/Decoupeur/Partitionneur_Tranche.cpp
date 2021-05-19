@@ -182,7 +182,7 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
     }
 }
 
-void Partitionneur_Tranche::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
+void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_.non_nul());
   assert(nb_tranches_[0] > 0);

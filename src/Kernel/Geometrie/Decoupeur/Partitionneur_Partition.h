@@ -25,7 +25,6 @@
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
 
-class ArrOfInt;
 // .DESCRIPTION
 //  Partitionneur de domaine en fonction du partitionnement
 //  d'un autre domaine
@@ -37,7 +36,7 @@ public:
   void set_param(Param& param);
   void associer_domaine(const Domaine& domaine);
   void initialiser();
-  void construire_partition(IntTab& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
 
 private:
   // Parametres du partitionneur

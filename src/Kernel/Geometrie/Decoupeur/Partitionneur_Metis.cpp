@@ -133,7 +133,7 @@ void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
 //  et a equilibrer le nombre d'elements par partie.
 // Precondition:
 //  domaine associe et nombre de parties initialise
-void Partitionneur_Metis::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
+void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
 #ifdef NO_METIS
   Cerr << "METIS is not compiled with this version. Use another partition tool like Tranche." << finl;

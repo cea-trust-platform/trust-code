@@ -82,7 +82,7 @@ void Partitionneur_Ptscotch::associer_domaine(const Domaine& domaine)
 //  Calcule le graphe de connectivite, appelle le partitionneur
 //  et remplit elem_part (pour chaque element, numero de la partie qui lui
 //  est attribuee).
-void Partitionneur_Ptscotch::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
+void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
 #ifndef PETSCKSP_H
   Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
@@ -159,7 +159,6 @@ void Partitionneur_Ptscotch::construire_partition(IntTab& elem_part, int& nb_par
   MD_Vector_tools::creer_tableau_distribue(ref_domaine_.valeur().zone(0).md_vector_elements(), elem_part);
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
-  elem_part.echange_espace_virtuel();
 
   delete [] partition;
 
@@ -177,6 +176,7 @@ void Partitionneur_Ptscotch::construire_partition(IntTab& elem_part, int& nb_par
 
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
+  elem_part.echange_espace_virtuel();
 
 #endif
 }

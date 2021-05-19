@@ -48,7 +48,7 @@ public:
   void set_param(Param& param) { };
   void associer_domaine(const Domaine& dom);
   void initialiser(const char *filename, const char *filename_ssz);
-  void construire_partition(IntTab& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
 
 protected:
   // Parametres du partitionneur

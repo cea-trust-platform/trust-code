@@ -64,8 +64,7 @@ void Partitionneur_base::declarer_bords_periodiques(const Noms& noms_bords_perio
 // Description: corrige la partition pour que l'element 0 du domaine initial
 //  se trouve sur le premier sous-domaine de la partition.
 //  On echange le premier sous-domaine et celui qui contient l'element 0.
-// ToDo: is it necessary ? involves communication in parallel...
-void Partitionneur_base::corriger_elem0_sur_proc0(ArrOfInt& elem_part)
+void Partitionneur_base::corriger_elem0_sur_proc0(IntVect& elem_part)
 {
   Cerr << "Correction of the splitting to put the element 0 on processor 0." << finl;
   int pe_to_xchange =  elem_part[0];
@@ -86,6 +85,7 @@ void Partitionneur_base::corriger_elem0_sur_proc0(ArrOfInt& elem_part)
       else if (pe == pe_to_xchange)
         elem_part[i] = 0;
     }
+
 }
 
 // Description: construction (taille et contenu) du tableau elements avec
@@ -261,11 +261,11 @@ int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
                                               const Noms& liste_bords_perio,
                                               const ArrOfInt& renum_som_perio,
                                               const Static_Int_Lists& som_elem,
-                                              IntTab& elem_part)
+                                              IntVect& elem_part)
 {
   const int nb_som_tot = domaine.nb_som_tot();
   const Zone& zone = domaine.zone(0);
-  const int nb_elem = zone.nb_elem_tot();
+  const int nb_elem = zone.nb_elem();
   const int nb_elem_tot = zone.nb_elem_tot();
 
   // Premiere etape :
@@ -420,7 +420,7 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                                                  const Noms& liste_bords_perio,
                                                  const ArrOfInt& renum_som_perio,
                                                  const Static_Int_Lists& som_elem,
-                                                 IntTab& elem_part)
+                                                 IntVect& elem_part)
 {
   const int nb_som = domaine.nb_som();
   const Zone& zone = domaine.zone(0);
@@ -631,7 +631,7 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
                                                    const Static_Int_Lists& som_elem,
                                                    const Domaine& domaine,
                                                    const Noms& liste_bords_perio,
-                                                   IntTab& elem_part)
+                                                   IntVect& elem_part)
 {
   // Algorithme: parcours de tous les elements dans l'ordre.
   //  Pour chaque element, associer aux autres elements lies la partie a laquelle appartient
@@ -669,7 +669,6 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
   if (liste_bords_perio.size() > 1)
     count += corriger_multiperiodique(domaine, liste_bords_perio, renum_som_perio, som_elem, elem_part);
   count += corriger_sommets_bord(domaine, liste_bords_perio, renum_som_perio, som_elem, elem_part);
-  elem_part.echange_espace_virtuel();
   return count;
 }
 
@@ -681,7 +680,7 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
 void Partitionneur_base::corriger_bords_avec_liste(const Domaine& dom,
                                                    const Noms& liste_bords_periodiques,
                                                    const int my_offset,
-                                                   IntTab& elem_part)
+                                                   IntVect& elem_part)
 {
   const Zone& zone = dom.zone(0);
   Cerr << "Correction of the splitting for the periodicity" << finl;

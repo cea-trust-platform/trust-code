@@ -36,7 +36,7 @@ public:
   void set_param(Param& param);
   void associer_domaine(const Domaine& domaine);
   void initialiser(const ArrOfInt& nb_tranches);
-  void construire_partition(IntTab& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
   static void chercher_direction_perio(const Zone& zone,
                                        const Noms& liste_bords_perio,
                                        ArrOfInt& directions_perio);

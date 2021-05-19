@@ -24,7 +24,7 @@
 
 #include <Deriv.h>
 #include <Noms.h>
-#include <IntTab.h>
+#include <IntVect.h>
 
 class Domaine;
 class ArrOfInt;
@@ -63,9 +63,9 @@ public:
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
   virtual void associer_domaine(const Domaine& domaine) = 0;
   virtual void declarer_bords_periodiques(const Noms& noms_bords_periodiques);
-  virtual void construire_partition(IntTab& elem_part, int& nb_parts_tot) const = 0;
+  virtual void construire_partition(IntVect& elem_part, int& nb_parts_tot) const = 0;
 
-  static void corriger_elem0_sur_proc0(ArrOfInt& elem_part);
+  static void corriger_elem0_sur_proc0(IntVect& elem_part);
   static int calculer_graphe_connexions_periodiques(const Zone& zone,
                                                     const Noms& liste_bords_periodiques,
                                                     const Static_Int_Lists& som_elem,
@@ -75,23 +75,23 @@ public:
                                         const Static_Int_Lists& som_elem,
                                         const Domaine& domaine,
                                         const Noms& liste_bords_perio,
-                                        IntTab& elem_part);
+                                        IntVect& elem_part);
   static void corriger_bords_avec_liste(const Domaine& dom,
                                         const Noms& liste_bords_periodiques,
                                         const int my_offset,
-                                        IntTab& elem_part);
+                                        IntVect& elem_part);
 
   static int corriger_sommets_bord(const Domaine& domaine,
                                    const Noms& liste_bords_perio,
                                    const ArrOfInt& renum_som_perio,
                                    const Static_Int_Lists& som_elem,
-                                   IntTab& elem_part);
+                                   IntVect& elem_part);
 
   static int corriger_multiperiodique(const Domaine& domaine,
                                       const Noms& liste_bords_perio,
                                       const ArrOfInt& renum_som_perio,
                                       const Static_Int_Lists& som_elem,
-                                      IntTab& elem_part);
+                                      IntVect& elem_part);
 protected:
 
   Noms liste_bords_periodiques_;

@@ -91,7 +91,7 @@ void Partitionneur_Sous_Zones::initialiser(const Noms& noms_sous_zones)
 //   Elements restants qui ne figurent dans aucune sous_zone => sur un nouveau pe.
 //   Si un element figure dans plusieurs sous-zones, c'est la premiere sous_zone
 //   qui gagne.
-void Partitionneur_Sous_Zones::construire_partition(IntTab& elem_part, int& nb_parts_tot) const
+void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_.non_nul());
   const Domaine& dom = ref_domaine_.valeur();

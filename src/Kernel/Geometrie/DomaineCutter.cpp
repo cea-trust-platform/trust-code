@@ -236,7 +236,7 @@ void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
 //  a un element de la partie voisine". La condition "les sommets des faces sont
 //  des sommets de joint" n'est PAS suffisante.
 void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
-                                         const IntTab& elem_part,
+                                         const IntVect& elem_part,
                                          const int     partie,
                                          const IntTab&    faces_sommets,
                                          const ArrOfInt& liste_inverse_sommets,
@@ -424,7 +424,7 @@ static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaiss
 //  Cette methode a ete codee pour construire_elements_distants_ssdom()
 static void parcourir_epaisseurs_elements(const IntTab& elements,
                                           const Static_Int_Lists& elem_som,
-                                          const IntTab& elem_part,
+                                          const IntVect& elem_part,
                                           ArrOfInt liste_sommets_depart, /* par valeur car on va la modifier */
                                           const int partie_a_ignorer, /* ne pas parcourir les elems de cette partie */
                                           const int epaisseur,
@@ -514,7 +514,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
 {
   const Zone& zone          = ref_domaine_.valeur().zone(0);
   const IntTab& elements    = zone.les_elems();
-  const IntTab& elem_part = ref_elem_part_.valeur();
+  const IntVect& elem_part = ref_elem_part_.valeur();
 
   const int nb_som_elem = elements.dimension(1);
 
@@ -641,7 +641,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
   Joints& les_joints = zone_partie.faces_joint();
 
   const int parts = nb_parties_;
-  const IntTab& elem_part = ref_elem_part_.valeur();
+  const IntVect& elem_part = ref_elem_part_.valeur();
   const Static_Int_Lists& som_elem = som_elem_;
 
   // Liste de sommets de joint (toutes parties confondues, un sommet peut
@@ -809,7 +809,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     const int nb_sommets_par_face = faces_element_reference.dimension(1);
     faces_joints.resize(0, nb_sommets_par_face); // Voir *suite*
     const ArrOfInt& liste_inverse_sommets = correspondance.get_liste_inverse_sommets();
-    const IntTab& elem_part = ref_elem_part_.valeur();
+    const IntVect& elem_part = ref_elem_part_.valeur();
     // Sommets des elements du maillage global
     const Domaine& domaine = ref_domaine_.valeur();
     const IntTab& elem_som = domaine.zone(0).les_elems();
@@ -964,7 +964,7 @@ void DomaineCutter::reset()
   som_elem_.reset();
 }
 
-void  calculer_listes_elements_sous_domaines(const IntTab& elem_part,
+void  calculer_listes_elements_sous_domaines(const IntVect& elem_part,
                                              const int nb_parts,
                                              const int nbelem,
                                              Static_Int_Lists& liste_elems_sous_domaines)
@@ -990,7 +990,7 @@ void  calculer_listes_elements_sous_domaines(const IntTab& elem_part,
 
 void calculer_elements_voisins_bords(const Domaine& dom,
                                      const Static_Int_Lists& som_elem,
-                                     Static_Int_Lists& voisins,const IntTab& elem_part, const int permissif, Noms& bords_a_pb_)
+                                     Static_Int_Lists& voisins,const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
 {
   const Zone& zone = dom.zone(0);
   const int nb_front = zone.nb_front_Cl();
@@ -1053,7 +1053,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
 // Parametre: les_faces
 // Parametre: epaisseur_joint
 void DomaineCutter::initialiser(const Domaine&   domaine_global,
-                                const IntTab& elem_part,
+                                const IntVect& elem_part,
                                 const int     nb_parts,
                                 const int     epaisseur_joint,
                                 const Noms&      liste_bords_periodiques,
@@ -1249,7 +1249,7 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 //  fichiers basename_000n.Zones pour 0 <= n < nb_parties_.
 //  Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
 //  on genere aussi un fichier par sous-zone.
-void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntTab& elem_part, const int& reorder)
+void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int& reorder)
 {
   assert(nb_parties_ >= 0);
   const Domaine& domaine = ref_domaine_.valeur();
