@@ -25,6 +25,23 @@
 }
 
 ###
+### MPICH
+###
+# 19/05/2020 : Problem on upwind test case on Fed 34 configured with force_latest_mpich
+{
+   <MPICH_3.4.1>
+   Memcheck:Cond
+   fun:MPIDI_OFI_mpi_finalize_hook
+   fun:MPID_Finalize
+   fun:PMPI_Finalize
+   fun:PetscFinalize
+   fun:_ZN8mon_main8finalizeEv
+   fun:_ZN8mon_mainD1Ev
+   fun:main
+}
+
+
+###
 ###  Hypre Library
 ###
 {
@@ -42,7 +59,7 @@
    fun:PCSetUp_HYPRE
    fun:PCSetUp
    fun:KSPSetUp
-   fun:_ZN10Solv_Petsc14Create_objectsERK13Matrice_MorseRK10DoubleVect
+   fun:_ZN10Solv_Petsc14Create_objectsERK13Matrice_Morse*
    fun:_ZN10Solv_Petsc16resoudre_systemeERK12Matrice_BaseRK10DoubleVectRS3_
    fun:_ZN10SolveurSys16resoudre_systemeERK12Matrice_BaseRK10DoubleVectRS3_
    ...
