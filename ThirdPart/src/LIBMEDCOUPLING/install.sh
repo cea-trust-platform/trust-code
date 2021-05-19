@@ -96,9 +96,6 @@ if ! [ $status -eq 0 ]; then
   exit -1
 fi
 
-# Clean build folder
-cd .. ; #rm -rf configuration* medcoupling*
-
 # Creation of env file. Done in a temporary file, because the final env.sh is the main target of the Makefile
 # but we need an env file for the test below ... 
 echo "@@@@@@@@@@@@ Creating env file ..."
@@ -118,6 +115,8 @@ then
   if [ $? -eq 0 ]
   then
     echo "medcoupling library OK"
+    # Clean build folder
+    cd .. ; rm -rf configuration* medcoupling*
   else
     echo "medcoupling library KO"
     exit -1
