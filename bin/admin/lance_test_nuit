@@ -758,10 +758,18 @@ fi
 #then
    echo " "
    echo "Mark new version in following files:"
-   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/src/MAIN/mon_main.cpp $TRUST_ROOT/doc/TRUST/exercices/my_first_class/mon_main.cpp
+   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/doc/TRUST/exercices/my_first_class/mon_main.cpp
    do
       CHECKOUT $MAIN 1>/dev/null 2>&1
       version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
+      echo "  "$version"=>"$new": "$MAIN
+      echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
+      CHECKIN $MAIN 1>/dev/null 2>&1
+   done
+   for MAIN in $TRUST_ROOT/src/MAIN/mon_main.cpp
+   do
+      CHECKOUT $MAIN 1>/dev/null 2>&1
+      version=`$TRUST_Awk '/version :/ {print $6}' $MAIN`
       echo "  "$version"=>"$new": "$MAIN
       echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
       CHECKIN $MAIN 1>/dev/null 2>&1
@@ -2974,7 +2982,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=79.65 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=79.66 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,8 @@ public :
   void dimensionner( const int& nb_lines , const int& nb_cols );
   void read_from_file( const Nom& filename );
   void convert_to_morse_matrix( Matrice_Morse& morse_matrix ) const;
-  double operator( )( const int& line , const int& col ) const;
+  inline const double& operator( )( const int& line , const int& col ) const;
+  inline double& operator( )( const int& line , const int& col );
   void build_matrix_from_coefficients_line_by_line( const DoubleVect& coefficients );
   void build_matrix_from_coefficients_column_by_column( const DoubleVect& coefficients );
   bool is_the_same( const Matrice_Dense& other_matrix , const double& tol=1e-14 ) const;
@@ -58,10 +59,33 @@ public :
   virtual void scale( const double& x ) ;
   virtual void get_stencil( IntTab& stencil ) const;
 
+  // Perform the matrix inversion
+  void inverse();
+
+  // Perform a matrix multipication : (*this) * B = RES
+  void multiplyToRight(const Matrice_Dense& B, Matrice_Dense& RES) const;
+  inline DoubleTab& coeffs()
+  {
+    return Matrix_;
+  }
 private :
 
   DoubleTab Matrix_ ;
 };
 
+// Access operators
+inline const double& Matrice_Dense::operator( )(const int& line, const int& col) const
+{
+  assert( line < nb_lignes( ) );
+  assert( col < nb_colonnes( ) );
+  return Matrix_( line , col );
+}
+
+inline double& Matrice_Dense::operator( )(const int& line, const int& col)
+{
+  assert( line < nb_lignes( ) );
+  assert( col < nb_colonnes( ) );
+  return Matrix_( line , col );
+}
 
 #endif

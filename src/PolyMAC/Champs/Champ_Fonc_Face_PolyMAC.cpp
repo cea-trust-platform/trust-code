@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -205,7 +205,8 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
                     break;
                   for(int ncomp=0; ncomp<nb_compo; ncomp++)
                     {
-                      vale(ncomp)+=ch(face)*normales(face,ncomp);
+                      //vale(ncomp)+=ch(face)*normales(face,ncomp);
+                      vale(ncomp)+=ch(face)*dabs(normales(face,ncomp));
                       s(ncomp)+=dabs(normales(face,ncomp));
                     }
                 }

@@ -1402,8 +1402,10 @@ void Equation_base::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(volume_maille);
         }
     }
-
-  Nom inco (inconnue()->le_nom());
+// pour recuperer une equation const !!!!!
+  const Equation_base& me_const =(*this);
+  const Nom& nom_inco=me_const.inconnue()->le_nom();
+  Nom inco(nom_inco);
   inco += "_residu";
   if (motlu == Motcle(inco))
     {

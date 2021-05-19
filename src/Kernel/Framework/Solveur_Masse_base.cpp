@@ -25,6 +25,7 @@
 #include <Matrice_Morse.h>
 #include <DoubleTrav.h>
 #include <Debog.h>
+#include <ConstDoubleTab_parts.h>
 
 Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_U);
 
@@ -173,7 +174,9 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
         }
 
       Debog::verifier("Solveur_Masse_base::appliquer coeffs",values);
-      tab_divide_any_shape(x, values, VECT_REAL_ITEMS);
+      //tab_divide_any_shape(x, values, VECT_REAL_ITEMS);
+      DoubleTab_parts values_parts(values);
+      tab_divide_any_shape(x, values_parts[0], VECT_REAL_ITEMS);
     }
 
   return appliquer_impl(x); // M-1.x

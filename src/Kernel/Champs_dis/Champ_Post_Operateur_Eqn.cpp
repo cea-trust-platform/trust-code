@@ -244,7 +244,11 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
   //if (ref_eq_->schema_temps().temps_courant()!=0)
   {
     if (numero_op_!=-1)
-      Operateur().calculer(ref_eq_->inconnue().valeurs(),es);
+      {
+        // certains calculer  sont faux !!!! il faudrait tous les recoder en res =0 ajouter();
+        es=0;
+        Operateur().ajouter(ref_eq_->operateur(numero_op_).mon_inconnue().valeurs(),es);
+      }
     else
       ref_eq_->sources()(numero_source_).calculer(es);
     if (!sans_solveur_masse_)
