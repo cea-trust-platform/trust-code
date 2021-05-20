@@ -652,6 +652,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
         }
     }
 
+  //tri des joints dans l'ordre croissant des procs
+  Joints& joints = dom.zone(0).faces_joint();
+  trier_les_joints(joints);
   envoyer_all_to_all(mergedZones, mergedZones);
   check_consistancy_remote_items( dom, mergedZones );
   dom.zone(0).check_zone();

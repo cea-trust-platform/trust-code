@@ -1273,11 +1273,15 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   VECT(ArrOfInt) otherProcZones(Process::nproc());
 
   //if some zones are splitted between multiple procs,
-  //we assign consecutive indices to the subzones
+  //we assign consecutive indices to each of its fragment
   //(reading the .Zones files during Scatter will be more efficient)
+  // Possible values for zones_index[part]:
+  // -2    : means that part is detained by multiple procs but not by me
+  // -1    : means that part is detained by a single proc
+  // i >=0 : means that my proc detains the i-th fragment of part
   VECT(ArrOfInt) zones_indices(Process::nproc());
   ArrOfInt zones_index(nb_parties_);
-  zones_index = -1;
+  zones_index = -2;
   for(int p=0; p<Process::nproc(); p++)
     {
       if(p==0)
@@ -1293,7 +1297,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
       for(int p=0; p<Process::nproc(); p++)
         {
           zones_indices[p].resize_array(nb_parties_);
-          zones_indices[p] = -1;
+          zones_indices[p] = -2;
           if(p!=0)
             recevoir(otherProcZones[p], p, 0, p+2001);
         }
@@ -1381,7 +1385,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                     {
                       for(int proc=0; proc < Process::nproc(); proc++)
                         {
-                          if(zones_indices[proc][part] != -1)
+                          if(zones_indices[proc][part] >=0)
                             {
                               std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
                               Nom dataset_name(dname.c_str());
@@ -1407,6 +1411,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         {
           if( !myZones[i_part] && !emptyZones[i_part]) continue;
           Cerr << " Construction of part number " << i_part << finl;
+
+          assert(zones_index[i_part]!=-2);
           if(zones_index[i_part] != -1)
             Cerr << "This part is shared between multiple processors" << finl;
 
