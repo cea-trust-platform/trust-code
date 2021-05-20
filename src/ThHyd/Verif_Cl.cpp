@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <Entree_fluide_temperature_imposee.h>
 #include <Entree_fluide_T_h_imposee.h>
 #include <Entree_fluide_concentration_imposee.h>
+#include <Entree_fluide_fraction_massique_imposee.h>
 #include <Neumann_paroi.h>
 #include <Neumann_paroi_adiabatique.h>
 #include <Neumann_paroi_flux_nul.h>
@@ -366,6 +367,161 @@ int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, in
   Cerr << "The hydraulic and concentration boundary conditions are not consitent  on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_co.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_co.valeur().que_suis_je() << " !! " << finl;
+  Process::exit();
+  return 1;
+}
+
+// Description:
+//    Teste la compatibilite des conditions aux limites
+//    fraction massqiues et hydrauliques.
+//    La liste des compatibilites est la suivante:
+//    -----------------------------------------------------------------------
+//    Hydraulique                      |       Fraction massique
+//    -----------------------------------------------------------------------
+//    Entree_fluide_vitesse_imposee ===> Entree_fluide_fraction_massique_imposee
+//    Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
+//    -----------------------------------------------------------------------
+//    Dirichlet_paroi_fixe |
+//    Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
+//    -----------------------------------------------------------------------
+//    Neumann_sortie_libre ============> Entree_fluide_fraction_massique_imposee
+//    =================================> Neumann_sortie_libre
+//    -----------------------------------------------------------------------
+//    Symetrie ========================> Symetrie
+//    =================================> Neumann_paroi_flux_nul
+//    -----------------------------------------------------------------------
+//    Periodique ======================> Periodique
+// Precondition:
+// Parametre: Zone_Cl_dis& zone_Cl_hydr
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: Zone_Cl_dis& zone_Cl_fm
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces:entree
+// Retour: int
+//    Signification: renvoie toujours 1
+//    Contraintes:
+// Exception: nombres de conditions aux limites differents
+// Exception: conditions aux limites hydraulique et fraction massiques incompatibles
+// Effets de bord:
+// Postcondition:
+int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr, const Zone_Cl_dis& zone_Cl_fm)
+{
+
+  int nb_Cl = zone_Cl_hydr.nb_cond_lim();
+
+  if (zone_Cl_fm.nb_cond_lim() != nb_Cl)
+    {
+      Cerr << "The two objects of Zone_Cl_dis type don't have" << finl;
+      Cerr << "the same number of boundary conditions." << finl;
+      Process::exit();
+    }
+
+  for (int num_Cl=0; num_Cl<nb_Cl; num_Cl++)
+    {
+      const Cond_lim& la_cl_hydr = zone_Cl_hydr.les_conditions_limites(num_Cl);
+      const Cond_lim& la_cl_fm = zone_Cl_fm.les_conditions_limites(num_Cl);
+      if (sub_type(Entree_fluide_vitesse_imposee_libre,la_cl_hydr.valeur()))
+        {
+          if ( (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
+               || (sub_type(Neumann_sortie_libre,la_cl_fm.valeur())) )
+            ;
+          else
+            {
+              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+            }
+        }
+      else if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+        {
+          if (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
+            ;
+          else
+            {
+              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+            }
+        }
+      else if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur())) ||
+                (sub_type(Dirichlet_paroi_defilante,la_cl_hydr.valeur()))  )
+        {
+          if ((!sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur())) &&
+              (!sub_type(Neumann_paroi,la_cl_fm.valeur())) &&
+              (!sub_type(Scalaire_impose_paroi,la_cl_fm.valeur())))
+            {
+              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+            }
+
+        }
+      else if (sub_type(Neumann_sortie_libre,la_cl_hydr.valeur()))
+        {
+          if ( (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
+               || (sub_type(Neumann_sortie_libre,la_cl_fm.valeur())) )
+            {
+              ;
+            }
+          else
+            {
+              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+            }
+        }
+      else if (sub_type(Symetrie,la_cl_hydr.valeur()))
+        {
+          if( (sub_type(Symetrie,la_cl_fm.valeur()))
+              || (sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur())) )
+            {
+              ;
+            }
+          else
+            {
+              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+            }
+        }
+      else if (sub_type(Periodique,la_cl_hydr.valeur()))
+        {
+          if (sub_type(Periodique,la_cl_fm.valeur()))
+            {
+              ;
+            }
+          else
+            {
+              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+            }
+        }
+    }
+  return 1;
+}
+
+// Description:
+//    Affiche un message d'erreur pour la fonction precedente
+// Precondition:
+// Parametre: Zone_Cl_dis& zone_Cl_hydr
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: Zone_Cl_dis& zone_Cl_frac_mass
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: int num_Cl
+//    Signification: numero de la CL
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour: int
+//    Signification: renvoie toujours 1
+//    Contraintes:
+// Effets de bord:
+// Postcondition:
+int message_erreur_fraction_massique(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_frac_mass, int& num_Cl)
+{
+  Cerr << "The hydraulic and massic fraction boundary conditions are not consitent  on border:" << finl;
+  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_frac_mass.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
+  Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_frac_mass.valeur().que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;
 }

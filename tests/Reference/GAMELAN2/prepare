@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/Reference/GAMELAN/dom.geom .

@@ -435,8 +435,29 @@ void Loi_Etat_base::calculer_alpha()
 // Postcondition:
 void Loi_Etat_base::calculer_mu_sur_Sc()
 {
-
+  /* Do nothing : overloaded later */
 }
+
+// Description:
+// Ne fait rien
+// Surcharge dans Loi_Etat_Melange_Binaire
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Loi_Etat_base::calculer_nu_sur_Sc()
+{
+  /* Do nothing : overloaded later */
+}
+
 // Description:
 //    Recalcule la masse volumique
 // Precondition:

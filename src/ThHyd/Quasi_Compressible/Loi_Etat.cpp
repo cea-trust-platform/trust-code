@@ -68,13 +68,14 @@ Entree& Loi_Etat::readOn(Entree& is)
   Motcle motlu;
   is>>motlu;
   Nom type = "Loi_Etat_";
-  Motcles les_mots_loi(5);
+  Motcles les_mots_loi(6);
   {
     les_mots_loi[0] = "gaz_parfait";
     les_mots_loi[1] = "gaz_reel_rhoe";
     les_mots_loi[2] = "gaz_reel_rhoT";
     les_mots_loi[3] = "melange_gaz_parfait";
     les_mots_loi[4] = "rho_T";
+    les_mots_loi[5] = "melange_binaire";
   }
   int rang_loi = les_mots_loi.search(motlu);
   switch(rang_loi)
@@ -102,6 +103,11 @@ Entree& Loi_Etat::readOn(Entree& is)
     case 4 :
       {
         type += "Rho_T";
+        break;
+      }
+    case 5 :
+      {
+        type += "Melange_Binaire";
         break;
       }
     default :

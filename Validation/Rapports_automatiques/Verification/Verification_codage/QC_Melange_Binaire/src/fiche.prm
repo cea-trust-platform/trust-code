@@ -1,0 +1,309 @@
+Parameters
+{
+  Title "Validation of a binary mixture flow problem with a Low Mach Number approximation"
+  Description "This document aims at validating the binary mixture flow problem of TRUST. Recall that this problem is used with a Low Mach Number (LMN) approximation and is only valid with iso-thermal and iso-bar conditions. The validation is carried out by injecting air into an axi-symmetrical cavity filled with air at rest (same properties for both species). Results are compared with those obtained by a non-compressible thermo-hydraulic problem (same physical parameters are used). The results in both cases are coherent as expected. For completeness, the influence of using of an explicit or a semi-implicit Rational Runge-Kutta (RRK2) time-integration scheme is also investigated for both cases. "
+  VersionTrio_U "1.8.3"
+  Author "Elie Saikali"
+  TestCase MB_exp Pb_Melange_Binaire.data /* data file in appendix */
+  TestCase TH_exp Pb_Thermo_Hydraulique.data /* data file in appendix */
+  TestCase MB_semi_impl Pb_Melange_Binaire.data
+  TestCase TH_semi_impl Pb_Thermo_Hydraulique.data
+}
+
+chapter
+{
+  title "Governing equations and physical parameters"
+  Description "\latex_( \input{\orig/ge} \latex_)"
+
+  visu {
+    title "Axi symmetric computational domain"
+    Description "\latex_(An axi-symmetrical computational domain is considered where a VDF mesh of 51968 cells is employed (see the figure below). Air is injected through a pipe of diameter 0.5 cm (3 cm long) into a cavity of width 10 cm and height 20 cm. A free outlet is located at the top-right corner of the cavity (height of opening is 3 cm). The injection flow-rate is $Q=4.71238898\times 10^{-5}$ m$^{3}$.s$^{-1}$.\latex_)"
+    Width 25cm
+    operator no_bounding_box
+    operator no_databaseinfo
+    operator no_triad
+    operator no_axes
+    operator_to_all no_legend
+    cycles -1
+    mesh MB_exp/Pb_Melange_Binaire.lata dom
+  }
+}
+
+chapter
+{
+  title "Qualitative comparisons : Mass fraction vs temperature"
+  Description "\latex_(We present first qualitative comparisons by comparing the masse fraction iso-contours (Pb melange binaire explicit) to those of the temperature (Pb thermo hydraulic explicit). As expected, both fields are identical (figures 3.1 and 3.2). Same observation is noted when a semi-implicit scheme is employed (figures 3.3 and 3.4). \latex_)"
+  visu {
+    title "Mass fraction : explicit"
+    Width 17cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor MB_exp/Pb_Melange_Binaire.lata FRACTION_MASSIQUE_ELEM_dom
+  }
+  visu {
+    title "Temperature : explicit"
+    Width 17cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor TH_exp/Pb_Thermo_Hydraulique.lata TEMPERATURE_ELEM_dom
+  }
+  visu {
+    title "Mass fraction : semi-implicit"
+    Width 17cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor MB_semi_impl/Pb_Melange_Binaire.lata FRACTION_MASSIQUE_ELEM_dom
+  }
+  visu {
+    title "Temperature : semi-implicit"
+    Width 17cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor TH_semi_impl/Pb_Thermo_Hydraulique.lata TEMPERATURE_ELEM_dom
+  }
+
+}
+
+Chapter
+{
+  title "Quantitative comparisons"
+  Figure
+  {
+    Dimension 2
+    Title "Total mass and energy"
+    Description "\latex_(We consider now the integral quatities $I_1$ and $I_2$ in the four calculations. Clearly we note that all profiles perfectly match together where a linear evolution is reproduced in all cases. This behavior is expected as far as a continuous/constant flow rate is considered at the injection (see symbols on the same graph which depict the exact injected quantity). \latex_)"
+    LabelX "t [s]"
+    LabelY "I1 and I2 [kg or J]"
+    grid
+    Width 16cm
+    Include_Description_Curves 0
+    Curve
+    {
+    legend "MB_exp"
+    file MB_exp/Pb_Melange_Binaire_INJ_MASS.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_exp"
+    file TH_exp/Pb_Thermo_Hydraulique_INJ_MASS.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "MB_semi_impl"
+    file MB_semi_impl/Pb_Melange_Binaire_INJ_MASS.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_semi_impl"
+    file TH_semi_impl/Pb_Thermo_Hydraulique_INJ_MASS.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "Exact"
+    file exact.d
+    columns ($1) ($2)
+    Style points
+    }
+  }
+
+  Figure
+  {
+    Dimension 2
+    Title "Mass fraction / temperature evolution"
+    Description "\latex_(We present here the mass fraction and temperature evolution for a fixed probes located at $r= 0.5$ cm and $z=5$ cm. The profiles are identical in the four simulations. \latex_)"
+    LabelX "t [s]"
+    LabelY "Y1 or T"
+    grid
+    Width 16cm
+    Include_Description_Curves 0
+    Curve
+    {
+    legend "MB_exp"
+    file MB_exp/Pb_Melange_Binaire_PROBE.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_exp"
+    file TH_exp/Pb_Thermo_Hydraulique_PROBE.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "MB_semi_impl"
+    file MB_semi_impl/Pb_Melange_Binaire_PROBE.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_semi_impl"
+    file TH_semi_impl/Pb_Thermo_Hydraulique_PROBE.son
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+  }
+
+  Figure
+  {
+    Dimension 2
+    Title "Mass fraction / temperature evolution"
+    Description "\latex_(We present here the mass fraction and temperature evolution for a fixed probes located at $r= 0.5$ cm and $z=15$ cm. The profiles are identical in the four simulations.\latex_)"
+    LabelX "t [s]"
+    LabelY "Y1 or T"
+    grid
+    Width 16cm
+    Include_Description_Curves 0
+    Curve
+    {
+    legend "MB_exp"
+    file MB_exp/Pb_Melange_Binaire_PROBE.son
+    columns ($1) ($3)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_exp"
+    file TH_exp/Pb_Thermo_Hydraulique_PROBE.son
+    columns ($1) ($3)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "MB_semi_impl"
+    file MB_semi_impl/Pb_Melange_Binaire_PROBE.son
+    columns ($1) ($3)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_semi_impl"
+    file TH_semi_impl/Pb_Thermo_Hydraulique_PROBE.son
+    columns ($1) ($3)
+    Linewidth 2
+    Style lines
+    }
+  }
+
+  Figure
+  {
+    Dimension 2
+    Title "Time step"
+    Description "\latex_(We consider now the evolution of the time step which is computed dynamically in the four calculations satisfying the stability criteria of the time scheme (facsec 0.9 used in all cases). We note also that the evolution of dt is identical for both pair of simulations; either with explicit or semi-implicit calculations. It is important here to highlight the benefit of using a semi-implicit scheme where a the time step can be about 1.5 times larger than that used with the explicit simulation (as far as the diffusion time step is more important in such a problem).\latex_)"
+    LabelX "t [s]"
+    LabelY "dt [s]"
+    grid
+    Width 16cm
+    Include_Description_Curves 0
+    Curve
+    {
+    legend "MB_exp"
+    file MB_exp/Pb_Melange_Binaire.dt_ev
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_exp"
+    file TH_exp/Pb_Thermo_Hydraulique.dt_ev
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "MB_semi_impl"
+    file MB_semi_impl/Pb_Melange_Binaire.dt_ev
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_semi_impl"
+    file TH_semi_impl/Pb_Thermo_Hydraulique.dt_ev
+    columns ($1) ($2)
+    Linewidth 2
+    Style lines
+    }
+  }
+
+  Figure
+  {
+    Dimension 2
+    Title "Volumic flow rate balance"
+    Description "\latex_(Finally we consider the volumic flow rate balance where we can see that the balance is very well ensured in all cases at the precision of the machine.\latex_)"
+    LabelX "t [s]"
+    LabelY ""-"
+    grid
+    Width 16cm
+    Include_Description_Curves 0
+    Curve
+    {
+    legend "MB_exp"
+    file MB_exp/Pb_Melange_Binaire_pb_Debit.out
+    columns ($1) ($6)
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_exp"
+    file TH_exp/Pb_Thermo_Hydraulique_pb_Debit.out
+    columns ($1) ($6)
+    Style lines
+    }
+    Curve
+    {
+    legend "MB_semi_impl"
+    file MB_semi_impl/Pb_Melange_Binaire_pb_Debit.out
+    columns ($1) ($6)
+    Style lines
+    }
+    Curve
+    {
+    legend "TH_semi_impl"
+    file TH_semi_impl/Pb_Thermo_Hydraulique_pb_Debit.out
+    columns ($1) ($6)
+    Style lines
+    }
+  }
+}
+
+Chapter
+{
+  Title "Conclusions"
+  Description "\latex_(We have presented in this document a validation concerning the TRUST binary mixture flow problem with a LMN approximation. Results show that considering two identical species reproduce exactly what is obtained by a non-compressible thermo-hydraulic problem. Moreover, we show that the explicit and the semi-implicit time integration schemes lead to identical results if a good time step is used and can be safely used to reduce a bit the computational time \\ \textbf{Note : } the influence of the time step is not illustrated here but tested. In particular, higher facsec values ($>1$) lead to a stable solution but with different results. \latex_)"
+}
+
+Chapter
+{
+  Title "Computer performance"
+  tableau_performance {
+  }
+}

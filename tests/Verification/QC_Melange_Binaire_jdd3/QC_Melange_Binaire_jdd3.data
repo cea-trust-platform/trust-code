@@ -1,0 +1,220 @@
+# Pb_Hydraulique_Melange_Binaire_QC en Axi #
+# PARALLEL OK 4 #
+
+dimension 2
+bidim_axi
+Pb_Hydraulique_Melange_Binaire_QC pb
+
+Domaine dom
+Domaine dom1
+Domaine dom2
+Domaine dom3
+
+# BEGIN MESH #
+/* Cavity */
+mailler dom1
+{
+  Pave pave1
+  {
+    origine 0. 0.
+    longueurs 0.1 0.2
+    /* nombre_de_noeuds 81 161 */
+    nombre_de_noeuds 161 321
+  }
+  {
+    bord in_remove Y = 0. 0. <= X <= 0.005
+    bord wall Y = 0. 0.005 <= X <= 0.1
+    bord sym X = 0. 0 <= Y <= 0.2
+    bord wall Y = 0.2 0 <= X <= 0.1
+    bord wall X = 0.1 0.0 <= Y <= 0.17
+    bord out_remove X = 0.1 0.17 <= Y <= 0.2
+  }
+}
+
+/* Inj pipe */
+mailler dom2
+{
+  Pave pave2
+  {
+    origine 0. -0.03
+    longueurs 0.005 0.03
+    /* nombre_de_noeuds 5 25 */
+    nombre_de_noeuds 9 49
+  }
+  {
+    bord in_remove Y = 0. 0. <= X <= 0.005
+    bord sym X = 0. -0.03 <= Y <= 0.0
+    bord wall X = 0.005 -0.03 <= Y <= 0.0
+    bord in Y = -0.03 0. <= X <= 0.005
+  }
+}
+
+/* Outlet */
+mailler dom3
+{
+  Pave pave2
+  {
+    origine 0.1 0.17
+    longueurs 0.005 0.03
+    /* nombre_de_noeuds 5 25 */
+    nombre_de_noeuds 9 49
+  }
+  {
+    bord out_remove X = 0.1 0.17 <= Y <= 0.2
+    bord out X = 0.105 0.17 <= Y <= 0.2
+    bord wall Y = 0.17 0.1 <= X <= 0.105
+    bord wall Y = 0.2 0.1 <= X <= 0.105
+  }
+}
+
+/* Merge */
+
+supprime_bord dom1 { in_remove }
+supprime_bord dom2 { in_remove }
+supprime_bord dom1 { out_remove }
+supprime_bord dom3 { out_remove }
+
+mailler dom { domain dom1 , domain dom2 , domain dom3 }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+  Partition_tool tranche { tranches 2 2 }
+  larg_joint 2
+  zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_Rationnel_ordre_2 sch
+
+Lire sch
+{
+  tinit 0.
+	nb_pas_dt_max 3
+  dt_start dt_calc
+  tmax 3.0
+  dt_min 1.e-7
+  dt_max 6.e-3
+  dt_impr 1.e-7
+  seuil_statio 1.e-14
+  facsec 0.9
+  diffusion_implicite 1
+  seuil_diffusion_implicite 1.e-10
+}
+
+Fluide_Quasi_Compressible air
+Lire air
+{
+  pression   100000.
+  traitement_pth constant
+
+  loi_etat melange_binaire
+  {
+    temperature 284.15
+    diffusion_coeff 7.72e-5
+
+    # air #
+    molar_mass1 0.02897
+    mu1 1.792e-5
+
+    # air #
+    molar_mass2 0.02897
+    mu2 1.792e-5
+  }
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 2 0. -9.81
+Associer air gravite
+
+Associer pb dom
+Associer pb air
+Associer pb sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb dis
+
+Lire pb
+{
+  Navier_Stokes_QC
+  {
+    solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }
+    convection { centre }
+    diffusion { }
+
+    conditions_initiales { vitesse Champ_uniforme 2 0. 0. }
+    conditions_limites
+    {
+      wall paroi_fixe
+      sym symetrie
+      in frontiere_ouverte_rho_U_impose  Champ_front_uniforme 2  0. 0.7357282127045688
+      out Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -12.0291562777197*y
+    }
+  }
+
+  Convection_Diffusion_fraction_massique_MB_QC
+  {
+    convection  { quick }
+    diffusion { }
+    conditions_initiales { fraction_massique Champ_uniforme  1  0.0 }
+
+    conditions_limites
+    {
+      wall paroi
+      sym symetrie
+      in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 1.0
+      out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+    }
+  }
+
+  Postraitement
+  {
+
+    Definition_champs
+    {
+      Inj_mass Transformation
+      {
+        methode formule expression 1 rho*fm
+        sources
+        {
+        refChamp { Pb_champ pb fraction_massique nom_source fm } ,
+        refChamp { Pb_champ pb masse_volumique nom_source rho }
+        }
+      }
+
+      total_Inj_mass reduction_0D { methode weighted_sum sources_reference { Inj_mass } }
+
+
+    } /* end Definition_champs */
+
+    probes
+    {
+      inj_mass total_Inj_mass periode 1e-3 Numero_elem_sur_maitre 0
+      probe fraction_massique periode 1e-3 points 2 0.005 0.05 0.005 0.15
+    }
+
+
+    format lml
+    Champs dt_post 0.5
+    {
+      vitesse	som
+      fraction_massique elem
+      /* pression elem
+      masse_volumique elem
+      Inj_mass elem */
+    }
+  }
+
+}
+
+Resoudre pb
+Fin

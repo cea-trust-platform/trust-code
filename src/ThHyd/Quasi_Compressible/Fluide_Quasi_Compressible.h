@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,6 +85,9 @@ public :
   inline const Champ_Don& mu_sur_Schmidt() const;
   inline Champ_Don& mu_sur_Schmidt();
 
+  inline const Champ_Don& nu_sur_Schmidt() const;
+  inline Champ_Don& nu_sur_Schmidt();
+
   void calculer_pression_tot();
   inline double calculer_H(double) const;
   //Methodes de l interface des champs postraitables
@@ -102,6 +105,7 @@ public :
   inline void calculer_nu();
   inline void calculer_alpha();
   inline void calculer_mu_sur_Sc();
+  inline void calculer_nu_sur_Sc();
   inline void Resoudre_EDO_PT();
   inline void calculer_masse_volumique();
 
@@ -143,7 +147,7 @@ protected :
   double Pth_n;  //Pression thermodynamique a l'etape precedente
   double Pth1; //Pression thermodynamique calculee pour conserver la masse
   double temps_debut_prise_en_compte_drho_dt_;
-  Champ_Don mu_sur_Sc,rho_gaz,rho_comme_v;
+  Champ_Don mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
   mutable DoubleTab tab_W_old_;
   double omega_drho_dt_; // Facteur de relaxation sur drho_dt
   Nom output_file_; // Fichier evolution (anciennement "evol_glob")
@@ -198,6 +202,7 @@ inline void Fluide_Quasi_Compressible::calculer_coeff_T()
   calculer_nu();
   calculer_alpha();
   calculer_mu_sur_Sc();
+  calculer_nu_sur_Sc();
 }
 inline void Fluide_Quasi_Compressible::calculer_Cp()
 {
@@ -225,6 +230,13 @@ inline void Fluide_Quasi_Compressible::calculer_mu_sur_Sc()
 
   loi_etat_-> calculer_mu_sur_Sc();
 }
+
+inline void Fluide_Quasi_Compressible::calculer_nu_sur_Sc()
+{
+
+  loi_etat_-> calculer_nu_sur_Sc();
+}
+
 
 inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()
 {
@@ -281,6 +293,16 @@ inline const Champ_Don& Fluide_Quasi_Compressible::mu_sur_Schmidt() const
 inline Champ_Don& Fluide_Quasi_Compressible::mu_sur_Schmidt()
 {
   return mu_sur_Sc;
+}
+
+inline const Champ_Don& Fluide_Quasi_Compressible::nu_sur_Schmidt() const
+{
+  return nu_sur_Sc;
+}
+
+inline Champ_Don& Fluide_Quasi_Compressible::nu_sur_Schmidt()
+{
+  return nu_sur_Sc;
 }
 
 //renvoie rho avec la meme discretisation que la vitesse

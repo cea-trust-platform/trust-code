@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ Sortie& Neumann_sortie_libre::printOn(Sortie& s ) const
 // Description:
 //    Type le_champ_front en "Champ_front_uniforme".
 //    Lit les valeurs du champ exterieur si les conditions
-//    aux limites sont specifiees: "T_ext", "C_ext", "K_Eps_ext" ou "F_M_ext"
+//    aux limites sont specifiees: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
 //    Produit une erreur sinon.
 // Precondition:
 // Parametre: Entree& s
@@ -62,14 +62,14 @@ Sortie& Neumann_sortie_libre::printOn(Sortie& s ) const
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception: type de champ exterieur non reconnu,
-//            les types reconnus sont: "T_ext", "C_ext", "K_Eps_ext" ou "F_M_ext"
+//            les types reconnus sont: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
 // Effets de bord:
 // Postcondition:
 Entree& Neumann_sortie_libre::readOn(Entree& s )
 {
   //   le_champ_front.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(7);
+  Motcles les_motcles(8);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
@@ -78,15 +78,18 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
     les_motcles[4] = "Fluctu_Temperature_ext";
     les_motcles[5] = "Flux_Chaleur_Turb_ext";
     les_motcles[6] = "V2_ext";
+    les_motcles[7] = "Y_ext";
 
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
   switch(rang)
     {
+      // Fall through ...
     case 0:
     case 1:
     case 2:
+    case 7:
     case 3:
       {
         s >> le_champ_ext;

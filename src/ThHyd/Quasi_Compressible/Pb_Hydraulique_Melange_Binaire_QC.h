@@ -14,43 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Verif_Cl.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/9
+// File:        Pb_Hydraulique_Melange_Binaire_QC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <arch.h>
-#include <Cond_lim.h>
+
+#ifndef Pb_Hydraulique_Melange_Binaire_QC_included
+#define Pb_Hydraulique_Melange_Binaire_QC_included
+
+#include <Pb_QC_base.h>
+#include <Navier_Stokes_QC.h>
+#include <Convection_Diffusion_fraction_massique_MB_QC.h>
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Interface du module ThHyd.
-//    Contient 3 fonctions:
-//      int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//    qui servent a tester la coherence des conditions aux limites
-//    et les 3 fonctions
-//      int message_erreur_[therm|conc|fraction_massique](const Cond_lim& , const Cond_lim& , int& )
-//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc]
+//    classe Pb_Hydraulique_Melange_Binaire_QC
+//     Cette classe represente un probleme de hydraulique binaire en fluide quasi compressible:
+//      - Equations de Navier_Stokes en regime laminaire
+//        pour un fluide quasi compressible
+//      - Equation de conv/diff fraction massique
+//        en regime laminaire pour un fluide quasi compressible
 // .SECTION voir aussi
-//    Fonction de librairie hors classe
+//     Probleme_base Navier_Stokes_QC Convection_Diffusion_fraction_massique_MB_QC
 //////////////////////////////////////////////////////////////////////////////
+class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC_base
+{
 
-class Zone_Cl_dis;
+  Declare_instanciable(Pb_Hydraulique_Melange_Binaire_QC);
 
-// Fonctions qui servent a tester la coherence des conditions aux limites
+public:
 
-int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& );
+  int nombre_d_equations() const;
+  const Equation_base& equation(int) const ;
+  Equation_base& equation(int);
+  int verifier();
 
-int message_erreur_therm(const Cond_lim& , const Cond_lim& , int& );
+protected:
 
-int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )  ;
+  Navier_Stokes_QC eq_hydraulique;
+  Convection_Diffusion_fraction_massique_MB_QC eq_frac_mass;
 
-int message_erreur_conc(const Cond_lim& , const Cond_lim& , int& );
+};
 
-int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& , const Zone_Cl_dis& );
-
-int message_erreur_fraction_massique(const Cond_lim& , const Cond_lim& , int& );
+#endif /* Pb_Hydraulique_Melange_Binaire_QC_included */

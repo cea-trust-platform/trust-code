@@ -14,43 +14,58 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Verif_Cl.h
-// Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/9
+// File:        Loi_Etat_Melange_Binaire.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <arch.h>
-#include <Cond_lim.h>
+#ifndef Loi_Etat_Melange_Binaire_included
+#define Loi_Etat_Melange_Binaire_included
+
+#include <Loi_Etat_GP.h>
+#include <Champ_Inc_base.h>
+#include <Ref_Champ_Inc_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Interface du module ThHyd.
-//    Contient 3 fonctions:
-//      int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//    qui servent a tester la coherence des conditions aux limites
-//    et les 3 fonctions
-//      int message_erreur_[therm|conc|fraction_massique](const Cond_lim& , const Cond_lim& , int& )
-//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc]
+//     classe Loi_Etat_Melange_Binaire
+//     Cette classe represente la loi d'etat pour les melanges binaires.
+//     Associe a un fluide incompressible, elle definit un fluide binaire quasi compressible
+//     dont la loi d'eata est :
+//        Pth = rho*R*T*(Y1/M1+Y2/M2)
 // .SECTION voir aussi
-//    Fonction de librairie hors classe
+//     Loi_Etat_GP
 //////////////////////////////////////////////////////////////////////////////
 
-class Zone_Cl_dis;
+class Loi_Etat_Melange_Binaire : public Loi_Etat_GP
+{
+  Declare_instanciable_sans_constructeur(Loi_Etat_Melange_Binaire);
 
-// Fonctions qui servent a tester la coherence des conditions aux limites
+public :
+  Loi_Etat_Melange_Binaire();
+  const Nom type_fluide() const;
+  void associer_fluide(const Fluide_Quasi_Compressible& fl);
+  void calculer_Cp();
+  void calculer_lambda();
+  void calculer_mu();
+  void calculer_mu_wilke();
+  void calculer_alpha();
+  void calculer_mu_sur_Sc(); // returns rho * D
+  void calculer_nu_sur_Sc(); // returns D
+  void calculer_masse_volumique();
+  double calculer_masse_volumique(double P,double Y1) const;
+  double inverser_Pth(double,double);
+  static constexpr double R_GAS = 8.314472;
 
-int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& );
+protected :
+  double massmol1_;
+  double massmol2_;
+  double mu1_;
+  double mu2_;
+  double tempr_;
+  double diff_coeff_;
+};
 
-int message_erreur_therm(const Cond_lim& , const Cond_lim& , int& );
-
-int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )  ;
-
-int message_erreur_conc(const Cond_lim& , const Cond_lim& , int& );
-
-int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& , const Zone_Cl_dis& );
-
-int message_erreur_fraction_massique(const Cond_lim& , const Cond_lim& , int& );
+#endif /* Loi_Etat_Melange_Binaire_included */
