@@ -380,7 +380,7 @@ void Matrice_Dense::inverse()
   // It uses the LAPACK library.
   const int nbLines = nb_lignes();
   const int nbCols = nb_colonnes();
-  int info = 0;
+  int infoerr = 0;
   ArrOfInt ipiv(nbLines);
   ArrOfDouble work(nbLines);
 
@@ -391,10 +391,10 @@ void Matrice_Dense::inverse()
       Process::abort( );
     }
 
-  F77NAME(DGETRF)(&nbLines, &nbLines, Matrix_.addr(), &nbLines, ipiv.addr(), &info);
-  assert(info == 0);
-  F77NAME(DGETRI)(&nbLines, Matrix_.addr(), &nbLines, ipiv.addr(), work.addr(), &nbLines, &info);
-  assert(info == 0);
+  F77NAME(DGETRF)(&nbLines, &nbLines, Matrix_.addr(), &nbLines, ipiv.addr(), &infoerr);
+  assert(infoerr == 0);
+  F77NAME(DGETRI)(&nbLines, Matrix_.addr(), &nbLines, ipiv.addr(), work.addr(), &nbLines, &infoerr);
+  assert(infoerr == 0);
 
   return;
 }
