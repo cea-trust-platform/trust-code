@@ -419,6 +419,7 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
           const int     nb_items      = items_communs.size_array();
           const DoubleTab& coord_voisin = coord_items_distants[i_joint];
           const DoubleTab& my_coord = coord_items_locaux[i_joint];
+          assert(my_coord.size_array() ==  coord_voisin.size_array());
           for(int i=0; i<nb_items; i++)
             {
               for(int j=0; j<nb_items; j++)
@@ -503,20 +504,24 @@ void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
       dom.zones().merge();
 
       //merging common vertices and remote items
-      const int& nb_faces_joint = dom_to_add.zone(0).faces_joint().size();
-      for (int i_joint = 0; i_joint < nb_faces_joint; i_joint++)
+      const int& nb_joints = dom_to_add.zone(0).nb_joints();
+      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
         {
-          const Joint& joint     = dom_to_add.zone(0).faces_joint()[i_joint];
+          const Joint& joint_to_add  = dom_to_add.zone(0).faces_joint()[i_joint];
 
-          const ArrOfInt& sommets_to_add = joint.joint_item(Joint::SOMMET).items_communs();
-          ArrOfInt& items_communs = dom.zone(0).faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
+          int my_joint_index = 0;
+          while(joint_to_add.PEvoisin() != dom.zone(0).faces_joint()[my_joint_index].PEvoisin())
+            my_joint_index++;
+
+          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
+          ArrOfInt& items_communs = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
           items_communs.set_smart_resize(1);
           for(int index=0; index<sommets_to_add.size_array(); index++)
             items_communs.append_array(nums[sommets_to_add[index]]);
           items_communs.array_trier_retirer_doublons();
 
-          const ArrOfInt& elements_to_add = joint.joint_item(Joint::ELEMENT).items_distants();
-          ArrOfInt& items_distants = dom.zone(0).faces_joint()[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
+          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
+          ArrOfInt& items_distants = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
           items_distants.set_smart_resize(1);
           for(int index=0; index<elements_to_add.size_array(); index++)
             items_distants.append_array(new_nb_elems + elements_to_add[index]);
