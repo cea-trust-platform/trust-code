@@ -491,6 +491,10 @@ convection_diffusion_chaleur_qc eqn_base convection_diffusion_chaleur_qc -1 Ener
 pb_thermohydraulique_qc Pb_base pb_thermohydraulique_qc -1 Resolution of thermohydraulic problem under low Mach number. NL2 Keywords for the unknowns other than pressure, velocity, temperature are : NL2 masse_volumique : density NL2 enthalpie : enthalpy NL2 pression : reduced pressure NL2 pression_tot : total pressure.
   attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 Navier-Stokes equations under low Mach number.
   attr convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc 0 Energy equation under low Mach number.
+convection_diffusion_fraction_massique_mb_qc eqn_base convection_diffusion_fraction_massique_mb_qc -1 Species conservation equation under low Mach number.
+pb_hydraulique_melange_binaire_qc Pb_base pb_hydraulique_melange_binaire_qc -1 Resolution of a binary mixture problem under low Mach number and iso-thermal conditions. NL2 Keywords for the unknowns other than pressure, velocity, fraction_massique are : NL2 masse_volumique : density NL2 pression : reduced pressure NL2 pression_tot : total pressure.
+  attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 Navier-Stokes equations under low Mach number.
+  attr convection_diffusion_fraction_massique_mb_qc convection_diffusion_fraction_massique_mb_qc convection_diffusion_fraction_massique_mb_qc 0 Species conservation equation under low Mach number.
 paroi_fixe condlim_base paroi_fixe -1 Keyword to designate a situation of adherence to the wall called bord (edge) (normal and tangential velocity at the edge is zero).
 paroi_ft_disc_deriv objet_lecture paroi_ft_disc_deriv 0 not_set
 paroi_ft_disc_symetrie paroi_ft_disc_deriv symetrie 0 Symetrie condition in the case of two-phase flows
@@ -521,7 +525,7 @@ frontiere_ouverte_pression_imposee_orlansky neumann frontiere_ouverte_pression_i
 frontiere_ouverte_pression_moyenne_imposee neumann frontiere_ouverte_pression_moyenne_imposee 0 Class for open boundary with pressure mean level imposed.
   attr pext floattant pext 0 Mean pressure.
 frontiere_ouverte neumann frontiere_ouverte -1 Boundary outlet condition on the boundary called bord (edge) (diffusion flux zero). This condition must be associated with a boundary outlet hydraulic condition.
-  attr var_name chaine(into=["T_ext","C_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext"]) var_name 0 Field name.
+  attr var_name chaine(into=["T_ext","C_ext","Y_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext"]) var_name 0 Field name.
   attr ch front_field_base ch 0 Boundary field type.
 frontiere_ouverte_temperature_imposee dirichlet frontiere_ouverte_temperature_imposee -1 Imposed temperature condition at the open boundary called bord (edge) (in the case of fluid inlet). This condition must be associated with an imposed inlet velocity condition. The imposed temperature value is expressed in oC or K.
   attr ch front_field_base ch 0 Boundary field type.

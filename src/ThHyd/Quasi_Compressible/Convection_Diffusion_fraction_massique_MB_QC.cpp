@@ -415,6 +415,12 @@ DoubleTab& Convection_Diffusion_fraction_massique_MB_QC::derivee_en_temps_inco_s
 
   derivee.echange_espace_virtuel();
 
+  // TODO : FIXME
+  // WE SHOULD ADD THE SOURCE TERM ...
+  /*
+   *
+   */
+
   /*
    * SECOND TERM : convective
    * = - u grad(Y) = [ Y div (rho*u) - div( rho*u*Y ) ] / rho
@@ -493,6 +499,12 @@ void Convection_Diffusion_fraction_massique_MB_QC::assembler( Matrice_Morse& mat
 
       matrice(som,som)+=derivee2(som)*inv_rho;
     }
+
+  // TODO : FIXME
+  // WE SHOULD ADD THE SOURCE TERM ...
+  /*
+   *
+   */
 
   // on a la matrice approchee on recalcule le residu;
   resu=0;

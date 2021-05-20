@@ -108,9 +108,9 @@ Lire pb1
       c_c_c_c_c_c_c%0 paroi
       p  paroi
       in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 1.0
-      o_o_o_o  frontiere_ouverte C_ext Champ_front_Uniforme 1 0.0
-      f  frontiere_ouverte C_ext Champ_front_Uniforme 1 0.0
-      g   frontiere_ouverte C_ext Champ_front_Uniforme 1 0.0
+      o_o_o_o  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+      f  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+      g   frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
     }
   }
 
