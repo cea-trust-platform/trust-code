@@ -148,11 +148,7 @@ void Ch_front_input_P1::getTemplate(TrioField& afield) const
   // Includes all the nodes, even those not used in connectivity
   // order is  x y z  x y z  x y z
   affecte_double_avec_doubletab(&afield._coords,sommets);
-
-
-  assert (sizeof(int)==sizeof(int));
   affecte_int_avec_inttab(&afield._connectivity,faces);
-
 }
 
 

@@ -120,7 +120,7 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
       if (ma_sous_zone.non_nul())
         {
           const Sous_Zone& ssz=ma_sous_zone.valeur();
-          afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+          afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
           for (int i = 0, j = 0; i < ssz.nb_elem_tot(); i++)
             if (ssz[i] < zvf.nb_elem())
               memcpy(afield._connectivity + j * e_s.dimension(1), &e_s(ssz[i], 0), e_s.dimension(1) * sizeof(int)), j++;
@@ -130,7 +130,7 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
   else //polyedres -> il faut reconstruire une connectivite de type MEDCoupling a la main
     {
       afield._nodes_per_elem = zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1); //un -1 apres chaque face
-      int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+      int *p = afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
       for (int i = 0, j, k, e, f, s; i < (ma_sous_zone.non_nul() ? ma_sous_zone.valeur().nb_elem_tot() : zvf.nb_elem()); i++)
         {
           if (ma_sous_zone.non_nul() && ma_sous_zone.valeur()[i] >= zvf.nb_elem()) continue; //element non reel de la sous-zone -> on saute

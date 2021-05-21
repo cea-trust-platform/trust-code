@@ -42,7 +42,7 @@ class DoubleTab;
 class ArrOfDouble;
 class ArrOfInt;
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
-void affecte_int_avec_inttab(True_int** p, const ArrOfInt& trio);
+void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
 #include <ICoCoMEDDoubleField.hxx>
 #ifndef NO_MEDFIELD
 ICoCo::MEDDoubleField build_medfield(ICoCo::TrioField&);

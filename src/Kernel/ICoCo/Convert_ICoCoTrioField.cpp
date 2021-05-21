@@ -36,15 +36,11 @@ void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
   memcpy(*p,trio.addr(),trio.size_array()*sizeof(double));
 }
 
-void affecte_int_avec_inttab(True_int** p, const ArrOfInt& trio)
+void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
 {
   int sz=trio.size_array();
-  *p=new True_int[sz];
-  if (sizeof(int)==sizeof(True_int))
-    memcpy(*p,trio.addr(),sz*sizeof(int));
-  else
-    for (int i=0; i<sz; i++)
-      (*p)[i]=True_int(trio[i]);
+  *p=new int[sz];
+  memcpy(*p,trio.addr(),sz*sizeof(int));
 }
 
 ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
@@ -96,14 +92,14 @@ ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
       const IntTab& conn = loc_faces ? zvf.face_sommets() : zvf.zone().les_elems();
       //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
       afield._nodes_per_elem = max(conn.dimension(1), type_elem == "POLYGONE" || type_elem == "POLYGONE_3D"  || type_elem == "POLYEDRE"  ? 5 : 0);
-      afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+      afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
       for (int i = 0; i < afield._nb_elems; i++) for (int j = 0; j < afield._nodes_per_elem; j++)
           afield._connectivity[afield._nodes_per_elem * i + j] = j < conn.dimension(1) ? conn(i, j) : -1;
     }
   else //maillage de polyedres -> connectivite au format MEDCoupling, a faire a la main
     {
       afield._nodes_per_elem = max(zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1), 9); //un -1 apres chaque face : au moins 9 pour eviter un papillonage
-      int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];
+      int *p = afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
       for (int e = 0, f, s, i, j; e < afield._nb_elems; e++)
         {
           /* insertion de la connectivite de chaque face, suivie d'un -1 */
