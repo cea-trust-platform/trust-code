@@ -6,6 +6,7 @@ jdd=`basename $jdd`
 if [ ${jdd#PAR_} != $jdd ]
 then
    # compare parmetis results with metis and trust
+   rm *Zones -f
    trust FIRST_DEC || exit -1
    trust DEC_INTERM 2 || exit -1
    trust READ_DEC 4 || exit -1

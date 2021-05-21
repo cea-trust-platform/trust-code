@@ -1235,6 +1235,7 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
   fichier += Nom(s);
 }
 
+
 void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 {
   os << sous_domaine;
@@ -1255,87 +1256,6 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   const Domaine& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
 
-  //To detect my parts (when running in parallel)
-  ArrOfInt myZones(nb_parties_);
-  myZones = 0;
-  const int nbelem = domaine.zone(0).nb_elem();
-  for(int i=0; i < nbelem; i++)
-    {
-      const int part = elem_part[i];
-      myZones[part] = 1;
-    }
-
-  //to detect empty parts (sometimes parmetis can also generate empty parts)
-  ArrOfInt emptyZones(nb_parties_);
-  emptyZones = 0;
-
-  //check to see if my Zones are shared with other procs
-  VECT(ArrOfInt) otherProcZones(Process::nproc());
-
-  //if some zones are splitted between multiple procs,
-  //we assign consecutive indices to each of its fragment
-  //(reading the .Zones files during Scatter will be more efficient)
-  // Possible values for zones_index[part]:
-  // -2    : means that part is detained by multiple procs but not by me
-  // -1    : means that part is detained by a single proc
-  // i >=0 : means that my proc detains the i-th fragment of part
-  VECT(ArrOfInt) zones_indices(Process::nproc());
-  ArrOfInt zones_index(nb_parties_);
-  zones_index = -2;
-  for(int p=0; p<Process::nproc(); p++)
-    {
-      if(p==0)
-        otherProcZones[p] = myZones;
-      else
-        {
-          otherProcZones[p].resize_array(nb_parties_);
-          otherProcZones[p] = 0;
-        }
-    }
-  if(Process::je_suis_maitre())
-    {
-      for(int p=0; p<Process::nproc(); p++)
-        {
-          zones_indices[p].resize_array(nb_parties_);
-          zones_indices[p] = -2;
-          if(p!=0)
-            recevoir(otherProcZones[p], p, 0, p+2001);
-        }
-
-      for(int part=0; part<nb_parties_; part++)
-        {
-          int s = 0;
-          for(int proc=0; proc < Process::nproc(); proc++)
-            {
-              if(otherProcZones[proc][part])
-                zones_indices[proc][part] = s++;
-            }
-
-          //empty part
-          if(s==0)
-            emptyZones[part] = 1;
-
-          //part is detained by a single proc
-          if(s==1)
-            for(int proc=0; proc < Process::nproc(); proc++)
-              zones_indices[proc][part] = -1;
-
-        }
-
-      for(int p=0; p<Process::nproc(); p++)
-        {
-          if(p==0)
-            zones_index = zones_indices[p];
-          else
-            envoyer(zones_indices[p], 0, p, p+2002);
-        }
-    }
-  else
-    {
-      envoyer(myZones, Process::me(), 0, Process::me()+2001);
-      recevoir(zones_index, 0, Process::me(), Process::me()+2002);
-    }
-
   // Needed for HDF5 Zones output:
   FichierHDFPar fic_hdf;
   Nom nom_fichier_hdf5(basename);
@@ -1348,6 +1268,22 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   ja.set_smart_resize(1);
   int nnz=0;
   ia[0]=1;
+
+  //To detect my parts (when running in parallel)
+  ArrOfInt myZones(nb_parties_);
+  myZones = 0;
+
+  //if some zones are splitted between multiple procs,
+  //we assign consecutive indices to each of its fragment
+  //(reading the .Zones files during Scatter will be more efficient)
+  // Possible values for zones_index[part]:
+  // -2    : means that part is detained by multiple procs but not by me
+  // -1    : means that part is detained by a single proc
+  // i >=0 : means that my proc detains the i-th fragment of part
+  ArrOfInt zones_index(nb_parties_);
+  zones_index = -2;
+
+  const int nbelem = domaine.zone(0).nb_elem();
 
   Cerr << "Generation of " << nb_parties_ << " parts:" << finl;
   IntVect EdgeCut(nb_parties_);
@@ -1365,55 +1301,128 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           Cerr << "====================================" << finl;
         }
 
-      if (format == Decouper::HDF5_SINGLE && loop == 0)  // create HDF5 file only once!
+      if(loop == reorder)
         {
-          fic_hdf.create(nom_fichier_hdf5);
-          fic_hdf.close();
+          // check to see which part is shared between multiple processors:
+          // 1- everyone sends the number of the parts that belong to them to the master process
+          // 2- master process will assign a unique positive number to each fragment of a shared zone
+          // 3- if a part is owned by a single process, it is indicated with the index -1
+          // 4- the master process scatters the indices to all the proc
 
+          VECT(ArrOfInt) zones_indices(Process::nproc());
+          VECT(ArrOfInt) otherProcZones(Process::nproc());
+
+          for(int i=0; i < nbelem; i++)
+            {
+              const int part = elem_part[i];
+              myZones[part] = 1;
+            }
+
+          for(int p=0; p<Process::nproc(); p++)
+            {
+              if(p==0)
+                otherProcZones[p] = myZones;
+              else
+                {
+                  otherProcZones[p].resize_array(nb_parties_);
+                  otherProcZones[p] = 0;
+                }
+            }
           if(Process::je_suis_maitre())
             {
-              Noms dataset_names;
+              for(int p=0; p<Process::nproc(); p++)
+                {
+                  zones_indices[p].resize_array(nb_parties_);
+                  zones_indices[p] = -2;
+                  if(p!=0)
+                    recevoir(otherProcZones[p], p, 0, p+2001);
+                }
+
               for(int part=0; part<nb_parties_; part++)
                 {
-                  if(zones_index[part] == -1)
+                  int s = 0;
+                  for(int proc=0; proc < Process::nproc(); proc++)
                     {
-                      std::string dname = "/zone_"  + std::to_string(part);
-                      Nom dataset_name(dname.c_str());
-                      dataset_names.add(dataset_name);
+                      if(otherProcZones[proc][part])
+                        zones_indices[proc][part] = s++;
                     }
-                  else
+
+                  if(s<=1)
                     {
+                      if(s==0)   //empty part: master process will write it
+                        myZones[part] = 1;
+
+                      //part is detained by a single proc
                       for(int proc=0; proc < Process::nproc(); proc++)
-                        {
-                          if(zones_indices[proc][part] >=0)
-                            {
-                              std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
-                              Nom dataset_name(dname.c_str());
-                              dataset_names.add(dataset_name);
-                            }
-                        }
+                        zones_indices[proc][part] = -1;
                     }
                 }
 
-              // estimation of an upper bound of the datasets' size
-              unsigned sz = domaine.nb_som()*dimension*sizeof(double)
-                            + domaine.zone(0).nb_elem()*domaine.zone(0).nb_som_elem()*sizeof(int)
-                            + (domaine.zone(0).nb_faces_frontiere()+domaine.zone(0).nb_faces_joint())*(domaine.zone(0).type_elem().valeur().nb_som_face()+2)*sizeof(int);
-              FichierHDF fic_master;
-              fic_master.open(nom_fichier_hdf5, false);
-              fic_master.create_datasets(dataset_names, sz);
-              fic_master.close();
+              for(int p=0; p<Process::nproc(); p++)
+                {
+                  if(p==0)
+                    zones_index = zones_indices[p];
+                  else
+                    envoyer(zones_indices[p], 0, p, p+2002);
+                }
+            }
+          else
+            {
+              envoyer(myZones, Process::me(), 0, Process::me()+2001);
+              recevoir(zones_index, 0, Process::me(), Process::me()+2002);
             }
 
-          fic_hdf.open(nom_fichier_hdf5, false);
+          if (format == Decouper::HDF5_SINGLE)  // create HDF5 file only once!
+            {
+              fic_hdf.create(nom_fichier_hdf5);
+              fic_hdf.close();
+              if(Process::je_suis_maitre())
+                {
+                  Noms dataset_names;
+                  for(int part=0; part<nb_parties_; part++)
+                    {
+                      if(zones_index[part] == -1)
+                        {
+                          std::string dname = "/zone_"  + std::to_string(part);
+                          Nom dataset_name(dname.c_str());
+                          dataset_names.add(dataset_name);
+                        }
+                      else
+                        {
+                          for(int proc=0; proc < Process::nproc(); proc++)
+                            {
+                              if(zones_indices[proc][part] >=0)
+                                {
+                                  std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
+                                  Nom dataset_name(dname.c_str());
+                                  dataset_names.add(dataset_name);
+                                }
+                            }
+                        }
+                    }
+
+
+                  // estimation of an upper bound of the datasets' size
+                  unsigned sz = domaine.nb_som()*dimension*sizeof(double)
+                                + domaine.zone(0).nb_elem()*domaine.zone(0).nb_som_elem()*sizeof(int)
+                                + (domaine.zone(0).nb_faces_frontiere()+domaine.zone(0).nb_faces_joint())*(domaine.zone(0).type_elem().valeur().nb_som_face()+2)*sizeof(int);
+                  FichierHDF fic_master;
+                  fic_master.open(nom_fichier_hdf5, false);
+                  fic_master.create_datasets(dataset_names, sz);
+                  fic_master.close();
+                }
+
+              fic_hdf.open(nom_fichier_hdf5, false);
+            }
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
-          if( !myZones[i_part] && !emptyZones[i_part]) continue;
-          Cerr << " Construction of part number " << i_part << finl;
+          if(!myZones[i_part])
+            continue;
 
-          assert(zones_index[i_part]!=-2);
-          if(zones_index[i_part] != -1)
+          assert(zones_index[i_part] > -2);
+          Cerr << " Construction of part number " << i_part << finl;
+          if(zones_index[i_part] >= 0)
             Cerr << "This part is shared between multiple processors" << finl;
 
           Domaine sous_domaine;
@@ -1501,7 +1510,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   writeData(sous_domaine, os_hdf);
 
                   std::string dname = "/zone_" + std::to_string(i_part);;
-                  if(zones_index[i_part] != -1)
+                  if(zones_index[i_part] >=0)
                     dname += "_" + std::to_string(zones_index[i_part]);
 
                   Nom dataset_name(dname.c_str());
@@ -1587,11 +1596,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           int size=elem_part.size_array();
           for (int i=0; i<size; i++)
             elem_part[i]=renum[elem_part[i]];
-
+          elem_part.echange_espace_virtuel();
           // Rebuild the liste_elems_sous_domaines_
           liste_elems_sous_domaines_.reset();
           calculer_listes_elements_sous_domaines(elem_part, nb_parties_, nbelem, liste_elems_sous_domaines_);
-          //calculer_listes_elements_sous_domaines(elem_part, nb_parties_, liste_elems_sous_domaines_);
         }
 
       /*

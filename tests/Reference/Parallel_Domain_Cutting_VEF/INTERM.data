@@ -1,0 +1,19 @@
+# SECOND PARTITIONNING #
+# Parallel OK #
+dimension 3
+Domaine dom
+
+# BEGIN SCATTER #
+Scatter DOM.Zones dom
+Decouper dom
+{ 
+	partitionneur parmetis { nb_parts 8 } 
+	Larg_joint 2
+	reorder 1
+	Nom_Zones DOM_PARMETIS
+	periodique 1 paroiY
+	single_hdf
+	
+}
+End
+# END SCATTER #
