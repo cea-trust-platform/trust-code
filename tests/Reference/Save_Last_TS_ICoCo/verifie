@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! -f Save_Last_TS_ICoCo.sauv ]
+then
+   echo "Error - SAUV file not produced !!"
+   exit 255
+fi
+

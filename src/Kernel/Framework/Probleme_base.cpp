@@ -1133,7 +1133,7 @@ void Probleme_base::finir()
   Debog::set_nom_pb_actuel(le_nom());
 
   les_postraitements.finir();
-  if (lsauv())
+  if (schema_temps().temps_sauv() > 0.0)
     sauver();
 
   // On ferme proprement le fichier de sauvegarde

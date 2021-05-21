@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+21/05/21 (TRUST)  Bug fix     : Last backup was not always correctly done, especially within ICoCo context. 
 20/05/21 (TRUST)  New feature : New problem added which allows simulating binary mixture flows at iso-bar and iso-thermal conditions using a low Mach number approximation (turbulent version available in trioCFD)
 12/05/21 (TRUST)  New feature : Add a new state equation Rho_T which defines the density as a function of the temperature field in a QC problem; i.e. rho=f(T) (independent of the thermo-dynamic pressure)
 11/05/21 (TRUST)  New feature : Add a solid/fluid coupling test case which illustrates the use of ICoCo (V2) with a python supervisor (docond_VEF_3D_ICoCo_py)
