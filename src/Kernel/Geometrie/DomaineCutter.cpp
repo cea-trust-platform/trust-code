@@ -1272,6 +1272,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   //To detect my parts (when running in parallel)
   ArrOfInt myZones(nb_parties_);
   myZones = 0;
+  VECT(ArrOfInt) otherProcZones(Process::nproc());
 
   //if some zones are splitted between multiple procs,
   //we assign consecutive indices to each of its fragment
@@ -1287,7 +1288,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
 
   Cerr << "Generation of " << nb_parties_ << " parts:" << finl;
   IntVect EdgeCut(nb_parties_);
-  IntVect Neighbours(nb_parties_);
+  VECT(ArrOfInt) Neighbours(nb_parties_);
   // 2 loops if reorder=1
   for (int loop=0; loop<1+reorder; loop++)
     {
@@ -1308,9 +1309,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           // 2- master process will assign a unique positive number to each fragment of a shared zone
           // 3- if a part is owned by a single process, it is indicated with the index -1
           // 4- the master process scatters the indices to all the proc
-
           VECT(ArrOfInt) zones_indices(Process::nproc());
-          VECT(ArrOfInt) otherProcZones(Process::nproc());
 
           for(int i=0; i < nbelem; i++)
             {
@@ -1439,10 +1438,13 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             int nbfaces_total=0;
             int nbelemdist_total=0;
             int nbsom_total=0;
+            Neighbours[i_part].resize_array(0);
+            Neighbours[i_part].resize_array(nb_joints);
             for (int i = 0; i < nb_joints; i++)
               {
                 const Joint& joint = joints[i];
                 const int pe = joint.PEvoisin();
+                Neighbours[i_part][i] = pe;
                 const int nbsom = joint.joint_item(Joint::SOMMET).items_communs().size_array();
                 nbsom_total+=nbsom;
                 const int nbfaces = joint.nb_faces();
@@ -1458,7 +1460,6 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             Cerr<<"               Total:    NbSommets "<<nbsom_total<<" NbFaces "<<nbfaces_total;
             if (Decouper::print_more_infos) Cerr<<" NbElemDist "<<nbelemdist_total;
             EdgeCut(i_part)=nbfaces_total;
-            Neighbours(i_part)=nb_joints;
             Cerr<<finl;
 
           }
@@ -1593,7 +1594,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           ArrOfInt renum(nb_parties_);
           for (int i_part=0; i_part < nb_parties_; i_part++)
             renum[riord[i_part]-1]=i_part;
-          int size=elem_part.size_array();
+          int size=elem_part.size_reelle();
           for (int i=0; i<size; i++)
             elem_part[i]=renum[elem_part[i]];
           elem_part.echange_espace_virtuel();
@@ -1626,30 +1627,85 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
       Cerr << "Global interface ratio      =    3.4%
       Cerr << "Neighbor variation          = (1 - 2) */
     }
-  Cout << "\nQuality of partitioning --------------------------------------------" << finl;
-  int total_edge_cut = 0;
-  for (int i_part=0; i_part<nb_parties_; i_part++)
-    total_edge_cut+=EdgeCut(i_part);
-  Cout << "Total number of edge-cut (faces shared by processes) : " << total_edge_cut << finl;
-  if (total_edge_cut>0)
+
+  // if my part is shared with other procs, then my whole part may contain joints that I don't have
+  // calling mp_sum wouldn't be correct though, because the shared joints would be counted several times
+  // so we need to gather neighbours of each part
+  if (Decouper::print_more_infos)   // involves communication: do it only if requested
     {
-      double mean_edgecut_zone = total_edge_cut / nb_parties_;
-      double load_imbalance = double(local_max_vect(EdgeCut) / mean_edgecut_zone);
-      Cout << "Number of edge-cut per Zone (min/mean/max) : " << local_min_vect(EdgeCut) << " / "
-           << (int) (mean_edgecut_zone) << " / " << local_max_vect(EdgeCut) << " Load imbalance: " << load_imbalance
-           << "\n" << finl;
+      if(Process::je_suis_maitre())
+        {
+          for(int proc=1; proc<Process::nproc(); proc++)
+            {
+              for(int i_part=0; i_part<nb_parties_; i_part++)
+                {
+                  if(otherProcZones[proc][i_part])
+                    {
+                      ArrOfInt tmp_neighbours;
+                      tmp_neighbours.set_smart_resize(1);
+                      recevoir(tmp_neighbours, proc, 0, proc+2003);
+
+                      Neighbours[i_part].set_smart_resize(1);
+                      for(int i=0; i<tmp_neighbours.size_array(); i++)
+                        Neighbours[i_part].append_array(tmp_neighbours[i]);
+                    }
+                }
+              ArrOfInt tmp_edge_cut(nb_parties_);
+              tmp_edge_cut = 0;
+              recevoir(tmp_edge_cut, proc, 0, proc+2008);
+
+              for(int i_part=0; i_part<nb_parties_; i_part++)
+                EdgeCut(i_part) += tmp_edge_cut(i_part);
+
+            }
+
+          Cout << "\nQuality of partitioning --------------------------------------------" << finl;
+          int total_edge_cut = 0;
+          for (int i_part=0; i_part<nb_parties_; i_part++)
+            total_edge_cut+=EdgeCut(i_part);
+          Cout << "Total number of edge-cut (faces shared by processes) : " << total_edge_cut << finl;
+          if (total_edge_cut>0)
+            {
+              double mean_edgecut_zone = total_edge_cut / nb_parties_;
+              int max_edgecut_zone = local_min_vect(EdgeCut);
+              int min_edgecut_zone = local_max_vect(EdgeCut);
+
+              double load_imbalance = double(max_edgecut_zone / mean_edgecut_zone);
+              Cout << "Number of edge-cut per Zone (min/mean/max) : " << min_edgecut_zone  << " / "
+                   << (int) (mean_edgecut_zone) << " / " << max_edgecut_zone  << " Load imbalance: " << load_imbalance
+                   << "\n" << finl;
+            }
+
+          int mean_neighbours = 0;
+          int min_neighbours = nb_parties_;
+          int max_neighbours = 0;
+          for (int i_part = 0; i_part < nb_parties_; i_part++)
+            {
+              Neighbours[i_part].array_trier_retirer_doublons();
+              int nb_neighbours = Neighbours[i_part].size_array();
+              mean_neighbours += nb_neighbours;
+              if(nb_neighbours < min_neighbours)   min_neighbours = nb_neighbours;
+              if(nb_neighbours > max_neighbours)   max_neighbours = nb_neighbours;
+            }
+
+          mean_neighbours/=nb_parties_;
+          if (mean_neighbours>0)
+            {
+              double load_imbalance = double(max_neighbours / mean_neighbours);
+              Cout << "Number of neighbours per Zone (min/mean/max) : " << min_neighbours << " / "
+                   << (int) (mean_neighbours) << " / " <<max_neighbours << " Load imbalance: " << load_imbalance
+                   << "\n" << finl;
+            }
+        }
+      else
+        {
+          for(int i_part=0; i_part < nb_parties_; i_part++)
+            if(myZones[i_part])
+              envoyer(Neighbours[i_part], Process::me(), 0, Process::me()+2003);
+          envoyer(EdgeCut, Process::me(), 0, Process::me()+2008);
+        }
     }
-  int mean_neighbours = 0;
-  for (int i_part = 0; i_part < nb_parties_; i_part++)
-    mean_neighbours += Neighbours(i_part);
-  mean_neighbours/=nb_parties_;
-  if (mean_neighbours>0)
-    {
-      double load_imbalance = double(local_max_vect(Neighbours) / mean_neighbours);
-      Cout << "Number of neighbours per Zone (min/mean/max) : " << local_min_vect(Neighbours) << " / "
-           << (int) (mean_neighbours) << " / " << local_max_vect(Neighbours) << " Load imbalance: " << load_imbalance
-           << "\n" << finl;
-    }
+
   if (format == Decouper::HDF5_SINGLE)
     fic_hdf.close();
 

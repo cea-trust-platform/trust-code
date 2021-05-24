@@ -76,7 +76,7 @@ void Partitionneur_base::corriger_elem0_sur_proc0(IntVect& elem_part)
     }
 
   Cerr << " Exchange of parts 0 and " << pe_to_xchange << finl;
-  const int n = elem_part.size_array();
+  const int n = elem_part.size_reelle();
   for (int i = 0; i < n; i++)
     {
       const int pe = elem_part[i];
