@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,7 @@ class Terme_Source_Canal_perio_VEF_P1NC : public Terme_Source_Canal_perio
   Declare_instanciable(Terme_Source_Canal_perio_VEF_P1NC);
 
 public :
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const;
+  virtual DoubleTab& ajouter(DoubleTab& ) const;
 
 protected :
 

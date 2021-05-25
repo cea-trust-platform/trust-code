@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 //
 // File:        Terme_Source_Canal_perio_VDF_Face.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Sources
-// Version:     /main/37
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -106,8 +106,7 @@ DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
   const DoubleVect& porosite_surf = zone_VF.porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
   int ncomp;
-  ArrOfDouble s;
-  s = source();
+  ArrOfDouble s(source());
 
   // Boucle sur les conditions limites pour traiter les faces de bord
   int n_bord,ndeb,nfin;
@@ -159,11 +158,6 @@ DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-DoubleTab& Terme_Source_Canal_perio_VDF_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
-}
 
 void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
 {

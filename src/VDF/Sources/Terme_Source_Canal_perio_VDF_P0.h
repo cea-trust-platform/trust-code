@@ -14,57 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_Canal_perio_VDF_Face.h
+// File:        Terme_Source_Canal_perio_VDF_P0.h
 // Directory:   $TRUST_ROOT/src/VDF/Sources
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Terme_Source_Canal_perio_VDF_Face_included
-#define Terme_Source_Canal_perio_VDF_Face_included
+#ifndef Terme_Source_Canal_perio_VDF_P0_included
+#define Terme_Source_Canal_perio_VDF_P0_included
 
 
 
 //
-// .DESCRIPTION class Terme_Source_Canal_perio_VDF_Face
+// .DESCRIPTION class Terme_Source_Canal_perio_VDF_P0
 //  Cette classe permet de conserver le debit dans une simulation
 //  temporelle de Canal
 //
 // .SECTION voir aussi
 //  Terme_Source_Canal_perio
 
-#include <Terme_Source_Canal_perio.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Terme_Source_Canal_perio_VDF_Face.h>
 
-class Probleme_base;
-class Navier_Stokes_std;
-class DoubleTab;
-
-
-// La classe derive de Source_base et peut etre d'un terme source
-
-class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
+class Terme_Source_Canal_perio_VDF_P0 : public Terme_Source_Canal_perio_VDF_Face
 {
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
+  Declare_instanciable(Terme_Source_Canal_perio_VDF_P0);
 
 public :
   virtual DoubleTab& ajouter(DoubleTab& ) const;
 
 protected :
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  // This one is overridden from Terme_Source_Canal_perio essentially to store source
+  // term on P0 location and not on Faces or P1NC.
+  virtual ArrOfDouble source_convection_diffusion(double debit_e) const;
+};
 
-  virtual void calculer_debit(double&) const;
-};
-class Terme_Source_Canal_perio_QC_VDF_Face : public Terme_Source_Canal_perio_VDF_Face
-{
-  Declare_instanciable(Terme_Source_Canal_perio_QC_VDF_Face);
-};
-class Terme_Source_Canal_perio_VDF_Front_Tracking : public Terme_Source_Canal_perio_VDF_Face
-{
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_Front_Tracking);
-};
 #endif

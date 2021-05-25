@@ -14,57 +14,72 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_Canal_perio_VDF_Face.h
+// File:        Terme_Source_Canal_perio_VDF_P0.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Sources
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Terme_Source_Canal_perio_VDF_P0.h>
+#include <Zone_VF.h>
+#include <Zone_VDF.h>
+#include <Convection_Diffusion_std.h>
 
-#ifndef Terme_Source_Canal_perio_VDF_Face_included
-#define Terme_Source_Canal_perio_VDF_Face_included
+Implemente_instanciable(Terme_Source_Canal_perio_VDF_P0, "Canal_perio_VDF_P0_VDF", Terme_Source_Canal_perio_VDF_Face);
 
-
-
+//// printOn
 //
-// .DESCRIPTION class Terme_Source_Canal_perio_VDF_Face
-//  Cette classe permet de conserver le debit dans une simulation
-//  temporelle de Canal
+Sortie& Terme_Source_Canal_perio_VDF_P0::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}
+
+//// readOn
 //
-// .SECTION voir aussi
-//  Terme_Source_Canal_perio
-
-#include <Terme_Source_Canal_perio.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
-
-class Probleme_base;
-class Navier_Stokes_std;
-class DoubleTab;
-
-
-// La classe derive de Source_base et peut etre d'un terme source
-
-class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
+Entree& Terme_Source_Canal_perio_VDF_P0::readOn(Entree& s )
 {
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
+  return Terme_Source_Canal_perio_VDF_Face::readOn(s);
+}
 
-public :
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
-
-protected :
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
-
-  virtual void calculer_debit(double&) const;
-};
-class Terme_Source_Canal_perio_QC_VDF_Face : public Terme_Source_Canal_perio_VDF_Face
+ArrOfDouble Terme_Source_Canal_perio_VDF_P0::source_convection_diffusion(double debit_e) const
 {
-  Declare_instanciable(Terme_Source_Canal_perio_QC_VDF_Face);
-};
-class Terme_Source_Canal_perio_VDF_Front_Tracking : public Terme_Source_Canal_perio_VDF_Face
+  // Compute heat_flux:
+  double heat_flux = compute_heat_flux();
+
+  const Zone_VF& zone_vf = ref_cast(Zone_VF,equation().zone_dis().valeur());
+  const double& volume = zone_vf.zone().volume_total();
+  int size = zone_vf.nb_elem();
+  ArrOfDouble s(size);
+  if (velocity_weighting_) // It seems this algorithm do not imply dT/dt -> 0
+    {
+      Cerr << "Option 'velocity_weighting' of source term 'canal_perio' in '" << equation().que_suis_je() << "' is not supported!!" << finl;
+      Cerr << "Contact TRUST support" << finl;
+      exit();
+    }
+  else
+    {
+      // Compute source term with
+      // Source = -Sum(imposed_heat_flux)/Volume
+      // Loop on the faces
+      for (int num_elem = 0; num_elem < size; num_elem++)
+        s(num_elem) = -heat_flux/volume;
+    }
+  return s;
+}
+
+DoubleTab& Terme_Source_Canal_perio_VDF_P0::ajouter(DoubleTab& resu) const
 {
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_Front_Tracking);
-};
-#endif
+  const Zone_VF& zone_VF = la_zone_VDF.valeur();
+  const DoubleVect& volumes = zone_VF.volumes();
+  ArrOfDouble s(source());
+
+  // Boucle sur les elements internes
+  int nb_elem = zone_VF.nb_elem();
+  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+    {
+      double vol = volumes(num_elem);
+      resu(num_elem)+= s(num_elem)*vol;
+    }
+
+  return resu;
+}

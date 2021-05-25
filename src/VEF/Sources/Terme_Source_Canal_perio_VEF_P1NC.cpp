@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -128,12 +128,6 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
         }
     }
   return resu;
-}
-
-DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
 }
 
 void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
