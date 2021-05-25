@@ -88,30 +88,41 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
-                              cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), dv(N, N), coeff(N, N, 2); //arguments pour coeff
-  double dv_min = 0.1;
+                              cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), exp_res = 2;
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N, 2); //arguments pour coeff
+  double dv_min = 0.1, dh, a_res = 1e-2;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-        {
-          for (n = 0; n < N; n++) a_l(n)   = alpha(e, n);
-          for (n = 0; n < N; n++) p_l(n)   = press(e, n * (Np > 1));
-          for (n = 0; n < N; n++) T_l(n)   = temp(e, n);
-          for (n = 0; n < N; n++) rho_l(n) = rho(!cR * e, n);
-          for (n = 0; n < N; n++) mu_l(n)  = mu(!cM * e, n);
-          for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = max(ch.v_norm(pvit, pvit, e, f, k, l, NULL, NULL), dv_min);
-          correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh_e(e), dv, coeff);
-
-          /* contributions : on prend le max entre les deux cotes */
-          for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
+  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
+      {
+        for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, dv = dv_min, ddv = 0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+          {
+            for (n = 0; n < N; n++) a_l(n)   += mu_f(f, n, c) * alpha(e, n);
+            for (n = 0; n < N; n++) p_l(n)   += mu_f(f, n, c) * press(e, n * (Np > 1));
+            for (n = 0; n < N; n++) T_l(n)   += mu_f(f, n, c) * temp(e, n);
+            for (n = 0; n < N; n++) rho_l(n) += mu_f(f, n, c) * rho(!cR * e, n);
+            for (n = 0; n < N; n++) mu_l(n)  += mu_f(f, n, c) * mu(!cM * e, n);
+            for (n = 0; n < N; n++) dh += mu_f(f, n, c) * alpha(e, n) * dh_e(e);
+            for (k = 0; k < N; k++) for (l = 0; l < N; l++)
                 {
-                  double fac = pf(f) * vf(f) * mu_f(f, k, c) * coeff(k, l, 0);
-                  secmem(f, k) -= fac * (inco(f, k) - inco(f, l));
-                  if (mat) for (j = 0; j < 2; j++) (*mat)(N * f + k, N * f + (j ? l : k)) += fac * (j ? -1 : 1);
+                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
+                  if (dv_c > dv(k, l)) for (dv(k, l) = dv_c, i = 0; i < 4; i++) ddv(k, l, i) = ddv_c(i);
                 }
-        }
+          }
+        correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh, dv, coeff);
+        for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
+              coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
+
+        /* contributions : on prend le max entre les deux cotes */
+        for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
+              {
+                double fac = pf(f) * vf(f);
+                /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
+                secmem(f, k) -= fac * (coeff(k, l, 0) * (inco(f, k) - inco(f, l)) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)) * ((inco(f, k) - inco(f, l)) - (pvit(f, k) - pvit(f, l))));
+                if (mat) for (j = 0; j < 2; j++) (*mat)(N * f + k, N * f + (j ? l : k)) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)));
+              }
+      }
 
   /* elements */
   for (e = 0; e < zone.nb_elem_tot(); e++)
@@ -123,14 +134,18 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
       for (n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
       for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
 
-      for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, NULL), dv_min);
+      for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh_e(e), dv, coeff);
+      for (k = 0; k < N; k++) for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
+      for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
+            coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
 
       for (d = 0, i = nf_tot + D * e; d < D; d++, i++) for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
               {
-                double fac = pe(e) * ve(e) * coeff(k, l, 0);
-                secmem(i, k) -= fac * (inco(i, k) - inco(i, l));
-                if (mat) for (j = 0; j < 2; j++) (*mat)(N * i + k, N * i + l) += fac * (j ? -1 : 1);
+                double fac = pe(e) * ve(e);
+                /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
+                secmem(i, k) -= fac * (coeff(k, l, 0) * (inco(i, k) - inco(i, l)) + coeff(k, l, 1) * ddv(k, l, d) * (pvit(i, k) - pvit(i, l)) * ((inco(i, k) - inco(i, l)) - (pvit(i, k) - pvit(i, l))));
+                if (mat) for (j = 0; j < 2; j++) (*mat)(N * i + k, N * i + l) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, d) * (pvit(i, k) - pvit(i, l)));
               }
     }
 }
