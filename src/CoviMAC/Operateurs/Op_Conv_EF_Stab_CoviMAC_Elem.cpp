@@ -79,15 +79,17 @@ Entree& Op_Conv_EF_Stab_CoviMAC_Elem::readOn( Entree& is )
       param.lire_avec_accolades_depuis(is);
     }
 
-  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit
+  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
     {
       const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
       noms_cc_phases_.dimensionner(pb.nb_phases()), cc_phases_.resize(pb.nb_phases());
       noms_vd_phases_.dimensionner(pb.nb_phases()), vd_phases_.resize(pb.nb_phases());
+      noms_x_phases_.dimensionner(pb.nb_phases()),   x_phases_.resize(pb.nb_phases());
       for (int i = 0; i < pb.nb_phases(); i++)
         {
           champs_compris_.ajoute_nom_compris(noms_cc_phases_[i] = Nom("debit_") + pb.nom_phase(i));
           champs_compris_.ajoute_nom_compris(noms_vd_phases_[i] = Nom("vitesse_debitante_") + pb.nom_phase(i));
+          champs_compris_.ajoute_nom_compris(noms_x_phases_[i] = Nom("titre_") + pb.nom_phase(i));
         }
     }
 
@@ -214,7 +216,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
 void Op_Conv_EF_Stab_CoviMAC_Elem::creer_champ(const Motcle& motlu)
 {
   Op_Conv_CoviMAC_base::creer_champ(motlu);
-  int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu);
+  int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
   if (i >= 0 && !cc_phases_[i].non_nul())
     {
       equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_cc_phases_[i], "kg/m2/s",dimension, 1, 0, cc_phases_[i]);
@@ -224,6 +226,11 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::creer_champ(const Motcle& motlu)
     {
       equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_vd_phases_[j], "m/s",dimension, 1, 0, vd_phases_[j]);
       champs_compris_.ajoute_champ(vd_phases_[j]);
+    }
+  if (k >= 0 && !x_phases_[k].non_nul())
+    {
+      equation().discretisation().discretiser_champ("temperature", equation().zone_dis(), noms_x_phases_[k], "m/s",1, 1, 0, x_phases_[k]);
+      champs_compris_.ajoute_champ(x_phases_[k]);
     }
 }
 
@@ -282,5 +289,15 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
           for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) v_ph(nf_tot + D * e + d) *= pe(e); //pour repasser en debitant
           c_ph.changer_temps(temps);
         }
+
+  DoubleTrav G(N), v2(N);
+  double Gt;
+  if (x_phases_.size()) for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
+      {
+        for (v2 = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) v2(n) += std::pow(vit(nf_tot + D * e + d, n), 2);
+        for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(v2(n));
+        for (n = 0; n < N; n++) if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
+      }
+  if (x_phases_.size()) for (n = 0; n < N; n++) if (x_phases_[n].non_nul()) x_phases_[n]->changer_temps(temps);
 }
 

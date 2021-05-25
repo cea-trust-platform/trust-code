@@ -66,6 +66,8 @@ protected :
   Motcles noms_cc_phases_; //leurs noms
   std::vector<Champ_Inc> vd_phases_; //vitesses debitantes
   Motcles noms_vd_phases_; //leurs noms
+  std::vector<Champ_Inc> x_phases_; //titres par phase
+  Motcles noms_x_phases_; //leurs noms
 };
 
 class Op_Conv_Amont_CoviMAC_Elem : public Op_Conv_EF_Stab_CoviMAC_Elem
