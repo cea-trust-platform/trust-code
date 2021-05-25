@@ -14,34 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique_homogene.h
+// File:        Frottement_interfacial_Sonnenburg.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Multiplicateur_diphasique_homogene_included
-#define Multiplicateur_diphasique_homogene_included
-#include <Multiplicateur_diphasique_base.h>
+#ifndef Frottement_interfacial_Sonnenburg_included
+#define Frottement_interfacial_Sonnenburg_included
+#include <Frottement_interfacial_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Multiplicateur_diphasique_homogene
-//    multiplicateur diphasique homogene : Phi^2 = 1 + x (rho_l / rho_g - 1)
-//    raccord vers la phase vapeur a partir de alpha_min et jusqu'a alpha_max
+//    classe Frottement_interfacial_Sonnenburg
+//      coefficients de frottement interfacial correspondant a la correlation
+//      de "drift flux" de Sonnenburg, modifiee par Bissen, Alpy et Medale
+//      pour presenter les bonnes limites en alpha -> 0 et alpha -> 1
+//      parametres : non!
 //////////////////////////////////////////////////////////////////////////////
 
-class Multiplicateur_diphasique_homogene : public Multiplicateur_diphasique_base
+class Frottement_interfacial_Sonnenburg : public Frottement_interfacial_base
 {
-  Declare_instanciable(Multiplicateur_diphasique_homogene);
+  Declare_instanciable(Frottement_interfacial_Sonnenburg);
 public:
-  virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                           const double *mu, const double Dh, const double gamma, const double *Fk,
-                           const double Fm, DoubleTab& coeff) const;
+  virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                           const DoubleTab& rho, const DoubleTab& mu, double Dh,
+                           const DoubleTab& ndv, DoubleTab& coeff) const;
 protected:
-  double alpha_min_ = 0.9995, alpha_max_ = 1;
-  int n_l = -1, n_g = -1; //indices des phases frottantes (liquide/gaz)
+  int n_l = -1, n_g = -1; //phases traitees : liquide / gaz continu
 };
 
 #endif

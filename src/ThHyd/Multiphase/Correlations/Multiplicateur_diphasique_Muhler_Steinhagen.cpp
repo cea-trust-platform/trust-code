@@ -14,29 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique_Friedel.cpp
+// File:        Multiplicateur_diphasique_Muhler_Steinhagen.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Multiplicateur_diphasique_Friedel.h>
+#include <Multiplicateur_diphasique_Muhler_Steinhagen.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Multiplicateur_diphasique_Friedel, "Multiplicateur_diphasique_Friedel", Multiplicateur_diphasique_base);
+Implemente_instanciable(Multiplicateur_diphasique_Muhler_Steinhagen, "Multiplicateur_diphasique_Muhler_Steinhagen", Multiplicateur_diphasique_base);
 
-Sortie& Multiplicateur_diphasique_Friedel::printOn(Sortie& os) const
+Sortie& Multiplicateur_diphasique_Muhler_Steinhagen::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Multiplicateur_diphasique_Friedel::readOn(Entree& is)
+Entree& Multiplicateur_diphasique_Muhler_Steinhagen::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("alpha_min", &alpha_min_);
   param.ajouter("alpha_max", &alpha_max_);
   param.ajouter("min_lottes_flinn", &min_lottes_flinn_);
   param.ajouter("min_sensas", &min_sensas_);
+  param.ajouter("C", &C_);
   param.lire_avec_accolades_depuis(is);
 
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
@@ -51,23 +52,19 @@ Entree& Multiplicateur_diphasique_Friedel::readOn(Entree& is)
   return is;
 }
 
-void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                                                    const double *mu, const double Dh, const double gamma, const double *Fk,
-                                                    const double Fm, DoubleTab& coeff) const
+void Multiplicateur_diphasique_Muhler_Steinhagen::coefficient(const double *alpha, const double *rho, const double *v, const double *f,
+                                                              const double *mu, const double Dh, const double gamma, const double *Fk,
+                                                              const double Fm, DoubleTab& coeff) const
 {
   int min_ = min_sensas_ || min_lottes_flinn_;
   double G = alpha[n_l] * rho[n_l] * dabs(v[n_l]) + alpha[n_g] * rho[n_g] * dabs(v[n_g]), //debit total
          x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
-         E = (1 - x) * (1 - x) + x * x * (rho[n_l] * f[n_g] / rho[n_g] * f[n_l]),
-         F = std::pow(x, 0.78) * std::pow(1 - x, 0.224),
-         H = std::pow(rho[n_l] / rho[n_g], 0.91) * std::pow(mu[n_l] / mu[n_g], 0.19) * std::pow(1 - mu[n_g] / mu[n_l], 0.7),
-         rho_m = alpha[n_l] * rho[n_l] + alpha[n_g] * rho[n_g], //masse volumlque du melange
-         Fr = G * G / (9.81 * Dh * rho_m), We = G * G * Dh / (gamma * rho_m), //Froude, Weber,
-         Phi2 = E + 3.24 * F * H * std::pow(Fr, -0.045) * std::pow(We, -0.035), //le multiplicateur!
-         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g, //fraction appliquee a la vapeur
+         fm_sur_rhom = (f[n_l] / rho[n_l] + C_ * (f[n_g] / rho[n_g] - f[n_l] / rho[n_l]) * x) * std::pow(1 - x, 1. / 3) + f[n_g] / rho[n_g] * std::pow(x, 3),
+         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g, //fraction appliquee au liquide
          mul = min_sensas_ ? min(1., 1.4429 * std::pow(alpha[n_l], 0.6492)) : 1;
   coeff = 0;
-  if (min_ && Fk[n_l] * mul < Phi2 * Fm * (alpha[n_l] * alpha[n_l])) /* Lottes-Flinn/SENSAS sur le liquide donne un frottement plus bas -> on le prend*/
-    coeff(n_l, 0) = frac_l * min_ / (alpha[n_l] * alpha[n_l]), coeff(n_g, 0) = frac_g * min_ / (alpha[n_l] * alpha[n_l]);
-  else  coeff(n_l, 1) = frac_l * Phi2, coeff(n_g, 1) = frac_g * Phi2; //application au liquide et/ou a la vapeur
+  /* si min_ == 1 et si Lottes-Flinn/SENSAS donne un frottement plus bas -> on le prend */
+  if (min_ && Fk[n_l] * mul < rho[n_l] / f[n_l] * fm_sur_rhom * Fm * (alpha[n_l] * alpha[n_l]))
+    coeff(n_l, 0) = mul / (alpha[n_l] * alpha[n_l]);
+  else coeff(n_l, 1) = frac_l * rho[n_l] / f[n_l] * fm_sur_rhom, coeff(n_g, 1) = frac_g * rho[n_g] / f[n_g] * fm_sur_rhom;
 }

@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frottement_interfacial_Wallis.cpp
+// File:        Frottement_interfacial_Sonnenburg.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Frottement_interfacial_Wallis.h>
+#include <Frottement_interfacial_Sonnenburg.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Frottement_interfacial_Wallis, "Frottement_interfacial_Wallis", Frottement_interfacial_base);
+Implemente_instanciable(Frottement_interfacial_Sonnenburg, "Frottement_interfacial_Sonnenburg", Frottement_interfacial_base);
 
-Sortie& Frottement_interfacial_Wallis::printOn(Sortie& os) const
+Sortie& Frottement_interfacial_Sonnenburg::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Frottement_interfacial_Wallis::readOn(Entree& is)
+Entree& Frottement_interfacial_Sonnenburg::readOn(Entree& is)
 {
   /* rien a lire pour l'instant */
   Param param(que_suis_je());
@@ -38,6 +38,7 @@ Entree& Frottement_interfacial_Wallis::readOn(Entree& is)
 
   //identification des phases
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
+
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
   for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
     if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
@@ -49,14 +50,14 @@ Entree& Frottement_interfacial_Wallis::readOn(Entree& is)
   return is;
 }
 
-void Frottement_interfacial_Wallis::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                                                const DoubleTab& rho, const DoubleTab& mu, double Dh,
-                                                const DoubleTab& ndv, DoubleTab& coeff) const
+void Frottement_interfacial_Sonnenburg::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                                                    const DoubleTab& rho, const DoubleTab& mu, double Dh,
+                                                    const DoubleTab& ndv, DoubleTab& coeff) const
 {
-  double A_i = 4 * sqrt(alpha(n_g)) / Dh, //aire interfaciale
-         d_f = Dh / 2 * (1 - sqrt(alpha(n_g))), //epaisseur de film,
-         Cf = 0.005 * (1 + 300 * d_f / Dh); //coeff de frottement
   coeff = 0;
-  coeff(n_l, n_g, 1) = coeff(n_g, n_l, 1) = A_i * Cf * rho(n_g);
+  if (alpha(n_l) < 1e-8 || alpha(n_g) < 1e-8) return;
+  double a_u = 32, b_u = 9. / 16 * sqrt(rho(n_g) / rho(n_l)), c_u = 40, alp = min(max(alpha(n_g), 1e-3), 0.999),
+         fac = 16. / 9 * (1 - alp * (1 - b_u)) / (tanh(a_u * alp) * (1 - std::pow(alp, c_u)));
+  coeff(n_l, n_g, 1) = coeff(n_g, n_l, 1) = alpha(n_l) * alpha(n_g) * rho(n_l) / Dh * fac * fac;
   coeff(n_l, n_g, 0) = coeff(n_g, n_l, 0) = coeff(n_l, n_g, 1) * ndv(n_l, n_g);
 }

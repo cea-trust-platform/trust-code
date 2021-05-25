@@ -14,34 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Multiplicateur_diphasique_homogene.h
+// File:        Multiplicateur_diphasique_Muhler_Steinhagen.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Multiplicateur_diphasique_homogene_included
-#define Multiplicateur_diphasique_homogene_included
+#ifndef Multiplicateur_diphasique_Muhler_Steinhagen_included
+#define Multiplicateur_diphasique_Muhler_Steinhagen_included
 #include <Multiplicateur_diphasique_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Multiplicateur_diphasique_homogene
-//    multiplicateur diphasique homogene : Phi^2 = 1 + x (rho_l / rho_g - 1)
-//    raccord vers la phase vapeur a partir de alpha_min et jusqu'a alpha_max
+//    classe Multiplicateur_diphasique_Muhler_Steinhagen
+//    multiplicateur diphasique par la correlation de Muhler-Steinhagen :
+//      Phi^2 f_m / rho_m = (f_lo / rho_l + C (f_go / rho_g -  f_lo / rho_l) x) (1 - x)^(1/3) + f_go / rho_g x^3
+//      avec C = 2 par defaut
+//    - applique a la phase liquide pour alpha < alpha_min
+//    - applique a la phase vapeur pour alpha > alpha_max
 //////////////////////////////////////////////////////////////////////////////
 
-class Multiplicateur_diphasique_homogene : public Multiplicateur_diphasique_base
+class Multiplicateur_diphasique_Muhler_Steinhagen : public Multiplicateur_diphasique_base
 {
-  Declare_instanciable(Multiplicateur_diphasique_homogene);
+  Declare_instanciable(Multiplicateur_diphasique_Muhler_Steinhagen);
 public:
   virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
                            const double *mu, const double Dh, const double gamma, const double *Fk,
                            const double Fm, DoubleTab& coeff) const;
 protected:
-  double alpha_min_ = 0.9995, alpha_max_ = 1;
-  int n_l = -1, n_g = -1; //indices des phases frottantes (liquide/gaz)
+  double alpha_min_ = 1, alpha_max_ = 1.1, C_ = 2;
+  int n_l = -1, n_g = -1, min_lottes_flinn_ = 0, min_sensas_ = 0; //indices des phases frottantes : liquide, gaz
 };
 
 #endif
