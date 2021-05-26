@@ -50,10 +50,11 @@ void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& i
   const Champ_base& masse_volumique = inco.equation().milieu().masse_volumique();
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   const Zone_VF& zone = ref_cast(Zone_VF, inco.equation().zone_dis().valeur());
-  DoubleTab rho_bord = masse_volumique.valeur_aux_bords(); /* valeur a toutes les faces de bord */
+  const bool Cr = sub_type(Champ_Uniforme, masse_volumique);
+  DoubleTab rho_bord = Cr ? masse_volumique.valeurs() : masse_volumique.valeur_aux_bords(); /* valeur a toutes les faces de bord */
   for(rho_.resize(le_bord.nb_faces_tot(), N), i = 0; i < le_bord.nb_faces_tot(); i++)
     for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
-      rho_(i, n) = rho_bord(fb, n);
+      rho_(i, n) = rho_bord(Cr ? 0 : fb, n);
 
   assert(flow_rate_.valeur().valeurs().line_size() == rho_.line_size());
   const int crho = sub_type(Champ_Uniforme, masse_volumique);
