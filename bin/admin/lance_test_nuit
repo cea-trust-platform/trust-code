@@ -911,6 +911,27 @@ fi
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
          fi
          rm tmp.log 1>/dev/null 2>&1
+      elif [[ "$Composant" == "pemfc" ]]
+      then
+         git remote update
+         git checkout .
+         git checkout master
+         git pull 1>tmp.log 2>&1
+         # mise a jour de sympy_to_trust
+         echo "update sympy_to_TRUST:" >> tmp.log
+         cd sympy_to_TRUST
+         git remote update
+         git checkout .
+         git checkout master
+         git pull 1>>../pemfc/tmp.log 2>&1
+         cd -
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master OK \" $TRUST_MAIL
+         fi
+         rm tmp.log 1>/dev/null 2>&1
       else
          git remote update
          git checkout .
@@ -920,9 +941,9 @@ fi
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
          fi
          rm tmp.log 1>/dev/null 2>&1
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
@@ -2982,7 +3003,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=79.66 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=79.91 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0

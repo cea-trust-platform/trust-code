@@ -422,6 +422,9 @@ do
    else
       echo "The build directory is NOT deleted."
    fi
+   echo "==========================="
+   # on met les bons droits d'execution
+   $TRUST_ROOT/bin/admin/change_droits_install.sh .
    if [ $MODULE = TRUST ]
    then
       echo "==========================="

@@ -15,48 +15,60 @@
 
 from Figure import Figure
 from Visu import Visu
-from GenericSection import GenericSection
 from lib import GestionMessages
 from lib import getNomFonction
-from lib import extraireMotcleValeur
+from lib import extraireMotcleValeur,print_description
+from lib import chaine2Ascii
 from lib import _accoladeF,verifie_accolade_suivante
 
-class Conclusion(GenericSection):
-    '''Classe decrivant la partie CONCLUSION telle qu elle devra apparaitre dans le rapport de validation de TRUST.'''
-
-    def __init__(self, verbose=0, output=''):
+class GenericSection(object):
+    """ Classe servant de base aux differents types de section possible au sein de la fiche
+    """
+    def __init__(self, verbose=0, output='', namePart=""):
         '''Constructeur.'''
-        super().__init__(verbose=verbose, output=output, namePart="Conclusion")
+        if output=='':
+            self.gestMsg = GestionMessages(verbose,'log')
+        else:
+            self.gestMsg = output
+        self.verbose = verbose
+        #initialisations
+        self.description = []
+        self.listeFigures = []
+        self.namePart = namePart
+
+
+    def printFichierParametres(self,indice):
+        """ Lecture des parametres de la partie concernee dans le fichier de parametres """
+        print("%s {" % self.namePart)
+        dec='\t'
+
+        print_description(self.description,dec)
+
+        for fig in self.listeFigures :
+            print(dec,"# definition figure %d"%(indice))
+            fig.printFichierParametres()
+            indice += 1
+            pass
+        print("}")
+        return indice
 
     def lireParametres(self, fichier,casTest):
-        '''Lecture des parametres du paragraphe Conclusion.'''
+        '''Lecture des parametres du paragraphe. This should be overriden by subclasses. '''
+        raise NotImplementedError
+
+    def genererGraphes(self, dest, indice,debug_figure,novisit):
+        '''Generation des graphiques correspondant a la partie.'''
+        from Visu import Visu as vis
         self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
-        fin = False
-        dico=['description','figure','visu']
-        while not fin:
-            ligne = fichier.readline()
-            if not ligne:
-                self.gestMsg.ecrire(GestionMessages._ERR, 'Unexpected end of file. We expected parameters of the paragraph Conclusion.')
-            ligne = ligne.strip()
-            if len(ligne)>0 and ligne[0]!='#':
-                motcle,valeur,motcle_lu = extraireMotcleValeur(fichier,ligne, self.gestMsg)
-                if motcle==_accoladeF:
-                    fin = True
-                elif motcle=='description':
-                    self.description.append(valeur)
-                elif motcle=='figure':
-                    verifie_accolade_suivante(ligne,fichier,self.gestMsg)
-                    figure = Figure(verbose=self.verbose, output=self.gestMsg)
-                    figure.lireParametres(fichier)
-                    self.listeFigures.append(figure)
+        for figure in self.listeFigures:
+            if not isinstance(figure, vis) or novisit==False:
+                figure.genererGraphe(dest, indice,debug_figure)
+                indice += 1
+        return indice
 
-                elif motcle=='visu':
-                    verifie_accolade_suivante(ligne,fichier,self.gestMsg)
-                    figure = Visu(verbose=self.verbose, output=self.gestMsg)
-                    figure.lireParametres(fichier)
-                    self.listeFigures.append(figure)
+    def afficherParametres(self):
+        '''Affichage des parametres du paragraphe.'''
+        self.gestMsg.ecrire(GestionMessages._INFO, '\tDesc =  %s' % self.description)
+        for figure in self.listeFigures:
+            figure.afficherParametres()
 
-                    pass
-                else:
-                    self.gestMsg.ecrire_usage(GestionMessages._ERR,'Conclusion', dico,motcle_lu,fichier=fichier)
-                if motcle!=_accoladeF and not (motcle in dico): print("Missing code for ",motcle);1/0

@@ -110,7 +110,7 @@ class Write_tex:
 
         if minifigure:
             minipage_width=figure.width.split(",")[0]
-            if maitre.nvellevalid==2: fichier.write_Tex('\hspace*\fill')
+            fichier.write_Tex('\hspace*\fill')
             fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
             pass
         fichier.write_description(figure.description)
@@ -126,8 +126,7 @@ class Write_tex:
                     fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (figure.width,figure.fichierGraphique))
                 else:
                     fichier.write_Tex('\begin{center} \includegraphics[width=%s]{\orig/.tmp/%s} \end{center}' % (figure.width,figure.fichierGraphique))
-                    fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(figure.titre))
-                    fichier.write_Tex('\bigskip')
+                    fichier.write_Tex('\begin{center} \captionof{figure}{ %s } \end{center}' %chaine2Tex(figure.titre))
             else:
                 # fichier.write('\input{%s}\n' % figure.fichierGraphiqueComplet)
                 fichier.write_Tex('\input{\orig/.tmp/%s}' % figure.fichierGraphique)
@@ -137,19 +136,10 @@ class Write_tex:
             print("The figure does not really include the picture ",figure.fichierGraphique," because the width <= 0:",figure.width)
             pass
         if (minifigure==1):
-            if maitre.nvellevalid==2:
-                fichier.write_Tex('} \end{minipage}')
-                fichier.write_Tex('\hspace*\fill')
-            else:
-                fichier.write_Tex('} \end{minipage} \n')
-                fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(figure.titre))
-                fichier.write_Tex('\bigskip')
-            pass
+            fichier.write_Tex('} \end{minipage}')
+            fichier.write_Tex('\hspace*\fill')
         if (self.nb_visu>=figure.nb_img_without_newline):
-            if maitre.nvellevalid==2:
-                fichier.write_Tex('\n\n')
-            else:
-                fichier.write_Tex('\n')
+            fichier.write_Tex('\n\n')
             self.nb_visu=0
             self.minifigure_avt=0
         else:
@@ -205,18 +195,14 @@ class Write_tex:
             pass
         if minifigure:
             minipage_width=visu.width.split(",")[0]
-            if maitre.nvellevalid==2:
-                fichier.write_Tex('\hspace*\fill')
+            fichier.write_Tex('\hspace*\fill')
             fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
-            pass
         fichier.write_description(visu.description)
         fichier.write_text('')
         for i in range(max(len(visu.cycles.split()),1)):
             if (minifigure) and (i>0):
-                if maitre.nvellevalid==2:
-                    fichier.write_Tex('\hspace*\fill')
+                fichier.write_Tex('\hspace*\fill')
                 fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
-                pass
             if not self.novisit:
                 fichiercomplet=visu.fichierGraphiqueComplet+'_'+str(i)+'.'+visu.format
                 fichiergraphique=visu.fichierGraphique+'_'+str(i)+'.'+visu.format
@@ -230,24 +216,17 @@ class Write_tex:
                             fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (visu.width,fichiergraphique))
                         else:
                             fichier.write_Tex('\begin{center} \includegraphics[width=%s]{\orig/.tmp/%s} \end{center}' % (visu.width,fichiergraphique))
-                            fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(visu.titre))
-                            fichier.write_Tex('\bigskip')
+                            fichier.write_Tex('\begin{center} \captionof{figure}{ %s } \end{center}' %chaine2Tex(visu.titre))
                     else:
                         fichier.write_Tex('\input{%s}' % fichiercomplet)
                 else:
                     print("The visu does not really include the picture ",fichiergraphique," because the width <= 0 :",visu.width)
                     pass
             if (minifigure==1):
-                if maitre.nvellevalid==2:
-                    fichier.write_Tex('} \end{minipage}')
-                    fichier.write_Tex('\hspace*\fill')
-                else:
-                    fichier.write_Tex('} \end{minipage} \n')
-                    fichier.write_Tex('\captionof{figure}{ %s }' %chaine2Tex(visu.titre))
-                    fichier.write_Tex('\bigskip')
-                pass
+                  fichier.write_Tex('} \end{minipage}')
+                  fichier.write_Tex('\hspace*\fill')
             if (self.nb_visu>=visu.nb_img_without_newline):
-                if maitre.nvellevalid==2: fichier.write_Tex('\n\n')
+                fichier.write_Tex('\n\n')
                 self.nb_visu=0
                 self.minifigure_avt=0
             else:
