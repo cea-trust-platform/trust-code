@@ -12,6 +12,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs_Diff\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
 	
 

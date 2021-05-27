@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -171,7 +171,7 @@ public:
   inline void coeffs_face(int, int,const Periodique&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int, int,const NSCBC&, DoubleVect& aii, DoubleVect& ajj ) const;
 
-  //virtual void coeffs_face(const DoubleTab&, int ,int, const Nouvelle_Cl_VDF&, int,
+  //void coeffs_face(const DoubleTab&, int ,int, const Nouvelle_Cl_VDF&, int,
   //                           DoubleVect& aii, DoubleVect& ajj ) const;
 
   inline void coeffs_faces_interne(int, DoubleVect& aii, DoubleVect& ajj ) const;

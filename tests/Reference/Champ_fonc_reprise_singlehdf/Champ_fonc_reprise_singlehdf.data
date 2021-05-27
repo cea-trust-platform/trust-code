@@ -1,68 +1,41 @@
-# ThemoHydraulique 2D avec Champ_Fonc_Reprise depuis un probleme hydraulique #
+# Hydraulique 2D laminaire avec "trou" dans le maillage et Champ_Fonc_Reprise #
 # PARALLEL ONLY 2 #
 # lance_test 50 ecarts #
 dimension 2
-
-Pb_conduction pb_conduction
-Pb_Thermohydraulique pb
+Pb_hydraulique pb
 Domaine dom
-Domaine dom_conduction
 
 # BEGIN SCATTER #
 Scatter DOM.Zones dom
-Scatter DOM_conduction.Zones dom_conduction
 # END SCATTER #
 
-# Je choisis une discretisation #
-VDF ma_discretisation
+VDF dis
 
-Scheme_euler_explicit mon_schema
-Read mon_schema
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
-	tmax 2.0
-	dt_min 1.e-4
-	dt_max 1.
-	dt_impr 5.e-3
-	dt_sauv 100
+	tmax 2.5
+	/* dt_min identique au dt_max alors dt=dt_min=dt_max */
+	dt_min 5.e-3
+	dt_max 5.e-3
+	dt_impr 5.e-1
+	dt_sauv 1
 	seuil_statio 1.e-8
 }
 
-# Je definis un milieu #
-Fluide_Incompressible milieu
-Read milieu
+Fluide_Incompressible eau
+Read eau
 {
 	mu Champ_Uniforme 1 3.7e-05
 	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 1.0 
-	Cp Champ_Uniforme 1 500
-	beta_th Champ_Uniforme 1 0.0001	
 }
-
-Solide solide
-Read solide
-{
-	rho Champ_Uniforme 1 2000.
-	lambda Champ_Uniforme 1 50.    
-	Cp Champ_Uniforme 1 50
-}
-
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-Associate solide gravite
-Associate milieu gravite
 
 Associate pb dom
-Associate pb milieu
+Associate pb sch
+Associate pb eau
 
-Associate pb_conduction dom_conduction
-Associate pb_conduction solide
-
-Probleme_Couple pbc
-Associate pbc pb
-Associate pbc pb_conduction
-Associate pbc mon_schema
-Discretize pbc ma_discretisation
+Discretize pb dis
 
 Read pb
 {
@@ -70,35 +43,23 @@ Read pb
 	{
 		solveur_pression GCP { 
 			precond ssor { omega 1.5 } 
-			seuil 1.e-06 
-			impr 
+			seuil 1.e-8 impr
 		}
-		convection { quick }
-		diffusion { }
+		convection { amont }
+		diffusion {  }
+		# Conditions initiales sur la vitesse #
 		initial_conditions {
 			vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time
 			/* vitesse Champ_Uniforme 2 0. 0. */
 			}
 		boundary_conditions {
-			Solide paroi_fixe
-			Canal symetrie
-			Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 1. 0.
+			Obstacle paroi_fixe
+			Symetrie symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			     Champ_front_Uniforme 2  1. 0.
 		}
-
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { quick }
-		boundary_conditions 
-		{
-			Solide paroi_contact pb_conduction  Solide
-			Canal  symetrie
-			Sortie frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-			Entree frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 20. }
 	}
 
 	Post_processing
@@ -106,58 +67,125 @@ Read pb
 		Probes
 		{
 			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105	0.14 0.115
-			sonde_vit vitesse periode 0.005 segment 22 0.14 0.0 0.14 0.22
-			sonde_P pression periode 0.01 plan 23 11 0.01 0.005 0.91 0.005 0.01 0.21
-			sonde_Pmoy Moyenne_pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-			sonde_Pect Ecart_type_pression periode 0.005 points 2 0.13 0.105 0.13 0.115	
-			sonde_profil_moyen Moyenne_vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115	
+			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+			sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
+                	sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
 		}
 		
-		
-		
-		fields dt_post 1.
+		Definition_champs 
+		 {  
+		  	# Calcul du produit scalaire grad(Pression).Vitesse #
+	  		pscal_gradP_vit Transformation {
+			  	methode produit_scalaire
+				sources {
+				 	Interpolation { localisation elem source refChamp { Pb_champ pb gradient_pression } } ,
+				  	Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
+				}
+		    	}
+		    	# Calcul du produit scalaire Vitesse.Vitesse #
+	       		pscal_vit_vit_elem Transformation {
+				methode produit_scalaire
+				sources {
+					refChamp { Pb_champ pb vitesse } ,
+				 	refChamp { Pb_champ pb vitesse } 
+				}
+				localisation elem 
+		    	}
+		    
+			pscal_vit_vit_elem_interp Transformation {
+				methode produit_scalaire
+				sources {
+			 		Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } } ,
+					Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
+				}
+		    	}   
+		    
+	        	pscal_vit_vit_som Interpolation { localisation som sources_reference { pscal_vit_vit_elem_interp } }   
+		    
+	        	pscal_vit_vit_faces Interpolation { localisation faces sources_reference { pscal_vit_vit_elem_interp } }
+		        
+	  	 	norme_transfo_vit Transformation {
+		  	  	methode norme
+			  	source Interpolation { 
+			  	localisation elem
+			    	source refChamp { Pb_champ pb vitesse } } 
+			}
+			   
+	         	vecteur_unitairex transformation { methode vecteur expression 2 1. 0. localisation faces }   
+			
+		  	vecteur_transfo transformation { methode vecteur  expression 2 x t localisation faces }
+			
+		  	vecteur_source_elem Transformation { 
+				methode vecteur  expression 2 pression_natif_dom y
+		 		source refChamp { Pb_champ pb pression }
+				localisation elem	
+			}
+		  	vecteur_source_faces Transformation { 
+				methode vecteur expression  2 pression_natif_dom y
+		 		source refChamp { Pb_champ pb pression }
+				localisation faces	
+			}
+			
+		  	compo_vitessex Transformation { 
+				methode composante numero 0 
+		 		source refChamp { Pb_champ pb vitesse }
+				localisation elem	
+			}
+			
+		  	compo_vitessex_elem Interpolation { localisation elem sources_reference { compo_vitessex } }
+			
+			# Calcul de la composante selon X du gradient de pression #
+		  	compo_graPx Transformation { 
+				methode composante numero 0 
+				source refChamp { Pb_champ pb gradient_pression }
+				localisation elem 
+			}
+			# Interpolation de cette composante aux elements #
+		 	compo_graPx_elem Interpolation { localisation elem sources_reference { compo_graPx } }				   							       		   		    	
+		}
+		Format lml
+		fields dt_post 1.3
 		{
+			pression elem
 			vitesse elem
-			temperature elem
+			masse_volumique elem
+			gradient_pression elem
+			pscal_gradP_vit elem
+			pscal_vit_vit_elem
+			pscal_vit_vit_elem_interp
+			pscal_vit_vit_som
+			norme_transfo_vit elem
+			vecteur_unitairex elem
+			vecteur_transfo elem
+			vecteur_source_elem
+			compo_vitessex_elem
+			compo_graPx_elem
 		}
-		Statistiques dt_post 1.
+	}
+	liste_de_postraitements {
+	test1 Post_processing {
+		Definition_champs {
+		test_nom reduction_0D { methode weighted_average 
+	              sources { refchamp { pb_champ pb pression } } 
+		         }
+	                }
+		format lata 
+		fields dt_post 1.3
+		  {
+			pression elem
+			test_nom
+		 }
+	      }
+	
+	test2 Post_processing {
+	        format lata 
+		fields dt_post 1.3e9
 		{
-			t_deb 0.5 t_fin 10.
-			
-			
-			moyenne vitesse
-			ecart_type vitesse
-			moyenne pression
-			ecart_type pression
+		       pression elem			
 		}
+	    } 
 	}
 	/* sauvegarde single_hdf datafile.sauv */
 }
-
-Read pb_conduction
-{
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 30.
-			}
-		boundary_conditions {
-			Solide paroi_contact pb  Solide
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-			sonde_tsol temperature periode 1. point 1 0.11 0.11
-		}
-		fields dt_post 1.
-		{
-			temperature elem
-		}
-	}
-}
-Solve pbc
+Solve pb
 End

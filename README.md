@@ -8,7 +8,7 @@
       | |    | (\ (    | |   | |       ) |    | |      
       | |    | ) \ \__ | (___) | /\____) |    | |      
       )_(    |/   \__/ (_______) \_______)    )_(      
-                                                       
+
 
 BSD3 license
 
@@ -29,7 +29,7 @@ To initialize:
 To build a binary with a single directory build:
 
 	$> make # Create an optimized debug binaries
-	$> make optim # Create an optimized binary 
+	$> make optim # Create an optimized binary
 	$> make debug # Create a debug binary
 	$> make prof  # Create a profiled binary  
 
@@ -48,17 +48,17 @@ To clean also the third party libraries:
 
 # **Quick directories description**
 
-> - **TRUST scripts** => bin/ 
+> - **TRUST scripts** => bin/
 
 > - **Documentation files** => doc/		
 
-> - **Environment files** => env_src/ & env/	
+> - **Environment files** => env_src/ & env/
 
 > - **Binaries** => exec/		
 
-> - **Link to all TRUST include files (automatically updated)** => include/	
+> - **Link to all TRUST include files (automatically updated)** => include/
 
-> - **Libraries** => ThirdPart/ & lib/	
+> - **Libraries** => ThirdPart/ & lib/
 
 > - **TRUST sources** => src/		 
 
@@ -66,12 +66,12 @@ To clean also the third party libraries:
 
 > - **Tools to build TRUST** => Outils/		
 
-> - **Location of Validation forms** => Validation/	
+> - **Location of Validation forms** => Validation/
 
 
 # **Quick files description**
 
-> - **DEVELOPER_NOTES.md**	=> Developer notes (manually and regulary updated by support)
+> - **DEVELOPER_NOTES**	=> Developer notes (manually and regulary updated by support)
 
 > - **Makefile** =>	List of targets to build the code
 
@@ -91,3 +91,30 @@ To clean also the third party libraries:
 
 > - **license** => TRUST and third party licences
 
+# **How to run a TRUST preinstalled version**
+
+If you are a CEA worker, it is possible to use a TMA preinstalled version of TRUST. Here is the list of the machines and the paths that can be used to source the TRUST environment
+
+- for a local machine at CEA Saclay
+
+      $> source /home/triou/env_TRUST_1.8.3.sh
+
+      or
+
+      $> source /home/trust_trio-public/env_TRUST-1.8.3.sh
+
+- for CEA Saclay cluster (orcus):
+
+      $> source /home/trust_trio/env_TRUST-1.8.3.sh
+
+- for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
+
+      $> source /ccc/cont002/home/den/triou/env_TRUST-1.8.3.sh
+
+- for CCRT-TGCC supercomputers (irene-amd int64):
+
+      $> source /ccc/cont002/home/den/triou/env_TRUST-1.8.3-int64.sh
+
+- for CINES supercomputer (occigen):
+
+      $> source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-1.8.3.sh

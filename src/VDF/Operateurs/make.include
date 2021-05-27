@@ -20,6 +20,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Cond_Lim\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Iterateurs\
+    -I$(TRUST_ROOT)/src/VDF/Operateurs/Evaluateurs_Diff\
+    -I$(TRUST_ROOT)/src/VDF/Operateurs/Operateurs_Diff\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
 
 

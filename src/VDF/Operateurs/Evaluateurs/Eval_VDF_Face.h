@@ -40,165 +40,113 @@ class Eval_VDF_Face
 {
 
 public:
-
-  inline Eval_VDF_Face();
-  inline virtual ~Eval_VDF_Face() {};
   inline void associer_inconnue(const Champ_base& );
-  virtual int calculer_arete_bord() const;
-  virtual int calculer_arete_symetrie_paroi() const;
-  virtual int calculer_arete_symetrie_fluide() const;
-  virtual void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int,
-                                          double&, double&) const
+  int calculer_arete_bord() const;
+  int calculer_arete_symetrie_paroi() const;
+  int calculer_arete_symetrie_fluide() const;
+  void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int,
+                                  double&, double&) const
   {
     ;
   }
-  virtual double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const
+  double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const
   {
     return 0.;
   }
-  virtual void flux_arete_symetrie_fluide(const DoubleTab&, int, int,
-                                          int, int, DoubleVect&, DoubleVect&) const
+  void flux_arete_symetrie_fluide(const DoubleTab&, int, int,
+                                  int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
-  virtual void flux_arete_symetrie_paroi(const DoubleTab&, int, int,
-                                         int, int, DoubleVect& ) const
+  void flux_arete_symetrie_paroi(const DoubleTab&, int, int,
+                                 int, int, DoubleVect& ) const
   {
     ;
   }
 
-//#ifndef _INLINE_EVALUATEURS_
-
-  virtual int calculer_fa7_sortie_libre() const =0;
-  virtual int calculer_arete_interne() const =0;
-  virtual int calculer_arete_mixte() const =0;
-  virtual int calculer_arete_symetrie() const =0;
-  virtual int calculer_arete_fluide() const =0;
-  virtual int calculer_arete_paroi() const =0;
-  virtual int calculer_arete_paroi_fluide() const =0;
-  virtual int calculer_arete_coin_fluide() const
+  int calculer_arete_coin_fluide() const
   {
     Cerr << "arete_coin_fluide not coded for this scheme." << finl;
     Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
     Process::exit();
     return 1;
   }
-  virtual int calculer_arete_periodicite() const =0;
 
-  // Fonctions qui servent a calculer le flux de grandeurs scalaires
-  // Elles renvoient le flux calcule
-
-  virtual double flux_fa7_elem(const DoubleTab&, int, int, int) const =0;
-  virtual double flux_fa7_sortie_libre(const DoubleTab&, int ,
-                                       const Neumann_sortie_libre&, int ) const=0;
-  virtual double flux_arete_interne(const DoubleTab&, int, int, int, int) const =0;
-  virtual double flux_arete_mixte(const DoubleTab&, int, int, int, int) const =0;
-  virtual double flux_arete_symetrie(const DoubleTab&, int, int, int, int) const =0;
-  virtual double flux_arete_paroi(const DoubleTab&, int, int, int, int ) const =0;
-  virtual void flux_arete_fluide(const DoubleTab&, int, int, int, int,
-                                 double&, double&) const =0;
-  virtual void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int,
-                                       double&, double&) const =0;
-  virtual void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int,
-                                      double&, double&) const
+  void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int,
+                              double&, double&) const
   {
     Cerr << "arete_coin_fluide not coded for this scheme." << finl;
     Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
     Process::exit();
   }
-  virtual void flux_arete_periodicite(const DoubleTab&, int, int, int, int,
-                                      double&, double&) const =0;
 
-  // Fonctions qui servent a calculer le flux de grandeurs vectorielles
-  // Elles sont de type void et remplissent le tableau flux
-
-  virtual void flux_fa7_elem(const DoubleTab&, int, int, int, DoubleVect& flux) const =0;
-  virtual void flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&,
-                                     int, DoubleVect& flux) const=0;
-  virtual void flux_arete_interne(const DoubleTab&, int, int, int,
-                                  int, DoubleVect& flux) const =0;
-  virtual void flux_arete_mixte(const DoubleTab&, int, int, int,
-                                int, DoubleVect& flux) const =0;
-  virtual void flux_arete_symetrie(const DoubleTab&, int, int, int,
-                                   int, DoubleVect& ) const =0;
-  virtual void flux_arete_paroi(const DoubleTab&, int, int, int,
-                                int, DoubleVect& ) const =0;
-
-  virtual void flux_arete_fluide(const DoubleTab&, int, int, int,
-                                 int, DoubleVect&, DoubleVect&) const =0;
-  virtual void flux_arete_paroi_fluide(const DoubleTab&, int, int,
-                                       int, int, DoubleVect&, DoubleVect&) const =0;
-  virtual void flux_arete_coin_fluide(const DoubleTab&, int, int,
-                                      int, int, DoubleVect&, DoubleVect&) const
+  void flux_arete_coin_fluide(const DoubleTab&, int, int,
+                              int, int, DoubleVect&, DoubleVect&) const
   {
     Cerr << "arete_coin_fluide not coded for this scheme." << finl;
     Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
     Process::exit();
   };
-  virtual void flux_arete_periodicite(const DoubleTab&, int, int,
-                                      int, int, DoubleVect&, DoubleVect&) const =0;
 
-
-//#endif
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
 
-  virtual void coeffs_fa7_elem(int, int, int, double& aii, double& ajj) const
+  void coeffs_fa7_elem(int, int, int, double& aii, double& ajj) const
   {
     ;
   }
-  virtual void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&,
-                                       double& aii, double& ajj ) const
+  void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&,
+                               double& aii, double& ajj ) const
   {
     ;
   }
-  virtual void coeffs_arete_interne(int, int, int, int,
-                                    double& aii, double& ajj) const
+  void coeffs_arete_interne(int, int, int, int,
+                            double& aii, double& ajj) const
   {
     ;
   }
-  virtual void coeffs_arete_mixte(int, int, int, int,
-                                  double& aii, double& ajj) const
+  void coeffs_arete_mixte(int, int, int, int,
+                          double& aii, double& ajj) const
   {
     ;
   }
-  virtual void coeffs_arete_symetrie(int, int, int, int,
-                                     double& aii1_2, double& aii3_4, double& ajj1_2) const
+  void coeffs_arete_symetrie(int, int, int, int,
+                             double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
-  virtual void coeffs_arete_paroi(int, int, int, int,
-                                  double& aii1_2, double& aii3_4, double& ajj1_2) const
+  void coeffs_arete_paroi(int, int, int, int,
+                          double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
-  virtual void coeffs_arete_fluide(int, int, int, int,
+  void coeffs_arete_fluide(int, int, int, int,
+                           double& aii1_2, double& aii3_4, double& ajj1_2) const
+  {
+    ;
+  }
+  void coeffs_arete_paroi_fluide(int, int, int, int,
+                                 double& aii1_2, double& aii3_4, double& ajj1_2) const
+  {
+    ;
+  }
+  void coeffs_arete_coin_fluide(int, int, int, int,
+                                double& aii1_2, double& aii3_4, double& ajj1_2) const
+  {
+    ;
+  }
+  void coeffs_arete_periodicite(int, int, int, int,
+                                double& aii, double& ajj) const
+  {
+    ;
+  }
+  void coeffs_arete_symetrie_paroi(int, int, int, int,
                                    double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
-  virtual void coeffs_arete_paroi_fluide(int, int, int, int,
-                                         double& aii1_2, double& aii3_4, double& ajj1_2) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_coin_fluide(int, int, int, int,
-                                        double& aii1_2, double& aii3_4, double& ajj1_2) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_periodicite(int, int, int, int,
-                                        double& aii, double& ajj) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_symetrie_paroi(int, int, int, int,
-                                           double& aii1_2, double& aii3_4, double& ajj1_2) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_symetrie_fluide(int, int, int, int,
-                                            double& aii1_2, double& aii3_4, double& ajj1_2) const
+  void coeffs_arete_symetrie_fluide(int, int, int, int,
+                                    double& aii1_2, double& aii3_4, double& ajj1_2) const
   {
     ;
   }
@@ -206,51 +154,51 @@ public:
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas scalaire.
 
-  virtual double secmem_fa7_elem( int, int, int) const
+  double secmem_fa7_elem( int, int, int) const
   {
     return 0;
   }
-  virtual double secmem_fa7_sortie_libre(int, const Neumann_sortie_libre&, int ) const
+  double secmem_fa7_sortie_libre(int, const Neumann_sortie_libre&, int ) const
   {
     return 0;
   }
-  virtual double secmem_arete_interne(int, int, int, int) const
+  double secmem_arete_interne(int, int, int, int) const
   {
     return 0;
   }
-  virtual double secmem_arete_mixte(int, int, int, int) const
+  double secmem_arete_mixte(int, int, int, int) const
   {
     return 0;
   }
-  virtual double secmem_arete_symetrie(int, int, int, int) const
+  double secmem_arete_symetrie(int, int, int, int) const
   {
     return 0;
   }
-  virtual double secmem_arete_paroi(int, int, int, int ) const
+  double secmem_arete_paroi(int, int, int, int ) const
   {
     return 0;
   }
-  virtual void secmem_arete_fluide(int, int, int, int, double&, double&) const
+  void secmem_arete_fluide(int, int, int, int, double&, double&) const
   {
     ;
   }
-  virtual void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const
+  void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const
   {
     ;
   }
-  virtual void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const
+  void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const
   {
     ;
   }
-  virtual void secmem_arete_periodicite(int, int, int, int, double&, double&) const
+  void secmem_arete_periodicite(int, int, int, int, double&, double&) const
   {
     ;
   }
-  virtual double secmem_arete_symetrie_paroi(int, int, int, int ) const
+  double secmem_arete_symetrie_paroi(int, int, int, int ) const
   {
     return 0;
   }
-  virtual void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const
+  void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const
   {
     ;
   }
@@ -258,112 +206,112 @@ public:
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // vectorielles.
 
-  virtual void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const
+  void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
-  virtual void coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj) const
+  void coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
-  virtual void coeffs_arete_interne(int, int, int, int,
-                                    DoubleVect& aii, DoubleVect& ajj) const
+  void coeffs_arete_interne(int, int, int, int,
+                            DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
-  virtual void coeffs_arete_mixte(int, int, int, int,
-                                  DoubleVect& aii, DoubleVect& ajj) const
+  void coeffs_arete_mixte(int, int, int, int,
+                          DoubleVect& aii, DoubleVect& ajj) const
   {
     ;
   }
-  virtual void coeffs_arete_symetrie(int, int, int, int,
-                                     DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  void coeffs_arete_symetrie(int, int, int, int,
+                             DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
-  virtual void coeffs_arete_paroi(int, int, int, int,
-                                  DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  void coeffs_arete_paroi(int, int, int, int,
+                          DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
-  virtual void coeffs_arete_fluide(int, int, int, int,
+  void coeffs_arete_fluide(int, int, int, int,
+                           DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  {
+    ;
+  }
+  void coeffs_arete_paroi_fluide(int, int, int, int,
+                                 DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  {
+    ;
+  }
+  void coeffs_arete_coin_fluide(int, int, int, int,
+                                DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  {
+    ;
+  }
+  void coeffs_arete_periodicite(int, int, int, int,
+                                DoubleVect& aii, DoubleVect& ajj) const
+  {
+    ;
+  }
+  void coeffs_arete_symetrie_paroi(int, int, int, int,
                                    DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
-  virtual void coeffs_arete_paroi_fluide(int, int, int, int,
-                                         DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_coin_fluide(int, int, int, int,
-                                        DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_periodicite(int, int, int, int,
-                                        DoubleVect& aii, DoubleVect& ajj) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_symetrie_paroi(int, int, int, int,
-                                           DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
-  {
-    ;
-  }
-  virtual void coeffs_arete_symetrie_fluide(int, int, int, int,
-                                            DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  void coeffs_arete_symetrie_fluide(int, int, int, int,
+                                    DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
   {
     ;
   }
   // Fonctions qui servent a calculer la contribution des conditions limites
   // au second membre pour l'implicite dans le cas vectoriel.
 
-  virtual void secmem_fa7_elem(int, int, int, DoubleVect& flux) const
+  void secmem_fa7_elem(int, int, int, DoubleVect& flux) const
   {
     ;
   }
-  virtual void secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&, int, DoubleVect& flux) const
+  void secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&, int, DoubleVect& flux) const
   {
     ;
   }
-  virtual void secmem_arete_interne(int, int, int, int, DoubleVect& flux) const
+  void secmem_arete_interne(int, int, int, int, DoubleVect& flux) const
   {
     ;
   }
-  virtual void secmem_arete_mixte(int, int, int, int, DoubleVect& flux) const
+  void secmem_arete_mixte(int, int, int, int, DoubleVect& flux) const
   {
     ;
   }
-  virtual void secmem_arete_symetrie(int, int, int, int, DoubleVect& ) const
+  void secmem_arete_symetrie(int, int, int, int, DoubleVect& ) const
   {
     ;
   }
-  virtual void secmem_arete_paroi(int, int, int, int, DoubleVect& ) const
+  void secmem_arete_paroi(int, int, int, int, DoubleVect& ) const
   {
     ;
   }
-  virtual void secmem_arete_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
+  void secmem_arete_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
-  virtual void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
+  void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
-  virtual void secmem_arete_coin_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
+  void secmem_arete_coin_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
-  virtual void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const
+  void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
-  virtual void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const
+  void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const
   {
     ;
   }
-  virtual void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
+  void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     ;
   }
@@ -377,9 +325,6 @@ protected:
 //
 // Fonctions inline de la classe Eval_VDF_Face
 //
-
-inline Eval_VDF_Face::Eval_VDF_Face()
-{}
 
 inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)
 {
