@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 ###
-### This file is generated automatically by SALOME v8.5.0 with dump python functionality
+### This file is generated automatically by SALOME v9.6.0 with dump python functionality
 ###
 
 import sys
 import salome
 
 salome.salome_init()
-theStudy = salome.myStudy
-
 import salome_notebook
-notebook = salome_notebook.NoteBook(theStudy)
+notebook = salome_notebook.NoteBook()
 
 ###
 ### GEOM component
@@ -23,7 +21,7 @@ import math
 import SALOMEDS
 
 
-geompy = geomBuilder.New(theStudy)
+geompy = geomBuilder.New()
 
 O = geompy.MakeVertex(0, 0, 0)
 OX = geompy.MakeVectorDXDYDZ(1, 0, 0)
@@ -47,9 +45,10 @@ geompy.UnionIDs(Solid_top, [34])
 Solid_bottom = geompy.CreateGroup(Partition_1, geompy.ShapeType["FACE"])
 geompy.UnionIDs(Solid_bottom, [45])
 Solid_lateral_walls = geompy.CreateGroup(Partition_1, geompy.ShapeType["FACE"])
-geompy.UnionIDs(Solid_lateral_walls, [27, 49, 40, 17])
+geompy.UnionIDs(Solid_lateral_walls, [49, 27, 17, 40])
 Solid_Fluid_Interface = geompy.CreateGroup(Partition_1, geompy.ShapeType["FACE"])
 geompy.UnionIDs(Solid_Fluid_Interface, [4])
+[Solid, Fluid, Fluid_inlet, Fluid_outlet, Solid_top, Solid_bottom, Solid_lateral_walls, Solid_Fluid_Interface] = geompy.GetExistingSubObjects(Partition_1, False)
 geompy.addToStudy( O, 'O' )
 geompy.addToStudy( OX, 'OX' )
 geompy.addToStudy( OY, 'OY' )
@@ -75,21 +74,24 @@ geompy.addToStudyInFather( Partition_1, Solid_Fluid_Interface, 'Solid_Fluid_Inte
 import  SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 
-smesh = smeshBuilder.New(theStudy)
+smesh = smeshBuilder.New()
+#smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
+                                 # multiples meshes built in parallel, complex and numerous mesh edition (performance)
+
 Mesh_1 = smesh.Mesh(Partition_1)
 NETGEN_1D_2D_3D = Mesh_1.Tetrahedron(algo=smeshBuilder.NETGEN_1D2D3D)
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 NETGEN_3D_Parameters_1.SetMaxSize( 48.9898 )
+NETGEN_3D_Parameters_1.SetMinSize( 6.97246 )
 NETGEN_3D_Parameters_1.SetSecondOrder( 0 )
 NETGEN_3D_Parameters_1.SetOptimize( 1 )
 NETGEN_3D_Parameters_1.SetFineness( 3 )
-NETGEN_3D_Parameters_1.SetChordalError( 0.1 )
+NETGEN_3D_Parameters_1.SetChordalError( -1 )
 NETGEN_3D_Parameters_1.SetChordalErrorEnabled( 0 )
-NETGEN_3D_Parameters_1.SetMinSize( 6.97246 )
 NETGEN_3D_Parameters_1.SetUseSurfaceCurvature( 1 )
 NETGEN_3D_Parameters_1.SetFuseEdges( 1 )
 NETGEN_3D_Parameters_1.SetQuadAllowed( 0 )
-isDone = Mesh_1.Compute()
+NETGEN_3D_Parameters_1.SetCheckChartBoundary( 24 )
 Solid_1 = Mesh_1.GroupOnGeom(Solid,'Solid',SMESH.VOLUME)
 Fluid_1 = Mesh_1.GroupOnGeom(Fluid,'Fluid',SMESH.VOLUME)
 Fluid_inlet_1 = Mesh_1.GroupOnGeom(Fluid_inlet,'Fluid_inlet',SMESH.FACE)
@@ -98,12 +100,8 @@ Solid_top_1 = Mesh_1.GroupOnGeom(Solid_top,'Solid_top',SMESH.FACE)
 Solid_bottom_1 = Mesh_1.GroupOnGeom(Solid_bottom,'Solid_bottom',SMESH.FACE)
 Solid_lateral_walls_1 = Mesh_1.GroupOnGeom(Solid_lateral_walls,'Solid_lateral_walls',SMESH.FACE)
 Solid_Fluid_Interface_1 = Mesh_1.GroupOnGeom(Solid_Fluid_Interface,'Solid_Fluid_Interface',SMESH.FACE)
-smesh.SetName(Mesh_1, 'Mesh_1')
-try:
-    Mesh_1.ExportMED( r'Mesh_1.med', 0, SMESH.MED_MINOR_2, 1, None ,1)
-    pass
-except:
-    print('ExportToMEDX() failed. Invalid file name?')
+isDone = Mesh_1.Compute()
+[ Solid_1, Fluid_1, Fluid_inlet_1, Fluid_outlet_1, Solid_top_1, Solid_bottom_1, Solid_lateral_walls_1, Solid_Fluid_Interface_1 ] = Mesh_1.GetGroups()
 
 
 ## Set names of Mesh objects
@@ -121,4 +119,4 @@ smesh.SetName(Solid_1, 'Solid')
 
 
 if salome.sg.hasDesktop():
-    salome.sg.updateObjBrowser(True)
+  salome.sg.updateObjBrowser()

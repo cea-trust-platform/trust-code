@@ -1347,7 +1347,7 @@ Goals:
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item First initialize TrioCFD environment :\\
+\item First initialize TrioCFD environment:\\
 {\small{
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
@@ -1375,7 +1375,7 @@ If you want to run it and generate the pdf report, see the last exercise of this
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item There are several files :\\
+\item There are several files:\\
     \begin{itemize}
     \item [$\circ$] \textit{BuildMeshes.data}: To build the meshes\\
     \item [$\circ$] \textit{PeriodicBoxRANS.data}: To run the flow in the box with RANS model\\
@@ -1484,7 +1484,7 @@ Outlet: $P_0=0$
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item First initialize TrioCFD environment :\\
+\item First initialize TrioCFD environment:\\
 {\small{
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
@@ -1771,7 +1771,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
  & $\mu=2,82.10^{-4}kg.m^{-1}.s^{-1}$\tabularnewline
  & \tabularnewline
  & \textbf{Boundary conditions}:  \tabularnewline
- & Up : Free outlet, \hspace{0.5cm} Wall : $V=0$ \tabularnewline
+ & Up: Free outlet, \hspace{0.5cm} Wall: $V=0$ \tabularnewline
  & Down: $V(x,y,z)=(0,0,10^{-3}m.s^{-1})$\tabularnewline
  & \tabularnewline
  & \textbf{Initial conditions}: $V=0$, \tabularnewline
@@ -1790,7 +1790,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item First initialize TrioCFD environment :\\
+\item First initialize TrioCFD environment:\\
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} 
 
@@ -2005,7 +2005,7 @@ Mesh & Create Groups from Geometry \tabularnewline
 \item Then push the arrow button of Elements/Geometry.
 \item Select together the 3 groups (Inlet, Wall and Outlet) with "Ctrl"+left click in the Cylinder\_1 object of the Object Browser, then press Apply and Close.
 \item Check that the 3 boundaries are in the "Group of Faces" of the Mesh\_1 object in the Object Browser.
-\item Export your mesh with the MED format :\\
+\item Export your mesh with the MED format:\\
 Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ MED file (or File $\rightarrow$ Export $\rightarrow$ MED file).
 \end{itemize}
 
@@ -2200,7 +2200,7 @@ Netgen & MG
 
 \item Select the Geometry module into the SALOME drop-down menu.
 
-\item Create points : New Entity $\rightarrow$ Basic $\rightarrow$ Point\\
+\item Create points: New Entity $\rightarrow$ Basic $\rightarrow$ Point\\
 \begin{tabular}{lll}
 Vertex\_1 (0,0,0)       &   Vertex\_2 (1,0,0)       &   Vertex\_3 (1,0,0.3) \tabularnewline
 Vertex\_4 (0.75,0,0.3)  &   Vertex\_5 (0.375,0,1)   &   Vertex\_6 (0.75,0,1.6) \tabularnewline
@@ -2610,7 +2610,7 @@ or in parallel with:\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e: Create domains for a TRUST coupled problem}
+\frametitle{Salom\'e: Create domains for a TRUST coupled problem\label{salomecoupledpb}}
 \begin{block}{}
 Consider that we want to simulate a coupled problem with TRUST on a complex geometry. Suppose that this latter is drawn by means of Salom\'e.
 
@@ -2734,6 +2734,9 @@ In order to build meshes using Salom\'e for such a simulation, we should create 
  In Mesh, select Mesh\_1 then in Elements select all the created groups in Partition\_1 (with keypad Ctrl) in Geometry then click on Apply And Close.
 
  \item Export the mesh in med format (if possible, choose MED 3.2).
+
+ \item Dump the study and the mesh in a python script with: File $\rightarrow$ Dump Study. \\
+ We will need it on the next exercice. 
  
 \end{itemize}
 \end{block}
@@ -2761,6 +2764,107 @@ In order to build meshes using Salom\'e for such a simulation, we should create 
 
  \item Draw the temperature profile on both domains and set the min and max on color bar to 300 and 400 respectively. When you visualize time evolution of temperature, you see that the solid is cooled and its temperature decreases. If we increase the time of the simulation, the temperature of the solid will be equal to that of the fluid at the steady state.
  
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Edit and build meshes with python script}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{small}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\end{columns}
+\end{small}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Aim of this exercise}
+
+\begin{block}{}
+Consider you already created a mesh using Salome. You will be able to change mesh and geometry parameters without starting it from scratch if you saved your study in python script.
+\newline
+
+Salome offers the possibility to save all commands launched from the Graphical User Interface, either in HDF5 format, or to save the study as a python script. 
+If you dump your study in a python script, you can later modify some parameters and run it to build the new mesh, without having to rebuild the geometry nor the mesh in Salome.
+\newline
+
+In this exercice, you will learn how to do so.
+
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Copy the python script}
+
+\begin{block}{In your terminal}
+\begin{itemize}
+ \item Create a new directory\\
+ \texttt{\$ mkdir -p Formation\_TRUST/yourname/salome/exo5}\\
+ \texttt{\$ cd Formation\_TRUST/yourname/salome/exo5}
+
+ \item Copy the python script you generated in the previous exercise (see page \pageref{salomecoupledpb}) and the data file\\
+ \texttt{\$ cp ../exo4/Mesh\_1.py .}\\
+ \texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/salome/Coupled\_pb.data .}\\
+N.B.: If you have not permformed the previous exercise, you can copy the python script as follows:\\
+ \texttt{\$ path=\$TRUST\_ROOT/doc/TRUST/exercices/salome}\\
+ \texttt{\$ cp \$path/Coupled\_pb.py Mesh\_1.py}\\
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Edit geometry and meshing parameters}
+
+\begin{block}{Edit the Mesh\_1.py script in a text editor}
+\begin{itemize}
+ \item At the end of the \texttt{Mesh\_1.py} script, add the line:\\
+ \texttt{   Mesh\_1.ExportMED("Mesh\_1.med",0)}\\
+which allows to export the generated mesh on MED format.
+ \item Change some parameters:
+ \begin{enumerate}
+  \item Change the height of the box and the cylinder: \texttt{400 $\rightarrow$ 300}
+
+  \item Change the radius of the cylinder: \texttt{40 $\rightarrow$ 70}
+
+  \item Change the cell's MaxSize in NETGEN\_3D\_Parameters\_1: \texttt{48.9898 $\rightarrow$ 9.}
+
+  \item Change the cell's MinSize in NETGEN\_3D\_Parameters\_1: \texttt{6.97246 $\rightarrow$ 2.}
+
+ \end{enumerate}
+
+ \item Save and close\\
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Generate the mesh and vizualize it}
+
+\begin{block}{In your terminal}
+\begin{itemize}
+ \item Run your python script using the \texttt{-t} option of Salome:\\
+ \texttt{\$ \$PathToSalome/salome -t Mesh\_1.py}
+
+ \item You should have now \texttt{Mesh\_1.med}  generated in your folder
+
+ \item Visualize the generated mesh to check that changes made:\\
+ \texttt{\$ trust -mesh Coupled\_pb}\\
+ You should see that the box is smaller in the \texttt{z} direction, the cylinder is thicker, and the mesh is finer.
+
+ \item You can now run the calculation on the new mesh:\\
+ \texttt{\$ trust Coupled\_pb}
 \end{itemize}
 \end{block}
 
@@ -3618,7 +3722,7 @@ or\\
 
 \item We are going to update the validation form.
     \begin{itemize}
-    \item [$\circ$] Modify the "Canal.prm" file in "src" directory to take into account the new test case debit4. Add in the \textbf{Parameters} block :\\
+    \item [$\circ$] Modify the "Canal.prm" file in "src" directory to take into account the new test case debit4. Add in the \textbf{Parameters} block:\\
     \hspace{0.3cm} \textbf{TestCase . Debit4.data}\\
 
     \item [$\circ$] Build the report by running the 4 test cases simultaneously (not sequentially):\\
