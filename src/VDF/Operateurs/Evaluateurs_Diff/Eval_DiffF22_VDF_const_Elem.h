@@ -134,6 +134,7 @@ inline double Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::secmem_face(int f
 
 //// coeffs_face avec Dirichlet_paroi_fixe
 //
+#ifdef DOXYGEN_SHOULD_SKIP_THIS
 template<>template<>
 inline void Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::coeffs_face(int face, int num1,
                                                                          const Dirichlet_paroi_fixe& la_cl,
@@ -153,7 +154,7 @@ inline void Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::coeffs_face(int fac
       aii = 0;
     }
 }
-
+#endif
 //// flux_face avec Echange_externe_impose
 //
 template<>
@@ -252,6 +253,7 @@ inline double Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::secmem_face(int f
 
 //// coeffs_face avec Neumann_sortie_libre
 //
+#ifdef DOXYGEN_SHOULD_SKIP_THIS
 template<>template<>
 inline void Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::coeffs_face(int face, int num1,
                                                                          const Neumann_sortie_libre& la_cl,
@@ -276,7 +278,7 @@ inline double Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::secmem_face(int f
 {
   return 0;
 }
-
+#endif
 //// flux_face avec Periodique
 //
 template<>
