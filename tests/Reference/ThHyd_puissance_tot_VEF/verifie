@@ -10,7 +10,7 @@ jdd=`basename $jdd`
 debog=$1
 
 # Recuperation de la puissance totale degagee dans le domaine (dans fichier d impression)
-source=`tail -1 $jdd"_pb_Puissance_Thermique.out" | $TRUST_Awk '{print $2}'`
+source=`tail -1 $jdd"_pb_Puissance_Thermique_puissance_volumique.out" | $TRUST_Awk '{print $2}'`
 
 # Recuperation du bilan du flux de diffusion sur les bords (dans fichier d impression)
 fluxdiff=`tail -1 $jdd"_pb_Diffusion_chaleur.out" | $TRUST_Awk '{print $6}'`

@@ -9,7 +9,7 @@ dimension 2
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 1.000010e+02
+	tinit 1.010000e+02 
 	tmax 300.
 	dt_min 0.001
 	dt_max 10.
