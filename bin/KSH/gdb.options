@@ -17,7 +17,7 @@ end
 
 # To print a TRUST DoubleTab, use: dumptab name_of_array
 define dumptab
- set $dimb = $arg0.nb_dim()
+ set $dimb = $arg0.line_size()
  set $dima = $arg0.dimension_tot(0)
  printf "%8d %8d\n", $dima, $dimb
  set $i = 0
@@ -32,7 +32,7 @@ define dumptab
 end 
 # To print a TRUST IntTab, use: dumpinttab name_of_array
 define dumpinttab
- set $dimb = $arg0.nb_dim()
+ set $dimb = $arg0.line_size()
  set $dima = $arg0.dimension_tot(0)
  printf "%8d %8d\n", $dima, $dimb
  set $i = 0
@@ -58,7 +58,7 @@ define ptab
  set $j = $arg0.dimension_tot(1) * $arg1
  set $i = 0
  while $i < $arg0.dimension_tot(1)
-    printf "%16.12 ", $arg0.data_[+$i++]
+    printf "%16.12f", $arg0.data_[+$i++]
  end
  printf "\n"
 end
