@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,9 +133,7 @@ double Dirichlet::val_imp_au_temps(double temps, int i) const
   const DoubleTab& tab=le_champ_front->valeurs_au_temps(temps);
   if (tab.size()==1)
     return tab(0,0);
-  if (tab.nb_dim()==1)
-    return tab(i);
-  if (tab.dimension(1)==1)
+  if (tab.line_size()==1)
     return tab(i,0);
   else
     Cerr << "Dirichlet::val_imp error" << finl;

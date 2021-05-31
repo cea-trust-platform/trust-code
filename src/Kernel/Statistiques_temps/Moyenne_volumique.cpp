@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -636,8 +636,8 @@ void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
   const int nb_coords_max = ::mp_max(nb_coords_to_compute);
 
   int nb_comp;
-  nb_comp = champ_source.dimension(1);
-  assert(resu.dimension(1) == nb_comp);
+  nb_comp = champ_source.line_size();
+  assert(resu.line_size() == nb_comp);
 
   DoubleTab coords(nbproc, 3);
   ArrOfInt flag(nbproc);

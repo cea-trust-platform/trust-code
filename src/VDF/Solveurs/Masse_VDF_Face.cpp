@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,9 +62,7 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const DoubleVect& porosite_face = zone_VDF.porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-
-  int nb_faces = zone_VDF.nb_faces();
-  int num_face,ndeb,nfin;
+  const int nb_faces = zone_VDF.nb_faces(), N = sm.line_size();
 
   if (sm.dimension(0) != nb_faces)
     {
@@ -72,101 +70,45 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
       exit();
     }
 
-  if (sm.nb_dim() == 1)
+
+  // Boucle sur les faces joint
+
+  // Boucle sur les bords
+  // Sur les faces qui portent des conditions aux limites de Dirichlet ou de Symetrie
+  // la vitesse normale reste egale a sa valeur initiale.
+  // Donc sur ces faces vpoint doit rester a 0.
+
+  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
     {
-      // Boucle sur les faces joint
 
-      // Boucle sur les bords
-      // Sur les faces qui portent des conditions aux limites de Dirichlet ou de Symetrie
-      // la vitesse normale reste egale a sa valeur initiale.
-      // Donc sur ces faces vpoint doit rester a 0.
+      // pour chaque Condition Limite on regarde son type
+      const Cond_lim& la_cl = la_zone_Cl_VDF->les_conditions_limites(n_bord);
+      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const int ndeb = la_front_dis.num_premiere_face();
+      const int nfin = ndeb + la_front_dis.nb_faces();
 
-      for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
-        {
+      if ( sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur()) )
+        // Pour les faces de Dirichlet on met sm a 0
+        for (int f = ndeb; f < nfin; f++)
+          for (int n = 0; n < N; n++)
+            sm(f, n) = 0;
+      else if (sub_type(Symetrie,la_cl.valeur()))
+        // Pour les faces de Symetrie on met vpoint a 0
+        for (int f = ndeb; f < nfin; f++)
+          for (int n = 0; n < N; n++)
+            sm(f, n) = 0;
+      else
+        for (int f = ndeb; f < nfin; f++)
+          for (int n = 0; n < N; n++)
+            sm(f, n) /= (volumes_entrelaces(f) * porosite_face(f));
 
-          // pour chaque Condition Limite on regarde son type
-
-          const Cond_lim& la_cl = la_zone_Cl_VDF->les_conditions_limites(n_bord);
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = la_front_dis.num_premiere_face();
-          nfin = ndeb + la_front_dis.nb_faces();
-
-          if ( (sub_type(Dirichlet,la_cl.valeur()))
-               ||
-               (sub_type(Dirichlet_homogene,la_cl.valeur()))
-             )
-            // Pour les faces de Dirichlet on met sm a 0
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              sm[num_face] = 0;
-          else if (sub_type(Symetrie,la_cl.valeur()))
-            // Pour les faces de Symetrie on met vpoint a 0
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              sm[num_face] = 0;
-          else
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              sm[num_face] /= (volumes_entrelaces(num_face)*porosite_face(num_face));
-
-        }
-
-      // Boucle sur les faces internes
-
-      ndeb = zone_VDF.premiere_face_int();
-      for (num_face=ndeb; num_face<nb_faces; num_face++)
-        {
-          sm[num_face] /= (volumes_entrelaces(num_face)*porosite_face(num_face));
-        }
     }
-  else
-    {
-      assert(sm.nb_dim()==2); // sinon on ne fait pas ce qu'il faut
-      int nb_comp = sm.dimension(1);
-      int ncomp;
 
-      // Boucle sur les faces joint
-
-      // Boucle sur les bords
-      // Sur les faces qui portent des conditions aux limites de Dirichlet ou de Symetrie
-      // la vitesse normale reste egale a sa valeur initiale.
-      // Donc sur ces faces vpoint doit rester a 0.
-
-      for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
-        {
-
-          // pour chaque Condition Limite on regarde son type
-
-          const Cond_lim& la_cl = la_zone_Cl_VDF->les_conditions_limites(n_bord);
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = la_front_dis.num_premiere_face();
-          nfin = ndeb + la_front_dis.nb_faces();
-
-          if ( (sub_type(Dirichlet,la_cl.valeur()))
-               ||
-               (sub_type(Dirichlet_homogene,la_cl.valeur()))
-             )
-            // Pour les faces de Dirichlet on met sm a 0
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              for (ncomp=0; ncomp<nb_comp; ncomp++)
-                sm(num_face,ncomp) = 0;
-          else if (sub_type(Symetrie,la_cl.valeur()))
-            // Pour les faces de Symetrie on met vpoint a 0
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              for (ncomp=0; ncomp<nb_comp; ncomp++)
-                sm(num_face,ncomp) = 0;
-          else
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              for (ncomp=0; ncomp<nb_comp; ncomp++)
-                sm(num_face,ncomp)
-                /= (volumes_entrelaces(num_face)*porosite_face(num_face));
-
-        }
-
-      // Boucle sur les faces internes
-
-      ndeb = zone_VDF.premiere_face_int();
-      for (num_face=ndeb; num_face<nb_faces; num_face++)
-        for (ncomp=0; ncomp<nb_comp; ncomp++)
-          sm(num_face,ncomp) /= (volumes_entrelaces(num_face)*porosite_face(num_face));
-    }
+  // Boucle sur les faces internes
+  const int ndeb = zone_VDF.premiere_face_int();
+  for (int f = ndeb; f < nb_faces; f++)
+    for (int n = 0; n < N; n++)
+      sm(f, n) /= (volumes_entrelaces(f) * porosite_face(f));
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VDF_Face::appliquer sm",sm);
   return sm;

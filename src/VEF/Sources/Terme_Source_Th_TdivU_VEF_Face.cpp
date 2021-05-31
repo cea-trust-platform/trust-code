@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -157,7 +157,7 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
 {
   Terme_Source_Th_TdivU_VEF_Face& me_non_const=ref_cast_non_const(Terme_Source_Th_TdivU_VEF_Face,*this);
   me_non_const.modifier_zone_cl();
-  if(resu.nb_dim()!=1)
+  if(resu.line_size() > 1)
     {
       Cerr << "Error in " << que_suis_je()  << finl;
       Cerr << "The source term Source_Th_TdivU_VEF_P1NC is only dedicated to thermal equation" << finl;

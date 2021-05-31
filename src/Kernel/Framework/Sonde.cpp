@@ -797,13 +797,10 @@ void Sonde::initialiser()
         {
           const Noms noms_comp = mon_champ->get_property("composantes");
           int nb_comp = noms_comp.size();
-          if (nb_comp == 1)
-            valeurs_sur_maitre.resize(nbre_points);
-          else
-            valeurs_sur_maitre.resize(nbre_points,nb_comp);
+          valeurs_sur_maitre.resize(nbre_points,nb_comp);
         }
       else
-        valeurs_sur_maitre.resize(nbre_points);
+        valeurs_sur_maitre.resize(nbre_points, 1);
     }
 
   // Probes may be moved to cog, face, vertex:
@@ -1036,14 +1033,10 @@ void Sonde::initialiser()
     {
       const Noms noms_comp = mon_champ->get_property("composantes");
       int nb_comp = noms_comp.size();
-
-      if (nb_comp == 1)
-        valeurs_locales.resize(nbre_points);
-      else
-        valeurs_locales.resize(nbre_points,nb_comp);
+      valeurs_locales.resize(nbre_points,nb_comp);
     }
   else
-    valeurs_locales.resize(nbre_points);
+    valeurs_locales.resize(nbre_points, 1);
 
 }
 
@@ -1325,7 +1318,7 @@ void Sonde::postraiter()
   if (gravcl)
     mettre_a_jour_bords();
   //int i;
-  int nb_compo=valeurs_locales.nb_dim();
+  const int N = valeurs_locales.line_size();
   //  int nbre_points = les_positions_.dimension(0);
 
   // le maitre reconstruit le tableau valeurs
@@ -1345,23 +1338,9 @@ void Sonde::postraiter()
       else
         {
           int nb_val=valeurs_locales.dimension(0);
-          if(nb_compo==1)
-            {
-              for(int i=0; i<nb_val; i++)
-                {
-                  valeurs(participant[0][i])=valeurs_locales(i);
-                }
-            }
-          else
-            {
-              int nb_val2=valeurs_locales.dimension(1);
-              int k;
-              for(int i=0; i<nb_val; i++)
-                for(k=0; k<nb_val2; k++)
-                  {
-                    valeurs(participant[0][i],k)=valeurs_locales(i,k);
-                  }
-            }
+          for(int i=0; i<nb_val; i++)
+            for(int n = 0; n < N; n++)
+              valeurs(participant[0][i], n) = valeurs_locales(i, n);
         }
 
       for(p=1; p<nbproc; p++)
@@ -1370,31 +1349,16 @@ void Sonde::postraiter()
           if (participant[p].size_array()!=0)
             {
               recevoir(valeurs_pe,p,0,2002+p);
-              if(nb_compo==1)
-                {
-                  int nb_val=valeurs_pe.dimension(0);
-                  for(int i=0; i<nb_val; i++)
-                    {
-                      valeurs(participant[p][i])=valeurs_pe(i);
-                      //           val_max = max(dabs(valeurs(i)),dabs(valeurs_pe(i)));
-                      //                   if(val_max==(dabs(valeurs_pe(i))))
-                      //                     valeurs(i)=valeurs_pe(i);
-                    }
-                }
-              else
-                {
-                  int nb_val1=valeurs_pe.dimension(0);
-                  int nb_val2=valeurs_pe.dimension(1);
-                  int k;
-                  for(int i=0; i<nb_val1; i++)
-                    for(k=0; k<nb_val2; k++)
-                      {
-                        valeurs(participant[p][i],k)=valeurs_pe(i,k);
-                        //  val_max = max(dabs(valeurs(i,k)),dabs(valeurs_pe(i,k)));
-                        //                     if(val_max==(dabs(valeurs_pe(i,k))))
-                        //                       valeurs(i,k)=valeurs_pe(i,k);
-                      }
-                }
+              int nb_val1=valeurs_pe.dimension(0);
+              assert(N == valeurs_pe.line_size());
+              for(int i=0; i<nb_val1; i++)
+                for(int n = 0; n < N; n++)
+                  {
+                    valeurs(participant[p][i], n)=valeurs_pe(i, n);
+                    //  val_max = max(dabs(valeurs(i,k)),dabs(valeurs_pe(i,k)));
+                    //                     if(val_max==(dabs(valeurs_pe(i,k))))
+                    //                       valeurs(i,k)=valeurs_pe(i,k);
+                  }
             }
         }
 
@@ -1404,11 +1368,8 @@ void Sonde::postraiter()
         {
           fichier() << temps_courant;
           for(int i=0; i<valeurs.dimension(0); i++)
-            if (nb_compo==2)
-              for(int k=0; k<valeurs.dimension(1); k++)
-                fichier() << " " << valeurs(i,k);
-            else
-              fichier() << " " << valeurs(i);
+            for(int k=0; k<N; k++)
+              fichier() << " " << valeurs(i,k);
           fichier() << finl;
         }
       // Pour les sondes type plan, impression au format lml :
@@ -1448,11 +1409,8 @@ void Sonde::postraiter()
           for(i=0; i<nbre_points; i++)
             {
               fichier() << i+1;
-              if (nb_compo==2)
-                for(int j=0; j<valeurs.dimension(1); j++)
-                  fichier() << " " << valeurs(i,j);
-              else
-                fichier() << " " << valeurs(i);
+              for(int j=0; j<N; j++)
+                fichier() << " " << valeurs(i,j);
               // Pour ne pas flusher :
               fichier() << "\n";
             }
@@ -1462,11 +1420,8 @@ void Sonde::postraiter()
               for(i=0; i<nbre_points; i++)
                 {
                   fichier() << nbre_points+i+1;
-                  if (nb_compo==2)
-                    for(int j=0; j<valeurs.dimension(1); j++)
-                      fichier() << " " << valeurs(i,j);
-                  else
-                    fichier() << " " << valeurs(i);
+                  for(int j=0; j<N; j++)
+                    fichier() << " " << valeurs(i,j);
                   // Pour ne pas flusher :
                   fichier() << "\n";
                 }

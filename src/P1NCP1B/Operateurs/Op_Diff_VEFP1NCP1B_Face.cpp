@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1102,7 +1102,7 @@ void Op_Diff_VEFP1NCP1B_Face::initialiser()
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
 
   const DoubleTab& unknown = equation().inconnue().valeurs();
-  const int size = (unknown.nb_dim()==2) ? unknown.dimension(1) : 1;
+  const int size = unknown.line_size();
 
   //Definition des gradients
   gradient_p0_.resize(0, size, Objet_U::dimension);
@@ -1352,12 +1352,9 @@ ajouter_contribution_elem(const DoubleTab& inconnue,const DoubleVect& porosite_f
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
   //   int nb_faces_tot = zone_VEF.nb_faces_tot();
-  int nb_dim = inconnue.nb_dim();
   int nb_faces=zone_VEF.nb_faces();
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
-  int nb_comp = 1;
-  if (nb_dim==2)
-    nb_comp=inconnue.dimension(1);
+  int nb_comp = inconnue.line_size();
 
   int i,j,num_face;
   int elem1,elem2;
@@ -3021,8 +3018,7 @@ void Op_Diff_VEFP1NCP1B_Face::dimensionner(Matrice_Morse& matrice) const
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
 
   const int nb_faces_tot=zone_VEF.nb_faces_tot();
-  const int nb_comp=(inconnue_.valeur().valeurs().nb_dim()==2) ?
-                    inconnue_.valeur().valeurs().dimension(1) : 1;
+  const int nb_comp = inconnue_.valeur().valeurs().line_size();
 
   int face=0;
   int i=0,size=0;
@@ -3267,9 +3263,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   int num1=0,num2=0,ind_face=0;
   int ii=0;
 
-  int size1=1;
-  if (inco.nb_dim()==2)
-    size1=unknown.dimension(1);
+  int size1 = unknown.line_size();
 
   Matrice_Morse matrice;
   dimensionner(matrice);

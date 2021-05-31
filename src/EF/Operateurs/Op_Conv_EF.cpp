@@ -194,7 +194,6 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
                                              DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const
 {
   const Zone_EF& zone_ef = ref_cast(Zone_EF, la_zone_EF.valeur());
-  const int nb_dim=resu.nb_dim();
   const int nb_som_elem=zone_ef.zone().nb_som_elem();
 
 
@@ -224,14 +223,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
-  int nb_comp0 = 1;
-//int nb_dim = resu.nb_dim();
-  //const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp0=resu.dimension(1);
-
-    }
+  int nb_comp0 = resu.line_size();
 
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -286,11 +278,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
             int glob=elems(elem,i1);
             for (int b=0; b<const_dimension; b++)
               G_e[b]+=G(glob,b);
-            if (nb_dim==1)
-              transp_loc(i1,0)=transporte(glob);
-            else
-              for (int a=0; a<nb_comp; a++)
-                transp_loc(i1,a)=transporte_(glob,a);
+            for (int a=0; a<nb_comp; a++)
+              transp_loc(i1,a)=transporte_(glob,a);
           }
         G_e*=inv_nb_som_elem;
         // Cerr<<" coucou "<<G_e<<finl;
@@ -341,28 +330,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
                 double t4=t0+coef2d*4.*(transp_loc_(2,a)+transp_loc_(5,a));
                 */
                 //	  if (elem==0) Cerr<<a<<" "<<t3d<<" iiiiii "<<t1<<" "<<pond3<<" "<<f<<finl;
-                if (nb_dim==1)
-                  {
-                    for (int i=0; i<8; i++)
-                      resu(elems(elem,i))-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-
-
-                    /* {
-                       resu(elems(elem,0))-=t3d+t1;
-                       resu(elems(elem,1))-=-t3d+t2;
-                       resu(elems(elem,2))-=-t3d+t4;
-                       resu(elems(elem,3))-=t3d+t3;
-                       resu(elems(elem,4))-=-t3d+t3;
-                       resu(elems(elem,5))-=t3d+t4;
-                       resu(elems(elem,6))-=t3d+t2;
-                       resu(elems(elem,7))-=-t3d+t1;
-                    }*/
-                  }
-                else
-                  {
-                    for (int i=0; i<8; i++)
-                      resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-                  }
+                for (int i=0; i<8; i++)
+                  resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
               }
 
           }
@@ -399,11 +368,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
                       for (int a=0; a<nb_comp; a++)
                         pr[a]-=coef*transp_loc_(i2,a);
                     }
-                  if (nb_dim==1)
-                    resu(glob)+=pr[0];
-                  else
-                    for (int a=0; a<nb_comp; a++)
-                      resu_(glob,a)+=pr[a];
+                  for (int a=0; a<nb_comp; a++)
+                    resu_(glob,a)+=pr[a];
                 }
             }
 
@@ -426,7 +392,6 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
 {
   const Zone_EF& zone_ef = ref_cast(Zone_EF, la_zone_EF.valeur());
   const int nb_som_elem=8;
-  const int nb_dim=2;
 
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
@@ -454,14 +419,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
-  int nb_comp0 = 1;
-//int nb_dim = resu.nb_dim();
-  //const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp0=resu.dimension(1);
-
-    }
+  int nb_comp0 = resu.line_size();
 
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -521,11 +479,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
             int glob=elems(elem,i1);
             for (int b=0; b<const_dimension; b++)
               G_e[b]+=G(glob,b);
-            if (nb_dim==1)
-              transp_loc(i1,0)=transporte(glob);
-            else
-              for (int a=0; a<nb_comp; a++)
-                transp_loc(i1,a)=transporte_(glob,a);
+            for (int a=0; a<nb_comp; a++)
+              transp_loc(i1,a)=transporte_(glob,a);
           }
         G_e*=inv_nb_som_elem;
         // Cerr<<" coucou "<<G_e<<finl;
@@ -576,28 +531,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
                 double t4=t0+coef2d*4.*(transp_loc_(2,a)+transp_loc_(5,a));
                 */
                 //	  if (elem==0) Cerr<<a<<" "<<t3d<<" iiiiii "<<t1<<" "<<pond3<<" "<<f<<finl;
-                if (nb_dim==1)
-                  {
-                    for (int i=0; i<8; i++)
-                      resu(elems(elem,i))-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-
-
-                    /* {
-                       resu(elems(elem,0))-=t3d+t1;
-                       resu(elems(elem,1))-=-t3d+t2;
-                       resu(elems(elem,2))-=-t3d+t4;
-                       resu(elems(elem,3))-=t3d+t3;
-                       resu(elems(elem,4))-=-t3d+t3;
-                       resu(elems(elem,5))-=t3d+t4;
-                       resu(elems(elem,6))-=t3d+t2;
-                       resu(elems(elem,7))-=-t3d+t1;
-                    }*/
-                  }
-                else
-                  {
-                    for (int i=0; i<8; i++)
-                      resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-                  }
+                for (int i=0; i<8; i++)
+                  resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
               }
 
           }
@@ -634,11 +569,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
                       for (int a=0; a<nb_comp; a++)
                         pr[a]-=coef*transp_loc_(i2,a);
                     }
-                  if (nb_dim==1)
-                    resu(glob)+=pr[0];
-                  else
-                    for (int a=0; a<nb_comp; a++)
-                      resu_(glob,a)+=pr[a];
+                  for (int a=0; a<nb_comp; a++)
+                    resu_(glob,a)+=pr[a];
                 }
             }
 
@@ -660,7 +592,6 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
 {
   const Zone_EF& zone_ef = ref_cast(Zone_EF, la_zone_EF.valeur());
   const int nb_som_elem=8;
-  const int nb_dim=1;
 
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
@@ -688,14 +619,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
-  int nb_comp0 = 1;
-//int nb_dim = resu.nb_dim();
-  //const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp0=resu.dimension(1);
-
-    }
+  int nb_comp0 = resu.line_size();
 
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -755,11 +679,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
             int glob=elems(elem,i1);
             for (int b=0; b<const_dimension; b++)
               G_e[b]+=G(glob,b);
-            if (nb_dim==1)
-              transp_loc(i1,0)=transporte(glob);
-            else
-              for (int a=0; a<nb_comp; a++)
-                transp_loc(i1,a)=transporte_(glob,a);
+            for (int a=0; a<nb_comp; a++)
+              transp_loc(i1,a)=transporte_(glob,a);
           }
         G_e*=inv_nb_som_elem;
         // Cerr<<" coucou "<<G_e<<finl;
@@ -810,28 +731,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
                 double t4=t0+coef2d*4.*(transp_loc_(2,a)+transp_loc_(5,a));
                 */
                 //	  if (elem==0) Cerr<<a<<" "<<t3d<<" iiiiii "<<t1<<" "<<pond3<<" "<<f<<finl;
-                if (nb_dim==1)
-                  {
-                    for (int i=0; i<8; i++)
-                      resu(elems(elem,i))-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-
-
-                    /* {
-                       resu(elems(elem,0))-=t3d+t1;
-                       resu(elems(elem,1))-=-t3d+t2;
-                       resu(elems(elem,2))-=-t3d+t4;
-                       resu(elems(elem,3))-=t3d+t3;
-                       resu(elems(elem,4))-=-t3d+t3;
-                       resu(elems(elem,5))-=t3d+t4;
-                       resu(elems(elem,6))-=t3d+t2;
-                       resu(elems(elem,7))-=-t3d+t1;
-                    }*/
-                  }
-                else
-                  {
-                    for (int i=0; i<8; i++)
-                      resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-                  }
+                for (int i=0; i<8; i++)
+                  resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
               }
 
           }
@@ -868,11 +769,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
                       for (int a=0; a<nb_comp; a++)
                         pr[a]-=coef*transp_loc_(i2,a);
                     }
-                  if (nb_dim==1)
-                    resu(glob)+=pr[0];
-                  else
-                    for (int a=0; a<nb_comp; a++)
-                      resu_(glob,a)+=pr[a];
+                  for (int a=0; a<nb_comp; a++)
+                    resu_(glob,a)+=pr[a];
                 }
             }
 
@@ -895,7 +793,6 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
 {
   const Zone_EF& zone_ef = ref_cast(Zone_EF, la_zone_EF.valeur());
   const int nb_som_elem=4;
-  const int nb_dim=2;
 
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
@@ -923,14 +820,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
-  int nb_comp0 = 1;
-//int nb_dim = resu.nb_dim();
-  //const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp0=resu.dimension(1);
-
-    }
+  int nb_comp0 = resu.line_size();
 
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -990,11 +880,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
             int glob=elems(elem,i1);
             for (int b=0; b<const_dimension; b++)
               G_e[b]+=G(glob,b);
-            if (nb_dim==1)
-              transp_loc(i1,0)=transporte(glob);
-            else
-              for (int a=0; a<nb_comp; a++)
-                transp_loc(i1,a)=transporte_(glob,a);
+            for (int a=0; a<nb_comp; a++)
+              transp_loc(i1,a)=transporte_(glob,a);
           }
         G_e*=inv_nb_som_elem;
         // Cerr<<" coucou "<<G_e<<finl;
@@ -1045,28 +932,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
                 double t4=t0+coef2d*4.*(transp_loc_(2,a)+transp_loc_(5,a));
                 */
                 //	  if (elem==0) Cerr<<a<<" "<<t3d<<" iiiiii "<<t1<<" "<<pond3<<" "<<f<<finl;
-                if (nb_dim==1)
-                  {
-                    for (int i=0; i<8; i++)
-                      resu(elems(elem,i))-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-
-
-                    /* {
-                       resu(elems(elem,0))-=t3d+t1;
-                       resu(elems(elem,1))-=-t3d+t2;
-                       resu(elems(elem,2))-=-t3d+t4;
-                       resu(elems(elem,3))-=t3d+t3;
-                       resu(elems(elem,4))-=-t3d+t3;
-                       resu(elems(elem,5))-=t3d+t4;
-                       resu(elems(elem,6))-=t3d+t2;
-                       resu(elems(elem,7))-=-t3d+t1;
-                    }*/
-                  }
-                else
-                  {
-                    for (int i=0; i<8; i++)
-                      resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-                  }
+                for (int i=0; i<8; i++)
+                  resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
               }
 
           }
@@ -1103,11 +970,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
                       for (int a=0; a<nb_comp; a++)
                         pr[a]-=coef*transp_loc_(i2,a);
                     }
-                  if (nb_dim==1)
-                    resu(glob)+=pr[0];
-                  else
-                    for (int a=0; a<nb_comp; a++)
-                      resu_(glob,a)+=pr[a];
+                  for (int a=0; a<nb_comp; a++)
+                    resu_(glob,a)+=pr[a];
                 }
             }
 
@@ -1129,7 +993,6 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
 {
   const Zone_EF& zone_ef = ref_cast(Zone_EF, la_zone_EF.valeur());
   const int nb_som_elem=4;
-  const int nb_dim=1;
 
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
@@ -1157,14 +1020,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
-  int nb_comp0 = 1;
-//int nb_dim = resu.nb_dim();
-  //const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp0=resu.dimension(1);
-
-    }
+  int nb_comp0 = resu.line_size();
 
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -1224,11 +1080,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
             int glob=elems(elem,i1);
             for (int b=0; b<const_dimension; b++)
               G_e[b]+=G(glob,b);
-            if (nb_dim==1)
-              transp_loc(i1,0)=transporte(glob);
-            else
-              for (int a=0; a<nb_comp; a++)
-                transp_loc(i1,a)=transporte_(glob,a);
+            for (int a=0; a<nb_comp; a++)
+              transp_loc(i1,a)=transporte_(glob,a);
           }
         G_e*=inv_nb_som_elem;
         // Cerr<<" coucou "<<G_e<<finl;
@@ -1279,28 +1132,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
                 double t4=t0+coef2d*4.*(transp_loc_(2,a)+transp_loc_(5,a));
                 */
                 //	  if (elem==0) Cerr<<a<<" "<<t3d<<" iiiiii "<<t1<<" "<<pond3<<" "<<f<<finl;
-                if (nb_dim==1)
-                  {
-                    for (int i=0; i<8; i++)
-                      resu(elems(elem,i))-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-
-
-                    /* {
-                       resu(elems(elem,0))-=t3d+t1;
-                       resu(elems(elem,1))-=-t3d+t2;
-                       resu(elems(elem,2))-=-t3d+t4;
-                       resu(elems(elem,3))-=t3d+t3;
-                       resu(elems(elem,4))-=-t3d+t3;
-                       resu(elems(elem,5))-=t3d+t4;
-                       resu(elems(elem,6))-=t3d+t2;
-                       resu(elems(elem,7))-=-t3d+t1;
-                    }*/
-                  }
-                else
-                  {
-                    for (int i=0; i<8; i++)
-                      resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
-                  }
+                for (int i=0; i<8; i++)
+                  resu_(elems(elem,i),a)-=mcoef3d[i]*t3d+t0+coef2d*4.*(transp_loc_(i,a)+transp_loc_(sommetoppose[i],a));
               }
 
           }
@@ -1337,11 +1170,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
                       for (int a=0; a<nb_comp; a++)
                         pr[a]-=coef*transp_loc_(i2,a);
                     }
-                  if (nb_dim==1)
-                    resu(glob)+=pr[0];
-                  else
-                    for (int a=0; a<nb_comp; a++)
-                      resu_(glob,a)+=pr[a];
+                  for (int a=0; a<nb_comp; a++)
+                    resu_(glob,a)+=pr[a];
                 }
             }
 
@@ -1394,13 +1224,8 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
                              equation().probleme().get_champ("masse_volumique").valeurs());
   int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
 
-  int nb_comp = 1;
-  int nb_dim = transporte.nb_dim();
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp=transporte.dimension(1);
-    }
+  int nb_comp = transporte.line_size();
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
   const DoubleTab& IPhi_thilde=zone_ef.IPhi_thilde();

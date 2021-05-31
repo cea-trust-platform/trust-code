@@ -849,6 +849,9 @@ Champ_base& Champ_Inc_base::affecter_(const Champ_base& ch)
       pos.ref_tab(noeuds, 0, n);
       val.ref_tab(valeurs(), 0, n);
       ch.valeur_aux(pos, val);
+      //copie dans toutes les cases
+      valeurs().echange_espace_virtuel();
+      for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
     }
   else
     {

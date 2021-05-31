@@ -449,7 +449,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
         }
 
       // s'il y a plusieurs composantes par CL, on se sert des noms de composante de l'inconnue
-      int nb_compo = flux_bords_.dimension(1);
+      int nb_compo = flux_bords_.line_size();
       if (type=="moment" && dimension == 2) nb_compo=1;
       Noms noms_compo_courts(eqn.inconnue()->noms_compo());
       if (nb_compo > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)

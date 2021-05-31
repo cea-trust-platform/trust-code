@@ -477,11 +477,7 @@ void Equation_base::ecrire_fichier_xyz() const
                           la_frontiere.faces().calculer_centres_gravite(pos);
 
                           // Construction du tableau val contenant les valeurs aux centres des faces
-                          DoubleTab val;
-                          if (nb_compo == 1)
-                            val.resize(nb_val);
-                          else
-                            val.resize(nb_val,nb_compo);
+                          DoubleTab val(nb_val,nb_compo);
                           val = 0.;
                           if (champ_stat == 1)
                             {
@@ -509,14 +505,9 @@ void Equation_base::ecrire_fichier_xyz() const
                               for (int j2=0; j2<dimension; j2++)
                                 fic << pos(i2,j2) << " ";
                               // Ecriture des valeurs
-                              if (nb_compo==1)
-                                fic << val(i2) << finl;
-                              else
-                                {
-                                  for (int nb=0; nb<nb_compo; nb++)
-                                    fic << val(i2,nb) << " " ;
-                                  fic << finl;
-                                }
+                              for (int nb=0; nb<nb_compo; nb++)
+                                fic << val(i2,nb) << " " ;
+                              fic << finl;
                             }
                           fic.unlockfile();
                           barrier();
@@ -1968,12 +1959,11 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
         {
           statistiques().begin_count(assemblage_sys_counter_);
           const int nb_case = inconnue().valeurs().dimension_tot(0);
-          const int nbdim1 = (inconnue().valeurs().nb_dim() == 1);
-          const int nb_comp = (nbdim1 ? 1 : inconnue().valeurs().dimension(1));
+          const int nb_comp = inconnue().valeurs().line_size();
           if (nb_comp * nb_case != n)
             {
               Cerr << "the size of the unknown and the second member does not match" << finl;
-              Cerr << "dimension_tot nbdim1 nb_comp = " << nb_case << " " << nbdim1 << " " << nb_comp << finl;
+              Cerr << "dimension_tot nbdim1 nb_comp = " << nb_case << " " << nb_comp << finl;
               Cerr << "size_totale = " << n << finl;
               exit();
             }
@@ -1986,17 +1976,8 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           // Il faut appliquer le solveur_masse
           DoubleTab tempo(inconnue().valeurs());
           for (int ca = 0; ca < nb_case; ca++)
-            {
-              if (nbdim1)
-                {
-                  tempo(ca) = diag(ca, ca);
-                }
-              else
-                {
-                  for (int ncp = 0; ncp < nb_comp; ncp++)
-                    tempo(ca, ncp) = diag(ca * nb_comp + ncp, ca * nb_comp + ncp);
-                }
-            }
+            for (int ncp = 0; ncp < nb_comp; ncp++)
+              tempo(ca, ncp) = diag(ca * nb_comp + ncp, ca * nb_comp + ncp);
           solveur_masse.appliquer(tempo);
           tempo.echange_espace_virtuel();
           // On inverse... // Crank - Nicholson
@@ -2004,11 +1985,8 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           for (int ca = 0; ca < nb_case; ca++)
             {
               double tmp = (size_terme_mul ? terme_mul(ca) : 1) / dt;
-              if (nbdim1)
-                diag(ca, ca) = 1. / (tmp + tempo(ca) * aCKN);
-              else
-                for (int ncpa = 0; ncpa < nb_comp; ncpa++)
-                  diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
+              for (int ncpa = 0; ncpa < nb_comp; ncpa++)
+                diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
             }
           statistiques().end_count(assemblage_sys_counter_);
         }
@@ -2529,7 +2507,7 @@ Nom Equation_base::expression_residu()
 void Equation_base::initialise_residu(int size)
 {
   if (size==0)
-    size=inconnue().valeurs().nb_dim()==1?1:inconnue().valeurs().dimension(1);
+    size = inconnue().valeurs().line_size();
   residu_.resize(size);
   residu_initial_.resize(size);
   residu_=0;

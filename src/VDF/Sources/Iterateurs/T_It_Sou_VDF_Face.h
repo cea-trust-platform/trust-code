@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -123,9 +123,7 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
   ((_TYPE_&) (evaluateur_source_face)).mettre_a_jour( );
 
   assert(resu.nb_dim() < 3);
-  int ncomp=1;
-  if (resu.nb_dim() == 2)
-    ncomp=resu.dimension(1);
+  const int ncomp = resu.line_size();
 
   DoubleVect& bilan = so_base->bilan();
   bilan=0;

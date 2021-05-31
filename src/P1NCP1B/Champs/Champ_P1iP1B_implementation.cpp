@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,22 +101,8 @@ valeur_aux_elems(const DoubleTab& positions,
   int nb_compo_=le_champ().nb_comp();
   int dimension=Objet_U::dimension;
 
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
-    {
-      Cerr << "Erreur TRUST dans Champ_P1NC::valeur_aux()\n";
-      Cerr << "Le DoubleTab val a plus de 2 entrees\n";
-      Process::exit();
-    }
+  assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
+  assert(val.line_size() == nb_compo_);
 
   // Filtrage du champ dans le tableau champ_filtre_
   champ_filtre_=filtrage(zvef,le_champ());
@@ -127,10 +113,7 @@ valeur_aux_elems(const DoubleTab& positions,
       for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
         {
           // On initialise
-          if (val.nb_dim() == 1)
-            val(rang_poly) = 0.;
-          else
-            val(rang_poly,0) = 0.;
+          val(rang_poly,0) = 0.;
 
           // On prend le_poly
           int le_poly=les_polys(rang_poly);
@@ -138,12 +121,7 @@ valeur_aux_elems(const DoubleTab& positions,
             {
               // Contribution P0
               if (zvef.get_alphaE())
-                {
-                  if (val.nb_dim() == 1)
-                    val(rang_poly) += champ_filtre_(le_poly);
-                  else
-                    val(rang_poly,0) += champ_filtre_(le_poly);
-                }
+                val(rang_poly,0) += champ_filtre_(le_poly);
               // Contribution P1
               if (zvef.get_alphaS())
                 {
@@ -168,10 +146,7 @@ valeur_aux_elems(const DoubleTab& positions,
                         li=coord_barycentrique_P1_tetraedre(sommet_poly,
                                                             coord, xs, ys, zs,
                                                             le_poly, i);
-                      if (val.nb_dim() == 1)
-                        val(rang_poly) += champ_filtre_som * li;
-                      else
-                        val(rang_poly,0) += champ_filtre_som * li;
+                      val(rang_poly,0) += champ_filtre_som * li;
                     }
                 }
             }
@@ -206,21 +181,7 @@ valeur_aux_sommets(const Domaine& dom,
 {
   const Zone_VEF_PreP1b& zvef = zone_vef();
   int nb_compo_=le_champ().nb_comp();
-
-  if (val.nb_dim() == 1)
-    {
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
-    {
-      Cerr << "Erreur TRUST dans Champ_P1iP1B_implementation:::valeur_aux_sommets()\n";
-      Cerr << "Le DoubleTab val a plus de 2 entrees\n";
-      Process::exit();
-    }
+  assert(nb_compo_ == val.line_size());
 
   // Filtrage du champ pour le postraitement (contenu dans le tableau champ_filtre_)
   champ_filtre_=filtrage(zvef,le_champ());
@@ -229,10 +190,7 @@ valeur_aux_sommets(const Domaine& dom,
     {
       Champ_P0_VEF tmp;
       tmp.associer_zone_dis_base(zvef);
-      tmp.fixer_nb_comp(1);
-      tmp.fixer_nb_valeurs_nodales(zvef.nb_elem());
-      DoubleVect& valeurs=tmp.valeurs();
-      valeurs.ref_data(champ_filtre_.addr(),zvef.nb_elem_tot());
+      tmp.valeurs() = champ_filtre_;
       tmp.valeur_aux_sommets(zvef.zone().domaine(), val);
     }
 
@@ -246,10 +204,7 @@ valeur_aux_sommets(const Domaine& dom,
           for (num_som = 0; num_som<nbs; num_som++)
             {
               som = prs+num_som;
-              if (val.nb_dim() == 1)
-                val(num_som) += champ_filtre_(som);
-              else
-                val(num_som,0) += champ_filtre_(som);
+              val(num_som,0) += champ_filtre_(som);
             }
         }
       else // nb_compo_ > 1

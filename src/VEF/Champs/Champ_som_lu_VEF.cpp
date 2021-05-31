@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,33 +141,19 @@ DoubleTab& Champ_som_lu_VEF::valeur_aux_elems(const DoubleTab& positions,
                                               DoubleTab& val) const
 {
 
-  int som;
+  int som, le_poly;
   double xs,ys,zs;
 
   const Zone& la_zone = mon_domaine->zone(0);
-  //   const Zone_dis_base& zone_dis = zone_dis_base();
-  //   const Zone& zone_geom = zone_dis.zone();
   const DoubleTab& coord = la_zone.domaine().coord_sommets();
   const IntTab& sommet_poly = la_zone.les_elems();
 
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
+  if (val.nb_dim() > 2)
     {
       Cerr << "Erreur TRUST dans Champ_P1NC::valeur_aux()\n";
       Cerr << "Le DoubleTab val a plus de 2 entrees\n";
       exit();
     }
-
-  int le_poly;
 
   if (dimension == 2)
     {
@@ -175,82 +161,28 @@ DoubleTab& Champ_som_lu_VEF::valeur_aux_elems(const DoubleTab& positions,
       Cerr << "Il manque les fonctions de forme en 2D!! A vous de jouer!!" << finl;
     }
 
-  if (nb_compo_ == 1)
-    {
-      const DoubleVect& ch = valeurs();
+  const DoubleTab& ch = valeurs();
 
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+    {
+      le_poly=les_polys(rang_poly);
+      if (le_poly == -1)
+        for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+          val(rang_poly, ncomp) = 0;
+      else
         {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            val(rang_poly) = 0;
-          else
+          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
             {
-              // Calcul d'apres les fonctions de forme sur le triangle
-              val(rang_poly) = 0;
-              if (dimension == 2)
-                {
-                  xs = positions(rang_poly,0);
-                  ys = positions(rang_poly,1);
-                  for (int i=0; i< 3; i++)
-                    {
-                      som = sommet_poly(le_poly,i);
-                      val(rang_poly) += ch(som)* coord_barycentrique2D(sommet_poly, coord, xs, ys,le_poly, i);
-                    }
-                }
-              else if (dimension == 3)
-                {
-                  xs = positions(rang_poly,0);
-                  ys = positions(rang_poly,1);
-                  zs = positions(rang_poly,2);
-                  for (int i=0; i< 4; i++)
-                    {
-                      som = sommet_poly(le_poly,i);
-                      val(rang_poly) += ch(som) * coord_barycentrique3D(sommet_poly, coord, xs, ys, zs,le_poly, i);
-                    }
-                }
-            }
-        }
-    }
-  else // nb_compo_ > 1
-    {
-      const DoubleTab& ch = valeurs();
-
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
               val(rang_poly, ncomp) = 0;
-          else
-            {
-              for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+              xs = positions(rang_poly,0);
+              ys = positions(rang_poly,1);
+              zs = (dimension == 3) ? positions(rang_poly,2) : 0.;
+              for (int i=0; i< dimension + 1; i++)
                 {
-                  val(rang_poly, ncomp) = 0;
-                  if (dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 3; i++)
-                        {
-                          som = sommet_poly(le_poly,i);
-                          val(rang_poly, ncomp) += ch(som, ncomp)
-                                                   * coord_barycentrique2D(sommet_poly, coord, xs, ys, le_poly, i);
-                        }
-                    }
-                  else if (dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 4; i++)
-                        {
-                          som = sommet_poly(le_poly,i);
-                          val(rang_poly, ncomp) += ch(som, ncomp)
-                                                   * coord_barycentrique3D(sommet_poly, coord, xs, ys, zs,
-                                                                           le_poly, i);
-                        }
-                    }
+                  som = sommet_poly(le_poly,i);
+                  val(rang_poly, ncomp) += ch(som, ncomp) *
+                                           ( (dimension == 2) ? coord_barycentrique2D(sommet_poly, coord, xs, ys, le_poly, i) :
+                                             coord_barycentrique3D(sommet_poly, coord, xs, ys, zs, le_poly, i));
                 }
             }
         }
@@ -265,61 +197,38 @@ DoubleVect& Champ_som_lu_VEF::valeur_aux_elems_compo(const DoubleTab& positions,
                                                      DoubleVect& val,
                                                      int ncomp) const
 {
-  int som;
+  int som, le_poly;
   double xs,ys,zs;
-
   const Zone& la_zone = mon_domaine->zone(0);
-  //   const Zone_dis_base& zone_dis = zone_dis_base();
-  //   const Zone& zone_geom = zone_dis.zone();
   const DoubleTab& coord = la_zone.domaine().coord_sommets();
   const IntTab& sommet_poly = la_zone.les_elems();
   assert(val.size() == les_polys.size());
-  int le_poly;
-
   const DoubleTab& ch = valeurs();
 
   if (dimension == 2)
     {
       Cerr << "ATTENTION : Cela n a pas encore ete teste en 2D!!!" << finl;
       Cerr << "Il manque les fonctions de forme en 2D!! A vous de jouer!!" << finl;
-      exit();
+      Process::exit();
     }
 
   for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
     {
       le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
+      if (le_poly == -1) val(rang_poly) = 0;
       else
         {
           val(rang_poly) = 0;
-          if (dimension == 2)
+          xs = positions(rang_poly,0);
+          ys = positions(rang_poly,1);
+          zs = (dimension == 3) ? positions(rang_poly,2) : 0.;
+          for (int i=0; i< dimension + 1 ; i++)
             {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              for (int i=0; i< 3; i++)
-                {
-                  som = sommet_poly(le_poly,i);
-                  val(rang_poly) += ch(som, ncomp)
-                                    * coord_barycentrique2D(sommet_poly, coord, xs, ys, le_poly, i);
-                }
+              som = sommet_poly(le_poly,i);
+              val(rang_poly) += ch(som, ncomp) *
+                                ( (dimension == 2) ? coord_barycentrique2D(sommet_poly, coord, xs, ys, le_poly, i) :
+                                  coord_barycentrique3D(sommet_poly, coord, xs, ys, zs, le_poly, i));
             }
-          else if (dimension == 3)
-            {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              zs = positions(rang_poly,2);
-              for (int i=0; i< 4; i++)
-                {
-                  som = sommet_poly(le_poly,i);
-                  val(rang_poly) += ch(som, ncomp)
-                                    * coord_barycentrique3D(sommet_poly, coord, xs, ys, zs,
-                                                            le_poly, i);
-                }
-            }
-          else
-            Cerr << "Il y a un pbl : cela ne marche qu en dimension 3" << finl;
-
         }
     }
   return val;

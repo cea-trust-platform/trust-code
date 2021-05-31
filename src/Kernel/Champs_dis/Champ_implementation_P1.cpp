@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -118,7 +118,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
   const Zone&      zone              = get_zone_geom();
   const IntTab&    les_elems         = zone.les_elems();
   const DoubleTab& nodes = zone.domaine().les_sommets();
-  const int     nb_nodes_per_cell = zone.nb_som_elem();
+  const int nb_nodes_per_cell = zone.nb_som_elem(), N = resu.line_size();
   ArrOfInt index(nb_nodes_per_cell);
   ArrOfDouble position(Objet_U::dimension);
   resu = 0;
@@ -141,31 +141,14 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
         }
       else
         {
-          if (values.nb_dim() == 1)
+
+          assert(values.line_size() == N);
+          for (int j = 0; j < nb_nodes_per_cell; j++)
             {
-              int nb_dim = resu.nb_dim();
-              assert(nb_dim == 1 || resu.dimension_tot(1)==1);
-              for (int j = 0; j < nb_nodes_per_cell; j++)
-                {
-                  int node = les_elems(cell, j);
-                  if (nb_dim == 1)
-                    resu(ic) += values(node) * form_function(position,les_elems,nodes,index,cell,j);
-                  else
-                    resu(ic, 0) += values(node) * form_function(position,les_elems,nodes,index,cell,j);
-                }
-            }
-          else
-            {
-              int nb_components = resu.dimension(1);
-              assert(values.nb_dim() == 2);
-              assert(values.dimension(1) == nb_components);
-              for (int j = 0; j < nb_nodes_per_cell; j++)
-                {
-                  double weight = form_function(position,les_elems,nodes,index,cell,j);
-                  int node = les_elems(cell, j);
-                  for (int k = 0; k < nb_components; k++)
-                    resu(ic, k) += values(node, k) * weight;
-                }
+              double weight = form_function(position,les_elems,nodes,index,cell,j);
+              int node = les_elems(cell, j);
+              for (int k = 0; k < N; k++)
+                resu(ic, k) += values(node, k) * weight;
             }
         }
     }

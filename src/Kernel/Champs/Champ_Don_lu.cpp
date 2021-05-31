@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -294,12 +294,8 @@ DoubleVect& Champ_Don_lu::valeur_a_elem(const DoubleVect&,
     }
 
   const DoubleTab& ch = valeurs();
-
-  if (nb_compo_ == 1)
-    val(0) = ch(le_poly,0);
-  else
-    for (int k=0; k<nb_compo_; k++)
-      val(k) = ch(le_poly,k);
+  for (int k=0; k<nb_compo_; k++)
+    val(k) = ch(le_poly,k);
 
   return val;
 }
@@ -336,22 +332,14 @@ DoubleVect& Champ_Don_lu::valeur_a_elem(const DoubleVect&,
 double Champ_Don_lu::valeur_a_elem_compo(const DoubleVect& ,
                                          int le_poly,int ncomp) const
 {
-  double val;
-  if (ncomp > nb_compo_)
+  if (ncomp >= nb_compo_)
     {
       Cerr << "Error TRUST in Champ_Don_lu::valeur_a()" << finl;
       Cerr << "the integer ncomp is upper than the number of field components" << finl;
       exit();
     }
 
-  const DoubleTab& ch = valeurs();
-
-  if (nb_compo_ == 1)
-    val = ch(le_poly,0);
-  else
-    val = ch(le_poly,ncomp);
-
-  return val;
+  return valeurs()(le_poly,ncomp);
 }
 
 
@@ -457,56 +445,22 @@ DoubleTab& Champ_Don_lu::valeur_aux_elems(const DoubleTab& ,
                                           const IntVect& les_polys,
                                           DoubleTab& val) const
 {
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
+  if (val.nb_dim() > 2)
     {
       Cerr << "Error TRUST in Champ_Don_lu::valeur_aux_elems()" << finl;
-      Cerr << "The DoubleTab val has more than 2 entries" << finl;
+      Cerr << "The DoubleTab val don't have 2 entries" << finl;
       exit();
     }
 
-  int le_poly;
+  int p;
+  const DoubleTab& ch = valeurs();
+  val = 0.;
 
-  if (nb_compo_ == 1)
-    {
-      const DoubleTab& ch = valeurs();
+  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+    if ((p = les_polys(rang_poly)) != -1)
+      for(int n = 0; n < nb_compo_; n++)
+        val(rang_poly, n) = ch(p, n);
 
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            val(rang_poly) = 0;
-          else if (val.nb_dim()==1)
-            val(rang_poly) = ch(le_poly,0);
-          else
-            val(rang_poly,0) = ch(le_poly,0);
-        }
-    }
-  else // nb_compo_ > 1
-    {
-      const DoubleTab& ch = valeurs();
-
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              val(rang_poly, ncomp) = 0;
-          else
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              val(rang_poly, ncomp) = ch(le_poly,ncomp);
-        }
-
-    }
   return val;
 }
 

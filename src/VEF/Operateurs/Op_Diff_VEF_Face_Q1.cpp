@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,51 +130,56 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
   double val;
 
   // On traite les faces bord
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
 
-  if (nb_dim==1)
-    for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-      {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int num1 = le_bord.num_premiere_face();
+      int num2 = num1 + le_bord.nb_faces();
 
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-        int num1 = le_bord.num_premiere_face();
-        int num2 = num1 + le_bord.nb_faces();
-        if (sub_type(Periodique,la_cl.valeur()))
-          {
-            const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-            int fac_asso;
-            for (num_face=num1; num_face<num2; num_face++)
-              {
-                fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
-                elem1 = face_voisins(num_face,0);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+      if (sub_type(Periodique,la_cl.valeur()))
+        {
+          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
+          int fac_asso;
+          for (num_face=num1; num_face<num2; num_face++)
+            {
+              elem1 = face_voisins(num_face,0);
+              fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
+              for (i=0; i<nb_faces_elem; i++)
+                {
+                  if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
+                    {
+                      val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
 
-                        resu(num_face)+=val*inconnue(j);
-                        resu(num_face)-=val*inconnue(num_face);
-                        resu(j)+=0.5*val*inconnue(num_face);
-                        resu(j)-=0.5*val*inconnue(j);
-                      }
-                  }
-                elem2 = face_voisins(num_face,1);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-
-                        resu(num_face)+=val*inconnue(j);
-                        resu(num_face)-=val*inconnue(num_face);
-                        resu(j)+=0.5*val*inconnue(num_face);
-                        resu(j)-=0.5*val*inconnue(j);
-                      }
-                  }
-              }
-          }
-        else
+                      for (int nc=0; nc<nb_comp; nc++)
+                        {
+                          resu(num_face,nc)+=val*inconnue(j,nc);
+                          resu(num_face,nc)-=val*inconnue(num_face,nc);
+                          resu(j,nc)+=0.5*val*inconnue(num_face,nc);
+                          resu(j,nc)-=0.5*val*inconnue(j,nc);
+                        }
+                    }
+                }
+              elem2 = face_voisins(num_face,1);
+              for (i=0; i<nb_faces_elem; i++)
+                {
+                  if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso ) )
+                    {
+                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+                      for (int nc=0; nc<nb_comp; nc++)
+                        {
+                          resu(num_face,nc)+=val*inconnue(j,nc);
+                          resu(num_face,nc)-=val*inconnue(num_face,nc);
+                          resu(j,nc)+=0.5*val*inconnue(num_face,nc);
+                          resu(j,nc)-=0.5*val*inconnue(j,nc);
+                        }
+                    }
+                }
+            }
+        }
+      else
+        {
           for (num_face=num1; num_face<num2; num_face++)
             {
               elem1 = face_voisins(num_face,0);
@@ -183,217 +188,81 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
                   if ( (j= elem_faces(elem1,i)) > num_face )
                     {
                       val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-
-                      resu(num_face)+=val*inconnue(j);
-                      resu(num_face)-=val*inconnue(num_face);
-                      resu(j)+=val*inconnue(num_face);
-                      resu(j)-=val*inconnue(j);
+                      for (int nc=0; nc<nb_comp; nc++)
+                        {
+                          resu(num_face,nc)+=val*inconnue(j,nc);
+                          resu(num_face,nc)-=val*inconnue(num_face,nc);
+                          resu(j,nc)+=val*inconnue(num_face,nc);
+                          resu(j,nc)-=val*inconnue(j,nc);
+                        }
                     }
                 }
             }
-      }
-  else  // nb_comp > 1
-    for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-      {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-        int num1 = le_bord.num_premiere_face();
-        int num2 = num1 + le_bord.nb_faces();
-
-        if (sub_type(Periodique,la_cl.valeur()))
-          {
-            const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-            int fac_asso;
-            for (num_face=num1; num_face<num2; num_face++)
-              {
-                elem1 = face_voisins(num_face,0);
-                fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            resu(num_face,nc)+=val*inconnue(j,nc);
-                            resu(num_face,nc)-=val*inconnue(num_face,nc);
-                            resu(j,nc)+=0.5*val*inconnue(num_face,nc);
-                            resu(j,nc)-=0.5*val*inconnue(j,nc);
-                          }
-                      }
-                  }
-                elem2 = face_voisins(num_face,1);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso ) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            resu(num_face,nc)+=val*inconnue(j,nc);
-                            resu(num_face,nc)-=val*inconnue(num_face,nc);
-                            resu(j,nc)+=0.5*val*inconnue(num_face,nc);
-                            resu(j,nc)-=0.5*val*inconnue(j,nc);
-                          }
-                      }
-                  }
-              }
-          }
-        else
-          {
-            for (num_face=num1; num_face<num2; num_face++)
-              {
-                elem1 = face_voisins(num_face,0);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( (j= elem_faces(elem1,i)) > num_face )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            resu(num_face,nc)+=val*inconnue(j,nc);
-                            resu(num_face,nc)-=val*inconnue(num_face,nc);
-                            resu(j,nc)+=val*inconnue(num_face,nc);
-                            resu(j,nc)-=val*inconnue(j,nc);
-                          }
-                      }
-                  }
-              }
-          }
-      }
+        }
+    }
 
   // On traite les faces internes
+  for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
+    {
+      elem1 = face_voisins(num_face,0);
+      elem2 = face_voisins(num_face,1);
 
-  if (nb_dim==1)
-    for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
-      {
-        elem1 = face_voisins(num_face,0);
-        elem2 = face_voisins(num_face,1);
-        for (i=0; i<nb_faces_elem; i++)
-          {
-            if ( (j=elem_faces(elem1,i)) > num_face )
-              {
-                val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+      for (i=0; i<nb_faces_elem; i++)
+        {
+          if ( (j=elem_faces(elem1,i)) > num_face )
+            {
+              val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+              for (int nc=0; nc<nb_comp; nc++)
                 {
-                  resu(num_face)+=val*inconnue(j);
-                  resu(num_face)-=val*inconnue(num_face);
-                  resu(j)+=val*inconnue(num_face);
-                  resu(j)-=val*inconnue(j);
+                  resu(num_face,nc)+=val*inconnue(j,nc);
+                  resu(num_face,nc)-=val*inconnue(num_face,nc);
+                  resu(j,nc)+=val*inconnue(num_face,nc);
+                  resu(j,nc)-=val*inconnue(j,nc);
                 }
-              }
-            if ( (j=elem_faces(elem2,i)) > num_face )
-              {
-                val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                if (nb_dim==1)
-                  {
-                    resu(num_face)+=val*inconnue(j);
-                    resu(num_face)-=val*inconnue(num_face);
-                    resu(j)+=val*inconnue(num_face);
-                    resu(j)-=val*inconnue(j);
-                  }
-                else
-                  for (int nc=0; nc<nb_comp; nc++)
-                    {
-                      resu(num_face,nc)+=val*inconnue(j,nc);
-                      resu(num_face,nc)-=val*inconnue(num_face,nc);
-                      resu(j,nc)+=val*inconnue(num_face,nc);
-                      resu(j,nc)-=val*inconnue(j,nc);
-                    }
-              }
-          }
-      }
-  else
-    for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
-      {
-        elem1 = face_voisins(num_face,0);
-        elem2 = face_voisins(num_face,1);
 
-        for (i=0; i<nb_faces_elem; i++)
-          {
-            if ( (j=elem_faces(elem1,i)) > num_face )
-              {
-                val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                for (int nc=0; nc<nb_comp; nc++)
-                  {
-                    resu(num_face,nc)+=val*inconnue(j,nc);
-                    resu(num_face,nc)-=val*inconnue(num_face,nc);
-                    resu(j,nc)+=val*inconnue(num_face,nc);
-                    resu(j,nc)-=val*inconnue(j,nc);
-                  }
-
-              }
-            if ( (j=elem_faces(elem2,i)) > num_face )
-              {
-                val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                for (int nc=0; nc<nb_comp; nc++)
-                  {
-                    resu(num_face,nc)+=val*inconnue(j,nc);
-                    resu(num_face,nc)-=val*inconnue(num_face,nc);
-                    resu(j,nc)+=val*inconnue(num_face,nc);
-                    resu(j,nc)-=val*inconnue(j,nc);
-                  }
-              }
-          }
-      }
+            }
+          if ( (j=elem_faces(elem2,i)) > num_face )
+            {
+              val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+              for (int nc=0; nc<nb_comp; nc++)
+                {
+                  resu(num_face,nc)+=val*inconnue(j,nc);
+                  resu(num_face,nc)-=val*inconnue(num_face,nc);
+                  resu(j,nc)+=val*inconnue(num_face,nc);
+                  resu(j,nc)-=val*inconnue(j,nc);
+                }
+            }
+        }
+    }
 
   // Partie imposee :
-
-  if (nb_dim == 1)
+  int nbcomp = resu.dimension(1);
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.surface(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
-            {
-              const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*zone_VEF.surface(face);
-            }
+          const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nbcomp; comp++)
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
+        }
+      else if (sub_type(Echange_externe_impose,la_cl.valeur()))
+        {
+          const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nbcomp; comp++)
+              resu(face,comp) += la_cl_paroi.h_imp(face-ndeb,comp)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face,comp))*zone_VEF.surface(face);
         }
     }
-  else
-    {
-      int nbcomp = resu.dimension(1);
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
 
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nbcomp; comp++)
-                  resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
-            {
-              const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nbcomp; comp++)
-                  resu(face,comp) += la_cl_paroi.h_imp(face-ndeb,comp)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face,comp))*zone_VEF.surface(face);
-            }
-        }
-    }
   modifier_flux(*this);
   return resu;
 }
@@ -439,68 +308,75 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
 
 
   // On traite les faces bord
-  if (nb_dim==1)
-    for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-      {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
 
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-        int num1 = le_bord.num_premiere_face();
-        int num2 = num1 + le_bord.nb_faces();
-        if (sub_type(Periodique,la_cl.valeur()))
-          {
-            const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-            int fac_asso;
-            for (num_face=num1; num_face<num2; num_face++)
-              {
-                fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
-                elem1 = face_voisins(num_face,0);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                        for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face)
-                              coeff(k) +=val;
-                            if (tab2[k]-1==j)
-                              coeff(k) -=0.5*val;
-                          }
-                        for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face)
-                              coeff(k) -= val;
-                            if (tab2[k]-1==j)
-                              coeff(k) +=0.5;
-                          }
-                      }
-                  }
-                elem2 = face_voisins(num_face,1);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                        for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face)
-                              coeff(k) +=val;
-                            if (tab2[k]-1==j)
-                              coeff(k) -=0.5;
-                          }
-                        for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face)
-                              coeff(k) -= val;
-                            if (tab2[k]-1==j)
-                              coeff(k) +=0.5*val;
-                          }
-                      }
-                  }
-              }
-          }
-        else
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int num1 = le_bord.num_premiere_face();
+      int num2 = num1 + le_bord.nb_faces();
+
+      if (sub_type(Periodique,la_cl.valeur()))
+        {
+          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
+          int fac_asso;
+          for (num_face=num1; num_face<num2; num_face++)
+            {
+              elem1 = face_voisins(num_face,0);
+              fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
+              for (i=0; i<nb_faces_elem; i++)
+                {
+                  if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
+                    {
+                      val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                      for (int nc=0; nc<nb_comp; nc++)
+                        {
+                          for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                            {
+                              if (tab2[k]-1==num_face*nb_comp+nc)
+                                coeff(k)+=val;
+                              if (tab2[k]-1==j*nb_comp+nc)
+                                coeff(k)-=0.5;
+                            }
+                          for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
+                            {
+                              if (tab2[k]-1==num_face*nb_comp+nc)
+                                coeff(k)-=val;
+                              if (tab2[k]-1==j*nb_comp+nc)
+                                coeff(k)+=0.5*val;
+                            }
+                        }
+                    }
+                }
+              elem2 = face_voisins(num_face,1);
+              for (i=0; i<nb_faces_elem; i++)
+                {
+                  if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso ) )
+                    {
+                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+                      for (int nc=0; nc<nb_comp; nc++)
+                        {
+                          for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                            {
+                              if (tab2[k]-1==num_face*nb_comp+nc)
+                                coeff(k)+=val;
+                              if (tab2[k]-1==j*nb_comp+nc)
+                                coeff(k)-=0.5*val;
+                            }
+                          for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
+                            {
+                              if (tab2[k]-1==num_face*nb_comp+nc)
+                                coeff(k)-=val;
+                              if (tab2[k]-1==j*nb_comp+nc)
+                                coeff(k)+=0.5*val;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      else
+        {
           for (num_face=num1; num_face<num2; num_face++)
             {
               elem1 = face_voisins(num_face,0);
@@ -509,252 +385,82 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
                   if ( (j= elem_faces(elem1,i)) > num_face )
                     {
                       val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                      for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
+                      for (int nc=0; nc<nb_comp; nc++)
                         {
-                          if (tab2[k]-1==num_face)
-                            coeff(k) += val;
-                          if (tab2[k]-1==j)
-                            coeff(k) -= val;
-                        }
-                      for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
-                        {
-                          if (tab2[k]-1==num_face)
-                            coeff(k) -= val;
-                          if (tab2[k]-1==j)
-                            coeff(k) += val;
-                        }
-                    }
-                }
-            }
-      }
-  else  // nb_comp > 1
-    for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-      {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+                          for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                            {
+                              if (tab2[k]-1==num_face*nb_comp+nc)
+                                coeff(k)+=val;
+                              if (tab2[k]-1==j*nb_comp+nc)
+                                coeff(k)-=val;
+                            }
+                          for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
+                            {
+                              if (tab2[k]-1==num_face*nb_comp+nc)
+                                coeff(k)-=val;
+                              if (tab2[k]-1==j*nb_comp+nc)
+                                coeff(k)+=val;
+                            }
 
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-        int num1 = le_bord.num_premiere_face();
-        int num2 = num1 + le_bord.nb_faces();
-
-        if (sub_type(Periodique,la_cl.valeur()))
-          {
-            const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-            int fac_asso;
-            for (num_face=num1; num_face<num2; num_face++)
-              {
-                elem1 = face_voisins(num_face,0);
-                fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
-                              {
-                                if (tab2[k]-1==num_face*nb_comp+nc)
-                                  coeff(k)+=val;
-                                if (tab2[k]-1==j*nb_comp+nc)
-                                  coeff(k)-=0.5;
-                              }
-                            for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
-                              {
-                                if (tab2[k]-1==num_face*nb_comp+nc)
-                                  coeff(k)-=val;
-                                if (tab2[k]-1==j*nb_comp+nc)
-                                  coeff(k)+=0.5*val;
-                              }
-                          }
-                      }
-                  }
-                elem2 = face_voisins(num_face,1);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso ) )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
-                              {
-                                if (tab2[k]-1==num_face*nb_comp+nc)
-                                  coeff(k)+=val;
-                                if (tab2[k]-1==j*nb_comp+nc)
-                                  coeff(k)-=0.5*val;
-                              }
-                            for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
-                              {
-                                if (tab2[k]-1==num_face*nb_comp+nc)
-                                  coeff(k)-=val;
-                                if (tab2[k]-1==j*nb_comp+nc)
-                                  coeff(k)+=0.5*val;
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-        else
-          {
-            for (num_face=num1; num_face<num2; num_face++)
-              {
-                elem1 = face_voisins(num_face,0);
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( (j= elem_faces(elem1,i)) > num_face )
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
-                              {
-                                if (tab2[k]-1==num_face*nb_comp+nc)
-                                  coeff(k)+=val;
-                                if (tab2[k]-1==j*nb_comp+nc)
-                                  coeff(k)-=val;
-                              }
-                            for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
-                              {
-                                if (tab2[k]-1==num_face*nb_comp+nc)
-                                  coeff(k)-=val;
-                                if (tab2[k]-1==j*nb_comp+nc)
-                                  coeff(k)+=val;
-                              }
-
-                          }
-                      }
-                  }
-              }
-          }
-      }
-
-  // On traite les faces internes
-
-  if (nb_dim==1)
-    {
-      for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
-        {
-          elem1 = face_voisins(num_face,0);
-          elem2 = face_voisins(num_face,1);
-          for (i=0; i<nb_faces_elem; i++)
-            {
-              if ( (j=elem_faces(elem1,i)) > num_face )
-                {
-                  val= visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                  {
-                    for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
-                      {
-                        if (tab2[k]-1==num_face)
-                          coeff(k)+=val;
-                        if (tab2[k]-1==j)
-                          coeff(k)-=val;
-                      }
-                    for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
-                      {
-                        if (tab2[k]-1==num_face)
-                          coeff(k)-=val;
-                        if (tab2[k]-1==j)
-                          coeff(k)+=val;
-                      }
-
-                  }
-                }
-              if ( (j=elem_faces(elem2,i)) > num_face )
-                {
-                  if (nb_dim==1)
-                    {
-                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                      for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
-                        {
-                          if (tab2[k]-1==num_face)
-                            coeff(k) += val;
-                          if (tab2[k]-1==j)
-                            coeff(k) -= val;
-                        }
-                      for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
-                        {
-                          if (tab2[k]-1==num_face)
-                            coeff(k) -= val;
-                          if (tab2[k]-1==j)
-                            coeff(k) += val;
                         }
                     }
-                  else
-                    for (int nc=0; nc<nb_comp; nc++)
-                      {
-                        val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
-                        for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face*nb_comp+nc)
-                              coeff(k)+=val;
-                            if (tab2[k]-1==j*nb_comp+nc)
-                              coeff(k)-=val;
-                          }
-                        for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face*nb_comp+nc)
-                              coeff(k)-=val;
-                            if (tab2[k]-1==j*nb_comp+nc)
-                              coeff(k)+=val;
-                          }
-                      }
                 }
             }
         }
     }
-  else
-    for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
-      {
-        elem1 = face_voisins(num_face,0);
-        elem2 = face_voisins(num_face,1);
 
-        for (i=0; i<nb_faces_elem; i++)
-          {
-            if ( (j=elem_faces(elem1,i)) > num_face )
-              {
-                val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                for (int nc=0; nc<nb_comp; nc++)
-                  {
-                    for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
-                      {
-                        if (tab2[k]-1==num_face*nb_comp+nc)
-                          coeff(k) += val;
-                        if (tab2[k]-1==j*nb_comp+nc)
-                          coeff(k) -= val;
-                      }
-                    for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
-                      {
-                        if (tab2[k]-1==num_face*nb_comp+nc)
-                          coeff(k) -= val;
-                        if (tab2[k]-1==j*nb_comp+nc)
-                          coeff(k) += val;
-                      }
-                  }
-              }
-            if ( (j=elem_faces(elem2,i)) > num_face )
-              {
-                val= visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-                for (int nc=0; nc<nb_comp; nc++)
-                  {
-                    for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
-                      {
-                        if (tab2[k]-1==num_face*nb_comp+nc)
-                          coeff(k)+=val;
-                        if (tab2[k]-1==j*nb_comp+nc)
-                          coeff(k)-=val;
-                      }
-                    for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
-                      {
-                        if (tab2[k]-1==num_face*nb_comp+nc)
-                          coeff(k)-=val;
-                        if (tab2[k]-1==j*nb_comp+nc)
-                          coeff(k)+=val;
-                      }
-                  }
-              }
-          }
-      }
+  // On traite les faces internes
+  for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
+    {
+      elem1 = face_voisins(num_face,0);
+      elem2 = face_voisins(num_face,1);
+
+      for (i=0; i<nb_faces_elem; i++)
+        {
+          if ( (j=elem_faces(elem1,i)) > num_face )
+            {
+              val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+              for (int nc=0; nc<nb_comp; nc++)
+                {
+                  for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                    {
+                      if (tab2[k]-1==num_face*nb_comp+nc)
+                        coeff(k) += val;
+                      if (tab2[k]-1==j*nb_comp+nc)
+                        coeff(k) -= val;
+                    }
+                  for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
+                    {
+                      if (tab2[k]-1==num_face*nb_comp+nc)
+                        coeff(k) -= val;
+                      if (tab2[k]-1==j*nb_comp+nc)
+                        coeff(k) += val;
+                    }
+                }
+            }
+          if ( (j=elem_faces(elem2,i)) > num_face )
+            {
+              val= visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+              for (int nc=0; nc<nb_comp; nc++)
+                {
+                  for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                    {
+                      if (tab2[k]-1==num_face*nb_comp+nc)
+                        coeff(k)+=val;
+                      if (tab2[k]-1==j*nb_comp+nc)
+                        coeff(k)-=val;
+                    }
+                  for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
+                    {
+                      if (tab2[k]-1==num_face*nb_comp+nc)
+                        coeff(k)-=val;
+                      if (tab2[k]-1==j*nb_comp+nc)
+                        coeff(k)+=val;
+                    }
+                }
+            }
+        }
+    }
   // Cerr << "la matrice de diffusion " << matrice << finl;
 }
 
@@ -787,46 +493,19 @@ void Op_Diff_VEF_Face_Q1::contribue_au_second_membre(DoubleTab& resu ) const
     nb_comp=resu.dimension(1);
 
   // Partie imposee :
-
-  if (nb_dim == 1)
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
 
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.surface(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
-            {
-              Cerr << "Non code pour Echange_externe_impose" << finl;
-              assert(0);
-            }
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
+        {
+          const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nb_comp; comp++)
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
         }
     }
-  else
-    {
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nb_comp; comp++)
-                  resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
-            }
-        }
-    }
-
 }

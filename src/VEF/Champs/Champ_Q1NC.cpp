@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,6 @@ void Champ_Q1NC::verifie_valeurs_cl()
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int nb_compo = nb_comp();
-  int nb_dimension = ch_tab.nb_dim();
   int ndeb,nfin,num_face;
 
   for (int i=0; i<nb_cl; i++)
@@ -89,32 +88,16 @@ void Champ_Q1NC::verifie_valeurs_cl()
           int voisine;
           double moy;
 
-          if (nb_dimension==1)
+          for (num_face=ndeb; num_face<nfin; num_face++)
             {
-              for (num_face=ndeb; num_face<nfin; num_face++)
+              voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
+              for (int comp=0; comp<nb_compo; comp++)
                 {
-                  voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
-                  if (ch_tab[num_face] != ch_tab[voisine])
+                  if (ch_tab(num_face,comp) != ch_tab(voisine,comp))
                     {
-                      moy = 0.5*(ch_tab[num_face] + ch_tab[voisine]);
-                      ch_tab[num_face] = moy;
-                      ch_tab[voisine] = moy;
-                    }
-                }
-            }
-          else
-            {
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                {
-                  voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
-                  for (int comp=0; comp<nb_compo; comp++)
-                    {
-                      if (ch_tab(num_face,comp) != ch_tab(voisine,comp))
-                        {
-                          moy = 0.5*(ch_tab(num_face,comp) + ch_tab(voisine,comp));
-                          ch_tab(num_face,comp) = moy;
-                          ch_tab(voisine,comp) = moy;
-                        }
+                      moy = 0.5*(ch_tab(num_face,comp) + ch_tab(voisine,comp));
+                      ch_tab(num_face,comp) = moy;
+                      ch_tab(voisine,comp) = moy;
                     }
                 }
             }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,8 +42,6 @@ DoubleTab& Champ_Q1NC_impl::Derivee_fonction_forme_2D_normalise(double u, double
 
 }
 
-
-
 DoubleTab& Champ_Q1NC_impl::Derivee_fonction_forme_3D_normalise(double u, double v, double w, DoubleTab& DF)
 {
   double tier=1./3.;
@@ -77,58 +75,31 @@ DoubleVect& Champ_Q1NC_impl::valeur_a_elem(const DoubleVect& position,
                                            int le_poly) const
 {
   const Champ_base& cha=le_champ();
-  // Cerr << "Champ_Q1NC_impl::valeur_a_elem  " <<  finl;
-  int nb_compo_=cha.nb_comp();
+  int face, nb_compo_=cha.nb_comp();
   double xs,ys,zs;
-  int face;
   const DoubleTab& ch = cha.valeurs();
   const Zone_VEF& zone_VEF = zone_vef();
-  int init=tab_param.size();
-  if (init == 0)
-    {
-      if (Objet_U::dimension == 2)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
-        }
-      if (Objet_U::dimension == 3)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
-        }
-    }
+  int init=tab_param.size(), D = Objet_U::dimension;
+  if (init == 0 && D == 2) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+  if (init == 0 && D == 3) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
+
   val=0;
   if (le_poly != -1)
     {
-      if (Objet_U::dimension == 2)
+      xs = position(0);
+      ys = position(1);
+      zs = (D ==3 ) ? position(2) : 0.;
+
+      for (int i=0; i< 2 * D; i++)
         {
-          xs = position(0);
-          ys = position(1);
-          for (int i=0; i< 4; i++)
-            {
-              face = zone_VEF.elem_faces(le_poly,i);
-              for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-                {
-                  val(ncomp) += ch(face, ncomp)
-                                * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-                }
-            }
+          face = zone_VEF.elem_faces(le_poly,i);
+          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+            val(ncomp) += ch(face, ncomp)*
+                          ( (D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i) :
+                            (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i));
         }
-      else if (Objet_U::dimension == 3)
-        {
-          xs = position(0);
-          ys = position(1);
-          zs = position(2);
-          for (int i=0; i< 6; i++)
-            {
-              for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-                {
-                  face = zone_VEF.elem_faces(le_poly,i);
-                  val += ch(face, ncomp)
-                         * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-                }
-            }
-        }
+
     }
-  //Cerr << "val de Champ_Q1NC_impl::valeur_a_elem " << cha.que_suis_je() << finl;
   return val;
 }
 
@@ -136,66 +107,25 @@ double Champ_Q1NC_impl::calcule_valeur_a_elem_compo(double xs, double ys, double
 {
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& ch = le_champ().valeurs();
-  int face,init=tab_param.size();
-  if (init == 0)
-    {
-      if (Objet_U::dimension == 2)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
-        }
-      if (Objet_U::dimension == 3)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
-        }
-    }
+  int face,init=tab_param.size() , D = Objet_U::dimension;
+
+  if (init == 0 && D == 2) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+  if (init == 0 && D == 3) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
 
   double val;
+
   if (le_poly == -1)
-    {
-      val = 0;
-    }
-  else if(ch.nb_dim()!=1)
-    {
-      // Calcul d'apres les fonctions de forme sur le quadrangle ou son extension en 3D
-      val = 0;
-      if (Objet_U::dimension == 2)
-        {
-          for (int i=0; i< 4; i++)
-            {
-              face = zone_VEF.elem_faces(le_poly,i);
-              val += ch(face, ncomp)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-            }
-        }
-      else if (Objet_U::dimension == 3)
-        {
-          for (int i=0; i< 6; i++)
-            {
-              face = zone_VEF.elem_faces(le_poly,i);
-              val += ch(face, ncomp)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-            }
-        }
-    }
+    val = 0;
   else
     {
       // Calcul d'apres les fonctions de forme sur le quadrangle ou son extension en 3D
-      assert(ncomp==0);
       val = 0;
-      if (Objet_U::dimension == 2)
+      for (int i=0; i< 2 * D; i++)
         {
-          for (int i=0; i< 4; i++)
-            {
-              face = zone_VEF.elem_faces(le_poly,i);
-              val += ch(face)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-            }
-        }
-      else if (Objet_U::dimension == 3)
-        {
-          for (int i=0; i< 6; i++)
-            {
-              face = zone_VEF.elem_faces(le_poly,i);
-              val += ch(face)
-                     * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-            }
+          face = zone_VEF.elem_faces(le_poly,i);
+          val += ch(face, ncomp)*
+                 ( (D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i) :
+                   (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i));
         }
     }
   return val;
@@ -203,12 +133,10 @@ double Champ_Q1NC_impl::calcule_valeur_a_elem_compo(double xs, double ys, double
 
 double Champ_Q1NC_impl::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
-  // Cerr << "Champ_Q1NC_impl::valeur_a_elem_compo " << finl;
   double xs,ys,zs=0;
   xs = position(0);
   ys = position(1);
-  if (Objet_U::dimension == 3)
-    zs = position(2);
+  if (Objet_U::dimension == 3) zs = position(2);
   return calcule_valeur_a_elem_compo(xs,ys,zs,le_poly,ncomp);
 }
 
@@ -222,8 +150,7 @@ double Champ_Q1NC_impl::valeur_a_sommet_compo(int num_som, int le_poly, int ncom
   const Domaine& dom=zone().domaine();
   xs = dom.coord(num_som,0);
   ys = dom.coord(num_som,1);
-  if (Objet_U::dimension == 3)
-    zs = dom.coord(num_som,2);
+  if (Objet_U::dimension == 3) zs = dom.coord(num_som,2);
   return calcule_valeur_a_elem_compo(xs,ys,zs,le_poly,ncomp);
 }
 
@@ -232,38 +159,15 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_elems(const DoubleTab& positions,
                                              DoubleTab& val) const
 {
   const Champ_base& cha=le_champ();
-  // Cerr << "Champ_Q1NC_impl::valeur_aux_elems" << finl;
-
-  int nb_compo_=cha.nb_comp();
-  int face;
+  int face, nb_compo_=cha.nb_comp();
   double xs,ys,zs;
-
   const Zone_VEF& zone_VEF = zone_vef();
+  int init=tab_param.size(), D = Objet_U::dimension;
 
-  int init=tab_param.size();
-  if (init == 0)
-    {
-      if (Objet_U::dimension == 2)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
-        }
-      if (Objet_U::dimension == 3)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
-        }
-    }
+  if (init == 0 && D == 2) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+  if (init == 0 && D == 3) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
 
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
+  if (val.nb_dim() > 2)
     {
       Cerr << "Erreur TRUST dans Champ_Q1NC_impl::valeur_aux_elems()\n";
       Cerr << "Le DoubleTab val a plus de 2 entrees\n";
@@ -271,167 +175,34 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_elems(const DoubleTab& positions,
     }
 
   int le_poly;
-
   const DoubleTab& ch = cha.valeurs();
-  // Cerr << "ch " << cha.valeurs() << finl;
-  if (nb_compo_ == 1)
+
+  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
     {
-      if ((ch.nb_dim() == 1) && (val.nb_dim() == 1))
+      le_poly=les_polys(rang_poly);
+      if (le_poly == -1)
+        for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+          val(rang_poly, ncomp) = 0;
+      else
         {
-          for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
             {
-              le_poly=les_polys(rang_poly);
-              if (le_poly == -1)
-                val(rang_poly) = 0;
-              else
-                {
-                  // Calcul d'apres les fonctions de forme sur le quadrangle
-                  val(rang_poly) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 6; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face)
-                                            * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-                        }
-                    }
-                }
-            }
-        }
-      else if ((ch.nb_dim() == 1) && (val.nb_dim() != 1))
-        {
-          for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-            {
-              le_poly=les_polys(rang_poly);
-              if (le_poly == -1)
-                val(rang_poly,0) = 0;
-              else
-                {
-                  // Calcul d'apres les fonctions de forme sur le quadrangle
-                  val(rang_poly,0) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-
-                          val(rang_poly,0) += ch(face)* (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 6; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly,0) += ch(face)
-                                              * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-                        }
-                    }
-                }
-            }
-        }
-      else if ((ch.nb_dim() != 1) && (val.nb_dim() == 1))
-        {
-          for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-            {
-              le_poly=les_polys(rang_poly);
-              if (le_poly == -1)
-                val(rang_poly) = 0;
-              else
-                {
-                  // Calcul d'apres les fonctions de forme sur le quadrangle
-                  val(rang_poly) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-
-                          val(rang_poly) += ch(face,0)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 6; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face,0)
-                                            * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-                        }
-                    }
-                }
-            }
-        }
-    }
-  else // nb_compo_ > 1
-    {
-
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
               val(rang_poly, ncomp) = 0;
-          else
-            {
-              for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+              xs = positions(rang_poly,0);
+              ys = positions(rang_poly,1);
+              zs = (D == 3) ? positions(rang_poly,2) : 0.;
+              for (int i=0; i< 2 * D ; i++)
                 {
-                  val(rang_poly, ncomp) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-
-                          val(rang_poly, ncomp) += ch(face, ncomp)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 6; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly, ncomp) += ch(face, ncomp)
-                                                   * (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-                        }
-                    }
+                  face = zone_VEF.elem_faces(le_poly,i);
+                  val(rang_poly, ncomp) += ch(face, ncomp)*
+                                           ((D==2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i) :
+                                            (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i));
                 }
             }
         }
     }
-  // Cerr << "valeur " << val << finl;
   return val;
 }
-
 
 DoubleVect& Champ_Q1NC_impl::valeur_aux_elems_compo(const DoubleTab& positions,
                                                     const IntVect& les_polys,
@@ -444,55 +215,33 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_elems_compo(const DoubleTab& positions,
   const Zone_VEF& zone_VEF = zone_vef();
   assert(val.size() == les_polys.size());
   int le_poly;
-
   const DoubleTab& ch = cha.valeurs();
+  int init=tab_param.size(), D = Objet_U::dimension;
 
-  int init=tab_param.size();
-  if (init == 0)
-    {
-      if (Objet_U::dimension == 2)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
-        }
-      if (Objet_U::dimension == 3)
-        {
-          (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
-        }
-    }
+  if (init == 0 && D == 2) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+  if (init == 0 && D == 3) (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
+
 
   for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
     {
       le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
+      if (le_poly == -1) val(rang_poly) = 0;
       else
         {
           // Calcul d'apres les fonctions de forme sur le quadrangle ou son extension en 3D
           val = 0;
-          if (Objet_U::dimension == 2)
+          xs = positions(rang_poly,0);
+          ys = positions(rang_poly,1);
+          zs = (D == 3) ? positions(rang_poly,2) : 0.;
+          for (int i=0; i< 2 * D; i++)
             {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              for (int i=0; i< 4; i++)
-                {
-                  face = zone_VEF.elem_faces(le_poly,i);
-                  val(rang_poly) += ch(face, ncomp)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i);
-                }
-            }
-          else if (Objet_U::dimension == 3)
-            {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              zs = positions(rang_poly,2);
-              for (int i=0; i< 6; i++)
-                {
-                  face = zone_VEF.elem_faces(le_poly,i);
-                  val(rang_poly) += ch(face, ncomp)*(verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i);
-                }
+              face = zone_VEF.elem_faces(le_poly,i);
+              val(rang_poly) += ch(face, ncomp)*
+                                ( (D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs,ys,le_poly,i) :
+                                  (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs,ys,zs,le_poly,i));
             }
         }
     }
-
   return val;
 }
 
@@ -502,47 +251,37 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_sommets(const Domaine& dom,
   // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets " << finl;
   const Zone_dis_base& zone_dis = zone_dis_base();
   const Zone& ma_zone = zone_dis.zone();
-  int nb_elem_tot = ma_zone.nb_elem_tot();
-  int nb_som = ma_zone.nb_som();
-  int nb_som_elem = ma_zone.nb_som_elem();
+  int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
   IntVect compteur(nb_som);
-  int ncomp;
-  int num_elem,num_som,j;
+  int ncomp, num_elem,num_som,j;
   ch_som = 0;
   compteur = 0;
 
-  //   if (nb_compo_ == 1)
-  //     {
-  //     }
-  //   else // (nb_compo_ != 1)
-  {
-    DoubleVect position(Objet_U::dimension);
-    for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
-      for (j=0; j<nb_som_elem; j++)
-        {
-          num_som = ma_zone.sommet_elem(num_elem,j);
-          //        Cerr << "num_som " << num_som << finl;
-          for(int k=0; k<Objet_U::dimension; k++)
-            position(k)=dom.coord(num_som,k);
-          //        Cerr << "position " << position << finl;
-          if(num_som < nb_som)
-            {
-              compteur[num_som]++;
-              for (ncomp=0; ncomp<nb_compo_; ncomp++)
-                {
-                  ch_som(num_som,ncomp) += valeur_a_elem_compo(position,num_elem,ncomp);
-                  //   Cerr << "ch_som " <<  ch_som(num_som,ncomp)  << finl;
-                }
-            }
-        }
+  DoubleVect position(Objet_U::dimension);
+  for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
+    for (j=0; j<nb_som_elem; j++)
+      {
+        num_som = ma_zone.sommet_elem(num_elem,j);
+        //        Cerr << "num_som " << num_som << finl;
+        for(int k=0; k<Objet_U::dimension; k++)
+          position(k)=dom.coord(num_som,k);
+        //        Cerr << "position " << position << finl;
+        if(num_som < nb_som)
+          {
+            compteur[num_som]++;
+            for (ncomp=0; ncomp<nb_compo_; ncomp++)
+              {
+                ch_som(num_som,ncomp) += valeur_a_elem_compo(position,num_elem,ncomp);
+                //   Cerr << "ch_som " <<  ch_som(num_som,ncomp)  << finl;
+              }
+          }
+      }
 
-    for (num_som=0; num_som<nb_som; num_som++)
-      for (ncomp=0; ncomp<nb_compo_; ncomp++)
-        ch_som(num_som,ncomp) /= compteur[num_som];
-  }
-  //Cerr << "ch_som " <<  ch_som << finl;
+  for (num_som=0; num_som<nb_som; num_som++)
+    for (ncomp=0; ncomp<nb_compo_; ncomp++)
+      ch_som(num_som,ncomp) /= compteur[num_som];
 
   return ch_som;
 }
@@ -553,64 +292,29 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_sommets_compo(const Domaine& dom,
   // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets_compo " << finl;
   const Zone_dis_base& zone_dis = zone_dis_base();
   const Zone& ma_zone = zone_dis.zone();
-
-  int nb_elem_tot = ma_zone.nb_elem_tot();
-  int nb_som = ma_zone.nb_som();
-  int nb_som_elem = ma_zone.nb_som_elem();
+  int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
   IntVect compteur(nb_som);
   int num_elem,num_som,j;
   ch_som = 0;
   compteur = 0;
 
-  {
-    DoubleVect position(Objet_U::dimension);
-    for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
-      for (j=0; j<nb_som_elem; j++)
-        {
-          num_som = ma_zone.sommet_elem(num_elem,j);
-          for(int k=0; k<Objet_U::dimension; k++)
-            position(k)=dom.coord(num_som,k);
+  DoubleVect position(Objet_U::dimension);
+  for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
+    for (j=0; j<nb_som_elem; j++)
+      {
+        num_som = ma_zone.sommet_elem(num_elem,j);
+        for(int k=0; k<Objet_U::dimension; k++)
+          position(k)=dom.coord(num_som,k);
 
-          if(num_som < nb_som)
-            {
-              compteur[num_som]++;
-              ch_som(num_som) +=  valeur_a_elem_compo(position,num_elem,ncomp);
-            }
-        }
-    for (num_som=0; num_som<nb_som; num_som++)
-      ch_som(num_som) /= compteur[num_som];
-  }
-  // if (nb_compo_ == 1)
-  //     {
-  //       DoubleVect position(Objet_U::dimension);
-  //       for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
-  //         for (j=0; j<nb_som_elem; j++) {
-  //           num_som = zone.sommet_elem(num_elem,j);
-  //           for(int k=0; k<Objet_U::dimension; k++);
-  //           position(k)=dom.coord(num_som,k);
-  //           if(num_som < nb_som) {
-  //             compteur[num_som]++;
-  //             ch_som(num_som) += valeur_a_elem_compo(position,num_elem,ncomp);
-  //           }
-  //         }
+        if(num_som < nb_som)
+          {
+            compteur[num_som]++;
+            ch_som(num_som) +=  valeur_a_elem_compo(position,num_elem,ncomp);
+          }
+      }
+  for (num_som=0; num_som<nb_som; num_som++)
+    ch_som(num_som) /= compteur[num_som];
 
-  //       for (num_som=0; num_som<nb_som; num_som++)
-  //         ch_som(num_som)/= compteur[num_som];
-  //     }
-  //   else // (nb_compo_ != 1)
-  //     {
-  //       for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
-  //         for (j=0; j<nb_som_elem; j++) {
-  //           num_som = zone.sommet_elem(num_elem,j);
-  //           if(num_som < nb_som) {
-  //             compteur[num_som]++;
-  //             ch_som(num_som) += ch(num_elem,ncomp);
-  //           }
-  //         }
-
-  //       for (num_som=0; num_som<nb_som; num_som++)
-  //         ch_som(num_som) /= compteur[num_som];
-  //     }
   return ch_som;
 }
 
@@ -619,7 +323,7 @@ DoubleTab& Champ_Q1NC_impl::remplir_coord_noeuds(DoubleTab& noeuds) const
   const Zone_VEF& zvef = zone_vef();
   const DoubleTab& xv = zvef.xv();
   int nb_fac = zvef.nb_faces();
-  if ( (xv.dimension(0) == nb_fac ) && (xv.dimension(1) == Objet_U::dimension) )
+  if ( (xv.dimension(0) == nb_fac ) && (xv.line_size() == Objet_U::dimension) )
     noeuds.ref(xv);
   else
     {
@@ -641,9 +345,8 @@ int Champ_Q1NC_impl::remplir_coord_noeuds_et_polys(DoubleTab& positions,
   polys.resize(nb_faces);
 
   for(int i= 0; i< nb_faces; i++)
-    {
-      polys(i)=face_voisins(i, 0);
-    }
+    polys(i)=face_voisins(i, 0);
+
   return 1;
 }
 

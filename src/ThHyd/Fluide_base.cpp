@@ -207,20 +207,6 @@ void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
       msg += "The density rho has not been specified. \n";
       err = 1;
     }
-  if (mu.non_nul())
-    {
-      if (mp_min_vect(mu.valeurs()) <= 0)
-        {
-          msg += "The dynamical viscosity mu is not positive. \n";
-          err = 1;
-        }
-    }
-  else
-    {
-      msg += "The viscosity mu has not been specified. \n";
-      err = 1;
-    }
-
   if  (  (Cp.non_nul()) && ( (lambda.non_nul()) && (beta_th.non_nul()) ) ) // Fluide anisotherme
     {
 //      if (mp_min_vect(Cp.valeurs()) <= 0)

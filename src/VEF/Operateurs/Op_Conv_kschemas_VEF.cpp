@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,17 +94,9 @@ void convkschemas(const double K, const int ncomp, int dimension, const int poly
           fluent[jel0] -= psc;
         }
 
+      for (comp=0; comp<ncomp; comp++)
+        flux(comp) = tab1(amont,comp);
 
-      if (ncomp == 1)
-        {
-          flux(0) = tab1(amont);
-        }
-      else
-        for (comp=0; comp<ncomp; comp++)
-          {
-            flux(comp) = tab1(amont,comp);
-            // Cerr << " fluxamont(" << comp << ")= " <<  flux(comp) << finl;
-          }
     }
   else
     {
@@ -126,17 +118,18 @@ void convkschemas(const double K, const int ncomp, int dimension, const int poly
           fluent(jel0)  -= psc;
         }
 
-      if (ncomp == 1)
+      for (comp=0; comp<ncomp; comp++)
         {
-          flux(0) = tab1(amont);
+          deltat0 = deltat1 = 0.0;
+          flux(comp) = tab1(amont,comp);
+          //Cerr << " flux(" << comp << ") ie phiamont= " <<  flux(comp) << finl;
+
           for (i=0; i<dimension; i++)
             {
-              // Determination des deltat phi0 et phi1
-
-              deltat0 += gradient_elem(elem1,0,i)*rx(i);
-              deltat1 += gradient_elem(elem2,0,i)*rx(i);
-
+              deltat0 += gradient_elem(elem1,comp,i)*rx(i);
+              deltat1 += gradient_elem(elem2,comp,i)*rx(i);
             }
+
           if (K == 0.5)
             {
               deltat = deltat0 + deltat1;
@@ -156,73 +149,20 @@ void convkschemas(const double K, const int ncomp, int dimension, const int poly
                   else
                     {
                       CF=0.;
-                      assert(0);
                       Process::exit();
                     }
                 }
-
               // Calcul du flux
-              flux(0) += (0.5 - CF)*deltat0 + CF*deltat1 ;
+              flux(comp) += (0.5 - CF)*deltat0 + CF*deltat1 ;
+              //Cerr << " flux(" << comp << ")= " <<  flux(comp) << finl;
             }
-
           else
             {
               // Calcul du flux
-              flux(0) += 0.25*((1.+K)*deltat0 +(1.-K)*deltat1);
-            }
-
-        }
-
-      else
-        {
-          for (comp=0; comp<ncomp; comp++)
-            {
-              deltat0 = deltat1 = 0.0;
-              flux(comp) = tab1(amont,comp);
-              //Cerr << " flux(" << comp << ") ie phiamont= " <<  flux(comp) << finl;
-
-              for (i=0; i<dimension; i++)
-                {
-                  deltat0 += gradient_elem(elem1,comp,i)*rx(i);
-                  deltat1 += gradient_elem(elem2,comp,i)*rx(i);
-                }
-
-              if (K == 0.5)
-                {
-                  deltat = deltat0 + deltat1;
-
-                  if  (dabs(deltat) <= 1.e-5)
-                    {
-                      CF = 0.125;
-                    }
-                  else
-                    {
-                      UTC = deltat1 / deltat;
-
-                      if ( (UTC <= -1.) || (UTC >= 1.5) )      CF = 0.125;
-                      else if ((UTC > -1.) && (UTC <= 0.))     CF = 0.5 + 0.375*UTC;
-                      else if ((UTC > 0.) && (UTC <= 0.25))    CF = 0.5 - 0.625*sqrt(UTC);
-                      else if ((UTC > 0.25) && (UTC < 1.5 ))   CF = 0.25* dabs(UTC - 1.);
-                      else
-                        {
-                          CF=0.;
-                          assert(0);
-                          Process::exit();
-                        }
-                    }
-
-                  // Calcul du flux
-                  flux(comp) += (0.5 - CF)*deltat0 + CF*deltat1 ;
-                  //Cerr << " flux(" << comp << ")= " <<  flux(comp) << finl;
-                }
-              else
-                {
-                  // Calcul du flux
-
-                  flux(comp) += 0.25*((1.+K)*deltat0 + (1.-K)*deltat1) ;
-                }
+              flux(comp) += 0.25*((1.+K)*deltat0 + (1.-K)*deltat1) ;
             }
         }
+
     }
 }
 
@@ -275,7 +215,6 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   int poly,poly1,poly2,face_adj,fa7,i,j,n_bord;
   int num_face, rang ,itypcl;
   int num10,num20,num3,num_som;
-  int ncomp_ch_transporte;
 
   // MODIF SB su 10/09/03
   // Pour les 3 elements suivants, il y a autant de sommets que de face
@@ -291,14 +230,9 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   int istetra=0;
   const Elem_VEF_base& type_elemvef= zone_VEF.type_elem().valeur();
   Nom nom_elem=type_elemvef.que_suis_je();
-  if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
-    istetra=1;
+  if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF")) istetra=1;
 
-  if (transporte.nb_dim() == 1)
-    ncomp_ch_transporte=1;
-  else
-    ncomp_ch_transporte= transporte.dimension(1);
-  // Cerr << "ncomp_ch_transporte " << ncomp_ch_transporte << finl;
+  const int ncomp_ch_transporte= transporte.line_size();
   int fac,elem1,elem2,comp0;
   int nb_faces_ = zone_VEF.nb_faces();
   IntVect face(nfac);
@@ -306,7 +240,6 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   DoubleVect flux(ncomp_ch_transporte);
   DoubleVect fluxsom(ncomp_ch_transporte);
   DoubleVect fluxg(ncomp_ch_transporte);
-
 
   // Traitement particulier pour les faces de periodicite
   int nb_faces_perio = 0;
@@ -323,11 +256,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
         }
     }
 
-  DoubleTab tab;
-  if (ncomp_ch_transporte == 1)
-    tab.resize(nb_faces_perio);
-  else
-    tab.resize(nb_faces_perio,ncomp_ch_transporte);
+  DoubleTab tab(nb_faces_perio,ncomp_ch_transporte);
 
   nb_faces_perio=0;
   for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
@@ -335,17 +264,13 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
-          //          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
           for (num_face=num1; num_face<num2; num_face++)
             {
-              if (ncomp_ch_transporte == 1)
-                tab(nb_faces_perio) = resu(num_face);
-              else
-                for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                  tab(nb_faces_perio,comp) = resu(num_face,comp);
+              for (int comp=0; comp<ncomp_ch_transporte; comp++)
+                tab(nb_faces_perio,comp) = resu(num_face,comp);
               nb_faces_perio++;
             }
         }
@@ -436,8 +361,6 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
   for (poly=0; poly<nb_elem; poly++)
     {
-      //Cerr << "poly = " << poly << finl;
-
       rang = rang_elem_non_std(poly);
       if (rang==-1)
         itypcl=0;
@@ -445,18 +368,13 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
         itypcl=zone_Cl_VEF.type_elem_Cl(rang);
 
       // calcul des numeros des faces du polyedre
-
       for (face_adj=0; face_adj<nfac; face_adj++)
-        {
-          face(face_adj)= elem_faces(poly,face_adj);
-          //Cerr << "les faces de l'elements sont : " << face(face_adj) << finl;
-        }
+        face(face_adj)= elem_faces(poly,face_adj);
 
       int scom;
       DoubleVect rx0(dimension);
 
       // calcul de la vitesse aux sommets des polyedres
-
       for (j=0; j<dimension; j++)
         {
           vs(j) = la_vitesse(face(0),j)*porosite_face(face(0));
@@ -488,12 +406,9 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
             }
         }
       // calcul de la vitesse au centre de gravite
-
       zone_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
-
       // Boucle sur les facettes du polyedre non standard:
-
       for (fa7=0; fa7<nfa7; fa7++)
         {
           //Cerr << "la facette etudiee est " << fa7 << finl;
@@ -507,15 +422,11 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
 
           poly1 = face_voisins(num10,0);
           if (poly1==poly)
-            {
-              poly1 = face_voisins(num10,1);
-            }
+            poly1 = face_voisins(num10,1);
 
           poly2 = face_voisins(num20,0);
           if (poly2==poly)
-            {
-              poly2 = face_voisins(num20,1);
-            }
+            poly2 = face_voisins(num20,1);
 
           scom = les_Polys(poly,KEL(2,fa7));
 
@@ -533,15 +444,12 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
             for (i=0; i<dimension; i++)
               cc[i] = normales_facettes_Cl(rang,fa7,i);
 
-
           /////////////////////////////////////////////////////////////////////////
           // On traite le point pour lequel vitesse = 0.5(vitsommet + vitmilieu)
           /////////////////////////////////////////////////////////////////////////
 
-
           for (i=0; i<nb_som_facette-1; i++)
             {
-
               //////////////////////////////////////////////////////////////////////////
               //Determination de PhiIJ au milieu entre le sommet et le milieu de num3
               /////////////////////////////////////////////////////////////////////////
@@ -553,19 +461,18 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
               convkschemas(K,ncomp_ch_transporte,dimension,poly,poly1,poly2,num10,num20,psc,transporte,
                            fluent_,flux,rx0,gradient_elem);
 
-
               ////////////////////////////////////////////////////////////////////////////////////////////////////////
               //Limiteur pour le gradient. Calcul effectue en meme temps que le calcul du flux.
               // gradient(K0) = teta*gradient(K0)+ (1-teta)gradient(K1ou K2)
               ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-              double teta;
-              teta = 0.5;
+              double teta = 0.5;
 
               /////////////////////////////////////////////////////////////////////////
               // On traite les sommets qui sont aussi des sommets du polyedre
               /////////////////////////////////////////////////////////////////////////
 
+              // XXX XXX XXX : Attention : we can not factorize more... the code is not the same
               if (ncomp_ch_transporte == 1)
                 {
                   for (j=0; j<dimension; j++)
@@ -574,31 +481,21 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                       if (psc >= 0)
                         {
                           if (poly1==-1)
-                            {
-                              fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
-                            }
+                            fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
                           else
-                            {
-                              fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(coord(scom,j)-xm);
-                            }
+                            fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(coord(scom,j)-xm);
                         }
-
                       else
                         {
                           if (poly2==-1)
-                            {
-                              fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
-                            }
+                            fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
                           else
-                            {
-                              fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(coord(scom,j)-xm);
-                            }
+                            fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(coord(scom,j)-xm);
                         }
                     }
                   fluxsom(0) += flux(0);
                   fluxsom(0) *= psc;
                 }
-
               else
                 {
                   for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
@@ -610,39 +507,27 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                           if (psc >= 0)
                             {
                               if (poly1==-1)
-                                {
-                                  fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
-                                }
+                                fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
                               else
-                                {
-                                  fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(coord(scom,j)-xm);
-                                }
+                                fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(coord(scom,j)-xm);
                             }
-
                           else
                             {
                               if (poly2==-1)
-                                {
-                                  fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
-                                }
+                                fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
                               else
-                                {
-                                  fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(coord(scom,j)-xm);
-                                }
-
+                                fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(coord(scom,j)-xm);
                             }
-
                         }
                       fluxsom(comp0) *= psc;
-                      //  Cerr << "fluxsom(" << comp << ") = " << fluxsom(comp) << finl;
                     }
                 }
-
 
               ////////////////////////////////////////////////////////////////////////////
               // on traite le centre de gravite
               ////////////////////////////////////////////////////////////////////////////
 
+              // XXX XXX XXX : Attention : we can not factorize more... the code is not the same
               if (ncomp_ch_transporte == 1)
                 {
                   for (j=0; j<dimension; j++)
@@ -651,27 +536,18 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                       if (psc >= 0)
                         {
                           if (poly1==-1)
-                            {
-                              fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
-                            }
+                            fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
                           else
-                            {
-                              fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(xg(poly,j)-xm);
-                            }
+                            fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(xg(poly,j)-xm);
                         }
 
                       else
                         {
                           if (poly2==-1)
-                            {
-                              fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
-                            }
+                            fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
                           else
-                            {
-                              fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(xg(poly,j)-xm);
-                            }
+                            fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(xg(poly,j)-xm);
                         }
-
                     }
 
                   fluxg(0) += flux(0);
@@ -688,50 +564,29 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                           if (psc >= 0)
                             {
                               if (poly1==-1)
-                                {
-                                  fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
-                                }
+                                fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
                               else
-                                {
-                                  fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(xg(poly,j)-xm);
-                                }
+                                fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(xg(poly,j)-xm);
                             }
 
                           else
                             {
                               if (poly2==-1)
-                                {
-                                  fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
-                                }
+                                fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
                               else
-                                {
-                                  fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(xg(poly,j)-xm);
-                                }
+                                fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(xg(poly,j)-xm);
                             }
-
                         }
-
                       fluxg(comp0) *= psc;
-                      // Cerr << "fluxg(" << comp << ") = " << fluxg(comp) << finl;
                     }
                 }
-
               //////////////////////////////////////////////////////////////////////////////
               // Integration de u.n.flux
               /////////////////////////////////////////////////////////////////////////////
-
-              if (ncomp_ch_transporte == 1)
+              for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
                 {
-                  resu(num10) -= ( 0.5*(fluxsom(0)+fluxg(0)) );
-                  resu(num20) += ( 0.5*(fluxsom(0)+fluxg(0)) );
-                }
-              else
-                {
-                  for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
-                    {
-                      resu(num10,comp0) -= ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
-                      resu(num20,comp0) += ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
-                    }
+                  resu(num10,comp0) -= ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
+                  resu(num20,comp0) += ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
                 }
             }
         }
@@ -752,7 +607,6 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
             itypcl=zone_Cl_VEF.type_elem_Cl(rang);
 
           // calcul des numeros des faces du polyedre
-
           for (face_adj=0; face_adj<nfac; face_adj++)
             {
               face(face_adj)= elem_faces(poly,face_adj);
@@ -763,7 +617,6 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
           DoubleVect rx0(dimension);
 
           // calcul de la vitesse aux sommets des polyedres
-
           for (j=0; j<dimension; j++)
             {
               vs(j) = la_vitesse(face(0),j)*porosite_face(face(0));
@@ -775,9 +628,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
             {
               num_som = zone.sommet_elem(poly,j);
               for (ncomp=0; ncomp<dimension; ncomp++)
-                {
-                  vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
-                }
+                vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
             }
           // calcul de la vitesse au centre de gravite
 
@@ -825,15 +676,12 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                 for (i=0; i<dimension; i++)
                   cc[i] = normales_facettes_Cl(rang,fa7,i);
 
-
               /////////////////////////////////////////////////////////////////////////
               // On traite le point pour lequel vitesse = 0.5(vitsommet + vitmilieu)
               /////////////////////////////////////////////////////////////////////////
 
-
               for (i=0; i<nb_som_facette-1; i++)
                 {
-
                   //////////////////////////////////////////////////////////////////////////
                   //Determination de PhiIJ au milieu entre le sommet et le milieu de num3
                   /////////////////////////////////////////////////////////////////////////
@@ -851,13 +699,13 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                   // gradient(K0) = teta*gradient(K0)+ (1-teta)gradient(K1ou K2)
                   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                  double teta;
-                  teta = 0.5;
+                  double teta = 0.5;
 
                   /////////////////////////////////////////////////////////////////////////
                   // On traite les sommets qui sont aussi des sommets du polyedre
                   /////////////////////////////////////////////////////////////////////////
 
+                  // XXX XXX XXX : Attention : we can not factorize more... the code is not the same
                   if (ncomp_ch_transporte == 1)
                     {
                       for (j=0; j<dimension; j++)
@@ -866,31 +714,21 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                           if (psc >= 0)
                             {
                               if (poly1==-1)
-                                {
-                                  fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
-                                }
+                                fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
                               else
-                                {
-                                  fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(coord(scom,j)-xm);
-                                }
+                                fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(coord(scom,j)-xm);
                             }
-
                           else
                             {
                               if (poly2==-1)
-                                {
-                                  fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
-                                }
+                                fluxsom(0) += gradient_elem(poly,0,j)*(coord(scom,j)-xm);
                               else
-                                {
-                                  fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(coord(scom,j)-xm);
-                                }
+                                fluxsom(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(coord(scom,j)-xm);
                             }
                         }
                       fluxsom(0) += flux(0);
                       fluxsom(0) *= psc;
                     }
-
                   else
                     {
                       for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
@@ -902,39 +740,27 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                               if (psc >= 0)
                                 {
                                   if (poly1==-1)
-                                    {
-                                      fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
-                                    }
+                                    fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
                                   else
-                                    {
-                                      fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(coord(scom,j)-xm);
-                                    }
+                                    fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(coord(scom,j)-xm);
                                 }
-
                               else
                                 {
                                   if (poly2==-1)
-                                    {
-                                      fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
-                                    }
+                                    fluxsom(comp0) += gradient_elem(poly,comp0,j)*(coord(scom,j)-xm);
                                   else
-                                    {
-                                      fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(coord(scom,j)-xm);
-                                    }
-
+                                    fluxsom(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(coord(scom,j)-xm);
                                 }
-
                             }
                           fluxsom(comp0) *= psc;
-                          //  Cerr << "fluxsom(" << comp << ") = " << fluxsom(comp) << finl;
                         }
                     }
-
 
                   ////////////////////////////////////////////////////////////////////////////
                   // on traite le centre de gravite
                   ////////////////////////////////////////////////////////////////////////////
 
+                  // XXX XXX XXX : Attention : we can not factorize more... the code is not the same
                   if (ncomp_ch_transporte == 1)
                     {
                       for (j=0; j<dimension; j++)
@@ -943,29 +769,18 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                           if (psc >= 0)
                             {
                               if (poly1==-1)
-                                {
-                                  fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
-                                }
+                                fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
                               else
-                                {
-                                  fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(xg(poly,j)-xm);
-                                }
+                                fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly1,0,j))*(xg(poly,j)-xm);
                             }
-
                           else
                             {
                               if (poly2==-1)
-                                {
-                                  fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
-                                }
+                                fluxg(0) += gradient_elem(poly,0,j)*(xg(poly,j)-xm);
                               else
-                                {
-                                  fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(xg(poly,j)-xm);
-                                }
+                                fluxg(0) += (teta*gradient_elem(poly,0,j) + (1.- teta)*gradient_elem(poly2,0,j))*(xg(poly,j)-xm);
                             }
-
                         }
-
                       fluxg(0) += flux(0);
                       fluxg(0) *= psc;
                     }
@@ -980,50 +795,29 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                               if (psc >= 0)
                                 {
                                   if (poly1==-1)
-                                    {
-                                      fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
-                                    }
+                                    fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
                                   else
-                                    {
-                                      fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(xg(poly,j)-xm);
-                                    }
+                                    fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly1,comp0,j))*(xg(poly,j)-xm);
                                 }
-
                               else
                                 {
                                   if (poly2==-1)
-                                    {
-                                      fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
-                                    }
+                                    fluxg(comp0) += gradient_elem(poly,comp0,j)*(xg(poly,j)-xm);
                                   else
-                                    {
-                                      fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(xg(poly,j)-xm);
-                                    }
+                                    fluxg(comp0) += (teta*gradient_elem(poly,comp0,j) + (1.-teta)*gradient_elem(poly2,comp0,j))*(xg(poly,j)-xm);
                                 }
-
                             }
-
                           fluxg(comp0) *= psc;
-                          // Cerr << "fluxg(" << comp << ") = " << fluxg(comp) << finl;
                         }
                     }
 
                   //////////////////////////////////////////////////////////////////////////////
                   // Integration de u.n.flux
                   /////////////////////////////////////////////////////////////////////////////
-
-                  if (ncomp_ch_transporte == 1)
+                  for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
                     {
-                      resu(num10) -= ( 0.5*(fluxsom(0)+fluxg(0)) );
-                      resu(num20) += ( 0.5*(fluxsom(0)+fluxg(0)) );
-                    }
-                  else
-                    {
-                      for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
-                        {
-                          resu(num10,comp0) -= ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
-                          resu(num20,comp0) += ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
-                        }
+                      resu(num10,comp0) -= ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
+                      resu(num20,comp0) += ( 0.5*(fluxsom(comp0)+fluxg(comp0)) );
                     }
                 }
             }
@@ -1059,30 +853,18 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
               for (i=0; i<dimension; i++)
                 psc += la_vitesse(num_face,i)*face_normales(num_face,i)*porosite_face(num_face);
               if (psc>0)
-                if (ncomp_ch_transporte == 1)
+                for (i=0; i<ncomp_ch_transporte; i++)
                   {
-                    resu(num_face) -= psc*transporte(num_face);
-                    flux_b(num_face,0) -= psc*transporte(num_face);
+                    resu(num_face,i) -= psc*transporte(num_face,i);
+                    flux_b(num_face,i) -= psc*transporte(num_face,i);
                   }
-                else
-                  for (i=0; i<ncomp_ch_transporte; i++)
-                    {
-                      resu(num_face,i) -= psc*transporte(num_face,i);
-                      flux_b(num_face,i) -= psc*transporte(num_face,i);
-                    }
               else
                 {
-                  if (ncomp_ch_transporte == 1)
+                  for (i=0; i<ncomp_ch_transporte; i++)
                     {
-                      resu(num_face) -= psc*la_sortie_libre.val_ext(num_face-num1);
-                      flux_b(num_face,0) -= psc*la_sortie_libre.val_ext(num_face-num1);
+                      resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
+                      flux_b(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
                     }
-                  else
-                    for (i=0; i<ncomp_ch_transporte; i++)
-                      {
-                        resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
-                        flux_b(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
-                      }
                   fluent_(num_face) -= psc;
                 }
             }
@@ -1100,27 +882,15 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
               if (fait[num_face-num1] == 0)
                 {
                   voisine = la_cl_perio.face_associee(num_face-num1) + num1;
-
-                  if (ncomp_ch_transporte == 1)
+                  for (int comp=0; comp<ncomp_ch_transporte; comp++)
                     {
-                      diff1 = resu(num_face)-tab(nb_faces_perio);
-                      diff2 = resu(voisine)-tab(nb_faces_perio+voisine-num_face);
-                      resu(voisine)  += diff1;
-                      resu(num_face) += diff2;
-                      flux_b(voisine,0) += diff1;
-                      flux_b(num_face,0) += diff2;
+                      diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
+                      diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
+                      resu(voisine,comp)  += diff1;
+                      resu(num_face,comp) += diff2;
+                      flux_b(voisine,comp) += diff1;
+                      flux_b(num_face,comp) += diff2;
                     }
-                  else
-                    for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                      {
-                        diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
-                        diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
-                        resu(voisine,comp)  += diff1;
-                        resu(num_face,comp) += diff2;
-                        flux_b(voisine,comp) += diff1;
-                        flux_b(num_face,comp) += diff2;
-                      }
-
                   fait[num_face-num1]= 1;
                   fait[voisine-num1] = 1;
                 }
@@ -1130,6 +900,4 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
     }
   modifier_flux(*this);
   return resu;
-
 }
-

@@ -129,7 +129,6 @@ double Op_Dift_VDF_Elem::calculer_dt_stab() const
   const IntTab& elem_faces = zone_VDF.elem_faces();
   double alpha = diffusivite().valeurs()(0, 0);
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
-  int is_QC = mon_equation->probleme().is_QC();
   bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_fraction"));
 
 
@@ -149,14 +148,14 @@ double Op_Dift_VDF_Elem::calculer_dt_stab() const
   for (int elem = 0; elem < zone_VDF.nb_elem(); elem++)
     {
       // choix du facteur
-      double rcp = 0.;
-      if (is_concentration) rcp = 1.;
-      else if (is_QC)
+      double rcp = 1.;
+      if (!is_concentration)
         {
-          const DoubleTab& tab_Cp = mon_equation->milieu().capacite_calorifique().valeurs();
-          rcp = mon_equation->milieu().masse_volumique()(elem) * ((tab_Cp.nb_dim()==2) ? tab_Cp(0,0) : tab_Cp(elem));
+          const int Ccp = sub_type(Champ_Uniforme, mon_equation->milieu().capacite_calorifique().valeur());
+          const int Cr = sub_type(Champ_Uniforme, mon_equation->milieu().masse_volumique());
+          const DoubleTab& tab_Cp = mon_equation->milieu().capacite_calorifique().valeurs(), tab_r = mon_equation->milieu().masse_volumique().valeurs();
+          rcp = tab_r(Cr ? 0 : elem, 0) * tab_Cp(Ccp ? 0 : elem, 0);
         }
-      else rcp = mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
 
       double moy = 0.;
       for (int i = 0; i < 2 * dimension; i++) numfa[i] = elem_faces(elem, i);

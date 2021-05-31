@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,9 +79,7 @@
   {                                                                        \
     ((_TYPE_&) (evaluateur_source_elem)).mettre_a_jour( );                \
     assert(resu.nb_dim() < 3);                                                \
-    int ncomp=1;                                                        \
-    if (resu.nb_dim() == 2)                                                \
-      ncomp=resu.dimension(1);                                                \
+    const int ncomp = resu.line_size();                                      \
     DoubleVect& bilan = so_base->bilan();                                \
     bilan=0;                                                                \
     if( ncomp == 1)                                                        \

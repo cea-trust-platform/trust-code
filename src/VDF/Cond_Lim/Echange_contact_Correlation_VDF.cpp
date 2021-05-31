@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -764,31 +764,17 @@ void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equ
     {
       //Cerr << "raccord local homogene et conductivite non uniforme" << finl;
       const DoubleTab& tab_lambda = le_milieu.conductivite().valeurs();
-      if (tab_lambda.nb_dim() == 1)
+      for (int face=ndeb; face<nfin; face++)
         {
-          assert(nb_comp==1);
-          for (int face=ndeb; face<nfin; face++)
+          int elem = face_voisins(face,0);
+          if (elem == -1)
+            elem = face_voisins(face,1);
+          for(i=0; i<nb_comp; i++)
             {
-              int elem = face_voisins(face,0);
-              if (elem == -1)
-                elem = face_voisins(face,1);
-              assert(tab_lambda(elem)!=0.);
-              for(i=0; i<nb_comp; i++)
-                tab(face-ndeb,i) = tab_lambda(elem)/e(face-ndeb);
+              assert(le_milieu.conductivite()(elem,i)!=0.);
+              tab(face-ndeb,i) = tab_lambda(elem,i)/e(face-ndeb);
             }
         }
-      else
-        for (int face=ndeb; face<nfin; face++)
-          {
-            int elem = face_voisins(face,0);
-            if (elem == -1)
-              elem = face_voisins(face,1);
-            for(i=0; i<nb_comp; i++)
-              {
-                assert(le_milieu.conductivite()(elem,i)!=0.);
-                tab(face-ndeb,i) = tab_lambda(elem,i)/e(face-ndeb);
-              }
-          }
     }
   else  // la conductivite est un Champ uniforme
     {

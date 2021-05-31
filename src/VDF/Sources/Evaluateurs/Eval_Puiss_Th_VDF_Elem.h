@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,15 +58,8 @@ protected:
 
 inline double Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    return puissance(0,0)*volumes(num_elem)*porosite_vol(num_elem);
-  else
-    {
-      if (puissance.nb_dim()==1)
-        return puissance(num_elem)*volumes(num_elem)*porosite_vol(num_elem);
-      else
-        return puissance(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem);
-    }
+  const int k = sub_type(Champ_Uniforme,la_puissance.valeur().valeur()) ? 0 : num_elem;
+  return puissance(k, 0) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
 inline void Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const

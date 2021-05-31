@@ -1465,16 +1465,12 @@ inline void Eval_centre_VDF_Elem::qcentre(const double& psc, const int num0, con
   //double dxav=dist_elem(num1, num1_1, ori);
 
   ArrOfDouble T0(ncomp);
-  ArrOfDouble T0_0(ncomp);
   ArrOfDouble T1(ncomp);
-  ArrOfDouble T1_1(ncomp);
 
   for (k=0; k<ncomp; k++)
     {
       T0(k) = transporte(num0,k);
-      T0_0(k) = transporte(num0_0,k);
       T1(k) = transporte(num1,k);
-      T1_1(k) = transporte(num1_1,k);
     }
 
   //double g1 = -dx*dx*(dx/2+dxav)/(4*(dx+dxam+dxav)*(dx+dxam)*dxam);

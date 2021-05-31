@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,12 +62,8 @@ inline Eval_Source_C_VDF_Elem::Eval_Source_C_VDF_Elem() {}
 
 inline double Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    return source_constituant(0,0)*volumes(num_elem)*porosite_vol(num_elem);
-  else if (source_constituant.nb_dim()==2)
-    return source_constituant(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem);
-  else
-    return source_constituant(num_elem)*volumes(num_elem)*porosite_vol(num_elem);
+  const int k = sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()) ? 0 : num_elem;
+  return source_constituant(k, 0) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
 inline void Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem, DoubleVect& source) const

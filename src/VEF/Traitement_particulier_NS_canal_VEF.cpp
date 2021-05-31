@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -209,18 +209,8 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_vitesse_rho_
       elem0 = face_voisins(num_face,0);
       elem1 = face_voisins(num_face,1);
 
-      if (taille_mu==1)   val_moy(i,11) += c*visco_dyn(0,0);
-      else if (visco_dyn.nb_dim()==1)
-        {
-          if (elem1!=-1)
-            {
-              val_moy(i,11) += c*0.5*(visco_dyn[elem0]+visco_dyn[elem1]);
-            }
-          else
-            {
-              val_moy(i,11) += c*visco_dyn[elem0];
-            }
-        }
+      if (taille_mu==1)
+        val_moy(i,11) += c*visco_dyn(0,0);
       else
         {
           if (elem1!=-1)

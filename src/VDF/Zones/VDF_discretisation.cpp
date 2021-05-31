@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -604,7 +604,7 @@ void VDF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Ch
   else
     {
       loc = "champ_elem";
-      nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
+      nb_comp = ch_inco.valeurs().line_size();
     }
 
   Discretisation_base::discretiser_champ(loc,zone_vdf, ch_name ,"units_not_defined",nb_comp,ch_inco.temps(),champ);

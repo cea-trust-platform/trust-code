@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -938,56 +938,22 @@ void Op_Diff_VEF_Anisotrope_Face::contribue_au_second_membre(DoubleTab& resu ) c
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-
+  int nb_comp = resu.line_size();
   int nb_bords=zone_VEF.nb_front_Cl();
 
-  if(nb_dim==2)
-    nb_comp=resu.dimension(1);
-
   // Partie imposee :
-
-  if (nb_dim == 1)
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      for (int n_bord=0; n_bord<nb_bords; n_bord++)
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.surface(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
-            {
-              Cerr << "Non code pour Echange_externe_impose" << finl;
-              assert(0);
-            }
-
-        }
-    }
-  else
-    {
-      for (int n_bord=0; n_bord<nb_bords; n_bord++)
-        {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nb_comp; comp++)
-                  resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
-            }
+          const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nb_comp; comp++)
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
         }
     }
 }

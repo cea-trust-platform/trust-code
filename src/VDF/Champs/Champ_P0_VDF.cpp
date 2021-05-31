@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,21 +100,13 @@ DoubleVect Champ_P0_VDF::moyenne() const
   moy =0;
   double coef,sum_vol=0;
 
-  if (nb_compo == 1)
-    for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
-      {
-        coef = porosite(num_elem)*volumes(num_elem);
-        moy += val(num_elem)*coef;
-        sum_vol += coef;
-      }
-  else
-    for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
-      {
-        coef = porosite(num_elem)*volumes(num_elem);
-        for (k=0; k<nb_compo; k++)
-          moy[k] += val(num_elem,k)*coef;
-        sum_vol += coef;
-      }
+  for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
+    {
+      coef = porosite(num_elem)*volumes(num_elem);
+      for (k=0; k<nb_compo; k++)
+        moy[k] += val(num_elem,k)*coef;
+      sum_vol += coef;
+    }
 
   moy /= sum_vol;
   return moy;
@@ -133,20 +125,12 @@ double Champ_P0_VDF::moyenne(int ncomp) const
   double moy=0;
   double coef,sum_vol=0;
 
-  if (nb_comp() == 1)
-    for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
-      {
-        coef = porosite(num_elem)*volumes(num_elem);
-        moy += val(num_elem)*coef;
-        sum_vol += coef;
-      }
-  else
-    for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
-      {
-        coef = porosite(num_elem)*volumes(num_elem);
-        moy += val(num_elem,ncomp)*coef;
-        sum_vol += coef;
-      }
+  for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
+    {
+      coef = porosite(num_elem)*volumes(num_elem);
+      moy += val(num_elem,ncomp)*coef;
+      sum_vol += coef;
+    }
   moy /= sum_vol;
   return moy;
 }
@@ -298,30 +282,10 @@ double Champ_P0_VDF::integrale_espace(int ncomp) const
   int nb_elem =zone_vdf.nb_elem();
   int elem;
   const DoubleTab& val = valeurs();
-  int nbdim = val.nb_dim();
-  if (nbdim == 1)
-    {
-      if (ncomp<nbdim)
-        for (elem=0; elem<nb_elem; elem++)
-          integr+= val(elem)*volumes(elem);
-      else
-        {
-          Cerr << "Erreur sur l'indice de la composante dans " << finl;
-          Cerr << "Champ_P0_VF::integrale_espace" << finl;
-          exit();
-        }
-    }
-  else
-    {
-      if (ncomp<nbdim)
-        for (elem=0; elem<nb_elem; elem++)
-          integr+= val(elem,ncomp)*volumes(elem);
-      else
-        {
-          Cerr << "Erreur sur l'indice de la composante dans " << finl;
-          Cerr << "Champ_P0_VDF::integrale_espace" << finl;
-          exit();
-        }
-    }
+  assert(ncomp < val.line_size());
+
+  for (elem=0; elem<nb_elem; elem++)
+    integr+= val(elem,ncomp)*volumes(elem);
+
   return integr;
 }

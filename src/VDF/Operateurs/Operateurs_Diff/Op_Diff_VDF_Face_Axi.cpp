@@ -77,7 +77,7 @@ const Champ_base& Op_Diff_VDF_Face_Axi::diffusivite() const
 DoubleTab& Op_Diff_VDF_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
 {
 
-  if (inco.nb_dim() > 1)
+  if (inco.line_size() > 1)
     {
       Cerr << "Erreur dans Op_Diff_VDF_Face_Axi::ajouter" << finl;
       Cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues" << finl;
@@ -473,7 +473,7 @@ void Op_Diff_VDF_Face_Axi::ajouter_bord(const DoubleTab& inco, DoubleTab& resu) 
 
 void Op_Diff_VDF_Face_Axi::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
-  if (inco.nb_dim() > 1)
+  if (inco.line_size() > 1)
     {
       Cerr << "Erreur dans Op_Diff_VDF_Face_Axi::ajouter" << finl;
       Cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues" << finl;

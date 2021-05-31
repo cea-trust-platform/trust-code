@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -273,18 +273,9 @@ void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,c
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF=la_zcl_vef.valeur();
   const DoubleTab& face_normales=zone_VEF.face_normales();
-
   const int nb_bord=zone_Cl_VEF.nb_cond_lim();
-
-  int nb_comp=1;
-  if(transporte.nb_dim()!=1)
-    nb_comp=transporte.dimension(1);
-
-  int n_bord=0;
-  int num1=0,num2=0;
-  int ind_face=0,facei=0;
-  int dim=0;
-
+  const int nb_comp=transporte.line_size();
+  int n_bord=0, num1=0, num2=0, ind_face=0,facei=0, dim=0;
   double psc=0.;
 
   const DoubleVect& transporteV=ref_cast(DoubleVect,transporte);
@@ -311,14 +302,9 @@ void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,c
                 psc-=tab_vitesse(facei,dim)*face_normales(facei,dim);
 
               if (psc>0)
-                {
-                  //Modification des donnees
-                  if (nb_comp==1)
-                    resu(facei)+=psc*(la_sortie_libre.val_ext(facei-num1)-transporteV[facei]);
-                  else
-                    for (dim=0; dim<nb_comp; dim++)
-                      resu(facei,dim)+=psc*(la_sortie_libre.val_ext(facei-num1,dim)-transporteV[facei*nb_comp+dim]);
-                }
+                for (dim=0; dim<nb_comp; dim++)
+                  resu(facei,dim)+=psc*(la_sortie_libre.val_ext(facei-num1,dim)-transporteV[facei*nb_comp+dim]);
+
             }
         }//fin du if sur "Neumann_sortie_libre"
     }
@@ -328,16 +314,11 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
-  //const Champ_Inc_base& la_vitesse=vitesse_.valeur();
-  //const DoubleTab& vitesse=la_vitesse.valeurs();
   const DoubleTab& face_normales=zone_VEF.face_normales();
-
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=elem_faces.line_size();
 
   assert(Kij.nb_dim()==3);
   assert(Kij.dimension(0)==nb_elem_tot);
@@ -584,9 +565,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
   const int nb_faces_elem=elem_faces.dimension(1);
   assert(nb_faces_elem==(dimension+1));
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  int nb_comp=1;
-  if(resu.nb_dim()!=1)
-    nb_comp=resu.dimension(1);
+  int nb_comp=resu.line_size();
 
   DoubleTab transporte_;
   DoubleTab vitesse_face_;
@@ -655,18 +634,14 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
                                                                  DoubleTab& resu, const DoubleTab& vitesse_2) const
 {
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
-
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   const DoubleTab& face_normales=zone_VEF.face_normales();
-
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=elem_faces.line_size();
 
   //Pour tenir compte de la porosite
   const int marq = phi_u_transportant(equation());
-
   const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
   const DoubleVect& porosite_face = zone_VEF.porosite_face();
 
@@ -675,27 +650,19 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
     for (int j=0; j<tab_vitesse.dimension(1); j++)
       tab_vitesse(i,j)*=porosite_face(i);
 
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0,type_elem=0;
-  int facei=0,facei_loc=0;
-  int ligne=0;
-  int dim=0;
-
-  double coeff=0.;
-  double signe=0.;
-  double div=0.;
+  const int nb_comp=transporte.line_size();
+  int elem=0,type_elem=0, facei=0,facei_loc=0, ligne=0, dim=0;
+  double coeff=0., signe=0., div=0.;
 
   const DoubleVect& transporteV=ref_cast(DoubleVect,transporte);
   DoubleVect& resuV=ref_cast(DoubleVect,resu);
 
   double (*formule)(int);
   if (!volumes_etendus_)
-    if (dimension==2) formule=&formule_Id_2D;
-    else formule=&formule_Id_3D;
-  else if (dimension==2) formule=&formule_2D;
-  else formule=&formule_3D;
+    formule= (dimension==2) ? &formule_Id_2D : &formule_Id_3D;
+  else
+    formule= (dimension==2) ? &formule_2D : &formule_3D;
+
 
   for (elem=0; elem<nb_elem_tot; elem++)
     {
@@ -721,7 +688,6 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
       for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
         {
           facei=elem_faces(elem,facei_loc);
-
           for (dim=0; dim<nb_comp; dim++)
             {
               ligne=facei*nb_comp+dim;
@@ -743,19 +709,11 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
 #endif
   const DoubleVect& transporteV=ref_cast(DoubleVect,transporte);
   const DoubleTab& face_normales=zone_VEF.face_normales();
-
   const int nb_bord = zone_Cl_VEF.nb_cond_lim();
-
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
+  const int nb_comp=transporte.line_size();
 
   //  int elem=0;
-  int facei=0;
-  int dim=0;
-  int n_bord=0;
-  int num1=0,num2=0;
-  int ind_face=0;
-
+  int facei=0, dim=0, n_bord=0, num1=0,num2=0, ind_face=0;
   double psc=0.;
 
   for (n_bord=0; n_bord<nb_bord; n_bord++)
@@ -768,23 +726,19 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
       if ( sub_type(Dirichlet_homogene,la_cl.valeur()) )
         {
           //On ne calcule pas le flux aux bords Dirichlet_homogene
-        }//fin du if sur "Dirichlet"
-
+        }
       else if ( sub_type(Neumann,la_cl.valeur())
                 || sub_type(Neumann_val_ext,la_cl.valeur())
                 || sub_type(Neumann_homogene,la_cl.valeur())
                 || sub_type(Symetrie,la_cl.valeur())
                 || sub_type(Echange_impose_base,la_cl.valeur())
                 || sub_type(Dirichlet,la_cl.valeur())
-                || sub_type(Periodique,la_cl.valeur())
-              )
+                || sub_type(Periodique,la_cl.valeur()) )
         {
           for (ind_face=num1; ind_face<num2; ind_face++)
             {
               facei = le_bord.num_face(ind_face);
-
               assert(face_voisins(facei,0)!=-1);
-
               psc=0.;
               for (dim=0; dim<dimension; dim++)
                 psc-=tab_vitesse(facei,dim)*face_normales(facei,dim);
@@ -794,7 +748,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
             }
 
         }//fin du if sur "Neumann", "Neumann_homogene", "Symetrie", "Echange_impose_base"
-
       else
         {
           Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords()" << finl;
@@ -809,24 +762,12 @@ DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
-
   const IntTab& elem_faces=zone_VEF.elem_faces();
-
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
-
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0;
-  int facei=0,facei_loc=0;
-  int facej=0,facej_loc=0;
-  int ligne=0,colonne=0;
-  int dim=0;
-
-  double kij=0.,kji=0.;
-  double delta=0.;
-
+  const int nb_faces_elem=elem_faces.line_size();
+  const int nb_comp=transporte.line_size();
+  int elem=0,facei=0,facei_loc=0, facej=0,facej_loc=0, ligne=0,colonne=0, dim=0;
+  double kij=0.,kji=0.,delta=0.;
   const DoubleVect& transporteV=ref_cast(DoubleVect,transporte);
   DoubleVect& resuV=ref_cast(DoubleVect,resu);
 
@@ -834,12 +775,10 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const D
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
       {
         facei=elem_faces(elem,facei_loc);
-
         for (facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
           {
             facej=elem_faces(elem,facej_loc);
             assert(facej!=facei);
-
             kij=Kij(elem,facei_loc,facej_loc);
             kji=Kij(elem,facej_loc,facei_loc);
 
@@ -847,7 +786,6 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const D
               {
                 ligne=facei*nb_comp+dim;
                 colonne=facej*nb_comp+dim;
-
                 delta=transporteV[colonne]-transporteV[ligne];
                 resuV[ligne]+=kij*delta;
                 resuV[colonne]-=kji*delta;
@@ -862,24 +800,12 @@ DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
-
   const IntTab& elem_faces=zone_VEF.elem_faces();
-
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
-
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0;
-  int facei=0,facei_loc=0;
-  int facej=0,facej_loc=0;
-  int ligne=0,colonne=0;
-  int dim=0;
-
-  double dij=0.;
-  double delta=0.;
-  double coeffij=0.,coeffji=0.;
+  const int nb_faces_elem=elem_faces.line_size();
+  const int nb_comp=transporte.line_size();
+  int elem=0, facei=0,facei_loc=0, facej=0,facej_loc=0, ligne=0,colonne=0, dim=0;
+  double dij=0., delta=0., coeffij=0.,coeffji=0.;
 
   const DoubleVect& transporteV=ref_cast(DoubleVect,transporte);
   DoubleVect& resuV=ref_cast(DoubleVect,resu);
@@ -888,7 +814,6 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTa
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
       {
         facei=elem_faces(elem,facei_loc);
-
         for (facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
           {
             facej=elem_faces(elem,facej_loc);
@@ -913,7 +838,6 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTa
               }
           }
       }
-
   return resu;
 }
 
@@ -925,25 +849,11 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const Doub
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
-
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0;
-  int facei=0,facei_loc=0;
-  int facej=0,facej_loc=0;
-  int ligne=0,colonne=0;
-  int dim=0;
-  int face_amont=0,face_aval=0;
-
-  double kij=0.,kji=0.,dij=0.;
-  double lij=0.,lji=0.;
-  double limit=0.,daij=0.;
-  double delta=0.;
-  double coeffij=0.,coeffji=0.;
-  double coeff=0.;
-  double R=0.;
+  const int nb_faces_elem=elem_faces.line_size();
+  const int nb_comp=transporte.line_size();
+  int elem=0, facei=0,facei_loc=0, facej=0,facej_loc=0, ligne=0,colonne=0, dim=0, face_amont=0,face_aval=0;
+  double kij=0.,kji=0.,dij=0.,lij=0.,lji=0., limit=0.,daij=0., delta=0.;
+  double coeffij=0.,coeffji=0., coeff=0., R=0.;
 
   //Pour le limiteur
   ArrOfDouble P_plus(nb_comp),P_moins(nb_comp);
@@ -1279,19 +1189,14 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=elem_faces.line_size();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
-  int nb_comp=1;
-  if(resu.nb_dim()!=1)
-    nb_comp=resu.dimension(1);
+  const int nb_comp=resu.line_size();
 
   int face_i0, face_j0, elem, comp0;
   const int nb_faces0 = transporte.dimension(0);
-
-  double sigma_fijd=0;
-  double sigma_fija=0;
+  double sigma_fijd=0., sigma_fija=0.;
 
   ArrOfDouble pplusi(nb_comp);
   ArrOfDouble qplusi(nb_comp);
@@ -1300,35 +1205,22 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 
   for(elem=0; elem<nb_elem_tot; elem++)
     {
-      int face_loci=0;
-      int face_locj=0;
+      int face_loci=0, face_locj=0;
 
       for(; face_loci<nb_faces_elem; face_loci++)
         {
           face_i0=elem_faces(elem,face_loci);
-
-          if(nb_comp==1)
-            {
-              resu2(face_i0)+=Kij_ancien(elem,face_loci,face_loci)*transporte(face_i0);
-            }
-          else
-            {
-              for(comp0=0; comp0<nb_comp; comp0++)
-                resu2(face_i0,comp0)+=Kij_ancien(elem,face_loci,face_loci)*transporte(face_i0,comp0);
-            }
+          for(comp0=0; comp0<nb_comp; comp0++)
+            resu2(face_i0,comp0)+=Kij_ancien(elem,face_loci,face_loci)*transporte(face_i0,comp0);
 
           pplusi=0.;
           qplusi=0.;
           pmoinsi=0.;
           qmoinsi=0.;
 
-
-          int elem1=face_voisins(face_i0,0);
-          int elem2=face_voisins(face_i0,1);
-          int face_loc_i=0;
-          int face_loc_j=0;
-          double dT,min_dT,max_dT;
-          double K,min_K,max_K;
+          int elem1=face_voisins(face_i0,0), elem2=face_voisins(face_i0,1);
+          int face_loc_i=0, face_loc_j=0;
+          double dT,min_dT,max_dT, K,min_K,max_K;
 
           //
           // dans elem1 :
@@ -1365,10 +1257,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                       min_K=K ;
                     }
 
-                  if(nb_comp==1)
+                  for(comp0=0; comp0<nb_comp; comp0++)
                     {
-                      dT =transporte(face_j);
-                      dT-=transporte(face_i0);
+                      dT =transporte(face_j,comp0);
+                      dT-=transporte(face_i0,comp0);
 
                       if(dT>0.)
                         {
@@ -1381,34 +1273,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                           min_dT=dT ;
                         }
 
-                      pplusi(0) +=min_K*min_dT;
-                      pmoinsi(0)+=min_K*max_dT;
-                      qplusi(0) +=max_K*max_dT;
-                      qmoinsi(0)+=max_K*min_dT;
-                    }
-                  else
-                    {
-                      for(comp0=0; comp0<nb_comp; comp0++)
-                        {
-                          dT =transporte(face_j,comp0);
-                          dT-=transporte(face_i0,comp0);
-
-                          if(dT>0.)
-                            {
-                              max_dT=dT ;
-                              min_dT=0 ;
-                            }
-                          else
-                            {
-                              max_dT=0. ;
-                              min_dT=dT ;
-                            }
-
-                          pplusi(comp0) +=min_K*min_dT;
-                          pmoinsi(comp0)+=min_K*max_dT;
-                          qplusi(comp0) +=max_K*max_dT;
-                          qmoinsi(comp0)+=max_K*min_dT;
-                        }
+                      pplusi(comp0) +=min_K*min_dT;
+                      pmoinsi(comp0)+=min_K*max_dT;
+                      qplusi(comp0) +=max_K*max_dT;
+                      qmoinsi(comp0)+=max_K*min_dT;
                     }
                 }
             }
@@ -1450,10 +1318,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                           min_K=K ;
                         }
 
-                      if(nb_comp==1)
+                      for(comp0=0; comp0<nb_comp; comp0++)
                         {
-                          dT =transporte(face_j);
-                          dT-=transporte(face_i0);
+                          dT =transporte(face_j,comp0);
+                          dT-=transporte(face_i0,comp0);
 
                           if(dT>0.)
                             {
@@ -1466,34 +1334,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                               min_dT=dT ;
                             }
 
-                          pplusi(0) +=min_K*min_dT;
-                          pmoinsi(0)+=min_K*max_dT;
-                          qplusi(0) +=max_K*max_dT;
-                          qmoinsi(0)+=max_K*min_dT;
-                        }
-                      else
-                        {
-                          for(comp0=0; comp0<nb_comp; comp0++)
-                            {
-                              dT =transporte(face_j,comp0);
-                              dT-=transporte(face_i0,comp0);
-
-                              if(dT>0.)
-                                {
-                                  max_dT=dT ;
-                                  min_dT=0 ;
-                                }
-                              else
-                                {
-                                  max_dT=0. ;
-                                  min_dT=dT ;
-                                }
-
-                              pplusi(comp0) +=min_K*min_dT;
-                              pmoinsi(comp0)+=min_K*max_dT;
-                              qplusi(comp0) +=max_K*max_dT;
-                              qmoinsi(comp0)+=max_K*min_dT;
-                            }
+                          pplusi(comp0) +=min_K*min_dT;
+                          pmoinsi(comp0)+=min_K*max_dT;
+                          qplusi(comp0) +=max_K*max_dT;
+                          qmoinsi(comp0)+=max_K*min_dT;
                         }
                     }
                 }
@@ -1511,10 +1355,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                 assert(lij>=0);
                 assert(lji>=0);
 
-                if(nb_comp==1)
+                for(comp0=0; comp0<nb_comp; comp0++)
                   {
-                    const double& Ti=transporte(face_i0);
-                    const double& Tj=transporte(face_j0);
+                    const double& Ti=transporte(face_i0,comp0);
+                    const double& Tj=transporte(face_j0,comp0);
                     double deltaij=Ti-Tj;
                     double Fij=0;
                     if(lij<=lji)
@@ -1525,19 +1369,16 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                           {
                             if(Ti >= Tj)
                               {
-                                if(pplusi(0))
+                                if(pplusi(comp0))
                                   {
-                                    double R=qplusi(0)/pplusi(0);
+                                    double R=qplusi(comp0)/pplusi(comp0);
                                     Fij=minimum(limiteur(R)*dij,lji);
                                   }
                               }
-                            else
+                            else if(pmoinsi(comp0))
                               {
-                                if(pmoinsi(0))
-                                  {
-                                    double R=qmoinsi(0)/pmoinsi(0);
-                                    Fij=minimum(limiteur(R)*dij,lji);
-                                  }
+                                double R=qmoinsi(comp0)/pmoinsi(comp0);
+                                Fij=minimum(limiteur(R)*dij,lji);
                               }
 
                             assert(Fij*dij>=0);
@@ -1546,46 +1387,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                             Fij-=dij;
                             Fij*=deltaij;
                           }
-                        resu2(face_i0)+=coef*(kij*Tj+Fij);
-                        resu2(face_j0)+=coef*(kji*Ti-Fij);
+                        resu2(face_i0,comp0)+=coef*(kij*Tj+Fij);
+                        resu2(face_j0,comp0)+=coef*(kji*Ti-Fij);
                       }
                   }
-                else
-                  for(comp0=0; comp0<nb_comp; comp0++)
-                    {
-                      const double& Ti=transporte(face_i0,comp0);
-                      const double& Tj=transporte(face_j0,comp0);
-                      double deltaij=Ti-Tj;
-                      double Fij=0;
-                      if(lij<=lji)
-                        {
-                          double coef=1;
-                          if (lij==lji)  coef=.5;
-                          if(deltaij)
-                            {
-                              if(Ti >= Tj)
-                                {
-                                  if(pplusi(comp0))
-                                    {
-                                      double R=qplusi(comp0)/pplusi(comp0);
-                                      Fij=minimum(limiteur(R)*dij,lji);
-                                    }
-                                }
-                              else if(pmoinsi(comp0))
-                                {
-                                  double R=qmoinsi(comp0)/pmoinsi(comp0);
-                                  Fij=minimum(limiteur(R)*dij,lji);
-                                }
-                              assert(Fij*dij>=0);
-                              sigma_fijd+=dij;
-                              sigma_fija+=Fij;
-                              Fij-=dij;
-                              Fij*=deltaij;
-                            }
-                          resu2(face_i0,comp0)+=coef*(kij*Tj+Fij);
-                          resu2(face_j0,comp0)+=coef*(kji*Ti-Fij);
-                        }
-                    }
               }
         }
     }
@@ -1616,12 +1421,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                   face_associee=la_cl_perio.face_associee(face-num1);
                   fait(face_associee) = 1;
                   for (int comp=0; comp<nb_comp; comp++)
-                    {
-                      if(nb_comp==1)
-                        resu2(face_associee+num1)=(resu2(face)+=resu2(face_associee+num1));
-                      else
-                        resu2(face_associee+num1, comp)=(resu2(face,comp)+=resu2(face_associee+num1,comp));
-                    }
+                    resu2(face_associee+num1, comp)=(resu2(face,comp)+=resu2(face_associee+num1,comp));
                 }// if fait
             }// for face
         }// sub_type Perio
@@ -1644,13 +1444,9 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 
       if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur()))
         {
-          if (nb_comp>1)
-            for (face=num1; face<num2; face++)
-              for (int dim=0; dim<nb_comp; dim++)
-                resu1(face,dim)=0;
-          else
-            for (face=num1; face<num2; face++)
-              resu1(face)=0;
+          for (face=num1; face<num2; face++)
+            for (int dim=0; dim<nb_comp; dim++)
+              resu1(face,dim)=0;
         }//fin du if sur Dirichlet
     }//fin du for sur "n_bord"
 
@@ -1766,18 +1562,11 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 void Op_Conv_EF_VEF_P1NC_Stab::mettre_a_jour_pour_periodicite(DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
   const int nb_bord = zone_Cl_VEF.nb_cond_lim();
   const int nb_comp = (resu.nb_dim()==1) ? 1 : resu.dimension(1);
-
   DoubleVect& resuV=ref_cast(DoubleVect,resu);
-
-  int ligne=0,ligneAss=0;
-  int facei=0,faceiAss=0;
-  int ind_face=0;
-  int num1=0,num2=0;
-  int ind_face_associee=0;
-  int dim=0;
+  int ligne=0,ligneAss=0,facei=0,faceiAss=0, ind_face=0;
+  int num1=0,num2=0, ind_face_associee=0, dim=0;
 
   //Faces de bord
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
@@ -1824,16 +1613,12 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const int nb_faces_elem=elem_faces.dimension(1);
-  //  const int nb_faces = zone_VEF.nb_faces();
-  //  const DoubleVect& porosite_face = zone_VEF.porosite_face();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
 
   assert(nb_faces_elem==(dimension+1));
 
-  int nb_comp=1;
-  if(resu.nb_dim()!=1)
-    nb_comp=resu.dimension(1);
+  int nb_comp=resu.line_size();
 
   int face_i0, face_j0, elem0, comp0;
   DoubleTab Kij(nb_elem_tot,nb_faces_elem, nb_faces_elem);
@@ -1971,21 +1756,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
         {
           face_i0=elem_faces(elem0,face_loci);
 
-          if(nb_comp==1)
-            {
-              resu(face_i0)+=Kij(elem0,face_loci,face_loci)*transporte(face_i0);
-            }
-          else
-            {
-              for(comp0=0; comp0<nb_comp; comp0++)
-                resu(face_i0,comp0)+=Kij(elem0,face_loci,face_loci)*transporte(face_i0,comp0);
-            }
+          for(comp0=0; comp0<nb_comp; comp0++)
+            resu(face_i0,comp0)+=Kij(elem0,face_loci,face_loci)*transporte(face_i0,comp0);
 
-          pplusi=0.;
-          qplusi=0.;
-          pmoinsi=0.;
-          qmoinsi=0.;
-
+          pplusi=0., qplusi=0., pmoinsi=0., qmoinsi=0.;
 
           int elem1=face_voisins(face_i0,0);
           int elem2=face_voisins(face_i0,1);
@@ -2028,10 +1802,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                       min_K=K ;
                     }
 
-                  if(nb_comp==1)
+                  for(comp0=0; comp0<nb_comp; comp0++)
                     {
-                      dT =transporte(face_j);
-                      dT-=transporte(face_i0);
+                      dT =transporte(face_j,comp0);
+                      dT-=transporte(face_i0,comp0);
 
                       if(dT>0.)
                         {
@@ -2044,34 +1818,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                           min_dT=dT ;
                         }
 
-                      pplusi(0) +=min_K*min_dT;
-                      pmoinsi(0)+=min_K*max_dT;
-                      qplusi(0) +=max_K*max_dT;
-                      qmoinsi(0)+=max_K*min_dT;
-                    }
-                  else
-                    {
-                      for(comp0=0; comp0<nb_comp; comp0++)
-                        {
-                          dT =transporte(face_j,comp0);
-                          dT-=transporte(face_i0,comp0);
-
-                          if(dT>0.)
-                            {
-                              max_dT=dT ;
-                              min_dT=0 ;
-                            }
-                          else
-                            {
-                              max_dT=0. ;
-                              min_dT=dT ;
-                            }
-
-                          pplusi(comp0) +=min_K*min_dT;
-                          pmoinsi(comp0)+=min_K*max_dT;
-                          qplusi(comp0) +=max_K*max_dT;
-                          qmoinsi(comp0)+=max_K*min_dT;
-                        }
+                      pplusi(comp0) +=min_K*min_dT;
+                      pmoinsi(comp0)+=min_K*max_dT;
+                      qplusi(comp0) +=max_K*max_dT;
+                      qmoinsi(comp0)+=max_K*min_dT;
                     }
                 }
             }
@@ -2113,10 +1863,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                           min_K=K ;
                         }
 
-                      if(nb_comp==1)
+                      for(comp0=0; comp0<nb_comp; comp0++)
                         {
-                          dT =transporte(face_j);
-                          dT-=transporte(face_i0);
+                          dT =transporte(face_j,comp0);
+                          dT-=transporte(face_i0,comp0);
 
                           if(dT>0.)
                             {
@@ -2129,34 +1879,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                               min_dT=dT ;
                             }
 
-                          pplusi(0) +=min_K*min_dT;
-                          pmoinsi(0)+=min_K*max_dT;
-                          qplusi(0) +=max_K*max_dT;
-                          qmoinsi(0)+=max_K*min_dT;
-                        }
-                      else
-                        {
-                          for(comp0=0; comp0<nb_comp; comp0++)
-                            {
-                              dT =transporte(face_j,comp0);
-                              dT-=transporte(face_i0,comp0);
-
-                              if(dT>0.)
-                                {
-                                  max_dT=dT ;
-                                  min_dT=0 ;
-                                }
-                              else
-                                {
-                                  max_dT=0. ;
-                                  min_dT=dT ;
-                                }
-
-                              pplusi(comp0) +=min_K*min_dT;
-                              pmoinsi(comp0)+=min_K*max_dT;
-                              qplusi(comp0) +=max_K*max_dT;
-                              qmoinsi(comp0)+=max_K*min_dT;
-                            }
+                          pplusi(comp0) +=min_K*min_dT;
+                          pmoinsi(comp0)+=min_K*max_dT;
+                          qplusi(comp0) +=max_K*max_dT;
+                          qmoinsi(comp0)+=max_K*min_dT;
                         }
                     }
                 }
@@ -2176,10 +1902,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                 assert(lij>=0);
                 assert(lji>=0);
 
-                if(nb_comp==1)
+                for(comp0=0; comp0<nb_comp; comp0++)
                   {
-                    const double& Ti=transporte(face_i0);
-                    const double& Tj=transporte(face_j0);
+                    const double& Ti=transporte(face_i0,comp0);
+                    const double& Tj=transporte(face_j0,comp0);
                     double deltaij=Ti-Tj;
                     double Fij=0;
                     if(lij<=lji)
@@ -2190,15 +1916,15 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                           {
                             if(Ti >= Tj)
                               {
-                                if(pplusi(0))
+                                if(pplusi(comp0))
                                   {
-                                    double R=qplusi(0)/pplusi(0);
+                                    double R=qplusi(comp0)/pplusi(comp0);
                                     Fij=minimum(limiteur(R)*dij,lji);
                                   }
                               }
-                            else if(pmoinsi(0))
+                            else if(pmoinsi(comp0))
                               {
-                                double R=qmoinsi(0)/pmoinsi(0);
+                                double R=qmoinsi(comp0)/pmoinsi(comp0);
                                 Fij=minimum(limiteur(R)*dij,lji);
                               }
                             assert(Fij*dij>=0);
@@ -2207,57 +1933,17 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                             Fij-=dij;
                             Fij*=deltaij;
                           }
-                        resu(face_i0)+=coef*(kij*Tj+Fij);
-                        resu(face_j0)+=coef*(kji*Ti-Fij);
+                        resu(face_i0,comp0)+=coef*(kij*Tj+Fij);
+                        resu(face_j0,comp0)+=coef*(kji*Ti-Fij);
                       }
                   }
-                else
-                  for(comp0=0; comp0<nb_comp; comp0++)
-                    {
-                      const double& Ti=transporte(face_i0,comp0);
-                      const double& Tj=transporte(face_j0,comp0);
-                      double deltaij=Ti-Tj;
-                      double Fij=0;
-                      if(lij<=lji)
-                        {
-                          double coef=1;
-                          if (lij==lji)  coef=.5;
-                          if(deltaij)
-                            {
-                              if(Ti >= Tj)
-                                {
-                                  if(pplusi(comp0))
-                                    {
-                                      double R=qplusi(comp0)/pplusi(comp0);
-                                      Fij=minimum(limiteur(R)*dij,lji);
-                                    }
-                                }
-                              else if(pmoinsi(comp0))
-                                {
-                                  double R=qmoinsi(comp0)/pmoinsi(comp0);
-                                  Fij=minimum(limiteur(R)*dij,lji);
-                                }
-                              assert(Fij*dij>=0);
-                              sigma_fijd+=dij;
-                              sigma_fija+=Fij;
-                              Fij-=dij;
-                              Fij*=deltaij;
-                            }
-                          resu(face_i0,comp0)+=coef*(kij*Tj+Fij);
-                          resu(face_j0,comp0)+=coef*(kji*Ti-Fij);
-                        }
-                    }
               }
         }
     }
   //On reprend ici le traitement qui est fait pour la CL de Neumann_sortie_libre dans Op_Conv_VEF_Face
   int nb_bord=zone_Cl_VEF.nb_cond_lim();
   int face;
-  int ncomp_ch_transporte;
-  if (transporte.nb_dim() == 1)
-    ncomp_ch_transporte=1;
-  else
-    ncomp_ch_transporte= transporte.dimension(1);
+  const int ncomp_ch_transporte = transporte.line_size();
 
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
@@ -2282,18 +1968,14 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
               for (i=0; i<dimension; i++)
                 psc += tab_vitesse(num_face,i)*face_normales(num_face,i);
               if (psc>0)
-                if (ncomp_ch_transporte == 1)
-                  resu(num_face) -= psc*transporte(num_face);
-                else
+                {
                   for (i=0; i<ncomp_ch_transporte; i++)
                     resu(num_face,i) -= psc*transporte(num_face,i);
+                }
               else
                 {
-                  if (ncomp_ch_transporte == 1)
-                    resu(num_face) -= psc*la_sortie_libre.val_ext(num_face-num1);
-                  else
-                    for (i=0; i<ncomp_ch_transporte; i++)
-                      resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
+                  for (i=0; i<ncomp_ch_transporte; i++)
+                    resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
                   fluent_(num_face) -= psc;
                 }
             }
@@ -2316,12 +1998,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                   fait(ind_face_associee) = 1;
                   face_associee=le_bord.num_face(ind_face_associee);
                   for (int comp=0; comp<nb_comp; comp++)
-                    {
-                      if(nb_comp==1)
-                        resu(face_associee)=(resu(face)+=resu(face_associee));
-                      else
-                        resu(face_associee, comp)=(resu(face,comp)+=resu(face_associee,comp));
-                    }
+                    resu(face_associee, comp)=(resu(face,comp)+=resu(face_associee,comp));
                 }// if fait
             }// for face
         }// sub_type Perio
@@ -2384,8 +2061,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_data_pour_dirichlet()
     {
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int nb_faces_tot=le_bord.nb_faces_tot();
-      int face;
+      int face, nb_faces_tot=le_bord.nb_faces_tot();
 
       if ( (sub_type(Dirichlet,la_cl.valeur()))
            || (sub_type(Dirichlet_homogene,la_cl.valeur()))
@@ -2439,7 +2115,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
 
   alpha_tab.resize_array(la_zone_vef->nb_faces_tot());
   alpha_tab = alpha_;
-
   beta.resize_array(la_zone_vef->nb_faces_tot());
   beta=1.;
 
@@ -2524,10 +2199,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution(const DoubleTab& transporte_
 
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
-
-  int nb_comp=1;
-  if(transporte_2.nb_dim()!=1)
-    nb_comp=transporte_2.dimension(1);
+  const int nb_comp=transporte_2.line_size();
 
   DoubleTab Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
   Kij=0.;
@@ -2573,19 +2245,11 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_operateur_centre(const Doubl
   const int nb_faces_elem=elem_faces.dimension(1);
   const int nb_bord=zone_Cl_VEF.nb_cond_lim();
 
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
+  const int nb_comp=transporte.line_size();
 
-  int elem=0;
-  int facei=0,facei_loc=0;
-  int facej=0,facej_loc=0;
-  int ligne=0,colonne=0;
-  int dim=0;
-  int ind_face=0;
-  int num1=0,num2=0;
-  int faceToComplete=0;
-  int elem_loc=0;
-
+  int elem=0, facei=0,facei_loc=0, facej=0,facej_loc=0;
+  int ligne=0,colonne=0, dim=0, ind_face=0, num1=0,num2=0;
+  int faceToComplete=0, elem_loc=0;
   double kij=0.,kji=0.;
 
   for (elem=0; elem<nb_elem_tot; elem++)
@@ -2687,29 +2351,17 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_diffusion(const DoubleTab& K
 {
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=elem_faces.line_size();
   const int nb_bord=zone_Cl_VEF.nb_cond_lim();
+  const int nb_comp=transporte.line_size();
 
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0;
-  int facei=0,facei_loc=0;
-  int facej=0,facej_loc=0;
-  int ligne=0,colonne=0;
-  int dim=0;
-  int ind_face=0;
-  int num1=0,num2=0;
-  int faceToComplete=0;
-  int elem_loc=0;
-
-  double dij=0.;
-  double coeffij=0.,coeffji=0.;
+  int elem=0, facei=0,facei_loc=0, facej=0,facej_loc=0;
+  int ligne=0,colonne=0, dim=0, ind_face=0, num1=0,num2=0;
+  int faceToComplete=0, elem_loc=0;
+  double dij=0., coeffij=0.,coeffji=0.;
 
   for (elem=0; elem<nb_elem_tot; elem++)
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
@@ -2824,51 +2476,34 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_partie_compressible(const Do
 {
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   const DoubleTab& face_normales=zone_VEF.face_normales();
-
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=elem_faces.line_size();
   const int nb_bord=zone_Cl_VEF.nb_cond_lim();
 
   //Pour tenir compte de la porosite
   const int marq = phi_u_transportant(equation());
-
   const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
   const DoubleVect& porosite_face = zone_VEF.porosite_face();
 
   DoubleTab tab_vitesse(vitesse_.valeur().valeurs());
   for (int i=0; i<tab_vitesse.dimension(0); i++)
-    for (int j=0; j<tab_vitesse.dimension(1); j++)
+    for (int j=0; j<tab_vitesse.line_size(); j++)
       tab_vitesse(i,j)*=porosite_face(i);
 
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0,type_elem=0;
-  int facei=0,facei_loc=0;
-  int faceiAss=0,ind_faceiAss=0;
-  int ligne=0;
-  int dim=0;
-  int ind_face=0;
-  int num1=0,num2=0;
-  int faceToComplete=0;
-  int elem_loc=0;
-  int n_bord=0;
-
-  double coeff=0.;
-  double signe=0.;
-  double div=0.;
+  const int nb_comp=transporte.line_size();
+  int elem=0,type_elem=0, facei=0,facei_loc=0, faceiAss=0,ind_faceiAss=0;
+  int ligne=0, dim=0, ind_face=0, num1=0,num2=0, faceToComplete=0, elem_loc=0, n_bord=0;
+  double coeff=0., signe=0., div=0.;
 
   double (*formule)(int);
+
   if (!volumes_etendus_)
-    if (dimension==2) formule=&formule_Id_2D;
-    else formule=&formule_Id_3D;
-  else if (dimension==2) formule=&formule_2D;
-  else formule=&formule_3D;
+    formule= (dimension==2) ? &formule_Id_2D : &formule_Id_3D;
+  else
+    formule= (dimension==2) ? &formule_2D : &formule_3D;
 
   for (elem=0; elem<nb_elem_tot; elem++)
     {
@@ -2977,43 +2612,23 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
 {
   const Zone_VEF& zone_VEF=la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=elem_faces.line_size();
   const int nb_bord=zone_Cl_VEF.nb_cond_lim();
+  const int nb_comp=transporte.line_size();
 
-  int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  int elem=0;
-  int elem_loc=0;
-  int facei=0,facei_loc=0;
-  int faceiAss=0;
-  int ind_face=0,ind_faceiAss=0;
-  int facej=0,facej_loc=0;
-  int ligne=0,colonne=0;
-  int dim=0;
-  int face_amont=0,face_aval=0;
-  int faceToComplete=0;
-  int num1=0,num2=0;
-  int n_bord=0;
-
-  double kij=0.,kji=0.,dij=0.;
-  double lij=0.,lji=0.;
-  double daij=0.;
-  double delta=0.;
-  double coeffij=0.,coeffji=0.;
-  double coeff=0.;
-  double R=0.;
+  int elem=0, elem_loc=0, facei=0,facei_loc=0, faceiAss=0, ind_face=0,ind_faceiAss=0;
+  int facej=0,facej_loc=0, ligne=0,colonne=0, dim=0, face_amont=0,face_aval=0;
+  int faceToComplete=0, num1=0,num2=0, n_bord=0;
+  double kij=0.,kji=0.,dij=0., lij=0.,lji=0., daij=0.;
+  double delta=0., coeffij=0.,coeffji=0., coeff=0., R=0.;
 
   //Pour le limiteur
   ArrOfDouble P_plus(nb_comp),P_moins(nb_comp);
   ArrOfDouble Q_plus(nb_comp),Q_moins(nb_comp);
-  P_plus=0., P_moins=0.;
-  Q_plus=0., Q_moins=0.;
+  P_plus=0., P_moins=0., Q_plus=0., Q_moins=0.;
 
   const DoubleVect& transporteV=ref_cast(DoubleVect,transporte);
   const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
@@ -3021,9 +2636,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
       {
         facei=elem_faces(elem,facei_loc);
-
-        P_plus=0., P_moins=0.;
-        Q_plus=0., Q_moins=0.;
+        P_plus=0., P_moins=0., Q_plus=0., Q_moins=0.;
         calculer_senseur(Kij,transporteV,nb_comp,facei,elem_faces,face_voisins,num_fac_loc,P_plus,P_moins,Q_plus,Q_moins);
         for (facej_loc=0; facej_loc<nb_faces_elem; facej_loc++)
           if (facej_loc!=facei_loc)
@@ -3158,7 +2771,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                                 {
                                   ligne=face_amont*nb_comp+dim;
                                   colonne=face_aval*nb_comp+dim;
-
                                   delta=transporteV[ligne]-transporteV[colonne];
 
                                   //Limiteur de pente
@@ -3170,7 +2782,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
 
                                   if (delta>=0.) R=(dabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
                                   else  R=(dabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
-
 
                                   daij=minimum(limiteur(R)*dij,lji);
                                   assert(daij>=0);
@@ -3186,11 +2797,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                             {
                               face_aval=faceToComplete;
                               face_amont=facej;
-
                               coeff=1.;
-
-                              Pj_plus=0., Pj_moins=0.;
-                              Qj_plus=0., Qj_moins=0.;
+                              Pj_plus=0., Pj_moins=0., Qj_plus=0., Qj_moins=0.;
                               calculer_senseur(Kij,transporteV,nb_comp,facej,elem_faces,face_voisins,num_fac_loc,Pj_plus,Pj_moins,Qj_plus,Qj_moins);
 
                               for (dim=0; dim<nb_comp; dim++)
@@ -3209,7 +2817,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
 
                                   if (delta>=0.) R=(dabs(Pj_plus(dim))<DMINFLOAT) ? 0. : Qj_plus(dim)/Pj_plus(dim);
                                   else  R=(dabs(Pj_moins(dim))<DMINFLOAT) ? 0. : Qj_moins(dim)/Pj_moins(dim);
-
 
                                   daij=minimum(limiteur(R)*dij,lij);
                                   assert(daij>=0);
@@ -3256,16 +2863,9 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_implicite() const
   DoubleTab Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
   Kij=0.;
 
-  int nb_comp=1;
-  if (unknown.nb_dim()==2)
-    nb_comp=unknown.dimension(1);
-
+  const int nb_comp=unknown.line_size();
   int size=unknown.dimension(0);
-  int face=0,face2=0;
-  int faceAss=0;
-  int ind_face=0,ind_faceAss=0;
-  int n_bord=0;
-  int num1=0,num2=0;
+  int face=0,face2=0, faceAss=0, ind_face=0,ind_faceAss=0, n_bord=0, num1=0,num2=0;
 
   SFichier testResu("test.txt");
   SFichier testMat("matrice.txt");

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,10 +47,8 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone,
   //  const DoubleVect& volumes_entrelaces = la_zone.volumes_entrelaces();
   //  const DoubleVect& porosite_face = la_zone.porosite_face();
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
-  int nb_comp = 1;
-
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
+  int nb_comp = champ_inconnue.line_size();
   //Cerr << "nb_compo de Op_VDF_Elem::dimensionner" << nb_comp << finl;
   //Cerr << " nombre d'elements de Op_VDF_Elem::dimensionner" << n1 << finl;
 

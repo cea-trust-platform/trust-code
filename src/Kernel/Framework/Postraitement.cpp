@@ -1535,41 +1535,16 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
   const Nom& id_du_domaine = dom.le_nom();
   const Nom& id_champ_ecrit = nom_post;
 
-  DoubleTab valeurs_tmp;
-  int dim0 = valeurs.dimension(0);
-  int nb_dim_val = 1;
+  const int dim0 = valeurs.dimension(0);
+  const int N = valeurs.line_size();
+  DoubleTab valeurs_tmp(dim0, ncomp == -1 ? N : 1);
 
-  if (ncomp==-1)
-    {
-      if (valeurs.nb_dim()>1)
-        {
-          nb_dim_val = valeurs.dimension(1);
-          valeurs_tmp.resize(dim0,nb_dim_val);
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_dim_val; j++)
-              valeurs_tmp(i,j) = valeurs(i,j);
-        }
-      else
-        {
-          valeurs_tmp.resize(dim0,nb_dim_val);
-          for (int i=0; i<dim0; i++)
-            valeurs_tmp(i,0) = valeurs(i);
-        }
-    }
-  else
-    {
-      valeurs_tmp.resize(dim0);
-      if (valeurs.nb_dim()>1)
-        {
-          int nb_comp = valeurs.dimension(1);
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_comp; j++)
-              if (j==ncomp)
-                valeurs_tmp(i) = valeurs(i,j);
-        }
-      else
-        valeurs_tmp = valeurs;
-    }
+  for (int i = 0; i < dim0; i++)
+    if (ncomp == -1)
+      for (int j = 0; j < N; j++)
+        valeurs_tmp(i, j) = valeurs(i, j);
+    else
+      valeurs_tmp(i, 0) = valeurs(i, ncomp);
 
   const DoubleTab& val_post_ecrit = valeurs_tmp;
   if (Motcle(format)=="XYZ")
@@ -1610,17 +1585,8 @@ int Postraitement::postraiter_tenseur(const Domaine& dom,const Noms& unites,cons
 {
 
   int nb_comp = noms_compo.size();
-  DoubleTab valeurs_comp(valeurs.dimension(0));
-
   for (int comp=0; comp<nb_comp; comp++)
-    {
-      Nom nom_post_compo = noms_compo[comp];
-      for (int i=0; i<valeurs_comp.dimension(0); i++)
-        valeurs_comp(i) = valeurs(i,comp);
-
-      postraiter_tableau(dom,unites,noms_compo,comp,temps_champ,temps_courant,nom_post_compo,localisation,nature,valeurs_comp);
-
-    }
+    postraiter_tableau(dom,unites,noms_compo,comp,temps_champ,temps_courant,noms_compo[comp],localisation,nature,valeurs);
   return 1;
 }
 

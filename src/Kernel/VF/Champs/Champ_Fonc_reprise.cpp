@@ -441,20 +441,12 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
         }
       for (int i=0; i<sz; i++)
         {
-          if (nb_compo==1)
+          for (int j=0; j<nb_compo; j++)
             {
-              fxyz[0].setVar("val",tab_valeurs(i));
+              fxyz[j].setVar("val",tab_valeurs(i,j));
               // On fait la transformation des valeurs du champs
-              tab_valeurs(i)=fxyz[0].eval();
+              tab_valeurs(i,j)=fxyz[j].eval();
             }
-          else
-            // On boucle sur les composantes du champ
-            for (int j=0; j<nb_compo; j++)
-              {
-                fxyz[j].setVar("val",tab_valeurs(i,j));
-                // On fait la transformation des valeurs du champs
-                tab_valeurs(i,j)=fxyz[j].eval();
-              }
         }
     }
   return s ;

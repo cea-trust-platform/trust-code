@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -272,8 +272,7 @@ void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
   const DoubleTab& diffu=diffusivite().valeurs();
   if (!nu.get_md_vector().non_nul())
     {
-      if (diffu.nb_dim() > 1 && diffu.dimension(1) > 1)
-        nu.resize(0, diffu.dimension(1));
+      nu.resize(0, diffu.line_size());
       zone_VEF.zone().creer_tableau_elements(nu, Array_base::NOCOPY_NOINIT);
     }
   if (! diffu.get_md_vector().non_nul())

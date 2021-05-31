@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,14 +111,8 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
       DoubleTab val_a,val_b;
       // Le jour ou les champs seront mieux foutus, on n'aura
       // pas a faire ca:
-      if (a.nb_comp()>1)
-        val_a.resize(nb_elem_tot,a.nb_comp());
-      else
-        val_a.resize(nb_elem_tot);
-      if (b.nb_comp()>1)
-        val_b.resize(nb_elem_tot,b.nb_comp());
-      else
-        val_b.resize(nb_elem_tot);
+      val_a.resize(nb_elem_tot,a.nb_comp());
+      val_b.resize(nb_elem_tot,b.nb_comp());
       a.valeur_aux(xp, val_a);
       b.valeur_aux(xp, val_b);
       valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);

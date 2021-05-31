@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -348,7 +348,7 @@ void Convection_Diffusion_Chaleur_QC::calculer_div_u_ou_div_rhou(DoubleTab& Div)
       eqn_hydr.operateur_divergence().calculer(vitesse.valeurs(),Div_on_pressure_nodes);
 
       // Test on the discretization:
-      if (vitesse.valeurs().nb_dim()==2)
+      if (vitesse.valeurs().line_size() > 1)
         {
           // VEF (temperature and pressure are not the same)
           // so Div extrapolated on velocity nodes:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -208,7 +208,7 @@ void Zone_VEF::reordonner(Faces& les_faces)
   {
     IntTab& faces_sommets = les_faces.les_sommets();
     IntTab old_tab(faces_sommets);
-    const int nb_som_faces = faces_sommets.dimension(1);
+    const int nb_som_faces = faces_sommets.line_size();
     for (int i = 0; i < nbr_faces; i++)
       {
         const int old_i = sort_key[i];

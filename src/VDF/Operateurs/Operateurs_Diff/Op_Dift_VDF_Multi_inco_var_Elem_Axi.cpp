@@ -108,13 +108,11 @@ void Op_Dift_VDF_Multi_inco_var_Elem_Axi::completer()
 
 double Op_Dift_VDF_Multi_inco_var_Elem_Axi::calculer_dt_stab() const
 {
-  double dt_stab;
-  double coef;
   const Zone_VDF& zone_VDF = iter.zone();
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const DoubleTab& alpha = diffusivite().valeurs();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
-
+  const int D = dimension;
   // Calcul du pas de temps de stabilite :
   //
   //
@@ -131,50 +129,25 @@ double Op_Dift_VDF_Multi_inco_var_Elem_Axi::calculer_dt_stab() const
   //            i decrivant l'ensemble des elements du maillage
   //
 
-  coef= -1.e10;
-  double alpha_local,h_x,h_y,h_z;
-  double alpha_lam;
+  double coef = -1.e10;
+  DoubleVect numfa(2 * D), h(D);
 
-  if (dimension == 2)
+  for (int e = 0; e < zone_VDF.nb_elem(); e++)
     {
-      int numfa[4];
-      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
-        {
-          for (int i=0; i<4; i++)
-            numfa[i] = elem_faces(elem,i);
-          h_x = zone_VDF.dist_face_axi(numfa[0],numfa[2],0);
-          h_y = zone_VDF.dist_face_axi(numfa[1],numfa[3],1);
-          alpha_lam = alpha(elem,0);
-          for (int k=1; k<alpha.dimension(1); k++)
-            alpha_lam = max(alpha_lam,alpha(elem,k));
-          alpha_local = (alpha_lam + alpha_t(elem))
-                        *(1/(h_x*h_x) + 1/(h_y*h_y));
-          coef = max(coef,alpha_local);
-        }
+      for (int i = 0; i < 2 * D; i++)
+        numfa(i) = elem_faces(e, i);
+      for (int d = 0; d < D; d++)
+        h(d) = zone_VDF.dist_face_axi(numfa(d), numfa(d + D), d);
+      double alpha_lam = alpha(e, 0), invh = 0.;
+      for (int k = 1; k < alpha.dimension(1); k++)
+        alpha_lam = max(alpha_lam, alpha(e, k));
+      for (int d = 0; d < D; d++)
+        invh += 1. / (h(d) * h(d));
+      const double alpha_local = (alpha_lam + alpha_t(e)) * invh;
+      coef = max(coef, alpha_local);
     }
 
-  else if (dimension == 3)
-    {
-      int numfa[6];
-      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
-        {
-          for (int i=0; i<6; i++)
-            numfa[i] = elem_faces(elem,i);
-          h_x = zone_VDF.dist_face_axi(numfa[0],numfa[3],0);
-          h_y = zone_VDF.dist_face_axi(numfa[1],numfa[4],1);
-          h_z = zone_VDF.dist_face_axi(numfa[2],numfa[5],2);
-          // correction initialisation alpha_lam
-          //assert(0);exit();
-          alpha_lam = alpha(elem,0);
-          for (int k=1; k<alpha.dimension(1); k++)
-            alpha_lam = max(alpha_lam,alpha(elem,k));
-          alpha_local = (alpha_lam + alpha_t(elem))
-                        *(1/(h_x*h_x) + 1/(h_y*h_y) + 1/(h_z*h_z));
-          coef = max(coef,alpha_local);
-        }
-    }
-
-  dt_stab = 1/(2*(coef+DMINFLOAT));
+  const double dt_stab = 1. / (2. * (coef + DMINFLOAT));
 
   return dt_stab;
 }

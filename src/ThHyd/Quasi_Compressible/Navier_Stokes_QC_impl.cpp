@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@
 DoubleTab& Navier_Stokes_QC_impl::rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vitesse,DoubleTab& rhovitesse) const
 {
   int i,j, n = vitesse.dimension(0);
-  if (vitesse.nb_dim()==1)
+  if (vitesse.line_size()==1)
     {
       for (i=0 ; i<n ; i++)
         {
@@ -196,7 +196,7 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
   const Conds_lim& lescl=eqn.zone_Cl_dis().les_conditions_limites();
   const IntTab& face_voisins = eqn.zone_dis().valeur().face_voisins();
   int nbcondlim=lescl.size();
-  int taille=vpoint.nb_dim();
+  int taille=vpoint.line_size();
   if (taille==1)
     {
       if (orientation_VDF_.size()==0)
@@ -255,11 +255,8 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
       {
         Transport_Interfaces_base& eq_transport = ref_cast(Transport_Interfaces_base,probleme.equation(i));
         const int nb = vpoint.dimension(0);
-        const int nbdim1 = (vpoint.nb_dim() == 1);
-        const int m = (nbdim1 ? 0 : vpoint.dimension(1));
-        DoubleTab source_ibc(nb);
-        if (m!=0)
-          source_ibc.resize(nb,m);
+        const int m = vpoint.line_size();
+        DoubleTab source_ibc(nb, m);
 
         //On ajoute un terme source a vpoint pour imposer au fluide la vitesse de l interface
         //source_ibc est local pas postraitable (different cas FT ou le terme source est defini et peut etre postraite)
@@ -315,7 +312,7 @@ DoubleTab& Navier_Stokes_QC_impl::derivee_en_temps_inco(Navier_Stokes_std& eqn,D
   vpoint+=rhoU; // rhoU(n+1)
 
   // Compute U(n+1):
-  if (vpoint.nb_dim()==1)
+  if (vpoint.line_size()==1)
     {
       for (int i=0 ; i<n ; i++)
         vpoint(i) /= tab_rho_face_np1(i);
@@ -359,8 +356,7 @@ void Navier_Stokes_QC_impl::assembler_avec_inertie_impl(const Navier_Stokes_std&
   const Fluide_Quasi_Compressible& fluide_QC=ref_cast(Fluide_Quasi_Compressible,eqn.milieu());
   const DoubleTab& tab_rho_face_np1=fluide_QC.rho_face_np1();
   const DoubleTab& tab_rho_face_n=fluide_QC.rho_face_n();
-  int nb_compo = 1;
-  if (present.nb_dim() == 2) nb_compo = present.dimension(1);
+  int nb_compo = present.line_size();
   const IntVect& tab1= matrice.get_tab1();
   const IntVect& tab2= matrice.get_tab2();
   DoubleVect& coeff=matrice.get_set_coeff();
@@ -419,7 +415,7 @@ void Navier_Stokes_QC_impl::assembler_avec_inertie_impl(const Navier_Stokes_std&
           int nfin = ndeb + la_front_dis.nb_faces();
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {
-              if (present.nb_dim()==1)
+              if (present.line_size()==1)
                 resu(num_face)*=tab_rho_face_np1(num_face);
               else
                 for (int dir=0; dir<Objet_U::dimension; dir++)

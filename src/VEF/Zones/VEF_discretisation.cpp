@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -715,7 +715,7 @@ void VEF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Ch
   Cerr << "Discretization of " << ch_name << finl;
 
   const Zone_VEF& zone_vef = ref_cast( Zone_VEF, z.valeur( ) );
-  int nb_comp = ch_inco.valeurs().nb_dim()==1?1:ch_inco.valeurs().dimension(1);
+  int nb_comp =ch_inco.valeurs().line_size();
   Discretisation_base::discretiser_champ("champ_face",zone_vef, ch_name,"units_not_defined", nb_comp, ch_inco.temps(), champ);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
   DoubleTab& tab=ch_fonc.valeurs();

@@ -114,7 +114,6 @@ double Op_Dift_VDF_Multi_inco_var_Elem::calculer_dt_stab() const
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const DoubleTab& alpha = diffusivite_pour_pas_de_temps().valeurs();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
-  int is_QC = mon_equation->probleme().is_QC();
   bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_fraction"));
 
   // Calcul du pas de temps de stabilite :
@@ -141,14 +140,14 @@ double Op_Dift_VDF_Multi_inco_var_Elem::calculer_dt_stab() const
         alpha_lam = max(alpha_lam, alpha(elem, k));
 
       // choix du facteur
-      double rcp = 0.;
-      if (is_concentration) rcp = 1.;
-      else if (is_QC)
+      double rcp = 1.;
+      if (!is_concentration)
         {
-          const DoubleTab& tab_Cp = mon_equation->milieu().capacite_calorifique().valeurs();
-          rcp = mon_equation->milieu().masse_volumique()(elem) * ((tab_Cp.nb_dim()==2) ? tab_Cp(0,0) : tab_Cp(elem));
+          const int Ccp = sub_type(Champ_Uniforme, mon_equation->milieu().capacite_calorifique().valeur());
+          const int Cr = sub_type(Champ_Uniforme, mon_equation->milieu().masse_volumique());
+          const DoubleTab& tab_Cp = mon_equation->milieu().capacite_calorifique().valeurs(), tab_r = mon_equation->milieu().masse_volumique().valeurs();
+          rcp = tab_r(Cr ? 0 : elem, 0) * tab_Cp(Ccp ? 0 : elem, 0);
         }
-      else rcp = mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
 
       double moy = 0.;
       for (int i = 0; i < 2 * dimension; i++) numfa[i] = elem_faces(elem, i);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -176,7 +176,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   espace_stockage->fixer_nature_du_champ(nature_source);
 
   DoubleTab& espace_valeurs = espace_stockage->valeurs();
-  int nb_dim_source = source_valeurs.nb_dim();
+  const int N = source_valeurs.line_size();
   espace_valeurs.resize(nb_ddl,nb_comp);
 
   if (methode_=="trace")                         //On prend la trace du champ sur un bord
@@ -191,25 +191,9 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
 
       if (sub_type(Champ_front_uniforme,champ_fr.valeur()))
         {
-          if (nb_dim_source==1)
-            {
-              double val_champ_fr =  champ_fr.valeur()(0,0);
-              for (int i=0; i<nb_ddl; i++)
-                {
-                  espace_valeurs(i,0)= val_champ_fr;
-                }
-            }
-          else
-            {
-              for (int j=0; j<nb_dim_source; j++)
-                {
-                  double val_champ_fr =  champ_fr.valeur()(0,j);
-                  for (int i=0; i<nb_ddl; i++)
-                    {
-                      espace_valeurs(i,j) = val_champ_fr;
-                    }
-                }
-            }
+          for (int j = 0; j < N; j++)
+            for (int i=0; i<nb_ddl; i++)
+              espace_valeurs(i,j) = champ_fr.valeur()(0,j);
         }
       else
         espace_valeurs = champ_fr->valeurs();

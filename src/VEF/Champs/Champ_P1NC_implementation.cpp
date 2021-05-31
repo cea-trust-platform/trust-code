@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,19 +88,12 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
   double mijK, miiK;
   DoubleTab& vit_som=cha.ch_som();
 
-  int n_bord,nb_comp=1;
-  if(vit_som.nb_dim()>1)
-    nb_comp=vit_som.dimension(1);
-
+  int n_bord, nb_comp=vit_som.line_size();
   DoubleTab secmem(cha.ch_som());
 
   secmem=0.;
   //  vit_som=0.; // PQ : 06/10/04 : dans la resolution du systeme, "solution" repart de vit_som=cha.ch_som()
   //                                   pour s'affranchir de recalculer u_bar lors d'un double appel a filtrer_L2
-
-  if(nb_comp!=0)
-    {
-    }
 
   if(Objet_U::dimension==2)
     {
@@ -312,13 +305,8 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
                 {
                   int som=face_sommets(face,isom);
                   int som1=dom.get_renum_som_perio(som);
-                  if(nb_comp==1)
-                    secmem(som1)+=0.5*coeff*volume*ch(face);
-                  else
-                    for(int k=0; k<nb_comp; k++)
-                      {
-                        secmem(som1,k)+=0.5*coeff*volume*ch(face,k);
-                      }
+                  for(int k=0; k<nb_comp; k++)
+                    secmem(som1,k)+=0.5*coeff*volume*ch(face,k);
                 }
             }
         }
@@ -336,13 +324,8 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
               {
                 int som=face_sommets(face,isom);
                 int som1=dom.get_renum_som_perio(som);
-                if(nb_comp==1)
-                  secmem(som1)+=coeff*volume*ch(face);
-                else
-                  for(int k=0; k<nb_comp; k++)
-                    {
-                      secmem(som1,k)+=coeff*volume*ch(face,k);
-                    }
+                for(int k=0; k<nb_comp; k++)
+                  secmem(som1,k)+=coeff*volume*ch(face,k);
               }
           }
     }
@@ -363,17 +346,8 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
         {
           int som=face_sommets(face,isom);
           int som1=dom.get_renum_som_perio(som);
-          if(nb_comp==1)
-            {
-              secmem(som1)+=coeff*volume*ch(face);
-            }
-          else
-            {
-              for(int k=0; k<nb_comp; k++)
-                {
-                  secmem(som1,k)+=coeff*volume*ch(face,k);
-                }
-            }
+          for(int k=0; k<nb_comp; k++)
+            secmem(som1,k)+=coeff*volume*ch(face,k);
         }
     }
   // ************************************************************************************************
@@ -409,21 +383,13 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
                 {
                   int som=face_sommets(face,isom);
                   int som1=dom.get_renum_som_perio(som);
-                  if(nb_comp==1)
+                  for(int k=0; k<nb_comp; k++)
                     {
                       if (test_cl_imposee(som1)==0)
-                        secmem(som1) = 0;
+                        secmem(som1,k) = 0;
 
-                      secmem(som1) += coeff_penalisation * ch(face);
+                      secmem(som1,k) += coeff_penalisation * ch(face,k);
                     }
-                  else
-                    for(int k=0; k<nb_comp; k++)
-                      {
-                        if (test_cl_imposee(som1)==0)
-                          secmem(som1,k) = 0;
-
-                        secmem(som1,k) += coeff_penalisation * ch(face,k);
-                      }
                   test_cl_imposee(som1) += 1;
                 }
             }
@@ -449,21 +415,13 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
                 {
                   int som=face_sommets(face,isom);
                   int som1=dom.get_renum_som_perio(som);
-                  if(nb_comp==1)
+                  for(int k=0; k<nb_comp; k++)
                     {
                       if (test_cl_imposee(som1)==0)
-                        secmem(som1) = 0;
+                        secmem(som1,k) = 0;
 
-                      secmem(som1) += coeff_penalisation * ch(face);
+                      secmem(som1,k) += coeff_penalisation * ch(face,k);
                     }
-                  else
-                    for(int k=0; k<nb_comp; k++)
-                      {
-                        if (test_cl_imposee(som1)==0)
-                          secmem(som1,k) = 0;
-
-                        secmem(som1,k) += coeff_penalisation * ch(face,k);
-                      }
                   test_cl_imposee(som1) += 1;
                 }
             }
@@ -545,10 +503,7 @@ DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Domaine& dom)
   double mijK, miiK;
   DoubleTab& vit_som=cha.ch_som();
 
-  int nb_comp=1;
-  if(vit_som.nb_dim()>1)
-    nb_comp=vit_som.dimension(1);
-
+  int nb_comp=vit_som.line_size();
   DoubleTab secmem(cha.ch_som());
   secmem=0.;
 
@@ -691,15 +646,8 @@ DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Domaine& dom)
           //Pour un sommet periodique on ne retient qu une seule contribution
           //pour deux faces en vis a vis
           if (som1==som)
-            {
-              if(nb_comp==1)
-                secmem(som1)+=coeff*volume*ch(face);
-              else
-                {
-                  for(int k=0; k<nb_comp; k++)
-                    secmem(som1,k)+=coeff*volume*ch(face,k);
-                }
-            }
+            for(int k=0; k<nb_comp; k++)
+              secmem(som1,k)+=coeff*volume*ch(face,k);
         }
     }
 
@@ -970,9 +918,7 @@ void Champ_P1NC_implementation::filtrer_H1(DoubleTab& valeurs) const
   Champ_P1NC& cha=ref_cast_non_const(Champ_P1NC,cha_const);
   DoubleTab valeurs_fac(cha.valeurs());
   cha.valeurs()=valeurs;
-  int nb_comp=1;
-  if(valeurs.nb_dim()!=1)
-    nb_comp=valeurs.dimension(1);
+  const int nb_comp=valeurs.line_size();
   DoubleTab vit_som(nb_som, nb_comp);
   valeur_P1_H1(cha, cha.domaine(), vit_som);
   cha.valeurs()=valeurs_fac;
@@ -988,21 +934,10 @@ void Champ_P1NC_implementation::filtrer_H1(DoubleTab& valeurs) const
       for(int comp=0; comp<nb_comp; comp++)
         {
           double somme=0;
-          if(nb_comp==1)
-            somme+=(vit_som(s1)+vit_som(s2));
-          else
-            somme+=(vit_som(s1,comp)+vit_som(s2,comp));
+          somme+=(vit_som(s1,comp)+vit_som(s2,comp));
           if(Objet_U::dimension==3)
-            {
-              if(nb_comp==1)
-                somme+=vit_som(s3);
-              else
-                somme+=vit_som(s3,comp);
-            }
-          if(nb_comp==1)
-            valeurs(face)=coeff*somme;
-          else
-            valeurs(face, comp)=coeff*somme;
+            somme+=vit_som(s3,comp);
+          valeurs(face, comp)=coeff*somme;
         }
     }
 }
@@ -1021,9 +956,7 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
       Process::exit();
     }
 
-  int nb_comp=1;
-  if(valeurs.nb_dim()!=1)
-    nb_comp=valeurs.dimension(1);
+  const int nb_comp=valeurs.line_size();
 
   if (sub_type(Champ_P1NC,cha))
     {
@@ -1177,21 +1110,10 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
       for(int comp=0; comp<nb_comp; comp++)
         {
           double somme=0;
-          if(nb_comp==1)
-            somme+=(ch_som_(s1)+ch_som_(s2));
-          else
-            somme+=(ch_som_(s1,comp)+ch_som_(s2,comp));
+          somme+=(ch_som_(s1,comp)+ch_som_(s2,comp));
           if(Objet_U::dimension==3)
-            {
-              if(nb_comp==1)
-                somme+=ch_som_(s3);
-              else
-                somme+=ch_som_(s3,comp);
-            }
-          if(nb_comp==1)
-            valeurs(face)=coeff*somme;
-          else
-            valeurs(face, comp)=coeff*somme;
+            somme+=ch_som_(s3,comp);
+          valeurs(face, comp)=coeff*somme;
         }
     }
   valeurs.echange_espace_virtuel();
@@ -1224,9 +1146,8 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
   const IntTab& face_sommets=zone_VEF.face_sommets();
   int nb_faces=resu.dimension(0);
   int nb_faces_tot=resu.dimension_tot(0);
-  int n_bord,nb_comp=1;
-  if(resu.nb_dim()!=1)
-    nb_comp=resu.dimension(1);
+  int n_bord,nb_comp=resu.line_size();
+
   DoubleTab resu_som(cha.ch_som());
   resu_som = 0;
 
@@ -1269,12 +1190,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
                         int som=face_sommets(face,isom);
                         som=dom.get_renum_som_perio(som);
                         for (int comp=0; comp<nb_comp; comp++)
-                          {
-                            if(nb_comp==1)
-                              resu_som(som)+=coeff*resu(face);
-                            else
-                              resu_som(som, comp)+=coeff*resu(face, comp);
-                          }
+                          resu_som(som, comp)+=coeff*resu(face, comp);
                       }
 
                   }
@@ -1291,12 +1207,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
                     int som=face_sommets(face,isom);
                     som=dom.get_renum_som_perio(som);
                     for (int comp=0; comp<nb_comp; comp++)
-                      {
-                        if(nb_comp==1)
-                          resu_som(som)+=coeff*resu(face);
-                        else
-                          resu_som(som, comp)+=coeff*resu(face, comp);
-                      }
+                      resu_som(som, comp)+=coeff*resu(face, comp);
                   }
               }
           }
@@ -1317,12 +1228,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
             int som=face_sommets(face,isom);
             som=dom.get_renum_som_perio(som);
             for(int comp=0; comp<nb_comp; comp++)
-              {
-                if(nb_comp==1)
-                  resu_som(som)+=coeff*resu(face);
-                else
-                  resu_som(som, comp)+=coeff*resu(face, comp);
-              }
+              resu_som(som, comp)+=coeff*resu(face, comp);
           }
       }
   }
@@ -1361,23 +1267,9 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
                   som=dom.get_renum_som_perio(som);
                   for (int comp=0; comp<nb_comp; comp++)
                     {
-                      if(nb_comp==1)
-                        {
-                          if (test_cl_imposee(som)==0)
-                            resu_som(som) = 0;
-
-                          resu_som(som) += coeff_penalisation * resu(face)/vol;
-                        }
-                      else
-                        {
-                          if (test_cl_imposee(som)==0)
-                            resu_som(som,comp) = 0;
-                          //                            Cerr<<"resu_som("<<som<<","<<comp<<") 0 = "<<resu_som(som,comp)<<finl;
-                          //                            Cerr<<"resu("<<face<<","<< comp<<") = "<<resu(face, comp)<<finl;
-                          //                            Cerr<<"vol = "<<vol<<finl;
-                          resu_som(som, comp) += coeff_penalisation * resu(face, comp)/vol;
-                          //                            Cerr<<"resu_som("<<som<<","<<comp<<") 1 = "<<resu_som(som,comp)<<finl;
-                        }
+                      if (test_cl_imposee(som)==0)
+                        resu_som(som,comp) = 0;
+                      resu_som(som, comp) += coeff_penalisation * resu(face, comp)/vol;
                     }
                   test_cl_imposee(som) += 1;
                 }
@@ -1401,32 +1293,18 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
 
   //  Debog::verifier_Mat_sommet("Champ_P1NC_implementation::filtrer_resu  cha.MatP1NC2P1_L2 ", cha.MatP1NC2P1_L2);
 
-  if(nb_comp==1)
+  for(int k=0; k<nb_comp; k++)
     {
       solution=0.;
       for(i=0; i<nbs; i++)
-        secmem(i)=resu_som(i);
+        secmem(i)=resu_som(i,k);
+
       secmem.echange_espace_virtuel();
+
       solv.resoudre_systeme(cha.MatP1NC2P1_L2_Parallele.valeur(), secmem, solution);
 
       for(i=0; i<nbs; i++)
-        resu_som(i)=solution(i);
-    }
-  else
-    {
-      for(int k=0; k<nb_comp; k++)
-        {
-          solution=0.;
-          for(i=0; i<nbs; i++)
-            secmem(i)=resu_som(i,k);
-
-          secmem.echange_espace_virtuel();
-
-          solv.resoudre_systeme(cha.MatP1NC2P1_L2_Parallele.valeur(), secmem, solution);
-
-          for(i=0; i<nbs; i++)
-            resu_som(i,k)=solution(i);
-        }
+        resu_som(i,k)=solution(i);
     }
 
   resu=0;
@@ -1437,12 +1315,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
           {
             int som=dom.get_renum_som_perio(zone_VEF.face_sommets(face,isom));
             for(int comp=0; comp<nb_comp; comp++)
-              {
-                if(nb_comp==1)
-                  resu(face)+=coeff*resu_som(som);
-                else
-                  resu(face, comp)+=coeff*resu_som(som, comp);
-              }
+              resu(face, comp)+=coeff*resu_som(som, comp);
           }
       }
   }
@@ -1451,14 +1324,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
       {
         double vol=volumes_entrelaces(face);
         for(int comp=0; comp<nb_comp; comp++)
-          {
-            if(nb_comp==1)
-              resu(face)*=vol;
-            else
-              {
-                resu(face, comp)*=vol;
-              }
-          }
+          resu(face, comp)*=vol;
       }
   }
 }
@@ -1468,53 +1334,24 @@ DoubleVect& Champ_P1NC_implementation::valeur_a_elem(const DoubleVect& position,
                                                      int le_poly) const
 {
   const Champ_base& cha=le_champ();
-  int nb_compo_=cha.nb_comp();
+  const int N = cha.nb_comp(), D = Objet_U::dimension;
   const Zone& zone_geom = zone();
-  double xs,ys,zs;
-  int face;
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const DoubleTab& ch = cha.valeurs();
-  val=0;
-  int nbdim=ch.nb_dim();
+  val = 0;
+
   if (le_poly != -1)
     {
-      if (Objet_U::dimension == 2)
+      const double xs = position(0), ys = position(1),
+                   zs = (D == 3) ? position(2) : 0;
+      for (int i = 0; i < D + 1; i++)
         {
-          xs = position(0);
-          ys = position(1);
-          for (int i=0; i< 3; i++)
-            {
-              face = zone_VEF.elem_faces(le_poly,i);
-              if (nbdim==1)
-                val(0) += ch(face) * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-              else
-                for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-                  {
-                    val(ncomp) += ch(face, ncomp)
-                                  * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-                  }
-            }
-        }
-      else if (Objet_U::dimension == 3)
-        {
-          xs = position(0);
-          ys = position(1);
-          zs = position(2);
-          for (int i=0; i< 4; i++)
-            {
-              face = elem_faces(le_poly,i);
-              if (nbdim==1)
-                val(0) += ch(face) * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-              else
-                for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-                  {
-                    val(ncomp) += ch(face, ncomp)
-                                  * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-                  }
-            }
+          const int f = elem_faces(le_poly, i);
+          for(int n = 0; n < N; n++)
+            val(n) += ch(f, n) * ((D == 2) ? fonction_forme_2D(xs, ys, le_poly, i, sommet_poly, coord) : fonction_forme_3D(xs, ys, zs, le_poly, i, sommet_poly, coord));
         }
     }
   return val;
@@ -1526,75 +1363,29 @@ valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
   //Cerr << "Champ_P1NC_implementation::valeur_a_elem_compo" << finl;
   const Champ_base& cha=le_champ();
   const Zone& zone_geom = zone();
-  double xs,ys,zs;
-  int face;
+  const int D = Objet_U::dimension;
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const DoubleTab& ch = cha.valeurs();
-  double val;
-  if (le_poly == -1)
-    val = 0;
-  else if(ch.nb_dim()!=1)
+  double val = 0.;
+
+  if (le_poly != -1)
     {
       // Calcul d'apres les fonctions de forme sur le triangle ou le tetraedre
-      val = 0;
-      if (Objet_U::dimension == 2)
+      const double xs = position(0), ys = position(1),
+                   zs = (D == 3) ? position(2) : 0;
+      for (int i = 0; i < D + 1; i++)
         {
-          xs = position(0);
-          ys = position(1);
-          for (int i=0; i< 3; i++)
-            {
-              face = elem_faces(le_poly,i);
-              val += ch(face, ncomp)
-                     * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-            }
-        }
-      else if (Objet_U::dimension == 3)
-        {
-          xs = position(0);
-          ys = position(1);
-          zs = position(2);
-          for (int i=0; i< 4; i++)
-            {
-              face = elem_faces(le_poly,i);
-              val += ch(face, ncomp)
-                     * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-            }
+          const int f = elem_faces(le_poly,i);
+          val += ch(f, ncomp) * ((D == 2) ? fonction_forme_2D(xs, ys, le_poly, i, sommet_poly, coord) : fonction_forme_3D(xs, ys, zs, le_poly, i, sommet_poly, coord));
         }
     }
-  else
-    {
-      // Calcul d'apres les fonctions de forme sur le triangle ou le tetraedre
-      assert(ncomp==0);
-      val = 0;
-      if (Objet_U::dimension == 2)
-        {
-          xs = position(0);
-          ys = position(1);
-          for (int i=0; i< 3; i++)
-            {
-              face = elem_faces(le_poly,i);
-              val += ch(face)
-                     * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-            }
-        }
-      else if (Objet_U::dimension == 3)
-        {
-          xs = position(0);
-          ys = position(1);
-          zs = position(2);
-          for (int i=0; i< 4; i++)
-            {
-              face = elem_faces(le_poly,i);
-              val += ch(face)
-                     * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-            }
-        }
-    }
+
   return val;
 }
+
 
 DoubleTab& Champ_P1NC_implementation::
 valeur_aux_elems(const DoubleTab& positions,
@@ -1603,7 +1394,6 @@ valeur_aux_elems(const DoubleTab& positions,
 {
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
-  int les_polys_size = les_polys.size();
   int face;
   double xs,ys,zs;
   const DoubleTab& ch = cha.valeurs();
@@ -1612,190 +1402,41 @@ valeur_aux_elems(const DoubleTab& positions,
   const Zone& zone_geom = zone();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys_size)||(val.dimension_tot(0) == les_polys_size));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys_size)||(val.dimension_tot(0) == les_polys_size));
-      assert(val.dimension(1) == nb_compo_);
-
-      // PQ : 05/03 : pour les sondes en particulier, on traite le champ conforme
-      // pour eviter de representer les discontinuites liees a la non conformite (vitesse uniquement)
-
-      //  if (sub_type(Champ_P1NC,le_champ()))
-      //           if(nb_compo_>1) filtrer_L2(ch);
-
-    }
-  else
+  if (val.nb_dim() > 2)
     {
       Cerr << "Erreur TRUST dans Champ_P1NC_implementation::valeur_aux_elems()\n";
       Cerr << "Le DoubleTab val a plus de 2 entrees\n";
       Process::exit();
     }
 
-  int le_poly;
+  int le_poly, D = Objet_U::dimension;
   const IntTab& elem_faces=zone_VEF.elem_faces();
-  if (nb_compo_ == 1)
-    {
-      if ((ch.nb_dim() == 1) && (val.nb_dim() == 1))
-        {
-          for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-            {
-              le_poly=les_polys(rang_poly);
-              if (le_poly == -1)
-                val(rang_poly) = 0;
-              else
-                {
-                  // Calcul d'apres les fonctions de forme sur le triangle
-                  val(rang_poly) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 3; i++)
-                        {
-                          face = elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face)
-                                            * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face)
-                                            * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                }
-            }
-        }
-      else if ((ch.nb_dim() == 1) && (val.nb_dim() != 1))
-        {
-          for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-            {
-              le_poly=les_polys(rang_poly);
-              if (le_poly == -1)
-                val(rang_poly,0) = 0;
-              else
-                {
-                  // Calcul d'apres les fonctions de forme sur le triangle
-                  val(rang_poly,0) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 3; i++)
-                        {
-                          face = elem_faces(le_poly,i);
-                          val(rang_poly,0) += ch(face)
-                                              * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly,0) += ch(face)
-                                              * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                }
-            }
-        }
-      else if ((ch.nb_dim() != 1) && (val.nb_dim() == 1))
-        {
-          for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-            {
-              le_poly=les_polys(rang_poly);
-              if (le_poly == -1)
-                val(rang_poly) = 0;
-              else
-                {
-                  // Calcul d'apres les fonctions de forme sur le triangle
-                  val(rang_poly) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 3; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face,0)
-                                            * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly) += ch(face,0)
-                                            * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                }
-            }
-        }
-    }
-  else // nb_compo_ > 1
-    {
 
-      for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
+  for(int rang_poly=0; rang_poly<val.dimension_tot(0); rang_poly++)
+    {
+      le_poly=les_polys(rang_poly);
+      if (le_poly == -1)
+        for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+          val(rang_poly, ncomp) = 0;
+      else
         {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              val(rang_poly, ncomp) = 0;
-          else
+          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
             {
-              for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+              val(rang_poly, ncomp) = 0;
+              xs = positions(rang_poly,0);
+              ys = positions(rang_poly,1);
+              zs = (D == 3) ? positions(rang_poly,2) : 0;
+              for (int i = 0; i < D + 1; i++)
                 {
-                  val(rang_poly, ncomp) = 0;
-                  if (Objet_U::dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 3; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly, ncomp) += ch(face, ncomp)
-                                                   * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-                        }
-                    }
-                  else if (Objet_U::dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 4; i++)
-                        {
-                          face = zone_VEF.elem_faces(le_poly,i);
-                          val(rang_poly, ncomp) += ch(face, ncomp)
-                                                   * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-                        }
-                    }
+                  face = elem_faces(le_poly, i);
+                  val(rang_poly, ncomp) += ch(face, ncomp) *
+                                           ((D == 2) ? fonction_forme_2D(xs, ys, le_poly, i, sommet_poly, coord) : fonction_forme_3D(xs, ys, zs, le_poly, i, sommet_poly, coord));
                 }
             }
         }
     }
   return val;
 }
-
 
 DoubleVect& Champ_P1NC_implementation::
 valeur_aux_elems_compo(const DoubleTab& positions,
@@ -1812,41 +1453,27 @@ valeur_aux_elems_compo(const DoubleTab& positions,
   const IntTab& sommet_poly = zone_geom.les_elems();
   // Commenter en attendant de comprendre le dimensionnement de xp apres la sortie de version
   // assert(val.size() == les_polys_size);
-  int le_poly;
+  int le_poly, D = Objet_U::dimension;
 
   const DoubleTab& ch = cha.valeurs();
 
   for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
     {
       le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
+      if (le_poly == -1) val(rang_poly) = 0;
       else
         {
           // Calcul d'apres les fonctions de forme sur le triangle ou le tetraedre
           val(rang_poly) = 0;
-          if (Objet_U::dimension == 2)
+          xs = positions(rang_poly,0);
+          ys = positions(rang_poly,1);
+          zs = (D == 3) ? positions(rang_poly,2) : 0.;
+          for (int i=0; i < D + 1; i++)
             {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              for (int i=0; i< 3; i++)
-                {
-                  face = zone_VEF.elem_faces(le_poly,i);
-                  val(rang_poly) += ch(face, ncomp)
-                                    * fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord);
-                }
-            }
-          else if (Objet_U::dimension == 3)
-            {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              zs = positions(rang_poly,2);
-              for (int i=0; i< 4; i++)
-                {
-                  face = zone_VEF.elem_faces(le_poly,i);
-                  val(rang_poly) += ch(face, ncomp)
-                                    * fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord);
-                }
+              face = zone_VEF.elem_faces(le_poly,i);
+              val(rang_poly) += ch(face, ncomp) *
+                                ( (D == 2) ? fonction_forme_2D(xs,ys,le_poly,i,sommet_poly,coord) :
+                                  fonction_forme_3D(xs,ys,zs,le_poly,i,sommet_poly,coord));
             }
         }
     }
@@ -1868,9 +1495,26 @@ valeur_aux_elems_smooth(const DoubleTab& positions,
       Cerr << "TRUST a provoque une erreur et va s'arreter" << finl;
       Process::exit();
     }
-  int les_polys_size = les_polys.size();
+
   Champ_base& cha =ref_cast(Champ_base,le_champ());
-  int nb_compo_=cha.nb_comp();
+  const int les_polys_size = les_polys.size(), nb_compo_=cha.nb_comp(), D = Objet_U::dimension;
+  const DoubleTab&  ch_sommet= (ch_som());
+  const Zone_VEF& zone_VEF = zone_vef();
+  const Zone& zone_geom = zone();
+  const Domaine& dom=zone_VEF.zone().domaine();
+  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const IntTab& sommet_poly = zone_geom.les_elems();
+  if (val.nb_dim() == 2)
+    {
+      assert((val.dimension(0) == les_polys_size)||(val.dimension_tot(0) == les_polys_size));
+      assert(val.line_size() == nb_compo_);
+    }
+  else
+    {
+      Cerr << "Erreur TRUST dans Champ_P1NC_implementation::valeur_aux_elems_smooth()\n";
+      Cerr << "Le DoubleTab val a plus de 2 entrees\n";
+      Process::exit();
+    }
   if (!filtrer_L2_deja_appele_)
     {
       // Filtrer L2 ne marche que pour les vecteurs
@@ -1884,156 +1528,22 @@ valeur_aux_elems_smooth(const DoubleTab& positions,
       filtrer_L2_deja_appele_=1;
     }
 
-  const DoubleTab&  ch_sommet= (ch_som());
-  int dimension=Objet_U::dimension;
-
-  double xs,ys,zs;
-
-  const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = zone();
-  const Domaine& dom=zone_VEF.zone().domaine();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
-  const IntTab& sommet_poly = zone_geom.les_elems();
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys_size)||(val.dimension_tot(0) == les_polys_size));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys_size)||(val.dimension_tot(0) == les_polys_size));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
-    {
-      Cerr << "Erreur TRUST dans Champ_P1NC_implementation::valeur_aux_elems_smooth()\n";
-      Cerr << "Le DoubleTab val a plus de 2 entrees\n";
-      Process::exit();
-    }
-
   // calcul de la valeur aux elements suivant les coordonnees barycentriques (repris de Champ_P1)
-
-  int le_poly;
-
-  if (nb_compo_ == 1)
-    {
-      for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            if (val.nb_dim() == 1)
-              val(rang_poly) = 0;
-            else
-              val(rang_poly,0) = 0;
-          else
+  val = 0.;
+  int p;
+  for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
+    if ((p = les_polys(rang_poly)) != -1)
+      {
+        const double xs = positions(rang_poly,0), ys = positions(rang_poly,1),
+                     zs = (D == 3) ? positions(rang_poly,2) : 0.;
+        for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+          for (int i = 0; i < D + 1; i++)
             {
-              // Calcul d'apres les fonctions de forme sur le triangle
-              if (val.nb_dim() == 1)
-                val(rang_poly) = 0;
-              else
-                val(rang_poly,0) = 0;
-              if (dimension == 2)
-                {
-                  xs = positions(rang_poly,0);
-                  ys = positions(rang_poly,1);
-                  if (val.nb_dim() == 1)
-                    {
-                      for (int i=0; i< 3; i++)
-                        {
-                          int som = sommet_poly(le_poly,i);
-                          int som1=dom.get_renum_som_perio(som);
-                          val(rang_poly) += ch_sommet(som1)
-                                            * coord_barycentrique(sommet_poly, coord, xs, ys,
-                                                                  le_poly, i);
-                        }
-                    }
-                  else
-                    {
-                      for (int i=0; i< 3; i++)
-                        {
-                          int som = sommet_poly(le_poly,i);
-                          int som1=dom.get_renum_som_perio(som);
-                          val(rang_poly,0) += ch_sommet(som1)
-                                              * coord_barycentrique(sommet_poly, coord, xs, ys,
-                                                                    le_poly, i);
-                        }
-                    }
-                }
-              else if (dimension == 3)
-                {
-                  xs = positions(rang_poly,0);
-                  ys = positions(rang_poly,1);
-                  zs = positions(rang_poly,2);
-                  if (val.nb_dim() == 1)
-                    {
-                      for (int i=0; i< 4; i++)
-                        {
-                          int som = sommet_poly(le_poly,i);
-                          int som1=dom.get_renum_som_perio(som);
-                          val(rang_poly) += ch_sommet(som1)
-                                            * coord_barycentrique(sommet_poly, coord, xs, ys, zs,
-                                                                  le_poly, i);
-                        }
-                    }
-                  else
-                    {
-                      for (int i=0; i< 4; i++)
-                        {
-                          int som = sommet_poly(le_poly,i);
-                          int som1=dom.get_renum_som_perio(som);
-                          val(rang_poly,0) += ch_sommet(som1)
-                                              * coord_barycentrique(sommet_poly, coord, xs, ys, zs,
-                                                                    le_poly, i);
-                        }
-                    }
-                }
+              int som = sommet_poly(p, i);
+              int som1=dom.get_renum_som_perio(som);
+              val(rang_poly, ncomp) += ch_sommet(som1, ncomp) * ((D == 2) ? coord_barycentrique(sommet_poly, coord, xs, ys, p, i) : coord_barycentrique(sommet_poly, coord, xs, ys, zs, p, i));
             }
-        }
-    }
-  else // nb_compo_ > 1
-    {
-      for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              val(rang_poly, ncomp) = 0;
-          else
-            {
-              for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-                {
-                  val(rang_poly, ncomp) = 0;
-                  if (dimension == 2)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      for (int i=0; i< 3; i++)
-                        {
-                          int som = sommet_poly(le_poly,i);
-                          int som1=dom.get_renum_som_perio(som);
-                          val(rang_poly, ncomp) += ch_sommet(som1, ncomp)
-                                                   * coord_barycentrique(sommet_poly, coord, xs, ys,
-                                                                         le_poly, i);
-                        }
-                    }
-                  else if (dimension == 3)
-                    {
-                      xs = positions(rang_poly,0);
-                      ys = positions(rang_poly,1);
-                      zs = positions(rang_poly,2);
-                      for (int i=0; i< 4; i++)
-                        {
-                          int som = sommet_poly(le_poly,i);
-                          int som1=dom.get_renum_som_perio(som);
-                          val(rang_poly, ncomp) += ch_sommet(som1, ncomp)
-                                                   * coord_barycentrique(sommet_poly, coord, xs, ys, zs,
-                                                                         le_poly, i);
-                        }
-                    }
-                }
-            }
-        }
-    }
+      }
   return val;
 }
 
@@ -2051,9 +1561,14 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
       Cerr << "TRUST a provoque une erreur et va s'arreter" << finl;
       Process::exit();
     }
-  int les_polys_size = les_polys.size();
   Champ_base& cha =le_champ();
-  int nb_compo_=cha.nb_comp();
+  const int les_polys_size = les_polys.size(), nb_compo_=cha.nb_comp(), D = Objet_U::dimension;
+  const DoubleTab& ch_sommet= (ch_som());
+  const Zone_VEF& zone_VEF = zone_vef();
+  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& zone_geom = zone();
+  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const IntTab& sommet_poly = zone_geom.les_elems();
   if (!filtrer_L2_deja_appele_)
     {
       // Filtrer L2 ne marche que pour les vecteurs
@@ -2066,56 +1581,25 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
         }
       filtrer_L2_deja_appele_=1;
     }
-  const DoubleTab& ch_sommet= (ch_som());
-  int dimension=Objet_U::dimension;
-
-  double xs,ys,zs;
-  const Zone_VEF& zone_VEF = zone_vef();
-  const Domaine& dom=zone_VEF.zone().domaine();
-  const Zone& zone_geom = zone();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
-  const IntTab& sommet_poly = zone_geom.les_elems();
   assert(val.size() == les_polys_size);
-  int le_poly;
+  val = 0.;
+  int p;
 
   // calcul de la valeur aux elements suivant les coordonnees barycentriques (repris de Champ_P1)
 
   for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-    {
-      le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
-      else
-        {
-          val(rang_poly) = 0;
-          if (dimension == 2)
-            {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              for (int i=0; i< 3; i++)
-                {
-                  int som = sommet_poly(le_poly,i);
-                  int som1=dom.get_renum_som_perio(som);
-                  val(rang_poly) += ch_sommet(som1, ncomp)
-                                    * coord_barycentrique(sommet_poly, coord, xs, ys, le_poly, i);
-                }
-            }
-          else if (dimension == 3)
-            {
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              zs = positions(rang_poly,2);
-              for (int i=0; i< 4; i++)
-                {
-                  int som = sommet_poly(le_poly,i);
-                  int som1=dom.get_renum_som_perio(som);
-                  val(rang_poly) += ch_sommet(som1, ncomp)
-                                    * coord_barycentrique(sommet_poly, coord, xs, ys, zs,
-                                                          le_poly, i);
-                }
-            }
-        }
-    }
+    if ((p = les_polys(rang_poly)) != -1)
+      {
+        const double xs = positions(rang_poly,0), ys = positions(rang_poly,1),
+                     zs = (D == 3) ? positions(rang_poly,2) : 0.;
+        for (int i = 0; i < D + 1; i++)
+          {
+            int som = sommet_poly(p, i);
+            int som1=dom.get_renum_som_perio(som);
+            val(rang_poly) += ch_sommet(som1, ncomp)
+                              * ((D == 2) ? coord_barycentrique(sommet_poly, coord, xs, ys, p, i) : coord_barycentrique(sommet_poly, coord, xs, ys, zs, p, i));
+          }
+      }
   return val;
 }
 
@@ -2157,52 +1641,24 @@ valeur_aux_sommets(const Domaine& dom,
             max_som(j,k) = 1.e-30 ;
           }
 
-      if (nb_compo_ == 1)
+      for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
         {
-          ncomp = 0;
-          for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
+          for (j=0; j<nb_som_elem; j++)
             {
-              for (j=0; j<nb_som_elem; j++)
+              num_som = mazone.sommet_elem(num_elem,j);
+              if(num_som < nb_som_return)
                 {
-                  num_som = mazone.sommet_elem(num_elem,j);
-                  if(num_som < nb_som_return)
+                  compteur[num_som]++;
+                  for (ncomp=0; ncomp<nb_compo_; ncomp++)
                     {
-                      compteur[num_som]++;
                       champ_som(num_som,ncomp) += valeur_a_sommet_compo(num_som,num_elem,ncomp);
                       for(face_adj=0; face_adj<nb_som_elem; face_adj ++)
                         {
                           if (face_adj != j )
                             {
                               face_glob = elem_faces(num_elem, face_adj);
-                              min_som(num_som,ncomp) = min ( ch(face_glob),min_som(num_som,ncomp) ) ;
-                              max_som(num_som,ncomp) = max ( ch(face_glob),max_som(num_som,ncomp) ) ;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-      else
-        {
-          for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
-            {
-              for (j=0; j<nb_som_elem; j++)
-                {
-                  num_som = mazone.sommet_elem(num_elem,j);
-                  if(num_som < nb_som_return)
-                    {
-                      compteur[num_som]++;
-                      for (ncomp=0; ncomp<nb_compo_; ncomp++)
-                        {
-                          champ_som(num_som,ncomp) += valeur_a_sommet_compo(num_som,num_elem,ncomp);
-                          for(face_adj=0; face_adj<nb_som_elem; face_adj ++)
-                            {
-                              if (face_adj != j )
-                                {
-                                  face_glob = elem_faces(num_elem, face_adj);
-                                  min_som(num_som,ncomp) = min ( ch(face_glob,ncomp),min_som(num_som,ncomp) ) ;
-                                  max_som(num_som,ncomp) = max ( ch(face_glob,ncomp),max_som(num_som,ncomp) ) ;
-                                }
+                              min_som(num_som,ncomp) = min ( ch(face_glob,ncomp),min_som(num_som,ncomp) ) ;
+                              max_som(num_som,ncomp) = max ( ch(face_glob,ncomp),max_som(num_som,ncomp) ) ;
                             }
                         }
                     }
@@ -2245,17 +1701,8 @@ valeur_aux_sommets(const Domaine& dom,
               if (som1<nb_som_return)
                 {
                   compteur[som1]++;
-                  if(nb_comp==1)
-                    {
-                      champ_som(som1,0)+=ch(face);
-                    }
-                  else
-                    {
-                      for(int k=0; k<nb_comp; k++)
-                        {
-                          champ_som(som1,k)+=ch(face,k);
-                        }
-                    }
+                  for(int k=0; k<nb_comp; k++)
+                    champ_som(som1,k)+=ch(face,k);
                 }
             }
         }
@@ -2280,26 +1727,13 @@ double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
   double val=0;
   if (le_poly != -1)
     {
-      if (ch.nb_dim()==2)
-        for (int i=0; i< Objet_U::dimension+1; i++)
-          {
-            face = elem_faces(le_poly,i);
-            if (sommet_poly(le_poly,i)==num_som)
-              val -= (Objet_U::dimension-1)*ch(face, ncomp);
-            else
-              val += ch(face, ncomp);
-          }
-      else
+      for (int i=0; i< Objet_U::dimension+1; i++)
         {
-          assert(ncomp==0);
-          for (int i=0; i< Objet_U::dimension+1; i++)
-            {
-              face = elem_faces(le_poly,i);
-              if (sommet_poly(le_poly,i)==num_som)
-                val -= (Objet_U::dimension-1)*ch(face);
-              else
-                val += ch(face);
-            }
+          face = elem_faces(le_poly,i);
+          if (sommet_poly(le_poly,i)==num_som)
+            val -= (Objet_U::dimension-1)*ch(face, ncomp);
+          else
+            val += ch(face, ncomp);
         }
     }
   return val;
@@ -2471,7 +1905,6 @@ int Champ_P1NC_implementation::imprime_P1NC(Sortie& os, int ncomp) const
   const DoubleTab& pos_face=zone_VEF.xv();
   const int nb_faces = zone_VEF.nb_faces();
   const Champ_base& cha=le_champ();
-  int nb_compo_=cha.nb_comp();
   const DoubleTab& val = cha.valeurs();
   int fac;
   os << nb_faces << finl;
@@ -2481,10 +1914,7 @@ int Champ_P1NC_implementation::imprime_P1NC(Sortie& os, int ncomp) const
         os << pos_face(fac,0) << " " << pos_face(fac,1) << " " << pos_face(fac,2) << " " ;
       if (Objet_U::dimension==2)
         os << pos_face(fac,0) << " " << pos_face(fac,1) << " " ;
-      if (nb_compo_ == 1)
-        os << val(fac) << finl;
-      else
-        os << val(fac,ncomp) << finl;
+      os << val(fac,ncomp) << finl;
     }
   os << finl;
   Cout << "Champ_P1NC_implementation::imprime_P1NC FIN >>>>>>>>>> " << finl;

@@ -387,7 +387,7 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 
 DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
-  int sz = y.size();
+  int sz = y.dimension_tot(0) * y.line_size();
   DoubleTrav diag(equation().inconnue().valeurs());
   diag=1.;
   appliquer(diag); // M-1
@@ -413,8 +413,7 @@ void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
       return;
     }
   const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
-  int size = champ_inconnue.dimension_tot(0);
-  if (champ_inconnue.nb_dim() == 2) size *= champ_inconnue.dimension(1);
+  int size = champ_inconnue.dimension_tot(0) * champ_inconnue.line_size();
 
   IntTab indice(size, 2);
   for(int i=0; i<size; ++i)

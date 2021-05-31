@@ -1,16 +1,16 @@
 /****************************************************************************
 * Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
-* 
+*
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-* 
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-* 
+*
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -143,12 +143,9 @@ void Op_Diff_EF::associer(const Zone_dis& zone_dis,
   // On dimensionne et initialise le tableau des bilans de flux:
   const Zone_EF& zone_EF = la_zone_EF.valeur();
 
-  int nb_comp = 1;
-  //  int nb_dim = resu.nb_dim();
-  //  if(nb_dim==2)
-  //    nb_comp=resu.dimension(1);
+  int N = 1;
 
-  (ref_cast(DoubleTab,flux_bords)).resize(zone_EF.nb_faces_bord(),nb_comp);
+  (ref_cast(DoubleTab,flux_bords)).resize(zone_EF.nb_faces_bord(),N);
   flux_bords=0.;
 }
 */
@@ -205,12 +202,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
   const Zone_EF& zone_ef = la_zone_EF.valeur();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
 
-  int nb_dim = resu.nb_dim();
-  int nb_comp = 1;
-  if(nb_dim==2)
-    {
-      nb_comp=resu.dimension(1);
-    }
+  int N = resu.line_size();
   Nature_du_champ nat= equation().inconnue().valeur().nature_du_champ();
   if (nat==vectoriel)
     {
@@ -228,7 +220,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
     }
   else
     {
-      if (nb_comp!=1)
+      if (N != 1)
         {
           Cerr<<__FILE__<<(int)__LINE__<< "cas non prevu "<<finl;
           assert(0);
@@ -250,26 +242,21 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
     }
   //
 }
-#Pmacro declare_ajouter(__dimension__,nb_dim,__nb_comp__,nature,__nb_som_elem__,__dim_fois_nbn__,general)
+#Pmacro declare_ajouter(__dimension__,__nb_comp__,nature,__nb_som_elem__,__dim_fois_nbn__,general)
 
 #Pif(general==1)
 DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleTab& resu) const
 {
   const int const_dimension= Objet_U::__dimension__;
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  int nb_comp=1;
-  if (nb_dim==2) nb_comp=resu.dimension(1);
+  const int N = resu.line_size();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   int dim_fois_nbn=nb_som_elem*const_dimension;
 #Pelse
 
-//Pset(nb_comp __nb_comp__)
-//Pset(dim_fois_nbn __dim_fois_nbn__)
-//Pset(nb_som_elem __nb_som_elem__)
-
   DoubleTab& Op_Diff_EF::ajouter_nature_dim__dimension___nbn___nb_som_elem__(const DoubleTab& tab_inconnue, DoubleTab& resu) const
   {
-    const int nb_comp =__nb_comp__;
+    const int N =__nb_comp__;
     const int dim_fois_nbn= __dim_fois_nbn__;
     const int nb_som_elem= __nb_som_elem__;
     const int const_dimension= __dimension__;
@@ -296,8 +283,8 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
 #Pif("nature"=="vectoriel")double* resu_ptr=resu.addr();#Pendif
 
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
@@ -325,7 +312,7 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
 #Pendif
           {
 #Pif(general==1)
-            ArrOfDouble pr(nb_comp);
+            ArrOfDouble pr(N);
 #Pelse
             double pr[__nb_comp__];
 #Pendif
@@ -338,11 +325,9 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
                   for (int i1=0; i1<nb_som_elem; i1++)
                     {
                       int glob=elems(elem,i1);
-                      for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
+                      for (int yy=0; yy<N; yy++) pr[yy]=0;
 #Pif("nature"=="vectoriel")
-                      int transpose=transpose_;
-                      if (marqueur_neuman(glob)==1)
-                        transpose=0;
+                      int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
 #Pendif
                       for (int i2=0; i2<nb_som_elem; i2++)
                         {
@@ -358,15 +343,15 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
                                 prod2+=bij_(elem,i1,b)*inconnue_(glob2,b);
 #Pendif
                               }
-                            for (int a=0; a<nb_comp; a++)
-                              pr[a]+=prod*inconnue_(glob2,a)#Pif("nature"=="vectoriel")+prod2*bij_(elem,i2,a)#Pendif;
+                            for (int n = 0; n < N; n++)
+                              pr[n] += prod*inconnue_(glob2, n)#Pif("nature"=="vectoriel")+prod2*bij_(elem, i2, n)#Pendif;
                           }
                         }
-#Pif(nb_dim==1)
+#Pif("__nb_comp__"=="1")
                       resu(glob)-=pr[0]*pond;
 #Pelse
-                      for (int a=0; a<nb_comp; a++)
-                        resu_(glob,a)-=pr[a]*pond;
+                      for (int n = 0; n < N; n++)
+                        resu_(glob, n) -= pr[n] * pond;
 #Pendif
 
                     }
@@ -387,22 +372,22 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
 #Pif(general==0)
 
 
-//Punset(nb_comp)
+//Punset(N)
 //Punset(dim_fois_nbn)
 //Punset(nb_som_elem)
 #Pendif
 #Pendmacro(declare_ajouter)
 
 
-// macro declare_ajouter(dimension,nbdim,nb_comp,nature,nb_som_elem,dim_fois_nbn)
-#Pusemacro(declare_ajouter)(3,2,3,vectoriel,8,24,0)
-#Pusemacro(declare_ajouter)(3,1,1,scalaire,8,24,0)
+// macro declare_ajouter(dimension,N,nature,nb_som_elem,dim_fois_nbn)
+#Pusemacro(declare_ajouter)(3,3,vectoriel,8,24,0)
+#Pusemacro(declare_ajouter)(3,1,scalaire,8,24,0)
 
-#Pusemacro(declare_ajouter)(2,2,2,vectoriel,4,8,0)
-#Pusemacro(declare_ajouter)(2,1,1,scalaire,4,8,0)
+#Pusemacro(declare_ajouter)(2,2,vectoriel,4,8,0)
+#Pusemacro(declare_ajouter)(2,1,scalaire,4,8,0)
 
-#Pusemacro(declare_ajouter)(dimension,1,1,scalaire,nb_som_elem,dim_fois_nbn,1)
-#Pusemacro(declare_ajouter)(dimension,2,nb_comp,vectoriel,nb_som_elem,dim_fois_nbn,1)
+#Pusemacro(declare_ajouter)(dimension,1,scalaire,nb_som_elem,dim_fois_nbn,1)
+#Pusemacro(declare_ajouter)(dimension,N,vectoriel,nb_som_elem,dim_fois_nbn,1)
 
   DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& resu) const
   {
@@ -412,15 +397,11 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     //const Zone_EF& zone_EF = la_zone_EF.valeur();
 
 
-    int nb_comp = 1;
-    int nb_dim = resu.nb_dim();
+    const int N = resu.line_size();
     ArrOfInt marqueur_neuman;
     const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-    if(nb_dim==2)
-      {
-        nb_comp=resu.dimension(1);
+    if(N > 1)
         remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
-      }
 
     const DoubleVect& volumes= zone_ef.volumes();
 
@@ -429,49 +410,26 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     int nb_elem_tot=zone_ef.zone().nb_elem_tot();
     int nb_som_elem=zone_ef.zone().nb_som_elem();
     const IntTab& elems=zone_ef.zone().les_elems() ;
-    if (nb_dim==1)
-      {
-        for (int elem=0; elem<nb_elem_tot; elem++)
-          if (elem_contribue(elem))
-            {
 
-              double pond=1./volumes(elem);
-              for (int i1=0; i1<nb_som_elem; i1++)
+    for (int elem=0; elem<nb_elem_tot; elem++)
+      if (elem_contribue(elem))
+        {
+          double pond=1./volumes(elem);
+          assert(N == dimension || N == 1);
+
+          for (int i1=0; i1<nb_som_elem; i1++)
+            {
+              int glob=elems(elem,i1);
+              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+              for (int i2=0; i2<nb_som_elem; i2++)
                 {
-                  int glob=elems(elem,i1);
-                  for (int i2=0; i2<nb_som_elem; i2++)
-                    {
-                      int glob2=elems(elem,i2);
-                      for (int b=0; b<dimension; b++)
-                        resu(glob)-=bij(elem,i1,b)*bij_thilde(elem,i2,b)*tab_inconnue(glob2)*nu_(elem)*pond;
-                    }
+                  int glob2=elems(elem,i2);
+                  for (int n = 0; n < N; n++)
+                    for (int d = 0; d < dimension; d++)
+                      resu(glob, n) -= bij(elem, i1, d) * (bij_thilde(elem, i2, d) * tab_inconnue(glob2, n) + transpose * bij_thilde(elem, i2, n) * tab_inconnue(glob2, d)) * nu_(elem) * pond;
                 }
             }
-      }
-    else
-      {
-        for (int elem=0; elem<nb_elem_tot; elem++)
-          if (elem_contribue(elem))
-            {
-              double pond=1./volumes(elem);
-              assert(nb_comp==dimension);
-
-              for (int i1=0; i1<nb_som_elem; i1++)
-                {
-                  int glob=elems(elem,i1);
-                  int transpose=transpose_;
-                  if (marqueur_neuman(glob)==1)
-                    transpose=0;
-                  for (int i2=0; i2<nb_som_elem; i2++)
-                    {
-                      int glob2=elems(elem,i2);
-                      for (int a=0; a<nb_comp; a++)
-                        for (int b=0; b<dimension; b++)
-                          resu(glob,a)-=bij(elem,i1,b)*(bij_thilde(elem,i2,b)*tab_inconnue(glob2,a)+transpose*bij_thilde(elem,i2,a)*tab_inconnue(glob2,b))*nu_(elem)*pond;
-                    }
-                }
-            }
-      }
+        }
     //  Debog::verifier(" Op_Diff_EF::ajouter, resu 0 ",resu);
     //  Journal()<<max(resu)<<" "<<min(resu)<<finl;
 
@@ -530,10 +488,7 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     // avant le premier pas de temps
     remplir_nu(nu_);
 
-    int nb_comp = 1;
-    int nb_dim = transporte.nb_dim();
-    if(nb_dim==2)
-      nb_comp=transporte.dimension(1);
+    const int N = transporte.line_size();
     const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
     const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
     const DoubleVect& volumes= zone_ef.volumes();
@@ -543,32 +498,7 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     int nb_som_elem=zone_ef.zone().nb_som_elem();
     const IntTab& elems=zone_ef.zone().les_elems() ;
     int nb_som=zone_ef.zone().nb_som();
-    if (nb_dim==1)
-      {
-        for (int elem=0; elem<nb_elem_tot; elem++)
-          if (elem_contribue(elem))
-            {
-              double pond=volumes_thilde(elem)/volumes(elem)/volumes(elem);
 
-              for (int i1=0; i1<nb_som_elem; i1++)
-                {
-                  int glob=elems(elem,i1);
-                  if (glob<nb_som)
-                    for (int i2=0; i2<nb_som_elem; i2++)
-                      {
-                        int glob2=elems(elem,i2);
-                        double cb=0;
-                        for (int b=0; b<dimension; b++)
-                          cb+=bij(elem,i1,b)*bij(elem,i2,b);
-
-                        matrice_coef(glob,glob2)+=cb*nu_(elem)*pond;
-                      }
-                }
-            }
-	 ajouter_contributions_bords(matrice);
-      }
-    else
-      {
         ArrOfInt marqueur_neuman;
         remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
         for (int elem=0; elem<nb_elem_tot; elem++)
@@ -580,9 +510,7 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
                 {
                   int glob=elems(elem,i1);
 
-                  int transpose=transpose_;
-                  if (marqueur_neuman(glob)==1)
-                    transpose=0;
+                  int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
                   if (glob<nb_som)
                     for (int i2=0; i2<nb_som_elem; i2++)
                       {
@@ -590,20 +518,17 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
                         double cb=0;
                         for (int b=0; b<dimension; b++)
                           cb+=bij(elem,i1,b)*bij(elem,i2,b);
-                        for (int a=0; a<nb_comp; a++)
+                        for (int n = 0; n < N; n++)
                           {
-                            //  resu(glob,a)-=bij(elem,i1,b)*(bij(elem,i2,b)*tab_inconnue(glob2,a)+bij(elem,i2,a)*tab_inconnue(glob2,b))*nu_(elem)*pond;
-
-                            matrice_coef(glob*nb_comp+a,glob2*nb_comp+a)+=cb*nu_(elem)*pond;
+                            matrice_coef(glob * N + n, glob2 * N + n) += cb * nu_(elem) * pond;
                             if (transpose)
-                              for (int b=0; b<dimension; b++)
-                                matrice_coef(glob*nb_comp+a,glob2*nb_comp+b)+=bij(elem,i1,b)*bij(elem,i2,a)*nu_(elem)*pond;
-                            // +bij(elem,i2,a)*tab_inconnue(glob2,b)
+                              for (int d = 0; d < dimension; d++)
+                                matrice_coef(glob * N + n, glob2 * N + d) += bij(elem, i1, d) * bij(elem, i2, n) * nu_(elem) * pond;
                           }
                       }
                 }
             }
-      }
+	 if (N == 1) ajouter_contributions_bords(matrice);
 
 
 
@@ -617,10 +542,7 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     // avant le premier pas de temps
     remplir_nu(nu_);
 
-    int nb_comp = 1;
-    int nb_dim = transporte.nb_dim();
-    if(nb_dim==2)
-      nb_comp=transporte.dimension(1);
+    const int N = transporte.line_size();
     const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
     //const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
     const DoubleVect& volumes= zone_ef.volumes();
@@ -631,66 +553,37 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     int nb_som_elem=zone_ef.zone().nb_som_elem();
     const IntTab& elems=zone_ef.zone().les_elems() ;
     int nb_som=zone_ef.zone().nb_som();
-    if (nb_dim==1)
-      {
-        for (int elem=0; elem<nb_elem_tot; elem++)
-          if (elem_contribue(elem))
+
+    ArrOfInt marqueur_neuman;
+    remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
+    for (int elem=0; elem<nb_elem_tot; elem++)
+      if (elem_contribue(elem))
+        {
+          double pond=1./volumes(elem);
+
+          for (int i1=0; i1<nb_som_elem; i1++)
             {
-              double pond=1./volumes(elem);
+              int glob=elems(elem,i1);
 
-              for (int i1=0; i1<nb_som_elem; i1++)
-                {
-                  int glob=elems(elem,i1);
-                  if (glob<nb_som)
-                    for (int i2=0; i2<nb_som_elem; i2++)
+              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+              if (glob<nb_som)
+                for (int i2=0; i2<nb_som_elem; i2++)
+                  {
+                    int glob2=elems(elem,i2);
+                    double cb=0;
+                    for (int b=0; b<dimension; b++)
+                      cb+=bij(elem,i1,b)*bij_thilde(elem,i2,b);
+                    for (int n = 0; n < N; n++)
                       {
-                        int glob2=elems(elem,i2);
-                        double cb=0;
-                        for (int b=0; b<dimension; b++)
-                          cb+=bij(elem,i1,b)*bij_thilde(elem,i2,b);
-
-                        matrice_coef(glob,glob2)+=cb*nu_(elem)*pond;
+                        matrice_coef(glob * N + n, glob2 * N + n) += cb * nu_(elem) * pond;
+                        if (transpose)
+                          for (int d = 0; d < dimension; d++)
+                            matrice_coef(glob * N + n, glob2 * N + d) += bij(elem, i1, d) * bij_thilde(elem, i2, n) * nu_(elem) * pond;
                       }
-                }
+                  }
             }
-      }
-    else
-      {
-        ArrOfInt marqueur_neuman;
-        remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
-        for (int elem=0; elem<nb_elem_tot; elem++)
-          if (elem_contribue(elem))
-            {
-              double pond=1./volumes(elem);
+        }
 
-              for (int i1=0; i1<nb_som_elem; i1++)
-                {
-                  int glob=elems(elem,i1);
-
-                  int transpose=transpose_;
-                  if (marqueur_neuman(glob)==1)
-                    transpose=0;
-                  if (glob<nb_som)
-                    for (int i2=0; i2<nb_som_elem; i2++)
-                      {
-                        int glob2=elems(elem,i2);
-                        double cb=0;
-                        for (int b=0; b<dimension; b++)
-                          cb+=bij(elem,i1,b)*bij_thilde(elem,i2,b);
-                        for (int a=0; a<nb_comp; a++)
-                          {
-                            //  resu(glob,a)-=bij(elem,i1,b)*(bij(elem,i2,b)*tab_inconnue(glob2,a)+bij(elem,i2,a)*tab_inconnue(glob2,b))*nu_(elem)*pond;
-
-                            matrice_coef(glob*nb_comp+a,glob2*nb_comp+a)+=cb*nu_(elem)*pond;
-                            if (transpose)
-                              for (int b=0; b<dimension; b++)
-                                matrice_coef(glob*nb_comp+a,glob2*nb_comp+b)+=bij(elem,i1,b)*bij_thilde(elem,i2,a)*nu_(elem)*pond;
-                            // +bij(elem,i2,a)*tab_inconnue(glob2,b)
-                          }
-                      }
-                }
-            }
-      }
 
 
 
@@ -724,9 +617,9 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
     const IntTab& face_sommets=zone_ef.face_sommets();
     int nb_som_face=zone_ef.nb_som_face();
 
-    int nb_dim = resu.nb_dim();
+    const int N = resu.line_size();
 
-    if (nb_dim==2)
+    if (N > 1)
       {
         // Cerr<<__PRETTY_FUNCTION__<<" non code pour les vecteurs"<<finl;
         modifier_flux(*this);
@@ -792,8 +685,8 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
 
               double h=la_cl_paroi.h_imp(face-ndeb);
 	      double Text=la_cl_paroi.T_ext(face-ndeb);
-	      
-	     
+
+
 	      double tm=0;
 	      if (contrib_interne)
 		{
@@ -815,11 +708,11 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
                   {
                     resu[glob2] += flux;
                   }
-                 
+
                 }
             }
         }
-    
+
 
       }
     modifier_flux(*this);
@@ -833,13 +726,13 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  
+
   const IntTab& face_sommets=zone_ef.face_sommets();
   int nb_som_face=zone_ef.nb_som_face();
-  
-  int nb_dim =equation().inconnue().valeurs().nb_dim();
 
-  if (nb_dim==2)
+  int N = equation().inconnue().valeurs().line_size();
+
+  if (N > 1)
     {
       // Cerr<<__PRETTY_FUNCTION__<<" non code pour les vecteurs"<<finl;
       throw;
@@ -856,7 +749,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
-    
+
 
       if (sub_type(Echange_global_impose, la_cl.valeur()))
 	{
@@ -867,8 +760,8 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 
               double h=la_cl_paroi.h_imp(face-ndeb);
 	      //double Text=la_cl_paroi.T_ext(face-ndeb);
-	      
-	     
+
+
 	      double tm=1./(nb_som_face*nb_som_face);
 	      double flux=h*zone_EF.surface(face)*tm;
 	      for (int i1=0; i1<nb_som_face; i1++)
@@ -880,7 +773,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 		      {
 			matrice_coef(glob1,glob2) += flux;
 		      }
-		      
+
 		    }
 		}
 	    }

@@ -332,41 +332,24 @@ void Frontiere::creer_tableau_faces(Array_base& v, Array_base::Resize_Options op
 // Renvoie la trace sur la frontiere du tableau aux elements y
 void Frontiere::trace_elem_local(const DoubleTab& y, DoubleTab& x) const
 {
-  int size = nb_faces();
-  int nb_compo_=1;
-  if (y.nb_dim() == 2)
-    nb_compo_ = y.dimension(1);
+  const int size = nb_faces(), nb_compo_ = y.line_size();
 
   // On dimensionne x si ce n'est pas fait
-  if (x.size_array()==0 && size!=0)
+  if (x.size_array() == 0 && size != 0)
+    x.resize(size, nb_compo_);
+  else if (x.dimension(0) != size || nb_compo_ != x.line_size())
     {
-      if (y.nb_dim() == 2)
-        x.resize(size,nb_compo_);
-      else
-        x.resize(size);
-    }
-  else if (x.dimension(0) != size)
-    {
-      Cerr << "Call to Frontiere::trace_elem with a DoubleTab x not located on boundary faces." << finl;
+      Cerr << "Call to Frontiere::trace_elem with a DoubleTab x not located on boundary faces or don't have the same number of components" << finl;
       Process::exit();
     }
-  for (int i=0; i<size; i++)
+  for (int i = 0; i < size; i++)
     {
-      int elem=faces().voisin(i,0);
-      if (elem==-1)
-        elem=faces().voisin(i,1);
+      int elem = faces().voisin(i, 0);
+      if (elem == -1)
+        elem = faces().voisin(i, 1);
 
-      if(y.nb_dim()==2)
-        for(int j=0; j<nb_compo_; j++)
-          x(i,j)=y(elem,j);
-      else
-        {
-          if (x.nb_dim()==2)
-            for(int j=0; j<nb_compo_; j++)
-              x(i,j)=y(elem);
-          else
-            x(i)=y(elem);
-        }
+      for(int j = 0; j < nb_compo_; j++)
+        x(i, j) = y(elem, j);
     }
 }
 
@@ -374,70 +357,29 @@ void Frontiere::trace_elem_local(const DoubleTab& y, DoubleTab& x) const
 // Renvoie la trace sur la frontiere du tableau aux noeuds y
 void Frontiere::trace_som_local(const DoubleTab& y, DoubleTab& x) const
 {
-  int size = nb_faces();
-  int nb_compo_=1;
   const IntTab& som_face = les_sommets_des_faces();
-
-  if (y.nb_dim() == 2)
-    nb_compo_ = y.dimension(1);
+  const int size = nb_faces(), nb_compo_ = y.line_size();
+  const int nsomfa = som_face.dimension(1);
 
   // On dimensionne x si ce n'est pas fait
-  if (x.size_array()==0 && size!=0)
+  if (x.size_array() == 0 && size != 0)
+    x.resize(size, nb_compo_);
+  else if (x.dimension(0) != size || nb_compo_ != x.line_size())
     {
-      if (y.nb_dim() == 2)
-        x.resize(size,nb_compo_);
-      else
-        x.resize(size);
-    }
-  else if (x.dimension(0) != size)
-    {
-      Cerr << "Call to Frontiere::trace_som with a DoubleTab x not located on boundary faces." << finl;
+      Cerr << "Call to Frontiere::trace_elem with a DoubleTab x not located on boundary faces or don't have the same number of components" << finl;
       Process::exit();
     }
-  int nsomfa = som_face.dimension(1);
-  double s;
 
-  for (int i=0; i<size; i++)
-    {
-      if(y.nb_dim()==2)
-        {
-          for(int j=0; j<nb_compo_; j++)
-            {
-              s=0.;
-              for (int isom=0 ; isom<nsomfa ; isom++)
-                s+=y(som_face(i,isom),j);
+  for (int i = 0; i < size; i++)
+    for(int j=0; j<nb_compo_; j++)
+      {
+        double s = 0.;
+        for (int isom = 0; isom < nsomfa; isom++)
+          s += y(som_face(i, isom), j);
 
-              s/=nsomfa;
-              x(i,j) = s;
-            }
-        }
-      else
-        {
-
-          if (x.nb_dim()==2)
-            {
-              for(int j=0; j<nb_compo_; j++)
-                {
-                  s = 0.;
-                  for (int isom=0 ; isom<nsomfa ; isom++)
-                    s+=y(som_face(i,isom));
-
-                  s/=nsomfa;
-                  x(i,j) = s;
-                }
-            }
-          else
-            {
-              s = 0.;
-              for (int isom=0 ; isom<nsomfa ; isom++)
-                s+=y(som_face(i,isom));
-
-              s/=nsomfa;
-              x(i) = s;
-            }
-
-        }
-    }
+        s /= nsomfa;
+        x(i, j) = s;
+      }
 }
 
 // Description:

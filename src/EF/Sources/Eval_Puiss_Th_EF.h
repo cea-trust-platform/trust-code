@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,12 +74,7 @@ inline double Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem) con
   if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
     source = puissance(0,0);
   else
-    {
-      if (puissance.nb_dim()==1)
-        source = puissance(num_elem);
-      else
-        source = puissance(num_elem,0);
-    }
+    source = puissance(num_elem,0);
   return (source);
 }
 

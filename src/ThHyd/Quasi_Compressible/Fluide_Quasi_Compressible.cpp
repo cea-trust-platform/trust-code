@@ -766,7 +766,7 @@ void Fluide_Quasi_Compressible::calculer_pression_tot()
 {
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
   int n = tab_Ptot.dimension_tot(0);
-  DoubleTab tab_PHyd(n);
+  DoubleTab tab_PHyd(n, 1);
   if( n != pression_->valeurs().dimension_tot(0) )
     {
       // Interpolation de pression_ aux elements (ex: P1P0)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,8 +63,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& g = gravite().valeurs();
 
-  int nb_dim = param.nb_dim();
-  int nbcomp = resu.dimension(1);
+  int nb_dim = param.line_size(), nbcomp = resu.line_size();
   // Verifie la validite de T0:
   check();
 
@@ -72,11 +71,10 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   int nb_faces = zone_VEF.nb_faces();
   for (int face=0; face<nb_faces; face++)
     {
-      int elem1 = face_voisins(face,0);
-      int elem2 = face_voisins(face,1);
+      int elem1 = face_voisins(face,0), elem2 = face_voisins(face,1);
       double delta_param = 0;
       for (int dim=0; dim<nb_dim; dim++)
-        delta_param += valeur(beta_valeurs,elem1,elem2,dim)*(Scalaire0(dim)-(nb_dim==1 ? param(face) : param(face,dim)));
+        delta_param += valeur(beta_valeurs,elem1,elem2,dim)*(Scalaire0(dim)-param(face,dim));
 
       for (int comp=0; comp<dimension; comp++)
         {

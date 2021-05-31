@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -142,28 +142,19 @@ DoubleVect& Champ_som_lu_VDF::valeur_aux_compo(const DoubleTab& positions,
 //
 DoubleTab& Champ_som_lu_VDF::valeur_aux_elems(const DoubleTab& positions,
                                               const IntVect& les_polys,
-                                              DoubleTab& val2) const
+                                              DoubleTab& val) const
 {
-  DoubleTab valprov;
-  if (val2.nb_dim() == 1)
+  if (val.nb_dim() == 2)
     {
-      assert(val2.dimension(0) == les_polys.size_array());
-      assert(nb_compo_ == 1);
-      valprov.resize(val2.dimension(0),1);
-
-    }
-  else if (val2.nb_dim() == 2)
-    {
-      assert(val2.dimension(0) == les_polys.size_array());
-      assert(val2.dimension(1) == nb_compo_);
+      assert(val.dimension(0) == les_polys.size_array());
+      assert(val.dimension(1) == nb_compo_);
     }
   else
     {
       Cerr << "Erreur TRUST dans Champ_som_lu_VDF::valeur_aux_elems()" << finl;
-      Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
+      Cerr << "Le DoubleTab val n'a pas 2 entrees" << finl;
       exit();
     }
-  DoubleTab& val=(val2.nb_dim() ==1?valprov:val2);
   const DoubleTab& coord=mon_domaine->coord_sommets();
   const Zone& zone=mon_domaine->zone(0);
   int le_poly;
@@ -235,10 +226,7 @@ DoubleTab& Champ_som_lu_VDF::valeur_aux_elems(const DoubleTab& positions,
       }
   }
 
-  if (val2.nb_dim() ==1)
-    for (int ii=0; ii<val2.dimension(0); ii++) val2(ii)=valprov(ii,0);
-
-  return val2;
+  return val;
 }
 
 // Description:

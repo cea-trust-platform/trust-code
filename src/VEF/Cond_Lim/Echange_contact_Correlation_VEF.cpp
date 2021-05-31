@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -257,32 +257,15 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
     {
       const DoubleTab& tab_lambda = mon_milieu.conductivite().valeurs();
 
-      if (tab_lambda.nb_dim() == 1)
+      for (int face=ndeb; face<nfin; face++)
         {
-          for (int face=ndeb; face<nfin; face++)
-            {
-              int elem =  face_voisins(face,0);
-              if(elem == -1)
-                elem =  face_voisins(face,1);
+          int elem =  face_voisins(face,0);
+          if(elem == -1)
+            elem =  face_voisins(face,1);
 
-              for(int i=0; i<nb_comp; i++)
-                {
-                  tab(face-ndeb,i) = pdt_scalSqrt(zvef,face,face,elem,dimension,tab_lambda(elem)) ;
-                }
-            }
+          for(int i=0; i<nb_comp; i++)
+            tab(face-ndeb,i) = pdt_scalSqrt(zvef,face,face,elem,dimension,tab_lambda(elem,i)) ;
         }
-      else
-        for (int face=ndeb; face<nfin; face++)
-          {
-            int elem =  face_voisins(face,0);
-            if(elem == -1)
-              elem =  face_voisins(face,1);
-
-            for(int i=0; i<nb_comp; i++)
-              {
-                tab(face-ndeb,i) = pdt_scalSqrt(zvef,face,face,elem,dimension,tab_lambda(elem,i)) ;
-              }
-          }
     }
   else  // la conductivite est un Champ uniforme
     {

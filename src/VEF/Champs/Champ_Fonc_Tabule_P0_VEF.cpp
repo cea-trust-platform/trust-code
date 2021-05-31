@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,13 +64,8 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
       Cerr << "Le champ parametre et le champ a initialiser ne sont pas compatibles" << finl;
       exit();
     }
-  int nb_elem=zone_VEF.nb_elem();
-  int nb_elem_tot=zone_VEF.nb_elem_tot();
-  DoubleTab val_param_aux_elems;
-  if (mes_valeurs.nb_dim() == 1)
-    val_param_aux_elems.resize(nb_elem_tot);
-  else if (mes_valeurs.nb_dim() == 2)
-    val_param_aux_elems.resize(nb_elem_tot, mes_valeurs.dimension(1));
+  const int nb_elem = zone_VEF.nb_elem(), nb_elem_tot = zone_VEF.nb_elem_tot(), N = mes_valeurs.line_size();
+  DoubleTab val_param_aux_elems(nb_elem_tot, N);
   const DoubleTab& centres_de_gravites=zone_VEF.xp();
   IntVect les_polys(nb_elem_tot);
   for(int elem=0; elem<nb_elem_tot; elem++)
@@ -81,16 +76,9 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
   // Compute the field according to the parameter field
   if (isfct!=2)
     {
-      if (val_param_aux_elems.nb_dim() == 1)
-        for (int num_elem=0; num_elem<nb_elem; num_elem++)
-          mes_valeurs(num_elem) = table.val(val_param_aux_elems(num_elem));
-      else
-        {
-          int nbcomp=mes_valeurs.dimension(1);
-          for (int num_elem=0; num_elem<nb_elem; num_elem++)
-            for (int ncomp=0; ncomp<nbcomp; ncomp++)
-              mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp), ncomp);
-        }
+      for (int num_elem=0; num_elem<nb_elem; num_elem++)
+        for (int ncomp=0; ncomp<N; ncomp++)
+          mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp), ncomp);
     }
   else
     table.valeurs(val_param_aux_elems,centres_de_gravites,t,mes_valeurs);

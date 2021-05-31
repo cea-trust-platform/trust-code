@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -172,9 +172,7 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
   const int nb_faces = zone_VEF.nb_faces();
   int face, k;
 
-  int nb_comp=1;
-  if(resu.nb_dim()!=1)
-    nb_comp=resu.dimension(1);
+  int nb_comp = resu.line_size();
 
   la_vitesse.valeur().filtrer_L2(ubar);
   uprime-=ubar;
@@ -241,7 +239,7 @@ double Terme_Source_Qdm_lambdaup_VEF_Face::norme_H1(const DoubleTab& vitesse) co
   //ATTENTION: les prismes ne sont pas supportes.
 
   dnorme_H1=0.;
-  for (int composante=0; composante<vitesse.dimension(1); composante++)
+  for (int composante=0; composante<vitesse.line_size(); composante++)
     {
       norme_H1_comp=0.; //pour eviter les accumulations
       for (int K=0; K<zone.nb_elem(); K++) //boucle sur les elements
@@ -286,7 +284,7 @@ double Terme_Source_Qdm_lambdaup_VEF_Face::norme_L2(const DoubleTab& u) const
 
   int i=0;
   double norme =0;
-  int nb_compo_=u.dimension(1);
+  int nb_compo_=u.line_size();
 
   for(; i<nb_faces; i++)
     {

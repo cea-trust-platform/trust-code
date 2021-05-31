@@ -61,12 +61,12 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
   //  Rq: en hydraulique on cherche le Max sur les elements du maillage
   //      initial (comme en thermique) et non le Max sur les volumes de Qdm.
   double coef=0;
-  const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
-  const int diffu_variable = (diffu.dimension(0) == 1) ? 0 : 1;
-  const double diffu_constante = (diffu_variable ? 0. : max_array(diffu));
+  const Champ_base& ch_diffu = has_champ_masse_volumique() ? diffusivite() : diffusivite_pour_pas_de_temps();
+  const DoubleTab& diffu = ch_diffu.valeurs();
+  const double Cdiffu = sub_type(Champ_Uniforme, ch_diffu);
 
   // Si la diffusivite est variable, ce doit etre un champ aux elements.
-  assert((!diffu_variable) || diffu.size()==zone_VDF.nb_elem());
+  assert(Cdiffu || diffu.size() == zone_VDF.nb_elem());
   const int nb_elem = zone_VDF.nb_elem();
   for (int elem = 0; elem < nb_elem; elem++)
     {
@@ -76,20 +76,11 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
           const double h = zone_VDF.dim_elem(elem, i);
           diflo += 1. / (h * h);
         }
-      double alpha;
-      if (diffu_variable)
-        {
-          if (diffu.nb_dim() == 1)
-            alpha = diffu(elem);
-          else
-            {
-              alpha = diffu(elem, 0);
-              for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
-                alpha = max(alpha, diffu(elem, ncomp));
-            }
-        }
-      else
-        alpha = diffu_constante;
+      const int k = Cdiffu ? 0 : elem;
+      double alpha = diffu(k, 0);
+      for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
+        alpha = max(alpha, diffu(k, ncomp));
+
       diflo *= alpha;
       if (has_champ_masse_volumique())
         {

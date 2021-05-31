@@ -125,7 +125,7 @@ void Loi_Etat_Rho_T::initialiser_rho()
   if (isVDF)
     {
       // Disc VDF/polyMAC => rho_ & rho_xyz_ on elems => we do nothing
-      rho_.resize(nb_elems);
+      rho_.resize(nb_elems, 1);
       DoubleTab& fld = rho_xyz_.valeur().valeurs();
 
       for (int i=0; i<nb_elems; i++)
@@ -135,7 +135,7 @@ void Loi_Etat_Rho_T::initialiser_rho()
     {
       // Disc VEF => rho on faces ...
       int nb_faces =  le_fluide->masse_volumique().valeurs().size(); // rho on faces in VEF
-      rho_.resize(nb_faces);
+      rho_.resize(nb_faces, 1);
 
       Champ_base& ch_rho = le_fluide->masse_volumique();
       ch_rho.affecter_(rho_xyz_);

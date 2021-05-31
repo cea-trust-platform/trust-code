@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -156,17 +156,9 @@ Champ_base& Champ_Don_Fonc_xyz::affecter(const Champ_base& )
 Champ_base& Champ_Don_Fonc_xyz::affecter_(const Champ_base& ch)
 {
   if(sub_type(Champ_Uniforme, ch))
-    {
-      const DoubleTab& val=ch.valeurs();
-      if(val.nb_dim()==1)
-        valeurs()=ch.valeurs()[0];
-      else
-        valeurs()=ch.valeurs()(0,0);
-    }
+    valeurs()=ch.valeurs()(0,0);
   else
-    {
-      valeurs()=ch.valeurs();
-    }
+    valeurs()=ch.valeurs();
   return *this;
 }
 
@@ -346,15 +338,7 @@ double Champ_Don_Fonc_xyz::valeur_a_elem_compo(const DoubleVect& x,
 DoubleTab& Champ_Don_Fonc_xyz::valeur_aux(const DoubleTab& x,
                                           DoubleTab& val) const
 {
-  if (val.nb_dim() == 1)
-    {
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
+  if (val.nb_dim() > 2)
     {
       Cerr << "Error TRUST in "<<que_suis_je()<<"::valeur_aux_elems()" << finl;
       Cerr << "The DoubleTab val has more than 2 entries" << finl;

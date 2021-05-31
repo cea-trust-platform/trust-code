@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ double Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int face) const
       double Pimp  = a1 + a2*a3;
       return Pimp ;
     }
-  else if (le_champ_front.valeurs().dimension(1)==1)
+  else if (le_champ_front.valeurs().line_size()==1)
     {
       return (trace_pression_int[face] + coeff[face]*le_champ_front(face,0));
     }

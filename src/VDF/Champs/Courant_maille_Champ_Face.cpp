@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,10 +60,7 @@ inline double valeur(const DoubleTab& champ, const int& face, const int& compo, 
       int elem0 = la_zone_VDF.face_voisins(face,0);
       int elem1 = la_zone_VDF.face_voisins(face,1);
       if (elem1<0) elem1 = elem0; // face frontiere
-      if (champ.nb_dim()==1)
-        return 0.5*(champ(elem0)+champ(elem1));
-      else
-        return 0.5*(champ(elem0,compo)+champ(elem1,compo));
+      return 0.5*(champ(elem0,compo)+champ(elem1,compo));
     }
 }
 

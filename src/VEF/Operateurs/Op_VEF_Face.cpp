@@ -66,10 +66,7 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
   int elem1,elem2;
   int nb_faces_elem = la_zone.zone().nb_faces_elem();
   //const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
-  int nb_comp = 1;
-
-  const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
+  const int nb_comp = la_zone_cl.equation().inconnue().valeurs().line_size();
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
 
   IntVect& tab1=la_matrice.get_set_tab1();
@@ -196,9 +193,8 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
   const IntVect& tab1=la_matrice.get_tab1();
   DoubleVect& coeff = la_matrice.get_set_coeff();
-  int nb_comp = 1;
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
+  const int nb_comp = champ_inconnue.line_size();
   ArrOfDouble normale(nb_comp);
   int size = les_cl.size();
   for (int i=0; i<size; i++)
@@ -637,13 +633,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 /////////////////////////////////////////
 void modif_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice,const Equation_base& eqn)
 {
-  int nb_comp=1;
-  {
-    const DoubleTab& inconnue=eqn.inconnue().valeurs();
-    int nb_dim=inconnue.nb_dim();
-    if(nb_dim==2)
-      nb_comp=inconnue.dimension(1);
-  }
+  const int nb_comp = eqn.inconnue().valeurs().line_size();
   const Zone_Cl_dis_base& zone_Cl_VEF=eqn.zone_Cl_dis().valeur();
   const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());
   int nb_bords=zone_VEF.nb_front_Cl();
@@ -707,13 +697,7 @@ void modif_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice,const
 
 void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice,const Equation_base& eqn)
 {
-  int nb_comp=1;
-  {
-    const DoubleTab& inconnue=eqn.inconnue().valeurs();
-    int nb_dim=inconnue.nb_dim();
-    if(nb_dim==2)
-      nb_comp=inconnue.dimension(1);
-  }
+  const int nb_comp = eqn.inconnue().valeurs().line_size();
   const Zone_Cl_dis_base& zone_Cl_VEF=eqn.zone_Cl_dis().valeur();
   const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());
   int nb_bords=zone_VEF.nb_front_Cl();
@@ -816,15 +800,7 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Mors
   // verification que la matrice est bien periodique
 #ifndef  NDEBUG
 
-  //
-  int nb_comp=1;
-  {
-    const DoubleTab& inconnue=eqn.inconnue().valeurs();
-    int nb_dim=inconnue.nb_dim();
-    if(nb_dim==2)
-      nb_comp=inconnue.dimension(1);
-  }
-
+  const int nb_comp = eqn.inconnue().valeurs().line_size();
 
   const Zone_Cl_dis_base& zone_Cl_VEF=eqn.zone_Cl_dis().valeur();
   const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());

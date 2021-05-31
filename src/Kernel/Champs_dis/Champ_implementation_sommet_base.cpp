@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,72 +105,15 @@ int Champ_implementation_sommet_base::remplir_coord_noeuds_et_polys(DoubleTab& p
 
 DoubleTab& Champ_implementation_sommet_base::valeur_aux_sommets_impl(DoubleTab& result) const
 {
-  const Champ_base& ch_base       = le_champ();
-  int            nb_components = ch_base.nb_comp();
-  const DoubleTab&  values        = ch_base.valeurs();
-  int            size          = values.dimension(0);
+  const Champ_base& ch_base = le_champ();
+  const DoubleTab&  values = ch_base.valeurs();
+  const int size = values.dimension(0), N = values.line_size();
 
-  assert((result.dimension(0) == size)||(result.dimension_tot(0) == size));
-
-  if (nb_components == 1)
-    {
-      if (values.nb_dim() == 1)
-        {
-          if (result.nb_dim() == 1)
-            {
-              result = values;
-            }
-          else if (result.nb_dim() == 2)
-            {
-              assert(result.dimension(1) == 1);
-              for (int i=0; i<size; i++)
-                {
-                  result(i,0) = values(i);
-                }
-            }
-          else
-            {
-              Cerr << "Error TRUST in Champ_implementation_sommet_base::valeur_aux_sommets_impl()" << finl;
-              Cerr << "The DoubleTab result has more than 2 entries" << finl;
-              Process::exit();
-            }
-        }
-      else if (values.nb_dim() == 2)
-        {
-          assert(values.dimension(1) == 1);
-          if (result.nb_dim() == 1)
-            {
-              for (int i=0; i<size; i++)
-                {
-                  result(i) = values(i,0);
-                }
-            }
-          else if (result.nb_dim() == 2)
-            {
-              assert(result.dimension(1) == 1);
-              result = values;
-            }
-          else
-            {
-              Cerr << "Error TRUST in Champ_implementation_sommet_base::valeur_aux_sommets_impl()" << finl;
-              Cerr << "The DoubleTab result has more than 2 entries" << finl;
-              Process::exit();
-            }
-        }
-      else
-        {
-          Cerr << "Error TRUST in Champ_implementation_sommet_base::valeur_aux_sommets_impl()" << finl;
-          Cerr << "The dimensions of the field are inconsistent" << finl;
-          Process::exit();
-        }
-    }
-  else
-    {
-      assert(result.nb_dim() == 2);
-      assert(values.nb_dim() == 2);
-      assert(result.dimension(1) == values.dimension(1));
-      result = values;
-    }
+  assert((result.dimension(0) == size) || (result.dimension_tot(0) == size));
+  assert(result.line_size() == N);
+  for (int i = 0; i < size; i++)
+    for (int n = 0; n < N; n++)
+      result(i, n) = values(i, n);
 
   return result;
 }
@@ -178,47 +121,17 @@ DoubleTab& Champ_implementation_sommet_base::valeur_aux_sommets_impl(DoubleTab& 
 DoubleVect& Champ_implementation_sommet_base::valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const
 {
   const Champ_base& ch_base       = le_champ();
-  int            nb_components = ch_base.nb_comp();
   const DoubleTab&  values        = ch_base.valeurs();
   int            size          = values.dimension(0);
 
   assert(ncomp>=0);
-  assert(ncomp<nb_components);
+  assert(ncomp < ch_base.nb_comp());
   assert(result.size() == size);
+  assert(values.nb_dim() == 2);
+  assert(values.dimension(1) == ch_base.nb_comp());
 
-  if (nb_components == 1)
-    {
-      if (values.nb_dim() == 1)
-        {
-          for (int i=0; i<size; i++)
-            {
-              result(i) = values(i);
-            }
-        }
-      else if (values.nb_dim() == 2)
-        {
-          assert(values.dimension(1) == 1);
-          for (int i=0; i<size; i++)
-            {
-              result(i) = values(i,0);
-            }
-        }
-      else
-        {
-          Cerr << "Error TRUST in Champ_implementation_sommet_base::valeur_aux_sommets_compo_impl()" << finl;
-          Cerr << "The dimensions of the field are inconsistent" << finl;
-          Process::exit();
-        }
-    }
-  else
-    {
-      assert(values.nb_dim() == 2);
-      assert(values.dimension(1) == nb_components);
-      for (int i=0; i<size; i++)
-        {
-          result(i) = values(i,ncomp);
-        }
-    }
+  for (int i=0; i<size; i++)
+    result(i) = values(i, ncomp);
 
   return result;
 }

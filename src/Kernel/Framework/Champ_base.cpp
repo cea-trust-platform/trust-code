@@ -482,10 +482,7 @@ void Champ_base::abortTimeStep()
 // Postcondition:
 Champ_base& Champ_base::affecter(const Champ_base& ch)
 {
-  if (valeurs().get_md_vector()==ch.valeurs().get_md_vector() && valeurs().nb_dim()==ch.valeurs().nb_dim())
-    valeurs() = ch.valeurs();
-  else
-    affecter_(ch);
+  affecter_(ch);
   valeurs().echange_espace_virtuel();
   return *this;
 }
@@ -599,9 +596,6 @@ int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,No
         }
     }
 
-  if (nb_compo_==1)
-    les_valeurs.resize(nb_elem);
-
   nom_post+= Nom("_elem_");
   nom_post+= nom_dom;
   return nb_elem_PE;
@@ -667,9 +661,7 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
   char* theValue = getenv("TRUST_POST_SOM_NON_PARA");
   if (theValue != NULL)
     return;
-  int nb_compo_ = 0;
-  if (les_valeurs.nb_dim()==2)
-    nb_compo_ = les_valeurs.dimension(1);
+  int nb_compo_ = les_valeurs.line_size();
 
   // On balaie les joints
   const Joints& joints = dom.zone(0).faces_joint();
@@ -707,21 +699,9 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
               envoie_sommets(size-1) = sommet_voisin;
               envoie_compteur.resize(size);
               envoie_compteur(size-1) = compteur(sommet);
-              if (nb_compo_)
-                {
-                  envoie_valeurs.resize(size, nb_compo_);
-                  for(int compo=0; compo<nb_compo_; compo++)
-                    {
-                      envoie_valeurs(size-1,compo) = les_valeurs(sommet,compo);
-                    }
-                }
-              else
-                {
-                  envoie_valeurs.resize(size);
-
-                  envoie_valeurs(size-1) = les_valeurs(sommet);
-
-                }
+              envoie_valeurs.resize(size, nb_compo_);
+              for(int compo=0; compo<nb_compo_; compo++)
+                envoie_valeurs(size-1,compo) = les_valeurs(sommet,compo);
             }
         }
       if (Process::me()<PEvoisin)
@@ -759,23 +739,12 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
             {
               // Si le sommet local n'est pas Dirichlet, on annulle valeurs
               if (compteur(sommet)==0)
-                {
-                  if (nb_compo_)
-                    for(int compo=0; compo<nb_compo_; compo++)
-                      les_valeurs(sommet,compo)=0;
-                  else
-                    les_valeurs(sommet)=0;
-                }
+                for(int compo=0; compo<nb_compo_; compo++)
+                  les_valeurs(sommet,compo)=0;
 
               compteur(sommet)+=recoit_compteur(i);
-              if (nb_compo_)
-                for(int compo=0; compo<nb_compo_; compo++)
-
-                  les_valeurs(sommet,compo)+=recoit_valeurs(i,compo);
-              else
-                les_valeurs(sommet)+=recoit_valeurs(i);
-
-
+              for(int compo=0; compo<nb_compo_; compo++)
+                les_valeurs(sommet,compo)+=recoit_valeurs(i,compo);
             }
         }
     }
@@ -975,10 +944,6 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
           les_valeurs(sommet, 1) =vR*sin(teta)+vT*cos(teta);
         }
     }
-
-
-  if (nb_compo_==1)
-    les_valeurs.resize(nb_som);
 
   nom_post+= Nom("_som_");
   nom_post+= nom_dom;

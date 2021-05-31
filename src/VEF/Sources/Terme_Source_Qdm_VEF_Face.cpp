@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ void Terme_Source_Qdm_VEF_Face::associer_zones(const Zone_dis& zone_dis,
 
 DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  int nb_comp=resu.dimension(1);
+  int nb_comp=resu.line_size();
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF=la_zone_Cl_VEF.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -88,20 +88,10 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   ArrOfDouble a0(dimension),a0a1(dimension),a0a2(dimension), a0a3(dimension);
   int nb_elem_tot=zone_VEF.nb_elem_tot();
   double volume;
-  int nbpts=-1; // nombre de points d'integration
   DoubleTab resu_sauv(resu);
   resu = 0.;
+  const int nbpts = (dimension==2) ? 7 : 15;
 
-  if(dimension==2)
-    {
-      nbpts=7; // ordre 5
-    }
-  else if(dimension==3)
-    {
-      nbpts=15; // ordre 5
-    }
-  else
-    assert(0);
 
   // On remplit les Poids et les coord_bary :
 

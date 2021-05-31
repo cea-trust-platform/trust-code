@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -275,17 +275,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       DoubleTab& val=source_bis.valeurs();
 
       int dim0 = val.dimension_tot(0);
-      if (val.nb_dim()==2)
-        {
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_comp; j++)
-              val(i,j) = i+decal;
-        }
-      else
-        {
-          for (int i=0; i<dim0; i++)
-            val(i) = i+decal;
-        }
+      for (int i=0; i<dim0; i++)
+        for (int j=0; j<nb_comp; j++)
+          val(i,j) = i+decal;
     }
 
   //Evaluation des valeurs du champ espace_stockage
@@ -295,37 +287,14 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     {
       const DoubleTab& val_temp= source.valeurs();
       int dim0 = espace_valeurs.dimension(0);
-      if (ncomp==-1)
-        {
-          if (nb_comp==1)
-            for (int i=0; i<dim0; i++)
-              {
-                int n=renumerotation_maillage_[i];
-                if (n>=0)
-                  espace_valeurs(i) = val_temp(n);
-              }
-          else
-            for (int i=0; i<dim0; i++)
-              for (int j=0; j<nb_comp; j++)
-                {
-                  int n=renumerotation_maillage_[i];
-                  if (n>=0)
-                    espace_valeurs(i,j) = val_temp(n,j);
-                }
-        }
-      else
-        //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
-        {
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_comp; j++)
-              if (j==ncomp)
-                {
-                  espace_valeurs(i,j) = val_temp(renumerotation_maillage_[i]);
-                }
-        }
-
-
-
+      for (int i=0; i<dim0; i++)
+        if (ncomp==-1) for (int j=0; j<nb_comp; j++)
+            {
+              int n=renumerotation_maillage_[i];
+              if (n>=0)
+                espace_valeurs(i,j) = val_temp(n,j);
+            }
+        else espace_valeurs(i, ncomp) = val_temp(renumerotation_maillage_[i]);
 
       espace_valeurs.echange_espace_virtuel();
       return espace_stockage.valeur();
@@ -349,17 +318,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
                                             nom_champ_interpole,
                                             domaine);
 
-          if (nb_comp==1)
-            for (int i_val=0; i_val<imax; i_val++)
-              {
-                espace_valeurs(i_val) = val_temp(i_val);
-              }
-          else
-            for (int i_val=0; i_val<imax; i_val++)
-              for (int j_val=0; j_val<nb_comp; j_val++)
-                {
-                  espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
-                }
+          for (int i_val=0; i_val<imax; i_val++)
+            for (int j_val=0; j_val<nb_comp; j_val++)
+              espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
 
         }
       else
@@ -376,9 +337,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
           for (int i=0; i<dim0; i++)
             for (int j=0; j<nb_comp; j++)
               if (j==ncomp)
-                {
-                  espace_valeurs(i,j) = val_temp(i);
-                }
+                espace_valeurs(i,j) = val_temp(i);
         }
 
     }
@@ -396,17 +355,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
                                                           nb_sommets,
                                                           nom_champ_interpole,
                                                           domaine);
-          if (nb_comp==1)
-            for (int i_val=0; i_val<imax; i_val++)
-              {
-                espace_valeurs(i_val) = val_temp(i_val);
-              }
-          else
-            for (int i_val=0; i_val<imax; i_val++)
-              for (int j_val=0; j_val<nb_comp; j_val++)
-                {
-                  espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
-                }
+          for (int i_val=0; i_val<imax; i_val++)
+            for (int j_val=0; j_val<nb_comp; j_val++)
+              espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
         }
       else
         //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
@@ -422,9 +373,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
           for (int i=0; i<dim0; i++)
             for (int j=0; j<nb_comp; j++)
               if (j==ncomp)
-                {
-                  espace_valeurs(i,j) = val_temp(i);
-                }
+                espace_valeurs(i,j) = val_temp(i);
         }
     }
   else
@@ -457,10 +406,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       for (int i=0; (i<dim0)&& ok; i++)
         {
           double v;
-          if (val.nb_dim()==2)
-            v=espace_valeurs(i,0) ;
-          else
-            v=espace_valeurs(i) ;
+          v=espace_valeurs(i,0) ;
 
           int iproche=-1;
           if (v>0)

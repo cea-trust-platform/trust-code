@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,12 +32,7 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
 {
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo_ == 1);
-    }
-  else if (val.nb_dim() == 2)
+  if (val.nb_dim() == 2)
     {
       assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
       assert(val.dimension(1) == nb_compo_);
@@ -45,7 +40,7 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
   else
     {
       Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
-      Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
+      Cerr << "Le DoubleTab val n'a pas 2 entrees" << finl;
       Process::exit();
     }
 

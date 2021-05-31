@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,61 +54,31 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
   int nb_front_cl = la_zone_VEF->nb_front_Cl();
   int premiere_face_interne = la_zone_VEF->premiere_face_int();
   int num_face;
+  int nb_comp = resu.line_size();
 
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-
-  if(nb_dim==2)
-    nb_comp = resu.dimension(1);
-
-  if (nb_dim==1)
+  for (int num_cl =0; num_cl<nb_front_cl; num_cl++)
     {
-      for (int num_cl =0; num_cl<nb_front_cl; num_cl++)
-        {
-          const Cond_lim& la_cl = la_zcl_VEF->les_conditions_limites(num_cl);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
+      const Cond_lim& la_cl = la_zcl_VEF->les_conditions_limites(num_cl);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
 
-          if ((sub_type(Dirichlet,la_cl.valeur()))
-              ||
-              (sub_type(Dirichlet_homogene,la_cl.valeur()))
-             )
-            ;
-          else
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              resu(num_face) += valeurs_calc(num_face)*vol_entrelaces_Cl(num_face)*poro_face(num_face);
-        }
-
-      for (num_face=premiere_face_interne; num_face<nb_faces; num_face++)
-        resu(num_face) += valeurs_calc(num_face)*vol_entrelaces(num_face)*poro_face(num_face);
+      if ((sub_type(Dirichlet,la_cl.valeur()))
+          ||
+          (sub_type(Dirichlet_homogene,la_cl.valeur()))
+         )
+        ;
+      else
+        for (num_face=ndeb; num_face<nfin; num_face++)
+          {
+            for (int nc=0; nc<nb_comp; nc++)
+              resu(num_face,nc) += valeurs_calc(num_face,nc)*vol_entrelaces_Cl(num_face)*poro_face(num_face);
+          }
     }
-  else
-    {
-      for (int num_cl =0; num_cl<nb_front_cl; num_cl++)
-        {
-          const Cond_lim& la_cl = la_zcl_VEF->les_conditions_limites(num_cl);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
 
-          if ((sub_type(Dirichlet,la_cl.valeur()))
-              ||
-              (sub_type(Dirichlet_homogene,la_cl.valeur()))
-             )
-            ;
-          else
-            for (num_face=ndeb; num_face<nfin; num_face++)
-              {
-                for (int nc=0; nc<nb_comp; nc++)
-                  resu(num_face,nc) += valeurs_calc(num_face,nc)*vol_entrelaces_Cl(num_face)*poro_face(num_face);
-              }
-        }
-
-      for (num_face=premiere_face_interne; num_face<nb_faces; num_face++)
-        for (int nc=0; nc<nb_comp; nc++)
-          resu(num_face,nc) += valeurs_calc(num_face,nc)*vol_entrelaces(num_face)*poro_face(num_face);
-    }
+  for (num_face=premiere_face_interne; num_face<nb_faces; num_face++)
+    for (int nc=0; nc<nb_comp; nc++)
+      resu(num_face,nc) += valeurs_calc(num_face,nc)*vol_entrelaces(num_face)*poro_face(num_face);
 
   return resu;
 }

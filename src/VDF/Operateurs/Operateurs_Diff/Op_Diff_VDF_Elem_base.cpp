@@ -81,7 +81,6 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
   else
     {
       double alpha_loc;
-      int nbdim=diffu.nb_dim();
       int nb_elem=diffu.dimension(0);
       for (int elem=0 ; elem<nb_elem; elem++)
         {
@@ -91,14 +90,9 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
               double l = zone_VDF.dim_elem(elem,i);
               h += 1./(l*l);
             }
-          if (nbdim==1)
-            alpha_loc=diffu(elem);
-          else
-            {
-              alpha_loc = diffu(elem,0);
-              for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++)
-                alpha_loc = max(alpha_loc,diffu(elem,ncomp));
-            }
+          alpha_loc = diffu(elem,0);
+          for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++)
+            alpha_loc = max(alpha_loc,diffu(elem,ncomp));
           if (has_champ_masse_volumique())
             {
               const DoubleTab& rho = get_champ_masse_volumique().valeurs();

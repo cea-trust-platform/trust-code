@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,42 +73,21 @@ void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
   DoubleTrav vsom(tabHn.dimension_tot(0));
   int nb_som_elem=les_elems.dimension(1);
   int nb_elem_tot=zone_dis_base.nb_elem_tot();
-  int nb_dim=tabHe.nb_dim();
-  if (nb_dim==1)
-    {
-      for (int ele=0; ele<nb_elem_tot; ele++)
-        {
-          for (int s=0; s<nb_som_elem; s++)
-            {
-              int sglob=les_elems(ele,s);
-              tabHn(sglob)+=tabHe(ele)*volumes(ele);
-              vsom(sglob)+=volumes(ele);
-            }
-        }
-      for (int som=0; som<zone_dis_base.nb_som(); som++)
-        {
-          tabHn(som)/=vsom(som);
-        }
-    }
-  else
-    {
-      int nb_comp=tabHn.dimension(1);
-      for (int ele=0; ele<nb_elem_tot; ele++)
-        {
-          for (int s=0; s<nb_som_elem; s++)
-            {
-              int sglob=les_elems(ele,s);
-              for (int comp=0; comp<nb_comp; comp++)
-                tabHn(sglob,comp)+=tabHe(ele,comp)*volumes(ele);
-              vsom(sglob)+=volumes(ele);
-            }
-        }
-      for (int som=0; som<zone_dis_base.nb_som(); som++)
-        {
-          for (int comp=0; comp<nb_comp; comp++)
-            tabHn(som,comp)/=vsom(som);
-        }
-    }
+  int N = tabHn.line_size();
+
+  for (int e = 0; e < nb_elem_tot; e++)
+    for (int s = 0; s < nb_som_elem; s++)
+      {
+        int sglob = les_elems(e, s);
+        for (int n = 0; n < N; n++)
+          tabHn(sglob, n) += tabHe(e, n) * volumes(e);
+        vsom(sglob) += volumes(e);
+      }
+
+  for (int s = 0; s < zone_dis_base.nb_som(); s++)
+    for (int n = 0; n < N; n++)
+      tabHn(s, n) /= vsom(s);
+
   tabHn.echange_espace_virtuel();
   Debog::verifier("elno sortie",tabHn);
 }
@@ -156,13 +135,9 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
   const DoubleVect& volumes=zone_vf.volumes();
   const DoubleVect& volumes_entrelaces=zone_vf.volumes_entrelaces();
 
-
-
   tabHf=0;
   int nb_face_elem=elem_faces.dimension(1);
   int nb_elem_tot=zone_dis_base.nb_elem_tot();
-  int nb_dim=tabHe.nb_dim();
-
 
   double coeffb=nb_face_elem;
   double coeffi=coeffb;
@@ -172,37 +147,23 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
       coeffi=2;
     }
 
-  if (nb_dim==1)
+  // TODO : FIXME
+  // XXX : codage pas coherent... à voir : volumes ou volumes_entrelaces ???
+  if (tabHe.line_size() == 1)
     {
       DoubleTab vol_tot(tabHf);
       for (int ele=0; ele<nb_elem_tot; ele++)
         for (int s=0; s<nb_face_elem; s++)
           {
-            tabHf(elem_faces(ele,s))+=tabHe(ele)*volumes(ele);
+            tabHf(elem_faces(ele,s))+=tabHe(ele,0)*volumes(ele);
             vol_tot(elem_faces(ele,s)) += volumes(ele);
           }
       for (int f = 0; f < zone_vf.nb_faces(); f++)
         tabHf(f) /= vol_tot(f);
     }
-  else if (nb_dim==2 && tabHe.dimension(1) == 1) //one more case
-    {
-      for (int ele=0; ele<nb_elem_tot; ele++)
-        {
-          for (int s=0; s<nb_face_elem; s++)
-            {
-
-              tabHf(elem_faces(ele,s))+=tabHe(ele, 0)*volumes(ele);
-              //	      Cerr<<elem_faces(ele,s)<<" "<<tabHe(ele)*volumes(ele)<<" "<<tabHf(elem_faces(ele,s))<<finl;
-            }
-        }
-      for (int f=0; f<zone_vf.premiere_face_int(); f++)
-        tabHf(f)/=volumes_entrelaces(f)*coeffb;
-      for (int f=zone_vf.premiere_face_int(); f<zone_vf.nb_faces(); f++)
-        tabHf(f)/=volumes_entrelaces(f)*coeffi;
-    }
   else
     {
-
+      // TODO : factorize these cases ...
       if (tabHf.nb_dim()==1)
         {
           assert(coeffi==2);

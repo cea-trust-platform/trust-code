@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -159,19 +159,14 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
   DoubleTab uT(transporte);
   DoubleTab u(tab_vitesse);
 
-  if (transporte_bar)
-    ch.filtrer_L2(uT);
-  if (transportant_bar)
-    la_vitesse.filtrer_L2(u);
+  if (transporte_bar) ch.filtrer_L2(uT);
+  if (transportant_bar) la_vitesse.filtrer_L2(u);
 
-  int nb_comp=1;
-  if(resu.nb_dim()!=1)
-    nb_comp=resu.dimension(1);
+  const int nb_comp =resu.line_size();
   DoubleTab grad_uT(nb_comp, dimension);
   DoubleTab grad_phi(nb_faces_elem,dimension);
-  int elem, num_face, j, i;
+  int elem, num_face, j, i, face;
   double d_inv=(1./nb_faces_elem);
-  int face;
 
   resu=0;
   DoubleTab sigma(dimension, dimension);
@@ -179,10 +174,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
   for (elem=0; elem<nb_elem_tot; elem++)
     {
       //for elem
-      sigma=0;
-      contrib_elem=0;
-      grad_uT=0.;
-      grad_phi=0.;
+      sigma=0, contrib_elem=0, grad_uT=0., grad_phi=0.;
       for(num_face=0; num_face<nb_faces_elem; num_face++)
         {
           //for num_face
@@ -193,17 +185,11 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
           for (i=0; i<dimension; i++)
             {
               grad_phi(num_face,i)=face_normales(face,i)*cc;
-              if(nb_comp==1)
+              for (j=0; j<nb_comp; j++)
                 {
-                  sigma(i,0)+=u(face,i)*uT(face);
-                  grad_uT(0,i)+=uT(face)*grad_phi(num_face,i);
+                  sigma(i,j)+=u(face,i)*uT(face,j);
+                  grad_uT(j,i)+=uT(face,j)*grad_phi(num_face,i);
                 }
-              else
-                for (j=0; j<nb_comp; j++)
-                  {
-                    sigma(i,j)+=u(face,i)*uT(face,j);
-                    grad_uT(j,i)+=uT(face,j)*grad_phi(num_face,i);
-                  }
             }
         }
 
@@ -233,11 +219,8 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
       for(num_face=0; num_face<nb_faces_elem; num_face++)
         {
           face=elem_faces(elem, num_face);
-          if(nb_comp==1)
-            resu(face)+=contrib_elem(num_face,0);
-          else
-            for (i=0; i<nb_comp; i++)
-              resu(face,i)+=contrib_elem(num_face,i);
+          for (i=0; i<nb_comp; i++)
+            resu(face,i)+=contrib_elem(num_face,i);
         }
     }
 
@@ -246,8 +229,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int nb_faces_bord_tot=le_bord.nb_faces_tot();
-      int num10 = 0 ;
-      int num20 = le_bord.nb_faces_tot();
+      int num10 = 0, num20 = le_bord.nb_faces_tot();
 
       if (sub_type(Periodique,la_cl.valeur()))
         {
@@ -269,36 +251,14 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
                   for (int comp=0; comp<nb_comp; comp++)
                     {
                       double som;
-                      if(nb_comp==1)
-                        {
-                          som=resu(face_associee)+resu(face);
-                          resu(face)=resu(face_associee)=som;
-                        }
-                      else
-                        {
-                          som=resu(face_associee,comp)+resu(face,comp);
-                          resu(face,comp)=resu(face_associee,comp)=som;
-                        }
+                      som=resu(face_associee,comp)+resu(face,comp);
+                      resu(face,comp)=resu(face_associee,comp)=som;
                     }
                 }// if fait
             }// for face
 
         }// sub_type Perio
-      //       else if ( (sub_type(Dirichlet,la_cl.valeur())) || (sub_type(Dirichlet_homogene,la_cl.valeur())) )
-      //         {
-      //           for (face=num1; face<num2; face++)
-      //             {
-      //               if(nb_comp==1)
-      //                 {
-      //                   resu(face)=0;
-      //                 }
-      //               else
-      //                 for (int comp=0; comp<nb_comp; comp++)
-      //                   {
-      //                     resu(face,comp)=0.;
-      //                   }
-      //             }
-      //         }
+
       else if ((antisym==1) && (!sub_type(Symetrie,la_cl.valeur())) )
         {
           //          Cerr << "Ajout des termes de bords :" << finl;
@@ -313,25 +273,13 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
               for (comp=0; comp<nb_comp; comp++)
                 psc += face_normales(face,comp)*u(face, comp);
               psc *=0.5;
-              if(nb_comp==1)
-                resu(face)-=psc*uT(face);
-              else
-                {
-                  for (comp=0; comp<nb_comp; comp++)
-                    resu(face, comp)-=psc*uT(face, comp);
-                }
+              for (comp=0; comp<nb_comp; comp++)
+                resu(face, comp)-=psc*uT(face, comp);
+
             }
         }
     }// for nbord
 
-  //Cerr << "Av filtre resu = " << resu << finl;
-  // Filtrage de l'acceleration :
-  // PQ : 11/03 : probleme de filtrer_resu constate avec un scalaire
-  //  if(filtrer_resu && nb_comp==1)
-  //  {
-  //  Cerr << " probleme de filtrer_resu constate avec un scalaire dans VEF/Operateurs/OpConvEFP1NC.cpp" << finl;
-  //  exit();
-  //  }
   if(filtrer_resu)
     ch.filtrer_resu(resu);
 
@@ -349,10 +297,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
       const int nb_faces = zone_VEF.nb_faces();
       const DoubleVect& volumes_entrelaces=zone_VEF.volumes_entrelaces();
       int face2, k;
-      double psc=0;
-      double pscprim=0;
-      double ec=0;
-      double ecprime=0;
+      double psc=0., pscprim=0., ec=0., ecprime=0.;
       int deb=zone_VEF.premiere_face_int();
       for(face2=deb; face2<nb_faces; face2++)
         for(k=0; k< dimension; k++)

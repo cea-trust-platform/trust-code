@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,12 +52,6 @@ static void convbis(const double& psc,const int num1,const int num2,
   int comp,amont;
   double flux;
 
-
-  //   int impr=0;
-  //   if((Process::nproc()==1)&&((num1==8)||(num2==8)))
-  //     impr=1;
-  //   if((Process::nproc()==2)&&(Process::me()==0)&&((num1==4)||(num2==4)))
-  //     impr=1;
   if (psc >= 0)
     {
       amont = num1;
@@ -69,36 +63,11 @@ static void convbis(const double& psc,const int num1,const int num2,
       fluent[num1] -= psc;
     }
 
-  if (ncomp == 1)
+  for (comp=0; comp<ncomp; comp++)
     {
-      // Cerr << "transporte de num1 " << transporte(num1) << finl;
-      // Cerr << "transporte de num2 " << transporte(num2) << finl;
-      flux = transporte(amont)*psc;
-      resu(num1) -= flux;
-      resu(num2) += flux;
-    }
-  else
-    {
-      for (comp=0; comp<ncomp; comp++)
-        {
-          //         if(impr)
-          //           {
-          //             Process::Journal()<<"num1 : "<<num1<<" ; num2 : "<<num2<<finl;
-          //             Process::Journal()<<"resu(num1,comp) : "<<resu(num1,comp)<<finl;
-          //             Process::Journal()<<"resu(num2,comp) : "<<resu(num2,comp)<<finl;
-          //           }
-          flux = transporte(amont,comp)*psc;
-          resu(num1,comp) -= flux;
-          resu(num2,comp) += flux;
-          //         if(impr)
-          //           {
-          //             Process::Journal()<<"transporte(amont,comp) = "<<transporte(amont,comp)<<finl;
-          //             Process::Journal()<<"psc : "<<psc<<finl;
-          //             Process::Journal()<<"flux : "<<flux<<finl;
-          //             Process::Journal()<<"resu(num1,comp) : "<<resu(num1,comp)<<finl;
-          //             Process::Journal()<<"resu(num2,comp) : "<<resu(num2,comp)<<finl;
-          //           }
-        }
+      flux = transporte(amont,comp)*psc;
+      resu(num1,comp) -= flux;
+      resu(num2,comp) += flux;
     }
 }
 static void convbisimplicite(const double& psc,const int num1,const int num2,
@@ -109,65 +78,35 @@ static void convbisimplicite(const double& psc,const int num1,const int num2,
   IntVect& tab1 = matrice.get_set_tab1();
   IntVect& tab2 = matrice.get_set_tab2();
 
-  if (ncomp == 1)
+  for (comp=0; comp<ncomp; comp++)
     {
       if (psc >=0)
         {
-          for (k=tab1[num1]-1; k<tab1[num1+1]-1; k++)
+          for (k=tab1[num1*ncomp+comp]-1; k<tab1[num1*ncomp+comp+1]-1; k++)
             {
-              if (tab2[k]-1 == num1)
+              if (tab2[k]-1== num1*ncomp+comp)
                 coeff(k) += psc;
             }
-          for (k=tab1[num2]-1; k<tab1[num2+1]-1; k++)
+          for (k=tab1[num2*ncomp+comp]-1; k<tab1[num2*ncomp+comp+1]-1; k++)
             {
-              if (tab2[k]-1== num1)
+              if (tab2[k]-1== num1*ncomp+comp)
                 coeff(k) -= psc;
             }
         }
       else
         {
-          for (k=tab1[num1]-1; k<tab1[num1+1]-1; k++)
+          for (k=tab1[num1*ncomp+comp]-1; k<tab1[num1*ncomp+comp+1]-1; k++)
             {
-              if (tab2[k]-1 == num2)
+              if (tab2[k]-1== num2*ncomp+comp)
                 coeff(k) += psc;
             }
-          for (k=tab1[num2]-1; k<tab1[num2+1]-1; k++)
+          for (k=tab1[num2*ncomp+comp]-1; k<tab1[num2*ncomp+comp+1]-1; k++)
             {
-              if (tab2[k]-1== num2)
+              if (tab2[k]-1== num2*ncomp+comp)
                 coeff(k) -= psc;
             }
         }
     }
-  else
-    for (comp=0; comp<ncomp; comp++)
-      {
-        if (psc >=0)
-          {
-            for (k=tab1[num1*ncomp+comp]-1; k<tab1[num1*ncomp+comp+1]-1; k++)
-              {
-                if (tab2[k]-1== num1*ncomp+comp)
-                  coeff(k) += psc;
-              }
-            for (k=tab1[num2*ncomp+comp]-1; k<tab1[num2*ncomp+comp+1]-1; k++)
-              {
-                if (tab2[k]-1== num1*ncomp+comp)
-                  coeff(k) -= psc;
-              }
-          }
-        else
-          {
-            for (k=tab1[num1*ncomp+comp]-1; k<tab1[num1*ncomp+comp+1]-1; k++)
-              {
-                if (tab2[k]-1== num2*ncomp+comp)
-                  coeff(k) += psc;
-              }
-            for (k=tab1[num2*ncomp+comp]-1; k<tab1[num2*ncomp+comp+1]-1; k++)
-              {
-                if (tab2[k]-1== num2*ncomp+comp)
-                  coeff(k) -= psc;
-              }
-          }
-      }
 }
 
 
@@ -227,22 +166,14 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // du type (triangle, tetraedre ...) et du nombre de faces de Dirichlet.
 
   double psc;
-  int poly,face_adj,fa7,i,j,n_bord;
-  int num_face, rang ,itypcl;
-  int num10,num20,num_som;
-  int ncomp_ch_transporte;
-
-  if (transporte.nb_dim() == 1)
-    ncomp_ch_transporte=1;
-  else
-    ncomp_ch_transporte= transporte.dimension(1);
+  int poly,face_adj,fa7,i,j,n_bord,num_face, rang ,itypcl, num10,num20,num_som;
+  const int ncomp_ch_transporte = transporte.line_size();
 
   IntVect face(nfac);
   DoubleVect vs(dimension);
   DoubleVect vc(dimension);
   DoubleTab vsom(nsom,dimension);
   DoubleVect cc(dimension);
-
 
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite
@@ -262,12 +193,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
         }
     }
 
-  DoubleTab tab;
-  if (ncomp_ch_transporte == 1)
-    tab.resize(nb_faces_perio);
-  else
-    tab.resize(nb_faces_perio,ncomp_ch_transporte);
-
+  DoubleTab tab(nb_faces_perio,ncomp_ch_transporte);
   // Boucle pour remplir tab
   nb_faces_perio=0;
   for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
@@ -281,11 +207,8 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
           int num2 = num1 + le_bord.nb_faces();
           for (num_face=num1; num_face<num2; num_face++)
             {
-              if (ncomp_ch_transporte == 1)
-                tab(nb_faces_perio) = resu(num_face);
-              else
-                for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                  tab(nb_faces_perio,comp) = resu(num_face,comp);
+              for (int comp=0; comp<ncomp_ch_transporte; comp++)
+                tab(nb_faces_perio,comp) = resu(num_face,comp);
               nb_faces_perio++;
             }
         }
@@ -305,7 +228,6 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
-
       rang = rang_elem_non_std(poly);
       if (rang==-1)
         itypcl=0;
@@ -324,15 +246,12 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
       // calcul de la vitesse aux sommets des polyedres
-
       // int ncomp;
       if (istetra==1)
         {
           for (j=0; j<nsom; j++)
-            {
-              for (int ncomp=0; ncomp<Objet_U::dimension; ncomp++)
-                vsom(j,ncomp) =vs[ncomp] - Objet_U::dimension*la_vitesse(face[j],ncomp)*porosite_face(face[j]);
-            }
+            for (int ncomp=0; ncomp<Objet_U::dimension; ncomp++)
+              vsom(j,ncomp) =vs[ncomp] - Objet_U::dimension*la_vitesse(face[j],ncomp)*porosite_face(face[j]);
         }
       else
         {
@@ -343,16 +262,13 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
             {
               num_som = zone.sommet_elem(poly,j);
               for (int ncomp=0; ncomp<dimension; ncomp++)
-                {
-                  vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
-                }
+                vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
             }
         }
 
       type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
       // Boucle sur les facettes du polyedre
-
       for (fa7=0; fa7<nfa7; fa7++)
         {
           if (rang==-1)
@@ -361,17 +277,15 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
           else
             for (i=0; i<dimension; i++)
               cc[i] = normales_facettes_Cl(rang,fa7,i);
+
           // On applique le schema de convection a chaque sommet de la facette
-
           // On traite le ou les sommets qui sont aussi des sommets du polyedre
-
           for (i=0; i<nb_som_facette-1; i++)
             {
               psc =0;
               for (j=0; j<dimension; j++)
-                {
-                  psc+= vsom(KEL(i+2,fa7),j)*cc[j];
-                }
+                psc+= vsom(KEL(i+2,fa7),j)*cc[j];
+
               // Boucle sur les facettes du polyedre
               psc /= nb_som_facette;
               num10 = face[KEL(0,fa7)];
@@ -429,30 +343,20 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
               for (i=0; i<dimension; i++)
                 psc += la_vitesse(num_face,i)*face_normales(num_face,i)*porosite_face(num_face);
               if (psc>0)
-                if (ncomp_ch_transporte == 1)
-                  {
-                    resu(num_face) -= psc*transporte(num_face);
-                    flux_b(num_face,0) -= psc*transporte(num_face);
-                  }
-                else
+                {
                   for (i=0; i<ncomp_ch_transporte; i++)
                     {
                       resu(num_face,i) -= psc*transporte(num_face,i);
                       flux_b(num_face,i) -= psc*transporte(num_face,i);
                     }
+                }
               else
                 {
-                  if (ncomp_ch_transporte == 1)
+                  for (i=0; i<ncomp_ch_transporte; i++)
                     {
-                      resu(num_face) -= psc*la_sortie_libre.val_ext(num_face-num1);
-                      flux_b(num_face,0) -= psc*la_sortie_libre.val_ext(num_face-num1);
+                      resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
+                      flux_b(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
                     }
-                  else
-                    for (i=0; i<ncomp_ch_transporte; i++)
-                      {
-                        resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
-                        flux_b(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
-                      }
                   fluent_[num_face] -= psc;
                 }
             }
@@ -461,8 +365,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int num1 = le_bord.num_premiere_face();
-          int num2 = num1 + le_bord.nb_faces();
+          int num1 = le_bord.num_premiere_face(), num2 = num1 + le_bord.nb_faces();
           IntVect fait(le_bord.nb_faces());
           fait = 0;
           for (num_face=num1; num_face<num2; num_face++)
@@ -470,26 +373,15 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
               if (fait[num_face-num1] == 0)
                 {
                   voisine = la_cl_perio.face_associee(num_face-num1) + num1;
-
-                  if (ncomp_ch_transporte == 1)
+                  for (int comp=0; comp<ncomp_ch_transporte; comp++)
                     {
-                      diff1 = resu(num_face)-tab(nb_faces_perio);
-                      diff2 = resu(voisine)-tab(nb_faces_perio+voisine-num_face);
-                      resu(voisine)  += diff1;
-                      resu(num_face) += diff2;
-                      flux_b(voisine,0) += diff1;
-                      flux_b(num_face,0) += diff2;
+                      diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
+                      diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
+                      resu(voisine,comp)  += diff1;
+                      resu(num_face,comp) += diff2;
+                      flux_b(voisine,comp) += diff1;
+                      flux_b(num_face,comp) += diff2;
                     }
-                  else
-                    for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                      {
-                        diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
-                        diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
-                        resu(voisine,comp)  += diff1;
-                        resu(num_face,comp) += diff2;
-                        flux_b(voisine,comp) += diff1;
-                        flux_b(num_face,comp) += diff2;
-                      }
 
                   fait[num_face-num1]= 1;
                   fait[voisine-num1] = 1;
@@ -517,14 +409,9 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   const int nfa7 = type_elem.nb_facette();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-
-
   const DoubleVect& porosite_face = zone_VEF.porosite_face();
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
-
-  int nfac = zone.nb_faces_elem();
-  int nsom = zone.nb_som_elem();
-  int nb_som_facette = zone.type_elem().nb_som_face();
+  int nfac = zone.nb_faces_elem(), nsom = zone.nb_som_elem(), nb_som_facette = zone.type_elem().nb_som_face();
 
   // Pour le traitement de la convection on distingue les polyedres
   // standard qui ne "voient" pas les conditions aux limites et les
@@ -538,14 +425,8 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
 
   double psc;
   DoubleTab pscl=0;
-  int poly,face_adj,fa7,i,j,k,n_bord;
-  int num_face, rang ,itypcl;
-  int num10,num20,num_som;
-  int ncomp_ch_transporte;
-  if (transporte.nb_dim() == 1)
-    ncomp_ch_transporte=1;
-  else
-    ncomp_ch_transporte= transporte.dimension(1);
+  int poly,face_adj,fa7,i,j,k,n_bord, num_face, rang ,itypcl, num10,num20,num_som;
+  const int ncomp_ch_transporte = transporte.line_size();
 
   IntVect face(nfac);
   DoubleVect vs(dimension);
@@ -556,11 +437,8 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   IntVect& tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
 
-
   // Traitement particulier pour les faces de periodicite
-
-  int nb_faces_perio = 0;
-  int voisine;
+  int voisine, nb_faces_perio = 0;
   double diff1,diff2;
 
   // Boucle pour compter le nombre de faces de periodicite
@@ -570,36 +448,26 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-
           nb_faces_perio += le_bord.nb_faces();
         }
     }
 
-  DoubleTab tab;
-  if (ncomp_ch_transporte == 1)
-    tab.resize(nb_faces_perio);
-  else
-    tab.resize(nb_faces_perio,ncomp_ch_transporte);
+  DoubleTab tab(nb_faces_perio,ncomp_ch_transporte);
 
   // Boucle pour remplir tab
-
   nb_faces_perio=0;
   for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
-          //          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
           for (num_face=num1; num_face<num2; num_face++)
             {
-              if (ncomp_ch_transporte == 1)
-                tab(nb_faces_perio) = coeff(num_face);
-              else
-                for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                  tab(nb_faces_perio,comp) = coeff(num_face*ncomp_ch_transporte+comp);
+              for (int comp=0; comp<ncomp_ch_transporte; comp++)
+                tab(nb_faces_perio,comp) = coeff(num_face*ncomp_ch_transporte+comp);
               nb_faces_perio++;
             }
         }
@@ -643,14 +511,8 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
           num_som = zone.sommet_elem(poly,j);
           for(int kk=0; kk<Objet_U::dimension; kk++)
             for (ncomp=0; ncomp<dimension; ncomp++)
-              {
-                vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
-              }
+              vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
         }
-
-      // for (i=0; i<nsom; i++)
-      //       for (j=0; j<dimension; j++)
-      //         vsom(i,j) = vs[j] - dimension*la_vitesse(face[i],j);
 
       // calcul de vc
       type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
@@ -667,7 +529,6 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
               cc[i] = normales_facettes_Cl(rang,fa7,i);
 
           // On applique le schema de convection a chaque sommet de la facette
-
           // On traite le ou les sommets qui sont aussi des sommets du polyedre
 
           for (i=0; i<nb_som_facette-1; i++)
@@ -706,9 +567,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
 
   for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
-
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
           //        const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
@@ -722,45 +581,23 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
                 psc += la_vitesse(num_face,i)*face_normales(num_face,i);
               if (psc>0)
                 {
-                  if (ncomp_ch_transporte == 1)
+                  for (j=0; j<ncomp_ch_transporte; j++)
                     {
-                      for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
+                      for (k=tab1[num_face*ncomp_ch_transporte+j]-1; k<tab1[num_face*ncomp_ch_transporte+j+1]-1; k++)
                         {
-                          if (tab2[k]-1==num_face)
+                          if (tab2[k]-1==num_face*ncomp_ch_transporte+j)
                             coeff(k) += psc;
-                        }
-                    }
-                  else
-                    {
-                      for (j=0; j<ncomp_ch_transporte; j++)
-                        {
-                          for (k=tab1[num_face*ncomp_ch_transporte+j]-1; k<tab1[num_face*ncomp_ch_transporte+j+1]-1; k++)
-                            {
-                              if (tab2[k]-1==num_face*ncomp_ch_transporte+j)
-                                coeff(k) += psc;
-                            }
                         }
                     }
                 }
               else /*psc < 0 */
                 {
-                  if (ncomp_ch_transporte == 1)
+                  for (j=0; j<ncomp_ch_transporte; j++)
                     {
-                      for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
+                      for (k=tab1[num_face*ncomp_ch_transporte+j]-1; k<tab1[num_face*ncomp_ch_transporte+j+1]-1; k++)
                         {
-                          if (tab2[k]-1==num_face)
+                          if (tab2[k]-1==num_face*ncomp_ch_transporte+j)
                             coeff(k) += 0;
-                        }
-                    }
-                  else
-                    {
-                      for (j=0; j<ncomp_ch_transporte; j++)
-                        {
-                          for (k=tab1[num_face*ncomp_ch_transporte+j]-1; k<tab1[num_face*ncomp_ch_transporte+j+1]-1; k++)
-                            {
-                              if (tab2[k]-1==num_face*ncomp_ch_transporte+j)
-                                coeff(k) += 0;
-                            }
                         }
                     }
                 }
@@ -779,38 +616,19 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
               if (fait[num_face-num1] == 0)
                 {
                   voisine = la_cl_perio.face_associee(num_face-num1) + num1;
-
-                  if (ncomp_ch_transporte == 1)
+                  for (int comp=0; comp<ncomp_ch_transporte; comp++)
                     {
-                      diff1 = -1*tab(nb_faces_perio);
-                      diff2 = -1*tab(nb_faces_perio+voisine-num_face);
-                      for (k=tab1[num_face]-1; k<tab1[num_face+1]-1; k++)
-                        {
-                          if (tab2[k]-1==num_face)
-                            coeff(k) += diff2;
-                        }
-                      for (k=tab1[voisine]-1; k<tab1[voisine+1]-1; k++)
-                        {
-                          if (tab2[k]-1==voisine)
-                            coeff(k) += diff1;
-                        }
+                      diff1 = -1*tab(nb_faces_perio,comp);
+                      diff2 = -1*tab(nb_faces_perio+voisine-num_face,comp);
+
+                      for (k=tab1[num_face*ncomp_ch_transporte+comp]-1; k<tab1[num_face*ncomp_ch_transporte+1+comp]-1; k++)
+                        if (tab2[k]-1==num_face*ncomp_ch_transporte+comp)
+                          coeff(k) += diff2;
+
+                      for (k=tab1[voisine*ncomp_ch_transporte+comp]-1; k<tab1[voisine*ncomp_ch_transporte+1+comp]-1; k++)
+                        if (tab2[k]-1==voisine*ncomp_ch_transporte+comp)
+                          coeff(k) += diff1;
                     }
-                  else
-                    for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                      {
-                        diff1 = -1*tab(nb_faces_perio,comp);
-                        diff2 = -1*tab(nb_faces_perio+voisine-num_face,comp);
-                        for (k=tab1[num_face*ncomp_ch_transporte+comp]-1; k<tab1[num_face*ncomp_ch_transporte+1+comp]-1; k++)
-                          {
-                            if (tab2[k]-1==num_face*ncomp_ch_transporte+comp)
-                              coeff(k) += diff2;
-                          }
-                        for (k=tab1[voisine*ncomp_ch_transporte+comp]-1; k<tab1[voisine*ncomp_ch_transporte+1+comp]-1; k++)
-                          {
-                            if (tab2[k]-1==voisine*ncomp_ch_transporte+comp)
-                              coeff(k) += diff1;
-                          }
-                      }
 
                   fait[num_face-num1]= 1;
                   fait[voisine-num1] = 1;
@@ -826,42 +644,17 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
-
-  //  const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleTab& face_normales = zone_VEF.face_normales();
-  //  const DoubleTab& facette_normales = zone_VEF.facette_normales();
-  //  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const Zone& zone = zone_VEF.zone();
-  //  const int nb_faces = zone_VEF.nb_faces();
-  //  const int nfa7 = type_elem.nb_facette();
-  //  const int nb_elem = zone_VEF.nb_elem();
-  //  const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  //  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-
-
-  //  const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
-  //  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
-
   int nfac = zone.nb_faces_elem();
-  //  int nsom = zone.nb_som_elem();
-  //  int nb_som_facette = zone.type_elem().nb_som_face();
-
   double psc;
-  int i,n_bord;
-  int num_face;
-  int ncomp;
-  if (resu.nb_dim() == 1)
-    ncomp=1;
-  else
-    ncomp= resu.dimension(1);
+  int i,n_bord, num_face;
+  const int ncomp = resu.line_size();
 
   IntVect face(nfac);
 
-
   // Traitement particulier pour les faces de periodicite
-
-  int nb_faces_perio = 0;
-  int voisine;
+  int voisine, nb_faces_perio = 0;
   double diff1,diff2;
 
   // Boucle pour compter le nombre de faces de periodicite
@@ -872,16 +665,10 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           nb_faces_perio += le_bord.nb_faces();
-
         }
     }
 
-  DoubleTab tab;
-  if (ncomp == 1)
-    tab.resize(nb_faces_perio);
-  else
-    tab.resize(nb_faces_perio,ncomp);
-
+  DoubleTab tab(nb_faces_perio,ncomp);
   // Boucle pour remplir tab
   nb_faces_perio=0;
   for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
@@ -889,17 +676,14 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
-          //          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
           for (num_face=num1; num_face<num2; num_face++)
             {
-              if (ncomp == 1)
-                tab(nb_faces_perio) = resu(num_face);
-              else
-                for (int comp=0; comp<ncomp; comp++)
-                  tab(nb_faces_perio,comp) = resu(num_face,comp);
+              for (int comp=0; comp<ncomp; comp++)
+                tab(nb_faces_perio,comp) = resu(num_face,comp);
+
               nb_faces_perio++;
             }
         }
@@ -910,9 +694,7 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
 
   for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
-
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
           const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
@@ -925,19 +707,11 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
               for (i=0; i<dimension; i++)
                 psc += la_vitesse(num_face,i)*face_normales(num_face,i);
               if (psc>0)
-                if (ncomp == 1)
-                  resu(num_face) += 0;
-                else
-                  for (i=0; i<ncomp; i++)
-                    resu(num_face,i) += 0;
+                for (i=0; i<ncomp; i++)
+                  resu(num_face,i) += 0;
               else
-                {
-                  if (ncomp == 1)
-                    resu(num_face) -= psc*la_sortie_libre.val_ext(num_face-num1);
-                  else
-                    for (i=0; i<ncomp; i++)
-                      resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
-                }
+                for (i=0; i<ncomp; i++)
+                  resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
             }
         }
       else if (sub_type(Periodique,la_cl.valeur()))
@@ -953,22 +727,13 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
               if (fait[num_face-num1] == 0)
                 {
                   voisine = la_cl_perio.face_associee(num_face-num1) + num1;
-
-                  if (ncomp == 1)
+                  for (int comp=0; comp<ncomp; comp++)
                     {
-                      diff1 = resu(num_face)-tab(nb_faces_perio);
-                      diff2 = resu(voisine)-tab(nb_faces_perio+voisine-num_face);
-                      resu(voisine)  += diff1;
-                      resu(num_face) += diff2;
+                      diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
+                      diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
+                      resu(voisine,comp)  += diff1;
+                      resu(num_face,comp) += diff2;
                     }
-                  else
-                    for (int comp=0; comp<ncomp; comp++)
-                      {
-                        diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
-                        diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
-                        resu(voisine,comp)  += diff1;
-                        resu(num_face,comp) += diff2;
-                      }
 
                   fait[num_face-num1]= 1;
                   fait[voisine-num1] = 1;

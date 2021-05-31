@@ -146,12 +146,9 @@ void Op_Diff_EF::associer(const Zone_dis& zone_dis,
   // On dimensionne et initialise le tableau des bilans de flux:
   const Zone_EF& zone_EF = la_zone_EF.valeur();
 
-  int nb_comp = 1;
-  //  int nb_dim = resu.nb_dim();
-  //  if(nb_dim==2)
-  //    nb_comp=resu.dimension(1);
+  int N = 1;
 
-  (ref_cast(DoubleTab,flux_bords)).resize(zone_EF.nb_faces_bord(),nb_comp);
+  (ref_cast(DoubleTab,flux_bords)).resize(zone_EF.nb_faces_bord(),N);
   flux_bords=0.;
 }
 */
@@ -208,12 +205,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
   const Zone_EF& zone_ef = la_zone_EF.valeur();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
 
-  int nb_dim = resu.nb_dim();
-  int nb_comp = 1;
-  if(nb_dim==2)
-    {
-      nb_comp=resu.dimension(1);
-    }
+  int N = resu.line_size();
   Nature_du_champ nat= equation().inconnue().valeur().nature_du_champ();
   if (nat==vectoriel)
     {
@@ -231,7 +223,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
     }
   else
     {
-      if (nb_comp!=1)
+      if (N != 1)
         {
           Cerr<<__FILE__<<(int)__LINE__<< "cas non prevu "<<finl;
           assert(0);
@@ -255,16 +247,12 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
 }
 
 
-// macro declare_ajouter(dimension,nbdim,nb_comp,nature,nb_som_elem,dim_fois_nbn)
+// macro declare_ajouter(dimension,N,nature,nb_som_elem,dim_fois_nbn)
 
-
-//Pset(nb_comp 3)
-//Pset(dim_fois_nbn 24)
-//Pset(nb_som_elem 8)
 
 DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnue, DoubleTab& resu) const
 {
-  const int nb_comp =3;
+  const int N =3;
   const int dim_fois_nbn= 24;
   const int nb_som_elem= 8;
   const int const_dimension= 3;
@@ -287,8 +275,8 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
   const double* inco_ptr=tab_inconnue.addr();
   double* resu_ptr=resu.addr();
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
@@ -305,10 +293,8 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
           for (int i1=0; i1<nb_som_elem; i1++)
             {
               int glob=elems(elem,i1);
-              for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
-              int transpose=transpose_;
-              if (marqueur_neuman(glob)==1)
-                transpose=0;
+              for (int yy=0; yy<N; yy++) pr[yy]=0;
+              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -322,12 +308,12 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
                         if (transpose)
                           prod2+=bij_(elem,i1,b)*inconnue_(glob2,b);
                       }
-                    for (int a=0; a<nb_comp; a++)
-                      pr[a]+=prod*inconnue_(glob2,a)+prod2*bij_(elem,i2,a);
+                    for (int n = 0; n < N; n++)
+                      pr[n] += prod*inconnue_(glob2, n)+prod2*bij_(elem, i2, n);
                   }
                 }
-              for (int a=0; a<nb_comp; a++)
-                resu_(glob,a)-=pr[a]*pond;
+              for (int n = 0; n < N; n++)
+                resu_(glob, n) -= pr[n] * pond;
 
             }
         }
@@ -346,18 +332,14 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
 }
 
 
-//Punset(nb_comp)
+//Punset(N)
 //Punset(dim_fois_nbn)
 //Punset(nb_som_elem)
 
 
-//Pset(nb_comp 1)
-//Pset(dim_fois_nbn 24)
-//Pset(nb_som_elem 8)
-
 DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue, DoubleTab& resu) const
 {
-  const int nb_comp =1;
+  const int N =1;
   const int dim_fois_nbn= 24;
   const int nb_som_elem= 8;
   const int const_dimension= 3;
@@ -378,8 +360,8 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue
   const double* inco_ptr=tab_inconnue.addr();
 
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
@@ -396,7 +378,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue
           for (int i1=0; i1<nb_som_elem; i1++)
             {
               int glob=elems(elem,i1);
-              for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
+              for (int yy=0; yy<N; yy++) pr[yy]=0;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -407,8 +389,8 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue
                       {
                         prod+=bij_(elem,i1,b)*bij_(elem,i2,b);
                       }
-                    for (int a=0; a<nb_comp; a++)
-                      pr[a]+=prod*inconnue_(glob2,a);
+                    for (int n = 0; n < N; n++)
+                      pr[n] += prod*inconnue_(glob2, n);
                   }
                 }
               resu(glob)-=pr[0]*pond;
@@ -430,19 +412,15 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue
 }
 
 
-//Punset(nb_comp)
+//Punset(N)
 //Punset(dim_fois_nbn)
 //Punset(nb_som_elem)
 
 
 
-//Pset(nb_comp 2)
-//Pset(dim_fois_nbn 8)
-//Pset(nb_som_elem 4)
-
 DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnue, DoubleTab& resu) const
 {
-  const int nb_comp =2;
+  const int N =2;
   const int dim_fois_nbn= 8;
   const int nb_som_elem= 4;
   const int const_dimension= 2;
@@ -465,8 +443,8 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
   const double* inco_ptr=tab_inconnue.addr();
   double* resu_ptr=resu.addr();
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
@@ -483,10 +461,8 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
           for (int i1=0; i1<nb_som_elem; i1++)
             {
               int glob=elems(elem,i1);
-              for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
-              int transpose=transpose_;
-              if (marqueur_neuman(glob)==1)
-                transpose=0;
+              for (int yy=0; yy<N; yy++) pr[yy]=0;
+              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -500,12 +476,12 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
                         if (transpose)
                           prod2+=bij_(elem,i1,b)*inconnue_(glob2,b);
                       }
-                    for (int a=0; a<nb_comp; a++)
-                      pr[a]+=prod*inconnue_(glob2,a)+prod2*bij_(elem,i2,a);
+                    for (int n = 0; n < N; n++)
+                      pr[n] += prod*inconnue_(glob2, n)+prod2*bij_(elem, i2, n);
                   }
                 }
-              for (int a=0; a<nb_comp; a++)
-                resu_(glob,a)-=pr[a]*pond;
+              for (int n = 0; n < N; n++)
+                resu_(glob, n) -= pr[n] * pond;
 
             }
         }
@@ -524,18 +500,14 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
 }
 
 
-//Punset(nb_comp)
+//Punset(N)
 //Punset(dim_fois_nbn)
 //Punset(nb_som_elem)
 
 
-//Pset(nb_comp 1)
-//Pset(dim_fois_nbn 8)
-//Pset(nb_som_elem 4)
-
 DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue, DoubleTab& resu) const
 {
-  const int nb_comp =1;
+  const int N =1;
   const int dim_fois_nbn= 8;
   const int nb_som_elem= 4;
   const int const_dimension= 2;
@@ -556,8 +528,8 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue
   const double* inco_ptr=tab_inconnue.addr();
 
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
@@ -574,7 +546,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue
           for (int i1=0; i1<nb_som_elem; i1++)
             {
               int glob=elems(elem,i1);
-              for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
+              for (int yy=0; yy<N; yy++) pr[yy]=0;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -585,8 +557,8 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue
                       {
                         prod+=bij_(elem,i1,b)*bij_(elem,i2,b);
                       }
-                    for (int a=0; a<nb_comp; a++)
-                      pr[a]+=prod*inconnue_(glob2,a);
+                    for (int n = 0; n < N; n++)
+                      pr[n] += prod*inconnue_(glob2, n);
                   }
                 }
               resu(glob)-=pr[0]*pond;
@@ -608,7 +580,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue
 }
 
 
-//Punset(nb_comp)
+//Punset(N)
 //Punset(dim_fois_nbn)
 //Punset(nb_som_elem)
 
@@ -617,8 +589,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_gen(const DoubleTab& tab_inconnue, Doubl
 {
   const int const_dimension= Objet_U::dimension;
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  int nb_comp=1;
-  if (1==2) nb_comp=resu.dimension(1);
+  const int N = resu.line_size();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   int dim_fois_nbn=nb_som_elem*const_dimension;
   assert(nb_som_elem*const_dimension==dim_fois_nbn);
@@ -637,15 +608,15 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_gen(const DoubleTab& tab_inconnue, Doubl
   const double* inco_ptr=tab_inconnue.addr();
 
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
 #define resu_(som,a) resu(som,a)
 #endif
   {
-    ArrOfDouble pr(nb_comp);
+    ArrOfDouble pr(N);
     for (int elem=0; elem<nb_elem_tot; elem++)
       if (elem_contribue(elem))
         {
@@ -655,7 +626,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_gen(const DoubleTab& tab_inconnue, Doubl
           for (int i1=0; i1<nb_som_elem; i1++)
             {
               int glob=elems(elem,i1);
-              for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
+              for (int yy=0; yy<N; yy++) pr[yy]=0;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -666,8 +637,8 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_gen(const DoubleTab& tab_inconnue, Doubl
                       {
                         prod+=bij_(elem,i1,b)*bij_(elem,i2,b);
                       }
-                    for (int a=0; a<nb_comp; a++)
-                      pr[a]+=prod*inconnue_(glob2,a);
+                    for (int n = 0; n < N; n++)
+                      pr[n] += prod*inconnue_(glob2, n);
                   }
                 }
               resu(glob)-=pr[0]*pond;
@@ -692,8 +663,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_gen(const DoubleTab& tab_inconnue, Doub
 {
   const int const_dimension= Objet_U::dimension;
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  int nb_comp=1;
-  if (2==2) nb_comp=resu.dimension(1);
+  const int N = resu.line_size();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   int dim_fois_nbn=nb_som_elem*const_dimension;
   assert(nb_som_elem*const_dimension==dim_fois_nbn);
@@ -714,15 +684,15 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_gen(const DoubleTab& tab_inconnue, Doub
   const double* inco_ptr=tab_inconnue.addr();
   double* resu_ptr=resu.addr();
 #define bij_(elem,i,j) bij_ptr[elem*dim_fois_nbn+i*const_dimension+j]
-#define inconnue_(som,a) inco_ptr[som*nb_comp+a]
-#define resu_(som,a) resu_ptr[som*nb_comp+a]
+#define inconnue_(som,a) inco_ptr[som * N + a]
+#define resu_(som,a) resu_ptr[som * N + a]
 #else
 #define bij_(elem,i,j) bij(elem,i,j)
 #define inconnue_(som,a) inconnue(som,a)
 #define resu_(som,a) resu(som,a)
 #endif
   {
-    ArrOfDouble pr(nb_comp);
+    ArrOfDouble pr(N);
     for (int elem=0; elem<nb_elem_tot; elem++)
       if (elem_contribue(elem))
         {
@@ -732,10 +702,8 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_gen(const DoubleTab& tab_inconnue, Doub
           for (int i1=0; i1<nb_som_elem; i1++)
             {
               int glob=elems(elem,i1);
-              for (int yy=0; yy<nb_comp; yy++) pr[yy]=0;
-              int transpose=transpose_;
-              if (marqueur_neuman(glob)==1)
-                transpose=0;
+              for (int yy=0; yy<N; yy++) pr[yy]=0;
+              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -749,12 +717,12 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_gen(const DoubleTab& tab_inconnue, Doub
                         if (transpose)
                           prod2+=bij_(elem,i1,b)*inconnue_(glob2,b);
                       }
-                    for (int a=0; a<nb_comp; a++)
-                      pr[a]+=prod*inconnue_(glob2,a)+prod2*bij_(elem,i2,a);
+                    for (int n = 0; n < N; n++)
+                      pr[n] += prod*inconnue_(glob2, n)+prod2*bij_(elem, i2, n);
                   }
                 }
-              for (int a=0; a<nb_comp; a++)
-                resu_(glob,a)-=pr[a]*pond;
+              for (int n = 0; n < N; n++)
+                resu_(glob, n) -= pr[n] * pond;
 
             }
         }
@@ -780,15 +748,11 @@ DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& res
   //const Zone_EF& zone_EF = la_zone_EF.valeur();
 
 
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
+  const int N = resu.line_size();
   ArrOfInt marqueur_neuman;
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  if(nb_dim==2)
-    {
-      nb_comp=resu.dimension(1);
-      remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
-    }
+  if(N > 1)
+    remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
 
   const DoubleVect& volumes= zone_ef.volumes();
 
@@ -797,49 +761,26 @@ DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& res
   int nb_elem_tot=zone_ef.zone().nb_elem_tot();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   const IntTab& elems=zone_ef.zone().les_elems() ;
-  if (nb_dim==1)
-    {
-      for (int elem=0; elem<nb_elem_tot; elem++)
-        if (elem_contribue(elem))
-          {
 
-            double pond=1./volumes(elem);
-            for (int i1=0; i1<nb_som_elem; i1++)
+  for (int elem=0; elem<nb_elem_tot; elem++)
+    if (elem_contribue(elem))
+      {
+        double pond=1./volumes(elem);
+        assert(N == dimension || N == 1);
+
+        for (int i1=0; i1<nb_som_elem; i1++)
+          {
+            int glob=elems(elem,i1);
+            int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+            for (int i2=0; i2<nb_som_elem; i2++)
               {
-                int glob=elems(elem,i1);
-                for (int i2=0; i2<nb_som_elem; i2++)
-                  {
-                    int glob2=elems(elem,i2);
-                    for (int b=0; b<dimension; b++)
-                      resu(glob)-=bij(elem,i1,b)*bij_thilde(elem,i2,b)*tab_inconnue(glob2)*nu_(elem)*pond;
-                  }
+                int glob2=elems(elem,i2);
+                for (int n = 0; n < N; n++)
+                  for (int d = 0; d < dimension; d++)
+                    resu(glob, n) -= bij(elem, i1, d) * (bij_thilde(elem, i2, d) * tab_inconnue(glob2, n) + transpose * bij_thilde(elem, i2, n) * tab_inconnue(glob2, d)) * nu_(elem) * pond;
               }
           }
-    }
-  else
-    {
-      for (int elem=0; elem<nb_elem_tot; elem++)
-        if (elem_contribue(elem))
-          {
-            double pond=1./volumes(elem);
-            assert(nb_comp==dimension);
-
-            for (int i1=0; i1<nb_som_elem; i1++)
-              {
-                int glob=elems(elem,i1);
-                int transpose=transpose_;
-                if (marqueur_neuman(glob)==1)
-                  transpose=0;
-                for (int i2=0; i2<nb_som_elem; i2++)
-                  {
-                    int glob2=elems(elem,i2);
-                    for (int a=0; a<nb_comp; a++)
-                      for (int b=0; b<dimension; b++)
-                        resu(glob,a)-=bij(elem,i1,b)*(bij_thilde(elem,i2,b)*tab_inconnue(glob2,a)+transpose*bij_thilde(elem,i2,a)*tab_inconnue(glob2,b))*nu_(elem)*pond;
-                  }
-              }
-          }
-    }
+      }
   //  Debog::verifier(" Op_Diff_EF::ajouter, resu 0 ",resu);
   //  Journal()<<max(resu)<<" "<<min(resu)<<finl;
 
@@ -898,10 +839,7 @@ void Op_Diff_EF::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse
   // avant le premier pas de temps
   remplir_nu(nu_);
 
-  int nb_comp = 1;
-  int nb_dim = transporte.nb_dim();
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
+  const int N = transporte.line_size();
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
   const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -911,67 +849,37 @@ void Op_Diff_EF::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   const IntTab& elems=zone_ef.zone().les_elems() ;
   int nb_som=zone_ef.zone().nb_som();
-  if (nb_dim==1)
-    {
-      for (int elem=0; elem<nb_elem_tot; elem++)
-        if (elem_contribue(elem))
+
+  ArrOfInt marqueur_neuman;
+  remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
+  for (int elem=0; elem<nb_elem_tot; elem++)
+    if (elem_contribue(elem))
+      {
+        double pond=volumes_thilde(elem)/volumes(elem)/volumes(elem);
+
+        for (int i1=0; i1<nb_som_elem; i1++)
           {
-            double pond=volumes_thilde(elem)/volumes(elem)/volumes(elem);
+            int glob=elems(elem,i1);
 
-            for (int i1=0; i1<nb_som_elem; i1++)
-              {
-                int glob=elems(elem,i1);
-                if (glob<nb_som)
-                  for (int i2=0; i2<nb_som_elem; i2++)
+            int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+            if (glob<nb_som)
+              for (int i2=0; i2<nb_som_elem; i2++)
+                {
+                  int glob2=elems(elem,i2);
+                  double cb=0;
+                  for (int b=0; b<dimension; b++)
+                    cb+=bij(elem,i1,b)*bij(elem,i2,b);
+                  for (int n = 0; n < N; n++)
                     {
-                      int glob2=elems(elem,i2);
-                      double cb=0;
-                      for (int b=0; b<dimension; b++)
-                        cb+=bij(elem,i1,b)*bij(elem,i2,b);
-
-                      matrice_coef(glob,glob2)+=cb*nu_(elem)*pond;
+                      matrice_coef(glob * N + n, glob2 * N + n) += cb * nu_(elem) * pond;
+                      if (transpose)
+                        for (int d = 0; d < dimension; d++)
+                          matrice_coef(glob * N + n, glob2 * N + d) += bij(elem, i1, d) * bij(elem, i2, n) * nu_(elem) * pond;
                     }
-              }
+                }
           }
-      ajouter_contributions_bords(matrice);
-    }
-  else
-    {
-      ArrOfInt marqueur_neuman;
-      remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
-      for (int elem=0; elem<nb_elem_tot; elem++)
-        if (elem_contribue(elem))
-          {
-            double pond=volumes_thilde(elem)/volumes(elem)/volumes(elem);
-
-            for (int i1=0; i1<nb_som_elem; i1++)
-              {
-                int glob=elems(elem,i1);
-
-                int transpose=transpose_;
-                if (marqueur_neuman(glob)==1)
-                  transpose=0;
-                if (glob<nb_som)
-                  for (int i2=0; i2<nb_som_elem; i2++)
-                    {
-                      int glob2=elems(elem,i2);
-                      double cb=0;
-                      for (int b=0; b<dimension; b++)
-                        cb+=bij(elem,i1,b)*bij(elem,i2,b);
-                      for (int a=0; a<nb_comp; a++)
-                        {
-                          //  resu(glob,a)-=bij(elem,i1,b)*(bij(elem,i2,b)*tab_inconnue(glob2,a)+bij(elem,i2,a)*tab_inconnue(glob2,b))*nu_(elem)*pond;
-
-                          matrice_coef(glob*nb_comp+a,glob2*nb_comp+a)+=cb*nu_(elem)*pond;
-                          if (transpose)
-                            for (int b=0; b<dimension; b++)
-                              matrice_coef(glob*nb_comp+a,glob2*nb_comp+b)+=bij(elem,i1,b)*bij(elem,i2,a)*nu_(elem)*pond;
-                          // +bij(elem,i2,a)*tab_inconnue(glob2,b)
-                        }
-                    }
-              }
-          }
-    }
+      }
+  if (N == 1) ajouter_contributions_bords(matrice);
 
 
 
@@ -985,10 +893,7 @@ void Op_Diff_EF::ajouter_contribution_new(const DoubleTab& transporte, Matrice_M
   // avant le premier pas de temps
   remplir_nu(nu_);
 
-  int nb_comp = 1;
-  int nb_dim = transporte.nb_dim();
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
+  const int N = transporte.line_size();
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
   //const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
   const DoubleVect& volumes= zone_ef.volumes();
@@ -999,66 +904,37 @@ void Op_Diff_EF::ajouter_contribution_new(const DoubleTab& transporte, Matrice_M
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   const IntTab& elems=zone_ef.zone().les_elems() ;
   int nb_som=zone_ef.zone().nb_som();
-  if (nb_dim==1)
-    {
-      for (int elem=0; elem<nb_elem_tot; elem++)
-        if (elem_contribue(elem))
+
+  ArrOfInt marqueur_neuman;
+  remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
+  for (int elem=0; elem<nb_elem_tot; elem++)
+    if (elem_contribue(elem))
+      {
+        double pond=1./volumes(elem);
+
+        for (int i1=0; i1<nb_som_elem; i1++)
           {
-            double pond=1./volumes(elem);
+            int glob=elems(elem,i1);
 
-            for (int i1=0; i1<nb_som_elem; i1++)
-              {
-                int glob=elems(elem,i1);
-                if (glob<nb_som)
-                  for (int i2=0; i2<nb_som_elem; i2++)
+            int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+            if (glob<nb_som)
+              for (int i2=0; i2<nb_som_elem; i2++)
+                {
+                  int glob2=elems(elem,i2);
+                  double cb=0;
+                  for (int b=0; b<dimension; b++)
+                    cb+=bij(elem,i1,b)*bij_thilde(elem,i2,b);
+                  for (int n = 0; n < N; n++)
                     {
-                      int glob2=elems(elem,i2);
-                      double cb=0;
-                      for (int b=0; b<dimension; b++)
-                        cb+=bij(elem,i1,b)*bij_thilde(elem,i2,b);
-
-                      matrice_coef(glob,glob2)+=cb*nu_(elem)*pond;
+                      matrice_coef(glob * N + n, glob2 * N + n) += cb * nu_(elem) * pond;
+                      if (transpose)
+                        for (int d = 0; d < dimension; d++)
+                          matrice_coef(glob * N + n, glob2 * N + d) += bij(elem, i1, d) * bij_thilde(elem, i2, n) * nu_(elem) * pond;
                     }
-              }
+                }
           }
-    }
-  else
-    {
-      ArrOfInt marqueur_neuman;
-      remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
-      for (int elem=0; elem<nb_elem_tot; elem++)
-        if (elem_contribue(elem))
-          {
-            double pond=1./volumes(elem);
+      }
 
-            for (int i1=0; i1<nb_som_elem; i1++)
-              {
-                int glob=elems(elem,i1);
-
-                int transpose=transpose_;
-                if (marqueur_neuman(glob)==1)
-                  transpose=0;
-                if (glob<nb_som)
-                  for (int i2=0; i2<nb_som_elem; i2++)
-                    {
-                      int glob2=elems(elem,i2);
-                      double cb=0;
-                      for (int b=0; b<dimension; b++)
-                        cb+=bij(elem,i1,b)*bij_thilde(elem,i2,b);
-                      for (int a=0; a<nb_comp; a++)
-                        {
-                          //  resu(glob,a)-=bij(elem,i1,b)*(bij(elem,i2,b)*tab_inconnue(glob2,a)+bij(elem,i2,a)*tab_inconnue(glob2,b))*nu_(elem)*pond;
-
-                          matrice_coef(glob*nb_comp+a,glob2*nb_comp+a)+=cb*nu_(elem)*pond;
-                          if (transpose)
-                            for (int b=0; b<dimension; b++)
-                              matrice_coef(glob*nb_comp+a,glob2*nb_comp+b)+=bij(elem,i1,b)*bij_thilde(elem,i2,a)*nu_(elem)*pond;
-                          // +bij(elem,i2,a)*tab_inconnue(glob2,b)
-                        }
-                    }
-              }
-          }
-    }
 
 
 
@@ -1092,9 +968,9 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
   const IntTab& face_sommets=zone_ef.face_sommets();
   int nb_som_face=zone_ef.nb_som_face();
 
-  int nb_dim = resu.nb_dim();
+  const int N = resu.line_size();
 
-  if (nb_dim==2)
+  if (N > 1)
     {
       // Cerr<<__PRETTY_FUNCTION__<<" non code pour les vecteurs"<<finl;
       modifier_flux(*this);
@@ -1205,9 +1081,9 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
   const IntTab& face_sommets=zone_ef.face_sommets();
   int nb_som_face=zone_ef.nb_som_face();
 
-  int nb_dim =equation().inconnue().valeurs().nb_dim();
+  int N = equation().inconnue().valeurs().line_size();
 
-  if (nb_dim==2)
+  if (N > 1)
     {
       // Cerr<<__PRETTY_FUNCTION__<<" non code pour les vecteurs"<<finl;
       throw;

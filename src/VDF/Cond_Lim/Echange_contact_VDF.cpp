@@ -143,31 +143,17 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Zone_VDF
   if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
     {
       const DoubleTab& lambda = le_milieu.conductivite().valeurs();
-      if (lambda.nb_dim() == 1)
+      for (int face=ndeb; face<nfin; face++)
         {
-          assert(nb_comp==1);
-          for (int face=ndeb; face<nfin; face++)
+          int elem = face_voisins(face,0);
+          if (elem == -1)
+            elem = face_voisins(face,1);
+          for(i=0; i<nb_comp; i++)
             {
-              int elem = face_voisins(face,0);
-              if (elem == -1)
-                elem = face_voisins(face,1);
-              assert(lambda(elem)!=0.);
-              for(i=0; i<nb_comp; i++)
-                tab(face-ndeb,i) = 1./(e(face-ndeb)/lambda(elem)+invhparoi);
+              assert(le_milieu.conductivite()(elem,i)!=0.);
+              tab(face-ndeb,i) = 1./(e(face-ndeb)/lambda(elem,i)+invhparoi);
             }
         }
-      else
-        for (int face=ndeb; face<nfin; face++)
-          {
-            int elem = face_voisins(face,0);
-            if (elem == -1)
-              elem = face_voisins(face,1);
-            for(i=0; i<nb_comp; i++)
-              {
-                assert(le_milieu.conductivite()(elem,i)!=0.);
-                tab(face-ndeb,i) = 1./(e(face-ndeb)/lambda(elem,i)+invhparoi);
-              }
-          }
     }
   else  // la conductivite est un Champ uniforme
     {
@@ -219,23 +205,12 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Zone_V
     {
       DoubleTab lambda;
       front_vf.frontiere().trace_elem_distant(le_milieu.conductivite().valeurs(),lambda);
-      if (lambda.nb_dim() == 1)
-        {
-          assert(nb_comp==1);
-          for (int face=0; face<nb_faces_raccord1; face++)
-            {
-              assert(lambda(face)!=0.);
-              for(i=0; i<nb_comp; i++)
-                tab(face,i) = 1./(e(face)/lambda(face)+invhparoi);
-            }
-        }
-      else
-        for (int face=0; face<nb_faces_raccord1; face++)
-          for(i=0; i<nb_comp; i++)
-            {
-              assert(lambda(face,i)!=0.);
-              tab(face,i) = 1./(e(face)/lambda(face,i)+invhparoi);
-            }
+      for (int face=0; face<nb_faces_raccord1; face++)
+        for(i=0; i<nb_comp; i++)
+          {
+            assert(lambda(face,i)!=0.);
+            tab(face,i) = 1./(e(face)/lambda(face,i)+invhparoi);
+          }
     }
   else  // la conductivite est un Champ uniforme
     {

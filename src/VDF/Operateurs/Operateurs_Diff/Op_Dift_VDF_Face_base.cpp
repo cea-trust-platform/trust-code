@@ -126,24 +126,12 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
               const double h = zone_VDF.dim_elem(elem, i);
               diflo += 1. / (h * h);
             }
-          double mu_physique;
-          if (diffu.nb_dim() == 1)
-            mu_physique = diffu(elem);
-          else
-            {
-              mu_physique = diffu(elem, 0);
-              for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
-                mu_physique = max(mu_physique, diffu(elem, ncomp));
-            }
-          double mu_turbulent;
-          if (diffu_turb.nb_dim() == 1)
-            mu_turbulent = diffu_turb(elem);
-          else
-            {
-              mu_turbulent = diffu_turb(elem, 0);
-              for (int ncomp = 1; ncomp < diffu_turb.dimension(1); ncomp++)
-                mu_turbulent = max(mu_turbulent, diffu_turb(elem, ncomp));
-            }
+          double mu_physique = diffu(elem, 0);
+          for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
+            mu_physique = max(mu_physique, diffu(elem, ncomp));
+          double mu_turbulent = diffu_turb(elem, 0);
+          for (int ncomp = 1; ncomp < diffu_turb.dimension(1); ncomp++)
+            mu_turbulent = max(mu_turbulent, diffu_turb(elem, ncomp));
           const double inv_rho = 1./valeurs_rho(elem) ;
           diflo *= (mu_physique + mu_turbulent) * inv_rho;
           coef = max(coef, diflo);
@@ -165,37 +153,19 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
               const double h = zone_VDF.dim_elem(elem, i);
               diflo += 1. / (h * h);
             }
-          double mu_physique;
           int item = (diffu_variable ? elem : 0);
-          if (diffu.nb_dim() == 1)
-            mu_physique = diffu(item);
-          else
-            {
-              mu_physique = diffu(item, 0);
-              for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
-                mu_physique = max(mu_physique, diffu(item, ncomp));
-            }
+          double mu_physique = diffu(item, 0);
+          for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
+            mu_physique = max(mu_physique, diffu(item, ncomp));
 
-          double mu_turbulent;
-          if (diffu_turb.nb_dim() == 1)
-            mu_turbulent = diffu_turb(elem);
-          else
-            {
-              mu_turbulent = diffu_turb(elem, 0);
-              for (int ncomp = 1; ncomp < diffu_turb.dimension(1); ncomp++)
-                mu_turbulent = max(mu_turbulent, diffu_turb(elem, ncomp));
-            }
+          double mu_turbulent = diffu_turb(elem, 0);
+          for (int ncomp = 1; ncomp < diffu_turb.dimension(1); ncomp++)
+            mu_turbulent = max(mu_turbulent, diffu_turb(elem, ncomp));
 
-          double diffu_dt_l;
           item = (diffu_dt_variable ? elem : 0);
-          if (diffu_dt.nb_dim() == 1)
-            diffu_dt_l = diffu_dt(item);
-          else
-            {
-              diffu_dt_l = diffu_dt(item, 0);
-              for (int ncomp = 1; ncomp < diffu_dt.dimension(1); ncomp++)
-                diffu_dt_l = max(diffu_dt_l, diffu_dt(item, ncomp));
-            }
+          double diffu_dt_l = diffu_dt(item, 0);
+          for (int ncomp = 1; ncomp < diffu_dt.dimension(1); ncomp++)
+            diffu_dt_l = max(diffu_dt_l, diffu_dt(item, ncomp));
 
           // si on a associe mu au lieu de nu , on a nu sans diffu_dt
           // le pas de temps de stab est nu+nu_t, on calcule (mu+mu_t)*(nu/mu)=(mu+mu_t)/rho=nu+nu_t (avantage par rapport a la division par rho ca marche aussi pour alpha et lambda et en VEF

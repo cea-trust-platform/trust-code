@@ -71,6 +71,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   int num_std = zone_VEF.premiere_face_std();
   int num_int = zone_VEF.premiere_face_int();
   int face,comp,elem;
+  int nbcomp = sm.line_size();
   if (nfa != sm.dimension(0))
     {
       Cerr << "erreur dans Masse_VEF_P1NC : ";
@@ -79,142 +80,83 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
       exit();
     }
 
-  if (sm.nb_dim() == 1)
+  // On traite les faces standard qui ne portent pas de conditions aux limites
+
+  for (face=num_std; face<nfa; face++)
     {
-      // On traite les faces standard qui ne portent pas de conditions aux limites
-
-      for (face=num_std; face<nfa; face++)
-        {
-          // elem1 = face_voisins(face,0);
-          //elem2 = face_voisins(face,1);
-          sm(face) /= (volumes_entrelaces(face)*porosite_face(face));
-
-        }
-
-      // On traite les faces non standard
-      // les faces des bord sont des faces non standard susceptibles de porter des C.L
-      // les faces internes non standard ne portent pas de C.L
-
-      // On traite les conditions aux limites
-
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int num1 = le_bord.num_premiere_face();
-          int num2 = num1 + le_bord.nb_faces();
-
-          if ( (sub_type(Dirichlet,la_cl.valeur()))
-               ||
-               (sub_type(Dirichlet_homogene,la_cl.valeur()))
-             )
-            // Pour les faces de Dirichlet on met sm a 0
-            for (face=num1; face<num2; face++)
-              sm(face) =0;
-          else
-            for (face=num1; face<num2; face++)
-              {
-                elem = face_voisins(face,0);
-                if ( elem ==-1 )
-                  {
-                    elem = face_voisins(face,1);
-                  }
-                sm(face) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
-              }
-        }
-
-      // On traite les faces internes non standard
-      for (face=num_int; face<num_std; face++)
-        {
-          //elem1 = face_voisins(face,0);
-          //elem2 = face_voisins(face,1);
-          sm(face) /=  (volumes_entrelaces_Cl(face)*porosite_face(face)) ;
-        }
+      //elem1 = face_voisins(face,0);
+      //elem2 = face_voisins(face,1);
+      for (comp=0; comp<nbcomp; comp++)
+        sm(face,comp) /= (volumes_entrelaces(face)*porosite_face(face)) ;
     }
-  else
+  // On traite les faces non standard
+  // les faces des bord sont des faces non standard susceptibles de porter des C.L
+  // les faces internes non standard ne portent pas de C.L
+
+  // On traite les conditions aux limites
+
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
 
-      int nbcomp = sm.dimension(1);
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int num1 = le_bord.num_premiere_face();
+      int num2 = num1 + le_bord.nb_faces();
 
-      // On traite les faces standard qui ne portent pas de conditions aux limites
-
-      for (face=num_std; face<nfa; face++)
-        {
-          //elem1 = face_voisins(face,0);
-          //elem2 = face_voisins(face,1);
+      if ( (sub_type(Dirichlet,la_cl.valeur()))
+           ||
+           (sub_type(Dirichlet_homogene,la_cl.valeur()))
+         )
+        // Pour les faces de Dirichlet on met sm a 0
+        for (face=num1; face<num2; face++)
           for (comp=0; comp<nbcomp; comp++)
-            sm(face,comp) /= (volumes_entrelaces(face)*porosite_face(face)) ;
-        }
-      // On traite les faces non standard
-      // les faces des bord sont des faces non standard susceptibles de porter des C.L
-      // les faces internes non standard ne portent pas de C.L
+            sm(face,comp) =0;
+      else
 
-      // On traite les conditions aux limites
-
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int num1 = le_bord.num_premiere_face();
-          int num2 = num1 + le_bord.nb_faces();
-
-          if ( (sub_type(Dirichlet,la_cl.valeur()))
-               ||
-               (sub_type(Dirichlet_homogene,la_cl.valeur()))
-             )
-            // Pour les faces de Dirichlet on met sm a 0
+        if ((sub_type(Symetrie,la_cl.valeur()))&&(zone_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
+          {
+            const DoubleTab& normales = zone_VEF.face_normales();
             for (face=num1; face<num2; face++)
-              for (comp=0; comp<nbcomp; comp++)
-                sm(face,comp) =0;
-          else
-
-            if ((sub_type(Symetrie,la_cl.valeur()))&&(zone_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
               {
-                const DoubleTab& normales = zone_VEF.face_normales();
-                for (face=num1; face<num2; face++)
+                double psc=0;
+                double surf=0;
+                for (comp=0; comp<nbcomp; comp++)
                   {
-                    double psc=0;
-                    double surf=0;
-                    for (comp=0; comp<nbcomp; comp++)
-                      {
-                        psc+=sm(face,comp)*normales(face,comp);
-                        surf+=normales(face,comp)*normales(face,comp);
-                      }
-                    psc/=surf;
-                    for(comp=0; comp<dimension; comp++)
-                      {
-                        sm(face,comp)-=psc*normales(face,comp);
-                        sm(face,comp) /= (volumes_entrelaces_Cl(face)*
-                                          porosite_face(face));
-                      }
+                    psc+=sm(face,comp)*normales(face,comp);
+                    surf+=normales(face,comp)*normales(face,comp);
+                  }
+                psc/=surf;
+                for(comp=0; comp<dimension; comp++)
+                  {
+                    sm(face,comp)-=psc*normales(face,comp);
+                    sm(face,comp) /= (volumes_entrelaces_Cl(face)*
+                                      porosite_face(face));
                   }
               }
+          }
 
-            else
+        else
 
-              for (face=num1; face<num2; face++)
+          for (face=num1; face<num2; face++)
+            {
+              elem = face_voisins(face,0);
+              if ( elem == -1 )
                 {
-                  elem = face_voisins(face,0);
-                  if ( elem == -1 )
-                    {
-                      elem = face_voisins(face,1);
-                    }
-                  for (comp=0; comp<nbcomp; comp++)
-                    sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
+                  elem = face_voisins(face,1);
                 }
-        }
+              for (comp=0; comp<nbcomp; comp++)
+                sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
+            }
+    }
 
-      // On traite les faces internes non standard
-      for (face=num_int; face<num_std; face++)
-        {
-          //elem1 = face_voisins(face,0);
-          //elem2 = face_voisins(face,1);
-          for (comp=0; comp<nbcomp; comp++)
-            sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face)) ;
+  // On traite les faces internes non standard
+  for (face=num_int; face<num_std; face++)
+    {
+      //elem1 = face_voisins(face,0);
+      //elem2 = face_voisins(face,1);
+      for (comp=0; comp<nbcomp; comp++)
+        sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face)) ;
 
-        }
     }
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, sm=",sm);

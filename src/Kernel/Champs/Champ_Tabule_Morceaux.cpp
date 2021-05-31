@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,26 +161,15 @@ DoubleTab& Champ_Tabule_Morceaux::valeur_aux_elems(const DoubleTab& positions,
   for (int i=0; i<champs_tabules.size(); i++)
     tabs[i] = champs_tabules[i].valeur_aux_elems(positions,les_polys,val);
 
-  if (val.nb_dim()==1)
+  for( int i=0; i<les_polys.size(); i++)
     {
-      for( int i=0; i<les_polys.size(); i++)
-        {
-          int elem= les_polys[i];
-          int izone = num_zone_[elem];
-          val(i) = tabs[izone](i);
-        }
+      int elem= les_polys[i];
+      int izone = num_zone_[elem];
+
+      for (int j=0; j<val.line_size() ; j++)
+        val(i,j) = tabs[izone](i,j);
     }
-  else
-    {
-      int dim = val.dimension(1);
-      for( int i=0; i<les_polys.size(); i++)
-        {
-          int elem= les_polys[i];
-          int izone = num_zone_[elem];
-          for (int j=0; j<dim; j++)
-            val(i,j) = tabs[izone](i,j);
-        }
-    }
+
   return val;
 }
 

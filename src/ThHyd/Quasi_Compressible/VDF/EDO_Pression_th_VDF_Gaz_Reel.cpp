@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,7 +117,7 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
   double v,al,b, bnp1, hn,hnp1, divu;
 
   const IntTab& elem_faces = la_zone->elem_faces();
-  DoubleTrav divU(tab_vit.dimension(0));
+  DoubleTrav divU(tab_vit.dimension(0), 1);
   ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit,divU);
   DoubleTrav gradh(tab_vit.dimension(0));
   DoubleTrav Hstar(tab_vit.dimension(0));

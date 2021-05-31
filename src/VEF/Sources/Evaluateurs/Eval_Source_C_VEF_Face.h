@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,12 +72,8 @@ inline double Eval_Source_C_VEF_Face::calculer_terme_source_standard(int num_fac
   if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
     source = source_constituant(0,0)*volumes_entrelaces(num_face);
   else
-    {
-      if (source_constituant.nb_dim()==1)
-        source = (source_constituant(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1))*volumes(face_voisins(num_face,1)))/nb_faces_elem;
-      else
-        source = (source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/nb_faces_elem;
-    }
+    source = (source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/nb_faces_elem;
+
   return (source*porosite_surf(num_face));
 }
 
@@ -89,19 +85,9 @@ inline double Eval_Source_C_VEF_Face::calculer_terme_source_non_standard(int num
   else
     {
       if (face_voisins(num_face,1) != -1)
-        {
-          if (source_constituant.nb_dim()==1)
-            source = (source_constituant(face_voisins(num_face,0))*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1))*volumes(face_voisins(num_face,1)))/nb_faces_elem;
-          else
-            source = (source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/nb_faces_elem;
-        }
+        source = (source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/nb_faces_elem;
       else
-        {
-          if (source_constituant.nb_dim()==1)
-            source = source_constituant(face_voisins(num_face,0))*volumes(face_voisins(num_face,0))/nb_faces_elem;
-          else
-            source = source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0))/nb_faces_elem;
-        }
+        source = source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0))/nb_faces_elem;
     }
 
   return (source*porosite_surf(num_face));

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
   int dimension = Objet_U::dimension;
 
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  int nb_comp = champ_inconnue.nb_dim() == 2 ? champ_inconnue.dimension(1) : 1;
+  const int nb_comp = champ_inconnue.line_size();
 
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
 
@@ -274,10 +274,9 @@ void Op_VDF_Face::modifier_pour_Cl(const Zone_VDF& la_zone,
   IntVect& tab1=la_matrice.get_set_tab1();
   DoubleVect& coeff = la_matrice.get_set_coeff();
   const IntVect& orientation=la_zone.orientation();
-  int nb_comp = 1;
 
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
+  const int nb_comp = champ_inconnue.line_size();
 
   // Prise en compte des conditions de type periodicite
 

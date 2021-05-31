@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ void Champ_Fonc_Tabule_P0_VDF::mettre_a_jour(double t)
   const int& isfct = table.isfonction();
   const DoubleTab& val_param = le_champ_parametre->valeurs();
   DoubleTab& mes_valeurs = valeurs();
-  if (!(val_param.nb_dim() == mes_valeurs.nb_dim()))
+  if (!(val_param.line_size() == mes_valeurs.line_size()))
     {
       Cerr << "Erreur a l'initialisation d'un Champ_Fonc_Tabule" << finl;
       Cerr << "Le champ parametre et le champ a initialiser ne sont pas compatibles" << finl;
@@ -61,17 +61,10 @@ void Champ_Fonc_Tabule_P0_VDF::mettre_a_jour(double t)
     }
   if (isfct!=2)
     {
-      int nb_elems = zone_VDF.nb_elem();
-      if (val_param.nb_dim() == 1)
-        for (int num_elem=0; num_elem<nb_elems; num_elem++)
-          mes_valeurs(num_elem) = table.val(val_param(num_elem));
-      else
-        {
-          int nb_comps = val_param.nb_dim();
-          for (int num_elem=0; num_elem<nb_elems; num_elem++)
-            for (int ncomp=0; ncomp<nb_comps; ncomp++)
-              mes_valeurs(num_elem,ncomp) = table.val(val_param(num_elem,ncomp));
-        }
+      const int nb_elems = zone_VDF.nb_elem(), N = val_param.line_size();
+      for (int num_elem=0; num_elem<nb_elems; num_elem++)
+        for (int n = 0; n < N; n++)
+          mes_valeurs(num_elem, n) = table.val(val_param(num_elem, n));
     }
   else
     {

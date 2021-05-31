@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,16 +72,10 @@ void Champ_Fonc_Tabule_P0_EF::mettre_a_jour(double t)
       les_polys(elem)=elem;
     }
   le_champ_parametre.valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_param_aux_elems);
-  if (val_param_aux_elems.nb_dim() == 1)
-    for (int num_elem=0; num_elem<nb_elem; num_elem++)
-      mes_valeurs(num_elem) = table.val(val_param_aux_elems(num_elem));
-  else
-    {
-      int nbcomp=mes_valeurs.dimension(1);
-      for (int num_elem=0; num_elem<nb_elem; num_elem++)
-        for (int ncomp=0; ncomp<nbcomp; ncomp++)
-          mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp));
-    }
+  int nbcomp=mes_valeurs.line_size();
+  for (int num_elem=0; num_elem<nb_elem; num_elem++)
+    for (int ncomp=0; ncomp<nbcomp; ncomp++)
+      mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp));
   Champ_Fonc_base::mettre_a_jour(t);
 }
 

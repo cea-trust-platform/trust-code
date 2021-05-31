@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -107,7 +107,7 @@ double Sortie_libre_Gradient_Pression_impose::flux_impose(int face) const
 {
   if (le_champ_front.valeurs().size()==1)
     return (trace_pression_int[face] + coeff[face]*le_champ_front(0,0));
-  else if (le_champ_front.valeurs().dimension(1)==1)
+  else if (le_champ_front.valeurs().line_size()==1)
     return (trace_pression_int[face] + coeff[face]*le_champ_front(face,0));
   else
     Cerr << "Sortie_libre_Gradient_Pression_impose::flux_impose erreur" << finl;
@@ -131,7 +131,7 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
       double d_rho = rho(0,0);
       if (le_champ_front.valeurs().size()==1)
         return le_champ_front(0,0)/d_rho;
-      else if (le_champ_front.valeurs().dimension(1)==1)
+      else if (le_champ_front.valeurs().line_size()==1)
         return le_champ_front(face,0)/d_rho;
       else
         Cerr << "Sortie_libre_Gradient_Pression_impose::grad_P_imp() erreur" << finl;
@@ -146,7 +146,7 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
       double d_rho = tab_rho(elem);
       if (le_champ_front.valeurs().size()==1)
         return le_champ_front(0,0)/d_rho;
-      else if (le_champ_front.valeurs().dimension(1)==1)
+      else if (le_champ_front.valeurs().line_size()==1)
         return le_champ_front(face,0)/d_rho;
       else
         Cerr << "Sortie_libre_Gradient_Pression_impose::grad_P_imp() erreur" << finl;

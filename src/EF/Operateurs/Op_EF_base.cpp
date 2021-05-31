@@ -72,11 +72,9 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
   int nfin = la_zone.nb_som_tot();
   // essai
   nb_som=nfin;
-  int nb_comp = 1;
 
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
-
+  int nb_comp = champ_inconnue.line_size();
 
   // on ne s'occupe pas dans un premier temps des composantes
 
@@ -182,9 +180,8 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
 
   // determination de la taille du champ inconnue.
   // Cerr << "dans modifier cl " << finl;
-  int nb_comp = 1;
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
+  int nb_comp = champ_inconnue.line_size();
 
   const IntTab& faces_sommets=la_zone.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
@@ -220,22 +217,8 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
 
 
                       // pour le second membre
-                      if (nb_comp == 1)
-                        {
-                          secmem(som) = la_cl_Dirichlet.val_imp(ind_face,0);
-                        }
-                      else
-                        {
-                          secmem(som,comp)= la_cl_Dirichlet.val_imp(ind_face,comp);
-                        }
-                      if (nb_comp == 1)
-                        {
-                          secmem(som) = champ_inconnue(som) ;
-                        }
-                      else
-                        {
-                          secmem(som,comp)= champ_inconnue(som,comp);
-                        }
+                      secmem(som,comp)= la_cl_Dirichlet.val_imp(ind_face,comp);
+                      secmem(som,comp)= champ_inconnue(som,comp);
                     }
               }
         }
@@ -263,10 +246,7 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
 
 
                     // pour le second membre
-                    if (nb_comp == 1)
-                      secmem(som) = 0;
-                    else
-                      secmem(som,comp)= 0;
+                    secmem(som,comp)= 0;
                     if (la_cl_Dirichlet.val_imp(ind_face,comp)!=0)
                       {
                         Cerr<<"impossible non ??? "<<finl;

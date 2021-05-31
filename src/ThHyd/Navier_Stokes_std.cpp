@@ -1483,15 +1483,15 @@ bool Navier_Stokes_std::initTimeStep(double dt)
   // <IBM> Immersed Boundary Method
   double ddt = Equation_base::initTimeStep(dt);
 
-  for (int i=1; i<=sch_tps.nb_valeurs_futures(); i++)
-    {
-      double tps=sch_tps.temps_futur(i);
-      // Mise a jour du temps dans les champs de pression
-      pression()->changer_temps_futur(tps,i);
-      pression_pa()->changer_temps_futur(tps,i);
-      pression()->futur(i)=pression()->valeurs();
-      pression_pa()->futur(i)=pression()->valeurs();
-    }
+  for (int i=1; i<=sch_tps.nb_valeurs_futures(); i++) if (i <= pression().nb_valeurs_temporelles())
+      {
+        double tps=sch_tps.temps_futur(i);
+        // Mise a jour du temps dans les champs de pression
+        pression()->changer_temps_futur(tps,i);
+        pression_pa()->changer_temps_futur(tps,i);
+        pression()->futur(i)=pression()->valeurs();
+        pression_pa()->futur(i)=pression()->valeurs();
+      }
 
   if (i_source_pdf_ != -1)
     {

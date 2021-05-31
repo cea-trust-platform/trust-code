@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -245,21 +245,7 @@ const Champ_Proto& Champ_Face::affecter(const DoubleTab& v)
   const IntVect& orientation = zone_VDF.orientation();
   DoubleTab& val = valeurs();
 
-  if  (v.nb_dim() == 1 )
-    {
-      if (v.dimension(0) == dimension)
-        {
-          for (int num_face=0; num_face<val.size(); num_face++)
-            val(num_face)=v[orientation(num_face)];
-        }
-      else
-        {
-          Cerr << "Erreur TRUST dans Champ_Face::affecter(const DoubleTab& )" << finl;
-          Cerr << "la dimension du DoubleTab passe en parametre est incorrecte" << finl;
-          exit();
-        }
-    }
-  else if (v.nb_dim() == 2)
+  if (v.nb_dim() == 2)
     {
       if (v.dimension(1) == dimension)
         {

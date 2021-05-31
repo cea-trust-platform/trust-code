@@ -606,7 +606,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
         }
       else
         {
-          if (source_so_val.nb_dim()==1)
+          if (source_so_val.line_size()==1)
             {
               int nn=source_so_val.dimension_tot(0);
               sources_val[so].resize(nn,1);
@@ -763,13 +763,13 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
              f.setVar("y",y);
              f.setVar("z",z);
           */
-          if (valeurs_espace.nb_dim() == 1)
+          if (valeurs_espace.line_size() == 1)
             {
               for (int so=0; so<nb_sources; so++)
                 f.setVar(so+4,sources_val[so](i,0));
               valeurs_espace(i) = f.eval();
             }
-          else // nb_dim > 1
+          else // line_size > 1
             {
               for (int j=0; j<nb_comp_; j++)
                 {
@@ -780,11 +780,6 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
                         f.setVar(so+4,sources_val[so](i,j));
                       else if (nbcomp_loc == 1)
                         f.setVar(so+4,sources_val[so](i,0));
-                      /* Optimisation plus rapide que de passer par:
-                         if (nbcomp_loc == nb_comp_)
-                         f.setVar(nom_source[so],sources_val[so](i,j));
-                         else if (nbcomp_loc == 1)
-                         f.setVar(nom_source[so],sources_val[so](i,0)); */
                       else
                         {
                           Cerr << "The arrays of values don't have compatibles dimensions in "<<que_suis_je()<< finl;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -176,13 +176,7 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif,
   double nu1,nu2;
   double nu1t,nu2t;
   double flux;
-  //double dst=2./3.;
-
-  double c1,c2,c3,c4;
-  c1=0.;
-  c2=0.;
-  c3=0.;
-  c4=0.;
+  double c1=0., c2=0., c3=0., c4=0.;
 
   if(nu_lu)                c1=1.;
   if(nut_lu)                c2=1.;
@@ -334,15 +328,8 @@ DoubleTab& Op_Dift_standard_VEF_Face::ajouter(const DoubleTab& inconnue,
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
   DoubleTab nu(nu_turb);
   remplir_nu(nu);
+  const int nb_comp = resu.line_size();
 
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-  if(nb_dim==2)
-    nb_comp=resu.dimension(1);
-
-  //  if(nb_comp==1)
-  //    ajouter_cas_scalaire(inconnue, resu,ref_cast(DoubleTab,flux_bords, nu, nu_turb, zone_Cl_VEF, zone_VEF);
-  //  else
   ajouter_cas_vectoriel(inconnue, resu, flux_bords_,nu, nu_turb, zone_Cl_VEF, zone_VEF, tau_tan_,nb_comp);
   modifier_flux(*this);
   return resu;

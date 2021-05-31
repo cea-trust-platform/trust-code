@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,7 +207,7 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
   const int face_fin = face_debut + nb_faces;
   double ec = 0.;
   double rho = 0.;
-  const int nb_dim_1 = (vitesse.nb_dim() == 1);
+  const int nb_dim_1 = (vitesse.line_size() == 1);
   const int dim      = Objet_U::dimension;
   ArrOfDouble ve(Objet_U::dimension);
   for (int face = face_debut; face < face_fin; face++)
@@ -256,12 +256,8 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
           // En VEF, cela est incorrect, il faudrait les volumes etendus:
           volume = volumes_entrelaces(face);
         }
-      if (masse_volumique.nb_dim()==1)
-        rho = masse_volumique(face);
-      else if (masse_volumique.dimension(0)==1)
-        rho = masse_volumique(0,0);
-      else
-        rho = masse_volumique(face,0);
+      const int k = (masse_volumique.dimension(0)==1) ? 0 : face;
+      rho = masse_volumique(k, 0);
       double contribution = (faces_doubles(face)==1) ? 0.5 : 1 ;
       ec += contribution * 0.5 * v2 * volume * rho;
     }

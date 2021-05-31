@@ -169,17 +169,9 @@ Champ_base& Champ_Fonc_Tabule::affecter_(const Champ_base& ch)
   else
     {
       if(sub_type(Champ_Uniforme, ch))
-        {
-          const DoubleTab& val=ch.valeurs();
-          if(val.nb_dim()==1)
-            valeurs()=ch.valeurs()[0];
-          else
-            valeurs()=ch.valeurs()(0,0);
-        }
+        valeurs()=ch.valeurs()(0,0);
       else
-        {
-          valeurs()=ch.valeurs();
-        }
+        valeurs()=ch.valeurs();
     }
   return *this;
 }

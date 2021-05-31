@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -191,7 +191,7 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
 
   {
     // Force la periodicite
-    int nb_comp=resu.dimension(1);
+    int nb_comp=resu.line_size();
     for (int n_bord=0; n_bord<zone.nb_front_Cl(); n_bord++)
       {
         const Cond_lim& la_cl = zone_Cl.les_conditions_limites(n_bord);
