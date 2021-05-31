@@ -128,6 +128,25 @@ Entree& Domaine::readOn(Entree& s)
 
 
 // Description:
+// only read vertices from the stream s
+void Domaine::read_vertices(Entree& s)
+{
+  // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
+  sommets.reset();
+  renum_som_perio.reset();
+  les_zones.vide();
+
+  Nom tmp;
+  s >> tmp;
+  // Si le domaine n'est pas nomme, on prend celui lu
+  if (nom_=="??") nom_=tmp;
+  Cerr << "Reading domain " << le_nom() << finl;
+  s >> sommets;
+
+}
+
+
+// Description:
 //    Constructeur par defaut d'un objet Domaine.
 //    Ne fait rien sauf fixer la valeur d'epsilon
 //    a Objet_U::precision_geom

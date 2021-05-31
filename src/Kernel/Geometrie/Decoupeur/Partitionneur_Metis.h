@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ public:
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   void associer_domaine(const Domaine& domaine);
-  void construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
 
 
 private:
@@ -65,7 +65,6 @@ private:
   int use_weights_;
   int use_segment_to_build_connectivite_elem_elem_;
 
-
 };
 #ifndef NO_METIS
 typedef struct
@@ -74,24 +73,5 @@ typedef struct
   int option;
 } Metis_String_Option;
 
-// Metis 5.0 introduit le type idx_t
-#ifdef IDXTYPEWIDTH
-#define METIS
-typedef int idx_t;
-#endif
-
-struct graph_def
-{
-  idx_t nvtxs;                        /* The number of vertices */
-  idx_t nedges;                        /* The total number of edges */
-  idx_t weightflag;
-  idx_t *xadj;                        /* CRS storage scheme */
-  idx_t *adjncy;
-  idx_t *vwgts;
-  idx_t *ewgts;
-};
-
-typedef struct graph_def Graph_Type;
-idx_t *imalloc(int, const char *);
 #endif
 #endif

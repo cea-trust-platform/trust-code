@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ void Partitionneur_Partition::initialiser()
   assert(ref_domaine_interpol_.non_nul());
 }
 
-void Partitionneur_Partition::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_interpol_.non_nul());
   assert(ref_domaine_calcul_.non_nul());
@@ -88,7 +88,7 @@ void Partitionneur_Partition::construire_partition(ArrOfInt& elem_part, int& nb_
       exit();
     }
   const Zone& zone_interpol = dom_interpol.zone(0);
-  const int nb_elem_interpol = zone_interpol.nb_elem();
+  const int nb_elem_interpol = zone_interpol.nb_elem_tot();
   const int dim_interpol = dom_interpol.dimension;
 
   // Domaine dom_calcul
@@ -102,7 +102,7 @@ void Partitionneur_Partition::construire_partition(ArrOfInt& elem_part, int& nb_
   const int nb_elem_calcul = zone_calcul.nb_elem();
   const int dim_calcul = dom_calcul.dimension;
 
-  ArrOfInt elem_part_calcul;
+  IntVect elem_part_calcul;
   int nb_parts_tot_calcul;
   EFichier file;
   Nom nom_fichier;
@@ -145,7 +145,7 @@ void Partitionneur_Partition::construire_partition(ArrOfInt& elem_part, int& nb_
   assert(coord_g_calcul.dimension(0) == nb_elem_calcul);
   assert(coord_g_calcul.dimension(1) == dim_calcul);
 
-  elem_part.resize_array(nb_elem_interpol);
+  elem_part.resize(nb_elem_interpol);
   elem_part = 0;
   // Recherche des centres de gravite les plus proche les uns des autres
   {

@@ -52,8 +52,10 @@ static Sortie        std_out_(cout);
 // (if the journal is shared between all the procs, journal_file_ is not used
 //  and the processors' output is redirected to journal_shared_stream_ before being written in a HDF5 file)
 static SFichier     journal_file_;
-static SChaine      journal_shared_stream_;
-static int 			journal_shared_;
+
+static SChaine*      journal_shared_stream_;
+
+static int           journal_shared_;
 
 static int        journal_file_open_;
 static Nom           journal_file_name_;
@@ -89,6 +91,36 @@ bool Process::force_single_file(const int& ranks, const Nom& filename)
   else
     return false;
 }
+
+static void dump_hdf5_stream_to_file(const char* file_name)
+{
+  assert(journal_shared_stream_);
+  if(Process::je_suis_maitre())
+    {
+      Noms dataset_names;
+      for(int proc=0; proc<Process::nproc(); proc++)
+        {
+          std::string dname = "/log_"  + std::to_string(proc);
+          Nom dataset_name(dname.c_str());
+          dataset_names.add(dataset_name);
+        }
+
+      FichierHDF fic_master;
+      fic_master.open(file_name, false);
+      fic_master.extend_datasets(dataset_names, journal_shared_stream_->get_size()*5); //the log of proc master is much smaller than the others
+      fic_master.close();
+    }
+
+  std::string my_dname = "/log_"  + std::to_string(Process::me());
+  Nom my_dataset_name(my_dname.c_str());
+
+  FichierHDFPar fic;
+  fic.open(file_name, false);
+  fic.fill_dataset(my_dataset_name, *journal_shared_stream_, true);
+  fic.close();
+
+}
+
 
 // Description: renvoie 1 si on est sur le processeur maitre du groupe courant
 //  (c'est a dire me() == 0), 0 sinon. Voir Comm_Group::rank()
@@ -247,9 +279,12 @@ void Process::exit(const Nom& message ,int i)
         }
     }
   Journal() << message << finl;
-  if( journal_shared_ && journal_file_open_)
-    end_journal(verbose_level_);
-
+  if(journal_shared_ && journal_file_open_)
+    {
+      dump_hdf5_stream_to_file(journal_file_name_);
+      delete journal_shared_stream_;
+      journal_shared_stream_ = 0;
+    }
 
   if (exception_sur_exit)
     {
@@ -349,7 +384,17 @@ Sortie& Process::Journal(int message_level)
       if (journal_file_open_)
         {
           if(journal_shared_)
-            return journal_shared_stream_;
+            {
+              unsigned HundredKB = 100*1024;
+              if( journal_shared_stream_->get_size() >= HundredKB )
+                {
+                  dump_hdf5_stream_to_file(journal_file_name_);
+                  delete journal_shared_stream_;
+                  journal_shared_stream_ = 0;
+                  journal_shared_stream_ = new SChaine;
+                }
+              return *journal_shared_stream_;
+            }
           else
             return journal_file_;
         }
@@ -403,13 +448,15 @@ void Process::imprimer_ram_totale(int all_process)
 void init_journal_file(int verbose_level, int journal_shared, const char * file_name, int append)
 {
   journal_shared_ = journal_shared;
-  if( journal_shared_ )
-    {
-      if(journal_file_open_)
-        end_journal(verbose_level);
-    }
-  else
+  if( !journal_shared_ )
     end_journal(verbose_level);
+  else
+    {
+      journal_file_open_ = 0;
+      if(journal_shared_stream_)
+        delete journal_shared_stream_;
+      journal_shared_stream_ = new SChaine;
+    }
 
   if (verbose_level > 0)
     {
@@ -428,9 +475,29 @@ void init_journal_file(int verbose_level, int journal_shared, const char * file_
             }
           else
             {
-              if(append)
-                Cerr << "Process.cpp::init_journal_file : append mode is not possible with HDF5!\n"
-                     << "If " << file_name << " already exists, it will be overwritten" << finl;
+              if(!append)
+                {
+                  FichierHDFPar fic_hdf;
+                  fic_hdf.create(file_name);
+                  fic_hdf.close();
+
+                  *journal_shared_stream_ << "Journal logging started for Proc " << Process::me() << " !\n";
+                  if(Process::je_suis_maitre())
+                    {
+                      Noms dataset_names;
+                      for(int proc=0; proc<Process::nproc(); proc++)
+                        {
+                          std::string dname = "/log_"  + std::to_string(proc);
+                          Nom dataset_name(dname.c_str());
+                          dataset_names.add(dataset_name);
+                        }
+
+                      FichierHDF fic_master;
+                      fic_master.open(file_name, false);
+                      fic_master.create_datasets(dataset_names, journal_shared_stream_ ->get_size(), true /* extendible */, false /* not binary */ );
+                      fic_master.close();
+                    }
+                }
             }
           journal_file_open_ = 1;
           journal_file_name_ = file_name;
@@ -445,10 +512,9 @@ void end_journal(int verbose_level)
   // ecrit dans le journal !
   if(journal_shared_)
     {
-      FichierHDFPar fic_hdf;
-      fic_hdf.create(journal_file_name_);
-      fic_hdf.create_and_fill_dataset_MW("/log", journal_shared_stream_);
-      fic_hdf.close();
+      dump_hdf5_stream_to_file(journal_file_name_);
+      delete journal_shared_stream_;
+      journal_shared_stream_ = 0;
     }
   else
     journal_file_.close();
@@ -462,7 +528,17 @@ Sortie& get_Cerr()
   if (journal_file_open_ && cerr_to_journal_)
     {
       if(journal_shared_)
-        return journal_shared_stream_;
+        {
+          unsigned HundredKB = 100*1024;
+          if( journal_shared_stream_->get_size() >= HundredKB )
+            {
+              dump_hdf5_stream_to_file(journal_file_name_);
+              delete journal_shared_stream_;
+              journal_shared_stream_ = 0;
+              journal_shared_stream_ = new SChaine;
+            }
+          return *journal_shared_stream_;
+        }
       else
         return journal_file_;
     }
@@ -477,13 +553,10 @@ Sortie& get_Cerr()
         return std_err_;
       else if (verbose_level_)
         {
-          if(journal_shared_)
-            return journal_shared_stream_;
-          else
+          if(!journal_shared_)
             return journal_file_;
         }
-      else
-        return journal_zero_;
+      return journal_zero_;
     }
 }
 
@@ -497,7 +570,7 @@ Sortie& get_Cout()
       if (journal_file_open_ && cerr_to_journal_)
         {
           if(journal_shared_)
-            return journal_shared_stream_;
+            return *journal_shared_stream_;
           else
             return journal_file_;
         }
@@ -542,3 +615,5 @@ void change_disable_stop(int new_stop)
 {
   disable_stop_ = new_stop;
 }
+
+

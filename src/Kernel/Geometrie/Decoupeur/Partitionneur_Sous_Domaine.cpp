@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ void Partitionneur_Sous_Domaine::set_param(Param& param)
 //  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
 // Precondition:
 //  domaine associe et filename initialise
-void Partitionneur_Sous_Domaine::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   if (filename_ == "")
     {
@@ -91,7 +91,7 @@ void Partitionneur_Sous_Domaine::construire_partition(ArrOfInt& elem_part, int& 
       Cerr << " Failed to open file " << filename_ << finl;
       exit();
     }
-  ArrOfInt elem_part_glob;
+  IntVect elem_part_glob;
   file >> elem_part_glob;
   file >> nb_parts_tot;
   file.close();
@@ -112,4 +112,5 @@ void Partitionneur_Sous_Domaine::construire_partition(ArrOfInt& elem_part, int& 
   elem_part.resize(elem_ssz.size_array());
   for (int i = 0; i < elem_ssz.size_array(); i++)
     nb_parts_tot = max(nb_parts_tot, 1 + (elem_part[i] = elem_part_glob[elem_ssz[i]]));
+
 }

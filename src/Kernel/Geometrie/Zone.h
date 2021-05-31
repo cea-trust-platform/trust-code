@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -149,9 +149,11 @@ public:
   inline const Faces_Internes& faces_int() const;
   inline Faces_Internes& faces_int();
   void renum(const IntVect&);
+  void renum_joint_common_items(const IntVect& Les_Nums, const int& elem_offset);
   inline void reordonner();
   int face_interne_conjuguee(int) const;
   int comprimer() ;
+  int comprimer_joints();
   void ecrire_noms_bords(Sortie& ) const;
   double epsilon() const;
   inline void associer_Bords_a_imprimer(LIST(Nom));
@@ -196,8 +198,8 @@ public:
   const OctreeRoot& construit_octree(int&) const;
   //int postraiter_ijk(Sortie&) const;
   inline const ArrOfInt& ind_faces_virt_bord() const;
-
   void construire_elem_virt_pe_num();
+  void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const;
   const IntTab& elem_virt_pe_num() const;
 
   virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
@@ -206,6 +208,13 @@ public:
   static int identifie_item_unique(IntList& item_possible,
                                    DoubleTab& coord_possible,
                                    const DoubleVect& coord_ref);
+
+  //used for the readOn
+  void read_zone(Entree& s);
+  void check_zone();
+
+  void correct_type_of_borders_after_merge();
+
 protected:
   Nom nom;
   REF(Domaine) le_domaine;

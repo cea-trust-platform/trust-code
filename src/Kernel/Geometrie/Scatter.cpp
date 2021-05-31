@@ -44,6 +44,8 @@
 #include <FichierHDFPar.h>
 #include <LecFicDiffuse.h>
 
+#include <EFichierBin.h>
+
 extern Stat_Counter_Id interprete_scatter_counter_;
 
 Implemente_instanciable_sans_constructeur(Scatter,"Scatter",Interprete);
@@ -312,6 +314,222 @@ Entree& Scatter::interpreter(Entree& is)
 }
 
 // Description:
+// Merged zones receive joints information from their neighbours
+// to ensure that their common items (vertices) appear in the same order
+// If it's not the case, the merged zone reorders its common items so that it matches the neighbour's order
+// When 2 neighbouring zones have each been merged,
+// only the processor with the lowest rank proceeds to reordering
+void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& mergedZones)
+{
+  const Joints& joints     = dom.zone(0).faces_joint();
+  const int nb_joints = joints.size();
+
+  const DoubleTab& coords = dom.les_sommets();
+  ArrOfInt liste_send;
+  ArrOfInt liste_recv;
+  liste_send.set_smart_resize(1);
+  liste_recv.set_smart_resize(1);
+
+  const int& moi = Process::me();
+  const int& myZoneWasMerged = mergedZones[moi];
+
+  for (int i_joint = 0; i_joint < nb_joints; i_joint++)
+    {
+
+      const int& pe_voisin = joints[i_joint].PEvoisin();
+      const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+      if(myZoneWasMerged && neighbourZoneWasMerged)
+        {
+          if(pe_voisin < moi)
+            liste_recv.append_array(pe_voisin);
+          else
+            liste_send.append_array(pe_voisin);
+        }
+      else if(myZoneWasMerged && !neighbourZoneWasMerged)
+        liste_recv.append_array(pe_voisin);
+      else if(!myZoneWasMerged && neighbourZoneWasMerged)
+        liste_send.append_array(pe_voisin);
+      else
+        {
+          //nothing to exchange
+        }
+    }
+
+  VECT(DoubleTab) coord_items_locaux(nb_joints);
+  VECT(DoubleTab) coord_items_distants(nb_joints);
+  for (int i_joint = 0; i_joint < nb_joints; i_joint++)
+    {
+      const Joint& joint     = joints[i_joint];
+      const ArrOfInt& items_communs = joint.joint_item(Joint::SOMMET).items_communs();
+      const int nb_items_communs = items_communs.size_array();
+
+      DoubleTab&   coord   = coord_items_locaux[i_joint];
+      coord.resize(nb_items_communs, dimension);
+      for (int i = 0; i < nb_items_communs; i++)
+        for (int j = 0; j < dimension; j++)
+          coord(i,j) = coords(items_communs[i], j);
+    }
+
+  // Envoi des coordonnees locales au processeur voisin
+  {
+    Schema_Comm schema_comm;
+    schema_comm.set_send_recv_pe_list(liste_send, liste_recv);
+    schema_comm.begin_comm();
+    for (int i = 0; i < nb_joints; i++)
+      {
+        const int pe_voisin = joints[i].PEvoisin();
+        const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+        if( neighbourZoneWasMerged && !(myZoneWasMerged && pe_voisin<moi) )
+          {
+            Sortie& buffer = schema_comm.send_buffer(pe_voisin);
+            buffer << coord_items_locaux[i];
+          }
+      }
+    schema_comm.echange_taille_et_messages();
+
+    if(myZoneWasMerged)
+      {
+        for (int i = 0; i < nb_joints; i++)
+          {
+            const int pe_voisin = joints[i].PEvoisin();
+            const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+            if(!(neighbourZoneWasMerged && pe_voisin>moi))
+              {
+                Entree& buffer = schema_comm.recv_buffer(pe_voisin);
+                buffer >> coord_items_distants[i];
+              }
+          }
+      }
+
+    schema_comm.end_comm();
+  }
+
+  // check if the vertices in my joints appear in the same order as my neighbour joint
+  if(myZoneWasMerged)
+    {
+      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
+        {
+
+          const int pe_voisin = joints[i_joint].PEvoisin();
+          const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+          if(neighbourZoneWasMerged && pe_voisin>moi)
+            continue;
+          ArrOfInt& items_communs = dom.zone(0).faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
+          const ArrOfInt old_items_communs = joints[i_joint].joint_item(Joint::SOMMET).items_communs();
+          const int     nb_items      = items_communs.size_array();
+          const DoubleTab& coord_voisin = coord_items_distants[i_joint];
+          const DoubleTab& my_coord = coord_items_locaux[i_joint];
+          assert(my_coord.size_array() ==  coord_voisin.size_array());
+          for(int i=0; i<nb_items; i++)
+            {
+              for(int j=0; j<nb_items; j++)
+                {
+                  int ok=1;
+                  for (int dir=0; dir<Objet_U::dimension; dir++)
+                    ok=ok&&(est_egal(coord_voisin(i,dir),my_coord(j,dir)));
+                  if (ok)
+                    {
+                      items_communs[i] = old_items_communs[j];
+                      break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// Description:
+// Does the exact same thing as the readOn of the class Domaine
+// but without collective communication
+// Necessary when the processors don't have the same numbers of file to read
+void Scatter::readDomainWithoutCollComm(Domaine& dom, Entree& fic )
+{
+  Cerr << "reading vertices..." << finl;
+  dom.read_vertices(fic);
+
+  Cerr << "Done !\nreading zones..." << finl;
+
+  Nom accouverte="{";
+  Nom accfermee="}";
+  Nom virgule=",";
+  Motcle nom;
+  fic >> nom;
+  if(nom!=(const char*)"vide")
+    {
+      if (nom!=accouverte)
+        {
+          Cerr << "Error while reading a list." << finl;
+          Cerr << "One expected an opened bracket { to start." << finl;
+          exit();
+        }
+      while(1)
+        {
+          Zone zone_tmp;
+          zone_tmp.read_zone(fic);
+          dom.add(zone_tmp);
+          fic >> nom;
+          if(nom==accfermee)
+            break;
+          if(nom!=virgule)
+            {
+              Cerr << nom << " one expected a ',' or a '}'" << finl;
+              exit();
+            }
+        }
+
+    }
+  Cerr << "Done!" << finl;
+}
+
+// Description:
+// Merging dom_to_add with dom
+void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
+{
+  int old_nb_elems = dom.nb_zones() ? dom.zone(0).nb_elem() : 0;
+  // merging vertices
+  IntVect nums;
+  Zone& zone=dom.add(dom_to_add.zone(0));
+  zone.associer_domaine(dom);
+  dom.ajouter(dom_to_add.coord_sommets(), nums);
+  Scatter::uninit_sequential_domain(dom);
+  zone.renum(nums);
+  zone.renum_joint_common_items(nums, old_nb_elems);
+  zone.associer_domaine(dom);
+
+  if(dom.zones().size() > 1)
+    {
+      int new_nb_elems = dom.zone(0).nb_elem();
+      // merging zones
+      dom.zones().merge();
+
+      //merging common vertices and remote items
+      const int& nb_joints = dom_to_add.zone(0).nb_joints();
+      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
+        {
+          const Joint& joint_to_add  = dom_to_add.zone(0).faces_joint()[i_joint];
+
+          int my_joint_index = 0;
+          while(joint_to_add.PEvoisin() != dom.zone(0).faces_joint()[my_joint_index].PEvoisin())
+            my_joint_index++;
+
+          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
+          ArrOfInt& items_communs = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
+          items_communs.set_smart_resize(1);
+          for(int index=0; index<sommets_to_add.size_array(); index++)
+            items_communs.append_array(nums[sommets_to_add[index]]);
+          items_communs.array_trier_retirer_doublons();
+
+          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
+          ArrOfInt& items_distants = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
+          items_distants.set_smart_resize(1);
+          for(int index=0; index<elements_to_add.size_array(); index++)
+            items_distants.append_array(new_nb_elems + elements_to_add[index]);
+        }
+    }
+}
+
+// Description:
 //  Lit le domaine dans le fichier de nom "nomentree",
 //  de type LecFicDistribueBin ou LecFicDistribue
 //  Format attendu : Domaine::ReadOn
@@ -325,7 +543,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
   Domaine& dom = domaine();
 
-
   Nom copy(nomentree);
   copy = copy.nom_me(Process::nproc(), "p", 1);
 
@@ -338,41 +555,136 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   statistiques().begin_count(stats);
 
 
+  ArrOfInt mergedZones(Process::nproc());
+  mergedZones = 0;
   if (is_hdf)
     {
       FichierHDFPar fic_hdf;
       //FichierHDF fic_hdf;
       nomentree = copy;
       fic_hdf.open(nomentree, true);
-      Entree_Brute data;
-      fic_hdf.read_dataset("/zone", Process::me(), data);
 
-      // Feed TRUST objects:
-      data >> dom;
-      dom.set_fichier_lu(nomentree);
-      data >> liste_bords_periodiques;
+      std::string dname = "/zone_"  + std::to_string(Process::me());
+      bool ok = fic_hdf.exists(dname.c_str());
+      if(!ok)
+        {
+          mergedZones = 1;
+          for(int i=0; i<Process::nproc(); i++)
+            {
+              Entree_Brute data_part;
+              Domaine part_dom;
+              std::string dname_part = dname + "_" + std::to_string(i);
+
+              bool exists = fic_hdf.exists(dname_part.c_str());
+              if(exists)
+                {
+                  Nom dataset_name(dname_part.c_str());
+                  fic_hdf.read_dataset(dataset_name, data_part);
+                  readDomainWithoutCollComm( part_dom, data_part );
+                  mergeDomains(dom, part_dom);
+
+                  // Renseigne dans quel fichier le domaine a ete lu
+                  dom.set_fichier_lu(nomentree);
+                  data_part >> liste_bords_periodiques;
+                }
+              else
+                break;
+            }
+        }
+      else
+        {
+          Entree_Brute data;
+          Nom dataset_name = dname.c_str();
+          fic_hdf.read_dataset(dname.c_str(), data);
+
+          // Feed TRUST objects:
+          readDomainWithoutCollComm(dom, data);
+          dom.zones().associer_domaine(dom);
+          dom.set_fichier_lu(nomentree);
+          data >> liste_bords_periodiques;
+        }
 
       fic_hdf.close();
     }
   else
     {
+
       LecFicDistribueBin fichier_binaire;
-      int ok = fichier_binaire.ouvrir(nomentree);
+      int isSingleZone = fichier_binaire.ouvrir(nomentree);
 
-      if (ok == 0) exit(); // Useless to print the reason (written in .log files if .Zones files not found)
+      if (!isSingleZone)
+        {
+          mergedZones = 1;
+          Nom nomentree_with_suffix=nomentree.nom_me(Process::me());
+          for(int i=0; i<Process::nproc(); i++)
+            {
+              EFichierBin fichier_binaire_part;
+              Domaine part_dom;
+              std::string tmp = nomentree_with_suffix.getPrefix(".Zones").getString();
+              tmp += "_";
+              tmp += std::to_string(i);
+              tmp += ".Zones";
+              Nom nomentree_part(tmp.c_str());
+              int ok = fichier_binaire_part.ouvrir(nomentree_part);
+              if(ok)
+                {
+                  readDomainWithoutCollComm( part_dom, fichier_binaire_part );
+                  mergeDomains(dom, part_dom);
 
-      fichier_binaire >> dom;
+                  // Renseigne dans quel fichier le domaine a ete lu
+                  dom.set_fichier_lu(nomentree);
+                  fichier_binaire_part >> liste_bords_periodiques;
+                  fichier_binaire_part.close();
+                }
+              else
+                break;
+            }
+        }
+      else
+        {
+          readDomainWithoutCollComm(dom, fichier_binaire );
+          dom.zones().associer_domaine(dom);
 
-      // Renseigne dans quel fichier le domaine a ete lu
-      dom.set_fichier_lu(nomentree);
+          // Renseigne dans quel fichier le domaine a ete lu
+          dom.set_fichier_lu(nomentree);
+          fichier_binaire >> liste_bords_periodiques;
+          fichier_binaire.close();
+        }
+    }
 
-      fichier_binaire >> liste_bords_periodiques;
+  //tri des joints dans l'ordre croissant des procs
+  Joints& joints = dom.zone(0).faces_joint();
+  trier_les_joints(joints);
+  envoyer_all_to_all(mergedZones, mergedZones);
+  check_consistancy_remote_items( dom, mergedZones );
+  dom.zone(0).check_zone();
 
-      fichier_binaire.close();
+  // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
+  int nbsom = mp_sum(dom.les_sommets().dimension(0));
+  Cerr << " Number of nodes: " << nbsom << finl;
+
+  init_sequential_domain(dom);
+
+  // merged zones need to reorder faces of periodic borders
+  const int myZoneWasMerged = mergedZones[Process::me()];
+  if(myZoneWasMerged)
+    {
+      for(int bord_perio = 0; bord_perio < liste_bords_periodiques.size(); bord_perio++)
+        {
+          Nom bp_nom = liste_bords_periodiques(bord_perio);
+          Bord& bord = dom.zone(0).bord(bp_nom);
+          if(bord.nb_faces() == 0)
+            continue;
+
+          ArrOfDouble direction_perio(dimension);
+          Reordonner_faces_periodiques::chercher_direction_perio(direction_perio, dom, bp_nom);
+          IntTab& faces = bord.faces().les_sommets();
+          double epsilon = precision_geom;
+          Reordonner_faces_periodiques::reordonner_faces_periodiques(dom, faces, direction_perio, epsilon);
+        }
     }
 
   statistiques().end_count(stats);
-
   barrier();
 }
 
@@ -515,6 +827,8 @@ static void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorte
   sorted_array.resize_array(i_write);
 }
 
+
+
 // Si un joint avec le "pe" existe, renvoie son indice,
 // sion cree un nouveau joint et renvoie son indice.
 static int ajouter_joint(Zone& zone, int pe)
@@ -577,6 +891,7 @@ static int ajouter_joint(Zone& zone, int pe)
 
   return i_joint;
 }
+
 
 // Description:
 //  Determination des items distants en fonction d'une liste d'items
@@ -797,7 +1112,6 @@ void Scatter::calculer_espace_distant(Zone&                  zone,
       Process::Journal() << " Joint with PE:" << pe
                          << " Number of remote items : "
                          << joint_items_distants.size_array() << finl;
-
     }
   // Remplissage du nombre d'items virtuels
   calculer_nb_items_virtuels(joints_non_const, type_item);
@@ -1060,6 +1374,7 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
       const ArrOfInt& items_communs = joint.joint_item(type_item).items_communs();
       const int     nb_items      = items_communs.size_array();
       schema_comm.recv_buffer(pe_voisin) >> items_communs_voisin;
+
       assert(nb_items == items_communs_voisin.size_array());
 
       IntTab& renum_items_communs = joint.set_joint_item(type_item).set_renum_items_communs();
@@ -1103,6 +1418,7 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
         // Traitement des items communs
         const ArrOfInt& items_communs = joint.items_communs();
         const int n = items_communs.size_array();
+
         // Les joints doivent arriver dans l'ordre croissant du numero de pe
         // sinon l'algo suivant ne marche pas:
         assert((i_joint == 0) || (pe > joints[i_joint-1].PEvoisin()));

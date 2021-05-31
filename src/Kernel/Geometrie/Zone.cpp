@@ -132,6 +132,16 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 // Postcondition:
 Entree& Zone::readOn(Entree& s)
 {
+  read_zone(s);
+  check_zone();
+  return s ;
+}
+
+
+// Description:
+// read zone from the input stream
+void Zone::read_zone(Entree& s)
+{
   s >> nom ;
   Cerr << " Reading zone " << le_nom() << finl;
   s >> elem;
@@ -140,13 +150,21 @@ Entree& Zone::readOn(Entree& s)
   s >> mes_faces_joint;
   s >> mes_faces_raccord;
   s >> mes_faces_int;
+}
 
+// Description:
+// associate the read objects to the zone
+// and check that the reading objects are coherent
+void Zone::check_zone()
+{
   // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
   {
     int i;
     int n = nb_front_Cl();
     for (i = 0; i < n; i++)
-      corriger_type(frontiere(i).faces(),type_elem().valeur());
+      {
+        corriger_type(frontiere(i).faces(),type_elem().valeur());
+      }
   }
 
   if (mes_faces_bord.size()==0 && mes_faces_raccord.size()==0 && Process::nproc()==1)
@@ -154,6 +172,7 @@ Entree& Zone::readOn(Entree& s)
       Cerr << "Warning, the reread zone " << nom
            << " has no defined boundaries (none boundary or connector)." << finl;
     }
+
   mes_faces_bord.associer_zone(*this);
   mes_faces_joint.associer_zone(*this);
   mes_faces_raccord.associer_zone(*this);
@@ -163,13 +182,13 @@ Entree& Zone::readOn(Entree& s)
 
   const int nbelem = mp_sum(mes_elems.dimension(0));
   Cerr << "  Number of elements: " << nbelem << finl;
+
   // Verifications sanitaires:
   // On doit avoir le meme nombre de frontieres et les memes noms sur tous les procs
   check_frontiere(mes_faces_bord, "(Bord)");
   check_frontiere(mes_faces_raccord, "(Raccord)");
   check_frontiere(mes_faces_int, "(Face_Interne)");
 
-  return s ;
 }
 
 Entree& Zone::Lire_Bords_a_imprimer(Entree& is)
@@ -631,9 +650,11 @@ void Zone::renum(const IntVect& Les_Nums)
 {
   int dim0 = mes_elems.dimension(0);
   int dim1 = mes_elems.dimension(1);
+
   for(int i=0; i<dim0; i++)
     for(int j=0; j<dim1; j++)
       mes_elems(i,j)=Les_Nums[mes_elems(i,j)];
+
   for(int i=0; i<nb_bords(); i++)
     mes_faces_bord(i).renum(Les_Nums);
   for(int i=0; i<nb_joints(); i++)
@@ -643,6 +664,37 @@ void Zone::renum(const IntVect& Les_Nums)
   for(int i=0; i<nb_frontieres_internes(); i++)
     mes_faces_int(i).renum(Les_Nums);
 }
+
+// Description:
+//    Renumerotation des noeuds et des elements presents dans les items communs des joints
+//      Le noeud de numero k devient le noeud de numero Les_Nums[k]
+//      l'element de numero e devient l'element de numero e+elem_offset
+// Precondition:
+// Parametre: IntVect& Les_Nums
+//    Signification: le vecteur contenant la nouvelle numerotation
+//                   Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: les items communs ont une nouvelle numerotation
+void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int& elem_offset)
+{
+  for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
+    {
+      ArrOfInt& sommets_communs = mes_faces_joint[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
+      for(int index=0; index<sommets_communs.size_array(); index++)
+        sommets_communs[index] = Les_Nums[sommets_communs[index]];
+
+      ArrOfInt& elements_distants = mes_faces_joint[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
+      elements_distants+= elem_offset;
+    }
+}
+
 
 // Description:
 //    Renvoie -1 si face n'est pas une face interne
@@ -688,6 +740,163 @@ int Zone::face_interne_conjuguee(int face) const
   return -1;
 }
 
+
+// Description:
+// Correcting type of borders if they were empty before merge (ie equal to vide_0D)
+// difference with corriger_type is that we don't want to delete faces inside borders afterwards
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Zone::correct_type_of_borders_after_merge()
+{
+  {
+    // Les Bords
+    LIST_CURSEUR(Bord) curseur(mes_faces_bord);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Bord) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+
+  {
+    // Les Faces Internes :
+    LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Faces_Interne) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+  {
+    // Les Raccords
+    LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Raccord) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+  {
+    //Les joints
+    LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
+    while(curseur)
+      {
+        Frontiere& front=curseur.valeur();
+        if(front.faces().type_face() == Faces::vide_0D)
+          {
+            LIST_CURSEUR(Joint) curseur2(curseur.list());;;
+            while(!curseur2.list().est_dernier())
+              {
+                Frontiere& front2=curseur2.list().suivant().valeur();
+                if(front.le_nom() == front2.le_nom())
+                  {
+                    front.faces().typer(front2.faces().type_face());
+                    break;
+                  }
+                else
+                  ++curseur2;
+              }
+          }
+        ++curseur;
+      }
+  }
+}
+
+// Description:
+//    Concatene les joints de meme nom
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: les joints qui portent le meme nom sont
+//                regroupes dans un seul
+int Zone::comprimer_joints()
+{
+  LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
+  while(curseur)
+    {
+      Frontiere& front=curseur.valeur();
+      LIST_CURSEUR(Joint) curseur2(curseur.list());;;
+      while(!curseur2.list().est_dernier())
+        {
+          Frontiere& front2=curseur2.list().suivant().valeur();
+          if(front.le_nom() == front2.le_nom())
+            {
+              front.add(front2);
+              curseur2.list().supprimer();
+            }
+          else
+            ++curseur2;
+        }
+      ++curseur;
+    }
+  return 1;
+}
+
+
+
 // Description:
 //    Concatene les bords de meme nom et ceci pour:
 //    les bords, les bords periodiques et les faces internes.
@@ -714,6 +923,7 @@ int Zone::comprimer()
         Frontiere& front=curseur.valeur();
         // Au cas ou la zone de la frontiere n'est pas la bonne zone
         front.associer_zone(*this);
+
         LIST_CURSEUR(Bord) curseur2(curseur.list());;;
         Journal() << "Zone::comprimer() bord : " << front.le_nom() << finl;
         while(!curseur2.list().est_dernier())
@@ -1145,6 +1355,30 @@ void Zone::construire_elem_virt_pe_num()
       elem_virt_pe_num_(i, 1) = tableau_echange(n + i, 1);
     }
 }
+
+void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const
+{
+  IntTab tableau_echange(mes_elems);
+  assert(tableau_echange.dimension(1) >= 2);
+  int i;
+  const int n = nb_elem();
+  const int n_virt = nb_elem_tot() - n;
+  const int moi = me();
+  for (i = 0; i < n; i++)
+    {
+      tableau_echange(i, 0) = moi;
+      tableau_echange(i, 1) = i;
+    }
+  tableau_echange.echange_espace_virtuel();
+
+  elem_virt_pe_num_cpy.resize(n_virt, 2);
+  for (i = 0; i < n_virt; i++)
+    {
+      elem_virt_pe_num_cpy(i, 0) = tableau_echange(n + i, 0);
+      elem_virt_pe_num_cpy(i, 1) = tableau_echange(n + i, 1);
+    }
+}
+
 
 const IntTab& Zone::elem_virt_pe_num() const
 {

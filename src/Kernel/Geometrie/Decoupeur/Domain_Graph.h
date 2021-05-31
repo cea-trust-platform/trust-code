@@ -14,67 +14,60 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        FichierHDFPar.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     1
+// File:        Domain_Graph.h
+// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Decoupeur
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <FichierHDFPar.h>
+#ifndef Domain_Graph_included
+#define Domain_Graph_included
 
-#ifdef MPI_
-#include <comm_incl.h>
-#include <Comm_Group_MPI.h>
+// .DESCRIPTION
+//  Build the graph of the domain that the METIS/PARMETIS/PTSCOTHC libraries need
+
+#include <metis.h>
+
+#ifndef NO_METIS
+// Metis 5.0 introduit le type idx_t
+#ifdef IDXTYPEWIDTH
+#define METIS
+typedef int idx_t;
+#endif
 #endif
 
-FichierHDFPar::FichierHDFPar() :
-  FichierHDF(), collective_op_(false), collective_metadata_op_(false)
+class Domain_Graph
 {
-#ifndef MPI_
-  Cerr << "FichierHDFPar needs MPI to be used!" << finl;
-  Process::exit(-1);
+
+  friend class Partitionneur_Metis;
+  friend class Partitionneur_Parmetis;
+  friend class Partitionneur_Ptscotch;
+
+public:
+
+  void construire_graph_from_segment(const Domaine& dom,
+                                     const int use_weights );
+
+  void construire_graph_elem_elem(const Domaine& dom,
+                                  const Noms& liste_bords_periodiques,
+                                  const int use_weights,
+                                  Static_Int_Lists& graph_elements_perio);
+
+
+  void free_memory();
+
+private:
+#ifndef NO_METIS
+  idx_t nvtxs;                        /* The number of vertices */
+  idx_t nedges;                        /* The total number of edges */
+  idx_t weightflag;
+  idx_t *xadj;                        /* CRS storage scheme */
+  idx_t *adjncy;
+  idx_t *vwgts;
+  idx_t *ewgts;
+  idx_t *vtxdist;                     //for parmetis: distribution of the initial graph on the procs
+  idx_t *edgegsttab;                  //for ptscotch: local numbering of vertices
 #endif
-}
 
-FichierHDFPar::~FichierHDFPar() {}
+};
 
-void FichierHDFPar::prepare_file_props()
-{
-  FichierHDF::prepare_file_props();
-#ifdef MPI_
-
-  MPI_Info infos;
-  MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
-
-#ifdef MED_
-
-  hdf5_error<herr_t>(H5Pset_fapl_mpio(file_access_plst_, Comm_Group_MPI::get_trio_u_world(), infos));
-
-  //on cluster, type lfs getstripe . to see the default striping of the current repository
-  hsize_t stripe_size = 1048576; //1572864;
-  hdf5_error<herr_t>(H5Pset_alignment(file_access_plst_, 0, stripe_size));
-
-  if(collective_metadata_op_)
-    hdf5_error<herr_t>(H5Pset_all_coll_metadata_ops(file_access_plst_, 1));
-
-#endif
-
-  MPI_Info_free(&infos);
-#endif
-}
-
-#ifdef MED_
-void FichierHDFPar::prepare_dataset_props(int dcpl, hsize_t chunk_size, bool is_bin)
-{
-  FichierHDF::prepare_dataset_props(dcpl, chunk_size, is_bin);
-
-#ifdef MPI_
-  if(collective_op_)
-    hdf5_error<herr_t>(H5Pset_dxpl_mpio(dataset_transfer_plst_, H5FD_MPIO_COLLECTIVE));
-#endif
-  // int rank = Process::me();
-
-  // //Build expected dataset name for the current proc (with the trailing _000x stuff)
-  // Nom dataset_full_name = dataset_name;
-  // dataset_full_name.nom_me(rank);
-}
 #endif

@@ -1,0 +1,101 @@
+# READING PARTITIONNING #
+# Parallel OK #
+dimension 3
+Domaine dom
+
+# BEGIN SCATTER #
+Scatter DOM_PARMETIS.Zones dom
+# END SCATTER #
+
+VEFPreP1b dis
+Read dis { P0 P1 }
+
+Scheme_euler_explicit sch
+Read sch 
+{
+	nb_pas_dt_max 4
+        tinit 0.
+        tmax 0.1
+        dt_min 1.e-6
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 0.5
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme	1 1.
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Read pb
+	{
+	Navier_Stokes_standard
+		{
+                Solveur_Pression GCP_NS {
+                        seuil 1.e-8 quiet
+                        solveur1 GCP { precond ssor { omega 1.651 } seuil 1.e-10 }
+                        solveur0 GCP { precond ssor { omega 1.651 } seuil 1.e-9 }
+                }
+		solveur_bar petsc cholesky { }
+
+                convection { muscl }
+                diffusion  {  }
+				
+                Sources { Source_Qdm Champ_fonc_xyz dom 3  x*(1-y)*z x*y*z x*y*z
+                        }
+		initial_conditions
+			{
+                        vitesse Champ_fonc_xyz dom 3  0.  0. 0.
+			}
+		boundary_conditions
+			{
+			entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0. 0. 0.
+			sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+			symetrie symetrie
+			paroi paroi_fixe
+			paroiY periodique 
+			}
+	         }
+
+
+	Post_processings
+	{
+		lml
+        	{
+		fichier LAST
+		format lml  
+                Probes
+                	{ 
+                        sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5 
+			sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5  1. 0.5 0.5
+			}
+		fields dt_post 2.
+			{
+			pression elem
+			pression som
+			}
+		}
+		lata
+		{
+		fichier LAST
+		format lata  
+		fields dt_post 2.
+			{
+			pression elem
+			pression som
+			}		
+		}
+	}
+}
+Solve pb
+End

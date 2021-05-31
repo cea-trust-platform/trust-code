@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <Ref_Domaine.h>
-#include <Ref_ArrOfInt.h>
+//#include <Ref_ArrOfInt.h>
+#include <Ref_IntVect.h>
 #include <Static_Int_Lists.h>
 #include <Noms.h>
 #include <DomaineCutter_Correspondance.h>
@@ -41,7 +42,7 @@ class DomaineCutter : public Objet_U
   Declare_instanciable(DomaineCutter);
 public:
   void initialiser(const Domaine&   domaine_global,
-                   const ArrOfInt& elem_part,
+                   const IntVect& elem_part,
                    const int     nb_parts,
                    const int     epaisseur_joint,
                    const Noms&      bords_periodiques,
@@ -58,7 +59,7 @@ public:
     DomaineCutter_Correspondance  correspondance;
     construire_sous_domaine(part,correspondance,sous_domaine_);
   };
-  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, ArrOfInt& elem_part, const int& reorder);
+  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int& reorder);
   inline const Noms& bords_internes() const
   {
     return bords_a_pb_;
@@ -95,7 +96,7 @@ private:
   REF(Domaine) ref_domaine_;
   // Reference au tableau de decoupage
   //  (pour chaque element du domaine global, numero de sous-domaine)
-  REF(ArrOfInt) ref_elem_part_;
+  REF(IntVect) ref_elem_part_;
   // Liste des noms des bords periodiques
   Noms liste_bords_periodiques_;
   // Nombre total de parties (>= a max_array(elem_part) + 1)

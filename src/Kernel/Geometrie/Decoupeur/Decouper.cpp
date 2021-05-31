@@ -26,6 +26,7 @@
 #include <EChaine.h>
 #include <SFichier.h>
 #include <Param.h>
+#include <communications.h>
 
 Implemente_instanciable(Decouper,"Decouper|Partition",Interprete);
 
@@ -88,7 +89,7 @@ static void lire_partitionneur(DERIV(Partitionneur_base) & d_part,
 }
 
 static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
-                                     const ArrOfInt& elem_part,
+                                     const IntVect& elem_part,
                                      int& nb_parts_tot)
 {
   Cerr << "Writing of the splitting array at the format ArrOfInt ascii\n"
@@ -106,7 +107,7 @@ static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
 
 static void postraiter_decoupage(const Nom& nom_fichier_lata,
                                  const Domaine& domaine,
-                                 const ArrOfInt& elem_part)
+                                 const IntVect& elem_part)
 {
   Cerr << "Postprocessing of the splitting at the lata format: " << nom_fichier_lata << finl;
   Postraitement_lata::Format format = Postraitement_lata::BINAIRE;
@@ -120,7 +121,7 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
   Postraitement_lata::ecrire_temps(nom_fichier_lata,
                                    0.,
                                    format);
-  const int n = elem_part.size_array();
+  const int n = elem_part.size_reelle();
   DoubleTab data(n);
   for (int i = 0; i < n; i++)
     data(i) = elem_part[i];
@@ -141,7 +142,7 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
 static void ecrire_sous_zones(const Nom& nom_zones_decoup,
                               const Decouper::ZonesFileOutputType format,
                               const Domaine& domaine,
-                              ArrOfInt& elem_part,
+                              IntVect& elem_part,
                               const int nb_parties,
                               const int epaisseur_joint,
                               const int reorder,
@@ -171,7 +172,7 @@ static void ecrire_sous_zones(const Nom& nom_zones_decoup,
 // XD attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
 // XD attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
 // XD attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned zones in a single file in hdf5 format.
-// XD attr print_more_infos entier print_more_infos 1 If this option is set to 1 (0 by default), print infos about number of remote elements (ghosts). Warning, it slows wodn the cutting operations.
+// XD attr print_more_infos entier print_more_infos 1 If this option is set to 1 (0 by default), print infos about number of remote elements (ghosts) and additional infos about the quality of partitionning. Warning, it slows down the cutting operations.
 int Decouper::print_more_infos = 0;
 Entree& Decouper::interpreter(Entree& is)
 {
@@ -212,7 +213,7 @@ Entree& Decouper::interpreter(Entree& is)
 
   // On recupere le resultat: un tableau qui donne pour chaque element
   // le numero de la partie a laquelle il appartient.
-  ArrOfInt elem_part;
+  IntVect elem_part;
   partitionneur.declarer_bords_periodiques(liste_bords_periodiques);
   partitionneur.construire_partition(elem_part,nb_parts_tot);
 
@@ -220,6 +221,7 @@ Entree& Decouper::interpreter(Entree& is)
   int nb_parties = 0;
   if (elem_part.size_array() > 0)
     nb_parties = max_array(elem_part) + 1;
+  nb_parties = mp_max(nb_parties);
   Cerr << "The partitioner has generated " << nb_parties << " parts." << finl;
 
   // Prise en compte de la directive nb_parts_tot
@@ -256,20 +258,50 @@ Entree& Decouper::interpreter(Entree& is)
     postraiter_decoupage(nom_fichier_lata, domaine, elem_part);
 
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
-  Cout << "\nTotal number of elements = " << elem_part.size_array() << finl;
+  int total_elem = Process::mp_sum(elem_part.size_reelle());
+  Cout << "\nTotal number of elements = " << total_elem << finl;
+  Cout << "Number of Zones : " << nb_parties << finl;
 
-  DoubleVect A(nb_parties);
-  for (int i = 0; i < elem_part.size_array(); i++)
-    A(elem_part[i]) = A(elem_part[i]) + 1;
-
-  Cout << "Number of Zones : " << A.size_array() << finl;
-  double mean_element_zone = elem_part.size_array()/nb_parties;
-  if (mean_element_zone>0)
+  if (Decouper::print_more_infos)
     {
-      double load_imbalance = double(local_max_vect(A) / mean_element_zone);
-      Cout << "Number of cells per Zone (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_zone << " / "
-           << local_max_vect(A) << " Load imbalance: " << load_imbalance << "\n" << finl;
+      DoubleVect A(nb_parties);
+      A = 0;
+      for (int i = 0; i < elem_part.size_reelle(); i++)
+        A(elem_part[i]) = A(elem_part[i]) + 1;
+
+      if(Process::je_suis_maitre())
+        {
+          for(int proc=1; proc<Process::nproc(); proc++)
+            {
+              DoubleVect tmp(nb_parties);
+              tmp = 0;
+              recevoir(tmp, proc, 0, proc+2005);
+
+              for(int i_part=0; i_part<nb_parties; i_part++)
+                A(i_part) += tmp(i_part);
+            }
+
+
+          double mean_element_zone = total_elem/nb_parties;
+          if (mean_element_zone>0)
+            {
+              double load_imbalance = double(local_max_vect(A) / mean_element_zone);
+              Cout << "Number of cells per Zone (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_zone << " / "
+                   << local_max_vect(A) << " Load imbalance: " << load_imbalance << "\n" << finl;
+
+            }
+        }
+      else
+        envoyer(A, Process::me(), 0, Process::me()+2005);
+
+
+      // we could do it as below, but if nb_parties is big, it would involve a lot of collective communication
+      // for (int i = 0; i < nb_parties; i++)
+      // 	A[i] = Process::mp_sum(A[i]);
+
+
     }
+
   Cerr << "End of the interpreter Decouper" << finl;
   if (reorder==0 && nb_parties>128)
     {

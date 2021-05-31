@@ -589,6 +589,11 @@ do
 	 then
 	    echo "Change of the file $PETSC_ROOT/$PETSC_ARCH/include/metis.h failed." && exit -1
 	 fi
+	 # Correction du fichier ptscotch.h (s'il existe)
+	 if [ -f $PETSC_ROOT/$PETSC_ARCH/include/ptscotch.h ]
+	 then
+	     sed -i 's/#define PTSCOTCH_H/#define PTSCOTCH_H\n#include <mpi.h>/' $PETSC_ROOT/$PETSC_ARCH/include/ptscotch.h 1>/dev/null 2>&1
+	 fi  
       else
          echo "make test failed." && exit -1
       fi

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,16 @@ static inline void calculer_vecteur_2faces(const DoubleTab& coord,
   vect /= nb_som_faces;
 }
 
+
+static double local_norme_vect(const DoubleVect& dv)
+{
+  double x=0.0;
+  for(int i=0; i< dv.size_reelle(); i++)
+    x += dv(i)*dv(i);
+  x = sqrt(x);
+  return x;
+}
+
 void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord)
 {
   const DoubleTab& sommets = dom.coord_sommets();
@@ -70,7 +80,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   for (i = 0; i < nb_som_face; i++)
     une_face(0, i) = faces(0, i);
   dom.zone(0).type_elem().calculer_normales(une_face, normale);
-  normale /= mp_norme_vect(normale);
+  normale /= local_norme_vect(normale);
 
   ArrOfDouble delta(nb_faces);
   ArrOfDouble vect(dim);

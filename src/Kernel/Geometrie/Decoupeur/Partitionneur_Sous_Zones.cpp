@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,13 +91,13 @@ void Partitionneur_Sous_Zones::initialiser(const Noms& noms_sous_zones)
 //   Elements restants qui ne figurent dans aucune sous_zone => sur un nouveau pe.
 //   Si un element figure dans plusieurs sous-zones, c'est la premiere sous_zone
 //   qui gagne.
-void Partitionneur_Sous_Zones::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_.non_nul());
   const Domaine& dom = ref_domaine_.valeur();
   const Zone& zone = dom.zone(0);
-  const int nb_elem = zone.nb_elem();
-  elem_part.resize_array(nb_elem);
+  const int nb_elem = zone.nb_elem_tot();
+  elem_part.resize(nb_elem);
   elem_part = -1;
   if (noms_domaines_.size()!=0 && noms_sous_zones_.size())
     {
@@ -187,7 +187,7 @@ void Partitionneur_Sous_Zones::construire_partition(ArrOfInt& elem_part, int& nb
       Process::exit();
     } */
   if (liste_bords_periodiques_.size() > 0)
-    corriger_bords_avec_liste(dom, liste_bords_periodiques_, elem_part);
+    corriger_bords_avec_liste(dom, liste_bords_periodiques_, 0, elem_part);
 
   // On ne corrige pas elem0 sur proc0 (cas test CouplageFluide_Pb1Pb2_VEF_CN)
 }

@@ -1,0 +1,25 @@
+(
+jdd=$1
+jdd=`basename $jdd`
+
+if [ ${jdd#PAR_} != $jdd ]
+then
+   # compare parmetis results with metis and trust
+   rm *Zones -f
+   trust FIRST || exit -1
+   trust INTERM 2 || exit -1
+   trust LAST 8 || exit -1
+   compare_lata LAST.lml ${jdd#PAR_}.lml		
+   compare_lata LAST.lml $jdd.lml
+
+   # compare ptscotch results with metis and trust
+   sed -i "s?parmetis ?ptscotch ?g" INTERM.data
+   sed -i "s?DOM_PARMETIS?DOM_PTSCOTCH?g" INTERM.data
+   sed -i "s?DOM_PARMETIS?DOM_PTSCOTCH?g" LAST.data
+   trust INTERM 2 || exit -1
+   trust LAST 8 || exit -1
+   compare_lata LAST.lml ${jdd#PAR_}.lml		
+   compare_lata LAST.lml $jdd.lml
+
+fi
+) 1>>verifie.log 2>&1

@@ -1,0 +1,109 @@
+# Testing parallel domain cutting with Parmetis and Ptscotch #
+# PARALLEL OK #
+
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 21 9 9
+		Longueurs 6.283185307 2. 2.
+	}
+	{
+		Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 2.
+		Bord periox  X = 6.283185307            0. <= Y <= 2.0           0. <= Z <= 2. 
+		Bord bas     Y = 0.            0. <= X <= 6.283185307            0. <= Z <= 2.
+		Bord haut    Y = 2.            0. <= X <= 6.283185307            0. <= Z <= 2.
+                Bord perioz  Z = 0.            0. <= X <= 6.283185307            0. <= Y <= 2.0
+		Bord perioz  Z = 2.            0. <= X <= 6.283185307            0. <= Y <= 2.0   	
+		}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { nb_parts 4 use_weights }
+	Larg_joint 1
+	zones_name DOM
+	periodique 2 periox perioz
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+VDF dis
+
+
+Scheme_euler_explicit  sch
+Read sch
+{
+	tinit 0.
+	tmax 10.
+	dt_min 1.e-7
+	dt_max 1.e-1
+	dt_impr 0.00001
+	dt_sauv 1.5
+	seuil_statio 1.e-8
+	nb_pas_dt_max 20
+}
+
+Fluide_Incompressible air
+Read air
+{
+	mu Champ_Uniforme 1 1.0
+ 	rho Champ_Uniforme 1 1.0
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-10 impr }	
+		convection { negligeable  }
+		diffusion { }
+		initial_conditions {
+			vitesse champ_init_canal_sinal 3 { Ucent 0.5 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
+			}
+		sources { Canal_perio { bord periox } }
+		boundary_conditions {
+			periox periodique 
+			perioz periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		  
+		}
+     }
+	      
+	Post_processing
+	{
+	     Probes
+	          {
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15 1. 
+			sonde_vitesse vitesse periode 0.001 points 1 0.05 0.15 1. 
+	        }
+		fields dt_post 4.0
+		{
+			pression som			
+			pression elem			
+			vitesse som
+			vitesse elem
+	}
+
+
+	}
+}
+
+Solve pb
+End

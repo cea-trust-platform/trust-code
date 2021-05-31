@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ void Partitionneur_Union::associer_domaine(const Domaine& domaine)
 //  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
 // Precondition:
 //  domaine associe et filename initialise
-void Partitionneur_Union::construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const
+void Partitionneur_Union::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   elem_part.resize(ref_domaine_->zone(0).nb_elem());
   elem_part = -1;
@@ -83,7 +83,7 @@ void Partitionneur_Union::construire_partition(ArrOfInt& elem_part, int& nb_part
       const Sous_Zone& ssz = ref_cast(Sous_Zone, Interprete::objet(kv.first.c_str()));
       EFichier file;
       file.ouvrir(kv.second.c_str());
-      ArrOfInt dec_ssz;
+      IntVect dec_ssz;
       file >> dec_ssz;
       file.close();
       //... et on remplit un morceau de elem_part avec
