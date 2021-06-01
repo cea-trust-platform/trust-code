@@ -26,8 +26,8 @@ then
    cd ${Build}
    echo Creating symlink to source files
    ln -sf $DIR/src/* . 2>/dev/null
+   LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
    $local/xml2info triofield.xml
-  
    $local/xml2cmake triofield.xml
        
    dlocal=`dirname $local`

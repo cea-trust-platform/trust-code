@@ -45,12 +45,13 @@ if [ ! -d ${Build} ]
     done
 
 
-      echo "# Compiling $plugin plugin..."
-# Regroupement des sources du plugin depuis le Kernel:
-MED="-with_med"
-[ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
-$DIR/src/generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
+    echo "# Compiling $plugin plugin..."
+    # Regroupement des sources du plugin depuis le Kernel:
+    MED="-with_med"
+    [ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
+    $DIR/src/generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
    
+   LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
    $local/xml2info lata.xml
 
    if [ $prepsrc -eq 1 ] 
