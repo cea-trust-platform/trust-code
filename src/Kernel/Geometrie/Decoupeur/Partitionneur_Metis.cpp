@@ -184,11 +184,9 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
       graph.construire_graph_from_segment(ref_domaine_.valeur(), use_weights_);
 
     }
-  std::vector<idx_t> partition(graph.nvtxs);
-#ifdef METIS
-  idx_t int_parts = nb_parties_;
-#endif
-  idx_t edgecut = 0; // valeur renvoyee par metis (nombre total de faces de joint)
+  std::vector<int> partition(graph.nvtxs);
+  int int_parts = nb_parties_;
+  int edgecut = 0; // valeur renvoyee par metis (nombre total de faces de joint)
 
   switch(algo_)
     {
@@ -198,7 +196,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         Cerr << "Call for PMETIS" << finl;
         Cerr << "===============" << finl;
         // Voir le manual.pdf de METIS 5.0
-        idx_t options[METIS_NOPTIONS];
+        int options[METIS_NOPTIONS];
         METIS_SetDefaultOptions(options);
         //options[METIS_OPTION_PTYPE]=METIS_PTYPE_RB|METIS_PTYPE_KWAY; // Methode de partitionnement
         //options[METIS_OPTION_OBJTYPE]=METIS_OBJTYPE_CUT|METIS_OBJTYPE_VOL; // Objective type
@@ -209,11 +207,11 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         options[METIS_OPTION_NUMBERING]=0;              // Numerotation C qui demarre a 0
         options[METIS_OPTION_DBGLVL]=111111111;         // Mode verbose maximal
         //options[METIS_OPTION_NO2HOP]=1;                 // 5.1.0: not perform any 2-hop matchings (as 5.0.3)
-        idx_t ncon=1;
+        int ncon=1;
 
         // Implementation reduite (plusieurs valeurs par defaut->NULL) pour METIS 5.0
-        int status = METIS_PartGraphRecursive(&graph.nvtxs, &ncon, graph.xadj,
-                                              graph.adjncy, graph.vwgts, NULL, graph.ewgts,
+        int status = METIS_PartGraphRecursive(&graph.nvtxs, &ncon, graph.xadj.addr(),
+                                              graph.adjncy.addr(), graph.vwgts.addr(), NULL, graph.ewgts.addr(),
                                               &int_parts, NULL, NULL, options,
                                               &edgecut, partition.data());
         if (status != METIS_OK)
@@ -231,7 +229,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
     case KMETIS:
       {
         Cerr << " Call for KMETIS" << finl;
-        idx_t options[METIS_NOPTIONS];
+        int options[METIS_NOPTIONS];
         METIS_SetDefaultOptions(options);
         //options[METIS_OPTION_PTYPE]=METIS_PTYPE_RB|METIS_PTYPE_KWAY; // Methode de partitionnement
         //options[METIS_OPTION_OBJTYPE]=METIS_OBJTYPE_CUT|METIS_OBJTYPE_VOL; // Objective type
@@ -241,11 +239,11 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         options[METIS_OPTION_NCUTS]=nb_essais_;         // Nombre de partitionnements testes pour en prendre le meilleur
         options[METIS_OPTION_NUMBERING]=0;     // Numerotation C qui demarre a 0
         options[METIS_OPTION_DBGLVL]=111111111; // Mode verbose maximal
-        idx_t ncon=1;
+        int ncon=1;
         // Conseil de la doc Metis 4.0 : METIS_PartGraphKway si int_parts>8, METIS_PartGraphRecursive sinon...
         // En effet semble plus rapide, mais edgecut en sortie est moins bon...
-        int status = METIS_PartGraphKway(&graph.nvtxs, &ncon, graph.xadj,
-                                         graph.adjncy, graph.vwgts, NULL, graph.ewgts,
+        int status = METIS_PartGraphKway(&graph.nvtxs, &ncon, graph.xadj.addr(),
+                                         graph.adjncy.addr(), graph.vwgts.addr(), NULL, graph.ewgts.addr(),
                                          &int_parts, NULL, NULL, options ,
                                          &edgecut, partition.data());
         if (status != METIS_OK)
@@ -270,8 +268,6 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
   Cerr << "-> The lesser this number is, the lesser the total volume of communication between processors." << finl;
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
   Cerr << "===============" << finl;
-
-  graph.free_memory();
 
   const int n = graph.nvtxs;
   elem_part.resize(n);
