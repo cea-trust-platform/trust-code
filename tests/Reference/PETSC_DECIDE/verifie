@@ -1,14 +1,14 @@
-#!/bin/bash
-# Comparaison en parallel
-ref=PAR_PETSC_DECIDE
-if [ -f $ref.lata ]
+# Test several PETSc options in parallel
+if [ -f PAR_PETSC_DECIDE.dt_ev ]
 then
-   jdd=NON_PETSC_DECIDE
-   cp $ref.data $jdd.data
-   sed -i "1,$ s?petsc_decide 1?petsc_decide 0?" $jdd.data
-   trust $jdd.data 2 1>$jdd.out 2>$jdd.err || exit -1 
-   compare_lata $ref.lata $jdd.lata || exit -1 
-   echo "PETSC_DECIDE 1 vs 0:"
-   sdiff $ref.TU $jdd.TU  | grep "Secondes / solveur"
+   # Petsc_decide by nb_gpus options
+   options="nb_cpus@first@1 nb_cpus@first@2 nb_cpus@first@4"
+   for option in $options
+   do
+      option=`echo $option | awk '{gsub("@"," ",$0);print $0}'`
+      echo "Test solve PETSc with only: $option"
+      echo $ECHO_OPTS "1,$ s?petsc_decide 1?$option?g\nw test.data" | ed PAR_PETSC_DECIDE.data 1>/dev/null 2>&1 || exit -1
+      trust test 9 1>test.out 2>test.err || exit -1
+      compare_lata test.lml PAR_PETSC_DECIDE.lml 1>/dev/null 2>&1 || exit -1
+   done
 fi
-exit 0

@@ -201,7 +201,7 @@ inline void Solv_Petsc::reset()
       // Destruction des vecteurs
       VecDestroy(&SecondMembrePetsc_);
       VecDestroy(&SolutionPetsc_);
-      if (petsc_decide_)
+      if (LocalSolutionPetsc_!=NULL)
         {
           VecDestroy(&LocalSolutionPetsc_);
           VecScatterDestroy(&VecScatter_);
@@ -246,6 +246,8 @@ inline void Solv_Petsc::initialize()
   SecondMembrePetsc_ = NULL;
   SolutionPetsc_ = NULL;
   SolveurPetsc_ = NULL;
+  LocalSolutionPetsc_ = NULL;
+  VecScatter_ = NULL;
   // Dev:
   ignore_new_nonzero_ = false;
   rebuild_matrix_ = true;

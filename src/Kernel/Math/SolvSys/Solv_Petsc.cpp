@@ -753,7 +753,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 11:
               {
                 is >> petsc_decide_;
-                different_partition_ = 1; // If Petsc decides the matrix partition, the partition is often different than the TRUST partition
+                different_partition_ = petsc_decide_; // If Petsc decides the matrix partition, the partition is often different than the TRUST partition
                 break;
               }
             case 12:
@@ -2422,7 +2422,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   // et si on supprime les zeros de la matrice, lors d'un update on peut avoir une allocation -> erreur
   if (mataij_ && clean_matrix_)
     {
-      Cout << "Cleaning zero coefficients into PETSc matrix..." << finl;
+      if (amgx_) Cout << "Cleaning zero coefficients into PETSc matrix..." << finl;
       MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); // Ne stocke pas les zeros
     }
   // Genere une erreur (ou pas) si une case de la matrice est remplie sans allocation auparavant:
@@ -2558,7 +2558,7 @@ int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
       Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
            << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
            << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
-      if (nnz[1]>0)
+      if (nnz[1]>0 && amgx_)
         {
           Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
           double ratio = 1-(double)nnz(0) / (double)nnz(1);
