@@ -24,7 +24,6 @@
 
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
-#include <ptscotch.h>
 
 // .DESCRIPTION
 //  Partition d'un domaine en nb_parties parties equilibrees en utilisant

@@ -32,7 +32,7 @@
 #include <communications.h>
 #include <Domain_Graph.h>
 #include <MD_Vector_tools.h>
-#include <petsc_for_kernel.h>
+#include <parmetis++.h>
 
 inline void not_implemented(const Nom& chaine)
 {
@@ -84,7 +84,7 @@ void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
 //  est attribuee).
 void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
-#ifndef PETSCKSP_H
+#ifndef PARMETIS_
   Cerr << "PARMETIS is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
