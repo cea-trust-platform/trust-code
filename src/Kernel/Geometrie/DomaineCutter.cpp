@@ -1257,7 +1257,11 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   DomaineCutter_Correspondance dc_correspondance;
 
   // Needed for HDF5 Zones output:
+#ifdef MPI_
   FichierHDFPar fic_hdf;
+#else
+  FichierHDF fic_hdf;
+#endif
   Nom nom_fichier_hdf5(basename);
   nom_fichier_hdf5+=Nom(".Zones");
   nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
