@@ -43,12 +43,11 @@ void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
   memcpy(*p,trio.addr(),sz*sizeof(int));
 }
 
-ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
+void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF, ch.get_ref_zone_dis_base());
   const Domaine& dom = zvf.zone().domaine();
 
-  ICoCo::TrioField afield;
   afield.clear();
   afield.setName(ch.le_nom().getString());
   afield._type = ch.get_localisation() == NODE;
@@ -117,7 +116,6 @@ ICoCo::TrioField build_triofield(const Champ_Generique_base& ch)
   const DoubleTab& vals = champ_ecriture.valeurs();
   afield._nb_field_components = vals.nb_dim() > 1 ? vals.dimension(1) : 1;
   affecte_double_avec_doubletab(&afield._field, vals);
-  return afield;
 }
 
 #ifndef NO_MEDFIELD
@@ -294,7 +292,8 @@ MEDDoubleField build_medfield(TrioField& triofield)
 }
 MEDDoubleField build_medfield(const Champ_Generique_base& ch)
 {
-  TrioField fl =  build_triofield(ch);
+  TrioField fl;
+  build_triofield(ch, fl);
   return build_medfield(fl);
 }
 

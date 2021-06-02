@@ -48,6 +48,6 @@ void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
 ICoCo::MEDDoubleField build_medfield(ICoCo::TrioField&);
 ICoCo::MEDDoubleField build_medfield(const Champ_Generique_base&);
 #endif
-ICoCo::TrioField build_triofield(const Champ_Generique_base&);
+void build_triofield(const Champ_Generique_base&, ICoCo::TrioField& );
 
 #endif
