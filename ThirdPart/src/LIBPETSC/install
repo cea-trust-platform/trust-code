@@ -154,9 +154,8 @@ then
 
       ptscotch_inc=$PETSC_ROOT/$REP/include/ptscotch++.h
       parmetis_inc=$PETSC_ROOT/$REP/include/parmetis++.h
-
-      touch ptscotch_inc
-      touch parmetis_inc
+      echo > $ptscotch_inc
+      echo > $parmetis_inc
       if [ "$TRUST_DISABLE_MPI" = 0 ]
       then
 	  if [ $scotch -eq 1 ]
