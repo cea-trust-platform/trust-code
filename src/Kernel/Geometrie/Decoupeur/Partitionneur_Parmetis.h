@@ -24,8 +24,6 @@
 
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
-#include <metis.h>
-#include <parmetis.h>
 
 // .DESCRIPTION
 //  Partition d'un domaine en nb_parties parties equilibrees en utilisant

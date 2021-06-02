@@ -32,7 +32,7 @@
 #include <communications.h>
 #include <Domain_Graph.h>
 #include <MD_Vector_tools.h>
-#include <petsc_for_kernel.h>
+#include <parmetis++.h>
 
 inline void not_implemented(const Nom& chaine)
 {
@@ -84,7 +84,7 @@ void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
 //  est attribuee).
 void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
-#ifndef PETSCKSP_H
+#ifndef PARMETIS_
   Cerr << "PARMETIS is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
@@ -140,8 +140,8 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   idx_t numflag = 0; //numerotation C
   std::vector<real_t> tpwgts(ncon*int_parts, 1./int_parts); //we want the weight to be equally distributed on each sub_somain
   MPI_Comm comm = Comm_Group_MPI::get_trio_u_world();
-  int status = ParMETIS_V3_PartKway(graph.vtxdist, graph.xadj, graph.adjncy,
-                                    graph.vwgts, graph.ewgts, &graph.weightflag,
+  int status = ParMETIS_V3_PartKway(graph.vtxdist.addr(), graph.xadj.addr(), graph.adjncy.addr(),
+                                    graph.vwgts.addr(), graph.ewgts.addr(), &graph.weightflag,
                                     &numflag, &ncon, &int_parts, tpwgts.data(), &ubvec, options ,
                                     &edgecut, partition.data(), &comm);
   if (status != METIS_OK)
@@ -157,8 +157,6 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "-> The lesser this number is, the lesser the total volume of communication between processors." << finl;
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
   Cerr << "===============" << finl;
-
-  graph.free_memory();
 
   MD_Vector_tools::creer_tableau_distribue(ref_domaine_.valeur().zone(0).md_vector_elements(), elem_part);
   const int n = ref_domaine_.valeur().zone(0).nb_elem();

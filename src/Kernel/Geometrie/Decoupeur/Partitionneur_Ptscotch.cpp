@@ -32,7 +32,7 @@
 #include <communications.h>
 #include <Domain_Graph.h>
 #include <MD_Vector_tools.h>
-#include <petsc_for_kernel.h>
+#include <ptscotch++.h>
 
 inline void not_implemented(const Nom& chaine)
 {
@@ -84,7 +84,7 @@ void Partitionneur_Ptscotch::associer_domaine(const Domaine& domaine)
 //  est attribuee).
 void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
-#ifndef PETSCKSP_H
+#ifndef PTSCOTCH_
   Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
@@ -135,14 +135,14 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
                      0,             // baseval               , base first indice 0
                      n,   // vertlocnbr            , nb of local graph nodes
                      n,   // vertlocmax            , should be set to vertlocnbr for graphs without holes
-                     graph.xadj,    // vertloctab[vertnbr+1] , index vertex table
+                     graph.xadj.addr(),    // vertloctab[vertnbr+1] , index vertex table
                      0,             // vendloctab            , index end vertex table if disjoint, set to zero
-                     graph.ewgts, //graph.ewgts,  // veloloctab            , graph vertices loads, set to zero
+                     graph.ewgts.addr(), //graph.ewgts,  // veloloctab            , graph vertices loads, set to zero
                      0,     // vlblocltab            , vertex label array : global vertex index
                      graph.xadj[n],       // edgelocnbr            , number of edges
                      graph.xadj[n],       // edgelocsiz            , same as edgelocnbr if edgeloctab is compact
-                     graph.adjncy,        // edgeloctab[edgelocnbr], global indexes of edges
-                     graph.edgegsttab,   // edgegsttab            , optional, should be computed internally, set to zero
+                     graph.adjncy.addr(),        // edgeloctab[edgelocnbr], global indexes of edges
+                     graph.edgegsttab.addr(),   // edgegsttab            , optional, should be computed internally, set to zero
                      0); // edloloctab            , graph edges loads, set to zero
 
   SCOTCH_Strat scotch_strategy;
@@ -153,8 +153,6 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
 
   SCOTCH_stratExit(&scotch_strategy);
   SCOTCH_dgraphExit(&scotch_graph);
-
-  graph.free_memory();
 
   MD_Vector_tools::creer_tableau_distribue(ref_domaine_.valeur().zone(0).md_vector_elements(), elem_part);
   for (int i = 0; i < n; i++)

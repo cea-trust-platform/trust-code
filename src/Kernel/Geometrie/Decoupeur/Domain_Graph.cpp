@@ -31,45 +31,6 @@
 #include <Partitionneur_base.h>
 #include <map>
 
-// Description:
-// Precondition:
-// Parametre: int n
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Precondition:
-// Parametre: char * msg
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int*
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-#ifndef NO_METIS
-static idx_t *imalloc(int n, const char * msg)
-{
-  idx_t *ptr;
-
-  if (n == 0)
-    return NULL;
-
-  ptr = (idx_t *)malloc(sizeof(idx_t)*n);
-
-  if (ptr == NULL)
-    {
-      printf("TRUST has detected a memory allocation fail: %s int\n", msg);
-      Process::exit();
-    }
-  return ptr;
-}
-
-#endif
-
 static void construire_connectivite_real_som_virtual_elem(const int       nb_sommets,
                                                           const IntTab&      les_elems,
                                                           Static_Int_Lists& som_elem,
@@ -138,23 +99,6 @@ static void construire_connectivite_real_som_virtual_elem(const int       nb_som
   som_elem.trier_liste(-1);
 }
 
-
-#ifndef NO_METIS
-
-void Domain_Graph::free_memory()
-{
-
-  free(xadj);
-  free(adjncy);
-  free(edgegsttab);
-  if (ewgts)
-    free(ewgts);
-
-  free(vtxdist);
-
-}
-
-
 void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
                                                  const int use_weights)
 {
@@ -165,18 +109,18 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
   int nb_edges = liaisons.size_array(); // 2 liens par liaison
   int nb_elem=liaisons.local_max_vect()+1;  // mouif
   nvtxs = nb_elem;
-  xadj = imalloc(nb_elem+1, "readgraph: xadj");
-  vwgts = NULL;
+  xadj.resize_array(nb_elem+1);
+  vwgts.resize_array(0);
   if (! use_weights)
     {
       weightflag = 0;
-      ewgts = NULL;
+      ewgts.resize_array(0);
     }
   else
     {
       abort();
       weightflag = 1;
-      ewgts = imalloc(nb_edges, "readgraph: ewgts");
+      ewgts.resize_array(nb_edges);
     }
 
   // on construit connectivite item item
@@ -206,8 +150,7 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
 
   nb_edges=A.get_tab2().size_array(); // des liens peuvent etre doubles
   nedges = nb_edges;
-  adjncy = imalloc(nb_edges, "readgraph: adjncy");
-
+  adjncy.resize_array(nb_edges);
   //
   assert(A.get_tab1().size_array()==nvtxs+1);
   for (int c=0; c<nvtxs+1; c++)
@@ -220,12 +163,10 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
     }
 
 }
-#endif
 
 // Si use_weights, on pondere les liens entre les elements periodiques
 // pour les forcer a etre sur le meme processeur. Cela diminue le nombre
 // de corrections a faire ensuite (voir (***))
-#ifndef NO_METIS
 void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
                                               const Noms& liste_bords_periodiques,
                                               const int use_weights,
@@ -308,22 +249,26 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   const int nb_edges = nnn + nb_faces_bord;
 
   nvtxs = nb_elem + zone.nb_faces_joint(); //each joint face is linked to a virtual element
-  xadj = imalloc(nb_elem+1, "readgraph: xadj");
-  adjncy = imalloc(nb_edges + nb_faces_bord, "readgraph: adjncy");
-  edgegsttab = imalloc(nb_edges + nb_faces_bord, "readgraph: edgegsttab");
-  vwgts = NULL;
+  xadj.resize_array(nb_elem+1);
+  xadj = -1;
+  adjncy.resize_array(nb_edges+nb_faces_bord);
+  adjncy = -1;
+  edgegsttab.resize_array(nb_edges+nb_faces_bord);
+  edgegsttab = -1;
+
+  vwgts.resize_array(0); //NULL
   if (! use_weights)
     {
       weightflag = 0;
-      ewgts = NULL;
+      ewgts.resize_array(0); //NULL
     }
   else
     {
       weightflag = 1;
-      ewgts = imalloc(nb_edges + nb_faces_bord, "readgraph: ewgts");
+      ewgts.resize_array(nb_edges + nb_faces_bord);
     }
 
-  vtxdist = imalloc(Process::nproc()+1, "readgraph: vtxdist");
+  vtxdist.resize_array(Process::nproc()+1);
   for(int p = 0; p < Process::nproc(); p++)
     vtxdist[p] = offsets[p];
   vtxdist[Process::nproc()] = Process::mp_sum(nb_elem);
@@ -535,4 +480,3 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
     }
 
 }
-#endif

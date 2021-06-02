@@ -140,6 +140,7 @@ then
    done
    #################################################################
    # Creation de l'include pour le Kernel TRUST: petsc_for_kernel.h
+   # et des includes pour les librairies ptscotch et parmetis
    #################################################################
    for REP in `\ls $PETSC_ROOT 2>/dev/null`
    do
@@ -149,6 +150,21 @@ then
          echo "$petsc_for_kernel file changed..."
          echo "#include <petscksp.h>
 #$string" > $petsc_for_kernel
+      fi
+
+      ptscotch_inc=$PETSC_ROOT/$REP/include/ptscotch++.h
+      parmetis_inc=$PETSC_ROOT/$REP/include/parmetis++.h
+      echo > $ptscotch_inc
+      echo > $parmetis_inc
+      if [ "$TRUST_DISABLE_MPI" = 0 ]
+      then
+	  if [ $scotch -eq 1 ]
+	  then
+	      echo "#include <ptscotch.h>
+#define PTSCOTCH_"> $ptscotch_inc
+	  fi
+	  echo "#include <parmetis.h>
+#define PARMETIS_"> $parmetis_inc
       fi
    done
    exit 0
@@ -446,6 +462,7 @@ then
 	 fi
 	 export PATH=$PATH:$ROOT/flex/bin
       fi
+
    fi
    #######
    # Hypre
@@ -568,6 +585,7 @@ do
 	 then
 	    # On fait un touch des fichiers include
 	    touch $PETSC_ROOT/$PETSC_ARCH/include/*.h
+
 	    # Copie des fichiers include pour PETSc sequentiel:
 	    [ "$TRUST_DISABLE_MPI" = 1 ] && cp $PETSC_ROOT/$PETSC_ARCH/include/petsc/mpiuni/*.h $PETSC_ROOT/$PETSC_ARCH/include/
 	    # Copie de la doc
@@ -593,7 +611,9 @@ do
 	 if [ -f $PETSC_ROOT/$PETSC_ARCH/include/ptscotch.h ]
 	 then
 	     sed -i 's/#define PTSCOTCH_H/#define PTSCOTCH_H\n#include <mpi.h>/' $PETSC_ROOT/$PETSC_ARCH/include/ptscotch.h 1>/dev/null 2>&1
-	 fi  
+
+	 fi
+	 
       else
          echo "make test failed." && exit -1
       fi

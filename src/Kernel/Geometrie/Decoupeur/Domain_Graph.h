@@ -23,17 +23,7 @@
 #define Domain_Graph_included
 
 // .DESCRIPTION
-//  Build the graph of the domain that the METIS/PARMETIS/PTSCOTHC libraries need
-
-#include <metis.h>
-
-#ifndef NO_METIS
-// Metis 5.0 introduit le type idx_t
-#ifdef IDXTYPEWIDTH
-#define METIS
-typedef int idx_t;
-#endif
-#endif
+//  Build the graph of the domain that the METIS/PARMETIS/PTSCOTCH libraries need
 
 class Domain_Graph
 {
@@ -53,21 +43,17 @@ public:
                                   Static_Int_Lists& graph_elements_perio);
 
 
-  void free_memory();
 
 private:
-#ifndef NO_METIS
-  idx_t nvtxs;                        /* The number of vertices */
-  idx_t nedges;                        /* The total number of edges */
-  idx_t weightflag;
-  idx_t *xadj;                        /* CRS storage scheme */
-  idx_t *adjncy;
-  idx_t *vwgts;
-  idx_t *ewgts;
-  idx_t *vtxdist;                     //for parmetis: distribution of the initial graph on the procs
-  idx_t *edgegsttab;                  //for ptscotch: local numbering of vertices
-#endif
-
+  int nvtxs;                        /* The number of vertices */
+  int nedges;                        /* The total number of edges */
+  int weightflag;
+  ArrOfInt xadj;                        /* CRS storage scheme */
+  ArrOfInt adjncy;
+  ArrOfInt vwgts;
+  ArrOfInt ewgts;
+  ArrOfInt vtxdist;                     //for parmetis: distribution of the initial graph on the procs
+  ArrOfInt edgegsttab;                  //for ptscotch: local numbering of vertices
 };
 
 #endif
