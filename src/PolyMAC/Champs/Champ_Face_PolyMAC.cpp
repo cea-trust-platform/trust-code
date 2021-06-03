@@ -24,6 +24,7 @@
 #include <Domaine.h>
 #include <Zone_VF.h>
 #include <Champ_Uniforme.h>
+#include <Champ_Fonc_reprise.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_Cl_PolyMAC.h>
@@ -119,6 +120,9 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
           val(num_face) = vn;
         }
     }
+  else if (sub_type(Champ_Fonc_reprise, ch))
+    for (int f = 0; f < nb_faces; f++)
+      val(f) = ch.valeurs()(f);
   else
     {
       //      int ndeb_int = zone_PolyMAC.premiere_face_int();

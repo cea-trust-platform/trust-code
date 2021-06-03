@@ -345,7 +345,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       else
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
-  eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  if (eqn.has_interface_blocs()) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
 
   solveur->reinit();
   return (converge==1);
