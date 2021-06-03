@@ -1584,11 +1584,11 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         {
           // Reduce the bandwith of a the matrix connectivity between parts:
           // ToDo forcer a ne pas changer la partition 0 !
-          ArrOfInt riord(nb_parties_);
-          ArrOfInt levels(nb_parties_);
-          ArrOfInt mask(nb_parties_);
+          ArrOfInt riord(nb_parties_+1);
+          ArrOfInt levels(nb_parties_+1);
+          ArrOfInt mask(nb_parties_+1);
           int maskval = 1;
-          for (int i_part=0 ; i_part<nb_parties_; i_part++)
+          for (int i_part=0 ; i_part<nb_parties_+1; i_part++)
             mask[i_part] = maskval;
           int init=1;
           int nlev;
