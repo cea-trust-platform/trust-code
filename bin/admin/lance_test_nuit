@@ -70,12 +70,15 @@ check_components()
 	    then
 	       # Test debug tous les jours sur Template, Tuto, ICoCo, TrioMC, MPCube, Genepi3 et Flica5
 	       #if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
-	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ]
+	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ]
 	       then
 	          make_option="make check_all_optim check_all_debug"
 	       elif [ "$Composant" = flica5 ]
                then
 	          make_option="make check_optim check_debug"
+	       elif [ "$Composant" = pemfc ]
+               then
+	          make_option="make check_all_optim"
 	       fi
 	    fi
             if [[ "$Composant" == "triocfd" ]]
@@ -1689,7 +1692,7 @@ do
    ssh_ $log@$machine -n 'echo -e "'$machine: '\c";ls ${WORKDIR:-$HOME}/$WORKBASE"'$machine'"/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
 done >> $MESSAGES_NUIT
 echo "Older binaries (> v1.7.1) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
-echo "Older binaries (< v1.7.1) are available here: ftp://ftp.cea.fr/pub/Trio_U/a87pour/" >> $MESSAGES_NUIT
+echo "Older binaries (< v1.7.1) are available here: ftp://ftp.cea.fr/pub/TRUST/a87pour/" >> $MESSAGES_NUIT
 #echo "Older binaries (< v1.6.6) are available here: file:///net/dibona/users/dibona/triou/version/" >> $MESSAGES_NUIT
 echo "-------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 ##########################################################
@@ -3003,7 +3006,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=79.91 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=79.97 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0

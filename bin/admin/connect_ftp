@@ -4,7 +4,7 @@
 # Avec ou sans connection ftp
 
 # Repertoire public :
-export PUBLIC=pub/Trio_U/TRUST
+export PUBLIC=pub/TRUST/TRUST
 # Repertoire secret :
 export SECRET=incoming/y2k01/TRUST
 

@@ -242,31 +242,6 @@ Entree& Scatter::interpreter(Entree& is)
   Noms liste_bords_periodiques;
   lire_domaine(nomentree, liste_bords_periodiques);
 
-  // Verification sanitaire: nombre de processeurs = nombre de zones
-  // (on verifie qu'il n'y a pas de joint avec un processeur inexistant)
-  {
-    const Joints& joints = dom.zone(0).faces_joint();
-    const int nb_joints = joints.size();
-    int max_pe_voisin = 0;
-    for (int i = 0; i < nb_joints; i++)
-      {
-        const int pe_voisin = joints[i].PEvoisin();
-        if (pe_voisin >= max_pe_voisin)
-          max_pe_voisin = pe_voisin;
-      }
-    max_pe_voisin = (int) mp_max(max_pe_voisin);
-    double ok=1;
-    if (max_pe_voisin >= nproc()) ok=0;
-    if (!ok)
-      {
-        Cerr << "Error in Scatter::interpreter\n"
-             << "The domain has been partitioned with at least " << max_pe_voisin << " "
-             << "zones whereas the number of processes asked is " << Process::nproc() << "." << finl;
-        Cerr << "The number of zones and number of processes must match." << finl;
-        exit();
-      }
-  }
-
   barrier();
   Cerr << "Calculation of renum_items_communs for the nodes" << finl;
   calculer_renum_items_communs(dom.zone(0).faces_joint(), Joint::SOMMET);
@@ -554,9 +529,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
   statistiques().begin_count(stats);
 
-
   ArrOfInt mergedZones(Process::nproc());
   mergedZones = 0;
+  bool domain_not_built = true;
   if (is_hdf)
     {
       FichierHDFPar fic_hdf;
@@ -586,9 +561,11 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
                   // Renseigne dans quel fichier le domaine a ete lu
                   dom.set_fichier_lu(nomentree);
                   data_part >> liste_bords_periodiques;
+                  domain_not_built = false;
                 }
               else
                 break;
+
             }
         }
       else
@@ -602,16 +579,15 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
           dom.zones().associer_domaine(dom);
           dom.set_fichier_lu(nomentree);
           data >> liste_bords_periodiques;
+          domain_not_built = false;
         }
 
       fic_hdf.close();
     }
   else
     {
-
       LecFicDistribueBin fichier_binaire;
       int isSingleZone = fichier_binaire.ouvrir(nomentree);
-
       if (!isSingleZone)
         {
           mergedZones = 1;
@@ -635,6 +611,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
                   dom.set_fichier_lu(nomentree);
                   fichier_binaire_part >> liste_bords_periodiques;
                   fichier_binaire_part.close();
+                  domain_not_built = false;
                 }
               else
                 break;
@@ -649,8 +626,46 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
           dom.set_fichier_lu(nomentree);
           fichier_binaire >> liste_bords_periodiques;
           fichier_binaire.close();
+          domain_not_built = false;
         }
     }
+
+  if(domain_not_built)
+    {
+      Cerr << "Error in Scatter::lire_domaine\n";
+      Cerr << "The domain on the current process hasn't been built" << finl;
+      Cerr << "The number of processes you mentionned is probaly higher than the number of zones" << finl;
+      Process::exit();
+    }
+
+  // Verification sanitaire: nombre de processeurs = nombre de zones
+  // (on verifie qu'il n'y a pas de joint avec un processeur inexistant)
+  // (le check precedent n'est pas suffisant:
+  // il verifie seulement que le nombre de processeurs n'est pas superieur au nombre de zones)
+  {
+
+    const Joints& joints = dom.zone(0).faces_joint();
+    const int nb_joints = joints.size();
+    int max_pe_voisin = 0;
+    for (int i = 0; i < nb_joints; i++)
+      {
+        const int pe_voisin = joints[i].PEvoisin();
+        if (pe_voisin >= max_pe_voisin)
+          max_pe_voisin = pe_voisin;
+      }
+
+    max_pe_voisin = (int) mp_max(max_pe_voisin);
+    double ok=1;
+    if (max_pe_voisin >= nproc()) ok=0;
+    if (!ok)
+      {
+        Cerr << "Error in Scatter::lire_domaine\n"
+             << "The domain has been partitioned with at least " << max_pe_voisin << " "
+             << "zones whereas the number of processes asked is " << Process::nproc() << "." << finl;
+        Cerr << "The number of zones and number of processes must match." << finl;
+        exit();
+      }
+  }
 
   //tri des joints dans l'ordre croissant des procs
   Joints& joints = dom.zone(0).faces_joint();
