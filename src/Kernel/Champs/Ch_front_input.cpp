@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,7 +97,6 @@ void Ch_front_input::getTemplate(TrioField& afield) const
   // order is  x y z  x y z  x y z
   affecte_double_avec_doubletab(&afield._coords,sommets);
 
-  assert (sizeof(int)==sizeof(int));
   affecte_int_avec_inttab(&afield._connectivity,faces);
 }
 

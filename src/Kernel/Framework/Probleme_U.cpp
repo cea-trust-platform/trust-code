@@ -759,6 +759,6 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
     throw WrongArgument(le_nom().getChar(),"getOutputField",name.getString(),"no output field of that name");
 
   const Champ_Generique_base& ch = ref_ch.valeur();
-  afield = build_triofield(ch);
+  build_triofield(ch, afield);
   afield.setName(name.getString());
 }

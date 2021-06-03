@@ -16,6 +16,9 @@ cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/replace_int
 ./Modifie $(find Outils/lata2dx/lata2dx -not -name "*.py" )
 ./Modifie Outils/lata2dx/lata_dx_filter.cpp
 
+./Modifie  ThirdPart/src/LIBICOCOAPI/include/ICoCoTrioField.hxx
+./Modifie  ThirdPart/src/LIBICOCOAPI/src/ICoCoTrioField.cpp
+sed -i "s/connectivity=new int/connectivity=new long/g" Outils/ICoCo/ICoCo_src/share/Validation/Rapports_automatiques/Test_interpolation/src/main.cpp
 
 # Perform supplementary sed on some files
 sed "s/long long long/long long/" -i Outils/lata2dx//lata2dx/commun_triou/LataDB.cpp
@@ -34,10 +37,10 @@ sed -i "s/std::vector< std::pair<long,long> > tst = ft1->getTimeSteps(tps);/std:
 sed -i "s/std::vector<long> nel = file->getNonEmptyLevels();/std::vector<int> nel = file->getNonEmptyLevels();/" src/Kernel/MEDimpl/LireMED.cpp
 sed -i "s/std::vector< std::pair< std::pair< long, long >, double > > ts = GetAllFieldIterations(file_name, field_name);/std::vector< std::pair< std::pair< int, int >, double > > ts = GetAllFieldIterations(file_name, field_name);/" src/Kernel/MEDimpl/EcrMED.cpp
 
-sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/Champs/Champ_input_P0.cpp
-sed -i "s/long \*pf = p + afield._nodes_per_elem; \/\/fin de la ligne/int *pf = p + afield._nodes_per_elem; \/\/fin de la ligne/" src/Kernel/Champs/Champ_input_P0.cpp
+#sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/Champs/Champ_input_P0.cpp
+#sed -i "s/long \*pf = p + afield._nodes_per_elem; \/\/fin de la ligne/int *pf = p + afield._nodes_per_elem; \/\/fin de la ligne/" src/Kernel/Champs/Champ_input_P0.cpp
 
-sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
+#sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
 sed -i "s/long getMEDCouplingMajorVersion/int getMEDCouplingMajorVersion/" src/Kernel/ICoCo/ProblemTrio.h
 sed -i "s/long ProblemTrio::getMEDCouplingMajorVersion/int ProblemTrio::getMEDCouplingMajorVersion/" src/Kernel/ICoCo/ProblemTrio.cpp
 
