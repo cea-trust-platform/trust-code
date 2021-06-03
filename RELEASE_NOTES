@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+03/06/21 (TRUST)  New feature : Source term "Canal_perio" now supported in VDF for the Conduction_Diffusion_* equation
 31/05/21 (TRUST)  Output      : Improvements for HDF5 (appending to datasets is now possible and metadata are only handled by the master process)
 31/05/21 (TRUST)  New feature : Parallel partitionning (with ParMetis or Pt-Scotch libraries) thanks to parmetis or ptscotch option with partitionneur keyword
 27/05/21 (TRUST)  Major Change: Class and function templates are used now for the evaluator classes of the VDF diffusion operators

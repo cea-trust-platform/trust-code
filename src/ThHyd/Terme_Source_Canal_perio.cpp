@@ -16,7 +16,7 @@
 //
 // File:        Terme_Source_Canal_perio.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/29
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -37,13 +37,25 @@
 
 Implemente_base_sans_constructeur_ni_destructeur(Terme_Source_Canal_perio,"Terme_Source_Canal_perio",Source_base);
 
+
+Terme_Source_Canal_perio::Terme_Source_Canal_perio():
+  direction_ecoulement_(-1),
+  velocity_weighting_(0),
+  bord_periodique_(""),
+  surface_bord_(0.0),
+  h(0.0), coeff(0.0), u_etoile(0.0),
+  deb_(0.0),
+  source_(0.0),
+  debnm1_(0.0),
+  debit_ref_(0.0),
+  dernier_temps_calc_(-1.0),  // why??
+  is_debit_impose_(0),
+  debit_impose_(0.0)
+{
+}
+
 Terme_Source_Canal_perio::~Terme_Source_Canal_perio()
-{
-}
-Terme_Source_Canal_perio::Terme_Source_Canal_perio():direction_ecoulement_(-1),bord_periodique_(""),deb_(0),source_(0.),debit_ref_(0.),dernier_temps_calc_(-1.),is_debit_impose_(0)
-{
-  ;
-}
+{}
 
 Sortie& Terme_Source_Canal_perio::printOn(Sortie& s ) const
 {
@@ -213,8 +225,174 @@ void Terme_Source_Canal_perio::completer()
     }
   exit();
 }
+
+void Terme_Source_Canal_perio::write_flow_rate(const Nom& ext_nom_source_, double debit_e) const
+{
+  double tps = equation().schema_temps().temps_courant();
+  double tps_init = equation().schema_temps().temps_init();
+  double dt = equation().schema_temps().pas_de_temps();
+  int premiere_ecriture = (!equation().probleme().reprise_effectuee() && deb_==0 ? 1 : 0);
+
+  // Write the flow rate file if equation is Navier Stokes:
+  Nom filename(nom_du_cas());
+  filename+="_Channel_Flow_Rate_";
+  filename+=ext_nom_source_ ;
+  if (!flow_rate_file_.is_open())
+    {
+      flow_rate_file_.ouvrir(filename, (premiere_ecriture?ios::out:ios::app));
+      flow_rate_file_.setf(ios::scientific);
+    }
+  // on met des commentaires dans l'entete du fichier
+  if ((tps <= (tps_init+dt)) && premiere_ecriture)
+    {
+      if (equation().probleme().is_QC()==1)
+        flow_rate_file_ << "# Time t     Flow rate Q(t) in [kg.s-1] if SI units used" << finl;
+      else
+        flow_rate_file_ << "# Time t     Flow rate Q(t) in [m3.s-1] if SI units used" << finl;
+    }
+  flow_rate_file_ << tps+dt << " " << debit_e << finl;
+
+  if (deb_==0)
+    {
+      deb_ = 1;
+      debit_ref_ = debit_e;
+      if (is_debit_impose_)
+        debit_ref_=debit_impose_;
+      debnm1_ = debit_ref_;
+      source_ = 0.;
+
+      // Deplacer dans completer ?
+      // Read the restart file:
+      if (equation().probleme().reprise_effectuee())
+        {
+          Nom filename2(nom_du_cas());
+          filename2+="_Channel_Flow_Rate_repr_";
+          filename2+=ext_nom_source_ ;
+          EFichier fichier_reprise;
+          if (!fichier_reprise.ouvrir(filename2))
+            {
+              Cerr << "File " << filename2 << " not found !" << finl;
+              Cerr << "Since the 1.6.8 version, you absolutly need this file to restart the calculation." << finl;
+              Cerr << "Look for a file named *Channel_Flow_Rate_repr* and renamed it for example." << finl;
+              exit();
+            }
+          else
+            {
+              // Check header
+              Nom str;
+              fichier_reprise >> str;
+              if (str=="#")
+                {
+                  // Read the whole line:
+                  std::string line;
+                  std::getline(fichier_reprise.get_ifstream(), line);
+                }
+              else
+                {
+                  // Reopen:
+                  fichier_reprise.ouvrir(filename);
+                }
+              // Read up to the time:
+              int time_found = 0;
+              while (!fichier_reprise.eof() && !time_found)
+                {
+                  double temps_ecrit;
+                  fichier_reprise >> temps_ecrit;
+                  fichier_reprise >> debnm1_;
+                  fichier_reprise >> debit_ref_;
+                  fichier_reprise >> source_;
+                  //std::getline(fichier_reprise.get_ifstream(), line);
+                  if (est_egal(temps_ecrit,tps_init,1e-5))
+                    {
+                      Cerr << "Source canal_perio read values in the file " << filename << " for the time t= " << temps_ecrit << finl;
+                      time_found = 1;
+                    }
+                }
+              if (time_found==0)
+                {
+                  Cerr << "Sorry, we didn't find the time " << tps_init << " in the file " << filename << finl;
+                  Cerr << "We can't restart the calculation." << finl;
+                  exit();
+                }
+            }
+        }
+    }
+}
+
+double Terme_Source_Canal_perio::compute_heat_flux() const
+{
+  // On recupere flux_bords operateur de diffusion
+  const Operateur_base& op_base = equation().operateur(0).l_op_base(); // Diffusion operator
+  assert(sub_type(Operateur_Diff_base,op_base)); // Check
+  const DoubleTab& flux_bords = op_base.flux_bords();
+  // If flux_bords is not build (diffusion_implicit algorithm for example, we calculate it):
+  if (flux_bords.size()==0)
+    {
+      DoubleTab dummy(equation().inconnue().valeurs());
+      equation().operateur(0).ajouter(equation().inconnue(), dummy);
+    }
+  // Loop on boundaries to evaluate total heat flux:
+  double heat_flux=0;
+  int nb_bords = equation().zone_dis().valeur().nb_front_Cl();
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
+    {
+      const Cond_lim& la_cl = equation().zone_Cl_dis().valeur().les_conditions_limites(n_bord);
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
+        {
+          // Loop on boundary faces with imposed flux condition (Neumann)
+          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = frontiere_dis.num_premiere_face();
+          int nfin = ndeb + frontiere_dis.nb_faces();
+          for (int num_face=ndeb; num_face<nfin; num_face++)
+            heat_flux += flux_bords(num_face,0);
+        }
+    }
+  heat_flux=mp_sum(heat_flux);
+  return heat_flux;
+}
+
+ArrOfDouble Terme_Source_Canal_perio::source_convection_diffusion(double debit_e) const
+{
+  // Compute heat_flux:
+  double heat_flux = compute_heat_flux();
+
+  const Zone_VF& zone_vf = ref_cast(Zone_VF,equation().zone_dis().valeur());
+  const double& volume = zone_vf.zone().volume_total();
+  int size = zone_vf.nb_faces();
+  ArrOfDouble s(size);
+  if (velocity_weighting_) // It seems this algorithm do not imply dT/dt -> 0
+    {
+      // Compute source term for Energy
+      // Expression from TU Delft Master Thesis
+      // Source = -u*Sum(imposed_heat_flux)/(Volume*Ubulk)
+      // Ubulk=FlowRate/Area(PeriodicBoundary)
+      // Loop on the faces
+      const DoubleTab& vitesse = ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante().valeurs();
+      for (int num_face=0; num_face<size; num_face++)
+        {
+          double velocity = 0;
+          if (direction_ecoulement_>=0) // Ecoulement selon un axe
+            velocity = vitesse(num_face,direction_ecoulement_);
+          else // Cas general
+            for (int i=0; i<dimension; i++)
+              velocity += vitesse(num_face,i) * dir_source_(i);
+          s(num_face)=-velocity*heat_flux/(volume*debit_e/surface_bord_);
+        }
+    }
+  else
+    {
+      // Compute source term with
+      // Source = -Sum(imposed_heat_flux)/Volume
+      // Loop on the faces
+      for (int num_face=0; num_face<size; num_face++)
+        s(num_face)=-heat_flux/volume;
+    }
+  return s;
+}
+
 // Description:
 // Term source calculation (called by VDF and VEF implementations)
+// TODO: returning an ArrOfDouble is baaad.
 ArrOfDouble Terme_Source_Canal_perio::source() const
 {
   double tps = equation().schema_temps().temps_courant();
@@ -239,92 +417,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
               // Write nothing if equation is Energy
             }
           else
-            {
-              // Write the flow rate file if equation is Navier Stokes:
-              Nom filename(nom_du_cas());
-              filename+="_Channel_Flow_Rate_";
-              filename+=ext_nom_source_ ;
-              if (!flow_rate_file_.is_open())
-                {
-                  flow_rate_file_.ouvrir(filename, (premiere_ecriture?ios::out:ios::app));
-                  flow_rate_file_.setf(ios::scientific);
-                }
-              // on met des commentaires dans l'entete du fichier
-              if ((tps <= (tps_init+dt)) && premiere_ecriture)
-                {
-                  if (equation().probleme().is_QC()==1)
-                    flow_rate_file_ << "# Time t     Flow rate Q(t) in [kg.s-1] if SI units used" << finl;
-                  else
-                    flow_rate_file_ << "# Time t     Flow rate Q(t) in [m3.s-1] if SI units used" << finl;
-                }
-              flow_rate_file_ << tps+dt << " " << debit_e << finl;
-
-              if (deb_==0)
-                {
-                  deb_ = 1;
-                  debit_ref_ = debit_e;
-                  if (is_debit_impose_)
-                    debit_ref_=debit_impose_;
-                  debnm1_ = debit_ref_;
-                  source_ = 0.;
-
-                  // Deplacer dans completer ?
-                  // Read the restart file:
-                  if (equation().probleme().reprise_effectuee())
-                    {
-                      Nom filename2(nom_du_cas());
-                      filename2+="_Channel_Flow_Rate_repr_";
-                      filename2+=ext_nom_source_ ;
-                      EFichier fichier_reprise;
-                      if (!fichier_reprise.ouvrir(filename2))
-                        {
-                          Cerr << "File " << filename2 << " not found !" << finl;
-                          Cerr << "Since the 1.6.8 version, you absolutly need this file to restart the calculation." << finl;
-                          Cerr << "Look for a file named *Channel_Flow_Rate_repr* and renamed it for example." << finl;
-                          exit();
-                        }
-                      else
-                        {
-                          // Check header
-                          Nom str;
-                          fichier_reprise >> str;
-                          if (str=="#")
-                            {
-                              // Read the whole line:
-                              std::string line;
-                              std::getline(fichier_reprise.get_ifstream(), line);
-                            }
-                          else
-                            {
-                              // Reopen:
-                              fichier_reprise.ouvrir(filename);
-                            }
-                          // Read up to the time:
-                          int time_found = 0;
-                          while (!fichier_reprise.eof() && !time_found)
-                            {
-                              double temps_ecrit;
-                              fichier_reprise >> temps_ecrit;
-                              fichier_reprise >> debnm1_;
-                              fichier_reprise >> debit_ref_;
-                              fichier_reprise >> source_;
-                              //std::getline(fichier_reprise.get_ifstream(), line);
-                              if (est_egal(temps_ecrit,tps_init,1e-5))
-                                {
-                                  Cerr << "Source canal_perio read values in the file " << filename << " for the time t= " << temps_ecrit << finl;
-                                  time_found = 1;
-                                }
-                            }
-                          if (time_found==0)
-                            {
-                              Cerr << "Sorry, we didn't find the time " << tps_init << " in the file " << filename << finl;
-                              Cerr << "We can't restart the calculation." << finl;
-                              exit();
-                            }
-                        }
-                    }
-                }
-            }
+            write_flow_rate(ext_nom_source_, debit_e);
         }
       if (sub_type(Convection_Diffusion_std,equation()))
         {
@@ -340,68 +433,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
               Cerr << "Contact TRUST support." << finl;
               exit();
             }
-
-          // Compute heat_flux:
-          const Zone_VF& zone_vf = ref_cast(Zone_VF,equation().zone_dis().valeur());
-          const double& Volume = zone_vf.zone().volume_total();
-
-          // On recupere flux_bords operateur de diffusion
-          const Operateur_base& op_base = equation().operateur(0).l_op_base(); // Diffusion operator
-          assert(sub_type(Operateur_Diff_base,op_base)); // Check
-          const DoubleTab& flux_bords = op_base.flux_bords();
-          // If flux_bords is not build (diffusion_implicit algorithm for example, we calculate it):
-          if (flux_bords.size()==0)
-            {
-              DoubleTab dummy(equation().inconnue().valeurs());
-              equation().operateur(0).ajouter(equation().inconnue(), dummy);
-            }
-          // Loop on boundaries to evaluate total heat flux:
-          double heat_flux=0;
-          int nb_bords = equation().zone_dis().valeur().nb_front_Cl();
-          for (int n_bord=0; n_bord<nb_bords; n_bord++)
-            {
-              const Cond_lim& la_cl = equation().zone_Cl_dis().valeur().les_conditions_limites(n_bord);
-              if (sub_type(Neumann_paroi,la_cl.valeur()))
-                {
-                  // Loop on boundary faces with imposed flux condition (Neumann)
-                  const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-                  int ndeb = frontiere_dis.num_premiere_face();
-                  int nfin = ndeb + frontiere_dis.nb_faces();
-                  for (int num_face=ndeb; num_face<nfin; num_face++)
-                    heat_flux += flux_bords(num_face,0);
-                }
-            }
-          heat_flux=mp_sum(heat_flux);
-          int size = zone_vf.nb_faces();
-          ArrOfDouble s(size);
-          if (velocity_weighting_) // It seems this algorithm do not imply dT/dt -> 0
-            {
-              // Compute source term for Energy
-              // Expression from TU Delft Master Thesis
-              // Source = -u*Sum(imposed_heat_flux)/(Volume*Ubulk)
-              // Ubulk=FlowRate/Area(PeriodicBoundary)
-              // Loop on the faces
-              const DoubleTab& vitesse = ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante().valeurs();
-              for (int num_face=0; num_face<size; num_face++)
-                {
-                  double velocity = 0;
-                  if (direction_ecoulement_>=0) // Ecoulement selon un axe
-                    velocity = vitesse(num_face,direction_ecoulement_);
-                  else // Cas general
-                    for (int i=0; i<dimension; i++)
-                      velocity += vitesse(num_face,i) * dir_source_(i);
-                  s(num_face)=-velocity*heat_flux/(Volume*debit_e/surface_bord_);
-                }
-            }
-          else
-            {
-              // Compute source term with
-              // Source = -Sum(imposed_heat_flux)/Volume
-              // Loop on the faces
-              for (int num_face=0; num_face<size; num_face++)
-                s(num_face)=-heat_flux/Volume;
-            }
-          return s;
+          return source_convection_diffusion(debit_e);
         }
       else if (sub_type(Navier_Stokes_std,equation()))
         {
@@ -502,3 +534,9 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
   return s;
 }
 
+
+DoubleTab& Terme_Source_Canal_perio::calculer(DoubleTab& resu) const
+{
+  resu = 0;
+  return ajouter(resu);
+}

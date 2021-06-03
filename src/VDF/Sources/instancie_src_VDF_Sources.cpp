@@ -24,6 +24,7 @@
 #include <Terme_Source_Canal_RANS_LES_VDF_Elem.h>
 #include <Terme_Source_Canal_RANS_LES_VDF_Face.h>
 #include <Terme_Source_Canal_perio_VDF_Face.h>
+#include <Terme_Source_Canal_perio_VDF_P0.h>
 #include <Terme_Source_Constituant_VDF_Elem.h>
 #include <Terme_Source_Coriolis_VDF_Face.h>
 #include <Terme_Source_Qdm_VDF_Face.h>
@@ -55,11 +56,12 @@ Terme_Source_Canal_RANS_LES_VDF_Face inst20;verifie_pere(inst20);
 Terme_Source_Canal_perio_VDF_Face inst21;verifie_pere(inst21);
 Terme_Source_Canal_perio_QC_VDF_Face inst22;verifie_pere(inst22);
 Terme_Source_Canal_perio_VDF_Front_Tracking inst23;verifie_pere(inst23);
-Terme_Source_Constituant_VDF_Elem inst24;verifie_pere(inst24);
-Terme_Source_Coriolis_VDF_Face inst25;verifie_pere(inst25);
-Terme_Source_Coriolis_QC_VDF_Face inst26;verifie_pere(inst26);
-Terme_Source_Qdm_VDF_Face inst27;verifie_pere(inst27);
-Terme_Source_Solide_SWIFT_VDF inst28;verifie_pere(inst28);
-Terme_Source_inc_VDF_Face inst29;verifie_pere(inst29);
-Terme_Source_inc_th_VDF_Face inst30;verifie_pere(inst30);
+Terme_Source_Canal_perio_VDF_P0 inst24;verifie_pere(inst24);
+Terme_Source_Constituant_VDF_Elem inst25;verifie_pere(inst25);
+Terme_Source_Coriolis_VDF_Face inst26;verifie_pere(inst26);
+Terme_Source_Coriolis_QC_VDF_Face inst27;verifie_pere(inst27);
+Terme_Source_Qdm_VDF_Face inst28;verifie_pere(inst28);
+Terme_Source_Solide_SWIFT_VDF inst29;verifie_pere(inst29);
+Terme_Source_inc_VDF_Face inst30;verifie_pere(inst30);
+Terme_Source_inc_th_VDF_Face inst31;verifie_pere(inst31);
 }

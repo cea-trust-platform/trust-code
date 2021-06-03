@@ -16,7 +16,7 @@
 //
 // File:        Terme_Source_Canal_perio.h
 // Directory:   $TRUST_ROOT/src/ThHyd
-// Version:     /main/18
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -38,17 +38,22 @@ class Terme_Source_Canal_perio : public Source_base
   Declare_base(Terme_Source_Canal_perio);
 
 public:
-  void associer_pb(const Probleme_base& );
-  void mettre_a_jour(double temps)
-  {
-    ;
-  }
+  virtual void associer_pb(const Probleme_base& );
+  virtual void mettre_a_jour(double temps) {}
+  virtual DoubleTab& calculer(DoubleTab& resu) const;
 
 protected :
   Entree& lire_donnees(Entree& );
-  void completer();
+  virtual void completer();
+
+  // This one is overridden depending on discret.
   virtual void calculer_debit(double&) const=0;
+
   ArrOfDouble source() const;
+  void write_flow_rate(const Nom& ext_nom_source, double debit) const;
+  double compute_heat_flux() const;
+  // This one is overridden for P0 fields in VDF
+  virtual ArrOfDouble source_convection_diffusion(double debit_e) const;
 
   ArrOfDouble dir_source_;
   int direction_ecoulement_;
@@ -64,6 +69,7 @@ protected :
   mutable double dernier_temps_calc_ ;
   int is_debit_impose_;
   double debit_impose_;
+
 private:
   mutable SFichier flow_rate_file_;
   mutable SFichier pressure_gradient_file_;

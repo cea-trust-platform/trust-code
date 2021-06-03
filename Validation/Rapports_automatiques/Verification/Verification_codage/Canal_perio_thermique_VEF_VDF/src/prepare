@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mkdir -p VEF
+mkdir -p VEF_ref
+mkdir -p VDF
+mkdir -p VDF_ref
+
+cp canal_perio.data VEF/canal_perio_VEF.data
+sed -e 's/# Puissance_thermique champ_uniforme 1 -100 #/Puissance_thermique champ_uniforme 1 -100/' -e 's/Canal_perio { bord periox }/# Canal_perio { bord periox } #/' canal_perio.data  > VEF_ref/canal_perio_VEF_ref.data
+sed -e 's/Trianguler_Fin dom//' -e 's/VEFPreP1B dis/VDF dis/' VEF_ref/canal_perio_VEF_ref.data > VDF_ref/canal_perio_VDF_ref.data
+sed -e 's/Trianguler_Fin dom//' -e 's/VEFPreP1B dis/VDF dis/' canal_perio.data > VDF/canal_perio_VDF.data
+
