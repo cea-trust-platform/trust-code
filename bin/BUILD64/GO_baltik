@@ -9,3 +9,6 @@ fold=$1
 ./Modifie $(find $fold -not -name TrioDEC.?xx)
 ./Modifie $(find $fold -not -name TrioDEC.?xx)
 
+# We edit a supplementary main.cpp from ICoCo validation
+[ -f share/Validation/Rapports_automatiques/Test_interpolation/src/main.cpp ] && sed -i "s/connectivity=new int/connectivity=new long/g" share/Validation/Rapports_automatiques/Test_interpolation/src/main.cpp
+

@@ -132,6 +132,7 @@
  Champ_front_normal_VEF Champ_front_normal_VEF Boundary_field_inward.h
  Champ_front_pression_from_u Champ_front_pression_from_u Champ_front_pression_from_u.h
  Champ_front_recyclage Champ_front_recyclage Champ_front_recyclage.h
+ Champ_front_synt Champ_front_synt Champ_front_synt.h
  Champ_front_Tabule Champ_front_Tabule Champ_front_Tabule.h
  Champ_front_tangentiel Champ_front_tangentiel Champ_front_tangentiel.h
  Champ_front_tangentiel_VEF Champ_front_tangentiel_VEF Champ_front_tangentiel_VEF.h
