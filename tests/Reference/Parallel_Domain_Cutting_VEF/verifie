@@ -1,8 +1,9 @@
 (
-jdd=$1
+jdd=`pwd`
 jdd=`basename $jdd`
 
-if [ ${jdd#PAR_} != $jdd ]
+# If PAR_*.dt_ev file exists, parallel computation has started
+if [ -f PAR_$jdd.dt_ev ] && [ "$TRUST_DISABLE_PETSC" != "1" ]
 then
    # compare parmetis results with metis and trust
    rm *Zones -f
@@ -22,4 +23,4 @@ then
    compare_lata LAST.lml $jdd.lml
 
 fi
-) 1>>verifie.log 2>&1
+) 1>verifie.log 2>&1
