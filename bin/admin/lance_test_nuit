@@ -70,13 +70,13 @@ check_components()
 	    then
 	       # Test debug tous les jours sur Template, Tuto, ICoCo, TrioMC, MPCube, Genepi3 et Flica5
 	       #if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
-	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ]
+	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ] &&  [ "$Composant" = sympy_to_TRUST ]
 	       then
 	          make_option="make check_all_optim check_all_debug"
 	       elif [ "$Composant" = flica5 ]
                then
 	          make_option="make check_optim check_debug"
-	       elif [ "$Composant" = pemfc ]
+	       elif [ "$Composant" = pemfc ] || [ "$Composant" = sympy_to_TRUST ]
                then
 	          make_option="make check_all_optim"
 	       fi
@@ -251,6 +251,9 @@ check_components()
                elif [ "$Composant" = pemfc ]
                then
                   machines=`liste_machines "\-PEMFC"`
+               elif [ "$Composant" = sympy_to_TRUST ]
+               then
+                  machines=`liste_machines "\-STT"`
 	       elif [ "$Composant" = MPCube ] || [ "$Composant" = mpcube ]
 	       then
 	          machines=`liste_machines "\-MPCube"`
@@ -539,7 +542,7 @@ ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 ComposantsOfficial="triocfd ijk mpcube genepi3 flica5"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
-export ComposantsBeta="sides scorpio pemfc"
+export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 
@@ -891,7 +894,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "genepi3" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "genepi3" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
          #if [[ "$Composant" == "triocfd" ]]
          #then
@@ -914,20 +917,12 @@ fi
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
          fi
          rm tmp.log 1>/dev/null 2>&1
-      elif [[ "$Composant" == "pemfc" ]]
+      elif [[ "$Composant" == "sympy_to_TRUST" || "$Composant" == "pemfc" ]]
       then
          git remote update
          git checkout .
          git checkout master
          git pull 1>tmp.log 2>&1
-         # mise a jour de sympy_to_trust
-         echo "update sympy_to_TRUST:" >> tmp.log
-         cd sympy_to_TRUST
-         git remote update
-         git checkout .
-         git checkout master
-         git pull 1>>../pemfc/tmp.log 2>&1
-         cd -
          if [ $? != 0 ]
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master KO \" $TRUST_MAIL
