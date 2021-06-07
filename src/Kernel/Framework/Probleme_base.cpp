@@ -1803,6 +1803,9 @@ void Probleme_base::mettre_a_jour(double temps)
   // Update the name of the problem being debugged
   Debog::set_nom_pb_actuel(le_nom());
 
+  for(int i=0; i<nombre_d_equations(); i++)
+    equation(i).inconnue().mettre_a_jour(temps);
+
   // Update the media:
   milieu().mettre_a_jour(temps);
 
