@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -217,7 +217,10 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
+
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
@@ -297,13 +300,14 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
         double pond2=volumes_thilde(elem)*inv_vol_elem*inv_vol_elem;
 
 
-        if (transport_rhou) pond2/=rho_elem(elem);
+        if (transport_rhou)
+          pond2 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
         double fpond2=f*pond2;
 
         if ((hourglass)&&(nb_som_elem==8)&&(hourglass_impl==0))
           {
             double pond3=f*dotproduct_array(G_e,G_e);
-            if (transport_rhou) pond3/=rho_elem(elem);
+            if (transport_rhou) pond3 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
             if (is_not_lambda_unif)
               pond3+=lambda(elem);
             else
@@ -443,7 +447,10 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
+
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
@@ -528,13 +535,14 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
         double pond2=volumes_thilde(elem)*inv_vol_elem*inv_vol_elem;
 
 
-        if (transport_rhou) pond2/=rho_elem(elem);
+        if (transport_rhou)
+          pond2 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
         double fpond2=f*pond2;
 
         if ((hourglass)&&(nb_som_elem==8)&&(hourglass_impl==0))
           {
             double pond3=f*dotproduct_array(G_e,G_e);
-            if (transport_rhou) pond3/=rho_elem(elem);
+            if (transport_rhou) pond3 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
             if (is_not_lambda_unif)
               pond3+=lambda(elem);
             else
@@ -673,7 +681,10 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
+
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
@@ -758,13 +769,14 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
         double pond2=volumes_thilde(elem)*inv_vol_elem*inv_vol_elem;
 
 
-        if (transport_rhou) pond2/=rho_elem(elem);
+        if (transport_rhou)
+          pond2 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
         double fpond2=f*pond2;
 
         if ((hourglass)&&(nb_som_elem==8)&&(hourglass_impl==0))
           {
             double pond3=f*dotproduct_array(G_e,G_e);
-            if (transport_rhou) pond3/=rho_elem(elem);
+            if (transport_rhou) pond3 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
             if (is_not_lambda_unif)
               pond3+=lambda(elem);
             else
@@ -904,7 +916,10 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
+
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
@@ -989,13 +1004,14 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
         double pond2=volumes_thilde(elem)*inv_vol_elem*inv_vol_elem;
 
 
-        if (transport_rhou) pond2/=rho_elem(elem);
+        if (transport_rhou)
+          pond2 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
         double fpond2=f*pond2;
 
         if ((hourglass)&&(nb_som_elem==8)&&(hourglass_impl==0))
           {
             double pond3=f*dotproduct_array(G_e,G_e);
-            if (transport_rhou) pond3/=rho_elem(elem);
+            if (transport_rhou) pond3 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
             if (is_not_lambda_unif)
               pond3+=lambda(elem);
             else
@@ -1134,7 +1150,10 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
+
   Debog::verifier("conv vitesse",G);
   Debog::verifier("conv rho",rho_elem);
   Debog::verifier("conv transporte",transporte);
@@ -1219,13 +1238,14 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
         double pond2=volumes_thilde(elem)*inv_vol_elem*inv_vol_elem;
 
 
-        if (transport_rhou) pond2/=rho_elem(elem);
+        if (transport_rhou)
+          pond2 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
         double fpond2=f*pond2;
 
         if ((hourglass)&&(nb_som_elem==8)&&(hourglass_impl==0))
           {
             double pond3=f*dotproduct_array(G_e,G_e);
-            if (transport_rhou) pond3/=rho_elem(elem);
+            if (transport_rhou) pond3 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
             if (is_not_lambda_unif)
               pond3+=lambda(elem);
             else
@@ -1370,7 +1390,9 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
 
   int nb_comp = 1;
   int nb_dim = transporte.nb_dim();
@@ -1417,14 +1439,13 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
         // *10 !!!!!!!!!!!
         double pond2=volumes_thilde(elem)/volumes(elem)/volumes(elem);
 
-
-        if (transport_rhou) pond2/=rho_elem(elem);
-
+        if (transport_rhou)
+          pond2 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
 
         if ((hourglass)&&(nb_som_elem==8)&&(hourglass_impl==1))
           {
             double pond3=f*dotproduct_array(G_e,G_e);
-            if (transport_rhou) pond3/=rho_elem(elem);
+            if (transport_rhou) pond3 /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
             if (is_not_lambda_unif)
               pond3+=lambda(elem);
             else
@@ -1527,11 +1548,13 @@ double Op_Conv_EF::calculer_dt_stab() const
       transport_rhou=1;
     }
   // else abort();
-  const DoubleTab& rho_elem=(transport_rhou==1?equation().probleme().get_champ("masse_volumique_melange").valeurs():G);
-
+  const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
+                             equation().probleme().get_champ("masse_volumique").valeurs());
+  int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
 
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
   const DoubleVect&      valeurs_diffusivite = ref_cast(Operateur_Diff_base,equation().operateur(0).l_op_base()).diffusivite().valeurs();
+  int is_not_lambda_unif = (valeurs_diffusivite.size() == 1 ? 0 : 1);
 
   int autre_eq=0;
   const DoubleVect&      valeurs_diffusivite_p = ref_cast(Operateur_Diff_base,equation().probleme().equation(autre_eq).operateur(0).l_op_base()).diffusivite().valeurs();
@@ -1587,21 +1610,23 @@ double Op_Conv_EF::calculer_dt_stab() const
             vx[d]=G_e(d)*G_e(d);
           }
 
-        double diffu=valeurs_diffusivite(elem);
+        double diffu=(is_not_lambda_unif?valeurs_diffusivite(elem):valeurs_diffusivite(0));
+
         if (calcul_dt_stab_==2)
           {
-            double diffu2=valeurs_diffusivite_2(elem);
+            double diffu2=(is_not_lambda_unif?valeurs_diffusivite_2(elem):valeurs_diffusivite_2(0));
             if (diffu2<diffu)
               diffu=diffu2;
           }
-        diffu/=rho_elem(elem);
+        diffu /= (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
 
         // horreur pour NR G2 cas clotaire
         // diffu*=0.5;
         //if (elem==0) Cerr<<"uu "<<diffu<<finl;
         if (transport_rhou)
           {
-            double inv_rho2=rho_elem(elem)*rho_elem(elem);
+            double rho_e = (is_not_rho_unif ? rho_elem(elem) : rho_elem(0,0));
+            double inv_rho2= rho_e*rho_e;
             inv_rho2=1./inv_rho2;
             ml*=inv_rho2;
             for (int d=0; d<dimension; d++)
