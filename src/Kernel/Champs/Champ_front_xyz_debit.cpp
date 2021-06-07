@@ -155,7 +155,6 @@ void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, Doub
         velocity_field(i,j) = v_mult * velocity_user(velocity_user.size() > dimension ? i : 0,j);
   else for(int i=0; i<le_bord.nb_faces(); i++) for(int j=0; j<dimension; j++)
         velocity_field(i,j) = v_mult * normal_vectors_(i,j);
-  velocity_field.echange_espace_virtuel();
 }
 
 void Champ_front_xyz_debit::associer_fr_dis_base(const Frontiere_dis_base& fr)
