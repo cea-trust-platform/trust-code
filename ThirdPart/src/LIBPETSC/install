@@ -154,17 +154,26 @@ then
 
       ptscotch_inc=$PETSC_ROOT/$REP/include/ptscotch++.h
       parmetis_inc=$PETSC_ROOT/$REP/include/parmetis++.h
-      echo > $ptscotch_inc
-      echo > $parmetis_inc
+
       if [ "$TRUST_DISABLE_MPI" = 0 ]
       then
-	  if [ $scotch -eq 1 ]
+	  if [ $scotch -eq 1 ] && [ "`grep 'define PTSCOTCH_' $ptscotch_inc 2>/dev/null`" = "" ]
 	  then
-	      echo "#include <ptscotch.h>
+	     echo "$ptscotch_inc file changed..."
+	     echo "#include <ptscotch.h>
 #define PTSCOTCH_"> $ptscotch_inc
+	  else
+             [ ! -f $ptscotch_inc ] && echo > $ptscotch_inc
 	  fi
-	  echo "#include <parmetis.h>
+	  if [ "`grep 'define PARMETIS_' $parmetis_inc 2>/dev/null`" = "" ]
+	  then
+	     echo "$parmetis_inc file changed..."
+	     echo "#include <parmetis.h>
 #define PARMETIS_"> $parmetis_inc
+	  fi
+      else
+         [ ! -f $ptscotch_inc ] || [ "`grep 'define PTSCOTCH_' $ptscotch_inc 2>/dev/null`" != "" ] &&  echo > $ptscotch_inc
+	 [ ! -f $parmetis_inc ] || [ "`grep 'define PARMETIS_' $parmetis_inc 2>/dev/null`" != "" ] && echo > $parmetis_inc
       fi
    done
    exit 0
