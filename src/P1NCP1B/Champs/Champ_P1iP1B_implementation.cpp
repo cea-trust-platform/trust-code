@@ -519,7 +519,7 @@ DoubleTab& Champ_P1iP1B_implementation::trace(const Frontiere_dis_base& fr, cons
   IntVect elem_voisins(nb_faces_fr);
   elem_voisins = -1;
   DoubleTab cg_faces_fr(nb_faces_fr,Objet_U::dimension);
-  DoubleTab val_interp(nb_faces_fr);
+  DoubleTab val_interp(nb_faces_fr, 1);
 
   //On recupere les elements voisins des faces de la frontiere
   for (int i=0; i<nb_faces_fr; i++)
