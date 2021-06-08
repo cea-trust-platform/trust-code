@@ -1,0 +1,3 @@
+#!/bin/bash
+source $TRUST_ROOT/env_for_python.sh 
+python script_postprocess.py 1&>script_postprocess.out

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+rm -rf sim_*
+LISTE_CAS="sim_1 sim_2 sim_3"
+
+for CAS in $LISTE_CAS; do
+
+  SRCDATA=Cas.data
+  PRERUN=pre_run
+  POSTRUN=post_run
+  SCRIPT=script_postprocess.py
+  REP=./$CAS
+  mkdir $REP
+  DESTDATA=$REP/$SRCDATA
+
+  if test "$CAS" = "sim_1"; then
+
+    cp $SRCDATA $DESTDATA
+
+  elif test "$CAS" = "sim_2"; then # resume 1
+
+    echo "cp ../sim_1/Cas_Channel_Flow_Rate* ." >> $REP/$PRERUN # required for resuming the simulation
+
+    sed "s~sauvegarde binaire sim_1.sauv~sauvegarde binaire sim_2.sauv~;
+         s~/\* resume_last_time binaire ../sim_1/sim_1.sauv \*/~resume_last_time binaire ../sim_1/sim_1.sauv~" $SRCDATA > $DESTDATA
+
+  elif test "$CAS" = "sim_3"; then # resume 2
+
+    cp $POSTRUN $REP/$POSTRUN # this will run the python code at the end 
+    cp $SCRIPT $REP/$SCRIPT
+    echo "cp ../sim_2/Cas_Channel_Flow_Rate* ." >> $REP/$PRERUN # required for resuming the simulation
+
+    sed "s~sauvegarde binaire sim_1.sauv~sauvegarde binaire sim_3.sauv~;
+         s~/\* resume_last_time binaire ../sim_1/sim_1.sauv \*/~resume_last_time binaire ../sim_2/sim_2.sauv~" $SRCDATA > $DESTDATA 
+
+  fi
+done
+

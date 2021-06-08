@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3_beta : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
+08/06/21 (TRUST)  New feature : Python package added which offers the user a possibility to perform time/space statistical post-processing of the son files (convergence, correlation, spectra ...). See validation file HowTo/Postreatment_stats
+08/06/21 (TRUST)  New feature : Python package added which allows writing and running prm validation files via jupyter-lab using python & markdown syntax
 07/06/21 (TRUST)  Bug fixed   : Finite Element (EF) BTD or SUPG convection scheme were unavailable in Pb_Thermohydraulique 
 03/06/21 (TRUST)  New feature : Source term "Canal_perio" now supported in VDF for the Conduction_Diffusion_* equation
 31/05/21 (TRUST)  Output      : Improvements for HDF5 (appending to datasets is now possible and metadata are only handled by the master process)

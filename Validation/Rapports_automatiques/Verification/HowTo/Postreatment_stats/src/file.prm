@@ -1,0 +1,46 @@
+Parameters {
+        Title "Python package for postprocessing the TRUST son files"
+        VersionTrio_U "1.8.3"
+        Author "Morad Ben Tayeb"
+        TestCase sim_1 Cas.data
+        TestCase sim_2 Cas.data
+        TestCase sim_3 Cas.data
+}
+
+
+chapter
+{
+	title "Test case"
+	Description "\latex_( \input{\orig/intro} \latex_)"
+}
+
+chapter
+{
+        Table 
+        {
+                Title "Taylor Micro Scale"
+                Description "Root of parabola fit of autocorrelation "
+                nb_columns 1
+                Label Valeur
+                line 
+                {
+                        legend "Taylor micro scale"
+                        file ./sim_3/script_postprocess.py_Roots_1.txt
+                }
+
+        }
+}
+
+Chapter {
+        Title "Computer performance"
+        tableau_performance {
+        }
+}
+chapter
+{
+	title "Python"
+	Description "\latex_( \input{\orig/python} \latex_)"
+}
+
+
+
