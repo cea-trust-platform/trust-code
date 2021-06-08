@@ -78,6 +78,7 @@ public :
   virtual bool solveTimeStep();
   virtual void validateTimeStep();
   virtual void setStationaryMode(bool stationary); // new in V2
+  virtual bool getStationaryMode() const; // new in V2
   virtual bool isStationary() const;
   virtual void abortTimeStep();
 

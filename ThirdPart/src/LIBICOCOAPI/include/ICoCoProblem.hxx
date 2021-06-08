@@ -211,7 +211,7 @@ namespace ICoCo
      */
     virtual void validateTimeStep();
 
-    /*! @brief (Mandatory) Indicate whether the code should compute a stationary solution or a transient one.
+    /*! @brief (Mandatory) Set whether the code should compute a stationary solution or a transient one.
      *
      * New in version 2 of ICoCo. By default the code is assumed to be in stationary mode False (i.e. set up
      * for a transient computation).
@@ -228,6 +228,20 @@ namespace ICoCo
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      */
     virtual void setStationaryMode(bool stationaryMode);
+
+    /*! @brief (Mandatory) Indicate whether the code should compute a stationary solution or a transient one.
+     *
+     * See also setStationaryMode().
+     *
+     * Can be called whenever the code is outside the TIME_STEP_DEFINED context (see Problem documentation).
+     *
+     * @return true if the code has been set to compute a stationary solution.
+     *
+     * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation).
+     * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
+     */
+    virtual bool getStationaryMode() const;
+
 
     /*! @brief (Optional) Return whether the solution is constant on the computation time step.
      *
