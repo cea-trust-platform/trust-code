@@ -197,18 +197,7 @@ Entree& Decouper::interpreter(Entree& is)
 
 Entree& Decouper::lire(Entree& is)
 {
-
-// Lecture du nom du domaine a decouper:
-  int epaisseur_joint = 1;
-  Nom nom_zones_decoup("?");
-  Nom nom_fichier_decoupage("?");
-  Nom nom_fichier_lata("?");
-  int format_binaire = 1;
-  int format_hdf = 0;
-  int nb_parts_tot = -1;
-  int reorder = 0;
-  Noms liste_bords_periodiques;
-
+  // Lecture du nom du domaine a decouper:
   is >> nom_domaine;
   Cerr << " Domain name to split : " << nom_domaine << finl;
   ref_domaine = find_domain(nom_domaine);

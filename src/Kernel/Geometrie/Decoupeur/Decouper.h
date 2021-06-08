@@ -49,7 +49,7 @@ public:
   //ecriture d'une partition elem_part donnee
   //som_raccord (optionnel) : som_raccord[s] -> process auxquels est raccorde le sommet
   //                                            s par un raccord a un autre domaine
-  void ecrire(ArrOfInt& elem_part, const Static_Int_Lists *som_raccord = NULL);
+  void ecrire(IntVect& elem_part, const Static_Int_Lists *som_raccord = NULL);
 
   Nom nom_domaine;
   DERIV(Partitionneur_base) deriv_partitionneur;

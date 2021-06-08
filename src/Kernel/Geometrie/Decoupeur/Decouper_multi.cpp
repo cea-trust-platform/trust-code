@@ -89,7 +89,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   /* partition des domaines */
-  std::map<std::string, ArrOfInt> m_elem_part; //m_elem_part[nom_domaine] = sa partition
+  std::map<std::string, IntVect> m_elem_part; //m_elem_part[nom_domaine] = sa partition
   for (auto &&n_d : decoupeurs)
     {
       Partitionneur_base& partitionneur = n_d.second.deriv_partitionneur.valeur();
@@ -144,7 +144,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
       //pour chaque sommet : verification de la coincidence, contribution a som_raccord
       Static_Int_Lists *som_elem[2];                //connectivites som-elem de chaque cote
       std::map<int, std::set<int>> *som_raccord[2]; //som_raccord de chaque cote
-      ArrOfInt *elem_part[2];                       //partitions de chaque cote
+      IntVect *elem_part[2];                       //partitions de chaque cote
       for (i = 0; i < 2; i++) som_elem[i] = &m_som_elem[dom[i]->le_nom().getString()];
       for (i = 0; i < 2; i++) som_raccord[i] = &m_som_raccord[dom[i]->le_nom().getString()];
       for (i = 0; i < 2; i++) elem_part[i] = &m_elem_part[dom[i]->le_nom().getString()];
