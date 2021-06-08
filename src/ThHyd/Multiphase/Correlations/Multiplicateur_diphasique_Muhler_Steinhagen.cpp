@@ -37,7 +37,9 @@ Entree& Multiplicateur_diphasique_Muhler_Steinhagen::readOn(Entree& is)
   param.ajouter("alpha_max", &alpha_max_);
   param.ajouter("min_lottes_flinn", &min_lottes_flinn_);
   param.ajouter("min_sensas", &min_sensas_);
-  param.ajouter("C", &C_);
+  param.ajouter("a", &a_);
+  param.ajouter("b", &b_);
+  param.ajouter("c", &c_);
   param.lire_avec_accolades_depuis(is);
 
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
@@ -59,7 +61,7 @@ void Multiplicateur_diphasique_Muhler_Steinhagen::coefficient(const double *alph
   int min_ = min_sensas_ || min_lottes_flinn_;
   double G = alpha[n_l] * rho[n_l] * dabs(v[n_l]) + alpha[n_g] * rho[n_g] * dabs(v[n_g]), //debit total
          x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
-         fm_sur_rhom = (f[n_l] / rho[n_l] + C_ * (f[n_g] / rho[n_g] - f[n_l] / rho[n_l]) * x) * std::pow(1 - x, 1. / 3) + f[n_g] / rho[n_g] * std::pow(x, 3),
+         fm_sur_rhom = (f[n_l] / rho[n_l] + a_ * (f[n_g] / rho[n_g] - f[n_l] / rho[n_l]) * std::pow(x, b_)) * std::pow(1 - x, 1. / c_) + f[n_g] / rho[n_g] * std::pow(x, c_),
          frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g, //fraction appliquee au liquide
          mul = min_sensas_ ? min(1., 1.4429 * std::pow(alpha[n_l], 0.6492)) : 1;
   coeff = 0;
