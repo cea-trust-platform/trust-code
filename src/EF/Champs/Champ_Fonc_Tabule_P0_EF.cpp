@@ -64,7 +64,8 @@ void Champ_Fonc_Tabule_P0_EF::mettre_a_jour(double t)
     }
   int nb_elem=zone_EF.nb_elem();
   int nb_elem_tot=zone_EF.nb_elem_tot();
-  DoubleTab val_param_aux_elems(nb_elem_tot);
+  const int nbcomp=mes_valeurs.line_size();
+  DoubleTab val_param_aux_elems(nb_elem_tot,nbcomp);
   const DoubleTab& centres_de_gravites=zone_EF.xp();
   IntVect les_polys(nb_elem_tot);
   for(int elem=0; elem<nb_elem_tot; elem++)
@@ -72,7 +73,7 @@ void Champ_Fonc_Tabule_P0_EF::mettre_a_jour(double t)
       les_polys(elem)=elem;
     }
   le_champ_parametre.valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_param_aux_elems);
-  int nbcomp=mes_valeurs.line_size();
+
   for (int num_elem=0; num_elem<nb_elem; num_elem++)
     for (int ncomp=0; ncomp<nbcomp; ncomp++)
       mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp));
