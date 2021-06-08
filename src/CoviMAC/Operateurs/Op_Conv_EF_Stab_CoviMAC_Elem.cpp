@@ -49,6 +49,8 @@ Implemente_instanciable( Op_Conv_EF_Stab_CoviMAC_Elem, "Op_Conv_EF_Stab_CoviMAC_
 Implemente_instanciable( Op_Conv_Amont_CoviMAC_Elem, "Op_Conv_Amont_CoviMAC_Elem_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Elem ) ;
 Implemente_instanciable( Op_Conv_Centre_CoviMAC_Elem, "Op_Conv_Centre_CoviMAC_Elem_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Elem ) ;
 
+
+// XD Op_Conv_EF_Stab_CoviMAC_Elem interprete Op_Conv_EF_Stab_CoviMAC_Elem 1 Class Op_Conv_EF_Stab_CoviMAC_Elem
 Sortie& Op_Conv_EF_Stab_CoviMAC_Elem::printOn( Sortie& os ) const
 {
   Op_Conv_CoviMAC_base::printOn( os );

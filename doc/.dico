@@ -530,7 +530,6 @@
  Multi_Schema_ThHyd Multi_Sch_ThHyd Multi_Sch_ThHyd.h
  Navier_Stokes_QC Navier_Stokes_QC Navier_Stokes_QC.h
  Navier_Stokes_standard Navier_Stokes_std Navier_Stokes_std.h
- Nb_Phases Nb_Phases Nb_Phases.h
  NettoiePasNoeuds NettoieNoeuds NettoieNoeuds.h
  Neumann Neumann Neumann.h
  Neumann_homogene Neumann_homogene Neumann_homogene.h
@@ -546,7 +545,6 @@
  OctreeRoot OctreeRoot Octree.h
  Operateurs_Statistique_tps Operateurs_Statistique_tps Operateurs_Statistique_tps.h
  Operateur_base Operateur_base Operateur_base.h
- Operateur_Changement_Phase Operateur_Changement_Phase Operateur_Changement_Phase.h
  Operateur_Conv Operateur_Conv Operateur_Conv.h
  Operateur_Conv_ALE Op_Conv_ALE Op_Conv_ALE.h
  Operateur_Conv_base Operateur_Conv_base Operateur_Conv_base.h
@@ -563,7 +561,6 @@
  Operateur_Statistique_tps_base Operateur_Statistique_tps_base Operateur_Statistique_tps_base.h
  Option_CoviMAC Option_CoviMAC Option_CoviMAC.h
  Option_VDF Option_VDF Option_VDF.h
- Op_Changement_Phase_negligeable Op_Changement_Phase_negligeable Op_Changement_Phase_negligeable.h
  Op_Conv_AmontNew_VEF_P1NC Op_Conv_AmontNew_VEF_Face Op_Conv_AmontNew_VEF_Face.h
  Op_Conv_Amont_CoviMAC_Elem_CoviMAC Op_Conv_Amont_CoviMAC_Elem Op_Conv_EF_Stab_CoviMAC_Elem.h
  Op_Conv_Amont_CoviMAC_Face_CoviMAC Op_Conv_Amont_CoviMAC_Face Op_Conv_EF_Stab_CoviMAC_Face.h
