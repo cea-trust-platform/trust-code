@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1149,7 +1149,7 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
   const int nb_faces_elem = elem_faces.dimension(1);
   const DoubleTab& inc=inconnue().valeurs();
   // inconnue doit etre scalaire
-  assert(inc.nb_dim() == 1);
+  assert(inc.line_size() == 1);
   DoubleTrav t_voisinage(inc);
   DoubleTrav u_voisinage(u);
   const int nb_elem  = u.dimension_tot(0);
@@ -1204,13 +1204,13 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
       Transport_Interfaces_base& nom_eq = ref_cast(Transport_Interfaces_base,ref_penalisation_L2_FTD[i].valeur());
       const DoubleTab& tab = tab_penalisation_L2_FTD[i];
       //verification dimensions tab t obstacle = nb dim de l inconnu
-      if ( tab.dimension(0) != inc.nb_dim() )
+      if ( tab.dimension(0) != inc.line_size() )
         {
           Cerr << " penalisation_L2: Les champs de temperature impose et calcule n'ont pas les memes dimensions" <<finl;
           Cerr << " Dimension du champ de temperature impose "<< tab.dimension(0) << finl;
-          Cerr << " Dimension du champ de temperature calcule par TRUST "<<inc.nb_dim() <<finl;
+          Cerr << " Dimension du champ de temperature calcule par TRUST "<<inc.line_size() <<finl;
           Cerr << " Nombre d'elements stockes au dans l'iconnue " <<inc.size() <<finl;
-          exit();
+          Process::exit();
         }
       const DoubleTab& indicatrice = nom_eq.get_update_indicatrice().valeurs();
 

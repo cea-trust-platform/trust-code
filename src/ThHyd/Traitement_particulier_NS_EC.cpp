@@ -329,11 +329,11 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
     {
       const Champ_base& champ_rho = get_champ_masse_volumique();
       rho = champ_rho.valeurs();
-      if (rho->dimension(0) != zone_VF.nb_faces() || rho->nb_dim() != 1)
+      if (rho->dimension(0) != zone_VF.nb_faces() || rho->line_size() != 1)
         {
           Cerr << "Erreur dans Traitement_particulier_NS_EC::calculer_Ec" << finl;
           Cerr << "le champ de masse volumique n'est pas un champ scalaire aux faces" << finl;
-          exit();
+          Process::exit();
         }
     }
   else

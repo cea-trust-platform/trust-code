@@ -70,13 +70,17 @@ DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions,
   const Champ_base& ch_base       = le_champ();
   int            nb_components = ch_base.nb_comp();
   const DoubleTab&  values        = ch_base.valeurs();
-
   int nb_polys = polys.size();
-
-  assert((result.dimension_tot(0) == nb_polys)||(result.dimension(0) == nb_polys));
+  // XXX : TODO Check this assert (positions and not result)
+  assert((positions.dimension_tot(0) == nb_polys)||(positions.dimension(0) == nb_polys));
+  // assert((result.dimension_tot(0) == nb_polys)||(result.dimension(0) == nb_polys));
 
   if (nb_polys==0)
     return result;
+
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (result.nb_dim() == 1 ) result.resize(nb_polys,1);
 
   assert(values.line_size() == nb_components);
   assert(result.line_size() == nb_components);

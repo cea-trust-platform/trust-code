@@ -818,7 +818,9 @@ int Milieu_base::est_deja_associe()
 void Milieu_base::associer_equation(const Equation_base *eqn) const
 {
   std::string nom_inco(eqn->inconnue().le_nom().getString());
-  if (equation_.count(nom_inco))
+  // E. Saikali
+  // At the initialization step, FT problem can have several equations with same unknown name "concentration"
+  if (equation_.count(nom_inco) && eqn->probleme().que_suis_je() != "Probleme_FT_Disc_gen")
     Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl, Process::exit();
   equation_[nom_inco] = eqn;
 }

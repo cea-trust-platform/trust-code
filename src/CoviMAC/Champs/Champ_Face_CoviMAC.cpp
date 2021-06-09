@@ -286,17 +286,12 @@ DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, cons
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
   const Champ_base& cha=le_champ();
   int nb_compo=cha.nb_comp(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = valeurs().line_size();
-  if (val.nb_dim() == 1)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo == 1);
-    }
-  else if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo);
-    }
-  else
+
+  // XXX : TODO Check this assert (positions and not val)
+  assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
+  // assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
+
+  if (val.nb_dim() > 2)
     {
       Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
       Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
