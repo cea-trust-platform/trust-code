@@ -82,6 +82,11 @@ namespace ICoCo
     throw NotImplemented("type_of_Problem_not_set", "setStationaryMode");
   }
 
+  bool Problem::getStationaryMode() const
+  {
+    throw NotImplemented("type_of_Problem_not_set", "getStationaryMode");
+  }
+
   bool Problem::isStationary() const
   {
     throw NotImplemented("type_of_Problem_not_set", "isStationary");

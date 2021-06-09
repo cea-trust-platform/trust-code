@@ -421,6 +421,14 @@ void ProblemTrio::setStationaryMode(bool stationary)
   Process::exit(-1);
 }
 
+bool ProblemTrio::getStationaryMode() const
+{
+  // TODO TODO FIXME
+  Cerr << "ProblemTrio::getStationaryMode() not impl!" << finl;
+  Process::exit(-1);
+  return true;
+}
+
 
 // Description:
 // Aborts the resolution of the current time step.

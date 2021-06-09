@@ -61,10 +61,10 @@ namespace ICoCo
    * Within the computation of a time step (so within TIME_STEP_DEFINED), the temporal semantic of the fields (and
    * scalar values) is not imposed by the norm. Said differently, it does not require the fields to be defined at the
    * start/middle/end of the current time step, this semantic must be agreed on between the codes being coupled.
-   * Fields and scalar values that are set within the TIME_STEP_DEFINED context are invalidated after a call to
-   * validateTimeStep() (or abortTimeStep()). They need to be set at each time step. However, fields and scalar values that are
-   * set outside of this context (before the first time step for example, or after the resolution of the last time step) are
-   * permanent.
+   * Fields and scalar values that are set within the TIME_STEP_DEFINED context are invalidated (undefined behavior)  
+   * after a call to validateTimeStep() (or abortTimeStep()). They need to be set at each time step. However, fields and scalar 
+   * values that are set outside of this context (before the first time step for example, or after the resolution of the last 
+   * time step) are permanent (unless modified afterward within the TIME_STEP_DEFINED context).
    *
    * Finally, the ICoCo interface may be wrapped in Python using SWIG or PyBind11. For an example of the former see the
    * TRUST implementation of ICoCo. Notably the old methods returning directly MEDCoupling::MEDCouplingFieldDouble objects
@@ -74,7 +74,6 @@ namespace ICoCo
   {
 
   public :
-
     /*! @brief Return ICoCo interface major version number.
      * @return ICoCo interface major version number (2 at present)
      */
@@ -141,7 +140,6 @@ namespace ICoCo
      */
     virtual void terminate();
 
-
     // ******************************************************
     // section TimeStepManagement
     // ******************************************************
@@ -166,7 +164,7 @@ namespace ICoCo
      *
      * Can be called whenever the code is outside the TIME_STEP_DEFINED context (see Problem documentation).
      *
-     * @param[out] stop set to true if the code wants to stop. It can be used for example to indicate that, according to
+     * @param[out] stop set to true if the code wants to stop. It can be used for example to indicate that, according to 
      * a certain criterion, the end of the transient computation is reached from the code point of view.
      * @return the preferred time step for this code (only valid if stop is false).
      * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation).
@@ -178,6 +176,8 @@ namespace ICoCo
      *
      * After this call (if successful), the computation time step is defined to ]t, t + dt] where t is the value
      * returned by presentTime(). The code enters the TIME_STEP_DEFINED context.
+     * A time step = 0. may be used when the stationaryMode is set to true for codes solving directly for 
+     * the steady-state.
      *
      * @param[in] dt the time step to be used by the code
      * @return false means that given time step is not compatible with the code time scheme.
@@ -185,7 +185,7 @@ namespace ICoCo
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation).
      * @throws ICoCo::WrongContext exception if called several times without resolution.
-     * @throws ICoCo::WrongArgument exception if dt is invalid (dt <= 0.0).
+     * @throws ICoCo::WrongArgument exception if dt is invalid (dt < 0.0).
      */
     virtual bool initTimeStep(double dt);
 
@@ -195,6 +195,8 @@ namespace ICoCo
      *
      * @return true if computation was successful, false otherwise.
      * @throws ICoCo::WrongContext exception if called outside the TIME_STEP_DEFINED context (see Problem documentation).
+     * @throws ICoCo::WrongContext exception if called several times without a call to validateTimeStep() or to 
+     * abortTimeStep().
      */
     virtual bool solveTimeStep();
 
@@ -211,13 +213,14 @@ namespace ICoCo
      */
     virtual void validateTimeStep();
 
-    /*! @brief (Mandatory) Indicate whether the code should compute a stationary solution or a transient one.
+    /*! @brief (Mandatory) Set whether the code should compute a stationary solution or a transient one.
      *
      * New in version 2 of ICoCo. By default the code is assumed to be in stationary mode False (i.e. set up
      * for a transient computation).
      * If set to True, solveTimeStep() can be used either to solve a time step in view of an asymptotic solution,
-     * or to solve directly for the steady-state, whatever the time step provided by initTimeStep() (whose call is still
-     * needed). The stationary mode status of the code can only be modified by this method (or by a call to terminate()
+     * or to solve directly for the steady-state. In this last case, a time step = 0. can be used with initTimeStep()
+     * (whose call is always needed). 
+     * The stationary mode status of the code can only be modified by this method (or by a call to terminate() 
      * followed by initialize()).
      *
      * Can be called whenever the code is outside the TIME_STEP_DEFINED context (see Problem documentation).
@@ -228,6 +231,19 @@ namespace ICoCo
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      */
     virtual void setStationaryMode(bool stationaryMode);
+
+    /*! @brief (Mandatory) Indicate whether the code should compute a stationary solution or a transient one.
+     *
+     * See also setStationaryMode().
+     *
+     * Can be called whenever the code is outside the TIME_STEP_DEFINED context (see Problem documentation).
+     *
+     * @return true if the code has been set to compute a stationary solution.
+     *
+     * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation).
+     * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
+     */
+    virtual bool getStationaryMode() const;
 
     /*! @brief (Optional) Return whether the solution is constant on the computation time step.
      *
@@ -261,6 +277,7 @@ namespace ICoCo
      *
      * Can be called outside the TIME_STEP_DEFINED context (see Problem documentation).
      *
+     * @param[in] time the new current time.
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
      */
@@ -334,7 +351,6 @@ namespace ICoCo
      */
     virtual void forget(int label, const std::string& method) const;
 
-
     // ******************************************************
     // section Field I/O. Reminder: all methods are **optional** not all of them need to be implemented!
     // ******************************************************
@@ -374,11 +390,12 @@ namespace ICoCo
 
     /*! @brief (Optional) Get the physical unit used for a given field.
      *
+     * @param[in] name field name
      * @return unit in which the field values should be understood (e.g. "W", "J", "Pa", ...)
      * @throws ICoCo::WrongArgument exception if the field name is invalid.
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      */
-    virtual std::string getFieldUnit(const std::string& fieldName) const;
+    virtual std::string getFieldUnit(const std::string& name) const;
 
 
     // ******************************************************
@@ -549,7 +566,6 @@ namespace ICoCo
      */
     virtual void updateOutputField(const std::string& name, TrioField& afield) const;
 
-
     // ******************************************************
     // section Scalar values I/O
     // ******************************************************
@@ -582,11 +598,12 @@ namespace ICoCo
 
     /*! @brief (Optional) Get the physical unit used for a given value.
      *
+     * @param[in] name scalar value name
      * @return unit in which the scalar value should be understood (e.g. "W", "J", "Pa", ...)
      * @throws ICoCo::WrongArgument exception if the value name is invalid.
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      */
-    virtual std::string getValueUnit(const std::string& varName) const;
+    virtual std::string getValueUnit(const std::string& name) const;
 
     /*! @brief (Optional) Provide the code with a scalar double data.
      *
@@ -628,6 +645,7 @@ namespace ICoCo
      */
     virtual std::string getOutputStringValue(const std::string& name) const;
   };
+
 }
 
 /*! @brief (Mandatory) Retrieve an instance of the class defined by the code (and inheriting Problem).
