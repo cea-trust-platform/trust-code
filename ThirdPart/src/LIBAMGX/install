@@ -49,7 +49,7 @@ then
       # Latest:
       git clone https://github.com/barbagroup/AmgXWrapper.git $LIB
       cd $LIB && git checkout master && commit=`git rev-parse HEAD` && cd -
-      tar cfz $TRUST_ROOT/$LIB"_"$commit.tar.gz --exclude .git . && echo "Creation du package \$TRUST_ROOT/$LIB"_"$commit.tar.gz"
+      tar cfz $TRUST_ROOT/$LIB"_"$commit.tar.gz --exclude .git AmgXWrapper && echo "Creation du package \$TRUST_ROOT/$LIB"_"$commit.tar.gz"
    else
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz
    fi
@@ -64,6 +64,9 @@ then
    export CC=$TRUST_cc
    export CXX=$TRUST_CC
    CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$TRUST_CC_BASE"
+   # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
+   [ "$NVHPC" != "" ] && echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
+   # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
