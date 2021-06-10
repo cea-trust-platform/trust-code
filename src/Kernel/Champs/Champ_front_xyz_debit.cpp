@@ -73,7 +73,6 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
   // For tabular sizing only
   normal_vectors_=les_valeurs[0].valeurs();
   integrale_.resize(flow_rate_.valeur().valeurs().line_size());
-  integrale_ = 0.;
   DoubleTab velocity_user;
   if (!flow_rate_alone_)
     velocity_user=velocity_profil_.valeur().valeurs();
@@ -96,8 +95,9 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
 
 void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user)
 {
-  const int N = flow_rate_.valeur().valeurs().line_size();
+  const int N = flow_rate_.nb_comp();
   const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
+  integrale_ = 0.;
 
   for(int i = 0; i < le_bord.nb_faces_tot(); i++)
     {
@@ -220,6 +220,7 @@ void Champ_front_xyz_debit::mettre_a_jour(double temps)
       velocity_user.resize(1,dimension);
       velocity_user=1;
     }
+  if (update_coeff_) calculer_normales_et_integrale(ref_cast(Front_VF,frontiere_dis()),velocity_user);
   DoubleTab& velocity_field=valeurs_au_temps(temps); // values of the field at time t, type Roue_ptr
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   if (velocity_field.size_array())

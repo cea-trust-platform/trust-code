@@ -27,6 +27,8 @@
 #include <Champ_front_normal.h>
 #include <Champ_front_debit.h>
 #include <Ref_DoubleTab.h>
+#include <Champ_base.h>
+
 //.DESCRIPTION  class Champ_front_debit_massique
 //
 // Classe derivee de Champ_front_debit pour les amateurs de kg/s
@@ -42,7 +44,7 @@ public:
 
 protected:
   virtual void initialiser_coefficient(const Champ_Inc_base& inco, double temps);
-  DoubleTab rho_;
+  const Champ_base *ch_rho;
 };
 
 #endif

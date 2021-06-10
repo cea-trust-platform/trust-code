@@ -46,26 +46,18 @@ Entree& Champ_front_debit_massique::readOn(Entree& is)
 void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco, double temps)
 {
   Champ_front_debit::initialiser_coefficient(inco, temps);
-  int i, fb, n, N = coeff_.line_size();
-  const Champ_base& masse_volumique = inco.equation().milieu().masse_volumique();
-  const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
-  const Zone_VF& zone = ref_cast(Zone_VF, inco.equation().zone_dis().valeur());
-  const bool Cr = sub_type(Champ_Uniforme, masse_volumique);
-  DoubleTab rho_bord = Cr ? masse_volumique.valeurs() : masse_volumique.valeur_aux_bords(); /* valeur a toutes les faces de bord */
-  for(rho_.resize(le_bord.nb_faces_tot(), N), i = 0; i < le_bord.nb_faces_tot(); i++)
-    for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
-      rho_(i, n) = rho_bord(Cr ? 0 : fb, n);
-
-  assert(flow_rate_.valeur().valeurs().line_size() == rho_.line_size());
-  const int crho = sub_type(Champ_Uniforme, masse_volumique);
-  update_coeff_ = !crho;
-  update_coeff(temps);
+  ch_rho = &inco.equation().milieu().masse_volumique();
+  if (sub_type(Champ_Uniforme, *ch_rho)) //rho constant : on calcule le coeff maintenant, puis on ne le fait plus
+    update_coeff(temps), update_coeff_ = false;
+  else update_coeff_ = true;
 }
 
 void Champ_front_debit_massique::update_coeff(double temps)
 {
-  int i, N = coeff_.line_size();
+  int i, fb, n, N = coeff_.line_size(), cR = sub_type(Champ_Uniforme, *ch_rho);
+  DoubleTab rho_bord = cR ? ch_rho->valeurs() : ch_rho->valeur_aux_bords(); /* si rho uniforme, on ne peut pas appeler valeur_aux_bords() */
+  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
-  for(i = 0; i < le_bord.nb_faces_tot(); i++) for (int n = 0; n < N; ++n)
-      coeff_(i, n) = 1. / rho_(i, n);
+  for(i = 0; i < le_bord.nb_faces_tot(); i++) for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
+      coeff_(i, n) = 1. / rho_bord(!cR * fb, n);
 }
