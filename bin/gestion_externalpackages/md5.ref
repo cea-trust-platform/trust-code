@@ -12,6 +12,7 @@ ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 3143b1116f2d466d9325c206b7de88f7  Miniconda/Miniconda3-py37_4.9.2-Linux-x86_64.sh
 cfe1b551b169d6386f5f4b7df40cdac4  Miniconda/Miniconda3-py37_4.9.2-MacOSX-x86_64.sh
 7e88440c1848299f3bc443fc01e7a2eb  Miniconda/Miniforge3-Linux-aarch64.sh
+c6597bb708170310879896ee9ac51637  Miniconda/local_channel/linux-64/bison-3.7.5-h2531618_1.conda
 9ddfcaef10d79366c90128f5dc444be8  Miniconda/local_channel/linux-64/blas-1.0-openblas.conda
 9303f4af7c004e069bae22bde8d800ee  Miniconda/local_channel/linux-64/bzip2-1.0.8-h7b6447c_0.conda
 2b808c38e5dc9135fcd7f09627aa0941  Miniconda/local_channel/linux-64/ca-certificates-2020.10.14-h06a4308_1.conda
@@ -19,6 +20,7 @@ fcc43d5786127f01e1031137f7cb7190  Miniconda/local_channel/linux-64/cmake-3.18.2-
 48d1b09390e40b3554c5c714a33dd1b5  Miniconda/local_channel/linux-64/cycler-0.10.0-py37_0.conda
 6a6a6f1391f807847404344489ef6cf4  Miniconda/local_channel/linux-64/dbus-1.13.18-hb2f20db_0.conda
 ba5b1fda80a3db1f2e3dd3afbc579fab  Miniconda/local_channel/linux-64/expat-2.3.0-h2531618_2.conda
+8a9eaf084a1ab5f678ca6d602c65e348  Miniconda/local_channel/linux-64/flex-2.6.4-ha10e3a4_1.conda
 fa04e89166d4b44326c6d76e2f708715  Miniconda/local_channel/linux-64/fontconfig-2.13.1-h6c09931_0.conda
 bef0ea8b3abc9d84674733a3ca426865  Miniconda/local_channel/linux-64/freetype-2.10.4-h5ab3b9f_0.conda
 877b1358f7dcf1193e717adc543b2aff  Miniconda/local_channel/linux-64/giflib-5.1.4-h14c3975_1.conda
@@ -46,6 +48,7 @@ bb1eff3862d3729995c38fc1f5d71ca4  Miniconda/local_channel/linux-64/libuv-1.40.0-
 05811f2f9a9af28f3d7d665dca4d573e  Miniconda/local_channel/linux-64/libxcb-1.14-h7b6447c_0.conda
 5cc9d595a9d91c2f5c1d722252e27343  Miniconda/local_channel/linux-64/libxml2-2.9.10-hb55368b_3.conda
 1c5839d25f73e4067609a257db7d3624  Miniconda/local_channel/linux-64/lz4-c-1.9.3-h2531618_0.conda
+799785dac3c1caa68af0ee04d8ddaaa7  Miniconda/local_channel/linux-64/m4-1.4.18-h4e445db_0.conda
 d610f3eacce8402c5faa61809b26f099  Miniconda/local_channel/linux-64/matplotlib-3.3.4-py37h06a4308_0.conda
 46f701bb43f5e1bebfdc3dd9b3dca66b  Miniconda/local_channel/linux-64/matplotlib-base-3.3.4-py37h62a2d02_0.conda
 a04e160ec0a1117f7638590e534f16c7  Miniconda/local_channel/linux-64/mpc-1.1.0-h10f8cd9_1.conda
@@ -114,7 +117,6 @@ b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 9be6e048224797bf531f94b7a8aaa99d  osqp-0.6.0.tar.gz
 fe535e221293e72c7813e3bc2a60640a  petsc/MUMPS_5.3.3-p2.tar.gz
 0ddc62ed2636720be74be2e27e1fef6e  petsc/SuiteSparse-5.7.1.tar.gz
-5724bcffed4ebe39e9b55a9be80859ec  petsc/flex-2.6.0.tar.gz
 6704f17e342976e076e84c367bc995f3  petsc/hypre-2.19.0.tar.gz
 82e3b09d577580747fbcada30d9b4228  petsc/metis-5.1.0-p10.tar.gz
 3ba025a94fa01594573ee0df4fca9bef  petsc/ml-6.2-p4.tar.gz

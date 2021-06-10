@@ -64,7 +64,6 @@ cd build
 minimal_mumps=0 # && [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 scotch=1
 [ $minimal_mumps = 1 ] && scotch=0
-[ ! -f /usr/bin/bison ] && scotch=0 # Si bison pas trouve, on n'installe plus bison+m4 (difficile)
 
 if [ "$1" = "" ]
 then
@@ -454,24 +453,13 @@ then
       # On ajoute Scotch sur certaines machines
       add_package ptscotch
 
-      # Scotch necessite flex
-      if [ "`flex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
+      # flex et bison necessaires pour scotch desormais installes dans miniconda.
+      if [ "`flex --version 1>/dev/null 2>&1;echo $?`" != 0 ] || [ "`bison --version 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
-	 if [ ! -d $ROOT/flex/bin ]
-	 then
-            echo "Scotch needs flex installed. So installing it..."
-	    flex=`(cd ..; ls flex-*.tar.gz | sed "s/.tar.gz//")`
-	    gunzip -f -c ../$flex.tar.gz | tar -xf -
-	    cd $flex
-	    ./configure --prefix=$ROOT/flex || exit -1
-	    $TRUST_MAKE || exit -1
-	    make install || exit -1
-	    cd ..
-	    rm -r -f $flex
-	 fi
-	 export PATH=$PATH:$ROOT/flex/bin
+	 echo "Fatal error: flex and bison not found even though installed in miniconda!"
+	 echo "Contact TRUST support team at trust@cea.fr"
+	 exit -1
       fi
-
    fi
    #######
    # Hypre

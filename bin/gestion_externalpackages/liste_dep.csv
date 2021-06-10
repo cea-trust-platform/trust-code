@@ -52,7 +52,6 @@ lapack,OpenBLAS-0.3.10.tar.gz,,PL,BSD,https://www.openblas.net/,http://github.co
 petsc,SuiteSparse-5.7.1.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/v5.7.1.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
 petsc,viennacl-dc552a8.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisee ????"
 petsc,scotch-6.0.9.tar.gz,,PL," CeCILL-C license",http://scotch.gforge.inria.fr/,https://gforge.inria.fr/frs/download.php/file/38187/scotch_6.0.9.tar.gz,
-petsc,flex-2.6.0.tar.gz,,SV,"BSD Unix",http://flex.sourceforge.net/,https://sourceforge.net/projects/flex/files/flex-2.6.0.tar.gz/download,"d'apres https://sourceforge.net/projects/flex/files/ flex is distributed under a copyright very similar to that of BSD Unix, and not under the GNU General Public License (GPL)"
 petsc,parmetis-4.0.3-p6.tar.gz,,PL,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download",http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview,https://bitbucket.org/petsc/pkg-parmetis/get/v4.0.3-p6.tar.gz,"pour la licence (je ne sais pas ce que c'est) voir http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download"
 petsc,superlu_dist-6.3.0.tar.gz,,PL,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,https://github.com/xiaoyeli/superlu_dist/archive/v6.3.0.tar.gz,
 petsc,superlu-5.2.1.tar.gz,,PL,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,https://github.com/xiaoyeli/superlu/archive/v5.2.1.tar.gz,
@@ -79,12 +78,14 @@ MinicondaLocChannNoarch,pyparsing-2.4.7-pyhd3eb1b0_0.tar.bz2,outil,ND,MIT,,https
 MinicondaLocChannNoarch,python-dateutil-2.8.1-pyhd3eb1b0_0.tar.bz2,,ND,BSD,,https://repo.anaconda.com/pkgs/main/noarch/python-dateutil-2.8.1-pyhd3eb1b0_0.tar.bz2,
 MinicondaLocChannNoarch,pytz-2021.1-pyhd3eb1b0_0.conda,outil,ND,MIT,,https://repo.anaconda.com/pkgs/main/noarch/pytz-2021.1-pyhd3eb1b0_0.conda,
 MinicondaLocChannLinux,blas-1.0-openblas.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/blas-1.0-openblas.conda,
+MinicondaLocChannLinux,bison-3.7.5-h2531618_1.conda,outil,ND,GPL-3.0,,https://repo.anaconda.com/pkgs/main/linux-64/bison-3.7.5-h2531618_1.conda,
 MinicondaLocChannLinux,bzip2-1.0.8-h7b6447c_0.conda,outil,ND,bzip2,,https://repo.anaconda.com/pkgs/main/linux-64/bzip2-1.0.8-h7b6447c_0.conda,
 MinicondaLocChannLinux,ca-certificates-2020.10.14-h06a4308_1.conda,outil,ND,MPL,,https://repo.anaconda.com/pkgs/main/linux-64/ca-certificates-2020.10.14-h06a4308_1.conda,
 MinicondaLocChannLinux,cmake-3.18.2-ha30ef3c_0.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/cmake-3.18.2-ha30ef3c_0.conda,
 MinicondaLocChannLinux,cycler-0.10.0-py37_0.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/cycler-0.10.0-py37_0.conda,
 MinicondaLocChannLinux,dbus-1.13.18-hb2f20db_0.conda,outil,ND,GPL2,,https://repo.anaconda.com/pkgs/main/linux-64/dbus-1.13.18-hb2f20db_0.conda,
 MinicondaLocChannLinux,expat-2.3.0-h2531618_2.conda,outil,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/expat-2.3.0-h2531618_2.conda,
+MinicondaLocChannLinux,flex-2.6.4-ha10e3a4_1.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/flex-2.6.4-ha10e3a4_1.conda,
 MinicondaLocChannLinux,fontconfig-2.13.1-h6c09931_0.conda,outil,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/fontconfig-2.13.1-h6c09931_0.conda,
 MinicondaLocChannLinux,freetype-2.10.4-h5ab3b9f_0.conda,outil,ND,GPL2.0-only,,https://repo.anaconda.com/pkgs/main/linux-64/freetype-2.10.4-h5ab3b9f_0.conda,
 MinicondaLocChannLinux,giflib-5.1.4-h14c3975_1.conda,outil,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/giflib-5.1.4-h14c3975_1.conda,
@@ -112,6 +113,7 @@ MinicondaLocChannLinux,libwebp-1.0.1-h8e7db2f_0.conda,outil,ND,Google,,https://r
 MinicondaLocChannLinux,libxcb-1.14-h7b6447c_0.conda,,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/libxcb-1.14-h7b6447c_0.conda,
 MinicondaLocChannLinux,libxml2-2.9.10-hb55368b_3.conda,,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/libxml2-2.9.10-hb55368b_3.conda,
 MinicondaLocChannLinux,lz4-c-1.9.3-h2531618_0.conda,,ND,BSD-2,,https://repo.anaconda.com/pkgs/main/linux-64/lz4-c-1.9.3-h2531618_0.conda,
+MinicondaLocChannLinux,m4-1.4.18-h4e445db_0.conda,outil,ND,GPL-3.0,,https://repo.anaconda.com/pkgs/main/linux-64/m4-1.4.18-h4e445db_0.conda,
 MinicondaLocChannLinux,matplotlib-3.3.4-py37h06a4308_0.conda,outil,ND,PSF-based,,https://repo.anaconda.com/pkgs/main/linux-64/matplotlib-3.3.4-py37h06a4308_0.conda,
 MinicondaLocChannLinux,matplotlib-base-3.3.4-py37h62a2d02_0.conda,,ND,PSF-based,,https://repo.anaconda.com/pkgs/main/linux-64/matplotlib-base-3.3.4-py37h62a2d02_0.conda,
 MinicondaLocChannLinux,mpc-1.1.0-h10f8cd9_1.conda,outil,ND,LGPL,,https://repo.anaconda.com/pkgs/main/linux-64/mpc-1.1.0-h10f8cd9_1.conda,
