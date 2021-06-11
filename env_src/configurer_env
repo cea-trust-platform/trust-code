@@ -723,7 +723,7 @@ model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0"
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0"
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
@@ -733,11 +733,24 @@ then
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda
    $TRUST_ROOT/exec/python/bin/conda list > conda_list
-   for pkg in $pkgs
-   do
-     pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
-     [ "`grep $pkg conda_list`" = "" ] && INSTALL_OK=0
-   done
+   if [ "$system" = "Linux" ] && [ $model = "x86_64" ]
+   then
+      # Strict check of conda packages
+      cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" > conda_list.ref
+      if [ `diff conda_list.ref conda_list 1>/dev/null 2>&1; echo $?` != 0 ]
+      then
+         echo "# The current miniconda install contains some supplementary or missing packages, we clean it..."
+         INSTALL_OK=0
+      else
+         rm -f conda_lis.ref
+      fi
+   else
+      for pkg in $pkgs
+      do
+        pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
+        [ "`grep $pkg conda_list`" = "" ] && INSTALL_OK=0
+      done
+   fi
    rm -f conda_list
    if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
    then
