@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ Entree& Neumann_paroi_QC::readOn(Entree& s )
 int Neumann_paroi_QC::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-  if ( (dom_app=="Thermique_H") )
+  if ( (dom_app=="Thermique_H") || (dom_app=="fraction_massique"))
     return 1;
   else
     {

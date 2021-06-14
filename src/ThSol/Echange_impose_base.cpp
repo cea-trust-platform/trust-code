@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -311,7 +311,8 @@ int Echange_impose_base::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle dom_app=eqn.domaine_application();
   Motcle Thermique="Thermique";
   Motcle indetermine="indetermine";
-  if ( (dom_app==Thermique) || (dom_app==indetermine) )
+  Motcle FracMass="fraction_massique";
+  if ( (dom_app==Thermique) || (dom_app==indetermine) || (dom_app==FracMass) )
     return 1;
   else
     {

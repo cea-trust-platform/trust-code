@@ -364,7 +364,7 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
 // Postcondition:
 int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, int& num_Cl)
 {
-  Cerr << "The hydraulic and concentration boundary conditions are not consitent  on border:" << finl;
+  Cerr << "The hydraulic and concentration boundary conditions are not consitent on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_co.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_co.valeur().que_suis_je() << " !! " << finl;
   Process::exit();
@@ -380,15 +380,19 @@ int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, in
 //    -----------------------------------------------------------------------
 //    Entree_fluide_vitesse_imposee ===> Entree_fluide_fraction_massique_imposee
 //    Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
+//    Entree_fluide_vitesse_imposee ===> Echange_externe_impose
+//    Entree_fluide_vitesse_imposee ===> Neumann_paroi
 //    -----------------------------------------------------------------------
 //    Dirichlet_paroi_fixe |
 //    Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
+//    =================================> Echange_externe_impose
 //    -----------------------------------------------------------------------
 //    Neumann_sortie_libre ============> Entree_fluide_fraction_massique_imposee
 //    =================================> Neumann_sortie_libre
 //    -----------------------------------------------------------------------
 //    Symetrie ========================> Symetrie
 //    =================================> Neumann_paroi_flux_nul
+//    =================================> Neumann_paroi
 //    -----------------------------------------------------------------------
 //    Periodique ======================> Periodique
 // Precondition:
@@ -428,7 +432,9 @@ int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr,
       if (sub_type(Entree_fluide_vitesse_imposee_libre,la_cl_hydr.valeur()))
         {
           if ( (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
-               || (sub_type(Neumann_sortie_libre,la_cl_fm.valeur())) )
+               || (sub_type(Neumann_sortie_libre,la_cl_fm.valeur()))  ||
+               (sub_type(Echange_externe_impose,la_cl_fm.valeur())) ||
+               (sub_type(Neumann_paroi,la_cl_fm.valeur())) )
             ;
           else
             {
@@ -449,7 +455,8 @@ int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr,
         {
           if ((!sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur())) &&
               (!sub_type(Neumann_paroi,la_cl_fm.valeur())) &&
-              (!sub_type(Scalaire_impose_paroi,la_cl_fm.valeur())))
+              (!sub_type(Scalaire_impose_paroi,la_cl_fm.valeur())) &&
+              (!sub_type(Echange_externe_impose,la_cl_fm.valeur())) )
             {
               message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
             }
@@ -470,7 +477,8 @@ int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr,
       else if (sub_type(Symetrie,la_cl_hydr.valeur()))
         {
           if( (sub_type(Symetrie,la_cl_fm.valeur()))
-              || (sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur())) )
+              || (sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur()))
+              || (sub_type(Neumann_paroi,la_cl_fm.valeur())) )
             {
               ;
             }
@@ -519,7 +527,7 @@ int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr,
 // Postcondition:
 int message_erreur_fraction_massique(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_frac_mass, int& num_Cl)
 {
-  Cerr << "The hydraulic and massic fraction boundary conditions are not consitent  on border:" << finl;
+  Cerr << "The hydraulic and massic fraction boundary conditions are not consitent on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_frac_mass.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_frac_mass.valeur().que_suis_je() << " !! " << finl;
   Process::exit();

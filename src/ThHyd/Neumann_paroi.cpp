@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,8 +96,10 @@ int Neumann_paroi::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle Diphasique="diphasique_moyenne";
   Motcle indetermine="indetermine";
   Motcle Concentration="Concentration";
+  Motcle FracMass="fraction_massique";
 
-  if ( (dom_app==Thermique) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Concentration))
+  if ( (dom_app==Thermique) || (dom_app==Diphasique) || (dom_app==indetermine)
+       || (dom_app==Concentration) || (dom_app==FracMass))
     return 1;
   else
     {
