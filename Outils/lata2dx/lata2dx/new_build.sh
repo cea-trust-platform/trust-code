@@ -1,7 +1,8 @@
 #!/bin/bash
 
-env_med=${TRUST_MEDCOUPLING_ROOT}/env.sh
-[ -f $env_med ] && . $env_med
+#env_med=${TRUST_MEDCOUPLING_ROOT}/env.sh
+#[ -f $env_med ] && . $env_med
+export MED_COUPLING_ROOT=$TRUST_MEDCOUPLING_ROOT
 ORG=`pwd`
 # Fixed by use of cmake 3.0.1 so commented (furthermore, killall cmake was a bad idea: what if another build during the same time?)
 # recursive cmake killed:
