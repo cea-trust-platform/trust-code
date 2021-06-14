@@ -7,7 +7,7 @@ import time
 
 from .utils import completeResPath
 from .FileManager import FileManager
-from .TrustFiles import SonSEGFile
+from trustutils.files import SonSEGFile
 
 import curveplot
 def run_TRUST(longcaseName):

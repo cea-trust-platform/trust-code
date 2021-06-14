@@ -1,4 +1,3 @@
-from . import TrustFiles
 
 class FileManager(object):
     """ Class caching the TrustFiles """
@@ -18,8 +17,9 @@ class FileManager(object):
     def __addFile(self, fName, refPath):
         """ Add file object to the internal cache
         """
+        from trustutils import files
         if not self._testMode:
-            obj = TrustFiles.BuildFromPath(fName, refPath)
+            obj = files.BuildFromPath(fName, refPath)
         else:
             with open(fName) as f:
                 obj = id(f)

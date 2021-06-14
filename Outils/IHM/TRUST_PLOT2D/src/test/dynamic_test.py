@@ -1,5 +1,5 @@
 import unittest
-from trust_plot2d.TrustFiles import BuildFromPath, SonPOINTFile, SonSEGFile, DTEVFile
+from trustutils.files import BuildFromPath, SonPOINTFile, SonSEGFile, DTEVFile
 import numpy as np
 import os
 
