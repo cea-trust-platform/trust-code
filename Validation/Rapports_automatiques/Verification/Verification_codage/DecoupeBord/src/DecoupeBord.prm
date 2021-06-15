@@ -3,7 +3,9 @@ Parameters {
 	Author "Pierre LEDAC"
 	VersionTrio_U 1.8.2_beta
  	TestCase . DecoupeBord.data
-	IncludeData 1
+	ExtraUsedFile DecoupeBord.lata.dom_boundaries_SPAROI* 
+	ExtraUsedFile initial_dom.lata.dom_boundaries_SPAROI* 
+    IncludeData 1
 }
 
 Chapter {
