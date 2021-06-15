@@ -112,7 +112,7 @@ void Op_Dift_VDF_Face_Axi::mettre_a_jour(double )
 DoubleTab& Op_Dift_VDF_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
 
-  if (inco.nb_dim() > 1)
+  if (inco.line_size() > 1)
     {
       Cerr << "Erreur dans Op_Dift_VDF_Face_Axi::ajouter" << finl;
       Cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues" << finl;
