@@ -23,10 +23,12 @@ OK()
 
 CHOIX_MAKE()
 {
-   MAKE=make
+   # Partition de compilation
+   BATCH="" && [ $HOST = jean-zay ] && BATCH="srun -p compil -A fej@cpu -c 10 --hint=nomultithread "
+   MAKE=$BATCH"make"
    if [ ${#CLEAN} = 0 ] && [ $1 = "multiple" ]
    then
-      [ "$MAKE_NB_CPUS" != 0 ] && MAKE=$TRUST_MAKE
+      [ "$MAKE_NB_CPUS" != 0 ] && MAKE=$BATCH$TRUST_MAKE
    fi
 }
 
