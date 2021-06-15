@@ -50,16 +50,15 @@ if [ ! -d ${Build} ]
     MED="-with_med"
     [ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
     $DIR/src/generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
-   
-   LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
-   $local/xml2info lata.xml
+
+   env LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH $local/xml2info lata.xml
 
    if [ $prepsrc -eq 1 ] 
    then
-       $local/xml2cmake lata.xml -dv
+       env LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH $local/xml2cmake lata.xml -dv
        echo "end of preparation, makefile not modified" && exit 0
    fi
-   $local/xml2cmake  lata.xml
+   env LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH $local/xml2cmake  lata.xml
    dlocal=`dirname $local`
    echo $dlocal
    # Puree VisIt pas capable de proposer de fixer VISIT_PLUGIN_DIR...
