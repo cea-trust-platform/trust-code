@@ -1409,6 +1409,10 @@ valeur_aux_elems(const DoubleTab& positions,
       Process::exit();
     }
 
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (val.nb_dim() == 1 ) val.resize(val.dimension_tot(0),1);
+
   int le_poly, D = Objet_U::dimension;
   const IntTab& elem_faces=zone_VEF.elem_faces();
 

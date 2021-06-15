@@ -100,6 +100,11 @@ valeur_aux_elems(const DoubleTab& positions,
   int prs=zvef.numero_premier_sommet();
   int nb_compo_=le_champ().nb_comp();
   int dimension=Objet_U::dimension;
+  const int les_polys_size=les_polys.size();
+
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (val.nb_dim() == 1 ) val.resize(les_polys_size,1);
 
   assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
   assert(val.line_size() == nb_compo_);
@@ -109,7 +114,6 @@ valeur_aux_elems(const DoubleTab& positions,
 
   if (nb_compo_ == 1)
     {
-      int les_polys_size=les_polys.size();
       for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
         {
           // On initialise
