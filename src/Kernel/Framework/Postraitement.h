@@ -112,6 +112,7 @@ public:
   Postraitement();
 
   inline const Sondes& les_sondes() const;
+  inline Sondes& les_sondes();
   inline Probleme_base& probleme();
   inline const Probleme_base& probleme() const;
 
@@ -306,6 +307,10 @@ private :
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 inline const Sondes& Postraitement::les_sondes() const
+{
+  return les_sondes_;
+}
+inline Sondes& Postraitement::les_sondes()
 {
   return les_sondes_;
 }

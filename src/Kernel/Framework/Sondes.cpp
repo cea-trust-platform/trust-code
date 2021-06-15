@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,10 +23,9 @@
 #include <Sondes.h>
 #include <LecFicDiffuse_JDD.h>
 
-Implemente_liste(Sonde);
 Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
-
-
+Implemente_liste(Sonde);
+Implemente_liste(Champ);
 
 // Description:
 //    Lit une liste de sondes a partir d'un flot d'entree
@@ -171,8 +170,35 @@ void Sondes::postraiter()
       curseur->postraiter();
       ++curseur;
     }
+  clear_cache();
 }
 
+void Sondes::clear_cache()
+{
+  sourceList.vide();
+  espaceStockageList.vide();
+  sourceNoms.reset();
+}
+
+REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_)
+{
+  mon_champ->fixer_identifiant_appel(nom_champ_lu_);
+  int num = sourceNoms.rang(nom_champ_lu_);
+  if (num < 0)
+    {
+      Champ espace_stockage;
+      const Champ_base& ma_source = ref_cast(Champ_base, mon_champ->get_champ(espace_stockage));
+      sourceList.add(ma_source);
+      espaceStockageList.add(espace_stockage);
+      sourceNoms.add(nom_champ_lu_);
+      // Voir Champ_Generique_base pour la definition de l'espace stockage
+      return espace_stockage.non_nul() ? espaceStockageList.dernier().valeur() : ma_source;
+    }
+  else if (espaceStockageList(num).non_nul())
+    return espaceStockageList(num).valeur();
+  else
+    return sourceList(num);
+}
 
 // Description:
 //    Effectue une mise a jour en temps de chacune
@@ -202,6 +228,7 @@ void Sondes::mettre_a_jour(double temps, double tinit)
       curseur->mettre_a_jour(temps,tinit);
       ++curseur;
     }
+  clear_cache();
 }
 
 

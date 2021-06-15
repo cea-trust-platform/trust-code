@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1262,9 +1262,13 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   // On doit ecrire les sondes
   if (nb>nb_bip)
     {
-      Champ espace_stockage;
-      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
-      ma_source_mod.mettre_a_jour(un_temps);
+      // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
+      // Implemente au niveau de Sondes
+      REF(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
+//      Champ espace_stockage;
+//      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
+//        ma_source_mod.mettre_a_jour(un_temps);
+      ma_source.valeur().mettre_a_jour(un_temps);
 
       // Si le maillage est deformable il faut reconstruire les sondes
       if (mon_post->probleme().domaine().deformable())
@@ -1298,16 +1302,13 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
 // Postcondition:
 void Sonde::postraiter()
 {
-  // Pour sonde de Champ_Generique_Interpolation
-  // Attention le get_champ est important. Il permet
-  // de calculer les valeurs du champ
-  Champ espace_stockage;
-  mon_champ->fixer_identifiant_appel(nom_champ_lu_);
-  const Champ_base& ma_source = ref_cast(Champ_base,mon_champ->get_champ(espace_stockage));
+  // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
+  // Implemente au niveau de Sondes
+  REF(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
 
   if (chsom)
     {
-      Champ_base& ma_source_mod =ref_cast_non_const(Champ_base,ma_source);
+      Champ_base& ma_source_mod =ref_cast_non_const(Champ_base,ma_source.valeur());
       if (ncomp == -1)
         ma_source_mod.valeur_aux_elems_smooth(les_positions_,elem_, valeurs_locales);
       else
@@ -1316,9 +1317,9 @@ void Sonde::postraiter()
   else
     {
       if (ncomp == -1)
-        ma_source.valeur_aux_elems(les_positions_,elem_, valeurs_locales);
+        ma_source.valeur().valeur_aux_elems(les_positions_,elem_, valeurs_locales);
       else
-        ma_source.valeur_aux_elems_compo(les_positions_,elem_,valeurs_locales, ncomp);
+        ma_source.valeur().valeur_aux_elems_compo(les_positions_,elem_,valeurs_locales, ncomp);
     }
 
   if (gravcl)

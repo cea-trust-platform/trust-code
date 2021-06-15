@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,9 +28,13 @@
 
 #include <List.h>
 #include <Sonde.h>
-
+#include <Noms.h>
+#include <Champs_compris.h>
+#include <Champ.h>
+#include <Champ_Generique_base.h>
 
 Declare_liste(Sonde);
+Declare_liste(Champ);
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -55,9 +59,13 @@ public:
   void postraiter();
   void mettre_a_jour(double temps, double tinit);
   void lire_fichier(const Nom& nom_fichier);
-
+  REF(Champ_base) get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
+  void clear_cache();
 private:
-
+  // Mecanisme de cache pour les sondes:
+  LIST(REF(Champ_base)) sourceList;
+  LIST(Champ) espaceStockageList;
+  Noms sourceNoms;
   REF(Postraitement) mon_post;
 };
 

@@ -1,3 +1,4 @@
+XX/XX/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis 
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
@@ -5,7 +6,6 @@ Release notes version 1.8.4_beta : Enhancements, modifications and corrected bug
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3 : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
-15/06/21 (TRUST)  New feature : Add env_for_python.sh environment file which allows to load MEDCoupling, trusticoco and TRUST_STATS_JUPYTER Python environment
 15/06/21 (TRUST)  New feature : Python package added which offers the user a possibility to perform time/space statistical post-processing of the son files (convergence, correlation, spectra ...). See validation file HowTo/Postreatment_stats
 15/06/21 (TRUST)  New feature : Python package added which allows writing and running prm validation files via jupyter-lab using python & markdown syntax
 11/06/21 (TRUST)  Change      : If some conda packages are updated/added/removed after TRUST install, configuring TRUST again will detect that and re-install TRUST's conda packages as per default.
