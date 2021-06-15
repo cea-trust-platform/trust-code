@@ -181,7 +181,7 @@ then
             else
                ARCH=linux-x86_64-rhel7-wmesa
             fi
-	 elif [ $version = 3_1_1 ] && [ "$TRUST_INT64" = 0 ]
+	 elif [ $version = 3_1_1 ]
 	 then
             # See https://wci.llnl.gov/simulation/computer-codes/visit/executables
             [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu16
@@ -196,14 +196,6 @@ then
             [ "`grep 'Red' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7
             [ "$os" = "" ] && echo "OS not detected." && exit -1
 	    ARCH=linux-x86_64-$os
-	 else   
-            if [ "$TRUST_INT64" = 0 ]
-            then
-               echo "No ARCH defined yet for $version."
-            else
-               echo "Visit $version binary is not compatible with the 64 bits integers build of TRUST."
-            fi
-            exit -1
 	 fi
 	 package=visit$version.$ARCH.tar.gz
 	 rm -f $package
