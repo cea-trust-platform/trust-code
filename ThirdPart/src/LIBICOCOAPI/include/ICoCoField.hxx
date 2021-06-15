@@ -10,13 +10,15 @@
 #define ICoCoField_included
 #include <string>
 
+#include <ICoCo_DeclSpec.hxx>
+
 namespace ICoCo
 {
   /*! @brief Top abstract class defining field objects that can be exchanged via the ICoCo interface.
    *
    * The Field class holds the name of the field.
    */
-  class Field
+  class ICOCO_EXPORT Field
   {
   public:
     /*! @brief Set the name of the field.
