@@ -17,7 +17,7 @@ $(moduledebug): Test_ICoCo.sh makefile
 	./Test_ICoCo.sh  #1>LOG 2>&1
 	@echo OK
 
-$(trusticoco): ICoCo_src/share/swig/install.sh makefile
+$(trusticoco): ICoCo_src/share/swig/install.sh makefile ICoCo_src/share/swig/trusticoco.i ICoCo_src/share/swig/icocoexceptions.i ${TRUST_MEDCOUPLING_ROOT}/env.sh
 	@echo Compiling ICoCo
 	(cd ICoCo_src/share/swig; ./install.sh)  #1>LOG 2>&1
 	@echo OK
@@ -26,4 +26,5 @@ check:	all
 	(cd ICoCo_src; make check_optim)
 clean:
 	(cd ICoCo_src; make dist_clean|| echo dist_clean not possible;rm -f configure)
+	(cd ICoCo_src/share/swig; rm -rf build install)
 	#rm -f LOG
