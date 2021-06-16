@@ -27,7 +27,7 @@ It provides a python library for TRUST users to
 
 # Code organization
 
-The parent package is called **trustutils**. Inside, you find three packages: 
+The parent package is called **trustutils**. Inside, you find three packages:
 - **jupyter** : inside you find the **plot** and **run** modules
 - **stats** : inside you find the **trust_statistical_tools** module
 - **visitutils** : inside you find the **tools_for_visit** and **export_lata_base** modules
@@ -36,21 +36,29 @@ The parent package is called **trustutils**. Inside, you find three packages:
 
 Here are the steps to follow if the user wants to use the library from outside this package.
 
-- Create your own env_to_load.sh to append the environment variable PYTHONPATH as follows
+- Source the TRUST python environment
 
-	export PYTHONPATH=your_path_to_this_library:$PYTHONPATH
-	
+      source $TRUST_ROOT/env_for_python.sh
+
 - Create a python script and do what you want to do. The modules can be loaded, for example, as follows
 
-	from trustutils.stats import SpatialPostProcessing, TemporalPostProcessing
-	
-	from trustutils.jupyter import Graph
-	
+	   from trustutils.stats import SpatialPostProcessing, TemporalPostProcessing
+
+	   from trustutils.jupyter import Graph
+
 Examples of usage can be checked from the **tests** repository.
+
+## Jupyter lab installation
+
+Jupyter-lab can be easily installed as follows:
+
+      source env_TRUST.sh
+
+      conda install -c conda-forge jupyterlab ca-certificates=2020.10.14 conda=4.9.2 certifi=2020.6.20
 
 ## Python modules needed
 
 In order to execute the Python code, the following modules are needed:
 
-- **IPython**
+- **IPython** (Display images in jupyter lab)
 - **Sphinx** (to generate documentation)
