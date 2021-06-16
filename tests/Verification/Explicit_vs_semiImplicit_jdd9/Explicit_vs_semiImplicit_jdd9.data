@@ -58,7 +58,7 @@ Lire sch
 	dt_sauv 0.1
 	diffusion_implicite 1
 	seuil_statio 1.e-10
-	facsec 0.8
+	facsec 0.7
 }
 
 Fluide_Incompressible fluide

@@ -98,7 +98,7 @@ read pb
 }
 
 solve pb
-lata_to_med NOM_DU_CAS NOM_DU_CAS
+# lata_to_med NOM_DU_CAS NOM_DU_CAS #
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 
 end

@@ -1,3 +1,19 @@
 #!/bin/bash
+
+# This file should be run in sequential Run_fiche ...
+# We do like that now
+
+# reprise 1
+cd ../sim_2
+cp ../sim_1/Cas_Channel_Flow_Rate* .
+trust Cas.data 1>Cas.out 2>Cas.err
+
+# reprise 2
+cd ../sim_3
+cp ../sim_2/Cas_Channel_Flow_Rate* .
+trust Cas.data 1>Cas.out 2>Cas.err
 source $TRUST_ROOT/env_for_python.sh 
 python script_postprocess.py 1&>script_postprocess.out
+
+# go back
+cd ../sim_1

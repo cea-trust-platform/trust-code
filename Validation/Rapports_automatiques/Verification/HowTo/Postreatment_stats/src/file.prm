@@ -3,8 +3,6 @@ Parameters {
         VersionTrio_U "1.8.3"
         Author "Morad Ben Tayeb"
         TestCase sim_1 Cas.data
-        TestCase sim_2 Cas.data
-        TestCase sim_3 Cas.data
 }
 
 

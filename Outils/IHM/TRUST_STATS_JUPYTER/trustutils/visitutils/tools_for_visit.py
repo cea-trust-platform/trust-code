@@ -10,7 +10,8 @@ This package can be used with jupyter and stats package.
 
 
 import os
-from IPython.display import Image
+# TODO : FIXME : this should be used for jupyter
+#from IPython.display import Image
 import numpy as np
 
 def showMesh(fichier,mesh="dom"):
@@ -328,7 +329,8 @@ class Show:
             f.write("SaveWindow()")
         f.close()
         os.system("visit -nowin -cli -s  tmp.py") # Faire sa independante de cette methode
-        display(Image(filename = ""+self.nom+self.time+"_0000.png", width = 600, height = 300))
+        # TODO : FIXME : this should be used for jupyter
+        #display(Image(filename = ""+self.nom+self.time+"_0000.png", width = 600, height = 300))
 
     def meshColor(self):
         """

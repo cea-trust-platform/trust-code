@@ -1,6 +1,10 @@
 #!/bin/bash
 
-mv *000.med fields.med
+if [ -f *000.med ]
+then
+  mv *000.med fields.med
+fi
+
 source $TRUST_MEDCOUPLING_ROOT/env.sh
 
 python get_max_error.py

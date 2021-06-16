@@ -55,7 +55,7 @@ Chapter
 	     }
 	line {
 		legend AB2_impl
-		 values 0.8 NO		
+		 values 0.7 NO		
 	     }	   
 	line {
 		legend RK3
@@ -132,7 +132,7 @@ Chapter {
                 Style lines
 		}
 		Curve {
-		legend "AB2_impl, facsec = 0.8" 
+		legend "AB2_impl, facsec = 0.7" 
                 file AB2_impl/Moyennes_spatiales_vitesse_rho_mu_fin
                 columns ($1) ($5)
                 Style lines
@@ -353,7 +353,7 @@ Chapter {
                 Style lines
 		}
 		Curve {
-		legend "AB2_impl, facsec = 0.8" 
+		legend "AB2_impl, facsec = 0.7" 
                 file AB2_impl/Moyennes_spatiales_vitesse_rho_mu_fin
                 columns ($1) ($6)
                 Style lines
@@ -454,7 +454,7 @@ Chapter {
                 Style lines
 		}
 		Curve {
-		legend "AB2_impl, facsec = 0.8" 
+		legend "AB2_impl, facsec = 0.7" 
                 file AB2_impl/Moyennes_spatiales_vitesse_rho_mu_fin
                 columns ($1) ($7)
                 Style lines

@@ -70,7 +70,7 @@ for CAS in $LISTE_CAS; do
   
     sed "s~schema_euler_explicite sch~schema_adams_bashforth_order_2 sch~;
          s~diffusion_implicite 0~diffusion_implicite 1~;
-         s~facsec 1.0~facsec 0.8~" $SRCDATA > $DESTDATA
+         s~facsec 1.0~facsec 0.7~" $SRCDATA > $DESTDATA
          
    elif test "$CAS" = "AB2_2"; then
 
