@@ -7,9 +7,9 @@ Parameters {
         TestCase TC2/Ar1/M1 TC2.data
         TestCase TC2/Ar1/M2 TC2.data 2
         TestCase TC2/Ar1/M3 TC2.data 4
-        TestCase TC2/Ar1/M1 TC2_iso.data
-        TestCase TC2/Ar1/M2 TC2_iso.data 2
-        TestCase TC2/Ar1/M3 TC2_iso.data 4
+        TestCase TC2/Ar1_iso/M1 TC2_iso.data
+        TestCase TC2/Ar1_iso/M2 TC2_iso.data 2
+        TestCase TC2/Ar1_iso/M3 TC2_iso.data 4
       	TestCase TC2/Ar10/M1 TC2.data
       	TestCase TC2/Ar10/M2 TC2.data 2
       	TestCase TC2/Ar10/M3 TC2.data 4
@@ -226,7 +226,7 @@ visu {
                 operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2_iso_VOLUME.lata DIFFUSIVITE_THERMIQUE_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M1/TC2_iso_VOLUME.lata DIFFUSIVITE_THERMIQUE_ELEM_DOM
         }
 
 visu {
@@ -235,7 +235,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M1/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -245,7 +245,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M1/TC2_iso.lata ERROR_ELEM_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M1/TC2_iso.lata ERROR_ELEM_ELEM_DOM
         }
 
 visu {
@@ -254,7 +254,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M2/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M2/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -264,7 +264,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M2/TC2_iso.lata ERROR_ELEM_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M2/TC2_iso.lata ERROR_ELEM_ELEM_DOM
         }
 
 visu {
@@ -273,7 +273,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M3/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M3/TC2_iso_VOLUME.lata TEMPERATURE_ELEM_DOM
         }
 
 
@@ -283,7 +283,7 @@ visu {
                 #operator no_databaseinfo
                 #operator_to_all no_legend
                 cycles -1
-                pseudocolor TC2/Ar1/M3/TC2_iso.lata ERROR_ELEM_ELEM_DOM
+                pseudocolor TC2/Ar1_iso/M3/TC2_iso.lata ERROR_ELEM_ELEM_DOM
         }
 
 }

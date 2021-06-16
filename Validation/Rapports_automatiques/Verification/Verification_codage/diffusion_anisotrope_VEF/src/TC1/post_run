@@ -5,6 +5,8 @@ then
   mv *000.med fields.med
 fi
 
-source $TRUST_MEDCOUPLING_ROOT/env.sh
-
-python get_max_error.py
+if [ -f get_max_error.py ]
+then
+  source $TRUST_MEDCOUPLING_ROOT/env.sh
+  python get_max_error.py
+fi

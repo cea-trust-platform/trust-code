@@ -1,15 +1,15 @@
-# PARALLEL ONLY 2 #
+
 dimension 2
 
 DOMaine DOM
 
 Pb_conduction pb
 
-# BEGIN MESH
+# BEGIN MESH #
 Lire_med family_names_from_group_names DOM DOM Mesh_1.med
-END MESH #
+# END MESH #
 
-Scatter DOM.Zones DOM
+# Scatter DOM.Zones DOM #
 vefprep1b dis
 scheme_euler_implicit scheme
 

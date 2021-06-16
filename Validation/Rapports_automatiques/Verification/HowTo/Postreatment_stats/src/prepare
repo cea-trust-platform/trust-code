@@ -1,6 +1,5 @@
 #!/bin/bash
 
-rm -rf sim_*
 LISTE_CAS="sim_1 sim_2 sim_3"
 
 for CAS in $LISTE_CAS; do
