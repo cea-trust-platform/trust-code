@@ -17,7 +17,7 @@ install: $(MALIB) ./install_include.sh
 	@./install_include.sh
 all: $(MALIB)
 
-$(MALIB) : makefile include/ICoCoExceptions.* include/ICoCoTrioField.* include/ICoCoField.* include/ICoCoProblem.* include/ICoCoMEDDoubleField.* include/ICoCoMEDIntField.* $(SRCS)
+$(MALIB) : makefile include/ICoCoExceptions.* include/ICoCoTrioField.* include/ICoCoField.* include/ICoCoProblem.* include/ICoCoMEDDoubleField.* include/ICoCoMEDIntField.* include/ICoCo_DeclSpec.* $(SRCS)
 	@make clean 
 	@make $(OBJS)
 	@mkdir -p $(TRUST_ICOCOAPI)/lib
