@@ -3,6 +3,11 @@ Parameters {
         VersionTrio_U "1.8.3"
         Author "Morad Ben Tayeb"
         TestCase sim_1 Cas.data
+        # Those files need to be registered manually for Run_fiche -archive to work properly
+        # because they are not directly called from the PRM but from the TEX inclusion of intro.tex:
+        ExtraUsedFile canal.png
+        ExtraUsedFile sim_*/results/fig_*.png
+        ExtraUsedFile sim_3/script_postprocess.py
 }
 
 
