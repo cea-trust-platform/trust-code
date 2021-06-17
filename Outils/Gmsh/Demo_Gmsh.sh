@@ -9,6 +9,8 @@
 #       (jusqu'a la creation des faces)
 
 source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
+# On jean-zay, the Gmsh test is false since we build TRUST on compil partition
+[ $TRUST_WITHOUT_HOST = 0 ]  && echo "We do not check Gmsh on clusters" && exit 0
 
 # Test Gmsh if installed
 [ -f ~/.gmshrc ] && mv ~/.gmshrc ~/.gmshrc.bak
