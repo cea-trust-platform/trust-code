@@ -8,13 +8,6 @@ Lire_med family_names_from_group_names dom mesh mesh.med
 # END MESH #
 
 # BEGIN PARTITION
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lml
-    domaine dom
-}
-
 Partition dom
 {
     Partition_tool tranche { tranches 2 1 }
@@ -28,7 +21,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC  dis
+CoviMAC dis
 
 Schema_euler_implicite sch
 Read sch
@@ -36,14 +29,11 @@ Read sch
     tinit 0
 	nb_pas_dt_max 3
     dt_max  0.1
-    tmax 10
-    seuil_statio -1
-    solveur implicite
-    {
-        solveur petsc cholesky { }
-    }
+    facsec 10
+    tmax 100
+    seuil_statio 1e-10
+    solveur implicite { solveur petsc cholesky { } }
 }
-
 
 Fluide_Incompressible eau
 Read eau
@@ -57,7 +47,7 @@ Associate  pb sch
 Associate  pb eau
 Discretize pb dis
 
-porosites_champ pb champ_fonc_xyz dom 1 1-0.5*(y>1.4)*(y<2.8)
+porosites_champ pb champ_fonc_xyz dom 1 1-0.5*(y>1)*(y<2)
 
 Read pb
 {
@@ -85,8 +75,8 @@ Read pb
                 methode formule expression 1 abs(p-sol)
                 sources
                 {
-                    refChamp { Pb_champ pb pression_pa nom_source p } ,
-                    transformation { methode formule expression 1 1e5+(y>1.4)*(y<2.8)*500*(1-1/0.5^2) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    Interpolation { localisation elem nom_source p source refChamp { Pb_champ pb pression_pa } } ,
+                    transformation { methode formule expression 1 1e5+(y>1)*(y<2)*500*(1-1/0.5^2) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
@@ -98,7 +88,7 @@ Read pb
                 sources
                 {
                     Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,
-                    transformation { methode vecteur expression 2 0 1+(y>1.4)*(y<2.8) nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode vecteur expression 2 0 1+(y>1)*(y<2) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_V_max reduction_0D { methode max source transformation { methode norme sources_reference { erreur_V } } }
@@ -108,10 +98,12 @@ Read pb
         {
             errP erreur_P_max periode 1e-6 Numero_elem_sur_maitre 0
             errV erreur_V_max periode 1e-6 Numero_elem_sur_maitre 0
+            V grav vitesse     periode 1e-6 segment 1000 1 0 1 3
+            P grav pression_pa periode 1e-6 segment 1000 1 0 1 3
         }
 
-        Format Lata
-        fields dt_post 1e5
+        Format lml
+        fields dt_post 0
         {
             pression_pa elem
             vitesse elem
@@ -121,5 +113,4 @@ Read pb
     }
 }
 Solve pb
-lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End

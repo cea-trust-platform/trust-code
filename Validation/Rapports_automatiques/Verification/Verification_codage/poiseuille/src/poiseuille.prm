@@ -6,6 +6,22 @@ Parameters
     Prerequisite "./extract_convergence"
 
 
+    TestCase NCa/CoviMAC/maillage_12x12 jdd.data
+    TestCase NCa/CoviMAC/maillage_24x24 jdd.data
+    TestCase NCa/CoviMAC/maillage_36x36 jdd.data
+    TestCase NCa/CoviMAC/maillage_6x6 jdd.data
+    TestCase NCa/PolyMAC/maillage_12x12 jdd.data
+    TestCase NCa/PolyMAC/maillage_24x24 jdd.data
+    TestCase NCa/PolyMAC/maillage_36x36 jdd.data
+    TestCase NCa/PolyMAC/maillage_6x6 jdd.data
+    TestCase NCr/CoviMAC/maillage_12x12 jdd.data
+    TestCase NCr/CoviMAC/maillage_24x24 jdd.data
+    TestCase NCr/CoviMAC/maillage_36x36 jdd.data
+    TestCase NCr/CoviMAC/maillage_6x6 jdd.data
+    TestCase NCr/PolyMAC/maillage_12x12 jdd.data
+    TestCase NCr/PolyMAC/maillage_24x24 jdd.data
+    TestCase NCr/PolyMAC/maillage_36x36 jdd.data
+    TestCase NCr/PolyMAC/maillage_6x6 jdd.data
     TestCase cartesian/CoviMAC/maillage_12x12 jdd.data
     TestCase cartesian/CoviMAC/maillage_24x24 jdd.data
     TestCase cartesian/CoviMAC/maillage_36x36 jdd.data
@@ -18,14 +34,6 @@ Parameters
     TestCase cartesian/VDF/maillage_24x24 jdd.data
     TestCase cartesian/VDF/maillage_36x36 jdd.data
     TestCase cartesian/VDF/maillage_6x6 jdd.data
-    TestCase non_conformal/CoviMAC/maillage_12x12 jdd.data
-    TestCase non_conformal/CoviMAC/maillage_24x24 jdd.data
-    TestCase non_conformal/CoviMAC/maillage_36x36 jdd.data
-    TestCase non_conformal/CoviMAC/maillage_6x6 jdd.data
-    TestCase non_conformal/PolyMAC/maillage_12x12 jdd.data
-    TestCase non_conformal/PolyMAC/maillage_24x24 jdd.data
-    TestCase non_conformal/PolyMAC/maillage_36x36 jdd.data
-    TestCase non_conformal/PolyMAC/maillage_6x6 jdd.data
     TestCase triangle/CoviMAC/maillage_12x12 jdd.data
     TestCase triangle/CoviMAC/maillage_24x24 jdd.data
     TestCase triangle/CoviMAC/maillage_36x36 jdd.data
@@ -57,64 +65,70 @@ Chapter
         Title "Ordres de convergence - v"
         Curve
         {
-            fit_curve a*x**b a,b
-            legend sprintf("cartesian/CoviMAC order %3.1f", param1)
+            legend NCa/CoviMAC
+            file NCa/CoviMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend NCa/PolyMAC
+            file NCa/PolyMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend NCr/CoviMAC
+            file NCr/CoviMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend NCr/PolyMAC
+            file NCr/PolyMAC/conv_glob_v
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend cartesian/CoviMAC
             file cartesian/CoviMAC/conv_glob_v
             colonnes 1 2
             style linespoints
         }
         Curve
         {
-            fit_curve a*x**b a,b
-            legend sprintf("cartesian/PolyMAC order %3.1f", param1)
+            legend cartesian/PolyMAC
             file cartesian/PolyMAC/conv_glob_v
             colonnes 1 2
             style linespoints
         }
         Curve
         {
-            fit_curve a*x**b a,b
-            legend sprintf("cartesian/VDF order %3.1f", param1)
+            legend cartesian/VDF
             file cartesian/VDF/conv_glob_v
             colonnes 1 2
             style linespoints
         }
         Curve
         {
-            fit_curve a*x**b a,b
-            legend sprintf("non_conformal/CoviMAC order %3.1f", param1)
-            file non_conformal/CoviMAC/conv_glob_v
-            colonnes 1 2
-            style linespoints
-        }
-        Curve
-        {
-            fit_curve a*x**b a,b
-            legend sprintf("non_conformal/PolyMAC order %3.1f", param1)
-            file non_conformal/PolyMAC/conv_glob_v
-            colonnes 1 2
-            style linespoints
-        }
-        Curve
-        {
-            fit_curve a*x**b a,b
-            legend sprintf("triangle/CoviMAC order %3.1f", param1)
+            legend triangle/CoviMAC
             file triangle/CoviMAC/conv_glob_v
             colonnes 1 2
             style linespoints
         }
         Curve
         {
-            fit_curve a*x**b a,b
-            legend sprintf("triangle/PolyMAC order %3.1f", param1)
+            legend triangle/PolyMAC
             file triangle/PolyMAC/conv_glob_v
             colonnes 1 2
             style linespoints
         }
         Curve
         {
-            fit_curve a*x**b a,b
-            legend sprintf("triangle/VEFPreP1B order %3.1f", param1)
+            legend triangle/VEFPreP1B
             file triangle/VEFPreP1B/conv_glob_v
             colonnes 1 2
             style linespoints
@@ -130,6 +144,34 @@ Chapter
         legend below title "Legend"
         width 15cm
         Title "Ordres de convergence - p"
+        Curve
+        {
+            legend NCa/CoviMAC
+            file NCa/CoviMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend NCa/PolyMAC
+            file NCa/PolyMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend NCr/CoviMAC
+            file NCr/CoviMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
+        Curve
+        {
+            legend NCr/PolyMAC
+            file NCr/PolyMAC/conv_glob_p
+            colonnes 1 2
+            style linespoints
+        }
         Curve
         {
             legend cartesian/CoviMAC
@@ -148,20 +190,6 @@ Chapter
         {
             legend cartesian/VDF
             file cartesian/VDF/conv_glob_p
-            colonnes 1 2
-            style linespoints
-        }
-        Curve
-        {
-            legend non_conformal/CoviMAC
-            file non_conformal/CoviMAC/conv_glob_p
-            colonnes 1 2
-            style linespoints
-        }
-        Curve
-        {
-            legend non_conformal/PolyMAC
-            file non_conformal/PolyMAC/conv_glob_p
             colonnes 1 2
             style linespoints
         }

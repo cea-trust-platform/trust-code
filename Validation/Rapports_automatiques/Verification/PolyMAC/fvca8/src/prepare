@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # cas 2D
-declare -A dico_meshes_2d=(["Cartesian"]="1 2" #3 4 5 6 7"
-                           ["Locally_Refined"]="1 2" #3 4 5 6 7"
-                           ["Quadrangles"]="1" # 2 3 4 5 6 7"
-                           ["Triangles"]="1") # 2 3 4 5 6")
+declare -A dico_meshes_2d=(["Cartesian"]="1 2 3 4 5 6 7"
+                           ["Locally_Refined"]="1 2 3 4 5 6" # 7"
+                           ["Quadrangles"]="1 2 3 4 5 6" # 7"
+                           ["Triangles"]="1 2 3 4 5") # 6")
 
 declare -A dico_meshes_3d=(["Hexa"]="1" # 2 3 4 5"
                            ["Prism"]="1" # 2 3 4"
@@ -14,7 +14,7 @@ declare -A dico_meshes_3d=(["Hexa"]="1" # 2 3 4 5"
                            ["CheckerBoard"]="1" # 2 3 4 5"
                            ["PrismHexa"]="1" # 2 3 4"
                            ["Random"]="1" # 2 3 4"
-                           ["Tetra"]="1") # 2 2 3 4 5 6 7")
+			               ["Tetra"]="1") # 2 2 3 4 5 6 7")
 
 meshes_2d="${!dico_meshes_2d[@]}"
 meshes_3d="${!dico_meshes_3d[@]}"

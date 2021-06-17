@@ -101,7 +101,7 @@ Read pb
             P grav pression_pa periode 1e-6 segment 1000 1 0 1 3
         }
 
-        Format Lata
+        Format lml
         fields dt_post 0
         {
             pression_pa elem

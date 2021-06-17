@@ -2,17 +2,35 @@ Parameters
 {
     Title "Benchmark FVCA8"
  TestCase Triangles/jdd_1 cas.data
+ TestCase Triangles/jdd_2 cas.data
+ TestCase Triangles/jdd_3 cas.data
+ TestCase Triangles/jdd_4 cas.data
+ TestCase Triangles/jdd_5 cas.data
  TestCase Quadrangles/jdd_1 cas.data
+ TestCase Quadrangles/jdd_2 cas.data
+ TestCase Quadrangles/jdd_3 cas.data
+ TestCase Quadrangles/jdd_4 cas.data
+ TestCase Quadrangles/jdd_5 cas.data
+ TestCase Quadrangles/jdd_6 cas.data
  TestCase Cartesian/jdd_1 cas.data
  TestCase Cartesian/jdd_2 cas.data
+ TestCase Cartesian/jdd_3 cas.data
+ TestCase Cartesian/jdd_4 cas.data
+ TestCase Cartesian/jdd_5 cas.data
+ TestCase Cartesian/jdd_6 cas.data
+ TestCase Cartesian/jdd_7 cas.data
  TestCase Locally_Refined/jdd_1 cas.data
  TestCase Locally_Refined/jdd_2 cas.data
+ TestCase Locally_Refined/jdd_3 cas.data
+ TestCase Locally_Refined/jdd_4 cas.data
+ TestCase Locally_Refined/jdd_5 cas.data
+ TestCase Locally_Refined/jdd_6 cas.data
  TestCase Voronoi/jdd_1 cas.data
  TestCase Prism/jdd_1 cas.data
  TestCase Hexa/jdd_1 cas.data
  TestCase Tetra/jdd_1 cas.data
  TestCase PrismHexa/jdd_1 cas.data
- TestCase Kershaw/jdd_2 cas.data
+ TestCase Kershaw/jdd_1 cas.data
  TestCase LocRaf/jdd_1 cas.data
  TestCase Random/jdd_1 cas.data
  TestCase CheckerBoard/jdd_1 cas.data
@@ -172,64 +190,72 @@ Chapter
         visu
     {
         normal3D 0. 0. 1.
-         mesh Voronoi/jdd_1/cas.lata dom         Description "Voronoi"
+        mesh Voronoi/jdd_1/cas.lata dom
+        Description "Voronoi"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh Prism/jdd_1/cas.lata dom         Description "Prism"
+        mesh Prism/jdd_1/cas.lata dom
+        Description "Prism"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh Hexa/jdd_1/cas.lata dom         Description "Hexa"
+        mesh Hexa/jdd_1/cas.lata dom
+        Description "Hexa"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh Tetra/jdd_1/cas.lata dom         Description "Tetra"
+        mesh Tetra/jdd_1/cas.lata dom
+        Description "Tetra"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh PrismHexa/jdd_1/cas.lata dom         Description "PrismHexa"
+        mesh PrismHexa/jdd_1/cas.lata dom
+        Description "PrismHexa"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh Kershaw/jdd_2/cas.lata dom
-                Description "Kershaw"
+        mesh Kershaw/jdd_1/cas.lata dom
+        Description "Kershaw"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh LocRaf/jdd_1/cas.lata dom         Description "LocRaf"
+        mesh LocRaf/jdd_1/cas.lata dom
+        Description "LocRaf"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh Random/jdd_1/cas.lata dom         Description "Random"
+        mesh Random/jdd_1/cas.lata dom
+        Description "Random"
         nb_img_without_newline 3
         width 5cm
     }
         visu
     {
         normal3D 0. 0. 1.
-         mesh CheckerBoard/jdd_1/cas.lata dom         Description "CheckerBoard"
+        mesh CheckerBoard/jdd_1/cas.lata dom
+        Description "CheckerBoard"
         nb_img_without_newline 3
         width 5cm
     }

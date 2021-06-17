@@ -2,11 +2,29 @@ Parameters
 {
     Title "Benchmark FVCA8"
  TestCase Triangles/jdd_1 cas.data
+ TestCase Triangles/jdd_2 cas.data
+ TestCase Triangles/jdd_3 cas.data
+ TestCase Triangles/jdd_4 cas.data
+ TestCase Triangles/jdd_5 cas.data
  TestCase Quadrangles/jdd_1 cas.data
+ TestCase Quadrangles/jdd_2 cas.data
+ TestCase Quadrangles/jdd_3 cas.data
+ TestCase Quadrangles/jdd_4 cas.data
+ TestCase Quadrangles/jdd_5 cas.data
+ TestCase Quadrangles/jdd_6 cas.data
  TestCase Cartesian/jdd_1 cas.data
  TestCase Cartesian/jdd_2 cas.data
+ TestCase Cartesian/jdd_3 cas.data
+ TestCase Cartesian/jdd_4 cas.data
+ TestCase Cartesian/jdd_5 cas.data
+ TestCase Cartesian/jdd_6 cas.data
+ TestCase Cartesian/jdd_7 cas.data
  TestCase Locally_Refined/jdd_1 cas.data
  TestCase Locally_Refined/jdd_2 cas.data
+ TestCase Locally_Refined/jdd_3 cas.data
+ TestCase Locally_Refined/jdd_4 cas.data
+ TestCase Locally_Refined/jdd_5 cas.data
+ TestCase Locally_Refined/jdd_6 cas.data
  TestCase Voronoi/jdd_1 cas.data
  TestCase Prism/jdd_1 cas.data
  TestCase Hexa/jdd_1 cas.data
