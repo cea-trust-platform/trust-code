@@ -233,6 +233,7 @@ class FileAccumulator(object):
         #  cls.Append(dir + "/" + case + ".dt_ev")
         cls.Append(dir + "/" + case + ".sons")  # mandatory to spot 'plane' probes
         cls.Append(dir + "/" + case + ".perf")
+        cls.Append(dir + "/.tmp/*")          # mandatory for "make validation"
 
     @classmethod
     def AppendFromProbe(cls, param):
