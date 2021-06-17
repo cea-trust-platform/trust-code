@@ -1,5 +1,6 @@
 # Cas test 3D VEF pour tester GCP/ssor_bloc #
 # PARALLEL OK 4 #
+# VALGRIND NOT #
 dimension 3
 Domaine dom
 

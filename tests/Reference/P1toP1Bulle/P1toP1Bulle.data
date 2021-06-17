@@ -1,5 +1,6 @@
 # Canal 3D periodique a Re=200 depuis une reprise d'un calcul sur une discretisation plus lache (P1) #
 # PARALLEL OK #
+# VALGRIND NOT #
 
 dimension 3
 

@@ -1,4 +1,5 @@
 # Run several solvers specified on the Check_solver.list #
 # The data file is par.data and the partition given in the dec.data file #
+# VALGRIND NOT #
 
 

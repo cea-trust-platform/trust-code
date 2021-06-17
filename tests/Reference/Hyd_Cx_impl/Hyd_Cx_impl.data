@@ -1,5 +1,6 @@
 # Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #
 # PARALLEL OK #
+# VALGRIND NOT #
 
 dimension 3
 

@@ -7,6 +7,36 @@
 ###
 ###  PETSc
 ###
+# Triggered by test case using Scotch ordering or partitioning
+# Scotch
+{
+   <Scotch>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:_SCOTCHstratParserInit
+   fun:_SCOTCHstratParserParse
+   fun:_SCOTCHstratInit
+   ...
+}
+# Triggered by test case using orderings with MUMPS:
+{
+   <MUMPS>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Bcast
+   fun:PMPI_BCAST
+   fun:__dmumps_parallel_analysis_MOD_dmumps_ana_f_par
+   fun:dmumps_ana_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   ...
+}
+
 # Triggered by all test cases on some compilers (03/02/2021) after PETSc update (3.14.1)
 # PETSc memory leak reproduced on a simple PETSc test case:
 # $PETSC_DIR/share/petsc/examples/src/ksp/ksp/tutorials/ex23.c 
