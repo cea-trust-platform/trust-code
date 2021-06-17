@@ -441,11 +441,14 @@ then
    if [ -f $TRUST_ROOT/env/machine.env ]
    then
       err=""
+      OS_changed=0
+      [ "$TRUST_DISABLE_CHECK_OS" = "1" ] && echo "Warning: You are loading TRUST environment with TRUST_DISABLE_CHECK_OS, contact TRUST support team at $TRUST_MAIL"
       # Check if the OS has changed:
       OS=`print_OS`
-      if [ "$OS" != "" ] && [ "`grep 'OS for the machine' $TRUST_ROOT/env/machine.env`" != "" ] && [ "`grep "$OS" $TRUST_ROOT/env/machine.env`" = "" ]
+      if [ "$OS" != "" ] && [ "`grep 'OS for the machine' $TRUST_ROOT/env/machine.env`" != "" ] && [ "`grep "$OS" $TRUST_ROOT/env/machine.env`" = "" ] && [ "$TRUST_DISABLE_CHECK_OS" != "1" ]
       then
          err="The OS of your machine has changed"
+	 OS_changed=1
       else
 	 GNU_VERSION=`print_GNU_VERSION`
 	 if [ "$GNU_VERSION" != "" ]
@@ -468,6 +471,13 @@ then
 	 echo "$err"
 	 echo "The TRUST installation (or configure) MUST be done again"
 	 echo "cause it is now broken because of the previous change."
+	 if [ $OS_changed = 1 ]
+	 then
+	    echo ""
+	    echo "Tip: you can load TRUST environment by:"
+	    echo "TRUST_DISABLE_CHECK_OS=1 source $TRUST_ROOT/env_TRUST.sh"
+	    echo "Contact TRUST support team at: $TRUST_MAIL"
+	 fi
 	 echo "**********************************************************************"
 	 exit -1
       fi
