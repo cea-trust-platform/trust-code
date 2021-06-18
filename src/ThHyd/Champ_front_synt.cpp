@@ -108,7 +108,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
   dim=lire_dimension(is,que_suis_je());
   if( dim != 3)
     {
-      Cerr << "Error the dimension must be egal to 3" << finl;
+      Cerr << "Error the dimension must be equal to 3" << finl;
       exit();
     }
   Motcle motlu;
@@ -124,7 +124,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
   is >> motlu;
   if (motlu != "{")
     {
-      Cerr << "Error while reading a Champ_front_synt" << finl;
+      Cerr << "Error while reading Champ_front_synt" << finl;
       Cerr << "We expected a { instead of " << motlu << finl;
       exit();
     }
@@ -187,9 +187,9 @@ Entree& Champ_front_synt::readOn(Entree& is)
           }
         default :
           {
-            Cerr << "Error while reading a Champ_front_synt" << finl;
-            Cerr << motlu << "is not understand here "<< finl;
-            Cerr << "We were expecting a word from " << les_mots << finl;
+            Cerr << "Error while reading Champ_front_synt" << finl;
+            Cerr << motlu << "is not understood."<< finl;
+            Cerr << "We are expecting a word among " << les_mots << finl;
             exit();
           }
         }
@@ -197,14 +197,14 @@ Entree& Champ_front_synt::readOn(Entree& is)
     }
   if(cpt != 7)
     {
-      Cerr << "Error while reading Champ_front_synt" << finl;
-      Cerr << "There is the wrong number of parameters" << finl;
+      Cerr << "Error while reading Champ_front_synt: wrong number of parameters" << finl;
+      Cerr << "You should specify all these parameters: " << les_mots << finl;
       exit();
     }
   if( lenghtScale == 0 || nbModes == 0 || turbKinEn == 0 || p == 0 || timeScale == 0)
     {
       Cerr << "Error while reading Champ_front_synt" << finl;
-      Cerr << "There is one or more parameters at 0 value" << finl;
+      Cerr << "There is at least one parameter among: timeScale, lenghtScale, nbModes and turbKinEn set to 0" << finl;
       exit();
     }
 
