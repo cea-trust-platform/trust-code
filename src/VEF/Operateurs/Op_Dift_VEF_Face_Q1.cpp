@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -154,11 +154,7 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
   int n1 = zone_VEF.nb_faces();
   int elem0,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-  // Cerr << "nb_dim " << nb_dim << finl;
-  if(nb_dim==2)
-    nb_comp=resu.dimension(1);
+  const int nb_comp=resu.line_size();
   double valA, d_mu;
   double mu=(diffusivite_.valeur())(0,0);
   const DoubleTab& mu_turb=diffusivite_turbulente()->valeurs();
@@ -168,7 +164,7 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
 
   // On traite les faces bord
 
-  if (nb_dim==1)
+  if (nb_comp==1)
 
     for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
       {
@@ -196,10 +192,10 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
                     if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso) )
                       {
                         valA = viscA_Q1(zone_VEF,num_face,j,dimension,elem1,d_mu);
-                        resu(num_face)+=valA*inconnue(j)*porosite_face(num_face);
-                        resu(num_face)-=valA*inconnue(num_face)*porosite_face(num_face);
-                        resu(j)+=0.5*valA*inconnue(num_face)*porosite_face(j);
-                        resu(j)-=0.5*valA*inconnue(j)*porosite_face(j);
+                        resu(num_face,0)+=valA*inconnue(j,0)*porosite_face(num_face);
+                        resu(num_face,0)-=valA*inconnue(num_face,0)*porosite_face(num_face);
+                        resu(j,0)+=0.5*valA*inconnue(num_face,0)*porosite_face(j);
+                        resu(j,0)-=0.5*valA*inconnue(j,0)*porosite_face(j);
                       }
                   }
                 elem2 = face_voisins(num_face,1);
@@ -209,10 +205,10 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
                     if ( ( (j= elem_faces(elem2,i)) > num_face ) && ( j != fac_asso ) )
                       {
                         valA = viscA_Q1(zone_VEF,num_face,j,dimension,elem2,d_mu);
-                        resu(num_face)+=valA*inconnue(j)*porosite_face(num_face);
-                        resu(num_face)-=valA*inconnue(num_face)*porosite_face(num_face);
-                        resu(j)+=0.5*valA*inconnue(num_face)*porosite_face(j);
-                        resu(j)-=0.5*valA*inconnue(j)*porosite_face(j);
+                        resu(num_face,0)+=valA*inconnue(j,0)*porosite_face(num_face);
+                        resu(num_face,0)-=valA*inconnue(num_face,0)*porosite_face(num_face);
+                        resu(j,0)+=0.5*valA*inconnue(num_face,0)*porosite_face(j);
+                        resu(j,0)-=0.5*valA*inconnue(j,0)*porosite_face(j);
                       }
                   }
               }
@@ -228,10 +224,10 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
                   if ( (j= elem_faces(elem1,i)) > num_face )
                     {
                       valA = viscA_Q1(zone_VEF,num_face,j,dimension,elem1,d_mu);
-                      resu(num_face)+=valA*inconnue(j)*porosite_face(num_face);
-                      resu(num_face)-=valA*inconnue(num_face)*porosite_face(num_face);
-                      resu(j)+=valA*inconnue(num_face)*porosite_face(j);
-                      resu(j)-=valA*inconnue(j)*porosite_face(j);
+                      resu(num_face,0)+=valA*inconnue(j,0)*porosite_face(num_face);
+                      resu(num_face,0)-=valA*inconnue(num_face,0)*porosite_face(num_face);
+                      resu(j,0)+=valA*inconnue(num_face,0)*porosite_face(j);
+                      resu(j,0)-=valA*inconnue(j,0)*porosite_face(j);
                     }
                 }
             }
@@ -415,120 +411,61 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
 
   // On traite les faces internes
 
-  if (nb_dim == 1)
-    for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
-      {
-        for (int kk=0; kk<2; kk++)
-          {
-            elem0 = face_voisins(num_face,kk);
-            d_mu = mu+mu_turb(elem0);
-            // On elimine les elements avec CL de paroi (rang>=1)
-            int rang = rang_elem_non_std(elem0);
-            if (rang<1)
-              {
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( (j= elem_faces(elem0,i)) > num_face )
-                      {
-                        valA = viscA_Q1(zone_VEF,num_face,j,dimension,elem0,d_mu);
-
-                        resu(num_face)+=valA*inconnue(j)*porosite_face(num_face);
-                        resu(num_face)-=valA*inconnue(num_face)*porosite_face(num_face);
-                        resu(j)+=valA*inconnue(num_face)*porosite_face(j);
-                        resu(j)-=valA*inconnue(j)*porosite_face(j);
-
-                      }
-                  }
-              }
-          }
-      }
-  else // nb_comp > 1
-    for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
-      {
-        for (int kk=0; kk<2; kk++)
-          {
-            elem0 = face_voisins(num_face,kk);
-            d_mu = mu+mu_turb(elem0);
-            // On elimine les elements avec CL de paroi (rang>=1)
-            int rang = rang_elem_non_std(elem0);
-            if (rang<1)
-              {
-                for (i=0; i<nb_faces_elem; i++)
-                  {
-                    if ( (j= elem_faces(elem0,i)) > num_face )
-                      {
-                        valA = viscA_Q1(zone_VEF,num_face,j,dimension,elem0,d_mu);
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
-                            resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
-                            resu(j,nc)+=valA*inconnue(num_face,nc)*porosite_face(j);
-                            resu(j,nc)-=valA*inconnue(j,nc)*porosite_face(j);
-                          }
-                      }
-                  }
-              }
-          }
-      }
+  for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
+    {
+      for (int kk=0; kk<2; kk++)
+        {
+          elem0 = face_voisins(num_face,kk);
+          d_mu = mu+mu_turb(elem0);
+          // On elimine les elements avec CL de paroi (rang>=1)
+          int rang = rang_elem_non_std(elem0);
+          if (rang<1)
+            {
+              for (i=0; i<nb_faces_elem; i++)
+                {
+                  if ( (j= elem_faces(elem0,i)) > num_face )
+                    {
+                      valA = viscA_Q1(zone_VEF,num_face,j,dimension,elem0,d_mu);
+                      for (int nc=0; nc<nb_comp; nc++)
+                        {
+                          resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
+                          resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
+                          resu(j,nc)+=valA*inconnue(num_face,nc)*porosite_face(j);
+                          resu(j,nc)-=valA*inconnue(j,nc)*porosite_face(j);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
   Debog::verifier("Op_Dift_VEF_Face_Q1::ajouter apres interne, resu",resu);
 
-
-  if (resu.nb_dim() == 1)
+  int nb_comp_bis = resu.line_size();
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.surface(face)*porosite_face(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
-            {
-              const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*zone_VEF.surface(face)*porosite_face(face);
-            }
+          const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nb_comp_bis; comp++)
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face)*porosite_face(face);
+        }
+      else if (sub_type(Echange_externe_impose,la_cl.valeur()))
+        {
+          const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nb_comp_bis; comp++)
+              resu(face,comp) += la_cl_paroi.h_imp(face-ndeb,comp)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face,comp))*zone_VEF.surface(face)*porosite_face(face);
         }
     }
-  else
-    {
-      int nb_comp_bis = resu.dimension(1);
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nb_comp_bis; comp++)
-                  resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face)*porosite_face(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
-            {
-              const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nb_comp_bis; comp++)
-                  resu(face,comp) += la_cl_paroi.h_imp(face-ndeb,comp)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face,comp))*zone_VEF.surface(face)*porosite_face(face);
-            }
-        }
-    }
-
 
   Debog::verifier("Op_Dift_VEF_Face_Q1::ajouter apres fin, resu",resu);
   modifier_flux(*this);

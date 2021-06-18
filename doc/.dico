@@ -392,6 +392,7 @@
  Frottement_interfacial_base Frottement_interfacial_base Frottement_interfacial_base.h
  Frottement_interfacial_bulles Frottement_interfacial_bulles Frottement_interfacial_bulles.h
  Frottement_interfacial_Face_CoviMAC Frottement_interfacial_CoviMAC Frottement_interfacial_CoviMAC.h
+ Frottement_interfacial_Wallis Frottement_interfacial_Wallis Frottement_interfacial_Wallis.h
  Gmres SolvElem_Gmres SolvElem_Gmres.h
  Gradient Champ_Generique_Gradient Champ_Generique_Gradient.h
  gradient_temperature_Champ_P1NC grad_T_Champ_P1NC grad_T_Champ_P1NC.h
@@ -484,6 +485,8 @@
  Mailler Mailler Mailler.h
  MaillerParallel MaillerParallel MaillerParallel.h
  Marqueur_Lagrange_base Marqueur_Lagrange_base Marqueur_Lagrange_base.h
+ Masse_ajoutee_base Masse_ajoutee_base Masse_ajoutee_base.h
+ Masse_ajoutee_Coef_Constant Masse_ajoutee_Coef_Constant Masse_ajoutee_Coef_Constant.h
  Masse_CoviMAC_Elem Masse_CoviMAC_Elem Masse_CoviMAC_Elem.h
  Masse_CoviMAC_Face Masse_CoviMAC_Face Masse_CoviMAC_Face.h
  Masse_EF Solveur_Masse_EF Solveur_Masse_EF.h
@@ -526,6 +529,7 @@
  Moyenne_volumique Moyenne_volumique Moyenne_volumique.h
  MultipleFiles MultipleFiles MultipleFiles.h
  Multiplicateur_diphasique_base Multiplicateur_diphasique_base Multiplicateur_diphasique_base.h
+ Multiplicateur_diphasique_Friedel Multiplicateur_diphasique_Friedel Multiplicateur_diphasique_Friedel.h
  Multiplicateur_diphasique_Lottes_Flinn Multiplicateur_diphasique_Lottes_Flinn Multiplicateur_diphasique_Lottes_Flinn.h
  Multi_Schema_ThHyd Multi_Sch_ThHyd Multi_Sch_ThHyd.h
  Navier_Stokes_QC Navier_Stokes_QC Navier_Stokes_QC.h
@@ -1072,6 +1076,7 @@
  Transformation Champ_Generique_Transformation Champ_Generique_Transformation.h
  Transformer Transformer Transformer.h
  Transport_Interfaces_base Transport_Interfaces_base Transport_Interfaces_base.h
+ Travail_pression_P0_CoviMAC Travail_pression_CoviMAC Travail_pression_CoviMAC.h
  Triangle Triangle Triangle.h
  Triangulation_base Triangulation_base Triangulation_base.h
  Trianguler Trianguler Trianguler.h

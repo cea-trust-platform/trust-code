@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -136,12 +136,11 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
         unif_diffu_dt=0;
       if (nature_champ!=multi_scalaire)
         {
-          int nb_dim = valeurs_diffusivite.nb_dim();
           for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
             {
               alpha =  diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
               if(unif_diffu_dt==0)
-                valeurs_diffusivite_dt=(nb_dim==1?valeurs_diffusivite(num_elem):valeurs_diffusivite(num_elem,0));
+                valeurs_diffusivite_dt=valeurs_diffusivite(num_elem,0);
               alpha*=valeurs_diffusivite_dt/(diffu[num_elem]+DMINFLOAT);
               // dt=1/(dimension/(pas*pas))/(2*alpha)
               coef=la_zone_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
@@ -152,7 +151,7 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
         }
       else
         {
-          int nb_comp = valeurs_diffusivite.dimension(1);
+          int nb_comp = valeurs_diffusivite.line_size();
           for (int nc=0; nc<nb_comp; nc++)
             {
               for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
@@ -956,10 +955,7 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org,
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-  if(nb_dim==2)
-    nb_comp=resu.dimension(1);
+  const int nb_comp = resu.line_size();
 
   DoubleTab nu,nu_turb_m;
   DoubleTab tab_inconnue;
@@ -1019,10 +1015,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
   const DoubleTab& face_normale = zone_VEF.face_normales();
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int nb_faces = zone_VEF.nb_faces();
-  int nb_dim = transporte.nb_dim();
-  int nb_comp = 1;
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
+  const int nb_comp =transporte.line_size();
 
   int nb_bords=zone_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
@@ -1087,7 +1080,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
                                         matrice(j0,n0perio)-=valA*porosite_eventuelle(num_face);
                                       matrice(j0,j0)+=valA*porosite_eventuelle(j);
                                     }
-                                  if (nb_dim!=1) // on ajoute grad_U transpose
+                                  if ( nb_comp>1) // on ajoute grad_U transpose
                                     for (int nc2=0; nc2<nb_comp; nc2++)
                                       {
                                         int n1=num_face*nb_comp+nc2;
@@ -1236,7 +1229,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
                             matrice(j0,n0)-=valA*porosite_eventuelle(num_face);
                             matrice(j0,j0)+=valA*porosite_eventuelle(j);
                           }
-                        if (nb_dim!=1) // on ajoute grad_U transpose
+                        if (nb_comp>1) // on ajoute grad_U transpose
                           for (int nc2=0; nc2<nb_comp; nc2++)
                             {
                               int n1=num_face*nb_comp+nc2;
@@ -1271,12 +1264,8 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   int nb_faces = zone_VEF.nb_faces();
-  int nb_dim = transporte.nb_dim();
-  int nb_comp = 1;
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
+  const int nb_comp =transporte.line_size();
 
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
 
@@ -1327,7 +1316,7 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
                   if (contrib)
                     {
                       double tmp = 0;
-                      if (nb_dim!=1) // on ajoutera grad_U transpose
+                      if (nb_comp>1) // on ajoutera grad_U transpose
                         {
                           int orientation = 1;
                           if ( (elem == face_voisins(j,l)) || (face_voisins(num_face,1-l) == face_voisins(j,1-l)))
@@ -1348,7 +1337,7 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
                               matrice(j0,n0)-=contrib_num_face;
                               matrice(j0,j0)+=contrib_j;
                             }
-                          if (nb_dim!=1) // on ajoute grad_U transpose
+                          if (nb_comp>1) // on ajoute grad_U transpose
                             {
                               for (int nc2=0; nc2<nb_comp; nc2++)
                                 {
@@ -1387,10 +1376,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
   int nb_faces = zone_VEF.nb_faces();
-  int nb_comp = 1;
-  int nb_dim = transporte.nb_dim();
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
+  const int nb_comp =transporte.line_size();
 
   int i0,j,num_face0;
   int elem0,elem1;
@@ -1677,10 +1663,7 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
   int n_bord;
   int nb_faces = zone_VEF.nb_faces();
   //int elem;
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-  if(nb_dim==2)
-    nb_comp=resu.dimension(1);
+  int nb_comp =resu.line_size();
   const DoubleTab& face_normale = zone_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
@@ -1744,25 +1727,23 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
         }
     }
 
-
-
-
-  if (resu.nb_dim() == 1)
+  //int nb_comp = resu.dimension(1);
+  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
-      for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                resu[face] += la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.face_surfaces(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
+          const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            for (int comp=0; comp<nb_comp; comp++)
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.face_surfaces(face);
+        }
+      else if (sub_type(Echange_externe_impose,la_cl.valeur()))
+        {
+          if (resu.line_size() == 1)
             {
               const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -1772,28 +1753,8 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
                 {
                   resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb))*zone_VEF.face_surfaces(face);
                 }
-
-
             }
-        }
-    }
-  else
-    {
-      //int nb_comp = resu.dimension(1);
-      for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-          if (sub_type(Neumann_paroi,la_cl.valeur()))
-            {
-              const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              int ndeb = le_bord.num_premiere_face();
-              int nfin = ndeb + le_bord.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
-                for (int comp=0; comp<nb_comp; comp++)
-                  resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.face_surfaces(face);
-            }
-          else if (sub_type(Echange_externe_impose,la_cl.valeur()))
+          else
             {
 
               Cerr << "Non code pour Echange_externe_impose" << finl;
@@ -1801,5 +1762,6 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
             }
         }
     }
+
 }
 #undef grad_transp

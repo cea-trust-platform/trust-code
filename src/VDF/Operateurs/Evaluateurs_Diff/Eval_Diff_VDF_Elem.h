@@ -1083,7 +1083,16 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   //  int ori = orientation(face);
   int n0 = elem_(face,0);
   int n1 = elem_(face,1);
-  e=Dist_norm_bord_externe_VEC(boundary_index,face,local_face);
+  if (DERIVED_T::IS_MODIF_DEQ)
+    {
+      e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) :
+          equivalent_distance(boundary_index,local_face);
+    }
+  else
+    {
+      e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) :
+          Dist_norm_bord_externe_(face);
+    }
   if (n0 != -1)
     {
       //e = la_zone->xv(face,ori) - la_zone->xp(n0,ori);
