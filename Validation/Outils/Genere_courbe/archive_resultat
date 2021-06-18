@@ -4,6 +4,7 @@
 # in a PRM. The idea is to be able to reproduce the final PDF file with the old computation results
 # but the set of tools of the new version of TRUST.
 # This relies on the file build/used_files generated along the way by genererCourbe.py
+# which relies itself on src/fileList.py
 #
 
 echo "usage $0 src/file.prm [archive_name]"
@@ -31,6 +32,7 @@ echo "ARCHIVE: Copying necessary files ..."
 cp build/version_utilisee build/temps_total build/used_files preserve
 cp -r src/* preserve
 cp build/$1 preserve   # In F5 for example, the PRM itself is generated from a Python script ...
+cp -r build/.tmp preserve  # Mandatory for "make validation"
 chmod -R +w preserve
 cd build 
 for f in `cat used_files`; do

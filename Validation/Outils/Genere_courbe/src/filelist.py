@@ -1,3 +1,9 @@
+""" This module is used at various points in genererCourbe.py to save the list
+of files needed to produce the final report. The final result of this is a list
+of files stored in build/used_files when running a PRM report.
+The file 'used_files' is then read by the archive process (see archive_resultat script).
+"""
+
 from glob import glob
 
 class FileAccumulator(object):
@@ -233,7 +239,6 @@ class FileAccumulator(object):
         #  cls.Append(dir + "/" + case + ".dt_ev")
         cls.Append(dir + "/" + case + ".sons")  # mandatory to spot 'plane' probes
         cls.Append(dir + "/" + case + ".perf")
-        cls.Append(dir + "/.tmp/*")          # mandatory for "make validation"
 
     @classmethod
     def AppendFromProbe(cls, param):
