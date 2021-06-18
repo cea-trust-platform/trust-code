@@ -113,10 +113,11 @@ help()
    echo "-edit                         : Edit datafile."
 #   echo "-xedit                        : Edit datafile with xdata."
    echo "-xcheck                       : Check the datafile's keywords with xdata."
-   echo "-xdata			       : Check and run the datafile's keywords with xdata."
+   echo "-xdata                        : Check and run the datafile's keywords with xdata."
    echo "-partition                    : Partition the mesh to prepare a parallel calculation (Creation of the .Zones files)."
    echo "-mesh                         : Visualize the mesh(es) contained in the data file."
    echo "-eclipse-trust                : Generate Eclipse configuration files to import TRUST sources."
+   echo "-eclipse-baltik               : Generate Eclipse configuration files to import BALTIK sources (TRUST project should have been configured under Eclipse)."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                       : Monitor the TRUST calculation only."
    echo "-evol                         : Monitor the TRUST calculation (GUI)."
@@ -325,6 +326,54 @@ do
          echo "Warning : TRUST debug executable \$exec_debug not available. You can generate it by:"
          echo "cd $TRUST_ROOT"
          echo "make debug"
+         echo "*************************************************************************************"
+      fi
+      exit 0
+   elif [ "$1" = "-eclipse-baltik" ]
+   then
+      if [ "$project_directory" = "" ]
+      then 
+         echo "Error: You should load the env_BALTIK.sh of your baltik project"
+         exit -1
+      elif [ "`pwd`" != "$project_directory" ]
+      then
+         echo "You loaded the wrong baltik project or you are trying to configure eclipse for the wrong project"
+         echo "Loaded project is under $project_directory"
+         echo "Your current directory is `pwd`"
+         exit -1
+      elif [ -f $project_directory/src/.project ] || [ -f $project_directory/src/.cproject ]
+      then
+         echo "Error: Your project is already configured with eclipse."
+         echo "If you want to reconfigure it, delete $project_directory/src/.project and $project_directory/src/.cproject"
+         echo "than re-run: trust -eclipse-baltik."
+         exit -1
+      fi
+      trust_project_name="TRUST-$TRUST_VERSION"
+      baltik_project_name=`grep "^name" $project_directory/project.cfg | cut -f 2 -d':' | sed 's/ *//g'`
+      [ "$baltik_project_name" = "" ] && echo "Fatal error, your baltik project has no name ? " && exit -1
+
+      [ "`echo $TRUST_ROOT | grep tmptrust`" != "" ] || [ "`echo $TRUST_ROOT | grep trust_trio`" != "" ] && trust_project_name=$trust_project_name"_Network"
+
+      eclipseconfigpath=$TRUST_ROOT/Outils/eclipse/eclipse-baltik
+      sed "s/TRUSTName/$trust_project_name/; s?BaltikName?$baltik_project_name?g" $eclipseconfigpath/.project > $project_directory/src/.project
+      sed "s?BaltikName?$baltik_project_name?g; s?BaltikDirectory?$project_directory?g" $eclipseconfigpath/.cproject > $project_directory/src/.cproject
+      sed "s?BaltikName?$baltik_project_name?g; s?BaltikDirectory?$project_directory?g ; s?BaltikExecDebug?$exec_debug?g ; s?TRUSTROOT?$TRUST_ROOT?g" $eclipseconfigpath/Baltik_Debug.launch > $project_directory/src/$baltik_project_name"_Debug.launch"
+      sed "s?BaltikDirectory?$project_directory?g; s?project_name?$baltik_project_name?g" $eclipseconfigpath/README > $project_directory/README_BALTIK_ECLIPSE
+      echo "Eclipse project $baltik_project_name successfully configured (with CDT builder enabled) under $project_directory/src"
+      echo "You shoud run Eclipse and import this project."
+      cat $project_directory/README_BALTIK_ECLIPSE
+      if [ ! -d $project_directory/build/upwind ]
+      then
+         cp -r $TRUST_ROOT/tests/Reference/upwind $project_directory/build/
+         sed -i "s/Format lml/Format lata/g" $project_directory/build/upwind/upwind.data
+      fi
+      if [ ! -f $exec_debug ]
+      then
+         echo "*************************************************************************************"
+         echo "Warning : Your project's debug executable \$exec_debug not available. You can generate it by:"
+         echo "cd $project_directory"
+         echo "make debug"
+         echo "or from eclipse once your project configured"
          echo "*************************************************************************************"
       fi
       exit 0
