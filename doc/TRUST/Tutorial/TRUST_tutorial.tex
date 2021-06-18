@@ -1984,14 +1984,14 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \item Select the object Mesh\_1 in the Object Browser and Right Click $\rightarrow$ Compute (or Mesh $\rightarrow$ Compute).
 \item A tabular must appear with the number of triangles, quadrangles... Click on "Close".
 \item Hide the geometry by selecting the Cylinder\_1 in the Object Browser and Right Click $\rightarrow$ Hide (or click on the eye).
-\begin{tabular}{cc}
-\includegraphics[width=0.39\textwidth]{PICTURES/salome4} & \includegraphics[width=0.21\textwidth]{PICTURES/salome5}\tabularnewline
-Mesh & Create Groups from Geometry \tabularnewline
-\end{tabular}
-
 \end{itemize}
 
 \end{block}
+
+\begin{center}
+\includegraphics[width=0.39\textwidth]{PICTURES/salome4}
+\end{center}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2000,11 +2000,7 @@ Mesh & Create Groups from Geometry \tabularnewline
 \begin{block}{Export your mesh in MED format}
 
 \begin{itemize}
-\item Now, we are going to create groups for the mesh, by using the geometry groups: Mesh $\rightarrow$ Create Groups from Geometry.
-\item Click on "Mesh\_1" object in the Object Browser to select it.
-\item Then push the arrow button of Elements/Geometry.
-\item Select together the 3 groups (Inlet, Wall and Outlet) with "Ctrl"+left click in the Cylinder\_1 object of the Object Browser, then press Apply and Close.
-\item Check that the 3 boundaries are in the "Group of Faces" of the Mesh\_1 object in the Object Browser.
+\item Check that the 3 boundaries have automatically been added in the "Group of Faces" of the \textbf{Mesh\_1} object in the Object Browser.
 \item Export your mesh with the MED format:\\
 Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ MED file (or File $\rightarrow$ Export $\rightarrow$ MED file).
 \end{itemize}
@@ -2082,7 +2078,6 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
     \item For "Netgen 2D parameters":
         \begin{itemize}
         \item [$\circ$] Change "Fineness" from "Moderate" to "Very Fine".
-        \item [$\circ$] Select "Allow Quadrangles".
         \item [$\circ$] Click OK.
         \end{itemize}
     \item For "MG-CADSurf parameters", change "User size" to 20. Click OK.
@@ -2129,12 +2124,7 @@ Netgen & MG
 
 \begin{block}{Refine your mesh and use viscous layers}
 \begin{itemize}
-\item As usual, define the mesh boundaries with Groups:
-    \begin{itemize}
-    \item [$\circ$] Select the Refined\_Mesh, Right click $\rightarrow$ Create Groups from Geometry.
-    \item [$\circ$] Select "Inlet", "Outlet", "Wall" with "Ctrl"+click in the Cylinder\_1 object, then Apply and Close.
-    \end{itemize}
-
+\item Check that the 3 boundaries have automatically been added in the "Group of Faces" of the \textbf{Refined\_Mesh} object in the Object Browser.
 \item Export the mesh:
     \begin{itemize}
     \item [$\circ$] Select the Refined\_mesh, Right click $\rightarrow$ Export $\rightarrow$ MED file.
@@ -2540,12 +2530,7 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
     \item [$\circ$] Don't change the parameters, and click "Apply and Close".
     \end{itemize}
 
-\item Define the mesh boundaries with Groups:
-    \begin{itemize}
-    \item [$\circ$] Select the Mesh\_1, Right click $\rightarrow$ Create Groups from Geometry.
-    \item [$\circ$] Select "Inlet\_x", "Inlet\_z", "Outlet" and "Wall" with "Ctrl"+click in the Fuse\_1 object.
-    \item [$\circ$] Then Apply and Close.
-    \end{itemize}
+\item Check that the 4 boundaries have automatically been added in the "Group of Faces" of the \textbf{Mesh\_1} object in the Object Browser.
 
 \item Export the mesh:
     \begin{itemize}
@@ -2730,9 +2715,10 @@ In order to build meshes using Salom\'e for such a simulation, we should create 
  
  \item Right click on Mesh\_1, then Compute.
  
- \item Create groups with: Mesh $\rightarrow$ Greate Groups from Geometry. \\
- In Mesh, select Mesh\_1 then in Elements select all the created groups in Partition\_1 (with keypad Ctrl) in Geometry then click on Apply And Close.
-
+ \item Check that the 6 boundaries have automatically been added in the "Group of Faces" of the \textbf{Mesh\_1} object in the Object Browser.
+ 
+ \item Check that the 2 volume groups have automatically been added in the "Group of Volumes" of the \textbf{Mesh\_1} object in the Object Browser.
+ 
  \item Export the mesh in med format (if possible, choose MED 3.2).
 
  \item Dump the study and the mesh in a python script with: File $\rightarrow$ Dump Study. \\
