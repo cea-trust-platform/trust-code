@@ -311,7 +311,7 @@ Constraints:
 ICoCo is such a coupling interface:
 \begin{itemize}
 \item Stands for \textbf{I}nterface for \textbf{Co}de \textbf{Co}upling
-\item Written in C++
+\item Written in C++ (and in swig since TRUST-1.8.3 to be used through Python)
 \vspace{0.2cm}
 \item Initially designed for simulation codes exhibiting \textbf{\textcolor{LightSkyBlue}{iterative time loops}} 
 \vspace{0.2cm}
@@ -1325,6 +1325,38 @@ Results are identical!!!
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{{\bf{Using ICoCo API through Python}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\tableofcontents[currentsection, currentsubsection]
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Using ICoCo API through Python}
+
+\begin{block}{}
+In addition to the MEDCoupling python API, it is possible since TRUST-1.8.3 to:
+\begin{itemize}
+\item use ICoCo API from python scripts
+\item exploit multiple processors from python thanks to mpi4py package
+\end{itemize}
+These new features can be used by loading a specific environment file: \\
+\texttt{> source \$TRUST\_ROOT/env\_for\_python.sh} \\
+\texttt{> python} \\
+\texttt{  > import trusticoco as ti }\\
+\texttt{  > import medcoupling as mc}\\
+\texttt{  > from mpi4py import MPI}
+
+
+If you are interested in such coupling, you can copy the following test case from TRUST tests database:\\
+\texttt{> source \$TRUST\_ROOT/env\_for\_python.sh} \\
+\texttt{> trust -copy docond\_VEF\_3D\_ICoCo\_py} \\
+and have a look at its prepare script.
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{{\bf{Conclusions and further simulations!}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -1340,7 +1372,14 @@ This tutorial gave you an idea on how to run TRUST test cases with:
 \item imposing values from ICoCo as boundary conditions in TRUST datafile
 \item exchanging values between two datafiles where coupling is realised with ICoCo
 \end{itemize}
-and on how to run TrioCFD cases with ICoCo without any exchange, but we beleive you are able to perform exchange in ICoCo with TrioCFD datafiles easily.
+\end{block}
+
+\begin{block}{}
+We have seen also how to run TrioCFD cases with ICoCo without any exchange, but we beleive you are able to perform exchange in ICoCo with TrioCFD datafiles easily.
+\end{block}
+
+\begin{block}{}
+Finally, we recall that it is possible for you since TRUST 1.8.3 to run ICoCo API from Python.
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
