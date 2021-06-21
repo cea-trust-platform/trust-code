@@ -14,6 +14,32 @@ BSD3 license
 
 ```
 
+# **How to install ?**
+
+### **First method**
+
+    $> git clone https://github.com/cea-trust-platform/trust-code.git
+    $> cd trust-code
+    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.3.tar
+    $> tar xf externalpackages-1.8.3.tar
+    $> ./configure $OPTIONS
+    $> make
+
+To see the available OPTIONS, run
+
+    $> ./configure -help
+
+If you want to minimize the build, you can set the variable OPTIONS="-disable-optionals"
+
+### **Second method**
+
+    $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.8.3/TRUST-1.8.3.tar.gz
+    $> tar xzf TRUST-1.8.3.tar.gz
+    $> cd TRUST-1.8.3
+    $> ./configure $OPTIONS
+    $> make
+
+
 # **How to start ?**
 
 To detect the environment, run:
