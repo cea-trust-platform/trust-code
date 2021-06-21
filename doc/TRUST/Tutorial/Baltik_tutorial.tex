@@ -164,7 +164,7 @@ CEA Saclay \\ % Your institution for the title page
 %\column{.45\textwidth}
 %\tableofcontents[sections={1-4},hideallsubsections]
 %\column{.5\textwidth} 
-%\tableofcontents[sections={5-8},hideallsubsections]
+%\tableofcontents[sections={5-10},hideallsubsections]
 %\end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,7 +178,7 @@ CEA Saclay \\ % Your institution for the title page
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,23 +188,22 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{TRUST commands}
 
 \begin{itemize}
-\item Load TRUST environment:\\
-\vspace{0.2cm}
+\item Load TRUST environment:
 \begin{itemize}
-\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.2):\\
-%\vspace{0.2cm}
-\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
-%\vspace{0.5cm}
-\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then write on the terminal:\\
-%\vspace{0.2cm}
+\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.3):\\
+\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}\\
+or \\
+\textbf{source  /home/trust\_trio-public/env\_TRUST-X.Y.Z.sh}
+%
+\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was done), then write on the terminal:\\
+%
 \textbf{source  \$MyPathToTRUSTversion/env\_TRUST.sh}
-%\vspace{0.5cm}
+%
 \end{itemize}
-%\vspace{0.2cm}
+%
 
 Ensure that the configuration is ok and locate the sources:\\
 \texttt{\$ echo \$TRUST\_ROOT}
-\vspace{0.2cm}
 
 \item Now, copy a TRUST test case that we will need later:\\
 \texttt{\$ mkdir -p Formation\_TRUST/yourname}\\
@@ -221,14 +220,14 @@ Replace "format lml" by "format lata" in the data file\\
 
 
 \section{{\bf{Eclipse initialization}}}
-\subsection{{\bf{Download\& configure eclipse}}}
+\subsection{{\bf{Download eclipse}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,7 +241,7 @@ Replace "format lml" by "format lata" in the data file\\
 \item Click on the last version  \textbf{Eclipse 2020-12 (4.18)}.
 \item Select \textbf{Eclipse IDE for C/C++ Developers} $\rightarrow$ \textbf{Linux 64-bits}
 \item Download the \textbf{eclipse-cpp-2020-12-R-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
-\item For OS older than CentOs7, Ubuntu16.04 and Fedora22, download \textbf{Eclipse Mars} version: \textbf{eclipse-cpp-mars-2-linux-gtk-x86\_64.tar.gz}
+%\item For OS older than CentOs7, Ubuntu16.04 and Fedora22, download \textbf{Eclipse Mars} version: \textbf{eclipse-cpp-mars-2-linux-gtk-x86\_64.tar.gz}
 \end{itemize}
 \end{exampleblock}
 
@@ -254,8 +253,8 @@ Replace "format lml" by "format lata" in the data file\\
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Configure Eclipse}
+%\begin{frame}
+%\frametitle{Configure Eclipse}
 
 %\begin{exampleblock}{For Ubuntu16.04, Fedora22, CentOs 7 and recents OS}
 %Edit the \textit{eclipse.ini} an replace the line:\\
@@ -264,16 +263,16 @@ Replace "format lml" by "format lata" in the data file\\
 %\textbf{Xms512m}
 %\end{exampleblock}
 
-\begin{exampleblock}{If you downloaded \textbf{Eclipse Mars} version:}
-Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following ones: \\
-\textbf{Xmn256m} \\
-\textbf{Xss2m}\\
-\textbf{server}\\
-\textbf{Xms512m}\\
-\textbf{Xmx2048m}
-\end{exampleblock}
+%\begin{exampleblock}{If you downloaded \textbf{Eclipse Mars} version:}
+%Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following ones: \\
+%\textbf{Xmn256m} \\
+%\textbf{Xss2m}\\
+%\textbf{server}\\
+%\textbf{Xms512m}\\
+%\textbf{Xmx2048m}
+%\end{exampleblock}
 
-\end{frame}
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{{\bf{Create TRUST platform project under Eclipse}}}
@@ -283,7 +282,7 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -308,7 +307,10 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 \item Create a preconfigured TRUST project:\\
 \texttt{\$ cd Formation\_TRUST/yourname}\\
 \texttt{\$ trust -eclipse-trust}
-\item Then, follow the instructions displayed on the terminal to import TRUST sources.
+
+\item Then, follow the instructions displayed on the terminal to import TRUST sources.\\
+\item (You can follow instructions in the appendix to manually configure TRUST project under eclipse instead of using the -eclipse-trust option.)
+
 \end{itemize}
 \end{exampleblock}
 
@@ -336,6 +338,7 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
   \end{itemize}
   \vspace{0.1cm}
   $\Rightarrow$ "Debug" : your datafile will be run with the specified executable
+\item NB: If you generated the project with the trust -eclipse-trust command, a similar debug configuration is already set up for you.
 \end{itemize}
 \end{exampleblock}
 
@@ -351,7 +354,7 @@ Edit the \textit{eclipse.ini} file, by deleting the last 3 lines (MaxPermSize, X
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -401,7 +404,7 @@ You can see that you have now:
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -498,7 +501,7 @@ You can see information about your first commit and actual untracked changes.
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -571,7 +574,7 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -610,14 +613,8 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
 \end{exampleblock}
 
 \begin{exampleblock}{Create the project}
-\begin{itemize}
-\item File $\rightarrow$ New $\rightarrow$ Project $\rightarrow$ C/C++ $\rightarrow$ "Makefile Project with Existing Code" \\
-  $\Rightarrow$ Project name: MY\_BALTIK \\
-  $\Rightarrow$ Existing Code Location: copy string matching \texttt{\$project\_directory/src} \\
-  $\Rightarrow$ Toolchain for Indexer Settings: "Linux GCC" \\
-  $\Rightarrow$ Finish \\
-  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer).
-\end{itemize}
+\texttt{\$ trust -eclipse-baltik} \\
+then follow the instructions displayed on the terminal. If you want to manually configure your baltik project, follow the instructions in the Appendix. 
 \end{exampleblock}
 
 \end{frame}
@@ -625,34 +622,10 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
 \begin{frame}
 \frametitle{Create a basic BALTIK project without dependency (II)}
 
-\begin{exampleblock}{Configure the BALTIK project and link it with TRUST}
-\begin{itemize}
-\item From the "Project Explorer" tab, right click on MY\_BALTIK $\rightarrow$ Properties \\
-  $\Rightarrow$ Builders: check "CDT Builder" \\
-  $\Rightarrow$ C/C++ Build : 
-  \begin{itemize}
-  \item Builder Settings: Build directory: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../} or copy the string matching \texttt{\$project\_directory/} \\
-  \item Behavior: check "Build (Incremental build)": debug optim (instead of all) 
-  \end{itemize}
-  $\Rightarrow$ Project References: check your TRUST project $\rightarrow$ Apply and Close
-\end{itemize}
-\end{exampleblock}
-  
-\begin{exampleblock}{Build the BALTIK project}
-From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\rightarrow$ Rebuild \\
-  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer). \\
-  Right click MY\_BALTIK $\rightarrow$ Build Project \\
-\end{exampleblock}
-
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Create a basic BALTIK project without dependency (III)}
-
 \begin{exampleblock}{Launch a computation}
 \begin{itemize}
 \item From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..." \\
-  $\Rightarrow$ C/C++ Application $\rightarrow$ New configuration
+  $\Rightarrow$ C/C++ Application $\rightarrow$ Select the configuration containing your baltik's name
   \begin{itemize}
   \item In the "Main" tab:\\
   $\Rightarrow$ Project: MY\_BALTIK \\
@@ -664,6 +637,7 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
   $\Rightarrow$ "Apply"
   \end{itemize}
   $\Rightarrow$ Debug
+\item NB: If you generated the project with the trust -eclipse-baltik command, a similar debug configuration is already set up for you.
 \end{itemize}
 \end{exampleblock}
 
@@ -704,7 +678,7 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -884,7 +858,7 @@ then it calls "my\_first\_class::interpreter\_()" method.
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1148,7 +1122,7 @@ Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1221,7 +1195,7 @@ where "type" can be (cf 'doc\_TRAD\_2' file): 'int', 'floattant', 'chaine', 'rie
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1353,7 +1327,7 @@ where "DataFileName" is the name of the data file (eg: Cx).
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1502,7 +1476,7 @@ $\rightarrow$ Search for "Debog" keyword.
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1570,7 +1544,7 @@ $\rightarrow$ Search for "Debog" keyword.
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1699,7 +1673,7 @@ ERROR...
 %%%%\column{.45\textwidth}
 %%%%\tableofcontents[sections={1-4},currentsection, currentsubsection]
 %%%%\column{.5\textwidth} 
-%%%%\tableofcontents[sections={5-8},currentsection, currentsubsection]
+%%%%\tableofcontents[sections={5-10},currentsection, currentsubsection]
 %%%%\end{columns}
 %%%%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1744,7 +1718,7 @@ ERROR...
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1785,7 +1759,7 @@ ERROR...
 %\column{.45\textwidth}
 %\tableofcontents[sections={1-4},currentsection, currentsubsection]
 %\column{.5\textwidth} 
-%\tableofcontents[sections={5-8},currentsection, currentsubsection]
+%\tableofcontents[sections={5-10},currentsection, currentsubsection]
 %\end{columns}
 %\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1891,7 +1865,7 @@ ERROR...
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1986,7 +1960,7 @@ For more information about GDB commands, refer to the help menu.\\
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2055,7 +2029,7 @@ On the other hand, in this case, there are errors.\\
 \column{.45\textwidth}
 \tableofcontents[sections={1-4},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={5-8},currentsection, currentsubsection]
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2077,6 +2051,188 @@ On the other hand, in this case, there are errors.\\
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{\bf{Appendix}}
+\subsection{\bf{Configuring TRUST project in Eclipse}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project under Eclipse (I)}
+
+\begin{block}{On a terminal}
+Load TRUST environment and copy "upwind" test case as described on p.\ref{initTrust}: \\
+\texttt{\$ echo \$TRUST\_ROOT/src} \\
+\texttt{\$ echo \$exec\_debug} \\
+\end{block}
+
+\begin{exampleblock}{Launch Eclipse}
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/workspace}\\
+\texttt{\$ cd Formation\_TRUST/yourname/eclipse}\\
+\texttt{\$ ./eclipse \&}
+%
+\begin{itemize}
+\item Workspace: Browse the directory \texttt{Formation\_TRUST/yourname/workspace} 
+\item Welcome : close x button
+\end{itemize}
+%
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project under Eclipse (II)}
+
+\begin{exampleblock}{Create the project}
+\begin{itemize}
+\item File $\rightarrow$ New $\rightarrow$ C/C++ Project $\rightarrow$ C++ Managed Build \\
+ $\Rightarrow$ Project name: TRUST-X.Y.Z (e.g.: TRUST-1.8.2) \\
+ $\Rightarrow$ Project type: "Executable"  $\rightarrow$  "Empty Project" \\
+ $\Rightarrow$ Toolchains: "Linux GCC" \\
+ $\Rightarrow$ Finish
+\end{itemize}
+\end{exampleblock}
+
+\begin{exampleblock}{Import TRUST source files into the project}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click on TRUST-X-Y-Z  $\rightarrow$  "Import..." \\
+  $\Rightarrow$ General  $\rightarrow$ File System $\rightarrow$ Next \\
+  $\Rightarrow$ From directory: copy the string matching \texttt{\$TRUST\_ROOT/src/} \\
+  $\Rightarrow$ Check "Select All" \\
+  $\Rightarrow$ Into folder: TRUST-X.Y.Z \\
+  $\Rightarrow$ Finish \\
+  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer).
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a TRUST platform project under Eclipse (III)}
+
+\begin{exampleblock}{Configure the project and launch a computation}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ Properties \\
+  $\Rightarrow$ Builders: uncheck "CDT Builder" $\rightarrow$ OK $\rightarrow$ apply and close
+  \vspace{0.1cm}
+\item From the "Project Explorer" tab, right click on TRUST-X.Y.Z $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..."\\
+  \vspace{0.1cm}
+  $\Rightarrow$ Right click on "C/C++ Application" $\rightarrow$ New configuration
+  \vspace{0.1cm}
+  \begin{itemize}
+  \item In the "Main" tab (tell Eclipse which binary will be used): \\
+  $\Rightarrow$ Project: TRUST-X.Y.Z \\
+  $\Rightarrow$ "C/C++ Application": copy the string matching \$exec\_debug \\
+  $\Rightarrow$ "Apply" \\
+  \vspace{0.1cm}
+  \item In the "Arguments" tab (tell Eclipse which datafile to run):\\
+  $\Rightarrow$ "Program arguments" $\rightarrow$ specify datafile's name (here upwind) \\
+  $\Rightarrow$ "Working directory" $\rightarrow$ uncheck "Use default" and type path to datafile \\
+  $\Rightarrow$ "Apply"
+  \end{itemize}
+  \vspace{0.1cm}
+  $\Rightarrow$ "Debug": your datafile will be run with the specified executable
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{\bf{Configuring BALTIK project in Eclipse}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a basic BALTIK project without dependency (I)}
+
+\begin{block}{Initialize baltik environnement}
+ \texttt{\$ source env\_my\_project.sh } \\
+ \texttt{\$ echo \$project\_directory/src }
+\end{block}
+
+\begin{exampleblock}{Launch Eclipse}
+\texttt{\$ cd Formation\_TRUST/yourname/eclipse } \\
+\texttt{\$ ./eclipse \& }
+\end{exampleblock}
+
+\begin{exampleblock}{Create the project}
+\begin{itemize}
+\item File $\rightarrow$ New $\rightarrow$ Project $\rightarrow$ C/C++ $\rightarrow$ "Makefile Project with Existing Code" \\
+  $\Rightarrow$ Project name: MY\_BALTIK \\
+  $\Rightarrow$ Existing Code Location: copy string matching \texttt{\$project\_directory/src} \\
+  $\Rightarrow$ Toolchain for Indexer Settings: "Linux GCC" \\
+  $\Rightarrow$ Finish \\
+  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer).
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a basic BALTIK project without dependency (II)}
+
+\begin{exampleblock}{Configure the BALTIK project and link it with TRUST}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click on MY\_BALTIK $\rightarrow$ Properties \\
+  $\Rightarrow$ Builders: check "CDT Builder" \\
+  $\Rightarrow$ C/C++ Build : 
+  \begin{itemize}
+  \item Builder Settings: Build directory: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../} or copy the string matching \texttt{\$project\_directory/} \\
+  \item Behavior: check "Build (Incremental build)": debug optim (instead of all) 
+  \end{itemize}
+  $\Rightarrow$ Project References: check your TRUST project $\rightarrow$ Apply and Close
+\end{itemize}
+\end{exampleblock}
+  
+\begin{exampleblock}{Build the BALTIK project}
+From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\rightarrow$ Rebuild \\
+  $\Rightarrow$ Wait to have 100\% at the bottom right corner of the window  (C/C++ indexer). \\
+  Right click MY\_BALTIK $\rightarrow$ Build Project \\
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create a basic BALTIK project without dependency (III)}
+
+\begin{exampleblock}{Launch a computation}
+\begin{itemize}
+\item From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ "Debug As" $\rightarrow$ "Debug Configurations..." \\
+  $\Rightarrow$ C/C++ Application $\rightarrow$ New configuration
+  \begin{itemize}
+  \item In the "Main" tab:\\
+  $\Rightarrow$ Project: MY\_BALTIK \\
+  $\Rightarrow$ C/C++ Application: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../my\_project} or copy the string matching \texttt{\$exec\_debug} \\
+  $\Rightarrow$ "Apply" 
+  \item In the "Arguments" tab:\\
+  $\Rightarrow$ Program arguments $\rightarrow$ specify the name of your datafile (upwind) \\
+  $\Rightarrow$ Working directory $\rightarrow$ uncheck "Use default" and type path to datafile's directory \\
+  $\Rightarrow$ "Apply"
+  \end{itemize}
+  $\Rightarrow$ Debug
+\end{itemize}
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
