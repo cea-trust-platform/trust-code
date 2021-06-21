@@ -29,7 +29,9 @@ To see the available OPTIONS, run
 
     $> ./configure -help
 
-If you want to minimize the build, you can set the variable OPTIONS="-disable-optionals"
+Warning: Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster.
+Run the following command, mpicxx should be found into the bin directory of the MPI version you plan to use:
+    $> type mpicxx
 
 ### **Second method**
 
@@ -105,10 +107,6 @@ To clean also the third party libraries:
 
 > - **RELEASE_NOTES** => Release notes (manually and regulary updated by support)
 
-> - **tags** => Tags (automatically updated)
-
-> - **TAGS** => Tags (automatically updated)
-
 > - **ToDo** => List of tasks to do
 
 > - **configure** => configure script
@@ -117,7 +115,8 @@ To clean also the third party libraries:
 
 > - **license** => TRUST and third party licences
 
-# **How to run a TRUST preinstalled version**
+
+# **How to run a TRUST preinstalled version**
 
 If you are a CEA worker, it is possible to use a TMA preinstalled version of TRUST. Here is the list of the machines and the paths that can be used to source the TRUST environment
 

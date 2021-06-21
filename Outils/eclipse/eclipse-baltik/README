@@ -1,6 +1,6 @@
 How to create new eclipse projet "project_name" well configured (with CDT builder enabled to be able to build it):
 - Launch eclipse (if not available, download it as described on the Developer Tutorial)
-- File -> Open Projects From Sile System... 
+- File -> Open Projects From File System...
 - In "Import source:" write the path to your baltik project sources:
   BaltikDirectory/src
 - Finish
