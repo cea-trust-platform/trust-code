@@ -118,24 +118,23 @@ class Show:
         """
         
         if not empty:
-            if (fichier=="")|(field=="")|(name==""):
+            if fichier=="" or field=="" or name=="":
                 raise ValueError("Error: A file needed!!")
             else:
-                # Formatage de l adresse #
-                tmp=fichier.rsplit("/",1)
+                # Remove former PNG files
+                # Formatage du chemin
+                tmp = fichier.rsplit("/",1)
                 if len(tmp)!=1:
                     tmp=tmp[0]+"/"
                 else:
                     tmp=""
 
-                stream = os.popen('ls '+tmp+'*.png')
-                pdf = stream.readlines()
-                for i in pdf:
-                    if os.path.exists(i.replace("\n", "")):
-                        os.remove(i.replace("\n", ""))
+                from glob import glob
+                for f in glob("build/" + tmp + '*.png'):
+                   os.remove(f)
 
         self.field=field
-        self.fichier=fichier
+        self.fichier = "build/" + fichier
         self.name=name
         self.nom=str(self.field+self.name)
         
@@ -318,7 +317,7 @@ class Show:
     def add(self,fichier,field,name,xIndice=0,yIndice=0,time=-1):
         self.xIndice = xIndice
         self.yIndice = yIndice 
-        self.fichier = fichier 
+        self.fichier = "build/" + fichier 
         self.field   = field
         self.name    = name
         self.time    = time

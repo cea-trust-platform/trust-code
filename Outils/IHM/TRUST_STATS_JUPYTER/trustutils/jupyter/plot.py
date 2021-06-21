@@ -183,7 +183,7 @@ class Graph:
         if label==None:
             label=data
         
-        donne =tf.SonPOINTFile(data, None) 
+        donne =tf.SonPOINTFile("build/" + data, None) 
         ### On recupere le nom des variables ### 
         self.y_label=donne.getEntries()[0]   
         self.x_label=donne.getXLabel()
@@ -286,8 +286,8 @@ class Graph:
             label=data
         # On plot le dernier instant
         if(value==0)&(param=="Time"):
-            value=float(lastMoment(data)) 
-        donne =tf.SonSEGFile(data, None) 
+            value=float(lastMoment("build/"  + data)) 
+        donne =tf.SonSEGFile("build/" + data, None) 
         # On recupere le nom des variables 
         self.y_label=donne.getPointEntries()[0]   
         self.x_label=donne.getXLabel()
@@ -420,6 +420,6 @@ class Table: #ancian tableau
         ------- 
         
         """
-        self.addligne([list(np.loadtxt(data, dtype=double ))],"name")
+        self.addligne([list(np.loadtxt("build/" + data, dtype=double ))],"name")
     
      

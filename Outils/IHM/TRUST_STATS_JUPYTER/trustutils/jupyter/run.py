@@ -89,7 +89,6 @@ class TRUSTCase(object):
         origin=os.getcwd(); 
         path=origin+"/build/"+self.dir_
         os.chdir(path)
-        print(path)
         
         flag=True
         f=open(self.name_,"r") 
@@ -228,7 +227,7 @@ def dumpData(fiche,list_Trust_user_word=[]):
     list_Trust_keywork =tmp
     
     ### Import and Underline important words of the data file  ###
-    f =open(fiche,"r")
+    f =open("build/" + fiche,"r")
     tmp=f.readlines()
     test=[]
     for j in tmp:
@@ -398,7 +397,7 @@ def runCases(verbose=0,baltik=False):
                 print(process.stdout.read())
 
         ### Root in build ###
-        os.chdir(path)
+        os.chdir(origin)
         
         
 def tablePerf():
@@ -419,7 +418,7 @@ def tablePerf():
     
     ### Change the root to build file ###
     origin=os.getcwd();
-    path=origin#+"/build" 
+    path = origin + "/build" 
     
     columns=["host",'system','Total CPU Time','CPU time/step', 'number of cell']
     Table=plot.Table(columns)  
@@ -453,7 +452,8 @@ def tablePerf():
         
         
         os.chdir(path)
-    
+
+    os.chdir(origin) 
     return(Table.df)
         
         
