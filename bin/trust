@@ -350,6 +350,7 @@ do
       fi
       trust_project_name="TRUST-$TRUST_VERSION"
       baltik_project_name=`grep "^name" $project_directory/project.cfg | cut -f 2 -d':' | sed 's/ *//g'`
+      [ "$baltik_project_name" = "TrioCFD" ] && echo "Fatal error, your cannot configure TrioCFD but one of its sub projects (Turbulence, Front_tracking_discontinu, ...)" && exit -1
       [ "$baltik_project_name" = "" ] && echo "Fatal error, your baltik project has no name ? " && exit -1
 
       [ "`echo $TRUST_ROOT | grep tmptrust`" != "" ] || [ "`echo $TRUST_ROOT | grep trust_trio`" != "" ] && trust_project_name=$trust_project_name"_Network"
