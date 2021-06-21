@@ -26,6 +26,11 @@
 #include <Interprete_bloc.h>
 #include <EChaine.h>
 
+// a cause du mettre_a_jour
+#include <Debog.h>
+#include <Domaine.h>
+#include <Loi_Fermeture_base.h>
+
 Implemente_instanciable(Pb_Multiphase,"Pb_Multiphase",Pb_qdm_fluide);
 
 // Description:
@@ -251,4 +256,35 @@ int Pb_Multiphase::verifier()
   const Zone_Cl_dis& zone_Cl_hydr = eq_qdm.zone_Cl_dis();
   const Zone_Cl_dis& zone_Cl_th = eq_energie.zone_Cl_dis();
   return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
+}
+
+void Pb_Multiphase::mettre_a_jour(double temps)
+{
+  // Update the name of the problem being debugged
+  Debog::set_nom_pb_actuel(le_nom());
+
+  for(int i=0; i<nombre_d_equations(); i++)
+    equation(i).inconnue().mettre_a_jour(temps);
+
+  // Update the media:
+  milieu().mettre_a_jour(temps);
+
+  // Update the equations:
+  for(int i=0; i<nombre_d_equations(); i++)
+    equation(i).mettre_a_jour(temps);
+
+  // Update the post-processing:
+  les_postraitements.mettre_a_jour(temps);
+
+  // Update the domain:
+  domaine().mettre_a_jour(temps,domaine_dis(),*this);
+
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.mettre_a_jour(temps);
+      ++curseur;
+    }
+
 }

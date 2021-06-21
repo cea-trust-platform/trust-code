@@ -1130,7 +1130,16 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int boundary_index, int f
   //  int j = elem(face,1);
   //  int ori = orientation(face);
   int k;
-  e=Dist_norm_bord_externe_VEC(boundary_index, face, local_face);
+  if (DERIVED_T::IS_MODIF_DEQ)
+    {
+      e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) :
+          equivalent_distance(boundary_index,local_face);
+    }
+  else
+    {
+      e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) :
+          Dist_norm_bord_externe_(face);
+    }
   if (i != -1)
     {
       //      e = la_zone->xv(face,ori) - la_zone->xp(i,ori);
@@ -1171,7 +1180,16 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(int boundary_index, int f
   int i = elem_(face,0);
   //  int j = elem(face,1);
   //  int ori = orientation(face);
-  e=Dist_norm_bord_externe_VEC(boundary_index, face, local_face);
+  if (DERIVED_T::IS_MODIF_DEQ)
+    {
+      e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) :
+          equivalent_distance(boundary_index,local_face);
+    }
+  else
+    {
+      e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) :
+          Dist_norm_bord_externe_(face);
+    }
   if (i != -1)
     {
       //e = la_zone->xv(face,ori) - la_zone->xp(i,ori);

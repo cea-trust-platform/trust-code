@@ -63,6 +63,7 @@ public:
   void associer_milieu_base(const Milieu_base& );
   void creer_milieu(const Noms);
   int verifier();
+  void mettre_a_jour(double temps);
   virtual Entree& lire_equations(Entree& is);
   virtual Entree& lire_correlations(Entree& is);
 
