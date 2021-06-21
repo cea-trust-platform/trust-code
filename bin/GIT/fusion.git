@@ -105,6 +105,7 @@ then
    echo "git mergetool -t kdiff3 -y"
    echo "-> To see the differences:"
    echo "gitk"
-   git merge --no-commit --no-ff $merge_branch || git mergetool -t kdiff3 -y
+   #git merge --no-commit --no-ff $merge_branch || git mergetool -t kdiff3 -y
+   git merge --no-commit $merge_branch || git mergetool -t kdiff3 -y
    err=$?    
 fi

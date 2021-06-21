@@ -151,7 +151,7 @@ CEA Saclay \\ % Your institution for the title page
 %    PRESENTATION SLIDES
 %----------------------------------------------------------------------------------------
 
-\section{{\bf{Initialization}}}
+\section{{\bf{Initialization}}}\label{init_trust}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
@@ -172,7 +172,11 @@ CEA Saclay \\ % Your institution for the title page
 \begin{itemize}
 \item First, initialize the TRUST environment. 
 \begin{itemize}
-\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.1):\\
+\item On new CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.3):\\
+%\vspace{0.2cm}
+\textbf{source  /home/trust\_trio-public/env\_TRUST-X.Y.Z.sh}
+%\vspace{0.5cm}
+\item On old CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.3):\\
 %\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 %\vspace{0.5cm}
@@ -691,7 +695,7 @@ You will run it like:\\
 \begin{block}{}
 NB: On CEA Clusters, TRUST is already installed and the procedure of launching calculation is described below. Out of CEA, your cluster administrator should install and configure TRUST. In addition, submission files and procedure depend on the cluster itself and could be different from those presented below.
 \begin{itemize}
-\item Log in to the CEA cluster orcus and initialize the TRUST environment: \\
+\item Login to the CEA cluster "orcus" and initialize the TRUST environment (for example, X.Y.Z = 1.8.3): \\
 {\small{
 \textbf{ssh -X yourlogin@orcusloginint1(.intra.cea.fr)} or\\
 \textbf{ssh -X yourlogin@orcusloginamd1(.intra.cea.fr)} \\
@@ -811,6 +815,7 @@ $$
 \begin{block}{}
 
 \begin{itemize}
+\item Load TRUST environment as described on page \pageref{init_trust}
 \item Create a new study Coupling\_VDF by copying the docond study:\\
 \textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} docond} \\
@@ -957,7 +962,8 @@ The calculation will stop after the current time step and make post-process.
 %\textbf{Add a description of the problem with an image showing domain, BC, ...}
 
 \begin{itemize}
-\item Open a terminal and create a directory using Unix commands, and copy the study \textbf{TP\_Temp\_QC\_VEF} (it is a 2D simulation of helium gas flow from left to right between two heated walls):\\
+\item Open a terminal and Load TRUST environment as described on page \pageref{init_trust}
+\item Copy the study \textbf{TP\_Temp\_QC\_VEF} (it is a 2D simulation of helium gas flow from left to right between two heated walls) as follows:\\
 \textbf{mkdir -p Formation\_TRUST/yourname}\\
 \textbf{cd Formation\_TRUST/yourname}\\
 \textbf{trust -copy\index{trust -copy} TP\_Temp\_QC\_VEF}\\
@@ -1237,20 +1243,28 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 
 \begin{itemize}
 
-\item Initialize TrioCFD full environment to get access to TRUST\&TrioCFD tests:\\
+\item Initialize TrioCFD full environment to get access to TRUST\&TrioCFD tests.\\
 {\small{
-\textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
+\begin{itemize}
+\item On new CEA Saclay computers:\\
+\textbf{source /home/trust\_trio-public/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
+
+\item On old CEA Saclay computers:\\
+\textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
+
+\item On your own computer:\\
+\textbf{source PathToTrioCFD/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}.sh}
+
+\end{itemize}
 \textbf{echo \$exec} \\
 \textbf{echo \$project\_directory} \\
 }}
-
 \item Copy the study named \textbf{Marche} (\textcolor{blue}{TrioCFD}) using: \textbf{triocfd -copy Marche}\\
 in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"trust"} script since both commands have the same options and use the same \$exec executable. This test case simulates a 2D incompressible turbulent flow in the above configuration using the k-$\varepsilon$ model.
 
-\item We want to add a source of constituent's diffusion so copy the \textbf{Constituants\index{Constituants}} study (\textcolor{blue}{TRUST}) which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
+\item We will add a source of constituent's diffusion, so copy the \textbf{Constituants\index{Constituants}} (2D incompressible laminar flow) study which uses constituents.
 
-\item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the TrioCFD Reference Manual).\\
-\textbf{triocfd -index\index{triocfd -index}} then click on \textbf{Reference manual}
+
 
 
 \end{itemize}
@@ -1264,6 +1278,9 @@ in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"
 \begin{block}{TrioCFD}
 
 \begin{itemize}
+
+\item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the TrioCFD Reference Manual).\\
+\textbf{triocfd -index\index{triocfd -index}} then click on \textbf{Reference manual}
 
 \item Add 3 constituents of equal diffusivities ($\alpha=1m/s$) and associate the constituents to the problem.
 
@@ -1273,9 +1290,6 @@ in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"
 
 \item Change the sources of the Navier-Stokes turbulence model to a \textbf{Source\_Transport\_K\_Eps\_aniso\_concen\index{Source\_Transport\_K\_Eps\_aniso\_concen} \{ C1\_eps 1.44 C2\_eps 1.92 C3\_eps 1. \} } to fit with the new concentration equation.
 
-\item Add into the fluid definition, the volume expansion coefficient for the concentration: \textbf{beta\_co\index{beta\_co}} as a uniform field set to 0.
-
-\item You have also to add a gravity field which can be initialized to 0.
 \end{itemize}
 
 \end{block}
@@ -1287,6 +1301,10 @@ in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"
 \begin{block}{TrioCFD}
 
 \begin{itemize}
+
+\item Add into the fluid definition, the volume expansion coefficient for the concentration: \textbf{beta\_co\index{beta\_co}} as a uniform field set to 0.
+
+\item You have also to add a gravity field which can be initialized to 0.
 
 \item Run the calculation to see if it is ok.
 
@@ -1349,7 +1367,17 @@ Goals:
 \begin{itemize}
 \item First initialize TrioCFD environment:\\
 {\small{
-\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
+\begin{itemize}
+\item On new CEA Saclay computers:\\
+\textbf{source /home/trust\_trio-public/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
+
+\item On old CEA Saclay computers:\\
+\textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
+
+\item On your own computer:\\
+\textbf{source PathToTrioCFD/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}.sh}
+
+\end{itemize}
 \textbf{echo \$exec} \\
 \textbf{echo \$project\_directory} \\
 }}
@@ -1361,9 +1389,9 @@ Goals:
 \textbf{cp \$project\_directory/validation/share/Validation/Rapports\_automatiques/} \\
 \hspace{4cm} \textbf{Validant/pas\_fini/PeriodicBox/src/* \; .} \\
 }}
-\vspace{0.2cm}
-Notice that this directory corresponds to an automated validation test case. 
-If you want to run it and generate the pdf report, see the last exercise of this tutorial which is named "Validation form", but be careful this case needs huge computational effort!
+
+This directory corresponds to an automated validation form. 
+If you want to run it and generate the pdf report, see "Validation form" exercise on page \pageref{exo_validation}, but be aware that this case needs huge computational effort!
 \end{itemize}
 
 \end{block}
@@ -1480,13 +1508,23 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Turbulent flow over a backward-facing step}
+\frametitle{Turbulent flow over a backward-facing step}\label{init_triocfd}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
 \item First initialize TrioCFD environment:\\
 {\small{
-\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
+\begin{itemize}
+\item On new CEA Saclay computers:\\
+\textbf{source /home/trust\_trio-public/env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
+
+\item On old CEA Saclay computers:\\
+\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
+
+\item On your own computer:\\
+\textbf{source PathToTrioCFD/env\_\textcolor{blue}{TrioCFD}.sh}
+
+\end{itemize}
 \textbf{echo \$exec} \\
 \textbf{echo \$project\_directory} \\
 }}
@@ -1499,9 +1537,6 @@ Outlet: $P_0=0$
     \item [$\circ$] Note that we use a "Pb\_Hydraulique\_Turbulent" problem with "Navier\_Stokes\_Turbulent" equations and a "modele\_turbulence\index{modele\_turbulence}" model.
     \item [$\circ$] Modify the fluid characteristics to perform a calculation at $Re=50000$. For example, impose $\rho = 1 kg.m^{-3}$ and $\mu=2.10^{-5} kg.m^{-1}.s^{-1}$.
 %    \item [$\circ$] Define a turbulent hydraulic problem (see Reference Manual).
-    \item [$\circ$] Select the sub-grid Smagorinsky turbulence model with standard wall law instead of the "sous\_maille" model (LES).
-    \item [$\circ$] Select the Quick\index{quick} convection scheme.
-    \item [$\circ$] Post-process of velocity, pressure, vorticity, turbulent viscosity at the nodes and elements.
     \end{itemize}
 
 \end{itemize}
@@ -1515,7 +1550,13 @@ Outlet: $P_0=0$
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-
+\item Continue editing the data file
+    \begin{itemize}
+    \item [$\circ$] Select the sub-grid Smagorinsky turbulence model with standard wall law instead of the "sous\_maille" model (LES).
+    \item [$\circ$] Select the Quick\index{quick} convection scheme.
+    \item [$\circ$] Post-process of velocity, pressure, vorticity, turbulent viscosity at the nodes and elements.
+    \end{itemize}
+    
 \item Run the calculation and post-process the main calculated fields.\\
 \textbf{triocfd Marche3D} \\
 
@@ -1589,8 +1630,7 @@ Outlet: $P_0=0$
 \begin{block}{}
 
 \begin{itemize}
-\item Source the TRUST environment:\\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}
+\item Load TRUST environment as described on page \pageref{init_trust}
 \item Copy the study named \textbf{diagonale}. This test case deals with a 2D flow with Navier-Stokes and the equation for one constituent.
 \item Edit the data file and modify the fluid characteristics to the previous ones ($\mu, \rho, D$).
 \item We want to modify the geometry of this problem to the previous picture. So we want to create 3 blocks like:
@@ -1791,12 +1831,37 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item First initialize TrioCFD environment:\\
-\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
-\textbf{echo \$exec} 
+{\small{
+\begin{itemize}
+\item On new CEA Saclay computers:\\
+\textbf{source /home/trust\_trio-public/env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
 
-\item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{triocfd -copy\index{triocfd -copy} FTD\_all\_VDF}
+\item On old CEA Saclay computers:\\
+\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
+
+\item On your own computer:\\
+\textbf{source PathToTrioCFD/env\_\textcolor{blue}{TrioCFD}.sh}
+
+\end{itemize}
+}}
+
+\item Copy the study named \textbf{FTD\_all\_VDF}:\\
+ \textbf{triocfd -copy\index{triocfd -copy} FTD\_all\_VDF}
 
 \item This test case deals with a 3D two-phase flow in a tank with one initial interface between liquid and gas, a droplet, and a rotating solid in the liquid. The Discontinuous Front Tracking method is used with a 3D structured mesh.
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Tank filling (3D, two-phase flow)}
+\begin{block}{TrioCFD}
+
+\begin{itemize}
+
 
 \item Notice that:
     \begin{itemize}
@@ -2026,12 +2091,12 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 \hline 
 \end{tabular}
 
+\item Open a new terminal then load TRUST environment as described on page \pageref{init_trust}
 \item Run the data file and post-process the mesh with VisIt:\\
-\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh} \\
 \textbf{trust dom} \\
 \textbf{visit\index{visit} -o mesh.lata} \\
 \vspace{0.2cm}
-\textbf{Warning}: The more common error is to forget to define the boundaries with the groups for the mesh. The error in TRUST is printed and detected during the discretization where all the faces of the mesh (in particular the boundary faces) are built.
+\textbf{Warning}: The more common error is to forget to define the boundaries with the groups for the mesh (and hence for Geometry). The error in TRUST is printed and detected during the discretization where all the faces of the mesh (in particular the boundary faces) are built.
 
 \end{itemize}
 
@@ -2736,8 +2801,7 @@ In order to build meshes using Salom\'e for such a simulation, we should create 
 \begin{block}{Launch the coupled problem datafile:}
 \begin{itemize} 
 
- \item Source TRUST environnement with:\\
-\texttt{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+ \item Load TRUST environment as described on page \pageref{init_trust}
 
  \item Copy the datafile: \\
  \texttt{\$ cp \$TRUST\_ROOT/doc/TRUST/exercices/salome/Coupled\_pb.data .}
@@ -2887,9 +2951,9 @@ which allows to export the generated mesh on MED format.
 \item Create a directory and copy an example:\\
 {\footnotesize{
 \textbf{mkdir \, -p \, Formation\_TRUST/yourname/gmsh} \\
-\textbf{cd \, Formation\_TRUST/yourname/gmsh} \\
-\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
-\textbf{echo \$project\_directory} \\
+\textbf{cd \, Formation\_TRUST/yourname/gmsh}
+\item Load TrioCFD environment as described on page \pageref{init_triocfd}.
+\item Then copy file.geo as follows:
 \textbf{dir=\$project\_directory/validation/share/Validation/Rapports\_automatiques/Validant} \\
 \textbf{cp \, \$dir/pas\_fini/Drag/src/shape.geo \, file.geo} \\
 \textbf{nedit file.geo \& } \\
@@ -3073,68 +3137,68 @@ Physical Volume("dom") = \{1\};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{TRUST Wizzard for 3D VEF mesh}
-%\subsubsection{3D VEF mesh}
+%\subsection{TRUST Wizzard for 3D VEF mesh}
+%%\subsubsection{3D VEF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\begin{small}
+%\begin{columns}[c] 
+%\column{.45\textwidth}
+%\tableofcontents[sections={1-9},currentsection, currentsubsection]
+%\column{.5\textwidth} 
+%\tableofcontents[sections={10-16},currentsection, currentsubsection]
+%\end{columns}
+%\end{small}
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\begin{small}
-\begin{columns}[c] 
-\column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
-\column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
-\end{columns}
-\end{small}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{TRUST Wizzard for 3D VEF mesh}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item Open the TRUST wizzard:\\
+%\textbf{trust -wiz\index{trust -wiz}}
+%
+%\item Create an hydraulic problem with:
+%    \begin{itemize}
+%    \item in "Turbulent model" tab, set a laminar turbulent model.
+%    \item in "Domain" tab, input the path to your 3D mesh file in med format. The wizzard will find the name of your mesh.
+%    \item in "Boundary condition" tab, select a boundary condition of type:
+%        \begin{itemize}
+%        \item "Input" for your Inlet boundary and set your velocity field to ( 1. 0. 0. ),
+%        \item "Wall" with no velocity for your Obstacle boundary,
+%        \item "Output" with pressure field set to 0. for your Outlet boundary,
+%        \item "Symetry" for your Wall boundary.
+%        \end{itemize}
+%    \item in "Initial condition" tab, set your velocity field to ( 0. 0. 0. ).
+%    \item in "Incompressible flow" tab, choose a predefined field like "Water 20 deg".
+%    \end{itemize}
+%\item Then click on "Validate" to see if your parameters are ok.
+%\item You can see the message "All ok!" at the bottom left of the window.
+%\item You can save your session at the .JSon format by clicking on "Save ...".
+%\end{itemize}
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{TRUST Wizzard for 3D VEF mesh}
-\begin{block}{}
-
-\begin{itemize}
-\item Open the TRUST wizzard:\\
-\textbf{trust -wiz\index{trust -wiz}}
-
-\item Create an hydraulic problem with:
-    \begin{itemize}
-    \item in "Turbulent model" tab, set a laminar turbulent model.
-    \item in "Domain" tab, input the path to your 3D mesh file in med format. The wizzard will find the name of your mesh.
-    \item in "Boundary condition" tab, select a boundary condition of type:
-        \begin{itemize}
-        \item "Input" for your Inlet boundary and set your velocity field to ( 1. 0. 0. ),
-        \item "Wall" with no velocity for your Obstacle boundary,
-        \item "Output" with pressure field set to 0. for your Outlet boundary,
-        \item "Symetry" for your Wall boundary.
-        \end{itemize}
-    \item in "Initial condition" tab, set your velocity field to ( 0. 0. 0. ).
-    \item in "Incompressible flow" tab, choose a predefined field like "Water 20 deg".
-    \end{itemize}
-\item Then click on "Validate" to see if your parameters are ok.
-\item You can see the message "All ok!" at the bottom left of the window.
-\item You can save your session at the .JSon format by clicking on "Save ...".
-\end{itemize}
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{TRUST Wizzard for 3D VEF mesh}
-\begin{block}{}
-
-\begin{itemize}
-\item Click on "Start ...", a window opens to save your data file. Name it for example "test\_wiz.data" and click on "Save".
-\item The TRUST PLOT2D tool opens, click on "Start computation!".
-\item An error occurs! Open your data file with "Edit data" button.
-\item Correct the expression of gravity field by adding a third component.
-\item Add a "\textbf{tmax}" value (for example 'tmax 0.1') and suppress the max number of iterations.
-\item Save it and run your simulation.
-\item It must be long because of the size of the cells. You can decrease it and create another mesh with gmsh to run faster.
-\end{itemize}
-\textbf{Warning}: TRUST Wizzard is still in development. Models are not yet all available.
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{TRUST Wizzard for 3D VEF mesh}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item Click on "Start ...", a window opens to save your data file. Name it for example "test\_wiz.data" and click on "Save".
+%\item The TRUST PLOT2D tool opens, click on "Start computation!".
+%\item An error occurs! Open your data file with "Edit data" button.
+%\item Correct the expression of gravity field by adding a third component.
+%\item Add a "\textbf{tmax}" value (for example 'tmax 0.1') and suppress the max number of iterations.
+%\item Save it and run your simulation.
+%\item It must be long because of the size of the cells. You can decrease it and create another mesh with gmsh to run faster.
+%\end{itemize}
+%\textbf{Warning}: TRUST Wizzard is still in development. Models are not yet all available.
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -3170,7 +3234,7 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \item Create a directory:\\
 \textbf{mkdir \, -p \, Formation\_TRUST/yourname/Xprepro/exo1} \\
 \textbf{cd \, Formation\_TRUST/yourname/Xprepro/exo1} \\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+\item Load TRUST environment as described on page \pageref{init_trust} then run:\\
 \textbf{Xprepro \&} 
 \end{itemize}
 
@@ -3320,8 +3384,10 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 discretiser\_domaine\index{discretiser\_domaine} dom\_pb1 \\
 End }
 }}
-\item Run the file: \textbf{trust channel}
-\item Visualize your mesh with: \textbf{visit\index{visit} -o dom\_pb1.lata \& }
+\item Run the file:\\
+ \textbf{trust channel}
+\item Visualize your mesh with:\\
+ \textbf{visit\index{visit} -o dom\_pb1.lata \& }
 \end{itemize}
 
 \end{block}
@@ -3361,7 +3427,7 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \item Create a directory: Run Xprepro in the TRUST environment:\\
 \textbf{mkdir \, -p \, Formation\_TRUST/yourname/Xprepro/exo2} \\
 \textbf{cd \, Formation\_TRUST/yourname/Xprepro/exo2} \\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+\item Load TRUST environment as described on page \pageref{init_trust} then run:\\
 \textbf{Xprepro \&} 
 \end{itemize}
 
@@ -3467,7 +3533,7 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 
 
 
-\section{{\bf{Validation form}}}
+\section{{\bf{Validation form}}}\label{exo_validation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
