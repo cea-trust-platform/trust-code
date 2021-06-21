@@ -68,11 +68,11 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   const int nb_comp = ch_puissance_lu.nb_comp();
 
   eqn.probleme().discretisation().discretiser_champ("CHAMP_ELEM", eqn.zone_dis(), "pp", "1",nb_comp,0., la_puissance);
-
+  la_puissance_lu->fixer_nb_comp(nb_comp);
   if (ch_puissance_lu.le_nom()=="anonyme") ch_puissance_lu.nommer("puissance_volumique");
 
-  for (int n = 0; n < nb_comp; n++) la_puissance_lu->fixer_nom_compo(n, ch_puissance_lu.le_nom() + (nb_comp ? Nom(n) :""));
-  for (int n = 0; n < nb_comp; n++) la_puissance->fixer_nom_compo(n, ch_puissance_lu.le_nom() + (nb_comp ? Nom(n) :""));
+  for (int n = 0; n < nb_comp; n++) la_puissance_lu->fixer_nom_compo(n, ch_puissance_lu.le_nom() + (nb_comp > 1 ? Nom(n) :""));
+  for (int n = 0; n < nb_comp; n++) la_puissance->fixer_nom_compo(n, ch_puissance_lu.le_nom() + (nb_comp > 1 ? Nom(n) :""));
   // PL: Il faut faire nommer_completer_champ_physique les 2 champs (plantage sinon pour une puissance de type Champ_fonc_tabule)
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());

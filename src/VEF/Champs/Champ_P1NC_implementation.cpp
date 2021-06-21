@@ -1416,7 +1416,7 @@ valeur_aux_elems(const DoubleTab& positions,
   int le_poly, D = Objet_U::dimension;
   const IntTab& elem_faces=zone_VEF.elem_faces();
 
-  for(int rang_poly=0; rang_poly<val.dimension_tot(0); rang_poly++)
+  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
     {
       le_poly=les_polys(rang_poly);
       if (le_poly == -1)
