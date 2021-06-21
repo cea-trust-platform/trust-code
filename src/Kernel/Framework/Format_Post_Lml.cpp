@@ -421,10 +421,12 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
       for (int nelem=0; nelem<nb_elem; nelem++)
         {
           s << type_maille << " ";
-          for (j=0; j<nb_som_elem; j++)
-            s << sommet_elem( nelem,j)+1+2*nb_som_PE << " " ;
-          for (j=0; j<nb_som_elem; j++)
-            s << sommet_elem( nelem,j)+1+2*nb_som_PE+nsom << " " ;
+          int count = 0;
+          for (j=0; j<nb_som_elem && (sommet_elem( nelem,j) > -1); j++)
+            s << sommet_elem( nelem,j)+1+2*nb_som_PE << " ", count++;
+          for (j=0; j<nb_som_elem && (sommet_elem( nelem,j) > -1); j++)
+            s << sommet_elem( nelem,j)+1+2*nb_som_PE+nsom << " ", count++;
+          for (int k = count; k < 2 * nb_som_elem; k++) s << 0 << " ";
           s << "" << finl;
           s.flush();
         }
