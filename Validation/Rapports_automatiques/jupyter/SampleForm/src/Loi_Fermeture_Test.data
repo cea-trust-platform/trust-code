@@ -1,0 +1,99 @@
+# Conduction 2D : Diverses conditions limites thermiques #
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 3 3
+		Longueurs 1. 1.
+	}
+	{
+		Bord Haut X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 1.
+		Bord Haut    Y = 0. 0. <= X <= 1.
+		Bord Haut  X = 1. 0. <= Y <= 1.
+	}
+} 
+
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 1
+	nb_pas_dt_max 1
+	tmax 300.
+	dt_max 1
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.01
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+loi_fermeture_test loi
+associer  pb loi
+Discretize pb dis
+lire loi {  coef 2. }
+Read pb
+{
+	Conduction
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1 0. 
+			}
+		boundary_conditions {
+			Haut paroi_adiabatique
+		}
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+			sonde test_time periode 5. points 1 0.45 0.45
+		}
+		format lata
+		fields dt_post 30.
+		{
+			test_time elem
+			test_time som
+		}
+	}
+}
+
+Solve pb
+
+End

@@ -10,11 +10,34 @@ This package can be used with jupyter and stats package.
 
 
 import os
-# TODO : FIXME : this should be used for jupyter
-#from IPython.display import Image
 import numpy as np
+import subprocess
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
-def showMesh(fichier,mesh="dom"):
+def setFrame(self,numero=-1):
+    """
+
+    To set frame in visit
+
+    Parameters
+    ---------
+    numero: int
+        If numero = -1, the last frame chosen, else it select the frame in visit
+
+    Returns
+    -------
+
+    """
+    self.time=str(numero)
+    with open("tmp.py", "a") as f:
+        if numero == -1: # last frame
+            f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
+        else:
+            f.write("SetTimeSliderState("+ str(numero) +")\n")
+    f.close()
+
+def showMesh(fichier,mesh="dom",dim=2,rotx=0,roty=0,rotz=0):
     """
     Methods to plot the mesh from a .lata file.
 
@@ -28,10 +51,10 @@ def showMesh(fichier,mesh="dom"):
         a Visit plot 
     """
 
-    Field=Show(fichier=fichier,field="Mesh",name=mesh,mesh=mesh)
-    Field.visualize();
+    Field=Show(fichier=fichier,field="Mesh",name=mesh,mesh=mesh,dim=dim,rotx=rotx,roty=roty,rotz=rotz,plotmesh=False)  
+    Field.plot();
 
-def showField(fichier,field,name,mesh="dom",dim=2,rotx=-45,roty=45,rotz=0) :
+def showField(fichier,field,name,mesh="dom",dim=2,rotx=-45,roty=45,rotz=0,plotmesh=True,time=-1,win=False):
     """
     Methods to plot a field from a .lata file.
 
@@ -59,14 +82,14 @@ def showField(fichier,field,name,mesh="dom",dim=2,rotx=-45,roty=45,rotz=0) :
         a Visit plot 
     """
 
-    Field=Show(fichier,field,name,mesh=mesh,dim=dim,rotx=rotx,roty=roty,rotz=rotz)
-    Field.visualize();
+    Field=Show(fichier,field,name,mesh=mesh,dim=dim,rotx=rotx,roty=roty,rotz=rotz,plotmesh=plotmesh,time=-1)  
+    Field.plot(); 
 
 class Show:
     """ 
     Class Show, which allow to use visit command in a python enviroment
     """
-    def __init__(self,fichier,field,name,dim=2,mesh="dom",rotx=45,roty=45,rotz=45):
+    def __init__(self,fichier="",field="",name="",nX=1,nY=1,dim=2,mesh="dom",rotx=45,roty=45,rotz=45,plotmesh=True,time=-1,empty=False):
         """
         Constructeur
 
@@ -93,22 +116,47 @@ class Show:
         -------
         None      
         """
-        stream = os.popen('ls *.png')
-        pdf = stream.readlines()
-        for i in pdf:
-            if os.path.exists(i.replace("\n", "")):
-                os.remove(i.replace("\n", ""))
+        
+        if not empty:
+            if (fichier=="")|(field=="")|(name==""):
+                raise ValueError("Error: A file needed!!")
+            else:
+                # Formatage de l adresse #
+                tmp=fichier.rsplit("/",1)
+                if len(tmp)!=1:
+                    tmp=tmp[0]+"/"
+                else:
+                    tmp=""
+
+                stream = os.popen('ls '+tmp+'*.png')
+                pdf = stream.readlines()
+                for i in pdf:
+                    if os.path.exists(i.replace("\n", "")):
+                        os.remove(i.replace("\n", ""))
+
         self.field=field
+        self.fichier=fichier
         self.name=name
+        self.nom=str(self.field+self.name)
+        
+        self.plotmesh=plotmesh
         self.mesh=mesh
         self.time=str(0)
-        self.fichier=fichier
         self.dim=dim
         self.rotx=rotx
         self.roty=roty
         self.rotz=rotz
-        self.nom=str(self.field+self.name)
-        self._reset()
+        self.xIndice=0
+        self.yIndice=0
+        self.nX=nX
+        self.nY=nY 
+        self.axes=nY 
+        self.flag=False
+        self.time=time
+        self.key=-1
+        self.empty=empty
+                                       
+        self._reset() 
 
     def _reset(self):
         """
@@ -124,6 +172,21 @@ class Show:
         """
         # Assure qu'il ne y a pas deja une image,  si oui, il l'efface
 
+
+        
+        self.fig,self.axs=plt.subplots(self.nY,self.nX,figsize=(40,40))
+        if not self.empty: self.addPlot(self.coordonee()) 
+        #self.fig.suptitle(self.suptitle)
+        
+ 
+        
+    def addPlot(self,coordonee):   
+        """ 
+        
+        Methode 
+        
+        """  
+        self.key=self.key+1
         path=os.getcwd()
         # Assure qu'il ne y a pas deja un fichier, si oui, il l'efface
         path=""#os.getcwd()
@@ -135,8 +198,9 @@ class Show:
             f.write("ActivateDatabase(dbs) \n")
             f.write("AddPlot('"+self.field+"','"+ self.name+"')\n")
             f.write("DrawPlots() \n")
-            f.write("AddPlot('"+"Mesh"+"', '"+self.mesh+"')\n")
-            f.write("DrawPlots() \n")
+            if self.plotmesh:
+                f.write("AddPlot('"+"Mesh"+"', '"+self.mesh+"')\n")
+                f.write("DrawPlots() \n")
             # Boucle if pour roter le plot 3d de 30 degre ,selon l'axe x et y (2 rotations).
             f.write("if "+str(self.dim)+"==3: \n")
             f.write("\tva = GetView3D()\n")
@@ -148,12 +212,57 @@ class Show:
             f.write("\tSetView3D(va)\n")
             f.write("\tva.RotateAxis(2,"+str(self.rotz)+")\n")
             f.write("\tSetView3D(va)\n")
-        f.close()
-
-    def addPlot(self,field,name):
+        f.close()   
+        
+        if(self.nX==1)&(self.nY==1):
+            #raise ValueError("Use plot and not plot2!!!")
+            self.flag=True 
+        elif (self.nX==1)|(self.nY==1): self.xIndice=coordonee
+        else: 
+            self.xIndice=coordonee[0]
+            self.yIndice=coordonee[1]
+            
+        if self.flag : self.subplot=self.axs 
+        else: self.subplot=self.axs[self.coordonee()] 
+        
+        self.subplot.grid()  
+        
+        if (self.key!=0)|(self.nX*self.nY!=1):
+            self.setFrame(self.time)
+            self.save()        
+            self.insert()
+        
+    def addField(self,fichier=None,field=None,nom=None):   
+        """ 
+        
+        Methode 
+        
+        """     
+        if (field is None)|(nom is None):
+            raise ValueError("Error: need field or/and name!!") 
+        
+        with open("tmp.py", "a") as f: 
+            if not fichier==None:
+                f.write("dbs = ('"+fichier+"') \n")
+                f.write("ActivateDatabase(dbs) \n")
+            f.write("AddPlot('"+field+"','"+ nom+"')\n")
+            f.write("DrawPlots() \n") 
+        f.close()    
+        
+    def visitCommand(self,string):   
+        """ 
+        
+        Methode 
+        
+        """     
+        with open("tmp.py", "a") as f: 
+            f.write(string+"\n") 
+        f.close()    
+        
+    def save(self,win=False): #mettre un bon nom
         """
 
-        Add another field to the Visit Plot. 
+        Display the visit plot in Jupyter.
 
         Parameters
         ---------
@@ -168,10 +277,66 @@ class Show:
         
         """
         with open("tmp.py", "a") as f:
-            f.write("AddPlot('"+field+"','"+name+"')\n")
-            f.write("DrawPlots() \n")
+            f.write("s = SaveWindowAttributes() \n")
+            f.write("s.fileName = '"+self.fichier+self.name+str(self.time)+"_' \n")
+            f.write("s.format = s.PNG \n")
+            f.write("s.progressive = 1 \n")
+            f.write("s.fileName = '"+self.fichier+self.name+str(self.time)+"_' \n")
+            f.write("SetSaveWindowAttributes(s) \n")
+            f.write("SaveWindow()")
         f.close()
+        if win : 
+            process = subprocess.Popen("visit -cli -s  tmp.py", shell=True) # Faire sa independante de cette methode 
+            process.wait() 
+        else   :
+            os.system("visit -nowin -cli -s  tmp.py") # Faire sa independante de cette methode
+            
+    def coordonee(self):
+        """
 
+        Lorem Ipsum.
+        
+        Parameters
+        --------- 
+        
+        
+        """ 
+        if(self.nX==1)&(self.nY==1):
+            #raise ValueError("Use plot and not plot2!!!")
+            return(0) 
+        elif((self.nX==1)|(self.nY==1)): 
+            return(max(self.xIndice,self.yIndice))
+        else: 
+            return(self.xIndice,self.yIndice)
+        
+    def insert(self):
+        img = mpimg.imread(""+self.fichier+self.name+str(self.time)+"_0000.png") 
+        
+        self.subplot.imshow(img)
+        self.subplot.axis('off') 
+        
+    def add(self,fichier,field,name,xIndice=0,yIndice=0,time=-1):
+        self.xIndice = xIndice
+        self.yIndice = yIndice 
+        self.fichier = fichier 
+        self.field   = field
+        self.name    = name
+        self.time    = time
+        
+        
+        self.addPlot(self.coordonee())
+        
+        
+    def plot(self): 
+        if (self.key==0): 
+            self.setFrame(self.time)
+            self.save()        
+            self.insert()
+        if(self.empty==True):  
+            self.save()        
+            self.insert()
+        plt.show()        
+        
     def addMesh(self,mesh):
         """
 
@@ -301,36 +466,7 @@ class Show:
             else:
                 f.write("SetTimeSliderState("+ str(numero) +")\n")
         f.close()
-        
-    def visualize(self): #mettre un bon nom
-        """
-
-        Display the visit plot in Jupyter.
-
-        Parameters
-        ---------
-        field : str
-            The field we want to plot.  
-        name : str
-            The name of the field.  
-
-
-        Returns
-        -------
-        
-        """
-        with open("tmp.py", "a") as f:
-            f.write("s = SaveWindowAttributes() \n")
-            f.write("s.fileName = '"+self.nom+self.time+"_' \n")
-            f.write("s.format = s.PNG \n")
-            f.write("s.progressive = 1 \n")
-            f.write("s.fileName = '"+self.nom+self.time+"_' \n")
-            f.write("SetSaveWindowAttributes(s) \n")
-            f.write("SaveWindow()")
-        f.close()
-        os.system("visit -nowin -cli -s  tmp.py") # Faire sa independante de cette methode
-        # TODO : FIXME : this should be used for jupyter
-        #display(Image(filename = ""+self.nom+self.time+"_0000.png", width = 600, height = 300))
+         
 
     def meshColor(self):
         """
@@ -462,7 +598,6 @@ class export_lata_base:  # Changer le nom de calsse
         None
         
         """
-
         self.fichier=fichier
         self.field=field
         self.name=name
@@ -631,7 +766,7 @@ class export_lata_base:  # Changer le nom de calsse
             f.write("SetActiveWindow(2) \n")
         f.close()
 
-    def max(self,direct=""):
+    def maximun(self,name="Max",time=-1):
         """
 
         Extract Max of data from a .lata file
@@ -644,9 +779,34 @@ class export_lata_base:  # Changer le nom de calsse
         -------
         None
         """
+        self.setFrame(numero=-1)
         with open("tmp.py","a") as f:
-            f.write("Query(\"MinMax\", use_actual_data=1) \n")  
-            f.write("f=open(\"Umax\",\"w\") \n") 
+            f.write("Query(\"Max\", use_actual_data=1) \n")  
+            f.write("f=open(\""+ name +self.saveFile+"\",\"w\") \n") 
+            f.write("f.write(str(GetQueryOutputValue())) \n") 
+            f.write("f.close() \n") 
+            f.write("print(GetQueryOutputValue())\n") 
+            
+            f.write("""sys.exit()""")
+        self.run()
+        
+    def minimun(self,name="Min",time=-1):
+        """
+
+        Extract Max of data from a .lata file
+
+        Parameters
+        --------- 
+        None
+
+        Returns
+        -------
+        None
+        """
+        self.setFrame(numero=-1)
+        with open("tmp.py","a") as f:
+            f.write("Query(\"Min\", use_actual_data=1) \n")  
+            f.write("f=open(\""+ name +self.saveFile+"\",\"w\") \n") 
             f.write("f.write(str(GetQueryOutputValue())) \n") 
             f.write("f.close() \n") 
             f.write("print(GetQueryOutputValue())\n") 

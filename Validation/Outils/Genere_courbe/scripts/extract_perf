@@ -17,7 +17,7 @@ else
    fi
 fi
 
-tot=`get_execution_time $1`
+tot=`$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_execution_time $1`
 [ $? -ne  0 ] &&  status=2
 [ $status -ne 0 ] && tot="?"
 [ ! -f $1.TU ] && tot="1e9"

@@ -1,0 +1,106 @@
+# Hydraulique 3D pour tester le grad(u)^T du tenseur visqueux #
+
+dimension 3
+
+Pb_hydraulique pb
+
+Domaine dom
+
+Mailler dom
+{
+        Pave Cavite
+        {
+                Origine -1. -1. -1.
+                Nombre_de_noeuds 6 6 6
+                Longueurs 2. 2. 2.
+        }
+        {
+                Bord Gauche   Y = -1.  -1. <= X <= 1.  -1. <= Z <= 1.
+                Bord Droit    Y =  1.  -1. <= X <= 1.  -1. <= Z <= 1.
+                Bord Bas      Z = -1.  -1. <= X <= 1.  -1. <= Y <= 1.
+                Bord Haut     Z =  1.  -1. <= X <= 1.  -1. <= Y <= 1.
+                Bord Derriere X = -1.  -1. <= Y <= 1.  -1. <= Z <= 1.
+                Bord Devant   X =  1.  -1. <= Y <= 1.  -1. <= Z <= 1.
+        }
+}
+
+EF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0
+	tmax 2.5
+	dt_max 5.e-3
+	dt_impr 5.e-1
+	dt_sauv 1
+	seuil_statio 1.e-5
+	dt_min 5e-5
+    nb_pas_dt_max 10
+}
+#
+	solveur implicite { seuil_convergence_solveur 1e-8 
+	solveur optimal { seuil 1e-9 }
+	 solveur gen { seuil 1e-09   solv_elem bicgstab precond ilu { type 2 filling 10 } impr }
+
+}
+	facsec 1.
+}
+#
+Fluide_Incompressible eau
+Read eau
+{
+	mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
+	rho Champ_Uniforme 1 1.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+                methode_calcul_pression_initiale avec_sources_et_operateurs
+		solveur_pression GCP {
+			precond ssor { omega -1.5 } 
+			seuil 1.e-8
+		}
+		convection { negligeable }
+		diffusion {  }
+		initial_conditions {
+			vitesse Champ_Fonc_XYZ dom 3 (2.*x) (-y) (-z)
+			}
+		boundary_conditions {
+			Gauche frontiere_ouverte_vitesse_imposee 
+			     Champ_front_fonc_tXYZ 3 (2.*x) (-y) (-z)
+			Droit frontiere_ouverte_vitesse_imposee 
+			     Champ_front_fonc_tXYZ 3 (2.*x) (-y) (-z)
+			Bas frontiere_ouverte_vitesse_imposee 
+			     Champ_front_fonc_tXYZ 3 (2.*x) (-y) (-z)
+			Haut frontiere_ouverte_vitesse_imposee 
+			     Champ_front_fonc_tXYZ 3 (2.*x) (-y) (-z)
+			Derriere frontiere_ouverte_vitesse_imposee 
+			     Champ_front_fonc_tXYZ 3 (2.*x) (-y) (-z)
+			Devant frontiere_ouverte_pression_imposee 
+			     Champ_front_fonc_tXYZ 1 (4.*x-2.*y-2.*z-(10.+x+y+z)*(2.))
+		}
+	}
+
+	Post_processing
+	{
+		format lata
+		fields dt_post 1.3
+		{
+			pression_pa elem
+			vitesse som
+		}
+	}
+}
+
+Solve pb
+
+End

@@ -1,4 +1,5 @@
 # Jupyter submodule
 
-from .run import *
-from .plot import Graph, Table
+from .run import * 
+from .plot import *
+from  .widget import *
