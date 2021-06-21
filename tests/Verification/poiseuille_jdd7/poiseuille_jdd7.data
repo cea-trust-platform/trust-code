@@ -21,7 +21,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC dis
+VDF dis
 option_vdf { P_imposee_aux_faces oui }
 
 Schema_euler_implicite sch
@@ -33,7 +33,7 @@ Read sch
     tmax 100
     facsec 1e30
     seuil_statio 1e-5
-    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
+    solveur implicite { solveur petsc cholesky { } }
 }
 
 
