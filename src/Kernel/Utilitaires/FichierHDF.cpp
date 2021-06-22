@@ -139,9 +139,9 @@ void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute&
   hid_t dataspace_id =  H5Dget_space(dataset_id);
   hssize_t sz = H5Sget_simple_extent_npoints(dataspace_id);
   char * dset_data = new char[sz];
-  Process::Journal() << "[HDF5] Reading into HDF dataset " << dataset_name << "...";
+  Cerr << "[HDF5] Reading into HDF dataset " << dataset_name << "...";
   H5Dread(dataset_id, H5T_NATIVE_OPAQUE, H5S_ALL, H5S_ALL, dataset_transfer_plst_, dset_data);
-  Process::Journal() << " Done !" << finl;
+  Cerr << " Done !" << finl;
 
   // Put extracted data in a standard Entree_Brute from TRUST, that we then use to feed TRUST objects
   entree.set_data(dset_data, sz);  // data are copied into the Entree
@@ -157,7 +157,6 @@ void FichierHDF::create_datasets(Noms dataset_names, hsize_t length)
 {
   hid_t dataspace_id = H5Screate_simple(1, &length, NULL);
 
-  Cerr << "LENGTH = " << (long)length << finl;
   // Create the dataset
   for(int i=0; i<dataset_names.size(); i++)
    {
@@ -168,7 +167,7 @@ void FichierHDF::create_datasets(Noms dataset_names, hsize_t length)
   // Close dataset and dataspace
   hdf5_error<herr_t>(H5Sclose(dataspace_id));
 
-  Cerr << "[HDF5] All datasets closed !" << finl;
+  Cerr << "[HDF5] All datasets created !" << finl;
  }
 
 
@@ -195,7 +194,6 @@ void FichierHDF::fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
   hdf5_error<herr_t>(H5Dclose(dataset_id));
   hdf5_error<herr_t>(H5Sclose(dataspace_id));
 
-  Cerr << "[HDF5] All datasets closed !" << finl;
 }
 
 
@@ -247,10 +245,10 @@ void FichierHDF::create_and_fill_dataset_MW(Nom dataset_basename, const char* da
 
   hid_t dataspace_id = H5Screate_simple(1, &lenData, NULL);
 
-  Process::Journal() << "[HDF5] Writing into HDF dataset " << my_dataset_name << "...";
+  Cerr << "[HDF5] Writing into HDF dataset " << my_dataset_name << "...";
   // Writing my own dataset
   H5Dwrite(datasets_id[Process::me()], datatype, dataspace_id, H5S_ALL, dataset_transfer_plst_, data);
-  Process::Journal() << " Dataset written !" << finl;
+  Cerr << " Dataset written !" << finl;
 
   // Close dataset and dataspace
   for(int p = 0; p < Process::nproc(); p++)
