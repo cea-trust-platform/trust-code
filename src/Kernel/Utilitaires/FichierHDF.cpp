@@ -159,16 +159,16 @@ void FichierHDF::create_datasets(Noms dataset_names, hsize_t length)
 
   // Create the dataset
   for(int i=0; i<dataset_names.size(); i++)
-   {
-     Nom dataset_name = dataset_names[i];
-     hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-     hdf5_error<herr_t>(H5Dclose(dataset_id));
-   }
+    {
+      Nom dataset_name = dataset_names[i];
+      hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      hdf5_error<herr_t>(H5Dclose(dataset_id));
+    }
   // Close dataset and dataspace
   hdf5_error<herr_t>(H5Sclose(dataspace_id));
 
   Cerr << "[HDF5] All datasets created !" << finl;
- }
+}
 
 
 void FichierHDF::fill_dataset(Nom dataset_name, Sortie_Brute& sortie)

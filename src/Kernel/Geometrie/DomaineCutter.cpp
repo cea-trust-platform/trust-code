@@ -1376,12 +1376,12 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             }
 
           if (format == Decouper::HDF5_SINGLE)  // create HDF5 file only once!
-	    {
-	      fic_hdf.create(nom_fichier_hdf5);
+            {
+              fic_hdf.create(nom_fichier_hdf5);
 
-	      // creating datasets
-	      Noms dataset_names;
-	      if(Process::je_suis_maitre())
+              // creating datasets
+              Noms dataset_names;
+              if(Process::je_suis_maitre())
                 {
                   for(int part=0; part<nb_parties_; part++)
                     {
@@ -1404,16 +1404,16 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                             }
                         }
                     }
-		}
-	      envoyer_broadcast(dataset_names,0);
-	      // estimation of an upper bound of the datasets' size
-	      unsigned sz = domaine.nb_som()*dimension*sizeof(double)
-		+ domaine.zone(0).nb_elem()*domaine.zone(0).nb_som_elem()*sizeof(int)
-		+ (domaine.zone(0).nb_faces_frontiere()+domaine.zone(0).nb_faces_joint())*(domaine.zone(0).type_elem().valeur().nb_som_face()+2)*sizeof(int);
-	      sz = Process::mp_max(sz);
-	      fic_hdf.create_datasets(dataset_names, sz);
-	    }
-             
+                }
+              envoyer_broadcast(dataset_names,0);
+              // estimation of an upper bound of the datasets' size
+              unsigned sz = domaine.nb_som()*dimension*sizeof(double)
+                            + domaine.zone(0).nb_elem()*domaine.zone(0).nb_som_elem()*sizeof(int)
+                            + (domaine.zone(0).nb_faces_frontiere()+domaine.zone(0).nb_faces_joint())*(domaine.zone(0).type_elem().valeur().nb_som_face()+2)*sizeof(int);
+              sz = Process::mp_max(sz);
+              fic_hdf.create_datasets(dataset_names, sz);
+            }
+
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
@@ -1514,8 +1514,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   std::string dname = "/zone_" + std::to_string(i_part);
                   if(zones_index[i_part] >=0)
                     dname += "_" + std::to_string(zones_index[i_part]);
-		  Nom datasetname(dname.c_str());
-		  fic_hdf.fill_dataset(datasetname, os_hdf);
+                  Nom datasetname(dname.c_str());
+                  fic_hdf.fill_dataset(datasetname, os_hdf);
 
                 }
               else
