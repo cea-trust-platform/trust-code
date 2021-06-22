@@ -32,7 +32,7 @@ def clean(FILE_NAME, NEW_FILE_NAME):
     tmp_str = " ".join(raw_data)
     tmp_list = tmp_str.split('", "')
     hdf5_text = "".join(tmp_list)
-    
+
     # second stage of cleaning:
     # removing the unreadable binary part at the end of the log of each process    
     separator = '\n============================================================================================================================================================================='
@@ -52,18 +52,16 @@ def clean(FILE_NAME, NEW_FILE_NAME):
             
         journalEnd += len(end)
         #searching the beginning of the log of the next proc
-        begin = "Journal logging started for Proc %d !" % proc
+        begin = "[Proc %d] : Journal logging started" % proc
         journalStart = hdf5_text.find(begin, journalEnd)
 
         #if the next log doesn't exist, we have reached the end of the HDF file
         if journalStart == -1:
             hdf5_text = hdf5_text[:journalEnd] 
             break
-
         #otherwise, we remove everything in between the logs
         hdf5_text = hdf5_text[:journalEnd] + separator*2 + '\n           ' + hdf5_text[journalStart:]
         proc+=1
-        journalStart=journalEnd
 
     write_file(NEW_FILE_NAME, hdf5_text)
     print("The file %s has been written" % NEW_FILE_NAME)

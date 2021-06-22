@@ -443,6 +443,7 @@ void Scatter::readDomainWithoutCollComm(Domaine& dom, Entree& fic )
           Zone zone_tmp;
           zone_tmp.read_zone(fic);
           dom.add(zone_tmp);
+
           fic >> nom;
           if(nom==accfermee)
             break;
@@ -528,7 +529,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
 
   statistiques().begin_count(stats);
-
   ArrOfInt mergedZones(Process::nproc());
   mergedZones = 0;
   bool domain_not_built = true;
@@ -548,13 +548,13 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
             {
               Entree_Brute data_part;
               Domaine part_dom;
-              std::string dname_part = dname + "_" + std::to_string(i);
+              std::string tmp = dname + "_" + std::to_string(i);
 
-              bool exists = fic_hdf.exists(dname_part.c_str());
+              bool exists = fic_hdf.exists(tmp.c_str());
               if(exists)
                 {
-                  Nom dataset_name(dname_part.c_str());
-                  fic_hdf.read_dataset(dataset_name, data_part);
+                  Nom dataset_name(dname.c_str());
+                  fic_hdf.read_dataset(dataset_name, i, data_part);
                   readDomainWithoutCollComm( part_dom, data_part );
                   mergeDomains(dom, part_dom);
 
@@ -571,8 +571,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       else
         {
           Entree_Brute data;
-          Nom dataset_name = dname.c_str();
-          fic_hdf.read_dataset(dname.c_str(), data);
+          fic_hdf.read_dataset("/zone", Process::me(), data);
 
           // Feed TRUST objects:
           readDomainWithoutCollComm(dom, data);
@@ -620,8 +619,8 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       else
         {
           readDomainWithoutCollComm(dom, fichier_binaire );
-          dom.zones().associer_domaine(dom);
 
+          dom.zones().associer_domaine(dom);
           // Renseigne dans quel fichier le domaine a ete lu
           dom.set_fichier_lu(nomentree);
           fichier_binaire >> liste_bords_periodiques;

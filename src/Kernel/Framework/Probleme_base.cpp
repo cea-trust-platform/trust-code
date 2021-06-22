@@ -92,34 +92,6 @@ Probleme_base::~Probleme_base()
 //////////////////////////////////////////////////
 
 
-static void dump_hdf5_stream_to_file(const char* file_name, const Sortie_Brute& sortie)
-{
-  if(Process::je_suis_maitre())
-    {
-      Noms dataset_names;
-      for(int proc=0; proc<Process::nproc(); proc++)
-        {
-          std::string dname = "/sauv_"  + std::to_string(proc);
-          Nom dataset_name(dname.c_str());
-          dataset_names.add(dataset_name);
-        }
-
-      FichierHDF fic_master;
-      fic_master.open(file_name, false);
-      fic_master.extend_datasets(dataset_names, sortie.get_size());
-      fic_master.close();
-    }
-
-  std::string my_dname = "/sauv_"  + std::to_string(Process::me());
-  Nom my_dataset_name(my_dname.c_str());
-
-  FichierHDFPar fic;
-  fic.open(file_name, false);
-  fic.fill_dataset(my_dataset_name, sortie, true);
-  fic.close();
-
-}
-
 void Probleme_base::initialize()
 {
   if (initialized)
@@ -394,10 +366,10 @@ REF(Champ_Generique_base) Probleme_base::findOutputField(const Nom& name) const
 // B.Math. 21/09/2004: quelques initialisations, ca fait pas de mal...
 Probleme_base::Probleme_base() :
   //ficsauv(0),
+  osauv_hdf_(0),
   reprise_effectuee_(0),
   reprise_version_(155),
   restart_file(0),
-  hdf5_file_created_(false),
   initialized(false),
   terminated(false),
   dt_defined(false),
@@ -533,7 +505,6 @@ Entree& Probleme_base::readOn(Entree& is)
 #ifdef MPI_
           Entree_Brute input_data;
           FichierHDFPar fic_hdf; //FichierHDF fic_hdf;
-          //fic_hdf.set_collective_metadata_op(true);
 #endif
 
           if (format_rep == "formatte")
@@ -556,9 +527,7 @@ Entree& Probleme_base::readOn(Entree& is)
                   Process::exit();
                 }
               fic_hdf.open(nomfic, true);
-              std::string dname = "/sauv_" + std::to_string(Process::me());
-              Nom dataset_name(dname.c_str());
-              fic_hdf.read_dataset(dataset_name,input_data);
+              fic_hdf.read_dataset("/sauv", Process::me(),input_data);
 #endif
             }
           else
@@ -609,10 +578,7 @@ Entree& Probleme_base::readOn(Entree& is)
               else
                 {
 #ifdef MPI_
-                  std::string dname = "/sauv_" + std::to_string(Process::me());
-                  Nom dataset_name(dname.c_str());
-                  fic_hdf.read_dataset(dataset_name,input_data);
-
+                  fic_hdf.read_dataset("/sauv", Process::me(), input_data);
 #endif
                 }
             }
@@ -1067,13 +1033,7 @@ void Probleme_base::sauver() const
   statistiques().begin_count(sauvegarde_counter_);
 
   // Si le fichier de sauvegarde n'a pas ete ouvert alors on cree le fichier de sauvegarde:
-  Sortie_Brute osauv_hdf;
-
-  bool binary_file_not_created = Motcle(format_sauv) != "single_hdf" && !ficsauv_.non_nul();
-  //in case of simple backup,
-  //a new file will be created for each backup, thus overwriting the previous one
-  bool hdf_file_not_created = Motcle(format_sauv) == "single_hdf" && !hdf5_file_created_ && restart_file != 1;
-  if (binary_file_not_created || hdf_file_not_created)
+  if ( !ficsauv_.non_nul() && !osauv_hdf_ )
     {
       if (Motcle(format_sauv) == "formatte")
         {
@@ -1092,13 +1052,7 @@ void Probleme_base::sauver() const
           ficsauv_->ouvrir(nom_fich);
         }
       else if (Motcle(format_sauv) == "single_hdf")
-        {
-          FichierHDFPar fic_hdf;
-          fic_hdf.create(nom_fich);
-          fic_hdf.close();
-          hdf5_file_created_ = true;
-
-        }
+        osauv_hdf_ = new Sortie_Brute;
       else
         {
           Cerr << "Error in Probleme_base::sauver() " << finl;
@@ -1113,30 +1067,10 @@ void Probleme_base::sauver() const
             ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
         }
       else if((Motcle(format_sauv) == "single_hdf"))
-        {
-          osauv_hdf << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
-          //creating datasets
-          if(Process::je_suis_maitre())
-            {
-              Noms dataset_names;
-              for(int proc=0; proc<Process::nproc(); proc++)
-                {
-                  std::string dname = "/sauv_"  + std::to_string(proc);
-                  Nom dataset_name(dname.c_str());
-                  dataset_names.add(dataset_name);
-                }
-              FichierHDF fic_master;
-              fic_master.open(nom_fich, false);
-              fic_master.create_datasets(dataset_names, osauv_hdf.get_size(), true /* extendible */ );
-              fic_master.close();
-            }
-        }
+        *osauv_hdf_ << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
       else
         ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
     }
-
-  if((Motcle(format_sauv) == "single_hdf") && restart_file == 1)
-    osauv_hdf << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
 
   // On realise l'ecriture de la sauvegarde
   int bytes;
@@ -1144,7 +1078,7 @@ void Probleme_base::sauver() const
   if(Motcle(format_sauv) != "single_hdf")
     bytes = sauvegarder(ficsauv_.valeur());
   else
-    bytes = sauvegarder(osauv_hdf);
+    bytes = sauvegarder(*osauv_hdf_);
 
   EcritureLectureSpecial::mode_ecr=-1;
 
@@ -1160,31 +1094,13 @@ void Probleme_base::sauver() const
         }
       else if(Motcle(format_sauv)=="single_hdf")
         {
-          osauv_hdf << Nom("fin");
+          *osauv_hdf_ << Nom("fin");
           FichierHDFPar fic_hdf;
           fic_hdf.create(nom_fich);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
           fic_hdf.close();
-          if(Process::je_suis_maitre())
-            {
-              Noms dataset_names;
-              for(int proc=0; proc<Process::nproc(); proc++)
-                {
-                  std::string dname = "/sauv_"  + std::to_string(proc);
-                  Nom dataset_name(dname.c_str());
-                  dataset_names.add(dataset_name);
-                }
-
-              FichierHDF fic_master;
-              fic_master.open(nom_fich, false);
-              fic_master.create_datasets(dataset_names, osauv_hdf.get_size());
-              fic_master.close();
-            }
-
-          std::string my_dname = "/sauv_"  + std::to_string(Process::me());
-          Nom my_dataset_name(my_dname.c_str());
-          fic_hdf.open(nom_fich, false);
-          fic_hdf.fill_dataset(my_dataset_name, osauv_hdf, false);
-          fic_hdf.close();
+          delete osauv_hdf_;
+          osauv_hdf_ = 0;
         }
       else
         {
@@ -1193,10 +1109,6 @@ void Probleme_base::sauver() const
         }
       ficsauv_.detach();
     }
-  else if(Motcle(format_sauv)=="single_hdf")
-    dump_hdf5_stream_to_file(nom_fich, osauv_hdf);
-
-
   Debog::set_nom_pb_actuel(le_nom());
   statistiques().end_count(sauvegarde_counter_, bytes);
 }
@@ -1226,7 +1138,7 @@ void Probleme_base::finir()
 
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
-  if (restart_file!=1 && (ficsauv_.non_nul() || Motcle(format_sauv) == "single_hdf") )
+  if (restart_file!=1 && (ficsauv_.non_nul() || osauv_hdf_) )
     {
       if (Motcle(format_sauv)=="xyz")
         {
@@ -1237,9 +1149,13 @@ void Probleme_base::finir()
         }
       else if(Motcle(format_sauv) == "single_hdf")
         {
-          Sortie_Brute osauv_hdf_;
-          osauv_hdf_ << Nom("fin");
-          dump_hdf5_stream_to_file(nom_fich, osauv_hdf_);
+          *osauv_hdf_ << Nom("fin");
+          FichierHDFPar fic_hdf;
+          fic_hdf.create(nom_fich);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
+          fic_hdf.close();
+          delete osauv_hdf_;
+          osauv_hdf_ = 0;
         }
       else
         {
