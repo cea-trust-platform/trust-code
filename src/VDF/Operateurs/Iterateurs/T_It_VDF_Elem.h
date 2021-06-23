@@ -836,7 +836,6 @@ template <class _TYPE_>  int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
   mp_sum_for_each_item(flux_bords2);
   if (je_suis_maitre())
     {
-      SFichier Flux;
       op_base->ouvrir_fichier(Flux,"",1);
       Flux.add_col(temps);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)

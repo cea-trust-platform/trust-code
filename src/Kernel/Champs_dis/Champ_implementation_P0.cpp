@@ -86,12 +86,10 @@ DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions,
     {
       int cell = polys(i);
       assert(cell<values.dimension_tot(0));
+
       for (int j=0; j<nb_components; j++)
-        {
-          if (cell!=-1)
-            result(i,j) =  values(cell,j);
-          //result(i,j) = (cell == -1) ? 0 : values(cell,j);
-        }
+        if (cell!=-1)
+          result(i,j) = values.nb_dim() == 1 ? values(cell) : values(cell,j); // Some post-processed fields can have nb_dim() == 1
     }
 
   return result;

@@ -114,27 +114,26 @@ public:
   virtual int impr(Sortie& os) const;
 
 protected:
-
   REF(Zone_CoviMAC) la_zone_poly_;
   REF(Zone_Cl_CoviMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_, nu_bord_; //conductivite aux elements, aux faces de bord
-  /* interpolations de nu.grad T de chaque cote de chaque face */
-  mutable IntTab phif_d, phif_j; //indices : phif_j([phif_d(f), phif_d(f + 1)[)
-  mutable DoubleTab phif_c, phif_w, phif_xb; //coeffs :  phif_c([phif_d(f), phif_d(f + 1)[, n) pour la composante n
-  mutable SFichier Flux, Flux_moment, Flux_sum;
-  mutable int nu_constant_, nu_a_jour_ = 0, op_ext_init_ = 0, xwh_a_jour_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / xh,wh,whm,kh a jour / phif a jour
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
-  void update_nu_invh() const; //mise a jour
+
   /* diffusivite aux elems, 1 / h aux faces de bord */
+  void update_nu_invh() const; //mise a jour
   mutable DoubleTab nu_, invh_;
+
   /* tableaux op_ext et pe_ext */
   void init_op_ext() const; //initialisation
 
   /* points harmoniques aux faces */
   void update_xwh() const; //mise a jour
   mutable DoubleTab xh_, wh_, whm_; //position, poids de l'amont, partie constante (1 par composante pour Op_.._Elem, D par composante pour Op_.._Face), partie Echange_contact (melange les composantes)
+
+  mutable int nu_constant_, nu_a_jour_ = 0, op_ext_init_ = 0, xwh_a_jour_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / xh,wh,whm,kh a jour / phif a jour
+
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
 Declare_ref(Op_Diff_CoviMAC_base);

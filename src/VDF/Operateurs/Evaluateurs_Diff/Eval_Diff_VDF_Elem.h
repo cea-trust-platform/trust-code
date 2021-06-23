@@ -197,6 +197,7 @@ public:
   inline void coeffs_face(int, int,const BC&, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
 
   // To overload
+  inline void coeffs_face(int,int, const Neumann_paroi&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int,int, const Dirichlet_paroi_defilante&, DoubleVect& aii, DoubleVect& ajj ) const;
   inline void coeffs_face(int, int,const Dirichlet_paroi_fixe&, DoubleVect& aii, DoubleVect& ajj ) const;
@@ -1297,6 +1298,16 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , int face
   int i = elem_(face,0);
   for (int k=0; k<flux.size(); k++)
     flux(k) = ((i != -1) ? 1 : -1) * la_cl.flux_impose(face-num1,k)*surface(face);
+}
+
+//// coeffs_face avec Neumann_paroi
+//
+template <typename DERIVED_T>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int num1, const Neumann_paroi&,
+                                                       DoubleVect& aii, DoubleVect& ajj ) const
+{
+  aii=0.;
+  ajj=0.;
 }
 
 //// secmem_face avec Neumann_paroi

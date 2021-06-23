@@ -284,28 +284,18 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
   remplir_nu(nu_);
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-
-  // const DoubleVect& porosite_face = zone_VEF.porosite_face();
-
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-
   int n1 = zone_VEF.nb_faces();
-  int nb_comp = 1;
-  int nb_dim = transporte.nb_dim();
+  const int nb_comp = transporte.line_size();
 
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
-
-  int i,j,k,num_face;
-  int elem1,elem2;
+  int i,j,k,num_face,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   // DoubleTab val= 0;
   double val;
   IntVect& tab1 = matrice.get_set_tab1();
   IntVect& tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
-
 
   // On traite les faces bord
   for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
@@ -440,57 +430,61 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
             }
           if ( (j=elem_faces(elem2,i)) > num_face )
             {
-              val= visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
-              for (int nc=0; nc<nb_comp; nc++)
+              // E Saikali : can not factorize more
+              if (nb_comp == 1)
                 {
-                  for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                  for (int nc=0; nc<nb_comp; nc++)
                     {
-                      if (tab2[k]-1==num_face*nb_comp+nc)
-                        coeff(k)+=val;
-                      if (tab2[k]-1==j*nb_comp+nc)
-                        coeff(k)-=val;
-                    }
-                  for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
-                    {
-                      if (tab2[k]-1==num_face*nb_comp+nc)
-                        coeff(k)-=val;
-                      if (tab2[k]-1==j*nb_comp+nc)
-                        coeff(k)+=val;
+                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+                      for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                        {
+                          if (tab2[k]-1==num_face*nb_comp+nc)
+                            coeff(k)+=val;
+                          if (tab2[k]-1==j*nb_comp+nc)
+                            coeff(k)-=val;
+                        }
+                      for (k=tab1[j]-1; k<tab1[j+1]-1; k++)
+                        {
+                          if (tab2[k]-1==num_face*nb_comp+nc)
+                            coeff(k)-=val;
+                          if (tab2[k]-1==j*nb_comp+nc)
+                            coeff(k)+=val;
+                        }
                     }
                 }
+              else
+                {
+                  val= visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                  for (int nc=0; nc<nb_comp; nc++)
+                    {
+                      for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
+                        {
+                          if (tab2[k]-1==num_face*nb_comp+nc)
+                            coeff(k)+=val;
+                          if (tab2[k]-1==j*nb_comp+nc)
+                            coeff(k)-=val;
+                        }
+                      for (k=tab1[j*nb_comp+nc]-1; k<tab1[j*nb_comp+nc+1]-1; k++)
+                        {
+                          if (tab2[k]-1==num_face*nb_comp+nc)
+                            coeff(k)-=val;
+                          if (tab2[k]-1==j*nb_comp+nc)
+                            coeff(k)+=val;
+                        }
+                    }
+                }
+
             }
         }
     }
-  // Cerr << "la matrice de diffusion " << matrice << finl;
+
 }
 
 void Op_Diff_VEF_Face_Q1::contribue_au_second_membre(DoubleTab& resu ) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-
-  //  const IntTab& elem_faces = zone_VEF.elem_faces();
-  //  const DoubleTab& face_normales = zone_VEF.face_normales();
-  //  const DoubleTab& facette_normales = zone_VEF.facette_normales();
-  //  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  //  const Zone& zone = zone_VEF.zone();
-  //  const int nb_faces = zone_VEF.nb_faces();
-  //  const int nfa7 = zone_VEF.type_elem().nb_facette();
-  //  const int nb_elem = zone_VEF.nb_elem();
-  //  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-
-
-  //  const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
-  //  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
-
-  //  int nfac = zone.nb_faces_elem();
-  //  int nsom = zone.nb_som_elem();
-  //  int nb_som_facette = zone.type_elem().nb_som_face();
-  int nb_comp = 1;
-  int nb_dim = resu.nb_dim();
-
-  if(nb_dim==2)
-    nb_comp=resu.dimension(1);
+  const int nb_comp=resu.line_size();
 
   // Partie imposee :
   for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)

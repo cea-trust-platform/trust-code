@@ -70,7 +70,6 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
     return 0;
 
   ref_inco_ = inco;
-
   mettre_a_jour(tps);
 
   return 1;
@@ -109,7 +108,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
   if( dim != 3)
     {
       Cerr << "Error the dimension must be equal to 3" << finl;
-      exit();
+      Process::exit();
     }
   Motcle motlu;
   Motcles les_mots(7);
@@ -126,7 +125,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
     {
       Cerr << "Error while reading Champ_front_synt" << finl;
       Cerr << "We expected a { instead of " << motlu << finl;
-      exit();
+      Process::exit();
     }
   int cpt = 0;
   is >> motlu;
@@ -190,7 +189,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
             Cerr << "Error while reading Champ_front_synt" << finl;
             Cerr << motlu << "is not understood."<< finl;
             Cerr << "We are expecting a word among " << les_mots << finl;
-            exit();
+            Process::exit();
           }
         }
       is >> motlu;
@@ -199,21 +198,14 @@ Entree& Champ_front_synt::readOn(Entree& is)
     {
       Cerr << "Error while reading Champ_front_synt: wrong number of parameters" << finl;
       Cerr << "You should specify all these parameters: " << les_mots << finl;
-      exit();
+      Process::exit();
     }
   if( lenghtScale == 0 || nbModes == 0 || turbKinEn == 0 || p == 0 || timeScale == 0)
     {
       Cerr << "Error while reading Champ_front_synt" << finl;
       Cerr << "There is at least one parameter among: timeScale, lenghtScale, nbModes and turbKinEn set to 0" << finl;
-      exit();
+      Process::exit();
     }
-
-  for(int i=0; i<dim; i++)
-    {
-      Cerr << dir_fluct(i) << " ";
-    }
-  Cerr << finl;
-
 
   return is;
 }
@@ -245,25 +237,6 @@ void Champ_front_synt::mettre_a_jour(double temps)
   const Equation_base& equ = ref_inco_.valeur().equation();
   const Milieu_base& mil = equ.milieu();
 
-  /*
-    Cerr << "*************************************************" << finl;
-    Cerr << "mil = " << mil.masse_volumique().valeur()(0,0) << finl;
-    Cerr << "temps = " << equ.inconnue().temps() << finl;
-    Cerr << "dt = " << equ.schema_temps().pas_de_temps() << finl;
-    Cerr << "visco cinematique = " << ref_cast(Fluide_Incompressible,mil).viscosite_cinematique().valeur()(0,0) << finl;
-    Cerr << "visco dynamique = " << ref_cast(Fluide_Incompressible,mil).viscosite_dynamique().valeur()(0,0) << finl;
-    Cerr << "*************************************************" << finl;
-
-    const Champ_Don& visco = ref_cast(Fluide_Incompressible,mil).viscosite_dynamique();
-    if (sub_type(Champ_Uniforme,visco.valeur()))
-      Cerr << "visco dynamique = " << visco(0,0) << finl;
-    else
-      {
-        const DoubleTab& val_visco = visco.valeur().valeurs();
-        Cerr << "valeurs viscosite = " << val_visco << finl;\
-      }
-  */
-
   ////////////////////////////////////////////
   /// 	   donnees d'initialisation        ///
   ////////////////////////////////////////////
@@ -279,13 +252,10 @@ void Champ_front_synt::mettre_a_jour(double temps)
   tabFaces.calculer_surfaces(aireFaces);
 
   double sum_aire=0.;
-  for(int i=0; i<nb_face; i++)
-    sum_aire += aireFaces[i];
+  for(int i=0; i<nb_face; i++) sum_aire += aireFaces[i];
 
   sum_aire = mp_sum(sum_aire);
   double dmin = sum_aire / mp_sum(nb_face) ;
-
-  //Cerr << "******" << dmin << finl;
   double turbScale = sqrt(2*turbKinEn/3);
   double eps = pow(turbKinEn,1.5);
 
@@ -315,7 +285,6 @@ void Champ_front_synt::mettre_a_jour(double temps)
   DoubleVect alpha(nbModes);
   DoubleVect psi(nbModes);
   DoubleVect teta(nbModes);
-
 
   ////////////////////////////////////////////
   /// generation aleatoire des angles      ///
@@ -385,7 +354,6 @@ void Champ_front_synt::mettre_a_jour(double temps)
             }
         }
 
-
       //////////////////////////////////////
       /// MISE EN PLACE AUTOCORRELATION  ///
       //////////////////////////////////////
@@ -400,35 +368,5 @@ void Champ_front_synt::mettre_a_jour(double temps)
 
     }
 
-
-  // Pour afficher les valeurs de la vitesse comme un fichier ".son" dans le fichier test.txt
-  // Chemin a definir
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /*
-  double debit_vit_moy = 0;
-  double debit = 0;
-  for(int i = 0; i < nb_face; i++)
-    {
-      debit += tab(i, 0) * aireFaces(i);//le debit est calcule pour une normal = e_x (pas de cas general)
-      debit_vit_moy += moyenne(0) * aireFaces(i);
-    }
-
-    Cerr << "temps : "<< endl;
-    Cerr << "\t Debit : " << debit << endl;
-    Cerr << "\t Debit vit moy : " << debit_vit_moy << endl;
-
-    std::string const nomFichier("CHEMIN_DU_FICHIER/test.txt");
-    std::ofstream monFichier(nomFichier.c_str(), ios::app);
-    monFichier << (double)temps << " ";
-    for(int i = 0; i < nb_face; i++)
-      {
-        monFichier << tab(i,0) << " " << tab(i,1) << " " << tab(i,2) << " ";
-      }
-    monFichier << '\n';*/
-  //////////////////////////////////////////////////////////////////////////////////////////////
-
   tab.echange_espace_virtuel();
-
 }
-
-

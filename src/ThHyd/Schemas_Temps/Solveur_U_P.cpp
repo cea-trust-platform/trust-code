@@ -39,7 +39,6 @@
 #include <Dirichlet.h>
 #include <Matrice_Diagonale.h>
 #include <Dirichlet_homogene.h>
-#include <Zone_Cl_PolyMAC.h>
 #include <Neumann_sortie_libre.h>
 #include <Symetrie.h>
 #include <Zone_VF.h>

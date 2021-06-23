@@ -400,28 +400,29 @@ void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
   for (int i = 0; i < size; i++)
     {
       int face = num_premiere_face() + i;
-      for (int n = 0; n < min(M, N); n++) x.addr()[N * i + n] = y.addr()[M * face + n];
+      for (int n = 0; n < N; n++)
+        x.addr()[N * i + n] = y.addr()[M * face + n];
     }
 }
 
 void Frontiere::trace_som_distant(const DoubleTab&, DoubleTab&) const
 {
   Cerr<<que_suis_je()<<"::trace_som_distant not implemented "<<finl;
-  exit();
+  Process::exit();
 }
 
 void Frontiere::trace_elem_distant(const DoubleTab&, DoubleTab&) const
 {
   Cerr<<que_suis_je()<<"::trace_elem_distant not implemented "<<finl;
-  exit();
+  Process::exit();
 }
 void Frontiere::trace_face_distant(const DoubleTab&, DoubleTab&) const
 {
   Cerr<<que_suis_je()<<"::trace_face_distant not implemented "<<finl;
-  exit();
+  Process::exit();
 }
 void Frontiere::trace_face_distant(const DoubleVect&, DoubleVect&) const
 {
   Cerr<<que_suis_je()<<"::trace_face_distant not implemented "<<finl;
-  exit();
+  Process::exit();
 }
