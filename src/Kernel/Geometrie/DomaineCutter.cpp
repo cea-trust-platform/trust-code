@@ -1404,14 +1404,21 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                             }
                         }
                     }
+
 		}
-	      envoyer_broadcast(dataset_names,0);
+
 	      // estimation of an upper bound of the datasets' size
-	      unsigned sz = domaine.nb_som()*dimension*sizeof(double)+domaine.zone(0).nb_elem()*domaine.zone(0).nb_som_elem()*sizeof(int); 
-	      sz = sz / (nb_parties_/Process::nproc()) * 2;
-	      sz+=(domaine.zone(0).nb_faces_frontiere()+domaine.zone(0).nb_faces_joint())*(domaine.zone(0).type_elem().valeur().nb_som_face()+2)*sizeof(int);
-	      sz = Process::mp_max(sz);
-	      fic_hdf.create_datasets(dataset_names, sz);
+	      int ipart = 0;
+	      while(!myZones[ipart]) ipart++;
+	      Domaine dom_tmp;
+	      construire_sous_domaine(ipart, dc_correspondance, dom_tmp);
+	      Sortie_Brute os_tmp;
+	      writeData(dom_tmp, os_tmp);
+	      long sz_ = os_tmp.get_size();
+	      sz_ *= 1.5;
+	      sz_ = Process::mp_max(sz_);
+	      envoyer_broadcast(dataset_names,0);
+	      fic_hdf.create_datasets(dataset_names, sz_);
 	    }
              
         }
