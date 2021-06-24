@@ -36,11 +36,6 @@ namespace ICoCo
      */
     TrioField(const TrioField& OtherField);
 
-    /*! @brief Assignment operator - FORBIDDEN.
-     * @throws ICoCo::NotImplemented
-     */
-    TrioField& operator=(const TrioField& NewField);
-
     /*! @brief Destructor.
      */
     ~TrioField();
@@ -63,6 +58,11 @@ namespace ICoCo
     /*! @brief Used to simulate a 0D geometry (Cathare/Trio for example).
      */
     void dummy_geom();
+
+    /*! @brief Assignment operator - FORBIDDEN.
+     * @throws ICoCo::NotImplemented
+     */
+    TrioField& operator=(const TrioField& NewField);
 
     /*! @brief Save field to a .field file
      */

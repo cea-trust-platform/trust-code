@@ -7,6 +7,7 @@
 //    https://github.com/cea-trust-platform/icoco-coupling
 
 #ifndef ICoCo_DeclSpec_included
+#define ICoCo_DeclSpec_included
 
 #ifdef WIN32
 #  if defined medicoco_EXPORTS
