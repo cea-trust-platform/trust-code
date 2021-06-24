@@ -1378,51 +1378,51 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           if (format == Decouper::HDF5_SINGLE)  // create HDF5 file only once!
             {
               fic_hdf.create(nom_fichier_hdf5);
-	      if(Process::nproc() > 1)
-		{
-              // creating datasets
-		  Noms dataset_names;
-		  if(Process::je_suis_maitre())
-		    {
-		      for(int part=0; part<nb_parties_; part++)
-			{
-			  if(zones_index[part] == -1)
-			    {
-			      std::string dname = "/zone_"  + std::to_string(part);
-			      Nom dataset_name(dname.c_str());
-			      dataset_names.add(dataset_name);
-			    }
-			  else
-			    {
-			      for(int proc=0; proc < Process::nproc(); proc++)
-				{
-				  if(zones_indices[proc][part] >=0)
-				    {
-				      std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
-				      Nom dataset_name(dname.c_str());
-				      dataset_names.add(dataset_name);
-				    }
-				}
-			    }
-			}
+              if(Process::nproc() > 1)
+                {
+                  // creating datasets
+                  Noms dataset_names;
+                  if(Process::je_suis_maitre())
+                    {
+                      for(int part=0; part<nb_parties_; part++)
+                        {
+                          if(zones_index[part] == -1)
+                            {
+                              std::string dname = "/zone_"  + std::to_string(part);
+                              Nom dataset_name(dname.c_str());
+                              dataset_names.add(dataset_name);
+                            }
+                          else
+                            {
+                              for(int proc=0; proc < Process::nproc(); proc++)
+                                {
+                                  if(zones_indices[proc][part] >=0)
+                                    {
+                                      std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
+                                      Nom dataset_name(dname.c_str());
+                                      dataset_names.add(dataset_name);
+                                    }
+                                }
+                            }
+                        }
 
-		    }
+                    }
 
-		  // estimation of an upper bound of the datasets' size
-		  int ipart = 0;
-		  while(!myZones[ipart]) ipart++;
-		  Domaine dom_tmp;
-		  construire_sous_domaine(ipart, dc_correspondance, dom_tmp);
-		  Sortie_Brute os_tmp;
-		  writeData(dom_tmp, os_tmp);
-		  long sz_ = os_tmp.get_size();
-		  sz_ *= 1.5;
-		  sz_ = Process::mp_max(sz_);
-		  envoyer_broadcast(dataset_names,0);
-		  fic_hdf.create_datasets(dataset_names, sz_);
-		}
-	    }
-             
+                  // estimation of an upper bound of the datasets' size
+                  int ipart = 0;
+                  while(!myZones[ipart]) ipart++;
+                  Domaine dom_tmp;
+                  construire_sous_domaine(ipart, dc_correspondance, dom_tmp);
+                  Sortie_Brute os_tmp;
+                  writeData(dom_tmp, os_tmp);
+                  long sz_ = os_tmp.get_size();
+                  sz_ *= 1.5;
+                  sz_ = Process::mp_max(sz_);
+                  envoyer_broadcast(dataset_names,0);
+                  fic_hdf.create_datasets(dataset_names, sz_);
+                }
+            }
+
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
@@ -1520,14 +1520,14 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   Sortie_Brute os_hdf;
                   writeData(sous_domaine, os_hdf);
 
-		  std::string dname = "/zone_" + std::to_string(i_part);
-		  if(zones_index[i_part] >=0)
-		    dname += "_" + std::to_string(zones_index[i_part]);
-		  Nom datasetname(dname.c_str());
-		  if(Process::nproc() > 1)
-		    fic_hdf.fill_dataset(datasetname, os_hdf);
-		  else
-		    fic_hdf.create_and_fill_dataset_SW(datasetname, os_hdf);
+                  std::string dname = "/zone_" + std::to_string(i_part);
+                  if(zones_index[i_part] >=0)
+                    dname += "_" + std::to_string(zones_index[i_part]);
+                  Nom datasetname(dname.c_str());
+                  if(Process::nproc() > 1)
+                    fic_hdf.fill_dataset(datasetname, os_hdf);
+                  else
+                    fic_hdf.create_and_fill_dataset_SW(datasetname, os_hdf);
 
                 }
               else
