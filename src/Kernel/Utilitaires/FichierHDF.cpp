@@ -281,7 +281,6 @@ void FichierHDF::create_and_fill_dataset_SW(Nom dataset_name, Sortie_Brute& sort
   H5Dclose(dataset_id);
   H5Sclose(dataspace_id);
 
-  Cerr << "[HDF5] All datasets closed !" << finl;
 }
 
 
