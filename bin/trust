@@ -701,17 +701,7 @@ then
     if [ "$VALGRIND_STRICT" != "1" ]
     then
         suppressions="--gen-suppressions=all"
-	if [ "`$Mpirun --version 2>&1 | grep 1.2.9`" != "" ]
-	then
-	   # Ajout de suppressions supplementaires pour OpenMPI 1.2.9
-           # Ajout d'un fichier de suppressions supplementaires
-	   cat $TRUST_ROOT/Outils/valgrind/suppressions_openmpi_129 $TRUST_ROOT/Outils/valgrind/suppressions $suppression_file > $TRUST_TMP/suppressions
-	   suppressions=$suppressions" --suppressions=$TRUST_TMP/suppressions"
-	else
-           # Ajout d'un fichier de suppressions supplementaires
-	   cat $TRUST_ROOT/Outils/valgrind/suppressions $suppression_file > $TRUST_TMP/suppressions
-	   suppressions=$suppressions" --suppressions=$TRUST_TMP/suppressions"
-	fi
+	    suppressions=$suppressions" --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions"
     fi
     if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
     then
