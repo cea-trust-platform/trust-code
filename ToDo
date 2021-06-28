@@ -1,39 +1,26 @@
 Version	Qui				Tache
-1.8.3   trust@cea.fr            Valider le commit 0f14b8a75682 de Yannick qui a des repercusions sur TrioCFD (cas FTD_couplage2) et Cath3D (echanges avec Celine)
-1.8.3   pierre.ledac@cea.fr	    Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
-1.8.3   pierre.ledac@cea.fr     Revenir en arriere sur single_hdf par defaut au dela de 5000 coeurs si HDF5 corrompu en cas de crash (faire un test)
-1.8.3   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
-1.8.3   pierre.ledac@cea.fr     Supprimer le format LATA V1
-1.8.3   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
-1.8.3   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
-1.8.3   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
-1.8.3   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
-1.8.3   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
-1.8.3   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
-1.8.3   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
-1.8.3   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
-1.8.3   trust@cea.fr            LDC: verifier le dossier extra de 1.8.3 sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
-1.8.3   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
-1.8.3   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
-1.8.3   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
-1.8.3   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
-
-
-1.8.x   trust@cea.fr            Ajouter -DENABLE_NETGEN=ON a gmsh pour activer netgen
-1.8.x   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
+1.8.x   trust@cea.fr            retirer --disable-shared de l installer openmpi pour que docond_VEF_3D_ICoCo_py passe
+1.8.x   trust@cea.fr            mettre a jour la version salome lors du configure -download-salome
+1.8.x   trust@cea.fr            corriger install de petsc sur compil de jean-zay
+1.8.x   trust@cea.fr            Ajouter -DENABLE_NETGEN=ON a gmsh pour activer le module netgen
+1.8.x   trust@cea.fr            Creer un dossier NUIT par version sur cluster
 1.8.x   adrien.bruneton@cea.fr  Ajout d'echange_espace_virtuel dans Champ_front_xyz_debit.cpp. cf commit 76e425581
-1.8.x   trust@cea.fr            Corriger les problemes de flica5 et de TrioCFD (Rayonnement_Cuve_2D en parallele) sur Fedora 34
+1.8.x   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
+1.8.x   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
+1.8.x   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
+1.8.x   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
+1.8.x   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
+1.8.x   pierre.ledac@cea.fr	    Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
 1.8.x   pierre.ledac@cea.fr     Doxygen update + remove #ifdef DOXYGEN_SHOULD_SKIP_THIS from Eval_DiffF22_VDF_const_Elem.h
-1.8.x   pierre.ledac@cea.fr     LDC: Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
-1.8.x   pierre.ledac@cea.fr     LDC: Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
-1.8.x   adrien.bruneton@cea.fr  LDC: ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
-1.8.x   adrien.bruneton@cea.fr  LDC: Nettoyer le vieux code med fichier
-1.8.x   adrien.bruneton@cea.fr  LDC: Revoir LireMED pour ne pas utiliser les familles mais que les groupes
+1.8.x   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
+1.8.x   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
+1.8.x   trust@cea.fr            Corriger les problemes de F5 et de TrioCFD (Rayonnement_Cuve_2D en parallele) sur Fedora 34
+1.8.x   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE sur un cluster
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 184" (cf DI 188128)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
-1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation clusters (cf di 188130)
+1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation clusters
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
 1.8.x   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.x   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
@@ -43,6 +30,6 @@ Version	Qui				Tache
 1.8.x   trust@cea.fr            LDC: verifier le dossier extra de 1.8.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
 1.8.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.8.x   pierre.ledac@cea.fr     LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
-1.8.x   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
+1.8.x   trust@cea.fr            LDC: envoyer BDL
 1.8.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.8.x   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
