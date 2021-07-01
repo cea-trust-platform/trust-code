@@ -13,7 +13,27 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
-	-I$(TRUST_ROOT)/src/ThHyd/Quasi_Compressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Quasi_Compressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Loi_Etat\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Problems\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable\
 	-I$(TRUST_ROOT)/src/ThHyd\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\

@@ -341,12 +341,14 @@
  Field_base Field_base Field_base.h
  FloatTab FloatTab FloatTab.h
  Fluide_base Fluide_base Fluide_base.h
+ Fluide_Dilatable Fluide_Dilatable Fluide_Dilatable.h
  Fluide_Incompressible Fluide_Incompressible Fluide_Incompressible.h
  Fluide_Ostwald Fluide_Ostwald Fluide_Ostwald.h
  Fluide_Quasi_Compressible Fluide_Quasi_Compressible Fluide_Quasi_Compressible.h
  Fluide_reel_base Fluide_reel_base Fluide_reel_base.h
  Fluide_sodium_gaz Fluide_sodium_gaz Fluide_sodium_gaz.h
  Fluide_sodium_liquide Fluide_sodium_liquide Fluide_sodium_liquide.h
+ Fluide_Weakly_Compressible Fluide_Weakly_Compressible Fluide_Weakly_Compressible.h
  Flux_interfacial_base Flux_interfacial_base Flux_interfacial_base.h
  Flux_interfacial_Coef_Constant Flux_interfacial_Coef_Constant Flux_interfacial_Coef_Constant.h
  Flux_interfacial_P0_CoviMAC Flux_interfacial_CoviMAC Flux_interfacial_CoviMAC.h

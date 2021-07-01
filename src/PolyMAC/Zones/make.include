@@ -16,6 +16,14 @@ Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBOSQP/include -I$(TRUST_ROOT)/include/b
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol
