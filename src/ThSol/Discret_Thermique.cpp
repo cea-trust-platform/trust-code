@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,4 +109,11 @@ void Discret_Thermique::Flux_Chaleur_Turb(const Schema_Temps_base& sch,
   discretiser_champ("vitesse",z.valeur(),"Flux_Chaleur_Turbulente","truc1",dimension,sch.nb_valeurs_temporelles(),
                     sch.temps_courant(),ch);
 
+}
+
+void Discret_Thermique::flux_neutronique(const Schema_Temps_base& sch,
+                                         Zone_dis& z, Champ_Inc& ch, int nb_comp) const
+{
+  Cerr << "Discretisation du flux neutronique" << finl;
+  discretiser_champ("temperature",z.valeur(),"flux_neutronique","m-2.s-1",nb_comp,sch.nb_valeurs_temporelles(),sch.temps_courant(),ch);
 }

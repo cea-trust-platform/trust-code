@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@ class Discret_Thermique : public Discretisation_base
 public :
 
   void temperature(const Schema_Temps_base&, Zone_dis&, Champ_Inc&, int nb_comp = 1) const;
+  void flux_neutronique(const Schema_Temps_base& sch, Zone_dis& z, Champ_Inc& ch, int nb_comp=1) const;
 //  virtual void t_paroi(const Zone_dis& z,const Zone_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
   void Fluctu_Temperature(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const ;
   void Flux_Chaleur_Turb(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
