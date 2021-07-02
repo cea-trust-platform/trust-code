@@ -4,22 +4,35 @@
 #     - the name of the test case involved
 #     - the OS of the machine involved (and the hostname if you want)
 
+
 ###
-###  PETSc
+### SCOTCH
 ###
-# Triggered by test case using Scotch ordering or partitioning
-# Scotch
+#
+# 01/07/2021: Suppression for PTScotch (parallel domain cutting) 
+# Triggered by Parallel_Domain_Cutting_VEF and Parallel_Domain_Cutting on CentOS7 (altair)
+#
 {
-   <Scotch>
+   <Parallel_SCOTCH>
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   ...
+   fun:yy*
+   fun:yyrestart
    fun:_SCOTCHstratParserInit
    fun:_SCOTCHstratParserParse
-   fun:_SCOTCHstratInit
+   ...
+   fun:SCOTCH_stratDgraphMap
+   fun:SCOTCH_stratDgraphMapBuild
+   fun:SCOTCH_dgraphMapCompute
+   fun:SCOTCH_dgraphMap
+   fun:SCOTCH_dgraphPart
    ...
 }
+
+###
+###  PETSc
+###
 # Triggered by test case using orderings with MUMPS:
 {
    <MUMPS>
@@ -949,4 +962,6 @@
    fun:progress_engine
    fun:start_thread
 }
+
+
 
