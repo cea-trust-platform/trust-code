@@ -1,5 +1,6 @@
 # Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #
 # PARALLEL OK 9 #
+# VALGRIND NOT #
 
 dimension 3
 
