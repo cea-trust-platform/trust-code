@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.8.4_beta : Changes since version 1.8.3 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.8.3 : Changes since version 1.8.2 :
 -------------------------------------------------------------
 21/06/21 (TRUST)  Add trust -eclipse-baltik option that helps to configure easily Eclipse project with a BALTIK sources.

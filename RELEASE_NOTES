@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.8.3 : Enhancements, modifications and corrected bugs since version 1.8.2 :
 --------------------------------------------------------------------------------------------------
 15/06/21 (TRUST)  New feature : Add env_for_python.sh environment file which allows to load MEDCoupling, trusticoco and TRUST_STATS_JUPYTER Python environment
