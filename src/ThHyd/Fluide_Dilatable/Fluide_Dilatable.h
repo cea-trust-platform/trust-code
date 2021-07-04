@@ -24,6 +24,8 @@
 #define Fluide_Dilatable_included
 
 #include <Fluide_Incompressible.h>
+#include <Ref_Champ_Inc.h>
+#include <Champ_Inc.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,6 +44,34 @@ class Fluide_Dilatable : public Fluide_Incompressible
 
 public :
   Fluide_Dilatable();
+  void verifier_coherence_champs(int& err,Nom& message);
+  void set_Cp(double);
+  void update_rho_cp(double temps);
+  virtual void checkTraitementPth(const Zone_Cl_dis&);
+  inline const Champ_Inc& inco_chaleur() const { return inco_chaleur_.valeur(); }
+  inline Champ_Inc& inco_chaleur() { return inco_chaleur_.valeur(); }
+  inline const Champ_Inc& vitesse() const { return vitesse_.valeur(); }
+  inline const Champ_Don& pression_tot() const { return pression_tot_; }
+  inline Champ_Don& pression_tot() { return pression_tot_; }
+  inline const Champ_Don& mu_sur_Schmidt() const { return mu_sur_Sc; }
+  inline Champ_Don& mu_sur_Schmidt() { return mu_sur_Sc; }
+  inline const Champ_Don& nu_sur_Schmidt() const { return nu_sur_Sc; }
+  inline Champ_Don& nu_sur_Schmidt() { return nu_sur_Sc;  }
+  inline double pression_th() const { return Pth_;  }
+  inline double pression_thn() const { return Pth_n; }
+  inline double pression_th1() const { return Pth1; }
+  inline void set_pression_th(double Pth) { Pth_n = Pth_ = Pth; }
+
+protected :
+  int traitement_PTh; // flag pour le traitement de la pression thermo
+  double Pth_;  //Pression thermodynamique
+  double Pth_n;  //Pression thermodynamique a l'etape precedente
+  double Pth1; //Pression thermodynamique calculee pour conserver la masse
+  REF(Champ_Inc) inco_chaleur_;
+  REF(Champ_Inc) vitesse_;
+  REF(Champ_Inc) pression_;
+  Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
+  mutable DoubleTab tab_W_old_;
 
 };
 

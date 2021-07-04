@@ -24,7 +24,7 @@
 #define Convection_Diffusion_Chaleur_QC_included
 
 #include <Convection_Diffusion_std.h>
-class Fluide_Incompressible;
+class Fluide_Dilatable;
 #include <Fluide_Quasi_Compressible.h>
 
 
@@ -48,13 +48,13 @@ public :
   Convection_Diffusion_Chaleur_QC();
   void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&);
-  void associer_fluide(const Fluide_Incompressible& );
+  void associer_fluide(const Fluide_Dilatable& );
   inline const Champ_Inc& inconnue() const;
   inline Champ_Inc& inconnue();
   void discretiser();
   const Milieu_base& milieu() const;
-  const Fluide_Incompressible& fluide() const;
-  Fluide_Incompressible& fluide();
+  const Fluide_Dilatable& fluide() const;
+  Fluide_Dilatable& fluide();
   Milieu_base& milieu();
   void associer_milieu_base(const Milieu_base& );
   virtual int impr(Sortie& os) const;

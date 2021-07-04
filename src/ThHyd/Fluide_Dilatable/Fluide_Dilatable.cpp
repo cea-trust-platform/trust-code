@@ -21,10 +21,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Dilatable.h>
+#include <Champ_Uniforme.h>
+#include <Zone_Cl_dis.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Dilatable,"Fluide_Dilatable",Fluide_Incompressible);
 
-Fluide_Dilatable::Fluide_Dilatable() {}
+Fluide_Dilatable::Fluide_Dilatable():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1(-1.) {}
 
 // Description:
 //    Ecrit les proprietes du fluide sur un flot de sortie.
@@ -66,4 +68,112 @@ Entree& Fluide_Dilatable::readOn(Entree& is)
 {
   Fluide_Incompressible::readOn(is);
   return is;
+}
+
+// Description:
+//    Verifie que les champs lus l'ont ete correctement.
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception: l'une des proprietes (rho mu Cp ou lambda) du fluide n'a pas ete definie
+// Effets de bord:
+// Postcondition:
+void Fluide_Dilatable::verifier_coherence_champs(int& err,Nom& msg)
+{
+  msg="";
+  if (rho.non_nul())
+    {
+    }
+  else
+    {
+      msg += "The density rho has not been specified. \n";
+      err = 1;
+    }
+  if (mu.non_nul())
+    {
+      if (sub_type(Champ_Uniforme,mu.valeur()))
+        {
+          if (mu(0,0) <= 0)
+            {
+              msg += "The dynamical viscosity mu is not striclty positive. \n";
+              err = 1;
+            }
+        }
+    }
+  else
+    {
+      msg += "The dynamical viscosity mu has not been specified. \n";
+      err = 1;
+    }
+  if (lambda.non_nul())
+    {
+    }
+  else
+    {
+      msg += "The conductivity lambda has not been specified. \n";
+      err = 1;
+    }
+  if (Cp.non_nul())
+    {
+    }
+  else
+    {
+      msg += "The heat capacity Cp has not been specified. \n";
+      err = 1;
+    }
+  Milieu_base::verifier_coherence_champs(err,msg);
+}
+
+// Description:
+//    Complete le fluide avec un Cp constant
+// Precondition:
+// Parametre: double Cp
+//    Signification: le cp du fluide
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: lecture
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Fluide_Dilatable::set_Cp(double Cp_)
+{
+  Cp.typer("Champ_Uniforme");
+  Champ_Uniforme& ch_Cp = ref_cast(Champ_Uniforme,Cp.valeur());
+  ch_Cp.dimensionner(1,1);
+  DoubleTab& tab_Cp = Cp.valeurs();
+  tab_Cp(0,0) = Cp_;
+}
+
+void Fluide_Dilatable::update_rho_cp(double temps)
+{
+  rho_cp_comme_T_.changer_temps(temps);
+  rho_cp_comme_T_.valeur().changer_temps(temps);
+  DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
+  if (sub_type(Champ_Uniforme,rho))
+    rho_cp = rho.valeurs()(0, 0);
+  else
+    {
+      // AB: rho_cp = rho.valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
+      rho_cp = 1.;
+      tab_multiply_any_shape(rho_cp, rho.valeurs());
+    }
+  if (sub_type(Champ_Uniforme, Cp.valeur()))
+    rho_cp *= Cp.valeurs()(0, 0);
+  else
+    tab_multiply_any_shape(rho_cp,Cp.valeurs());
+}
+
+void Fluide_Dilatable::checkTraitementPth(const Zone_Cl_dis& zone_cl)
+{
+  Cerr << "The method checkTraitementPth must be overloaded in the child classes of Fluide_Dilatable" << finl;
+  Process::exit();
 }

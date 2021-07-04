@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Weakly_Compressible.h>
+#include <Zone_Cl_dis.h>
+#include <Neumann_sortie_libre.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable);
 
@@ -67,4 +69,41 @@ Entree& Fluide_Weakly_Compressible::readOn(Entree& is)
 {
   Fluide_Dilatable::readOn(is);
   return is;
+}
+
+void Fluide_Weakly_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
+{
+  /*
+   * traitement_PTh=0 => pression laissee cste.
+   * traitement_PTh=1 => pression calculee pour conserver la masse
+   */
+  int pression_imposee=0;
+  int size=zone_cl.les_conditions_limites().size();
+  assert(size!=0);
+  for (int n=0; n<size; n++)
+    {
+      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
+      if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
+        {
+          pression_imposee=1;
+        }
+    }
+  if (pression_imposee && traitement_PTh!=0)
+    {
+      if (Process::je_suis_maitre())
+        {
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
+        }
+      Process::exit();
+    }
+  if (!pression_imposee && traitement_PTh!=1)
+    {
+      if (Process::je_suis_maitre())
+        {
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
+        }
+      Process::exit();
+    }
 }

@@ -40,15 +40,8 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 Fluide_Quasi_Compressible::Fluide_Quasi_Compressible()
 {
   omega_drho_dt_=1;
-  traitement_PTh=0;
   traitement_rho_gravite_=0;
   temps_debut_prise_en_compte_drho_dt_=-DMAXFLOAT;
-  /*
-    Noms& nom=champs_compris_.liste_noms_compris();
-    nom.dimensionner(2);
-    nom[0]="pression_tot";
-    nom[1]="mu_sur_Schmidt";
-  */
 }
 
 // Description:
@@ -86,7 +79,7 @@ Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
 //      [Beta_th type_champ bloc de lecture de champ]
 //      [Beta_co type_champ bloc de lecture de champ]
 //     }
-// cd Fluide_Incompressible::readOn
+// cd Fluide_Dilatable::readOn
 // Precondition:
 // Parametre: Entree& is
 //    Signification: un flot d'entree
@@ -107,7 +100,7 @@ Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
 
 void Fluide_Quasi_Compressible::set_param(Param& param)
 {
-  Fluide_Incompressible::set_param(param);
+  Fluide_Dilatable::set_param(param);
   param.ajouter("temps_debut_prise_en_compte_drho_dt",&temps_debut_prise_en_compte_drho_dt_);
   param.ajouter("omega_relaxation_drho_dt",&omega_drho_dt_);
   param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
@@ -242,7 +235,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       return -1;
     }
   else
-    return Fluide_Incompressible::lire_motcle_non_standard(mot,is);
+    return Fluide_Dilatable::lire_motcle_non_standard(mot,is);
 }
 
 // Description:
@@ -329,30 +322,6 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
     }
 }
 
-// Description:
-//    Complete le fluide avec un Cp constant
-// Precondition:
-// Parametre: double Cp
-//    Signification: le cp du fluide
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Fluide_Quasi_Compressible::set_Cp(double Cp_)
-{
-  Cp.typer("Champ_Uniforme");
-  Champ_Uniforme& ch_Cp = ref_cast(Champ_Uniforme,Cp.valeur());
-  ch_Cp.dimensionner(1,1);
-  DoubleTab& tab_Cp = Cp.valeurs();
-  tab_Cp(0,0) = Cp_;
-
-  //Cerr<<"Fluide_Quasi_Compressible : set Cp="<<tab_Cp(0,0)<<finl;
-}
 
 // Description:
 //    Renvoie le tableau des valeurs de le temperature
@@ -485,67 +454,7 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   dis.discretiser_champ("temperature",zone_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
   champs_compris_.ajoute_champ(rho_gaz);
 
-  Fluide_Incompressible::discretiser(pb,dis);
-}
-
-// Description:
-//    Verifie que les champs lus l'ont ete correctement.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: l'une des proprietes (rho mu Cp ou lambda) du fluide n'a pas ete definie
-// Effets de bord:
-// Postcondition:
-void Fluide_Quasi_Compressible::verifier_coherence_champs(int& err,Nom& msg)
-{
-  msg="";
-  if (rho.non_nul())
-    {
-    }
-  else
-    {
-      msg += "The density rho has not been specified. \n";
-      err = 1;
-    }
-  if (mu.non_nul())
-    {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
-        {
-          if (mu(0,0) <= 0)
-            {
-              msg += "The dynamical viscosity mu is not striclty positive. \n";
-              err = 1;
-            }
-        }
-    }
-  else
-    {
-      msg += "The dynamical viscosity mu has not been specified. \n";
-      err = 1;
-    }
-  if (lambda.non_nul())
-    {
-    }
-  else
-    {
-      msg += "The conductivity lambda has not been specified. \n";
-      err = 1;
-    }
-  if (Cp.non_nul())
-    {
-    }
-  else
-    {
-      msg += "The heat capacity Cp has not been specified. \n";
-      err = 1;
-    }
-  Milieu_base::verifier_coherence_champs(err,msg);
+  Fluide_Dilatable::discretiser(pb,dis);
 }
 
 void Fluide_Quasi_Compressible::creer_champs_non_lus()
@@ -654,24 +563,7 @@ void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
     }
 }
 
-void Fluide_Quasi_Compressible::update_rho_cp(double temps)
-{
-  rho_cp_comme_T_.changer_temps(temps);
-  rho_cp_comme_T_.valeur().changer_temps(temps);
-  DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
-  if (sub_type(Champ_Uniforme,rho))
-    rho_cp = rho.valeurs()(0, 0);
-  else
-    {
-      // AB: rho_cp = rho.valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
-      rho_cp = 1.;
-      tab_multiply_any_shape(rho_cp, rho.valeurs());
-    }
-  if (sub_type(Champ_Uniforme, Cp.valeur()))
-    rho_cp *= Cp.valeurs()(0, 0);
-  else
-    tab_multiply_any_shape(rho_cp,Cp.valeurs());
-}
+
 
 // Description:
 //    Initialise les parametres du fluide.
@@ -789,7 +681,7 @@ const Champ_base& Fluide_Quasi_Compressible::get_champ(const Motcle& nom) const
   REF(Champ_base) ref_champ;
   try
     {
-      return Fluide_Incompressible::get_champ(nom);
+      return Fluide_Dilatable::get_champ(nom);
     }
   catch (Champs_compris_erreur)
     {
@@ -805,12 +697,18 @@ const Champ_base& Fluide_Quasi_Compressible::get_champ(const Motcle& nom) const
 }
 void Fluide_Quasi_Compressible::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
-  Fluide_Incompressible::get_noms_champs_postraitables(nom,opt);
+  Fluide_Dilatable::get_noms_champs_postraitables(nom,opt);
   loi_etat_->get_noms_champs_postraitables(nom,opt);
 }
 
 void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
 {
+  /*
+   * traitement_PTh=0 => resolution classique de l'edo
+   * traitement_PTh=1 => pression calculee pour conserver la masse
+   * traitement_PTh=2 => pression laissee cste.
+   */
+
   // Pas de verification si EDO choisi (traitement_PTh=0)
   if (traitement_PTh==0) return;
   int pression_imposee=0;

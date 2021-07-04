@@ -42,6 +42,7 @@ class Fluide_Weakly_Compressible : public Fluide_Dilatable
 public :
 
   Fluide_Weakly_Compressible();
+  virtual void checkTraitementPth(const Zone_Cl_dis&);
 
 };
 

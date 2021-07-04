@@ -237,7 +237,7 @@ void Convection_Diffusion_fraction_massique_QC::discretiser()
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_Dilatable upcaste en Milieu_base)
 //    (version const)
 // Precondition:
 // Parametre:
@@ -246,7 +246,7 @@ void Convection_Diffusion_fraction_massique_QC::discretiser()
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_Dilatable upcaste en Milieu_base
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
@@ -259,7 +259,7 @@ const Milieu_base& Convection_Diffusion_fraction_massique_QC::milieu() const
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_Dilatable upcaste en Milieu_base)
 // Precondition:
 // Parametre:
 //    Signification:
@@ -267,7 +267,7 @@ const Milieu_base& Convection_Diffusion_fraction_massique_QC::milieu() const
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_Dilatable upcaste en Milieu_base
 //    Contraintes:
 // Exception:
 // Effets de bord:
@@ -287,13 +287,13 @@ Milieu_base& Convection_Diffusion_fraction_massique_QC::milieu()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_Dilatable&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes: reference constante
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Fluide_Incompressible& Convection_Diffusion_fraction_massique_QC::fluide() const
+const Fluide_Dilatable& Convection_Diffusion_fraction_massique_QC::fluide() const
 {
   if (!le_fluide.non_nul())
     {
@@ -312,13 +312,13 @@ const Fluide_Incompressible& Convection_Diffusion_fraction_massique_QC::fluide()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_Dilatable&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes:
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition:
-Fluide_Incompressible& Convection_Diffusion_fraction_massique_QC::fluide()
+Fluide_Dilatable& Convection_Diffusion_fraction_massique_QC::fluide()
 {
   assert(le_fluide.non_nul());
   return le_fluide.valeur();
@@ -585,7 +585,7 @@ const Motcle& Convection_Diffusion_fraction_massique_QC::domaine_application() c
 // Description:
 //    Associe un fluide de type Fluide_Quasi_Compressible a l'equation.
 // Precondition:
-// Parametre: Fluide_Incompressible& un_fluide
+// Parametre: Fluide_Dilatable& un_fluide
 //    Signification: le milieu a associer a l'equation
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -596,7 +596,7 @@ const Motcle& Convection_Diffusion_fraction_massique_QC::domaine_application() c
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation a un milieu associe
-void Convection_Diffusion_fraction_massique_QC::associer_fluide(const Fluide_Incompressible& un_fluide)
+void Convection_Diffusion_fraction_massique_QC::associer_fluide(const Fluide_Dilatable& un_fluide)
 {
   assert(sub_type(Fluide_Quasi_Compressible,un_fluide));
   le_fluide = ref_cast(Fluide_Quasi_Compressible,un_fluide);
