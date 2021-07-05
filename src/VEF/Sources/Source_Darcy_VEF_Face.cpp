@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ void Source_Darcy_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_
 
 void Source_Darcy_VEF_Face::associer_pb(const Probleme_base& pb)
 {
-  const Champ_Don& diffu = ref_cast(Fluide_Incompressible,pb.milieu()).viscosite_cinematique();
+  const Champ_Don& diffu = ref_cast(Fluide_base,pb.milieu()).viscosite_cinematique();
   const Champ_Inc& vit = pb.equation(0).inconnue();
   eval().associer(diffu);
   eval().associer(vit);

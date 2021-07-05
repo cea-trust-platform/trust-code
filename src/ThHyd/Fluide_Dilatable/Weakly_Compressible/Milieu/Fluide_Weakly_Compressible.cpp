@@ -107,3 +107,23 @@ void Fluide_Weakly_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
       Process::exit();
     }
 }
+
+void Fluide_Weakly_Compressible::completer(const Probleme_base&)
+{
+  // TODO ...
+}
+
+void Fluide_Weakly_Compressible::prepare_pressure_edo()
+{
+  /* Do nothing */
+}
+
+void Fluide_Weakly_Compressible::calculer_rho_face(const DoubleTab& tab_rho)
+{
+  /* Do nothing */
+}
+
+void Fluide_Weakly_Compressible::write_mean_edo(double t)
+{
+  /* Do nothing */
+}

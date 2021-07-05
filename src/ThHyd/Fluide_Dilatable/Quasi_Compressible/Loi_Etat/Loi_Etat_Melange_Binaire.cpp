@@ -118,10 +118,9 @@ const Nom Loi_Etat_Melange_Binaire::type_fluide() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::associer_fluide(const Fluide_Quasi_Compressible& fl)
+void Loi_Etat_Melange_Binaire::associer_fluide(const Fluide_Dilatable& fl)
 {
-  le_fluide = fl;
-
+  Loi_Etat_base::associer_fluide(fl);
 }
 
 // Description:

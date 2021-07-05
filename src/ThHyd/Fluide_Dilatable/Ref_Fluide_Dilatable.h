@@ -14,64 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Perte_Charge_PolyMAC_Face.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/9
+// File:        Ref_Fluide_Dilatable.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Ref_Fluide_Dilatable_included
+#define Ref_Fluide_Dilatable_included
 
-#ifndef Perte_Charge_PolyMAC_Face_included
-#define Perte_Charge_PolyMAC_Face_included
-
-#include <Source_base.h>
-#include <Terme_Source_Qdm.h>
-
-#include <Ref_Zone_PolyMAC.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-#include <Ref_Fluide_base.h>
-#include <Ref_Champ_Inc_base.h>
-
-
-class Probleme_base;
-
-//
-// .DESCRIPTION class Perte_Charge_PolyMAC_Face
-//
-
-//
-// .SECTION voir aussi Source_base
-//
-//
-
-class Perte_Charge_PolyMAC_Face :  public Source_base,
-  public Terme_Source_Qdm
-
-
-{
-
-  Declare_base(Perte_Charge_PolyMAC_Face);
-
-public:
-
-  virtual DoubleTab& ajouter(DoubleTab& )  const =0;
-  virtual DoubleTab& calculer(DoubleTab& ) const =0;
-  void associer_pb(const Probleme_base& );
-  void mettre_a_jour(double );
-
-protected:
-
-  REF(Champ_Inc_base) la_vitesse;
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
-  REF(Fluide_base) le_fluide;
-  IntVect num_faces;
-
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
-
-
-
-};
+#include <Ref.h>
+class Fluide_Dilatable;
+Declare_ref(Fluide_Dilatable);
 
 #endif

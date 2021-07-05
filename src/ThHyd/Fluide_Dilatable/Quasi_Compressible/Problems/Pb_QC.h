@@ -42,9 +42,9 @@ class Pb_QC : public Pb_Dilatable
   Declare_base(Pb_QC);
 public:
   virtual bool initTimeStep(double dt);
-  virtual bool iterateTimeStep(bool& converged); // Schema de resolution particulier au QC
   virtual void preparer_calcul();
   virtual void associer_milieu_base(const Milieu_base& );
+  virtual void solve_pressure_thermo();
 };
 
 #endif /* Pb_QC_included */

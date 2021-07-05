@@ -38,7 +38,7 @@
 //     Cette classe represente la loi d'etat pour un melange de gaz parfaits.
 //
 // .SECTION voir aussi
-//     Fluide_Quasi_Compressible Loi_Etat_base Loi_Etat_GP
+//     Fluide_Dilatable Loi_Etat_base Loi_Etat_GP
 //////////////////////////////////////////////////////////////////////////////
 
 Declare_liste(REF(Champ_Inc_base));
@@ -51,7 +51,7 @@ class Loi_Etat_Melange_GP : public Loi_Etat_GP
 public :
 
   Loi_Etat_Melange_GP();
-  void associer_fluide(const Fluide_Quasi_Compressible&);
+  void associer_fluide(const Fluide_Dilatable&);
   virtual  void associer_inconnue(const Champ_Inc_base& inconnue);
   void associer_espece(const Convection_Diffusion_fraction_massique_QC& eq);
   void calculer_Cp();

@@ -25,7 +25,6 @@
 #include <Equation_base.h>
 #include <Loi_Fermeture_base.h>
 #include <Probleme_Couple.h>
-#include <stat_counters.h>
 #include <Debog.h>
 #include <Domaine.h>
 
@@ -75,59 +74,15 @@ void Pb_QC::preparer_calcul()
 bool Pb_QC::initTimeStep(double dt)
 {
   bool ok = Pb_Dilatable::initTimeStep(dt);
-  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
+  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
   le_fluide.preparer_pas_temps();
   return ok;
 }
 
-bool Pb_QC::iterateTimeStep(bool& converged)
+void Pb_QC::solve_pressure_thermo()
 {
-  Debog::set_nom_pb_actuel(le_nom());
-  Schema_Temps_base& sch=schema_temps();
-  double temps_present=sch.temps_courant();
-  double temps_futur=temps_present+sch.pas_de_temps();
-
-  //1. Solve all the equations except the first one (Navier Stokes, solved later at //6)
-  for (int i=1; i<nombre_d_equations(); i++)
-    {
-      sch.faire_un_pas_de_temps_eqn_base(equation(i));
-      statistiques().begin_count(mettre_a_jour_counter_);
-      equation(i).milieu().mettre_a_jour(temps_futur);
-      equation(i).inconnue().mettre_a_jour(temps_futur);
-      statistiques().end_count(mettre_a_jour_counter_);
-    }
-
-  statistiques().begin_count(mettre_a_jour_counter_);
-  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
-  //2. Compute temperature-dependent coefficients
-  le_fluide.calculer_coeff_T();
-
-  //3. Compute volumic mass (update Cp)
-  le_fluide.calculer_masse_volumique();
-
-  //4. Solve EDO equation (pressure)
-  le_fluide.Resoudre_EDO_PT();
-
-  //5. Compute volumic mass
-  le_fluide.calculer_masse_volumique();
-  statistiques().end_count(mettre_a_jour_counter_);
-
-  //6. Solve Navier Stokes equation
-  sch.faire_un_pas_de_temps_eqn_base(equation(0));
-  statistiques().begin_count(mettre_a_jour_counter_);
-  equation(0).milieu().mettre_a_jour(temps_futur);
-  equation(0).inconnue().mettre_a_jour(temps_futur);
-  statistiques().end_count(mettre_a_jour_counter_);
-
-  // on recule les inconnues (le pb mettra a jour les equations)
-  for (int i=0; i<nombre_d_equations(); i++)
-    equation(i).inconnue().reculer();
-
-  // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
-  double tps=schema_temps().temps_defaut();
-  for(int i=0; i<nombre_d_equations(); i++)
-    equation(i).zone_Cl_dis()->calculer_coeffs_echange(tps);
-
-  converged=true;
-  return true;
+  Fluide_Quasi_Compressible& le_fluide_QC = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
+  le_fluide_QC.Resoudre_EDO_PT();
 }
+
+

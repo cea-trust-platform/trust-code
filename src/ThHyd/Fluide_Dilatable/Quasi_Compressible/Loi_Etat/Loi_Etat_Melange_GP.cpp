@@ -111,9 +111,9 @@ Entree& Loi_Etat_Melange_GP::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::associer_fluide(const Fluide_Quasi_Compressible& fl)
+void Loi_Etat_Melange_GP::associer_fluide(const Fluide_Dilatable& fl)
 {
-  le_fluide = fl;
+  Loi_Etat_base::associer_fluide(fl);
 }
 
 //Description:

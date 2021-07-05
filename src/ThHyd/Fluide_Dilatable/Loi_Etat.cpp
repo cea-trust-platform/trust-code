@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Loi_Etat.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -70,12 +70,15 @@ Entree& Loi_Etat::readOn(Entree& is)
   Nom type = "Loi_Etat_";
   Motcles les_mots_loi(6);
   {
+    // QC
     les_mots_loi[0] = "gaz_parfait";
     les_mots_loi[1] = "gaz_reel_rhoe";
     les_mots_loi[2] = "gaz_reel_rhoT";
     les_mots_loi[3] = "melange_gaz_parfait";
     les_mots_loi[4] = "rho_T";
     les_mots_loi[5] = "melange_binaire";
+    // WC
+//    les_mots_loi[6] = "gaz_parfait_WC";
   }
   int rang_loi = les_mots_loi.search(motlu);
   switch(rang_loi)
@@ -110,6 +113,11 @@ Entree& Loi_Etat::readOn(Entree& is)
         type += "Melange_Binaire";
         break;
       }
+//    case 6 :
+//          {
+//            type += "Melange_Binaire_WC";
+//            break;
+//          }
     default :
       {
         Cerr<<"ERREUR : Les lois d'etat actuellement implementees sont :"<<finl;

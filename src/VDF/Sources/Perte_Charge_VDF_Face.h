@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #define Perte_Charge_VDF_Face_included
 
 #include <Source_dep_inco_base.h>
-#include <Ref_Fluide_Incompressible.h>
+#include <Ref_Fluide_base.h>
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
@@ -59,7 +59,7 @@ public:
 protected:
 
   REF(Champ_Face) la_vitesse;
-  REF(Fluide_Incompressible) le_fluide;
+  REF(Fluide_base) le_fluide;
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
   IntVect num_faces;

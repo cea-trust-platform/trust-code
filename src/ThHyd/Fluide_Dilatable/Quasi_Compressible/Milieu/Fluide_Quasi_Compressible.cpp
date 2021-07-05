@@ -37,12 +37,8 @@
 
 Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable);
 
-Fluide_Quasi_Compressible::Fluide_Quasi_Compressible()
-{
-  omega_drho_dt_=1;
-  traitement_rho_gravite_=0;
-  temps_debut_prise_en_compte_drho_dt_=-DMAXFLOAT;
-}
+Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_(0),
+  temps_debut_prise_en_compte_drho_dt_(-DMAXFLOAT),omega_drho_dt_(1.) { }
 
 // Description:
 //    Ecrit les proprietes du fluide sur un flot de sortie.
@@ -69,17 +65,6 @@ Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
 // Description:
 //   Lit les caracteristiques du fluide a partir d'un flot
 //   d'entree.
-//   Format:
-//     Fluide_Quasi_Compressible
-//     {
-//      Mu type_champ bloc de lecture de champ
-//      Rho type_champ bloc de lecture de champ
-//      [Cp type_champ bloc de lecture de champ]
-//      [Lambda type_champ bloc de lecture de champ]
-//      [Beta_th type_champ bloc de lecture de champ]
-//      [Beta_co type_champ bloc de lecture de champ]
-//     }
-// cd Fluide_Dilatable::readOn
 // Precondition:
 // Parametre: Entree& is
 //    Signification: un flot d'entree
@@ -96,6 +81,48 @@ Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
 {
   Fluide_Dilatable::readOn(is);
   return is;
+}
+
+
+void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
+{
+  /*
+   * traitement_PTh=0 => resolution classique de l'edo
+   * traitement_PTh=1 => pression calculee pour conserver la masse
+   * traitement_PTh=2 => pression laissee cste.
+   */
+
+  // Pas de verification si EDO choisi (traitement_PTh=0)
+  if (traitement_PTh==0) return;
+  int pression_imposee=0;
+  int size=zone_cl.les_conditions_limites().size();
+  assert(size!=0);
+  for (int n=0; n<size; n++)
+    {
+      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
+      if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
+        {
+          pression_imposee=1;
+        }
+    }
+  if (pression_imposee && traitement_PTh!=2)
+    {
+      if (Process::je_suis_maitre())
+        {
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
+        }
+      Process::exit();
+    }
+  if (!pression_imposee && traitement_PTh!=1)
+    {
+      if (Process::je_suis_maitre())
+        {
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
+        }
+      Process::exit();
+    }
 }
 
 void Fluide_Quasi_Compressible::set_param(Param& param)
@@ -252,7 +279,6 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 // Exception:
 // Effets de bord:
 // Postcondition:
-// void Fluide_Quasi_Compressible::completer(const Pb_Thermohydraulique& pb)
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
 
@@ -264,7 +290,7 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
       Process::exit();
     }
 
-  Cerr<<"Fluide_Quasi_Compressible::completer Pth="<<Pth_<<finl;
+  Cerr<<"Fluide_Dilatable::completer Pth="<<Pth_<<finl;
   inco_chaleur_ = pb.equation(1).inconnue();
 
   if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
@@ -304,65 +330,19 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   initialiser_inco_ch();
 
   EDO_Pth_->mettre_a_jour(0.);
-  //calculer_masse_volumique();
   loi_etat_->initialiser();
 
-  //   double Ch_m = EDO_Pth_->moyenne_vol(inco_chaleur_->valeurs());
-  //   double rhom = EDO_Pth_->moyenne_vol(rho.valeurs());
-  //   Pth_n = Pth_ = loi_etat_->inverser_Pth(Ch_m,rhom);
   output_file_ = Objet_U::nom_du_cas();
   output_file_ += "_";
   output_file_ += pb.le_nom();
   output_file_ += ".evol_glob";
+
   Cerr << "Warning! evol_glob file renamed " << output_file_ << finl;
   if(je_suis_maitre())
     {
       SFichier fic (output_file_);
       fic<<"# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]"<<finl;
     }
-}
-
-
-// Description:
-//    Renvoie le tableau des valeurs de le temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-const DoubleTab& Fluide_Quasi_Compressible::temperature() const
-{
-  return ch_temperature().valeurs();
-}
-
-// Description:
-//    Renvoie le champ de le temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-const Champ_Don& Fluide_Quasi_Compressible::ch_temperature() const
-{
-  return loi_etat_->ch_temperature();
-}
-Champ_Don& Fluide_Quasi_Compressible::ch_temperature()
-{
-  return loi_etat_->ch_temperature();
 }
 
 // Description:
@@ -381,16 +361,11 @@ Champ_Don& Fluide_Quasi_Compressible::ch_temperature()
 // Postcondition:
 void Fluide_Quasi_Compressible::preparer_pas_temps()
 {
-  loi_etat_->mettre_a_jour(0);
+  Fluide_Dilatable::preparer_pas_temps();
   EDO_Pth_->mettre_a_jour(0);
   EDO_Pth_->mettre_a_jour_CL(Pth_);
 }
 
-void Fluide_Quasi_Compressible::abortTimeStep()
-{
-  loi_etat()->abortTimeStep();
-  Pth_=Pth_n;
-}
 
 void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
@@ -403,7 +378,7 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
   double temps=pb.schema_temps().temps_courant();
   //
-  Cerr<<"Fluide_Quasi_Compressible::discretiser"<<finl;
+  Cerr<<"Fluide_Dilatable::discretiser"<<finl;
   // les champs seront nommes par le milieu_base
   Champ_Don ch_rho;
   dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,ch_rho);
@@ -457,102 +432,14 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   Fluide_Dilatable::discretiser(pb,dis);
 }
 
-void Fluide_Quasi_Compressible::creer_champs_non_lus()
+void Fluide_Quasi_Compressible::prepare_pressure_edo()
 {
-  // on s'occupe de lamda si mu uniforme et CP uniforme
-  // on type lambda en champ uniforme et on met lambda=mu*Cp/Pr
-  //
-  if (mu.non_nul())
-    {
-      if (!(lambda.non_nul())||(!sub_type(Champ_Fonc_Tabule,lambda.valeur())))
-        if ((sub_type(Champ_Uniforme,mu.valeur()))&&(sub_type(Loi_Etat_GP,loi_etat_.valeur())))
-          {
-            if (!sub_type(Loi_Etat_Melange_GP,loi_etat_.valeur()))
-              {
-                // Si mu uniforme et si la loi d'etat est celle d'un gaz parfait
-                double lold=-1;
-                if (lambda.non_nul())
-                  lold=lambda.valeurs()(0,0);
-                lambda.typer(mu.valeur().le_type());
-                lambda=mu;
-
-                loi_etat_->calculer_lambda();
-                double lo=lambda.valeurs()(0,0);
-                if (lold!=-1)
-                  {
-                    if (!est_egal(lold,lo))
-                      {
-                        Cerr << "Error : mu, lambda, Cp and Prandtl are all specified in your data set." << finl;
-                        Cerr << "It is observed that your imput values leads to :" << finl;
-                        Cerr.precision(20);
-                        Cerr << "mu/(lambda*Cp)=" << loi_etat_->Prandt()*(lo/lold) << " and Prandtl=" << loi_etat_->Prandt() << finl;
-                        Cerr<<"Please modify your data set by specifying for instance Prandtl = "<<loi_etat_->Prandt()*(lo/lold)<<finl;
-                        Process::exit();
-                      }
-                  }
-              }
-          }
-
-      if (lambda.non_nul())
-        {
-          if (sub_type(Sutherland,lambda.valeur()))
-            {
-              if (!sub_type(Champ_Uniforme,Cp.valeur()))
-                {
-                  Cerr << "A sutherland law cannot be requested for the conductivity "<<finl;
-                  Cerr << "by indicating Slambda if the heat capacity (Cp) is not uniform."<<finl;
-                  Process::exit();
-                }
-              Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
-              const double& mu0 = mu_suth.get_A();
-              Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
-              double lambda0 = mu0/loi_etat_->Prandt()*Cp(0,0);
-              lambda_suth.set_A(lambda0);
-              lambda_suth.lire_expression();
-            }
-        }
-    }
+  EDO_Pth_->completer();
+  EDO_Pth_->mettre_a_jour(0.);
 }
 
-// Description:
-//    Effectue une mise a jour en temps du milieu,
-//    et donc de ses parametres caracteristiques.
-//    Les champs uniformes sont recalcules pour le
-//    nouveau temps specifie, les autres sont mis a
-//    par un appel a CLASSE_DU_CHAMP::mettre_a_jour(double temps).
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
+void Fluide_Quasi_Compressible::write_mean_edo(double temps)
 {
-  rho.mettre_a_jour(temps);
-
-  // NOTE : ch_temperature() is the temperature field
-  // unless for a Pb_Hydraulique_Melange_Binaire_QC/Pb_Hydraulique_Melange_Binaire_Turbulent_QC
-  // where it denotes the species Y1 (mass fraction)
-  ch_temperature().mettre_a_jour(temps);
-  rho->changer_temps(temps);
-  ch_temperature()->changer_temps(temps);
-  //  mu.mettre_a_jour(temps); // Useless cause updated in calculer_coeff_T
-  mu->changer_temps(temps);
-
-  // lambda.mettre_a_jour(temps);  // Useless cause updated in calculer_coeff_T
-  lambda->changer_temps(temps);
-  Cp.mettre_a_jour(temps);
-  update_rho_cp(temps);
-
-  calculer_pression_tot();
-  pression_tot_.mettre_a_jour(temps);
-
   double Ch_m = EDO_Pth_->moyenne_vol(inco_chaleur_->valeurs());
   double rhom = EDO_Pth_->moyenne_vol(rho.valeurs());
 
@@ -560,184 +447,5 @@ void Fluide_Quasi_Compressible::mettre_a_jour(double temps)
     {
       SFichier fic (output_file_,ios::app);
       fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;
-    }
-}
-
-
-
-// Description:
-//    Initialise les parametres du fluide.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les parametres du fluide sont initialises
-int Fluide_Quasi_Compressible::initialiser(const double& temps)
-{
-  Cerr << "Fluide_Quasi_Compressible::initialiser()" << finl;
-  if (sub_type(Champ_Don_base, rho)) ref_cast(Champ_Don_base, rho).initialiser(temps);
-  mu.initialiser(temps);
-  lambda.initialiser(temps);
-  Cp.initialiser(temps);
-  update_rho_cp(temps);
-
-  // Initialisation des proprietes radiatives du fluide incompressible
-  // (Pour un fluide incompressible semi transparent).
-
-  if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
-    {
-      coeff_absorption_.initialiser(temps);
-      indice_refraction_.initialiser(temps);
-
-      // Initialisation de longueur_rayo
-      longueur_rayo_.initialiser(temps);
-      if (sub_type(Champ_Uniforme,kappa().valeur()))
-        {
-          longueur_rayo()->valeurs()(0,0)=1/(3*kappa()(0,0));
-        }
-      else
-        {
-          DoubleTab& l_rayo = longueur_rayo_.valeurs();
-          const DoubleTab& K = kappa().valeurs();
-          for (int i=0; i<kappa().nb_valeurs_nodales(); i++)
-            l_rayo[i] = 1/(3*K[i]);
-        }
-    }
-  return 1;
-}
-
-// Description:
-//    Prepare le fluide au calcul.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Fluide_Quasi_Compressible::preparer_calcul()
-{
-  // On teste si les valeurs lues sont OK
-  Cerr << "Fluide_Quasi_Compressible::preparer_calcul()" << finl;
-  Milieu_base::preparer_calcul();
-  loi_etat_->preparer_calcul();
-  EDO_Pth_->completer();
-  EDO_Pth_->mettre_a_jour(0.);
-  calculer_coeff_T();
-  calculer_pression_tot();
-  pression_tot_.mettre_a_jour(0);
-}
-
-// Description:
-//    Calcule la pression totale : pression thermodynamique + pression hydrodynamique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Fluide_Quasi_Compressible::calculer_pression_tot()
-{
-  DoubleTab& tab_Ptot = pression_tot_.valeurs();
-  int n = tab_Ptot.dimension_tot(0);
-  DoubleTab tab_PHyd(n, 1);
-  if( n != pression_->valeurs().dimension_tot(0) )
-    {
-      // Interpolation de pression_ aux elements (ex: P1P0)
-      const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
-      const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-      const DoubleTab& centres_de_gravites=zone.xp();
-      pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
-    }
-  else
-    tab_PHyd = pression_->valeurs();
-
-  for (int i=0 ; i<n ; i++)
-    {
-      tab_Ptot(i) = tab_PHyd(i) + Pth_;
-    }
-}
-
-const Champ_base& Fluide_Quasi_Compressible::get_champ(const Motcle& nom) const
-{
-  REF(Champ_base) ref_champ;
-  try
-    {
-      return Fluide_Dilatable::get_champ(nom);
-    }
-  catch (Champs_compris_erreur)
-    {
-    }
-  try
-    {
-      return loi_etat_->get_champ(nom);
-    }
-  catch (Champs_compris_erreur)
-    {
-    }
-  throw Champs_compris_erreur();
-}
-void Fluide_Quasi_Compressible::get_noms_champs_postraitables(Noms& nom,Option opt) const
-{
-  Fluide_Dilatable::get_noms_champs_postraitables(nom,opt);
-  loi_etat_->get_noms_champs_postraitables(nom,opt);
-}
-
-void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
-{
-  /*
-   * traitement_PTh=0 => resolution classique de l'edo
-   * traitement_PTh=1 => pression calculee pour conserver la masse
-   * traitement_PTh=2 => pression laissee cste.
-   */
-
-  // Pas de verification si EDO choisi (traitement_PTh=0)
-  if (traitement_PTh==0) return;
-  int pression_imposee=0;
-  int size=zone_cl.les_conditions_limites().size();
-  assert(size!=0);
-  for (int n=0; n<size; n++)
-    {
-      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
-      if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
-        {
-          pression_imposee=1;
-        }
-    }
-  if (pression_imposee && traitement_PTh!=2)
-    {
-      if (Process::je_suis_maitre())
-        {
-          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
-        }
-      Process::exit();
-    }
-  if (!pression_imposee && traitement_PTh!=1)
-    {
-      if (Process::je_suis_maitre())
-        {
-          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
-        }
-      Process::exit();
     }
 }

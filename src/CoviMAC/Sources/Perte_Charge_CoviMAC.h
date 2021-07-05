@@ -26,7 +26,7 @@
 #include <Source_base.h>
 #include <Terme_Source_Qdm.h>
 #include <Ref_Sous_Zone.h>
-#include <Ref_Fluide_Incompressible.h>
+#include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
@@ -89,7 +89,7 @@ protected:
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
   Champ_Don diam_hydr;
   //! Fluide associe au probleme
-  REF(Fluide_Incompressible) le_fluide;
+  REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
   //! Zone dans laquelle s'applique la perte de charge

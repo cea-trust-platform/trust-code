@@ -22,7 +22,7 @@
 
 #include <Loi_Etat_GP.h>
 #include <Motcle.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable.h>
 #include <Champ_Uniforme.h>
 #include <Zone_VF.h>
 #include <Champ_Fonc_Tabule.h>
@@ -195,7 +195,7 @@ const Nom Loi_Etat_GP::type_fluide() const
 // Description:
 //    Associe le fluide a la loi d'etat
 // Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
+// Parametre: Fluide_Dilatable& fl
 //    Signification: le fluide associe
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -206,9 +206,9 @@ const Nom Loi_Etat_GP::type_fluide() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_GP::associer_fluide(const Fluide_Quasi_Compressible& fl)
+void Loi_Etat_GP::associer_fluide(const Fluide_Dilatable& fl)
 {
-  le_fluide = fl;
+  Loi_Etat_base::associer_fluide(fl);
   le_fluide->set_Cp(Cp_);
 }
 

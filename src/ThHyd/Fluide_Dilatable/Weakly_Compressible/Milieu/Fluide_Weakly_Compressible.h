@@ -43,6 +43,12 @@ public :
 
   Fluide_Weakly_Compressible();
   virtual void checkTraitementPth(const Zone_Cl_dis&);
+  virtual void calculer_rho_face(const DoubleTab& tab_rho);
+  virtual void completer(const Probleme_base&);
+  virtual void write_mean_edo(double);
+
+  virtual void prepare_pressure_edo();
+
 
 };
 

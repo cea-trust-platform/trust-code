@@ -46,7 +46,7 @@ class Loi_Etat_Melange_Binaire : public Loi_Etat_GP
 public :
   Loi_Etat_Melange_Binaire();
   const Nom type_fluide() const;
-  void associer_fluide(const Fluide_Quasi_Compressible& fl);
+  void associer_fluide(const Fluide_Dilatable& fl);
   void calculer_Cp();
   void calculer_lambda();
   void calculer_mu();

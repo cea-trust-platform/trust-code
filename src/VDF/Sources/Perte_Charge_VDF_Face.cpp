@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ void Perte_Charge_VDF_Face::associer_pb(const Probleme_base& pb)
       if  (sub_type(Navier_Stokes_std,eqn))
         {
           la_vitesse = ref_cast(Champ_Face,eqn.inconnue().valeur());
-          le_fluide = ref_cast(Fluide_Incompressible,eqn.milieu());
+          le_fluide = ref_cast(Fluide_base,eqn.milieu());
           associer_zones(eqn.zone_dis(),eqn.zone_Cl_dis());
           i = nb_eqn;
           ok = 1;
@@ -79,7 +79,7 @@ void Perte_Charge_VDF_Face::associer_pb(const Probleme_base& pb)
     {
       Cerr << "Erreur TRUST dans Perte_Charge_VDF_Face::associer_pb()" << finl;
       Cerr << "On ne trouve pas d'equation d'hydraulique dans le probleme" << finl;
-      exit();
+      Process::exit();
     }
 }
 

@@ -23,31 +23,66 @@
 #ifndef Fluide_Dilatable_included
 #define Fluide_Dilatable_included
 
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Ref_Champ_Inc.h>
 #include <Champ_Inc.h>
+#include <Loi_Etat.h>
+#include <EDO_Pression_th.h>
+
+class Probleme_base;
+class Zone_Cl_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
 //    classe Fluide_Dilatable
 //    Cette classe represente un d'un fluide dilatable,
-//    heritant de l'incompressible
+//    heritant de fluide base
 // .SECTION voir aussi
-//     Milieu_base Fluide_Incompressible
+//     Milieu_base Fluide_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Fluide_Dilatable : public Fluide_Incompressible
+class Fluide_Dilatable : public Fluide_base
 {
-  Declare_instanciable_sans_constructeur(Fluide_Dilatable);
+  Declare_base_sans_constructeur(Fluide_Dilatable);
 
 public :
+
   Fluide_Dilatable();
+
   void verifier_coherence_champs(int& err,Nom& message);
   void set_Cp(double);
   void update_rho_cp(double temps);
-  virtual void checkTraitementPth(const Zone_Cl_dis&);
+  void creer_champs_non_lus();
+  void calculer_pression_tot();
+  int initialiser(const double& temps);
+
+  const DoubleTab& temperature() const;
+  const Champ_Don& ch_temperature() const;
+  Champ_Don& ch_temperature();
+
+  virtual void preparer_pas_temps();
+  virtual void abortTimeStep();
+  virtual void set_param(Param& param);
+  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  virtual void mettre_a_jour(double );
+  virtual void preparer_calcul();
+  virtual void checkTraitementPth(const Zone_Cl_dis&)=0;
+  virtual void calculer_rho_face(const DoubleTab& tab_rho)=0;
+  virtual void completer(const Probleme_base&)=0;
+  virtual void prepare_pressure_edo()=0;
+  virtual void write_mean_edo(double )=0;
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+
+  // Methodes de l interface des champs postraitables
+  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+
+  // Methodes inlines
+  inline const Nom type_fluide() const { return loi_etat_->type_fluide(); }
+  inline const Loi_Etat& loi_etat() const { return loi_etat_; }
+  inline Loi_Etat&  loi_etat() { return loi_etat_; }
   inline const Champ_Inc& inco_chaleur() const { return inco_chaleur_.valeur(); }
   inline Champ_Inc& inco_chaleur() { return inco_chaleur_.valeur(); }
   inline const Champ_Inc& vitesse() const { return vitesse_.valeur(); }
@@ -56,23 +91,44 @@ public :
   inline const Champ_Don& mu_sur_Schmidt() const { return mu_sur_Sc; }
   inline Champ_Don& mu_sur_Schmidt() { return mu_sur_Sc; }
   inline const Champ_Don& nu_sur_Schmidt() const { return nu_sur_Sc; }
-  inline Champ_Don& nu_sur_Schmidt() { return nu_sur_Sc;  }
-  inline double pression_th() const { return Pth_;  }
-  inline double pression_thn() const { return Pth_n; }
-  inline double pression_th1() const { return Pth1; }
+  inline Champ_Don& nu_sur_Schmidt() { return nu_sur_Sc; }
+  inline const  DoubleTab& rho_n() const { return loi_etat_->rho_n(); }
+  inline const  DoubleTab& rho_np1() const { return loi_etat_->rho_np1(); }
+  inline void calculer_coeff_T();
+  inline void initialiser_inco_ch() { loi_etat_->initialiser_inco_ch();  }
+  inline void calculer_Cp() { loi_etat_->calculer_Cp(); }
+  inline void calculer_lambda() { loi_etat_->calculer_lambda(); }
+  inline void calculer_mu() { loi_etat_->calculer_mu(); }
+  inline void calculer_nu() { loi_etat_->calculer_nu(); }
+  inline void calculer_alpha() { loi_etat_->calculer_alpha(); }
+  inline void calculer_mu_sur_Sc() { loi_etat_-> calculer_mu_sur_Sc(); }
+  inline void calculer_nu_sur_Sc() { loi_etat_-> calculer_nu_sur_Sc(); }
+  inline void calculer_masse_volumique() { loi_etat_->calculer_masse_volumique(); }
   inline void set_pression_th(double Pth) { Pth_n = Pth_ = Pth; }
+  inline int getTraitementPth() const { return traitement_PTh; }
+  inline double pression_th() const { return Pth_; } // Pression thermodynamique
+  inline double pression_thn() const { return Pth_n; } // Pression thermodynamique a l'etape precedente
+  inline double pression_th1() const { return Pth1; } // Pression thermodynamique calculee pour conserver la masse
+  inline double calculer_H(double hh) const { return loi_etat_->calculer_H(Pth_,hh); }
 
 protected :
   int traitement_PTh; // flag pour le traitement de la pression thermo
-  double Pth_;  //Pression thermodynamique
-  double Pth_n;  //Pression thermodynamique a l'etape precedente
-  double Pth1; //Pression thermodynamique calculee pour conserver la masse
-  REF(Champ_Inc) inco_chaleur_;
-  REF(Champ_Inc) vitesse_;
-  REF(Champ_Inc) pression_;
+  double Pth_, Pth_n, Pth1;
+  REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
-  mutable DoubleTab tab_W_old_;
-
+  Loi_Etat loi_etat_;
 };
+
+inline void Fluide_Dilatable::calculer_coeff_T()
+{
+  loi_etat_->remplir_T();
+  calculer_Cp();
+  calculer_mu();
+  calculer_lambda();
+  calculer_nu();
+  calculer_alpha();
+  calculer_mu_sur_Sc();
+  calculer_nu_sur_Sc();
+}
 
 #endif /* Fluide_Dilatable_included */

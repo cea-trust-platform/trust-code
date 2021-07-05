@@ -31,6 +31,8 @@
 #include <Domaine.h>
 #include <Loi_Fermeture_base.h>
 #include <Probleme_Couple.h>
+#include <stat_counters.h>
+#include <Fluide_Dilatable.h>
 
 Implemente_base(Pb_Dilatable,"Pb_Dilatable",Pb_qdm_fluide);
 
@@ -47,6 +49,7 @@ Entree& Pb_Dilatable::readOn(Entree& is)
 void Pb_Dilatable::associer_milieu_base(const Milieu_base& mil)
 {
   Pb_qdm_fluide::associer_milieu_base(mil);
+  le_fluide_ =  ref_cast(Fluide_Dilatable,mil);
 }
 
 void Pb_Dilatable::associer_sch_tps_base(const Schema_Temps_base& sch)
@@ -96,3 +99,56 @@ void Pb_Dilatable::mettre_a_jour(double temps)
       ++curseur;
     }
 }
+
+bool Pb_Dilatable::iterateTimeStep(bool& converged)
+{
+  Debog::set_nom_pb_actuel(le_nom());
+  Schema_Temps_base& sch=schema_temps();
+  double temps_present=sch.temps_courant();
+  double temps_futur=temps_present+sch.pas_de_temps();
+
+  //1. Solve all the equations except the first one (Navier Stokes, solved later at //6)
+  for (int i=1; i<nombre_d_equations(); i++)
+    {
+      sch.faire_un_pas_de_temps_eqn_base(equation(i));
+      statistiques().begin_count(mettre_a_jour_counter_);
+      equation(i).milieu().mettre_a_jour(temps_futur);
+      equation(i).inconnue().mettre_a_jour(temps_futur);
+      statistiques().end_count(mettre_a_jour_counter_);
+    }
+
+  statistiques().begin_count(mettre_a_jour_counter_);
+
+  //2. Compute temperature-dependent coefficients
+  le_fluide_->calculer_coeff_T();
+
+  //3. Compute volumic mass (update Cp)
+  le_fluide_->calculer_masse_volumique();
+
+  //4. Solve EDO equation (pressure) if needed (ie. QC)
+  solve_pressure_thermo();
+
+  //5. Compute volumic mass
+  le_fluide_->calculer_masse_volumique();
+  statistiques().end_count(mettre_a_jour_counter_);
+
+  //6. Solve Navier Stokes equation
+  sch.faire_un_pas_de_temps_eqn_base(equation(0));
+  statistiques().begin_count(mettre_a_jour_counter_);
+  equation(0).milieu().mettre_a_jour(temps_futur);
+  equation(0).inconnue().mettre_a_jour(temps_futur);
+  statistiques().end_count(mettre_a_jour_counter_);
+
+  // on recule les inconnues (le pb mettra a jour les equations)
+  for (int i=0; i<nombre_d_equations(); i++)
+    equation(i).inconnue().reculer();
+
+  // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
+  double tps=schema_temps().temps_defaut();
+  for(int i=0; i<nombre_d_equations(); i++)
+    equation(i).zone_Cl_dis()->calculer_coeffs_echange(tps);
+
+  converged=true;
+  return true;
+}
+

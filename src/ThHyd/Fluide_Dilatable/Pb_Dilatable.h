@@ -24,6 +24,9 @@
 #define Pb_Dilatable_included
 
 #include <Pb_qdm_fluide.h>
+#include <Ref_Fluide_Dilatable.h>
+
+class Fluide_Dilatable;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -39,13 +42,18 @@
 class Pb_Dilatable : public Pb_qdm_fluide
 {
   Declare_base(Pb_Dilatable);
+
 public:
   virtual bool initTimeStep(double dt);
   virtual void preparer_calcul();
   virtual void mettre_a_jour(double temps); // Ne met a jour que les postraitements
   virtual void associer_milieu_base(const Milieu_base& );
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
-  virtual bool iterateTimeStep(bool& converged)=0; // MUST BE IMPLEMENTED IN CHILD CLASSES
+  virtual bool iterateTimeStep(bool& converged);
+  virtual void solve_pressure_thermo() =0;
+
+protected :
+  REF(Fluide_Dilatable) le_fluide_;
 };
 
 #endif /* Pb_Dilatable_included */

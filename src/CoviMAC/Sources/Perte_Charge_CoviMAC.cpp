@@ -118,7 +118,7 @@ void Perte_Charge_CoviMAC::completer()
 void Perte_Charge_CoviMAC::associer_pb(const Probleme_base& pb)
 {
   la_vitesse = ref_cast(Champ_Face_CoviMAC,equation().inconnue().valeur());
-  le_fluide = ref_cast(Fluide_Incompressible,equation().milieu());
+  le_fluide = ref_cast(Fluide_base,equation().milieu());
 }
 
 void Perte_Charge_CoviMAC::associer_zones(const Zone_dis& zone_dis,
