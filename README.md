@@ -18,8 +18,8 @@ BSD3 license
 
 ### **First method**
 
-    $> git clone https://github.com/cea-trust-platform/trust-code.git
-    $> cd trust-code
+    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.8.3
+    $> cd TRUST-1.8.3
     $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.3.tar
     $> tar xf externalpackages-1.8.3.tar
     $> ./configure $OPTIONS
