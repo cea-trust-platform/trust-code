@@ -20,7 +20,7 @@ then
    [ -f $TRUST_ROOT/exec/valgrind ] && options=$options" --with-valgrind=$TRUST_ROOT/exec/valgrind"
    [ $version = $latest_version ] && options=$options" --enable-mpi1-compatibility" # HDF5 qui utilise des MPI deprecated...
 fi
-# On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a
+# On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a 
 # On retire  --disable-shared pour que les cas tests utilisant mpi4py tournent.
 options="--enable-static --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
 # Ajout CUDA:

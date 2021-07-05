@@ -731,7 +731,7 @@ then
 fi
 if [ "$MASSIF" = 1 ]
 then
-   exec="$val --tool=massif --massif-out-file=$NOM.massif $binary"
+   exec="$val --tool=massif --massif-out-file=$NOM.massif.%p $binary"
 fi
 if [ "$ADVISOR" = 1 ]
 then
@@ -1156,8 +1156,8 @@ then
 fi
 if [ "$MASSIF" = 1 ]
 then
-   echo "Massif log $NOM.massif is created."
-   echo "You could try now: massif-visualizer $NOM.massif" && [ ! -f /usr/bin/massif-visualizer ] && echo "But massif-visualizer is not installed."
+   echo "Massif log $NOM.massif.* are created."
+   echo "You could try now: massif-visualizer $NOM.massif.*" && [ ! -f /usr/bin/massif-visualizer ] && echo "But massif-visualizer is not installed."
 fi
 [ "$VTUNE" = 1 ] && vtune-gui `ls -art | grep hs | tail -1`
 [ "$ADVISOR" = 1 ] && advisor-gui `ls -art | grep e0 | tail -1`
