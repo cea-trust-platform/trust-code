@@ -36,8 +36,9 @@ Comparaison temps calcul (donne par la balise clock: Total execution) sur test c
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
 Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1
+Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++ 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3
 Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
-Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe		(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2
+Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe			(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2
 Linux x86_64	2*64@2.5Ghz				AMD EPYC 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
 Linux_x86_64 	 2*4@3.8-3.9Ghz       1000Go:16Mo       Xeon Gold 5222  2.0s 	is244274.intra.cea.fr 	(g++ 10.0.1)
 Linux x86_64 	 1*4@1.6-4.1Ghz		16Go:6Mo	Xeon i5-8365U	2.0s	is242568.intra.cea.fr   (g++ 7.0, OpenMPI)		1.16	cpu_3D   v1.8.1
@@ -165,6 +166,19 @@ HP-UX 10.20 9000/819/K200     		800Mo: 			699s		midi.alpes.cea.fr       (Compilo
 #######################################
 Cas VDF (4096000 inconnues en pression)
 #######################################
+Calcul parallele TRUST 1.8.3_beta Mon Jun 28 18:36:08 CEST 2021 sur topaze : (AMD Milan, Intel 20.0.4, OpenMPI 4.0.5)
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 18.8997       | 195.55        | 0.0822608     | 1.000         | 1.000         |
+2       | 13.4643       | 195.55        | 0.0588341     | 1.403         | .701          |
+4       | 12.0419       | 195.55        | 0.0548918     | 1.569         | .392          |
+8       | 11.9925       | 195.55        | 0.0561463     | 1.575         | .196          |
+16      |       	|       |       |               |               |
+32      | 4.46373       | 196.35        | 0.0206088     | 4.234         | .132          |
+64      | 1.50298       | 196.55        | 0.00659878    | 12.574        | .196          |
+128     |       	|       	|       	|               |               | 1 node (128 cores)
+256     | 0.228611      | 196.6 	| 0.000920183   | 82.671        | .322          | 2 nodes 
 ------------------------------------------------------------------------------------
 Calcul parallele TRUST 1.8.2_beta Thu Jun 18 14:35:51 CEST 2020 sur orcus-amd : (AMD, AOCC 2.1.0, HPCX 2.6.0):
 ------------------------------------------------------------------------------------

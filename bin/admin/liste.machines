@@ -12,6 +12,7 @@ linux	rsync_ssh	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-F
 linux	rsync_ssh	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD 						-build_64_bit -without-doc						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD					-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited	-TrioCFD -IJK-FT				-cuda		-without-doc									# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh	tache	cobalt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	         						-benchmark -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited	-IJK-FT        			-cuda 		-without-doc -disable-plot2d -without-visit                					# RedHat 8.1
