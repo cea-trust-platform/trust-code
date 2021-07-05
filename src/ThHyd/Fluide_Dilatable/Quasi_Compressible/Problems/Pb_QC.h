@@ -14,50 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Hydraulique_Melange_Binaire_QC.h
+// File:        Pb_QC.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems
-// Version:     /main/11
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Pb_QC_included
+#define Pb_QC_included
 
-#ifndef Pb_Hydraulique_Melange_Binaire_QC_included
-#define Pb_Hydraulique_Melange_Binaire_QC_included
-
-#include <Pb_QC.h>
-#include <Navier_Stokes_QC.h>
-#include <Convection_Diffusion_fraction_massique_MB_QC.h>
-
+#include <Pb_Dilatable.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_Hydraulique_Melange_Binaire_QC
-//     Cette classe represente un probleme de hydraulique binaire en fluide quasi compressible:
-//      - Equations de Navier_Stokes en regime laminaire
-//        pour un fluide quasi compressible
-//      - Equation de conv/diff fraction massique
-//        en regime laminaire pour un fluide quasi compressible
-// .SECTION voir aussi
-//     Probleme_base Navier_Stokes_QC Convection_Diffusion_fraction_massique_MB_QC
+//    classe Pb_QC
+//    Cette classe est censee factoriser ce qui est commun a l'ensemble
+//    des problemes quasi-compressibles.
+//    Il est suppose dans l'algorithme de iterateTimeStep que la
+//     premiere equation est hydraulique et la deuxieme est thermique.
+// .SECTION voir Pb_qdm_fluide
+//
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC
+
+class Pb_QC : public Pb_Dilatable
 {
-
-  Declare_instanciable(Pb_Hydraulique_Melange_Binaire_QC);
-
+  Declare_base(Pb_QC);
 public:
-
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
-  int verifier();
-
-protected:
-
-  Navier_Stokes_QC eq_hydraulique;
-  Convection_Diffusion_fraction_massique_MB_QC eq_frac_mass;
-
+  virtual bool initTimeStep(double dt);
+  virtual bool iterateTimeStep(bool& converged); // Schema de resolution particulier au QC
+  virtual void preparer_calcul();
+  virtual void associer_milieu_base(const Milieu_base& );
 };
 
-#endif /* Pb_Hydraulique_Melange_Binaire_QC_included */
+#endif /* Pb_QC_included */

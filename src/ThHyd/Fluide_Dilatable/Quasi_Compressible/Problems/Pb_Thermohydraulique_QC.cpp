@@ -23,7 +23,7 @@
 #include <Pb_Thermohydraulique_QC.h>
 #include <Verif_Cl.h>
 
-Implemente_instanciable(Pb_Thermohydraulique_QC,"Pb_Thermohydraulique_QC",Pb_QC_base);
+Implemente_instanciable(Pb_Thermohydraulique_QC,"Pb_Thermohydraulique_QC",Pb_QC);
 
 
 // Description:

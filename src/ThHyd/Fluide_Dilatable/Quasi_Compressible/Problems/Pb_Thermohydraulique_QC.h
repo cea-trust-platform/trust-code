@@ -24,7 +24,7 @@
 #ifndef Pb_Thermohydraulique_QC_included
 #define Pb_Thermohydraulique_QC_included
 
-#include <Pb_QC_base.h>
+#include <Pb_QC.h>
 #include <Navier_Stokes_QC.h>
 #include <Convection_Diffusion_Chaleur_QC.h>
 
@@ -42,7 +42,7 @@
 // .SECTION voir aussi
 //     Probleme_base Navier_Stokes_QC Convection_Diffusion_Chaleur_QC
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Thermohydraulique_QC : public Pb_QC_base
+class Pb_Thermohydraulique_QC : public Pb_QC
 {
 
   Declare_instanciable(Pb_Thermohydraulique_QC);

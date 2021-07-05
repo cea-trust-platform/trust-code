@@ -14,159 +14,75 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_QC_base.cpp
+// File:        Pb_QC.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems
 // Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Pb_QC_base.h>
-#include <Equation_base.h>
+#include <Pb_QC.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Schema_Euler_explicite.h>
-#include <Pred_Cor.h>
-#include <RRK2.h>
-#include <RK3.h>
-#include <Debog.h>
-#include <Schema_Euler_Implicite.h>
-#include <Domaine.h>
+#include <Equation_base.h>
 #include <Loi_Fermeture_base.h>
 #include <Probleme_Couple.h>
 #include <stat_counters.h>
+#include <Debog.h>
+#include <Domaine.h>
 
-Implemente_base(Pb_QC_base,"Pb_QC_base",Pb_qdm_fluide);
+Implemente_base(Pb_QC,"Pb_QC",Pb_Dilatable);
 
-Sortie& Pb_QC_base::printOn(Sortie& os) const
+Sortie& Pb_QC::printOn(Sortie& os) const
 {
-  return Pb_qdm_fluide::printOn(os);
+  return Pb_Dilatable::printOn(os);
 }
 
-
-Entree& Pb_QC_base::readOn(Entree& is)
+Entree& Pb_QC::readOn(Entree& is)
 {
-  return Pb_qdm_fluide::readOn(is);
+  return Pb_Dilatable::readOn(is);
 }
 
-
-void Pb_QC_base::associer_milieu_base(const Milieu_base& mil)
+void Pb_QC::associer_milieu_base(const Milieu_base& mil)
 {
   if (sub_type(Fluide_Quasi_Compressible,mil))
     {
-      Pb_qdm_fluide::associer_milieu_base(mil);
+      Pb_Dilatable::associer_milieu_base(mil);
     }
   else
     {
       Cerr << "Un milieu de type " << mil.que_suis_je()
            << " ne peut etre associe a "<< finl
            << "un probleme quasi-compressible" << finl;
-      exit();
+      Process::exit();
     }
 }
 
-
-void Pb_QC_base::associer_sch_tps_base(const Schema_Temps_base& sch)
+void Pb_QC::preparer_calcul()
 {
-  if (!sub_type(Schema_Euler_explicite,sch)
-      && !sub_type(Schema_Euler_Implicite,sch)
-      && !sub_type(RRK2,sch)
-      && !sub_type(RK3,sch))
-    {
-      Cerr << finl;
-      Cerr << "TRUST can't solve a " << que_suis_je() << finl;
-      Cerr << "with a " << sch.que_suis_je() << " time scheme." << finl;
-      exit();
-    }
-  if ( sub_type(Schema_Euler_Implicite,sch) && coupled_==1 )
-    {
-      Cerr << finl;
-      Cerr << "Coupled problem with unique Euler implicit time scheme with quasi-compressible fluid are not allowed!" << finl;
-      Cerr << "Choose another time scheme or set a time scheme for each of your problems." << finl;
-      exit();
-    }
-  Pb_qdm_fluide::associer_sch_tps_base(sch);
-}
-
-
-void Pb_QC_base::preparer_calcul()
-{
-  // WEC : Attention le double appel a le_fluide.preparer_calcul() est necessaire !
-  // (je ne sais pas pourquoi, vu sur le cas test Champs_fonc_QC_rayo_semi_transp)
   Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
-
   //Le nom sera a nouveau modifie dans Loi_Etat_GR_rhoT::initialiser()
-  if (le_fluide.type_fluide()=="Gaz_Reel")
-    {
-      equation(1).inconnue()->nommer("temperature");
-    }
-
-  if (le_fluide.type_fluide()=="Melange_Binaire")
-    {
-      equation(1).inconnue()->nommer("fraction_massique");
-    }
+  if (le_fluide.type_fluide()=="Gaz_Reel") equation(1).inconnue()->nommer("temperature");
+  if (le_fluide.type_fluide()=="Melange_Binaire") equation(1).inconnue()->nommer("fraction_massique");
 
   le_fluide.completer(*this);
   le_fluide.preparer_calcul();
-  Pb_qdm_fluide::preparer_calcul();
+  Pb_Dilatable::preparer_calcul();
   le_fluide.calculer_masse_volumique();
   le_fluide.preparer_calcul();
-  // encore utile ?
-  le_fluide.calculer_masse_volumique();
+  le_fluide.calculer_masse_volumique(); // XXX : encore utile ?
   le_fluide.preparer_calcul();
 }
 
-
-bool Pb_QC_base::initTimeStep(double dt)
+bool Pb_QC::initTimeStep(double dt)
 {
-  bool ok=Pb_qdm_fluide::initTimeStep(dt);
+  bool ok = Pb_Dilatable::initTimeStep(dt);
   Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
   le_fluide.preparer_pas_temps();
   return ok;
 }
 
-
-void Pb_QC_base::mettre_a_jour(double temps)
+bool Pb_QC::iterateTimeStep(bool& converged)
 {
   Debog::set_nom_pb_actuel(le_nom());
-  equation(1).mettre_a_jour(temps);
-  //   Schema_Temps_base& sch=schema_temps();
-
-  // GF correction pour mettre a jour rho dans le cas ou l'on ne passe pas par
-  // iterateTimeStep
-  // WEC : ?? On y passe a tous les coups dans iterateTimeStep !!
-
-  //   if (sub_type(Schema_Euler_Implicite,sch))
-  //   {
-  //     Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
-  //     le_fluide.calculer_coeff_T();
-  //     le_fluide.Resoudre_EDO_PT();
-  //     le_fluide.calculer_masse_volumique();
-  //     le_fluide.preparer_pas_temps();
-  //   }
-
-  equation(0).mettre_a_jour(temps);
-  for(int i=2; i<nombre_d_equations(); i++)
-    {
-      equation(i).mettre_a_jour(temps);
-    }
-
-  // WEC : si ca pouvait venir ici, ce serait factorise avec Pb_base
-  //   for(int i=0; i<nombre_d_equations(); i++)
-  //     equation(i).mettre_a_jour(temps);
-  les_postraitements.mettre_a_jour(temps);
-  domaine().mettre_a_jour(temps,domaine_dis(),*this);
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
-    {
-      Loi_Fermeture_base& loi=curseur.valeur().valeur();
-      loi.mettre_a_jour(temps);
-      ++curseur;
-    }
-}
-
-bool Pb_QC_base::iterateTimeStep(bool& converged)
-{
-  Debog::set_nom_pb_actuel(le_nom());
-
   Schema_Temps_base& sch=schema_temps();
   double temps_present=sch.temps_courant();
   double temps_futur=temps_present+sch.pas_de_temps();
@@ -203,12 +119,9 @@ bool Pb_QC_base::iterateTimeStep(bool& converged)
   equation(0).inconnue().mettre_a_jour(temps_futur);
   statistiques().end_count(mettre_a_jour_counter_);
 
+  // on recule les inconnues (le pb mettra a jour les equations)
   for (int i=0; i<nombre_d_equations(); i++)
-    {
-      // on recule les inconnues (le pb mettra a jour les equations)
-      equation(i).inconnue().reculer();
-    }
-  //FIN REMPLACEMENT PAR LE SCHEMA DE RESOLUTION PARTICULIER AU QUASI COMPRESSIBLE
+    equation(i).inconnue().reculer();
 
   // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
   double tps=schema_temps().temps_defaut();

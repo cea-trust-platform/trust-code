@@ -23,7 +23,7 @@
 #include <Pb_Hydraulique_Melange_Binaire_QC.h>
 #include <Verif_Cl.h>
 
-Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_QC,"Pb_Hydraulique_Melange_Binaire_QC",Pb_QC_base);
+Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_QC,"Pb_Hydraulique_Melange_Binaire_QC",Pb_QC);
 
 
 // Description:

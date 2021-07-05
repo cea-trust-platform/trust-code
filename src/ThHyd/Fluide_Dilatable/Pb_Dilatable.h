@@ -14,49 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_QC_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems
+// File:        Pb_Dilatable.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#ifndef Pb_QC_base_included
-#define Pb_QC_base_included
+#ifndef Pb_Dilatable_included
+#define Pb_Dilatable_included
 
 #include <Pb_qdm_fluide.h>
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_QC_base
+//    classe Pb_Dilatable
 //    Cette classe est censee factoriser ce qui est commun a l'ensemble
-//    des problemes quasi-compressibles.
-//    Il est suppose dans l'algorithme de iterateTimeStep que la
-//     premiere equation est hydraulique et la deuxieme est thermique.
+//    des problemes dilatables.
+//
 // .SECTION voir Pb_qdm_fluide
+//
 //////////////////////////////////////////////////////////////////////////////
-class Pb_QC_base : public Pb_qdm_fluide
+
+class Pb_Dilatable : public Pb_qdm_fluide
 {
-
-  Declare_base(Pb_QC_base);
-
+  Declare_base(Pb_Dilatable);
 public:
-
-  virtual bool initTimeStep(double dt); // Appelle aussi sur le fluide
-  virtual bool iterateTimeStep(bool& converged); // Schema de resolution particulier au QC
-
-  virtual void preparer_calcul(); // Prepare aussi le fluide
+  virtual bool initTimeStep(double dt);
+  virtual void preparer_calcul();
   virtual void mettre_a_jour(double temps); // Ne met a jour que les postraitements
-  virtual void associer_milieu_base(const Milieu_base& ); // Verifie le milieu
-  virtual void associer_sch_tps_base(const Schema_Temps_base&); // Verifie le schema
-
-protected:
-
-
+  virtual void associer_milieu_base(const Milieu_base& );
+  virtual void associer_sch_tps_base(const Schema_Temps_base&);
+  virtual bool iterateTimeStep(bool& converged)=0; // MUST BE IMPLEMENTED IN CHILD CLASSES
 };
 
-
-
-#endif
+#endif /* Pb_Dilatable_included */
