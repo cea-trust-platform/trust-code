@@ -23,7 +23,7 @@
 #ifndef Loi_Etat_base_included
 #define Loi_Etat_base_included
 
-#include <Ref_Fluide_Dilatable.h>
+#include <Ref_Fluide_Dilatable_base.h>
 #include <Champ_Don.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
@@ -37,7 +37,7 @@ class Fluide_Quasi_Comp;
 //     Cette classe est la base de la hierarchie des lois d'etat.
 //     Associe a un fluide incompressible, elle definit un fluide quasi compressible
 // .SECTION voir aussi
-//     Fluide_Dilatable
+//     Fluide_Dilatable_base
 //     Classe abstraite dont toutes les lois d'etat doivent deriver.
 //     Methodes abstraites:
 //       void calculer_coeff_T()
@@ -52,7 +52,7 @@ public :
 
   Loi_Etat_base();
 
-  virtual void associer_fluide(const Fluide_Dilatable&);
+  virtual void associer_fluide(const Fluide_Dilatable_base&);
   virtual void initialiser() =0;
   const virtual Nom type_fluide() const =0;
   virtual void preparer_calcul();
@@ -96,7 +96,7 @@ public :
   /////////////////////////////////////////////////////
 
 protected :
-  REF(Fluide_Dilatable) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
   Champ_Don temperature_;
   DoubleTab tab_rho_n;    //rho a l'etape precedente
   DoubleTab tab_rho_np1;    //rho a l'etape suivante

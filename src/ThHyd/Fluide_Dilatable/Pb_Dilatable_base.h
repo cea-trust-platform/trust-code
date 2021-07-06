@@ -14,24 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Dilatable.h
+// File:        Pb_Dilatable_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_Dilatable_included
-#define Pb_Dilatable_included
+#ifndef Pb_Dilatable_base_included
+#define Pb_Dilatable_base_included
 
 #include <Pb_qdm_fluide.h>
-#include <Ref_Fluide_Dilatable.h>
+#include <Ref_Fluide_Dilatable_base.h>
 
-class Fluide_Dilatable;
+class Fluide_Dilatable_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_Dilatable
+//    classe Pb_Dilatable_base
 //    Cette classe est censee factoriser ce qui est commun a l'ensemble
 //    des problemes dilatables.
 //
@@ -39,9 +39,9 @@ class Fluide_Dilatable;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Pb_Dilatable : public Pb_qdm_fluide
+class Pb_Dilatable_base : public Pb_qdm_fluide
 {
-  Declare_base(Pb_Dilatable);
+  Declare_base(Pb_Dilatable_base);
 
 public:
   virtual bool initTimeStep(double dt);
@@ -53,7 +53,7 @@ public:
   virtual void solve_pressure_thermo() =0;
 
 protected :
-  REF(Fluide_Dilatable) le_fluide_;
+  REF(Fluide_Dilatable_base) le_fluide_;
 };
 
-#endif /* Pb_Dilatable_included */
+#endif /* Pb_Dilatable_base_included */

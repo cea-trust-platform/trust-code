@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_Dilatable.cpp
+// File:        Fluide_Dilatable_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
 // Version:     /main/49
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Fluide_Dilatable.h>
+#include <Fluide_Dilatable_base.h>
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_dis.h>
 #include <Probleme_base.h>
@@ -35,9 +35,9 @@
 #include <Neumann_sortie_libre.h>
 #include <Zone_VF.h>
 
-Implemente_base_sans_constructeur(Fluide_Dilatable,"Fluide_Dilatable",Fluide_base);
+Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
 
-Fluide_Dilatable::Fluide_Dilatable():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1(-1.) {}
+Fluide_Dilatable_base::Fluide_Dilatable_base():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1(-1.) {}
 
 // Description:
 //    Ecrit les proprietes du fluide sur un flot de sortie.
@@ -53,7 +53,7 @@ Fluide_Dilatable::Fluide_Dilatable():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Fluide_Dilatable::printOn(Sortie& os) const
+Sortie& Fluide_Dilatable_base::printOn(Sortie& os) const
 {
   Fluide_base::ecrire(os);
   return os;
@@ -74,23 +74,23 @@ Sortie& Fluide_Dilatable::printOn(Sortie& os) const
 // Exception: accolade ouvrante attendue
 // Effets de bord:
 // Postcondition:
-Entree& Fluide_Dilatable::readOn(Entree& is)
+Entree& Fluide_Dilatable_base::readOn(Entree& is)
 {
   Fluide_base::readOn(is);
   return is;
 }
 
-void Fluide_Dilatable::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
+void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   Fluide_base::discretiser(pb,dis);
 }
 
-void Fluide_Dilatable::set_param(Param& param)
+void Fluide_Dilatable_base::set_param(Param& param)
 {
   Fluide_base::set_param(param);
 }
 
-int Fluide_Dilatable::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   return Fluide_base::lire_motcle_non_standard(mot,is);
 }
@@ -109,7 +109,7 @@ int Fluide_Dilatable::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 // Exception: l'une des proprietes (rho mu Cp ou lambda) du fluide n'a pas ete definie
 // Effets de bord:
 // Postcondition:
-void Fluide_Dilatable::verifier_coherence_champs(int& err,Nom& msg)
+void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";
   if (rho.non_nul()) { }
@@ -164,7 +164,7 @@ void Fluide_Dilatable::verifier_coherence_champs(int& err,Nom& msg)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Fluide_Dilatable::set_Cp(double Cp_)
+void Fluide_Dilatable_base::set_Cp(double Cp_)
 {
   Cp.typer("Champ_Uniforme");
   Champ_Uniforme& ch_Cp = ref_cast(Champ_Uniforme,Cp.valeur());
@@ -173,7 +173,7 @@ void Fluide_Dilatable::set_Cp(double Cp_)
   tab_Cp(0,0) = Cp_;
 }
 
-void Fluide_Dilatable::update_rho_cp(double temps)
+void Fluide_Dilatable_base::update_rho_cp(double temps)
 {
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_.valeur().changer_temps(temps);
@@ -206,7 +206,7 @@ void Fluide_Dilatable::update_rho_cp(double temps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-const DoubleTab& Fluide_Dilatable::temperature() const
+const DoubleTab& Fluide_Dilatable_base::temperature() const
 {
   return ch_temperature().valeurs();
 }
@@ -225,12 +225,12 @@ const DoubleTab& Fluide_Dilatable::temperature() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-const Champ_Don& Fluide_Dilatable::ch_temperature() const
+const Champ_Don& Fluide_Dilatable_base::ch_temperature() const
 {
   return loi_etat_->ch_temperature();
 }
 
-Champ_Don& Fluide_Dilatable::ch_temperature()
+Champ_Don& Fluide_Dilatable_base::ch_temperature()
 {
   return loi_etat_->ch_temperature();
 }
@@ -249,18 +249,18 @@ Champ_Don& Fluide_Dilatable::ch_temperature()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Fluide_Dilatable::preparer_pas_temps()
+void Fluide_Dilatable_base::preparer_pas_temps()
 {
   loi_etat_->mettre_a_jour(0);
 }
 
-void Fluide_Dilatable::abortTimeStep()
+void Fluide_Dilatable_base::abortTimeStep()
 {
   loi_etat()->abortTimeStep();
   Pth_=Pth_n;
 }
 
-void Fluide_Dilatable::creer_champs_non_lus()
+void Fluide_Dilatable_base::creer_champs_non_lus()
 {
   // on s'occupe de lamda si mu uniforme et CP uniforme
   // on type lambda en champ uniforme et on met lambda=mu*Cp/Pr
@@ -331,9 +331,9 @@ void Fluide_Dilatable::creer_champs_non_lus()
 // Exception:
 // Effets de bord:
 // Postcondition: les parametres du fluide sont initialises
-int Fluide_Dilatable::initialiser(const double& temps)
+int Fluide_Dilatable_base::initialiser(const double& temps)
 {
-  Cerr << "Fluide_Dilatable::initialiser()" << finl;
+  Cerr << "Fluide_Dilatable_base::initialiser()" << finl;
   if (sub_type(Champ_Don_base, rho)) ref_cast(Champ_Don_base, rho).initialiser(temps);
   mu.initialiser(temps);
   lambda.initialiser(temps);
@@ -379,7 +379,7 @@ int Fluide_Dilatable::initialiser(const double& temps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Fluide_Dilatable::calculer_pression_tot()
+void Fluide_Dilatable_base::calculer_pression_tot()
 {
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
   int n = tab_Ptot.dimension_tot(0);
@@ -401,7 +401,7 @@ void Fluide_Dilatable::calculer_pression_tot()
     }
 }
 
-const Champ_base& Fluide_Dilatable::get_champ(const Motcle& nom) const
+const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
 {
   REF(Champ_base) ref_champ;
   try
@@ -421,7 +421,7 @@ const Champ_base& Fluide_Dilatable::get_champ(const Motcle& nom) const
   throw Champs_compris_erreur();
 }
 
-void Fluide_Dilatable::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   Fluide_base::get_noms_champs_postraitables(nom,opt);
   loi_etat_->get_noms_champs_postraitables(nom,opt);
@@ -441,7 +441,7 @@ void Fluide_Dilatable::get_noms_champs_postraitables(Noms& nom,Option opt) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Fluide_Dilatable::mettre_a_jour(double temps)
+void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
   rho.mettre_a_jour(temps);
   ch_temperature().mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
@@ -471,9 +471,9 @@ void Fluide_Dilatable::mettre_a_jour(double temps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Fluide_Dilatable::preparer_calcul()
+void Fluide_Dilatable_base::preparer_calcul()
 {
-  Cerr << "Fluide_Dilatable::preparer_calcul()" << finl;
+  Cerr << "Fluide_Dilatable_base::preparer_calcul()" << finl;
   Milieu_base::preparer_calcul();
   loi_etat_->preparer_calcul();
   prepare_pressure_edo(); // si besoin (i.e. QC)

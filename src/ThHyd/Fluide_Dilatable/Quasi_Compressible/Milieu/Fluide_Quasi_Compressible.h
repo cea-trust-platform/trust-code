@@ -23,7 +23,7 @@
 #ifndef Fluide_Quasi_Compressible_included
 #define Fluide_Quasi_Compressible_included
 
-#include <Fluide_Dilatable.h>
+#include <Fluide_Dilatable_base.h>
 
 class Zone_Cl_dis;
 
@@ -34,11 +34,11 @@ class Zone_Cl_dis;
 //    Cette classe represente un d'un fluide quasi compressible
 //    c'est a dire heritant de fluide dilatable
 // .SECTION voir aussi
-//     Milieu_base Fluide_Dilatable
+//     Milieu_base Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Fluide_Quasi_Compressible : public Fluide_Dilatable
+class Fluide_Quasi_Compressible : public Fluide_Dilatable_base
 {
   Declare_instanciable_sans_constructeur(Fluide_Quasi_Compressible);
 

@@ -35,7 +35,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Zone_VF.h>
 
-Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable);
+Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable_base);
 
 Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_(0),
   temps_debut_prise_en_compte_drho_dt_(-DMAXFLOAT),omega_drho_dt_(1.) { }
@@ -57,7 +57,7 @@ Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_
 Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
 {
   os << que_suis_je() << finl;
-  Fluide_Dilatable::ecrire(os);
+  Fluide_Dilatable_base::ecrire(os);
   return os;
 }
 
@@ -79,7 +79,7 @@ Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
 // Postcondition:
 Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
 {
-  Fluide_Dilatable::readOn(is);
+  Fluide_Dilatable_base::readOn(is);
   return is;
 }
 
@@ -127,7 +127,7 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
 
 void Fluide_Quasi_Compressible::set_param(Param& param)
 {
-  Fluide_Dilatable::set_param(param);
+  Fluide_Dilatable_base::set_param(param);
   param.ajouter("temps_debut_prise_en_compte_drho_dt",&temps_debut_prise_en_compte_drho_dt_);
   param.ajouter("omega_relaxation_drho_dt",&omega_drho_dt_);
   param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
@@ -262,7 +262,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       return -1;
     }
   else
-    return Fluide_Dilatable::lire_motcle_non_standard(mot,is);
+    return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 }
 
 // Description:
@@ -290,7 +290,7 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
       Process::exit();
     }
 
-  Cerr<<"Fluide_Dilatable::completer Pth="<<Pth_<<finl;
+  Cerr<<"Fluide_Dilatable_base::completer Pth="<<Pth_<<finl;
   inco_chaleur_ = pb.equation(1).inconnue();
 
   if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
@@ -361,7 +361,7 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 // Postcondition:
 void Fluide_Quasi_Compressible::preparer_pas_temps()
 {
-  Fluide_Dilatable::preparer_pas_temps();
+  Fluide_Dilatable_base::preparer_pas_temps();
   EDO_Pth_->mettre_a_jour(0);
   EDO_Pth_->mettre_a_jour_CL(Pth_);
 }
@@ -378,7 +378,7 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
   double temps=pb.schema_temps().temps_courant();
   //
-  Cerr<<"Fluide_Dilatable::discretiser"<<finl;
+  Cerr<<"Fluide_Dilatable_base::discretiser"<<finl;
   // les champs seront nommes par le milieu_base
   Champ_Don ch_rho;
   dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,ch_rho);
@@ -429,7 +429,7 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   dis.discretiser_champ("temperature",zone_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
   champs_compris_.ajoute_champ(rho_gaz);
 
-  Fluide_Dilatable::discretiser(pb,dis);
+  Fluide_Dilatable_base::discretiser(pb,dis);
 }
 
 void Fluide_Quasi_Compressible::prepare_pressure_edo()

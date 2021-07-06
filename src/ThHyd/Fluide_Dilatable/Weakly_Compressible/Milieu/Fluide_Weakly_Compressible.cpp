@@ -24,7 +24,7 @@
 #include <Zone_Cl_dis.h>
 #include <Neumann_sortie_libre.h>
 
-Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable);
+Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 
 Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() {}
 
@@ -45,7 +45,7 @@ Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() {}
 Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
 {
   os << que_suis_je() << finl;
-  Fluide_Dilatable::ecrire(os);
+  Fluide_Dilatable_base::ecrire(os);
   return os;
 }
 
@@ -67,7 +67,7 @@ Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
 // Postcondition:
 Entree& Fluide_Weakly_Compressible::readOn(Entree& is)
 {
-  Fluide_Dilatable::readOn(is);
+  Fluide_Dilatable_base::readOn(is);
   return is;
 }
 

@@ -23,7 +23,7 @@
 #ifndef Pb_QC_included
 #define Pb_QC_included
 
-#include <Pb_Dilatable.h>
+#include <Pb_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -37,7 +37,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Pb_QC : public Pb_Dilatable
+class Pb_QC : public Pb_Dilatable_base
 {
   Declare_base(Pb_QC);
 public:

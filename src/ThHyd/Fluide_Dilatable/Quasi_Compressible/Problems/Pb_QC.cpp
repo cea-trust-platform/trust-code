@@ -28,23 +28,23 @@
 #include <Debog.h>
 #include <Domaine.h>
 
-Implemente_base(Pb_QC,"Pb_QC",Pb_Dilatable);
+Implemente_base(Pb_QC,"Pb_QC",Pb_Dilatable_base);
 
 Sortie& Pb_QC::printOn(Sortie& os) const
 {
-  return Pb_Dilatable::printOn(os);
+  return Pb_Dilatable_base::printOn(os);
 }
 
 Entree& Pb_QC::readOn(Entree& is)
 {
-  return Pb_Dilatable::readOn(is);
+  return Pb_Dilatable_base::readOn(is);
 }
 
 void Pb_QC::associer_milieu_base(const Milieu_base& mil)
 {
   if (sub_type(Fluide_Quasi_Compressible,mil))
     {
-      Pb_Dilatable::associer_milieu_base(mil);
+      Pb_Dilatable_base::associer_milieu_base(mil);
     }
   else
     {
@@ -64,7 +64,7 @@ void Pb_QC::preparer_calcul()
 
   le_fluide.completer(*this);
   le_fluide.preparer_calcul();
-  Pb_Dilatable::preparer_calcul();
+  Pb_Dilatable_base::preparer_calcul();
   le_fluide.calculer_masse_volumique();
   le_fluide.preparer_calcul();
   le_fluide.calculer_masse_volumique(); // XXX : encore utile ?
@@ -73,7 +73,7 @@ void Pb_QC::preparer_calcul()
 
 bool Pb_QC::initTimeStep(double dt)
 {
-  bool ok = Pb_Dilatable::initTimeStep(dt);
+  bool ok = Pb_Dilatable_base::initTimeStep(dt);
   Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
   le_fluide.preparer_pas_temps();
   return ok;

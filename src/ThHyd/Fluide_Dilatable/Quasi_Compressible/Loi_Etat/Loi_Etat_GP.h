@@ -34,7 +34,7 @@
 //     dont la loi d'eata est :
 //        Pth = rho*R*T
 // .SECTION voir aussi
-//     Fluide_Dilatable Loi_Etat_base
+//     Fluide_Dilatable_base Loi_Etat_base
 //////////////////////////////////////////////////////////////////////////////
 
 class Loi_Etat_GP : public Loi_Etat_base
@@ -45,7 +45,7 @@ public :
 
   Loi_Etat_GP();
   const Nom type_fluide() const;
-  void associer_fluide(const Fluide_Dilatable&);
+  void associer_fluide(const Fluide_Dilatable_base&);
   virtual void initialiser();
   void remplir_T();
   void calculer_Cp();

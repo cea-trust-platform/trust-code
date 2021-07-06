@@ -14,17 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Ref_Fluide_Dilatable.h
+// File:        Ref_Fluide_Dilatable_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
-// Version:     /main/6
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Ref_Fluide_Dilatable_included
-#define Ref_Fluide_Dilatable_included
+#include <Ref_Fluide_Dilatable_base.h>
+#include <Fluide_Dilatable_base.h>
 
-#include <Ref.h>
-class Fluide_Dilatable;
-Declare_ref(Fluide_Dilatable);
-
-#endif
+Implemente_ref(Fluide_Dilatable_base);

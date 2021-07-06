@@ -341,7 +341,7 @@
  Field_base Field_base Field_base.h
  FloatTab FloatTab FloatTab.h
  Fluide_base Fluide_base Fluide_base.h
- Fluide_Dilatable Fluide_Dilatable Fluide_Dilatable.h
+ Fluide_Dilatable_base Fluide_Dilatable_base Fluide_Dilatable_base.h
  Fluide_Incompressible Fluide_Incompressible Fluide_Incompressible.h
  Fluide_Ostwald Fluide_Ostwald Fluide_Ostwald.h
  Fluide_Quasi_Compressible Fluide_Quasi_Compressible Fluide_Quasi_Compressible.h
@@ -752,7 +752,7 @@
  Pave Pave Pave.h
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h
- Pb_Dilatable Pb_Dilatable Pb_Dilatable.h
+ Pb_Dilatable_base Pb_Dilatable_base Pb_Dilatable_base.h
  Pb_Hydraulique Pb_Hydraulique Pb_Hydraulique.h
  Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration.h
  Pb_Hydraulique_Melange_Binaire_QC Pb_Hydraulique_Melange_Binaire_QC Pb_Hydraulique_Melange_Binaire_QC.h

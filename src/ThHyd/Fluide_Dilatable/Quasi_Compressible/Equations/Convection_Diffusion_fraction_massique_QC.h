@@ -25,7 +25,7 @@
 #define Convection_Diffusion_fraction_massique_QC_included
 
 #include <Convection_Diffusion_std.h>
-class Fluide_Dilatable;
+class Fluide_Dilatable_base;
 #include <Espece.h>
 
 
@@ -47,7 +47,7 @@ public :
   Convection_Diffusion_fraction_massique_QC();
   void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&);
-  void associer_fluide(const Fluide_Dilatable& );
+  void associer_fluide(const Fluide_Dilatable_base& );
   inline const Champ_Inc& inconnue() const;
   inline Champ_Inc& inconnue();
   inline const Espece& espece() const;
@@ -55,8 +55,8 @@ public :
 
   void discretiser();
   const Milieu_base& milieu() const;
-  const Fluide_Dilatable& fluide() const;
-  Fluide_Dilatable& fluide();
+  const Fluide_Dilatable_base& fluide() const;
+  Fluide_Dilatable_base& fluide();
   Milieu_base& milieu();
   void associer_milieu_base(const Milieu_base& );
   virtual void completer();

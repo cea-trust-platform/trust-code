@@ -23,19 +23,19 @@
 #ifndef Fluide_Weakly_Compressible_included
 #define Fluide_Weakly_Compressible_included
 
-#include <Fluide_Dilatable.h>
+#include <Fluide_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
 //    classe Fluide_Weakly_Compressible
 //    Cette classe represente un d'un fluide faiblement compressible
-//    c'est a dire heritant de Fluide_Dilatable
+//    c'est a dire heritant de Fluide_Dilatable_base
 // .SECTION voir aussi
-//     Milieu_base Fluide_Dilatable
+//     Milieu_base Fluide_Dilatable_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Fluide_Weakly_Compressible : public Fluide_Dilatable
+class Fluide_Weakly_Compressible : public Fluide_Dilatable_base
 {
   Declare_instanciable_sans_constructeur(Fluide_Weakly_Compressible);
 

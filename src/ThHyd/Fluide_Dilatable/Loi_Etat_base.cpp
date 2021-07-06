@@ -22,7 +22,7 @@
 
 #include <Loi_Etat_base.h>
 #include <Champ_Uniforme.h>
-#include <Fluide_Dilatable.h>
+#include <Fluide_Dilatable_base.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Zone_VF.h>
 #include <Debog.h>
@@ -82,7 +82,7 @@ Entree& Loi_Etat_base::readOn(Entree& is)
 // Description:
 //    Associe le fluide a la loi d'etat
 // Precondition:
-// Parametre: Fluide_Dilatable& fl
+// Parametre: Fluide_Dilatable_base& fl
 //    Signification: le fluide associe
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -93,7 +93,7 @@ Entree& Loi_Etat_base::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_base::associer_fluide(const Fluide_Dilatable& fl)
+void Loi_Etat_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   le_fluide = fl;
 }

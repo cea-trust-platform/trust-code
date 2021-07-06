@@ -14,13 +14,14 @@
  *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Dilatable.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems
+// File:        Pb_Dilatable_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable_base/Quasi_Compressible/Problems
 // Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Pb_Dilatable.h>
+#include <Fluide_Dilatable_base.h>
+#include <Pb_Dilatable_base.h>
 #include <Equation_base.h>
 #include <Schema_Euler_explicite.h>
 #include <Schema_Euler_Implicite.h>
@@ -32,27 +33,26 @@
 #include <Loi_Fermeture_base.h>
 #include <Probleme_Couple.h>
 #include <stat_counters.h>
-#include <Fluide_Dilatable.h>
 
-Implemente_base(Pb_Dilatable,"Pb_Dilatable",Pb_qdm_fluide);
+Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_qdm_fluide);
 
-Sortie& Pb_Dilatable::printOn(Sortie& os) const
+Sortie& Pb_Dilatable_base::printOn(Sortie& os) const
 {
   return Pb_qdm_fluide::printOn(os);
 }
 
-Entree& Pb_Dilatable::readOn(Entree& is)
+Entree& Pb_Dilatable_base::readOn(Entree& is)
 {
   return Pb_qdm_fluide::readOn(is);
 }
 
-void Pb_Dilatable::associer_milieu_base(const Milieu_base& mil)
+void Pb_Dilatable_base::associer_milieu_base(const Milieu_base& mil)
 {
   Pb_qdm_fluide::associer_milieu_base(mil);
-  le_fluide_ =  ref_cast(Fluide_Dilatable,mil);
+  le_fluide_ =  ref_cast(Fluide_Dilatable_base,mil);
 }
 
-void Pb_Dilatable::associer_sch_tps_base(const Schema_Temps_base& sch)
+void Pb_Dilatable_base::associer_sch_tps_base(const Schema_Temps_base& sch)
 {
   if (!sub_type(Schema_Euler_explicite,sch) && !sub_type(Schema_Euler_Implicite,sch)
       && !sub_type(RRK2,sch) && !sub_type(RK3,sch))
@@ -70,17 +70,17 @@ void Pb_Dilatable::associer_sch_tps_base(const Schema_Temps_base& sch)
   Pb_qdm_fluide::associer_sch_tps_base(sch);
 }
 
-void Pb_Dilatable::preparer_calcul()
+void Pb_Dilatable_base::preparer_calcul()
 {
   Pb_qdm_fluide::preparer_calcul();
 }
 
-bool Pb_Dilatable::initTimeStep(double dt)
+bool Pb_Dilatable_base::initTimeStep(double dt)
 {
   return Pb_qdm_fluide::initTimeStep(dt);
 }
 
-void Pb_Dilatable::mettre_a_jour(double temps)
+void Pb_Dilatable_base::mettre_a_jour(double temps)
 {
   Debog::set_nom_pb_actuel(le_nom());
   equation(1).mettre_a_jour(temps); // thermique
@@ -100,7 +100,7 @@ void Pb_Dilatable::mettre_a_jour(double temps)
     }
 }
 
-bool Pb_Dilatable::iterateTimeStep(bool& converged)
+bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
 {
   Debog::set_nom_pb_actuel(le_nom());
   Schema_Temps_base& sch=schema_temps();

@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Fluide_Dilatable.h
+// File:        Fluide_Dilatable_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
 // Version:     /main/29
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Fluide_Dilatable_included
-#define Fluide_Dilatable_included
+#ifndef Fluide_Dilatable_base_included
+#define Fluide_Dilatable_base_included
 
 #include <Fluide_base.h>
 #include <Ref_Champ_Inc.h>
@@ -35,7 +35,7 @@ class Zone_Cl_dis;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Fluide_Dilatable
+//    classe Fluide_Dilatable_base
 //    Cette classe represente un d'un fluide dilatable,
 //    heritant de fluide base
 // .SECTION voir aussi
@@ -43,13 +43,13 @@ class Zone_Cl_dis;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Fluide_Dilatable : public Fluide_base
+class Fluide_Dilatable_base : public Fluide_base
 {
-  Declare_base_sans_constructeur(Fluide_Dilatable);
+  Declare_base_sans_constructeur(Fluide_Dilatable_base);
 
 public :
 
-  Fluide_Dilatable();
+  Fluide_Dilatable_base();
 
   void verifier_coherence_champs(int& err,Nom& message);
   void set_Cp(double);
@@ -119,7 +119,7 @@ protected :
   Loi_Etat loi_etat_;
 };
 
-inline void Fluide_Dilatable::calculer_coeff_T()
+inline void Fluide_Dilatable_base::calculer_coeff_T()
 {
   loi_etat_->remplir_T();
   calculer_Cp();
@@ -131,4 +131,4 @@ inline void Fluide_Dilatable::calculer_coeff_T()
   calculer_nu_sur_Sc();
 }
 
-#endif /* Fluide_Dilatable_included */
+#endif /* Fluide_Dilatable_base_included */
