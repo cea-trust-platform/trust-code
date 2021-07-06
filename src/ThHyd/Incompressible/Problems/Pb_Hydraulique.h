@@ -24,7 +24,7 @@
 #ifndef Pb_Hydraulique_included
 #define Pb_Hydraulique_included
 
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Champ_Don.h>
 #include <Navier_Stokes_std.h>
 
@@ -38,9 +38,9 @@
 //     pour un fluide incompressible
 //     La formulation est de type vitesse pression
 // .SECTION voir aussi
-//      Navier_Stokes_std Pb_qdm_fluide Fluide_base
+//      Navier_Stokes_std Pb_Fluide_base Fluide_base
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique : public Pb_qdm_fluide
+class Pb_Hydraulique : public Pb_Fluide_base
 {
   Declare_instanciable(Pb_Hydraulique);
 

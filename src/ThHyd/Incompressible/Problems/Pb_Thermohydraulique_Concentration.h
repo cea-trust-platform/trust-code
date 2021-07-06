@@ -24,7 +24,7 @@
 #ifndef Pb_Thermohydraulique_Concentration_included
 #define Pb_Thermohydraulique_Concentration_included
 
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Convection_Diffusion_Concentration.h>
@@ -47,9 +47,9 @@
 //       variations de la masse volumique en fonction de la temperature et
 //       de la concentration.
 // .SECTION voir aussi
-//      Pb_qdm_fluide
+//      Pb_Fluide_base
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Thermohydraulique_Concentration : public Pb_qdm_fluide
+class Pb_Thermohydraulique_Concentration : public Pb_Fluide_base
 {
 
   Declare_instanciable(Pb_Thermohydraulique_Concentration);

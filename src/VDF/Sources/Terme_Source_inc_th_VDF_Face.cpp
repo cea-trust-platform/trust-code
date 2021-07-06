@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
 #include <Periodique.h>
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Navier_Stokes_std.h>
 #include <Fluide_Incompressible.h>
@@ -57,7 +57,7 @@ Entree& Terme_Source_inc_th_VDF_Face::readOn(Entree& s )
 
 void Terme_Source_inc_th_VDF_Face::associer_pb(const Probleme_base& pb)
 {
-  if (sub_type(Pb_qdm_fluide,pb) && (pb.nombre_d_equations()>1))
+  if (sub_type(Pb_Fluide_base,pb) && (pb.nombre_d_equations()>1))
     {
       const Equation_base& eqn = pb.equation(1);
       if (sub_type(Convection_Diffusion_Temperature,eqn))

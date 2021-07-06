@@ -25,7 +25,7 @@
 #define Pb_Multiphase_included
 
 #include <Interprete.h>
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <QDM_Multiphase.h>
 #include <Masse_Multiphase.h>
 #include <Energie_Multiphase.h>
@@ -48,9 +48,9 @@
 //      3) Energie_Multiphase -> advection/dffusion implicite de l'energie
 //
 // .SECTION voir aussi
-//     Pb_qdm_fluide QDM_Multiphase Masse_Multiphase Energie_Multiphase
+//     Pb_Fluide_base QDM_Multiphase Masse_Multiphase Energie_Multiphase
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Multiphase : public Pb_qdm_fluide
+class Pb_Multiphase : public Pb_Fluide_base
 {
 
   Declare_instanciable(Pb_Multiphase);

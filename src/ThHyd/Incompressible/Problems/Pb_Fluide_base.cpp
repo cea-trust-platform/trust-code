@@ -14,29 +14,29 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_qdm_fluide.cpp
+// File:        Pb_Fluide_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Problems
 // Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 
-Implemente_base(Pb_qdm_fluide,"Pb_qdm_fluide",Probleme_base);
+Implemente_base(Pb_Fluide_base,"Pb_Fluide_base",Probleme_base);
 
-Sortie& Pb_qdm_fluide::printOn(Sortie& os) const
+Sortie& Pb_Fluide_base::printOn(Sortie& os) const
 {
   Probleme_base::printOn(os);
   return os;
 }
 
-Entree& Pb_qdm_fluide::readOn(Entree& is)
+Entree& Pb_Fluide_base::readOn(Entree& is)
 {
   Probleme_base::readOn(is);
   return is ;
 }
 
-int Pb_qdm_fluide::expression_predefini(const Motcle& motlu, Nom& expression)
+int Pb_Fluide_base::expression_predefini(const Motcle& motlu, Nom& expression)
 {
   if (motlu=="ENERGIE_CINETIQUE_TOTALE")
     {

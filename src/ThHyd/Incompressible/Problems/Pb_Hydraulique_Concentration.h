@@ -24,7 +24,7 @@
 #ifndef Pb_Hydraulique_Concentration_included
 #define Pb_Hydraulique_Concentration_included
 
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
 #include <Convection_Diffusion_Concentration.h>
 
@@ -46,9 +46,9 @@
 //         en compte de petites variations de la masse volumique en fonction
 //         du ou des constituants
 // .SECTION voir aussi
-//    Pb_qdm_fluide
+//    Pb_Fluide_base
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique_Concentration : public Pb_qdm_fluide
+class Pb_Hydraulique_Concentration : public Pb_Fluide_base
 {
 
   Declare_instanciable(Pb_Hydraulique_Concentration);

@@ -24,7 +24,7 @@
 #ifndef Pb_Thermohydraulique_included
 #define Pb_Thermohydraulique_included
 
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
 #include <Convection_Diffusion_Temperature.h>
 
@@ -44,9 +44,9 @@
 //        la temperature
 //        (le fluide est incompressible et faiblement dilalatable)
 // .SECTION voir aussi
-//     Pb_qdm_fluide Navier_Stokes_std Convection_Diffusion_Temperature
+//     Pb_Fluide_base Navier_Stokes_std Convection_Diffusion_Temperature
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Thermohydraulique : public Pb_qdm_fluide
+class Pb_Thermohydraulique : public Pb_Fluide_base
 {
 
   Declare_instanciable(Pb_Thermohydraulique);

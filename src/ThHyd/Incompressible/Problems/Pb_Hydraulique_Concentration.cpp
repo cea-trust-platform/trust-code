@@ -25,11 +25,11 @@
 #include <Constituant.h>
 #include <Verif_Cl.h>
 
-Implemente_instanciable(Pb_Hydraulique_Concentration,"Pb_Hydraulique_Concentration",Pb_qdm_fluide);
+Implemente_instanciable(Pb_Hydraulique_Concentration,"Pb_Hydraulique_Concentration",Pb_Fluide_base);
 
 
 // Description:
-//    Simple appel a: Pb_qdm_fluide::printOn(Sortie&)
+//    Simple appel a: Pb_Fluide_base::printOn(Sortie&)
 //    Ecrit le probleme sur un flot de sortie.
 // Precondition:
 // Parametre: Sortie& os
@@ -45,12 +45,12 @@ Implemente_instanciable(Pb_Hydraulique_Concentration,"Pb_Hydraulique_Concentrati
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Pb_Hydraulique_Concentration::printOn(Sortie& os) const
 {
-  return Pb_qdm_fluide::printOn(os);
+  return Pb_Fluide_base::printOn(os);
 }
 
 
 // Description:
-//    Simple appel a: Pb_qdm_fluide::readOn(Entree&)
+//    Simple appel a: Pb_Fluide_base::readOn(Entree&)
 //    Lit le probleme a partir d'un flot d'entree.
 // Precondition:
 // Parametre: Entree& is
@@ -66,7 +66,7 @@ Sortie& Pb_Hydraulique_Concentration::printOn(Sortie& os) const
 // Postcondition:
 Entree& Pb_Hydraulique_Concentration::readOn(Entree& is)
 {
-  return Pb_qdm_fluide::readOn(is);
+  return Pb_Fluide_base::readOn(is);
 }
 
 // Description:

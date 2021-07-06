@@ -34,21 +34,21 @@
 #include <Probleme_Couple.h>
 #include <stat_counters.h>
 
-Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_qdm_fluide);
+Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_Fluide_base);
 
 Sortie& Pb_Dilatable_base::printOn(Sortie& os) const
 {
-  return Pb_qdm_fluide::printOn(os);
+  return Pb_Fluide_base::printOn(os);
 }
 
 Entree& Pb_Dilatable_base::readOn(Entree& is)
 {
-  return Pb_qdm_fluide::readOn(is);
+  return Pb_Fluide_base::readOn(is);
 }
 
 void Pb_Dilatable_base::associer_milieu_base(const Milieu_base& mil)
 {
-  Pb_qdm_fluide::associer_milieu_base(mil);
+  Pb_Fluide_base::associer_milieu_base(mil);
   le_fluide_ =  ref_cast(Fluide_Dilatable_base,mil);
 }
 
@@ -67,17 +67,17 @@ void Pb_Dilatable_base::associer_sch_tps_base(const Schema_Temps_base& sch)
       Cerr << "Choose another time scheme or set a time scheme for each of your problems." << finl;
       Process::exit();
     }
-  Pb_qdm_fluide::associer_sch_tps_base(sch);
+  Pb_Fluide_base::associer_sch_tps_base(sch);
 }
 
 void Pb_Dilatable_base::preparer_calcul()
 {
-  Pb_qdm_fluide::preparer_calcul();
+  Pb_Fluide_base::preparer_calcul();
 }
 
 bool Pb_Dilatable_base::initTimeStep(double dt)
 {
-  return Pb_qdm_fluide::initTimeStep(dt);
+  return Pb_Fluide_base::initTimeStep(dt);
 }
 
 void Pb_Dilatable_base::mettre_a_jour(double temps)

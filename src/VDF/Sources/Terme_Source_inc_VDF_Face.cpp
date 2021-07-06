@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
 #include <DoubleTrav.h>
 
@@ -54,7 +54,7 @@ Entree& Terme_Source_inc_VDF_Face::readOn(Entree& s )
 
 void Terme_Source_inc_VDF_Face::associer_pb(const Probleme_base& pb)
 {
-  if (sub_type(Pb_qdm_fluide,pb))
+  if (sub_type(Pb_Fluide_base,pb))
     {
       const Navier_Stokes_std& eqn_th = ref_cast(Navier_Stokes_std,pb.equation(0));
       Terme_Source_inc::associer_eqn(eqn_th);

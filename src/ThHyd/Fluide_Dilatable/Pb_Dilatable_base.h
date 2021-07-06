@@ -23,7 +23,7 @@
 #ifndef Pb_Dilatable_base_included
 #define Pb_Dilatable_base_included
 
-#include <Pb_qdm_fluide.h>
+#include <Pb_Fluide_base.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
 class Fluide_Dilatable_base;
@@ -35,11 +35,11 @@ class Fluide_Dilatable_base;
 //    Cette classe est censee factoriser ce qui est commun a l'ensemble
 //    des problemes dilatables.
 //
-// .SECTION voir Pb_qdm_fluide
+// .SECTION voir Pb_Fluide_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Pb_Dilatable_base : public Pb_qdm_fluide
+class Pb_Dilatable_base : public Pb_Fluide_base
 {
   Declare_base(Pb_Dilatable_base);
 

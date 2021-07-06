@@ -14,28 +14,28 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_qdm_fluide.h
+// File:        Pb_Fluide_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Problems
 // Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_qdm_fluide_included
-#define Pb_qdm_fluide_included
+#ifndef Pb_Fluide_base_included
+#define Pb_Fluide_base_included
 
 #include <Probleme_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe  Pb_qdm_fluide
+//     classe  Pb_Fluide_base
 //     Cette classe a pour but de disposer d une classe amont pour
 //     la hierarchie des problemes portant une equation de Navier_Stokes
 // .SECTION voir Probleme_base
 //////////////////////////////////////////////////////////////////////////////
-class Pb_qdm_fluide : public Probleme_base
+class Pb_Fluide_base : public Probleme_base
 {
-  Declare_base(Pb_qdm_fluide);
+  Declare_base(Pb_Fluide_base);
 
 public:
 

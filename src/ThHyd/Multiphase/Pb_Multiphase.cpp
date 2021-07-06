@@ -31,10 +31,10 @@
 #include <Domaine.h>
 #include <Loi_Fermeture_base.h>
 
-Implemente_instanciable(Pb_Multiphase,"Pb_Multiphase",Pb_qdm_fluide);
+Implemente_instanciable(Pb_Multiphase,"Pb_Multiphase",Pb_Fluide_base);
 
 // Description:
-//    Simple appel a: Pb_qdm_fluide::printOn(Sortie&)
+//    Simple appel a: Pb_Fluide_base::printOn(Sortie&)
 //    Ecrit le probleme sur un flot de sortie.
 // Precondition:
 // Parametre: Sortie& os
@@ -50,12 +50,12 @@ Implemente_instanciable(Pb_Multiphase,"Pb_Multiphase",Pb_qdm_fluide);
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Pb_Multiphase::printOn(Sortie& os) const
 {
-  return Pb_qdm_fluide::printOn(os);
+  return Pb_Fluide_base::printOn(os);
 }
 
 
 // Description:
-//    Simple appel a: Pb_qdm_fluide::readOn(Entree&)
+//    Simple appel a: Pb_Fluide_base::readOn(Entree&)
 //    Lit le probleme a partir d'un flot d'entree.
 // Precondition:
 // Parametre: Entree& is
@@ -71,7 +71,7 @@ Sortie& Pb_Multiphase::printOn(Sortie& os) const
 // Postcondition:
 Entree& Pb_Multiphase::readOn(Entree& is)
 {
-  return Pb_qdm_fluide::readOn(is);
+  return Pb_Fluide_base::readOn(is);
 }
 
 Entree& Pb_Multiphase::lire_equations(Entree& is)
@@ -114,7 +114,7 @@ void Pb_Multiphase::discretiser(const Discretisation_base& disc)
 {
   if (!noms_phases_.size())
     Cerr << "Pb_Multiphase : the phases must be set using Phase " << le_nom() << " { ... } before Discretiser" << finl, Process::exit();
-  return Pb_qdm_fluide::discretiser(disc);
+  return Pb_Fluide_base::discretiser(disc);
 }
 
 // Description:
